@@ -1,0 +1,6 @@
+{"version":1,"strings":[
+{"hash":2857157,"name":"ttl2notes.bbsave.caption","sourcebytes":[38,83,97,118,101],"value":"&Save"},
+{"hash":77089212,"name":"ttl2notes.bbcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
+{"hash":349861,"name":"ttl2notes.sgnotes.columns[0].title.caption","sourcebytes":[78,111,116,101],"value":"Note"},
+{"hash":6063029,"name":"ttl2notes.sgnotes.columns[1].title.caption","sourcebytes":[86,97,108,117,101],"value":"Value"}
+]}

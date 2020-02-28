@@ -1,0 +1,526 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.4\n"
+
+#: taboutform.caption
+msgid "About"
+msgstr "О программе"
+
+#: taboutform.lblidea.caption
+msgid ""
+"Based on idea of Torch2Translate progam\n"
+"by Alexey Abramoff"
+msgstr ""
+"Основано на идее программы Torch2Translate\n"
+"за авторством Алексея Абрамова"
+
+#: taboutform.lblinfo.caption
+msgid ""
+"This program is for translation help.\n"
+"Used for Torchligh 2 game."
+msgstr ""
+"Эта программа для помощи в переводе.\n"
+"Используется для игры Torchligh 2."
+
+#: taboutform.lblused.caption
+msgid ""
+"Used standard FreePascal modules,\n"
+"line by line text files processing,\n"
+"except read/write options in INI-file"
+msgstr ""
+"Использованы стандартные модули FreePascal,\n"
+"обработка текста строка за строкой,\n"
+"за исключением операций чтения/записи INI файлов"
+
+#: tedittextform.actmarkaspartial.hint
+msgid "Mark as Partial"
+msgstr "Помечено как Частичный перевод"
+
+#: tedittextform.actnextline.hint
+msgid "Next line"
+msgstr "Следующая строка"
+
+#: tedittextform.actnextuntranslated.hint
+msgid "Next untranslated"
+msgstr "Следующий непереведёный текст"
+
+#: tedittextform.actprevline.hint
+msgid "Previous line"
+msgstr "Предыдущая строка"
+
+#: tedittextform.actprevuntranslated.hint
+msgid "Previous untranslated"
+msgstr "Предыдущий непереведёный текст"
+
+#: tedittextform.actshowsample.hint
+msgid "Show Sample"
+msgstr "Показать пример"
+
+#: tedittextform.acttranslate.hint
+msgctxt "tedittextform.acttranslate.hint"
+msgid "Translate"
+msgstr "Перевести"
+
+#: tedittextform.caption
+msgid "Edit text"
+msgstr "Редактировать текст"
+
+#: tl2notesform.stitle
+msgctxt "tl2notesform.stitle"
+msgid "Notes"
+msgstr "Заметки"
+
+#: tl2projectform.sall
+msgid "&All"
+msgstr "Всё"
+
+#: tl2projectform.saskexport
+msgid "Export All or just project?"
+msgstr "Экспорт всего или проекта?"
+
+#: tl2projectform.schecksimilar
+msgid "Check for similar text"
+msgstr "Проверка на похожий текст"
+
+#: tl2projectform.scheckthesame
+msgid "Check for same text"
+msgstr "Проверка на такой же текст"
+
+#: tl2projectform.sdodelete
+msgid ""
+"Are you sure to delete selected line(s)?\n"
+"This text will be just hidden until you save and reload project."
+msgstr ""
+"Вы уверены, что хотите удалить выбранную строку (строки)?\n"
+"Этот текст будет лишь скрытым, пока Вы не сохраните и не перезагрузите проект."
+
+#: tl2projectform.sexport
+msgid "Export finished. Create file"
+msgstr "Экспорт завершён. Создан файл"
+
+#: tl2projectform.simporting
+msgid "Importing"
+msgstr "Импорт"
+
+#: tl2projectform.sproject
+msgid "&Project"
+msgstr "Проект"
+
+#: tl2projectform.sreplaces
+msgid "Total replaces"
+msgstr "Всего замен"
+
+#: tl2projectform.ssbtext
+#, object-pascal-format
+msgctxt "tl2projectform.ssbtext"
+msgid "Preload files: %d; lines: base = %d, mods = %d | Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
+msgstr "Предзагружено файлов: %d; строк: база = %d, моды = %d | Проект файлов: %d; тэгов: %d; строк: %d | Переведено: %d; частично: %d | Дублей: %d"
+
+#: tl2projectform.stransfileerror
+#, object-pascal-format
+msgctxt "tl2projectform.stransfileerror"
+msgid "Error %d in translation file %s, line %d"
+msgstr "Ошибка %d в файле перевода %s, строка %d"
+
+#: tl2projectform.swhatexport
+msgid "What to export"
+msgstr "Что экспортировать"
+
+#: tl2settingsform.sopenaddon
+msgctxt "tl2settingsform.sopenaddon"
+msgid "Choose additional file"
+msgstr "Выберите дополнительный файл"
+
+#: tl2settingsform.sunknownerror
+msgctxt "tl2settingsform.sunknownerror"
+msgid "Unknown Error"
+msgstr "Неизвестная ошибка"
+
+#: tl2settingsform.sycanttranslate
+msgctxt "tl2settingsform.sycanttranslate"
+msgid "Text can't be translated"
+msgstr "Текст не может быть переведен"
+
+#: tl2settingsform.sykeyblocked
+msgctxt "tl2settingsform.sykeyblocked"
+msgid "API key blocked"
+msgstr "API-ключ заблокирован"
+
+#: tl2settingsform.sytoolongtext
+msgctxt "tl2settingsform.sytoolongtext"
+msgid "Text length too large"
+msgstr "Превышен максимально допустимый размер текста"
+
+#: tl2settingsform.sytoomuchtext
+msgctxt "tl2settingsform.sytoomuchtext"
+msgid "Day text potion out of limit"
+msgstr "Превышено суточное ограничение на объем переведенного текста"
+
+#: tl2settingsform.sywrongapikey
+msgctxt "tl2settingsform.sywrongapikey"
+msgid "Wrong API key"
+msgstr "Неправильный API-ключ"
+
+#: tl2settingsform.sywronglanguage
+msgctxt "tl2settingsform.sywronglanguage"
+msgid "Choosen language is unsupported"
+msgstr "Заданное направление перевода не поддерживается"
+
+#: tl2simform.stotal
+msgid "Total"
+msgstr "Всего"
+
+#: tl2unit.sdefaultcaption
+msgctxt "tl2unit.sdefaultcaption"
+msgid "Torchlight 2 Translation"
+msgstr "Перевод Torchlight 2"
+
+#: tl2unit.sdoprocessscan
+msgid "Do you want to scan this directory?"
+msgstr "Вы хотите проверить эту папку?"
+
+#: tl2unit.sdothescan
+msgid "Do tree scan?"
+msgstr "Сканировать папки?"
+
+#: tl2unit.sexporting
+msgid "(exporting)"
+msgstr "(экспортируется)"
+
+#: tl2unit.sloading
+msgid "(loading)"
+msgstr "(загружается)"
+
+#: tl2unit.snotsaved
+msgid "Project modified. Do you want to save it?"
+msgstr "Проект изменён. Хотите сохранить его?"
+
+#: tl2unit.sopenproject
+msgctxt "tl2unit.sopenproject"
+msgid "Open project"
+msgstr "Открыть проект"
+
+#: tl2unit.ssaveproject
+msgctxt "tl2unit.ssaveproject"
+msgid "Save project"
+msgstr "Сохранить проект"
+
+#: tl2unit.ssaving
+msgid "(saving)"
+msgstr "(сохраняется)"
+
+#: tl2unit.sscanning
+msgid "(scanning)"
+msgstr "(сканируется)"
+
+#: tl2unit.ssettings
+msgctxt "tl2unit.ssettings"
+msgid "Settings"
+msgstr "Настройки"
+
+#: tmaintl2transform.actnotes.caption
+msgid "Show Notes"
+msgstr "Показать заметки"
+
+#: tmaintl2transform.caption
+msgctxt "tmaintl2transform.caption"
+msgid "Torchlight 2 Translation"
+msgstr "Перевод Torchlight 2"
+
+#: tmaintl2transform.cbscancurdir.caption
+msgid "Scan selected dir only"
+msgstr "Проверять только выбранный каталог"
+
+#: tmaintl2transform.closepage.caption
+msgid "Close Page"
+msgstr "Закрыть страницу"
+
+#: tmaintl2transform.fileexit.caption
+msgid "E&xit"
+msgstr "Выход"
+
+#: tmaintl2transform.fileexit.hint
+msgid "Exit program"
+msgstr "Выйти из программы"
+
+#: tmaintl2transform.fileexport.caption
+msgid "&Export"
+msgstr "Экспорт"
+
+#: tmaintl2transform.fileexport.hint
+msgid "Export project"
+msgstr "Экспорт проекта"
+
+#: tmaintl2transform.filenew.caption
+msgid "&New"
+msgstr "Новый"
+
+#: tmaintl2transform.filenew.hint
+msgid "New project"
+msgstr "Новый проект"
+
+#: tmaintl2transform.fileopen.caption
+msgid "&Open"
+msgstr "Открыть"
+
+#: tmaintl2transform.fileopen.hint
+msgctxt "tmaintl2transform.fileopen.hint"
+msgid "Open project"
+msgstr "Открыть проект"
+
+#: tmaintl2transform.filesave.caption
+msgctxt "tmaintl2transform.filesave.caption"
+msgid "&Save"
+msgstr "Сохранить"
+
+#: tmaintl2transform.filesave.hint
+msgctxt "tmaintl2transform.filesave.hint"
+msgid "Save project"
+msgstr "Сохранить проект"
+
+#: tmaintl2transform.filesaveas.caption
+msgid "Save &As..."
+msgstr "Сохранить как..."
+
+#: tmaintl2transform.filesaveas.hint
+msgid "Save project as..."
+msgstr "Сохранить проект как..."
+
+#: tmaintl2transform.fontedit.caption
+msgctxt "tmaintl2transform.fontedit.caption"
+msgid "&Font"
+msgstr "Шрифт"
+
+#: tmaintl2transform.fontedit.hint
+msgid "Font changing"
+msgstr "Изменить шрифт"
+
+#: tmaintl2transform.gbscanobjects.caption
+msgid "Objects to scan"
+msgstr "Объекты для сканирования"
+
+#: tmaintl2transform.helpabout.caption
+msgid "&About"
+msgstr "О программе"
+
+#: tmaintl2transform.helpabout.hint
+msgid "About program"
+msgstr "О программе"
+
+#: tmaintl2transform.lbltreenotes.caption
+msgid "Doubleclick to scan"
+msgstr "Двойной клик для сканирования"
+
+#: tmaintl2transform.mifile.caption
+msgid "&File"
+msgstr "Файл"
+
+#: tmaintl2transform.mihelp.caption
+msgid "&Help"
+msgstr "Помощь"
+
+#: tmaintl2transform.rbscanknown.caption
+msgid "Scan just known files"
+msgstr "Проверять только известные файлы"
+
+#: tmaintl2transform.rbscanknown.hint
+msgid "*.DAT,  *.LAYOUT and *.TEMPLATE files"
+msgstr "*.DAT,  *.LAYOUT и *.TEMPLATE файлы"
+
+#: tmaintl2transform.rbscantext.caption
+msgid "Scan all text files"
+msgstr "Проверять все файлы"
+
+#: ttl2notes.bbcancel.caption
+msgid "Cancel"
+msgstr "Отмена"
+
+#: ttl2notes.bbsave.caption
+msgctxt "ttl2notes.bbsave.caption"
+msgid "&Save"
+msgstr "Сохр."
+
+#: ttl2notes.sgnotes.columns[0].title.caption
+msgid "Note"
+msgstr "Заметка"
+
+#: ttl2notes.sgnotes.columns[1].title.caption
+msgctxt "ttl2notes.sgnotes.columns[1].title.caption"
+msgid "Value"
+msgstr "Значение"
+
+#: ttl2project.actexportclipbrd.hint
+msgctxt "ttl2project.actexportclipbrd.hint"
+msgid "Copy selected source text to clipboard"
+msgstr "Копировать выбранный исходный текст в буфер обмена"
+
+#: ttl2project.actexportfile.hint
+msgctxt "ttl2project.actexportfile.hint"
+msgid "Save selected source text"
+msgstr "Сохранить выбранный исходный текст"
+
+#: ttl2project.actfilename.hint
+msgctxt "ttl2project.actfilename.hint"
+msgid "Short file names"
+msgstr "Короткие имена файлов"
+
+#: ttl2project.actfilter.hint
+msgctxt "ttl2project.actfilter.hint"
+msgid "Filter"
+msgstr "Фильтр"
+
+#: ttl2project.actfindnext.hint
+msgctxt "ttl2project.actfindnext.hint"
+msgid "Search next"
+msgstr "Искать дальше"
+
+#: ttl2project.acthideready.hint
+msgctxt "ttl2project.acthideready.hint"
+msgid "Hide translated lines"
+msgstr "Скрыть переведённые строки"
+
+#: ttl2project.actimportclipbrd.hint
+msgctxt "ttl2project.actimportclipbrd.hint"
+msgid "Inset text with translation from clipboard"
+msgstr "Вставить из буфера обмена текст с переводом"
+
+#: ttl2project.actimportfile.hint
+msgctxt "ttl2project.actimportfile.hint"
+msgid "Add translation from file"
+msgstr "Добавить перевод из файла"
+
+#: ttl2project.actpartasready.hint
+msgid "Mark partially translated text as translated"
+msgstr "Пометить частично переведёный текст как переведёный"
+
+#: ttl2project.actreplace.hint
+msgctxt "ttl2project.actreplace.hint"
+msgid "Replace translation text"
+msgstr "Заменить текст перевода"
+
+#: ttl2project.actshowdoubles.hint
+msgctxt "ttl2project.actshowdoubles.hint"
+msgid "Show Doubling lines"
+msgstr "Показать дублирующиеся строки"
+
+#: ttl2project.actshowsimilar.hint
+msgctxt "ttl2project.actshowsimilar.hint"
+msgid "Show lines with \"almost the same\" text"
+msgstr "Показать строки с похожим текстом"
+
+#: ttl2project.actshowtemplate.hint
+msgid "Show template text"
+msgstr "Показать шаблон"
+
+#: ttl2project.actyandex.hint
+msgctxt "ttl2project.actyandex.hint"
+msgid "Use Yandex translate service"
+msgstr "Использовать сервис перевода Яндекса"
+
+#: ttl2project.tl2projectgrid.columns[0].title.caption
+msgid "File"
+msgstr "Файл"
+
+#: ttl2project.tl2projectgrid.columns[1].title.caption
+msgid "Attribute"
+msgstr "Аттрибут"
+
+#: ttl2project.tl2projectgrid.columns[2].title.caption
+msgctxt "ttl2project.tl2projectgrid.columns[2].title.caption"
+msgid "Template"
+msgstr "Шаблон"
+
+#: ttl2project.tl2projectgrid.columns[3].title.caption
+msgctxt "ttl2project.tl2projectgrid.columns[3].title.caption"
+msgid "Value"
+msgstr "Значение"
+
+#: ttl2project.tl2projectgrid.columns[4].title.caption
+msgctxt "ttl2project.tl2projectgrid.columns[4].title.caption"
+msgid "Part"
+msgstr "Част."
+
+#: ttl2project.tl2projectgrid.columns[5].title.caption
+msgctxt "ttl2project.tl2projectgrid.columns[5].title.caption"
+msgid "Translation"
+msgstr "Перевод"
+
+#: ttl2settings.bbfontedit.caption
+msgctxt "ttl2settings.bbfontedit.caption"
+msgid "&Font"
+msgstr "Шрифт"
+
+#: ttl2settings.bbsavesettings.caption
+msgctxt "ttl2settings.bbsavesettings.caption"
+msgid "&Save"
+msgstr "Сохр."
+
+#: ttl2settings.cbexportparts.caption
+msgid "Export partially translated text"
+msgstr "Экспорт частично переведённого текста"
+
+#: ttl2settings.cbimportparts.caption
+msgid "Mark imported lines as partial"
+msgstr "Пометить импортированное как частичное"
+
+#: ttl2settings.cbkeepspaces.caption
+msgid "Keep Spaces at the end of text"
+msgstr "Оставлять пробелы в конце текста"
+
+#: ttl2settings.gbtranslate.caption
+msgid "Yandex Translation"
+msgstr "Перевод Яндекса"
+
+#: ttl2settings.lbladdfile.caption
+msgid "Additional files"
+msgstr "Доп. файлы"
+
+#: ttl2settings.lblapikey.caption
+msgid "API Key"
+msgstr "Ключ API"
+
+#: ttl2settings.lbldefaultfile.caption
+msgid "Default translation file"
+msgstr "Файл перевода по-умолчанию"
+
+#: ttl2settings.lblfilter.caption
+msgid "Words to exclude from comparing"
+msgstr "Слова-исключения из сравнения"
+
+#: ttl2settings.lblfilternote.caption
+msgid "Reopen project to apply new list"
+msgstr "Переоткройте проект, чтобы применить список"
+
+#: ttl2settings.lblgetapikey.caption
+msgid "Get your own API key"
+msgstr "Получить свой ключ API"
+
+#: ttl2settings.lblimportdir.caption
+msgid "Importing files directory"
+msgstr "Каталог файлов для импорта"
+
+#: ttl2settings.lbllang.caption
+msgid "Translation language"
+msgstr "Язык перевода"
+
+#: ttl2settings.lblrootdirectory.caption
+msgid "Root directory for mods"
+msgstr "Корневая папка модов"
+
+#: ttl2settings.lblworkdirectory.caption
+msgid "Working directory"
+msgstr "Рабочий каталог"
+
+#: ttl2settings.lblyandexnote.caption
+msgctxt "ttl2settings.lblyandexnote.caption"
+msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
+msgstr "Размер текста - не более 10Кб. Дневной лимит - 1 000 000 символов, месячный - 10 000 000 символов."

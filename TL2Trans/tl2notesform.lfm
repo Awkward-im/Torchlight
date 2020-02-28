@@ -1,0 +1,149 @@
+object TL2Notes: TTL2Notes
+  Left = 415
+  Height = 378
+  Top = 198
+  Width = 252
+  BorderStyle = bsSizeToolWin
+  ClientHeight = 378
+  ClientWidth = 252
+  OnCreate = FormCreate
+  LCLVersion = '2.1.0.0'
+  object pnlTop: TPanel
+    Left = 0
+    Height = 42
+    Top = 0
+    Width = 252
+    Align = alTop
+    ClientHeight = 42
+    ClientWidth = 252
+    TabOrder = 0
+    object edSearch: TEdit
+      Left = 8
+      Height = 23
+      Top = 8
+      Width = 144
+      OnChange = edSearchChange
+      TabOrder = 0
+    end
+    object sbAdd: TSpeedButton
+      Left = 160
+      Height = 22
+      Top = 8
+      Width = 23
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 6
+      OnClick = sbAddClick
+    end
+    object sbDelete: TSpeedButton
+      Left = 190
+      Height = 22
+      Top = 8
+      Width = 23
+      Enabled = False
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 7
+      OnClick = sbDeleteClick
+    end
+    object sbSave: TSpeedButton
+      Left = 219
+      Height = 22
+      Top = 8
+      Width = 23
+      Anchors = [akTop, akRight]
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 2
+      OnClick = sbSaveClick
+    end
+  end
+  object pnlEdit: TPanel
+    Left = 0
+    Height = 178
+    Top = 42
+    Width = 252
+    Align = alTop
+    BorderStyle = bsSingle
+    ClientHeight = 174
+    ClientWidth = 248
+    TabOrder = 1
+    Visible = False
+    object edTitle: TEdit
+      Left = 6
+      Height = 23
+      Top = 8
+      Width = 234
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      TabOrder = 0
+    end
+    object memNote: TMemo
+      Left = 6
+      Height = 90
+      Top = 40
+      Width = 234
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 1
+    end
+    object bbSave: TBitBtn
+      Left = 165
+      Height = 30
+      Top = 136
+      Width = 75
+      Anchors = [akTop, akRight]
+      Caption = '&Save'
+      Default = True
+      Kind = bkOK
+      OnClick = bbSaveClick
+      TabOrder = 2
+    end
+    object bbCancel: TBitBtn
+      Left = 76
+      Height = 30
+      Top = 136
+      Width = 75
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = 'Cancel'
+      Kind = bkCancel
+      OnClick = bbCancelClick
+      TabOrder = 3
+    end
+    object sbTranslate: TSpeedButton
+      Left = 6
+      Height = 22
+      Top = 141
+      Width = 23
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 8
+      OnClick = sbTranslateClick
+    end
+  end
+  object sgNotes: TStringGrid
+    Left = 0
+    Height = 158
+    Top = 220
+    Width = 252
+    Align = alClient
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 2
+    Columns = <    
+      item
+        SizePriority = 0
+        Title.Caption = 'Note'
+        Width = 100
+      end    
+      item
+        Title.Caption = 'Value'
+        Width = 148
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect, goSmoothScroll, goCellHints, goRowHighlight]
+    RowCount = 1
+    TabOrder = 2
+    OnDblClick = sgNotesDblClick
+    ColWidths = (
+      100
+      148
+    )
+  end
+end

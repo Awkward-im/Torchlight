@@ -1,0 +1,306 @@
+object TL2Settings: TTL2Settings
+  Left = 357
+  Height = 525
+  Top = 293
+  Width = 783
+  BorderStyle = bsNone
+  ClientHeight = 525
+  ClientWidth = 783
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  ParentFont = True
+  LCLVersion = '2.1.0.0'
+  object lblDefaultFile: TLabel
+    Left = 8
+    Height = 15
+    Top = 57
+    Width = 392
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Default translation file'
+    ParentColor = False
+  end
+  object edDefaultFile: TFileNameEdit
+    Left = 8
+    Height = 23
+    Top = 77
+    Width = 392
+    DialogTitle = 'Default translation filename'
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    AutoSize = False
+    MaxLength = 0
+    TabOrder = 1
+  end
+  object lblRootDirectory: TLabel
+    Left = 8
+    Height = 15
+    Top = 112
+    Width = 392
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Root directory for mods'
+    ParentColor = False
+  end
+  object edRootDir: TDirectoryEdit
+    Left = 8
+    Height = 23
+    Top = 130
+    Width = 392
+    DialogTitle = 'Root mod files directory'
+    ShowHidden = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    AutoSize = False
+    MaxLength = 0
+    TabOrder = 2
+  end
+  object edWorkDir: TDirectoryEdit
+    Left = 8
+    Height = 23
+    Top = 22
+    Width = 392
+    DialogTitle = 'Working directory'
+    ShowHidden = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    AutoSize = False
+    MaxLength = 0
+    TabOrder = 0
+  end
+  object lblWorkDirectory: TLabel
+    Left = 8
+    Height = 15
+    Top = 2
+    Width = 392
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Working directory'
+    ParentColor = False
+  end
+  object lblAddFile: TLabel
+    Left = 153
+    Height = 15
+    Top = 337
+    Width = 216
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Additional files'
+    ParentColor = False
+  end
+  object lbAddFileList: TListBox
+    Left = 153
+    Height = 157
+    Top = 356
+    Width = 216
+    ItemHeight = 0
+    TabOrder = 6
+  end
+  object bbSaveSettings: TBitBtn
+    Left = 700
+    Height = 30
+    Top = 488
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = '&Save'
+    Default = True
+    Kind = bkOK
+    OnClick = bbSaveSettingsClick
+    TabOrder = 7
+  end
+  object sbAddonUp: TSpeedButton
+    Left = 377
+    Height = 22
+    Top = 356
+    Width = 23
+    Images = TL2DataModule.TL2ImageList
+    ImageIndex = 23
+    OnClick = TL2ArrowUpClick
+  end
+  object sbAddonAdd: TSpeedButton
+    Left = 377
+    Height = 22
+    Top = 416
+    Width = 23
+    Images = TL2DataModule.TL2ImageList
+    ImageIndex = 6
+    OnClick = sbAddonAddClick
+  end
+  object sbAddonDel: TSpeedButton
+    Left = 377
+    Height = 22
+    Top = 445
+    Width = 23
+    Images = TL2DataModule.TL2ImageList
+    ImageIndex = 7
+    OnClick = sbAddonDelClick
+  end
+  object sbAddonDown: TSpeedButton
+    Left = 377
+    Height = 22
+    Top = 491
+    Width = 23
+    Images = TL2DataModule.TL2ImageList
+    ImageIndex = 22
+    OnClick = TL2ArrowDownClick
+  end
+  object cbExportParts: TCheckBox
+    Left = 8
+    Height = 19
+    Top = 227
+    Width = 175
+    Caption = 'Export partially translated text'
+    TabOrder = 3
+  end
+  object cbKeepSpaces: TCheckBox
+    Left = 8
+    Height = 19
+    Top = 252
+    Width = 177
+    Caption = 'Keep Spaces at the end of text'
+    TabOrder = 4
+  end
+  object bbFontEdit: TBitBtn
+    Left = 8
+    Height = 26
+    Top = 337
+    Width = 70
+    AutoSize = True
+    Caption = '&Font'
+    Images = TL2DataModule.TL2ImageList
+    ImageIndex = 4
+    OnClick = btnFontEditClick
+    TabOrder = 5
+  end
+  object gbTranslate: TGroupBox
+    Left = 408
+    Height = 182
+    Top = 2
+    Width = 367
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'Yandex Translation'
+    ClientHeight = 162
+    ClientWidth = 363
+    TabOrder = 8
+    object edTransLang: TEdit
+      Left = 4
+      Height = 23
+      Top = 86
+      Width = 36
+      TabOrder = 1
+    end
+    object lblAPIKey: TLabel
+      Left = 4
+      Height = 15
+      Top = 2
+      Width = 40
+      Caption = 'API Key'
+      ParentColor = False
+    end
+    object memAPIKey: TMemo
+      Left = 4
+      Height = 57
+      Top = 24
+      Width = 354
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 0
+    end
+    object lblLang: TLabel
+      Left = 48
+      Height = 15
+      Top = 90
+      Width = 111
+      Caption = 'Translation language'
+      ParentColor = False
+    end
+    object lblGetAPIKey: TLabel
+      Cursor = crHandPoint
+      Left = 245
+      Height = 15
+      Top = 2
+      Width = 113
+      Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      Caption = 'Get your own API key'
+      Font.Color = clBlue
+      Font.Style = [fsUnderline]
+      ParentColor = False
+      ParentFont = False
+      OnClick = lblGetAPIKeyClick
+    end
+    object lblYandexNote: TLabel
+      Left = 4
+      Height = 47
+      Top = 113
+      Width = 354
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      Caption = 'Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols.'
+      ParentColor = False
+      WordWrap = True
+    end
+  end
+  object edFilterWords: TEdit
+    Left = 408
+    Height = 23
+    Top = 248
+    Width = 367
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 9
+  end
+  object lblFilter: TLabel
+    Left = 408
+    Height = 15
+    Top = 227
+    Width = 367
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'Words to exclude from comparing'
+    ParentColor = False
+  end
+  object lblFilterNote: TLabel
+    Left = 408
+    Height = 15
+    Top = 272
+    Width = 367
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'Reopen project to apply new list'
+    ParentColor = False
+  end
+  object edImportDir: TDirectoryEdit
+    Left = 8
+    Height = 23
+    Top = 183
+    Width = 392
+    ShowHidden = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    AutoSize = False
+    MaxLength = 0
+    TabOrder = 10
+  end
+  object lblImportDir: TLabel
+    Left = 8
+    Height = 15
+    Top = 165
+    Width = 392
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Importing files directory'
+    ParentColor = False
+  end
+  object cbImportParts: TCheckBox
+    Left = 8
+    Height = 19
+    Top = 277
+    Width = 176
+    Caption = 'Mark imported lines as partial'
+    TabOrder = 11
+  end
+end

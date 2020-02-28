@@ -1,0 +1,316 @@
+object MainTL2TransForm: TMainTL2TransForm
+  Left = 426
+  Height = 655
+  Top = 152
+  Width = 1007
+  Caption = 'Torchlight 2 Translation'
+  ClientHeight = 635
+  ClientWidth = 1007
+  KeyPreview = True
+  Menu = TL2MainMenu
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  ShowHint = True
+  LCLVersion = '2.1.0.0'
+  object TL2StatusBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 612
+    Width = 1007
+    Panels = <>
+  end
+  object TL2TreePanel: TPanel
+    Left = 0
+    Height = 586
+    Top = 26
+    Width = 250
+    Align = alLeft
+    ClientHeight = 586
+    ClientWidth = 250
+    TabOrder = 1
+    Visible = False
+    object gbScanObjects: TGroupBox
+      Left = 1
+      Height = 89
+      Top = 1
+      Width = 248
+      Align = alTop
+      Caption = 'Objects to scan'
+      ClientHeight = 69
+      ClientWidth = 244
+      TabOrder = 0
+      object rbScanKnown: TRadioButton
+        Left = 4
+        Height = 19
+        Hint = '*.DAT,  *.LAYOUT and *.TEMPLATE files'
+        Top = 24
+        Width = 130
+        Caption = 'Scan just known files'
+        Checked = True
+        TabOrder = 1
+        TabStop = True
+      end
+      object rbScanText: TRadioButton
+        Left = 4
+        Height = 19
+        Top = 1
+        Width = 106
+        Caption = 'Scan all text files'
+        TabOrder = 0
+      end
+      object cbScanCurDir: TCheckBox
+        Left = 4
+        Height = 19
+        Top = 48
+        Width = 134
+        Caption = 'Scan selected dir only'
+        TabOrder = 2
+      end
+    end
+    object lblTreeNotes: TLabel
+      Left = 1
+      Height = 30
+      Top = 90
+      Width = 216
+      Alignment = taCenter
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      Caption = 'Doubleclick to scan'
+      Layout = tlCenter
+      ParentColor = False
+      WordWrap = True
+    end
+    object TL2ShellTreeView: TShellTreeView
+      Left = 1
+      Height = 465
+      Top = 120
+      Width = 248
+      Align = alCustom
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      FileSortType = fstNone
+      ReadOnly = True
+      RowSelect = True
+      TabOrder = 1
+      OnDblClick = TL2ShellTreeViewDblClick
+      OnKeyDown = TL2ShellTreeViewKeyDown
+      Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+      ObjectTypes = [otFolders]
+    end
+    object bbCloseTree: TBitBtn
+      Left = 219
+      Height = 30
+      Top = 90
+      Width = 30
+      Anchors = [akTop, akRight]
+      Kind = bkAbort
+      OnClick = bbCloseTreeClick
+      Spacing = 0
+      TabOrder = 2
+    end
+  end
+  object TL2Splitter: TSplitter
+    Left = 250
+    Height = 586
+    Top = 26
+    Width = 5
+  end
+  object TL2PageControl: TPageControl
+    Left = 255
+    Height = 586
+    Top = 26
+    Width = 752
+    Align = alClient
+    Images = TL2DataModule.TL2ImageList
+    TabOrder = 3
+    OnChange = TL2PageControlChange
+    OnMouseUp = TL2PageControlMouseUp
+    Options = [nboShowCloseButtons, nboDoChangeOnSetIndex]
+  end
+  object TL2Toolbar: TToolBar
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 1007
+    Images = TL2DataModule.TL2ImageList
+    Indent = 4
+    TabOrder = 0
+    object tbFileNew: TToolButton
+      Left = 4
+      Top = 2
+      Action = FileNew
+    end
+    object tbFileOpen: TToolButton
+      Left = 27
+      Top = 2
+      Action = FileOpen
+    end
+    object tbFileSave: TToolButton
+      Left = 50
+      Top = 2
+      Action = FileSave
+    end
+    object tbFileExport: TToolButton
+      Left = 73
+      Top = 2
+      Action = FileExport
+    end
+    object tbSeparator1: TToolButton
+      Left = 96
+      Height = 22
+      Top = 2
+      Style = tbsSeparator
+    end
+    object tbFontEdit: TToolButton
+      Left = 104
+      Top = 2
+      Action = FontEdit
+    end
+    object tbSeparator2: TToolButton
+      Left = 127
+      Height = 22
+      Top = 2
+      Style = tbsSeparator
+    end
+    object tbHelpAbout: TToolButton
+      Left = 135
+      Top = 2
+      Action = HelpAbout
+    end
+    object tbHelpNotes: TToolButton
+      Left = 158
+      Top = 2
+      Action = actNotes
+    end
+  end
+  object TL2ActionList: TActionList
+    Images = TL2DataModule.TL2ImageList
+    Left = 287
+    Top = 448
+    object FontEdit: TFontEdit
+      Category = 'Dialog'
+      Caption = '&Font'
+      Dialog.MinFontSize = 0
+      Dialog.MaxFontSize = 0
+      Hint = 'Font changing'
+      ImageIndex = 4
+      ShortCut = 32838
+      BeforeExecute = FontEditBeforeExecute
+      OnAccept = FontEditAccept
+    end
+    object FileNew: TAction
+      Category = 'File'
+      Caption = '&New'
+      Hint = 'New project'
+      ImageIndex = 0
+      OnExecute = FileNewExecute
+      ShortCut = 16462
+    end
+    object FileOpen: TAction
+      Category = 'File'
+      Caption = '&Open'
+      Hint = 'Open project'
+      ImageIndex = 1
+      OnExecute = FileOpenExecute
+      ShortCut = 16463
+    end
+    object FileSave: TAction
+      Category = 'File'
+      Caption = '&Save'
+      Enabled = False
+      Hint = 'Save project'
+      ImageIndex = 2
+      OnExecute = FileSaveExecute
+      ShortCut = 16467
+    end
+    object FileSaveAs: TAction
+      Category = 'File'
+      Caption = 'Save &As...'
+      Enabled = False
+      Hint = 'Save project as...'
+      ImageIndex = 5
+      OnExecute = FileSaveAsExecute
+      ShortCut = 24659
+    end
+    object FileExport: TAction
+      Category = 'File'
+      Caption = '&Export'
+      Enabled = False
+      Hint = 'Export project'
+      ImageIndex = 3
+      OnExecute = FileExportExecute
+      ShortCut = 16453
+    end
+    object FileExit: TAction
+      Category = 'File'
+      Caption = 'E&xit'
+      Hint = 'Exit program'
+      ImageIndex = 18
+      OnExecute = FileExitExecute
+      ShortCut = 32883
+    end
+    object HelpAbout: TAction
+      Category = 'Help'
+      Caption = '&About'
+      Hint = 'About program'
+      ImageIndex = 9
+      OnExecute = HelpAboutExecute
+    end
+    object ClosePage: TAction
+      Caption = 'Close Page'
+      OnExecute = ClosePageExecute
+      ShortCut = 16499
+    end
+    object actNotes: TAction
+      Category = 'Help'
+      Caption = 'Show Notes'
+      ImageIndex = 8
+      OnExecute = actNotesExecute
+      ShortCut = 32840
+    end
+  end
+  object TL2MainMenu: TMainMenu
+    Images = TL2DataModule.TL2ImageList
+    Left = 287
+    Top = 512
+    object miFile: TMenuItem
+      Caption = '&File'
+      object miFileNew: TMenuItem
+        Action = FileNew
+      end
+      object miFileOpen: TMenuItem
+        Action = FileOpen
+      end
+      object miFileSave: TMenuItem
+        Action = FileSave
+      end
+      object miFileSaveAs: TMenuItem
+        Action = FileSaveAs
+      end
+      object miFileExport: TMenuItem
+        Action = FileExport
+      end
+      object miFileSep1: TMenuItem
+        Caption = '-'
+      end
+      object miClosePage: TMenuItem
+        Action = ClosePage
+      end
+      object miFileSep2: TMenuItem
+        Caption = '-'
+      end
+      object miFileExit: TMenuItem
+        Action = FileExit
+      end
+    end
+    object miHelp: TMenuItem
+      Caption = '&Help'
+      object MenuItem1: TMenuItem
+        Action = actNotes
+      end
+      object miHelpAbout: TMenuItem
+        Action = HelpAbout
+      end
+    end
+  end
+end

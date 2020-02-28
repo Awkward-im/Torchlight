@@ -1,0 +1,19 @@
+{"version":1,"strings":[
+{"hash":141047397,"name":"ttl2settings.lbldefaultfile.caption","sourcebytes":[68,101,102,97,117,108,116,32,116,114,97,110,115,108,97,116,105,111,110,32,102,105,108,101],"value":"Default translation file"},
+{"hash":136806051,"name":"ttl2settings.lblrootdirectory.caption","sourcebytes":[82,111,111,116,32,100,105,114,101,99,116,111,114,121,32,102,111,114,32,109,111,100,115],"value":"Root directory for mods"},
+{"hash":145601209,"name":"ttl2settings.lblworkdirectory.caption","sourcebytes":[87,111,114,107,105,110,103,32,100,105,114,101,99,116,111,114,121],"value":"Working directory"},
+{"hash":247520259,"name":"ttl2settings.lbladdfile.caption","sourcebytes":[65,100,100,105,116,105,111,110,97,108,32,102,105,108,101,115],"value":"Additional files"},
+{"hash":2857157,"name":"ttl2settings.bbsavesettings.caption","sourcebytes":[38,83,97,118,101],"value":"&Save"},
+{"hash":133808644,"name":"ttl2settings.cbexportparts.caption","sourcebytes":[69,120,112,111,114,116,32,112,97,114,116,105,97,108,108,121,32,116,114,97,110,115,108,97,116,101,100,32,116,101,120,116],"value":"Export partially translated text"},
+{"hash":185978468,"name":"ttl2settings.cbkeepspaces.caption","sourcebytes":[75,101,101,112,32,83,112,97,99,101,115,32,97,116,32,116,104,101,32,101,110,100,32,111,102,32,116,101,120,116],"value":"Keep Spaces at the end of text"},
+{"hash":2807380,"name":"ttl2settings.bbfontedit.caption","sourcebytes":[38,70,111,110,116],"value":"&Font"},
+{"hash":126575310,"name":"ttl2settings.gbtranslate.caption","sourcebytes":[89,97,110,100,101,120,32,84,114,97,110,115,108,97,116,105,111,110],"value":"Yandex Translation"},
+{"hash":105599369,"name":"ttl2settings.lblapikey.caption","sourcebytes":[65,80,73,32,75,101,121],"value":"API Key"},
+{"hash":114234821,"name":"ttl2settings.lbllang.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110,32,108,97,110,103,117,97,103,101],"value":"Translation language"},
+{"hash":240489369,"name":"ttl2settings.lblgetapikey.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
+{"hash":234828510,"name":"ttl2settings.lblyandexnote.caption","sourcebytes":[84,101,120,116,32,108,101,110,103,116,104,32,105,115,32,110,111,116,32,109,111,114,101,32,116,104,97,110,32,49,48,75,98,46,32,68,97,121,32,108,105,109,105,116,32,105,115,32,49,32,48,48,48,32,48,48,48,32,115,121,109,98,111,108,115,46,32,77,111,110,116,104,32,108,105,109,105,116,32,105,115,32,49,48,32,48,48,48,32,48,48,48,32,115,121,109,98,111,108,115,46],"value":"Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."},
+{"hash":200534807,"name":"ttl2settings.lblfilter.caption","sourcebytes":[87,111,114,100,115,32,116,111,32,101,120,99,108,117,100,101,32,102,114,111,109,32,99,111,109,112,97,114,105,110,103],"value":"Words to exclude from comparing"},
+{"hash":107700020,"name":"ttl2settings.lblfilternote.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,32,116,111,32,97,112,112,108,121,32,110,101,119,32,108,105,115,116],"value":"Reopen project to apply new list"},
+{"hash":175233177,"name":"ttl2settings.lblimportdir.caption","sourcebytes":[73,109,112,111,114,116,105,110,103,32,102,105,108,101,115,32,100,105,114,101,99,116,111,114,121],"value":"Importing files directory"},
+{"hash":180741772,"name":"ttl2settings.cbimportparts.caption","sourcebytes":[77,97,114,107,32,105,109,112,111,114,116,101,100,32,108,105,110,101,115,32,97,115,32,112,97,114,116,105,97,108],"value":"Mark imported lines as partial"}
+]}

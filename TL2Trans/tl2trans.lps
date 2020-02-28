@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="tl2trans.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="12"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2unit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainTL2TransForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2Unit"/>
+        <TopLine Value="173"/>
+        <CursorPos Y="173"/>
+        <FoldState Value=" T46031 T7FM( T8ie26]E3jb086 piajJ0I3[9778 pjHk30D5 T6jc01C T1je057]YY]q35]9ZjO0F7[94k0023 T0kX27E]Hgmg494g"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="TL2DataUnit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="1343"/>
+        <CursorPos X="28" Y="1427"/>
+        <FoldState Value=" T44021 TCMF7]7LiM447 T7dK{P T8e2s]M3mC03A piYjI036 plTmF0~V2 pjdqU0D1]9akC0y41212 T1mD02C]naja054 pkgm90~I[n4VqI0C[n4UkH0s4112]n0mK26]nlRlMG24]UCL8U9],eiICB6],FiY4S8]Icie635]I3i34MA[a4]I8B[{U5R668]-XjP4{17]A6WCCC[s4kC4B2841134 T6pU01G\"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\utils\cfgbase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\utils\iniconfig.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="INIConfig"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="798"/>
+        <CursorPos Y="813"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2edittext.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditTextForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2EditText"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="72"/>
+        <CursorPos Y="72"/>
+        <FoldState Value=" T46031 T7FIl T8iC2[E43iW0G2 pibjI08A T6iX012 T1iZ0D3]PcjQ029 T0id28A~"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="23"/>
+        <FoldState Value=" T46011 T7DFC T8L2[D43d07 T1e06}"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2datamodule.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2DataModule"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="TL2DataModule"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="32"/>
+        <FoldState Value=" T4602 T7EJ9 T8I211 T3X03]71Y021*"/>
+        <UsageCount Value="202"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2projectform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2Project"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1072"/>
+        <CursorPos X="60" Y="1100"/>
+        <FoldState Value=" T46031 TLnU07 p0;b05 T7IG{N T8ib2L]TM-Y8]73ka033 pj2jD0W1]9XkS0W[I40je0R[94RkJ0t4 piZkE0r[94e]I8416]BamE0Y6]ccl20K[l4Jk60k2 T1kb024]HFk90{Y4[R4mW0N[a4EkI0q5]9PlO[b5iYjH]R17]K9n00I[T41]vG[l45k70f2 T6kg02Y T0l6246 piZiH828]Y2iR4I[\4bR4H5[Q4b8DA[x4jY6BA[(4jD496[Y4j448D]9akC4C3]9gS6aE]8XmD2314D[J4lF45[^4fj6A5F[~05K645 TKzC05q"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2settingsform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2Settings"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2SettingsForm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="102"/>
+        <CursorPos X="28" Y="119"/>
+        <FoldState Value=" T4602 T7IHi T8iE23 T3lY0k4 pj5kM065 T6lZ03]81ld0f]PiZkI05]H0nJ245I"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2simform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SimilaristForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2SimForm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="14"/>
+        <CursorPos X="41" Y="79"/>
+        <FoldState Value=" T46011 TLj2032 T7DKJ T8P24]L3i50I013 T1i60H[A50iC]S14 T6iQ012E"/>
+        <UsageCount Value="172"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2refunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2RefUnit"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="71"/>
+        <CursorPos Y="186"/>
+        <FoldState Value=" TL004 T4901 T7DIp T8E2C2 TCGH9 TMNO]P3iT0K9 pjLkM0V]T6iU013 T1iW0H[P47]PS]P0iY26Au"/>
+        <UsageCount Value="71"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2notesform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2Notes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2NotesForm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="49"/>
+        <CursorPos X="50" Y="122"/>
+        <FoldState Value=" T46021 T7EEQ T8a21]D3iI0B7 piajK09 T1iJ0A8 T6jA012 T0je234K"/>
+        <UsageCount Value="63"/>
+      </Unit>
+    </Units>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="colors[0]"/>
+      </Item>
+      <Item>
+        <Expression Value="colors[1]"/>
+      </Item>
+      <Item>
+        <Expression Value="lcnt"/>
+      </Item>
+      <Item>
+        <Expression Value="llcnt"/>
+      </Item>
+      <Item>
+        <Expression Value="TL2ProjectGrid"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,1501 @@
+unit TL2DataUnit;
+
+interface
+
+uses
+  Classes,
+  TL2RefUnit;
+
+// filters
+type
+  tSearchFilter = (
+    flNoSearch,  // do not search for doubles
+    flNoFilter,  // search but 100% the same only
+    flFiltered); // search the same and similar
+  tTextMode     = (tmOriginal,tmDefault,tmMod);
+  tTextStatus   = (
+    stOriginal,  // not translated
+    stPartial,   // translated just partially
+    stReady,     // translated
+    stDeleted);  // prepared to delete (don't save)
+
+type
+  tDATString = record
+    origin: AnsiString;
+    filter: AnsiString;
+    transl: AnsiString;
+    aref  : integer; // reference to original placement
+    sample: integer;
+    atype : tTextStatus;
+  end;
+
+type
+  TOnFileScan = procedure (const fname:AnsiString; idx, atotal:integer) of object;
+
+type
+  PTL2Translation = ^TTL2Translation;
+
+  { TTL2Translation }
+
+  TTL2Translation = object
+  private
+    FErrFile: AnsiString;
+    FErrCode: integer;
+    FErrLine: integer;
+
+    ref:TTL2Reference;
+    
+    arText  : array of tDATString;
+    cntText : integer; // lines totally
+    cntStart: integer; // start line of project
+
+    FDoubles  : integer;
+    FFMode    : tTextMode;
+    FFilter   : tSearchFilter;
+    FKeepSpace: Boolean;
+
+    FOnFileScan:TOnFileScan;
+
+    function GetFileLine(idx: integer): integer;
+
+    procedure SetFilter(afilter:tSearchFilter);
+    function  GetStatus(idx:integer):tTextStatus;
+    procedure SetStatus(idx:integer; astat:tTextStatus);
+
+    procedure Error(code:integer; const fname:AnsiString; line:integer);
+    {
+     >0 = idx+1
+     =0 = not found
+     <0 = partially
+    }
+    function SearchString(const atext,afilter:AnsiString):integer;
+    {
+      >0 =  (idx+1) (=current lines amount)
+      <0 = -(idx+1) (found the same)
+      =0 = not added (empty source)
+    }
+    function  AddString(const aorig,atrans:AnsiString):integer;
+    procedure AddDouble(atext,aref:integer);
+
+    function  GetRefAmount :integer;
+    function  GetTagAmount :integer;
+    function  GetFileAmount:integer;
+    function  GetSimIndex(idx:integer):integer;
+    function  GetTemplate(idx:integer):AnsiString;
+    function  GetSample(idx:integer):AnsiString;
+    function  GetFile  (idx:integer):AnsiString;
+    function  GetAttrib(idx:integer):AnsiString;
+    function  GetSource(idx:integer):AnsiString;
+    procedure SetTrans (idx:integer; const translated: AnsiString);
+    function  GetTrans (idx:integer):AnsiString;
+
+    procedure ReadSrcFile(const fname: AnsiString; atype: integer; arootlen:integer);
+    procedure CycleDir     (sl:TStringList; const adir:AnsiString; allText:boolean; withChild:boolean);
+    procedure CycleDirBuild(sl:TStringList; const adir:AnsiString);
+
+  public
+    procedure Init;
+    procedure Free;
+
+    {
+      -1 no file starting tag
+      -2 no block start
+      -3 no original text
+      -4 no translated text
+      -5 no end of block
+    }
+    function  LoadFromFile(const fname:AnsiString):integer;
+    procedure SaveToFile  (const fname:AnsiString; astat:tTextStatus);
+    procedure SaveInfo(const aname:AnsiString);
+    procedure LoadInfo(const aname:AnsiString);
+
+    procedure Scan (const adir:AnsiString; allText:boolean; withChild:boolean);
+    procedure Build(const adir:AnsiString);
+
+    property OnFileScan:TOnFileScan read FOnFileScan write FOnFileScan;
+    // statistic
+    property Tags    :integer read GetTagAmount;
+    property Files   :integer read GetFileAmount;
+    property Referals:integer read GetRefAmount;
+    property Lines   :integer read cntText;
+    property Doubles :integer read FDoubles;
+
+    // errors
+    property ErrorCode:integer    read FErrCode;
+    property ErrorFile:AnsiString read FErrFile;
+    property ErrorLine:integer    read FErrLine;
+
+    // global
+    property Mode  :tTextMode     read FFMode  write FFMode;
+    property Filter:tSearchFilter read FFilter write SetFilter;
+
+    property SpaceAtEnd :boolean read FKeepSpace   write FKeepSpace;
+
+    // lines
+    property Template[idx:integer]:AnsiString  read GetTemplate;
+
+    property FileLine[idx:integer]:integer     read GetFileLine;
+    property SimIndex[idx:integer]:integer     read GetSimIndex;
+    property Sample  [idx:integer]:AnsiString  read GetSample;
+    property State   [idx:integer]:tTextStatus read GetStatus write SetStatus;
+    property _File   [idx:integer]:AnsiString  read GetFile;
+    property Attrib  [idx:integer]:AnsiString  read GetAttrib;
+
+    property Line    [idx:integer]:AnsiString  read GetSource;
+    property Trans   [idx:integer]:AnsiString  read GetTrans  write SetTrans;
+  end;
+
+procedure SetFilterWords(const atext:AnsiString);
+function  FilteredString(const astr :AnsiString): AnsiString;
+function  ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
+
+//============================================
+
+implementation
+
+uses
+  SysUtils;
+
+const
+  KnownGoodExt: array of string = (
+    '.DAT',
+    '.LAYOUT',
+    '.TEMPLATE'
+  );
+
+  KnownBadExt: array of string = (
+    '.BIN',
+    '.BINDAT',
+    '.BINLAYOUT',
+    '.DDS',
+    '.MPP',
+    '.RAW',
+    '.ANIMATION',
+    '.MATERIAL',
+    '.MESH',
+    '.SKELETON',
+    '.OGG',
+    '.WAV',
+    '.FONT',
+    '.TTF',
+    '.PNG',
+    '.BAK',
+    '.DLL',
+    '.EXE'
+  );
+
+const
+  // TRANSLATION.DAT
+  sBeginFile   = '[TRANSLATIONS]';
+  sEndFile     = '[/TRANSLATIONS]';
+  sBeginBlock  = '[TRANSLATION]';
+  sEndBlock    = '[/TRANSLATION]';
+  sOriginal    = '<STRING>ORIGINAL:';
+  sTranslated  = '<STRING>TRANSLATION:';
+  // Translation
+  sTranslate   = '<TRANSLATE>';
+  // Layouts
+  sString      = '<STRING>';
+  sText_       = 'TEXT ';
+  sDialog_     = 'DIALOG ';
+  sText        = 'TEXT';
+  sToolTip     = 'TOOL TIP';
+  sTitle       = 'TITLE';
+  sGreet       = 'GREET';
+  sFailed      = 'FAILED';
+  sReturn      = 'RETURN';
+  sComplete    = 'COMPLETE';
+  sComplRet    = 'COMPLETE RETURN';
+
+const
+  sColorSuffix = #124'u';
+  sColorPrefix = #124'c';
+
+const
+  increment = 8;
+
+var
+  filter: TStringArray=nil;
+var
+  TmpInfo:array of record
+    _ref :integer;
+    _part:boolean;
+  end = nil;
+
+//===== Support =====
+
+
+procedure TTL2Translation.SetFilter(afilter:tSearchFilter);
+begin
+  FFilter:=afilter;
+end;
+
+procedure TTL2Translation.SetTrans(idx:integer; const translated: AnsiString);
+begin
+  if (idx>=0) and (idx<cntText) then
+  begin
+    arText[idx].transl:=translated;
+    if translated<>'' then
+      arText[idx].atype:=stReady
+    else
+      arText[idx].atype:=stOriginal;
+  end;
+end;
+
+function TTL2Translation.GetTrans(idx:integer): AnsiString;
+begin
+  if (idx>=0) and (idx<cntText) then
+  begin
+    result:=arText[idx].transl;
+
+    if arText[idx].atype=stPartial then
+    begin
+      if (result='') and (arText[idx].sample>=0) then
+        result:=arText[arText[idx].sample].transl;
+    end;
+  end
+  else
+    result:='';
+end;
+
+function TTL2Translation.GetSource(idx:integer): AnsiString;
+begin
+  if (idx>=0) and (idx<cntText) then
+    result:=arText[idx].origin
+  else
+    result:='';
+end;
+
+procedure TTL2Translation.SetStatus(idx:integer; astat:tTextStatus);
+begin
+  if (idx>=0) and (idx<cntText) then
+  begin
+    arText[idx].atype:=astat;
+{
+    if astat=stPartial then
+      arText[idx].atype:=stPartial
+    else if arText[idx].transl<>'' then
+      arText[idx].atype:=stReady
+    else
+      arText[idx].atype:=stOriginal;
+}
+  end;
+end;
+
+function TTL2Translation.GetStatus(idx:integer):tTextStatus;
+begin
+  if (idx>=0) and (idx<cntText) then
+    result:=arText[idx].atype
+  else
+    result:=stOriginal;
+end;
+
+function TTL2Translation.GetSimIndex(idx:integer):integer;
+begin
+  if (idx>=0) and (idx<cntText) then
+    result:=arText[idx].sample
+  else
+    result:=-1;
+end;
+
+function TTL2Translation.GetSample(idx:integer):AnsiString;
+begin
+  result:='';
+  if (idx>=0) and (idx<cntText) then
+  begin
+    idx:=arText[idx].sample;
+    if idx>=0 then
+      result:=arText[idx].origin;
+  end;
+end;
+
+function TTL2Translation.GetTemplate(idx:integer):AnsiString;
+begin
+  if (idx>=0) and (idx<cntText) then
+    result:=arText[idx].filter
+  else
+    result:='';
+end;
+
+//----- Referals -----
+
+function TTL2Translation.GetRefAmount:integer;
+begin
+  result:=ref.RefCount;
+end;
+
+function TTL2Translation.GetTagAmount:integer;
+begin
+  result:=ref.TagCount;
+end;
+
+function TTL2Translation.GetFileAmount:integer;
+begin
+  result:=ref.FileCount;
+end;
+
+function TTL2Translation.GetFile(idx:integer):AnsiString;
+begin
+  result:='';
+
+  if (idx>=0) and (idx<cntText) then
+  begin
+    if arText[idx].aref>=0 then
+    begin
+      result:=ref.GetFile(arText[idx].aref);
+    end;
+  end;
+end;
+
+function TTL2Translation.GetFileLine(idx:integer):integer;
+begin
+  if (idx>=0) and (idx<cntText) then
+    result:=ref.GetLine(arText[idx].aref)
+  else
+    result:=-1;
+end;
+
+function TTL2Translation.GetAttrib(idx:integer):AnsiString;
+begin
+  result:='';
+
+  if (idx>=0) and (idx<cntText) then
+  begin
+    if arText[idx].aref>=0 then
+    begin
+      result:=ref.GetTag(arText[idx].aref);
+    end;
+  end;
+end;
+
+//----- unnecessary -----
+
+// atext - old line index; aref - current line reference
+procedure TTL2Translation.AddDouble(atext,aref:integer);
+var
+  oldref:integer;
+begin
+  // if line added
+  if atext>=0 then
+  begin
+    if aref>=0 then
+    begin
+      oldref:=arText[atext].aref;
+      // dupe in project files
+      if oldref>=0 then
+      begin
+        ref.Dupe[oldref]:=ref.Dupe[oldref]-1;
+        ref.Dupe[aref  ]:=oldref+1;
+      end
+      // dupe in preloads
+      else
+        ref.Dupe[aref]:=0;
+    end;
+
+    inc(FDoubles);
+  end;
+end;
+
+//----- Search & Filter -----
+
+procedure SetFilterWords(const atext:AnsiString);
+begin
+  Filter:=atext.Split(' ');
+end;
+
+{
+  convert letters to lowcase
+  remove color information
+  remove numbers
+  !! KEEP '_','+','%' as significat chars
+  remove \n and other punctuation
+}
+function FilteredString(const astr:AnsiString):AnsiString;
+const
+  sWord = ['A'..'Z','_','a'..'z','0'..'9'];
+var
+  lword:String[15];
+  p:PAnsiChar;
+  i,j,k,ldi:integer;
+  b,wasletter:boolean;
+begin
+  result:='';
+  SetLength(result,Length(astr));
+  ldi:=1;
+  i:=1;
+  wasletter:=false;
+  while i<=Length(astr) do
+  begin
+    case astr[i] of
+      '0'..'9': begin
+        wasletter:=true;
+      end;
+      '-': begin
+        p:=pointer(astr)+i;
+        if p^ in ['[','0'..'9'] then
+        begin
+          result[ldi]:='-';
+          inc(ldi);
+        end;
+        wasletter:=false;
+      end;
+      '_','+','%': begin
+        result[ldi]:=astr[i];
+        inc(ldi);
+        wasletter:=false;
+      end;
+      'a'..'z',
+      'A'..'Z': begin
+        // Filter
+        if not wasletter then
+        begin
+          p:=pointer(astr)+i-1;
+          j:=0;
+          // 1 - get word
+          lword:='';
+          while p^ in sWord do
+          begin
+            // numbers will convert to crap but we don't worry about it
+            if p^ in ['A'..'Z'] then
+              lword:=lword+AnsiChar(ORD(p^)+ORD('a')-ORD('A'))
+            else
+              lword:=lword+p^;
+            inc(p);
+            inc(j);
+          end;
+          // 2 - search word
+          b:=false;
+          for k:=0 to High(Filter) do
+          begin
+            if lword=Filter[k] then
+            begin
+              b:=true;
+              break;
+            end;
+          end;
+          if b then
+          begin
+            inc(i,j);
+            continue;
+          end;
+        end;
+
+        case astr[i] of
+          'a'..'z': begin
+            // Suffixes
+            if wasletter then
+            begin
+              p:=pointer(astr)+i-1;
+              if (p^='e') and ((p+1)^ in ['d','s']) and
+                 not ((p+2)^ in sWord) then
+              begin
+                inc(i,2);
+                continue;
+              end
+              else if (p^='i') and ((p+1)^='n') and
+                  ((p+2)^='g') and not ((p+3)^ in sWord) then
+              begin
+                inc(i,3);
+                continue;
+              end;
+            end;
+
+            // regular letters
+            result[ldi]:=astr[i];
+            inc(ldi);
+            wasletter:=true;
+          end;
+
+          'A'..'Z': begin
+            // Roman numbers
+            if (astr[i] in ['I','V','X']) and not wasletter then
+            begin
+              p:=pointer(astr)+i-1;
+              j:=0;
+              repeat
+                inc(p); inc(j);
+              until not (p^ in ['I','V','X']);
+              if not (p^ in sWord) then
+              begin
+                inc(i,j);
+                continue;
+              end;
+            end;
+
+            // Regular letters
+            result[ldi]:=AnsiChar(ORD(astr[i])-ORD('A')+ORD('a'));
+            inc(ldi);
+            wasletter:=true;
+          end;
+        end;
+      end;
+      '\': begin // skip ANY slash combo
+        inc(i);
+        // special for \\n
+        if (i<Length(astr)) and (astr[i]='\') and (astr[i+1]='n') then inc(i);
+        wasletter:=false;
+{
+        if astr[i]='n' then
+        begin
+        end;
+}
+      end;
+      #124: begin
+        inc(i);
+        if astr[i]='u' then
+        begin
+        end
+        else if astr[i]='c' then
+        begin
+          inc(i,8);
+        end;
+        wasletter:=false;
+      end;
+    else // any other symbols
+      wasletter:=false;
+    end;
+    inc(i);
+  end;
+  SetLength(result,ldi-1);
+end;
+
+function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
+const
+  sWordSet = ['A'..'Z','a'..'z',#128..#255];
+var
+  colors :array [0.. 7] of String[10]; //#124'cAARRGGBB', 8 times per text must be enough
+  numbers:array [0..15] of String[9];
+  rome   :array [0.. 7] of String[7];
+  lr:String[7];
+  pc:PAnsiChar;
+  lsrc,ldst:AnsiString;
+  i,j,k:integer;
+  lcntSC,lcntSN,lcntDC,lcntDN:integer;
+  lcntSR,lcntDR:integer;
+begin
+  //-- make translation template, count source colors and numbers
+
+  lcntSC:=0;
+  lcntSN:=0;
+  lcntSR:=0;
+  i:=0;
+  j:=1;
+  pc:=pointer(srcText);
+  SetLength(lsrc,Length(srcText)+16*10);
+  while pc[i]<>#0 do
+  begin
+    //--- Color
+    if (pc[i]=#124) then
+    begin
+      inc(i);
+      if (pc[i]='c') then
+      begin
+        lsrc[j]:='%'; inc(j);
+        lsrc[j]:='s'; inc(j);
+        inc(i);
+
+        SetLength(colors[lcntSC],10);
+        colors[lcntSC][ 1]:=#124;
+        colors[lcntSC][ 2]:='c';
+        colors[lcntSC][ 3]:=pc[i]; inc(i);
+        colors[lcntSC][ 4]:=pc[i]; inc(i);
+        colors[lcntSC][ 5]:=pc[i]; inc(i);
+        colors[lcntSC][ 6]:=pc[i]; inc(i);
+        colors[lcntSC][ 7]:=pc[i]; inc(i);
+        colors[lcntSC][ 8]:=pc[i]; inc(i);
+        colors[lcntSC][ 9]:=pc[i]; inc(i);
+        colors[lcntSC][10]:=pc[i]; inc(i);
+
+        inc(lcntSC);
+      end
+      else if pc[i]='u' then
+      begin
+        lsrc[j]:='|'; inc(j);
+        lsrc[j]:='u'; inc(j);
+        inc(i);
+      end;
+    end
+    //--- New Line
+    else if (pc[i]='\' ) and (pc[i+1]='n') then
+    begin
+      lsrc[j]:='\'; inc(j);
+      lsrc[j]:='n'; inc(j);
+     inc(i,2);
+    end
+    //--- Roman numbers
+    else if (i>0) and (pc[i] in ['I','V','X']) then
+    begin
+      k:=i;
+      lr:='';
+      repeat
+        lr:=lr+pc[i];
+        inc(i);
+      until not (pc[i] in ['I','V','X']);
+      // if it was part of word, skip it
+      if pc[i] in sWordSet+['0'..'9'] then
+      begin
+        i:=k;
+        repeat
+          lsrc[j]:=pc[i]; inc(j); inc(i);
+        until not (pc[i] in sWordSet+['0'..'9']);
+      end
+      else
+      begin
+        lsrc[j]:='%'; inc(j);
+        lsrc[j]:='r'; inc(j);
+        rome[lcntSR]:=lr;
+        inc(lcntSR);
+      end;
+    end
+    //--- Words
+    else if pc[i] in sWordSet then
+    begin
+      repeat
+        lsrc[j]:=pc[i]; inc(j); inc(i);
+      until not (pc[i] in sWordSet+['0'..'9']);
+{
+      while pc[i] in sWordSet+['0'..'9'] do
+      begin
+        lsrc[j]:=pc[i]; inc(j); inc(i);
+      end;
+}
+    end
+    //--- Numbers starting from point
+    else if (pc[i]='.') and (pc[i+1] in ['0'..'9']) then
+    begin
+      lsrc[j]:='%'; inc(j);
+      lsrc[j]:='d'; inc(j);
+
+      numbers[lcntSN]:='0.';
+      inc(i);
+      while (pc[i] in ['0'..'9']) do
+      begin
+        numbers[lcntSN]:=numbers[lcntSN]+pc[i];
+        inc(i);
+      end;
+
+      inc(lcntSN);
+    end
+    //--- Numbers
+    else if (pc[i] in ['0'..'9']) then
+    begin
+      lsrc[j]:='%'; inc(j);
+      lsrc[j]:='d'; inc(j);
+
+      numbers[lcntSN]:='';
+      while (pc[i] in ['0'..'9']) do
+      begin
+        numbers[lcntSN]:=numbers[lcntSN]+pc[i];
+        inc(i);
+        if (pc[i] in ['.',',']) and (pc[i+1] in ['0'..'9']) then
+        begin
+          numbers[lcntSN]:=numbers[lcntSN]+'.';
+          inc(i);
+        end;
+      end;
+
+      inc(lcntSN);
+    end
+    //--- Any other
+    else
+    begin
+      lsrc[j]:=pc[i]; inc(j); inc(i);
+    end;
+  end;
+  SetLength(lsrc,j-1);
+
+  //-- fill color and number arrays, count them in sample
+
+  lcntDC:=0;
+  lcntDN:=0;
+  lcntDR:=0;
+  i:=0;
+  pc:=pointer(srcData);
+  while pc[i]<>#0 do
+  begin
+    //--- Color
+    if (pc[i]=#124) then
+    begin
+      inc(i);
+      if (pc[i]='c') then
+      begin
+        inc(i);
+        SetLength(colors[lcntDC],10);
+        colors[lcntDC][ 1]:=#124;
+        colors[lcntDC][ 2]:='c';
+        colors[lcntDC][ 3]:=pc[i]; inc(i);
+        colors[lcntDC][ 4]:=pc[i]; inc(i);
+        colors[lcntDC][ 5]:=pc[i]; inc(i);
+        colors[lcntDC][ 6]:=pc[i]; inc(i);
+        colors[lcntDC][ 7]:=pc[i]; inc(i);
+        colors[lcntDC][ 8]:=pc[i]; inc(i);
+        colors[lcntDC][ 9]:=pc[i]; inc(i);
+        colors[lcntDC][10]:=pc[i]; inc(i);
+        inc(lcntDC);
+      end
+      else if pc[i]='u' then
+      begin
+        inc(i);
+      end;
+    end
+    //--- New Line
+    else if (pc[i]='\' ) and (pc[i+1]='n') then
+    begin
+     inc(i,2);
+    end
+    //--- Roman numbers
+    else if (i>0) and (pc[i] in ['I','V','X']) then
+    begin
+      k:=i;
+
+      lr:='';
+      repeat
+        lr:=lr+pc[i];
+        inc(i);
+      until not (pc[i] in ['I','V','X']);
+
+      if pc[i] in sWordSet+['0'..'9'] then
+      begin
+        i:=k;
+        repeat
+          inc(i);
+        until not (pc[i] in sWordSet+['0'..'9']);
+      end
+      else
+      begin
+        rome[lcntDR]:=lr;
+        inc(lcntDR);
+      end;
+    end
+    //--- Words
+    else if pc[i] in sWordSet then
+    begin
+      repeat
+        inc(i);
+      until not (pc[i] in sWordSet+['0'..'9']);
+{
+      while pc[i] in sWordSet+['0'..'9'] do
+      begin
+        inc(i);
+      end;
+}
+    end
+    //--- Numbers starting from dot
+    else if (pc[i]='.') and (pc[i+1] in ['0'..'9']) then
+    begin
+      numbers[lcntDN]:='0.';
+      inc(i);
+      while (pc[i] in ['0'..'9']) do
+      begin
+        numbers[lcntDN]:=numbers[lcntDN]+pc[i];
+        inc(i);
+      end;
+
+      inc(lcntDN);
+    end
+    //--- Numbers
+    else if (pc[i] in ['0'..'9']) then
+    begin
+      numbers[lcntDN]:='';
+      while (pc[i] in ['0'..'9']) do
+      begin
+        numbers[lcntDN]:=numbers[lcntDN]+pc[i];
+        inc(i);
+        if (pc[i] in ['.',',']) and (pc[i+1] in ['0'..'9']) then
+        begin
+          numbers[lcntDN]:=numbers[lcntDN]+pc[i];
+          inc(i);
+        end;
+      end;
+      inc(lcntDN);
+    end
+    //--- Any other
+    else
+    begin
+      inc(i);
+    end;
+  end;
+
+  //-- replace source by sample
+
+  ldst:=lsrc;
+
+  for i:=0 to lcntSR-1 do
+    ldst:=StringReplace(ldst,'%r',rome[i],[]);
+
+  for i:=0 to lcntSN-1 do
+    ldst:=StringReplace(ldst,'%d',numbers[i],[]);
+
+  // just one coloration added (for items usually)
+  if (lcntSC=0) and (lcntDC=1) and
+     (Pos(sColorPrefix,srcData)=1) then
+  begin
+    ldst:=colors[0]+ldst;
+    // check for color suffix at the end
+    if (srcData[Length(srcData)-1]=#124) and
+       (srcData[Length(srcData)  ]='u' ) then
+      ldst:=ldst+sColorSuffix;
+  end
+  else
+  begin
+    for i:=0 to lcntSC-1 do
+      ldst:=StringReplace(ldst,'%s',colors[i],[]);
+  end;
+
+  result:=ldst;
+end;
+
+function TTL2Translation.SearchString(const atext,afilter:AnsiString):integer;
+var
+  i,first,tries:integer;
+begin
+  result:=0;
+
+  first:=-1;
+  tries:=0;
+  for i:=0 to cntText-1 do
+  begin
+    if (afilter=arText[i].filter) then
+    begin
+      // 100% the same
+      if atext=arText[i].origin then
+      begin
+        result:=i+1;
+        exit;
+      end;
+      // keep similar lines amount
+      inc(tries);
+      // save 1st case only
+      if first<0 then
+        first:=i
+      else
+      begin
+        if (arText[first].transl= '') and
+           (arText[i    ].transl<>'') then
+          first:=i;
+      end;
+    end;
+  end;
+  if first>=0 then
+  begin
+    // no translation = not found
+    if (arText[first].transl= '') then
+      result:=0
+    else
+      result:=-first-1;
+  end;
+end;
+
+function TTL2Translation.AddString(const aorig,atrans:AnsiString):integer;
+var
+  lorig,ltrans,lfilter:AnsiString;
+  ltype:tTextStatus;
+  i:integer;
+begin
+  result:=0;
+
+  if aorig='' then exit;
+
+  //--- Preprocess
+
+  lorig:=aorig;
+  if not SpaceAtEnd then
+  begin
+    if lorig[Length(lorig)]=' ' then SetLength(lorig,Length(lorig)-1);
+    if lorig='' then exit; // yes, we have strings as single space only!
+  end;
+
+  //--- Search for doubles
+
+  case filter of
+    flNoSearch: i:=0;
+    flNoFilter: begin
+      for i:=0 to cntText-1 do
+      begin
+        if lorig=arText[i].origin then
+        begin
+          result:=-(i+1);
+          exit;
+        end;
+      end;
+      i:=0;
+    end;
+  end;
+
+  lfilter:=FilteredString(lorig);
+  //!!!
+  if lfilter='' then exit;
+
+  if filter=flFiltered then
+  begin
+    i:=SearchString(lorig,lfilter);
+    if i>0 then
+    begin
+      result:=-i;
+      exit;
+    end;
+  end;
+
+  //--- Prepare translation
+
+  if (atrans='') or (lorig=atrans) then
+  begin
+    ltrans:='';
+    if i=0 then // "same" text without translation
+      ltype:=stOriginal
+    else
+    begin
+      ltype:=stPartial;
+
+      ltrans:=ReplaceTranslation(arText[-i-1].transl,lorig);
+    end;
+  end
+  else
+  begin
+    ltrans:=atrans;
+    ltype:=stReady;
+  end;
+
+  //--- Fill
+
+  if cntText>=Length(arText) then
+  begin
+    SetLength(arText,cntText+increment*100);
+  end;
+
+  arText[cntText].sample:=-i-1;
+  arText[cntText].transl:=ltrans;
+  arText[cntText].atype :=ltype;
+
+  arText[cntText].origin:=lorig;
+  arText[cntText].filter:=lfilter;
+
+  inc(cntText);
+  result:=cntText;
+end;
+
+//===== Read translation =====
+
+procedure TTL2Translation.Error(code:integer; const fname:AnsiString; line:integer);
+begin
+  FErrFile:=fname;
+  FErrCode:=code;
+  FErrLine:=line;
+
+  case code of
+    1: ; // no file starting tag
+    2: ; // no block start
+    3: ; // no original text
+    4: ; // no translated text
+    5: ; // no end of block
+  end;
+end;
+
+function TTL2Translation.LoadFromFile(const fname:AnsiString):integer;
+var
+  slin:TStringList;
+  s,lsrc:AnsiString;
+  lcnt,lline:integer;
+  i,stage:integer;
+begin
+  FErrCode:=0;
+  FErrLine:=0;
+  FErrFile:='';
+
+  result:=0;
+  if fname='' then exit;
+
+  slin:=TStringList.Create;
+  try
+    slin.LoadFromFile(fname,TEncoding.Unicode);
+  except
+    slin.Free;
+    exit;
+  end;
+
+  lline:=0;
+  lcnt:=0;
+
+  stage:=1;
+
+  while lline<slin.Count do
+  begin
+    s:=slin[lline];
+    if s<>'' then
+    begin
+      case stage of
+        2: begin
+          if      Pos(sBeginBlock,s)<>0 then stage:=3
+          else if Pos(sEndFile   ,s)<>0 then break // end of file
+          else
+          begin
+            Error(2,fname,lline); // no block start
+            result:=-2;
+            break;
+          end;
+        end;
+        3: begin
+          i:=Pos(sOriginal,s);
+          if i<>0 then
+          begin
+            stage:=4;
+            lsrc:=Copy(s,i+Length(sOriginal),Length(s));
+          end
+          else
+          begin
+            Error(3,fname,lline); // no original text
+            result:=-3;
+            break;
+          end;
+        end;
+        4: begin
+          if Pos(sTranslated,s)<>0 then
+          begin
+            stage:=5;
+            i:=AddString(lsrc,Copy(s,i+Length(sTranslated)));
+            if i>0 then
+            begin
+              if Length(TmpInfo)>0 then
+              begin
+                arText[i-1].aref:=TmpInfo[lcnt]._ref;
+                if TmpInfo[lcnt]._part then
+                  arText[i-1].atype:=stPartial;
+              end
+              else
+              begin
+                arText[i-1].aref:=-1;
+              end;
+              inc(result);
+            end
+            else
+            begin
+              if Length(TmpInfo)>0 then
+                AddDouble(-i-1,TmpInfo[lcnt]._ref)
+              else
+                AddDouble(-i-1,-1);
+            end;
+            inc(lcnt);
+          end
+          else 
+          begin
+            Error(4,fname,lline); // no translated text
+            result:=-4;
+            break;
+          end;
+        end;
+        5: begin
+          if Pos(sEndBlock,s)<>0 then
+            stage:=2
+          else
+          begin
+            Error(5,fname,lline); // no end of block
+            result:=-5;
+            break;
+          end;
+        end;
+        1: begin
+          if Pos(sBeginFile,s)<>0 then
+            stage:=2
+          else
+          begin
+            Error(1,fname,lline); // no file starting tag
+            result:=-1;
+            break;
+          end;
+        end;
+      end;
+    end;
+    inc(lline);
+  end;
+  // if it was preload, we points to project start
+  if Mode in [tmDefault,tmMod] then
+    cntStart:=cntText;
+  slin.Free;
+
+  SetLength(TmpInfo,0);
+end;
+
+//===== Export =====
+
+procedure TTL2Translation.SaveToFile(const fname:AnsiString; astat:tTextStatus);
+var
+  sl:TStringList;
+  ls:AnsiString;
+  i,lstart:integer;
+  lst:tTextStatus;
+begin
+  FErrCode:=0;
+  FErrLine:=0;
+  FErrFile:='';
+
+  sl:=TStringList.Create;
+  sl.WriteBOM:=true;
+
+  sl.Add(sBeginFile);
+
+  if Mode=tmDefault then
+    lstart:=0
+  else
+    lstart:=cntStart;
+
+  for i:=lstart to cntText-1 do
+  begin
+    lst:=arText[i].atype;
+    if lst<>stDeleted then
+    begin
+      sl.Add(#9+sBeginBlock);
+      sl.Add(#9#9+sOriginal+arText[i].origin);
+
+      if (arText[i].transl<>'') and
+        ((lst <>stPartial) or
+         (astat=stPartial)) then
+        sl.Add(#9#9+sTranslated+arText[i].transl)
+      else
+        sl.Add(#9#9+sTranslated+arText[i].origin);
+
+      sl.Add(#9+sEndBlock);
+    end;
+  end;
+
+  sl.Add(sEndFile);
+
+  if Mode=tmDefault then
+  begin
+    if fname<>'' then
+      ls:=fname
+    else
+      ls:='EXPORT_FULL.DAT';
+    sl.SaveToFile(ls,TEncoding.Unicode);
+  end
+  else
+  begin
+    if fname<>'' then
+      ls:=fname
+    else
+      ls:='EXPORT.DAT';
+    sl.SaveToFile(ls,TEncoding.Unicode);
+  end;
+
+  sl.Free;
+end;
+
+//===== Info =====
+
+procedure TTL2Translation.SaveInfo(const aname:AnsiString);
+var
+  lstrm:tMemoryStream;
+  i,lcnt,lpos:integer;
+  lst:tTextStatus;
+begin
+  lstrm:=tMemoryStream.Create;
+  try
+    ref.SaveToStream(lstrm);
+    lstrm.Position:=lstrm.Size;
+    lpos:=lstrm.Size;
+    lstrm.WriteDWord(0);
+    lcnt:=0;
+    for i:=cntStart to cntText-1 do
+    begin
+      lst:=arText[i].atype;
+      if lst<>stDeleted then
+      begin
+        inc(lcnt);
+        lstrm.WriteDWord(dword(arText[i].aref));
+        if arText[i].atype=stPartial then
+          lstrm.WriteByte(1)
+        else
+          lstrm.WriteByte(0);
+      end;
+    end;
+    lstrm.Position:=lpos;
+    lstrm.WriteDWord(lcnt);
+
+    lstrm.SaveToFile(ChangeFileExt(aname,'.ref'));
+  finally
+    lstrm.Free;
+  end;
+end;
+
+procedure TTL2Translation.LoadInfo(const aname:AnsiString);
+var
+  lstrm:tMemoryStream;
+  i,lsize:integer;
+begin
+  lstrm:=tMemoryStream.Create;
+  try
+    lstrm.LoadFromFile(ChangeFileExt(aname,'.ref'));
+    ref.LoadFromStream(lstrm);
+
+    lsize:=lstrm.ReadDWord();
+    SetLength(TmpInfo,lsize);
+
+    for i:=0 to lsize-1 do
+    begin
+      TmpInfo[i]._ref :=integer(lstrm.ReadDWord());
+      TmpInfo[i]._part:=lstrm.ReadByte ()<>0;
+    end;
+  except
+  end;
+  lstrm.Free;
+end;
+
+//===== Basic =====
+
+procedure TTL2Translation.Free;
+begin
+  SetLength(arText  ,0);
+
+  ref.Free;
+end;
+
+procedure TTL2Translation.Init;
+begin
+  cntText :=0; SetLength(arText,16000);
+  cntStart:=0;
+
+  ref.Init;
+end;
+
+//===== Read sources =====
+
+procedure TTL2Translation.ReadSrcFile(const fname:AnsiString; atype:integer; arootlen:integer);
+var
+  slin:TStringList;
+  s,ls,ltag,lfile:AnsiString;
+  lref,lline:integer;
+  i,j:integer;
+begin
+  FErrCode:=0;
+  FErrLine:=0;
+  FErrFile:='';
+
+  slin:=TStringList.Create;
+  try
+    slin.LoadFromFile(fname,TEncoding.Unicode);
+  except
+    slin.Free;
+    exit;
+  end;
+
+  lfile:=Copy(fname,arootlen);
+
+  for lline:=0 to slin.Count-1 do
+  begin
+    s:=slin[lline];
+    j:=Pos(sTranslate,s);
+    i:=-1;
+    if j>0 then
+    begin
+      inc(j,Length(sTranslate));  // points to tag for text
+      i:=Pos(':',s);
+      if i>0 then
+      begin
+        ltag:=Copy(s,j,i-j);
+        inc(i);                   // points to text
+      end
+      else
+        i:=j;                     // 'no tag' version (really?)
+    end
+    else if atype=1 then
+    begin
+      j:=pos(sString,s);
+      if j>0 then
+      begin
+        if (pos(sString+sText_       ,s)>0) or
+           (pos(sString+sDialog_     ,s)>0) or
+           (pos(sString+sText    +':',s)>0) or
+           (pos(sString+sToolTip +':',s)>0) or
+           (pos(sString+sTitle   +':',s)>0) or
+           (pos(sString+sGreet   +':',s)>0) or
+           (pos(sString+sFailed  +':',s)>0) or
+           (pos(sString+sReturn  +':',s)>0) or
+           (pos(sString+sComplete+':',s)>0) or
+           (pos(sString+sComplRet+':',s)>0) then
+        begin
+          inc(j,Length(sString)); // points to tag for text
+          i:=Pos(':',s);
+          ltag:=Copy(s,j,i-j);
+          inc(i);                 // points to text
+        end;
+      end;
+    end;
+
+    if i>0 then
+    begin
+      ls:=Copy(s,i,Length(s));
+      if (ls<>'') and (ls<>' ') then
+      begin
+        lref:=ref.AddRef(lfile,ltag,lline+1);
+        
+        i:=AddString(ls,'');
+        if i>0 then
+          arText[i-1].aref:=lref
+        else
+          AddDouble(-i-1,lref);
+      end;
+    end;
+  end;
+
+  slin.Free;
+end;
+
+{$I-}
+function CheckSourceFile(const fname:AnsiString; allText:boolean):integer;
+var
+  f:file of byte;
+  lext:AnsiString;
+  i:integer;
+  lsign:word;
+begin
+  result:=-1;
+
+  lext:=UpCase(ExtractFileExt(fname));
+
+  for i:=0 to High(KnownGoodExt) do
+    if lext=KnownGoodExt[i] then
+    begin
+      result:=i;
+      exit;
+    end;
+
+  for i:=0 to High(KnownBadExt) do
+    if lext=KnownBadExt[i] then exit;
+
+  if allText then
+  begin
+    AssignFile(f,fname);
+    Reset(f);
+    if IOResult=0 then
+    begin
+      i:=FileSize(f);
+      if i>2 then
+      begin
+        BlockRead(f,lsign,2);
+        if lsign=$FEFF then
+          result:=1000;
+      end;
+      CloseFile(f);
+    end;
+  end;
+end;
+
+procedure TTL2Translation.CycleDir(sl:TStringList;
+    const adir:AnsiString; allText:boolean; withChild:boolean);
+var
+  sr:TSearchRec;
+  lname:AnsiString;
+  i:integer;
+begin
+  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
+  begin
+    repeat
+      lname:=adir+'\'+sr.Name;
+      if (sr.Attr and faDirectory)=faDirectory then
+      begin
+        if withChild and (sr.Name<>'.') and (sr.Name<>'..') then
+          CycleDir(sl, lname, allText, withChild);
+      end
+      else
+      begin
+        i:=CheckSourceFile(lname, allText);
+        if i>=0 then
+          sl.AddObject(lname,TObject(i));
+      end;
+    until FindNext(sr)<>0;
+    FindClose(sr);
+  end;
+end;
+
+procedure TTL2Translation.Scan(const adir:AnsiString; allText:boolean; withChild:boolean);
+var
+  sl:TStringList;
+  lRootScanDir:AnsiString;
+  i,llen:integer;
+begin
+  Filter:=flFiltered;
+
+  if adir[Length(adir)]='\' then
+    lRootScanDir:=Copy(adir,1,Length(adir)-1)
+  else
+    lRootScanDir:=adir;
+
+  sl:=TStringList.Create();
+  CycleDir(sl, lRootScanDir, allText, withChild);
+
+  if sl.Count>0 then
+  begin
+    ref.Root:=lRootScanDir;
+    llen:=Length(lRootScanDir)+2; // to get relative filepath+name later
+    for i:=0 to sl.Count-1 do
+    begin
+      if Assigned(FOnFileScan) then FOnFileScan(sl[i],i,sl.Count);
+
+      ReadSrcFile(sl[i],integer(sl.Objects[i]),llen);
+    end;
+  end;
+
+  sl.Free;
+end;
+
+//==== BUILD ====
+
+procedure TTL2Translation.CycleDirBuild(sl:TStringList; const adir:AnsiString);
+var
+  sr:TSearchRec;
+  lext,lname:AnsiString;
+begin
+  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
+  begin
+    repeat
+      lname:=adir+'\'+sr.Name;
+      if (sr.Attr and faDirectory)=faDirectory then
+      begin
+        if (sr.Name<>'.') and (sr.Name<>'..') then
+          CycleDirBuild(sl, lname);
+      end
+      else
+      begin
+        lext:=UpCase(ExtractFileExt(lname));
+        if lext='.DAT' then
+          sl.Add(lname);
+      end;
+    until FindNext(sr)<>0;
+    FindClose(sr);
+  end;
+end;
+
+procedure TTL2Translation.Build(const adir:AnsiString);
+var
+  sl:TStringList;
+  lRootScanDir:AnsiString;
+  i:integer;
+begin
+  Filter:=flFiltered;
+
+  if adir[Length(adir)]='\' then
+    lRootScanDir:=Copy(adir,1,Length(adir)-1)
+  else
+    lRootScanDir:=adir;
+
+  sl:=TStringList.Create();
+  CycleDirBuild(sl, lRootScanDir);
+
+  //!! think about preload here
+  Mode  :=tmMod;
+  Filter:=flNoFilter;
+  for i:=0 to sl.Count-1 do
+  begin
+    LoadFromFile(sl[i]);
+  end;
+
+  sl.Free;
+
+  //!! Here export all
+end;
+
+finalization
+  SetLength(Filter,0);
+  SetLength(TmpInfo,0);
+
+end.
+

@@ -1,0 +1,92 @@
+object SimilaristForm: TSimilaristForm
+  Left = 590
+  Height = 623
+  Top = 184
+  Width = 663
+  ClientHeight = 623
+  ClientWidth = 663
+  ParentFont = True
+  LCLVersion = '2.1.0.0'
+  object lbSimilars: TListBox
+    Left = 8
+    Height = 327
+    Top = 8
+    Width = 310
+    ItemHeight = 0
+    TabOrder = 0
+  end
+  object lblTextLine: TLabel
+    Left = 8
+    Height = 15
+    Top = 344
+    Width = 60
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblTextFile: TLabel
+    Left = 80
+    Height = 15
+    Top = 344
+    Width = 576
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    ParentColor = False
+  end
+  object memText: TMemo
+    Left = 8
+    Height = 91
+    Top = 370
+    Width = 648
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 1
+  end
+  object memSim: TMemo
+    Left = 8
+    Height = 91
+    Top = 472
+    Width = 648
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 2
+  end
+  object lblTextTag: TLabel
+    Left = 328
+    Height = 15
+    Top = 320
+    Width = 328
+    Alignment = taRightJustify
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblSimLine: TLabel
+    Left = 8
+    Height = 15
+    Top = 576
+    Width = 60
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblSimFile: TLabel
+    Left = 80
+    Height = 15
+    Top = 576
+    Width = 576
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblSimTag: TLabel
+    Left = 328
+    Height = 15
+    Top = 600
+    Width = 328
+    Alignment = taRightJustify
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblTotal: TLabel
+    Left = 328
+    Height = 1
+    Top = 21
+    Width = 1
+    ParentColor = False
+  end
+end

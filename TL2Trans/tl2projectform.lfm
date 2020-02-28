@@ -1,0 +1,323 @@
+object TL2Project: TTL2Project
+  Left = 328
+  Height = 520
+  Top = 234
+  Width = 820
+  BorderStyle = bsNone
+  ClientHeight = 520
+  ClientWidth = 820
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  ParentFont = True
+  ShowHint = True
+  LCLVersion = '2.1.0.0'
+  object TL2ProjectFilterPanel: TPanel
+    Left = 0
+    Height = 40
+    Top = 0
+    Width = 820
+    Align = alTop
+    ClientHeight = 40
+    ClientWidth = 820
+    TabOrder = 0
+    object sbFileName: TSpeedButton
+      Left = 2
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actFileName
+      AllowAllUp = True
+      Down = True
+      GroupIndex = 2
+    end
+    object sbHideReady: TSpeedButton
+      Left = 29
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actHideReady
+      GroupIndex = 3
+    end
+    object sbExportFile: TSpeedButton
+      Left = 84
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actExportFile
+    end
+    object sbExportClipBrd: TSpeedButton
+      Left = 146
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actExportClipBrd
+    end
+    object sbImportClipBrd: TSpeedButton
+      Left = 172
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actImportClipBrd
+    end
+    object sbImportFile: TSpeedButton
+      Left = 110
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actImportFile
+    end
+    object sbShowSimilar: TSpeedButton
+      Left = 213
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actShowSimilar
+    end
+    object sbShowDoubles: TSpeedButton
+      Left = 239
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actShowDoubles
+    end
+    object sbReplace: TSpeedButton
+      Left = 344
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actReplace
+      Anchors = [akTop, akRight]
+    end
+    object sbYandex: TSpeedButton
+      Left = 318
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actYandex
+      Anchors = [akTop, akRight]
+    end
+    object sbProjectFilter: TSpeedButton
+      Left = 371
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actFilter
+      AllowAllUp = True
+      Anchors = [akTop, akRight]
+      GroupIndex = 1
+      ShowCaption = False
+    end
+    object edProjectFilter: TEdit
+      Left = 401
+      Height = 23
+      Top = 8
+      Width = 385
+      Anchors = [akTop, akRight]
+      OnChange = edProjectFilterChange
+      TabOrder = 0
+    end
+    object sbFindNext: TSpeedButton
+      Left = 792
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actFindNext
+      Anchors = [akTop, akRight]
+    end
+    object cbPartAsReady: TSpeedButton
+      Left = 280
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actPartAsReady
+    end
+    object sbShowTemplate: TSpeedButton
+      Left = 56
+      Height = 22
+      Top = 8
+      Width = 23
+      Action = actShowTemplate
+      AllowAllUp = True
+      GroupIndex = 4
+    end
+  end
+  object TL2ProjectGrid: TStringGrid
+    Left = 0
+    Height = 480
+    Top = 40
+    Width = 820
+    Align = alClient
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 7
+    ColumnClickSorts = True
+    Columns = <    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'File'
+        Width = 200
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Attribute'
+        Width = 16
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Template'
+        Width = 0
+        Visible = False
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Value'
+        Width = 269
+      end    
+      item
+        Alignment = taCenter
+        ButtonStyle = cbsCheckboxColumn
+        SizePriority = 0
+        Title.Caption = 'Part'
+        Width = 28
+      end    
+      item
+        Title.Caption = 'Translation'
+        Width = 255
+      end>
+    DefaultColWidth = 48
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
+    RangeSelectMode = rsmMulti
+    RowCount = 1
+    TabOrder = 1
+    OnDblClick = TL2ProjectGridDblClick
+    OnDrawCell = TL2ProjectGridDrawCell
+    OnGetEditText = TL2ProjectGridGetEditText
+    OnHeaderSized = TL2ProjectGridHeaderSized
+    OnKeyDown = TL2ProjectGridKeyDown
+    OnSelectEditor = TL2ProjectGridSelectEditor
+    OnSetCheckboxState = TL2ProjectGridSetCheckboxState
+    ColWidths = (
+      48
+      200
+      16
+      0
+      269
+      28
+      255
+    )
+  end
+  object memEdit: TMemo
+    Left = 252
+    Height = 90
+    Top = 296
+    Width = 150
+    BorderStyle = bsNone
+    OnExit = memEditExit
+    OnKeyDown = memEditKeyDown
+    TabOrder = 2
+    Visible = False
+    WantReturns = False
+  end
+  object alProject: TActionList
+    Images = TL2DataModule.TL2ImageList
+    Left = 125
+    Top = 124
+    object actFileName: TAction
+      AutoCheck = True
+      Checked = True
+      GroupIndex = 2
+      Hint = 'Short file names'
+      ImageIndex = 11
+      OnExecute = ShortFNameClick
+      ShortCut = 32846
+    end
+    object actHideReady: TAction
+      AutoCheck = True
+      GroupIndex = 3
+      Hint = 'Hide translated lines'
+      ImageIndex = 24
+      OnExecute = edProjectFilterChange
+      ShortCut = 32850
+    end
+    object actShowTemplate: TAction
+      AutoCheck = True
+      GroupIndex = 4
+      Hint = 'Show template text'
+      ImageIndex = 17
+      OnExecute = actShowTemplateExecute
+    end
+    object actExportFile: TAction
+      Hint = 'Save selected source text'
+      ImageIndex = 3
+      OnExecute = ExportFileClick
+    end
+    object actExportClipBrd: TAction
+      Hint = 'Copy selected source text to clipboard'
+      ImageIndex = 16
+      OnExecute = ExportClipBrdClick
+    end
+    object actImportFile: TAction
+      Hint = 'Add translation from file'
+      ImageIndex = 6
+      OnExecute = ImportFileClick
+      ShortCut = 32841
+    end
+    object actImportClipBrd: TAction
+      Hint = 'Inset text with translation from clipboard'
+      ImageIndex = 19
+      OnExecute = ImportClipBrdClick
+      ShortCut = 16457
+    end
+    object actShowSimilar: TAction
+      Hint = 'Show lines with "almost the same" text'
+      ImageIndex = 17
+      OnExecute = ShowSimilarClick
+    end
+    object actShowDoubles: TAction
+      Hint = 'Show Doubling lines'
+      ImageIndex = 7
+      OnExecute = ShowDoublesClick
+      Visible = False
+    end
+    object actFilter: TAction
+      AutoCheck = True
+      GroupIndex = 1
+      Hint = 'Filter'
+      ImageIndex = 10
+      OnExecute = edProjectFilterChange
+      ShortCut = 32838
+    end
+    object actReplace: TAction
+      Hint = 'Replace translation text'
+      ImageIndex = 20
+      OnExecute = ReplaceClick
+      ShortCut = 16466
+    end
+    object actFindNext: TAction
+      Hint = 'Search next'
+      ImageIndex = 15
+      OnExecute = FindNextClick
+      ShortCut = 32807
+    end
+    object actYandex: TAction
+      Hint = 'Use Yandex translate service'
+      ImageIndex = 8
+      OnExecute = YandexClick
+      ShortCut = 16468
+    end
+    object actPartAsReady: TAction
+      Hint = 'Mark partially translated text as translated'
+      ImageIndex = 24
+      OnExecute = actPartAsReadyExecute
+    end
+  end
+  object mnuColor: TPopupMenu
+    AutoPopup = False
+    Left = 330
+    Top = 231
+  end
+end
