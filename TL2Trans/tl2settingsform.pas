@@ -9,6 +9,7 @@ uses
   Buttons;
 
 const
+  DefDATFile    = 'TRANSLATION.DAT';
   DefaultExt    = '.DAT';
   DefaultFilter = 'DAT files|*.DAT';
 
@@ -20,7 +21,6 @@ type
     bbSaveSettings: TBitBtn;
     bbFontEdit: TBitBtn;
     cbExportParts: TCheckBox;
-    cbKeepSpaces: TCheckBox;
     cbImportParts: TCheckBox;
     edImportDir: TDirectoryEdit;
     edDefaultFile: TFileNameEdit;
@@ -75,10 +75,12 @@ uses
   opensslsockets,
   jsontools,
 
+  inifiles,
+
   LCLType,
   LCLIntf,
-  TL2DataModule,
-  cfgbase,iniconfig;
+
+  TL2DataModule;
 
 //----- Translation -----
 
@@ -158,11 +160,7 @@ end;
 resourcestring
   sOpenAddon = 'Choose additional file';
 
-var
-  config:tCfgBase;
-
 const
-  DefDATFile = 'TRANSLATION.DAT';
   INIFileName = 'TL2Trans.ini';
 
 const
@@ -179,7 +177,6 @@ const
   sWorkDir     = 'workdir';
   sImportDir   = 'importdir';
   sExportParts = 'exportparts';
-  sKeepSpaces  = 'keepspaces';
   sImportParts = 'importparts';
   sFontName    = 'Name';
   sFontCharset = 'Charset';
@@ -196,7 +193,7 @@ const
 const
   YandexKeyURL   = 'https://translate.yandex.ru/developers/keys';
   MyYandexAPIKey = 'trnsl.1.1.20200101T160123Z.3e57638fddd71006.49c9489591b0e6a07ab3e6cf12886b99fecdf26b';
-//  akey='trnsl.1.1.20140120T030428Z.c4c35e8a7d79c03e.defc651bed90c4424445c47be30e6b531bc4b063';
+//  AbramoffYandexAPIkey = 'trnsl.1.1.20140120T030428Z.c4c35e8a7d79c03e.defc651bed90c4424445c47be30e6b531bc4b063';
   MyLanguage     = 'ru';
 
 //----- default settings -----
@@ -212,33 +209,35 @@ const
 
 procedure TTL2Settings.SaveSettings();
 var
+  config:TIniFile;
   ls:AnsiString;
   lstyle:TFontStyles;
   i:integer;
 begin
+  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+
   //--- Main
-  config.WriteString(sNSBase,sSectSettings,sDefFile  ,edDefaultFile.Text);
-  config.WriteString(sNSBase,sSectSettings,sRootDir  ,edRootDir    .Text);
-  config.WriteString(sNSBase,sSectSettings,sWorkDir  ,edWorkDir    .Text);
-  config.WriteString(sNSBase,sSectSettings,sImportDir,edImportDir  .Text);
+  config.WriteString(sNSBase+':'+sSectSettings,sDefFile  ,edDefaultFile.Text);
+  config.WriteString(sNSBase+':'+sSectSettings,sRootDir  ,edRootDir    .Text);
+  config.WriteString(sNSBase+':'+sSectSettings,sWorkDir  ,edWorkDir    .Text);
+  config.WriteString(sNSBase+':'+sSectSettings,sImportDir,edImportDir  .Text);
 
   //--- Options
-  config.WriteBool(sNSBase,sSectSettings,sExportParts,cbExportParts.Checked);
-  config.WriteBool(sNSBase,sSectSettings,sKeepSpaces ,cbKeepSpaces .Checked);
-  config.WriteBool(sNSBase,sSectSettings,sImportParts,cbImportParts.Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sExportParts,cbExportParts.Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sImportParts,cbImportParts.Checked);
 
   //--- Addons
-  config.DeleteSection(sNSBase,sSectAddon);
-  config.WriteInt(sNSBase,sSectAddon,sAddFiles,lbAddFileList.Count);
+  config.EraseSection(sNSBase+':'+sSectAddon);
+  config.WriteInteger(sNSBase+':'+sSectAddon,sAddFiles,lbAddFileList.Count);
   for i:=0 to lbAddFileList.Count-1 do
-    config.WriteString(sNSBase,sSectAddon,
-    pointer(sFile+IntToStr(i)),lbAddFileList.Items[i]);
+    config.WriteString(sNSBase+':'+sSectAddon,
+    sFile+IntToStr(i),lbAddFileList.Items[i]);
 
   //--- Font
-  config.WriteString(sNSBase,sSectFont,sFontName   ,TL2DM.TL2Font.Name);
-  config.WriteInt   (sNSBase,sSectFont,sFontCharset,TL2DM.TL2Font.Charset);
-  config.WriteInt   (sNSBase,sSectFont,sFontSize   ,TL2DM.TL2Font.Size);
-  config.WriteString(sNSBase,sSectFont,sFontColor  ,ColorToString(TL2DM.TL2Font.Color));
+  config.WriteString (sNSBase+':'+sSectFont,sFontName   ,TL2DM.TL2Font.Name);
+  config.WriteInteger(sNSBase+':'+sSectFont,sFontCharset,TL2DM.TL2Font.Charset);
+  config.WriteInteger(sNSBase+':'+sSectFont,sFontSize   ,TL2DM.TL2Font.Size);
+  config.WriteString (sNSBase+':'+sSectFont,sFontColor  ,ColorToString(TL2DM.TL2Font.Color));
 
   lstyle:=TL2DM.TL2Font.Style;
   ls:='';
@@ -246,55 +245,57 @@ begin
   if fsItalic    in lstyle then ls:=ls+'italic ';
   if fsUnderline in lstyle then ls:=ls+'underline ';
   if fsStrikeOut in lstyle then ls:=ls+'strikeout ';
-  config.WriteString(sNSBase,sSectFont,sFontStyle,ls);
+  config.WriteString(sNSBase+':'+sSectFont,sFontStyle,ls);
 
   //--- Translation
-  config.WriteString(sNSBase,sTranslation,sYAPIKey  ,memAPIKey  .Text);
-  config.WriteString(sNSBase,sTranslation,sTransLang,edTransLang.Text);
+  config.WriteString(sNSBase+':'+sTranslation,sYAPIKey  ,memAPIKey  .Text);
+  config.WriteString(sNSBase+':'+sTranslation,sTransLang,edTransLang.Text);
 
   //--- Special
-  config.WriteString(sNSBase,sSectSettings,sFilter,edFilterWords.Caption);
+  config.WriteString(sNSBase+':'+sSectSettings,sFilter,edFilterWords.Caption);
 
-  SaveINIFile(@config,INIFileName);
+  config.UpdateFile;
+
+  config.Free;
 end;
 
 procedure TTL2Settings.LoadSettings();
 var
+  config:TIniFile;
   ls:AnsiString;
   lstyle:TFontStyles;
   i,lcnt:integer;
 begin
-  LoadINIFile(@config,INIFileName);
+  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   //--- Main
-  edDefaultFile.Text:=config.ReadString(sNSBase,sSectSettings,sDefFile  ,DefDATFile);
-  edRootDir    .Text:=config.ReadString(sNSBase,sSectSettings,sRootDir  ,'');
-  edWorkDir    .Text:=config.ReadString(sNSBase,sSectSettings,sWorkDir  ,GetCurrentDir());
-  edImportDir  .Text:=config.ReadString(sNSBase,sSectSettings,sImportDir,edWorkDir.Text);
+  edDefaultFile.Text:=config.ReadString(sNSBase+':'+sSectSettings,sDefFile  ,DefDATFile);
+  edRootDir    .Text:=config.ReadString(sNSBase+':'+sSectSettings,sRootDir  ,'');
+  edWorkDir    .Text:=config.ReadString(sNSBase+':'+sSectSettings,sWorkDir  ,GetCurrentDir());
+  edImportDir  .Text:=config.ReadString(sNSBase+':'+sSectSettings,sImportDir,edWorkDir.Text);
 
   //--- Options
-  cbExportParts.Checked:=config.ReadBool(sNSBase,sSectSettings,sExportParts);
-  cbKeepSpaces .Checked:=config.ReadBool(sNSBase,sSectSettings,sKeepSpaces ,true);
-  cbImportParts.Checked:=config.ReadBool(sNSBase,sSectSettings,sImportParts);
+  cbExportParts.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sExportParts,false);
+  cbImportParts.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sImportParts,false);
 
   //--- Addons
-  lcnt:=config.ReadInt(sNSBase,sSectAddon,sAddFiles);
+  lcnt:=config.ReadInteger(sNSBase+':'+sSectAddon,sAddFiles,0);
   lbAddFileList.Clear;
   for i:=0 to lcnt-1 do
   begin
     lbAddFileList.AddItem(
-        config.ReadString(sNSBase,sSectAddon,
-        pointer(sFile+IntToStr(i))),nil);
+        config.ReadString(sNSBase+':'+sSectAddon,
+        sFile+IntToStr(i),''),nil);
   end;
 
 //--- Font
-  TL2DM.TL2Font.Name   :=config.ReadString(sNSBase,sSectFont,sFontName   ,DefFontName);
-  TL2DM.TL2Font.Charset:=config.ReadInt   (sNSBase,sSectFont,sFontCharset,DefFontCharset);
-  TL2DM.TL2Font.Size   :=config.ReadInt   (sNSBase,sSectFont,sFontSize   ,DefFontSize);
+  TL2DM.TL2Font.Name   :=config.ReadString (sNSBase+':'+sSectFont,sFontName   ,DefFontName);
+  TL2DM.TL2Font.Charset:=config.ReadInteger(sNSBase+':'+sSectFont,sFontCharset,DefFontCharset);
+  TL2DM.TL2Font.Size   :=config.ReadInteger(sNSBase+':'+sSectFont,sFontSize   ,DefFontSize);
   TL2DM.TL2Font.Color  :=StringToColor(
-      config.ReadString(sNSBase,sSectFont,sFontColor,ColorToString(DefFontColor)));
+      config.ReadString(sNSBase+':'+sSectFont,sFontColor,ColorToString(DefFontColor)));
 
-  ls:=config.ReadString(sNSBase,sSectFont,sFontStyle,DefFontStyle);
+  ls:=config.ReadString(sNSBase+':'+sSectFont,sFontStyle,DefFontStyle);
   lstyle:=[];
   if Pos('bold'     ,ls)<>0 then lstyle:=lstyle+[fsBold];
   if Pos('italic'   ,ls)<>0 then lstyle:=lstyle+[fsItalic];
@@ -303,11 +304,13 @@ begin
   TL2DM.TL2Font.Style:=lstyle;
 
   //--- Translation
-  memAPIKey  .Text:=config.ReadString(sNSBase,sTranslation,sYAPIKey  ,MyYandexAPIKey);
-  edTransLang.Text:=config.ReadString(sNSBase,sTranslation,sTransLang,MyLanguage);
+  memAPIKey  .Text:=config.ReadString(sNSBase+':'+sTranslation,sYAPIKey  ,MyYandexAPIKey);
+  edTransLang.Text:=config.ReadString(sNSBase+':'+sTranslation,sTransLang,MyLanguage);
 
   //--- Special
-  edFilterWords.Caption:=config.ReadString(sNSBase,sSectSettings,sFilter,defFilter);
+  edFilterWords.Caption:=config.ReadString(sNSBase+':'+sSectSettings,sFilter,defFilter);
+
+  config.Free;
 end;
 
 //----- Other -----
@@ -398,7 +401,6 @@ end;
 procedure TTL2Settings.lblGetAPIKeyClick(Sender: TObject);
 begin
   OpenURL(YandexKeyURL);
-//  ShellExecute(0, 'OPEN', PChar(YandexKeyURL), '', '', SW_SHOWNORMAL);
 end;
 
 //----- Base -----
@@ -407,7 +409,6 @@ procedure TTL2Settings.FormCreate(Sender: TObject);
 begin
   TL2Settings:=Self;
 
-  CreateConfig(config,[CFG_USENAMESPACE]);
   edDefaultFile.Filter:=DefaultFilter;
   edDefaultFile.DefaultExt:=DefaultExt;
 
@@ -417,7 +418,6 @@ end;
 procedure TTL2Settings.FormDestroy(Sender: TObject);
 begin
 //  SaveSettings;
-  FreeConfig(config);
 end;
 
 end.

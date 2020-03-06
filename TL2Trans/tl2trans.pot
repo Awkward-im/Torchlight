@@ -21,7 +21,8 @@ msgstr ""
 msgid ""
 "Used standard FreePascal modules,\n"
 "line by line text files processing,\n"
-"except read/write options in INI-file"
+"except online Translation\n"
+"and JSON processing"
 msgstr ""
 
 #: tedittextform.actmarkaspartial.hint
@@ -57,6 +58,26 @@ msgstr ""
 msgid "Edit text"
 msgstr ""
 
+#: tl2dataunit.snoblockstart
+msgid "No block start"
+msgstr ""
+
+#: tl2dataunit.snoendblock
+msgid "No end of block"
+msgstr ""
+
+#: tl2dataunit.snofilestart
+msgid "No file starting tag"
+msgstr ""
+
+#: tl2dataunit.snoorigntext
+msgid "No original text"
+msgstr ""
+
+#: tl2dataunit.snotranstext
+msgid "No translated text"
+msgstr ""
+
 #: tl2notesform.stitle
 msgctxt "tl2notesform.stitle"
 msgid "Notes"
@@ -68,6 +89,14 @@ msgstr ""
 
 #: tl2projectform.saskexport
 msgid "Export All or just project?"
+msgstr ""
+
+#: tl2projectform.sbuildread
+msgid "Build translation. Read"
+msgstr ""
+
+#: tl2projectform.sbuildwrite
+msgid "Build translation in file."
 msgstr ""
 
 #: tl2projectform.schecksimilar
@@ -109,7 +138,13 @@ msgstr ""
 #: tl2projectform.stransfileerror
 #, object-pascal-format
 msgctxt "tl2projectform.stransfileerror"
-msgid "Error %d in translation file %s, line %d"
+msgid ""
+"Error %d in translation file %s, line %d:\n"
+"%s"
+msgstr ""
+
+#: tl2projectform.swarning
+msgid "Warning"
 msgstr ""
 
 #: tl2projectform.swhatexport
@@ -223,6 +258,10 @@ msgstr ""
 
 #: tmaintl2transform.closepage.caption
 msgid "Close Page"
+msgstr ""
+
+#: tmaintl2transform.filebuild.caption
+msgid "&Build"
 msgstr ""
 
 #: tmaintl2transform.fileexit.caption
@@ -451,10 +490,6 @@ msgstr ""
 
 #: ttl2settings.cbimportparts.caption
 msgid "Mark imported lines as partial"
-msgstr ""
-
-#: ttl2settings.cbkeepspaces.caption
-msgid "Keep Spaces at the end of text"
 msgstr ""
 
 #: ttl2settings.gbtranslate.caption

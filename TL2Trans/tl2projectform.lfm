@@ -314,6 +314,10 @@ object TL2Project: TTL2Project
       ImageIndex = 24
       OnExecute = actPartAsReadyExecute
     end
+    object actOpenSource: TAction
+      OnExecute = actOpenSourceExecute
+      ShortCut = 32851
+    end
   end
   object mnuColor: TPopupMenu
     AutoPopup = False

@@ -32,7 +32,7 @@ object AboutForm: TAboutForm
   object lblIdea: TLabel
     Left = 8
     Height = 30
-    Top = 178
+    Top = 168
     Width = 448
     Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
@@ -43,13 +43,13 @@ object AboutForm: TAboutForm
   end
   object lblUsed: TLabel
     Left = 8
-    Height = 45
-    Top = 216
+    Height = 64
+    Top = 201
     Width = 448
     Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
     AutoSize = False
-    Caption = 'Used standard FreePascal modules,'#13#10'line by line text files processing,'#13#10'except read/write options in INI-file'
+    Caption = 'Used standard FreePascal modules,'#13#10'line by line text files processing,'#13#10'except online Translation'#13#10'and JSON processing'
     ParentColor = False
   end
   object lblInfo: TLabel

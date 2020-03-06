@@ -1,7 +1,7 @@
 object TL2Notes: TTL2Notes
-  Left = 415
+  Left = 291
   Height = 378
-  Top = 198
+  Top = 301
   Width = 252
   BorderStyle = bsSizeToolWin
   ClientHeight = 378

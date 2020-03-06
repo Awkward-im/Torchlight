@@ -35,11 +35,13 @@ msgstr ""
 msgid ""
 "Used standard FreePascal modules,\n"
 "line by line text files processing,\n"
-"except read/write options in INI-file"
+"except online Translation\n"
+"and JSON processing"
 msgstr ""
 "Использованы стандартные модули FreePascal,\n"
 "обработка текста строка за строкой,\n"
-"за исключением операций чтения/записи INI файлов"
+"за исключением онлайн-перевода\n"
+"и обработки JSON"
 
 #: tedittextform.actmarkaspartial.hint
 msgid "Mark as Partial"
@@ -74,6 +76,26 @@ msgstr "Перевести"
 msgid "Edit text"
 msgstr "Редактировать текст"
 
+#: tl2dataunit.snoblockstart
+msgid "No block start"
+msgstr "Нет начала блока"
+
+#: tl2dataunit.snoendblock
+msgid "No end of block"
+msgstr "Нет конца блока"
+
+#: tl2dataunit.snofilestart
+msgid "No file starting tag"
+msgstr "Нет тэга начала файла"
+
+#: tl2dataunit.snoorigntext
+msgid "No original text"
+msgstr "Нет исходного текста"
+
+#: tl2dataunit.snotranstext
+msgid "No translated text"
+msgstr "Нет текста перевода"
+
 #: tl2notesform.stitle
 msgctxt "tl2notesform.stitle"
 msgid "Notes"
@@ -86,6 +108,14 @@ msgstr "Всё"
 #: tl2projectform.saskexport
 msgid "Export All or just project?"
 msgstr "Экспорт всего или проекта?"
+
+#: tl2projectform.sbuildread
+msgid "Build translation. Read"
+msgstr "Строим перевод. Читаем"
+
+#: tl2projectform.sbuildwrite
+msgid "Build translation in file."
+msgstr "Записываем перевод в файл."
 
 #: tl2projectform.schecksimilar
 msgid "Check for similar text"
@@ -128,8 +158,16 @@ msgstr "Предзагружено файлов: %d; строк: база = %d, 
 #: tl2projectform.stransfileerror
 #, object-pascal-format
 msgctxt "tl2projectform.stransfileerror"
-msgid "Error %d in translation file %s, line %d"
-msgstr "Ошибка %d в файле перевода %s, строка %d"
+msgid ""
+"Error %d in translation file %s, line %d:\n"
+"%s"
+msgstr ""
+"Ошибка %d в файле перевода %s, строка %d\n"
+"%s"
+
+#: tl2projectform.swarning
+msgid "Warning"
+msgstr "Предупреждение"
 
 #: tl2projectform.swhatexport
 msgid "What to export"
@@ -243,6 +281,10 @@ msgstr "Проверять только выбранный каталог"
 #: tmaintl2transform.closepage.caption
 msgid "Close Page"
 msgstr "Закрыть страницу"
+
+#: tmaintl2transform.filebuild.caption
+msgid "&Build"
+msgstr "Собрать &Перевод"
 
 #: tmaintl2transform.fileexit.caption
 msgid "E&xit"
@@ -471,10 +513,6 @@ msgstr "Экспорт частично переведённого текста"
 #: ttl2settings.cbimportparts.caption
 msgid "Mark imported lines as partial"
 msgstr "Пометить импортированное как частичное"
-
-#: ttl2settings.cbkeepspaces.caption
-msgid "Keep Spaces at the end of text"
-msgstr "Оставлять пробелы в конце текста"
 
 #: ttl2settings.gbtranslate.caption
 msgid "Yandex Translation"

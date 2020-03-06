@@ -14,6 +14,7 @@ type
   { TMainTL2TransForm }
 
   TMainTL2TransForm = class(TForm)
+    FileBuild: TAction;
     actNotes: TAction;
     ClosePage: TAction;
     bbCloseTree: TBitBtn;
@@ -28,6 +29,7 @@ type
     gbScanObjects: TGroupBox;
     HelpAbout: TAction;
     MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     rbScanKnown: TRadioButton;
     rbScanText: TRadioButton;
     TL2ActionList: TActionList;
@@ -63,6 +65,7 @@ type
     procedure actNotesExecute(Sender: TObject);
     procedure bbCloseTreeClick(Sender: TObject);
     procedure ClosePageExecute(Sender: TObject);
+    procedure FileBuildExecute(Sender: TObject);
     procedure FileExitExecute(Sender: TObject);
     procedure FileExportExecute(Sender: TObject);
     procedure FileNewExecute(Sender: TObject);
@@ -135,7 +138,8 @@ end;
 
 function ActiveProject:TTL2Project;
 begin
-  if MainTL2TransForm.TL2PageControl.PageIndex>0 then
+  if (MainTL2TransForm.TL2PageControl.PageIndex>0) and
+     (MainTL2TransForm.TL2PageControl.ActivePage.Tag=0) then
     result:=MainTL2TransForm.TL2PageControl.ActivePage.Components[0] as TTL2Project
   else
     result:=nil;
@@ -311,18 +315,19 @@ begin
 
   TL2PageControl.ActivePageIndex:=idx;
   lprj:=ActiveProject;
-  while lprj.Modified do
-    case MessageDlg(sNotSaved,mtWarning,[mbCancel,mbNo,mbOk],0,mbCancel) of
-      mrOk: begin
-        if lprj.FileName='' then
-          FileSaveAsExecute(self)
-        else
-          FileSaveExecute(self);
+  if lprj<>nil then
+    while lprj.Modified do
+      case MessageDlg(sNotSaved,mtWarning,[mbCancel,mbNo,mbOk],0,mbCancel) of
+        mrOk: begin
+          if lprj.FileName='' then
+            FileSaveAsExecute(self)
+          else
+            FileSaveExecute(self);
+        end;
+        mrCancel: exit;
+      else
+        break;
       end;
-      mrCancel: exit;
-    else
-      break;
-    end;
   result:=true;
 
   TL2PageControl.ActivePageIndex:=idx-1;
@@ -388,6 +393,11 @@ procedure TMainTL2TransForm.ClosePageExecute(Sender: TObject);
 begin
   if TL2PageControl.PageIndex>0 then
     CanClosePage(TL2PageControl.PageIndex);
+end;
+
+procedure TMainTL2TransForm.FileBuildExecute(Sender: TObject);
+begin
+  Build(@UpdateStatusBar);
 end;
 
 procedure TMainTL2TransForm.FileNewExecute(Sender: TObject);

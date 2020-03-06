@@ -23,6 +23,7 @@ type
     actExportClipBrd: TAction;
     actImportFile: TAction;
     actImportClipBrd: TAction;
+    actOpenSource: TAction;
     actShowTemplate: TAction;
     actPartAsReady: TAction;
     actYandex: TAction;
@@ -51,6 +52,7 @@ type
     sbShowTemplate: TSpeedButton;
     TL2ProjectFilterPanel: TPanel;
     TL2ProjectGrid: TStringGrid;
+    procedure actOpenSourceExecute(Sender: TObject);
     procedure actPartAsReadyExecute(Sender: TObject);
     procedure actShowTemplateExecute(Sender: TObject);
     procedure edProjectFilterChange(Sender: TObject);
@@ -81,13 +83,14 @@ type
   private
     FSBUpdate:TSBUpdateEvent;
 
+    procedure CreateFileTab(idx: integer);
     function  FillColorPopup: boolean;
     function  FillParamPopup: boolean;
     procedure InsertColor(const acolor: AnsiString);
     procedure InsertParam(const aparam: AnsiString);
     procedure PopupColorChanged(Sender: TObject);
     procedure PopupParamChanged(Sender: TObject);
-    procedure ProjectFileScan(const fname:AnsiString; idx, atotal:integer);
+    function  ProjectFileScan(const fname:AnsiString; idx, atotal:integer):integer;
     procedure PasteFromClipBrd();
     function  CheckLine(const asrc, atrans: AnsiString; asame:Boolean; astate:tTextStatus=stReady): boolean;
     procedure FillProjectGrid(const afilter: AnsiString);
@@ -121,6 +124,8 @@ type
     property OnSBUpdate:TSBUpdateEvent read FSBUpdate write FSBUpdate;
   end;
 
+procedure Build(aprogress:TSBUpdateEvent);
+
 
 implementation
 
@@ -136,13 +141,16 @@ uses
   ClipBrd;
 
 resourcestring
+  sWarning        = 'Warning';
+  sBuildRead      = 'Build translation. Read';
+  sBuildWrite     = 'Build translation in file.';
   sReplaces       = 'Total replaces';
   sExport         = 'Export finished. Create file';
   sAskExport      = 'Export All or just project?';
   sWhatExport     = 'What to export';
   sProject        = '&Project';
   sAll            = '&All';
-  sTransFileError = 'Error %d in translation file %s, line %d';
+  sTransFileError = 'Error %d in translation file %s, line %d:'#13#10'%s';
   sSBText         = 'Preload files: %d; lines: base = %d, mods = %d | ' +
                     'Project files: %d; tags: %d; lines: %d | ' +
                     'Translated: %d; patially: %d | Doubles: %d';
@@ -162,8 +170,9 @@ const
 
 //----- Other -----
 
-procedure TTL2Project.ProjectFileScan(const fname:AnsiString; idx, atotal:integer);
+function TTL2Project.ProjectFileScan(const fname:AnsiString; idx, atotal:integer):integer;
 begin
+  result:=0;
   OnSBUpdate(Self,'['+IntToStr(idx)+' / '+IntToStr(atotal)+'] '+fname);
 end;
 
@@ -838,6 +847,7 @@ end;
 procedure TTL2Project.TL2ProjectGridDrawCell(Sender: TObject; aCol,
   aRow: Integer; aRect: TRect; aState: TGridDrawState);
 var
+  ls:String;
   ts:TTextStyle;
   count1, count2: integer;
   lidx:integer;
@@ -869,16 +879,18 @@ begin
         else
           RowHeights[aRow]:=DefaultRowHeight;
 
-       if gdSelected in aState then
-         Canvas.Brush.Color:=clHighlight
-       else
-         Canvas.Brush.Color:=clWindow;
+        if gdSelected in aState then
+          Canvas.Brush.Color:=clHighlight
+        else
+          Canvas.Brush.Color:=clWindow;
         Canvas.Brush.Style:= bsSolid;
         Canvas.FillRect(aRect);
 
+        ls:=Cells[ACol,ARow];
+        if (ACol=colOrigin) and (ls[Length(ls)]=' ') then
+          ls[Length(ls)]:='~';
         Canvas.TextRect(aRect,
-          aRect.Left+constCellPadding,aRect.Top+constCellPadding,
-          Cells[ACol,ARow]);
+          aRect.Left+constCellPadding,aRect.Top+constCellPadding,ls);
 
         if gdFocused in aState then
           Canvas.DrawFocusRect(aRect);
@@ -937,8 +949,6 @@ var
 begin
   result:=true;
 
-  data.SpaceAtEnd:=TL2Settings.cbKeepSpaces.Checked;
-
   data.Filter:=flNoSearch;
   data.Mode:=tmDefault;
 
@@ -948,8 +958,10 @@ begin
     cntBaseLines:=data.LoadFromFile(ls);
     if cntBaseLines<0 then // ErrorCode<>0
     begin
-      MessageDlg('Warning',
-        Format(sTransFileError,[data.ErrorCode,data.ErrorFile,data.ErrorLine]),mtError,[mbOk],0);
+      MessageDlg(sWarning,
+        Format(sTransFileError,
+               [data.ErrorCode,data.ErrorFile,data.ErrorLine,data.ErrorText]),
+               mtError,[mbOk],0);
       cntBaseLines:=0;
     end;
   end
@@ -976,8 +988,10 @@ begin
     end
     else if lcnt<0 then // ErrorCode<>0
     begin
-      MessageDlg('Warning',
-        Format(sTransFileError,[data.ErrorCode,data.ErrorFile,data.ErrorLine]),mtError,[mbOk],0);
+      MessageDlg(sWarning,
+        Format(sTransFileError,
+               [data.ErrorCode,data.ErrorFile,data.ErrorLine,data.ErrorText]),
+               mtError,[mbOk],0);
     end;
   end;
 
@@ -994,14 +1008,18 @@ begin
 end;
 
 procedure TTL2Project.Load(const fname:AnsiString);
+var
+  ls:AnsiString;
 begin
   data.Filter:=flFiltered;
   data.Mode  :=tmOriginal;
   data.LoadInfo(fname);
   if data.LoadFromFile(fname)<0 then
   begin
-    MessageDlg('Warning',
-      Format(sTransFileError,[data.ErrorCode,data.ErrorFile,data.ErrorLine]),mtError,[mbOk],0);
+    MessageDlg(sWarning,
+      Format(sTransFileError,
+             [data.ErrorCode,data.ErrorFile,data.ErrorLine,data.ErrorText]),
+             mtError,[mbOk],0);
     exit;
   end;
   FileName:=fname;
@@ -1014,6 +1032,17 @@ begin
     TL2ProjectGrid.Columns[colFile-1].Visible:=false;
     TL2ProjectGrid.Columns[colTag -1].Visible:=false;
     actFileName.Enabled:=false;
+  end
+  else
+  begin
+    if data.SrcDir='' then
+    begin
+      ls:=TL2Settings.edRootDir.Text;
+      if ls[Length(ls)]<>'\' then ls:=ls+'\';
+      ls:=ls+ProjectName;
+      if FileExists(ls+'\'+data._File[0]) then
+        data.SrcDir:=ls;
+    end;
   end;
 
   FillProjectGrid('');
@@ -1091,12 +1120,77 @@ begin
   OnSBUpdate(Self);
 end;
 
+procedure TTL2Project.CreateFileTab(idx:integer);
+var
+  ts:TTabSheet;
+  lform:TForm;
+  lmemo:TMemo;
+  sl:TStringList;
+  ls:AnsiString;
+  i,xpos:integer;
+begin
+  if data.SrcDir<>'' then
+    ls:=data.SrcDir
+  else
+  begin
+    ls:=TL2Settings.edRootDir.Text;
+    if ls[Length(ls)]<>'\' then
+      ls:=ls+'\';
+    ls:=ls+ProjectName;
+  end;
+  ls:=ls+'\'+data._File[idx];
+
+  sl:=TStringList.Create;
+  try
+    sl.LoadFromFile(ls);
+  except
+    sl.Free;
+    exit;
+  end;
+  xpos:=1;
+  for i:=0 to sl.Count-1 do
+  begin
+    sl[i]:=StringReplace(sl[i],#9,'    ',[rfReplaceAll]);
+    if i=(data.FileLine[idx]-1) then
+    begin
+      xpos:=Pos(data.Attrib[idx],sl[i]);
+    end;
+  end;
+
+  ts:=(Self.Parent.Parent as TPageControl).AddTabSheet;
+  ts.Tag:=1;
+  ts.ShowHint:=false;
+  ts.Caption :='***'{sSource} + ExtractFileName(data._File[idx]);
+
+  lform:=TForm.Create(ts);
+  lform.Parent     :=ts;
+  lform.BorderStyle:=bsNone;
+  lform.Align      :=alClient;
+  lform.Visible    :=true;
+
+  lmemo:=tMemo.Create(lform);
+  lmemo.Parent    :=lform;
+  lmemo.Align     :=alClient;
+  lmemo.WordWrap  :=False;
+  lmemo.ReadOnly  :=True;
+  lmemo.Scrollbars:=ssBoth;
+  lmemo.Lines.Assign(sl);
+  lmemo.Show;
+
+  sl.Free;
+  (Self.Parent.Parent as TPageControl).ActivePage:=ts;
+  lmemo.SetFocus;
+  lmemo.CaretPos :=Point(xpos-1,data.FileLine[idx]-1);
+  lmemo.SelStart :=Pos(data.Attrib[idx],lmemo.Text)-1;
+  lmemo.SelLength:=Length(data.Attrib[idx]);
+end;
+
 procedure TTL2Project.TL2ProjectGridDblClick(Sender: TObject);
 //var  lrow:integer;
 begin
   if TL2ProjectGrid.Col in [colFile,colTag] then
   begin
-    // IntPtr(TL2ProjectGrid.Objects[0,TL2ProjectGrid.Row])
+    CreateFileTab(IntPtr(TL2ProjectGrid.Objects[0,TL2ProjectGrid.Row]));
   end;
 
   if TL2ProjectGrid.Col in [colFilter,colOrigin,colPartial,colTrans] then
@@ -1117,6 +1211,11 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TTL2Project.actOpenSourceExecute(Sender: TObject);
+begin
+  CreateFileTab(IntPtr(TL2ProjectGrid.Objects[0,TL2ProjectGrid.Row]));
 end;
 
 //----- Buttons ans Editfield -----
@@ -1605,6 +1704,86 @@ begin
   SetFilterWords(TL2Settings.edFilterWords.Caption);
   Preload();
 //  TL2ProjectGrid.ValidateOnSetSelection:=true;
+end;
+
+//==== BUILD ====
+
+procedure CycleDirBuild(sl:TStringList; const adir:AnsiString);
+var
+  sr:TSearchRec;
+  lext,lname:AnsiString;
+begin
+  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
+  begin
+    repeat
+      lname:=adir+'\'+sr.Name;
+      if (sr.Attr and faDirectory)=faDirectory then
+      begin
+        if (sr.Name<>'.') and (sr.Name<>'..') then
+          CycleDirBuild(sl, lname);
+      end
+      else
+      begin
+        lext:=UpCase(ExtractFileExt(lname));
+        if lext='.DAT' then
+          sl.Add(lname);
+      end;
+    until FindNext(sr)<>0;
+    FindClose(sr);
+  end;
+end;
+
+procedure Build(aprogress:TSBUpdateEvent);
+var
+  data:TTL2Translation;
+  sl:TStringList;
+  ldir:AnsiString;
+  i:integer;
+begin
+  data.Init;
+  
+  data.Filter:=flNoSearch;
+  data.Mode:=tmDefault;
+
+  ldir:=TL2Settings.edDefaultFile.Text;
+  if ldir='' then
+    ldir:=DefDATFile;
+
+  aprogress(TObject(1),sBuildRead+' '+ldir);
+  data.LoadFromFile(ldir);
+  
+  // ready for import files
+
+  ldir:=TL2Settings.edImportDir.Text;
+  
+  if ldir[Length(ldir)]='\' then
+    SetLength(ldir,Length(ldir)-1);
+
+  sl:=TStringList.Create();
+  CycleDirBuild(sl, ldir);
+
+  //!! think about preload here
+  data.Mode  :=tmMod;
+  data.Filter:=flNoFilter;
+  for i:=0 to sl.Count-1 do
+  begin
+    aprogress(TObject(1),sBuildRead+' '+sl[i]);
+    data.LoadFromFile(sl[i]);
+  end;
+
+  sl.Free;
+
+  //!! Here export all
+  data.Mode:=tmDefault;
+
+//  ldir:=TL2Settings.edWorkDir.Text;
+//  if (ldir<>'') and (ldir[Length(ldir)]<>'\') then ldir:=ldir+'\';
+
+  aprogress(TObject(1),sBuildWrite);
+  data.SaveToFile(''{ldir+DefDATFile},stPartial);
+  aprogress(nil,sBuildWrite);
+
+  data.Free;
 end;
 
 end.

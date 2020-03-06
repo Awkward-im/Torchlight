@@ -30,7 +30,12 @@ type
   end;
 
 type
-  TOnFileScan = procedure (const fname:AnsiString; idx, atotal:integer) of object;
+{
+  0 - OK
+  1 - skip this file
+  2 - abort
+}
+  TOnFileScan = function (const fname:AnsiString; idx, atotal:integer):integer of object;
 
 type
   PTL2Translation = ^TTL2Translation;
@@ -40,6 +45,7 @@ type
   TTL2Translation = object
   private
     FErrFile: AnsiString;
+    FErrText: AnsiString;
     FErrCode: integer;
     FErrLine: integer;
 
@@ -52,7 +58,6 @@ type
     FDoubles  : integer;
     FFMode    : tTextMode;
     FFilter   : tSearchFilter;
-    FKeepSpace: Boolean;
 
     FOnFileScan:TOnFileScan;
 
@@ -88,10 +93,11 @@ type
     function  GetSource(idx:integer):AnsiString;
     procedure SetTrans (idx:integer; const translated: AnsiString);
     function  GetTrans (idx:integer):AnsiString;
+    function  GetSrcDir:AnsiString;
+    procedure SetSrcDir(const adir:AnsiString);
 
     procedure ReadSrcFile(const fname: AnsiString; atype: integer; arootlen:integer);
     procedure CycleDir     (sl:TStringList; const adir:AnsiString; allText:boolean; withChild:boolean);
-    procedure CycleDirBuild(sl:TStringList; const adir:AnsiString);
 
   public
     procedure Init;
@@ -110,7 +116,6 @@ type
     procedure LoadInfo(const aname:AnsiString);
 
     procedure Scan (const adir:AnsiString; allText:boolean; withChild:boolean);
-    procedure Build(const adir:AnsiString);
 
     property OnFileScan:TOnFileScan read FOnFileScan write FOnFileScan;
     // statistic
@@ -122,6 +127,7 @@ type
 
     // errors
     property ErrorCode:integer    read FErrCode;
+    property ErrorText:AnsiString read FErrText;
     property ErrorFile:AnsiString read FErrFile;
     property ErrorLine:integer    read FErrLine;
 
@@ -129,17 +135,16 @@ type
     property Mode  :tTextMode     read FFMode  write FFMode;
     property Filter:tSearchFilter read FFilter write SetFilter;
 
-    property SpaceAtEnd :boolean read FKeepSpace   write FKeepSpace;
-
+    // reference
+    property SrcDir:AnsiString read GetSrcDir write SetSrcDir;
+    property FileLine[idx:integer]:integer     read GetFileLine;
+    property _File   [idx:integer]:AnsiString  read GetFile;
+    property Attrib  [idx:integer]:AnsiString  read GetAttrib;
     // lines
     property Template[idx:integer]:AnsiString  read GetTemplate;
-
-    property FileLine[idx:integer]:integer     read GetFileLine;
     property SimIndex[idx:integer]:integer     read GetSimIndex;
     property Sample  [idx:integer]:AnsiString  read GetSample;
     property State   [idx:integer]:tTextStatus read GetStatus write SetStatus;
-    property _File   [idx:integer]:AnsiString  read GetFile;
-    property Attrib  [idx:integer]:AnsiString  read GetAttrib;
 
     property Line    [idx:integer]:AnsiString  read GetSource;
     property Trans   [idx:integer]:AnsiString  read GetTrans  write SetTrans;
@@ -155,6 +160,15 @@ implementation
 
 uses
   SysUtils;
+
+// Open file error codes
+
+resourcestring
+  sNoFileStart  = 'No file starting tag';
+  sNoBlockStart = 'No block start';
+  sNoOrignText  = 'No original text';
+  sNoTransText  = 'No translated text';
+  sNoEndBlock   = 'No end of block';
 
 const
   KnownGoodExt: array of string = (
@@ -318,6 +332,17 @@ begin
 end;
 
 //----- Referals -----
+
+function TTL2Translation.GetSrcDir:AnsiString;
+begin
+  result:=ref.Root;
+end;
+
+procedure TTL2Translation.SetSrcDir(const adir:AnsiString);
+begin
+  if ref.Root<>adir then
+    ref.Root:=adir;
+end;
 
 function TTL2Translation.GetRefAmount:integer;
 begin
@@ -899,11 +924,6 @@ begin
   //--- Preprocess
 
   lorig:=aorig;
-  if not SpaceAtEnd then
-  begin
-    if lorig[Length(lorig)]=' ' then SetLength(lorig,Length(lorig)-1);
-    if lorig='' then exit; // yes, we have strings as single space only!
-  end;
 
   //--- Search for doubles
 
@@ -980,14 +1000,14 @@ procedure TTL2Translation.Error(code:integer; const fname:AnsiString; line:integ
 begin
   FErrFile:=fname;
   FErrCode:=code;
-  FErrLine:=line;
+  FErrLine:=line+1;
 
   case code of
-    1: ; // no file starting tag
-    2: ; // no block start
-    3: ; // no original text
-    4: ; // no translated text
-    5: ; // no end of block
+    1: FErrText:=sNoFileStart;  // no file starting tag
+    2: FErrText:=sNoBlockStart; // no block start
+    3: FErrText:=sNoOrignText;  // no original text
+    4: FErrText:=sNoTransText;  // no translated text
+    5: FErrText:=sNoEndBlock;   // no end of block
   end;
 end;
 
@@ -1001,6 +1021,7 @@ begin
   FErrCode:=0;
   FErrLine:=0;
   FErrFile:='';
+  FErrText:='';
 
   result:=0;
   if fname='' then exit;
@@ -1127,6 +1148,7 @@ begin
   FErrCode:=0;
   FErrLine:=0;
   FErrFile:='';
+  FErrText:='';
 
   sl:=TStringList.Create;
   sl.WriteBOM:=true;
@@ -1268,6 +1290,7 @@ begin
   FErrCode:=0;
   FErrLine:=0;
   FErrFile:='';
+  FErrText:='';
 
   slin:=TStringList.Create;
   try
@@ -1428,7 +1451,12 @@ begin
     llen:=Length(lRootScanDir)+2; // to get relative filepath+name later
     for i:=0 to sl.Count-1 do
     begin
-      if Assigned(FOnFileScan) then FOnFileScan(sl[i],i,sl.Count);
+      if Assigned(FOnFileScan) then
+        case FOnFileScan(sl[i],i+1,sl.Count) of
+          0: ;
+          1: continue;
+          2: break;
+        end;
 
       ReadSrcFile(sl[i],integer(sl.Objects[i]),llen);
     end;
@@ -1437,61 +1465,6 @@ begin
   sl.Free;
 end;
 
-//==== BUILD ====
-
-procedure TTL2Translation.CycleDirBuild(sl:TStringList; const adir:AnsiString);
-var
-  sr:TSearchRec;
-  lext,lname:AnsiString;
-begin
-  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
-  begin
-    repeat
-      lname:=adir+'\'+sr.Name;
-      if (sr.Attr and faDirectory)=faDirectory then
-      begin
-        if (sr.Name<>'.') and (sr.Name<>'..') then
-          CycleDirBuild(sl, lname);
-      end
-      else
-      begin
-        lext:=UpCase(ExtractFileExt(lname));
-        if lext='.DAT' then
-          sl.Add(lname);
-      end;
-    until FindNext(sr)<>0;
-    FindClose(sr);
-  end;
-end;
-
-procedure TTL2Translation.Build(const adir:AnsiString);
-var
-  sl:TStringList;
-  lRootScanDir:AnsiString;
-  i:integer;
-begin
-  Filter:=flFiltered;
-
-  if adir[Length(adir)]='\' then
-    lRootScanDir:=Copy(adir,1,Length(adir)-1)
-  else
-    lRootScanDir:=adir;
-
-  sl:=TStringList.Create();
-  CycleDirBuild(sl, lRootScanDir);
-
-  //!! think about preload here
-  Mode  :=tmMod;
-  Filter:=flNoFilter;
-  for i:=0 to sl.Count-1 do
-  begin
-    LoadFromFile(sl[i]);
-  end;
-
-  sl.Free;
-
-  //!! Here export all
-end;
 
 finalization
   SetLength(Filter,0);

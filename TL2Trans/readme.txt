@@ -1,3 +1,12 @@
+ABOUT
+-----
+This program was developed to help translate Torchlight II text from mods to another
+languages. It was written on FreePascal language with less as possible 3rd side components.
+It supports different interface languages (English is built-in) but initially russian used.
+It based on another program, 'TorchTranslate' by Abramoff
+Feel free to modify it. But if you will show me changes, it can be nice ^_^
+=====
+
 How to change program language:
 ------------------------------
 Just remove tl2trans.ru.po file, it gives russian translation only.
@@ -26,6 +35,7 @@ Note: Import/export buttons on project page works only with visible grid lines
 
 Main hotkeys:
 -------------
+Ctrl-B         - Build translation file from default file and 'import' directory
 Ctrl-E         - Export
 Ctrl-F         - Change font
 Ctrl-N         - Show tree to start scan for new project
@@ -53,6 +63,7 @@ Alt-F     - Toggle filter/search mode
 Alt-I     - Import file(s)
 Alt-N     - Toggle full/short file name
 Alt-R     - Toggle hide/show translated lines
+Alt-S     - Open source file referred by file and tag
 Alt-Del   - Set translation without color info
 Alt-Right - Search next
 Del       - Delete translated text / delete line(s)
@@ -78,7 +89,7 @@ Alt-Up    - Previous untranslated line
 Alt-Down  - Next untranslated line
 Alt-P     - [Un]mark line as partially translated
 Alt-S     - Show/hide source with partial translation
-Alt-T     - translate selected or source text with yandex translate service
+Alt-T     - Translate selected or source text with yandex translate service
 =====
 
 Notes:

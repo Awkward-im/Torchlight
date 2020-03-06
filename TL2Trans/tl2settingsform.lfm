@@ -98,7 +98,7 @@ object TL2Settings: TTL2Settings
     Top = 356
     Width = 216
     ItemHeight = 0
-    TabOrder = 6
+    TabOrder = 8
   end
   object bbSaveSettings: TBitBtn
     Left = 700
@@ -110,7 +110,7 @@ object TL2Settings: TTL2Settings
     Default = True
     Kind = bkOK
     OnClick = bbSaveSettingsClick
-    TabOrder = 7
+    TabOrder = 9
   end
   object sbAddonUp: TSpeedButton
     Left = 377
@@ -154,14 +154,6 @@ object TL2Settings: TTL2Settings
     Top = 227
     Width = 175
     Caption = 'Export partially translated text'
-    TabOrder = 3
-  end
-  object cbKeepSpaces: TCheckBox
-    Left = 8
-    Height = 19
-    Top = 252
-    Width = 177
-    Caption = 'Keep Spaces at the end of text'
     TabOrder = 4
   end
   object bbFontEdit: TBitBtn
@@ -174,7 +166,7 @@ object TL2Settings: TTL2Settings
     Images = TL2DataModule.TL2ImageList
     ImageIndex = 4
     OnClick = btnFontEditClick
-    TabOrder = 5
+    TabOrder = 7
   end
   object gbTranslate: TGroupBox
     Left = 408
@@ -185,7 +177,7 @@ object TL2Settings: TTL2Settings
     Caption = 'Yandex Translation'
     ClientHeight = 162
     ClientWidth = 363
-    TabOrder = 8
+    TabOrder = 10
     object edTransLang: TEdit
       Left = 4
       Height = 23
@@ -250,7 +242,7 @@ object TL2Settings: TTL2Settings
     Top = 248
     Width = 367
     Anchors = [akTop, akLeft, akRight]
-    TabOrder = 9
+    TabOrder = 6
   end
   object lblFilter: TLabel
     Left = 408
@@ -283,7 +275,7 @@ object TL2Settings: TTL2Settings
     NumGlyphs = 1
     AutoSize = False
     MaxLength = 0
-    TabOrder = 10
+    TabOrder = 3
   end
   object lblImportDir: TLabel
     Left = 8
@@ -298,9 +290,9 @@ object TL2Settings: TTL2Settings
   object cbImportParts: TCheckBox
     Left = 8
     Height = 19
-    Top = 277
+    Top = 252
     Width = 176
     Caption = 'Mark imported lines as partial'
-    TabOrder = 11
+    TabOrder = 5
   end
 end

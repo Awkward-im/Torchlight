@@ -241,14 +241,6 @@ object MainTL2TransForm: TMainTL2TransForm
       OnExecute = FileExportExecute
       ShortCut = 16453
     end
-    object FileExit: TAction
-      Category = 'File'
-      Caption = 'E&xit'
-      Hint = 'Exit program'
-      ImageIndex = 18
-      OnExecute = FileExitExecute
-      ShortCut = 32883
-    end
     object HelpAbout: TAction
       Category = 'Help'
       Caption = '&About'
@@ -258,6 +250,7 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object ClosePage: TAction
       Caption = 'Close Page'
+      ImageIndex = 21
       OnExecute = ClosePageExecute
       ShortCut = 16499
     end
@@ -267,6 +260,21 @@ object MainTL2TransForm: TMainTL2TransForm
       ImageIndex = 8
       OnExecute = actNotesExecute
       ShortCut = 32840
+    end
+    object FileBuild: TAction
+      Category = 'File'
+      Caption = '&Build'
+      ImageIndex = 24
+      OnExecute = FileBuildExecute
+      ShortCut = 16450
+    end
+    object FileExit: TAction
+      Category = 'File'
+      Caption = 'E&xit'
+      Hint = 'Exit program'
+      ImageIndex = 18
+      OnExecute = FileExitExecute
+      ShortCut = 32883
     end
   end
   object TL2MainMenu: TMainMenu
@@ -289,6 +297,9 @@ object MainTL2TransForm: TMainTL2TransForm
       end
       object miFileExport: TMenuItem
         Action = FileExport
+      end
+      object MenuItem2: TMenuItem
+        Action = FileBuild
       end
       object miFileSep1: TMenuItem
         Caption = '-'
