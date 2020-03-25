@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="tl2dump.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos Y="6"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2consts.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2save.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="240"/>
+        <CursorPos X="40" Y="265"/>
+        <FoldState Value=" T7CHq T8E233 TCiVQ41 T3j3055 piXj90D01112 T1j4046[C66jB025[A40jI2C411c"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="19">
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="244" TopLine="215"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="272" TopLine="232"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="244" TopLine="233"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="245" TopLine="233"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="246" TopLine="233"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="260" TopLine="233"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="261" TopLine="233"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="262" TopLine="234"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="264" TopLine="238"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="237" TopLine="211"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="265" TopLine="249"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="237" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="261" Column="17" TopLine="238"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="262" Column="10" TopLine="237"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="208" Column="13" TopLine="202"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="258" Column="10" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="262" Column="14" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="263" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="264" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="265" TopLine="243"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default">
+        <Mode Name="default">
+          <local>
+            <CommandLineParams Value="D:\Dropbox\src\bin\rage-pet200.bin"/>
+          </local>
+        </Mode>
+      </Modes>
+    </RunParams>
+    <HistoryLists>
+      <List Name="WorkingDirectory" Type="File" Count="1"/>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+      <List Name="CommandLineParameters" Count="4">
+        <Item1 Value="D:\Dropbox\src\bin\rage-pet200.bin"/>
+        <Item2 Value="D:\Dropbox\src\bin\Чиха.bin"/>
+        <Item3 Value="D:\Dropbox\src\bin\Theo.bin"/>
+      </List>
+    </HistoryLists>
+  </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="lpos"/>
+        <DisplayStyle Value="wdfHex"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>
