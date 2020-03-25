@@ -13,7 +13,7 @@ object TL2Settings: TTL2Settings
   object lblDefaultFile: TLabel
     Left = 8
     Height = 15
-    Top = 57
+    Top = 53
     Width = 392
     Alignment = taCenter
     AutoSize = False
@@ -23,7 +23,7 @@ object TL2Settings: TTL2Settings
   object edDefaultFile: TFileNameEdit
     Left = 8
     Height = 23
-    Top = 77
+    Top = 73
     Width = 392
     DialogTitle = 'Default translation filename'
     FilterIndex = 0
@@ -37,7 +37,7 @@ object TL2Settings: TTL2Settings
   object lblRootDirectory: TLabel
     Left = 8
     Height = 15
-    Top = 112
+    Top = 104
     Width = 392
     Alignment = taCenter
     AutoSize = False
@@ -47,7 +47,7 @@ object TL2Settings: TTL2Settings
   object edRootDir: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 130
+    Top = 122
     Width = 392
     DialogTitle = 'Root mod files directory'
     ShowHidden = False
@@ -83,20 +83,20 @@ object TL2Settings: TTL2Settings
     ParentColor = False
   end
   object lblAddFile: TLabel
-    Left = 153
+    Left = 152
     Height = 15
-    Top = 337
-    Width = 216
+    Top = 341
+    Width = 220
     Alignment = taCenter
     AutoSize = False
     Caption = 'Additional files'
     ParentColor = False
   end
   object lbAddFileList: TListBox
-    Left = 153
+    Left = 152
     Height = 157
-    Top = 356
-    Width = 216
+    Top = 361
+    Width = 220
     ItemHeight = 0
     TabOrder = 8
   end
@@ -115,7 +115,7 @@ object TL2Settings: TTL2Settings
   object sbAddonUp: TSpeedButton
     Left = 377
     Height = 22
-    Top = 356
+    Top = 361
     Width = 23
     Images = TL2DataModule.TL2ImageList
     ImageIndex = 23
@@ -124,7 +124,7 @@ object TL2Settings: TTL2Settings
   object sbAddonAdd: TSpeedButton
     Left = 377
     Height = 22
-    Top = 416
+    Top = 421
     Width = 23
     Images = TL2DataModule.TL2ImageList
     ImageIndex = 6
@@ -133,7 +133,7 @@ object TL2Settings: TTL2Settings
   object sbAddonDel: TSpeedButton
     Left = 377
     Height = 22
-    Top = 445
+    Top = 450
     Width = 23
     Images = TL2DataModule.TL2ImageList
     ImageIndex = 7
@@ -142,7 +142,7 @@ object TL2Settings: TTL2Settings
   object sbAddonDown: TSpeedButton
     Left = 377
     Height = 22
-    Top = 491
+    Top = 496
     Width = 23
     Images = TL2DataModule.TL2ImageList
     ImageIndex = 22
@@ -151,7 +151,7 @@ object TL2Settings: TTL2Settings
   object cbExportParts: TCheckBox
     Left = 8
     Height = 19
-    Top = 227
+    Top = 206
     Width = 175
     Caption = 'Export partially translated text'
     TabOrder = 4
@@ -159,7 +159,7 @@ object TL2Settings: TTL2Settings
   object bbFontEdit: TBitBtn
     Left = 8
     Height = 26
-    Top = 337
+    Top = 341
     Width = 70
     AutoSize = True
     Caption = '&Font'
@@ -168,24 +168,17 @@ object TL2Settings: TTL2Settings
     OnClick = btnFontEditClick
     TabOrder = 7
   end
-  object gbTranslate: TGroupBox
+  object gbTranslateYandex: TGroupBox
     Left = 408
-    Height = 182
-    Top = 2
+    Height = 142
+    Top = 33
     Width = 367
     Anchors = [akTop, akLeft, akRight]
     Caption = 'Yandex Translation'
-    ClientHeight = 162
+    ClientHeight = 122
     ClientWidth = 363
     TabOrder = 10
-    object edTransLang: TEdit
-      Left = 4
-      Height = 23
-      Top = 86
-      Width = 36
-      TabOrder = 1
-    end
-    object lblAPIKey: TLabel
+    object lblAPIKeyYandex: TLabel
       Left = 4
       Height = 15
       Top = 2
@@ -193,23 +186,15 @@ object TL2Settings: TTL2Settings
       Caption = 'API Key'
       ParentColor = False
     end
-    object memAPIKey: TMemo
+    object memAPIKeyYandex: TMemo
       Left = 4
-      Height = 57
+      Height = 40
       Top = 24
       Width = 354
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
     end
-    object lblLang: TLabel
-      Left = 48
-      Height = 15
-      Top = 90
-      Width = 111
-      Caption = 'Translation language'
-      ParentColor = False
-    end
-    object lblGetAPIKey: TLabel
+    object lblGetAPIKeyYandex: TLabel
       Cursor = crHandPoint
       Left = 245
       Height = 15
@@ -222,12 +207,12 @@ object TL2Settings: TTL2Settings
       Font.Style = [fsUnderline]
       ParentColor = False
       ParentFont = False
-      OnClick = lblGetAPIKeyClick
+      OnClick = lblGetAPIKeyYandexClick
     end
     object lblYandexNote: TLabel
       Left = 4
       Height = 47
-      Top = 113
+      Top = 70
       Width = 354
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
@@ -237,29 +222,26 @@ object TL2Settings: TTL2Settings
     end
   end
   object edFilterWords: TEdit
-    Left = 408
+    Left = 8
     Height = 23
-    Top = 248
-    Width = 367
-    Anchors = [akTop, akLeft, akRight]
+    Top = 287
+    Width = 364
     TabOrder = 6
   end
   object lblFilter: TLabel
-    Left = 408
+    Left = 8
     Height = 15
-    Top = 227
-    Width = 367
-    Anchors = [akTop, akLeft, akRight]
+    Top = 266
+    Width = 364
     AutoSize = False
     Caption = 'Words to exclude from comparing'
     ParentColor = False
   end
   object lblFilterNote: TLabel
-    Left = 408
+    Left = 8
     Height = 15
-    Top = 272
-    Width = 367
-    Anchors = [akTop, akLeft, akRight]
+    Top = 313
+    Width = 364
     AutoSize = False
     Caption = 'Reopen project to apply new list'
     ParentColor = False
@@ -267,7 +249,7 @@ object TL2Settings: TTL2Settings
   object edImportDir: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 183
+    Top = 171
     Width = 392
     ShowHidden = False
     ButtonWidth = 23
@@ -280,7 +262,7 @@ object TL2Settings: TTL2Settings
   object lblImportDir: TLabel
     Left = 8
     Height = 15
-    Top = 165
+    Top = 153
     Width = 392
     Alignment = taCenter
     AutoSize = False
@@ -290,9 +272,103 @@ object TL2Settings: TTL2Settings
   object cbImportParts: TCheckBox
     Left = 8
     Height = 19
-    Top = 252
+    Top = 233
     Width = 176
     Caption = 'Mark imported lines as partial'
     TabOrder = 5
+  end
+  object lblLang: TLabel
+    Left = 536
+    Height = 15
+    Top = 8
+    Width = 111
+    Caption = 'Translation language'
+    ParentColor = False
+  end
+  object edTransLang: TEdit
+    Left = 412
+    Height = 23
+    Top = 4
+    Width = 114
+    TabOrder = 11
+  end
+  object gbTranslateGoogle: TGroupBox
+    Left = 408
+    Height = 84
+    Top = 181
+    Width = 367
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'Google Translation'
+    ClientHeight = 64
+    ClientWidth = 363
+    TabOrder = 12
+    object lblAPIKeyGoogle: TLabel
+      Left = 4
+      Height = 15
+      Top = 2
+      Width = 40
+      Caption = 'API Key'
+      ParentColor = False
+    end
+    object memAPIKeyGoogle: TMemo
+      Left = 4
+      Height = 34
+      Top = 24
+      Width = 354
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 0
+    end
+    object lblGetAPIKeyGoogle: TLabel
+      Cursor = crHandPoint
+      Left = 245
+      Height = 15
+      Top = 2
+      Width = 113
+      Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      Caption = 'Get your own API key'
+      Font.Color = clBlue
+      Font.Style = [fsUnderline]
+      ParentColor = False
+      ParentFont = False
+      OnClick = lblGetAPIKeyGoogleClick
+    end
+  end
+  object lbLanguage: TListBox
+    Left = 412
+    Height = 157
+    Top = 361
+    Width = 184
+    ItemHeight = 0
+    OnSelectionChange = lbLanguageSelectionChange
+    TabOrder = 13
+  end
+  object lblProgramLanguage: TLabel
+    Left = 412
+    Height = 15
+    Top = 341
+    Width = 184
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Program Language'
+    ParentColor = False
+  end
+  object lbTranslators: TListBox
+    Left = 608
+    Height = 120
+    Top = 361
+    Width = 167
+    ItemHeight = 0
+    TabOrder = 14
+  end
+  object lblTranslators: TLabel
+    Left = 608
+    Height = 15
+    Top = 341
+    Width = 167
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Translators'
+    ParentColor = False
   end
 end

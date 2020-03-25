@@ -67,7 +67,7 @@ type
     function  GetStatus(idx:integer):tTextStatus;
     procedure SetStatus(idx:integer; astat:tTextStatus);
 
-    procedure Error(code:integer; const fname:AnsiString; line:integer);
+    procedure Error(acode:integer; const afname:AnsiString; aline:integer);
     {
      >0 = idx+1
      =0 = not found
@@ -115,7 +115,7 @@ type
     procedure SaveInfo(const aname:AnsiString);
     procedure LoadInfo(const aname:AnsiString);
 
-    procedure Scan (const adir:AnsiString; allText:boolean; withChild:boolean);
+    function Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
 
     property OnFileScan:TOnFileScan read FOnFileScan write FOnFileScan;
     // statistic
@@ -996,13 +996,13 @@ end;
 
 //===== Read translation =====
 
-procedure TTL2Translation.Error(code:integer; const fname:AnsiString; line:integer);
+procedure TTL2Translation.Error(acode:integer; const afname:AnsiString; aline:integer);
 begin
-  FErrFile:=fname;
-  FErrCode:=code;
-  FErrLine:=line+1;
+  FErrFile:=afname;
+  FErrCode:=acode;
+  FErrLine:=aline+1;
 
-  case code of
+  case acode of
     1: FErrText:=sNoFileStart;  // no file starting tag
     2: FErrText:=sNoBlockStart; // no block start
     3: FErrText:=sNoOrignText;  // no original text
@@ -1429,12 +1429,14 @@ begin
   end;
 end;
 
-procedure TTL2Translation.Scan(const adir:AnsiString; allText:boolean; withChild:boolean);
+function TTL2Translation.Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
 var
   sl:TStringList;
   lRootScanDir:AnsiString;
   i,llen:integer;
 begin
+  result:=true;
+
   Filter:=flFiltered;
 
   if adir[Length(adir)]='\' then
@@ -1455,7 +1457,10 @@ begin
         case FOnFileScan(sl[i],i+1,sl.Count) of
           0: ;
           1: continue;
-          2: break;
+          2: begin
+            result:=false;
+            break;
+          end;
         end;
 
       ReadSrcFile(sl[i],integer(sl.Objects[i]),llen);

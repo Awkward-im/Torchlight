@@ -28,6 +28,7 @@ object TL2Notes: TTL2Notes
     object sbAdd: TSpeedButton
       Left = 160
       Height = 22
+      Hint = 'Add note'
       Top = 8
       Width = 23
       Images = TL2DataModule.TL2ImageList
@@ -37,6 +38,7 @@ object TL2Notes: TTL2Notes
     object sbDelete: TSpeedButton
       Left = 190
       Height = 22
+      Hint = 'Delete note'
       Top = 8
       Width = 23
       Enabled = False
@@ -47,6 +49,7 @@ object TL2Notes: TTL2Notes
     object sbSave: TSpeedButton
       Left = 219
       Height = 22
+      Hint = 'Save notes'
       Top = 8
       Width = 23
       Anchors = [akTop, akRight]
@@ -110,6 +113,7 @@ object TL2Notes: TTL2Notes
     object sbTranslate: TSpeedButton
       Left = 6
       Height = 22
+      Hint = 'Translate'
       Top = 141
       Width = 23
       Images = TL2DataModule.TL2ImageList

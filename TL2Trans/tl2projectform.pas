@@ -23,10 +23,11 @@ type
     actExportClipBrd: TAction;
     actImportFile: TAction;
     actImportClipBrd: TAction;
+    actStopScan: TAction;
     actOpenSource: TAction;
     actShowTemplate: TAction;
     actPartAsReady: TAction;
-    actYandex: TAction;
+    actTranslate: TAction;
     actReplace: TAction;
     actFindNext: TAction;
     actShowSimilar: TAction;
@@ -46,7 +47,7 @@ type
     sbShowSimilar: TSpeedButton;
     sbShowDoubles: TSpeedButton;
     sbReplace: TSpeedButton;
-    sbYandex: TSpeedButton;
+    sbTranslate: TSpeedButton;
     sbFindNext: TSpeedButton;
     cbPartAsReady: TSpeedButton;
     sbShowTemplate: TSpeedButton;
@@ -55,6 +56,7 @@ type
     procedure actOpenSourceExecute(Sender: TObject);
     procedure actPartAsReadyExecute(Sender: TObject);
     procedure actShowTemplateExecute(Sender: TObject);
+    procedure actStopScanExecute(Sender: TObject);
     procedure edProjectFilterChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
@@ -67,20 +69,21 @@ type
     procedure ShortFNameClick(Sender: TObject);
     procedure ExportClipBrdClick(Sender: TObject);
     procedure ExportFileClick(Sender: TObject);
-    procedure TL2ProjectGridHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
-    procedure YandexClick(Sender: TObject);
+    procedure TranslateClick(Sender: TObject);
     procedure ReplaceClick(Sender: TObject);
     procedure dlgOnReplace(Sender: TObject);
     procedure FindNextClick(Sender: TObject);
+    procedure TL2ProjectGridHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
     procedure TL2ProjectGridDblClick(Sender: TObject);
     procedure TL2ProjectGridDrawCell(Sender: TObject; aCol, aRow: Integer;
-      aRect: TRect; aState: TGridDrawState);
-    procedure TL2ProjectGridGetEditText(Sender: TObject; ACol, ARow: Integer; var Value: string);
+      aRect: TRect; astate: TGridDrawState);
+    procedure TL2ProjectGridGetEditText(Sender: TObject; aCol, aRow: Integer; var Value: string);
     procedure TL2ProjectGridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure TL2ProjectGridSelectEditor(Sender: TObject; aCol, aRow: Integer; var Editor: TWinControl);
-    procedure TL2ProjectGridSetCheckboxState(Sender: TObject; ACol,
-      ARow: Integer; const Value: TCheckboxState);
+    procedure TL2ProjectGridSetCheckboxState(Sender: TObject; aCol,
+      aRow: Integer; const Value: TCheckboxState);
   private
+    doStopScan:boolean;
     FSBUpdate:TSBUpdateEvent;
 
     procedure CreateFileTab(idx: integer);
@@ -99,7 +102,7 @@ type
     function  Preload():boolean;
     procedure ReBoundEditor;
     function  RemoveColor(const textin: AnsiString; var textout: AnsiString): boolean;
-    procedure Search(const aText: AnsiString; aRow: integer);
+    procedure Search(const atext: AnsiString; aRow: integer);
     procedure SetCellText(arow: integer; const atext: AnsiString);
 
   public
@@ -112,7 +115,7 @@ type
     Modified: Boolean;
     data:TTL2Translation;
 
-    procedure New(const adir:AnsiString; allText:boolean; withChild:boolean);
+    function New(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
     procedure Load(const fname:AnsiString);
     procedure Save();
     procedure DoExport();
@@ -159,6 +162,8 @@ resourcestring
   sCheckSimilar   = 'Check for similar text';
   sDoDelete       = 'Are you sure to delete selected line(s)?'#13#10+
                     'This text will be just hidden until you save and reload project.';
+  sStopScan       = 'Do you want to break scan? It clear full scan process.';
+  sEscCancel      = 'ESC to cancel';
 
 const
   colFile    = 1;
@@ -172,8 +177,17 @@ const
 
 function TTL2Project.ProjectFileScan(const fname:AnsiString; idx, atotal:integer):integer;
 begin
-  result:=0;
-  OnSBUpdate(Self,'['+IntToStr(idx)+' / '+IntToStr(atotal)+'] '+fname);
+  if doStopScan then
+    result:=2
+  else
+    result:=0;
+  OnSBUpdate(Self,'('+sEscCancel+') ['+IntToStr(idx)+' / '+IntToStr(atotal)+'] '+fname);
+end;
+
+procedure TTL2Project.actStopScanExecute(Sender: TObject);
+begin
+  if actStopScan.Enabled then
+    doStopScan:=MessageDlg(sStopScan,mtWarning,[mbNo,mbYes],0,mbNo)=mrYes;
 end;
 
 function TTL2Project.GetStatusText:AnsiString;
@@ -197,12 +211,12 @@ begin
      data.Doubles]);
 end;
 
-procedure TTL2Project.Search(const aText:AnsiString; aRow:integer);
+procedure TTL2Project.Search(const atext:AnsiString; aRow:integer);
 var
   ltext:AnsiString;
   i:integer;
 begin
-  ltext:=aText; // already locase
+  ltext:=atext; // already locase
   for i:=aRow to TL2ProjectGrid.RowCount-1 do
   begin
     if (Pos(ltext,AnsiLowerCase(TL2ProjectGrid.Cells[colOrigin,i]))>0) or
@@ -804,7 +818,7 @@ begin
   CurX:=aRect.Left+constCellPadding;
 
   { Here we get the contents of the cell }
-  Sentence:=aText;
+  Sentence:=atext;
 
   { for each word in the cell }
   EndOfSentence:=FALSE;
@@ -845,14 +859,14 @@ begin
 end;
 
 procedure TTL2Project.TL2ProjectGridDrawCell(Sender: TObject; aCol,
-  aRow: Integer; aRect: TRect; aState: TGridDrawState);
+  aRow: Integer; aRect: TRect; astate: TGridDrawState);
 var
   ls:String;
   ts:TTextStyle;
   count1, count2: integer;
   lidx:integer;
 begin
-  if not (gdFixed in aState) then
+  if not (gdFixed in astate) then
   begin
     with TL2ProjectGrid do
     begin
@@ -879,30 +893,30 @@ begin
         else
           RowHeights[aRow]:=DefaultRowHeight;
 
-        if gdSelected in aState then
+        if gdSelected in astate then
           Canvas.Brush.Color:=clHighlight
         else
           Canvas.Brush.Color:=clWindow;
         Canvas.Brush.Style:= bsSolid;
         Canvas.FillRect(aRect);
 
-        ls:=Cells[ACol,ARow];
+        ls:=Cells[aCol,aRow];
         if (ACol=colOrigin) and (ls[Length(ls)]=' ') then
           ls[Length(ls)]:='~';
         Canvas.TextRect(aRect,
           aRect.Left+constCellPadding,aRect.Top+constCellPadding,ls);
 
-        if gdFocused in aState then
+        if gdFocused in astate then
           Canvas.DrawFocusRect(aRect);
         exit;
       end;
     end;
   end;
 
-//  (Sender as TStringGrid).DefaultDrawCell(aCol,aRow,aRect,aState);
+//  (Sender as TStringGrid).DefaultDrawCell(aCol,aRow,aRect,astate);
 end;
 
-procedure TTL2Project.TL2ProjectGridGetEditText(Sender: TObject; ACol,ARow: Integer; var Value: string);
+procedure TTL2Project.TL2ProjectGridGetEditText(Sender: TObject; aCol,aRow: Integer; var Value: string);
 begin
   memEdit.Text:=Value;
 end;
@@ -997,14 +1011,20 @@ begin
 
 end;
 
-procedure TTL2Project.New(const adir:AnsiString; allText:boolean; withChild:boolean);
+function TTL2Project.New(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
 begin
   data.Filter:=flFiltered;
-  data.Scan(adir,allText,withChild);
-  Modified:=true;
-  OnSBUpdate(Self);
-  FillProjectGrid('');
-//!!  actShowDoubles.Visible:=data.Doubles<>0;
+  actStopScan.Enabled:=true;
+  doStopScan:=false;
+  result:=data.Scan(adir,allText,withChild);
+  actStopScan.Enabled:=false;
+  if result then
+  begin
+    Modified:=true;
+    OnSBUpdate(Self);
+    FillProjectGrid('');
+  //!!  actShowDoubles.Visible:=data.Doubles<>0;
+  end;
 end;
 
 procedure TTL2Project.Load(const fname:AnsiString);
@@ -1098,19 +1118,19 @@ end;
 //----- Edit -----
 
 procedure TTL2Project.TL2ProjectGridSetCheckboxState(Sender: TObject;
-  ACol, ARow: Integer; const Value: TCheckboxState);
+  aCol, aRow: Integer; const Value: TCheckboxState);
 var
   lidx:integer;
 begin
   lidx:=IntPtr(TL2ProjectGrid.Objects[0,aRow]);
   if Value=cbChecked then
   begin
-    TL2ProjectGrid.Cells[colPartial,ARow]:='1';
+    TL2ProjectGrid.Cells[colPartial,aRow]:='1';
     data.State[lidx]:=stPartial;
   end
   else
   begin
-    TL2ProjectGrid.Cells[colPartial,ARow]:='0';
+    TL2ProjectGrid.Cells[colPartial,aRow]:='0';
     if data.Trans[lidx]<>'' then
       data.State[lidx]:=stReady
     else
@@ -1311,7 +1331,7 @@ begin
   end;
 end;
 
-procedure TTL2Project.YandexClick(Sender: TObject);
+procedure TTL2Project.TranslateClick(Sender: TObject);
 var
   ls:AnsiString;
   idx:integer;
@@ -1322,24 +1342,24 @@ begin
   begin
     if memEdit.SelLength>0 then
     begin
-      memEdit.SelText:=TranslateYandex(memEdit.SelText);
+      memEdit.SelText:=Translate(memEdit.SelText);
       ls:=memEdit.Text;
 {
       ls:=memEdit.Text;
       UTF8Delete(ls,memEdit.SelStart+1,memEdit.SelLength);
-      UTF8Insert(TranslateYandex(memEdit.SelText),ls,memEdit.SelStart+1);
+      UTF8Insert(Translate(memEdit.SelText),ls,memEdit.SelStart+1);
       memEdit.Text:=ls;
 }
     end
     else
-      ls:=TranslateYandex(memEdit.Text);
+      ls:=Translate(memEdit.Text);
   end
   else
   begin
-    ls:=TranslateYandex(data.Line[idx]);
+    ls:=Translate(data.Line[idx]);
   end;
 
-  data.Trans[idx]:=ls;//TranslateYandex(data.Line[idx]);
+  data.Trans[idx]:=ls;//Translate(data.Line[idx]);
   data.State[idx]:=stPartial;
   UpdateGrid(idx);
 

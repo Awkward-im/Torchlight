@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.3\n"
 
 #: taboutform.caption
 msgid "About"
@@ -133,6 +133,10 @@ msgstr ""
 "Вы уверены, что хотите удалить выбранную строку (строки)?\n"
 "Этот текст будет лишь скрытым, пока Вы не сохраните и не перезагрузите проект."
 
+#: tl2projectform.sesccancel
+msgid "ESC to cancel"
+msgstr "ESC чтобы прервать"
+
 #: tl2projectform.sexport
 msgid "Export finished. Create file"
 msgstr "Экспорт завершён. Создан файл"
@@ -155,6 +159,10 @@ msgctxt "tl2projectform.ssbtext"
 msgid "Preload files: %d; lines: base = %d, mods = %d | Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
 msgstr "Предзагружено файлов: %d; строк: база = %d, моды = %d | Проект файлов: %d; тэгов: %d; строк: %d | Переведено: %d; частично: %d | Дублей: %d"
 
+#: tl2projectform.sstopscan
+msgid "Do you want to break scan? It clear full scan process."
+msgstr "Вы хотите прерваться? Это отменит весь процесс сканирования."
+
 #: tl2projectform.stransfileerror
 #, object-pascal-format
 msgctxt "tl2projectform.stransfileerror"
@@ -173,45 +181,19 @@ msgstr "Предупреждение"
 msgid "What to export"
 msgstr "Что экспортировать"
 
+#: tl2settingsform.snotrealized
+msgid "Not realized yet"
+msgstr "Не реализовано"
+
 #: tl2settingsform.sopenaddon
 msgctxt "tl2settingsform.sopenaddon"
 msgid "Choose additional file"
 msgstr "Выберите дополнительный файл"
 
-#: tl2settingsform.sunknownerror
-msgctxt "tl2settingsform.sunknownerror"
-msgid "Unknown Error"
-msgstr "Неизвестная ошибка"
-
-#: tl2settingsform.sycanttranslate
-msgctxt "tl2settingsform.sycanttranslate"
-msgid "Text can't be translated"
-msgstr "Текст не может быть переведен"
-
-#: tl2settingsform.sykeyblocked
-msgctxt "tl2settingsform.sykeyblocked"
-msgid "API key blocked"
-msgstr "API-ключ заблокирован"
-
-#: tl2settingsform.sytoolongtext
-msgctxt "tl2settingsform.sytoolongtext"
-msgid "Text length too large"
-msgstr "Превышен максимально допустимый размер текста"
-
-#: tl2settingsform.sytoomuchtext
-msgctxt "tl2settingsform.sytoomuchtext"
-msgid "Day text potion out of limit"
-msgstr "Превышено суточное ограничение на объем переведенного текста"
-
-#: tl2settingsform.sywrongapikey
-msgctxt "tl2settingsform.sywrongapikey"
-msgid "Wrong API key"
-msgstr "Неправильный API-ключ"
-
-#: tl2settingsform.sywronglanguage
-msgctxt "tl2settingsform.sywronglanguage"
-msgid "Choosen language is unsupported"
-msgstr "Заданное направление перевода не поддерживается"
+#: tl2settingsform.ssettings
+msgctxt "tl2settingsform.ssettings"
+msgid "Settings"
+msgstr "Настройки"
 
 #: tl2simform.stotal
 msgid "Total"
@@ -259,11 +241,6 @@ msgstr "(сохраняется)"
 #: tl2unit.sscanning
 msgid "(scanning)"
 msgstr "(сканируется)"
-
-#: tl2unit.ssettings
-msgctxt "tl2unit.ssettings"
-msgid "Settings"
-msgstr "Настройки"
 
 #: tmaintl2transform.actnotes.caption
 msgid "Show Notes"
@@ -382,6 +359,41 @@ msgstr "*.DAT,  *.LAYOUT и *.TEMPLATE файлы"
 msgid "Scan all text files"
 msgstr "Проверять все файлы"
 
+#: trclass.scanttranslate
+msgctxt "trclass.scanttranslate"
+msgid "Text can't be translated"
+msgstr "Текст не может быть переведен"
+
+#: trclass.skeyblocked
+msgctxt "trclass.skeyblocked"
+msgid "API key blocked"
+msgstr "API-ключ заблокирован"
+
+#: trclass.stoolongtext
+msgctxt "trclass.stoolongtext"
+msgid "Text length too large"
+msgstr "Превышен максимально допустимый размер текста"
+
+#: trclass.stoomuchtext
+msgctxt "trclass.stoomuchtext"
+msgid "Day text potion out of limit"
+msgstr "Превышено суточное ограничение на объем переведенного текста"
+
+#: trclass.sunknownerror
+msgctxt "trclass.sunknownerror"
+msgid "Unknown Error"
+msgstr "Неизвестная ошибка"
+
+#: trclass.swrongapikey
+msgctxt "trclass.swrongapikey"
+msgid "Wrong API key"
+msgstr "Неправильный API-ключ"
+
+#: trclass.swronglanguage
+msgctxt "trclass.swronglanguage"
+msgid "Choosen language is unsupported"
+msgstr "Заданное направление перевода не поддерживается"
+
 #: ttl2notes.bbcancel.caption
 msgid "Cancel"
 msgstr "Отмена"
@@ -390,6 +402,23 @@ msgstr "Отмена"
 msgctxt "ttl2notes.bbsave.caption"
 msgid "&Save"
 msgstr "Сохр."
+
+#: ttl2notes.sbadd.hint
+msgid "Add note"
+msgstr "Добавить заметку"
+
+#: ttl2notes.sbdelete.hint
+msgid "Delete note"
+msgstr "Удалить заметку"
+
+#: ttl2notes.sbsave.hint
+msgid "Save notes"
+msgstr "Сохранить заметки"
+
+#: ttl2notes.sbtranslate.hint
+msgctxt "ttl2notes.sbtranslate.hint"
+msgid "Translate"
+msgstr "Перевести"
 
 #: ttl2notes.sgnotes.columns[0].title.caption
 msgid "Note"
@@ -463,10 +492,9 @@ msgstr "Показать строки с похожим текстом"
 msgid "Show template text"
 msgstr "Показать шаблон"
 
-#: ttl2project.actyandex.hint
-msgctxt "ttl2project.actyandex.hint"
-msgid "Use Yandex translate service"
-msgstr "Использовать сервис перевода Яндекса"
+#: ttl2project.acttranslate.hint
+msgid "Use online translate service"
+msgstr "Использовать онлайн-перевод"
 
 #: ttl2project.tl2projectgrid.columns[0].title.caption
 msgid "File"
@@ -514,7 +542,12 @@ msgstr "Экспорт частично переведённого текста"
 msgid "Mark imported lines as partial"
 msgstr "Пометить импортированное как частичное"
 
-#: ttl2settings.gbtranslate.caption
+#: ttl2settings.gbtranslategoogle.caption
+msgid "Google Translation"
+msgstr "Перевод Google"
+
+#: ttl2settings.gbtranslateyandex.caption
+msgctxt "ttl2settings.gbtranslateyandex.caption"
 msgid "Yandex Translation"
 msgstr "Перевод Яндекса"
 
@@ -522,7 +555,13 @@ msgstr "Перевод Яндекса"
 msgid "Additional files"
 msgstr "Доп. файлы"
 
-#: ttl2settings.lblapikey.caption
+#: ttl2settings.lblapikeygoogle.caption
+msgctxt "ttl2settings.lblapikeygoogle.caption"
+msgid "API Key"
+msgstr "Ключ API"
+
+#: ttl2settings.lblapikeyyandex.caption
+msgctxt "ttl2settings.lblapikeyyandex.caption"
 msgid "API Key"
 msgstr "Ключ API"
 
@@ -538,7 +577,13 @@ msgstr "Слова-исключения из сравнения"
 msgid "Reopen project to apply new list"
 msgstr "Переоткройте проект, чтобы применить список"
 
-#: ttl2settings.lblgetapikey.caption
+#: ttl2settings.lblgetapikeygoogle.caption
+msgctxt "ttl2settings.lblgetapikeygoogle.caption"
+msgid "Get your own API key"
+msgstr "Получить свой ключ API"
+
+#: ttl2settings.lblgetapikeyyandex.caption
+msgctxt "ttl2settings.lblgetapikeyyandex.caption"
 msgid "Get your own API key"
 msgstr "Получить свой ключ API"
 
@@ -550,9 +595,17 @@ msgstr "Каталог файлов для импорта"
 msgid "Translation language"
 msgstr "Язык перевода"
 
+#: ttl2settings.lblprogramlanguage.caption
+msgid "Program Language"
+msgstr "Язык программы"
+
 #: ttl2settings.lblrootdirectory.caption
 msgid "Root directory for mods"
 msgstr "Корневая папка модов"
+
+#: ttl2settings.lbltranslators.caption
+msgid "Translators"
+msgstr ""
 
 #: ttl2settings.lblworkdirectory.caption
 msgid "Working directory"
@@ -562,3 +615,4 @@ msgstr "Рабочий каталог"
 msgctxt "ttl2settings.lblyandexnote.caption"
 msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr "Размер текста - не более 10Кб. Дневной лимит - 1 000 000 символов, месячный - 10 000 000 символов."
+

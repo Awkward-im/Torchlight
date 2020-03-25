@@ -9,8 +9,11 @@ Feel free to modify it. But if you will show me changes, it can be nice ^_^
 
 How to change program language:
 ------------------------------
-Just remove tl2trans.ru.po file, it gives russian translation only.
-You can use tl2trans.pot as template to create your own program interface translation.
+First tab, "Settings" have list of program localizations which you can use. Just select required
+line. If your language not presents there, you can create it by yourself. That just text file in
+UTF-8 encoding. You can use languages\tl2trans.pot as template to create your own program interface
+translation and languages\*.po files as examples. Save your newly created (edited) PO file there and
+restart program. You can use Poedit (https://poedit.net/download) program to edit these localizations.
 =====
 
 How to combine files into one:
@@ -29,7 +32,7 @@ How to delete old (not presented anymore) lines:
 
 Note: Import/export buttons on project page works only with visible grid lines
 
-'Import' function requires next format:
+'Import from clipboard' function requires next format:
 <source text><tab><translated text>
 =====
 

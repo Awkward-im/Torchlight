@@ -221,11 +221,11 @@ end;
 procedure TEditTextForm.actTranslateExecute(Sender: TObject);
 begin
   if memTrans.SelLength>0 then
-    memTrans.SelText:=TranslateYandex(memTrans.SelText)
+    memTrans.SelText:=Translate(memTrans.SelText)
   else if memOriginal.SelLength>0 then
-    memTrans.Text:=TranslateYandex(memOriginal.SelText)
+    memTrans.Text:=Translate(memOriginal.SelText)
   else
-    memTrans.Text:=TranslateYandex(memOriginal.Text);
+    memTrans.Text:=Translate(memOriginal.Text);
   sbPartial.Down:=true;
 end;
 

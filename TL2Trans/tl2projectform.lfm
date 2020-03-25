@@ -6,6 +6,7 @@ object TL2Project: TTL2Project
   BorderStyle = bsNone
   ClientHeight = 520
   ClientWidth = 820
+  KeyPreview = True
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   ParentFont = True
@@ -88,16 +89,16 @@ object TL2Project: TTL2Project
       Action = actReplace
       Anchors = [akTop, akRight]
     end
-    object sbYandex: TSpeedButton
+    object sbTranslate: TSpeedButton
       Left = 318
       Height = 22
       Top = 8
       Width = 23
-      Action = actYandex
+      Action = actTranslate
       Anchors = [akTop, akRight]
     end
     object sbProjectFilter: TSpeedButton
-      Left = 371
+      Left = 369
       Height = 22
       Top = 8
       Width = 23
@@ -303,10 +304,10 @@ object TL2Project: TTL2Project
       OnExecute = FindNextClick
       ShortCut = 32807
     end
-    object actYandex: TAction
-      Hint = 'Use Yandex translate service'
+    object actTranslate: TAction
+      Hint = 'Use online translate service'
       ImageIndex = 8
-      OnExecute = YandexClick
+      OnExecute = TranslateClick
       ShortCut = 16468
     end
     object actPartAsReady: TAction
@@ -318,10 +319,14 @@ object TL2Project: TTL2Project
       OnExecute = actOpenSourceExecute
       ShortCut = 32851
     end
+    object actStopScan: TAction
+      Enabled = False
+      OnExecute = actStopScanExecute
+    end
   end
   object mnuColor: TPopupMenu
     AutoPopup = False
     Left = 330
-    Top = 231
+    Top = 230
   end
 end

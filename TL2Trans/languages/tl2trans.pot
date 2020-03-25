@@ -79,7 +79,6 @@ msgid "No translated text"
 msgstr ""
 
 #: tl2notesform.stitle
-msgctxt "tl2notesform.stitle"
 msgid "Notes"
 msgstr ""
 
@@ -113,6 +112,10 @@ msgid ""
 "This text will be just hidden until you save and reload project."
 msgstr ""
 
+#: tl2projectform.sesccancel
+msgid "ESC to cancel"
+msgstr ""
+
 #: tl2projectform.sexport
 msgid "Export finished. Create file"
 msgstr ""
@@ -131,13 +134,15 @@ msgstr ""
 
 #: tl2projectform.ssbtext
 #, object-pascal-format
-msgctxt "tl2projectform.ssbtext"
 msgid "Preload files: %d; lines: base = %d, mods = %d | Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
+msgstr ""
+
+#: tl2projectform.sstopscan
+msgid "Do you want to break scan? It clear full scan process."
 msgstr ""
 
 #: tl2projectform.stransfileerror
 #, object-pascal-format
-msgctxt "tl2projectform.stransfileerror"
 msgid ""
 "Error %d in translation file %s, line %d:\n"
 "%s"
@@ -151,44 +156,17 @@ msgstr ""
 msgid "What to export"
 msgstr ""
 
+#: tl2settingsform.snotrealized
+msgid "Not realized yet"
+msgstr ""
+
 #: tl2settingsform.sopenaddon
-msgctxt "tl2settingsform.sopenaddon"
 msgid "Choose additional file"
 msgstr ""
 
-#: tl2settingsform.sunknownerror
-msgctxt "tl2settingsform.sunknownerror"
-msgid "Unknown Error"
-msgstr ""
-
-#: tl2settingsform.sycanttranslate
-msgctxt "tl2settingsform.sycanttranslate"
-msgid "Text can't be translated"
-msgstr ""
-
-#: tl2settingsform.sykeyblocked
-msgctxt "tl2settingsform.sykeyblocked"
-msgid "API key blocked"
-msgstr ""
-
-#: tl2settingsform.sytoolongtext
-msgctxt "tl2settingsform.sytoolongtext"
-msgid "Text length too large"
-msgstr ""
-
-#: tl2settingsform.sytoomuchtext
-msgctxt "tl2settingsform.sytoomuchtext"
-msgid "Day text potion out of limit"
-msgstr ""
-
-#: tl2settingsform.sywrongapikey
-msgctxt "tl2settingsform.sywrongapikey"
-msgid "Wrong API key"
-msgstr ""
-
-#: tl2settingsform.sywronglanguage
-msgctxt "tl2settingsform.sywronglanguage"
-msgid "Choosen language is unsupported"
+#: tl2settingsform.ssettings
+msgctxt "tl2settingsform.ssettings"
+msgid "Settings"
 msgstr ""
 
 #: tl2simform.stotal
@@ -236,11 +214,6 @@ msgstr ""
 
 #: tl2unit.sscanning
 msgid "(scanning)"
-msgstr ""
-
-#: tl2unit.ssettings
-msgctxt "tl2unit.ssettings"
-msgid "Settings"
 msgstr ""
 
 #: tmaintl2transform.actnotes.caption
@@ -360,6 +333,41 @@ msgstr ""
 msgid "Scan all text files"
 msgstr ""
 
+#: trclass.scanttranslate
+msgctxt "trclass.scanttranslate"
+msgid "Text can't be translated"
+msgstr ""
+
+#: trclass.skeyblocked
+msgctxt "trclass.skeyblocked"
+msgid "API key blocked"
+msgstr ""
+
+#: trclass.stoolongtext
+msgctxt "trclass.stoolongtext"
+msgid "Text length too large"
+msgstr ""
+
+#: trclass.stoomuchtext
+msgctxt "trclass.stoomuchtext"
+msgid "Day text potion out of limit"
+msgstr ""
+
+#: trclass.sunknownerror
+msgctxt "trclass.sunknownerror"
+msgid "Unknown Error"
+msgstr ""
+
+#: trclass.swrongapikey
+msgctxt "trclass.swrongapikey"
+msgid "Wrong API key"
+msgstr ""
+
+#: trclass.swronglanguage
+msgctxt "trclass.swronglanguage"
+msgid "Choosen language is unsupported"
+msgstr ""
+
 #: ttl2notes.bbcancel.caption
 msgid "Cancel"
 msgstr ""
@@ -367,6 +375,23 @@ msgstr ""
 #: ttl2notes.bbsave.caption
 msgctxt "ttl2notes.bbsave.caption"
 msgid "&Save"
+msgstr ""
+
+#: ttl2notes.sbadd.hint
+msgid "Add note"
+msgstr ""
+
+#: ttl2notes.sbdelete.hint
+msgid "Delete note"
+msgstr ""
+
+#: ttl2notes.sbsave.hint
+msgid "Save notes"
+msgstr ""
+
+#: ttl2notes.sbtranslate.hint
+msgctxt "ttl2notes.sbtranslate.hint"
+msgid "Translate"
 msgstr ""
 
 #: ttl2notes.sgnotes.columns[0].title.caption
@@ -379,42 +404,34 @@ msgid "Value"
 msgstr ""
 
 #: ttl2project.actexportclipbrd.hint
-msgctxt "ttl2project.actexportclipbrd.hint"
 msgid "Copy selected source text to clipboard"
 msgstr ""
 
 #: ttl2project.actexportfile.hint
-msgctxt "ttl2project.actexportfile.hint"
 msgid "Save selected source text"
 msgstr ""
 
 #: ttl2project.actfilename.hint
-msgctxt "ttl2project.actfilename.hint"
 msgid "Short file names"
 msgstr ""
 
 #: ttl2project.actfilter.hint
-msgctxt "ttl2project.actfilter.hint"
 msgid "Filter"
 msgstr ""
 
 #: ttl2project.actfindnext.hint
-msgctxt "ttl2project.actfindnext.hint"
 msgid "Search next"
 msgstr ""
 
 #: ttl2project.acthideready.hint
-msgctxt "ttl2project.acthideready.hint"
 msgid "Hide translated lines"
 msgstr ""
 
 #: ttl2project.actimportclipbrd.hint
-msgctxt "ttl2project.actimportclipbrd.hint"
 msgid "Inset text with translation from clipboard"
 msgstr ""
 
 #: ttl2project.actimportfile.hint
-msgctxt "ttl2project.actimportfile.hint"
 msgid "Add translation from file"
 msgstr ""
 
@@ -423,17 +440,14 @@ msgid "Mark partially translated text as translated"
 msgstr ""
 
 #: ttl2project.actreplace.hint
-msgctxt "ttl2project.actreplace.hint"
 msgid "Replace translation text"
 msgstr ""
 
 #: ttl2project.actshowdoubles.hint
-msgctxt "ttl2project.actshowdoubles.hint"
 msgid "Show Doubling lines"
 msgstr ""
 
 #: ttl2project.actshowsimilar.hint
-msgctxt "ttl2project.actshowsimilar.hint"
 msgid "Show lines with \"almost the same\" text"
 msgstr ""
 
@@ -441,9 +455,8 @@ msgstr ""
 msgid "Show template text"
 msgstr ""
 
-#: ttl2project.actyandex.hint
-msgctxt "ttl2project.actyandex.hint"
-msgid "Use Yandex translate service"
+#: ttl2project.acttranslate.hint
+msgid "Use online translate service"
 msgstr ""
 
 #: ttl2project.tl2projectgrid.columns[0].title.caption
@@ -455,7 +468,6 @@ msgid "Attribute"
 msgstr ""
 
 #: ttl2project.tl2projectgrid.columns[2].title.caption
-msgctxt "ttl2project.tl2projectgrid.columns[2].title.caption"
 msgid "Template"
 msgstr ""
 
@@ -465,12 +477,10 @@ msgid "Value"
 msgstr ""
 
 #: ttl2project.tl2projectgrid.columns[4].title.caption
-msgctxt "ttl2project.tl2projectgrid.columns[4].title.caption"
 msgid "Part"
 msgstr ""
 
 #: ttl2project.tl2projectgrid.columns[5].title.caption
-msgctxt "ttl2project.tl2projectgrid.columns[5].title.caption"
 msgid "Translation"
 msgstr ""
 
@@ -492,7 +502,11 @@ msgstr ""
 msgid "Mark imported lines as partial"
 msgstr ""
 
-#: ttl2settings.gbtranslate.caption
+#: ttl2settings.gbtranslategoogle.caption
+msgid "Google Translation"
+msgstr ""
+
+#: ttl2settings.gbtranslateyandex.caption
 msgid "Yandex Translation"
 msgstr ""
 
@@ -500,7 +514,13 @@ msgstr ""
 msgid "Additional files"
 msgstr ""
 
-#: ttl2settings.lblapikey.caption
+#: ttl2settings.lblapikeygoogle.caption
+msgctxt "ttl2settings.lblapikeygoogle.caption"
+msgid "API Key"
+msgstr ""
+
+#: ttl2settings.lblapikeyyandex.caption
+msgctxt "ttl2settings.lblapikeyyandex.caption"
 msgid "API Key"
 msgstr ""
 
@@ -516,7 +536,13 @@ msgstr ""
 msgid "Reopen project to apply new list"
 msgstr ""
 
-#: ttl2settings.lblgetapikey.caption
+#: ttl2settings.lblgetapikeygoogle.caption
+msgctxt "ttl2settings.lblgetapikeygoogle.caption"
+msgid "Get your own API key"
+msgstr ""
+
+#: ttl2settings.lblgetapikeyyandex.caption
+msgctxt "ttl2settings.lblgetapikeyyandex.caption"
 msgid "Get your own API key"
 msgstr ""
 
@@ -528,8 +554,16 @@ msgstr ""
 msgid "Translation language"
 msgstr ""
 
+#: ttl2settings.lblprogramlanguage.caption
+msgid "Program Language"
+msgstr ""
+
 #: ttl2settings.lblrootdirectory.caption
 msgid "Root directory for mods"
+msgstr ""
+
+#: ttl2settings.lbltranslators.caption
+msgid "Translators"
 msgstr ""
 
 #: ttl2settings.lblworkdirectory.caption
@@ -537,7 +571,6 @@ msgid "Working directory"
 msgstr ""
 
 #: ttl2settings.lblyandexnote.caption
-msgctxt "ttl2settings.lblyandexnote.caption"
 msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr ""
 

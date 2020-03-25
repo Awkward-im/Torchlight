@@ -19,6 +19,7 @@
     </General>
     <i18n>
       <EnableI18N Value="True"/>
+      <OutDir Value="languages"/>
     </i18n>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -209,6 +210,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2NotesForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="iso639.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="trclass.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>

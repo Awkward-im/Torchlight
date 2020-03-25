@@ -186,7 +186,7 @@ object MainTL2TransForm: TMainTL2TransForm
   object TL2ActionList: TActionList
     Images = TL2DataModule.TL2ImageList
     Left = 287
-    Top = 448
+    Top = 447
     object FontEdit: TFontEdit
       Category = 'Dialog'
       Caption = '&Font'

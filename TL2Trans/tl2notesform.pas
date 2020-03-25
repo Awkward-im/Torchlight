@@ -134,7 +134,7 @@ begin
   end;
   sgNotes.Cells[0,i]:=edTitle.Text;
   sgNotes.Cells[1,i]:=memNote.Text;
-  sgNotes.SortColRow(true,0);
+//  sgNotes.SortColRow(true,0);
   Caption:='* '+sTitle;
 
   bbCancelClick(Sender);
@@ -142,7 +142,7 @@ end;
 
 procedure TTL2Notes.sbTranslateClick(Sender: TObject);
 begin
-  memNote.Text:=TranslateYandex(edTitle.Text);
+  memNote.Text:=Translate(edTitle.Text);
 end;
 
 procedure TTL2Notes.edSearchChange(Sender: TObject);

@@ -8,7 +8,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, lazcontrols,
-  DefaultTranslator,
+//  DefaultTranslator,
   tl2datamodule,TL2Unit
   { you can add units after this };
 

@@ -113,7 +113,6 @@ uses
 
 resourcestring
   sDefaultCaption = 'Torchlight 2 Translation';
-  sSettings       = 'Settings';
   sOpenProject    = 'Open project';
   sSaveProject    = 'Save project';
   sNotSaved       = 'Project modified. Do you want to save it?';
@@ -199,9 +198,9 @@ var
 begin
   ts:=TL2PageControl.AddTabSheet;
   ts.ShowHint:=false;
-  ts.Caption :=sSettings;
   with TTL2Settings.Create(ts) do
   begin
+    ts.Caption:=Caption;
     Parent :=ts;
     Align  :=alClient;
     Visible:=true;
@@ -258,9 +257,17 @@ end;
 
 procedure TMainTL2TransForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
+  lprj:TTL2Project;
   i:integer;
 begin
   i:=-1;
+
+  if Key=VK_ESCAPE then
+  begin
+    lprj:=ActiveProject;
+    if lprj<>nil then
+      lprj.actStopScanExecute(Sender);
+  end;
 
   if (ssAlt in Shift) then
   begin
@@ -304,6 +311,8 @@ begin
   begin
     ActiveProject.TL2ProjectGrid.SetFocus;
   end;
+
+  inherited;
 end;
 
 function TMainTL2TransForm.CanClosePage(idx:integer):boolean;
@@ -374,8 +383,9 @@ begin
 
     NewTab(lname);
     SetTABCaption(sScanning);
-    ActiveProject.New(TL2ShellTreeView.Path,rbScanText.Checked,not cbScanCurDir.Checked);
-
+    if not ActiveProject.New(TL2ShellTreeView.Path,
+        rbScanText.Checked,not cbScanCurDir.Checked) then
+    CanClosePage(TL2PageControl.ActivePageIndex);
   end;
 end;
 
@@ -452,7 +462,14 @@ begin
   try
     prj:=ActiveProject;
     SaveDialog.InitialDir:=TL2Settings.edWorkDir.Text;
-    SaveDialog.FileName  :=prj.ProjectName;
+
+    ls:=TL2Settings.edTransLang.Text;
+    if (ls<>'') and (Pos('.'+ls,prj.ProjectName)=0) then
+      ls:=prj.ProjectName+'.'+ls
+    else
+      ls:=prj.ProjectName;
+
+    SaveDialog.FileName  :=ls;
     SaveDialog.DefaultExt:=DefaultExt;
     SaveDialog.Filter    :=DefaultFilter;
     SaveDialog.Title     :=sSaveProject;
