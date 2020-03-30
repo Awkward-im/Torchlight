@@ -605,7 +605,7 @@ msgstr "Корневая папка модов"
 
 #: ttl2settings.lbltranslators.caption
 msgid "Translators"
-msgstr ""
+msgstr "Переводчики"
 
 #: ttl2settings.lblworkdirectory.caption
 msgid "Working directory"

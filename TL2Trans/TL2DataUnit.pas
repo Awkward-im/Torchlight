@@ -55,6 +55,8 @@ type
     cntText : integer; // lines totally
     cntStart: integer; // start line of project
 
+    noteIndex:integer;
+    
     FDoubles  : integer;
     FFMode    : tTextMode;
     FFilter   : tSearchFilter;
@@ -116,6 +118,8 @@ type
     procedure LoadInfo(const aname:AnsiString);
 
     function Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
+
+    function NextNoticed():integer;
 
     property OnFileScan:TOnFileScan read FOnFileScan write FOnFileScan;
     // statistic
@@ -238,6 +242,65 @@ var
 
 //===== Support =====
 
+function TTL2Translation.NextNoticed():integer;
+var
+  lsrc,ltrans:AnsiString;
+  i,j:integer;
+  isSpace:boolean;
+begin
+  inc(noteIndex);
+  if (noteIndex<cntStart) or (noteIndex>=cntText) then
+    noteIndex:=cntStart;
+
+  while noteIndex<cntText do
+  begin
+    ltrans:=arText[noteIndex].transl;
+    j:=Length(ltrans);
+    if j>0 then
+    begin
+      isSpace:=false;
+      lsrc:=arText[noteIndex].origin;
+      i:=Length(lsrc);
+      if i>0 then
+      begin
+        while (lsrc[i]=' ') and (i>0) do
+        begin
+          dec(i);
+          isSpace:=true;
+        end;
+
+        // 1 - space at the end (both)
+        if isSpace and (ltrans[j]<>' ') then
+        begin
+          result:=noteIndex;
+          exit;
+        end;
+
+        // 2 - check 'sign' or 'sign, space'
+        if i>0 then
+        begin
+          while (ltrans[j]=' ') and (j>0) do
+          begin
+            dec(j);
+          end;
+
+          if (lsrc[i] in [' ', '.', '!', '?', ':', ';']) then
+          begin
+            if ltrans[j]<>lsrc[i] then
+            begin
+              result:=noteIndex;
+              exit;
+            end;
+          end;
+        end;
+
+      end;
+    end;
+    inc(noteIndex);
+  end;
+
+  result:=-1;
+end;
 
 procedure TTL2Translation.SetFilter(afilter:tSearchFilter);
 begin
@@ -1274,6 +1337,8 @@ procedure TTL2Translation.Init;
 begin
   cntText :=0; SetLength(arText,16000);
   cntStart:=0;
+
+  noteIndex:=-1;
 
   ref.Init;
 end;

@@ -6,6 +6,7 @@ uses
   classes,
   tl2stream,
   tl2common,
+  tl2types,
   tl2modifiers;
 
 type
@@ -21,7 +22,7 @@ type
     FSuffix   :string;
 
 //    byte[] Unknown1
-    FModIds:TTL2ModIdList;
+    FModIds:TL2IdList;
 //    byte[] Unknown2
     FEnchantmentCount:integer;
     FStashPosition   :integer;
@@ -40,7 +41,7 @@ type
     FModifiers1:TTL2ModifierList;
     FModifiers2:TTL2ModifierList;
     FModifiers3:TTL2ModifierList;
-    FAugments: TTL2StringList;
+    FAugments: TL2StringList;
 //    int Unknown7Count
 //    byte[] Unknown7
 
@@ -97,7 +98,7 @@ begin
   AStream.ReadQWord;     // changing
   AStream.ReadQWord;
 
-  FModIds:=ReadModIdList(AStream);
+  FModIds:=AStream.ReadIdList;
 
   AStream.ReadByte;      // 0
   AStream.ReadQWord;     // *FF
@@ -117,29 +118,29 @@ begin
   AStream.ReadByte;  // 0
   AStream.ReadByte;  // 1
   // 7 times
-  AStream.ReadSingle; // C390C993 = -289.57
-  AStream.ReadSingle;
-  AStream.ReadSingle;
-  AStream.ReadSingle;
-  AStream.ReadSingle;
-  AStream.ReadSingle; // 66.27
-  AStream.ReadSingle;
+  AStream.ReadFloat; // C390C993 = -289.57
+  AStream.ReadFloat;
+  AStream.ReadFloat;
+  AStream.ReadFloat;
+  AStream.ReadFloat;
+  AStream.ReadFloat; // 66.27
+  AStream.ReadFloat;
 
-  AStream.ReadSingle; // ?
-  AStream.ReadSingle; // ?
-  AStream.ReadSingle; // ? = 0
-  AStream.ReadSingle; // ?
-  AStream.ReadSingle; // 1.0
+  AStream.ReadFloat; // ?
+  AStream.ReadFloat; // ?
+  AStream.ReadFloat; // ? = 0
+  AStream.ReadFloat; // ?
+  AStream.ReadFloat; // 1.0
   AStream.ReadDWord;  // ?
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  //   \ qword
   AStream.ReadDWord;  //   /
-  AStream.ReadSingle; // ?
+  AStream.ReadFloat; // ?
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  // 0
-  AStream.ReadSingle;
+  AStream.ReadFloat;
 
   FLevel      :=AStream.ReadDWord;
   FStackSize  :=AStream.ReadDWord;
@@ -163,7 +164,7 @@ begin
   FModifiers2:=ReadModifierList(AStream);
   FModifiers3:=ReadModifierList(AStream);
 
-  FAugments:=ReadShortStringList(AStream);
+  FAugments:=AStream.ReadShortStringList;
 
   lcnt:=AStream.ReadDWord;
   AStream.Seek(lcnt*12,soCurrent); // 8+4 ?

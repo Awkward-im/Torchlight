@@ -155,7 +155,7 @@ begin
   lcnt:=AStream.ReadByte();
   SetLength(FProperties,lcnt); // 40800000 = 4.0
   for i:=0 to lcnt-1 do
-    FProperties[i]:=AStream.ReadSingle;
+    FProperties[i]:=AStream.ReadFloat;
 
   lcnt:=AStream.ReadWord; // 0
   SetLength(FStatNames,lcnt);
@@ -168,9 +168,9 @@ begin
   FActivation := TTL2ModifierActivation(AStream.ReadDWord); // 0
 
   FLevel   :=AStream.ReadDWord;    // $30  -as item
-  FDuration:=AStream.ReadSingle;   // -1000 ms?
+  FDuration:=AStream.ReadFloat;   // -1000 ms?
   AStream.ReadDWord;  // 0
-  FDisplayValue := AStream.ReadSingle();       // 4.0
+  FDisplayValue := AStream.ReadFloat;       // 4.0
 
   FSource := TTL2ModifierSource(AStream.ReadDWord);  // 3
 
