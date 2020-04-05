@@ -2,34 +2,17 @@ unit tl2db;
 
 interface
 
-uses
-  tl2types;
-
-type
-  TTL2ModInfo = record
-    modid      :TL2ID;
-    gamever    :QWord;
-    title      :string;
-    author     :string;
-    descr      :string;
-    website    :string;
-    download   :string;
-    modver     :Word;
-  end;
-
-function ReadModInfo(const fname:string; var amod:TTL2ModInfo):boolean;
-
-function GetTL2Skill(const id:TL2ID; var aclass:TL2ID; var atype:integer):string; overload;
-function GetTL2Skill(const id:TL2ID; var aclass:TL2ID):string; overload;
-function GetTL2Skill(const id:TL2ID                  ):string; overload;
-function GetTL2Item (const id:TL2ID; var amod:TL2ID  ):string; overload;
-function GetTL2Item (const id:TL2ID                  ):string; overload;
-function GetTL2Class(const id:TL2ID; var amod:TL2ID  ):string; overload;
-function GetTL2Class(const id:TL2ID                  ):string; overload;
-function GetTL2Pet  (const id:TL2ID; var amod:TL2ID  ):string; overload;
-function GetTL2Pet  (const id:TL2ID                  ):string; overload;
-function GetTL2Mod  (const id:TL2ID; var aver:integer):string; overload;
-function GetTL2Mod  (const id:TL2ID                  ):string; overload;
+function GetTL2Skill(const id:Int64; out aclass:Int64; out atype:integer):string; overload;
+function GetTL2Skill(const id:Int64; out aclass:Int64):string; overload;
+function GetTL2Skill(const id:Int64                  ):string; overload;
+function GetTL2Item (const id:Int64; out amod:Int64  ):string; overload;
+function GetTL2Item (const id:Int64                  ):string; overload;
+function GetTL2Class(const id:Int64; out amod:Int64  ):string; overload;
+function GetTL2Class(const id:Int64                  ):string; overload;
+function GetTL2Pet  (const id:Int64; out amod:Int64  ):string; overload;
+function GetTL2Pet  (const id:Int64                  ):string; overload;
+function GetTL2Mod  (const id:Int64; out aver:integer):string; overload;
+function GetTL2Mod  (const id:Int64                  ):string; overload;
 
 function GetTL2KeyType(acode:integer):string;
 
@@ -41,8 +24,17 @@ procedure FreeBases;
 implementation
 
 uses
-  classes,
-  sysutils;
+//  classes,
+//  sysutils,
+  sqlite3,
+  awksqlite3
+  ;
+
+var
+  db:PSQLite3;
+
+const
+  TL2DataBase = 'tl2db.db';
 
 resourcestring
   rsQK1 = 'Quckslot 1';
@@ -71,145 +63,124 @@ resourcestring
   rsPetSpell3 = 'Pet spell 3';
   rsPetSpell4 = 'Pet spell 4';
 
-type
-  TTL2DBBaseInfo = record
-    id   : QWord;
-    title: string;
-  end;
-
-type
-  TTL2DBPetInfo = record
-    id   : QWord;
-    title: string;
-  end;
-  TTL2DBSkillInfo = record
-    id    :QWord;
-    fclass:QWord;
-    title :string;
-  end;
-  TTL2DBQuestInfo = record
-    id   :QWord;
-    title:string;
-  end;
-  TTL2DBModInfo = record
-    id   :QWord;
-    title:string;
-    ver  :integer;
-  end;
-  TTL2DBItemInfo = record
-    id   :QWord;
-    title:string;
-  end;
-
-var
-  TL2DBPetInfo  :array of TTL2DBPetInfo;
-  TL2DBSkillInfo:array of TTL2DBSkillInfo;
-  TL2DBQuestInfo:array of TTL2DBQuestInfo;
-  TL2DBModInfo  :array of TTL2DBModInfo;
-  TL2DBItemInfo :array of TTL2DBItemInfo;
-
-
 //----- Skill info -----
 
-function GetTL2Skill(const id:TL2ID; var aclass:TL2ID; var atype:integer):string;
+function GetTL2Skill(const id:Int64; out aclass:Int64; out atype:integer):string;
 begin
-  aclass:=TL2IdEmpty;
+  aclass:=-1;
   atype :=-1;
-  result:=IntToHex(id,16);
+  result:=HexStr(id,16);
 end;
 
-function GetTL2Skill(const id:TL2ID; var aclass:TL2ID):string;
+function GetTL2Skill(const id:Int64; out aclass:Int64):string;
 var
   ltype:integer;
 begin
   result:=GetTL2Skill(id,aclass,ltype);
 end;
 
-function GetTL2Skill(const id:TL2ID):string;
+function GetTL2Skill(const id:Int64):string;
 var
-  lclass:TL2ID;
+  lclass:Int64;
   ltype :integer;
 begin
   result:=GetTL2Skill(id,lclass,ltype);
 end;
 
-//----- Item info -----
+//-------------------
 
-function GetTL2Item(const id:TL2ID; var amod:TL2ID):string;
+function GetModAndTitle(const id:Int64; const abase:string; out amod:Int64):string;
+var
+  aSQL:string;
+  vm:pointer;
 begin
-  amod  :=TL2IdEmpty;
-  result:=IntToHex(id,16);
+  amod  :=-1;
+  result:=HexStr(id,16);
+
+  Str(id,aSQL);
+  aSQL:='SELECT title,modid FROM '+abase+' WHERE id='+aSQL+' LIMIT 1';
+
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+    begin
+      result:=sqlite3_column_text (vm,0);
+      amod  :=sqlite3_column_int64(vm,1);
+    end;
+    sqlite3_finalize(vm);
+  end;
 end;
 
-function GetTL2Item(const id:TL2ID):string;
+//----- Item info -----
+
+function GetTL2Item(const id:Int64; out amod:Int64):string;
+begin
+  result:=GetModAndTitle(id,'items',amod);
+end;
+
+function GetTL2Item(const id:Int64):string;
 var
-  lmod:TL2ID;
+  lmod:Int64;
 begin
   result:=GetTL2Item(id,lmod);
 end;
 
 //----- Class info -----
 
-function GetTL2Class(const id:TL2ID; var amod:TL2ID):string;
+function GetTL2Class(const id:Int64; out amod:Int64):string;
 begin
-  amod  :=TL2IdEmpty;
-  result:=IntToHex(id,16);
+  result:=GetModAndTitle(id,'classes',amod);
 end;
 
-function GetTL2Class(const id:TL2ID):string;
+function GetTL2Class(const id:Int64):string;
 var
-  lmod:TL2ID;
+  lmod:Int64;
 begin
   result:=GetTL2Class(id,lmod);
 end;
 
 //----- Pet info -----
 
-function GetTL2Pet(const id:TL2ID; var amod:TL2ID):string;
-var
-  i:integer;
+function GetTL2Pet(const id:Int64; out amod:Int64):string;
 begin
-  amod  :=TL2IdEmpty;
-  result:=IntToHex(id,16);
-
-  for i:=0 to High(TL2DBPetInfo) do
-  begin
-    if TL2DBPetInfo[i].id=id then
-    begin
-      result:=TL2DBPetInfo[i].title;
-      break;
-    end;
-  end;
+  result:=GetModAndTitle(id,'pets',amod);
 end;
 
-function GetTL2Pet(const id:TL2ID):string;
+function GetTL2Pet(const id:Int64):string;
 var
-  lmod:TL2ID;
+  lmod:Int64;
 begin
   result:=GetTL2Pet(id,lmod);
 end;
 
 //----- Mod info -----
 
-function GetTL2Mod(const id:TL2ID; var aver:integer):string;
+function GetTL2Mod(const id:Int64; out aver:integer):string;
 var
+  aSQL:string;
+  vm:pointer;
   i:integer;
 begin
   aver  :=0;
-  result:=IntToHex(id,16);
+  result:=HexStr(id,16);
 
-  for i:=0 to High(TL2DBModInfo) do
+  Str(id,aSQL);
+  aSQL:='SELECT title,version FROM mods WHERE id='+aSQL;
+
+  i:=sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil);
+  if i=SQLITE_OK then
   begin
-    if TL2DBModInfo[i].id=id then
+    i:=sqlite3_step(vm);
+    if i=SQLITE_ROW then
     begin
-      result:=TL2DBModInfo[i].title;
-      aver  :=TL2DBModInfo[i].ver;
-      break;
+      result:=sqlite3_column_text(vm,0);
+      aver  :=sqlite3_column_int (vm,1);
     end;
+    sqlite3_finalize(vm);
   end;
 end;
 
-function GetTL2Mod(const id:TL2ID):string;
+function GetTL2Mod(const id:Int64):string;
 var
   lver:integer;
 begin
@@ -251,157 +222,41 @@ begin
   end;
 end;
 
-//===== Mod files info =====
-
-function ReadShortString(var aptr:pbyte):string;
-var
-  ws:WideString;
-  lsize:cardinal;
-begin
-  lsize:=pword(aptr)^; inc(aptr,2);
-  if lsize>0 then
-  begin
-    SetLength(ws,lsize);
-    move(aptr^,ws[1],lsize*SizeOf(WideChar));
-    inc (aptr       ,lsize*SizeOf(WideChar));
-    result:=UTF8Encode(ws);
-  end
-  else
-    result:='';
-end;
-
-function ReadModInfo(const fname:string; var amod:TTL2ModInfo):boolean;
-type
-  PTL2ID = ^TL2ID;
-var
-  buf:array [0..16383] of byte;
-  f:file of byte;
-  p:pbyte;
-  i:integer;
-begin
-  result:=false;
-
-  AssignFile(f,fname);
-  try
-    Reset(f);
-    i:=FileSize(f);
-    if i>SizeOf(buf) then i:=SizeOf(buf);
-    BlockRead(f,buf[0],i);
-  except
-    i:=0;
-  end;
-  CloseFile(f);
-
-  if i<(2+2+8+4+4+2*5+8) then exit; // minimal size of used header data
-
-  p:=@buf[0];
-
-  // wrong signature
-  if pword(p)^<>4 then
-  begin
-    amod.modid:=TL2IdEmpty;
-    amod.title:='';
-    exit;
-  end;
-  inc(p,2);
-
-  result:=true;
-
-  amod.modver  :=pWord (p)^; inc(p,2);
-  amod.gamever :=pQWord(p)^; inc(p,8);
-  inc(p,4+4); // skip offset_data and offset_dir
-  amod.title   :=ReadShortString(p);
-  amod.author  :=ReadShortString(p);
-  amod.descr   :=ReadShortString(p);
-  amod.website :=ReadShortString(p);
-  amod.download:=ReadShortString(p);
-  amod.modid   :=PTL2ID(p)^;
-end;
-
 //===== Database load =====
 
-procedure LoadMods;
-var
-  sl:TStringList;
-  ls:string;
-  i,loldpos,ltabpos:integer;
-begin
-  sl:=TStringList.Create;
-  try
-    try
-      sl.LoadFromFile('modlist.csv');
-      SetLength(TL2DBModInfo,sl.Count);
-      for i:=0 to sl.Count-1 do
-      begin
-        ls:=sl[i];
-        TL2DBModInfo[i].id:=StrToQWord('$'+Copy(ls,1,16));
-        // mod title
-        loldpos:=18;
-        ltabpos:=18;
-        while (ltabpos<length(ls)) and (ls[ltabpos]<>#9) do inc(ltabpos);
-        TL2DBModInfo[i].title:=Copy(ls,loldpos,ltabpos-loldpos);
-        // mod version
-        loldpos:=ltabpos; inc(ltabpos);
-        while (ltabpos<length(ls)) and (ls[ltabpos]<>#9) do inc(ltabpos);
-        TL2DBModInfo[i].ver  :=StrToInt(Copy(sl[i],loldpos,ltabpos-loldpos));
-        // game version
-{
-        loldpos:=ltabpos+1; inc(ltabpos);
-        while (ltabpos<length(ls)) and (ls[ltabpos]<>#9) do inc(ltabpos);
-}
-      end;
-    except
-    end;
-  finally
-    sl.Free;
-  end;
-end;
-
-procedure LoadItems;
-begin
-end;
-
-procedure LoadPets;
-var
-  sl:TStringList;
-  i:integer;
-begin
-  sl:=TStringList.Create;
-  try
-    try
-      sl.LoadFromFile('petlist.csv');
-      SetLength(TL2DBPetInfo,sl.Count);
-      for i:=0 to sl.Count-1 do
-      begin
-        TL2DBPetInfo[i].id   :=StrToQWord('$'+Copy(sl[i],1,16));
-        TL2DBPetInfo[i].title:=Copy(sl[i],18);
-      end;
-    except
-    end;
-  finally
-    sl.Free;
-  end;
-end;
-
-procedure LoadQuests;
-begin
-end;
-
 procedure LoadBases;
+{
+var
+  lb:PSQLite3;
+  vm:pointer;
+}
 begin
-  LoadMods;
-  LoadItems;
-  LoadPets;
-  LoadQuests;
+{
+  if sqlite3_open('file:memdb?mode=memory',@db)=SQLITE_OK then
+  begin
+    sqlite3_open('tl2db.db',@lb);
+    if sqlite3_prepare_v2(lb, 'VACUUM INTO "file:memdb?mode=memory"',-1, @vm, nil)=SQLITE_OK then
+    begin
+      sqlite3_step(vm);
+      sqlite3_finalize(vm);
+    end;
+    sqlite3_close(lb);
+  end;
+}
+
+  if sqlite3_open(':memory:',@db)=SQLITE_OK then
+    try
+      if loadOrSaveDb(db,TL2DataBase,false)=SQLITE_OK then
+      begin
+      end;
+    except
+    end;
+
 end;
 
 procedure FreeBases;
 begin
-  SetLength(TL2DBPetInfo  ,0);
-  SetLength(TL2DBSkillInfo,0);
-  SetLength(TL2DBQuestInfo,0);
-  SetLength(TL2DBModInfo  ,0);
-  SetLength(TL2DBItemInfo ,0);
+  sqlite3_close(db);
 end;
 
 

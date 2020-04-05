@@ -21,6 +21,12 @@ type
   TTL2ModList = array of TTL2Mod;
 
 type
+  TTL2Function = packed record
+    id :TL2ID;
+    unk:TL2ID;
+  end;
+  TTL2FunctionList = array of TTL2Function;
+type
   TTL2KeyMapping = packed record
     id      :TL2ID;
     datatype:byte;   // (0=item, 2-skill)
@@ -99,6 +105,7 @@ type
 
     FMovies    :TL2IdValList;
     FKeyMapping:TTL2KeyMappingList;
+    FFunctions :TTL2FunctionList;
 
     FStatistic :TTL2Statistic; // OR we can just keep pointer to buffer
 
@@ -249,10 +256,10 @@ end;
 
 procedure TTL2SaveFile.DumpKeyMapping;
 var
-  ls:string;
   i:integer;
 begin
   if IsConsole then
+  begin
     if Length(FKeyMapping)>0 then
     begin
       writeln('Key Mapping'#13#10+
@@ -260,13 +267,23 @@ begin
       for i:=0 to High(FKeyMapping) do
         with FKeyMapping[i] do
         begin
-          if      datatype=0 then ls:='items'
-          else if datatype=2 then ls:='skill'
-          else ls:='['+inttostr(datatype)+']';
-          writeln(GetTL2Skill(id),'  ',ls,'  ',GetTL2KeyType(key));
+          if      datatype=0 then writeln(GetTL2Item (id),'  item  ' ,GetTL2KeyType(key))
+          else if datatype=2 then writeln(GetTL2Skill(id),'  skill  ',GetTL2KeyType(key))
+          else                    writeln(GetTL2Skill(id),'  ['+inttostr(datatype)+']  ',GetTL2KeyType(key));
         end;
       writeln;
     end;
+    if Length(FKeyMapping)>0 then
+    begin
+      writeln('Functions'#13#10+
+              '---------');
+      for i:=0 to High(FFunctions) do
+        with FFunctions[i] do
+        begin
+          if id<>-1 then writeln('F',i+1,' - ',GetTL2Skill(id));
+        end;
+    end;
+  end;
 end;
 
 procedure TTL2SaveFile.DumpModList(const acomment:string; alist:TTL2ModList);
@@ -297,6 +314,12 @@ begin
   SetLength(FKeyMapping,lcnt);
   if lcnt>0 then
     FStream.Read(FKeyMapping[0],lcnt*SizeOf(TTL2KeyMapping));
+
+  // F## keys, 12 for PC
+  lcnt:=FStream.ReadWord;
+  SetLength(FFunctions,lcnt);
+  if lcnt>0 then
+    FStream.Read(FFunctions[0],lcnt*SizeOf(TTL2Function));
 end;
 
 procedure TTL2SaveFile.ReadModList(var ml:TTL2ModList);
@@ -335,9 +358,13 @@ var
 begin
   lcnt:=Length(FKeyMapping);
   FStream.WriteWord(lcnt);
-
   if lcnt>0 then
     FStream.Write(FKeyMapping[0],lcnt*SizeOf(TTL2KeyMapping));
+
+  lcnt:=Length(FFunctions);
+  FStream.WriteWord(lcnt);
+  if lcnt>0 then
+    FStream.Write(FFunctions[0],lcnt*SizeOf(TTL2Function));
 end;
 
 procedure TTL2SaveFile.WriteModList(ml:TTL2ModList);
@@ -381,21 +408,17 @@ begin
   FMovies:=FStream.ReadIdValList;
 
   //--- Mod lists
-  ReadModList(FBoundMods);         // DumpModList('Bound mods'        ,FBoundMods);
-  ReadModList(FRecentModHistory);  // DumpModList('Recent mod history',FRecentModHistory);
-  ReadModList(FFullModHistory);    // DumpModList('Full mod history'  ,FFullModHistory);
+  ReadModList(FBoundMods);          DumpModList('Bound mods'        ,FBoundMods);
+  ReadModList(FRecentModHistory);   DumpModList('Recent mod history',FRecentModHistory);
+  ReadModList(FFullModHistory);     DumpModList('Full mod history'  ,FFullModHistory);
 
   //=== Character Data
   FCharInfoOffset:=FStream.Position;
   FCharInfo:=ReadCharData(FStream,amode,'charinfo.dmp');
 
-  //-- Keymapping table
+  //-- Keymapping table (including functional)
   ReadKeyMappingList;
   DumpKeyMapping;
-
-  //?? 2 bytes(=12) + $FF block 12*16
-  lcnt:=FStream.ReadWord; // 12
-  FStream.Seek(lcnt*16,soCurrent);
 
   //--- Statistic
   ReadStatistic();
@@ -408,6 +431,7 @@ begin
 {
   FStream.ReadDWord; // 0
 
+  // FStream.ReadCoord;
   FStream.ReadFloat; // $C479C000=-999
   FStream.ReadFloat;
   FStream.ReadFloat;
@@ -528,12 +552,8 @@ begin
   //=== Character Data
   WriteCharData(FStream,FCharInfo);
 
-  //-- Keymapping table
+  //-- Keymapping table (including functional)
   WriteKeyMappingList;
-
-  //!!
-  FStream.WriteWord(12);
-  FStream.WriteFiller(12*16);
 
   //--- Statistic
   WriteStatistic();
@@ -605,32 +625,39 @@ begin
 end;
 
 procedure TTL2SaveFile.SaveToFile(const aname:string; aencoded:boolean=false);
+type
+  PTL2SaveHeader = ^TL2SaveHeader;
 var
   lsout:TMemoryStream;
   lSaveHeader:TL2SaveHeader;
   lSaveFooter:TL2SaveFooter;
 begin
+{
   if not FChanged then
   begin
+    PTL2SaveHeader(FStream.Memory)^:=0;
+    // header.encoded MUST BE cleared
     FStream.SaveToFile(aname);
     exit;
   end;
-
-  FStream.Position:=0; //!!
-
+}
   lSaveHeader.Sign    :=$44;
   lSaveHeader.Encoded :=aencoded;
-  lSaveHeader.Checksum:=CalcCheckSum(FStream.Memory,FStream.Size);
+  lSaveHeader.Checksum:=CalcCheckSum(
+    FStream.Memory+SizeOf(lSaveHeader),
+    FStream.Size-(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
 
   lsout:=TMemoryStream.Create;
   try
     try
       lsout.Write(lSaveHeader,SizeOf(lSaveHeader));
-
-      lsout.CopyFrom(FStream,FStream.Size);
-
+{data}
+      FStream.Position:=SizeOf(lSaveHeader); //!!
+      lsout.CopyFrom(FStream,FStream.Size-(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
+{}
       if aencoded then
-        Encode(lsout.Memory+SizeOf(lSaveHeader),lsout.Size-SizeOf(lSaveHeader));
+        Encode(lsout.Memory+SizeOf(lSaveHeader),
+               lsout.Size-(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
 
       lSaveFooter.filesize:=lsout.Size+SizeOf(lSaveFooter);
       lsout.Write(lSaveFooter,SizeOf(lSaveFooter));
@@ -666,6 +693,7 @@ begin
   SetLength(FFullModHistory  ,0);
 
   SetLength(FKeyMapping,0);
+  SetLength(FFunctions ,0);
   SetLength(FMovies    ,0);
 
   inherited;

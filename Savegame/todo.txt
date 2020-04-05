@@ -1,19 +1,116 @@
+save.parse
+  read
+  save char - known size
+  save pet  - known size
+  save additional - size-headers
+char.parse
+  read
+  save inventory etc - char size-(position-start)?
+
+LoadIntoMemory <--   FStream: header,data,footer
+Decode    \______|   data
+(parse)   /
+(prepare) \______    -> data +footer size
+Encode    /      |   data
+SaveToFile     <--   FOut: +header,data,+footer
+
+readbyte/writebyte -> readBool(TL2Boolean)
+
+encode/decode без привязки к памяти?
+грузить в память, процесс, создать поток?
+
+если использовать обычный stream, будет не так просто сохранять блоки памяти?
+ну, по идее, сохраним позицию, считаем в буффер, восстановим позицию.
+в остальном, у нас чтение последовательное
+
+1 - common types
+2 - constants
+3 - savegame process
+4 - common database
+  mods
+  skills id, name, mod, active/passive, levels, requirement levels, classes?
+  quests
+  items
+  pets
+  classes
+  --
+  monsters
+  locations
+    
+    SPELLTABLE[37].ranks = 5;
+    SPELLTABLE[37].exclusive = false;
+    SPELLTABLE[37].externalname = "Summon Nether Imp";
+    SPELLTABLE[37].internalname[0] = "SUMMON NETHER IMP";
+    SPELLTABLE[37].internalname[1] = "SUMMON NETHER IMP 2";
+    SPELLTABLE[37].internalname[2] = "SUMMON NETHER IMP 3";
+    SPELLTABLE[37].internalname[3] = "SUMMON NETHER IMP 4";
+    SPELLTABLE[37].internalname[4] = "SUMMON NETHER IMP 5";
+    SPELLTABLE[37].internalname[5] = "";
+    SPELLTABLE[37].internallevel[0] = 1;
+    SPELLTABLE[37].internallevel[1] = 1;
+    SPELLTABLE[37].internallevel[2] = 1;
+    SPELLTABLE[37].internallevel[3] = 1;
+    SPELLTABLE[37].internallevel[4] = 1;
+    SPELLTABLE[37].internallevel[5] = 0;
+    SPELLTABLE[37].levelreq[0] = 5;
+    SPELLTABLE[37].levelreq[1] = 25;
+    SPELLTABLE[37].levelreq[2] = 40;
+    SPELLTABLE[37].levelreq[3] = 60;
+    SPELLTABLE[37].levelreq[4] = 80;
+    SPELLTABLE[37].levelreq[5] = -1;
+
+
+pet db: user names - text with separators
+mod (main) - ok. but alt?
+different mods, different textures
+
+skill db:
+  id
+  title
+  Class, spell, item
+  (mod list)
+item db:
+  id
+  title
+  (type)
+  (mod list)
+quest
+  id
+  title
+  (mod list)
+mod
+  id
+  title
+  version
+pet
+  id
+  title
+  (mod list)
+
+хз как различает, что можно класть, что нет (UNITTYPE ?)
+fish: "VALUE":
+  50=$32, - 5 min
+  85=$55, - 15 min
+  225=$E1 OR 5555=$15B3
+
+level start 839748293236720215 = BA7629F9F1D8257
+
 ELFLY_test_alt.SVB.bin
 ----------------------
 14DB8A:
 14DBAE:
   2b ($32)
   2b ($32)
-  x*8 = IDs ��������� �����������, �������� 321D31CD2184765E (Immolation Aura)
+  x*8 = IDs некоторые повторяются, например 321D31CD2184765E (Immolation Aura)
                                          or 8BD272812A59B266 (Astral Ally)
-��������, ������� �������� ������
+возможно, история изучения скилов
   2b (05)
   x*8
   4b (size?)
 ---------
 1580CD
   4b: cnt ($33)
-  17b: 8b - skill id, 4b(+5 for alt, not for all),4b,1b(���� =1� �� ���� � 0A)
+  17b: 8b - skill id, 4b(+5 for alt, not for all),4b,1b(чаще =1б но было и 0A)
 158434:
   4b: cnt ($3B)
   31b: 4b, 4,4,4, ??
@@ -61,8 +158,8 @@ EE9179E041437601
 
 	<INTEGER64>MODGUID:666819256828661366   =  76.8e.a9.c4.94.04.41.09
 	<INTEGER64>MODGUID:1456944424           =  28.35.d7.56              7b.01 = 379 variant pets
-	<INTEGER64>MODGUID:6075460356558930279  =  67.c1.a9.4f.01.5f.50.54  10.00 = 16  variant classes
-	<INTEGER64>MODGUID:153565915            =  db.3a.27.09
+	<INTEGER64>MODGUID:6075460356558930279  =  67.c1.a9.4f.01.5f.50.54  10.00 = 16  variant classes 35a5aacc
+	<INTEGER64>MODGUID:153565915            =  db.3a.27.09                          
 	<INTEGER64>MODGUID:1691341222           =  a6.d1.cf.64
 	                                           bf.d9.e1.31.             07.00 = 7 BiA:Warbounds
 
@@ -104,6 +201,7 @@ RAGE:   ELFLY  LONELFLY ZORRO
 1b=0    1b=0    0         0
 
 4b=cnt // fish?           [0]
+{??killcount_ stats??}
 8b+4b = 
     8872EC27348471A6=1=-8614563484077362778, units\monsters\varcolyn\VARKOLYN_MELEE_SPAWNER
     4EA6E548CFA9F12E=2=5667469281976774958, Ezrohir,EZRO_CRAWLER

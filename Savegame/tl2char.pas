@@ -327,8 +327,8 @@ begin
   AStream.WriteWord(0);     // 0
 
   AStream.ReadQWord;    // current Class ID (with sex)
-  AStream.ReadQword;    // *$FF or base class id (if morphed)
-  AStream.ReadQword;    //!! (changing) (F6ED2564.F596F9AA)
+  AStream.ReadQWord;    // *$FF or base class id (if morphed)
+  AStream.ReadQWord;    //!! (changing) (F6ED2564.F596F9AA)
 
   // really, that must mean "image" i think
   isPet:=(AStream.ReadWord and $0100)=0;     // :1B -  $0100 flags?
