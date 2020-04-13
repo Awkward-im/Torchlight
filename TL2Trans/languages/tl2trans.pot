@@ -82,6 +82,10 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
+#: tl2projectform.saffected
+msgid " line(s) affected"
+msgstr ""
+
 #: tl2projectform.sall
 msgid "&All"
 msgstr ""
@@ -106,6 +110,10 @@ msgstr ""
 msgid "Check for same text"
 msgstr ""
 
+#: tl2projectform.sdoautocorrect
+msgid "Autocorrect all these notices?"
+msgstr ""
+
 #: tl2projectform.sdodelete
 msgid ""
 "Are you sure to delete selected line(s)?\n"
@@ -122,6 +130,10 @@ msgstr ""
 
 #: tl2projectform.simporting
 msgid "Importing"
+msgstr ""
+
+#: tl2projectform.snowarnings
+msgid "No any warnings"
 msgstr ""
 
 #: tl2projectform.sproject
@@ -216,10 +228,6 @@ msgstr ""
 msgid "(scanning)"
 msgstr ""
 
-#: tmaintl2transform.actnotes.caption
-msgid "Show Notes"
-msgstr ""
-
 #: tmaintl2transform.caption
 msgctxt "tmaintl2transform.caption"
 msgid "Torchlight 2 Translation"
@@ -235,6 +243,10 @@ msgstr ""
 
 #: tmaintl2transform.filebuild.caption
 msgid "&Build"
+msgstr ""
+
+#: tmaintl2transform.filebuild.hint
+msgid "Build translation"
 msgstr ""
 
 #: tmaintl2transform.fileexit.caption
@@ -307,6 +319,16 @@ msgstr ""
 
 #: tmaintl2transform.helpabout.hint
 msgid "About program"
+msgstr ""
+
+#: tmaintl2transform.helpnotes.caption
+msgctxt "tmaintl2transform.helpnotes.caption"
+msgid "Show Notes"
+msgstr ""
+
+#: tmaintl2transform.helpnotes.hint
+msgctxt "tmaintl2transform.helpnotes.hint"
+msgid "Show Notes"
 msgstr ""
 
 #: tmaintl2transform.lbltreenotes.caption
@@ -403,6 +425,10 @@ msgctxt "ttl2notes.sgnotes.columns[1].title.caption"
 msgid "Value"
 msgstr ""
 
+#: ttl2project.actchecktranslation.hint
+msgid "Check for notes of translation"
+msgstr ""
+
 #: ttl2project.actexportclipbrd.hint
 msgid "Copy selected source text to clipboard"
 msgstr ""
@@ -492,6 +518,10 @@ msgstr ""
 #: ttl2settings.bbsavesettings.caption
 msgctxt "ttl2settings.bbsavesettings.caption"
 msgid "&Save"
+msgstr ""
+
+#: ttl2settings.cbautoaspartial.caption
+msgid "Mark Autocorrected as partial"
 msgstr ""
 
 #: ttl2settings.cbexportparts.caption

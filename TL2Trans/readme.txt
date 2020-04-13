@@ -20,8 +20,8 @@ How to combine files into one:
 ------------------------------
 1 - Add required files to Addon list on Settings tab
 2 - Choose proper order of added files
-3 - Opend last file as usual
-4 - Do full export
+3 - Open last file as usual
+4 - Do export (don't choose "full" if you want to get file without standard translation part)
 =====
 
 How to delete old (not presented anymore) lines:
@@ -65,6 +65,7 @@ Ctrl-T    - Translate current line with yandex translate service
 Alt-F     - Toggle filter/search mode
 Alt-I     - Import file(s)
 Alt-N     - Toggle full/short file name
+Alt-P     - Check for notes of translation
 Alt-R     - Toggle hide/show translated lines
 Alt-S     - Open source file referred by file and tag
 Alt-Del   - Set translation without color info

@@ -18,5 +18,6 @@
 {"hash":226421764,"name":"ttl2project.actreplace.hint","sourcebytes":[82,101,112,108,97,99,101,32,116,114,97,110,115,108,97,116,105,111,110,32,116,101,120,116],"value":"Replace translation text"},
 {"hash":167834740,"name":"ttl2project.actfindnext.hint","sourcebytes":[83,101,97,114,99,104,32,110,101,120,116],"value":"Search next"},
 {"hash":66587013,"name":"ttl2project.acttranslate.hint","sourcebytes":[85,115,101,32,111,110,108,105,110,101,32,116,114,97,110,115,108,97,116,101,32,115,101,114,118,105,99,101],"value":"Use online translate service"},
-{"hash":237566212,"name":"ttl2project.actpartasready.hint","sourcebytes":[77,97,114,107,32,112,97,114,116,105,97,108,108,121,32,116,114,97,110,115,108,97,116,101,100,32,116,101,120,116,32,97,115,32,116,114,97,110,115,108,97,116,101,100],"value":"Mark partially translated text as translated"}
+{"hash":237566212,"name":"ttl2project.actpartasready.hint","sourcebytes":[77,97,114,107,32,112,97,114,116,105,97,108,108,121,32,116,114,97,110,115,108,97,116,101,100,32,116,101,120,116,32,97,115,32,116,114,97,110,115,108,97,116,101,100],"value":"Mark partially translated text as translated"},
+{"hash":110526462,"name":"ttl2project.actchecktranslation.hint","sourcebytes":[67,104,101,99,107,32,102,111,114,32,110,111,116,101,115,32,111,102,32,116,114,97,110,115,108,97,116,105,111,110],"value":"Check for notes of translation"}
 ]}

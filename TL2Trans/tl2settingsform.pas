@@ -22,6 +22,7 @@ type
     bbFontEdit: TBitBtn;
     cbExportParts: TCheckBox;
     cbImportParts: TCheckBox;
+    cbAutoAsPartial: TCheckBox;
     edImportDir: TDirectoryEdit;
     edDefaultFile: TFileNameEdit;
     edFilterWords: TEdit;
@@ -181,6 +182,7 @@ const
   sTransLang    = 'Language';
   sPrgTransLang = 'PrgLanguage';
   sFilter       = 'filter';
+  sAutoPartial  = 'autoaspartial';
 
 const
   defFilter = 'a an the of by to for his her their';
@@ -219,8 +221,9 @@ begin
   config.WriteString(sNSBase+':'+sSectSettings,sImportDir,edImportDir  .Text);
 
   //--- Options
-  config.WriteBool(sNSBase+':'+sSectSettings,sExportParts,cbExportParts.Checked);
-  config.WriteBool(sNSBase+':'+sSectSettings,sImportParts,cbImportParts.Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sExportParts,cbExportParts  .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sImportParts,cbImportParts  .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAutoAsPartial.Checked);
 
   //--- Addons
   config.EraseSection(sNSBase+':'+sSectAddon);
@@ -278,8 +281,9 @@ begin
   edImportDir  .Text:=config.ReadString(sNSBase+':'+sSectSettings,sImportDir,edWorkDir.Text);
 
   //--- Options
-  cbExportParts.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sExportParts,false);
-  cbImportParts.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sImportParts,false);
+  cbExportParts  .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sExportParts,false);
+  cbImportParts  .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sImportParts,false);
+  cbAutoAsPartial.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
 
   //--- Addons
   lcnt:=config.ReadInteger(sNSBase+':'+sSectAddon,sAddFiles,0);
@@ -400,7 +404,8 @@ begin
     if OpenDialog.Execute then
     begin
       for fcnt:=0 to OpenDialog.Files.Count-1 do
-        lbAddFileList.AddItem(ExtractFileName(OpenDialog.Files[fcnt]),nil);
+      lbAddFileList.AddItem(OpenDialog.Files[fcnt],nil);
+//        lbAddFileList.AddItem(ExtractFileName(OpenDialog.Files[fcnt]),nil);
 
       lbAddFileList.ItemIndex:=lbAddFileList.Count-1;
     end;

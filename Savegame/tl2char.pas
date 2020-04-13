@@ -23,6 +23,8 @@ type
 type
   TTL2Character = class
   private
+    FDescr:string;
+    
     Data:PByte;
     Size:cardinal;
     FItemData:PByte;
@@ -30,10 +32,20 @@ type
     FMode:TTL2ParseType;
 
   private
+    FSign           :Byte;
+    FImageId,
+    FOriginId       :TL2ID;
+    Unk1            :TL2ID;
+    FScale          :TL2Float;
+    FSkin           :Byte;
+    FEnabled        :TL2Boolean;
+    FTownTime       :TL2Float;
+    FAction         :TTL2Action;
+    
     FFace           :integer;
     FHairstyle      :integer;
     FHairColor      :integer;
-    FCheater        :integer;
+    FCheater        :byte;
     FCharacterName  :string;
     FPlayer         :string;
     FPosition       :TL2Coord;
@@ -56,11 +68,12 @@ type
     FSkills         :TL2IdValList;
     FSpells         :TTL2SpellList;
     FModIds         :TL2IdList;
+
     FItems          :TTL2ItemList;
     FPassives1      :TTL2PassiveList;
     FPassives2      :TTL2PassiveList;
   public
-    constructor Create(amode:TTL2ParseType); overload;
+    constructor Create(amode:TTL2ParseType; const adescr:string); overload;
     destructor  Destroy; override;
 
     procedure LoadFromStream(AStream: TTL2Stream);
@@ -72,7 +85,7 @@ type
     property Face           :integer  read FFace            write FFace;
     property Hairstyle      :integer  read FHairstyle       write FHairstyle;
     property HairColor      :integer  read FHairColor       write FHairColor;
-    property Cheater        :integer  read FCheater         write FCheater;
+    property Cheater        :byte     read FCheater         write FCheater;
     property Position       :TL2Coord read FPosition        write FPosition;
     property Level          :integer  read FLevel           write FLevel;
     property Experience     :integer  read FExperience      write FExperience;
@@ -90,6 +103,7 @@ type
     property Vitality       :integer  read FVitality        write FVitality;
     property Focus          :integer  read FFocus           write FFocus;
     property Gold           :integer  read FGold            write FGold;
+    property Scale          :TL2Float read FScale           write FScale;
 {
     property Skills   [idx:integer]:TL2IdVal    read  GetSkills;
     property Spells   [idx:integer]:TTL2Spell   read  GetSpells;
@@ -108,10 +122,11 @@ procedure WriteCharData(AStream:TTL2Stream; achar:TTL2Character);
 implementation
 
 
-constructor TTL2Character.Create(amode:TTL2ParseType);
+constructor TTL2Character.Create(amode:TTL2ParseType; const adescr:string);
 begin
   inherited Create;
 
+  FDescr:=adescr;
   FMode:=amode;
 end;
 
@@ -119,6 +134,8 @@ destructor TTL2Character.Destroy;
 var
   i:integer;
 begin
+  FreeMem(FItemData);
+  
   SetLength(FSkills,0);
   SetLength(FModIds,0);
 
@@ -144,17 +161,19 @@ var
   lpos:cardinal;
   isPet:boolean;
 begin
+
 if FMode=ptLite then exit;
 
   lpos:=AStream.Position;
 
   // signature
-  AStream.ReadByte;     // $FF
-  AStream.ReadWord;     // 0
+  FSign:=AStream.ReadByte;  // $FF or 02
+  AStream.ReadWord;         // 0
+	
+  FImageId :=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
+  FOriginId:=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
 
-  AStream.ReadQWord;    // current Class ID (with sex)
-  AStream.ReadQword;    // *$FF or base class id (if morphed)
-  AStream.ReadQword;    //!! (changing) (F6ED2564.F596F9AA)
+  Unk1:=TL2ID(AStream.ReadQword);    //!! (changing) (F6ED2564.F596F9AA)
 
   // really, that must mean "image" i think
   isPet:=(AStream.ReadWord and $0100)=0;     // :1B -  $0100 flags?
@@ -171,21 +190,20 @@ if FMode=ptLite then exit;
     AStream.ReadDWord;
   end;
   AStream.ReadDWord;    // 0
-  AStream.ReadByte;     // 1 (pet - enabled)
+  FEnabled:=AStream.ReadByte<>0; // 1 (pet - enabled)
   AStream.ReadByte;     // 0
   AStream.ReadByte;     // 0
 
   if not isPet then
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
-
   AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0 :24 for pet, :55 for char
 
   AStream.ReadDWord;    // 0
-  AStream.ReadFloat;   // time to town,sec?
-  {TTL2Action}(AStream.ReadDWord);  // 1  (pet status)
+  FTownTime:=AStream.ReadFloat;   //!!!!!!!!!! time to town,sec?
+  FAction  :=TTL2Action(AStream.ReadDWord);  // 1  (pet status)
 
   AStream.ReadDWord;    // 1
-  AStream.ReadFloat;   // scale (1.0 for char) (pet size)
+  FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
   
   AStream.ReadQWord;    // ? player = FFFFFFFF, pet - no
   AStream.ReadQWord;    // -1
@@ -194,14 +212,14 @@ if FMode=ptLite then exit;
   isPet:=(AStream.ReadDWord=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
 
   FCharacterName:=AStream.ReadShortString(); // :55(pet) Char name
-  AStream.ReadShortString();                 // empty (len=0) atm or WORD = number?
+  Check(AStream.ReadWord,'name_between',0);  // empty (len=0) atm or WORD = number?
   if not isPet then
     FPlayer:=AStream.ReadShortString();      // "PLAYER" !!!!! not exists for pets!!!!!!
   
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0 / elfly=7, rage=2, lonelfly=2, zorro=0
 
-  FPosition:=AStream.ReadCoord;
+  FPosition:=AStream.ReadCoord; //!!!!!!!!
 
   // direction
   AStream.ReadCoord;
@@ -222,7 +240,7 @@ if FMode=ptLite then exit;
   FFame       :=AStream.ReadDWord;    // fame
   FHealth     :=AStream.ReadFloat;    // current HP
   FHealthBonus:=AStream.ReadDWord;    // health bonus (pet=full hp)
-  AStream.ReadDWord;                  // 0
+  Check(AStream.ReadDWord,'stat',0);  // 0 ?? charge maybe? or armor?
   FMana       :=AStream.ReadFloat;    // current MP
   FManaBonus  :=AStream.ReadDWord;    // Mana bonus   (pet=full mp)
 
@@ -273,27 +291,31 @@ if FMode=ptLite then exit;
   AStream.ReadQWord;    // FF same as pets
   AStream.ReadDWord;    // FF same as pets
 
-  AStream.ReadByte;     // FF OR pet texture (color)
+  FSkin:=AStream.ReadByte;  // FF OR pet texture (color)
 
   // mod id list
   FModIds:=AStream.ReadIdList;
 
-  if Size<>0 then
+//  if FDescr<>'' then SaveDump(FDescr+'_data.dmp',AStream.Memory+lpos,(AStream.Position-lpos));
+
+//-----------------------------
+  if not (FMode in [ptDeep,ptDeepest]) then
   begin
     FItemSize:=Size-(AStream.Position-lpos);
-    lpos:=AStream.Position;
+    if FDescr<>'' then SaveDump(FDescr+'_rest.dmp',AStream.Memory+AStream.Position,FItemSize);
     FItemData:=AStream.ReadBytes(FItemSize);
-    AStream.Seek(lpos,soBeginning);
+    exit;
   end;
 
 //-----------------------------
-  if not (FMode in [ptDeep,ptDeepest]) then exit;
-//-----------------------------
 
-  // item list
+  //----- item list -----
+
   FItems:=ReadItemList(AStream);
 
-  // "passives"  "activation: passive" attribute
+  //----- "passives" -----
+  // "activation: passive" attribute 
+
   FPassives1:=ReadPassiveList(AStream);
   FPassives2:=ReadPassiveList(AStream);
 
@@ -303,11 +325,13 @@ if FMode=ptLite then exit;
 
   AStream.ReadShortStringList; //?? spell name
 
-  //-- stats
+  //----- STATS -----
+
   lcnt:=AStream.ReaDWord;
 { atm just 2:
   CURRENT_PLAYER_STAT_PTS  - unallocated stat points
   CURRENT_PLAYER_SKILL_PTS - unallocated skill points
+  multiply_hotbar adds SELECTED_HOTBAR stat
 }
   for i:=0 to lcnt-1 do
   begin
@@ -323,12 +347,12 @@ var
   isPet:boolean;
 begin
   // signature
-  AStream.WriteByte($FF);     // $FF
+  AStream.WriteByte(FSign); // $FF
   AStream.WriteWord(0);     // 0
 
-  AStream.ReadQWord;    // current Class ID (with sex)
-  AStream.ReadQWord;    // *$FF or base class id (if morphed)
-  AStream.ReadQWord;    //!! (changing) (F6ED2564.F596F9AA)
+  AStream.WriteQWord(FImageId);  // current Class ID (with sex)
+  AStream.WriteQWord(FOriginId); // *$FF or base class id (if morphed)
+  AStream.WriteQWord(Unk1);      //!! (changing) (F6ED2564.F596F9AA)
 
   // really, that must mean "image" i think
   isPet:=(AStream.ReadWord and $0100)=0;     // :1B -  $0100 flags?
@@ -351,11 +375,11 @@ begin
   AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0 :24 for pet, :55 for char
 
   AStream.ReadDWord;    // 0
-  AStream.ReadFloat;   // time to town,sec?
-  {TTL2Action}(AStream.ReadDWord);  // 1  (pet status)
+  AStream.WriteFloat(FTownTime);     // time to town,sec?
+  AStream.WriteDWord(ord(FAction));  // 1  (pet status)
 
   AStream.ReadDWord;    // 1
-  AStream.ReadFloat;   // scale (1.0 for char) (pet size)
+  AStream.WriteFloat(FScale);   // scale (1.0 for char) (pet size)
   
   AStream.ReadQWord;    // ? player = FFFFFFFF, pet - no
   AStream.ReadQWord;    // -1
@@ -364,7 +388,7 @@ begin
   isPet:=(AStream.ReadDWord=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
 
   AStream.WriteShortString(FCharacterName); // :55(pet) Char name
-  AStream.ReadShortString();                 // empty (len=0) atm or WORD = number?
+  AStream.WriteWord(0);                     // empty (len=0) atm or WORD = number?
   if not isPet then
     AStream.WriteShortString(FPlayer);      // "PLAYER" !!!!! not exists for pets!!!!!!
   
@@ -373,17 +397,17 @@ begin
 
   AStream.WriteCoord(FPosition);
 
-  // direction
-  AStream.ReadCoord;
-  AStream.ReadDWord;    // 0
-  AStream.ReadCoord;
-  AStream.ReadDWord;    // 0
-  AStream.ReadCoord;
-  AStream.ReadDWord;    // 0
+  // Orientation
+  AStream.ReadCoord;   // Forward
+  AStream.ReadDWord;   // 0
+  AStream.ReadCoord;   // Right
+  AStream.ReadDWord;   // 0
+  AStream.ReadCoord;   // Up
+  AStream.ReadDWord;   // 0
 
-  AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0
+  AStream.ReadDWord;   // 0
+  AStream.ReadDWord;   // 0
+  AStream.ReadDWord;   // 0
   AStream.ReadFloat;   // float=1.0
 
   AStream.WriteDWord(FLevel);        // level
@@ -399,10 +423,10 @@ begin
   AStream.ReadDWord;    // 0 <e1>
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0
-  FPlayTime:=AStream.ReadFloat;    // play time, sec
+  AStream.WriteFloat(FPlayTime);    // play time, sec
   AStream.ReadFloat;               // 1.0
-  FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints? (elfly have 28 with 28 in fact)
-  FFreeStatPoints :=AStream.ReadDWord; // unallocated statpoints ? (elfly have 35 with 30 in fact)
+  AStream.WriteDWord(FFreeSkillPoints); // unallocated skillpoints? (elfly have 28 with 28 in fact)
+  AStream.WriteDWord(FFreeStatPoints ); // unallocated statpoints ? (elfly have 35 with 30 in fact)
 
   // mouse button skils
   AStream.ReadQWord;    // skill ID RMB active = Pet 1st spell?
@@ -414,13 +438,13 @@ begin
   AStream.ReadQWord;    // skill ID LMB
 
   // CURRENT Skill list. depends of current weapon (passive mainly)
-  FSkills:=AStream.ReadIdValList;
+  AStream.WriteIdValList(FSkills);
 
   // Spell list
   for i:=0 to 3 do
   begin
-    FSpells[i].name :=AStream.ReadShortString; // spell name
-    FSpells[i].level:=AStream.ReadDWord;       // spell level
+    AStream.WriteShortString(FSpells[i].name ); // spell name
+    AStream.WriteDWord      (FSpells[i].level); // spell level
   end;
 
   //!!-- 28 bytes
@@ -431,17 +455,17 @@ begin
   AStream.ReadDWord;    // 0, Elfly pet = $0197
   AStream.ReadDWord;    // 0 same as pets
 
-  FStrength :=AStream.ReadDWord;    // strength      0 for pet
-  FDexterity:=AStream.ReadDWord;    // dexterity     0 for pet
-  FVitality :=AStream.ReadDWord;    // vitality      10\ sure, pet have hp/mp bonuses
-  FFocus    :=AStream.ReadDWord;    // focus         10/
-  FGold     :=AStream.ReadDWord;    // gold          0
+  AStream.WriteDWord(FStrength );    // strength      0 for pet
+  AStream.WriteDWord(FDexterity);    // dexterity     0 for pet
+  AStream.WriteDWord(FVitality );    // vitality      10\ sure, pet have hp/mp bonuses
+  AStream.WriteDWord(FFocus    );    // focus         10/
+  AStream.WriteDWord(FGold     );    // gold          0
 
   AStream.ReadDWord;    // $FF=-1 / 1/0 (elfly)      0
   AStream.ReadQWord;    // FF same as pets
   AStream.ReadDWord;    // FF same as pets
 
-  AStream.ReadByte;     // FF OR pet texture (color)
+  AStream.WriteByte(FSkin); // FF OR pet texture (color)
 
   // mod id list
   AStream.WriteIdList(FModIds);
@@ -457,14 +481,14 @@ begin
   llen:=AStream.ReadDWord;
   lpos:=AStream.Position;
 
-  if adescr<>'' then
-    SaveDump(adescr,AStream.Memory+lpos,llen);
+//  if adescr<>'' then  SaveDump(adescr+'_charinfo.dmp',AStream.Memory+lpos,llen);
 
-  result:=TTL2Character.Create(amode);
+  result:=TTL2Character.Create(amode,adescr);
+
+  result.Size:=llen;
   if amode=ptLite then
   begin
     result.Data:=AStream.ReadBytes(llen);
-    result.Size:=llen;
   end
   else
     try

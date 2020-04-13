@@ -23,6 +23,7 @@ type
     actExportClipBrd: TAction;
     actImportFile: TAction;
     actImportClipBrd: TAction;
+    actCheckTranslation: TAction;
     actStopScan: TAction;
     actOpenSource: TAction;
     actShowTemplate: TAction;
@@ -51,8 +52,10 @@ type
     sbFindNext: TSpeedButton;
     cbPartAsReady: TSpeedButton;
     sbShowTemplate: TSpeedButton;
+    sbCheck: TSpeedButton;
     TL2ProjectFilterPanel: TPanel;
     TL2ProjectGrid: TStringGrid;
+    procedure actCheckTranslationExecute(Sender: TObject);
     procedure actOpenSourceExecute(Sender: TObject);
     procedure actPartAsReadyExecute(Sender: TObject);
     procedure actShowTemplateExecute(Sender: TObject);
@@ -164,6 +167,9 @@ resourcestring
                     'This text will be just hidden until you save and reload project.';
   sStopScan       = 'Do you want to break scan? It clear full scan process.';
   sEscCancel      = 'ESC to cancel';
+  sNoWarnings     = 'No any warnings';
+  sDoAutocorrect  = 'Autocorrect all these notices?';
+  sAffected       = ' line(s) affected';
 
 const
   colFile    = 1;
@@ -316,6 +322,38 @@ begin
     TL2ProjectGrid.TopRow:=lrow;
   end;
 }
+end;
+
+procedure TTL2Project.actCheckTranslationExecute(Sender: TObject);
+var
+  idx,lcnt:integer;
+begin
+  idx:=data.NextNoticed();
+  if idx<0 then idx:=data.FirstNoticed();
+  if idx>=0 then
+  begin
+    MoveToIndex(idx);
+    if MessageDlg(sDoAutocorrect,mtConfirmation,[mbOk,mbCancel],0)=mrOk then
+    begin
+      lcnt:=0;
+      idx:=data.FirstNoticed(true);
+      while idx>0 do
+      begin
+        inc(lcnt);
+        if TL2Settings.cbAutoAsPartial.Checked then
+        begin
+          data.State[idx]:=stPartial;
+        end;
+        UpdateGrid(idx);
+        idx:=data.NextNoticed(true);
+      end;
+      Modified:=true;
+      OnSBUpdate(Self);
+      ShowMessage(IntToStr(lcnt)+sAffected);
+    end;
+  end
+  else
+    ShowMessage(sNoWarnings);
 end;
 
 //----- Visual -----
@@ -958,7 +996,7 @@ end;
 
 function TTL2Project.Preload():boolean;
 var
-  ls:AnsiString;
+  ls,lls:AnsiString;
   i,lcnt:integer;
 begin
   result:=true;
@@ -994,7 +1032,10 @@ begin
   if (ls<>'') and (ls[Length(ls)]<>'\') then ls:=ls+'\';
   for i:=0 to TL2Settings.lbAddFileList.Count-1 do
   begin
-    lcnt:=data.LoadFromFile(ls+TL2Settings.lbAddFileList.Items[i]);
+    lls:=TL2Settings.lbAddFileList.Items[i];
+    if (Pos('\',lls)<1) and (Pos('/',lls)<1) then
+      lls:=ls+lls;
+    lcnt:=data.LoadFromFile(lls);
     if lcnt>0 then
     begin
       inc(cntModFiles);
@@ -1105,7 +1146,7 @@ begin
     end;
     mrNo : begin
       data.Mode:=tmOriginal;
-      ls:=ls+ProjectName+DefaultExt;
+      ls:=ls+ProjectName+'_export'+DefaultExt;
       data.SaveToFile(ls,lstat);
     end;
   else

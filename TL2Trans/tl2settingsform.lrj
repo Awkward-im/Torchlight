@@ -19,5 +19,6 @@
 {"hash":105599369,"name":"ttl2settings.lblapikeygoogle.caption","sourcebytes":[65,80,73,32,75,101,121],"value":"API Key"},
 {"hash":240489369,"name":"ttl2settings.lblgetapikeygoogle.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
 {"hash":181156261,"name":"ttl2settings.lblprogramlanguage.caption","sourcebytes":[80,114,111,103,114,97,109,32,76,97,110,103,117,97,103,101],"value":"Program Language"},
-{"hash":175324867,"name":"ttl2settings.lbltranslators.caption","sourcebytes":[84,114,97,110,115,108,97,116,111,114,115],"value":"Translators"}
+{"hash":175324867,"name":"ttl2settings.lbltranslators.caption","sourcebytes":[84,114,97,110,115,108,97,116,111,114,115],"value":"Translators"},
+{"hash":262712828,"name":"ttl2settings.cbautoaspartial.caption","sourcebytes":[77,97,114,107,32,65,117,116,111,99,111,114,114,101,99,116,101,100,32,97,115,32,112,97,114,116,105,97,108],"value":"Mark Autocorrected as partial"}
 ]}

@@ -1,3 +1,5 @@
+{$CALLING cdecl}
+
 unit TL2ModInfo;
 
 interface
@@ -14,8 +16,8 @@ type
     modver     :Word;
   end;
 
-function  ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean;
-procedure ClearModInfo(var amod:TTL2ModInfo);
+function  ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean; export;
+procedure ClearModInfo(var amod:TTL2ModInfo); export;
 
 
 implementation

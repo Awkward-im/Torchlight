@@ -1,3 +1,4 @@
+{$CALLING cdecl}
 unit TL2Memory;
 
 interface
@@ -7,19 +8,35 @@ uses
 
 //function ReadIdList         (var buf:PByte):TL2IdList;
 //function ReadShortStringList(var buf:PByte):TL2StringList;
-function ReadCoord          (var buf:PByte):TL2Coord;
+function  ReadCoord      (var buf:PByte):TL2Coord; export;
 
-function  ReadByte       (var buf:PByte):Byte;
-function  ReadWord       (var buf:PByte):Word;
-function  ReadDWord      (var buf:PByte):DWord;
-function  ReadQWord      (var buf:PByte):QWord;
-function  ReadFloat      (var buf:PByte):Single;
-procedure ReadData       (var buf:PByte; var dst; alen:integer);
-function  ReadByteString (var buf:PByte):PWideChar;
-function  ReadShortString(var buf:PByte):PWideChar;
+function  ReadByte       (var buf:PByte):Byte; export;
+function  ReadWord       (var buf:PByte):Word; export;
+function  ReadDWord      (var buf:PByte):DWord; export;
+function  ReadBool       (var buf:PByte):ByteBool; export;
+function  ReadInteger    (var buf:PByte):Int32; export;
+function  ReadUnsigned   (var buf:PByte):UInt32; export;
+function  ReadInteger64  (var buf:PByte):Int64; export;
+function  ReadFloat      (var buf:PByte):Single; export;
+procedure ReadData       (var buf:PByte; var dst; alen:integer); export;
+function  ReadByteString (var buf:PByte):PWideChar; export;
+function  ReadShortString(var buf:PByte):PWideChar; export;
 //procedure WriteByteString (var buf:PByte; const astr:string);
 //procedure WriteShortString(var buf:PByte; const astr:string);
 
+procedure WriteCoord      (var buf:PByte; var aval:TL2Coord); export;
+
+procedure WriteByte       (var buf:PByte; aval:Byte); export;
+procedure WriteWord       (var buf:PByte; aval:Word); export;
+procedure WriteDWord      (var buf:PByte; aval:DWord); export;
+procedure WriteBool       (var buf:PByte; aval:ByteBool); export;
+procedure WriteInteger    (var buf:PByte; aval:Int32); export;
+procedure WriteUnsigned   (var buf:PByte; aval:UInt32); export;
+procedure WriteInteger64  (var buf:PByte; aval:Int64); export;
+procedure WriteFloat      (var buf:PByte; aval:Single); export;
+procedure WriteData       (var buf:PByte; var aval; alen:integer); export;
+procedure WriteByteString (var buf:PByte; aval:PWideChar); export;
+procedure WriteShortString(var buf:PByte; aval:PWideChar); export;
 
 implementation
 
@@ -51,9 +68,24 @@ begin
   result:=pDWord(buf)^; inc(buf,SizeOf(DWord));
 end;
 
-function ReadQWord(var buf:PByte):QWord;
+function ReadBool(var buf:PByte):ByteBool;
 begin
-  result:=pQWord(buf)^; inc(buf,SizeOf(QWord));
+  result:=pByte(buf)^<>0; inc(buf);
+end;
+
+function ReadInteger(var buf:PByte):Int32;
+begin
+  result:=pInt32(buf)^; inc(buf,SizeOf(Int32));
+end;
+
+function ReadUnsigned(var buf:PByte):UInt32;
+begin
+  result:=pUInt32(buf)^; inc(buf,SizeOf(UInt32));
+end;
+
+function ReadInteger64(var buf:PByte):Int64;
+begin
+  result:=pInt64(buf)^; inc(buf,SizeOf(Int64));
 end;
 
 function ReadFloat(var buf:PByte):Single;
@@ -75,8 +107,6 @@ begin
   begin
     GetMem(result,(lsize+1)*SizeOf(WideChar));
     ReadData(buf,result^,lsize*SizeOf(WideChar));
-//    move(buf^,result^,lsize*SizeOf(WideChar));
-//    inc(buf,lsize*SizeOf(WideChar));
     result[lsize]:=#0;
   end
   else
@@ -92,8 +122,6 @@ begin
   begin
     GetMem(result,(lsize+1)*SizeOf(WideChar));
     ReadData(buf,result^,lsize*SizeOf(WideChar));
-//    move(buf^,result^,lsize*SizeOf(WideChar));
-//    inc(buf,lsize*SizeOf(WideChar));
     result[lsize]:=#0;
   end
   else
@@ -101,6 +129,71 @@ begin
 end;
 
 //----- Basic Write -----
+
+procedure WriteByte(var buf:PByte; aval:Byte);
+begin
+  pByte(buf)^:=aval; inc(buf);
+end;
+
+procedure WriteWord(var buf:PByte; aval:Word);
+begin
+  pWord(buf)^:=aval; inc(buf,SizeOf(word));
+end;
+
+procedure WriteDWord(var buf:PByte; aval:DWord);
+begin
+  pDWord(buf)^:=aval; inc(buf,SizeOf(DWord));
+end;
+
+procedure WriteBool(var buf:PByte; aval:ByteBool);
+begin
+  if aval then pByte(buf)^:=1 else pByte(buf)^:=0; inc(buf);
+end;
+
+procedure WriteInteger(var buf:PByte; aval:Int32);
+begin
+  pInt32(buf)^:=aval; inc(buf,SizeOf(Int32));
+end;
+
+procedure WriteUnsigned(var buf:PByte; aval:UInt32);
+begin
+  pUInt32(buf)^:=aval; inc(buf,SizeOf(UInt32));
+end;
+
+procedure WriteInteger64(var buf:PByte; aval:Int64);
+begin
+  pInt64(buf)^:=aval; inc(buf,SizeOf(Int64));
+end;
+
+procedure WriteFloat(var buf:PByte; aval:Single);
+begin
+  pSingle(buf)^:=aval; inc(buf,SizeOf(Single));
+end;
+
+procedure WriteData(var buf:PByte; var aval; alen:integer);
+begin
+  move(pByte(@aval)^,buf^,alen); inc(buf,alen);
+end;
+
+procedure WriteByteString(var buf:PByte; aval:PWideChar);
+var
+  lsize:cardinal;
+begin
+  lsize:=Length(aval);
+  WriteByte(buf,lsize);
+  if lsize>0 then
+    WriteData(buf,aval^,lsize*SizeOf(WideChar));
+end;
+
+procedure WriteShortString(var buf:PByte; aval:PWideChar);
+var
+  lsize:cardinal;
+begin
+  lsize:=Length(aval);
+  WriteWord(buf,lsize);
+  if lsize>0 then
+    WriteData(buf,aval^,lsize*SizeOf(WideChar));
+end;
 
 //----- Complex read -----
 {
@@ -160,17 +253,41 @@ begin
     WriteData(buf,astr,llen*SizeOf(WideChar));
 end;
 }
+
+procedure WriteCoord(var buf:PByte; var aval:TL2Coord);
+begin
+  WriteData(buf,aval,SizeOf(TL2Coord));
+end;
+
 exports
   ReadByte,
   ReadWord,
   ReadDWord,
-  ReadQWord,
+  ReadBool,
+  ReadInteger,
+  ReadUnsigned,
+  ReadInteger64,
   ReadFloat,
   ReadData,
   ReadByteString,
   ReadShortString,
 
-  ReadCoord
+  ReadCoord,
+
+  WriteByte,
+  WriteWord,
+  WriteDWord,
+  WriteBool,
+  WriteInteger,
+  WriteUnsigned,
+  WriteInteger64,
+  WriteFloat,
+  WriteData,
+  WriteByteString,
+  WriteShortString,
+
+  WriteCoord
+
   ;
   
 end.

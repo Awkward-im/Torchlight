@@ -7,6 +7,7 @@ uses
   tl2stream,
   tl2common,
   tl2types,
+  tl2map,
   tl2char;
 
 // these types used just in this unit ("global" save file data)
@@ -60,7 +61,7 @@ type
     statDmgObtained:TL2Integer ; // max.damage obtained
     statDamage     :TL2Integer ; // max damage made
     statLevelTime  :TL2UInteger; // time on map, msec ?? last ingame time, msec
-    statBlasted    :TL2Integer ; // mobs blasted
+    statExploded   :TL2Integer ; // mobs blasted
   end;
 const
   RealStatsCount = SizeOf(TTL2Statistic) div SizeOf(TL2Integer);
@@ -88,10 +89,19 @@ type
 
   //--- TL2 save part
   private
+
+    //--- Blocks
+    FLastBlock :PByte;
+    FQuestBlock:PByte;
+    FUnknown1  :PByte;
+    FUnknown2  :PByte;
+    FUnknown3  :PByte;
+    FQBlockSize:integer;
+    FUnkn3Size :integer;
+    FLBlockSize:integer;
+    
     FCharInfo:TTL2Character;
-    FPetInfo :TTL2Character;
-    FCharInfoOffset:cardinal;
-    FPetInfoOffset :cardinal;
+    FPetInfos:array of TTL2Character;
 
     FClassString :string;
     FDifficulty  :TTL2Difficulty;
@@ -103,18 +113,20 @@ type
     FRecentModHistory:TTL2ModList;
     FFullModHistory  :TTL2ModList;
 
-    FMovies    :TL2IdValList;
     FKeyMapping:TTL2KeyMappingList;
     FFunctions :TTL2FunctionList;
+
+    FMovies    :TL2IdValList;
+    FRecipes   :TL2IdList;
+    FHistory   :TL2IdList;
+    FMaps      :TTL2MapList;
 
     FStatistic :TTL2Statistic; // OR we can just keep pointer to buffer
 
     FMap :string;
     FArea:string;
 
-    FUnknown1:PByte;
-    TheRest  :PByte;
-    RestSize :cardinal;
+    Unk1,Unk2:DWord;
     
     function  ReadStatistic():boolean;
     procedure ReadModList(var ml:TTL2ModList);
@@ -124,9 +136,11 @@ type
     procedure WriteModList(ml:TTL2ModList);
     procedure WriteStatistic();
 
+    function  GetPetInfo   (idx:integer):TTL2Character;
     function  GetKeyMapping(idx:integer):TTL2KeyMapping;
     function  GetMovie     (idx:integer):TL2IdVal;
   public
+    procedure DumpStatistic;
     procedure DumpKeyMapping;
     procedure DumpModList(const acomment:string; alist:TTL2ModList);
     
@@ -140,7 +154,7 @@ type
     property FullModHistory  :TTL2ModList read FFullModHistory;
 
     property CharInfo:TTL2Character read FCharInfo;
-    property PetInfo :TTL2Character read FPetInfo;
+    property PetInfo[idx:integer]:TTL2Character read GetPetInfo;
 
     property Movie     [idx:integer]:TL2IdVal       read GetMovie;
     property KeyMapping[idx:integer]:TTL2KeyMapping read GetKeyMapping;
@@ -166,6 +180,29 @@ resourcestring
   sWrongSize    = 'Wrong file size';
   sWrongVersion = 'Wrong save file signature';
   sWrongFooter  = 'Wrong save file size';
+  // statistic
+  rsTotalTime   = 'total time in game, msec';
+  rsGold        = 'gold collected';
+  rsDifficulty  = 'difficulty';
+  rsSteps       = 'steps done';
+  rsTasks       = 'tasks (quests) done';
+  rsDeaths      = 'number of deaths';
+  rsMobs        = 'mobs killed';
+  rsHeroes      = 'heroes killed';
+  rsSkills      = 'skills used';
+  rsTreasures   = 'hidden treasures opened';
+  rsTraps       = 'traps activated';
+  rsBroken      = 'items broken';
+  rsPotions     = 'potions used';
+  rsPortal      = 'portals opened';
+  rsFish        = 'fish catched';
+  rsGambled     = 'time gambled';
+  rsCharmed     = 'items charmed';
+  rsTransform   = 'items transformed';
+  rsDmgObtained = 'max.damage obtained';
+  rsDamage      = 'max damage made';
+  rsLevelTime   = 'time on map, msec';
+  rsExploded    = 'mobs exploded';
 
 //----- support functions -----
 
@@ -212,7 +249,7 @@ begin
   end;
 end;
 
-function CalcCheckSum(aptr:pByte; asize:cardinal):cardinal;
+function CalcCheckSum(aptr:pByte; asize:cardinal):longword;
 var
   i:cardinal;
 begin
@@ -252,6 +289,14 @@ begin
   end;
 end;
 
+function TTL2SaveFile.GetPetInfo(idx:integer):TTL2Character;
+begin
+  if (idx>=0) and (idx<Length(FKeyMapping)) then
+    result:=FPetInfos[idx]
+  else
+    result:=nil;
+end;
+
 //----- Dumps -----
 
 procedure TTL2SaveFile.DumpKeyMapping;
@@ -273,14 +318,14 @@ begin
         end;
       writeln;
     end;
-    if Length(FKeyMapping)>0 then
+    if Length(FFunctions)>0 then
     begin
       writeln('Functions'#13#10+
               '---------');
       for i:=0 to High(FFunctions) do
         with FFunctions[i] do
         begin
-          if id<>-1 then writeln('F',i+1,' - ',GetTL2Skill(id));
+          if id<>TL2IdEmpty then writeln('F',i+1,' - ',GetTL2Skill(id));
         end;
     end;
   end;
@@ -302,6 +347,40 @@ begin
         end;
       writeln;
     end;
+end;
+
+procedure TTL2SaveFile.DumpStatistic;
+begin
+  if IsConsole then
+  begin
+    writeln('Statistic'#13#10+
+            '---------');
+    with FStatistic do
+    begin
+      writeln(rsTotalTime  ,': ',MSecToTime(statTotalTime)); // total time in game, msec
+      writeln(rsGold       ,': ',statGold       ); // gold collected
+      writeln(rsDifficulty ,': ',statDifficulty ); // difficulty
+      writeln(rsSteps      ,': ',statSteps      ); // steps done
+      writeln(rsTasks      ,': ',statTasks      ); // tasks (quests) done
+      writeln(rsDeaths     ,': ',statDeaths     ); // number of deaths
+      writeln(rsMobs       ,': ',statMobs       ); // mobs killed
+      writeln(rsHeroes     ,': ',statHeroes     ); // heroes killed
+      writeln(rsSkills     ,': ',statSkills     ); // skills used
+      writeln(rsTreasures  ,': ',statTreasures  ); // hidden treasures opened
+      writeln(rsTraps      ,': ',statTraps      ); // traps activated
+      writeln(rsBroken     ,': ',statBroken     ); // items broken
+      writeln(rsPotions    ,': ',statPotions    ); // potions used
+      writeln(rsPortal     ,': ',statPortal     ); // portals opened
+      writeln(rsFish       ,': ',statFish       ); // fish catched
+      writeln(rsGambled    ,': ',statGambled    ); // time gambled
+      writeln(rsCharmed    ,': ',statCharmed    ); // items charmed
+      writeln(rsTransform  ,': ',statTransform  ); // items transformed
+      writeln(rsDmgObtained,': ',statDmgObtained); // max.damage obtained
+      writeln(rsDamage     ,': ',statDamage     ); // max damage made
+      writeln(rsLevelTime  ,': ',MSecToTime(statLevelTime)); // time on map, msec ?? last ingame time, msec
+      writeln(rsExploded   ,': ',statExploded   ); // mobs exploded
+    end;
+  end;
 end;
 
 //----- Read data -----
@@ -386,207 +465,9 @@ end;
 
 //----- processing -----
 
-function TTL2SaveFile.Parse(amode:TTL2ParseType):boolean;
-var
-  lcnt{,lcnt1}:integer;
-begin
-  result:=true;
+{$I TL2Parse.inc}
 
-  FStream.Position:=SizeOf(TL2SaveHeader);
-
-  FClassString :=FStream.ReadShortString();
-  FDifficulty  :=TTL2Difficulty(FStream.ReadDWord);
-  FHardcore    :=FStream.ReadByte<>0;
-  FNewGameCycle:=FStream.ReadByte;
-
-  //!!
-  FStream.ReadDWord; // 0
-
-  FGameTime:=FStream.ReadFloat; // game time (hh.mm)
-
-  //-- Movies
-  FMovies:=FStream.ReadIdValList;
-
-  //--- Mod lists
-  ReadModList(FBoundMods);          DumpModList('Bound mods'        ,FBoundMods);
-  ReadModList(FRecentModHistory);   DumpModList('Recent mod history',FRecentModHistory);
-  ReadModList(FFullModHistory);     DumpModList('Full mod history'  ,FFullModHistory);
-
-  //=== Character Data
-  FCharInfoOffset:=FStream.Position;
-  FCharInfo:=ReadCharData(FStream,amode,'charinfo.dmp');
-
-  //-- Keymapping table (including functional)
-  ReadKeyMappingList;
-  DumpKeyMapping;
-
-  //--- Statistic
-  ReadStatistic();
-
-  FMap :=FStream.ReadShortString(); // map
-  FArea:=FStream.ReadShortString(); // area (region)
-
-  //!!
-  FUnknown1:=FStream.ReadBytes(39);
-{
-  FStream.ReadDWord; // 0
-
-  // FStream.ReadCoord;
-  FStream.ReadFloat; // $C479C000=-999
-  FStream.ReadFloat;
-  FStream.ReadFloat;
-  
-  // 15 bytes
-  FStream.ReadDWord; // 0
-  FStream.ReadDWord;
-  FStream.ReadDWord;
-  FStream.ReadWord;
-  FStream.ReadByte;
-
-  FStream.ReadDWord;  // 1
-  FStream.ReadDWord;  // 1
-}
-  //=== Pet Data
-  FPetInfoOffset:=FStream.Position;
-  FPetInfo:=ReadCharData(FStream,amode,'petinfo.dmp');
-
-//  if amode<>ptDeepest then exit;
-  // !!!!
-  RestSize:=FStream.Size-SizeOf(TL2SaveFooter)-FStream.Position;
-  TheRest :=FStream.ReadBytes(RestSize);
-  SaveDump('rest.dmp',TheRest,RestSize);
-
-exit;
-(*
-//!!!!!!!!!!!!!!!!!!!!
-// undiscovered: locations, quests, keybinding? etc
-//!!!!!!!!!!!!!!!!!!!!
-
-  FStream.Seek(34,soCurrent); // 0
-  FStream.ReadDWord; // 7 for elfly
-  FStream.ReadDword; // 0
-
-  FStream.ReadFloat; // 47EE5583 = 122027.0234  0 for Zorro
-  FStream.ReadFloat; //(playtime) 47EECAF4 = 122261.9062  441CC954 for Zorro (changed) 627,1427
-  FStream.ReadFloat; // 1.0 3A83126F for Zorro  0,00100000004749745
-
-  FStream.ReadShortString; // Area "LAVERSDEN"
-  FStream.ReadWord;   // 0
-
-  lcnt :=FStream.ReadDword;  // 29  29*23 = 667
-  lcnt1:=FStream.ReadDword;  // 23
-  //!! Block: 29*23*4
-  FStream.Seek(lcnt*lcnt1*SizeOf(Single),soCurrent); // 0  :E82F
-{
-  FStream.Seek(80,soCurrent); // 0  :E82F
-
-  FStream.ReadFloat; // 3F28C52C = 0.66
-  FStream.ReadFloat; // 3F65864A = 0.896
-  FStream.ReadFloat; // 3F7EBBFF = 0.995
-  FStream.ReadFloat; // 3F7CA3E8 = 0.9868
-  FStream.ReadFloat; // 1.0
-  FStream.ReadFloat; // 3F795093 = 0.9738
-  FStream.ReadFloat; // 3F42E6F0 = 0.7613
-  // ... if 7*16 = 112 bytes. 112*667?? :172C6 something
-}
-  // :F29B
-  FStream.ReadDWord; // 0
-  lcnt:=FStream.ReadDword; // 14
-  FStream.Seek(lcnt*(8+4+8),soCurrent);
-{
-  // :F2A3 +14*(8+4+8) = +14*20 = +280 = F3BB
-  // 5361955370E81ED3: "LAYOUTS\GENERIC_CAVE\1X1SINGLE_ROOM_BOSS\1XSLAVERSBASEMENT_PB_A.LAYOUT
-  // 4b=00
-  // 56486755FDC4E322: ??
-}
-  // :F3BB
-  FStream.ReadDWord;  // 2
-  FStream.ReadDWord;  // 643BC0F76B020D58 ??
-  FStream.ReadDWord;  // 39815D860999E059 ??
-
-  // :F3CF
-  FStream.ReadDWord;  // 18
-  // A0 01 00 00 02 00 00
-  // :F3DA
-  FStream.ReadQWord;  // D35C7DDB557F7C52: "UNITS\MONSTERS\QUESTUNITS\ESTHERIANS\A1A1-CAPTUREDENCHANTER.DAT 
-  FStream.ReadQWord;  // *FF
-  FStream.ReadQWord;  // 715E733670A1DC5D: ??
-  FStream.ReadDWord;  // 1
-
-  FStream.ReadDword;
-  FStream.ReadDword;
-  FStream.ReadDword;
-  FStream.ReadDword;
-  FStream.ReadDword;
-
-  FStream.ReadFloat; // 3FB33333
-  // 7*4b*FF
-  // NPC name
-*)
-end;
-
-function TTL2SaveFile.Prepare:boolean;
-begin
-  // if not parsed then error
-
-  result:=true;
-
-  FStream.Position:=SizeOf(TL2SaveHeader); //!!
-
-  FStream.WriteShortString(FClassString);
-  FStream.WriteDword(DWord(FDifficulty));
-  FStream.WriteByte(Ord(FHardcore));
-  FStream.WriteByte(FNewGameCycle);
-
-  FStream.WriteDWord(0);
-  FStream.WriteFloat(FGameTime);
-
-  //-- Movies
-  FStream.WriteIdValList(FMovies);
-
-  //--- Mod lists
-  WriteModList(FBoundMods);
-  WriteModList(FRecentModHistory);
-  WriteModList(FFullModHistory);
-
-  //=== Character Data
-  WriteCharData(FStream,FCharInfo);
-
-  //-- Keymapping table (including functional)
-  WriteKeyMappingList;
-
-  //--- Statistic
-  WriteStatistic();
-
-  FStream.WriteShortString(FMap); // map
-  FStream.WriteShortString(FArea); // area (region)
-
-  //!!
-  FStream.Write(FUnknown1^,39);
-{
-  FStream.WriteDWord(0);
-
-  FStream.WriteFloat(-999);
-  FStream.WriteFloat(-999);
-  FStream.WriteFloat(-999);
-  
-  // 15 bytes
-  FStream.WriteDWord(0);
-  FStream.WriteDWord(0);
-  FStream.WriteDWord(0);
-  FStream.WriteWord(0);
-  FStream.WriteByte(0);
-
-  FStream.WriteDWord(1);
-  FStream.WriteDWord(1);
-}
-  //=== Pet Data
-  WriteCharData(FStream,FPetInfo);
-
-  // !!!!
-  FStream.Write(TheRest^,RestSize);
-
-end;
+{$I TL2Prepare.inc}
 
 //===== Global savegame class things =====
 
@@ -679,14 +560,18 @@ begin
 end;
 
 destructor TTL2SaveFile.Destroy;
+var
+  i:integer;
 begin
   FStream.Free;
 
   if FCharInfo<>nil then FCharInfo.Free;
-  if FPetInfo <>nil then FPetInfo.Free;
+
+  for i:=0 to High(FPetInfos) do
+    if FPetInfos[i]<>nil then FPetInfos[i].Free;
+  SetLength(FPetInfos,0);
 
   FreeMem(FUnknown1);
-  FreeMem(TheRest);
 
   SetLength(FBoundMods       ,0);
   SetLength(FRecentModHistory,0);
@@ -695,6 +580,11 @@ begin
   SetLength(FKeyMapping,0);
   SetLength(FFunctions ,0);
   SetLength(FMovies    ,0);
+  SetLength(FRecipes   ,0);
+
+  for i:=0 to High(FMaps) do
+    if FMaps[i]<>nil then FMaps[i].Free;
+  SetLength(FMaps,0);
 
   inherited;
 end;

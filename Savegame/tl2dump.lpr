@@ -10,7 +10,7 @@ begin
   LoadBases;
   tr:=TTL2SaveFile.Create;
   tr.LoadFromFile(ParamStr(1));
-  tr.Parse(ptlite);
+  tr.Parse(ptstandard);
   tr.Free;
 end.
 

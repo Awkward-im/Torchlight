@@ -119,7 +119,8 @@ type
 
     function Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
 
-    function NextNoticed():integer;
+    function FirstNoticed(acorrect:boolean=false):integer;
+    function NextNoticed (acorrect:boolean=false):integer;
 
     property OnFileScan:TOnFileScan read FOnFileScan write FOnFileScan;
     // statistic
@@ -242,7 +243,13 @@ var
 
 //===== Support =====
 
-function TTL2Translation.NextNoticed():integer;
+function TTL2Translation.FirstNoticed(acorrect:boolean=false):integer;
+begin
+  noteIndex:=-1;
+  result:=NextNoticed(acorrect);
+end;
+
+function TTL2Translation.NextNoticed(acorrect:boolean=false):integer;
 var
   lsrc,ltrans:AnsiString;
   i,j:integer;
@@ -272,6 +279,8 @@ begin
         // 1 - space at the end (both)
         if isSpace and (ltrans[j]<>' ') then
         begin
+          if acorrect then
+            arText[noteIndex].transl:=arText[noteIndex].transl+' ';
           result:=noteIndex;
           exit;
         end;
@@ -284,10 +293,15 @@ begin
             dec(j);
           end;
 
-          if (lsrc[i] in [' ', '.', '!', '?', ':', ';']) then
+          if (lsrc[i] in [{' ',} '.', '!', '?', ':', ';']) then
           begin
             if ltrans[j]<>lsrc[i] then
             begin
+              if acorrect then
+              begin
+                if not (ltrans[j] in ['.', '!', '?', ':', ';']) then
+                  Insert(lsrc[i],arText[noteIndex].transl,j+1);
+              end;
               result:=noteIndex;
               exit;
             end;

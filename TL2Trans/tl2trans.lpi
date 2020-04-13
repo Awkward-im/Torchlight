@@ -32,7 +32,6 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -79,7 +78,6 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -140,17 +138,9 @@
         <UnitName Value="TL2Unit"/>
       </Unit>
       <Unit>
-        <Filename Value="TL2DataUnit.pas"/>
+        <Filename Value="tl2dataunit.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\utils\cfgbase.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\utils\iniconfig.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="INIConfig"/>
+        <UnitName Value="TL2DataUnit"/>
       </Unit>
       <Unit>
         <Filename Value="tl2edittext.pas"/>
@@ -229,7 +219,6 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\utils"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
     </SearchPaths>
     <Linking>

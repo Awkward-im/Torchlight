@@ -15,7 +15,7 @@ type
 
   TMainTL2TransForm = class(TForm)
     FileBuild: TAction;
-    actNotes: TAction;
+    HelpNotes: TAction;
     ClosePage: TAction;
     bbCloseTree: TBitBtn;
     cbScanCurDir: TCheckBox;
@@ -62,7 +62,8 @@ type
     TL2ShellTreeView: TShellTreeView;
     TL2StatusBar: TStatusBar;
     tbHelpNotes: TToolButton;
-    procedure actNotesExecute(Sender: TObject);
+    tbBuild: TToolButton;
+    procedure HelpNotesExecute(Sender: TObject);
     procedure bbCloseTreeClick(Sender: TObject);
     procedure ClosePageExecute(Sender: TObject);
     procedure FileBuildExecute(Sender: TObject);
@@ -361,7 +362,7 @@ begin
   TL2TreePanel.Visible:=false;
 end;
 
-procedure TMainTL2TransForm.actNotesExecute(Sender: TObject);
+procedure TMainTL2TransForm.HelpNotesExecute(Sender: TObject);
 begin
   if TL2Notes=nil then
     TL2Notes:=TTL2Notes.Create(Self);

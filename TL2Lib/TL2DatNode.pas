@@ -4,6 +4,8 @@
   Text file MUST have root node.
    
 }
+{$CALLING cdecl}
+
 unit TL2DatNode;
 
 interface
@@ -32,18 +34,18 @@ type
   PTL2Node = ^TTL2Node;
   TTL2Node = record
     name  : PWideChar;
-    parent: PTL2Node;                      // not needed for props but will keep space anyway
+    parent: PTL2Node;
     case nodetype:byte of
       ntGroup    : (
         children  :PATL2Node;
-        childcount:integer;
+        childcount:Int32;
       );
       ntString,
       ntTranslate,
       ntNote,
       ntUnknown  : (
         asString  :PWideChar;
-        CustomType:PWideChar;              // for ntUnknown only
+        CustomType:PWideChar;  // for ntUnknown only
       );
       ntBool     : (asBoolean  :ByteBool);
       ntInteger  : (asInteger  :Int32);
@@ -57,43 +59,43 @@ type
   end;
   TATL2Node = array [0..16383] of TTL2Node;
 
-function ParseDatFile(fname:PChar;
-  var errorstate:integer; var errorstring):PTL2Node;
+function ParseDatFile(fname:PChar):PTL2Node; export;
 
-function WriteDatTree(anode:PTL2Node; fname:PChar;
-  var errorstate:integer; var errorstring):boolean;
+function WriteDatTree(anode:PTL2Node; fname:PChar):ByteBool; export;
 
-procedure DeleteNode(var anode:PTL2Node);
-function ExtractNode(src:PTL2Node):PTL2Node;
+procedure DeleteNode(var anode:PTL2Node); export;
+function ExtractNode(src:PTL2Node):PTL2Node; export;
 
 // Nodes MUST BE a group
 // action is: 0 - skip; 1 - overwrite; 2 - append
 // groups will append always
-function JoinNode(dst:PTL2Node; var anode:PTL2Node; action:integer):ByteBool;
+function JoinNode(dst:PTL2Node; var anode:PTL2Node; action:Int32):ByteBool; export;
 
-function FindNode  (anode:PTL2Node; apath:PWideChar):PTL2Node;
-function CloneNode (anode:PTL2Node):PTL2Node;
-function ChangeNode(anode:PTL2Node; aval:PWideChar):ByteBool;
+function FindNode  (anode:PTL2Node; apath:PWideChar):PTL2Node; export;
+function CloneNode (anode:PTL2Node):PTL2Node; export;
+function ChangeNode(anode:PTL2Node; aval:PWideChar):ByteBool; export;
 
-function  Defrag  (anode:PTL2Node):integer;
-procedure Compact (anode:PTL2Node);
-function  ExpandBy(anode:PTL2Node; amount:integer):ByteBool;
+function  Defrag  (anode:PTL2Node):Int32; export;
+procedure Compact (anode:PTL2Node); export;
+function  ExpandBy(anode:PTL2Node; amount:Int32):ByteBool; export;
 
-procedure AddNode     (dst:PTL2Node; anode:PTL2Node);
-function  AddGroup    (dst:PTL2Node; aname:PWideChar):PTL2Node;
-function  AddBool     (dst:PTL2Node; aname:PWideChar; aval:ByteBool):PTL2Node;
-function  AddInteger  (dst:PTL2Node; aname:PWideChar; aval:Int32   ):PTL2Node;
-function  AddFloat    (dst:PTL2Node; aname:PWideChar; aval:single  ):PTL2Node;
-function  AddInteger64(dst:PTL2Node; aname:PWideChar; aval:Int64   ):PTL2Node;
-function  AddUnsigned (dst:PTL2Node; aname:PWideChar; aval:UInt32  ):PTL2Node;
-function  AddText     (dst:PTL2Node; aname:PWideChar; aval:PWideChar; atype:integer):PTL2Node;
+function MakeNewNode(aparent:PTL2Node; aname:PWideChar; atype:byte; atext:PWideChar):PTL2Node; export;
+
+procedure AddNode     (dst:PTL2Node; anode:PTL2Node); export;
+function  AddGroup    (dst:PTL2Node; aname:PWideChar):PTL2Node; export;
+function  AddBool     (dst:PTL2Node; aname:PWideChar; aval:ByteBool):PTL2Node; export;
+function  AddInteger  (dst:PTL2Node; aname:PWideChar; aval:Int32   ):PTL2Node; export;
+function  AddFloat    (dst:PTL2Node; aname:PWideChar; aval:single  ):PTL2Node; export;
+function  AddInteger64(dst:PTL2Node; aname:PWideChar; aval:Int64   ):PTL2Node; export;
+function  AddUnsigned (dst:PTL2Node; aname:PWideChar; aval:UInt32  ):PTL2Node; export;
+function  AddText     (dst:PTL2Node; aname:PWideChar; aval:PWideChar; atype:byte):PTL2Node; export;
 // custom
-function  AddDouble   (dst:PTL2Node; aname:PWideChar; aval:double  ):PTL2Node;
+function  AddDouble   (dst:PTL2Node; aname:PWideChar; aval:double  ):PTL2Node; export;
 // user
-function  AddBinary   (dst:PTL2Node; aname:PWideChar; aval:UInt32  ):PTL2Node;
-function  AddByte     (dst:PTL2Node; aname:PWideChar; aval:byte    ):PTL2Node;
-function  AddWord     (dst:PTL2Node; aname:PWideChar; aval:word    ):PTL2Node;
-function  AddCustom   (dst:PTL2Node; aname:PWideChar; aval:PWideChar; atype:PWideChar):PTL2Node;
+function  AddBinary   (dst:PTL2Node; aname:PWideChar; aval:UInt32  ):PTL2Node; export;
+function  AddByte     (dst:PTL2Node; aname:PWideChar; aval:byte    ):PTL2Node; export;
+function  AddWord     (dst:PTL2Node; aname:PWideChar; aval:word    ):PTL2Node; export;
+function  AddCustom   (dst:PTL2Node; aname:PWideChar; aval:PWideChar; atype:PWideChar):PTL2Node; export;
 
 
 implementation
@@ -121,6 +123,30 @@ const
     (name: 'BYTE'        ; code: ntByte),
     (name: 'BINARY'      ; code: ntBinary)
   );
+
+//===== Error handler =====
+
+const
+  errCantOpen      = 1; // (Error) Can't open file for parsing
+  errTagNoClose    = 2; // (Error) Group tag have no closing parenties
+  errTagCloseWrong = 3; // (Error) Closing tag have wrong name
+  errNoRoot        = 4; // (Error) Unconditional. Properties without open Group (root) tag
+  errPropNoClose   = 5; // (Error) Property have no closing parenties
+  errRootNoClose   = 6; // (Error) End of file, Root group have no closing tag
+  errCloseNoRoot   = 7; // (Error) Unconditional. Closing tag without any opened (no root)
+  errUnknownTag    = 8; // (Warning) Unknown property type
+
+type
+  TErrorHandler = function(acode:integer; aFile:PChar; aLine:integer):integer; cdecl;
+
+var
+  OnError:TErrorHandler = nil;
+
+function SetDatErrorHandler(aproc:TErrorHandler):TErrorHandler;
+begin
+  result :=OnError;
+  OnError:=aproc;
+end;
 
 //===== Support =====
 
@@ -211,7 +237,7 @@ end;
 
 //===== Nodes =====
 
-function Defrag(anode:PTL2Node):integer;
+function Defrag(anode:PTL2Node):Int32;
 var
   i,j:integer;
 begin
@@ -253,7 +279,7 @@ begin
   end;
 end;
 
-function ExpandBy(anode:PTL2Node; amount:integer):ByteBool;
+function ExpandBy(anode:PTL2Node; amount:Int32):ByteBool;
 var
   i:integer;
 begin
@@ -262,6 +288,7 @@ begin
   if (anode^.nodetype<>ntGroup) then
     exit(false);
 
+  result:=true;
   i:=Defrag(anode);
   while (i<anode^.childcount) and (anode^.children^[i].nodetype<>ntDeleted) do inc(i);
   dec(amount,anode^.childcount-i);
@@ -342,7 +369,7 @@ begin
     end;
 end;
 
-function MakeNewNode(aparent:PTL2Node; aname:PWideChar; atype:integer; atext:PWideChar):PTL2Node;
+function MakeNewNode(aparent:PTL2Node; aname:PWideChar; atype:byte; atext:PWideChar):PTL2Node;
 begin
   if aparent<>nil then
   begin
@@ -394,7 +421,10 @@ begin
       anode:=nil;
     end
     else
+    begin
+      FillChar(anode^,SizeOf(anode^),0);
       anode^.nodetype:=ntDeleted;
+    end;
   end;
 end;
 
@@ -413,13 +443,13 @@ begin
   end;
 end;
 
-function ParseDatFile(fname:PChar; var errorstate:integer; var errorstring):PTL2Node;
+function ParseDatFile(fname:PChar):PTL2Node;
 var
   f:file of byte;
   lutype,buf:PWideChar;
   lnode,lgroup:PTL2Node;
   pc,peoln:PWideChar;
-  ltype,ldst,i,idx:integer;
+  lline,ltype,ldst,i,idx:integer;
   lname:array [0..127] of WideChar;
   leof,lclose:boolean;
 begin
@@ -431,7 +461,15 @@ begin
 {$I-}
   AssignFile(f,fname);
   Reset(f);
-  if IOResult<>0 then ;// Error ();  can't open file
+  if IOResult<>0 then
+  begin
+    if Assigned(OnError) then
+    begin
+      OnError(errCantOpen,fname,0);
+      exit;
+    end;
+  end;
+
   i:=FileSize(f);
   GetMem(buf,i+SizeOf(WideChar));
   BlockRead(f,buf^,i);
@@ -443,107 +481,147 @@ begin
 
   lgroup:=nil;
 
-  repeat
-    // Set pc to line start and peoln to line end
-    while (peoln^ in [#10,#13]) do inc(peoln);
-    if peoln^=#0 then break;
-    pc:=peoln;
-    while not (peoln^ in [#0,#10,#13]) do inc(peoln);
-    leof:=peoln^=#0;
-    if not leof then
-    begin
-      peoln^:=#0;
-      inc(peoln);
-    end;
+  lline:=0;
 
-    idx:=0;
-    while (pc[idx] in [' ',#9]) do inc(idx);
+  try
+    repeat
+      // Set pc to line start and peoln to line end
+      while (peoln^ in [#10,#13]) do inc(peoln); // lline going wrong if several crlf one-by-one
+      if peoln^=#0 then break;
 
-    //--- group
-    if pc[idx]='[' then
-    begin
-      inc(idx);
-      if pc[idx]='/' then
+      inc(lline);
+
+      pc:=peoln;
+      while not (peoln^ in [#0,#10,#13]) do inc(peoln);
+      leof:=peoln^=#0;
+      if not leof then
       begin
-        inc(idx);
-        lclose:=true;
-      end
-      else
-        lclose:=false;
-
-      ldst:=0;
-      while not (pc[idx] in [#0,']']) do
-      begin
-        lname[ldst]:=pc[idx];
-        inc(ldst);
-        inc(idx);
+        peoln^:=#0;
+        inc(peoln);
       end;
-      lname[ldst]:=#0;
-      if pc[idx]=#0 then
-;//            Error(); no closing parenties
 
-      if lclose then
+      idx:=0;
+      while (pc[idx] in [' ',#9]) do inc(idx);
+
+      //--- group
+      if pc[idx]='[' then
       begin
-        if not CompareWide(lgroup^.name,lname) then
-;//              Error(); closing tag name mismatch
-        lgroup:=lgroup^.parent;
-        leof:=lgroup=nil;
-      end
-      else
-      begin
-        // first group = root!!
-        if result=nil then
+        inc(idx);
+        if pc[idx]='/' then
         begin
-          result:=MakeNewNode(nil,lname,ntGroup,nil);
-          lgroup:=result;
+          if lgroup=nil then
+          begin
+            if Assigned(OnError) then OnError(errCloseNoRoot,fname,lline);
+            exit;
+          end;
+
+          inc(idx);
+          lclose:=true;
+        end
+        else
+          lclose:=false;
+
+        ldst:=0;
+        while not (pc[idx] in [#0,']']) do
+        begin
+          lname[ldst]:=pc[idx];
+          inc(ldst);
+          inc(idx);
+        end;
+        lname[ldst]:=#0;
+        if pc[idx]=#0 then
+        begin
+          if (not Assigned(OnError)) or (OnError(errTagNoClose,fname,lline)<>0) then
+          begin
+            DeleteNode(result);
+            exit;
+          end;
+        end;
+
+        if lclose then
+        begin
+          if not CompareWide(lgroup^.name,lname) then
+          begin
+            if (not Assigned(OnError)) or (OnError(errTagCloseWrong,fname,lline)<>0) then
+            begin
+              DeleteNode(result);
+              exit;
+            end;
+          end;
+
+          lgroup:=lgroup^.parent;
+          leof:=lgroup=nil;
         end
         else
         begin
-          lnode:=MakeNewNode(lgroup,lname,ntGroup,nil);
-          lgroup:=lnode;
+          lgroup:=MakeNewNode(lgroup,lname,ntGroup,nil);
+          if result=nil then
+            result:=lgroup;
+        end;
+      end
+      //--- property
+      else if pc[idx]='<' then
+      begin
+        if lgroup=nil then
+        begin
+          if Assigned(OnError) then OnError(errNoRoot,fname,lline);
+          exit;
+        end;
+
+        inc(idx);
+        // type
+        ldst:=0;
+        while not (pc[idx] in [#0,'>']) do
+        begin
+          lname[ldst]:=pc[idx];
+          inc(ldst);
+          inc(idx);
+        end;
+        lname[ldst]:=#0;
+        if pc[idx]=#0 then
+        begin
+          if (not Assigned(OnError)) or (OnError(errPropNoClose,fname,lline)<>0) then
+          begin
+            DeleteNode(result);
+            exit;
+          end;
+        end;
+        inc(idx);
+        ltype:=GetPropertyType(lname);
+        if ltype=ntUnknown then lutype:=CopyWide(lname);
+        
+        // name
+        ldst:=0;
+        while not (pc[idx] in [#0,':']) do
+        begin
+          lname[ldst]:=pc[idx];
+          inc(ldst);
+          inc(idx);
+        end;
+        lname[ldst]:=#0;
+        if pc[idx]=':' then
+          inc(idx);
+
+        lnode:=MakeNewNode(lgroup,lname,ltype,@pc[idx]);
+        if ltype=ntUnknown then
+        begin
+          lnode^.CustomType:=lutype;
+          if Assigned(OnError) then OnError(errUnknownTag,fname,lline);
         end;
       end;
-    end
-    //--- property
-    else if pc[idx]='<' then
+    until leof;
+    if lgroup<>nil then
     begin
-      inc(idx);
-      // type
-      ldst:=0;
-      while not (pc[idx] in [#0,'>']) do
+      if (not Assigned(OnError)) or (OnError(errRootNoClose,fname,lline)<>0) then
       begin
-        lname[ldst]:=pc[idx];
-        inc(ldst);
-        inc(idx);
+        DeleteNode(result);
+        exit;
       end;
-      lname[ldst]:=#0;
-      if pc[idx]=#0 then
-;//            Error(); no closing parenties
-      inc(idx);
-      ltype:=GetPropertyType(lname);
-      if ltype=ntUnknown then lutype:=CopyWide(lname);
-      
-      // name
-      ldst:=0;
-      while not (pc[idx] in [#0,':']) do
-      begin
-        lname[ldst]:=pc[idx];
-        inc(ldst);
-        inc(idx);
-      end;
-      lname[ldst]:=#0;
-      if pc[idx]=':' then
-        inc(idx);
-
-      if lgroup=nil then
-        ;// Error()  no root node
-      lnode:=MakeNewNode(lgroup,lname,ltype,@pc[idx]);
-      if ltype=ntUnknown then lnode^.CustomType:=lutype;
     end;
-  until leof;
-  if lgroup<>nil then ;//Error() not closed tree
 
-  FreeMem(buf);
+  finally
+    FreeMem(buf);
+  end;
 end;
 
 function DumpNode(var buf:TBytes; var idx:integer; const anode:TTL2Node; atab:integer):boolean;
@@ -653,8 +731,7 @@ begin
   end;
 end;
 
-function WriteDatTree(anode:PTL2Node; fname:PChar;
-  var errorstate:integer; var errorstring):boolean;
+function WriteDatTree(anode:PTL2Node; fname:PChar):ByteBool;
 var
   f:file of byte;
   lbuf:TBytes;
@@ -706,7 +783,7 @@ begin
   result^.CustomType:=CopyWide(atype);
 end;
 
-function AddText(dst:PTL2Node; aname:PWideChar; aval:PWideChar; atype:integer):PTL2Node;
+function AddText(dst:PTL2Node; aname:PWideChar; aval:PWideChar; atype:byte):PTL2Node;
 begin
   result:=MakeNewNode(dst, aname, atype, aval);
 end;
@@ -870,7 +947,7 @@ begin
 end;
 
 // action is: 0 - skip; 1 - overwrite; 2 - append
-function JoinNode(dst:PTL2Node; var anode:PTL2Node; action:integer):ByteBool;
+function JoinNode(dst:PTL2Node; var anode:PTL2Node; action:Int32):ByteBool;
 var
   lcnode,lnode:PTL2Node;
   i:integer;
@@ -904,13 +981,6 @@ begin
     end;
   end;
   DeleteNode(anode);
-end;
-
-type
-  TErrorHandler = function():integer;
-
-procedure SetDatErrorHandler(aproc:TErrorHandler);
-begin
 end;
 
 

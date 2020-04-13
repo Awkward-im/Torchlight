@@ -118,24 +118,24 @@ begin
   AStream.ReadByte;  // 0
   AStream.ReadByte;  // 1
   // 7 times
-  AStream.ReadFloat; // C390C993 = -289.57
+  AStream.ReadFloat;  // C390C993 = -289.57
   AStream.ReadFloat;
   AStream.ReadFloat;
   AStream.ReadFloat;
   AStream.ReadFloat;
-  AStream.ReadFloat; // 66.27
+  AStream.ReadFloat;  // 66.27
   AStream.ReadFloat;
 
-  AStream.ReadFloat; // ?
-  AStream.ReadFloat; // ?
-  AStream.ReadFloat; // ? = 0
-  AStream.ReadFloat; // ?
-  AStream.ReadFloat; // 1.0
+  AStream.ReadFloat;  // ?
+  AStream.ReadFloat;  // ?
+  AStream.ReadFloat;  // ? = 0
+  AStream.ReadFloat;  // ?
+  AStream.ReadFloat;  // 1.0
   AStream.ReadDWord;  // ?
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  //   \ qword
   AStream.ReadDWord;  //   /
-  AStream.ReadFloat; // ?
+  AStream.ReadFloat;  // ?
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  // 0

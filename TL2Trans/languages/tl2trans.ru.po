@@ -101,6 +101,10 @@ msgctxt "tl2notesform.stitle"
 msgid "Notes"
 msgstr "Заметки"
 
+#: tl2projectform.saffected
+msgid " line(s) affected"
+msgstr "строк(а/и) исправлено"
+
 #: tl2projectform.sall
 msgid "&All"
 msgstr "Всё"
@@ -125,6 +129,10 @@ msgstr "Проверка на похожий текст"
 msgid "Check for same text"
 msgstr "Проверка на такой же текст"
 
+#: tl2projectform.sdoautocorrect
+msgid "Autocorrect all these notices?"
+msgstr "Исправить все замечания?"
+
 #: tl2projectform.sdodelete
 msgid ""
 "Are you sure to delete selected line(s)?\n"
@@ -144,6 +152,10 @@ msgstr "Экспорт завершён. Создан файл"
 #: tl2projectform.simporting
 msgid "Importing"
 msgstr "Импорт"
+
+#: tl2projectform.snowarnings
+msgid "No any warnings"
+msgstr "Никаких предупреждений нет"
 
 #: tl2projectform.sproject
 msgid "&Project"
@@ -242,10 +254,6 @@ msgstr "(сохраняется)"
 msgid "(scanning)"
 msgstr "(сканируется)"
 
-#: tmaintl2transform.actnotes.caption
-msgid "Show Notes"
-msgstr "Показать заметки"
-
 #: tmaintl2transform.caption
 msgctxt "tmaintl2transform.caption"
 msgid "Torchlight 2 Translation"
@@ -262,6 +270,10 @@ msgstr "Закрыть страницу"
 #: tmaintl2transform.filebuild.caption
 msgid "&Build"
 msgstr "Собрать &Перевод"
+
+#: tmaintl2transform.filebuild.hint
+msgid "Build translation"
+msgstr ""
 
 #: tmaintl2transform.fileexit.caption
 msgid "E&xit"
@@ -334,6 +346,18 @@ msgstr "О программе"
 #: tmaintl2transform.helpabout.hint
 msgid "About program"
 msgstr "О программе"
+
+#: tmaintl2transform.helpnotes.caption
+#, fuzzy
+msgctxt "tmaintl2transform.helpnotes.caption"
+msgid "Show Notes"
+msgstr "Показать заметки"
+
+#: tmaintl2transform.helpnotes.hint
+#, fuzzy
+msgctxt "tmaintl2transform.helpnotes.hint"
+msgid "Show Notes"
+msgstr "Показать заметки"
 
 #: tmaintl2transform.lbltreenotes.caption
 msgid "Doubleclick to scan"
@@ -428,6 +452,10 @@ msgstr "Заметка"
 msgctxt "ttl2notes.sgnotes.columns[1].title.caption"
 msgid "Value"
 msgstr "Значение"
+
+#: ttl2project.actchecktranslation.hint
+msgid "Check for notes of translation"
+msgstr "Проверка на заметки перевода"
 
 #: ttl2project.actexportclipbrd.hint
 msgctxt "ttl2project.actexportclipbrd.hint"
@@ -533,6 +561,10 @@ msgstr "Шрифт"
 msgctxt "ttl2settings.bbsavesettings.caption"
 msgid "&Save"
 msgstr "Сохр."
+
+#: ttl2settings.cbautoaspartial.caption
+msgid "Mark Autocorrected as partial"
+msgstr "Пометить Автоисправление частичным"
 
 #: ttl2settings.cbexportparts.caption
 msgid "Export partially translated text"

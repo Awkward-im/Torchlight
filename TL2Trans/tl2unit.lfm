@@ -156,31 +156,36 @@ object MainTL2TransForm: TMainTL2TransForm
       Action = FileExport
     end
     object tbSeparator1: TToolButton
-      Left = 96
+      Left = 119
       Height = 22
       Top = 2
       Style = tbsSeparator
     end
     object tbFontEdit: TToolButton
-      Left = 104
+      Left = 127
       Top = 2
       Action = FontEdit
     end
     object tbSeparator2: TToolButton
-      Left = 127
+      Left = 150
       Height = 22
       Top = 2
       Style = tbsSeparator
     end
     object tbHelpAbout: TToolButton
-      Left = 135
+      Left = 158
       Top = 2
       Action = HelpAbout
     end
     object tbHelpNotes: TToolButton
-      Left = 158
+      Left = 181
       Top = 2
-      Action = actNotes
+      Action = HelpNotes
+    end
+    object tbBuild: TToolButton
+      Left = 96
+      Top = 2
+      Action = FileBuild
     end
   end
   object TL2ActionList: TActionList
@@ -254,16 +259,18 @@ object MainTL2TransForm: TMainTL2TransForm
       OnExecute = ClosePageExecute
       ShortCut = 16499
     end
-    object actNotes: TAction
+    object HelpNotes: TAction
       Category = 'Help'
       Caption = 'Show Notes'
+      Hint = 'Show Notes'
       ImageIndex = 8
-      OnExecute = actNotesExecute
+      OnExecute = HelpNotesExecute
       ShortCut = 32840
     end
     object FileBuild: TAction
       Category = 'File'
       Caption = '&Build'
+      Hint = 'Build translation'
       ImageIndex = 24
       OnExecute = FileBuildExecute
       ShortCut = 16450
@@ -317,7 +324,7 @@ object MainTL2TransForm: TMainTL2TransForm
     object miHelp: TMenuItem
       Caption = '&Help'
       object MenuItem1: TMenuItem
-        Action = actNotes
+        Action = HelpNotes
       end
       object miHelpAbout: TMenuItem
         Action = HelpAbout

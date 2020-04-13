@@ -2,7 +2,6 @@ unit TL2Passive;
 
 interface
 
-
 uses
   classes,
   tl2stream,
@@ -75,7 +74,6 @@ begin
   result:=nil;
   lcnt:=AStream.ReadDWord;
   if lcnt>0 then
-  else
   begin
     SetLength(result,lcnt);
     for i:=0 to lcnt-1 do

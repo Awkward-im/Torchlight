@@ -5,12 +5,18 @@ interface
 function GetTL2Skill(const id:Int64; out aclass:Int64; out atype:integer):string; overload;
 function GetTL2Skill(const id:Int64; out aclass:Int64):string; overload;
 function GetTL2Skill(const id:Int64                  ):string; overload;
+
+function GetTL2Movie(const id:Int64; out amod:Int64  ):string; overload;
+function GetTL2Movie(const id:Int64                  ):string; overload;
+function GetTL2Stat (const id:Int64; out amod:Int64  ):string; overload;
+function GetTL2Stat (const id:Int64                  ):string; overload;
 function GetTL2Item (const id:Int64; out amod:Int64  ):string; overload;
 function GetTL2Item (const id:Int64                  ):string; overload;
 function GetTL2Class(const id:Int64; out amod:Int64  ):string; overload;
 function GetTL2Class(const id:Int64                  ):string; overload;
 function GetTL2Pet  (const id:Int64; out amod:Int64  ):string; overload;
 function GetTL2Pet  (const id:Int64                  ):string; overload;
+
 function GetTL2Mod  (const id:Int64; out aver:integer):string; overload;
 function GetTL2Mod  (const id:Int64                  ):string; overload;
 
@@ -37,6 +43,7 @@ const
   TL2DataBase = 'tl2db.db';
 
 resourcestring
+  rsSet = 'Set';
   rsQK1 = 'Quckslot 1';
   rsQK2 = 'Quckslot 2';
   rsQK3 = 'Quckslot 3';
@@ -63,6 +70,49 @@ resourcestring
   rsPetSpell3 = 'Pet spell 3';
   rsPetSpell4 = 'Pet spell 4';
 
+//-------------------
+
+function GetModAndTitle(const id:Int64; const abase:string; const awhere:string;
+                        out amod:Int64):string;
+var
+  aSQL,lwhere:string;
+  vm:pointer;
+begin
+  amod  :=-1;
+  result:=HexStr(id,16);
+
+  Str(id,aSQL);
+  if awhere<>'' then
+    lwhere:=' AND '+awhere
+  else
+    lwhere:='';
+  aSQL:='SELECT title,modid FROM '+abase+' WHERE id='+aSQL+lwhere+' LIMIT 1';
+
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+    begin
+      result:=sqlite3_column_text (vm,0);
+      amod  :=sqlite3_column_int64(vm,1);
+    end;
+    sqlite3_finalize(vm);
+  end;
+end;
+
+//----- Movie Info -----
+
+function GetTL2Movie(const id:Int64; out amod:Int64):string; overload;
+begin
+  result:=GetModAndTitle(id,'movies','',amod);
+end;
+
+function GetTL2Movie(const id:Int64):string; overload;
+var
+  lmodid:Int64;
+begin
+  result:=GetTL2Movie(id,lmodid);
+end;
+
 //----- Skill info -----
 
 function GetTL2Skill(const id:Int64; out aclass:Int64; out atype:integer):string;
@@ -87,35 +137,25 @@ begin
   result:=GetTL2Skill(id,lclass,ltype);
 end;
 
-//-------------------
+//----- Stat info -----
 
-function GetModAndTitle(const id:Int64; const abase:string; out amod:Int64):string;
-var
-  aSQL:string;
-  vm:pointer;
+function GetTL2Stat(const id:Int64; out amod:Int64):string;
 begin
-  amod  :=-1;
-  result:=HexStr(id,16);
+  result:=GetModAndTitle(id,'stats','',amod);
+end;
 
-  Str(id,aSQL);
-  aSQL:='SELECT title,modid FROM '+abase+' WHERE id='+aSQL+' LIMIT 1';
-
-  if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
-  begin
-    if sqlite3_step(vm)=SQLITE_ROW then
-    begin
-      result:=sqlite3_column_text (vm,0);
-      amod  :=sqlite3_column_int64(vm,1);
-    end;
-    sqlite3_finalize(vm);
-  end;
+function GetTL2Stat(const id:Int64):string;
+var
+  lmod:Int64;
+begin
+  result:=GetTL2Stat(id,lmod);
 end;
 
 //----- Item info -----
 
 function GetTL2Item(const id:Int64; out amod:Int64):string;
 begin
-  result:=GetModAndTitle(id,'items',amod);
+  result:=GetModAndTitle(id,'items','',amod);
 end;
 
 function GetTL2Item(const id:Int64):string;
@@ -129,7 +169,7 @@ end;
 
 function GetTL2Class(const id:Int64; out amod:Int64):string;
 begin
-  result:=GetModAndTitle(id,'classes',amod);
+  result:=GetModAndTitle(id,'classes','',amod);
 end;
 
 function GetTL2Class(const id:Int64):string;
@@ -143,7 +183,7 @@ end;
 
 function GetTL2Pet(const id:Int64; out amod:Int64):string;
 begin
-  result:=GetModAndTitle(id,'pets',amod);
+  result:=GetModAndTitle(id,'pets','',amod);
 end;
 
 function GetTL2Pet(const id:Int64):string;
@@ -192,16 +232,29 @@ end;
 function GetTL2KeyType(acode:integer):string;
 begin
   case acode of
-    0: result:=rsQK1;
-    1: result:=rsQK2;
-    2: result:=rsQK3;
-    3: result:=rsQK4;
-    4: result:=rsQK5;
-    5: result:=rsQK6;
-    6: result:=rsQK7;
-    7: result:=rsQK8;
-    8: result:=rsQK9;
-    9: result:=rsQK0;
+    0..99: begin // just for 3 hotbars atm
+      if acode>=10 then
+      begin
+        Str(acode div 10,result);
+        result:=rsSet+' '+result+': ';
+      end
+      else
+        result:='';
+
+      case (acode mod 10) of
+        0: result:=result+rsQK1;
+        1: result:=result+rsQK2;
+        2: result:=result+rsQK3;
+        3: result:=result+rsQK4;
+        4: result:=result+rsQK5;
+        5: result:=result+rsQK6;
+        6: result:=result+rsQK7;
+        7: result:=result+rsQK8;
+        8: result:=result+rsQK9;
+        9: result:=result+rsQK0;
+      end;
+    end;
+
     $3E8: result:=rsLMB;
     $3E9: result:=rsRMB;
     $3EA: result:=rsRMBAlt;
@@ -246,7 +299,7 @@ begin
 
   if sqlite3_open(':memory:',@db)=SQLITE_OK then
     try
-      if loadOrSaveDb(db,TL2DataBase,false)=SQLITE_OK then
+      if CopyFromFile(db,TL2DataBase)=SQLITE_OK then
       begin
       end;
     except
