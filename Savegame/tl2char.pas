@@ -6,8 +6,8 @@ uses
   classes,
   tl2stream,
   tl2common,
-  tl2passive,
   tl2types,
+  tl2effects,
   tl2item;
 
 type
@@ -70,8 +70,10 @@ type
     FModIds         :TL2IdList;
 
     FItems          :TTL2ItemList;
-    FPassives1      :TTL2PassiveList;
-    FPassives2      :TTL2PassiveList;
+    FEffects1       :TTL2EffectList;
+    FEffects2       :TTL2EffectList;
+    FEffects3       :TTL2EffectList;
+    FAugments       :TL2StringList;
   public
     constructor Create(amode:TTL2ParseType; const adescr:string); overload;
     destructor  Destroy; override;
@@ -147,10 +149,14 @@ begin
   for i:=0 to High(FItems) do FItems[i].Free;
   SetLength(FItems,0);
 
-  for i:=0 to High(FPassives1) do FPassives1[i].Free;
-  SetLength(FPassives1,0);
-  for i:=0 to High(FPassives2) do FPassives2[i].Free;
-  SetLength(FPassives2,0);
+  for i:=0 to High(FEffects1) do FEffects1[i].Free;
+  SetLength(FEffects1,0);
+  for i:=0 to High(FEffects2) do FEffects2[i].Free;
+  SetLength(FEffects2,0);
+  for i:=0 to High(FEffects3) do FEffects3[i].Free;
+  SetLength(FEffects3,0);
+
+  SetLength(FAugments,0);
 
   inherited;
 end;
@@ -209,6 +215,7 @@ if FMode=ptLite then exit;
   AStream.ReadQWord;    // -1
   AStream.ReadQWord;    // -1
 
+  // can it be a name hash?
   isPet:=(AStream.ReadDWord=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
 
   FCharacterName:=AStream.ReadShortString(); // :55(pet) Char name
@@ -299,7 +306,8 @@ if FMode=ptLite then exit;
 //  if FDescr<>'' then SaveDump(FDescr+'_data.dmp',AStream.Memory+lpos,(AStream.Position-lpos));
 
 //-----------------------------
-  if not (FMode in [ptDeep,ptDeepest]) then
+  if FMode=ptLite then
+//  if not (FMode in [ptDeep,ptDeepest]) then
   begin
     FItemSize:=Size-(AStream.Position-lpos);
     if FDescr<>'' then SaveDump(FDescr+'_rest.dmp',AStream.Memory+AStream.Position,FItemSize);
@@ -313,18 +321,18 @@ if FMode=ptLite then exit;
 
   FItems:=ReadItemList(AStream);
 
-  //----- "passives" -----
-  // "activation: passive" attribute 
+  //----- Effects -----
+  // dynamic,passive,transfer
 
-  FPassives1:=ReadPassiveList(AStream);
-  FPassives2:=ReadPassiveList(AStream);
+//writeln('char effect 1');
+  FEffects1:=ReadEffectList(AStream,true);
+//writeln('char effect 2');
+  FEffects2:=ReadEffectList(AStream,true);
+//writeln('char effect 3');
+  FEffects3:=ReadEffectList(AStream,true);
 
-  //?? DYNAMIC activation passive names? activation: dynamic, duration: instant
-  // full chargebar state?
-  AStream.ReadDWord;    // 0
-
-  AStream.ReadShortStringList; //?? spell name
-
+  FAugments:=AStream.ReadShortStringList;
+  
   //----- STATS -----
 
   lcnt:=AStream.ReaDWord;
@@ -338,7 +346,6 @@ if FMode=ptLite then exit;
     AStream.ReadShortString(); // flag
     AStream.ReadDWord;         // value
   end;
-
 end;
 
 procedure TTL2Character.SaveToStream(AStream: TTL2Stream);
@@ -481,7 +488,7 @@ begin
   llen:=AStream.ReadDWord;
   lpos:=AStream.Position;
 
-//  if adescr<>'' then  SaveDump(adescr+'_charinfo.dmp',AStream.Memory+lpos,llen);
+  if adescr<>'' then SaveDump(adescr+'.dmp',AStream.Memory+lpos,llen);
 
   result:=TTL2Character.Create(amode,adescr);
 
@@ -494,6 +501,7 @@ begin
     try
       result.LoadFromStream(AStream);
     except
+writeln('got char exception');
     end;
 
   AStream.Seek(lpos+llen,soFromBeginning);

@@ -11,14 +11,14 @@ uses
   tl2common;
 
 type
-  TTL2Map = class;
+  TTL2Map     = class;
   TTL2MapList = array of TTL2Map;
 
 type
-  TTL2Trigger = array [0..135] of byte;
+  TTL2Trigger     = array [0..135] of byte;
   TTL2TriggerList = array of TTL2Trigger;
 type
-  TTL2Prop = array of byte;
+  TTL2Prop     = array of byte;
   TTL2PropList = array of TTL2Prop;
 type
   TTL2LayData = packed record
@@ -40,6 +40,10 @@ type
     FFoW_Y: integer;
     FFoW  : PByte;
 
+    Unkn0:DWord;
+    Unkn1:Word;
+    UnknF:TL2Float;
+
     FUnknList  : TL2IdList;
     FLayoutList: TL2StringList;
     FTriggers  : TTL2TriggerList;
@@ -48,8 +52,10 @@ type
 
     FUnknown1  : array of array of byte;
 
-    procedure ReadProp    (AStream: TTL2Stream; var aProp:TTL2Prop);
-    procedure ReadPropList(AStream: TTL2Stream);
+    procedure ReadProp     (AStream: TTL2Stream; var aProp:TTL2Prop);
+    procedure WriteProp    (AStream: TTL2Stream; var aProp:TTL2Prop);
+    procedure ReadPropList (AStream: TTL2Stream);
+    procedure WritePropList(AStream: TTL2Stream);
   
   public
     constructor Create;
@@ -89,14 +95,12 @@ begin
     SetLength(FPropList[i],0);
   SetLength(FPropList,0);
 
+  for i:=0 to High(FUnknown1) do
+    SetLength(FUnknown1[i],0);
   SetLength(FUnknown1,0);
 
   SetLength(FTriggers,0);
 
-{-- strings
-  for i:=0 to High(FLayoutList) do
-    SetLength(FLayoutList[i],0);
-}
   SetLength(FLayoutList,0);
   
   inherited;
@@ -131,6 +135,32 @@ begin
   }
 end;
 
+procedure TTL2Map.WriteProp(AStream: TTL2Stream; var aProp:TTL2Prop);
+begin
+  AStream.WriteDWord(Length(aProp));
+  if Length(aProp)>0 then
+    AStream.Write(aProp[0],Length(aProp));
+  {
+    AStream.ReadByte;
+    AStream.ReadQWord; // ID
+    FName:=AStream.ReadShortString;
+    AStream.ReadDWord; // 0
+    AStream.ReadQWord; // 2E3A2D8F.DDC8B8CA
+    AStream.ReadQWord; // 2E3A2D8FDDC8B8CA
+    AStream.ReadQWord; // 2EE026D98D5FC8C7
+    AStream.ReadDWord; // 0
+    AStream.ReadByte;  // 0
+    AStream.ReadQWord; // FF
+    ....
+
+    // 00 01 00 01 01 00 00
+    AStream.ReadDWord; // 43062E21  134.18
+    AStream.ReadDWord; // 0
+    AStream.ReadDWord; // 43A0492F
+    .....
+  }
+end;
+
 procedure TTL2Map.ReadPropList(AStream: TTL2Stream);
 var
   lcnt,i:integer;
@@ -143,29 +173,44 @@ begin
   end;
 end;
 
+procedure TTL2Map.WritePropList(AStream: TTL2Stream);
+var
+  i:integer;
+begin
+  AStream.WriteDWord(Length(FPropList));
+  for i:=0 to High(FPropList) do
+  begin
+    WriteProp(AStream, FPropList[i]);
+  end;
+end;
+
 procedure TTL2Map.LoadFromStream(AStream: TTL2Stream);
 var
   lcnt,lcnt1:integer;
   i:integer;
 begin
 
-  Check(AStream.ReadDword,'map 0',0); // 0, 2, 1 - for repeated
+  //??
+  Unkn0:=Check(AStream.ReadDword,'map 0',0); // 0, 2, 1 - for repeated
 
   FCurrentTime:=AStream.ReadFloat;
   FTime       :=AStream.ReadFloat;
 
-  AStream.ReadFloat; // 1.0 3A83126F for Zorro  0,00100000004749745
+  //??
+  UnknF:=AStream.ReadFloat; // 1.0 3A83126F for Zorro  0,00100000004749745
 
   FName:=AStream.ReadShortString;
 
-  Check(AStream.ReadWord,'pre-matrix of '+UTF8Encode(FName),0);   // 0 (1 for Lesya)
+  //??
+  Unkn1:=Check(AStream.ReadWord,'pre-matrix of '+UTF8Encode(FName),0);   // 0 (1 for Lesya)
 
   //----- i guess, this is Fog of War setings (what else?)
 
-  FFoW_X:=AStream.ReadDword;
-  FFoW_Y:=AStream.ReadDword;
-  FFoW  :=AStream.ReadBytes(FFoW_X*FFoW_Y*SizeOf(Single));
+  FFoW_X:=AStream.ReadDWord;
+  FFoW_Y:=AStream.ReadDWord;
+  FFoW  :=AStream.ReadBytes(FFoW_X*FFoW_Y*SizeOf(TL2Float));
 
+  //??
   Check(AStream.ReadDWord,'pre-layouts',0); // 0
 
   //----- Layout data -----
@@ -182,10 +227,10 @@ begin
   lcnt:=AStream.ReadDWord;  // mob count?
   SetLength(FMobInfos,lcnt);
   for i:=0 to lcnt-1 do
-    FMobInfos[i]:=ReadCharData(AStream,ptLite,'res\'+FName+'_mobinfo'+HexStr(i,2));
+    FMobInfos[i]:=ReadCharData(AStream,ptLite,''{'res\'+FName+'_mobinfo'+HexStr(i,2)});
 
   //----- Props (Items) -----
-
+  //!! Check on same as items
   ReadPropList(AStream);
 
   //----- !! -----
@@ -210,11 +255,76 @@ begin
 
   FLayoutList:=AStream.ReadShortStringList;
 
+  //??
   Check(AStream.ReadDWord,'map-end',0); // 0
 end;
 
 procedure TTL2Map.SaveToStream(AStream: TTL2Stream);
+var
+  i:integer;
 begin
+  //??
+  AStream.WriteDWord(Unkn0);
+
+  AStream.WriteFloat(FCurrentTime);
+  AStream.WriteFloat(FTime);
+
+  //??
+  AStream.WriteFloat(UnknF); // 1.0 3A83126F for Zorro  0,00100000004749745
+
+  AStream.WriteShortString(FName);
+
+  //??
+  AStream.WriteWord(Unkn1);
+
+  //----- i guess, this is Fog of War setings (what else?)
+
+  AStream.WriteDWord(FFoW_X);
+  AStream.WriteDWord(FFoW_Y);
+  AStream.Write(FFoW^,FFoW_X*FFoW_Y*SizeOf(TL2Float));
+
+  //??
+  AStream.WriteDWord(0);
+
+  //----- Layout data -----
+
+  AStream.WriteDword(Length(FLayData));
+  if Length(FLayData)>0 then
+    AStream.Write(FLayData[0],Length(FLayData)*SizeOf(TTL2LayData));
+
+  AStream.WriteIdList(FUnknList);
+
+  //----- units: Mobs and similar? -----
+
+  AStream.WriteDWord(Length(FMobInfos));
+  for i:=0 to High(FMobInfos) do
+    WriteCharData(AStream,FMobInfos[i]);
+
+  //----- Props (Items) -----
+  //!! Check on same as items
+  WritePropList(AStream);
+
+  //----- !! -----
+
+  AStream.WriteDWord(Length(FUnknown1));
+  for i:=0 to High(FUnknown1) do
+  begin
+    AStream.WriteDWord(Length(FUnknown1[i]));
+    AStream.Write(FUnknown1[i][0],Length(FUnknown1[i]));
+  end;
+
+  //----- Triggers and other -----
+
+  AStream.WriteDWord(Length(FTriggers));
+  if Length(FTriggers)>0 then
+    AStream.Write(FTriggers[0],Length(FTriggers)*SizeOf(TTL2Trigger));
+  
+  //----- LAYOUT -----
+
+  AStream.WriteShortStringList(FLayoutList);
+
+  //??
+  AStream.WriteDWord(0);
 end;
 
 function ReadMapList(AStream:TTL2Stream):TTL2MapList;

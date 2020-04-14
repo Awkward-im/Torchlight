@@ -103,6 +103,32 @@
         <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="tl2char.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Char"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2common.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2item.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2map.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Map"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2modifiers.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2passive.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -1,3 +1,26 @@
+Extract pet,
+AddPet (check coords - players) OR move pet to town (1-2 sec)
+
+"Max pets" NUM_PETS_ALLOWED  ??
+
+<FLOAT>POSITIONX:3.9799
+<FLOAT>POSITIONY:0
+<FLOAT>POSITIONZ:82.4775
+<FLOAT>FORWARDX:0.0761271
+<FLOAT>FORWARDY:0
+<FLOAT>FORWARDZ:-0.997098
+<FLOAT>RIGHTX:-0.997098
+<FLOAT>RIGHTY:0
+<FLOAT>RIGHTZ:-0.0761271
+
+forward-right-up
+
+<FLOAT>SCALE X:2
+<FLOAT>SCALE Z:1.5
+<FLOAT>ANGLE:43.8599
+
+Warbound have charge bar
+
 save.parse
   read
   save char - known size
@@ -14,154 +37,13 @@ Decode    \______|   data
 Encode    /      |   data
 SaveToFile     <--   FOut: +header,data,+footer
 
-readbyte/writebyte -> readBool(TL2Boolean)
+время морфа
 
-encode/decode без привязки к памяти?
-грузить в память, процесс, создать поток?
-
-если использовать обычный stream, будет не так просто сохранять блоки памяти?
-ну, по идее, сохраним позицию, считаем в буффер, восстановим позицию.
-в остальном, у нас чтение последовательное
-
-1 - common types
-2 - constants
-3 - savegame process
-4 - common database
-  mods
-  skills id, name, mod, active/passive, levels, requirement levels, classes?
-  quests
-  items
-  pets
-  classes
-  --
-  monsters
-  locations
-    
-    SPELLTABLE[37].ranks = 5;
-    SPELLTABLE[37].exclusive = false;
-    SPELLTABLE[37].externalname = "Summon Nether Imp";
-    SPELLTABLE[37].internalname[0] = "SUMMON NETHER IMP";
-    SPELLTABLE[37].internalname[1] = "SUMMON NETHER IMP 2";
-    SPELLTABLE[37].internalname[2] = "SUMMON NETHER IMP 3";
-    SPELLTABLE[37].internalname[3] = "SUMMON NETHER IMP 4";
-    SPELLTABLE[37].internalname[4] = "SUMMON NETHER IMP 5";
-    SPELLTABLE[37].internalname[5] = "";
-    SPELLTABLE[37].internallevel[0] = 1;
-    SPELLTABLE[37].internallevel[1] = 1;
-    SPELLTABLE[37].internallevel[2] = 1;
-    SPELLTABLE[37].internallevel[3] = 1;
-    SPELLTABLE[37].internallevel[4] = 1;
-    SPELLTABLE[37].internallevel[5] = 0;
-    SPELLTABLE[37].levelreq[0] = 5;
-    SPELLTABLE[37].levelreq[1] = 25;
-    SPELLTABLE[37].levelreq[2] = 40;
-    SPELLTABLE[37].levelreq[3] = 60;
-    SPELLTABLE[37].levelreq[4] = 80;
-    SPELLTABLE[37].levelreq[5] = -1;
-
-
-pet db: user names - text with separators
-mod (main) - ok. but alt?
-different mods, different textures
-
-skill db:
-  id
-  title
-  Class, spell, item
-  (mod list)
-item db:
-  id
-  title
-  (type)
-  (mod list)
-quest
-  id
-  title
-  (mod list)
-mod
-  id
-  title
-  version
-pet
-  id
-  title
-  (mod list)
-
-хз как различает, что можно класть, что нет (UNITTYPE ?)
 fish: "VALUE":
   50=$32, - 5 min
   85=$55, - 15 min
   225=$E1 OR 5555=$15B3
 
-level start 839748293236720215 = BA7629F9F1D8257
-
-ELFLY_test_alt.SVB.bin
-----------------------
-14DB8A:
-14DBAE:
-  2b ($32)
-  2b ($32)
-  x*8 = IDs некоторые повторяются, например 321D31CD2184765E (Immolation Aura)
-                                         or 8BD272812A59B266 (Astral Ally)
-возможно, история изучения скилов
-  2b (05)
-  x*8
-  4b (size?)
----------
-1580CD
-  4b: cnt ($33)
-  17b: 8b - skill id, 4b(+5 for alt, not for all),4b,1b(чаще =1б но было и 0A)
-158434:
-  4b: cnt ($3B)
-  31b: 4b, 4,4,4, ??
-4b-cnt, list: location name, 4b (example:43D46704=424.8)
-2b=0, list:(locname,4b?) - same name, small numbers
-if name+4b, then last=(17)
-159ADD:
-01 00 00 23/22
-00 00 00 00
-17 00 00 00 list
-8b=id ,4b level OR (-1),2 not level. value is 1,2 or 4
-4b
-name (Elfly), class (HUM_ARBITER_F), pet (Pet_Panda)
-1b=0 (final)
-
-00AAED8E1332C55F: at 14DBD2
-
-C55BB2224DE29444 (1) - F0AA0274DD653E78 (1) (passive) Rift Warp - (passive) Chaos Wand
-DE095FFF018EE602 (0) - C55BB2224DE29444 (1)  Avatar - (passive) Rift Warp
-
-quest NG+
-EE9179E041437601
-
-	[EFFECT]
-		<STRING>NAME:OFTHEBEAR DAMAGE BONUS
-		<STRING>ACTIVATION:PASSIVE
-		<STRING>DURATION:0
-		<STRING>TYPE:DAMAGE BONUS
-		<STRING>DAMAGE_TYPE:FIRE
-		<FLOAT>MIN:50
-		<FLOAT>MAX:50
-	[/EFFECT]
-
-	
-	[BONE_MODIFIERS]
-		[BONE_PUSH]
-			<STRING>NAME:Bip01 L ForeArm
-			<FLOAT>VALUE:-0.02 = BCA3D70A
-		[/BONE_PUSH]
-		[BONE_PUSH]
-			<STRING>NAME:Bip01 R ForeArm
-			<FLOAT>VALUE:-0.02
-		[/BONE_PUSH]
-	[/BONE_MODIFIERS]
-
-	<INTEGER64>MODGUID:666819256828661366   =  76.8e.a9.c4.94.04.41.09
-	<INTEGER64>MODGUID:1456944424           =  28.35.d7.56              7b.01 = 379 variant pets
-	<INTEGER64>MODGUID:6075460356558930279  =  67.c1.a9.4f.01.5f.50.54  10.00 = 16  variant classes 35a5aacc
-	<INTEGER64>MODGUID:153565915            =  db.3a.27.09                          
-	<INTEGER64>MODGUID:1691341222           =  a6.d1.cf.64
-	                                           bf.d9.e1.31.             07.00 = 7 BiA:Warbounds
 
 <INTEGER>MAX_SPAWN_RANGE:999=3E7
 1.0  = 3F800000
@@ -170,74 +52,8 @@ EE9179E041437601
 100  = 42C80000
 ==========
 time of morph, used skill (cd timer), skill, effect
-player - show cap or not?
 ---- + status (poisined, burning etc) + show loot or not
 
-pet info
-34b
-1b = 7
-7b
-47EE5583
-47EECA4F
-1.0
-2b,location name
-2b
-4b= 1D=30
-4b= 17=23
-
-
-EOF:
-<quests?>
-2b,text,4b
-RAGE:   ELFLY  LONELFLY ZORRO
-1b=3    1b=1    1         0
-1b=0    1b=0    0         1
-1b=0    1b=0    0         0
-1b=0    1b=1D   18        0
-1b=0    1b=0    0         0
-1b=0    1b=0    0         0
-1b=0    1b=0    0         0
-1b=6    1b=0    0         0
-1b=0    1b=0    0         0
-
-4b=cnt // fish?           [0]
-{??killcount_ stats??}
-8b+4b = 
-    8872EC27348471A6=1=-8614563484077362778, units\monsters\varcolyn\VARKOLYN_MELEE_SPAWNER
-    4EA6E548CFA9F12E=2=5667469281976774958, Ezrohir,EZRO_CRAWLER
-    78F79395A7C011DE=1=8716597874772677086, cursedsword\FLAME_SWORD_PET
----                        
-4b=0                       0
-2b,char name
-2b,char_class
-2b,pet_class
-0,filesize
-
--------------------------
-panda
-	<FLOAT>MINHP:160        = 43200000
-	<INTEGER>ARMOR:100      = 64
-	<INTEGER>MINDAMAGE:60   = 3C
-	<INTEGER>MAXDAMAGE:80   = 50
-	<FLOAT>WALKINGSPEED:1.5 = 3FC00000
-	<FLOAT>RUNNINGSPEED:6   = 40C00000
-	<FLOAT>ATTACKSPEED:100  = 42C80000
-	<FLOAT>REACH_BONUS:0.75 = 3F400000
-	<INTEGER>RARITY:0
-	<FLOAT>SCALE:1          = 3F800000
-	<BOOL>CANMATCHSPEED:true  = (byte) 1
-
-	<INTEGER>ARMOR_FIRE:75     = 4B
-	<INTEGER>ARMOR_ICE:75
-	<INTEGER>ARMOR_ELECTRIC:75
-	<INTEGER>ARMOR_POISON:75
-
-	<FLOAT>MAXHP:160              = 43200000
-	<FLOAT>DAMAGE_REACT_RADIUS:20 = 41A00000
-
-	<FLOAT>RUN_ANIM_MULT:0.75     = 3F400000
-	<FLOAT>WALK_ANIM_MULT:1.5     = 3FC00000
-	<STRING>UNIT_GUID:2947367154991955139
 ----------------
 	    a    b  =additional byte?
 67 - 01000011 no cheat

@@ -14,7 +14,7 @@ type
   gc_BaseClass = (Berserker, Embermage, Engineer, Outlander);
 
 procedure SaveDump(const aname:string; aptr:pByte; asize:cardinal);
-function Check(aval:dword; const albl:string; aright:dword):dword;
+function Check(aval:qword; const albl:string; aright:qword):qword;
 function SecToTime ( sec:cardinal):string;
 function MSecToTime(msec:cardinal):string;
 
@@ -32,7 +32,7 @@ begin
   CloseFile(f);
 end;
 
-function Check(aval:dword; const albl:string; aright:dword):dword;
+function Check(aval:qword; const albl:string; aright:qword):qword;
 begin
   result:=aval;
 

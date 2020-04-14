@@ -143,7 +143,7 @@ begin
     begin
       lcnt1:=FStream.ReadDWord; // Offset to next quest from quests block start
       FStream.ReadQWord;  // E36A01E3Ae3EBEEF "MEDIA\QUESTS\TL2MAINQUEST\ACT3\A3A3-TOWNARRIVAL.DAT 
-      Check(FStream.ReadQWord,'quest_8',$FFFFFFFFFFFFFFFF);  // FF
+      Check(FStream.ReadQWord,'quest_8',qword($FFFFFFFFFFFFFFFF));  // FF
       FStream.ReadDWord;  // 29C4F73E
       Check(FStream.ReadDWord,'quest_4',$FFFFFFFF);  // FF
 
@@ -199,7 +199,7 @@ begin
     FStream.Position:=lpos;
   end; // quest block
 
-  //----- ?? Skill learn history (check order) -----
+  //----- ?? Skill [??learn] history (check order) -----
 
   lcnt :=FStream.ReadWord; // same as next history list count
   lcnt1:=FStream.ReadWord;
@@ -214,7 +214,7 @@ begin
   if lcnt>0 then
     FStream.Read(FRecipes[0],lcnt*SizeOf(TL2ID));
 
-  //===== REST of file =====
+  //===== REST of file (statistic??) =====
 
   FLBlockSize:=FStream.ReadDWord;
   if (FStream.Position+FLBlockSize)<>(FStream.Size-4) then writeln('Something wrong!!');
@@ -234,23 +234,60 @@ begin
 
     FStream.ReadByte;  // 0
 
-    // ??
+    // ?? mobs
     lcnt:=FStream.ReadDWord;
     FStream.Seek(lcnt*40,soCurrent);
+{
+    8b - mob id (media/units/monsters)
+    4b - x?
+    4b - y?
+    4b - ?
+    4b - 
+    4b - 
+    4b - ?
+    4b - 
+    2b
+    2b
+}
 
-    // ??
+    // ?? items
     lcnt:=FStream.ReadDWord;
     FStream.Seek(lcnt*24,soCurrent);
+{
+    8b - item id (media\units\items)
+    4b - 
+    4b - 
+    4b - [0]
+    4b - amount?
+}
 
-    // ??
+    // ?? skills
     lcnt:=FStream.ReadDWord;
     FStream.Seek(lcnt*17,soCurrent);
+{
+    8b - skill id (media\skills)
+    4b - 
+    4b - 
+    1b - 
+}
 
     // ??
     lcnt:=FStream.ReadDWord;
     FStream.Seek(lcnt*31,soCurrent);
+{
+    4b - 131.87
+    4b - ?
+    4b - ?
+    4b - ?
+    1b - [0]
+    4b - 
+    1b
+    4b
+    4b
+    1b
+}
 
-    //----- ?? Area (teleports?) -----
+    //----- ?? Area (teleports? time on map?) -----
     // usually, count and titles are the same
 
     lcnt:=FStream.ReadDWord;

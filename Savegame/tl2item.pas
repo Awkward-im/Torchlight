@@ -7,7 +7,7 @@ uses
   tl2stream,
   tl2common,
   tl2types,
-  tl2modifiers;
+  tl2Effects;
 
 type
   TTL2Item = class;
@@ -16,7 +16,7 @@ type
   TTL2Item = class
   private
 //    MagicByte:byte;
-    FItemId   :QWord;
+    FItemId   :TL2ID;
     FName     :string;
     FPrefix   :string;
     FSuffix   :string;
@@ -38,9 +38,9 @@ type
 //    byte[] Unknown5
 //    short Unknown6Count
 //    byte[] Unknown6
-    FModifiers1:TTL2ModifierList;
-    FModifiers2:TTL2ModifierList;
-    FModifiers3:TTL2ModifierList;
+    FEffects1:TTL2EffectList;
+    FEffects2:TTL2EffectList;
+    FEffects3:TTL2EffectList;
     FAugments: TL2StringList;
 //    int Unknown7Count
 //    byte[] Unknown7
@@ -76,9 +76,14 @@ begin
   for i:=0 to High(FSocketables) do
     FSocketables[i].Free;
   SetLength(FSocketables,0);
-  SetLength(FModifiers1,0);
-  SetLength(FModifiers2,0);
-  SetLength(FModifiers3,0);
+
+  for i:=0 to High(FEffects1) do FEffects1[i].Free;
+  SetLength(FEffects1,0);
+  for i:=0 to High(FEffects2) do FEffects2[i].Free;
+  SetLength(FEffects2,0);
+  for i:=0 to High(FEffects3) do FEffects3[i].Free;
+  SetLength(FEffects3,0);
+
   SetLength(FAugments,0);
 
   inherited;
@@ -89,7 +94,7 @@ var
   lcnt:integer;
 begin
   AStream.ReadByte;                   // "2"
-  FItemId:=AStream.ReadQWord;         // Item ID
+  FItemId:=TL2ID(AStream.ReadQWord);  // Item ID
   FName  :=AStream.ReadShortString(); // name
   FPrefix:=AStream.ReadShortString(); // prefix
   FSuffix:=AStream.ReadShortString(); // suffix
@@ -106,8 +111,8 @@ begin
   AStream.ReadQWord;     // *FF
   AStream.ReadDWord;     // 0
 
-  FEnchantmentCount:=AStream.ReadDWord; // enchantment count
-  FStashPosition   :=AStream.ReadDWord; // stash position $285 = 645
+  FEnchantmentCount:=integer(AStream.ReadDWord); // enchantment count
+  FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645
   //-- 95 bytes
   // 7 times
   AStream.ReadByte;  // 1
@@ -125,7 +130,7 @@ begin
   AStream.ReadFloat;
   AStream.ReadFloat;  // 66.27
   AStream.ReadFloat;
-
+  // 35<--| --> 60 / 4 = 15
   AStream.ReadFloat;  // ?
   AStream.ReadFloat;  // ?
   AStream.ReadFloat;  // ? = 0
@@ -149,9 +154,9 @@ begin
   FSocketables:=ReadItemList(AStream);
 
   AStream.ReadDWord;  // 0
-  FWeaponDamage:=AStream.ReadDWord;
-  FArmor       :=AStream.ReadDWord;
-  FArmorType   :=AStream.ReadDWord;
+  FWeaponDamage:=integer(AStream.ReadDWord);
+  FArmor       :=integer(AStream.ReadDWord);
+  FArmorType   :=integer(AStream.ReadDWord);
 
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
@@ -160,15 +165,20 @@ begin
   lcnt:=AStream.ReadWord;
   AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
   
-  FModifiers1:=ReadModifierList(AStream);
-  FModifiers2:=ReadModifierList(AStream);
-  FModifiers3:=ReadModifierList(AStream);
+  // dynamic,passive,transfer
+//writeln('item effect 1');
+  FEffects1:=ReadEffectList(AStream);
+//writeln('item effect 2');
+  FEffects2:=ReadEffectList(AStream);
+//writeln('item effect 3');
+  FEffects3:=ReadEffectList(AStream);
 
   FAugments:=AStream.ReadShortStringList;
 
+  // Like STATS for char??
   lcnt:=AStream.ReadDWord;
-  AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
-
+  if lcnt>0 then
+    AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
 end;
 
 procedure TTL2Item.SaveToStream(AStream: TTL2Stream);
@@ -178,18 +188,25 @@ end;
 function ReadItemList(AStream:TTL2Stream):TTL2ItemList;
 var
   i,lcnt:integer;
+  lpos:cardinal;
 begin
   result:=nil;
   lcnt:=AStream.ReadDWord;
   if lcnt>0 then
-  else
   begin
     SetLength(result,lcnt);
     for i:=0 to lcnt-1 do
     begin
+lpos:=AStream.Position;
+      
       result[i]:=TTL2Item.Create;
+try
       result[i].LoadFromStream(AStream);
+except
+writeln('item exception ',i,' at ',HexStr(lpos,8));
+end;
     end;
+
   end;
 end;
 

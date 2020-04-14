@@ -81,20 +81,23 @@ begin
 
   //===== Quests =====
 
+  FStream.WriteDWord(FQBlockSize);
   FStream.Write(FQuestBlock^,FQBlockSize);
 
   //----- ?? History -----
 
-  FStream.WriteWord(High(FHistory)); // same as next history list count
-  // Skill using history?
-  FStream.WriteIdList(FHistory);
+  FStream.WriteWord(Length(FHistory)); // same as next history list count
+  FStream.WriteWord(Length(FHistory));
+  FStream.Write(FHistory[0],Length(FHistory)*SizeOf(TL2ID));
 
   //----- Recipes -----
 
-  FStream.WriteIdList(FRecipes);
+  FStream.WriteWord(Length(FRecipes));
+  FStream.Write(FRecipes[0],Length(FRecipes)*SizeOf(TL2ID));
 
   //===== REST of file =====
 
+  FStream.WriteDWord(FLBlockSize);
   FStream.Write(FLastBlock^,FLBlockSize);
 
 end;
