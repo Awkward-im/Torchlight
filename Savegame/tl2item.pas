@@ -15,35 +15,30 @@ type
 type
   TTL2Item = class
   private
-//    MagicByte:byte;
     FItemId   :TL2ID;
     FName     :string;
     FPrefix   :string;
     FSuffix   :string;
 
-//    byte[] Unknown1
     FModIds:TL2IdList;
-//    byte[] Unknown2
+
     FEnchantmentCount:integer;
     FStashPosition   :integer;
-//    byte[] Unknown3
+
     FLevel      :integer;
     FStackSize  :integer;
     FSocketCount:integer;
     FSocketables:TTL2ItemList;
-//    byte[] Unknown4
+
     FWeaponDamage:integer;
     FArmor       :integer;
     FArmorType   :integer;
-//    byte[] Unknown5
-//    short Unknown6Count
-//    byte[] Unknown6
+
     FEffects1:TTL2EffectList;
     FEffects2:TTL2EffectList;
     FEffects3:TTL2EffectList;
-    FAugments: TL2StringList;
-//    int Unknown7Count
-//    byte[] Unknown7
+    FAugments:TL2StringList;
+    FStats   :TL2IdValList;
 
   public
     constructor Create;
@@ -163,22 +158,17 @@ begin
   AStream.ReadDWord; // *FF
 
   lcnt:=AStream.ReadWord;
+  if lcnt>0 then writeln('item-pre effect at ',HexStr(AStream.Position,8));
   AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
   
   // dynamic,passive,transfer
-//writeln('item effect 1');
   FEffects1:=ReadEffectList(AStream);
-//writeln('item effect 2');
   FEffects2:=ReadEffectList(AStream);
-//writeln('item effect 3');
   FEffects3:=ReadEffectList(AStream);
 
   FAugments:=AStream.ReadShortStringList;
 
-  // Like STATS for char??
-  lcnt:=AStream.ReadDWord;
-  if lcnt>0 then
-    AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
+  FStats:=AStream.ReadIdValList;
 end;
 
 procedure TTL2Item.SaveToStream(AStream: TTL2Stream);

@@ -74,6 +74,7 @@ type
     FEffects2       :TTL2EffectList;
     FEffects3       :TTL2EffectList;
     FAugments       :TL2StringList;
+    FStats          :TL2IdValList;
   public
     constructor Create(amode:TTL2ParseType; const adescr:string); overload;
     destructor  Destroy; override;
@@ -142,9 +143,6 @@ begin
   SetLength(FModIds,0);
 
   FreeMem(Data);
-{
-  for i:=0 to 3 do FSpells[i].name:='';
-}
 
   for i:=0 to High(FItems) do FItems[i].Free;
   SetLength(FItems,0);
@@ -229,16 +227,16 @@ if FMode=ptLite then exit;
   FPosition:=AStream.ReadCoord; //!!!!!!!!
 
   // direction
-  AStream.ReadCoord;
-  AStream.ReadDWord;    // 0
-  AStream.ReadCoord;
-  AStream.ReadDWord;    // 0
-  AStream.ReadCoord;
-  AStream.ReadDWord;    // 0
+  AStream.ReadCoord;   // Forward
+  AStream.ReadDWord;   // 0
+  AStream.ReadCoord;   // Up
+  AStream.ReadDWord;   // 0
+  AStream.ReadCoord;   // Right
+  AStream.ReadDWord;   // 0
 
-  AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0
+  AStream.ReadDWord;   // 0
+  AStream.ReadDWord;   // 0
+  AStream.ReadDWord;   // 0
   AStream.ReadFloat;   // float=1.0
 
   FLevel      :=AStream.ReadDWord;    // level
@@ -251,7 +249,7 @@ if FMode=ptLite then exit;
   FMana       :=AStream.ReadFloat;    // current MP
   FManaBonus  :=AStream.ReadDWord;    // Mana bonus   (pet=full mp)
 
-  AStream.ReadDWord;    // 0 <e1>
+  AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0
   FPlayTime:=AStream.ReadFloat;    // play time, sec
@@ -324,28 +322,20 @@ if FMode=ptLite then exit;
   //----- Effects -----
   // dynamic,passive,transfer
 
-//writeln('char effect 1');
   FEffects1:=ReadEffectList(AStream,true);
-//writeln('char effect 2');
   FEffects2:=ReadEffectList(AStream,true);
-//writeln('char effect 3');
   FEffects3:=ReadEffectList(AStream,true);
 
   FAugments:=AStream.ReadShortStringList;
   
   //----- STATS -----
 
-  lcnt:=AStream.ReaDWord;
-{ atm just 2:
+{ two base:
   CURRENT_PLAYER_STAT_PTS  - unallocated stat points
   CURRENT_PLAYER_SKILL_PTS - unallocated skill points
   multiply_hotbar adds SELECTED_HOTBAR stat
 }
-  for i:=0 to lcnt-1 do
-  begin
-    AStream.ReadShortString(); // flag
-    AStream.ReadDWord;         // value
-  end;
+  FStats:=AStream.ReadIdValList;
 end;
 
 procedure TTL2Character.SaveToStream(AStream: TTL2Stream);
