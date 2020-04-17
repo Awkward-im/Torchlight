@@ -33,21 +33,27 @@ type
 
   private
     FSign           :Byte;
+
+    // Pet's corner
     FImageId,
     FOriginId       :TL2ID;
     Unk1            :TL2ID;
     FScale          :TL2Float;
     FSkin           :Byte;
     FEnabled        :TL2Boolean;
+    FMorphTime      :TL2Float;
     FTownTime       :TL2Float;
     FAction         :TTL2Action;
-    
+
+    // player's Wardrobe etc
     FFace           :integer;
     FHairstyle      :integer;
     FHairColor      :integer;
     FCheater        :byte;
-    FCharacterName  :string;
     FPlayer         :string;
+
+    // looks like common
+    FCharacterName  :string;
     FPosition       :TL2Coord;
     FLevel          :integer;
     FExperience     :integer;
@@ -193,22 +199,25 @@ if FMode=ptLite then exit;
     AStream.ReadQWord;
     AStream.ReadDWord;
   end;
+  //??
   AStream.ReadDWord;    // 0
   FEnabled:=AStream.ReadByte<>0; // 1 (pet - enabled)
+  //??
   AStream.ReadByte;     // 0
   AStream.ReadByte;     // 0
 
   if not isPet then
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
+  //??
   AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0 :24 for pet, :55 for char
 
-  AStream.ReadDWord;    // 0
-  FTownTime:=AStream.ReadFloat;   //!!!!!!!!!! time to town,sec?
-  FAction  :=TTL2Action(AStream.ReadDWord);  // 1  (pet status)
-
+  FMorphTime:=AStream.ReadFloat;   // pet morph time
+  FTownTime :=AStream.ReadFloat;   //!!!!!!!!!! time to town,sec?
+  FAction   :=TTL2Action(AStream.ReadDWord);  // 1  (pet status)
+  //??
   AStream.ReadDWord;    // 1
   FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
-  
+  //??
   AStream.ReadQWord;    // ? player = FFFFFFFF, pet - no
   AStream.ReadQWord;    // -1
   AStream.ReadQWord;    // -1
@@ -220,17 +229,20 @@ if FMode=ptLite then exit;
   Check(AStream.ReadWord,'name_between',0);  // empty (len=0) atm or WORD = number?
   if not isPet then
     FPlayer:=AStream.ReadShortString();      // "PLAYER" !!!!! not exists for pets!!!!!!
-  
+  //??
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0 / elfly=7, rage=2, lonelfly=2, zorro=0
 
   FPosition:=AStream.ReadCoord; //!!!!!!!!
 
+  //??
   // direction
   AStream.ReadCoord;   // Forward
   AStream.ReadDWord;   // 0
+
   AStream.ReadCoord;   // Up
   AStream.ReadDWord;   // 0
+  
   AStream.ReadCoord;   // Right
   AStream.ReadDWord;   // 0
 
@@ -248,7 +260,7 @@ if FMode=ptLite then exit;
   Check(AStream.ReadDWord,'stat',0);  // 0 ?? charge maybe? or armor?
   FMana       :=AStream.ReadFloat;    // current MP
   FManaBonus  :=AStream.ReadDWord;    // Mana bonus   (pet=full mp)
-
+  //??
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0
@@ -291,7 +303,7 @@ if FMode=ptLite then exit;
   FVitality :=AStream.ReadDWord;    // vitality      10\ sure, pet have hp/mp bonuses
   FFocus    :=AStream.ReadDWord;    // focus         10/
   FGold     :=AStream.ReadDWord;    // gold          0
-
+  //??
   AStream.ReadDWord;    // $FF=-1 / 1/0 (elfly)      0
   AStream.ReadQWord;    // FF same as pets
   AStream.ReadDWord;    // FF same as pets
@@ -312,7 +324,6 @@ if FMode=ptLite then exit;
     FItemData:=AStream.ReadBytes(FItemSize);
     exit;
   end;
-
 //-----------------------------
 
   //----- item list -----

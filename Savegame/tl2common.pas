@@ -18,9 +18,12 @@ function Check(aval:qword; const albl:string; aright:qword):qword;
 function SecToTime ( sec:cardinal):string;
 function MSecToTime(msec:cardinal):string;
 
+function GetDifficulty(acode:integer):string;
 
 implementation
 
+uses
+   tl2strings;
 
 procedure SaveDump(const aname:string; aptr:pByte; asize:cardinal);
 var
@@ -66,6 +69,18 @@ end;
 function MSecToTime(msec:cardinal):string;
 begin
   result:=SecToTime(msec div 1000);
+end;
+
+function GetDifficulty(acode:integer):string;
+begin
+  case acode of
+    0: result:=rsCasual;
+    1: result:=rsNormal;
+    2: result:=rsVeteran;
+    3: result:=rsExpert;
+  else
+    result:='';
+  end;
 end;
 
 end.

@@ -55,6 +55,12 @@ type
   end;
 
 
+//=====  =====
+
+type
+  TTL2Difficulty = (Casual, Normal, Veteran, Expert);
+
+
 implementation
 
 

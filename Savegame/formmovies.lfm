@@ -1,0 +1,68 @@
+object fmMovies: TfmMovies
+  Left = 582
+  Height = 306
+  Top = 218
+  Width = 540
+  Caption = 'Movies'
+  ClientHeight = 306
+  ClientWidth = 540
+  OnCreate = FormCreate
+  LCLVersion = '2.1.0.0'
+  object sgMovies: TStringGrid
+    Left = 0
+    Height = 200
+    Top = 0
+    Width = 536
+    ColCount = 6
+    Columns = <    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Title'
+        Width = 96
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Views'
+        Width = 48
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Path'
+        Width = 128
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'ID'
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Name'
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Mod'
+        Width = 128
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goRowHighlight]
+    RowCount = 1
+    TabOrder = 0
+    OnEditingDone = sgMoviesEditingDone
+  end
+  object bbUpdate: TBitBtn
+    Left = 8
+    Height = 30
+    Top = 208
+    Width = 75
+    Caption = '&Update'
+    Default = True
+    Kind = bkOK
+    OnClick = bbUpdateClick
+    TabOrder = 1
+  end
+end

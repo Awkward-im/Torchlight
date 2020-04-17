@@ -1,0 +1,30 @@
+object fmStatistic: TfmStatistic
+  Left = 513
+  Height = 377
+  Top = 125
+  Width = 602
+  Caption = 'Statistic'
+  ClientHeight = 377
+  ClientWidth = 602
+  OnCreate = FormCreate
+  LCLVersion = '2.1.0.0'
+  object bbUpdate: TBitBtn
+    Left = 24
+    Height = 30
+    Top = 336
+    Width = 75
+    Caption = '&Update'
+    Default = True
+    Kind = bkOK
+    OnClick = bbUpdateClick
+    TabOrder = 0
+  end
+  object gbStatistic: TGroupBox
+    Left = 16
+    Height = 227
+    Top = 5
+    Width = 410
+    Caption = 'Statistic'
+    TabOrder = 1
+  end
+end

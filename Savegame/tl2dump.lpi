@@ -115,6 +115,7 @@
       <Unit>
         <Filename Value="tl2item.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Item"/>
       </Unit>
       <Unit>
         <Filename Value="tl2map.pas"/>
@@ -122,12 +123,9 @@
         <UnitName Value="TL2Map"/>
       </Unit>
       <Unit>
-        <Filename Value="tl2modifiers.pas"/>
+        <Filename Value="tl2effects.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="tl2passive.pas"/>
-        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Effects"/>
       </Unit>
     </Units>
   </ProjectOptions>

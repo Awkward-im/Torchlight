@@ -50,8 +50,8 @@ type
   end;
 
 
-function ReadItemList(AStream:TTL2Stream):TTL2ItemList;
-
+function  ReadItemList (AStream:TTL2Stream):TTL2ItemList;
+procedure WriteItemList(AStream:TTL2Stream; alist:TTL2ItemList);
 
 
 implementation
@@ -94,12 +94,14 @@ begin
   FPrefix:=AStream.ReadShortString(); // prefix
   FSuffix:=AStream.ReadShortString(); // suffix
 
+  //??
   AStream.ReadQWord;
   AStream.ReadQWord;     // changing
   AStream.ReadQWord;
 
   FModIds:=AStream.ReadIdList;
 
+  //??
   AStream.ReadByte;      // 0
   AStream.ReadQWord;     // *FF
   AStream.ReadQWord;     // *FF
@@ -108,7 +110,8 @@ begin
 
   FEnchantmentCount:=integer(AStream.ReadDWord); // enchantment count
   FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645
-  //-- 95 bytes
+
+  //--?? 95 bytes
   // 7 times
   AStream.ReadByte;  // 1
   AStream.ReadByte;  // 1
@@ -148,17 +151,21 @@ begin
 
   FSocketables:=ReadItemList(AStream);
 
+  //??
   AStream.ReadDWord;  // 0
   FWeaponDamage:=integer(AStream.ReadDWord);
   FArmor       :=integer(AStream.ReadDWord);
   FArmorType   :=integer(AStream.ReadDWord);
 
+  //??
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
 
+  //??
   lcnt:=AStream.ReadWord;
-  if lcnt>0 then writeln('item-pre effect at ',HexStr(AStream.Position,8));
+  if IsConsole then if lcnt>0 then writeln('item-pre effect at ',HexStr(AStream.Position,8));
+  // 00 00 00 00 | 00 00 00 00 | <cnt> 00 00 00
   AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
   
   // dynamic,passive,transfer
@@ -173,6 +180,92 @@ end;
 
 procedure TTL2Item.SaveToStream(AStream: TTL2Stream);
 begin
+  AStream.WriteByte(2);                // "2"
+  AStream.WriteQWord(QWord(FItemId));  // Item ID
+  AStream.WriteShortString(FName);     // name
+  AStream.WriteShortString(FPrefix);   // prefix
+  AStream.WriteShortString(FSuffix);   // suffix
+
+  //??
+  AStream.ReadQWord;
+  AStream.ReadQWord;     // changing
+  AStream.ReadQWord;
+
+  AStream.WriteIdList(FModIds);
+
+  //??
+  AStream.ReadByte;      // 0
+  AStream.ReadQWord;     // *FF
+  AStream.ReadQWord;     // *FF
+  AStream.ReadQWord;     // *FF
+  AStream.ReadDWord;     // 0
+
+  AStream.WriteDWord(DWord(FEnchantmentCount)); // enchantment count
+  AStream.WriteDWord(DWord(FStashPosition   )); // stash position $285 = 645
+
+  //--?? 95 bytes
+  // 7 times
+  AStream.ReadByte;  // 1
+  AStream.ReadByte;  // 1
+  AStream.ReadByte;  // 1
+  AStream.ReadByte;  // 1
+  AStream.ReadByte;  // 1
+  AStream.ReadByte;  // 0
+  AStream.ReadByte;  // 1
+  // 7 times
+  AStream.ReadFloat;  // C390C993 = -289.57
+  AStream.ReadFloat;
+  AStream.ReadFloat;
+  AStream.ReadFloat;
+  AStream.ReadFloat;
+  AStream.ReadFloat;  // 66.27
+  AStream.ReadFloat;
+  // 35<--| --> 60 / 4 = 15
+  AStream.ReadFloat;  // ?
+  AStream.ReadFloat;  // ?
+  AStream.ReadFloat;  // ? = 0
+  AStream.ReadFloat;  // ?
+  AStream.ReadFloat;  // 1.0
+  AStream.ReadDWord;  // ?
+  AStream.ReadDWord;  // 0
+  AStream.ReadDWord;  //   \ qword
+  AStream.ReadDWord;  //   /
+  AStream.ReadFloat;  // ?
+  AStream.ReadDWord;  // 0
+  AStream.ReadDWord;  // 0
+  AStream.ReadDWord;  // 0
+  AStream.ReadDWord;  // 0
+  AStream.ReadFloat;
+
+  AStream.WriteDWord(FLevel);
+  AStream.WriteDWord(FStackSize);
+  AStream.WriteDWord(FSocketCount);
+
+  WriteItemList(AStream,FSocketables);
+
+  //??
+  AStream.ReadDWord;  // 0
+  AStream.WriteDWord(DWord(FWeaponDamage));
+  AStream.WriteDWord(DWord(FArmor));
+  AStream.WriteDWord(DWord(FArmorType));
+
+  //??
+  AStream.ReadDWord; // *FF
+  AStream.ReadDWord; // *FF
+  AStream.ReadDWord; // *FF
+
+  //??
+//  lcnt:=AStream.ReadWord;
+//  AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
+  
+  // dynamic,passive,transfer
+  WriteEffectList(AStream,FEffects1);
+  WriteEffectList(AStream,FEffects2);
+  WriteEffectList(AStream,FEffects3);
+
+  AStream.WriteShortStringList(FAugments);
+
+  AStream.WriteIdValList(FStats);
 end;
 
 function ReadItemList(AStream:TTL2Stream):TTL2ItemList;
@@ -198,6 +291,15 @@ end;
     end;
 
   end;
+end;
+
+procedure WriteItemList(AStream:TTL2Stream; alist:TTL2ItemList);
+var
+  i:integer;
+begin
+  AStream.WriteDWord(Length(alist));
+  for i:=0 to High(alist) do
+    alist[i].SaveToStream(AStream);
 end;
 
 end.

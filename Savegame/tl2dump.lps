@@ -8,18 +8,16 @@
       <Unit>
         <Filename Value="tl2dump.lpr"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
         <CursorPos Y="15"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="36"/>
       </Unit>
       <Unit>
         <Filename Value="tl2save.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <TopLine Value="566"/>
         <CursorPos Y="595"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -28,7 +26,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="15"/>
         <CursorPos X="3" Y="30"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="36"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
@@ -36,16 +34,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="76"/>
         <CursorPos X="67" Y="91"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="36"/>
       </Unit>
       <Unit>
         <Filename Value="tl2char.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Char"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="463"/>
-        <CursorPos Y="471"/>
-        <UsageCount Value="27"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="304"/>
+        <CursorPos X="23" Y="331"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -55,44 +53,56 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="35"/>
       </Unit>
       <Unit>
         <Filename Value="tl2item.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="27"/>
+        <UnitName Value="TL2Item"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="149"/>
+        <CursorPos X="23" Y="173"/>
+        <FoldState Value=" T4405B"/>
+        <UsageCount Value="35"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2map.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Map"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="72"/>
+        <TopLine Value="70"/>
         <CursorPos X="31" Y="53"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="35"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2effects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Effects"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="142"/>
+        <CursorPos X="16" Y="153"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2modifiers.pas"/>
-        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Modifiers"/>
         <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="27"/>
+        <TopLine Value="127"/>
+        <CursorPos X="36" Y="157"/>
+        <FoldState Value=" T4503 TCi0O]77i9Hh T8iA2J1 T3jJ043111]C1jK03[C70k32]k6kA012J"/>
+        <UsageCount Value="32"/>
       </Unit>
       <Unit>
         <Filename Value="tl2passive.pas"/>
-        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Passive"/>
         <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="27"/>
+        <TopLine Value="53"/>
+        <CursorPos X="39" Y="66"/>
+        <UsageCount Value="32"/>
       </Unit>
       <Unit>
         <Filename Value="tl2consts.inc"/>
@@ -102,127 +112,135 @@
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="19"/>
       </Unit>
+      <Unit>
+        <Filename Value="tl2stream.pas"/>
+        <UnitName Value="TL2Stream"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="89"/>
+        <CursorPos Y="110"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="77" TopLine="57"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="78" TopLine="69"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="85" TopLine="69"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="86" TopLine="69"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="88" TopLine="69"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="93" TopLine="69"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="94" TopLine="70"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="95" TopLine="71"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="96" TopLine="72"/>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="330" Column="29" TopLine="323"/>
       </Position>
       <Position>
         <Filename Value="tl2char.pas"/>
-        <Caret Line="20" Column="26"/>
+        <Caret Line="328" Column="3" TopLine="314"/>
       </Position>
       <Position>
         <Filename Value="tl2char.pas"/>
-        <Caret Line="162" Column="38" TopLine="142"/>
+        <Caret Line="75" Column="15" TopLine="49"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="87" Column="55" TopLine="71"/>
+        <Filename Value="tl2item.pas"/>
+        <Caret Line="206" TopLine="185"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="90" TopLine="71"/>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="329" TopLine="316"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="93" TopLine="71"/>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="331" TopLine="316"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="94" TopLine="71"/>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="329" TopLine="316"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="95" TopLine="71"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="30"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="96" TopLine="72"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="146" TopLine="106"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="58" TopLine="43"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="148" TopLine="106"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="97" TopLine="83"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="120" Column="11" TopLine="120"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="119" TopLine="92"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="61" Column="17" TopLine="52"/>
       </Position>
       <Position>
-        <Filename Value="tl2save.pas"/>
-        <Caret Line="489" TopLine="474"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="161" Column="5" TopLine="148"/>
       </Position>
       <Position>
-        <Filename Value="tl2save.pas"/>
-        <Caret Line="568" TopLine="554"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="162" TopLine="148"/>
       </Position>
       <Position>
-        <Filename Value="tl2dump.lpr"/>
-        <Caret Line="14"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="146" TopLine="105"/>
       </Position>
       <Position>
-        <Filename Value="tl2dump.lpr"/>
-        <Caret Line="9"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="162" TopLine="148"/>
       </Position>
       <Position>
-        <Filename Value="tl2save.pas"/>
-        <Caret Line="749" TopLine="731"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="143" Column="6" TopLine="107"/>
       </Position>
       <Position>
-        <Filename Value="tl2map.pas"/>
-        <Caret Line="93" TopLine="76"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="191" Column="13" TopLine="178"/>
       </Position>
       <Position>
-        <Filename Value="tl2save.pas"/>
-        <Caret Line="749" TopLine="731"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="193" TopLine="193"/>
       </Position>
       <Position>
-        <Filename Value="tl2save.pas"/>
-        <Caret Line="751" TopLine="731"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="102" TopLine="52"/>
       </Position>
       <Position>
-        <Filename Value="tl2save.pas"/>
-        <Caret Line="567" Column="10" TopLine="545"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="257" Column="42" TopLine="194"/>
       </Position>
       <Position>
-        <Filename Value="tl2save.pas"/>
-        <Caret Line="749" TopLine="735"/>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="65" TopLine="33"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="150" TopLine="141"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="260" TopLine="189"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="150" Column="5" TopLine="108"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="62" Column="2" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="110" Column="19" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="329" Column="41" TopLine="304"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2effects.pas"/>
+        <Caret Line="258" TopLine="198"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2item.pas"/>
+        <Caret Line="171" Column="41" TopLine="155"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -230,7 +248,7 @@
       <Modes ActiveMode="default">
         <Mode Name="default">
           <local>
-            <CommandLineParams Value="D:\Dropbox\src\bin\Ough_base.svb"/>
+            <CommandLineParams Value="D:\Dropbox\src\bin\NIZA.bin"/>
           </local>
         </Mode>
       </Modes>
@@ -239,19 +257,37 @@
       <List Name="LaunchingApplication" Type="File" Count="1">
         <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
       </List>
-      <List Name="CommandLineParameters" Count="5">
-        <Item1 Value="D:\Dropbox\src\bin\Ough_base.svb"/>
-        <Item2 Value="D:\Dropbox\src\bin\ZORRO_F2.SVB"/>
-        <Item3 Value="D:\Dropbox\src\bin\ZORRO_F2.SVB.bin"/>
-        <Item4 Value="D:\Dropbox\src\bin\Чиха.bin"/>
-        <Item5 Value="D:\Dropbox\src\bin\Theo.bin"/>
+      <List Name="CommandLineParameters" Count="6">
+        <Item1 Value="D:\Dropbox\src\bin\NIZA.bin"/>
+        <Item2 Value="D:\Dropbox\src\bin\Ough_base.svb"/>
+        <Item3 Value="D:\Dropbox\src\bin\ZORRO_F2.SVB"/>
+        <Item4 Value="D:\Dropbox\src\bin\ZORRO_F2.SVB.bin"/>
+        <Item5 Value="D:\Dropbox\src\bin\Чиха.bin"/>
+        <Item6 Value="D:\Dropbox\src\bin\Theo.bin"/>
       </List>
     </HistoryLists>
   </ProjectSession>
   <Debugging>
     <Watches>
       <Item>
-        <Expression Value="AStream"/>
+        <Expression Value="pbyte(AStream.fmemory+AStream.fPosition)^"/>
+        <DisplayStyle Value="wdfMemDump"/>
+      </Item>
+      <Item>
+        <Expression Value="fname"/>
+      </Item>
+      <Item>
+        <Expression Value="fprefix"/>
+      </Item>
+      <Item>
+        <Expression Value="fsuffix"/>
+      </Item>
+      <Item>
+        <Expression Value="astream.fposition"/>
+        <DisplayStyle Value="wdfPointer"/>
+      </Item>
+      <Item>
+        <Expression Value="fflags"/>
       </Item>
     </Watches>
   </Debugging>

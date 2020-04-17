@@ -270,7 +270,7 @@ begin
   AStream.WriteFloat(FTime);
 
   //??
-  AStream.WriteFloat(UnknF); // 1.0 3A83126F for Zorro  0,00100000004749745
+  AStream.WriteFloat(UnknF);
 
   AStream.WriteShortString(FName);
 
@@ -348,6 +348,7 @@ procedure WriteMapList(AStream:TTL2Stream; amaplist:TTL2MapList);
 var
   i:integer;
 begin
+  AStream.WriteDWord(Length(amaplist));
   for i:=0 to High(amaplist) do
     amaplist[i].SaveToStream(AStream);
 end;

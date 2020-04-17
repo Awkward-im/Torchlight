@@ -41,34 +41,24 @@ begin
 
   ReadStatistic(); // DumpStatistic;
 
-  FMap :=FStream.ReadShortString(); // map
-  FArea:=FStream.ReadShortString(); // area (region)
+  // for resurrection?
+  FMap :=FStream.ReadShortString(); // map (current place)
+  FArea:=FStream.ReadShortString(); // area (region) (at entrance?)
 
   //----- Unknown 1 -----
 
-  if amode in [ptLite, ptStandard] then
-  begin
-    FUnknown1:=FStream.ReadBytes(35);
-  end
-  else
-  begin
-    //!!
-    Unk2:=Check(FStream.ReadDWord,'save_label_2',0); // 0
+  //!!
+  Unk2    :=Check(FStream.ReadDWord,'save_label_2',0); // 0
+  UnkCoord:=FStream.ReadCoord; // usually [-999, -999, -999]
 
-    // FStream.ReadCoord; [-999, -999, -999]
-    Check(FStream.ReadDWord,'-999 1',$C479C000);
-    Check(FStream.ReadDWord,'-999 2',$C479C000);
-    Check(FStream.ReadDWord,'-999 3',$C479C000);
+  //----- User portal -----
 
-    // 15 bytes
-    Check(FStream.ReadDWord,'15-1',0); // 0
-    Check(FStream.ReadDWord,'15-2',0);
-    Check(FStream.ReadDWord,'15-3',0);
-    Check(FStream.ReadWord ,'15-4',0);
-    Check(FStream.ReadByte ,'15-5',0);
+  FPortalOpened:=FStream.ReadByte<>0;
+  FPortalCoord :=FStream.ReadCoord();
+  FPortalPlace :=FStream.ReadShortString(); // User portal location
 
-    Check(FStream.ReadDWord,'pre-pet',1);  // 1
-  end;
+  //!!
+  Unk3:=Check(FStream.ReadDWord,'pre-pet',1);  // usually, 1 but can be zero too
 
   //===== Pet Data =====
 
@@ -306,6 +296,7 @@ begin
 
     //----- ?? Unknown -----
 
+    //?? byte, word, dword (word+word), word
     FStream.ReadDword; // 03 00 00 00  | 01 00 00 18
     FStream.ReadDWord; // 00 00 00 06  | 00 00 00 00
     FStream.ReadByte;  // 00           | 00

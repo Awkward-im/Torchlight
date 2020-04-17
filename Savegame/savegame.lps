@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="savegame.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="24"/>
+        <UsageCount Value="35"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formsavegame.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmSaveFile"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formSaveGame"/>
+        <TopLine Value="80"/>
+        <CursorPos X="47" Y="98"/>
+        <UsageCount Value="35"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formmovies.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmMovies"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formMovies"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="82"/>
+        <CursorPos X="26" Y="93"/>
+        <UsageCount Value="35"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\tl2db.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="91"/>
+        <CursorPos X="13" Y="107"/>
+        <UsageCount Value="33"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\tl2types.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="33"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="32"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formstatistic.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmStatistic"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formStatistic"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="7" Y="23"/>
+        <UsageCount Value="32"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formkeybinding.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmKeyBinding"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formKeyBinding"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="40"/>
+        <CursorPos X="44" Y="52"/>
+        <UsageCount Value="26"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formrecipes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmRecipes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formRecipes"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="24"/>
+        <CursorPos X="21" Y="47"/>
+        <UsageCount Value="24"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\SVN\LazSVN\components\lazreport\source\lr_previewtoolsabstract.pas"/>
+        <UnitName Value="lr_PreviewToolsAbstract"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="108"/>
+        <CursorPos Y="136"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2common.pas"/>
+        <UnitName Value="TL2Common"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="19"/>
+        <CursorPos Y="36"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2item.pas"/>
+        <UnitName Value="TL2Item"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="153"/>
+        <CursorPos X="48" Y="166"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\SVN\LazSVN\lcl\grids.pas"/>
+        <UnitName Value="Grids"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="10082"/>
+        <CursorPos Y="10097"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2statistic.pas"/>
+        <UnitName Value="TL2Statistic"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="105"/>
+        <CursorPos X="18" Y="128"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2save.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="470"/>
+        <CursorPos X="20" Y="485"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2parse.inc"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="42"/>
+        <CursorPos X="54" Y="64"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2char.pas"/>
+        <UnitName Value="TL2Char"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="470"/>
+        <CursorPos Y="485"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="98" Column="23" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="94" Column="28" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="98" Column="47" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2statistic.pas"/>
+        <Caret Line="128" Column="18" TopLine="105"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="139" Column="7" TopLine="131"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="255" Column="36" TopLine="240"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="276" Column="36" TopLine="261"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="401" Column="43" TopLine="387"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="465" Column="29" TopLine="451"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="470" Column="29" TopLine="456"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2save.pas"/>
+        <Caret Line="485" Column="20" TopLine="470"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2common.pas"/>
+        <Caret Line="34" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="485" TopLine="470"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2common.pas"/>
+        <Caret Line="32" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2common.pas"/>
+        <Caret Line="33" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2common.pas"/>
+        <Caret Line="34" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2common.pas"/>
+        <Caret Line="35" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2common.pas"/>
+        <Caret Line="36" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="487" TopLine="470"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="489" TopLine="470"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="38" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="485" TopLine="470"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="38" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="42" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="44" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="45" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="66" Column="53" TopLine="46"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="485" TopLine="470"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2parse.inc"/>
+        <Caret Line="38" TopLine="23"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2char.pas"/>
+        <Caret Line="485" TopLine="470"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="AStream.FPosition"/>
+      </Item>
+      <Item>
+        <Expression Value="FStream.FPosition"/>
+        <DisplayStyle Value="wdfHex"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

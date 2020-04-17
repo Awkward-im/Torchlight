@@ -13,8 +13,9 @@ begin
   FStream.WriteDword(DWord(FDifficulty));
   FStream.WriteByte(Ord(FHardcore));
   FStream.WriteByte(FNewGameCycle);
-
+  //!!
   FStream.WriteDWord(Unk1);
+
   FStream.WriteFloat(FGameTime);
 
   //----- Movies -----
@@ -43,24 +44,18 @@ begin
   FStream.WriteShortString(FArea); // area (region)
 
   //----- Unknown 1 -----
-
-  FStream.Write(FUnknown1^,35);
-{
+  //!!
   FStream.WriteDWord(Unk2);
+  FStream.WriteCoord(UnkCoord);
 
-  FStream.WriteFloat(-999);
-  FStream.WriteFloat(-999);
-  FStream.WriteFloat(-999);
-  
-  // 15 bytes
-  FStream.WriteDWord(0);
-  FStream.WriteDWord(0);
-  FStream.WriteDWord(0);
-  FStream.WriteWord(0);
-  FStream.WriteByte(0);
+  //---- User Portal ----
 
-  FStream.WriteDWord(1);
-}
+  FStream.WriteByte       (Ord(FPortalOpened));
+  FStream.WriteCoord      (FPortalCoord);
+  FStream.WriteShortString(FPortalPlace);
+  //!!
+  FStream.WriteDWord(Unk3);
+
   //===== Pet Data =====
 
   FStream.WriteDWord(Length(FPetInfos));
@@ -68,7 +63,7 @@ begin
     WriteCharData(FStream,FPetInfos[i]);
 
   //----- Unknown 2 -----
-
+  //!!
   FStream.Write(FUnknown2^,34);
 
   //----- Maps -----

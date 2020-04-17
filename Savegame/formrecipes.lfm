@@ -1,0 +1,32 @@
+object fmRecipes: TfmRecipes
+  Left = 558
+  Height = 399
+  Top = 224
+  Width = 494
+  Caption = 'Recipes'
+  ClientHeight = 399
+  ClientWidth = 494
+  LCLVersion = '2.1.0.0'
+  object sgRecipes: TStringGrid
+    Left = 17
+    Height = 381
+    Top = 10
+    Width = 301
+    ColCount = 3
+    ColumnClickSorts = True
+    Columns = <    
+      item
+        SizePriority = 0
+        Title.Caption = 'Title'
+        Width = 128
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Mod'
+        Width = 128
+      end>
+    DefaultColWidth = 48
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
+    TabOrder = 0
+  end
+end

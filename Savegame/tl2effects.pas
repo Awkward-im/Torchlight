@@ -36,7 +36,7 @@ type
     modIsForWeapon       , // $00080000
     modIsForArmor        , // $00100000
     modIsDisabled        , // $00200000
-
+    // not realized (just reserved by me)
     modUnknown6          , // $00400000
     modUnknown7          , // $00800000
     modUnknown8          , // $01000000
@@ -52,7 +52,7 @@ type
   TTL2EffectFlags = set of TTL2EffectFlag;
 
 type
-  TTL2StatName = packed record
+  TTL2Stat = packed record
     id        :TL2ID;
     percentage:TL2Float;
   end;
@@ -72,7 +72,7 @@ type
     FClassId     :TL2ID;
     FFromChar    :boolean;
     FProperties  :array of TL2Float;
-    FStatNames   :array of TTL2StatName;
+    FStats       :array of TTL2Stat;
     FEffectType  :integer;
     FDamageType  :TTL2EffectDamageType;
     FActivation  :TTL2EffectActivation;
@@ -84,7 +84,7 @@ type
     FIcon        :string;
 
     function GetProperties(idx:integer):TL2Float;
-    function GetStatNames (idx:integer):TTL2StatName;
+    function GetStats     (idx:integer):TTL2Stat;
   public
     constructor Create(achar:boolean); overload;
     destructor Destroy; override;
@@ -99,7 +99,7 @@ type
     property UnitThemeId :TL2ID                     read FUnitThemeId  write FUnitThemeId;
     property ClassId     :TL2ID                     read FClassId      write FClassId;
     property Properties  [idx:integer]:TL2Float     read GetProperties; //!!
-    property StatNames   [idx:integer]:TTL2StatName read GetStatNames;  //!!
+    property Stats       [idx:integer]:TTL2Stat     read GetStats     ; //!!
     property EffectType  :integer                   read FEffectType   write FEffectType;
     property DamageType  :TTL2EffectDamageType      read FDamageType   write FDamageType;
     property Activation  :TTL2EffectActivation      read FActivation   write FActivation;
@@ -128,10 +128,11 @@ end;
 destructor TTL2Effect.Destroy;
 begin
   SetLength(FProperties,0);
-  SetLength(FStatNames ,0);
+  SetLength(FStats ,0);
 
   inherited;
 end;
+
 
 function TTL2Effect.GetProperties(idx:integer):single;
 begin
@@ -141,23 +142,23 @@ begin
     result:=0;
 end;
 
-function TTL2Effect.GetStatNames(idx:integer):TTL2StatName;
+function TTL2Effect.GetStats(idx:integer):TTL2Stat;
 begin
-  if (idx>=0) and (idx<Length(FStatNames)) then
-    result:=FStatNames[idx]
+  if (idx>=0) and (idx<Length(FStats)) then
+    result:=FStats[idx]
   else
   begin
-    result.id:=-1;
+    result.id:=TL2IdEmpty;
     result.percentage:=0;
   end;
 end;
+
 
 procedure TTL2Effect.LoadFromStream(AStream: TTL2Stream);
 var
   lcnt:integer;
 begin
   FFlags:=TTL2EffectFlags(AStream.ReadDword);
-//writeln('Effect flag: ',HexStr(DWord(FFlags),8),' at ',HexStr(AStream.Position,8));
   FName :=AStream.ReadShortString();
 
   if modHasLinkName in FFlags then
@@ -181,9 +182,9 @@ begin
     AStream.Read(FProperties[0],lcnt*SizeOf(TL2Float));
 
   lcnt:=AStream.ReadWord;
-  SetLength(FStatNames,lcnt);
+  SetLength(FStats,lcnt);
   if lcnt>0 then
-    AStream.Read(FStatNames[0],lcnt*SizeOf(TTL2StatName));
+    AStream.Read(FStats[0],lcnt*SizeOf(TTL2Stat));
 
   FEffectType  :=AStream.ReadDWord();
   FDamageType  :=TTL2EffectDamageType(AStream.ReadDWord);
@@ -191,8 +192,8 @@ begin
   FLevel       :=AStream.ReadDWord;
   FDuration    :=AStream.ReadFloat;
   FUnknown1    :=AStream.ReadFloat;  // 0 ??  SoakScale??
-  FDisplayValue:=AStream.ReadFloat;  // 4.0
-  FSource      :=TTL2EffectSource(AStream.ReadDWord);  // 3
+  FDisplayValue:=AStream.ReadFloat;
+  FSource      :=TTL2EffectSource(AStream.ReadDWord);
 
   if modHasIcon in FFlags then
     FIcon:=AStream.ReadByteString();
@@ -222,9 +223,9 @@ begin
   if Length(FProperties)>0 then
     AStream.Write(FProperties[0],Length(FProperties)*SizeOf(TL2Float));
 
-  AStream.WriteWord(Length(FStatNames));
-  if Length(FStatNames)>0 then
-    AStream.Write(FStatNames[0],Length(FStatNames)*SizeOf(TTL2StatName));
+  AStream.WriteWord(Length(FStats));
+  if Length(FStats)>0 then
+    AStream.Write(FStats[0],Length(FStats)*SizeOf(TTL2Stat));
 
   AStream.WriteDWord(FEffectType);
 

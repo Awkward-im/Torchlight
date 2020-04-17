@@ -4,6 +4,7 @@ interface
 
 uses
   classes,
+  tl2statistic,
   tl2stream,
   tl2common,
   tl2types,
@@ -16,7 +17,7 @@ type
 
 type
   TTL2Mod = packed record
-    id     :QWord;
+    id     :TL2ID;
     version:word;
   end;
   TTL2ModList = array of TTL2Mod;
@@ -34,37 +35,6 @@ type
     key     :word;   // or byte, (byte=3 or 0 for quick keys)
   end;
   TTL2KeyMappingList = array of TTL2KeyMapping;
-
-const
-  StatsCount = 22;
-
-type
-  TTL2Statistic = packed record
-    statTotalTime  :TL2UInteger; // total time in game, msec
-    statGold       :TL2Integer ; // gold collected
-    statDifficulty :TL2Integer ; // difficulty
-    statSteps      :TL2Integer ; // steps done
-    statTasks      :TL2Integer ; // tasks (quests) done
-    statDeaths     :TL2Integer ; // number of deaths
-    statMobs       :TL2Integer ; // mobs killed
-    statHeroes     :TL2Integer ; // heroes killed
-    statSkills     :TL2Integer ; // skills used
-    statTreasures  :TL2Integer ; // hidden treasures opened
-    statTraps      :TL2Integer ; // traps activated
-    statBroken     :TL2Integer ; // items broken
-    statPotions    :TL2Integer ; // potions used
-    statPortal     :TL2Integer ; // portals opened
-    statFish       :TL2Integer ; // fish catched
-    statGambled    :TL2Integer ; // time gambled
-    statCharmed    :TL2Integer ; // items charmed
-    statTransform  :TL2Integer ; // items transformed
-    statDmgObtained:TL2Integer ; // max.damage obtained
-    statDamage     :TL2Integer ; // max damage made
-    statLevelTime  :TL2UInteger; // time on map, msec ?? last ingame time, msec
-    statExploded   :TL2Integer ; // mobs blasted
-  end;
-const
-  RealStatsCount = SizeOf(TTL2Statistic) div SizeOf(TL2Integer);
 
 type
   TTL2SaveFile = class
@@ -126,8 +96,15 @@ type
     FMap :string;
     FArea:string;
 
-    Unk1,Unk2:DWord;
-    
+    Unk1,Unk2,Unk3:DWord;
+    UnkCoord:TL2Coord;
+
+    //----- User portal -----
+
+    FPortalOpened:ByteBool;
+    FPortalCoord :TL2Coord;
+    FPortalPlace :string;
+
     function  ReadStatistic():boolean;
     procedure ReadModList(var ml:TTL2ModList);
     procedure ReadKeyMappingList;
@@ -139,6 +116,9 @@ type
     function  GetPetInfo   (idx:integer):TTL2Character;
     function  GetKeyMapping(idx:integer):TTL2KeyMapping;
     function  GetMovie     (idx:integer):TL2IdVal;
+
+    function  GetStatistic (idx:integer):TL2Integer;
+    procedure SetStatistic (idx:integer; aval:TL2Integer);
   public
     procedure DumpStatistic;
     procedure DumpKeyMapping;
@@ -156,10 +136,40 @@ type
     property CharInfo:TTL2Character read FCharInfo;
     property PetInfo[idx:integer]:TTL2Character read GetPetInfo;
 
-    property Movie     [idx:integer]:TL2IdVal       read GetMovie;
-    property KeyMapping[idx:integer]:TTL2KeyMapping read GetKeyMapping;
+    property Recipes:TL2IdList read FRecipes;
 
-    property Statistic:TTL2Statistic read FStatistic;
+    property Movies    :TL2IdValList                read FMovies;
+    property Movie     [idx:integer]:TL2IdVal       read GetMovie;
+
+    property KeyMapping[idx:integer]:TTL2KeyMapping read GetKeyMapping;
+    property Keys     :TTL2KeyMappingList read FKeyMapping;
+    property Functions:TTL2FunctionList   read FFunctions;
+
+    // Statistic
+    property Statistic[idx:integer]:TL2Integer read GetStatistic write SetStatistic;
+    
+    property TimePlayed       :TL2Integer index statTotalTime  read GetStatistic write SetStatistic;
+    property GoldGathered     :TL2Integer index statGold       read GetStatistic write SetStatistic;
+//    property GameDifficulty   :TL2Integer index statDifficulty read GetStatistic write SetStatistic;
+    property StepsTaken       :TL2Integer index statSteps      read GetStatistic write SetStatistic;
+    property QuestsDone       :TL2Integer index statQuests     read GetStatistic write SetStatistic;
+    property Deaths           :TL2Integer index statDeaths     read GetStatistic write SetStatistic;
+    property MonstersKilled   :TL2Integer index statMonsters   read GetStatistic write SetStatistic;
+    property ChampionsKilled  :TL2Integer index statChampions  read GetStatistic write SetStatistic;
+    property SkillsUsed       :TL2Integer index statSkills     read GetStatistic write SetStatistic;
+    property LootablesLooted  :TL2Integer index statTreasures  read GetStatistic write SetStatistic;
+    property TrapsSprung      :TL2Integer index statTraps      read GetStatistic write SetStatistic;
+    property BreakablesBroken :TL2Integer index statBroken     read GetStatistic write SetStatistic;
+    property PotionsUsed      :TL2Integer index statPotions    read GetStatistic write SetStatistic;
+    property PortalsUsed      :TL2Integer index statPortals    read GetStatistic write SetStatistic;
+    property FishCaught       :TL2Integer index statFish       read GetStatistic write SetStatistic;
+    property TimesGambled     :TL2Integer index statGambled    read GetStatistic write SetStatistic;
+    property ItemsEnchanted   :TL2Integer index statEnchanted  read GetStatistic write SetStatistic;
+    property ItemsTransmuted  :TL2Integer index statTransmuted read GetStatistic write SetStatistic;
+    property DamageTaken      :TL2Integer index statDmgTaken   read GetStatistic write SetStatistic;
+    property DamageDealt      :TL2Integer index statDmgDealt   read GetStatistic write SetStatistic;
+    property LevelTime        :TL2Integer index statLevelTime  read GetStatistic write SetStatistic;
+    property MonstersExploded :TL2Integer index statExploded   read GetStatistic write SetStatistic;
 
     property ClassString:string read FClassString;
     property Map        :string read FMap;
@@ -180,29 +190,6 @@ resourcestring
   sWrongSize    = 'Wrong file size';
   sWrongVersion = 'Wrong save file signature';
   sWrongFooter  = 'Wrong save file size';
-  // statistic
-  rsTotalTime   = 'total time in game, msec';
-  rsGold        = 'gold collected';
-  rsDifficulty  = 'difficulty';
-  rsSteps       = 'steps done';
-  rsTasks       = 'tasks (quests) done';
-  rsDeaths      = 'number of deaths';
-  rsMobs        = 'mobs killed';
-  rsHeroes      = 'heroes killed';
-  rsSkills      = 'skills used';
-  rsTreasures   = 'hidden treasures opened';
-  rsTraps       = 'traps activated';
-  rsBroken      = 'items broken';
-  rsPotions     = 'potions used';
-  rsPortal      = 'portals opened';
-  rsFish        = 'fish catched';
-  rsGambled     = 'time gambled';
-  rsCharmed     = 'items charmed';
-  rsTransform   = 'items transformed';
-  rsDmgObtained = 'max.damage obtained';
-  rsDamage      = 'max damage made';
-  rsLevelTime   = 'time on map, msec';
-  rsExploded    = 'mobs exploded';
 
 //----- support functions -----
 
@@ -264,7 +251,23 @@ begin
   end;
 end;
 
-//----- Save/load -----
+//----- Get/Set methods -----
+
+function TTL2SaveFile.GetStatistic(idx:integer):TL2Integer;
+begin
+  if (idx>=0) and (idx<StatsCount) then
+    result:=FStatistic[idx]
+  else if idx<0 then
+    result:=StatsCount
+  else
+    result:=0;
+end;
+
+procedure TTL2SaveFile.SetStatistic(idx:integer; aval:TL2Integer);
+begin
+  if (idx>=0) and (idx<StatsCount) then
+    FStatistic[idx]:=aval;
+end;
 
 function TTL2SaveFile.GetMovie(idx:integer):TL2IdVal;
 begin
@@ -350,36 +353,15 @@ begin
 end;
 
 procedure TTL2SaveFile.DumpStatistic;
+var
+  i:integer;
 begin
   if IsConsole then
   begin
     writeln('Statistic'#13#10+
             '---------');
-    with FStatistic do
-    begin
-      writeln(rsTotalTime  ,': ',MSecToTime(statTotalTime)); // total time in game, msec
-      writeln(rsGold       ,': ',statGold       ); // gold collected
-      writeln(rsDifficulty ,': ',statDifficulty ); // difficulty
-      writeln(rsSteps      ,': ',statSteps      ); // steps done
-      writeln(rsTasks      ,': ',statTasks      ); // tasks (quests) done
-      writeln(rsDeaths     ,': ',statDeaths     ); // number of deaths
-      writeln(rsMobs       ,': ',statMobs       ); // mobs killed
-      writeln(rsHeroes     ,': ',statHeroes     ); // heroes killed
-      writeln(rsSkills     ,': ',statSkills     ); // skills used
-      writeln(rsTreasures  ,': ',statTreasures  ); // hidden treasures opened
-      writeln(rsTraps      ,': ',statTraps      ); // traps activated
-      writeln(rsBroken     ,': ',statBroken     ); // items broken
-      writeln(rsPotions    ,': ',statPotions    ); // potions used
-      writeln(rsPortal     ,': ',statPortal     ); // portals opened
-      writeln(rsFish       ,': ',statFish       ); // fish catched
-      writeln(rsGambled    ,': ',statGambled    ); // time gambled
-      writeln(rsCharmed    ,': ',statCharmed    ); // items charmed
-      writeln(rsTransform  ,': ',statTransform  ); // items transformed
-      writeln(rsDmgObtained,': ',statDmgObtained); // max.damage obtained
-      writeln(rsDamage     ,': ',statDamage     ); // max damage made
-      writeln(rsLevelTime  ,': ',MSecToTime(statLevelTime)); // time on map, msec ?? last ingame time, msec
-      writeln(rsExploded   ,': ',statExploded   ); // mobs exploded
-    end;
+    for i:=0 to StatsCount-1 do
+      writeln(GetStatDescr(i)+': '+GetStatText(i,FStatistic[i]));
   end;
 end;
 
