@@ -2,27 +2,40 @@ unit tl2db;
 
 interface
 
-function GetTL2Skill(const id:Int64; out aclass:Int64; out atype:integer):string; overload;
-function GetTL2Skill(const id:Int64; out aclass:Int64):string; overload;
-function GetTL2Skill(const id:Int64                  ):string; overload;
+uses
+  tl2types;
 
-function GetTL2Movie(const id:Int64; out amod:Int64  ):string; overload;
-function GetTL2Movie(const id:Int64                  ):string; overload;
-function GetTL2Stat (const id:Int64; out amod:Int64  ):string; overload;
-function GetTL2Stat (const id:Int64                  ):string; overload;
-function GetTL2Item (const id:Int64; out amod:Int64  ):string; overload;
-function GetTL2Item (const id:Int64                  ):string; overload;
-function GetTL2Class(const id:Int64; out amod:Int64  ):string; overload;
-function GetTL2Class(const id:Int64                  ):string; overload;
-function GetTL2Pet  (const id:Int64; out amod:Int64  ):string; overload;
-function GetTL2Pet  (const id:Int64                  ):string; overload;
+function GetTL2Skill(const id:TL2ID; out aclass:TL2ID; out atype:integer):string; overload;
+function GetTL2Skill(const id:TL2ID; out aclass:TL2ID):string; overload;
+function GetTL2Skill(const id:TL2ID                  ):string; overload;
 
-function GetTL2Mod  (const id:Int64; out aver:integer):string; overload;
-function GetTL2Mod  (const id:Int64                  ):string; overload;
+// can be nice to add list of modids for filtering
+function GetTL2Movie(const id   :TL2ID ; out amod :TL2ID; out aviews:integer;
+                     out   aname:string; out apath:string):string; overload;
+function GetTL2Movie(const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Movie(const id:TL2ID                  ):string; overload;
+
+function GetTL2Recipes(const id:TL2ID; out amod:TL2ID):string; overload;
+function GetTL2Recipes(const id:TL2ID                ):string; overload;
+
+function GetTL2Stat (const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Stat (const id:TL2ID                  ):string; overload;
+
+function GetTL2Item (const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Item (const id:TL2ID                  ):string; overload;
+
+function GetTL2Class(const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Class(const id:TL2ID                  ):string; overload;
+
+function GetTL2Pet  (const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Pet  (const id:TL2ID                  ):string; overload;
+
+function GetTL2Mod  (const id:TL2ID; out aver:integer):string; overload;
+function GetTL2Mod  (const id:TL2ID                  ):string; overload;
 
 function GetTL2KeyType(acode:integer):string;
 
-procedure LoadBases;
+function LoadBases:boolean;
 procedure FreeBases;
 
 //======================================
@@ -30,14 +43,13 @@ procedure FreeBases;
 implementation
 
 uses
-//  classes,
-//  sysutils,
   sqlite3,
   awksqlite3
   ;
 
 var
   db:PSQLite3;
+  filter:string;
 
 const
   TL2DataBase = 'tl2db.db';
@@ -72,8 +84,8 @@ resourcestring
 
 //-------------------
 
-function GetModAndTitle(const id:Int64; const abase:string; const awhere:string;
-                        out amod:Int64):string;
+function GetModAndTitle(const id:TL2ID; const abase:string; const awhere:string;
+                        out amod:TL2ID):string;
 var
   aSQL,lwhere:string;
   vm:pointer;
@@ -81,57 +93,108 @@ begin
   amod  :=-1;
   result:=HexStr(id,16);
 
-  Str(id,aSQL);
-  if awhere<>'' then
-    lwhere:=' AND '+awhere
-  else
-    lwhere:='';
-  aSQL:='SELECT title,modid FROM '+abase+' WHERE id='+aSQL+lwhere+' LIMIT 1';
-
-  if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+  if db<>nil then
   begin
-    if sqlite3_step(vm)=SQLITE_ROW then
+    Str(id,aSQL);
+    if awhere<>'' then
+      lwhere:=' AND '+awhere
+    else
+      lwhere:='';
+    aSQL:='SELECT title,modid,name FROM '+abase+' WHERE id='+aSQL+lwhere+' LIMIT 1';
+
+    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
     begin
-      result:=sqlite3_column_text (vm,0);
-      amod  :=sqlite3_column_int64(vm,1);
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        result:=sqlite3_column_text (vm,0);
+        amod  :=sqlite3_column_int64(vm,1);
+        if result='' then
+          result:=sqlite3_column_text(vm,2);
+      end;
+      sqlite3_finalize(vm);
     end;
-    sqlite3_finalize(vm);
   end;
 end;
 
 //----- Movie Info -----
 
-function GetTL2Movie(const id:Int64; out amod:Int64):string; overload;
+function GetTL2Movie(const id   :TL2ID ; out amod :TL2ID; out aviews:integer;
+                     out   aname:string; out apath:string ):string;
+var
+  aSQL:string;
+  vm:pointer;
+begin
+  amod  :=-1;
+  result:=HexStr(id,16);
+  aviews:=1;
+  aname:='';
+  apath:='';
+
+  if db<>nil then
+  begin
+    Str(id,aSQL);
+    aSQL:='SELECT title,modid,maxviews,name,path FROM movies WHERE id='+aSQL+' LIMIT 1';
+
+    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        result:=sqlite3_column_text (vm,0);
+        amod  :=sqlite3_column_int64(vm,1);
+        aviews:=sqlite3_column_int64(vm,2);
+        aname :=sqlite3_column_text (vm,3);
+        apath :=sqlite3_column_text (vm,4);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
+function GetTL2Movie(const id:TL2ID; out amod:TL2ID):string; overload;
 begin
   result:=GetModAndTitle(id,'movies','',amod);
 end;
 
-function GetTL2Movie(const id:Int64):string; overload;
+function GetTL2Movie(const id:TL2ID):string; overload;
 var
-  lmodid:Int64;
+  lmodid:TL2ID;
 begin
   result:=GetTL2Movie(id,lmodid);
 end;
 
+//----- Recipes -----
+
+function GetTL2Recipes(const id:TL2ID; out amod:TL2ID):string; overload;
+begin
+  result:=GetModAndTitle(id,'recipes','',amod);
+end;
+
+function GetTL2Recipes(const id:TL2ID):string; overload;
+var
+  lmodid:TL2ID;
+begin
+  result:=GetTL2Recipes(id,lmodid);
+end;
+
 //----- Skill info -----
 
-function GetTL2Skill(const id:Int64; out aclass:Int64; out atype:integer):string;
+function GetTL2Skill(const id:TL2ID; out aclass:TL2ID; out atype:integer):string;
 begin
   aclass:=-1;
   atype :=-1;
   result:=HexStr(id,16);
 end;
 
-function GetTL2Skill(const id:Int64; out aclass:Int64):string;
+function GetTL2Skill(const id:TL2ID; out aclass:TL2ID):string;
 var
   ltype:integer;
 begin
   result:=GetTL2Skill(id,aclass,ltype);
 end;
 
-function GetTL2Skill(const id:Int64):string;
+function GetTL2Skill(const id:TL2ID):string;
 var
-  lclass:Int64;
+  lclass:TL2ID;
   ltype :integer;
 begin
   result:=GetTL2Skill(id,lclass,ltype);
@@ -139,63 +202,63 @@ end;
 
 //----- Stat info -----
 
-function GetTL2Stat(const id:Int64; out amod:Int64):string;
+function GetTL2Stat(const id:TL2ID; out amod:TL2ID):string;
 begin
   result:=GetModAndTitle(id,'stats','',amod);
 end;
 
-function GetTL2Stat(const id:Int64):string;
+function GetTL2Stat(const id:TL2ID):string;
 var
-  lmod:Int64;
+  lmod:TL2ID;
 begin
   result:=GetTL2Stat(id,lmod);
 end;
 
 //----- Item info -----
 
-function GetTL2Item(const id:Int64; out amod:Int64):string;
+function GetTL2Item(const id:TL2ID; out amod:TL2ID):string;
 begin
   result:=GetModAndTitle(id,'items','',amod);
 end;
 
-function GetTL2Item(const id:Int64):string;
+function GetTL2Item(const id:TL2ID):string;
 var
-  lmod:Int64;
+  lmod:TL2ID;
 begin
   result:=GetTL2Item(id,lmod);
 end;
 
 //----- Class info -----
 
-function GetTL2Class(const id:Int64; out amod:Int64):string;
+function GetTL2Class(const id:TL2ID; out amod:TL2ID):string;
 begin
   result:=GetModAndTitle(id,'classes','',amod);
 end;
 
-function GetTL2Class(const id:Int64):string;
+function GetTL2Class(const id:TL2ID):string;
 var
-  lmod:Int64;
+  lmod:TL2ID;
 begin
   result:=GetTL2Class(id,lmod);
 end;
 
 //----- Pet info -----
 
-function GetTL2Pet(const id:Int64; out amod:Int64):string;
+function GetTL2Pet(const id:TL2ID; out amod:TL2ID):string;
 begin
   result:=GetModAndTitle(id,'pets','',amod);
 end;
 
-function GetTL2Pet(const id:Int64):string;
+function GetTL2Pet(const id:TL2ID):string;
 var
-  lmod:Int64;
+  lmod:TL2ID;
 begin
   result:=GetTL2Pet(id,lmod);
 end;
 
 //----- Mod info -----
 
-function GetTL2Mod(const id:Int64; out aver:integer):string;
+function GetTL2Mod(const id:TL2ID; out aver:integer):string;
 var
   aSQL:string;
   vm:pointer;
@@ -204,23 +267,26 @@ begin
   aver  :=0;
   result:=HexStr(id,16);
 
-  Str(id,aSQL);
-  aSQL:='SELECT title,version FROM mods WHERE id='+aSQL;
-
-  i:=sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil);
-  if i=SQLITE_OK then
+  if db<>nil then
   begin
-    i:=sqlite3_step(vm);
-    if i=SQLITE_ROW then
+    Str(id,aSQL);
+    aSQL:='SELECT title,version FROM mods WHERE id='+aSQL;
+
+    i:=sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil);
+    if i=SQLITE_OK then
     begin
-      result:=sqlite3_column_text(vm,0);
-      aver  :=sqlite3_column_int (vm,1);
+      i:=sqlite3_step(vm);
+      if i=SQLITE_ROW then
+      begin
+        result:=sqlite3_column_text(vm,0);
+        aver  :=sqlite3_column_int (vm,1);
+      end;
+      sqlite3_finalize(vm);
     end;
-    sqlite3_finalize(vm);
   end;
 end;
 
-function GetTL2Mod(const id:Int64):string;
+function GetTL2Mod(const id:TL2ID):string;
 var
   lver:integer;
 begin
@@ -277,40 +343,34 @@ end;
 
 //===== Database load =====
 
-procedure LoadBases;
-{
-var
-  lb:PSQLite3;
-  vm:pointer;
-}
+function LoadBases:boolean;
 begin
-{
-  if sqlite3_open('file:memdb?mode=memory',@db)=SQLITE_OK then
-  begin
-    sqlite3_open('tl2db.db',@lb);
-    if sqlite3_prepare_v2(lb, 'VACUUM INTO "file:memdb?mode=memory"',-1, @vm, nil)=SQLITE_OK then
-    begin
-      sqlite3_step(vm);
-      sqlite3_finalize(vm);
-    end;
-    sqlite3_close(lb);
-  end;
-}
+  result:=false;
+  db:=nil;
 
   if sqlite3_open(':memory:',@db)=SQLITE_OK then
+  begin
     try
-      if CopyFromFile(db,TL2DataBase)=SQLITE_OK then
-      begin
-      end;
+      result:=CopyFromFile(db,TL2DataBase)=SQLITE_OK;
     except
+      sqlite3_close(db);
+      db:=nil;
     end;
-
+  end;
 end;
 
 procedure FreeBases;
 begin
-  sqlite3_close(db);
+  if db<>nil then sqlite3_close(db);
 end;
 
+procedure SetFilter(const afilter:string);
+begin
+  if pos(',',afilter)>0 then
+    filter:='(modid IN ('+afilter+'))'
+  else
+    filter:='(modid='+afilter+')';
+//  'GLOB ''*,'+filter+',*''';
+end;
 
 end.
