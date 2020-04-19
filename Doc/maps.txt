@@ -1,0 +1,47 @@
+============
+Block "maps"
+============
+Don't have saved size. So, to skip it, we need to process some data.
+
+4 bytes - (Integer) - usually 0. But can be 1, 2 etc.
+          non=-zero usually if same location exists several time in file.
+4 bytes - (Float) - current time which user spent on location
+4 bytes - (float) - total time spended by user on location
+4 bytes - (float) - Unknown. at least, looks like Float. idk what is for
+x bytes - (ShortString) - name of location
+2 bytes - Idk, maybe "sub-location name" maybe flags. 0 usually
+
+4 bytes - (integer) X
+4 bytes - (integer) Y
+x bytes - (X*Y) floats - matrix of 4-bytes Floats. Fog of War? Who knows?
+
+4 bytes - (integer) Unknown. 0 usually
+
+4 bytes - (integer) count
+x bytes - list of data (somethig with laoyouts. modders must to know).
+          every element is 20 bytes:
+    8 bytes - (Integer64) - ID
+    4 bytes - (integer) - value
+    8 bytes - (Integer64) looks like ID but don't found it in MEDIA folder
+
+4 bytes - (integer) count
+x bytes - list of mobs/units. Yes, it can be processed as usual pet block
+
+4 bytes - (integer) list count
+x bytes - list of Props:
+  4 bytes - (integer) size in bytes
+  x bytes - Prop data. Can be read as Items
+
+4 bytes - (integer) list count
+x bytes - Unknown data. Sorry!
+  4 bytes - (integer) size in bytes
+  x bytes - unknown
+
+4 bytes - (integer) list count
+x bytes - Triggers etc. Each element is 136 bytes length
+
+4 bytes - (integer) list count
+x bytes - LAYOUT names. list of ShortString
+
+4 bytes - (integer) 0 usually
+  
