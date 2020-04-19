@@ -1,0 +1,58 @@
+======================
+Last block (statistic)
+======================
+All datas almost unknown yet, sorry
+
+4  bytes - (integer) unknown. 1 usually
+16 bytes - 4x4 bytes. Unknown with strange-looking numbers
+1  byte  - 0 usually
+
+-- mobs
+4 bytes  - (integer) list count
+x bytes  - list elements, 40 bytes each
+    8  bytes - (Integer64) Mob ID
+    32 bytes - mob data
+
+-- items
+4 bytes  - (integer) list count
+x bytes  - list elements, 24 bytes each
+    8  bytes - (Integer64) Item ID
+    20 bytes - data
+
+-- skills
+4 bytes  - (integer) list count
+x bytes  - list of elements, 17 bytes each
+    8  bytes - (Integer64) Skill ID
+    11 bytes - data
+
+-- something
+4 bytes  - (integer) list count
+x bytes  - list of elements, 31 bytes each
+
+-- something about areas
+4 bytes  - (integer) list count
+   x bytes - list
+     x bytes - (ShortString) area name
+     4 bytes - value
+
+4 bytes  - (integer) list count
+   x bytes - list
+     x bytes - (ShortString) area name
+     4 bytes - value
+
+-- Unknown
+9 bytes - 1 byte and 4 2-bytes data?
+
+-- Stats (like achievments mainly, Check MEDIA\STAT folder)
+4 bytes - list count.
+x bytes - list of elements, 12 bytes each
+  8 bytes - (Integer64) - STAT ID
+  4 bytes - (integer) value
+
+4 bytes - (Integer?) 0 usually
+
+-- final part
+x bytes - (ShortString) - player name
+x bytes - (ShortString) - player class
+x bytes - (ShortString) - pet class
+
