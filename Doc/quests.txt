@@ -1,0 +1,18 @@
+============
+Quests block
+============
+It have block size in savegame files so can be skipped easily
+Block consist of two subblocks: finished quests and active quests
+
+4 bytes - (integer) finished list count
+x bytes - list of quest IDs. each element is 8 bytes
+
+4 bytes - (integer) active list count.
+x bytes - much harder to recognize (flags, variable sizes...)
+  4 byte - (Integer) offset to next active quest data from start of Quests block (!!!)
+  x bytes - quest data
+    8 bytes - (Integer64) quest ID
+    8 bytes - (Integer64) -1 usually
+    4 bytes - (integer) maybe not integer, don't know.
+    4 bytes - (integer) maybe not. -1 usually but can be another in rare cases
+    x bytes - several bytes for booleans, (first is for DIALOG count, it placed later)
