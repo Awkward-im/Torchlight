@@ -1,0 +1,197 @@
+===================
+Commonly used types:
+===================
+
+  basic types:
+    Boolean      - 1 byte
+    Byte         - 1 byte
+    Short Int    - 2 bytes
+    Integer      - 4 bytes
+    Unsigned Int - 4 bytes
+    Float        - 4 bytes
+    Integer64    - 8 bytes
+
+  "-1" value means "empty" or "unuseful"
+    0xFFFFFFFF for Integer
+    0xFFFFFFFFFFFFFFFF for Integer64 (Id)
+
+  game types: (Notes: all text is UTF16-LE)
+    ID - Integer64, unical id for almost all things (item, class, skill, stat etc)
+    Coordinate   - 3 floats
+      X - float
+      Y - float
+      Z - float
+    Byte String  - variable length
+      Byte    - length
+      x bytes - text
+    Short String - variable length
+      Short Int - length
+      x bytes   - text
+
+=======================
+Savegame file structure:
+=======================
+
+<Header> (9 bytes)
+  4 bytes - file version (current is 0x00000044)
+  1 byte  - encription. 1 mean savegame body is encripted
+  4 bytes - checksum of not encripted body content
+
+<body> (variable length)
+  x bytes - savegame file body. Size is: filesize- SizeOf(Header) - SizeOf(Footer)
+
+<footer> (4 bytes)
+  4 bytes - total file size (including header and footer)
+
+About checksum and encoding - check Chthon notes and source codes
+
+=====================
+Savegame file content:
+=====================
+Note: Some blocks structure is complex enough so must be described separately
+
+Block "common"
+  x bytes - (Short String) ClassString, player class in form <Race>_<class>_<gender>
+    <Race>   is "Hum" (human)
+    <Class>  is character class (like "Berserker")
+    <Gender> is character gender. "F" for "female", "M" for "male"
+  4 bytes - (Integer). Game difficulty (Casual, Normal, Veteran, Expert)
+  1 byte  - (Boolean). Hardcore mode flag
+  1 byte  - (Byte). NG cycle number
+  4 bytes - (usually 0). NG cycle and this value can be different size but 5 bytes in summ
+  4 bytes - (Float). Game time in form "hh.mm"
+
+Block "movies"
+  List of game movies in form:
+    4 bytes - (Integer) Count
+    x elements (12 bytes each):
+      8 bytes - (Integer64) ID
+      4 bytes - (integer) watch count
+
+Block "Mods list"
+  Three similar lists: (really, don't know what is for 2 and 3 lists)
+    Bound Mods
+    Recent Mod history
+    Full Mod history
+  Each list have next structure:
+    4 bytes - (Integer) count
+    x elements
+      8 bytes - (Integer64) Mod ID
+
+Block "Character"
+  Main player info block
+    4 bytes - (Integer) total block size, bytes
+    x bytes - Character info
+
+Block "KeyMapping"
+   2 bytes - (Short Int) count of elements
+   x elements (11 bytes each)
+     8 bytes - (Integer64) ID of skill or item
+     1 byte  - (byte) Data type (0 - item, 2 - skill)
+     2 bytes - (short int) key code
+        0-99 - codes for Quickslot "1"-"0" (for several lines, used in mods)
+        0x03E8 - LMB
+        0x03E9 - RMB
+        0x03EA - RMBAlt (for <Tab> key switching)
+        0x03EB - Spell1
+        0x03EC - Spell2
+        0x03ED - Spell3
+        0x03EE - Spell4
+        0x03EF - PetSpell1;
+        0x03F0 - PetSpell2;
+        0x03F1 - PetSpell3;
+        0x03F2 - PetSpell4;
+        0x03F3 - HP potion
+        0x03F4 - MP potion
+        0x03F5 - PetHP potion
+        0x03F6 - PetMP potion
+   Next is fixed size for Functional keys:
+     12 elements
+       8 bytes - (Integer64) - skill ID for F## key
+       8 bytes - (Integer64) - usually -1 value, don't know what is for
+
+Block "Statistic"
+  Almost the same statistic which you can see in game
+   4 bytes - (Integer) - element count (normal value is 22)
+     x bytes (really, 88) - data (every element is integer = 4 bytes)
+       TotalTime  =  0 total time in game, msec
+       Gold       =  1 gold collected
+       Unknown    =  2 ?? (for me, has 0 on new, 2 on middle and 7 on NG+ main char)
+       Steps      =  3 steps done
+       Quests     =  4 tasks (quests) done
+       Deaths     =  5 number of deaths
+       Monsters   =  6 mobs killed
+       Champions  =  7 heroes killed
+       Skills     =  8 skills used
+       Treasures  =  9 hidden treasures opened
+       Traps      = 10 traps activated
+       Broken     = 11 items broken
+       Potions    = 12 potions used
+       Portals    = 13 portals opened
+       Fish       = 14 fish catched
+       Gambled    = 15 time gambled
+       Transmuted = 16 items transformed
+       Enchanted  = 17 items charmed
+       DmgTaken   = 18 max.damage obtained
+       DmgDealt   = 19 max damage made
+       LevelTime  = 20 time on level, msec
+       Exploded   = 21 mobs exploded
+
+Block "Area"
+  Looks like used for resurrection mainly
+    x bytes (ShortString) - current player map
+    x bytes (ShortString) - player "parent" area?
+
+Block "Unknown"
+  Yes, yes, don' know what is for.
+  4 bytes - (Integer) usually, 0
+  12 bytes - (Coord) [-999,-999,-999]
+
+Block "Portal"
+  describes portal opened by portal scroll
+    1 byte   - (boolean) 1 - Portal is opened
+    12 bytes - (coord) portal coordinates
+    x bytes  - (ShortString) portal map
+
+"Unknown"
+  4 bytes (Integer) - usually, 1 but can be a zero too
+
+Block "Pet and allies"
+  4 bytes - (integer) count of allies including pet (so, 1 as minimum)
+  x bytes - blocks almost like "Character" block
+
+Block "Unknown"
+  Again.
+  34 bytes - usually, all of them are zero, so its size can be larger really
+
+Block "Maps"
+  4 bytes - count of elements
+  x bytes - map descriptions
+
+Block "Unknown"
+  One more.
+  4 bytes - (Integer) count of elements
+    x bytes  - (Short string) - Area name
+    12 bytes - maybe Coord, maybe just 3 Integers
+    4 bytes  - count of sub-elements, every element is 4 bytes
+      x bytes - list
+
+Block "Quests"
+  4 bytes - (Integer) block size, bytes
+  x bytes - quests
+
+Block "Skills"
+  Looks like skill learning history
+  2 bytes - (Short Int) count
+  2 bytes - (Short Int) count (yes, two counts, the same values). every element is 8 bytes
+    x*8 bytes - (Integer64) Skill ID
+
+Block "Recipes"
+  2 bytes  - (Short Int) count. Every element is 8 bytes
+  x*8 bytes - (Integer64) Recipe ID
+
+Block "Last"
+  Looks like some statistic
+  4 bytes - block size in bytes
+  x bytes - block content
+

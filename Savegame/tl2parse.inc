@@ -1,7 +1,7 @@
 {}
 function TTL2SaveFile.Parse(amode:TTL2ParseType):boolean;
 var
-  lpos1,lpos,i,j,lcnt,lcnt1:integer;
+  lpos,i,j,lcnt,lcnt1:integer;
 begin
   result:=true;
 
@@ -113,81 +113,7 @@ begin
 
   //===== Quests =====
 
-  FQBlockSize:=FStream.ReadDWord;
-
-  if amode=ptLite then
-  begin
-    FQuestBlock:=FStream.ReadBytes(FQBlockSize);
-  end
-  else
-  begin
-    lpos1:=FStream.Position;
-    lpos :=FStream.Position+FQBlockSize;
-
-    // full quest list (sidequests?)
-    FStream.ReadIdList;
-
-    // quests progress
-    lcnt:=FStream.ReadDWord;  // 13
-    for i:=0 to lcnt-1 do
-    begin
-      lcnt1:=FStream.ReadDWord; // Offset to next quest from quests block start
-      FStream.ReadQWord;  // E36A01E3Ae3EBEEF "MEDIA\QUESTS\TL2MAINQUEST\ACT3\A3A3-TOWNARRIVAL.DAT 
-      Check(FStream.ReadQWord,'quest_8',qword($FFFFFFFFFFFFFFFF));  // FF
-      FStream.ReadDWord;  // 29C4F73E
-      Check(FStream.ReadDWord,'quest_4',$FFFFFFFF);  // FF
-
-      FStream.Position:=lpos1+lcnt1;
-  (*
-      [+0]1b=1 => [+12] have dialogs?
-      [+1]1b=? => [6][A][C] "a2-Find_Djinni"
-      =1: [6]=1; [8]=1 not always
-      [+2]4b=? non-zero usually
-      7 - [E=1 usually]
-
-      [+6]4b=?
-      [+A]2b=?
-      [+C]2b=?
-      [+E]4b=? 0 usually. can be 1
-      [+12]=cnt [PASSIVE] "dialog count" (words) addr. cnt+words+16 = next quest
-      [+16??]
-      if [e]=1 and [12]=0 =>$16(22) from [E]
-      // GLOBAL_TRILLBOT:
-  +0  01
-  +1  01
-  +2  0F 00 00 00
-  +6  00 00 00 00
-  +A  00 00
-  +C  00 00
-  +E  01 00 00 00
-  +12 00 00
-  +14 00 00 00 00
-  +18 05 00 00 00 - max parts?
-      01
-      01
-      01 00 00 00
-      01 00 00 00  
-      ---
-      06 00 00 00
-      ID=TRILLBOT ARM (QUEST ITEM)
-      00 00 00 00
-      00
-      01          - found?
-      01 00 00 00 - amount?
-      00 00 00 00
-      ---
-      07 00 00 00
-      ...
-      0A 00 00 00
-      ID
-      00 00 00 00
-      00 00 00 00
-      00 00 00 00
-  *)
-    end;
-
-    FStream.Position:=lpos;
-  end; // quest block
+  FQuests:=ReadQuests(FStream,ptLite);
 
   //----- ?? Skill [??learn] history (check order) -----
 

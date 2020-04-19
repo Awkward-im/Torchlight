@@ -7,6 +7,7 @@ uses
   tl2stream,
   tl2common,
   tl2types,
+  tl2base,
   tl2effects,
   tl2item;
 
@@ -21,14 +22,10 @@ type
   TTL2SpellList = array [0..3] of TTL2Spell;
 
 type
-  TTL2Character = class
+  TTL2Character = class(TL2BaseClass)
   private
-    FDescr:string;
-    
-    Data:PByte;
-    Size:cardinal;
-    FItemData:PByte;
-    FItemSize:cardinal;
+//    FDescr:string;
+
     FMode:TTL2ParseType;
 
   private
@@ -123,9 +120,7 @@ type
 }
   end;
 
-// Have Block length
-function  ReadCharData (AStream:TTL2Stream; amode:TTL2ParseType=ptLite; const adescr:string=''):TTL2Character;
-procedure WriteCharData(AStream:TTL2Stream; achar:TTL2Character);
+function ReadCharData(AStream:TTL2Stream; amode:TTL2ParseType=ptLite; const adescr:string=''):TTL2Character;
 
 
 implementation
@@ -135,7 +130,7 @@ constructor TTL2Character.Create(amode:TTL2ParseType; const adescr:string);
 begin
   inherited Create;
 
-  FDescr:=adescr;
+//  FDescr:=adescr;
   FMode:=amode;
 end;
 
@@ -143,12 +138,9 @@ destructor TTL2Character.Destroy;
 var
   i:integer;
 begin
-  FreeMem(FItemData);
-  
+
   SetLength(FSkills,0);
   SetLength(FModIds,0);
-
-  FreeMem(Data);
 
   for i:=0 to High(FItems) do FItems[i].Free;
   SetLength(FItems,0);
@@ -167,14 +159,16 @@ end;
 
 procedure TTL2Character.LoadFromStream(AStream: TTL2Stream);
 var
-  lcnt,i:integer;
-  lpos:cardinal;
+  i:integer;
   isPet:boolean;
 begin
+  FromStream(AStream);
 
-if FMode=ptLite then exit;
-
-  lpos:=AStream.Position;
+if FMode=ptLite then
+begin
+  AStream.Position:=FDataOffset+FDataSize;
+  exit;
+end;
 
   // signature
   FSign:=AStream.ReadByte;  // $FF or 02
@@ -313,19 +307,6 @@ if FMode=ptLite then exit;
   // mod id list
   FModIds:=AStream.ReadIdList;
 
-//  if FDescr<>'' then SaveDump(FDescr+'_data.dmp',AStream.Memory+lpos,(AStream.Position-lpos));
-
-//-----------------------------
-  if FMode=ptLite then
-//  if not (FMode in [ptDeep,ptDeepest]) then
-  begin
-    FItemSize:=Size-(AStream.Position-lpos);
-    if FDescr<>'' then SaveDump(FDescr+'_rest.dmp',AStream.Memory+AStream.Position,FItemSize);
-    FItemData:=AStream.ReadBytes(FItemSize);
-    exit;
-  end;
-//-----------------------------
-
   //----- item list -----
 
   FItems:=ReadItemList(AStream);
@@ -354,6 +335,11 @@ var
   i:integer;
   isPet:boolean;
 begin
+  if not FChanged then
+  begin
+    if ToStream(AStream) then exit;
+  end;
+
   // signature
   AStream.WriteByte(FSign); // $FF
   AStream.WriteWord(0);     // 0
@@ -478,49 +464,36 @@ begin
   // mod id list
   AStream.WriteIdList(FModIds);
 
+  WriteItemList(AStream,FItems);
 
-  AStream.Write(FItemData^,FItemSize);
+  //----- Effects -----
+  // dynamic,passive,transfer
+
+  WriteEffectList(AStream,FEffects1);
+  WriteEffectList(AStream,FEffects2);
+  WriteEffectList(AStream,FEffects3);
+
+  AStream.WriteShortStringList(FAugments);
+  
+  //----- STATS -----
+
+  AStream.WriteIdValList(FStats);
+
+  FChanged:=false;
 end;
 
 function ReadCharData(AStream:TTL2Stream; amode:TTL2ParseType=ptLite; const adescr:string=''):TTL2Character;
-var
-  llen,lpos:cardinal;
 begin
-  llen:=AStream.ReadDWord;
-  lpos:=AStream.Position;
-
-  if adescr<>'' then SaveDump(adescr+'.dmp',AStream.Memory+lpos,llen);
-
   result:=TTL2Character.Create(amode,adescr);
-
-  result.Size:=llen;
-  if amode=ptLite then
-  begin
-    result.Data:=AStream.ReadBytes(llen);
-  end
-  else
-    try
-      result.LoadFromStream(AStream);
-    except
-writeln('got char exception');
-    end;
-
-  AStream.Seek(lpos+llen,soFromBeginning);
-end;
-
-procedure WriteCharData(AStream:TTL2Stream; achar:TTL2Character);
-begin
-  if achar.FMode=ptLite then
-  begin
-    AStream.WriteDWord(achar.Size);
-    AStream.Write(achar.Data^,achar.Size);
-  end
-  else
-  //!!!! Size??
-    try
-      achar.SaveToStream(AStream);
-    except
-    end;
+  try
+    result.LoadFromStream(AStream);
+{$IFDEF DEBUG}
+    if adescr<>'' then result.ToFile(adescr+'.dmp');
+{$ENDIF}
+  except
+    if IsConsole then writeln('got char "'+adescr+'" exception at ',HexStr(result.FDataOffset,8));
+    AStream.Position:=result.FDataOffset+result.FDataSize;
+  end;
 end;
 
 end.

@@ -1,0 +1,43 @@
+object fmQuests: TfmQuests
+  Left = 557
+  Height = 391
+  Top = 198
+  Width = 523
+  Caption = 'quests'
+  ClientHeight = 391
+  ClientWidth = 523
+  LCLVersion = '2.1.0.0'
+  object sgQuests: TStringGrid
+    Left = 8
+    Height = 371
+    Top = 8
+    Width = 505
+    ColCount = 4
+    Columns = <    
+      item
+        SizePriority = 0
+        Title.Caption = 'Title'
+        Width = 150
+      end    
+      item
+        ButtonStyle = cbsCheckboxColumn
+        SizePriority = 0
+        Title.Caption = 'Done'
+        Width = 48
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Name'
+        Width = 150
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Mods'
+        Width = 150
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goDblClickAutoSize, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 0
+  end
+end

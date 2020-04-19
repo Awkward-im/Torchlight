@@ -12,7 +12,6 @@
       <XPManifest>
         <DpiAware Value="True"/>
       </XPManifest>
-      <Icon Value="0"/>
     </General>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -25,9 +24,6 @@
       <FormatVersion Value="2"/>
     </RunParams>
     <RequiredPackages>
-      <Item>
-        <PackageName Value="DateTimeCtrls"/>
-      </Item>
       <Item>
         <PackageName Value="LCL"/>
       </Item>
@@ -89,6 +85,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formRecipes"/>
       </Unit>
+      <Unit>
+        <Filename Value="formquests.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmQuests"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formQuests"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -99,10 +103,13 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2DB;..\TL2Lib;..\..\utils\SQL"/>
+      <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils\SQL"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

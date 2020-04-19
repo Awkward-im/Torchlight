@@ -9,6 +9,7 @@ uses
   tl2common,
   tl2types,
   tl2map,
+  tl2quest,
   tl2char;
 
 // these types used just in this unit ("global" save file data)
@@ -62,11 +63,9 @@ type
 
     //--- Blocks
     FLastBlock :PByte;
-    FQuestBlock:PByte;
     FUnknown1  :PByte;
     FUnknown2  :PByte;
     FUnknown3  :PByte;
-    FQBlockSize:integer;
     FUnkn3Size :integer;
     FLBlockSize:integer;
     
@@ -85,6 +84,8 @@ type
 
     FKeyMapping:TTL2KeyMappingList;
     FFunctions :TTL2FunctionList;
+
+    FQuests:TTL2Quest;
 
     FMovies    :TL2IdValList;
     FRecipes   :TL2IdList;
@@ -152,7 +153,7 @@ type
     property GoldGathered     :TL2Integer index statGold       read GetStatistic write SetStatistic;
 //    property GameDifficulty   :TL2Integer index statDifficulty read GetStatistic write SetStatistic;
     property StepsTaken       :TL2Integer index statSteps      read GetStatistic write SetStatistic;
-    property QuestsDone       :TL2Integer index statQuests     read GetStatistic write SetStatistic;
+    property Quests           :TL2Integer index statQuests     read GetStatistic write SetStatistic;
     property Deaths           :TL2Integer index statDeaths     read GetStatistic write SetStatistic;
     property MonstersKilled   :TL2Integer index statMonsters   read GetStatistic write SetStatistic;
     property ChampionsKilled  :TL2Integer index statChampions  read GetStatistic write SetStatistic;
@@ -547,26 +548,37 @@ var
 begin
   FStream.Free;
 
-  if FCharInfo<>nil then FCharInfo.Free;
-
-  for i:=0 to High(FPetInfos) do
-    if FPetInfos[i]<>nil then FPetInfos[i].Free;
-  SetLength(FPetInfos,0);
-
-  FreeMem(FUnknown1);
+  SetLength(FMovies,0);
 
   SetLength(FBoundMods       ,0);
   SetLength(FRecentModHistory,0);
   SetLength(FFullModHistory  ,0);
 
+  FCharInfo.Free;
+
   SetLength(FKeyMapping,0);
   SetLength(FFunctions ,0);
-  SetLength(FMovies    ,0);
-  SetLength(FRecipes   ,0);
+
+  FreeMem(FUnknown1);
+
+  for i:=0 to High(FPetInfos) do
+    if FPetInfos[i]<>nil then FPetInfos[i].Free;
+  SetLength(FPetInfos,0);
+
+  FreeMem(FUnknown2);
 
   for i:=0 to High(FMaps) do
     if FMaps[i]<>nil then FMaps[i].Free;
   SetLength(FMaps,0);
+
+  FreeMem(FUnknown3);
+
+  FQuests.Free;
+
+  SetLength(FRecipes,0);
+
+
+  FreeMem(FLastBlock);
 
   inherited;
 end;

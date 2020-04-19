@@ -1,6 +1,7 @@
 {
   small Statistic block
   which can be found in standard window
+  No real data work
 }
 unit TL2Statistic;
 

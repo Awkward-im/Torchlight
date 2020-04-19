@@ -6,8 +6,10 @@ uses
   sysutils,
   classes,
   tl2types,
+  tl2base,
   tl2stream,
   tl2char,
+  tl2item,
   tl2common;
 
 type
@@ -29,7 +31,7 @@ type
   TTL2LayDataList = array of TTL2LayData;
 
 type
-  TTL2Map = class
+  TTL2Map = class(TL2BaseClass)
   private
     FName :string;
     FMobInfos:array of TTL2Character;
@@ -47,7 +49,8 @@ type
     FUnknList  : TL2IdList;
     FLayoutList: TL2StringList;
     FTriggers  : TTL2TriggerList;
-    FPropList  : TTL2PropList;
+//    FPropList  : TTL2PropList;
+    FPropList  : TTL2ItemList;
     FLayData   : TTL2LayDataList;
 
     FUnknown1  : array of array of byte;
@@ -92,7 +95,8 @@ begin
   SetLength(FMobInfos,0);
 
   for i:=0 to High(FPropList) do
-    SetLength(FPropList[i],0);
+    FPropList[i].Free;
+//    SetLength(FPropList[i],0);
   SetLength(FPropList,0);
 
   for i:=0 to High(FUnknown1) do
@@ -111,6 +115,8 @@ var
   lcnt:integer;
 begin
   lcnt:=AStream.ReadDWord;
+
+  //!! treat as Item??
   SetLength(aProp,lcnt);
   if lcnt>0 then
     AStream.Read(aProp[0],lcnt);
@@ -163,13 +169,28 @@ end;
 
 procedure TTL2Map.ReadPropList(AStream: TTL2Stream);
 var
-  lcnt,i:integer;
+  lcnt1,lpos,lcnt,i:integer;
 begin
   lcnt:=AStream.ReadDWord;
   SetLength(FPropList,lcnt);
   for i:=0 to lcnt-1 do
   begin
-    ReadProp(AStream, FPropList[i]);
+
+   lcnt1:=AStream.ReadDWord(); // size
+lpos:=AStream.Position;
+writeln('prop ',i,' go ',HexStr(lpos,8) );      
+      FPropList[i]:=TTL2Item.Create;
+try
+      FPropList[i].LoadFromStream(AStream);
+except
+  writeln('prop exception ',i,' at ',HexStr(lpos,8));
+  AStream.Position:=lpos+lcnt1;
+end;
+if FPropList[i].DataSize<>lcnt1 then
+  if IsConsole then writeln('predefined size ',lcnt1,
+       ' is not as real ',FPropList[i].DataSize,
+       ' at ',HexStr(lpos,8));
+
   end;
 end;
 
@@ -180,7 +201,11 @@ begin
   AStream.WriteDWord(Length(FPropList));
   for i:=0 to High(FPropList) do
   begin
-    WriteProp(AStream, FPropList[i]);
+//    WriteProp(AStream, FPropList[i]);
+
+  AStream.WriteDWord(FPropList[i].DataSize);
+  FPropList[i].SaveToStream(AStream);
+
   end;
 end;
 
@@ -189,6 +214,7 @@ var
   lcnt,lcnt1:integer;
   i:integer;
 begin
+  FDataOffset:=AStream.Position;
 
   //??
   Unkn0:=Check(AStream.ReadDword,'map 0',0); // 0, 2, 1 - for repeated
@@ -227,7 +253,9 @@ begin
   lcnt:=AStream.ReadDWord;  // mob count?
   SetLength(FMobInfos,lcnt);
   for i:=0 to lcnt-1 do
+  begin
     FMobInfos[i]:=ReadCharData(AStream,ptLite,''{'res\'+FName+'_mobinfo'+HexStr(i,2)});
+  end;
 
   //----- Props (Items) -----
   //!! Check on same as items
@@ -257,12 +285,19 @@ begin
 
   //??
   Check(AStream.ReadDWord,'map-end',0); // 0
+
+  CloneStream(AStream);
 end;
 
 procedure TTL2Map.SaveToStream(AStream: TTL2Stream);
 var
   i:integer;
 begin
+  if not FChanged then
+  begin
+    if ToStream(AStream) then exit;
+  end;
+
   //??
   AStream.WriteDWord(Unkn0);
 
@@ -298,7 +333,7 @@ begin
 
   AStream.WriteDWord(Length(FMobInfos));
   for i:=0 to High(FMobInfos) do
-    WriteCharData(AStream,FMobInfos[i]);
+    FMobInfos[i].SaveToStream(AStream);
 
   //----- Props (Items) -----
   //!! Check on same as items

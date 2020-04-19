@@ -6,39 +6,52 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  tl2save,
-  formMovies,
-  formRecipes,
-  formKeyBinding,
-  formStatistic;
+  Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
+  formKeyBinding, formStatistic;
 
 type
 
   { TfmSaveFile }
 
   TfmSaveFile = class(TForm)
+    actFileExit: TAction;
+    actFileOpen: TAction;
+    actFileSave: TAction;
+    ActionList: TActionList;
     Button1: TButton;
-    Button2: TButton;
     Button3: TButton;
     Button4: TButton;
-    keys: TButton;
+    Button5: TButton;
     cbHardcore: TCheckBox;
+    edArea: TEdit;
     edClass: TEdit;
     edDifficulty: TEdit;
-    edArea: TEdit;
-    edNG: TEdit;
     edMap: TEdit;
+    edNG: TEdit;
     gbCharacter: TGroupBox;
+    ImageList: TImageList;
+    keys: TButton;
     lblArea: TLabel;
-    lblMap: TLabel;
-    lblGameTime: TLabel;
-    lblNG: TLabel;
-    lblDifficulty: TLabel;
     lblClass: TLabel;
+    lblDifficulty: TLabel;
+    lblGameTime: TLabel;
+    lblMap: TLabel;
+    lblNG: TLabel;
+    MainMenu: TMainMenu;
+    mnuFile: TMenuItem;
+    mnuFileOpen: TMenuItem;
+    mnuFileSave: TMenuItem;
+    mnuFileSep1: TMenuItem;
+    mnuFileExit: TMenuItem;
+    MainPanel: TPanel;
+    LeftPanel: TPanel;
+    Splitter: TSplitter;
+    TreeView1: TTreeView;
+    procedure actFileOpenExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure keysClick(Sender: TObject);
@@ -61,7 +74,6 @@ uses
 
 { TfmSaveFile }
 
-
 procedure TfmSaveFile.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   SGame.Free;
@@ -73,17 +85,21 @@ begin
   SGame:=TTL2SaveFile.Create;
 end;
 
-procedure TfmSaveFile.Button2Click(Sender: TObject);
+//===== Actions =====
+
+procedure TfmSaveFile.actFileOpenExecute(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
 begin
+  //!! check if savegame already opened and changed
+
   OpenDialog:=TOpenDialog.Create(nil);
   try
 //    OpenDialog.InitialDir:='';
 //    OpenDialog.DefaultExt:='';
 //    OpenDialog.Filter    :='';
-    OpenDialog.Title     :='open savegame';
 //    OpenDialog.Options   :=[];
+    OpenDialog.Title:=rsSaveGameOpen;
 
     if OpenDialog.Execute then
     begin
@@ -124,6 +140,13 @@ begin
   fmRecipes:=TfmRecipes.Create(nil);
   fmRecipes.FillGrid(SGame);
   fmRecipes.Show;
+end;
+
+procedure TfmSaveFile.Button5Click(Sender: TObject);
+begin
+  fmQuests:=TfmQuests.Create(nil);
+  fmQuests.FillGrid(SGame);
+  fmQuests.Show;
 end;
 
 procedure TfmSaveFile.keysClick(Sender: TObject);

@@ -30,7 +30,7 @@ begin
 
   //===== Character Data =====
 
-  WriteCharData(FStream,FCharInfo);
+  FCharInfo.SaveToStream(FStream);
 
   //----- Keymapping -----
 
@@ -60,24 +60,29 @@ begin
 
   FStream.WriteDWord(Length(FPetInfos));
   for i:=0 to High(FPetInfos) do
-    WriteCharData(FStream,FPetInfos[i]);
+    FPetInfos[i].SaveToStream(FStream);
 
   //----- Unknown 2 -----
   //!!
-  FStream.Write(FUnknown2^,34);
-
+//  if amode in [ptLite, ptStandard] then
+    FStream.Write(FUnknown2^,34);
+{
+  else
+  begin
+    for i:=0 to 33 do FStream.WriteByte(0);
+  end;
+}
   //----- Maps -----
 
   WriteMapList(FStream,FMaps);
 
   //----- Unknown 3 -----
-
+  //!!
   FStream.Write(FUnknown3^,FUnkn3Size);
 
   //===== Quests =====
 
-  FStream.WriteDWord(FQBlockSize);
-  FStream.Write(FQuestBlock^,FQBlockSize);
+  FQuests.SaveToStream(FStream);
 
   //----- ?? History -----
 
@@ -92,7 +97,15 @@ begin
 
   //===== REST of file =====
 
-  FStream.WriteDWord(FLBlockSize);
-  FStream.Write(FLastBlock^,FLBlockSize);
+//  if amode=ptLite then
+  begin
+    FStream.WriteDWord(FLBlockSize);
+    FStream.Write(FLastBlock^,FLBlockSize);
+{
+  end
+  else
+  begin
+}
+  end;
 
 end;

@@ -25,7 +25,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);."/>
-            <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL"/>
+            <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -47,7 +47,6 @@
               <DebugInfoType Value="dsDwarf2Set"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
-              <UseExternalDbgSyms Value="True"/>
             </Debugging>
           </Linking>
         </CompilerOptions>
@@ -61,7 +60,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);."/>
-            <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL"/>
+            <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -111,6 +110,7 @@
       <Unit>
         <Filename Value="tl2common.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Common"/>
       </Unit>
       <Unit>
         <Filename Value="tl2item.pas"/>
@@ -127,6 +127,15 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Effects"/>
       </Unit>
+      <Unit>
+        <Filename Value="tl2quest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Quest"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\tl2types.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -137,7 +146,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);."/>
-      <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL"/>
+      <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
   </CompilerOptions>
