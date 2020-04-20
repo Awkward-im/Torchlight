@@ -140,10 +140,10 @@ Block "Statistic"
 Block "Area"
   Looks like used for resurrection mainly
     x bytes (ShortString) - current player map
-    x bytes (ShortString) - player "parent" area?
+    x bytes (ShortString) - player "parent" area? looks like "WAYPOINTS" folder content
 
 Block "Unknown"
-  Yes, yes, don' know what is for.
+  Yes, yes, don't know what is for.
   4 bytes - (Integer) usually, 0
   12 bytes - (Coord) [-999,-999,-999]
 
@@ -164,7 +164,7 @@ Block "Unknown"
   Again.
   34 bytes - usually, all of them are zero, so its size can be larger really
 
-Block "Maps"
+Block "Maps" (Hard to skip, variable size)
   4 bytes - count of elements
   x bytes - map descriptions
 
