@@ -10,6 +10,7 @@ uses
   tl2types,
   tl2map,
   tl2quest,
+  tl2stats,
   tl2char;
 
 // these types used just in this unit ("global" save file data)
@@ -55,19 +56,19 @@ type
     procedure LoadFromFile(const aname:string);
     procedure SaveToFile  (const aname:string; aencoded:boolean=false);
 
-    function  Parse(amode:TTL2ParseType):boolean;
+    function  Parse():boolean;
     function  Prepare:boolean;
 
   //--- TL2 save part
   private
 
     //--- Blocks
-    FLastBlock :PByte;
+    FLastBlock :TTL2Stats;
+
     FUnknown1  :PByte;
     FUnknown2  :PByte;
     FUnknown3  :PByte;
     FUnkn3Size :integer;
-    FLBlockSize:integer;
     
     FCharInfo:TTL2Character;
     FPetInfos:array of TTL2Character;

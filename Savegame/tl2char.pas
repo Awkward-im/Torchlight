@@ -24,17 +24,14 @@ type
 type
   TTL2Character = class(TL2BaseClass)
   private
-//    FDescr:string;
-
-    FMode:TTL2ParseType;
-
-  private
     FSign           :Byte;
+    FSignWord       :Word;
+
+    FWardrobe       :TL2Boolean;
 
     // Pet's corner
     FImageId,
     FOriginId       :TL2ID;
-    Unk1            :TL2ID;
     FScale          :TL2Float;
     FSkin           :Byte;
     FEnabled        :TL2Boolean;
@@ -42,7 +39,25 @@ type
     FTownTime       :TL2Float;
     FAction         :TTL2Action;
 
+    // unknowns
+    FUnkn1          :TL2ID;
+    FUnkn2          :Byte;
+    FUnkn3          :DWord;
+    FUnkn4          :Word;
+    FUnkn5          :Byte;
+    FUnkn6          :DWord;
+    FUnkn7          :array [0..23] of byte;
+    FUnkn17         :DWord;
+    FUnkn9          :QWord;
+    FUnkn10         :array [0..63] of byte;
+    FUnkn11         :DWord;
+    FUnkn12         :array [0..11] of byte;
+    FUnkn13         :TL2Float;
+    FUnkn14         :array [0..27] of byte;
+    FUnkn15         :array [0..15] of byte;
+
     // player's Wardrobe etc
+    FWardUnkn       :array [0..35] of byte;
     FFace           :integer;
     FHairstyle      :integer;
     FHairColor      :integer;
@@ -51,6 +66,7 @@ type
 
     // looks like common
     FCharacterName  :string;
+    FCharacterTitle :string;
     FPosition       :TL2Coord;
     FLevel          :integer;
     FExperience     :integer;
@@ -72,6 +88,14 @@ type
     FSpells         :TTL2SpellList;
     FModIds         :TL2IdList;
 
+    // buttons
+    FRMB1 :TL2ID;
+    FRMB2 :TL2ID;
+    FLMB  :TL2ID;
+    FARMB1:TL2ID;
+    FARMB2:TL2ID;
+    FALMB :TL2ID;
+    
     FItems          :TTL2ItemList;
     FEffects1       :TTL2EffectList;
     FEffects2       :TTL2EffectList;
@@ -79,7 +103,6 @@ type
     FAugments       :TL2StringList;
     FStats          :TL2IdValList;
   public
-    constructor Create(amode:TTL2ParseType; const adescr:string); overload;
     destructor  Destroy; override;
 
     procedure LoadFromStream(AStream: TTL2Stream);
@@ -120,19 +143,11 @@ type
 }
   end;
 
-function ReadCharData(AStream:TTL2Stream; amode:TTL2ParseType=ptLite; const adescr:string=''):TTL2Character;
+function ReadCharData(AStream:TTL2Stream):TTL2Character;
 
 
 implementation
 
-
-constructor TTL2Character.Create(amode:TTL2ParseType; const adescr:string);
-begin
-  inherited Create;
-
-//  FDescr:=adescr;
-  FMode:=amode;
-end;
 
 destructor TTL2Character.Destroy;
 var
@@ -164,72 +179,80 @@ var
 begin
   FromStream(AStream);
 
-if FMode=ptLite then
-begin
-  AStream.Position:=FDataOffset+FDataSize;
-  exit;
-end;
-
   // signature
-  FSign:=AStream.ReadByte;  // $FF or 02
-  AStream.ReadWord;         // 0
+  // can be word+byte, can be 3 bytes. last looks like bool
+  FSign    :=AStream.ReadByte;  // $FF or 02
+  FSignWord:=Check(AStream.ReadWord,'char sign',0);  // 0 (can be $0100)
 	
   FImageId :=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
   FOriginId:=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
 
-  Unk1:=TL2ID(AStream.ReadQword);    //!! (changing) (F6ED2564.F596F9AA)
+  FUnkn1:=TL2ID(AStream.ReadQword);    //!! (changing) (F6ED2564.F596F9AA)
 
-  // really, that must mean "image" i think
-  isPet:=(AStream.ReadWord and $0100)=0;     // :1B -  $0100 flags?
-  if not isPet then // WARDROBE
+  FUnkn2   :=Check(AStream.ReadByte,'pre-wardrobe',0);
+  FWardrobe:=AStream.ReadByte<>0;     // not sure but why not?
+  if FWardrobe then
   begin
     FFace     :=AStream.ReadDWord;    // face
     FHairStyle:=AStream.ReadDWord;    // hairstyle
     FHairColor:=AStream.ReadDWord;    // haircolor (+bandana for outlander)
     // !!*$FF = 36
+    AStream.Read(FWardUnkn,36);
+{
     AStream.ReadQWord;
     AStream.ReadQWord;
     AStream.ReadQWord;
     AStream.ReadQWord;
     AStream.ReadDWord;
+}
   end;
   //??
-  AStream.ReadDWord;    // 0
+  FUnkn3:=Check(AStream.ReadDWord,'pre-pet enabled',0);    // 0
   FEnabled:=AStream.ReadByte<>0; // 1 (pet - enabled)
   //??
+  FUnkn4:=Check(AStream.ReadWord,'post-pet enabled',0);
+{
   AStream.ReadByte;     // 0
   AStream.ReadByte;     // 0
-
-  if not isPet then
+}
+//  if not isPet then
+  if FWardrobe then //!! YES, i know, i know!!!
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
-  //??
-  AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0 :24 for pet, :55 for char
+  //??  :24 for pet, :55 for char
+  FUnkn5:=AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0
 
   FMorphTime:=AStream.ReadFloat;   // pet morph time
   FTownTime :=AStream.ReadFloat;   //!!!!!!!!!! time to town,sec?
   FAction   :=TTL2Action(AStream.ReadDWord);  // 1  (pet status)
   //??
-  AStream.ReadDWord;    // 1
+  FUnkn6:=Check(AStream.ReadDWord,'before scale',1);    // 1
   FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
   //??
+  AStream.Read(FUnkn7,24);
+{
   AStream.ReadQWord;    // ? player = FFFFFFFF, pet - no
   AStream.ReadQWord;    // -1
   AStream.ReadQWord;    // -1
-
+}
   // can it be a name hash?
-  isPet:=(AStream.ReadDWord=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
+  FUnkn17:=AStream.ReadDWord;
+  isPet:=(FUnkn17=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
 
-  FCharacterName:=AStream.ReadShortString(); // :55(pet) Char name
-  Check(AStream.ReadWord,'name_between',0);  // empty (len=0) atm or WORD = number?
+  FCharacterName :=AStream.ReadShortString(); // :55(pet) Char name
+  FCharacterTitle:=AStream.ReadShortString(); // like mob title "(Teleporting)"
   if not isPet then
     FPlayer:=AStream.ReadShortString();      // "PLAYER" !!!!! not exists for pets!!!!!!
   //??
+  FUnkn9:=AStream.ReadQWord;
+{
   AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0 / elfly=7, rage=2, lonelfly=2, zorro=0
-
+  AStream.ReadDWord;    // 0 / SEE: Statistic=unknown elfly=7, rage=2, lonelfly=2, zorro=0
+}
   FPosition:=AStream.ReadCoord; //!!!!!!!!
 
   //??
+  AStream.Read(FUnkn10,64);
+{
   // direction
   AStream.ReadCoord;   // Forward
   AStream.ReadDWord;   // 0
@@ -240,37 +263,40 @@ end;
   AStream.ReadCoord;   // Right
   AStream.ReadDWord;   // 0
 
-  AStream.ReadDWord;   // 0
-  AStream.ReadDWord;   // 0
-  AStream.ReadDWord;   // 0
+  AStream.ReadDWord;   // 0  \
+  AStream.ReadDWord;   // 0  | coord?
+  AStream.ReadDWord;   // 0  /
   AStream.ReadFloat;   // float=1.0
-
+}
   FLevel      :=AStream.ReadDWord;    // level
   FExperience :=AStream.ReadDWord;    // exp
   FFameLevel  :=AStream.ReadDWord;    // fame level
   FFame       :=AStream.ReadDWord;    // fame
   FHealth     :=AStream.ReadFloat;    // current HP
   FHealthBonus:=AStream.ReadDWord;    // health bonus (pet=full hp)
-  Check(AStream.ReadDWord,'stat',0);  // 0 ?? charge maybe? or armor?
+  FUnkn11:=Check(AStream.ReadDWord,'stat',0);  // 0 ?? charge maybe? or armor?
   FMana       :=AStream.ReadFloat;    // current MP
   FManaBonus  :=AStream.ReadDWord;    // Mana bonus   (pet=full mp)
   //??
+  AStream.Read(FUnkn12,12);
+{
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0
+}
   FPlayTime:=AStream.ReadFloat;    // play time, sec
-  AStream.ReadFloat;               // 1.0
+  FUnkn13:=AStream.ReadFloat;      // 1.0
   FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints? (elfly have 28 with 28 in fact)
   FFreeStatPoints :=AStream.ReadDWord; // unallocated statpoints ? (elfly have 35 with 30 in fact)
 
-  // mouse button skils
-  AStream.ReadQWord;    // skill ID RMB active = Pet 1st spell?
-  AStream.ReadQWord;    // skill ID RMB secondary
-  AStream.ReadQWord;    // skill ID LMB
+  // mouse button skils.
+  FRMB1:=TL2ID(AStream.ReadQWord);    // skill ID RMB active = Pet 1st spell?
+  FRMB2:=TL2ID(AStream.ReadQWord);    // skill ID RMB secondary
+  FLMB :=TL2ID(AStream.ReadQWord);    // skill ID LMB
   // second weapon set (!!!!!!!!!) not for pets
-  AStream.ReadQWord;    // skill ID RMB active
-  AStream.ReadQWord;    // skill ID RMB secondary
-  AStream.ReadQWord;    // skill ID LMB
+  FARMB1:=TL2ID(AStream.ReadQWord);    // skill ID RMB active
+  FARMB2:=TL2ID(AStream.ReadQWord);    // skill ID RMB secondary
+  FALMB :=TL2ID(AStream.ReadQWord);    // skill ID LMB
 {  Pet: 6x4b = Nizza: 27BA7400, 27BA6E00,
 
 }
@@ -285,23 +311,28 @@ end;
   end;
 
   //!!-- 28 bytes
+  // something defensive/offensive? Physical, [Magical,] Fire, Ice, Electric, Poison, All
+  AStream.Read(Funkn14,28);
+{
   AStream.ReadQWord;    // 0 same as pets
   AStream.ReadDWord;    // 0, Elfly pet = $0197 (407)
   AStream.ReadDWord;    // 0, Elfly pet = $0197
   AStream.ReadDWord;    // 0, Elfly pet = $0197
   AStream.ReadDWord;    // 0, Elfly pet = $0197
   AStream.ReadDWord;    // 0 same as pets
-
+}
   FStrength :=AStream.ReadDWord;    // strength      0 for pet
   FDexterity:=AStream.ReadDWord;    // dexterity     0 for pet
   FVitality :=AStream.ReadDWord;    // vitality      10\ sure, pet have hp/mp bonuses
   FFocus    :=AStream.ReadDWord;    // focus         10/
   FGold     :=AStream.ReadDWord;    // gold          0
   //??
+  AStream.Read(Funkn15,16);
+{
   AStream.ReadDWord;    // $FF=-1 / 1/0 (elfly)      0
   AStream.ReadQWord;    // FF same as pets
   AStream.ReadDWord;    // FF same as pets
-
+}
   FSkin:=AStream.ReadByte;  // FF OR pet texture (color)
 
   // mod id list
@@ -332,66 +363,67 @@ end;
 
 procedure TTL2Character.SaveToStream(AStream: TTL2Stream);
 var
-  i:integer;
-  isPet:boolean;
+  i,lOffs:integer;
 begin
-  if not FChanged then
+  if not Changed then
   begin
     if ToStream(AStream) then exit;
   end;
 
+  AStream.WriteDWord(0); // reserved for size
+  lOffs:=AStream.Position;
+
   // signature
-  AStream.WriteByte(FSign); // $FF
-  AStream.WriteWord(0);     // 0
+  AStream.WriteByte(FSign);      // $FF or 2
+  AStream.WriteWord(FSignWord);  // 0 or 0x0100
 
-  AStream.WriteQWord(FImageId);  // current Class ID (with sex)
-  AStream.WriteQWord(FOriginId); // *$FF or base class id (if morphed)
-  AStream.WriteQWord(Unk1);      //!! (changing) (F6ED2564.F596F9AA)
+  AStream.WriteQWord(QWord(FImageId));  // current Class ID (with sex)
+  AStream.WriteQWord(QWord(FOriginId)); // *$FF or base class id (if morphed)
+  AStream.WriteQWord(QWord(FUnkn1));    //!! (changing) (F6ED2564.F596F9AA)
 
-  // really, that must mean "image" i think
-  isPet:=(AStream.ReadWord and $0100)=0;     // :1B -  $0100 flags?
-  if not isPet then // WARDROBE
+  AStream.WriteByte(FUnkn2);
+  AStream.WriteByte(byte(FWardrobe) and 1);
+  if FWardrobe then // WARDROBE
   begin
-    AStream.WriteDWord(FFace);         // face
-    AStream.WriteDWord(FHairStyle);    // hairstyle
-    AStream.WriteDWord(FHairColor);    // haircolor (+bandana for outlander)
-    // !!*$FF = 36
-    AStream.WriteFiller(36);
+    AStream.WriteDWord(FFace);       // face
+    AStream.WriteDWord(FHairStyle);  // hairstyle
+    AStream.WriteDWord(FHairColor);  // haircolor (+bandana for outlander)
+
+    AStream.Write(FWardUnkn,36);
   end;
-  AStream.ReadDWord;    // 0
-  AStream.ReadByte;     // 1 (pet - enabled)
-  AStream.ReadByte;     // 0
-  AStream.ReadByte;     // 0
 
-  if not isPet then
-    AStream.WriteByte(FCheater); // cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
+  AStream.WriteDWord(FUnkn3);
+  AStream.WriteByte (byte(FEnabled) and 1);
+  AStream.WriteWord (FUnkn4);
 
-  AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0 :24 for pet, :55 for char
+  if FWardrobe then
+    AStream.WriteByte(FCheater);
 
-  AStream.ReadDWord;    // 0
+  AStream.WriteByte(FUnkn5);
+
+  AStream.WriteFloat(FMorphTime);
   AStream.WriteFloat(FTownTime);     // time to town,sec?
   AStream.WriteDWord(ord(FAction));  // 1  (pet status)
 
-  AStream.ReadDWord;    // 1
-  AStream.WriteFloat(FScale);   // scale (1.0 for char) (pet size)
+  AStream.WriteDWord(FUnkn6);  // 1
+  AStream.WriteFloat(FScale);  // scale (1.0 for char) (pet size)
   
-  AStream.ReadQWord;    // ? player = FFFFFFFF, pet - no
-  AStream.ReadQWord;    // -1
-  AStream.ReadQWord;    // -1
+  AStream.Write(FUnkn7,24);
 
-  isPet:=(AStream.ReadDWord=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
+  AStream.WriteDWord(FUnkn17);
 
   AStream.WriteShortString(FCharacterName); // :55(pet) Char name
-  AStream.WriteWord(0);                     // empty (len=0) atm or WORD = number?
-  if not isPet then
+  AStream.WriteShortString(FCharacterTitle);
+  if (FUnkn17<>$FFFFFFFF) then
     AStream.WriteShortString(FPlayer);      // "PLAYER" !!!!! not exists for pets!!!!!!
   
-  AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0 / elfly=7, rage=2, lonelfly=2, zorro=0
+  AStream.WriteQWord(FUnkn9);
 
   AStream.WriteCoord(FPosition);
 
   // Orientation
+  AStream.Write(FUnkn10,64);
+{
   AStream.ReadCoord;   // Forward
   AStream.ReadDWord;   // 0
   AStream.ReadCoord;   // Right
@@ -403,33 +435,32 @@ begin
   AStream.ReadDWord;   // 0
   AStream.ReadDWord;   // 0
   AStream.ReadFloat;   // float=1.0
-
+}
   AStream.WriteDWord(FLevel);        // level
   AStream.WriteDWord(FExperience);   // exp
   AStream.WriteDWord(FFameLevel);    // fame level
   AStream.WriteDWord(FFame);         // fame
   AStream.WriteFloat(FHealth);       // current HP
   AStream.WriteDWord(FHealthBonus);  // health bonus (pet=full hp)
-  AStream.WriteDWord(0);             // 0
+  AStream.WriteDWord(FUnkn11);
   AStream.WriteFloat(FMana);         // current MP
   AStream.WriteDWord(FManaBonus);    // Mana bonus   (pet=full mp)
 
-  AStream.ReadDWord;    // 0 <e1>
-  AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0
-  AStream.WriteFloat(FPlayTime);    // play time, sec
-  AStream.ReadFloat;               // 1.0
+  AStream.Write(FUnkn12,12);
+
+  AStream.WriteFloat(FPlayTime);        // play time, sec
+  AStream.WriteFloat(FUnkn13);          // 1.0
   AStream.WriteDWord(FFreeSkillPoints); // unallocated skillpoints? (elfly have 28 with 28 in fact)
   AStream.WriteDWord(FFreeStatPoints ); // unallocated statpoints ? (elfly have 35 with 30 in fact)
 
   // mouse button skils
-  AStream.ReadQWord;    // skill ID RMB active = Pet 1st spell?
-  AStream.ReadQWord;    // skill ID RMB secondary
-  AStream.ReadQWord;    // skill ID LMB
+  AStream.WriteQWord(QWord(FRMB1));    // skill ID RMB active = Pet 1st spell?
+  AStream.WriteQWord(QWord(FRMB2));    // skill ID RMB secondary
+  AStream.WriteQWord(QWord(FLMB));     // skill ID LMB
   // second weapon set
-  AStream.ReadQWord;    // skill ID RMB active
-  AStream.ReadQWord;    // skill ID RMB secondary
-  AStream.ReadQWord;    // skill ID LMB
+  AStream.WriteQWord(QWord(FARMB1));   // skill ID RMB active
+  AStream.WriteQWord(QWord(FARMB2));   // skill ID RMB secondary
+  AStream.WriteQWord(QWord(FALMB));    // skill ID LMB
 
   // CURRENT Skill list. depends of current weapon (passive mainly)
   AStream.WriteIdValList(FSkills);
@@ -441,13 +472,7 @@ begin
     AStream.WriteDWord      (FSpells[i].level); // spell level
   end;
 
-  //!!-- 28 bytes
-  AStream.ReadQWord;    // 0 same as pets
-  AStream.ReadDWord;    // 0, Elfly pet = $0197 (407)
-  AStream.ReadDWord;    // 0, Elfly pet = $0197
-  AStream.ReadDWord;    // 0, Elfly pet = $0197
-  AStream.ReadDWord;    // 0, Elfly pet = $0197
-  AStream.ReadDWord;    // 0 same as pets
+  AStream.Write(FUnkn14,28);
 
   AStream.WriteDWord(FStrength );    // strength      0 for pet
   AStream.WriteDWord(FDexterity);    // dexterity     0 for pet
@@ -455,9 +480,7 @@ begin
   AStream.WriteDWord(FFocus    );    // focus         10/
   AStream.WriteDWord(FGold     );    // gold          0
 
-  AStream.ReadDWord;    // $FF=-1 / 1/0 (elfly)      0
-  AStream.ReadQWord;    // FF same as pets
-  AStream.ReadDWord;    // FF same as pets
+  AStream.Write(FUnkn15,16);
 
   AStream.WriteByte(FSkin); // FF OR pet texture (color)
 
@@ -479,20 +502,18 @@ begin
 
   AStream.WriteIdValList(FStats);
 
-  FChanged:=false;
+  FromStream(AStream,lOffs);
+  SetSize   (AStream);
 end;
 
-function ReadCharData(AStream:TTL2Stream; amode:TTL2ParseType=ptLite; const adescr:string=''):TTL2Character;
+function ReadCharData(AStream:TTL2Stream):TTL2Character;
 begin
-  result:=TTL2Character.Create(amode,adescr);
+  result:=TTL2Character.Create();
   try
     result.LoadFromStream(AStream);
-{$IFDEF DEBUG}
-    if adescr<>'' then result.ToFile(adescr+'.dmp');
-{$ENDIF}
   except
-    if IsConsole then writeln('got char "'+adescr+'" exception at ',HexStr(result.FDataOffset,8));
-    AStream.Position:=result.FDataOffset+result.FDataSize;
+    if IsConsole then writeln('got char exception at ',HexStr(result.DataOffset,8));
+    AStream.Position:=result.DataOffset+result.DataSize;
   end;
 end;
 

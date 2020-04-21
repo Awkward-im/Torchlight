@@ -22,8 +22,11 @@ function GetDifficulty(acode:integer):string;
 
 implementation
 
-uses
-   tl2strings;
+resourcestring
+  rsCasual  = 'Casual';
+  rsNormal  = 'Normal';
+  rsVeteran = 'Veteran';
+  rsExpert  = 'Expert';
 
 procedure SaveDump(const aname:string; aptr:pByte; asize:cardinal);
 var
@@ -41,7 +44,7 @@ begin
 
   if aval<>aright then
     if IsConsole then
-      writeln('!!Unknown value ',aval,' at label ',albl,' must be [',aright,']');
+;//      writeln('!!Unknown value ',aval,' at label ',albl,' must be [',aright,']');
 end;
 
 function SecToTime(sec:cardinal):string;

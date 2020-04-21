@@ -41,6 +41,15 @@ type
     FAugments:TL2StringList;
     FStats   :TL2IdValList;
 
+    FSign:byte;
+
+    FUnkn1:array [0..23] of byte;
+    FUnkn2:array [0..28] of byte;
+    FUnkn3:array [0..94] of byte;
+    FUnkn4:DWord;
+    FUnkn5:array [0..11] of byte;
+    FUnkn6:TL2IdValList;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -81,40 +90,49 @@ begin
   SetLength(FEffects3,0);
 
   SetLength(FAugments,0);
+  SetLength(FStats,0);
+
+  SetLength(FUnkn6,0);
 
   inherited;
 end;
 
 procedure TTL2Item.LoadFromStream(AStream: TTL2Stream);
 var
-  lcnt:integer;
+  lItemOffs,lcnt:integer;
 begin
-  FDataOffset:=AStream.Position;
+  lItemOffs:=AStream.Position;
 
-  AStream.ReadByte;                   // "2"
+  FSign:=Check(AStream.ReadByte,'item sign',2); // "2" (0 for gold)
   FItemId:=TL2ID(AStream.ReadQWord);  // Item ID
   FName  :=AStream.ReadShortString(); // name
   FPrefix:=AStream.ReadShortString(); // prefix
   FSuffix:=AStream.ReadShortString(); // suffix
 
   //??
+  AStream.Read(FUnkn1,24);
+{
   AStream.ReadQWord;
   AStream.ReadQWord;     // changing
   AStream.ReadQWord;
-
+}
   FModIds:=AStream.ReadIdList;
 
   //??
+  AStream.Read(FUnkn2,29);
+{
   AStream.ReadByte;      // 0
   AStream.ReadQWord;     // *FF
   AStream.ReadQWord;     // *FF props - not -1  MEDIA\LAYOUTS\ACT1_PASS1\1X1SINGLE_ROOM_A\PAPASS_PB_A.LAYOUT
   AStream.ReadQWord;     // *FF props - not -1  ?
   AStream.ReadDWord;     // 0
-
+}
   FEnchantmentCount:=integer(AStream.ReadDWord); // enchantment count // prop=E56DE12D
   FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645 . -1 for props
 
   //--?? 95 bytes
+  AStream.Read(FUnkn3,95);
+{
   // 7 times
   AStream.ReadByte;  // 1  props: 0 0
   AStream.ReadByte;  // 1         1 1
@@ -147,7 +165,7 @@ begin
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  // 0
   AStream.ReadFloat;
-
+}
   FLevel      :=integer(AStream.ReadDWord); // 1  for props (22)
   FStackSize  :=integer(AStream.ReadDWord); // -1 for props (1)
   FSocketCount:=integer(AStream.ReadDWord); // 0  for props (A009CC81)
@@ -155,21 +173,25 @@ begin
   FSocketables:=ReadItemList(AStream);
 
   //??
-  AStream.ReadDWord;  // 0
+  FUnkn4:=AStream.ReadDWord;  // 0
   FWeaponDamage:=integer(AStream.ReadDWord); // -1 for props
   FArmor       :=integer(AStream.ReadDWord); // -1 for props
   FArmorType   :=integer(AStream.ReadDWord); //  0 for props (2)
 
   //??
+  AStream.Read(FUnkn5,12);
+{
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
-
+}
   //??
   lcnt:=AStream.ReadWord;
-  if IsConsole then if lcnt>0 then writeln('item-pre effect at ',HexStr(AStream.Position,8));
+//  if IsConsole then if lcnt>0 then writeln('item-pre effect at ',HexStr(AStream.Position,8));
   // 00 00 00 00 | 00 00 00 00 | <cnt> 00 00 00
-  AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
+  SetLength(FUnkn6,lcnt);
+  if lcnt>0 then
+    AStream.Read(FUnkn6[0],lcnt*SizeOf(Tl2IdVal));
 
   // dynamic,passive,transfer
   FEffects1:=ReadEffectList(AStream);
@@ -180,41 +202,50 @@ begin
 
   FStats:=AStream.ReadIdValList;
 
-//  FDataSize:=AStream.Position-FDataOffset;
-  CloneStream(AStream);
+  FromStream(AStream,lItemOffs);
 end;
 
 procedure TTL2Item.SaveToStream(AStream: TTL2Stream);
+var
+  lOffs:integer;
 begin
-  if not FChanged then
+  if not Changed then
   begin
     if ToStream(AStream) then exit;
   end;
 
-  AStream.WriteByte(2);                // "2"
+  lOffs:=AStream.Position;
+
+  AStream.WriteByte(FSign);            // "2" (0 for gold)
   AStream.WriteQWord(QWord(FItemId));  // Item ID
   AStream.WriteShortString(FName);     // name
   AStream.WriteShortString(FPrefix);   // prefix
   AStream.WriteShortString(FSuffix);   // suffix
 
   //??
+  AStream.Write(FUnkn1,24);
+{
   AStream.ReadQWord;
   AStream.ReadQWord;     // changing
   AStream.ReadQWord;
-
+}
   AStream.WriteIdList(FModIds);
 
   //??
+  AStream.Write(FUnkn2,29);
+{
   AStream.ReadByte;      // 0
   AStream.ReadQWord;     // *FF
   AStream.ReadQWord;     // *FF
   AStream.ReadQWord;     // *FF
   AStream.ReadDWord;     // 0
-
+}
   AStream.WriteDWord(DWord(FEnchantmentCount)); // enchantment count
   AStream.WriteDWord(DWord(FStashPosition   )); // stash position $285 = 645
 
   //--?? 95 bytes
+  AStream.Write(FUnkn3,95);
+{
   // 7 times
   AStream.ReadByte;  // 1
   AStream.ReadByte;  // 1
@@ -247,25 +278,30 @@ begin
   AStream.ReadDWord;  // 0
   AStream.ReadDWord;  // 0
   AStream.ReadFloat;
-
+}
   AStream.WriteDWord(FLevel);
-  AStream.WriteDWord(FStackSize);
-  AStream.WriteDWord(FSocketCount);
+  AStream.WriteDWord(dword(FStackSize));
+  AStream.WriteDWord(dword(FSocketCount));
 
   WriteItemList(AStream,FSocketables);
 
   //??
-  AStream.ReadDWord;  // 0
+  AStream.WriteDWord(FUnkn4);
   AStream.WriteDWord(DWord(FWeaponDamage));
   AStream.WriteDWord(DWord(FArmor));
   AStream.WriteDWord(DWord(FArmorType));
 
   //??
+  AStream.Write(FUnkn5,12);
+{
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
-
+}
   //??
+  AStream.WriteWord(Length(FUnkn6));
+  if Length(FUnkn6)>0 then
+    AStream.Write(FUnkn6[0],Length(FUnkn6)*SizeOf(TL2IdVal));
 //  lcnt:=AStream.ReadWord;
 //  AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
   
@@ -277,6 +313,8 @@ begin
   AStream.WriteShortStringList(FAugments);
 
   AStream.WriteIdValList(FStats);
+
+  FromStream(AStream,lOffs);
 end;
 
 function ReadItemList(AStream:TTL2Stream):TTL2ItemList;
@@ -291,14 +329,14 @@ begin
     SetLength(result,lcnt);
     for i:=0 to lcnt-1 do
     begin
-lpos:=AStream.Position;
+     lpos:=AStream.Position;
       
       result[i]:=TTL2Item.Create;
-try
-      result[i].LoadFromStream(AStream);
-except
-writeln('item exception ',i,' at ',HexStr(lpos,8));
-end;
+      try
+        result[i].LoadFromStream(AStream);
+      except
+        if IsConsole then writeln('item exception ',i,' at ',HexStr(lpos,8));
+      end;
     end;
 
   end;

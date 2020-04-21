@@ -7,19 +7,20 @@ uses
 
 type
   TL2BaseClass = class
-  protected
+  private//  protected
     FData      :PByte;
     FDataOffset:PtrUInt;
     FDataSize  :integer;
 
+    FHaveSize  :boolean; // can be set to "false" at constructor
     FChanged   :boolean;
 
   public
     destructor Destroy; override;
 
+    procedure SetSize    (AStream:TStream);
     function  ToStream   (AStream:TStream):boolean;
-    procedure FromStream (AStream:TStream);
-    procedure CloneStream(AStream:TStream);
+    procedure FromStream (AStream:TStream; aFrom:integer=-1);
     function  ToFile    (const fname:string):boolean;
     procedure FromFile  (const fname:string);
     
@@ -27,7 +28,7 @@ type
     property DataOffset:PtrUInt read FDataOffset; // write FDataOffset;
     property DataSize  :integer read FDataSize  ; // write FDataSize;
 
-    property Changed:boolean read FChanged ; //write FChanged;
+    property Changed:boolean read FChanged write FChanged;
   end;
 
 
@@ -45,7 +46,8 @@ function TL2BaseClass.ToStream(AStream:TStream):boolean;
 begin
   if FData<>nil then
   begin
-    AStream.WriteDWord(FDataSize);
+    if FHaveSize then
+      AStream.WriteDWord(FDataSize);
     AStream.Write(FData^,FDataSize);
   end;
   result:=FData<>nil;
@@ -65,24 +67,35 @@ begin
   result:=FData<>nil;
 end;
 
-procedure TL2BaseClass.FromStream(AStream:TStream);
+procedure TL2BaseClass.FromStream(AStream:TStream; aFrom:integer=-1);
 begin
-  FDataSize  :=AStream.ReadDWord();
-  FDataOffset:=AStream.Position;
-  ReallocMem  (FData ,FDataSize);
-  AStream.Read(FData^,FDataSize);
-  AStream.Position:=FDataOffset;
-end;
-
-procedure TL2BaseClass.CloneStream(AStream:TStream);
-begin
-  if FDataOffset<>0 then
+  if aFrom<0 then
   begin
-    FDataSize:=AStream.Position-FDataOffset;
+    FDataSize  :=AStream.ReadDWord();
+    FHaveSize  :=true;
+    FDataOffset:=AStream.Position;
+    ReallocMem  (FData ,FDataSize);
+    AStream.Read(FData^,FDataSize);
+    AStream.Position:=FDataOffset;
+  end
+  else
+  begin
+    FDataOffset:=aFrom;
+    FDataSize  :=AStream.Position-FDataOffset;
     AStream.Position:=FDataOffset;
     ReallocMem  (FData ,FDataSize);
     AStream.Read(FData^,FDataSize);
   end;
+//  FChanged:=false;
+  FChanged:=true;
+end;
+
+procedure TL2BaseClass.SetSize(AStream:TStream);
+begin
+  FDataSize:=AStream.Position-FDataOffset; // to work before and after FromStream
+  AStream.Position:=FDataOffset-SizeOf(DWord);
+  AStream.WriteDWord(FDataSize);
+  AStream.Position:=AStream.Position+FDataSize;
 end;
 
 procedure TL2BaseClass.FromFile(const fname:string);

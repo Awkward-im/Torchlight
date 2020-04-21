@@ -1,5 +1,5 @@
 {}
-function TTL2SaveFile.Parse(amode:TTL2ParseType):boolean;
+function TTL2SaveFile.Parse():boolean;
 var
   lpos,i,j,lcnt,lcnt1:integer;
 begin
@@ -31,8 +31,7 @@ begin
 
   //===== Character Data =====
 
-  FCharInfo:=ReadCharData(FStream,amode,'mainchar');
-
+  FCharInfo:=ReadCharData(FStream);
   //----- Keymapping -----
 
   ReadKeyMappingList;  // DumpKeyMapping;
@@ -65,16 +64,10 @@ begin
   lcnt:=FStream.ReadDWord;  // 1 (2 if BiA cative)
   SetLength(FPetInfos,lcnt);
   for i:=0 to lcnt-1 do
-    FPetInfos[i]:=ReadCharData(FStream,amode,'petinfo'+HexStr(i,2));
-
+    FPetInfos[i]:=ReadCharData(FStream);
   //----- Unknown 2 -----
-
-  if amode in [ptLite, ptStandard] then
-  begin
-    FUnknown2:=FStream.ReadBytes(34);
-  end
-  else
-  begin
+  FUnknown2:=FStream.ReadBytes(34);
+{
     Check(FStream.ReadDWord,'pre-map 1',0);
     Check(FStream.ReadDWord,'pre-map 2',0);
     Check(FStream.ReadDWord,'pre-map 3',0);
@@ -84,7 +77,7 @@ begin
     Check(FStream.ReadDWord,'pre-map 7',0);
     Check(FStream.ReadDWord,'pre-map 7',0);
     Check(FStream.ReadWord ,'pre-map 8',0);
-  end;
+}
 
   //----- Maps -----
 
@@ -113,7 +106,7 @@ begin
 
   //===== Quests =====
 
-  FQuests:=ReadQuests(FStream,ptLite);
+  FQuests:=ReadQuests(FStream);
 
   //----- ?? Skill [??learn] history (check order) -----
 
@@ -132,110 +125,6 @@ begin
 
   //===== REST of file (statistic??) =====
 
-  FLBlockSize:=FStream.ReadDWord;
-  if (FStream.Position+FLBlockSize)<>(FStream.Size-4) then writeln('Something wrong!!');
-
-  if amode=ptLite then
-  begin
-    FLastBlock:=FStream.ReadBytes(FLBlockSize);
-  end
-  else
-  begin
-    Check(FStream.ReadDWord,'last block 1',1);
-
-    FStream.ReadDWord; // 3DF65D40 = 0.12
-    FStream.ReadDword; // 40
-    FStream.ReadDWord; // 3DF65D40 = 0.12
-    FStream.ReadDWord; // 0x##40
-
-    FStream.ReadByte;  // 0
-
-    // ?? mobs
-    lcnt:=FStream.ReadDWord;
-    FStream.Seek(lcnt*40,soCurrent);
-{
-    8b - mob id (media/units/monsters)
-    4b - x?
-    4b - y?
-    4b - ?
-    4b - 
-    4b - 
-    4b - ?
-    4b - 
-    2b
-    2b
-}
-
-    // ?? items
-    lcnt:=FStream.ReadDWord;
-    FStream.Seek(lcnt*24,soCurrent);
-{
-    8b - item id (media\units\items)
-    4b - 
-    4b - 
-    4b - [0]
-    4b - amount?
-}
-
-    // ?? skills
-    lcnt:=FStream.ReadDWord;
-    FStream.Seek(lcnt*17,soCurrent);
-{
-    8b - skill id (media\skills)
-    4b - 
-    4b - 
-    1b - 
-}
-
-    // ??
-    lcnt:=FStream.ReadDWord;
-    FStream.Seek(lcnt*31,soCurrent);
-{
-    4b - 131.87
-    4b - ?
-    4b - ?
-    4b - ?
-    1b - [0]
-    4b - 
-    1b
-    4b
-    4b
-    1b
-}
-
-    //----- ?? Area (teleports? time on map?) -----
-    // usually, count and titles are the same
-
-    lcnt:=FStream.ReadDWord;
-    for i:=0 to lcnt-1 do
-    begin
-      FStream.ReadShortString;
-      FStream.ReadDWord;
-    end;
-
-    lcnt:=FStream.ReadDWord;
-    for i:=0 to lcnt-1 do
-    begin
-      FStream.ReadShortString;
-      FStream.ReadDWord;
-    end;
-
-    //----- ?? Unknown -----
-
-    //?? byte, word, dword (word+word), word
-    FStream.ReadDword; // 03 00 00 00  | 01 00 00 18
-    FStream.ReadDWord; // 00 00 00 06  | 00 00 00 00
-    FStream.ReadByte;  // 00           | 00
-
-    //----- ?? Mob stat -----
-
-    FStream.ReadIdValList;
-
-    Check(FStream.ReadDWord,'pre-end',0);
-
-    FStream.ReadShortString; // player name
-    FStream.ReadShortString; // class
-    FStream.ReadShortString; // Pet class
-  end; // last block
+  FLastBlock:=ReadLastBlock(FStream);
 
 end;

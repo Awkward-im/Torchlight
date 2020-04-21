@@ -10,7 +10,10 @@ begin
   LoadBases;
   tr:=TTL2SaveFile.Create;
   tr.LoadFromFile(ParamStr(1));
-  tr.Parse(ptstandard);
+  tr.Parse();
+
+  tr.Prepare;
+  tr.SaveToFile(ParamStr(1)+'.bin');
   tr.Free;
 end.
 

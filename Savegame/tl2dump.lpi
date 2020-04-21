@@ -41,6 +41,9 @@
               <StackChecks Value="True"/>
             </Checks>
             <VerifyObjMethodCallValidity Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
           </CodeGeneration>
           <Linking>
             <Debugging>
@@ -134,6 +137,14 @@
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\tl2types.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2parse.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2prepare.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>

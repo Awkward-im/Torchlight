@@ -6,6 +6,7 @@ interface
 uses
   Classes,
   TL2Types,
+  TL2Base,
   TL2Stream;
 
 type
@@ -61,7 +62,7 @@ type
   TTL2Effect = class;
   TTL2EffectList = array of TTL2Effect;
 type
-  TTL2Effect = class
+  TTL2Effect = class(TL2BaseClass)
   private
     FFlags       :TTL2EffectFlags;
     FName        :string;
@@ -156,8 +157,10 @@ end;
 
 procedure TTL2Effect.LoadFromStream(AStream: TTL2Stream);
 var
-  lcnt:integer;
+  lOffs,lcnt:integer;
 begin
+  lOffs:=AStream.Position;
+
   FFlags:=TTL2EffectFlags(AStream.ReadDword);
   FName :=AStream.ReadShortString();
 
@@ -197,10 +200,21 @@ begin
 
   if modHasIcon in FFlags then
     FIcon:=AStream.ReadByteString();
+
+  FromStream(AStream,lOffs);
 end;
 
 procedure TTL2Effect.SaveToStream(AStream: TTL2Stream);
+var
+  lOffs:integer;
 begin
+  if not Changed then
+  begin
+    if ToStream(AStream) then exit;
+  end;
+
+  lOffs:=AStream.Position;
+  
   AStream.WriteDword(DWord(FFlags));
   AStream.WriteShortString(FName);
 
@@ -243,6 +257,7 @@ begin
   if modHasIcon in FFlags then
     AStream.WriteByteString(FIcon);
 
+  FromStream(AStream,lOffs);
 end;
 
 function ReadEffectList(AStream:TTL2Stream; atrans:boolean=false):TTL2EffectList;

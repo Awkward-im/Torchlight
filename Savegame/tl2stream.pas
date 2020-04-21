@@ -143,24 +143,28 @@ procedure TTL2Stream.WriteByteString(const astr:string);
 var
   ws:WideString;
 begin
-  WriteByte(Length(astr));
   if astr<>'' then
   begin
     ws:=UTF8Decode(astr);
-    Write(ws[1],Length(astr)*SizeOf(WideChar));
-  end;
+    WriteByte(Length(ws));
+    Write(ws[1],Length(ws)*SizeOf(WideChar));
+  end
+  else
+    WriteByte(0);
 end;
 
 procedure TTL2Stream.WriteShortString(const astr:string);
 var
   ws:WideString;
 begin
-  WriteWord(Length(astr));
   if astr<>'' then
   begin
     ws:=UTF8Decode(astr);
-    Write(ws[1],Length(astr)*SizeOf(WideChar));
-  end;
+    WriteWord(Length(ws));
+    Write(ws[1],Length(ws)*SizeOf(WideChar));
+  end
+  else
+    WriteWord(0);
 end;
 
 procedure TTL2Stream.WriteFloat(aval:TL2Float);

@@ -36,8 +36,6 @@ type
 type
   TTL2Quest = class(TL2BaseClass)
   private
-//    FMode:TTL2ParseType;
-
     FQuestsDone  :TL2IdList;
     FQuestsUnDone:TTL2QuestList;
 
@@ -55,7 +53,7 @@ type
   end;
 
 
-function ReadQuests(AStream:TTL2Stream; amode:TTL2ParseType):TTL2Quest;
+function ReadQuests(AStream:TTL2Stream):TTL2Quest;
 
 
 implementation
@@ -100,8 +98,9 @@ var
   loffset:integer;
 begin
   FromStream(AStream);
+
 {$IFDEF DEBUG}
-  ToFile('quests.dmp');
+//  ToFile('quests.dmp');
 {$ENDIF}
 
   //--- Finished quests
@@ -122,27 +121,23 @@ begin
       d1:=AStream.ReadDWord;
       d2:=TL2Integer(Check(AStream.ReadDWord,'quest_4_'+HexStr(AStream.Position,8),$FFFFFFFF));
 
-      len :=(FDataOffset+loffset)-AStream.Position;
+      len :=(DataOffset+loffset)-AStream.Position;
       data:=AStream.ReadBytes(len);
     end;
   end;
-
-// if not sure, uncomment this line
-//  AStream.Position:=FDataOffset+FDataSize;
 end;
 
 procedure TTL2Quest.SaveToStream(AStream: TTL2Stream);
 var
-  i:integer;
+  lOffs,i:integer;
 begin
-  if not FChanged then
+  if not Changed then
   begin
     if ToStream(AStream) then exit;
   end;
 
   AStream.WriteDWord(0); // reserve place for size
-
-  FDataOffset:=AStream.Position;
+  lOffs:=AStream.Position;
 
   //--- Finished quests
 
@@ -155,24 +150,21 @@ begin
   begin
     with FQuestsUnDone[i] do
     begin
-      AStream.WriteDWord(AStream.Position-FDataOffset+len+SizeOf(QWord)*2+SizeOf(DWord)*2);
+      AStream.WriteDWord(
+          (AStream.Position-lOffs+SizeOf(DWord))+
+          len+SizeOf(QWord)*2+SizeOf(DWord)*2);
       AStream.WriteQWord(QWord(id));
       AStream.WriteQWord(QWord(q1));
-      AStream.WriteDWord(d1);
-      AStream.WriteDWord(d2);
+      AStream.WriteDWord(DWord(d1));
+      AStream.WriteDWord(DWord(d2));
       AStream.Write(data^,len);
     end;
   end;
 
   //--- Update data size and internal buffer
 
-  FDataSize:=AStream.Position-FDataOffset;
-  AStream.Position:=FDataOffset-SizeOf(DWord);
-  AStream.WriteDWord (FDataSize);
-  ReallocMem  (FData ,FDataSize);
-  AStream.Read(FData^,FDataSize);
-
-  FChanged:=false;
+  FromStream(AStream,lOffs);
+  SetSize   (AStream);
 end;
 
 (*
@@ -222,11 +214,14 @@ end;
     00 00 00 00
 *)
 
-function ReadQuests(AStream:TTL2Stream; amode:TTL2ParseType):TTL2Quest;
+function ReadQuests(AStream:TTL2Stream):TTL2Quest;
 begin
   result:=TTL2Quest.Create;
-//  result.FMode:=amode;
-  result.LoadFromStream(AStream);
+  try
+    result.LoadFromStream(AStream);
+  except
+    AStream.Position:=result.DataOffset+result.DataSize;
+  end;
 end;
 
 end.

@@ -31,7 +31,6 @@ begin
   //===== Character Data =====
 
   FCharInfo.SaveToStream(FStream);
-
   //----- Keymapping -----
 
   WriteKeyMappingList;
@@ -50,7 +49,7 @@ begin
 
   //---- User Portal ----
 
-  FStream.WriteByte       (Ord(FPortalOpened));
+  FStream.WriteByte       (Byte(FPortalOpened) and 1);
   FStream.WriteCoord      (FPortalCoord);
   FStream.WriteShortString(FPortalPlace);
   //!!
@@ -64,14 +63,7 @@ begin
 
   //----- Unknown 2 -----
   //!!
-//  if amode in [ptLite, ptStandard] then
     FStream.Write(FUnknown2^,34);
-{
-  else
-  begin
-    for i:=0 to 33 do FStream.WriteByte(0);
-  end;
-}
   //----- Maps -----
 
   WriteMapList(FStream,FMaps);
@@ -93,19 +85,11 @@ begin
   //----- Recipes -----
 
   FStream.WriteWord(Length(FRecipes));
-  FStream.Write(FRecipes[0],Length(FRecipes)*SizeOf(TL2ID));
+  if Length(FRecipes)>0 then
+    FStream.Write(FRecipes[0],Length(FRecipes)*SizeOf(TL2ID));
 
   //===== REST of file =====
 
-//  if amode=ptLite then
-  begin
-    FStream.WriteDWord(FLBlockSize);
-    FStream.Write(FLastBlock^,FLBlockSize);
-{
-  end
-  else
-  begin
-}
-  end;
+  FLastBlock.SaveToStream(FStream);
 
 end;

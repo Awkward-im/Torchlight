@@ -19,9 +19,7 @@ type
 type
   TTL2Trigger     = array [0..135] of byte;
   TTL2TriggerList = array of TTL2Trigger;
-type
-  TTL2Prop     = array of byte;
-  TTL2PropList = array of TTL2Prop;
+
 type
   TTL2LayData = packed record
     id   : TL2ID;
@@ -49,14 +47,11 @@ type
     FUnknList  : TL2IdList;
     FLayoutList: TL2StringList;
     FTriggers  : TTL2TriggerList;
-//    FPropList  : TTL2PropList;
     FPropList  : TTL2ItemList;
     FLayData   : TTL2LayDataList;
 
     FUnknown1  : array of array of byte;
 
-    procedure ReadProp     (AStream: TTL2Stream; var aProp:TTL2Prop);
-    procedure WriteProp    (AStream: TTL2Stream; var aProp:TTL2Prop);
     procedure ReadPropList (AStream: TTL2Stream);
     procedure WritePropList(AStream: TTL2Stream);
   
@@ -96,7 +91,6 @@ begin
 
   for i:=0 to High(FPropList) do
     FPropList[i].Free;
-//    SetLength(FPropList[i],0);
   SetLength(FPropList,0);
 
   for i:=0 to High(FUnknown1) do
@@ -110,87 +104,29 @@ begin
   inherited;
 end;
 
-procedure TTL2Map.ReadProp(AStream: TTL2Stream; var aProp:TTL2Prop);
-var
-  lcnt:integer;
-begin
-  lcnt:=AStream.ReadDWord;
-
-  //!! treat as Item??
-  SetLength(aProp,lcnt);
-  if lcnt>0 then
-    AStream.Read(aProp[0],lcnt);
-  {
-    AStream.ReadByte;
-    AStream.ReadQWord; // ID
-    FName:=AStream.ReadShortString;
-    AStream.ReadDWord; // 0
-    AStream.ReadQWord; // 2E3A2D8F.DDC8B8CA
-    AStream.ReadQWord; // 2E3A2D8FDDC8B8CA
-    AStream.ReadQWord; // 2EE026D98D5FC8C7
-    AStream.ReadDWord; // 0
-    AStream.ReadByte;  // 0
-    AStream.ReadQWord; // FF
-    ....
-
-    // 00 01 00 01 01 00 00
-    AStream.ReadDWord; // 43062E21  134.18
-    AStream.ReadDWord; // 0
-    AStream.ReadDWord; // 43A0492F
-    .....
-  }
-end;
-
-procedure TTL2Map.WriteProp(AStream: TTL2Stream; var aProp:TTL2Prop);
-begin
-  AStream.WriteDWord(Length(aProp));
-  if Length(aProp)>0 then
-    AStream.Write(aProp[0],Length(aProp));
-  {
-    AStream.ReadByte;
-    AStream.ReadQWord; // ID
-    FName:=AStream.ReadShortString;
-    AStream.ReadDWord; // 0
-    AStream.ReadQWord; // 2E3A2D8F.DDC8B8CA
-    AStream.ReadQWord; // 2E3A2D8FDDC8B8CA
-    AStream.ReadQWord; // 2EE026D98D5FC8C7
-    AStream.ReadDWord; // 0
-    AStream.ReadByte;  // 0
-    AStream.ReadQWord; // FF
-    ....
-
-    // 00 01 00 01 01 00 00
-    AStream.ReadDWord; // 43062E21  134.18
-    AStream.ReadDWord; // 0
-    AStream.ReadDWord; // 43A0492F
-    .....
-  }
-end;
-
 procedure TTL2Map.ReadPropList(AStream: TTL2Stream);
 var
   lcnt1,lpos,lcnt,i:integer;
 begin
   lcnt:=AStream.ReadDWord;
   SetLength(FPropList,lcnt);
+
   for i:=0 to lcnt-1 do
   begin
-
-   lcnt1:=AStream.ReadDWord(); // size
-lpos:=AStream.Position;
-writeln('prop ',i,' go ',HexStr(lpos,8) );      
-      FPropList[i]:=TTL2Item.Create;
-try
+    lcnt1:=AStream.ReadDWord(); // size
+    lpos:=AStream.Position;
+    FPropList[i]:=TTL2Item.Create;
+    try
       FPropList[i].LoadFromStream(AStream);
-except
-  writeln('prop exception ',i,' at ',HexStr(lpos,8));
-  AStream.Position:=lpos+lcnt1;
-end;
-if FPropList[i].DataSize<>lcnt1 then
-  if IsConsole then writeln('predefined size ',lcnt1,
-       ' is not as real ',FPropList[i].DataSize,
-       ' at ',HexStr(lpos,8));
+    except
+      if IsConsole then writeln('prop exception ',i,' at ',HexStr(lpos,8));
+      AStream.Position:=lpos+lcnt1;
+    end;
 
+    if FPropList[i].DataSize<>lcnt1 then
+      if IsConsole then writeln('predefined size ',lcnt1,
+         ' is not as real ',FPropList[i].DataSize,
+         ' at ',HexStr(lpos,8));
   end;
 end;
 
@@ -201,20 +137,17 @@ begin
   AStream.WriteDWord(Length(FPropList));
   for i:=0 to High(FPropList) do
   begin
-//    WriteProp(AStream, FPropList[i]);
-
-  AStream.WriteDWord(FPropList[i].DataSize);
-  FPropList[i].SaveToStream(AStream);
-
+    AStream.WriteDWord(FPropList[i].DataSize);
+    FPropList[i].SaveToStream(AStream);
   end;
 end;
 
 procedure TTL2Map.LoadFromStream(AStream: TTL2Stream);
 var
   lcnt,lcnt1:integer;
-  i:integer;
+  lOffs,i:integer;
 begin
-  FDataOffset:=AStream.Position;
+  lOffs:=AStream.Position;
 
   //??
   Unkn0:=Check(AStream.ReadDword,'map 0',0); // 0, 2, 1 - for repeated
@@ -254,7 +187,7 @@ begin
   SetLength(FMobInfos,lcnt);
   for i:=0 to lcnt-1 do
   begin
-    FMobInfos[i]:=ReadCharData(AStream,ptLite,''{'res\'+FName+'_mobinfo'+HexStr(i,2)});
+    FMobInfos[i]:=ReadCharData(AStream);
   end;
 
   //----- Props (Items) -----
@@ -286,18 +219,20 @@ begin
   //??
   Check(AStream.ReadDWord,'map-end',0); // 0
 
-  CloneStream(AStream);
+  FromStream(AStream,lOffs);
 end;
 
 procedure TTL2Map.SaveToStream(AStream: TTL2Stream);
 var
-  i:integer;
+  lOffs,i:integer;
 begin
-  if not FChanged then
+  if not Changed then
   begin
     if ToStream(AStream) then exit;
   end;
 
+  lOffs:=AStream.Position;
+  
   //??
   AStream.WriteDWord(Unkn0);
 
@@ -360,6 +295,8 @@ begin
 
   //??
   AStream.WriteDWord(0);
+
+  FromStream(AStream,lOffs);
 end;
 
 function ReadMapList(AStream:TTL2Stream):TTL2MapList;
