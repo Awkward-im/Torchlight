@@ -1,0 +1,9 @@
+{"version":1,"strings":[
+{"hash":5966629,"name":"tfmmovies.sgmovies.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
+{"hash":6094051,"name":"tfmmovies.sgmovies.columns[1].title.caption","sourcebytes":[86,105,101,119,115],"value":"Views"},
+{"hash":354472,"name":"tfmmovies.sgmovies.columns[2].title.caption","sourcebytes":[80,97,116,104],"value":"Path"},
+{"hash":1236,"name":"tfmmovies.sgmovies.columns[3].title.caption","sourcebytes":[73,68],"value":"ID"},
+{"hash":346165,"name":"tfmmovies.sgmovies.columns[4].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
+{"hash":21588,"name":"tfmmovies.sgmovies.columns[5].title.caption","sourcebytes":[77,111,100],"value":"Mod"},
+{"hash":197568645,"name":"tfmmovies.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"}
+]}

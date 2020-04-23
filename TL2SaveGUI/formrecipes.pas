@@ -18,7 +18,8 @@ type
     sg:TTL2SaveFile;
 
   public
-    procedure FillGrid(asg:TTL2SaveFile);
+    procedure FillInfo(aSGame:TTL2SaveFile);
+
   end;
 
 var
@@ -32,25 +33,24 @@ uses
   tl2types,
   tl2db;
 
-procedure TfmRecipes.FillGrid(asg:TTL2SaveFile);
+procedure TfmRecipes.FillInfo(aSGame:TTL2SaveFile);
 var
   i:integer;
   lmod:TL2ID;
 begin
  sgRecipes.BeginUpdate;
  sgRecipes.Clear;
- sgRecipes.RowCount:=Length(asg.Recipes);
+ sgRecipes.RowCount:=Length(aSGame.Recipes);
 
- for i:=0 to High(asg.Recipes) do
+ for i:=0 to High(aSGame.Recipes) do
  begin
-   sgRecipes.Cells[1,i]:=GetTL2Recipes(asg.Recipes[i],lmod);
+   sgRecipes.Cells[1,i]:=GetTL2Recipes(aSGame.Recipes[i],lmod);
    sgRecipes.Cells[2,i]:=GetTL2Mod(lmod);
  end;
 
  sgRecipes.EndUpdate;
 
- sg:=asg;
+ sg:=aSGame;
 end;
 
 end.
-

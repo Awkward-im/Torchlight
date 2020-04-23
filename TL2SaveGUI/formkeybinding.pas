@@ -17,7 +17,7 @@ type
   private
 
   public
-    procedure FillGrid(asg: TTL2SaveFile);
+    procedure FillInfo(aSGame:TTL2SaveFile);
 
   end;
 
@@ -32,7 +32,7 @@ uses
   tl2types,
   tl2db;
 
-procedure TfmKeyBinding.FillGrid(asg:TTL2SaveFile);
+procedure TfmKeyBinding.FillInfo(aSGame:TTL2SaveFile);
 var
   i,j:integer;
   lmod:TL2ID;
@@ -41,13 +41,13 @@ begin
   sgKeybinding.Clear;
   sgKeyBinding.RowCount:=1;
 
-  if Length(asg.Keys)>0 then
+  if Length(aSGame.Keys)>0 then
   begin
-    for i:=0 to High(asg.Keys) do
+    for i:=0 to High(aSGame.Keys) do
     begin
       j:=sgKeyBinding.RowCount;
       sgKeyBinding.RowCount:=sgKeyBinding.RowCount+1;
-      with asg.Keys[i] do
+      with aSGame.Keys[i] do
       begin
         sgKeybinding.Cells[0,j]:=GetTL2KeyType(key);
         case datatype of
@@ -74,10 +74,10 @@ begin
       end;
     end;
   end;
-  if Length(asg.Functions)>0 then
+  if Length(aSGame.Functions)>0 then
   begin
-    for i:=0 to High(asg.Functions) do
-      with asg.Functions[i] do
+    for i:=0 to High(aSGame.Functions) do
+      with aSGame.Functions[i] do
       begin
         if id<>TL2IdEmpty then
         begin

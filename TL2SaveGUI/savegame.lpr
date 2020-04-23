@@ -10,9 +10,9 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
+  DefaultTranslator,
   Forms,
-  formSaveGame
-  { you can add units after this };
+  formSaveGame;
 
 {$R *.res}
 

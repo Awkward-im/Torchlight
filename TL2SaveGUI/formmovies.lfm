@@ -3,7 +3,8 @@ object fmMovies: TfmMovies
   Height = 306
   Top = 218
   Width = 540
-  Caption = 'Movies'
+  Align = alClient
+  BorderStyle = bsNone
   ClientHeight = 306
   ClientWidth = 540
   OnCreate = FormCreate

@@ -3,7 +3,8 @@ object fmStatistic: TfmStatistic
   Height = 377
   Top = 125
   Width = 602
-  Caption = 'Statistic'
+  Align = alClient
+  BorderStyle = bsNone
   ClientHeight = 377
   ClientWidth = 602
   OnCreate = FormCreate
@@ -20,7 +21,7 @@ object fmStatistic: TfmStatistic
     TabOrder = 0
   end
   object gbStatistic: TGroupBox
-    Left = 16
+    Left = 7
     Height = 227
     Top = 5
     Width = 410

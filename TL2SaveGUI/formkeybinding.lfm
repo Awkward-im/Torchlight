@@ -3,7 +3,8 @@ object fmKeyBinding: TfmKeyBinding
   Height = 449
   Top = 165
   Width = 598
-  Caption = 'Key binding'
+  Align = alClient
+  BorderStyle = bsNone
   ClientHeight = 449
   ClientWidth = 598
   LCLVersion = '2.1.0.0'

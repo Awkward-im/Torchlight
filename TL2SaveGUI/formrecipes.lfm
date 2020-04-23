@@ -3,7 +3,8 @@ object fmRecipes: TfmRecipes
   Height = 399
   Top = 224
   Width = 494
-  Caption = 'Recipes'
+  Align = alClient
+  BorderStyle = bsNone
   ClientHeight = 399
   ClientWidth = 494
   LCLVersion = '2.1.0.0'

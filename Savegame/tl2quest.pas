@@ -50,6 +50,9 @@ type
 
     property QuestsDoneNum  :integer read GetQuestsDoneNum;
     property QuestsUnDoneNum:integer read GetQuestsUnDoneNum;
+
+    property QuestsDone  :TL2IdList     read FQuestsDone;
+    property QuestsUnDone:TTL2QuestList read FQuestsUnDone;
   end;
 
 

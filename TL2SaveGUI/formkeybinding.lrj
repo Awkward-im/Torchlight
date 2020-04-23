@@ -1,0 +1,6 @@
+{"version":1,"strings":[
+{"hash":20937,"name":"tfmkeybinding.sgkeybinding.columns[0].title.caption","sourcebytes":[75,101,121],"value":"Key"},
+{"hash":376933,"name":"tfmkeybinding.sgkeybinding.columns[1].title.caption","sourcebytes":[84,121,112,101],"value":"Type"},
+{"hash":151302151,"name":"tfmkeybinding.sgkeybinding.columns[2].title.caption","sourcebytes":[66,105,110,100,105,110,103],"value":"Binding"},
+{"hash":21588,"name":"tfmkeybinding.sgkeybinding.columns[3].title.caption","sourcebytes":[77,111,100],"value":"Mod"}
+]}

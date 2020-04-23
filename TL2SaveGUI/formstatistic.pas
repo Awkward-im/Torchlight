@@ -23,7 +23,7 @@ type
     sg:TTL2SaveFile;
 
   public
-    procedure FillStatistic(asg:TTL2SaveFile);
+    procedure FillInfo(aSGame:TTL2SaveFile);
 
   end;
 
@@ -67,24 +67,11 @@ begin
       ly:=CoordTop;
     end;
 
-    with TLabel.Create(Self) do
-    begin
-      AutoSize :=false;
-      Left     :=lx;
-      Top      :=ly;
-      Width    :=WidthLabel;
-      Height   :=HeightEdit;
-      Layout   :=tlCenter;
-      Alignment:=taRightJustify;
-      Parent   :=gbStatistic;
-      Caption  :=GetStatDescr(i);
-      Visible  :=True;
-    end;
     StatEdits[i]:=TEdit.Create(Self);
     with StatEdits[i] do
     begin
       AutoSize:=false;
-      Left       :=lx+WidthLabel+Gap;
+      Left       :=lx;
       Top        :=ly;
       Width      :=WidthEdit;
       Height     :=HeightEdit;
@@ -93,6 +80,19 @@ begin
       Enabled    :=IsStatEditable(i);
       NumbersOnly:=IsStatNumeric(i);
       Visible    :=True;
+    end;
+    with TLabel.Create(Self) do
+    begin
+      AutoSize :=false;
+      Left     :=lx+WidthEdit+Gap;
+      Top      :=ly;
+      Width    :=WidthLabel;
+      Height   :=HeightEdit;
+      Layout   :=tlCenter;
+      Alignment:=taLeftJustify;
+      Parent   :=gbStatistic;
+      Caption  :=GetStatDescr(i);
+      Visible  :=True;
     end;
 
     inc(ly,HeightEdit+Gap);
@@ -119,15 +119,16 @@ begin
   end;
 end;
 
-procedure TfmStatistic.FillStatistic(asg:TTL2SaveFile);
+procedure TfmStatistic.FillInfo(aSGame:TTL2SaveFile);
 var
   i:integer;
 begin
   for i:=0 to High(StatEdits) do
   begin
-    StatEdits[i].Text:=GetStatText(i,asg.Statistic[i]);
+    StatEdits[i].Text:=GetStatText(i,aSGame.Statistic[i]);
   end;
-  sg:=asg;
+
+  sg:=aSGame;
 end;
 
 end.

@@ -13,6 +13,9 @@
         <DpiAware Value="True"/>
       </XPManifest>
     </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+    </i18n>
     <BuildModes>
       <Item Name="Default" Default="True"/>
     </BuildModes>
@@ -92,6 +95,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formQuests"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmCommon"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formCommon"/>
       </Unit>
     </Units>
   </ProjectOptions>

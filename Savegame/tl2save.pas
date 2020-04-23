@@ -43,7 +43,6 @@ type
   //--- common part
   private
     FStream:TTL2Stream;
-    FChanged:boolean;
 
     procedure Error(const atext:string);
   public
@@ -115,9 +114,12 @@ type
     procedure WriteModList(ml:TTL2ModList);
     procedure WriteStatistic();
 
+    function  GetMapCount:integer;
+    function  GetPetCount:integer;
     function  GetPetInfo   (idx:integer):TTL2Character;
     function  GetKeyMapping(idx:integer):TTL2KeyMapping;
     function  GetMovie     (idx:integer):TL2IdVal;
+    function  GetMap       (idx:integer):TTL2Map;
 
     function  GetStatistic (idx:integer):TL2Integer;
     procedure SetStatistic (idx:integer; aval:TL2Integer);
@@ -136,16 +138,23 @@ type
     property FullModHistory  :TTL2ModList read FFullModHistory;
 
     property CharInfo:TTL2Character read FCharInfo;
+    property PetCount:integer read GetPetCount;
     property PetInfo[idx:integer]:TTL2Character read GetPetInfo;
+
+    property MapCount:integer read GetMapCount;
+    property Maps[idx:integer]:TTL2Map read GetMap;
 
     property Recipes:TL2IdList read FRecipes;
 
-    property Movies    :TL2IdValList                read FMovies;
-    property Movie     [idx:integer]:TL2IdVal       read GetMovie;
+    property Movies    :TL2IdValList          read FMovies;
+    property Movie     [idx:integer]:TL2IdVal read GetMovie;
 
     property KeyMapping[idx:integer]:TTL2KeyMapping read GetKeyMapping;
     property Keys     :TTL2KeyMappingList read FKeyMapping;
     property Functions:TTL2FunctionList   read FFunctions;
+
+    property Quests:TTL2Quest read FQuests;
+    property Stats :TTL2Stats read FLastBlock;
 
     // Statistic
     property Statistic[idx:integer]:TL2Integer read GetStatistic write SetStatistic;
@@ -154,7 +163,7 @@ type
     property GoldGathered     :TL2Integer index statGold       read GetStatistic write SetStatistic;
 //    property GameDifficulty   :TL2Integer index statDifficulty read GetStatistic write SetStatistic;
     property StepsTaken       :TL2Integer index statSteps      read GetStatistic write SetStatistic;
-    property Quests           :TL2Integer index statQuests     read GetStatistic write SetStatistic;
+    property QuestsDone       :TL2Integer index statQuests     read GetStatistic write SetStatistic;
     property Deaths           :TL2Integer index statDeaths     read GetStatistic write SetStatistic;
     property MonstersKilled   :TL2Integer index statMonsters   read GetStatistic write SetStatistic;
     property ChampionsKilled  :TL2Integer index statChampions  read GetStatistic write SetStatistic;
@@ -254,6 +263,24 @@ begin
 end;
 
 //----- Get/Set methods -----
+
+function TTL2SaveFile.GetPetCount:integer;
+begin
+  result:=Length(FPetInfos);
+end;
+
+function TTL2SaveFile.GetMapCount:integer;
+begin
+  result:=Length(FMaps);
+end;
+
+function TTL2SaveFile.GetMap(idx:integer):TTL2Map;
+begin
+  if (idx>=0) and (idx<Length(FMaps)) then
+    result:=FMaps[idx]
+  else
+    result:=nil;
+end;
 
 function TTL2SaveFile.GetStatistic(idx:integer):TL2Integer;
 begin
@@ -460,7 +487,6 @@ var
   lSaveHeader:TL2SaveHeader;
   lSaveFooter:TL2SaveFooter;
 begin
-  FChanged:=false;
   if FStream<>nil then
     FreeAndNil(FStream);
 
@@ -497,15 +523,6 @@ var
   lSaveHeader:TL2SaveHeader;
   lSaveFooter:TL2SaveFooter;
 begin
-{
-  if not FChanged then
-  begin
-    PTL2SaveHeader(FStream.Memory)^:=0;
-    // header.encoded MUST BE cleared
-    FStream.SaveToFile(aname);
-    exit;
-  end;
-}
   lSaveHeader.Sign    :=$44;
   lSaveHeader.Encoded :=aencoded;
   lSaveHeader.Checksum:=CalcCheckSum(

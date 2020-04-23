@@ -44,7 +44,7 @@ begin
 
   if aval<>aright then
     if IsConsole then
-;//      writeln('!!Unknown value ',aval,' at label ',albl,' must be [',aright,']');
+      writeln('!!Unknown value ',aval,' at label ',albl,' must be [',aright,']');
 end;
 
 function SecToTime(sec:cardinal):string;

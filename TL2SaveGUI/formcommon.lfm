@@ -1,0 +1,113 @@
+object fmCommon: TfmCommon
+  Left = 543
+  Height = 530
+  Top = 212
+  Width = 693
+  Align = alClient
+  BorderStyle = bsNone
+  ClientHeight = 530
+  ClientWidth = 693
+  LCLVersion = '2.1.0.0'
+  object gbCharacter: TGroupBox
+    Left = 40
+    Height = 174
+    Top = 120
+    Width = 352
+    Caption = 'gbCharacter'
+    ClientHeight = 154
+    ClientWidth = 348
+    TabOrder = 0
+    object lblClass: TLabel
+      Left = 2
+      Height = 15
+      Top = 12
+      Width = 40
+      Caption = 'lblClass'
+      ParentColor = False
+    end
+    object lblDifficulty: TLabel
+      Left = 2
+      Height = 15
+      Top = 52
+      Width = 61
+      Caption = 'lblDifficulty'
+      ParentColor = False
+    end
+    object cbHardcore: TCheckBox
+      Left = 2
+      Height = 19
+      Top = 80
+      Width = 82
+      Caption = 'cbHardcore'
+      TabOrder = 0
+    end
+    object lblNG: TLabel
+      Left = 2
+      Height = 15
+      Top = 108
+      Width = 30
+      Caption = 'lblNG'
+      ParentColor = False
+    end
+    object edClass: TEdit
+      Left = 71
+      Height = 23
+      Top = 8
+      Width = 206
+      TabOrder = 1
+    end
+    object edDifficulty: TEdit
+      Left = 71
+      Height = 23
+      Top = 48
+      Width = 80
+      AutoSize = False
+      TabOrder = 2
+    end
+    object edNG: TEdit
+      Left = 71
+      Height = 23
+      Top = 104
+      Width = 80
+      TabOrder = 3
+    end
+  end
+  object lblGameTime: TLabel
+    Left = 552
+    Height = 15
+    Top = 199
+    Width = 71
+    Caption = 'lblGameTime'
+    ParentColor = False
+  end
+  object lblMap: TLabel
+    Left = 496
+    Height = 15
+    Top = 239
+    Width = 37
+    Caption = 'lblMap'
+    ParentColor = False
+  end
+  object lblArea: TLabel
+    Left = 496
+    Height = 15
+    Top = 279
+    Width = 37
+    Caption = 'lblArea'
+    ParentColor = False
+  end
+  object edArea: TEdit
+    Left = 552
+    Height = 23
+    Top = 279
+    Width = 80
+    TabOrder = 1
+  end
+  object edMap: TEdit
+    Left = 552
+    Height = 23
+    Top = 239
+    Width = 80
+    TabOrder = 2
+  end
+end

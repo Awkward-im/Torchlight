@@ -1,0 +1,330 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"Language: ru\n"
+
+#: formsavegame.rscharacter
+msgid "Character"
+msgstr "Персонаж"
+
+#: formsavegame.rscommon
+msgid "Common"
+msgstr "Общее"
+
+#: formsavegame.rsexportdata
+msgid "Export data"
+msgstr ""
+
+#: formsavegame.rskeymapping
+msgid "KeyMapping"
+msgstr "Клавиши"
+
+#: formsavegame.rsmaps
+msgid "Maps"
+msgstr "Локации"
+
+#: formsavegame.rsmodlist
+msgid "Mod list"
+msgstr "Список Модов"
+
+#: formsavegame.rsmovies
+msgid "Movies"
+msgstr "Киношки"
+
+#: formsavegame.rspets
+msgid "Pets and allies"
+msgstr "Питомцы и союзники"
+
+#: formsavegame.rsplayerstat
+msgid "Player statistic"
+msgstr "Статистика игрока"
+
+#: formsavegame.rsquests
+msgid "Quests"
+msgstr "Квесты"
+
+#: formsavegame.rsrecipes
+msgctxt "formsavegame.rsrecipes"
+msgid "Recipes"
+msgstr "Рецепты"
+
+#: formsavegame.rssavegame
+msgid "Savegame"
+msgstr "Сохранёнка"
+
+#: formsavegame.rssavegameopen
+msgid "Open Savegame"
+msgstr "Загрузить сохранённую игру"
+
+#: formsavegame.rsstatistic
+msgid "Global statistic"
+msgstr "Глобальная статистика"
+
+#: tfmcommon.cbhardcore.caption
+msgctxt "tfmcommon.cbhardcore.caption"
+msgid "cbHardcore"
+msgstr ""
+
+#: tfmcommon.gbcharacter.caption
+msgctxt "tfmcommon.gbcharacter.caption"
+msgid "gbCharacter"
+msgstr ""
+
+#: tfmcommon.lblarea.caption
+msgctxt "tfmcommon.lblarea.caption"
+msgid "lblArea"
+msgstr ""
+
+#: tfmcommon.lblclass.caption
+msgctxt "tfmcommon.lblclass.caption"
+msgid "lblClass"
+msgstr ""
+
+#: tfmcommon.lbldifficulty.caption
+msgctxt "tfmcommon.lbldifficulty.caption"
+msgid "lblDifficulty"
+msgstr ""
+
+#: tfmcommon.lblgametime.caption
+msgctxt "tfmcommon.lblgametime.caption"
+msgid "lblGameTime"
+msgstr ""
+
+#: tfmcommon.lblmap.caption
+msgctxt "tfmcommon.lblmap.caption"
+msgid "lblMap"
+msgstr ""
+
+#: tfmcommon.lblng.caption
+msgctxt "tfmcommon.lblng.caption"
+msgid "lblNG"
+msgstr ""
+
+#: tfmkeybinding.sgkeybinding.columns[0].title.caption
+msgid "Key"
+msgstr ""
+
+#: tfmkeybinding.sgkeybinding.columns[1].title.caption
+msgid "Type"
+msgstr ""
+
+#: tfmkeybinding.sgkeybinding.columns[2].title.caption
+msgid "Binding"
+msgstr ""
+
+#: tfmkeybinding.sgkeybinding.columns[3].title.caption
+msgctxt "tfmkeybinding.sgkeybinding.columns[3].title.caption"
+msgid "Mod"
+msgstr ""
+
+#: tfmmovies.bbupdate.caption
+msgctxt "tfmmovies.bbupdate.caption"
+msgid "&Update"
+msgstr ""
+
+#: tfmmovies.sgmovies.columns[0].title.caption
+msgctxt "tfmmovies.sgmovies.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmmovies.sgmovies.columns[1].title.caption
+msgid "Views"
+msgstr ""
+
+#: tfmmovies.sgmovies.columns[2].title.caption
+msgid "Path"
+msgstr ""
+
+#: tfmmovies.sgmovies.columns[3].title.caption
+msgid "ID"
+msgstr ""
+
+#: tfmmovies.sgmovies.columns[4].title.caption
+msgctxt "tfmmovies.sgmovies.columns[4].title.caption"
+msgid "Name"
+msgstr ""
+
+#: tfmmovies.sgmovies.columns[5].title.caption
+msgctxt "tfmmovies.sgmovies.columns[5].title.caption"
+msgid "Mod"
+msgstr ""
+
+#: tfmquests.sgquests.columns[0].title.caption
+msgctxt "tfmquests.sgquests.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmquests.sgquests.columns[1].title.caption
+msgid "Done"
+msgstr ""
+
+#: tfmquests.sgquests.columns[2].title.caption
+msgctxt "tfmquests.sgquests.columns[2].title.caption"
+msgid "Name"
+msgstr ""
+
+#: tfmquests.sgquests.columns[3].title.caption
+msgid "Mods"
+msgstr ""
+
+#: tfmrecipes.sgrecipes.columns[0].title.caption
+msgctxt "tfmrecipes.sgrecipes.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmrecipes.sgrecipes.columns[1].title.caption
+msgctxt "tfmrecipes.sgrecipes.columns[1].title.caption"
+msgid "Mod"
+msgstr ""
+
+#: tfmsavefile.actexport.caption
+msgid " Export"
+msgstr ""
+
+#: tfmsavefile.actfileexit.caption
+msgid "E&xit"
+msgstr ""
+
+#: tfmsavefile.actfileopen.caption
+msgid "&Open"
+msgstr ""
+
+#: tfmsavefile.actfilesave.caption
+msgid "&Save"
+msgstr ""
+
+#: tfmsavefile.actimport.caption
+msgid "Import"
+msgstr ""
+
+#: tfmsavefile.caption
+msgid "fmSaveFile"
+msgstr ""
+
+#: tfmsavefile.mnufile.caption
+msgid "&File"
+msgstr ""
+
+#: tfmstatistic.bbupdate.caption
+msgctxt "tfmstatistic.bbupdate.caption"
+msgid "&Update"
+msgstr ""
+
+#: tfmstatistic.gbstatistic.caption
+msgctxt "tfmstatistic.gbstatistic.caption"
+msgid "Statistic"
+msgstr ""
+
+#: tl2db.rshp
+msgid "Best Health Potion"
+msgstr "Лучшее зелье здоровья"
+
+#: tl2db.rslmb
+msgid "Left mouse button"
+msgstr "Левая кнпка мыши"
+
+#: tl2db.rsmp
+msgid "Best Mana Potion"
+msgstr "Лучшее зелье маны"
+
+#: tl2db.rspethp
+msgid "Best Pet Health Potion"
+msgstr "Лучшее зелье здоровья питомцу"
+
+#: tl2db.rspetmp
+msgid "Best Pet Mana Potion"
+msgstr "Лучшее зелье маны питомцу"
+
+#: tl2db.rspetspell1
+msgid "Pet spell 1"
+msgstr "Заклинание питомца 1"
+
+#: tl2db.rspetspell2
+msgid "Pet spell 2"
+msgstr "Заклинание питомца 2"
+
+#: tl2db.rspetspell3
+msgid "Pet spell 3"
+msgstr "Заклинание питомца 3"
+
+#: tl2db.rspetspell4
+msgid "Pet spell 4"
+msgstr "Заклинание питомца 4"
+
+#: tl2db.rsqk0
+msgid "Quckslot 0"
+msgstr "Быстрый доступ 0"
+
+#: tl2db.rsqk1
+msgid "Quckslot 1"
+msgstr "Быстрый доступ 1"
+
+#: tl2db.rsqk2
+msgid "Quckslot 2"
+msgstr "Быстрый доступ 2"
+
+#: tl2db.rsqk3
+msgid "Quckslot 3"
+msgstr "Быстрый доступ 3"
+
+#: tl2db.rsqk4
+msgid "Quckslot 4"
+msgstr "Быстрый доступ 4"
+
+#: tl2db.rsqk5
+msgid "Quckslot 5"
+msgstr "Быстрый доступ 5"
+
+#: tl2db.rsqk6
+msgid "Quckslot 6"
+msgstr "Быстрый доступ 6"
+
+#: tl2db.rsqk7
+msgid "Quckslot 7"
+msgstr "Быстрый доступ 7"
+
+#: tl2db.rsqk8
+msgid "Quckslot 8"
+msgstr "Быстрый доступ 8"
+
+#: tl2db.rsqk9
+msgid "Quckslot 9"
+msgstr "Быстрый доступ 9"
+
+#: tl2db.rsrmb
+msgid "Right mouse button"
+msgstr "Праавя кнопка мыши"
+
+#: tl2db.rsrmbalt
+msgid "Right mouse button (alternative)"
+msgstr "Правкая кнопка мыши (альтернативная)"
+
+#: tl2db.rsset
+msgid "Set"
+msgstr "Установить"
+
+#: tl2db.rsspell1
+msgid "Spell 1"
+msgstr "Заклинание 1"
+
+#: tl2db.rsspell2
+msgid "Spell 2"
+msgstr "Заклинание 2"
+
+#: tl2db.rsspell3
+msgid "Spell 3"
+msgstr "Заклинание 3"
+
+#: tl2db.rsspell4
+msgid "Spell 4"
+msgstr "Заклинание 4"
+

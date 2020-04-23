@@ -3,7 +3,8 @@ object fmQuests: TfmQuests
   Height = 391
   Top = 198
   Width = 523
-  Caption = 'quests'
+  Align = alClient
+  BorderStyle = bsNone
   ClientHeight = 391
   ClientWidth = 523
   LCLVersion = '2.1.0.0'
