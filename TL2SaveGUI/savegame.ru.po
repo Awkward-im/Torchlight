@@ -22,7 +22,7 @@ msgstr "Общее"
 
 #: formsavegame.rsexportdata
 msgid "Export data"
-msgstr ""
+msgstr "Экспорт данных"
 
 #: formsavegame.rskeymapping
 msgid "KeyMapping"
@@ -111,38 +111,38 @@ msgstr ""
 
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
 msgid "Key"
-msgstr ""
+msgstr "Клавиша"
 
 #: tfmkeybinding.sgkeybinding.columns[1].title.caption
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: tfmkeybinding.sgkeybinding.columns[2].title.caption
 msgid "Binding"
-msgstr ""
+msgstr "Привязка"
 
 #: tfmkeybinding.sgkeybinding.columns[3].title.caption
 msgctxt "tfmkeybinding.sgkeybinding.columns[3].title.caption"
 msgid "Mod"
-msgstr ""
+msgstr "Мод"
 
 #: tfmmovies.bbupdate.caption
 msgctxt "tfmmovies.bbupdate.caption"
 msgid "&Update"
-msgstr ""
+msgstr "Обновить"
 
 #: tfmmovies.sgmovies.columns[0].title.caption
 msgctxt "tfmmovies.sgmovies.columns[0].title.caption"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: tfmmovies.sgmovies.columns[1].title.caption
 msgid "Views"
-msgstr ""
+msgstr "Просмотров"
 
 #: tfmmovies.sgmovies.columns[2].title.caption
 msgid "Path"
-msgstr ""
+msgstr "Путь"
 
 #: tfmmovies.sgmovies.columns[3].title.caption
 msgid "ID"
@@ -151,60 +151,72 @@ msgstr ""
 #: tfmmovies.sgmovies.columns[4].title.caption
 msgctxt "tfmmovies.sgmovies.columns[4].title.caption"
 msgid "Name"
-msgstr ""
+msgstr "Имя"
 
 #: tfmmovies.sgmovies.columns[5].title.caption
 msgctxt "tfmmovies.sgmovies.columns[5].title.caption"
 msgid "Mod"
-msgstr ""
+msgstr "Мод"
 
 #: tfmquests.sgquests.columns[0].title.caption
 msgctxt "tfmquests.sgquests.columns[0].title.caption"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: tfmquests.sgquests.columns[1].title.caption
 msgid "Done"
-msgstr ""
+msgstr "Готовый"
 
 #: tfmquests.sgquests.columns[2].title.caption
 msgctxt "tfmquests.sgquests.columns[2].title.caption"
 msgid "Name"
-msgstr ""
+msgstr "Имя"
 
 #: tfmquests.sgquests.columns[3].title.caption
 msgid "Mods"
-msgstr ""
+msgstr "Моды"
+
+#: tfmrecipes.btndeletewrong.caption
+msgid "Delete Wrong"
+msgstr "Удалить ошиб."
+
+#: tfmrecipes.btnlearnall.caption
+msgid "Learn All"
+msgstr "Учить всё"
+
+#: tfmrecipes.btnlearnavail.caption
+msgid "Learn Avail"
+msgstr "Учить доступ."
 
 #: tfmrecipes.sgrecipes.columns[0].title.caption
 msgctxt "tfmrecipes.sgrecipes.columns[0].title.caption"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: tfmrecipes.sgrecipes.columns[1].title.caption
 msgctxt "tfmrecipes.sgrecipes.columns[1].title.caption"
 msgid "Mod"
-msgstr ""
+msgstr "Мод"
 
 #: tfmsavefile.actexport.caption
 msgid " Export"
-msgstr ""
+msgstr "Экспорт"
 
 #: tfmsavefile.actfileexit.caption
 msgid "E&xit"
-msgstr ""
+msgstr "Выход"
 
 #: tfmsavefile.actfileopen.caption
 msgid "&Open"
-msgstr ""
+msgstr "Открыть"
 
 #: tfmsavefile.actfilesave.caption
 msgid "&Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: tfmsavefile.actimport.caption
 msgid "Import"
-msgstr ""
+msgstr "Импорт"
 
 #: tfmsavefile.caption
 msgid "fmSaveFile"
@@ -212,17 +224,17 @@ msgstr ""
 
 #: tfmsavefile.mnufile.caption
 msgid "&File"
-msgstr ""
+msgstr "&Файл"
 
 #: tfmstatistic.bbupdate.caption
 msgctxt "tfmstatistic.bbupdate.caption"
 msgid "&Update"
-msgstr ""
+msgstr "Обновить"
 
 #: tfmstatistic.gbstatistic.caption
 msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
-msgstr ""
+msgstr "Статистика"
 
 #: tl2db.rshp
 msgid "Best Health Potion"
@@ -327,4 +339,3 @@ msgstr "Заклинание 3"
 #: tl2db.rsspell4
 msgid "Spell 4"
 msgstr "Заклинание 4"
-

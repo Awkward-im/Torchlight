@@ -8,6 +8,8 @@ type
   TTL2ModInfo = record
     modid      :Int64;
     gamever    :QWord;
+    offData    :DWord;
+    offDir     :DWord;
     title      :PWideChar;
     author     :PWideChar;
     descr      :PWideChar;
@@ -74,12 +76,13 @@ begin
 
   result:=true;
 
-  amod.modver  :=pWord (p)^; inc(p,2);
+  amod.modver  :=pWord(p)^; inc(p,2);
   amod.gamever :=             (QWord(pWord(p)^) shl 48); inc(p,2);
   amod.gamever :=amod.gamever+(QWord(pWord(p)^) shl 32); inc(p,2);
   amod.gamever :=amod.gamever+(DWord(pWord(p)^) shl 16); inc(p,2);
   amod.gamever :=amod.gamever+pWord(p)^; inc(p,2);
-  inc(p,4+4); // skip offset_data and offset_dir
+  amod.offData :=pDWord(p)^; inc(p,4);
+  amod.offDir  :=pDWord(p)^; inc(p,4);
   amod.title   :=ReadShortString(p);
   amod.author  :=ReadShortString(p);
   amod.descr   :=ReadShortString(p);

@@ -19,15 +19,13 @@ type
     procedure FormCreate(Sender: TObject);
     procedure sgMoviesEditingDone(Sender: TObject);
   private
-    FMovies:TL2IdValList;
+    SGame:TTL2SaveFile;
 
   public
     procedure FillInfo(aSGame:TTL2SaveFile);
 
   end;
 
-var
-  fmMovies: TfmMovies;
 
 implementation
 
@@ -60,7 +58,7 @@ var
 begin
   for i:=1 to sgMovies.RowCount do
   begin
-    fmovies[integer(sgMovies.Objects[0,i])].value:=
+    SGame.Movies[integer(sgMovies.Objects[0,i])].value:=
         StrToInt(sgMovies.Cells[colViews,i]);
   end;
 end;
@@ -76,16 +74,16 @@ var
   lmax,i:integer;
   lmod,lname,ltitle,lpath:string;
 begin
-  FMovies:=aSGame.Movies;
+  SGame:=aSGame;
 
   sgMovies.BeginUpdate;
   sgMovies.Clear;
-  sgMovies.RowCount:=Length(FMovies)+1;
-  if Length(FMovies)>0 then
+  sgMovies.RowCount:=Length(aSGame.Movies)+1;
+  if Length(aSGame.Movies)>0 then
   begin
-    for i:=0 to High(FMovies) do
+    for i:=0 to High(aSGame.Movies) do
     begin
-      ltitle:=GetTL2Movie(FMovies[i].id,lmodid,lmax,lname,lpath);
+      ltitle:=GetTL2Movie(aSGame.Movies[i].id,lmodid,lmax,lname,lpath);
       if lmodid<>TL2ID(-1) then
         lmod:=GetTL2Mod(lmodid)
       else
@@ -95,9 +93,9 @@ begin
       sgMovies.Objects[1,i+1]:=TObject(lmax);
 
       sgMovies.Cells[colTitle,i+1]:=ltitle;
-      sgMovies.Cells[colViews,i+1]:=IntToStr(FMovies[i].value);
+      sgMovies.Cells[colViews,i+1]:=IntToStr(aSGame.Movies[i].value);
       sgMovies.Cells[colPath ,i+1]:=lpath;
-      sgMovies.Cells[colID   ,i+1]:=IntToStr(FMovies[i].id);
+      sgMovies.Cells[colID   ,i+1]:=IntToStr(aSGame.Movies[i].id);
       sgMovies.Cells[colName ,i+1]:=lname;
       sgMovies.Cells[colMod  ,i+1]:=lmod;
     end;

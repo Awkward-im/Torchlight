@@ -33,8 +33,6 @@ type
 
   end;
 
-var
-  fmCommon: TfmCommon;
 
 implementation
 

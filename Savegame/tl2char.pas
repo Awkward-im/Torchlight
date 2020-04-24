@@ -24,6 +24,17 @@ type
 type
   TTL2Character = class(TL2BaseClass)
   private
+    procedure InternalClear;
+
+  public
+    destructor  Destroy; override;
+
+    procedure Clear;
+
+    procedure LoadFromStream(AStream: TTL2Stream);
+    procedure SaveToStream  (AStream: TTL2Stream);
+
+  private
     FSign           :Byte;
     FSignWord       :Word;
 
@@ -102,11 +113,6 @@ type
     FEffects3       :TTL2EffectList;
     FAugments       :TL2StringList;
     FStats          :TL2IdValList;
-  public
-    destructor  Destroy; override;
-
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
 
   public
     property Name           :string   read FCharacterName   write FCharacterName;
@@ -150,10 +156,16 @@ implementation
 
 
 destructor TTL2Character.Destroy;
+begin
+  InternalClear;
+
+  inherited;
+end;
+
+procedure TTL2Character.InternalClear;
 var
   i:integer;
 begin
-
   SetLength(FSkills,0);
   SetLength(FModIds,0);
 
@@ -168,8 +180,13 @@ begin
   SetLength(FEffects3,0);
 
   SetLength(FAugments,0);
+end;
 
-  inherited;
+procedure TTL2Character.Clear;
+begin
+  InternalClear;
+
+  Inherited;
 end;
 
 procedure TTL2Character.LoadFromStream(AStream: TTL2Stream);

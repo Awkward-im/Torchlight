@@ -9,7 +9,7 @@
         <Filename Value="savegame.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="24"/>
+        <CursorPos Y="25"/>
         <UsageCount Value="46"/>
       </Unit>
       <Unit>
@@ -20,8 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="300"/>
-        <CursorPos X="3" Y="327"/>
+        <TopLine Value="224"/>
+        <CursorPos X="31" Y="241"/>
         <FoldState Value=" T4603 T7FGgN"/>
         <UsageCount Value="46"/>
         <Loaded Value="True"/>
@@ -69,8 +69,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formStatistic"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="40"/>
-        <CursorPos X="19" Y="90"/>
+        <TopLine Value="39"/>
+        <CursorPos X="20" Y="56"/>
         <UsageCount Value="43"/>
       </Unit>
       <Unit>
@@ -93,8 +93,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formRecipes"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="24"/>
-        <CursorPos X="32" Y="38"/>
+        <TopLine Value="27"/>
+        <CursorPos X="36" Y="28"/>
         <UsageCount Value="35"/>
       </Unit>
       <Unit>
@@ -174,23 +174,7 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="149" Column="9" TopLine="131"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="148" Column="9" TopLine="130"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="147" Column="9" TopLine="129"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="146" Column="9" TopLine="128"/>
-      </Position>
+    <JumpHistory HistoryIndex="25">
       <Position>
         <Filename Value="formsavegame.pas"/>
         <Caret Line="145" Column="9" TopLine="127"/>

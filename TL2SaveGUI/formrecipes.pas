@@ -5,7 +5,7 @@ unit formRecipes;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
   tl2save;
 
 type
@@ -13,17 +13,18 @@ type
   { TfmRecipes }
 
   TfmRecipes = class(TForm)
+    btnDeleteWrong: TButton;
+    btnLearnAll: TButton;
+    btnLearnAvail: TButton;
     sgRecipes: TStringGrid;
   private
-    sg:TTL2SaveFile;
+    SGame:TTL2SaveFile;
 
   public
     procedure FillInfo(aSGame:TTL2SaveFile);
 
   end;
 
-var
-  fmRecipes: TfmRecipes;
 
 implementation
 
@@ -38,19 +39,19 @@ var
   i:integer;
   lmod:TL2ID;
 begin
- sgRecipes.BeginUpdate;
- sgRecipes.Clear;
- sgRecipes.RowCount:=Length(aSGame.Recipes);
+  sgRecipes.BeginUpdate;
+  sgRecipes.Clear;
+  sgRecipes.RowCount:=Length(aSGame.Recipes);
 
- for i:=0 to High(aSGame.Recipes) do
- begin
-   sgRecipes.Cells[1,i]:=GetTL2Recipes(aSGame.Recipes[i],lmod);
-   sgRecipes.Cells[2,i]:=GetTL2Mod(lmod);
- end;
+  for i:=0 to High(aSGame.Recipes) do
+  begin
+    sgRecipes.Cells[1,i]:=GetTL2Recipes(aSGame.Recipes[i],lmod);
+    sgRecipes.Cells[2,i]:=GetTL2Mod(lmod);
+  end;
 
- sgRecipes.EndUpdate;
+  sgRecipes.EndUpdate;
 
- sg:=aSGame;
+  SGame:=aSGame;
 end;
 
 end.

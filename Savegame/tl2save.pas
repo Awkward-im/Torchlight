@@ -49,6 +49,8 @@ type
     constructor Create;
     destructor Destroy; override;
 
+    procedure Clear;
+
 {
     Out: FStream with Header, decoded data, footer
 }
@@ -553,14 +555,7 @@ begin
   end;
 end;
 
-constructor TTL2SaveFile.Create;
-begin
-  inherited;
-
-  FStream:=nil;
-end;
-
-destructor TTL2SaveFile.Destroy;
+procedure TTL2SaveFile.Clear;
 var
   i:integer;
 begin
@@ -595,8 +590,19 @@ begin
 
   SetLength(FRecipes,0);
 
-
   FreeMem(FLastBlock);
+end;
+
+constructor TTL2SaveFile.Create;
+begin
+  inherited;
+
+  FStream:=nil;
+end;
+
+destructor TTL2SaveFile.Destroy;
+begin
+  Clear;
 
   inherited;
 end;

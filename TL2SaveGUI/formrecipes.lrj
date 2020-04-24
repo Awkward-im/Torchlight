@@ -1,4 +1,7 @@
 {"version":1,"strings":[
 {"hash":5966629,"name":"tfmrecipes.sgrecipes.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
-{"hash":21588,"name":"tfmrecipes.sgrecipes.columns[1].title.caption","sourcebytes":[77,111,100],"value":"Mod"}
+{"hash":21588,"name":"tfmrecipes.sgrecipes.columns[1].title.caption","sourcebytes":[77,111,100],"value":"Mod"},
+{"hash":66239207,"name":"tfmrecipes.btndeletewrong.caption","sourcebytes":[68,101,108,101,116,101,32,87,114,111,110,103],"value":"Delete Wrong"},
+{"hash":143660700,"name":"tfmrecipes.btnlearnall.caption","sourcebytes":[76,101,97,114,110,32,65,108,108],"value":"Learn All"},
+{"hash":1736556,"name":"tfmrecipes.btnlearnavail.caption","sourcebytes":[76,101,97,114,110,32,65,118,97,105,108],"value":"Learn Avail"}
 ]}

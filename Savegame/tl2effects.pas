@@ -64,6 +64,18 @@ type
 type
   TTL2Effect = class(TL2BaseClass)
   private
+    procedure InternalClear;
+
+  public
+    constructor Create(achar:boolean); overload;
+    destructor Destroy; override;
+
+    procedure Clear;
+
+    procedure LoadFromStream(AStream: TTL2Stream);
+    procedure SaveToStream  (AStream: TTL2Stream);
+
+  private
     FFlags       :TTL2EffectFlags;
     FName        :string;
     FLinkName    :string;
@@ -86,13 +98,8 @@ type
 
     function GetProperties(idx:integer):TL2Float;
     function GetStats     (idx:integer):TTL2Stat;
+
   public
-    constructor Create(achar:boolean); overload;
-    destructor Destroy; override;
-
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
-
     property Flags       :TTL2EffectFlags           read FFlags        write FFlags; //??
     property Name        :string                    read FName         write FName;
     property Graph       :string                    read FGraph        write FGraph;
@@ -128,12 +135,23 @@ end;
 
 destructor TTL2Effect.Destroy;
 begin
-  SetLength(FProperties,0);
-  SetLength(FStats ,0);
+  InternalClear;
 
   inherited;
 end;
 
+procedure TTL2Effect.InternalClear;
+begin
+  SetLength(FProperties,0);
+  SetLength(FStats ,0);
+end;
+
+procedure TTL2Effect.Clear;
+begin
+  InternalClear;
+
+  inherited;
+end;
 
 function TTL2Effect.GetProperties(idx:integer):single;
 begin

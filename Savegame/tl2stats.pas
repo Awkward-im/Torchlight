@@ -17,6 +17,18 @@ type
 type
   TTL2Stats = class(TL2BaseClass)
   private
+    procedure InternalClear;
+
+  public
+    constructor Create();
+    destructor  Destroy; override;
+
+    procedure Clear;
+
+    procedure LoadFromStream(AStream: TTL2Stream);
+    procedure SaveToStream  (AStream: TTL2Stream);
+
+  private
     FStatMobs   :array of array [0..39] of byte;
     FStatItems  :array of array [0..23] of byte;
     FStatSkills :array of array [0..16] of byte;
@@ -33,13 +45,6 @@ type
     FStatName :string;
     FStatClass:string;
     FStatPet  :string;
-  public
-    constructor Create();
-    destructor  Destroy; override;
-
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
-
   end;
 
 function ReadLastBlock(AStream:TTL2Stream):TTL2Stats;
@@ -59,6 +64,13 @@ end;
 
 destructor TTL2Stats.Destroy;
 begin
+  InternalClear;
+
+  inherited;
+end;
+
+procedure TTL2Stats.InternalClear;
+begin
   SetLength(FStatMobs   ,0);
   SetLength(FStatItems  ,0);
   SetLength(FStatSkills ,0);
@@ -66,10 +78,14 @@ begin
   SetLength(FStatArea1  ,0);
   SetLength(FStatArea2  ,0);
   SetLength(FStatStats  ,0);
+end;
+
+procedure TTL2Stats.Clear;
+begin
+  InternalClear;
 
   inherited;
 end;
-
 
 procedure TTL2Stats.LoadFromStream(AStream:TTL2Stream);
 var

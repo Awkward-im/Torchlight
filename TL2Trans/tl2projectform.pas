@@ -1799,12 +1799,13 @@ var
   data:TTL2Translation;
   sl:TStringList;
   ldir:AnsiString;
+  ldlg:TSelectDirectoryDialog;
   i:integer;
 begin
   data.Init;
   
   data.Filter:=flNoSearch;
-  data.Mode:=tmDefault;
+  data.Mode  :=tmDefault;
 
   ldir:=TL2Settings.edDefaultFile.Text;
   if ldir='' then
@@ -1815,6 +1816,34 @@ begin
   
   // ready for import files
 
+  ldlg:=TSelectDirectoryDialog.Create(nil);
+  try
+    ldlg.InitialDir:=TL2Settings.edImportDir.Text;
+    ldlg.FileName  :='';
+    ldlg.Options   :=[ofAllowMultiSelect,ofEnableSizing,ofPathMustExist];
+    if ldlg.Execute then
+    begin
+      sl:=TStringList.Create();
+
+      for i:=0 to ldlg.Files.Count-1 do
+        CycleDirBuild(sl, ldlg.Files[i]);
+      
+      data.Mode  :=tmMod;
+      data.Filter:=flNoFilter;
+      for i:=0 to sl.Count-1 do
+      begin
+        aprogress(TObject(1),sBuildRead+' '+sl[i]);
+        data.LoadFromFile(sl[i]);
+      end;
+
+      sl.Free;
+    end;
+
+  finally
+    ldlg.Free;
+  end;
+
+{  
   ldir:=TL2Settings.edImportDir.Text;
   
   if ldir[Length(ldir)]='\' then
@@ -1833,6 +1862,7 @@ begin
   end;
 
   sl.Free;
+}
 
   //!! Here export all
   data.Mode:=tmDefault;

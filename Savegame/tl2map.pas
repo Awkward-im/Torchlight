@@ -31,6 +31,18 @@ type
 type
   TTL2Map = class(TL2BaseClass)
   private
+    procedure InternalClear;
+
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Clear;
+
+    procedure LoadFromStream(AStream: TTL2Stream);
+    procedure SaveToStream  (AStream: TTL2Stream);
+
+  private
     FName :string;
     FMobInfos:array of TTL2Character;
 
@@ -54,14 +66,6 @@ type
 
     procedure ReadPropList (AStream: TTL2Stream);
     procedure WritePropList(AStream: TTL2Stream);
-  
-  public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
-
   end;
 
 function  ReadMapList (AStream:TTL2Stream):TTL2MapList;
@@ -77,6 +81,13 @@ begin
 end;
 
 destructor TTL2Map.Destroy;
+begin
+  InternalClear;
+
+  inherited;
+end;
+
+procedure TTL2Map.InternalClear;
 var
   i:integer;
 begin
@@ -100,7 +111,12 @@ begin
   SetLength(FTriggers,0);
 
   SetLength(FLayoutList,0);
-  
+end;
+
+procedure TTL2Map.Clear;
+begin
+  InternalClear;
+    
   inherited;
 end;
 

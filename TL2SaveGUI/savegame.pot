@@ -165,6 +165,18 @@ msgstr ""
 msgid "Mods"
 msgstr ""
 
+#: tfmrecipes.btndeletewrong.caption
+msgid "Delete Wrong"
+msgstr ""
+
+#: tfmrecipes.btnlearnall.caption
+msgid "Learn All"
+msgstr ""
+
+#: tfmrecipes.btnlearnavail.caption
+msgid "Learn Avail"
+msgstr ""
+
 #: tfmrecipes.sgrecipes.columns[0].title.caption
 msgctxt "tfmrecipes.sgrecipes.columns[0].title.caption"
 msgid "Title"

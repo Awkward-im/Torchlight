@@ -12,22 +12,22 @@ interface
 
 const
   ntGroup     = 0;
-  ntInteger   = 1;   // 1
-  ntString    = 2;   // 5
-  ntFloat     = 3;   // 2
-  ntBool      = 4;   // 6
-  ntTranslate = 5;   // 8
-  ntInteger64 = 6;   // 7
-  ntUnsigned  = 7;   // 4
+  ntInteger   = 1;
+  ntString    = 2;
+  ntFloat     = 3;
+  ntBool      = 4;
+  ntTranslate = 5;
+  ntInteger64 = 6;
+  ntUnsigned  = 7;
   // custom
-  ntNote      = 8;   // 9
-  ntDouble    = 9;   // 3
+  ntNote      = 8;
+  ntDouble    = 9;
   // user
   ntWord      = 10;
   ntByte      = 11;
   ntBinary    = $FD;
   ntDeleted   = $FE;
-  ntUnknown   = $FF; // 10
+  ntUnknown   = $FF;
 
 type
   PATL2Node = ^TATL2Node;

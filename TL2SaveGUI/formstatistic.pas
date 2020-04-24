@@ -20,15 +20,13 @@ type
     procedure FormCreate(Sender: TObject);
   private
     StatEdits:array of TEdit;
-    sg:TTL2SaveFile;
+    SGame:TTL2SaveFile;
 
   public
     procedure FillInfo(aSGame:TTL2SaveFile);
 
   end;
 
-var
-  fmStatistic: TfmStatistic;
 
 implementation
 
@@ -44,8 +42,8 @@ const
   CoordLeft  = 1;
   CoordTop   = 1;
   WidthLabel = 200;
-  WidthEdit  = 90;
-  Gap        = 4;
+  WidthEdit  = 80;
+  Gap        = 6;
   HeightEdit = 21;
 
 procedure TfmStatistic.FormCreate(Sender: TObject);
@@ -114,7 +112,7 @@ begin
   begin
     if StatEdits[i].Enabled then
     begin
-      sg.Statistic[i]:=StrToInt(StatEdits[i].Text);
+      SGame.Statistic[i]:=StrToInt(StatEdits[i].Text);
     end;
   end;
 end;
@@ -128,7 +126,7 @@ begin
     StatEdits[i].Text:=GetStatText(i,aSGame.Statistic[i]);
   end;
 
-  sg:=aSGame;
+  SGame:=aSGame;
 end;
 
 end.

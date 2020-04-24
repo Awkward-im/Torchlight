@@ -16,6 +16,18 @@ type
 type
   TTL2Item = class(TL2BaseClass)
   private
+    procedure InternalClear;
+
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Clear;
+
+    procedure LoadFromStream(AStream: TTL2Stream);
+    procedure SaveToStream  (AStream: TTL2Stream);
+
+  private
     FItemId   :TL2ID;
     FName     :string;
     FPrefix   :string;
@@ -50,13 +62,6 @@ type
     FUnkn5:array [0..11] of byte;
     FUnkn6:TL2IdValList;
 
-  public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
-
   end;
 
 
@@ -74,6 +79,14 @@ begin
 end;
 
 destructor TTL2Item.Destroy;
+begin
+  InternalClear;
+
+  inherited;
+end;
+
+
+procedure TTL2Item.InternalClear;
 var
   i:integer;
 begin
@@ -93,6 +106,11 @@ begin
   SetLength(FStats,0);
 
   SetLength(FUnkn6,0);
+end;
+
+procedure TTL2Item.Clear;
+begin
+  InternalClear;
 
   inherited;
 end;

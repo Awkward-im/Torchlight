@@ -18,6 +18,8 @@ type
   public
     destructor Destroy; override;
 
+    procedure Clear;
+
     procedure SetSize    (AStream:TStream);
     function  ToStream   (AStream:TStream):boolean;
     procedure FromStream (AStream:TStream; aFrom:integer=-1);
@@ -37,9 +39,18 @@ implementation
 
 destructor TL2BaseClass.Destroy;
 begin
-  if FData<>nil then FreeMem(FData);
+  Clear;
 
   inherited;
+end;
+
+procedure TL2BaseClass.Clear;
+begin
+  if FData<>nil then
+  begin
+    FreeMem(FData);
+    FData:=nil;
+  end;
 end;
 
 function TL2BaseClass.ToStream(AStream:TStream):boolean;
@@ -59,7 +70,7 @@ var
 begin
   if FData<>nil then
   begin
-    Assignfile(f,fname);
+    AssignFile(f,fname);
     Rewrite   (f);
     BlockWrite(f,FData^,FDataSize);
     CloseFile (f);
@@ -102,7 +113,7 @@ procedure TL2BaseClass.FromFile(const fname:string);
 var
   f:file of byte;
 begin
-  Assignfile(f,fname);
+  AssignFile(f,fname);
 {$PUSH}
 {$I-}
   Reset(f);

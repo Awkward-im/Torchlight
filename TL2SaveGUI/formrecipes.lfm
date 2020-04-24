@@ -2,32 +2,57 @@ object fmRecipes: TfmRecipes
   Left = 558
   Height = 399
   Top = 224
-  Width = 494
+  Width = 565
   Align = alClient
   BorderStyle = bsNone
   ClientHeight = 399
-  ClientWidth = 494
+  ClientWidth = 565
   LCLVersion = '2.1.0.0'
   object sgRecipes: TStringGrid
-    Left = 17
+    Left = 8
     Height = 381
-    Top = 10
-    Width = 301
+    Top = 8
+    Width = 384
     ColCount = 3
     ColumnClickSorts = True
     Columns = <    
       item
         SizePriority = 0
         Title.Caption = 'Title'
-        Width = 128
+        Width = 180
       end    
       item
         SizePriority = 0
         Title.Caption = 'Mod'
-        Width = 128
+        Width = 150
       end>
     DefaultColWidth = 48
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
+    RowCount = 1
     TabOrder = 0
+  end
+  object btnDeleteWrong: TButton
+    Left = 408
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Delete Wrong'
+    TabOrder = 1
+  end
+  object btnLearnAll: TButton
+    Left = 408
+    Height = 25
+    Top = 44
+    Width = 75
+    Caption = 'Learn All'
+    TabOrder = 2
+  end
+  object btnLearnAvail: TButton
+    Left = 408
+    Height = 25
+    Top = 84
+    Width = 75
+    Caption = 'Learn Avail'
+    TabOrder = 3
   end
 end

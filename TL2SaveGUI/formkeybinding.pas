@@ -21,8 +21,6 @@ type
 
   end;
 
-var
-  fmKeyBinding: TfmKeyBinding;
 
 implementation
 
