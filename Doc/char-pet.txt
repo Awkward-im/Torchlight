@@ -1,0 +1,110 @@
+================================
+Character, pet or mob (combined)
+================================
+if data not defined, it filled by 0xFF bytes usually
+
+1 byte   - signature (0xFF for player or pet, 0x02 for others)
+1 byte   - (bool?) 0
+1 byte   - (bool?) 0 usually (but saw 1 too)
+8 bytes  - ID of current character image (like morphed pet)
+8 bytes  - ID (original) if pet morphed
+8 bytes  - unknown (changeable data)
+1 byte   - 0 usually
+1 byte   - (bool?) wardrobe? set to "true" for player, i use it like player sign
+  if wardrobe -  data, 48 bytes totally
+    4 bytes  - (integer) face number
+    4 bytes  - (integer) hair style
+    4 bytes  - (integer) hair color (+bandana like for outlander)
+    36 bytes - unknown (maybe just reserved)
+4 bytes  - unknown, 0 usually
+1 byte   - (bool?) Pet enabled (checked through DISABLEPET console command)
+1 byte   - unknown
+1 byte   - unknown
+  if wardrobe
+    1 byte - cheater sign. 0xD6 = cheater, 0x4E - no cheats. Chthon said about 0x43 value as variant
+1 byte   - unknown. has values like 0 or 4 for pets
+4 bytes  - (float) time, sec of pet morph (decreasing)
+4 bytes  - (float) time, sec to pet town travel (decreasing)
+4 bytes  - (integer) pet action: idle = 0, attack = 1, defence = 2
+4 bytes  - unknown
+4 bytes  - (float) scale (used for pets usually)
+8 bytes  - (integer64) -1 for char, unknown for pets
+16 bytes - -1 usually
+4 bytes  - (integer) unknown, but -1 for pet (i use it as sign below)
+x bytes  - (ShartString) char/pet/mob name
+x bytes  - (ShartString) second line status, saw it non-empty on mob only, like (Teleporting)
+           MEDIA\AFFIXES\CHAMPIONAFFIXES\CHAMPIONTELEPORTER.DAT - SUFFIX
+if not pet (char only)
+  x bytes - (ShortString) 'PLAYER' - don't know what is for
+4 bytes  - 0 usually
+4 bytes  - Looks like unknown player statistic value (same number)
+12 bytes - (3 float) char coords
+direction next
+  12 bytes - (3 float) i think, "Forward"
+  4 bytes  - (float?) 0 usually
+  12 bytes - (3 float) i think, "Up"
+  4 bytes  - (float?) 0 usually
+  12 bytes - (3 float) i think, "Right"
+  4 bytes  - (float?) 0 usually
+  12 bytes - unknown, 0 usually
+  4 bytes  - (float) 1.0 usually
+4 bytes  - (integer) level
+4 bytes  - (integer) Experience
+4 bytes  - (integer) fame level
+4 bytes  - (integer) fame experience
+4 bytes  - (float) current Health
+4 bytes  - (integer) Health bonus
+4 bytes  - unknown, 0 usually
+4 bytes  - (float) current Mana
+4 bytes  -  integer) Mana bonus
+12 bytes - 0 usually
+4 bytes  - (float) Time played, sec
+4 bytes  - (float) 1.0 usually
+4 bytes  - (integer) unused skill points?
+4 bytes  - (integer) unused stat points?
+Mouse buttons: (24 bytes)
+  8 bytes - ID of skill on Right mouse button
+  8 bytes - ID of skill on Right mouse button (alternative)
+  8 bytes - ID of skill on Left mouse button
+Second weapon (unknown for pets) (24 bytes)
+  8 bytes - ID of skill on Right mouse button
+  8 bytes - ID of skill on Right mouse button (alternative)
+  8 bytes - ID of skill on Left mouse button
+4 bytes - count of known skills
+x bytes - list of skills ( 12 bytes element)
+  8 bytes - ID of skill
+  4 bytes - level of skill
+Spells - 4 times
+  x bytes - (ShartString) spell name
+  4 bytes - Spell level
+8 bytes  - unknown (0)
+4 bytes  - has 0 for char, 0x0197 for pet (magic def/atk?)
+4 bytes  - has 0 for char, 0x0197 for pet
+4 bytes  - has 0 for char, 0x0197 for pet
+4 bytes  - has 0 for char, 0x0197 for pet
+4 bytes  - 0 usually
+4 bytes  - (integer) strength
+4 bytes  - (integer) dexterity
+4 bytes  - (integer) vitality
+4 bytes  - (integer) focus
+4 bytes  - (integer) Gold
+4 bytes  - unknown (sometime -1, sometime not)
+12 bytes - unknown (-1 usually)
+1 byte   - Pet texture (skin) number
+Mod list:
+  4 bytes - list count
+  x bytes - list (8 bytes element)
+Item list:
+  4 bytes - list count
+  x bytes - items
+Effects (3 lists): (dynamic,passive,transfer?)
+  4 bytes - list count
+  x bytes - list of effects
+Augments:
+  4 bytes - list count
+  x bytes - list of ShortString
+Stats: (usually, 2 only, for unused stat and skill points)
+  4 bytes - count
+  x bytes - list, 12 bytes element:
+    8 bytes - ID of stat
+    4 bytes - (integer) stat value
