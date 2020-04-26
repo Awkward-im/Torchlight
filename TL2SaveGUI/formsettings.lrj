@@ -1,0 +1,8 @@
+{"version":1,"strings":[
+{"hash":130824265,"name":"tfmsettings.lblhpperlvl.caption","sourcebytes":[72,80,32,112,101,114,32,86,105,116,97,108,105,116,121],"value":"HP per Vitality"},
+{"hash":202385715,"name":"tfmsettings.lblmpperlvl.caption","sourcebytes":[77,97,110,97,32,112,101,114,32,70,111,99,117,115],"value":"Mana per Focus"},
+{"hash":163640604,"name":"tfmsettings.lblstatperlvl.caption","sourcebytes":[83,116,97,116,32,112,111,105,110,116,115,32,112,101,114,32,108,101,118,101,108],"value":"Stat points per level"},
+{"hash":54878844,"name":"tfmsettings.lblskillperlvl.caption","sourcebytes":[83,107,105,108,108,32,112,111,105,110,116,115,32,112,101,114,32,108,101,118,101,108],"value":"Skill points per level"},
+{"hash":204586709,"name":"tfmsettings.lblskillperfame.caption","sourcebytes":[83,107,105,108,108,32,112,111,105,110,116,115,32,112,101,114,32,70,97,109,101],"value":"Skill points per Fame"},
+{"hash":114277359,"name":"tfmsettings.cbshowtech.caption","sourcebytes":[83,104,111,119,32,84,101,99,104,32,105,110,102,111],"value":"Show Tech info"}
+]}

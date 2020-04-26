@@ -67,7 +67,6 @@ object fmSaveFile: TfmSaveFile
       Top = 1
       Width = 198
       Align = alClient
-      Enabled = False
       HideSelection = False
       HotTrack = True
       ReadOnly = True

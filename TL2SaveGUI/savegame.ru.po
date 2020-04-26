@@ -65,6 +65,10 @@ msgstr "Сохранёнка"
 msgid "Open Savegame"
 msgstr "Загрузить сохранённую игру"
 
+#: formsavegame.rssettings
+msgid "Settings"
+msgstr ""
+
 #: formsavegame.rsstatistic
 msgid "Global statistic"
 msgstr "Глобальная статистика"
@@ -226,6 +230,30 @@ msgstr ""
 msgid "&File"
 msgstr "&Файл"
 
+#: tfmsettings.cbshowtech.caption
+msgid "Show Tech info"
+msgstr ""
+
+#: tfmsettings.lblhpperlvl.caption
+msgid "HP per Vitality"
+msgstr ""
+
+#: tfmsettings.lblmpperlvl.caption
+msgid "Mana per Focus"
+msgstr ""
+
+#: tfmsettings.lblskillperfame.caption
+msgid "Skill points per Fame"
+msgstr ""
+
+#: tfmsettings.lblskillperlvl.caption
+msgid "Skill points per level"
+msgstr ""
+
+#: tfmsettings.lblstatperlvl.caption
+msgid "Stat points per level"
+msgstr ""
+
 #: tfmstatistic.bbupdate.caption
 msgctxt "tfmstatistic.bbupdate.caption"
 msgid "&Update"
@@ -339,3 +367,4 @@ msgstr "Заклинание 3"
 #: tl2db.rsspell4
 msgid "Spell 4"
 msgstr "Заклинание 4"
+

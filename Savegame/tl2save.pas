@@ -590,7 +590,7 @@ begin
 
   SetLength(FRecipes,0);
 
-  FreeMem(FLastBlock);
+  FLastBlock.Free;
 end;
 
 constructor TTL2SaveFile.Create;

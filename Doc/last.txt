@@ -17,13 +17,13 @@ x bytes  - list elements, 40 bytes each
 4 bytes  - (integer) list count
 x bytes  - list elements, 24 bytes each
     8  bytes - (Integer64) Item ID
-    20 bytes - data
+    16 bytes - data
 
 -- skills
 4 bytes  - (integer) list count
 x bytes  - list of elements, 17 bytes each
-    8  bytes - (Integer64) Skill ID
-    11 bytes - data
+    8 bytes - (Integer64) Skill ID
+    9 bytes - data
 
 -- something
 4 bytes  - (integer) list count
@@ -56,3 +56,4 @@ x bytes - (ShortString) - player name
 x bytes - (ShortString) - player class
 x bytes - (ShortString) - pet class
 
+1 byte - 0

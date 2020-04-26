@@ -3,14 +3,56 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Default"/>
+    <BuildModes Active="Debug">
+      <Item Name="Debug">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="savegame"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils\SQL"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item>
+    </BuildModes>
     <Units>
       <Unit>
         <Filename Value="savegame.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="25"/>
-        <UsageCount Value="46"/>
+        <CursorPos Y="24"/>
+        <UsageCount Value="48"/>
       </Unit>
       <Unit>
         <Filename Value="formsavegame.pas"/>
@@ -19,11 +61,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="224"/>
-        <CursorPos X="31" Y="241"/>
-        <FoldState Value=" T4603 T7FGgN"/>
-        <UsageCount Value="46"/>
+        <TopLine Value="105"/>
+        <CursorPos Y="274"/>
+        <UsageCount Value="48"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -37,7 +77,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="81"/>
         <CursorPos X="27" Y="102"/>
-        <UsageCount Value="46"/>
+        <UsageCount Value="48"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\tl2db.pas"/>
@@ -45,7 +85,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="91"/>
         <CursorPos X="13" Y="107"/>
-        <UsageCount Value="44"/>
+        <UsageCount Value="46"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\tl2types.pas"/>
@@ -54,12 +94,12 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="44"/>
+        <UsageCount Value="46"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="31"/>
       </Unit>
       <Unit>
         <Filename Value="formstatistic.pas"/>
@@ -71,7 +111,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="39"/>
         <CursorPos X="20" Y="56"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="45"/>
       </Unit>
       <Unit>
         <Filename Value="formkeybinding.pas"/>
@@ -83,7 +123,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="45" Y="58"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="39"/>
       </Unit>
       <Unit>
         <Filename Value="formrecipes.pas"/>
@@ -95,7 +135,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="27"/>
         <CursorPos X="36" Y="28"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="formquests.pas"/>
@@ -105,8 +145,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formQuests"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="58" Y="8"/>
-        <UsageCount Value="31"/>
+        <TopLine Value="5"/>
+        <CursorPos X="14" Y="16"/>
+        <UsageCount Value="33"/>
       </Unit>
       <Unit>
         <Filename Value="formcommon.pas"/>
@@ -117,8 +158,23 @@
         <UnitName Value="formCommon"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="27"/>
-        <CursorPos X="44" Y="43"/>
-        <UsageCount Value="28"/>
+        <CursorPos X="27" Y="44"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formsettings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmSettings"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formSettings"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="40"/>
+        <CursorPos X="11" Y="67"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2common.pas"/>
@@ -174,47 +230,7 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="25">
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="145" Column="9" TopLine="127"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="144" Column="9" TopLine="126"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="10" Column="44"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="10" Column="44"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="97" Column="20" TopLine="83"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="101" Column="24" TopLine="83"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="89" Column="28" TopLine="83"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="47" Column="25" TopLine="31"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="155" Column="43" TopLine="105"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="47" Column="24" TopLine="33"/>
-      </Position>
+    <JumpHistory HistoryIndex="24">
       <Position>
         <Filename Value="formsavegame.pas"/>
         <Caret Line="183" Column="31" TopLine="163"/>
@@ -278,6 +294,42 @@
       <Position>
         <Filename Value="formsavegame.pas"/>
         <Caret Line="258" Column="23" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="177" Column="18" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="290" TopLine="278"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="262" Column="43" TopLine="248"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="188" TopLine="105"/>
+      </Position>
+      <Position>
+        <Filename Value="formsettings.pas"/>
+        <Caret Line="13" Column="32"/>
+      </Position>
+      <Position>
+        <Filename Value="formsettings.pas"/>
+        <Caret Line="8" Column="22"/>
+      </Position>
+      <Position>
+        <Filename Value="formsettings.pas"/>
+        <Caret Line="48" Column="10" TopLine="24"/>
+      </Position>
+      <Position>
+        <Filename Value="formsettings.pas"/>
+        <Caret Line="39" Column="44" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="formsettings.pas"/>
+        <Caret Line="94" Column="32" TopLine="65"/>
       </Position>
     </JumpHistory>
     <RunParams>

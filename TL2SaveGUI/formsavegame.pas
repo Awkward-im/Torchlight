@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
   Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
-  formKeyBinding, formStatistic, formCommon;
+  formKeyBinding, formStatistic, formCommon, formSettings;
 
 type
 
@@ -17,8 +17,8 @@ type
     actFileExit: TAction;
     actFileOpen: TAction;
     actFileSave: TAction;
-    actExport: TAction;
-    actImport: TAction;
+    actExport  : TAction;
+    actImport  : TAction;
     ActionList: TActionList;
     btnExport: TButton;
     btnImport: TButton;
@@ -31,7 +31,6 @@ type
     mnuFileExit: TMenuItem;
     MainPanel: TPanel;
     LeftPanel: TPanel;
-    PageControl: TPageControl;
     pnlTop: TPanel;
     Splitter: TSplitter;
     tvSaveGame: TTreeView;
@@ -42,12 +41,13 @@ type
     procedure FormCreate(Sender: TObject);
     procedure tvSaveGameSelectionChanged(Sender: TObject);
   private
-    FCommon:TfmCommon;
-    FMovies:TfmMovies;
-    FRecipes:TfmRecipes;
+    FSettings  :TfmSettings;
+    FCommon    :TfmCommon;
+    FMovies    :TfmMovies;
+    FRecipes   :TfmRecipes;
     FKeyBinding:TfmKeyBinding;
-    FQuests:TfmQuests;
-    FStatistic:TfmStatistic;
+    FQuests    :TfmQuests;
+    FStatistic :TfmStatistic;
     
     SGame:TTL2SaveFile;
     procedure ChangeTree;
@@ -72,6 +72,7 @@ resourcestring
   rsSaveGameOpen = 'Open Savegame';
   rsExportData   = 'Export data';
 
+  rsSettings   = 'Settings';
   rsSavegame   = 'Savegame';
   rsCommon     = 'Common';
   rsMovies     = 'Movies';
@@ -89,6 +90,9 @@ const
   DefaultExt = '.dmp';
 
 const
+  idxSettings   =  0;
+  idxSavegame   =  1;
+
   idxCommon     =  0;
   idxMovies     =  1;
   idxModList    =  2;
@@ -112,7 +116,9 @@ begin
   with tvSaveGame do
   begin
     Items.Clear;
-    lroot:=Items.AddFirst(nil,rsSavegame);
+    Items.AddFirst(nil,rsSettings);
+    lroot:=Items.AddChild(nil,rsSavegame);
+    lroot.Visible:=false;
     Items.AddChild(lroot,rsCommon);
     Items.AddChild(lroot,rsMovies);
     Items.AddChild(lroot,rsModList);
@@ -133,7 +139,8 @@ var
   lNode,lMapNode:TTreeNode;
   i,lcnt: integer;
 begin
-  lNode:=tvSaveGame.Items[0];
+  lNode:=tvSaveGame.Items[idxSavegame];
+  lNode.Visible:=true;
   lNode.Items[idxCharacter].Data:=pointer(SGame.CharInfo);
   lNode.Items[idxPets     ].Data:=pointer(SGame.PetInfo[0]);
   lNode.Items[idxMaps     ].Data:=pointer(SGame.Maps[0]);
@@ -142,7 +149,7 @@ begin
 
 
   lcnt:=SGame.PetCount;
-  lNode:=tvSaveGame.Items[0].Items[idxPets];
+  lNode:=tvSaveGame.Items[idxSavegame].Items[idxPets];
   lNode.DeleteChildren;
   if lcnt>1 then
   begin
@@ -153,7 +160,7 @@ begin
   end;
 
   lcnt:=SGame.MapCount;
-  lNode:=tvSaveGame.Items[0].Items[idxMaps];
+  lNode:=tvSaveGame.Items[idxSavegame].Items[idxMaps];
   lNode.DeleteChildren;
   if lcnt>1 then
   begin
@@ -165,8 +172,8 @@ begin
       tvSaveGame.Items.AddChild(lMapNode,'props');
     end;
   end;
-  tvSaveGame.Enabled:=true;
-  tvSaveGame.Select(tvSaveGame.Items[0]);
+  tvSaveGame.Items[idxSavegame].Visible:=true;
+  tvSaveGame.Select(tvSaveGame.Items[idxSavegame]);
 end;
 
 //===== Form =====
@@ -178,6 +185,7 @@ end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);
 begin
+  FSettings  :=TfmSettings  .Create(Self); FSettings  .Parent:=MainPanel;
   FCommon    :=TfmCommon    .Create(Self); FCommon    .Parent:=MainPanel;
   FMovies    :=TfmMovies    .Create(Self); FMovies    .Parent:=MainPanel;
   FRecipes   :=TfmRecipes   .Create(Self); FRecipes   .Parent:=MainPanel;
@@ -252,7 +260,10 @@ end;
 function TfmSaveFile.GetTVIndex:integer;
 begin
   case tvSaveGame.Selected.level of
-    0: result:=0;
+    0: if tvSaveGame.Selected.Index=0 then
+      result:=-1
+    else
+      result:=0;
     1: result:=tvSaveGame.Selected.Index;
     2: result:=tvSaveGame.Selected.Parent.Index;
     3: result:=idxMaps; // units and props are for maps now only
@@ -276,6 +287,10 @@ begin
   FStatistic .Visible:=false;
 
   case lidx of
+    -1: begin
+      FSettings.Visible:=true;
+    end;
+
     idxCommon: begin
       FCommon.FillInfo(SGame);
       FCommon.Visible:=true;
@@ -328,4 +343,3 @@ begin
 end;
 
 end.
-

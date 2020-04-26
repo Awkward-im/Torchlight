@@ -263,7 +263,7 @@ begin
   FUnkn9:=AStream.ReadQWord;
 {
   AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0 / SEE: Statistic=unknown elfly=7, rage=2, lonelfly=2, zorro=0
+  AStream.ReadDWord;    // 0 (SEE: Statistic=unknown) elfly=7, rage=2, lonelfly=2, zorro=0
 }
   FPosition:=AStream.ReadCoord; //!!!!!!!!
 
