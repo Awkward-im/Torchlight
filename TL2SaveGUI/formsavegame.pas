@@ -111,7 +111,7 @@ const
 
 procedure TfmSaveFile.CreateTree;
 var
-  lroot:TTreeNode;
+  lroot,lNode:TTreeNode;
 begin
   with tvSaveGame do
   begin
@@ -123,7 +123,8 @@ begin
     Items.AddChild(lroot,rsMovies);
     Items.AddChild(lroot,rsModList);
     Items.AddChild(lroot,rsKeyMapping);
-    Items.AddChild(lroot,rsCharacter);
+    lNode:=Items.AddChild(lroot,rsCharacter);
+    Items.AddChild(lNode,'items');
     Items.AddChild(lroot,rsPlayerStat);
     Items.AddChild(lroot,rsPets);       // ??
     Items.AddChild(lroot,rsMaps);       // ??
@@ -136,7 +137,7 @@ end;
 
 procedure TfmSaveFile.ChangeTree;
 var
-  lNode,lMapNode:TTreeNode;
+  lNode,lSubNode:TTreeNode;
   i,lcnt: integer;
 begin
   lNode:=tvSaveGame.Items[idxSavegame];
@@ -155,7 +156,10 @@ begin
   begin
     for i:=0 to lcnt-1 do
     begin
-      (tvSaveGame.Items.AddChild(lNode,'pet_'+IntToStr(i))).Data:=pointer(SGame.PetInfo[i]);
+      lSubNode:=tvSaveGame.Items.AddChild(lNode,'pet_'+IntToStr(i));
+      lSubNode.Data:=pointer(SGame.PetInfo[i]);
+      tvSaveGame.Items.AddChild(lSubNode,'props');
+
     end;
   end;
 
@@ -166,10 +170,10 @@ begin
   begin
     for i:=0 to lcnt-1 do
     begin
-      lMapNode:=tvSaveGame.Items.AddChild(lNode,'map_'+IntToStr(i));
-      lMapNode.Data:=pointer(SGame.Maps[i]);
-      tvSaveGame.Items.AddChild(lMapNode,'units');
-      tvSaveGame.Items.AddChild(lMapNode,'props');
+      lSubNode:=tvSaveGame.Items.AddChild(lNode,'map_'+IntToStr(i));
+      lSubNode.Data:=pointer(SGame.Maps[i]);
+      tvSaveGame.Items.AddChild(lSubNode,'units');
+      tvSaveGame.Items.AddChild(lSubNode,'props');
     end;
   end;
   tvSaveGame.Items[idxSavegame].Visible:=true;
@@ -259,14 +263,20 @@ end;
 
 function TfmSaveFile.GetTVIndex:integer;
 begin
+  if tvSaveGame.Selected=nil then
+  begin
+    result:=-1;
+    exit;
+  end;
+
   case tvSaveGame.Selected.level of
-    0: if tvSaveGame.Selected.Index=0 then
+    0: if tvSaveGame.Selected.Index=idxSettings then
       result:=-1
     else
-      result:=0;
+      result:=idxCommon;
     1: result:=tvSaveGame.Selected.Index;
     2: result:=tvSaveGame.Selected.Parent.Index;
-    3: result:=idxMaps; // units and props are for maps now only
+    3: result:=tvSaveGame.Selected.Parent.Parent.Index;
   else
   end;
 end;
@@ -277,8 +287,9 @@ var
 begin
   lidx:=GetTVIndex;
 
-  actExport.Enabled:=tvSaveGame.Selected.Data<>nil;
+  actExport.Enabled:=(tvSaveGame.Selected<>nil) and (tvSaveGame.Selected.Data<>nil);
 
+  FSettings  .Visible:=false;
   FCommon    .Visible:=false;
   FMovies    .Visible:=false;
   FRecipes   .Visible:=false;
