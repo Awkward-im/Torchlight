@@ -218,6 +218,8 @@ var
 begin
   prj:=ActiveProject;
 
+  if prj=nil then exit;
+
   if anAction='' then
   begin
     if prj.Modified then ls:='* '+prj.ProjectName
@@ -246,7 +248,7 @@ begin
   begin
     Self.Caption:=sDefaultCaption+' - '+TTL2Project(Sender).ProjectName;
     TL2StatusBar.SimpleText:=TTL2Project(Sender).StatusBarText;
-    SetTABCaption('');
+    SetTabCaption('');
   end;
 end;
 
