@@ -27,12 +27,12 @@ type
     procedure InternalClear;
 
   public
-    destructor  Destroy; override;
+    destructor Destroy; override;
 
-    procedure Clear;
+    procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
+    procedure LoadFromStream(AStream: TTL2Stream); override;
+    procedure SaveToStream  (AStream: TTL2Stream); override;
 
   private
     FSign           :Byte;
@@ -82,7 +82,7 @@ type
     FLevel          :integer;
     FExperience     :integer;
     FFameLevel      :integer;
-    FFame           :integer;
+    FFameExp        :integer;
     FHealth         :TL2Float;
     FHealthBonus    :integer;
     FMana           :TL2Float;
@@ -115,6 +115,11 @@ type
     FStats          :TL2IdValList;
 
   public
+    property Action:TTL2Action read FAction write FAction;
+    property Sign           :Byte     read FSign;
+    property Enabled        :ByteBool read FEnabled         write FEnabled;
+    property ImageId        :TL2ID    read FImageId         write FImageId;
+    property OriginId       :TL2ID    read FOriginId        write FOriginId;
     property Name           :string   read FCharacterName   write FCharacterName;
     property Player         :string   read FPlayer          write FPlayer;
     property Face           :integer  read FFace            write FFace;
@@ -125,7 +130,7 @@ type
     property Level          :integer  read FLevel           write FLevel;
     property Experience     :integer  read FExperience      write FExperience;
     property FameLevel      :integer  read FFameLevel       write FFameLevel;
-    property Fame           :integer  read FFame            write FFame;
+    property FameExp        :integer  read FFameExp         write FFameExp;
     property Health         :TL2Float read FHealth          write FHealth;
     property HealthBonus    :integer  read FHealthBonus     write FHealthBonus;
     property Mana           :TL2Float read FMana            write FMana;
@@ -139,6 +144,7 @@ type
     property Focus          :integer  read FFocus           write FFocus;
     property Gold           :integer  read FGold            write FGold;
     property Scale          :TL2Float read FScale           write FScale;
+    property Skin           :byte     read FSkin            write FSkin;
 {
     property Skills   [idx:integer]:TL2IdVal    read  GetSkills;
     property Spells   [idx:integer]:TTL2Spell   read  GetSpells;
@@ -147,6 +153,7 @@ type
     property Passives1[idx:integer]:TTL2Passive read  GetPassives1;
     property Passives2[idx:integer]:TTL2Passive read  GetPassives2;
 }
+    property ModIds:TL2IdList read FModIds;
   end;
 
 function ReadCharData(AStream:TTL2Stream):TTL2Character;
@@ -194,19 +201,20 @@ var
   i:integer;
   isPet:boolean;
 begin
-  FromStream(AStream);
+  DataSize  :=AStream.ReadDWord;
+  DataOffset:=AStream.Position;
 
   // signature
   // can be word+byte, can be 3 bytes. last looks like bool
   FSign    :=AStream.ReadByte;  // $FF or 02
-  FSignWord:=Check(AStream.ReadWord,'char sign',0);  // 0 (can be $0100)
+  FSignWord:=Check(AStream.ReadWord,'char sign_'+HexStr(AStream.Position,8),0);  // 0 (can be $0100)
 	
   FImageId :=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
   FOriginId:=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
 
   FUnkn1:=TL2ID(AStream.ReadQword);    //!! (changing) (F6ED2564.F596F9AA)
 
-  FUnkn2   :=Check(AStream.ReadByte,'pre-wardrobe',0);
+  FUnkn2   :=Check(AStream.ReadByte,'pre-wardrobe_'+HexStr(AStream.Position,8),0);
   FWardrobe:=AStream.ReadByte<>0;     // not sure but why not?
   if FWardrobe then
   begin
@@ -224,10 +232,10 @@ begin
 }
   end;
   //??
-  FUnkn3:=Check(AStream.ReadDWord,'pre-pet enabled',0);    // 0
+  FUnkn3:=Check(AStream.ReadDWord,'pre-pet enabled_'+HexStr(AStream.Position,8),0);    // 0
   FEnabled:=AStream.ReadByte<>0; // 1 (pet - enabled)
   //??
-  FUnkn4:=Check(AStream.ReadWord,'post-pet enabled',0);
+  FUnkn4:=Check(AStream.ReadWord,'post-pet enabled_'+HexStr(AStream.Position,8),0);
 {
   AStream.ReadByte;     // 0
   AStream.ReadByte;     // 0
@@ -242,7 +250,7 @@ begin
   FTownTime :=AStream.ReadFloat;   //!!!!!!!!!! time to town,sec?
   FAction   :=TTL2Action(AStream.ReadDWord);  // 1  (pet status)
   //??
-  FUnkn6:=Check(AStream.ReadDWord,'before scale',1);    // 1
+  FUnkn6:=Check(AStream.ReadDWord,'before scale_'+HexStr(AStream.Position,8),1);    // 1
   FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
   //??
   AStream.Read(FUnkn7,24);
@@ -288,10 +296,10 @@ begin
   FLevel      :=AStream.ReadDWord;    // level
   FExperience :=AStream.ReadDWord;    // exp
   FFameLevel  :=AStream.ReadDWord;    // fame level
-  FFame       :=AStream.ReadDWord;    // fame
+  FFameExp    :=AStream.ReadDWord;    // fame exp
   FHealth     :=AStream.ReadFloat;    // current HP
   FHealthBonus:=AStream.ReadDWord;    // health bonus (pet=full hp)
-  FUnkn11:=Check(AStream.ReadDWord,'stat',0);  // 0 ?? charge maybe? or armor?
+  FUnkn11:=Check(AStream.ReadDWord,'stat_'+HexStr(AStream.Position,8),0);  // 0 ?? charge maybe? or armor?
   FMana       :=AStream.ReadFloat;    // current MP
   FManaBonus  :=AStream.ReadDWord;    // Mana bonus   (pet=full mp)
   //??
@@ -376,19 +384,23 @@ begin
   multiply_hotbar adds SELECTED_HOTBAR stat
 }
   FStats:=AStream.ReadIdValList;
+
+  LoadBlock(AStream);
 end;
 
 procedure TTL2Character.SaveToStream(AStream: TTL2Stream);
 var
-  i,lOffs:integer;
+  i:integer;
 begin
+  AStream.WriteDWord(DataSize);
+
   if not Changed then
   begin
-    if ToStream(AStream) then exit;
+    SaveBlock(AStream);
+    exit;
   end;
 
-  AStream.WriteDWord(0); // reserved for size
-  lOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
 
   // signature
   AStream.WriteByte(FSign);      // $FF or 2
@@ -456,7 +468,7 @@ begin
   AStream.WriteDWord(FLevel);        // level
   AStream.WriteDWord(FExperience);   // exp
   AStream.WriteDWord(FFameLevel);    // fame level
-  AStream.WriteDWord(FFame);         // fame
+  AStream.WriteDWord(FFameExp);      // fame
   AStream.WriteFloat(FHealth);       // current HP
   AStream.WriteDWord(FHealthBonus);  // health bonus (pet=full hp)
   AStream.WriteDWord(FUnkn11);
@@ -519,8 +531,8 @@ begin
 
   AStream.WriteIdValList(FStats);
 
-  FromStream(AStream,lOffs);
-  SetSize   (AStream);
+  LoadBlock(AStream);
+  FixSize  (AStream);
 end;
 
 function ReadCharData(AStream:TTL2Stream):TTL2Character;

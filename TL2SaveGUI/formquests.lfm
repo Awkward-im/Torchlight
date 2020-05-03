@@ -13,7 +13,8 @@ object fmQuests: TfmQuests
     Height = 371
     Top = 8
     Width = 505
-    ColCount = 4
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ColumnClickSorts = True
     Columns = <    
       item
         SizePriority = 0
@@ -35,6 +36,10 @@ object fmQuests: TfmQuests
         SizePriority = 0
         Title.Caption = 'Mods'
         Width = 150
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Id'
       end>
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goDblClickAutoSize, goSmoothScroll]

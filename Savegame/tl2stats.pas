@@ -8,6 +8,52 @@ uses
   TL2Base;
 
 type
+  tStatMob = packed record
+    id    :TL2ID;
+    field1:TL2Integer;
+    field2:TL2Integer;
+    field3:TL2Integer;
+    field4:TL2Integer;
+    field5:TL2Integer;
+    field6:TL2Integer;
+    field7:TL2Integer;
+    field8:Word;
+    field9:Word;
+  end;
+  tStatMobArray = array of tStatMob;
+
+  tStatItem = packed record
+    id    :TL2ID;
+    field1:TL2Integer; // ??
+    field2:TL2Integer;
+    field3:TL2Integer; // ??
+    field4:TL2Integer;
+  end;
+  tStatItemArray = array of tStatItem;
+
+  tStatSkill = packed record
+    id    :TL2ID;
+    field1:TL2Integer;
+    field2:TL2Integer;
+    field3:Byte;
+  end;
+  tStatSkillArray = array of tStatSkill;
+
+  tStatUnknown = packed record
+    field1 :TL2Float;
+    field2 :TL2Integer;
+    field3 :TL2Integer;
+    field4 :TL2Integer;
+    field5 :Byte;
+    field6 :TL2Integer; //??
+    field7 :Byte;
+    field8 :TL2Integer;
+    field9 :TL2Integer;
+    field10:Byte;
+  end;
+  tStatUnknownArray = array of tStatUnknown;
+
+type
   TTL2StringVal = record
     name :string;
     value:TL2Integer;
@@ -23,19 +69,19 @@ type
     constructor Create();
     destructor  Destroy; override;
 
-    procedure Clear;
+    procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
+    procedure LoadFromStream(AStream: TTL2Stream); override;
+    procedure SaveToStream  (AStream: TTL2Stream); override;
 
   private
-    FStatMobs   :array of array [0..39] of byte;
-    FStatItems  :array of array [0..23] of byte;
-    FStatSkills :array of array [0..16] of byte;
-    FStatUnknown:array of array [0..30] of byte;
+    FStatMobs   :tStatMobArray;     // array [0..39] of byte;
+    FStatItems  :tStatItemArray;    // array [0..23] of byte;
+    FStatSkills :tStatSkillArray;   // array [0..16] of byte;
+    FStatUnknown:tStatUnknownArray; // array [0..30] of byte;
     FStatArea1  :TTL2StringValList;
     FStatArea2  :TTL2StringValList;
-    FStatStats:TL2IdValList;
+    FStatStats  :TL2IdValList;
 
     FUnkn    :DWord;
     FUnkn17  :array [0..16] of byte;
@@ -45,6 +91,14 @@ type
     FStatName :string;
     FStatClass:string;
     FStatPet  :string;
+  public
+    property Mobs   :tStatMobArray     read FStatMobs;
+    property Items  :tStatItemArray    read FStatItems;
+    property Skills :tStatSkillArray   read FStatSkills;
+    property Unknown:tStatUnknownArray read FStatUnknown;
+    property Area1  :TTL2StringValList read FStatArea1;
+    property Area2  :TTL2StringValList read FStatArea2;
+    property Stats  :TL2IdValList      read FStatStats;
   end;
 
 function ReadLastBlock(AStream:TTL2Stream):TTL2Stats;
@@ -91,9 +145,10 @@ procedure TTL2Stats.LoadFromStream(AStream:TTL2Stream);
 var
   i,lcnt:integer;
 begin
-  FromStream(AStream);
-
-  FUnkn:=Check(AStream.ReadDWord,'last block 1',1);
+  DataSize  :=AStream.ReadDWord;
+  DataOffset:=AStream.Position;
+  
+  FUnkn:=Check(AStream.ReadDWord,'last block 1_'+HexStr(AStream.Position,8),1);
 
   AStream.Read(FUnkn17[0],17);
 {
@@ -203,20 +258,24 @@ begin
   FStatClass:=AStream.ReadShortString; // class
   FStatPet  :=AStream.ReadShortString; // Pet class
 
-  AStream.ReadByte; // 0
+  Check(AStream.ReadByte,'final',0); // 0
+
+  LoadBlock(AStream);
 end;
 
 procedure TTL2Stats.SaveToStream(AStream:TTL2Stream);
 var
-  lOffs,i:integer;
+  i:integer;
 begin
+  AStream.WriteDWord(DataSize);
+  
   if not Changed then
   begin
-    if ToStream(AStream) then exit;
+    SaveBlock(AStream);
+    exit;
   end;
 
-  AStream.WriteDWord(0);
-  lOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
 
   AStream.WriteDWord(FUnkn);
 
@@ -274,8 +333,8 @@ begin
 
   AStream.WriteByte(0);
 
-  FromStream(AStream,lOffs);
-  SetSize   (AStream);
+  LoadBlock(AStream);
+  FixSize  (AStream);
 end;
 
 

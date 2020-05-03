@@ -70,10 +70,10 @@ type
     constructor Create(achar:boolean); overload;
     destructor Destroy; override;
 
-    procedure Clear;
+    procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
+    procedure LoadFromStream(AStream: TTL2Stream); override;
+    procedure SaveToStream  (AStream: TTL2Stream); override;
 
   private
     FFlags       :TTL2EffectFlags;
@@ -175,9 +175,9 @@ end;
 
 procedure TTL2Effect.LoadFromStream(AStream: TTL2Stream);
 var
-  lOffs,lcnt:integer;
+  lcnt:integer;
 begin
-  lOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
 
   FFlags:=TTL2EffectFlags(AStream.ReadDword);
   FName :=AStream.ReadShortString();
@@ -219,19 +219,18 @@ begin
   if modHasIcon in FFlags then
     FIcon:=AStream.ReadByteString();
 
-  FromStream(AStream,lOffs);
+  LoadBlock(AStream);
 end;
 
 procedure TTL2Effect.SaveToStream(AStream: TTL2Stream);
-var
-  lOffs:integer;
 begin
   if not Changed then
   begin
-    if ToStream(AStream) then exit;
+    SaveBlock(AStream);
+    exit;
   end;
 
-  lOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
   
   AStream.WriteDword(DWord(FFlags));
   AStream.WriteShortString(FName);
@@ -275,7 +274,7 @@ begin
   if modHasIcon in FFlags then
     AStream.WriteByteString(FIcon);
 
-  FromStream(AStream,lOffs);
+  LoadBlock(AStream);
 end;
 
 function ReadEffectList(AStream:TTL2Stream; atrans:boolean=false):TTL2EffectList;

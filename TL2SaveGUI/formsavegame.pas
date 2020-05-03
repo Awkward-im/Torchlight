@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
   Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
-  formKeyBinding, formStatistic, formCommon, formSettings;
+  formKeyBinding, formStatistic, formCommon, formSettings,
+  formPet, formChar, formStat;
 
 type
 
@@ -23,6 +24,7 @@ type
     btnExport: TButton;
     btnImport: TButton;
     ImageList: TImageList;
+    lblOffset: TLabel;
     MainMenu: TMainMenu;
     mnuFile: TMenuItem;
     mnuFileOpen: TMenuItem;
@@ -37,6 +39,8 @@ type
     procedure actExportExecute(Sender: TObject);
     procedure actFileExitExecute(Sender: TObject);
     procedure actFileOpenExecute(Sender: TObject);
+    procedure actFileSaveExecute(Sender: TObject);
+    procedure actImportExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure tvSaveGameSelectionChanged(Sender: TObject);
@@ -48,11 +52,15 @@ type
     FKeyBinding:TfmKeyBinding;
     FQuests    :TfmQuests;
     FStatistic :TfmStatistic;
+    FPets      :TfmPet;
+    FChar      :TfmChar;
+    FStats     :TfmStat;
     
     SGame:TTL2SaveFile;
     procedure ChangeTree;
     procedure CreateTree;
     function GetTVIndex: integer;
+    procedure SetOffset(aofs: integer);
   public
 
   end;
@@ -66,11 +74,14 @@ implementation
 
 uses
   tl2db,
+  tl2stream,
   tl2base;
 
 resourcestring
   rsSaveGameOpen = 'Open Savegame';
+  rsSaveGameSave = 'Save Savegame';
   rsExportData   = 'Export data';
+  rsImportData   = 'Import data';
 
   rsSettings   = 'Settings';
   rsSavegame   = 'Savegame';
@@ -85,6 +96,11 @@ resourcestring
   rsQuests     = 'Quests';
   rsRecipes    = 'Recipes';
   rsStatistic  = 'Global statistic';
+
+  rsSkills = 'Skills';
+  rsItems  = 'Items';
+  rsUnits  = 'Units';
+  rsProps  = 'Props';
 
 const
   DefaultExt = '.dmp';
@@ -124,7 +140,8 @@ begin
     Items.AddChild(lroot,rsModList);
     Items.AddChild(lroot,rsKeyMapping);
     lNode:=Items.AddChild(lroot,rsCharacter);
-    Items.AddChild(lNode,'items');
+    Items.AddChild(lNode,rsSkills);
+    Items.AddChild(lNode,rsItems);
     Items.AddChild(lroot,rsPlayerStat);
     Items.AddChild(lroot,rsPets);       // ??
     Items.AddChild(lroot,rsMaps);       // ??
@@ -148,32 +165,30 @@ begin
   lNode.Items[idxQuests   ].Data:=pointer(SGame.Quests);
   lNode.Items[idxStatistic].Data:=pointer(SGame.Stats);
 
-
   lcnt:=SGame.PetCount;
   lNode:=tvSaveGame.Items[idxSavegame].Items[idxPets];
   lNode.DeleteChildren;
-  if lcnt>1 then
+//  if lcnt>1 then
   begin
     for i:=0 to lcnt-1 do
     begin
       lSubNode:=tvSaveGame.Items.AddChild(lNode,'pet_'+IntToStr(i));
       lSubNode.Data:=pointer(SGame.PetInfo[i]);
-      tvSaveGame.Items.AddChild(lSubNode,'props');
-
+      tvSaveGame.Items.AddChild(lSubNode,rsItems);
     end;
   end;
 
   lcnt:=SGame.MapCount;
   lNode:=tvSaveGame.Items[idxSavegame].Items[idxMaps];
   lNode.DeleteChildren;
-  if lcnt>1 then
+//  if lcnt>1 then
   begin
     for i:=0 to lcnt-1 do
     begin
       lSubNode:=tvSaveGame.Items.AddChild(lNode,'map_'+IntToStr(i));
       lSubNode.Data:=pointer(SGame.Maps[i]);
-      tvSaveGame.Items.AddChild(lSubNode,'units');
-      tvSaveGame.Items.AddChild(lSubNode,'props');
+      tvSaveGame.Items.AddChild(lSubNode,rsUnits);
+      tvSaveGame.Items.AddChild(lSubNode,rsProps);
     end;
   end;
   tvSaveGame.Items[idxSavegame].Visible:=true;
@@ -196,9 +211,20 @@ begin
   FKeyBinding:=TfmKeyBinding.Create(Self); FKeyBinding.Parent:=MainPanel;
   FQuests    :=TfmQuests    .Create(Self); FQuests    .Parent:=MainPanel;
   FStatistic :=TfmStatistic .Create(Self); FStatistic .Parent:=MainPanel;
-  
+  FPets      :=TfmPet       .Create(Self); FPets      .Parent:=MainPanel;
+  FChar      :=TfmChar      .Create(Self); FChar      .Parent:=MainPanel;
+  FStats     :=TfmStat      .Create(Self); FStats     .Parent:=MainPanel;
+
   CreateTree;
   LoadBases;
+end;
+
+procedure TfmSaveFile.SetOffset(aofs:integer);
+begin
+  if aofs<0 then
+    lblOffset.Caption:=''
+  else
+    lblOffset.Caption:='0x'+HexStr(aofs,8);
 end;
 
 //===== Actions =====
@@ -231,9 +257,60 @@ begin
   end;
 end;
 
+procedure TfmSaveFile.actFileSaveExecute(Sender: TObject);
+var
+  SaveDialog: TSaveDialog;
+begin
+  SaveDialog:=TSaveDialog.Create(nil);
+  try
+    SaveDialog.Title:=rsSaveGameSave;
+    SaveDialog.DefaultExt:='.SVB';
+    if SaveDialog.Execute then
+    begin
+      SGame.Prepare;
+      SGame.SaveToFile(SaveDialog.FileName);
+    end;
+  finally
+    SaveDialog.Free;
+  end;
+end;
+
 procedure TfmSaveFile.actFileExitExecute(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfmSaveFile.actImportExecute(Sender: TObject);
+var
+  ldlg:TOpenDialog;
+  lclass:TL2BaseClass;
+  lstrm:TTL2Stream;
+  ls:string;
+  lidx:integer;
+begin
+  lidx:=GetTVIndex;
+
+  lclass:=TL2BaseClass(tvSaveGame.Selected.Data);
+
+  ldlg:=TOpenDialog.Create(nil);
+  try
+    ldlg.FileName  :='';
+    ldlg.DefaultExt:=DefaultExt;
+    ldlg.Title     :=rsImportData;
+    ldlg.Options   :=ldlg.Options;
+    if ldlg.Execute then
+    begin
+      lstrm:=TTL2Stream.Create;
+      lstrm.LoadFromFile(ldlg.FileName);
+      lstrm.Position:=0;
+      lclass.Clear;
+      lclass.LoadFromStream(lstrm);
+      lstrm.Free;
+      tvSaveGameSelectionChanged(Self);
+    end;
+  finally
+    ldlg.Free;
+  end;
 end;
 
 procedure TfmSaveFile.actExportExecute(Sender: TObject);
@@ -255,7 +332,7 @@ begin
     ldlg.Title     :=rsExportData;
     ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
     if ldlg.Execute then
-      lclass.ToFile(ldlg.FileName);
+      lclass.SaveToFile(ldlg.FileName);
   finally
     ldlg.Free;
   end;
@@ -288,14 +365,19 @@ begin
   lidx:=GetTVIndex;
 
   actExport.Enabled:=(tvSaveGame.Selected<>nil) and (tvSaveGame.Selected.Data<>nil);
+  actImport.Enabled:=(tvSaveGame.Selected<>nil) and (tvSaveGame.Selected.Data<>nil);
 
   FSettings  .Visible:=false;
   FCommon    .Visible:=false;
   FMovies    .Visible:=false;
+  FPets      .Visible:=false;
   FRecipes   .Visible:=false;
   FKeyBinding.Visible:=false;
   FQuests    .Visible:=false;
   FStatistic .Visible:=false;
+  FChar      .Visible:=false;
+  FStats     .Visible:=false;
+  SetOffset(-1);
 
   case lidx of
     -1: begin
@@ -321,7 +403,8 @@ begin
     end;
 
     idxCharacter: begin
-//      FCharacter.FillInfo(SGame);
+      FChar.FillInfo(SGame);
+      FChar.Visible:=true;
     end;
 
     idxPlayerStat: begin
@@ -330,7 +413,15 @@ begin
     end;
 
     idxPets: begin
-//      .FillInfo(SGame);
+      case tvSaveGame.Selected.level of
+        2: lidx:=tvSaveGame.Selected.Index;
+        3: lidx:=tvSaveGame.Selected.Parent.Index;
+      else
+        lidx:=0;
+      end;
+      FPets.FillInfo(SGame,lidx);
+      actImport.Enabled:=FPets.IsMainPet;
+      FPets.Visible:=true;
     end;
 
     idxMaps: begin
@@ -338,6 +429,7 @@ begin
     end;
 
     idxQuests: begin
+      SetOffset(SGame.Quests.DataOffset);
       FQuests.FillInfo(SGame);
       FQuests.Visible:=true;
     end;
@@ -348,7 +440,8 @@ begin
     end;
 
     idxStatistic: begin
-//      FStats.FillInfo(SGame);
+      FStats.FillInfo(SGame);
+      FStats.Visible:=true;
     end;
   end;
 end;

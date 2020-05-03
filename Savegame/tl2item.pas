@@ -22,10 +22,10 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure Clear;
+    procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
+    procedure LoadFromStream(AStream: TTL2Stream); override;
+    procedure SaveToStream  (AStream: TTL2Stream); override;
 
   private
     FItemId   :TL2ID;
@@ -117,11 +117,11 @@ end;
 
 procedure TTL2Item.LoadFromStream(AStream: TTL2Stream);
 var
-  lItemOffs,lcnt:integer;
+  lcnt:integer;
 begin
-  lItemOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
 
-  FSign:=Check(AStream.ReadByte,'item sign',2); // "2" (0 for gold)
+  FSign:=Check(AStream.ReadByte,'item sign_'+HexStr(AStream.Position,8),2); // "2" (0 for gold)
   FItemId:=TL2ID(AStream.ReadQWord);  // Item ID
   FName  :=AStream.ReadShortString(); // name
   FPrefix:=AStream.ReadShortString(); // prefix
@@ -220,19 +220,18 @@ begin
 
   FStats:=AStream.ReadIdValList;
 
-  FromStream(AStream,lItemOffs);
+  LoadBlock(AStream);
 end;
 
 procedure TTL2Item.SaveToStream(AStream: TTL2Stream);
-var
-  lOffs:integer;
 begin
   if not Changed then
   begin
-    if ToStream(AStream) then exit;
+    SaveBlock(AStream);
+    exit;
   end;
 
-  lOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
 
   AStream.WriteByte(FSign);            // "2" (0 for gold)
   AStream.WriteQWord(QWord(FItemId));  // Item ID
@@ -332,7 +331,7 @@ begin
 
   AStream.WriteIdValList(FStats);
 
-  FromStream(AStream,lOffs);
+  LoadBlock(AStream);
 end;
 
 function ReadItemList(AStream:TTL2Stream):TTL2ItemList;

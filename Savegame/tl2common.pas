@@ -4,7 +4,6 @@ interface
 
 uses
    classes
-  ,tl2types
   ;
 
 type
@@ -63,9 +62,9 @@ begin
   result:='';
 
   if days>0 then Str(days,sday) else sday:='';
-  Str(hours,shour);
-  Str(mins,smin);
-  Str(secs,ssec);
+  Str(hours:2,shour); if shour[1]=' ' then shour[1]:='0';
+  Str(mins :2,smin ); if smin [1]=' ' then smin [1]:='0';
+  Str(secs :2,ssec ); if ssec [1]=' ' then ssec [1]:='0';
   result:=sday+' '+shour+':'+smin+':'+ssec;
 end;
 

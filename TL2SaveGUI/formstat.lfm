@@ -1,0 +1,322 @@
+object fmStat: TfmStat
+  Left = 511
+  Height = 488
+  Top = 267
+  Width = 741
+  Align = alClient
+  BorderStyle = bsNone
+  ClientHeight = 488
+  ClientWidth = 741
+  LCLVersion = '2.1.0.0'
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 488
+    Top = 0
+    Width = 741
+    ActivePage = tsItems
+    Align = alClient
+    TabIndex = 2
+    TabOrder = 0
+    object tsCommon: TTabSheet
+      Caption = 'Common'
+    end
+    object tsMobs: TTabSheet
+      Caption = 'Mobs'
+      ClientHeight = 460
+      ClientWidth = 733
+      OnContextPopup = tsMobsContextPopup
+      object sgMobs: TStringGrid
+        Left = 0
+        Height = 460
+        Top = 0
+        Width = 733
+        Align = alClient
+        ColCount = 10
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            Title.Caption = 'Title'
+            Width = 150
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field1'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field2'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field3'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field4'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field5'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field6'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field7'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field8'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field9'
+            Width = 48
+          end>
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 0
+      end
+    end
+    object tsItems: TTabSheet
+      Caption = 'Items'
+      ClientHeight = 460
+      ClientWidth = 733
+      object sgItems: TStringGrid
+        Left = 0
+        Height = 460
+        Top = 0
+        Width = 733
+        Align = alClient
+        ColCount = 6
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            Title.Caption = 'Title'
+            Width = 150
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field1'
+            Width = 72
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field2'
+            Width = 72
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field3'
+            Width = 72
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field4'
+            Width = 72
+          end>
+        DefaultColWidth = 48
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
+        RowCount = 1
+        TabOrder = 0
+      end
+    end
+    object tsSkills: TTabSheet
+      Caption = 'Skills'
+      ClientHeight = 460
+      ClientWidth = 733
+      object sgSkills: TStringGrid
+        Left = 0
+        Height = 460
+        Top = 0
+        Width = 733
+        Align = alClient
+        ColCount = 4
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            Title.Caption = 'Title'
+            Width = 150
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field1'
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field2'
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field3'
+          end>
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 0
+      end
+    end
+    object tsUnknown: TTabSheet
+      Caption = 'Unknown'
+      ClientHeight = 460
+      ClientWidth = 733
+      object sgUnknown: TStringGrid
+        Left = 0
+        Height = 460
+        Top = 0
+        Width = 733
+        Align = alClient
+        ColCount = 10
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field1'
+            Width = 96
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field2'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field3'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field4'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field5'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field6'
+            Width = 72
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field7'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field8'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field9'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field10'
+            Width = 48
+          end>
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 0
+      end
+    end
+    object tsArea1: TTabSheet
+      Caption = 'Area 1'
+      ClientHeight = 460
+      ClientWidth = 733
+      object sgArea1: TStringGrid
+        Left = 0
+        Height = 460
+        Top = 0
+        Width = 733
+        Align = alClient
+        ColCount = 2
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            Title.Caption = 'Title'
+            Width = 200
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Value'
+            Width = 64
+          end>
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 0
+      end
+    end
+    object tsArea2: TTabSheet
+      Caption = 'Area 2'
+      ClientHeight = 460
+      ClientWidth = 733
+      object sgArea2: TStringGrid
+        Left = 0
+        Height = 460
+        Top = 0
+        Width = 733
+        Align = alClient
+        ColCount = 2
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            Title.Caption = 'Title'
+            Width = 200
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Value'
+          end>
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 0
+      end
+    end
+    object tsStats: TTabSheet
+      Caption = 'Mobs-stat'
+      ClientHeight = 460
+      ClientWidth = 733
+      object sgStat: TStringGrid
+        Left = 0
+        Height = 460
+        Top = 0
+        Width = 733
+        Align = alClient
+        ColCount = 2
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            Title.Caption = 'Title'
+            Width = 150
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Value'
+          end>
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 0
+      end
+    end
+  end
+end

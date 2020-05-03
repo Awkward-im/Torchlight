@@ -6,11 +6,21 @@ msgid "Character"
 msgstr ""
 
 #: formsavegame.rscommon
+msgctxt "formsavegame.rscommon"
 msgid "Common"
 msgstr ""
 
 #: formsavegame.rsexportdata
 msgid "Export data"
+msgstr ""
+
+#: formsavegame.rsimportdata
+msgid "Import data"
+msgstr ""
+
+#: formsavegame.rsitems
+msgctxt "formsavegame.rsitems"
+msgid "Items"
 msgstr ""
 
 #: formsavegame.rskeymapping
@@ -37,6 +47,10 @@ msgstr ""
 msgid "Player statistic"
 msgstr ""
 
+#: formsavegame.rsprops
+msgid "Props"
+msgstr ""
+
 #: formsavegame.rsquests
 msgid "Quests"
 msgstr ""
@@ -54,12 +68,25 @@ msgstr ""
 msgid "Open Savegame"
 msgstr ""
 
+#: formsavegame.rssavegamesave
+msgid "Save Savegame"
+msgstr ""
+
 #: formsavegame.rssettings
 msgid "Settings"
 msgstr ""
 
+#: formsavegame.rsskills
+msgctxt "formsavegame.rsskills"
+msgid "Skills"
+msgstr ""
+
 #: formsavegame.rsstatistic
 msgid "Global statistic"
+msgstr ""
+
+#: formsavegame.rsunits
+msgid "Units"
 msgstr ""
 
 #: tfmcommon.cbhardcore.caption
@@ -151,6 +178,118 @@ msgctxt "tfmmovies.sgmovies.columns[5].title.caption"
 msgid "Mod"
 msgstr ""
 
+#: tfmpet.cbenabled.caption
+msgid "Enabled"
+msgstr ""
+
+#: tfmpet.cbimage.text
+msgid "cbImage"
+msgstr ""
+
+#: tfmpet.cbspell1.text
+msgid "cbSpell1"
+msgstr ""
+
+#: tfmpet.cbspell2.text
+msgid "cbSpell2"
+msgstr ""
+
+#: tfmpet.cbspell3.text
+msgid "cbSpell3"
+msgstr ""
+
+#: tfmpet.cbspell4.text
+msgid "cbSpell4"
+msgstr ""
+
+#: tfmpet.gbaction.caption
+msgid "Action"
+msgstr ""
+
+#: tfmpet.lbldexterity.caption
+msgid "Dexterity"
+msgstr ""
+
+#: tfmpet.lblexperience.caption
+msgid "Experience"
+msgstr ""
+
+#: tfmpet.lblfame.caption
+msgid "Fame"
+msgstr ""
+
+#: tfmpet.lblfameexp.caption
+msgid "Fame Exp"
+msgstr ""
+
+#: tfmpet.lblfocus.caption
+msgid "Focus"
+msgstr ""
+
+#: tfmpet.lblgold.caption
+msgid "Gold"
+msgstr ""
+
+#: tfmpet.lblhealth.caption
+msgid "Health"
+msgstr ""
+
+#: tfmpet.lblheathbonus.caption
+msgid "Heath Bonus"
+msgstr ""
+
+#: tfmpet.lblimage.caption
+msgid "Original and current image"
+msgstr ""
+
+#: tfmpet.lbllevel.caption
+msgid "Level"
+msgstr ""
+
+#: tfmpet.lblmana.caption
+msgid "Mana"
+msgstr ""
+
+#: tfmpet.lblmanabonus.caption
+msgid "Mana Bonus"
+msgstr ""
+
+#: tfmpet.lblmorphtime.caption
+msgid "Morph Time"
+msgstr ""
+
+#: tfmpet.lblscale.caption
+msgid "Scale"
+msgstr ""
+
+#: tfmpet.lblskin.caption
+msgid "Skin"
+msgstr ""
+
+#: tfmpet.lblstrength.caption
+msgid "Strength"
+msgstr ""
+
+#: tfmpet.lbltowntime.caption
+msgid "Town Time"
+msgstr ""
+
+#: tfmpet.lblvitality.caption
+msgid "Vitality"
+msgstr ""
+
+#: tfmpet.rbactionattack.caption
+msgid "Attack"
+msgstr ""
+
+#: tfmpet.rbactiondefence.caption
+msgid "Defence"
+msgstr ""
+
+#: tfmpet.rbactionidle.caption
+msgid "Idle"
+msgstr ""
+
 #: tfmquests.sgquests.columns[0].title.caption
 msgctxt "tfmquests.sgquests.columns[0].title.caption"
 msgid "Title"
@@ -167,6 +306,10 @@ msgstr ""
 
 #: tfmquests.sgquests.columns[3].title.caption
 msgid "Mods"
+msgstr ""
+
+#: tfmquests.sgquests.columns[4].title.caption
+msgid "Id"
 msgstr ""
 
 #: tfmrecipes.btndeletewrong.caption
@@ -192,7 +335,7 @@ msgid "Mod"
 msgstr ""
 
 #: tfmsavefile.actexport.caption
-msgid " Export"
+msgid "Export"
 msgstr ""
 
 #: tfmsavefile.actfileexit.caption
@@ -243,6 +386,216 @@ msgstr ""
 msgid "Stat points per level"
 msgstr ""
 
+#: tfmstat.sgarea1.columns[0].title.caption
+msgctxt "tfmstat.sgarea1.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmstat.sgarea1.columns[1].title.caption
+msgctxt "tfmstat.sgarea1.columns[1].title.caption"
+msgid "Value"
+msgstr ""
+
+#: tfmstat.sgarea2.columns[0].title.caption
+msgctxt "tfmstat.sgarea2.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmstat.sgarea2.columns[1].title.caption
+msgctxt "tfmstat.sgarea2.columns[1].title.caption"
+msgid "Value"
+msgstr ""
+
+#: tfmstat.sgitems.columns[0].title.caption
+msgctxt "tfmstat.sgitems.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmstat.sgitems.columns[1].title.caption
+msgctxt "tfmstat.sgitems.columns[1].title.caption"
+msgid "Field1"
+msgstr ""
+
+#: tfmstat.sgitems.columns[2].title.caption
+msgctxt "tfmstat.sgitems.columns[2].title.caption"
+msgid "Field2"
+msgstr ""
+
+#: tfmstat.sgitems.columns[3].title.caption
+msgctxt "tfmstat.sgitems.columns[3].title.caption"
+msgid "Field3"
+msgstr ""
+
+#: tfmstat.sgitems.columns[4].title.caption
+msgctxt "tfmstat.sgitems.columns[4].title.caption"
+msgid "Field4"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[0].title.caption
+msgctxt "tfmstat.sgmobs.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[1].title.caption
+msgctxt "tfmstat.sgmobs.columns[1].title.caption"
+msgid "Field1"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[2].title.caption
+msgctxt "tfmstat.sgmobs.columns[2].title.caption"
+msgid "Field2"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[3].title.caption
+msgctxt "tfmstat.sgmobs.columns[3].title.caption"
+msgid "Field3"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[4].title.caption
+msgctxt "tfmstat.sgmobs.columns[4].title.caption"
+msgid "Field4"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[5].title.caption
+msgctxt "tfmstat.sgmobs.columns[5].title.caption"
+msgid "Field5"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[6].title.caption
+msgctxt "tfmstat.sgmobs.columns[6].title.caption"
+msgid "Field6"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[7].title.caption
+msgctxt "tfmstat.sgmobs.columns[7].title.caption"
+msgid "Field7"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[8].title.caption
+msgctxt "tfmstat.sgmobs.columns[8].title.caption"
+msgid "Field8"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[9].title.caption
+msgctxt "tfmstat.sgmobs.columns[9].title.caption"
+msgid "Field9"
+msgstr ""
+
+#: tfmstat.sgskills.columns[0].title.caption
+msgctxt "tfmstat.sgskills.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmstat.sgskills.columns[1].title.caption
+msgctxt "tfmstat.sgskills.columns[1].title.caption"
+msgid "Field1"
+msgstr ""
+
+#: tfmstat.sgskills.columns[2].title.caption
+msgctxt "tfmstat.sgskills.columns[2].title.caption"
+msgid "Field2"
+msgstr ""
+
+#: tfmstat.sgskills.columns[3].title.caption
+msgctxt "tfmstat.sgskills.columns[3].title.caption"
+msgid "Field3"
+msgstr ""
+
+#: tfmstat.sgstat.columns[0].title.caption
+msgctxt "tfmstat.sgstat.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmstat.sgstat.columns[1].title.caption
+msgctxt "tfmstat.sgstat.columns[1].title.caption"
+msgid "Value"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[0].title.caption
+msgctxt "tfmstat.sgunknown.columns[0].title.caption"
+msgid "Field1"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[1].title.caption
+msgctxt "tfmstat.sgunknown.columns[1].title.caption"
+msgid "Field2"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[2].title.caption
+msgctxt "tfmstat.sgunknown.columns[2].title.caption"
+msgid "Field3"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[3].title.caption
+msgctxt "tfmstat.sgunknown.columns[3].title.caption"
+msgid "Field4"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[4].title.caption
+msgctxt "tfmstat.sgunknown.columns[4].title.caption"
+msgid "Field5"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[5].title.caption
+msgctxt "tfmstat.sgunknown.columns[5].title.caption"
+msgid "Field6"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[6].title.caption
+msgctxt "tfmstat.sgunknown.columns[6].title.caption"
+msgid "Field7"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[7].title.caption
+msgctxt "tfmstat.sgunknown.columns[7].title.caption"
+msgid "Field8"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[8].title.caption
+msgctxt "tfmstat.sgunknown.columns[8].title.caption"
+msgid "Field9"
+msgstr ""
+
+#: tfmstat.sgunknown.columns[9].title.caption
+msgctxt "tfmstat.sgunknown.columns[9].title.caption"
+msgid "Field10"
+msgstr ""
+
+#: tfmstat.tsarea1.caption
+msgid "Area 1"
+msgstr ""
+
+#: tfmstat.tsarea2.caption
+msgid "Area 2"
+msgstr ""
+
+#: tfmstat.tscommon.caption
+msgctxt "tfmstat.tscommon.caption"
+msgid "Common"
+msgstr ""
+
+#: tfmstat.tsitems.caption
+msgctxt "tfmstat.tsitems.caption"
+msgid "Items"
+msgstr ""
+
+#: tfmstat.tsmobs.caption
+msgid "Mobs"
+msgstr ""
+
+#: tfmstat.tsskills.caption
+msgctxt "tfmstat.tsskills.caption"
+msgid "Skills"
+msgstr ""
+
+#: tfmstat.tsstats.caption
+msgid "Mobs-stat"
+msgstr ""
+
+#: tfmstat.tsunknown.caption
+msgid "Unknown"
+msgstr ""
+
 #: tfmstatistic.bbupdate.caption
 msgctxt "tfmstatistic.bbupdate.caption"
 msgid "&Update"
@@ -251,6 +604,22 @@ msgstr ""
 #: tfmstatistic.gbstatistic.caption
 msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
+msgstr ""
+
+#: tl2common.rscasual
+msgid "Casual"
+msgstr ""
+
+#: tl2common.rsexpert
+msgid "Expert"
+msgstr ""
+
+#: tl2common.rsnormal
+msgid "Normal"
+msgstr ""
+
+#: tl2common.rsveteran
+msgid "Veteran"
 msgstr ""
 
 #: tl2db.rshp
@@ -355,5 +724,113 @@ msgstr ""
 
 #: tl2db.rsspell4
 msgid "Spell 4"
+msgstr ""
+
+#: tl2save.sloadfailed
+msgid "Savegame loading failed"
+msgstr ""
+
+#: tl2save.ssavingfailed
+msgid "Savegame saving failed"
+msgstr ""
+
+#: tl2save.swrongfooter
+msgid "Wrong save file size"
+msgstr ""
+
+#: tl2save.swrongsize
+msgid "Wrong file size"
+msgstr ""
+
+#: tl2save.swrongversion
+msgid "Wrong save file signature"
+msgstr ""
+
+#: tl2statistic.rsbroken
+msgid "Breakables Broken"
+msgstr ""
+
+#: tl2statistic.rschampions
+msgid "Champions Killed"
+msgstr ""
+
+#: tl2statistic.rsdeaths
+msgid "Deaths"
+msgstr ""
+
+#: tl2statistic.rsdmgdealt
+msgid "Highest Damage Dealt"
+msgstr ""
+
+#: tl2statistic.rsdmgtaken
+msgid "Highest Damage Taken"
+msgstr ""
+
+#: tl2statistic.rsenchanted
+msgid "Items Enchanted"
+msgstr ""
+
+#: tl2statistic.rsexploded
+msgid "Monsters Exploded"
+msgstr ""
+
+#: tl2statistic.rsfish
+msgid "Fish Caught"
+msgstr ""
+
+#: tl2statistic.rsgambled
+msgid "Times Gambled"
+msgstr ""
+
+#: tl2statistic.rsgold
+msgid "Gold Gathered"
+msgstr ""
+
+#: tl2statistic.rsleveltime
+msgid "Level Time Played"
+msgstr ""
+
+#: tl2statistic.rsmonsters
+msgid "Monsters Killed"
+msgstr ""
+
+#: tl2statistic.rsportal
+msgid "Portals Used"
+msgstr ""
+
+#: tl2statistic.rspotions
+msgid "Potions Used"
+msgstr ""
+
+#: tl2statistic.rsquestsdone
+msgid "Quests completed"
+msgstr ""
+
+#: tl2statistic.rsskills
+msgid "Skills Used"
+msgstr ""
+
+#: tl2statistic.rssteps
+msgid "Steps Taken"
+msgstr ""
+
+#: tl2statistic.rstotaltime
+msgid "Time Played"
+msgstr ""
+
+#: tl2statistic.rstransmuted
+msgid "Items Transmuted"
+msgstr ""
+
+#: tl2statistic.rstraps
+msgid "Traps Sprung"
+msgstr ""
+
+#: tl2statistic.rstreasures
+msgid "Lootables Looted"
+msgstr ""
+
+#: tl2statistic.rsunknownstat
+msgid "Unknown Stat"
 msgstr ""
 

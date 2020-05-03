@@ -325,7 +325,7 @@ end;
 
 function TTL2SaveFile.GetPetInfo(idx:integer):TTL2Character;
 begin
-  if (idx>=0) and (idx<Length(FKeyMapping)) then
+  if (idx>=0) and (idx<Length(FPetInfos)) then
     result:=FPetInfos[idx]
   else
     result:=nil;

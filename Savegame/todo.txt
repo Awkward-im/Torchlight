@@ -1,3 +1,85 @@
+HUM_WANDERER_BASE.DAT
+	[SKILL]
+		<STRING>NAME:CHARGE MASTERY
+		<INTEGER>LEVEL:0
+		<INTEGER>LEVEL_REQUIRED:7
+	[/SKILL]
+
+Replace = keep existing class or replace it?
+
+Prop:
+flags:
+  AllowHWSkinnning
+  Block
+  Collideable
+  LevelLighting
+  LocalOnly
+  NonSelectable
+  OccupiesNodes
+  RIMult
+  Shadows
+  Spawn_Treasure_overtime
+UNITTYPE:
+  <empty>
+  Breakable
+  Breakable complex
+  breakable trigger
+  container
+  fishing hole
+  fishing hole rare
+  gemshrine
+  intercatable
+  mapportal
+  mapselector
+  openable
+  shrine
+  statshrine
+  tempportal
+  townportal
+  waypointnode
+CreateAs:
+  <empty>
+  EQUIPMENT
+  BREAKABLE
+  TRIGGER
+  GOLD
+		
+		[FEMALE]
+			<INTEGER>ID:246
+		[PLAYERS_AND_PETS]
+			<INTEGER>ID:282 11A
+		[CHEST ARMOR]
+			<INTEGER>ID:15
+
+		[ITEM]
+			<INTEGER>ID:2
+
+
+MODIFYSIGHT = changes the sight distance of monsters activation. Pass 0 to reset.
+MODIFYMOTION = changes the motion distance of monsters activation. Pass 0 to reset.
+DOLLYMIN mindis = The min dolly distance for interaction.
+ALWAYSCRIT = Player always hits critically
+NOXP = Player doesn’t gain XP
+
+
+read data from stream/MEMORY to read it at runtime
+
+choosing skill mod, class, (common)
+--------------------
+common class (AddressOrigin, Dump)
+
+type
+  TL2BaseClass = class
+  private
+    FDataOffset:PByte;
+    FDataSize  :integer;
+
+  public
+    property Offset:PByte   read FDataOffset;
+    property Size  :integer read FDataSize;
+  end;
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 Extract pet,
 AddPet (check coords - players) OR move pet to town (1-2 sec)
 

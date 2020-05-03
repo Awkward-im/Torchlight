@@ -3,32 +3,41 @@ unit TL2Base;
 interface
 
 uses
-  Classes;
+  Classes,
+  tl2stream;
 
 type
   TL2BaseClass = class
-  private//  protected
+  private
     FData      :PByte;
     FDataOffset:PtrUInt;
     FDataSize  :integer;
 
-    FHaveSize  :boolean; // can be set to "false" at constructor
+    FKnownSize :boolean;
     FChanged   :boolean;
+
+    procedure SetDataSize(asize:integer);
+    procedure InternalClear;
 
   public
     destructor Destroy; override;
 
-    procedure Clear;
+    procedure Clear; virtual;
 
-    procedure SetSize    (AStream:TStream);
-    function  ToStream   (AStream:TStream):boolean;
-    procedure FromStream (AStream:TStream; aFrom:integer=-1);
-    function  ToFile    (const fname:string):boolean;
-    procedure FromFile  (const fname:string);
+    procedure FixSize(AStream:TStream);
+
+    procedure LoadFromFile(const fname:string);
+    procedure SaveToFile  (const fname:string);
+
+    procedure LoadBlock(AStream:TStream);
+    procedure SaveBlock(AStream:TStream);
+
+    procedure LoadFromStream(AStream:TTL2Stream); virtual; abstract;
+    procedure SaveToStream  (AStream:TTL2Stream); virtual; abstract;
     
     property Data      :PByte   read FData      ; // write FData;
-    property DataOffset:PtrUInt read FDataOffset; // write FDataOffset;
-    property DataSize  :integer read FDataSize  ; // write FDataSize;
+    property DataOffset:PtrUInt read FDataOffset write FDataOffset;
+    property DataSize  :integer read FDataSize   write SetDataSize;
 
     property Changed:boolean read FChanged write FChanged;
   end;
@@ -39,12 +48,17 @@ implementation
 
 destructor TL2BaseClass.Destroy;
 begin
-  Clear;
+  InternalClear;
 
   inherited;
 end;
 
 procedure TL2BaseClass.Clear;
+begin
+  InternalClear;
+end;
+
+procedure TL2BaseClass.InternalClear;
 begin
   if FData<>nil then
   begin
@@ -53,63 +67,44 @@ begin
   end;
 end;
 
-function TL2BaseClass.ToStream(AStream:TStream):boolean;
+procedure TL2BaseClass.SetDataSize(asize:integer);
+begin
+  FDataSize :=asize;
+  FKnownSize:=true;
+end;
+
+procedure TL2BaseClass.FixSize(AStream:TStream);
+var
+  lSize:integer;
+begin
+  lSize:=AStream.Position-FDataOffset;
+  if lSize<>FDataSize then
+  begin
+    FDataSize:=lSize;
+    AStream.Position:=FDataOffset-SizeOf(DWord);
+    AStream.WriteDWord(FDataSize);
+    AStream.Position:=AStream.Position+FDataSize;
+  end;
+end;
+
+procedure TL2BaseClass.SaveBlock(AStream:TStream);
 begin
   if FData<>nil then
   begin
-    if FHaveSize then
-      AStream.WriteDWord(FDataSize);
     AStream.Write(FData^,FDataSize);
   end;
-  result:=FData<>nil;
 end;
 
-function TL2BaseClass.ToFile(const fname:string):boolean;
-var
-  f:file of byte;
+procedure TL2BaseClass.LoadBlock(AStream:TStream);
 begin
-  if FData<>nil then
-  begin
-    AssignFile(f,fname);
-    Rewrite   (f);
-    BlockWrite(f,FData^,FDataSize);
-    CloseFile (f);
-  end;
-  result:=FData<>nil;
+  FDataSize:=AStream.Position-FDataOffset;
+  ReallocMem(FData ,FDataSize);
+  AStream.Position:=FDataOffset;
+  AStream.Read(FData^,FDataSize);
 end;
 
-procedure TL2BaseClass.FromStream(AStream:TStream; aFrom:integer=-1);
-begin
-  if aFrom<0 then
-  begin
-    FDataSize  :=AStream.ReadDWord();
-    FHaveSize  :=true;
-    FDataOffset:=AStream.Position;
-    ReallocMem  (FData ,FDataSize);
-    AStream.Read(FData^,FDataSize);
-    AStream.Position:=FDataOffset;
-  end
-  else
-  begin
-    FDataOffset:=aFrom;
-    FDataSize  :=AStream.Position-FDataOffset;
-    AStream.Position:=FDataOffset;
-    ReallocMem  (FData ,FDataSize);
-    AStream.Read(FData^,FDataSize);
-  end;
-//  FChanged:=false;
-  FChanged:=true;
-end;
 
-procedure TL2BaseClass.SetSize(AStream:TStream);
-begin
-  FDataSize:=AStream.Position-FDataOffset; // to work before and after FromStream
-  AStream.Position:=FDataOffset-SizeOf(DWord);
-  AStream.WriteDWord(FDataSize);
-  AStream.Position:=AStream.Position+FDataSize;
-end;
-
-procedure TL2BaseClass.FromFile(const fname:string);
+procedure TL2BaseClass.LoadFromFile(const fname:string);
 var
   f:file of byte;
 begin
@@ -123,9 +118,24 @@ begin
     FDataOffset:=0;
     ReallocMem(  FData ,FDataSize);
     BlockRead (f,FData^,FDataSize);
-    CloseFile(f);
+    CloseFile (f);
   end;
 {$POP}
+end;
+
+procedure TL2BaseClass.SaveToFile(const fname:string);
+var
+  f:file of byte;
+begin
+  if FData<>nil then
+  begin
+    AssignFile(f,fname);
+    Rewrite   (f);
+    if FKnownSize then
+      BlockWrite(f,FDataSize,SizeOf(DWord));
+    BlockWrite(f,FData^,FDataSize);
+    CloseFile (f);
+  end;
 end;
 
 end.

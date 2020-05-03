@@ -37,10 +37,10 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure Clear;
+    procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
+    procedure LoadFromStream(AStream: TTL2Stream); override;
+    procedure SaveToStream  (AStream: TTL2Stream); override;
 
   private
     FName :string;
@@ -160,13 +160,12 @@ end;
 
 procedure TTL2Map.LoadFromStream(AStream: TTL2Stream);
 var
-  lcnt,lcnt1:integer;
-  lOffs,i:integer;
+  i,lcnt,lcnt1:integer;
 begin
-  lOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
 
   //??
-  Unkn0:=Check(AStream.ReadDword,'map 0',0); // 0, 2, 1 - for repeated
+  Unkn0:=Check(AStream.ReadDword,'map 0_'+HexStr(AStream.Position,8),0); // 0, 2, 1 - for repeated
 
   FCurrentTime:=AStream.ReadFloat;
   FTime       :=AStream.ReadFloat;
@@ -186,7 +185,7 @@ begin
   FFoW  :=AStream.ReadBytes(FFoW_X*FFoW_Y*SizeOf(TL2Float));
 
   //??
-  Check(AStream.ReadDWord,'pre-layouts',0); // 0
+  Check(AStream.ReadDWord,'pre-layouts_'+HexStr(AStream.Position,8),0); // 0
 
   //----- Layout data -----
 
@@ -233,21 +232,22 @@ begin
   FLayoutList:=AStream.ReadShortStringList;
 
   //??
-  Check(AStream.ReadDWord,'map-end',0); // 0
+  Check(AStream.ReadDWord,'map-end_'+HexStr(AStream.Position,8),0); // 0
 
-  FromStream(AStream,lOffs);
+  LoadBlock(AStream);
 end;
 
 procedure TTL2Map.SaveToStream(AStream: TTL2Stream);
 var
-  lOffs,i:integer;
+  i:integer;
 begin
   if not Changed then
   begin
-    if ToStream(AStream) then exit;
+    SaveBlock(AStream);
+    exit;
   end;
 
-  lOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
   
   //??
   AStream.WriteDWord(Unkn0);
@@ -312,7 +312,7 @@ begin
   //??
   AStream.WriteDWord(0);
 
-  FromStream(AStream,lOffs);
+  LoadBlock(AStream);
 end;
 
 function ReadMapList(AStream:TTL2Stream):TTL2MapList;

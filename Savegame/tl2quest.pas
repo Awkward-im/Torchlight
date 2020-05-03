@@ -30,6 +30,8 @@ type
     d2  :TL2Integer;
     len :integer;
     data:PByte;
+
+    ofs :integer;
   end;
   TTL2QuestList = array of TTL2QuestData;
 
@@ -42,10 +44,10 @@ type
     constructor Create;
     destructor  Destroy; override;
 
-    procedure Clear;
+    procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream);
-    procedure SaveToStream  (AStream: TTL2Stream);
+    procedure LoadFromStream(AStream: TTL2Stream); override;
+    procedure SaveToStream  (AStream: TTL2Stream); override;
 
   private
     FQuestsDone  :TL2IdList;
@@ -118,7 +120,8 @@ var
   i,lcnt:integer;
   loffset:integer;
 begin
-  FromStream(AStream);
+  DataSize  :=AStream.ReadDWord;
+  DataOffset:=AStream.Position;
 
 {$IFDEF DEBUG}
 //  ToFile('quests.dmp');
@@ -137,6 +140,8 @@ begin
     loffset:=AStream.ReadDWord; // Offset to next quest from quests block start
     with FQuestsUnDone[i] do
     begin
+      ofs:=AStream.Position;
+
       id:=TL2ID(AStream.ReadQWord);
       q1:=TL2ID(Check(AStream.ReadQWord,'quest_8_'+HexStr(AStream.Position,8),QWord(TL2IdEmpty)));
       d1:=AStream.ReadDWord;
@@ -146,19 +151,23 @@ begin
       data:=AStream.ReadBytes(len);
     end;
   end;
+
+  LoadBlock(AStream);
 end;
 
 procedure TTL2Quest.SaveToStream(AStream: TTL2Stream);
 var
-  lOffs,i:integer;
+  i:integer;
 begin
+  AStream.WriteDWord(DataSize);
+
   if not Changed then
   begin
-    if ToStream(AStream) then exit;
+    SaveBlock(AStream);
+    exit;
   end;
 
-  AStream.WriteDWord(0); // reserve place for size
-  lOffs:=AStream.Position;
+  DataOffset:=AStream.Position;
 
   //--- Finished quests
 
@@ -172,7 +181,7 @@ begin
     with FQuestsUnDone[i] do
     begin
       AStream.WriteDWord(
-          (AStream.Position-lOffs+SizeOf(DWord))+
+          (AStream.Position-DataOffset+SizeOf(DWord))+
           len+SizeOf(QWord)*2+SizeOf(DWord)*2);
       AStream.WriteQWord(QWord(id));
       AStream.WriteQWord(QWord(q1));
@@ -184,8 +193,8 @@ begin
 
   //--- Update data size and internal buffer
 
-  FromStream(AStream,lOffs);
-  SetSize   (AStream);
+  LoadBlock(AStream);
+  FixSize  (AStream);
 end;
 
 (*

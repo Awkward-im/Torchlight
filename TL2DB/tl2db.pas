@@ -34,6 +34,9 @@ function GetTL2Class(const id:TL2ID                  ):string; overload;
 function GetTL2Pet  (const id:TL2ID; out amod:TL2ID  ):string; overload;
 function GetTL2Pet  (const id:TL2ID                  ):string; overload;
 
+function GetTL2Mobs (const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Mobs (const id:TL2ID                  ):string; overload;
+
 function GetTL2Mod  (const id:TL2ID; out aver:integer):string; overload;
 function GetTL2Mod  (const id:TL2ID                  ):string; overload;
 
@@ -292,6 +295,22 @@ var
   lmod:TL2ID;
 begin
   result:=GetTL2Pet(id,lmod);
+end;
+
+//----- Mob info -----
+
+function GetTL2Mobs(const id:TL2ID; out amod:TL2ID):string;
+var
+  lname:string;
+begin
+  result:=GetModAndTitle(id,'mobs','',amod,lname);
+end;
+
+function GetTL2Mobs(const id:TL2ID):string;
+var
+  lmod:TL2ID;
+begin
+  result:=GetTL2Mobs(id,lmod);
 end;
 
 //----- Mod info -----

@@ -492,7 +492,7 @@ begin
       inc(lline);
 
       pc:=peoln;
-      while not (peoln^ in [#0,#10,#13]) do inc(peoln);
+      while not (peoln^ in [#0{,#10},#13]) do inc(peoln);
       leof:=peoln^=#0;
       if not leof then
       begin

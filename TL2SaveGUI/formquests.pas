@@ -50,7 +50,7 @@ begin
       sgQuests.Cells[1,j]:='1';
       sgQuests.Cells[2,j]:=lname;
       sgQuests.Cells[3,j]:=GetTL2Mod(lmod);
-
+      sgQuests.Cells[4,j]:=HexStr(aSGame.Quests.QuestsDone[i],16);//IntToStr(aSGame.Quests.QuestsDone[i]);
       inc(j);
     end;
   end;
@@ -64,7 +64,7 @@ begin
       sgQuests.Cells[1,j]:='0';
       sgQuests.Cells[2,j]:=lname;
       sgQuests.Cells[3,j]:=GetTL2Mod(lmod);
-
+      sgQuests.Cells[4,j]:=HexStr(aSGame.Quests.QuestsUnDone[i].id,16);//IntToStr(aSGame.Quests.QuestsUnDone[i].id);
       inc(j);
     end;
   end;
