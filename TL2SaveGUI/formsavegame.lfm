@@ -124,12 +124,13 @@ object fmSaveFile: TfmSaveFile
       ShortCut = 32883
     end
     object actExport: TAction
-      Caption = ' Export'
+      Caption = 'Export'
       Enabled = False
       OnExecute = actExportExecute
     end
     object actImport: TAction
       Caption = 'Import'
+      Enabled = False
       OnExecute = actImportExecute
     end
   end

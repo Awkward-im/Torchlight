@@ -1,0 +1,125 @@
+object fmMap: TfmMap
+  Left = 494
+  Height = 462
+  Top = 171
+  Width = 722
+  Align = alClient
+  BorderStyle = bsNone
+  ClientHeight = 462
+  ClientWidth = 722
+  LCLVersion = '2.1.0.0'
+  object lblMatrix: TLabel
+    Left = 8
+    Height = 15
+    Top = 72
+    Width = 33
+    Caption = 'Matrix'
+    ParentColor = False
+  end
+  object lblMatrixValue: TLabel
+    Left = 79
+    Height = 15
+    Top = 72
+    Width = 80
+    AutoSize = False
+    ParentColor = False
+  end
+  object lbUnknList: TListBox
+    Left = 8
+    Height = 195
+    Top = 256
+    Width = 256
+    ItemHeight = 0
+    TabOrder = 2
+  end
+  object lbLayouts: TListBox
+    Left = 184
+    Height = 195
+    Top = 35
+    Width = 519
+    ItemHeight = 0
+    TabOrder = 0
+  end
+  object lblLayouts: TLabel
+    Left = 520
+    Height = 15
+    Top = 16
+    Width = 41
+    Caption = 'Layouts'
+    ParentColor = False
+  end
+  object lblUnknown: TLabel
+    Left = 8
+    Height = 15
+    Top = 32
+    Width = 51
+    Caption = 'Unknown'
+    ParentColor = False
+  end
+  object lblUnknownCount: TLabel
+    Left = 72
+    Height = 14
+    Top = 32
+    Width = 77
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblTriggers: TLabel
+    Left = 8
+    Height = 15
+    Top = 51
+    Width = 43
+    Caption = 'Triggers'
+    ParentColor = False
+  end
+  object lblTriggerCount: TLabel
+    Left = 72
+    Height = 15
+    Top = 51
+    Width = 84
+    AutoSize = False
+    ParentColor = False
+  end
+  object sgLayData: TStringGrid
+    Left = 272
+    Height = 203
+    Top = 248
+    Width = 435
+    ColCount = 3
+    Columns = <    
+      item
+        Title.Caption = 'Layout'
+        Width = 140
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Value'
+        Width = 48
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Unknown'
+        Width = 140
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goDblClickAutoSize, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 1
+  end
+  object lblName: TLabel
+    Left = 8
+    Height = 15
+    Top = 8
+    Width = 32
+    Caption = 'Name'
+    ParentColor = False
+  end
+  object lblMapName: TLabel
+    Left = 63
+    Height = 15
+    Top = 8
+    Width = 158
+    AutoSize = False
+    ParentColor = False
+  end
+end

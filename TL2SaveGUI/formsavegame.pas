@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
   Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
   formKeyBinding, formStatistic, formCommon, formSettings,
-  formPet, formChar, formStat;
+  formPet, formChar, formStat, formMap;
 
 type
 
@@ -53,6 +53,7 @@ type
     FQuests    :TfmQuests;
     FStatistic :TfmStatistic;
     FPets      :TfmPet;
+    FMaps      :TfmMap;
     FChar      :TfmChar;
     FStats     :TfmStat;
     
@@ -212,6 +213,7 @@ begin
   FQuests    :=TfmQuests    .Create(Self); FQuests    .Parent:=MainPanel;
   FStatistic :=TfmStatistic .Create(Self); FStatistic .Parent:=MainPanel;
   FPets      :=TfmPet       .Create(Self); FPets      .Parent:=MainPanel;
+  FMaps      :=TfmMap       .Create(Self); FMaps      .Parent:=MainPanel;
   FChar      :=TfmChar      .Create(Self); FChar      .Parent:=MainPanel;
   FStats     :=TfmStat      .Create(Self); FStats     .Parent:=MainPanel;
 
@@ -371,6 +373,7 @@ begin
   FCommon    .Visible:=false;
   FMovies    .Visible:=false;
   FPets      .Visible:=false;
+  FMaps      .Visible:=false;
   FRecipes   .Visible:=false;
   FKeyBinding.Visible:=false;
   FQuests    .Visible:=false;
@@ -425,7 +428,14 @@ begin
     end;
 
     idxMaps: begin
-//      .FillInfo(SGame);
+      case tvSaveGame.Selected.level of
+        2: lidx:=tvSaveGame.Selected.Index;
+        3: lidx:=tvSaveGame.Selected.Parent.Index;
+      else
+        lidx:=0;
+      end;
+      FMaps.FillInfo(SGame,lidx);
+      FMaps.Visible:=true;
     end;
 
     idxQuests: begin

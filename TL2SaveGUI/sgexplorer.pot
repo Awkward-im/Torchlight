@@ -146,6 +146,42 @@ msgctxt "tfmkeybinding.sgkeybinding.columns[3].title.caption"
 msgid "Mod"
 msgstr ""
 
+#: tfmmap.lbllayouts.caption
+msgid "Layouts"
+msgstr ""
+
+#: tfmmap.lblmatrix.caption
+msgid "Matrix"
+msgstr ""
+
+#: tfmmap.lblname.caption
+msgctxt "tfmmap.lblname.caption"
+msgid "Name"
+msgstr ""
+
+#: tfmmap.lbltriggers.caption
+msgid "Triggers"
+msgstr ""
+
+#: tfmmap.lblunknown.caption
+msgctxt "tfmmap.lblunknown.caption"
+msgid "Unknown"
+msgstr ""
+
+#: tfmmap.sglaydata.columns[0].title.caption
+msgid "Layout"
+msgstr ""
+
+#: tfmmap.sglaydata.columns[1].title.caption
+msgctxt "tfmmap.sglaydata.columns[1].title.caption"
+msgid "Value"
+msgstr ""
+
+#: tfmmap.sglaydata.columns[2].title.caption
+msgctxt "tfmmap.sglaydata.columns[2].title.caption"
+msgid "Unknown"
+msgstr ""
+
 #: tfmmovies.bbupdate.caption
 msgctxt "tfmmovies.bbupdate.caption"
 msgid "&Update"
@@ -593,6 +629,7 @@ msgid "Mobs-stat"
 msgstr ""
 
 #: tfmstat.tsunknown.caption
+msgctxt "tfmstat.tsunknown.caption"
 msgid "Unknown"
 msgstr ""
 

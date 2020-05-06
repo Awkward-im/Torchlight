@@ -70,7 +70,6 @@ end;
 
 procedure TfmMovies.FillInfo(aSGame:TTL2SaveFile);
 var
-  lmodid:TL2ID;
   lmax,i:integer;
   lmod,lname,ltitle,lpath:string;
 begin
@@ -83,11 +82,8 @@ begin
   begin
     for i:=0 to High(aSGame.Movies) do
     begin
-      ltitle:=GetTL2Movie(aSGame.Movies[i].id,lmodid,lmax,lname,lpath);
-      if lmodid<>TL2ID(-1) then
-        lmod:=GetTL2Mod(lmodid)
-      else
-        lmod:='';
+      ltitle:=GetTL2Movie(aSGame.Movies[i].id,lmod,lmax,lname,lpath);
+      lmod:=GetTL2Mod(lmod);
 
       sgMovies.Objects[0,i+1]:=TObject(i);
       sgMovies.Objects[1,i+1]:=TObject(lmax);

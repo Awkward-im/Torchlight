@@ -33,7 +33,7 @@ uses
 procedure TfmKeyBinding.FillInfo(aSGame:TTL2SaveFile);
 var
   i,j:integer;
-  lmod:TL2ID;
+  lmod:string;
 begin
   sgKeybinding.BeginUpdate;
   sgKeybinding.Clear;
@@ -64,7 +64,7 @@ begin
         else
           sgKeyBinding.Cells[2,j]:=GetTL2Skill(id,lmod);
           sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
-          if lmod<>TL2IdEmpty then
+          if lmod<>'' then
             sgKeyBinding.Cells[1,j]:='skill'
           else
             sgKeyBinding.Cells[1,j]:='['+inttostr(datatype)+']';

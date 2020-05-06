@@ -37,7 +37,7 @@ uses
 procedure TfmRecipes.FillInfo(aSGame:TTL2SaveFile);
 var
   i:integer;
-  lmod:TL2ID;
+  lmod:string;
 begin
   sgRecipes.BeginUpdate;
   sgRecipes.Clear;

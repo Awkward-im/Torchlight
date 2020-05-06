@@ -157,6 +157,46 @@ msgctxt "tfmkeybinding.sgkeybinding.columns[3].title.caption"
 msgid "Mod"
 msgstr "Мод"
 
+#: tfmmap.lbllayouts.caption
+msgid "Layouts"
+msgstr ""
+
+#: tfmmap.lblmatrix.caption
+msgid "Matrix"
+msgstr ""
+
+#: tfmmap.lblname.caption
+#, fuzzy
+msgctxt "tfmmap.lblname.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmmap.lbltriggers.caption
+msgid "Triggers"
+msgstr ""
+
+#: tfmmap.lblunknown.caption
+#, fuzzy
+msgctxt "tfmmap.lblunknown.caption"
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: tfmmap.sglaydata.columns[0].title.caption
+msgid "Layout"
+msgstr ""
+
+#: tfmmap.sglaydata.columns[1].title.caption
+#, fuzzy
+msgctxt "tfmmap.sglaydata.columns[1].title.caption"
+msgid "Value"
+msgstr "Значение"
+
+#: tfmmap.sglaydata.columns[2].title.caption
+#, fuzzy
+msgctxt "tfmmap.sglaydata.columns[2].title.caption"
+msgid "Unknown"
+msgstr "Неизвестно"
+
 #: tfmmovies.bbupdate.caption
 msgctxt "tfmmovies.bbupdate.caption"
 msgid "&Update"
@@ -346,6 +386,8 @@ msgid "Mod"
 msgstr "Мод"
 
 #: tfmsavefile.actexport.caption
+#, fuzzy
+#| msgid "Export"
 msgid "Export"
 msgstr "Экспорт"
 
@@ -423,9 +465,10 @@ msgid "Title"
 msgstr "Название"
 
 #: tfmstat.sgitems.columns[1].title.caption
+#, fuzzy
 msgctxt "tfmstat.sgitems.columns[1].title.caption"
 msgid "Field1"
-msgstr ""
+msgstr "Название"
 
 #: tfmstat.sgitems.columns[2].title.caption
 msgctxt "tfmstat.sgitems.columns[2].title.caption"
@@ -438,9 +481,10 @@ msgid "Field3"
 msgstr "Название"
 
 #: tfmstat.sgitems.columns[4].title.caption
+#, fuzzy
 msgctxt "tfmstat.sgitems.columns[4].title.caption"
 msgid "Field4"
-msgstr ""
+msgstr "Название"
 
 #: tfmstat.sgmobs.columns[0].title.caption
 msgctxt "tfmstat.sgmobs.columns[0].title.caption"
@@ -448,9 +492,10 @@ msgid "Title"
 msgstr "Название"
 
 #: tfmstat.sgmobs.columns[1].title.caption
+#, fuzzy
 msgctxt "tfmstat.sgmobs.columns[1].title.caption"
 msgid "Field1"
-msgstr ""
+msgstr "Название"
 
 #: tfmstat.sgmobs.columns[2].title.caption
 msgctxt "tfmstat.sgmobs.columns[2].title.caption"
@@ -498,9 +543,10 @@ msgid "Title"
 msgstr "Название"
 
 #: tfmstat.sgskills.columns[1].title.caption
+#, fuzzy
 msgctxt "tfmstat.sgskills.columns[1].title.caption"
 msgid "Field1"
-msgstr ""
+msgstr "Название"
 
 #: tfmstat.sgskills.columns[2].title.caption
 msgctxt "tfmstat.sgskills.columns[2].title.caption"
@@ -528,9 +574,10 @@ msgid "Field1"
 msgstr "Название"
 
 #: tfmstat.sgunknown.columns[1].title.caption
+#, fuzzy
 msgctxt "tfmstat.sgunknown.columns[1].title.caption"
 msgid "Field2"
-msgstr ""
+msgstr "Название"
 
 #: tfmstat.sgunknown.columns[2].title.caption
 msgctxt "tfmstat.sgunknown.columns[2].title.caption"
@@ -604,6 +651,7 @@ msgid "Mobs-stat"
 msgstr ""
 
 #: tfmstat.tsunknown.caption
+msgctxt "tfmstat.tsunknown.caption"
 msgid "Unknown"
 msgstr "Неизвестно"
 
@@ -844,3 +892,4 @@ msgstr "Сокровищ взято"
 #: tl2statistic.rsunknownstat
 msgid "Unknown Stat"
 msgstr "Неизвестноая статистика"
+

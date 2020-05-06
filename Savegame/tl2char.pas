@@ -155,6 +155,8 @@ type
 }
     property ModIds:TL2IdList read FModIds;
   end;
+type
+  TTL2CharArray = array of TTL2Character;
 
 function ReadCharData(AStream:TTL2Stream):TTL2Character;
 
@@ -265,8 +267,8 @@ begin
 
   FCharacterName :=AStream.ReadShortString(); // :55(pet) Char name
   FCharacterTitle:=AStream.ReadShortString(); // like mob title "(Teleporting)"
-  if not isPet then
-    FPlayer:=AStream.ReadShortString();      // "PLAYER" !!!!! not exists for pets!!!!!!
+  if not isPet then                           // maybe this is "PLAYERMAPICONS" from GLOBALS.DAT?
+    FPlayer:=AStream.ReadShortString();       // "PLAYER" !!!!! not exists for pets!!!!!!
   //??
   FUnkn9:=AStream.ReadQWord;
 {

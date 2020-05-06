@@ -13,6 +13,8 @@ uses
   tl2common;
 
 type
+  TTL2Binary = array of array of byte;
+type
   TTL2Map     = class;
   TTL2MapList = array of TTL2Map;
 
@@ -22,7 +24,7 @@ type
 
 type
   TTL2LayData = packed record
-    id   : TL2ID;
+    id   : TL2ID;       // example: Unit Trigger in MEDIA\LAYOUTS\ACT1\1X1_CLIFF_S0E1W1_LANDMARK_BANDITCAMP\1X1_CLIFF_S0E1W1_PB_LANDMARK_BANDITCAMP.LAYOUT
     value: TL2Integer;
     unkn : TL2ID; //??
   end;
@@ -44,7 +46,7 @@ type
 
   private
     FName :string;
-    FMobInfos:array of TTL2Character;
+    FMobInfos:TTL2CharArray;
 
     FTime,               // total time on location?
     FCurrentTime:Single; // current time on location?
@@ -62,10 +64,28 @@ type
     FPropList  : TTL2ItemList;
     FLayData   : TTL2LayDataList;
 
-    FUnknown1  : array of array of byte;
+    FUnknown1  : TTL2Binary;
 
     procedure ReadPropList (AStream: TTL2Stream);
     procedure WritePropList(AStream: TTL2Stream);
+
+  public
+    property Time       : Single read FTime;
+    property CurrentTime: Single read FCurrentTime;
+
+    property FoW_X: integer read FFoW_X;
+    property FoW_Y: integer read FFoW_Y;
+    property FoW  : PByte   read FFoW;
+    property Name : string  read FName;
+
+    property MobInfos  : TTL2CharArray   read FMobInfos;
+    property UnknList  : TL2IdList       read FUnknList;
+    property LayoutList: TL2StringList   read FLayoutList;
+    property Triggers  : TTL2TriggerList read FTriggers;
+    property PropList  : TTL2ItemList    read FPropList;
+    property LayData   : TTL2LayDataList read FLayData;
+
+    property Unknown   : TTL2Binary read FUnknown1;
   end;
 
 function  ReadMapList (AStream:TTL2Stream):TTL2MapList;

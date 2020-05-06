@@ -5,41 +5,40 @@ interface
 uses
   tl2types;
 
-function GetTL2Skill(const id:TL2ID; out amod:string; out atype:integer):string; overload;
-function GetTL2Skill(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Skill(const id:TL2ID                   ):string; overload;
+function GetTL2Skill(const id:TL2ID; out aclass:TL2ID; out atype:integer):string; overload;
+function GetTL2Skill(const id:TL2ID; out aclass:TL2ID):string; overload;
+function GetTL2Skill(const id:TL2ID                  ):string; overload;
 
 // can be nice to add list of modids for filtering
-function GetTL2Movie(const id   :TL2ID ; out amod :string; out aviews:integer;
+function GetTL2Movie(const id   :TL2ID ; out amod :TL2ID; out aviews:integer;
                      out   aname:string; out apath:string):string; overload;
-function GetTL2Movie(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Movie(const id:TL2ID                   ):string; overload;
+function GetTL2Movie(const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Movie(const id:TL2ID                  ):string; overload;
 
-function GetTL2Quest(const id:TL2ID; out amod:string; out aname:string):string; overload;
-function GetTL2Quest(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Quest(const id:TL2ID                   ):string; overload;
+function GetTL2Quest(const id:TL2ID; out amod:TL2ID; out aname:string):string; overload;
+function GetTL2Quest(const id:TL2ID; out amod:TL2ID):string; overload;
+function GetTL2Quest(const id:TL2ID                ):string; overload;
 
-function GetTL2Recipes(const id:TL2ID; out amod:string):string; overload;
-function GetTL2Recipes(const id:TL2ID                 ):string; overload;
+function GetTL2Recipes(const id:TL2ID; out amod:TL2ID):string; overload;
+function GetTL2Recipes(const id:TL2ID                ):string; overload;
 
-function GetTL2Stat (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Stat (const id:TL2ID                   ):string; overload;
+function GetTL2Stat (const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Stat (const id:TL2ID                  ):string; overload;
 
-function GetTL2Item (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Item (const id:TL2ID                   ):string; overload;
+function GetTL2Item (const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Item (const id:TL2ID                  ):string; overload;
 
-function GetTL2Class(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Class(const id:TL2ID                   ):string; overload;
+function GetTL2Class(const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Class(const id:TL2ID                  ):string; overload;
 
-function GetTL2Pet  (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Pet  (const id:TL2ID                   ):string; overload;
+function GetTL2Pet  (const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Pet  (const id:TL2ID                  ):string; overload;
 
-function GetTL2Mobs (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Mobs (const id:TL2ID                   ):string; overload;
+function GetTL2Mobs (const id:TL2ID; out amod:TL2ID  ):string; overload;
+function GetTL2Mobs (const id:TL2ID                  ):string; overload;
 
-function GetTL2Mod  (const id:TL2ID; out aver:integer ):string; overload;
-function GetTL2Mod  (const id:TL2ID                   ):string; overload;
-function GetTL2Mod  (const id:string                  ):string; overload;
+function GetTL2Mod  (const id:TL2ID; out aver:integer):string; overload;
+function GetTL2Mod  (const id:TL2ID                  ):string; overload;
 
 function GetTL2KeyType(acode:integer):string;
 
@@ -60,7 +59,7 @@ var
   filter:string;
 
 const
-  TL2DataBase = 'tl2db2.db';
+  TL2DataBase = 'tl2db.db';
 
 resourcestring
   rsSet = 'Set';
@@ -93,13 +92,12 @@ resourcestring
 //-------------------
 
 function GetModAndTitle(const id:TL2ID; const abase:string; const awhere:string;
-                        out amod:string; out aname:string):string;
+                        out amod:TL2ID; out aname:string):string;
 var
   aSQL,lwhere:string;
   vm:pointer;
 begin
-  amod  :='';
-  aname :='';
+  amod  :=-1;
   result:=HexStr(id,16);
 
   if db<>nil then
@@ -115,8 +113,8 @@ begin
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
       begin
-        result:=sqlite3_column_text(vm,0);
-        amod  :=sqlite3_column_text(vm,1);
+        result:=sqlite3_column_text (vm,0);
+        amod  :=sqlite3_column_int64(vm,1);
         aname :=sqlite3_column_text(vm,2);
         if result='' then
           result:=aname;
@@ -128,17 +126,17 @@ end;
 
 //----- Movie Info -----
 
-function GetTL2Movie(const id   :TL2ID ; out amod :string; out aviews:integer;
+function GetTL2Movie(const id   :TL2ID ; out amod :TL2ID; out aviews:integer;
                      out   aname:string; out apath:string ):string;
 var
   aSQL:string;
   vm:pointer;
 begin
-  amod  :='';
+  amod  :=-1;
   result:=HexStr(id,16);
   aviews:=1;
-  aname :='';
-  apath :='';
+  aname:='';
+  apath:='';
 
   if db<>nil then
   begin
@@ -150,7 +148,7 @@ begin
       if sqlite3_step(vm)=SQLITE_ROW then
       begin
         result:=sqlite3_column_text (vm,0);
-        amod  :=sqlite3_column_text (vm,1);
+        amod  :=sqlite3_column_int64(vm,1);
         aviews:=sqlite3_column_int64(vm,2);
         aname :=sqlite3_column_text (vm,3);
         apath :=sqlite3_column_text (vm,4);
@@ -160,7 +158,7 @@ begin
   end;
 end;
 
-function GetTL2Movie(const id:TL2ID; out amod:string):string; overload;
+function GetTL2Movie(const id:TL2ID; out amod:TL2ID):string; overload;
 var
   lname:string;
 begin
@@ -169,19 +167,19 @@ end;
 
 function GetTL2Movie(const id:TL2ID):string; overload;
 var
-  lmodid:string;
+  lmodid:TL2ID;
 begin
   result:=GetTL2Movie(id,lmodid);
 end;
 
 //----- Quests -----
 
-function GetTL2Quest(const id:TL2ID; out amod:string; out aname:string):string;
+function GetTL2Quest(const id:TL2ID; out amod:TL2ID; out aname:string):string;
 begin
   result:=GetModAndTitle(id,'quests','',amod,aname);
 end;
 
-function GetTL2Quest(const id:TL2ID; out amod:string):string;
+function GetTL2Quest(const id:TL2ID; out amod:TL2ID):string;
 var
   lname:string;
 begin
@@ -190,14 +188,14 @@ end;
 
 function GetTL2Quest(const id:TL2ID):string;
 var
-  lmodid:string;
+  lmodid:TL2ID;
 begin
   result:=GetTL2Quest(id,lmodid);
 end;
 
 //----- Recipes -----
 
-function GetTL2Recipes(const id:TL2ID; out amod:string):string; overload;
+function GetTL2Recipes(const id:TL2ID; out amod:TL2ID):string; overload;
 var
   lname:string;
 begin
@@ -206,39 +204,38 @@ end;
 
 function GetTL2Recipes(const id:TL2ID):string; overload;
 var
-  lmodid:string;
+  lmodid:TL2ID;
 begin
   result:=GetTL2Recipes(id,lmodid);
 end;
 
 //----- Skill info -----
 
-function GetTL2Skill(const id:TL2ID; out amod:string; out atype:integer):string;
+function GetTL2Skill(const id:TL2ID; out aclass:TL2ID; out atype:integer):string;
 begin
-  amod  :='';
+  aclass:=-1;
   atype :=-1;
   result:=HexStr(id,16);
 end;
 
-function GetTL2Skill(const id:TL2ID; out amod:string):string;
+function GetTL2Skill(const id:TL2ID; out aclass:TL2ID):string;
 var
   ltype:integer;
 begin
-  result:=GetTL2Skill(id,amod,ltype);
+  result:=GetTL2Skill(id,aclass,ltype);
 end;
 
 function GetTL2Skill(const id:TL2ID):string;
 var
   lclass:TL2ID;
-  lmod  :string;
   ltype :integer;
 begin
-  result:=GetTL2Skill(id,lmod,ltype);
+  result:=GetTL2Skill(id,lclass,ltype);
 end;
 
 //----- Stat info -----
 
-function GetTL2Stat(const id:TL2ID; out amod:string):string;
+function GetTL2Stat(const id:TL2ID; out amod:TL2ID):string;
 var
   lname:string;
 begin
@@ -247,14 +244,14 @@ end;
 
 function GetTL2Stat(const id:TL2ID):string;
 var
-  lmod:string;
+  lmod:TL2ID;
 begin
   result:=GetTL2Stat(id,lmod);
 end;
 
 //----- Item info -----
 
-function GetTL2Item(const id:TL2ID; out amod:string):string;
+function GetTL2Item(const id:TL2ID; out amod:TL2ID):string;
 var
   lname:string;
 begin
@@ -263,14 +260,14 @@ end;
 
 function GetTL2Item(const id:TL2ID):string;
 var
-  lmod:string;
+  lmod:TL2ID;
 begin
   result:=GetTL2Item(id,lmod);
 end;
 
 //----- Class info -----
 
-function GetTL2Class(const id:TL2ID; out amod:string):string;
+function GetTL2Class(const id:TL2ID; out amod:TL2ID):string;
 var
   lname:string;
 begin
@@ -279,14 +276,14 @@ end;
 
 function GetTL2Class(const id:TL2ID):string;
 var
-  lmod:string;
+  lmod:TL2ID;
 begin
   result:=GetTL2Class(id,lmod);
 end;
 
 //----- Pet info -----
 
-function GetTL2Pet(const id:TL2ID; out amod:string):string;
+function GetTL2Pet(const id:TL2ID; out amod:TL2ID):string;
 var
   lname:string;
 begin
@@ -295,14 +292,14 @@ end;
 
 function GetTL2Pet(const id:TL2ID):string;
 var
-  lmod:string;
+  lmod:TL2ID;
 begin
   result:=GetTL2Pet(id,lmod);
 end;
 
 //----- Mob info -----
 
-function GetTL2Mobs(const id:TL2ID; out amod:string):string;
+function GetTL2Mobs(const id:TL2ID; out amod:TL2ID):string;
 var
   lname:string;
 begin
@@ -311,7 +308,7 @@ end;
 
 function GetTL2Mobs(const id:TL2ID):string;
 var
-  lmod:string;
+  lmod:TL2ID;
 begin
   result:=GetTL2Mobs(id,lmod);
 end;
@@ -351,28 +348,6 @@ var
   lver:integer;
 begin
   result:=GetTL2Mod(id,lver);
-end;
-
-function GetTL2Mod(const id:string):string;
-var
-  ls:string;
-  lid:TL2ID;
-  lpos:integer;
-begin
-  ls:=id;
-  if ls='' then
-    lid:=0
-  else
-  begin
-    if ls[1]=' ' then ls:=Copy(ls,1);
-    if ls[Length(ls)]=' ' then SetLength(ls,High(ls));
-    lpos:=pos(' ',ls);
-    if lpos=0 then
-      Val(ls,lid)
-    else
-      Val(Copy(ls,1,lpos-1),lid);
-  end;
-  result:=GetTL2Mod(lid);
 end;
 
 //===== Key binding =====

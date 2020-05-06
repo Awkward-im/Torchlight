@@ -1,4 +1,4 @@
-program savegame;
+program sgexplorer;
 
 {$mode objfpc}{$H+}
 

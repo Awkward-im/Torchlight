@@ -34,7 +34,7 @@ procedure TfmQuests.FillInfo(aSGame:TTL2SaveFile);
 var
   lname:string;
   i,j:integer;
-  lmod:TL2ID;
+  lmod:string;
 begin
   sgQuests.BeginUpdate;
   sgQuests.Clear;

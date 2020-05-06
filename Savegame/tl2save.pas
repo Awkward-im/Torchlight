@@ -72,7 +72,7 @@ type
     FUnkn3Size :integer;
     
     FCharInfo:TTL2Character;
-    FPetInfos:array of TTL2Character;
+    FPetInfos:TTL2CharArray;
 
     FClassString :string;
     FDifficulty  :TTL2Difficulty;

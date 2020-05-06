@@ -5,7 +5,7 @@
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="savegame"/>
+      <Title Value="sgexplorer"/>
       <Scaled Value="True"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
@@ -23,7 +23,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="savegame"/>
+            <Filename Value="sgexplorer"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
@@ -64,7 +64,7 @@
     </RequiredPackages>
     <Units>
       <Unit>
-        <Filename Value="savegame.lpr"/>
+        <Filename Value="sgexplorer.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
@@ -224,13 +224,21 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formStat"/>
       </Unit>
+      <Unit>
+        <Filename Value="formmap.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmMap"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formMap"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="savegame"/>
+      <Filename Value="sgexplorer"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
