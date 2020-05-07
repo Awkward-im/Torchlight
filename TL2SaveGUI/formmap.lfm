@@ -11,56 +11,49 @@ object fmMap: TfmMap
   object lblMatrix: TLabel
     Left = 8
     Height = 15
-    Top = 72
+    Top = 27
     Width = 33
     Caption = 'Matrix'
     ParentColor = False
   end
   object lblMatrixValue: TLabel
-    Left = 79
+    Left = 100
     Height = 15
-    Top = 72
+    Top = 27
     Width = 80
+    Alignment = taCenter
     AutoSize = False
     ParentColor = False
   end
   object lbUnknList: TListBox
     Left = 8
-    Height = 195
-    Top = 256
+    Height = 203
+    Top = 248
     Width = 256
     ItemHeight = 0
-    TabOrder = 2
-  end
-  object lbLayouts: TListBox
-    Left = 184
-    Height = 195
-    Top = 35
-    Width = 519
-    ItemHeight = 0
-    TabOrder = 0
+    TabOrder = 1
   end
   object lblLayouts: TLabel
-    Left = 520
+    Left = 640
     Height = 15
-    Top = 16
+    Top = 8
     Width = 41
     Caption = 'Layouts'
     ParentColor = False
   end
-  object lblUnknown: TLabel
+  object lblQuestItem: TLabel
     Left = 8
     Height = 15
-    Top = 32
-    Width = 51
-    Caption = 'Unknown'
+    Top = 78
+    Width = 63
+    Caption = 'Quest items'
     ParentColor = False
   end
-  object lblUnknownCount: TLabel
-    Left = 72
-    Height = 14
-    Top = 32
-    Width = 77
+  object lblQItemCount: TLabel
+    Left = 100
+    Height = 15
+    Top = 78
+    Width = 50
     AutoSize = False
     ParentColor = False
   end
@@ -73,10 +66,10 @@ object fmMap: TfmMap
     ParentColor = False
   end
   object lblTriggerCount: TLabel
-    Left = 72
+    Left = 100
     Height = 15
     Top = 51
-    Width = 84
+    Width = 50
     AutoSize = False
     ParentColor = False
   end
@@ -84,12 +77,12 @@ object fmMap: TfmMap
     Left = 272
     Height = 203
     Top = 248
-    Width = 435
+    Width = 436
     ColCount = 3
     Columns = <    
       item
-        Title.Caption = 'Layout'
-        Width = 140
+        Title.Caption = 'Layout''s part'
+        Width = 150
       end    
       item
         SizePriority = 0
@@ -99,12 +92,12 @@ object fmMap: TfmMap
       item
         SizePriority = 0
         Title.Caption = 'Unknown'
-        Width = 140
+        Width = 150
       end>
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goDblClickAutoSize, goSmoothScroll]
     RowCount = 1
-    TabOrder = 1
+    TabOrder = 0
   end
   object lblName: TLabel
     Left = 8
@@ -121,5 +114,76 @@ object fmMap: TfmMap
     Width = 158
     AutoSize = False
     ParentColor = False
+  end
+  object btnQItemExport: TButton
+    Left = 157
+    Height = 20
+    Top = 75
+    Width = 23
+    Caption = 'E'
+    OnClick = btnQItemExportClick
+    TabOrder = 2
+  end
+  object btnTriggerExport: TButton
+    Left = 157
+    Height = 20
+    Top = 51
+    Width = 23
+    Caption = 'E'
+    OnClick = btnTriggerExportClick
+    TabOrder = 3
+  end
+  object lblTotalTime: TLabel
+    Left = 8
+    Height = 15
+    Top = 112
+    Width = 62
+    Caption = 'Total Time?'
+    ParentColor = False
+  end
+  object lblTTimeValue: TLabel
+    Left = 100
+    Height = 15
+    Top = 112
+    Width = 80
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblCurrentTime: TLabel
+    Left = 8
+    Height = 15
+    Top = 136
+    Width = 75
+    Caption = 'Current Time?'
+    ParentColor = False
+  end
+  object lblCTimeValue: TLabel
+    Left = 100
+    Height = 15
+    Top = 136
+    Width = 80
+    AutoSize = False
+    ParentColor = False
+  end
+  object sgLayouts: TStringGrid
+    Left = 186
+    Height = 203
+    Top = 27
+    Width = 522
+    Anchors = [akTop, akLeft, akRight]
+    ColCount = 1
+    Columns = <    
+      item
+        ReadOnly = True
+        Title.Caption = 'Title'
+      end>
+    FixedCols = 0
+    FixedRows = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+    RowCount = 0
+    TabOrder = 4
+    ColWidths = (
+      64
+    )
   end
 end

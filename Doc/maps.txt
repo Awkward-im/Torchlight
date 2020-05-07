@@ -33,9 +33,9 @@ x bytes - list of Props:
   x bytes - Prop data. Can be read as Items
 
 4 bytes - (integer) list count
-x bytes - Unknown data. Sorry!
+x bytes - list of Quest items
   4 bytes - (integer) size in bytes
-  x bytes - unknown
+  x bytes - quest item data
 
 4 bytes - (integer) list count
 x bytes - Triggers etc. Each element is 136 bytes length

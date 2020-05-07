@@ -389,7 +389,7 @@ end;
 
 //----- Items -----
 
-function AddItemToBase(const anid,aname,atitle,adescr,auses:string):boolean;
+function AddItemToBase(const anid,aname,atitle,adescr,auses,aquest:string):boolean;
 var
   lSQL:string;
   vm:pointer;
@@ -397,8 +397,9 @@ begin
   result:=CheckForMod('items', anid, smodid);
   if not result then
   begin
-    lSQL:='INSERT INTO items (id, name, title, descr, uses, modid) VALUES ('+
-        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+', '+auses+', '' '+smodid+' '')';
+    lSQL:='INSERT INTO items (id, name, title, descr, uses, quest, modid) VALUES ('+
+        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+
+        ', '+auses+', '+aquest+', '' '+smodid+' '')';
 //writeln(lsql);
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
@@ -413,12 +414,13 @@ end;
 procedure AddItem(fname:PChar);
 var
   p:PTL2Node;
-  ldescr,lid,lname,ltitle,luses:string;
+  ldescr,lid,lname,ltitle,luses,lquest:string;
   i:integer;
 begin
   p:=ParseDatFile(fname);
   ltitle:='';
   luses:='0';
+  if Pos('MEDIA\UNITS\ITEMS\QUEST_ITEMS\',fname)>0 then lquest:='1' else lquest:='0';
   for i:=0 to p^.childcount-1 do
   begin
     if CompareWide(p^.children^[i].name,'NAME') then
@@ -437,12 +439,18 @@ begin
     begin
       lid:=p^.children^[i].asString;
     end
+    else if (lquest='0') and CompareWide(p^.children^[i].name,'UNITTYPE') then
+    begin
+      if CompareWide(p^.children^[i].asString,'LEVEL ITEM') or 
+         CompareWide(p^.children^[i].asString,'QUESTITEM') then
+           lquest:='1';
+    end
     else if CompareWide(p^.children^[i].name,'USES') then
     begin
       luses:=p^.children^[i].asString;
     end;
   end;
-  if not AddItemToBase(lid,lname,ltitle,ldescr,luses) then
+  if not AddItemToBase(lid,lname,ltitle,ldescr,luses,lquest) then
     writeln('can''t update ',fname);
   DeleteNode(p);
 end;

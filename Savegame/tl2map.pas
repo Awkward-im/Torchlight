@@ -13,8 +13,6 @@ uses
   tl2common;
 
 type
-  TTL2Binary = array of array of byte;
-type
   TTL2Map     = class;
   TTL2MapList = array of TTL2Map;
 
@@ -62,12 +60,13 @@ type
     FLayoutList: TL2StringList;
     FTriggers  : TTL2TriggerList;
     FPropList  : TTL2ItemList;
+    FQuestItems: TTL2ItemList;
     FLayData   : TTL2LayDataList;
 
-    FUnknown1  : TTL2Binary;
-
-    procedure ReadPropList (AStream: TTL2Stream);
-    procedure WritePropList(AStream: TTL2Stream);
+    procedure ReadPropList   (AStream: TTL2Stream);
+    procedure WritePropList  (AStream: TTL2Stream);
+    procedure ReadQuestItems (AStream: TTL2Stream);
+    procedure WriteQuestItems(AStream: TTL2Stream);
 
   public
     property Time       : Single read FTime;
@@ -83,9 +82,8 @@ type
     property LayoutList: TL2StringList   read FLayoutList;
     property Triggers  : TTL2TriggerList read FTriggers;
     property PropList  : TTL2ItemList    read FPropList;
+    property QuestItems: TTL2ItemList    read FQuestItems;
     property LayData   : TTL2LayDataList read FLayData;
-
-    property Unknown   : TTL2Binary read FUnknown1;
   end;
 
 function  ReadMapList (AStream:TTL2Stream):TTL2MapList;
@@ -124,9 +122,9 @@ begin
     FPropList[i].Free;
   SetLength(FPropList,0);
 
-  for i:=0 to High(FUnknown1) do
-    SetLength(FUnknown1[i],0);
-  SetLength(FUnknown1,0);
+  for i:=0 to High(FQuestItems) do
+    FQuestItems[i].Free;
+  SetLength(FQuestItems,0);
 
   SetLength(FTriggers,0);
 
@@ -178,6 +176,44 @@ begin
   end;
 end;
 
+procedure TTL2Map.ReadQuestItems(AStream: TTL2Stream);
+var
+  i,lcnt,lcnt1,lpos:integer;
+begin
+  lcnt:=AStream.ReadDWord;
+  SetLength(FQuestItems,lcnt);
+
+  for i:=0 to lcnt-1 do
+  begin
+    lcnt1:=AStream.ReadDWord(); // size
+    lpos:=AStream.Position;
+    FQuestItems[i]:=TTL2Item.Create;
+    try
+      FQuestItems[i].LoadFromStream(AStream);
+    except
+      if IsConsole then writeln('quest item exception ',i,' at ',HexStr(lpos,8));
+      AStream.Position:=lpos+lcnt1;
+    end;
+
+    if FQuestItems[i].DataSize<>lcnt1 then
+      if IsConsole then writeln('predefined size ',lcnt1,
+         ' is not as real ',FQuestItems[i].DataSize,
+         ' at ',HexStr(lpos,8));
+  end;
+end;
+
+procedure TTL2Map.WriteQuestItems(AStream: TTL2Stream);
+var
+  i:integer;
+begin
+  AStream.WriteDWord(Length(FQuestItems));
+  for i:=0 to High(FQuestItems) do
+  begin
+    AStream.WriteDWord(FQuestItems[i].DataSize);
+    FQuestItems[i].SaveToStream(AStream);
+  end;
+end;
+
 procedure TTL2Map.LoadFromStream(AStream: TTL2Stream);
 var
   i,lcnt,lcnt1:integer;
@@ -226,19 +262,12 @@ begin
   end;
 
   //----- Props (Items) -----
-  //!! Check on same as items
+
   ReadPropList(AStream);
 
-  //----- !! -----
+  //----- Quest items -----
 
-  lcnt:=AStream.ReadDWord;
-  SetLength(FUnknown1,lcnt);
-  for i:=0 to lcnt-1 do
-  begin
-    lcnt1:=AStream.ReadDWord;
-    SetLength   (FUnknown1[i]   ,lcnt1);
-    AStream.Read(FUnknown1[i][0],lcnt1);
-  end;
+  ReadQuestItems(AStream);
 
   //----- Triggers and other -----
 
@@ -310,14 +339,9 @@ begin
   //!! Check on same as items
   WritePropList(AStream);
 
-  //----- !! -----
+  //----- Quest items -----
 
-  AStream.WriteDWord(Length(FUnknown1));
-  for i:=0 to High(FUnknown1) do
-  begin
-    AStream.WriteDWord(Length(FUnknown1[i]));
-    AStream.Write(FUnknown1[i][0],Length(FUnknown1[i]));
-  end;
+  WriteQuestItems(AStream);
 
   //----- Triggers and other -----
 

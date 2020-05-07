@@ -102,6 +102,7 @@ resourcestring
   rsItems  = 'Items';
   rsUnits  = 'Units';
   rsProps  = 'Props';
+  rsQItem  = 'Quest items';
 
 const
   DefaultExt = '.dmp';
@@ -190,6 +191,8 @@ begin
       lSubNode.Data:=pointer(SGame.Maps[i]);
       tvSaveGame.Items.AddChild(lSubNode,rsUnits);
       tvSaveGame.Items.AddChild(lSubNode,rsProps);
+      if Length(SGame.Maps[i].QuestItems)>0 then
+        tvSaveGame.Items.AddChild(lSubNode,rsQItem);
     end;
   end;
   tvSaveGame.Items[idxSavegame].Visible:=true;
