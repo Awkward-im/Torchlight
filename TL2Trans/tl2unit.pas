@@ -86,9 +86,10 @@ type
     procedure TL2ShellTreeViewKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
-    function CanClosePage(idx: integer): boolean;
+    function CanClosePage(idx: integer;out s:String): boolean;
     procedure CreateSettingsTab;
     procedure NewTab(const aname: AnsiString);
+    procedure OpenProject(const fname:string; silent:boolean=false);
 
     procedure SetTabCaption(const anAction:AnsiString);
     procedure UpdateStatusBar(Sender:TObject; const SBText:AnsiString='');
@@ -161,6 +162,7 @@ procedure TMainTL2TransForm.TL2PageControlMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   p: TPOINT;
+  ls:string;
   i: Integer;
 begin
   if Button = mbMiddle then
@@ -170,7 +172,7 @@ begin
 //    p:=TL2PageControl.ScreenToClient(p);
     i:=TL2PageControl.IndexOfPageAt(p);
     if i = -1 then exit;
-    CanClosePage(i);
+    CanClosePage(i,ls);
   end;
 end;
 
@@ -253,9 +255,20 @@ begin
 end;
 
 procedure TMainTL2TransForm.FormCreate(Sender: TObject);
+var
+  lsl:TStringList;
+  i:integer;
 begin
   CreateSettingsTab;
   Self.Font.Assign(TL2DM.TL2Font);
+  if TL2Settings.cbReopenProjects.Checked then
+  begin
+    lsl:=TStringList.Create;
+    TL2Settings.LoadTabs(lsl);
+    for i:=0 to lsl.Count-1 do
+      OpenProject(lsl[i],true);
+    lsl.Free;
+  end;
 end;
 
 procedure TMainTL2TransForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -318,7 +331,7 @@ begin
   inherited;
 end;
 
-function TMainTL2TransForm.CanClosePage(idx:integer):boolean;
+function TMainTL2TransForm.CanClosePage(idx:integer; out s:string):boolean;
 var
   ltab:TTabSheet;
   lprj:TTL2Project;
@@ -341,6 +354,7 @@ begin
         break;
       end;
   result:=true;
+  s:=lprj.FileName;
 
   TL2PageControl.ActivePageIndex:=idx-1;
   ltab:=TL2PageControl.Pages[idx];
@@ -350,11 +364,29 @@ end;
 
 procedure TMainTL2TransForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
+  lsl:TStringList;
+  ls:String;
   i:integer;
 begin
   CanClose:=true;
+  if TL2Settings.cbReopenProjects.Checked then
+  begin
+    lsl:=TStringList.Create;
+    for i:=1 to TL2PageControl.PageCount-1 do
+      lsl.Add('');
+  end;
+
   for i:=TL2PageControl.PageCount-1 downto 1 do
-    CanClose:=CanClose and CanClosePage(i);
+  begin
+    ls:='';
+    CanClose:=CanClose and CanClosePage(i,ls);
+    if ls<>'' then lsl[i-1]:=ls;
+  end;
+  if TL2Settings.cbReopenProjects.Checked then
+  begin
+    if CanClose then TL2Settings.SaveTabs(lsl);
+    lsl.Free;
+  end;
 end;
 
 //----- Tree view -----
@@ -373,7 +405,7 @@ end;
 
 procedure TMainTL2TransForm.TL2ShellTreeViewDblClick(Sender: TObject);
 var
-  lname:AnsiString;
+  ls,lname:AnsiString;
 begin
   if MessageDlg(sDoTheScan,sDoProcessScan,mtConfirmation,[mbOk,mbCancel],0)=mrOk then
   begin
@@ -388,7 +420,7 @@ begin
     SetTABCaption(sScanning);
     if not ActiveProject.New(TL2ShellTreeView.Path,
         rbScanText.Checked,not cbScanCurDir.Checked) then
-    CanClosePage(TL2PageControl.ActivePageIndex);
+    CanClosePage(TL2PageControl.ActivePageIndex,ls);
   end;
 end;
 
@@ -403,9 +435,11 @@ end;
 //----- Actions -----
 
 procedure TMainTL2TransForm.ClosePageExecute(Sender: TObject);
+var
+  ls:string;
 begin
   if TL2PageControl.PageIndex>0 then
-    CanClosePage(TL2PageControl.PageIndex);
+    CanClosePage(TL2PageControl.PageIndex,ls);
 end;
 
 procedure TMainTL2TransForm.FileBuildExecute(Sender: TObject);
@@ -425,10 +459,21 @@ begin
   TL2ShellTreeView.SetFocus;
 end;
 
+procedure TMainTL2TransForm.OpenProject(const fname:string; silent:boolean=false);
+var
+  lname:string;
+begin
+  lname:=ExtractJustName(ExtractFileName(fname));
+
+  NewTab(lname);
+  SetTABCaption(sLoading);
+  if not ActiveProject.Load(fname,silent) then
+    CanClosePage(TL2PageControl.ActivePageIndex,lname);
+end;
+
 procedure TMainTL2TransForm.FileOpenExecute(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
-  lname:AnsiString;
   fcnt:integer;
 begin
   OpenDialog:=TOpenDialog.Create(nil);
@@ -443,11 +488,7 @@ begin
     begin
       for fcnt:=0 to OpenDialog.Files.Count-1 do
       begin
-        lname:=ExtractJustName(ExtractFileName(OpenDialog.Files[fcnt]));
-
-        NewTab(lname);
-        SetTABCaption(sLoading);
-        ActiveProject.Load(OpenDialog.Files[fcnt]);
+        OpenProject(OpenDialog.Files[fcnt]);
       end;
     end;
   finally

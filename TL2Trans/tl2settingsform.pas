@@ -23,6 +23,7 @@ type
     cbExportParts: TCheckBox;
     cbImportParts: TCheckBox;
     cbAutoAsPartial: TCheckBox;
+    cbReopenProjects: TCheckBox;
     edImportDir: TDirectoryEdit;
     edDefaultFile: TFileNameEdit;
     edFilterWords: TEdit;
@@ -31,6 +32,7 @@ type
     edWorkDir: TDirectoryEdit;
     gbTranslateYandex: TGroupBox;
     gbTranslateGoogle: TGroupBox;
+    gbTranslation: TGroupBox;
     lblTranslators: TLabel;
     lblProgramLanguage: TLabel;
     lblAPIKeyGoogle: TLabel;
@@ -75,6 +77,8 @@ type
     procedure SaveSettings();
 
   public
+    procedure SaveTabs(asl:TStringList);
+    procedure LoadTabs(asl:TStringList);
   end;
 
 var
@@ -161,9 +165,12 @@ const
   sSectSettings = 'Settings';
   sSectFont     = 'Font';
   sSectAddon    = 'Addons';
+  sSectTabs     = 'Tabs';
   sTranslation  = 'Translation';
 
   sFile         = 'file';
+  sTabs         = 'tabs';
+  sTab          = 'tab';
   sAddFiles     = 'addfiles';
   sDefFile      = 'defaultfile';
   sRootDir      = 'rootdir';
@@ -183,6 +190,7 @@ const
   sPrgTransLang = 'PrgLanguage';
   sFilter       = 'filter';
   sAutoPartial  = 'autoaspartial';
+  sReopenFiles  = 'reopenfiles';
 
 const
   defFilter = 'a an the of by to for his her their';
@@ -205,6 +213,40 @@ const
 
 //----- Settings -----
 
+procedure TTL2Settings.SaveTabs(asl:TStringList);
+var
+  config:TIniFile;
+  i:integer;
+begin
+  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+
+  config.WriteInteger(sNSBase+':'+sSectTabs,sTabs,asl.Count);
+  for i:=0 to asl.Count-1 do
+  begin
+    config.WriteString(sNSBase+':'+sSectTabs,sTab+IntToStr(i+1),asl[i]);
+  end;
+
+  config.UpdateFile;
+  config.Free;
+end;
+
+procedure TTL2Settings.LoadTabs(asl:TStringList);
+var
+  config:TIniFile;
+  i,lcnt:integer;
+begin
+  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+
+  asl.Clear;
+  lcnt:=config.ReadInteger(sNSBase+':'+sSectTabs,sTabs,0);
+  for i:=1 to lcnt do
+  begin
+    asl.Add(config.ReadString(sNSBase+':'+sSectTabs,sTab+IntToStr(i),''));
+  end;
+
+  config.Free;
+end;
+
 procedure TTL2Settings.SaveSettings();
 var
   config:TIniFile;
@@ -221,9 +263,10 @@ begin
   config.WriteString(sNSBase+':'+sSectSettings,sImportDir,edImportDir  .Text);
 
   //--- Options
-  config.WriteBool(sNSBase+':'+sSectSettings,sExportParts,cbExportParts  .Checked);
-  config.WriteBool(sNSBase+':'+sSectSettings,sImportParts,cbImportParts  .Checked);
-  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAutoAsPartial.Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sExportParts,cbExportParts   .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sImportParts,cbImportParts   .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAutoAsPartial .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sReopenFiles,cbReopenProjects.Checked);
 
   //--- Addons
   config.EraseSection(sNSBase+':'+sSectAddon);
@@ -281,9 +324,10 @@ begin
   edImportDir  .Text:=config.ReadString(sNSBase+':'+sSectSettings,sImportDir,edWorkDir.Text);
 
   //--- Options
-  cbExportParts  .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sExportParts,false);
-  cbImportParts  .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sImportParts,false);
-  cbAutoAsPartial.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
+  cbExportParts   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sExportParts,false);
+  cbImportParts   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sImportParts,false);
+  cbAutoAsPartial .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
+  cbReopenProjects.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sReopenFiles,false);
 
   //--- Addons
   lcnt:=config.ReadInteger(sNSBase+':'+sSectAddon,sAddFiles,0);

@@ -1,7 +1,7 @@
 object TL2Settings: TTL2Settings
-  Left = 357
+  Left = 389
   Height = 561
-  Top = 293
+  Top = 387
   Width = 875
   BorderStyle = bsNone
   ClientHeight = 561
@@ -174,59 +174,6 @@ object TL2Settings: TTL2Settings
     OnClick = btnFontEditClick
     TabOrder = 7
   end
-  object gbTranslateYandex: TGroupBox
-    Left = 408
-    Height = 142
-    Top = 33
-    Width = 459
-    Anchors = [akTop, akLeft, akRight]
-    Caption = 'Yandex Translation'
-    ClientHeight = 122
-    ClientWidth = 455
-    TabOrder = 10
-    object lblAPIKeyYandex: TLabel
-      Left = 4
-      Height = 15
-      Top = 2
-      Width = 40
-      Caption = 'API Key'
-      ParentColor = False
-    end
-    object memAPIKeyYandex: TMemo
-      Left = 4
-      Height = 40
-      Top = 24
-      Width = 446
-      Anchors = [akTop, akLeft, akRight]
-      TabOrder = 0
-    end
-    object lblGetAPIKeyYandex: TLabel
-      Cursor = crHandPoint
-      Left = 337
-      Height = 15
-      Top = 2
-      Width = 113
-      Alignment = taRightJustify
-      Anchors = [akTop, akRight]
-      Caption = 'Get your own API key'
-      Font.Color = clBlue
-      Font.Style = [fsUnderline]
-      ParentColor = False
-      ParentFont = False
-      OnClick = lblGetAPIKeyYandexClick
-    end
-    object lblYandexNote: TLabel
-      Left = 4
-      Height = 47
-      Top = 70
-      Width = 446
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      Caption = 'Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols.'
-      ParentColor = False
-      WordWrap = True
-    end
-  end
   object edFilterWords: TEdit
     Left = 8
     Height = 23
@@ -245,7 +192,7 @@ object TL2Settings: TTL2Settings
   end
   object lblFilterNote: TLabel
     Left = 8
-    Height = 15
+    Height = 17
     Top = 318
     Width = 364
     AutoSize = False
@@ -296,49 +243,7 @@ object TL2Settings: TTL2Settings
     Height = 23
     Top = 4
     Width = 114
-    TabOrder = 11
-  end
-  object gbTranslateGoogle: TGroupBox
-    Left = 408
-    Height = 84
-    Top = 181
-    Width = 459
-    Anchors = [akTop, akLeft, akRight]
-    Caption = 'Google Translation'
-    ClientHeight = 64
-    ClientWidth = 455
-    TabOrder = 12
-    object lblAPIKeyGoogle: TLabel
-      Left = 4
-      Height = 15
-      Top = 2
-      Width = 40
-      Caption = 'API Key'
-      ParentColor = False
-    end
-    object memAPIKeyGoogle: TMemo
-      Left = 4
-      Height = 34
-      Top = 24
-      Width = 446
-      Anchors = [akTop, akLeft, akRight]
-      TabOrder = 0
-    end
-    object lblGetAPIKeyGoogle: TLabel
-      Cursor = crHandPoint
-      Left = 337
-      Height = 15
-      Top = 2
-      Width = 113
-      Alignment = taRightJustify
-      Anchors = [akTop, akRight]
-      Caption = 'Get your own API key'
-      Font.Color = clBlue
-      Font.Style = [fsUnderline]
-      ParentColor = False
-      ParentFont = False
-      OnClick = lblGetAPIKeyGoogleClick
-    end
+    TabOrder = 10
   end
   object lbLanguage: TListBox
     Left = 412
@@ -348,7 +253,7 @@ object TL2Settings: TTL2Settings
     Anchors = [akLeft, akBottom]
     ItemHeight = 0
     OnSelectionChange = lbLanguageSelectionChange
-    TabOrder = 13
+    TabOrder = 11
   end
   object lblProgramLanguage: TLabel
     Left = 412
@@ -368,7 +273,7 @@ object TL2Settings: TTL2Settings
     Width = 167
     Anchors = [akLeft, akBottom]
     ItemHeight = 0
-    TabOrder = 14
+    TabOrder = 12
   end
   object lblTranslators: TLabel
     Left = 608
@@ -387,6 +292,120 @@ object TL2Settings: TTL2Settings
     Top = 248
     Width = 176
     Caption = 'Mark Autocorrected as partial'
+    TabOrder = 13
+  end
+  object gbTranslation: TGroupBox
+    Left = 412
+    Height = 272
+    Top = 40
+    Width = 455
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'Translation (click to hide/expand)'
+    ClientHeight = 252
+    ClientWidth = 451
+    TabOrder = 14
+    object gbTranslateGoogle: TGroupBox
+      Left = 4
+      Height = 85
+      Top = 155
+      Width = 445
+      Anchors = [akTop, akLeft, akRight]
+      Caption = 'Google Translation'
+      ClientHeight = 65
+      ClientWidth = 441
+      TabOrder = 0
+      object lblAPIKeyGoogle: TLabel
+        Left = 4
+        Height = 15
+        Top = 2
+        Width = 40
+        Caption = 'API Key'
+        ParentColor = False
+      end
+      object memAPIKeyGoogle: TMemo
+        Left = 4
+        Height = 34
+        Top = 24
+        Width = 432
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 0
+      end
+      object lblGetAPIKeyGoogle: TLabel
+        Cursor = crHandPoint
+        Left = 323
+        Height = 15
+        Top = 2
+        Width = 113
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        Caption = 'Get your own API key'
+        Font.Color = clBlue
+        Font.Style = [fsUnderline]
+        ParentColor = False
+        ParentFont = False
+        OnClick = lblGetAPIKeyGoogleClick
+      end
+    end
+    object gbTranslateYandex: TGroupBox
+      Left = 4
+      Height = 142
+      Top = 5
+      Width = 445
+      Anchors = [akTop, akLeft, akRight]
+      Caption = 'Yandex Translation'
+      ClientHeight = 122
+      ClientWidth = 441
+      TabOrder = 1
+      object lblAPIKeyYandex: TLabel
+        Left = 4
+        Height = 15
+        Top = 2
+        Width = 40
+        Caption = 'API Key'
+        ParentColor = False
+      end
+      object memAPIKeyYandex: TMemo
+        Left = 4
+        Height = 40
+        Top = 24
+        Width = 432
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 0
+      end
+      object lblGetAPIKeyYandex: TLabel
+        Cursor = crHandPoint
+        Left = 323
+        Height = 15
+        Top = 2
+        Width = 113
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        Caption = 'Get your own API key'
+        Font.Color = clBlue
+        Font.Style = [fsUnderline]
+        ParentColor = False
+        ParentFont = False
+        OnClick = lblGetAPIKeyYandexClick
+      end
+      object lblYandexNote: TLabel
+        Left = 4
+        Height = 47
+        Top = 70
+        Width = 432
+        Anchors = [akTop, akLeft, akRight]
+        AutoSize = False
+        Caption = 'Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols.'
+        ParentColor = False
+        WordWrap = True
+      end
+    end
+  end
+  object cbReopenProjects: TCheckBox
+    Left = 88
+    Height = 19
+    Top = 344
+    Width = 144
+    Caption = 'Reopen projects at start'
     TabOrder = 15
   end
 end

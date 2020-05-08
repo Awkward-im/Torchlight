@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Release"/>
+    <BuildModes Active="Debug"/>
     <Units>
       <Unit>
         <Filename Value="tl2trans.lpr"/>
@@ -19,8 +19,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
-        <TopLine Value="360"/>
-        <CursorPos X="14" Y="373"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="148"/>
+        <CursorPos Y="271"/>
+        <FoldState Value=" T46031 T8j92]73jf086 piejN0I012 pj1jg0P02232 T6]C1F T1k105]V13]4[R47 T0kd270151863T"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -31,7 +33,7 @@
         <UnitName Value="TL2DataUnit"/>
         <EditorIndex Value="3"/>
         <TopLine Value="515"/>
-        <CursorPos Y="515"/>
+        <CursorPos X="42" Y="536"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -78,8 +80,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="997"/>
-        <CursorPos Y="997"/>
+        <TopLine Value="1073"/>
+        <CursorPos X="16" Y="1091"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -91,11 +93,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="389"/>
-        <CursorPos X="40" Y="450"/>
-        <FoldState Value=" T46021 T7JHw T8iP27 TMof0]K3jO0c2 pjTm10I7 pifjc036 T6jP02A T1jS0Y[Y4H]YEA]YXkJ0F3 T0jXE3Cm"/>
+        <TopLine Value="178"/>
+        <CursorPos X="31" Y="193"/>
+        <FoldState Value=" T4602H"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -111,7 +112,7 @@
         <TopLine Value="14"/>
         <CursorPos X="41" Y="79"/>
         <FoldState Value=" T46011 TLj2032 T7DKJ T8P24]L3i50I013 T1i60H[A50iC]S14 T6iQ012E"/>
-        <UsageCount Value="190"/>
+        <UsageCount Value="194"/>
       </Unit>
       <Unit>
         <Filename Value="tl2refunit.pas"/>
@@ -121,7 +122,7 @@
         <TopLine Value="228"/>
         <CursorPos Y="255"/>
         <FoldState Value=" TL004 T4901 T8E2C]7CGH9 TMNO]C3iT0K912 T6iU013 T1iW0H[I50iY269,"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="93"/>
       </Unit>
       <Unit>
         <Filename Value="tl2notesform.pas"/>
@@ -134,7 +135,7 @@
         <TopLine Value="46"/>
         <CursorPos X="34" Y="59"/>
         <FoldState Value=" T46021 T7EEQ T8a21]D3iI0B7 piajK09 T1iJ0A313 T6jA012 T0je234E"/>
-        <UsageCount Value="81"/>
+        <UsageCount Value="85"/>
       </Unit>
       <Unit>
         <Filename Value="iso639.pas"/>
@@ -143,7 +144,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="33"/>
       </Unit>
       <Unit>
         <Filename Value="trclass.pas"/>
@@ -152,7 +153,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="33"/>
       </Unit>
     </Units>
     <RunParams>
@@ -161,6 +162,22 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="tl2projectform.pas"/>
+        <Line Value="334"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="tl2projectform.pas"/>
+        <Line Value="507"/>
+      </Item>
+    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="colors[0]"/>

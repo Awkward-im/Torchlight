@@ -119,7 +119,7 @@ type
     data:TTL2Translation;
 
     function New(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
-    procedure Load(const fname:AnsiString);
+    function Load(const fname:AnsiString; silent:boolean=false):boolean;
     procedure Save();
     procedure DoExport();
     procedure MoveToIndex(idx: integer);
@@ -309,7 +309,10 @@ begin
       begin
 //        lrow:=TL2ProjectGrid.Row;
         data.Trans[j]:=ReplaceTranslation(data.Trans[i],data.Line[j]);
-        data.State[j]:=stPartial;
+        if TL2Settings.cbAutoAsPartial.Checked then
+        begin
+          data.State[j]:=stPartial;
+        end;
         UpdateGrid(j);
       end;
     end;
@@ -1068,21 +1071,24 @@ begin
   end;
 end;
 
-procedure TTL2Project.Load(const fname:AnsiString);
+function TTL2Project.Load(const fname:AnsiString; silent:boolean=false):boolean;
 var
   ls:AnsiString;
 begin
+  result:=false;
   data.Filter:=flFiltered;
   data.Mode  :=tmOriginal;
   data.LoadInfo(fname);
   if data.LoadFromFile(fname)<0 then
   begin
-    MessageDlg(sWarning,
-      Format(sTransFileError,
-             [data.ErrorCode,data.ErrorFile,data.ErrorLine,data.ErrorText]),
-             mtError,[mbOk],0);
+    if not silent then
+      MessageDlg(sWarning,
+        Format(sTransFileError,
+               [data.ErrorCode,data.ErrorFile,data.ErrorLine,data.ErrorText]),
+               mtError,[mbOk],0);
     exit;
   end;
+  result:=true;
   FileName:=fname;
 
 //!!  actShowDoubles.Visible:=data.Doubles<>0;
@@ -1749,7 +1755,7 @@ begin
   TL2ProjectGrid.EndUpdate;
 
   TL2ProjectGrid.Row:=1;
-  if afilter='' then
+  if (afilter='') and Self.Active then
   begin
     TL2ProjectGrid.SetFocus;
   end;
