@@ -163,7 +163,7 @@ object TL2Settings: TTL2Settings
     TabOrder = 4
   end
   object bbFontEdit: TBitBtn
-    Left = 8
+    Left = 7
     Height = 26
     Top = 341
     Width = 70
@@ -401,10 +401,13 @@ object TL2Settings: TTL2Settings
     end
   end
   object cbReopenProjects: TCheckBox
-    Left = 88
+    AnchorSideLeft.Control = bbFontEdit
+    AnchorSideLeft.Side = asrBottom
+    Left = 85
     Height = 19
     Top = 344
     Width = 144
+    BorderSpacing.Left = 8
     Caption = 'Reopen projects at start'
     TabOrder = 15
   end

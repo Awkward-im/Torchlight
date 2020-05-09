@@ -20,9 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="148"/>
-        <CursorPos Y="271"/>
-        <FoldState Value=" T46031 T8j92]73jf086 piejN0I012 pj1jg0P02232 T6]C1F T1k105]V13]4[R47 T0kd270151863T"/>
+        <TopLine Value="362"/>
+        <CursorPos X="8" Y="384"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -94,8 +93,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="178"/>
-        <CursorPos X="31" Y="193"/>
+        <TopLine Value="489"/>
+        <CursorPos X="19" Y="502"/>
         <FoldState Value=" T4602H"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -180,19 +179,7 @@
     </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="colors[0]"/>
-      </Item>
-      <Item>
-        <Expression Value="colors[1]"/>
-      </Item>
-      <Item>
-        <Expression Value="lcnt"/>
-      </Item>
-      <Item>
-        <Expression Value="llcnt"/>
-      </Item>
-      <Item>
-        <Expression Value="TL2ProjectGrid"/>
+        <Expression Value="lsl"/>
       </Item>
     </Watches>
   </Debugging>

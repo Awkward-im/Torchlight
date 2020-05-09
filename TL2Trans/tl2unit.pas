@@ -380,7 +380,8 @@ begin
   begin
     ls:='';
     CanClose:=CanClose and CanClosePage(i,ls);
-    if ls<>'' then lsl[i-1]:=ls;
+    if TL2Settings.cbReopenProjects.Checked and
+       (ls<>'') then lsl[i-1]:=ls;
   end;
   if TL2Settings.cbReopenProjects.Checked then
   begin

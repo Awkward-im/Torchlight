@@ -91,10 +91,6 @@ implementation
 
 {$R *.lfm}
 uses
-  fphttpclient,
-  opensslsockets,
-  jsontools,
-
   inifiles,
 
   LCLTranslator,
@@ -506,7 +502,6 @@ end;
 procedure TTL2Settings.lbLanguageSelectionChange(Sender: TObject; User: boolean);
 var
   ls:AnsiString;
-  i:integer;
 begin
   ls:=lbLanguage.Items[lbLanguage.ItemIndex];
   SetDefaultLang(copy(ls,1,pos(' ',ls)-1));
