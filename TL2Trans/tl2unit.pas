@@ -341,6 +341,7 @@ begin
   TL2PageControl.ActivePageIndex:=idx;
   lprj:=ActiveProject;
   if lprj<>nil then
+  begin
     while lprj.Modified do
       case MessageDlg(sNotSaved,mtWarning,[mbCancel,mbNo,mbOk],0,mbCancel) of
         mrOk: begin
@@ -353,8 +354,9 @@ begin
       else
         break;
       end;
+    s:=lprj.FileName;
+  end;
   result:=true;
-  s:=lprj.FileName;
 
   TL2PageControl.ActivePageIndex:=idx-1;
   ltab:=TL2PageControl.Pages[idx];
