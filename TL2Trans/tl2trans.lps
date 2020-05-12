@@ -19,9 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="362"/>
-        <CursorPos X="8" Y="384"/>
+        <TopLine Value="370"/>
+        <CursorPos X="34" Y="378"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -30,9 +29,10 @@
         <Filename Value="tl2dataunit.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2DataUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="515"/>
-        <CursorPos X="42" Y="536"/>
+        <TopLine Value="680"/>
+        <CursorPos X="26" Y="701"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -79,8 +79,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1073"/>
-        <CursorPos X="16" Y="1091"/>
+        <TopLine Value="493"/>
+        <CursorPos Y="507"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -95,7 +95,6 @@
         <EditorIndex Value="2"/>
         <TopLine Value="489"/>
         <CursorPos X="19" Y="502"/>
-        <FoldState Value=" T4602H"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -111,7 +110,7 @@
         <TopLine Value="14"/>
         <CursorPos X="41" Y="79"/>
         <FoldState Value=" T46011 TLj2032 T7DKJ T8P24]L3i50I013 T1i60H[A50iC]S14 T6iQ012E"/>
-        <UsageCount Value="194"/>
+        <UsageCount Value="196"/>
       </Unit>
       <Unit>
         <Filename Value="tl2refunit.pas"/>
@@ -121,7 +120,7 @@
         <TopLine Value="228"/>
         <CursorPos Y="255"/>
         <FoldState Value=" TL004 T4901 T8E2C]7CGH9 TMNO]C3iT0K912 T6iU013 T1iW0H[I50iY269,"/>
-        <UsageCount Value="93"/>
+        <UsageCount Value="95"/>
       </Unit>
       <Unit>
         <Filename Value="tl2notesform.pas"/>
@@ -134,7 +133,7 @@
         <TopLine Value="46"/>
         <CursorPos X="34" Y="59"/>
         <FoldState Value=" T46021 T7EEQ T8a21]D3iI0B7 piajK09 T1iJ0A313 T6jA012 T0je234E"/>
-        <UsageCount Value="85"/>
+        <UsageCount Value="87"/>
       </Unit>
       <Unit>
         <Filename Value="iso639.pas"/>
@@ -143,7 +142,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="35"/>
       </Unit>
       <Unit>
         <Filename Value="trclass.pas"/>
@@ -152,7 +151,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="35"/>
       </Unit>
     </Units>
     <RunParams>
@@ -169,17 +168,22 @@
         <Source Value="tl2projectform.pas"/>
         <Line Value="334"/>
       </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="tl2projectform.pas"/>
-        <Line Value="507"/>
-      </Item>
     </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="lsl"/>
+        <Expression Value="astr"/>
+      </Item>
+      <Item>
+        <Expression Value="i"/>
+      </Item>
+      <Item>
+        <Expression Value="k"/>
+      </Item>
+      <Item>
+        <Expression Value="j"/>
+      </Item>
+      <Item>
+        <Expression Value="astr[i]"/>
       </Item>
     </Watches>
   </Debugging>

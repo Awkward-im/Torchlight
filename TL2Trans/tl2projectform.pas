@@ -1148,12 +1148,12 @@ begin
     mrYes: begin
       data.Mode:=tmDefault;
       ls:=ls+'Full_'+ProjectName+DefaultExt;
-      data.SaveToFile(ls,lstat);
+      data.SaveToFile(ls,lstat,true);
     end;
     mrNo : begin
       data.Mode:=tmOriginal;
       ls:=ls+ProjectName+'_export'+DefaultExt;
-      data.SaveToFile(ls,lstat);
+      data.SaveToFile(ls,lstat,true);
     end;
   else
     // mrCancel
@@ -1849,27 +1849,6 @@ begin
     ldlg.Free;
   end;
 
-{  
-  ldir:=TL2Settings.edImportDir.Text;
-  
-  if ldir[Length(ldir)]='\' then
-    SetLength(ldir,Length(ldir)-1);
-
-  sl:=TStringList.Create();
-  CycleDirBuild(sl, ldir);
-
-  //!! think about preload here
-  data.Mode  :=tmMod;
-  data.Filter:=flNoFilter;
-  for i:=0 to sl.Count-1 do
-  begin
-    aprogress(TObject(1),sBuildRead+' '+sl[i]);
-    data.LoadFromFile(sl[i]);
-  end;
-
-  sl.Free;
-}
-
   //!! Here export all
   data.Mode:=tmDefault;
 
@@ -1877,7 +1856,7 @@ begin
 //  if (ldir<>'') and (ldir[Length(ldir)]<>'\') then ldir:=ldir+'\';
 
   aprogress(TObject(1),sBuildWrite);
-  data.SaveToFile(''{ldir+DefDATFile},stPartial);
+  data.SaveToFile(''{ldir+DefDATFile},stPartial,true);
   aprogress(nil,sBuildWrite);
 
   data.Free;

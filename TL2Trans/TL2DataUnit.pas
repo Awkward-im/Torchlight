@@ -12,7 +12,10 @@ type
     flNoSearch,  // do not search for doubles
     flNoFilter,  // search but 100% the same only
     flFiltered); // search the same and similar
-  tTextMode     = (tmOriginal,tmDefault,tmMod);
+  tTextMode     = (
+    tmOriginal,  // process: Load/save project
+    tmDefault,   // process: load default file / save all
+    tmMod);      // Process: loading mods
   tTextStatus   = (
     stOriginal,  // not translated
     stPartial,   // translated just partially
@@ -113,7 +116,7 @@ type
       -5 no end of block
     }
     function  LoadFromFile(const fname:AnsiString):integer;
-    procedure SaveToFile  (const fname:AnsiString; astat:tTextStatus);
+    procedure SaveToFile  (const fname:AnsiString; astat:tTextStatus; askip:boolean=false);
     procedure SaveInfo(const aname:AnsiString);
     procedure LoadInfo(const aname:AnsiString);
 
@@ -532,6 +535,7 @@ begin
       '0'..'9': begin
         wasletter:=true;
       end;
+
       '-': begin
         p:=pointer(astr)+i;
         if p^ in ['[','0'..'9'] then
@@ -541,11 +545,13 @@ begin
         end;
         wasletter:=false;
       end;
+
       '_','+','%': begin
         result[ldi]:=astr[i];
         inc(ldi);
         wasletter:=false;
       end;
+
       'a'..'z',
       'A'..'Z': begin
         // Filter
@@ -631,6 +637,7 @@ begin
           end;
         end;
       end;
+
       '\': begin // skip ANY slash combo
         inc(i);
         // special for \\n
@@ -642,6 +649,7 @@ begin
         end;
 }
       end;
+
       #124: begin
         inc(i);
         if astr[i]='u' then
@@ -653,12 +661,48 @@ begin
         end;
         wasletter:=false;
       end;
+
+      '<','[': begin
+        k:=i;
+        // value type
+        if astr[i]='<' then j:=0
+        else if astr[i]='[' then
+        begin
+          if (i<Length(astr)) and (astr[i+1]='[') then 
+          begin
+            inc(i);
+            j:=2
+          end
+          else 
+            j:=1;
+        end;
+        inc(i);
+
+        while (i<=Length(astr)) and (astr[i] in ['A'..'Z','a'..'z','0'..'9',':']) do inc(i);
+        if (i>Length(astr)) or
+           ((j<>0) and (astr[i]='>')) or
+           ((j= 0) and (astr[i]=']')) or
+           ((j= 2) and ((i=Length(astr))) and (astr[i+1]<>']')) then
+        begin
+          i:=k;
+        end
+        else if j=2 then inc(i);
+        
+        wasletter:=false;
+      end;
+
     else // any other symbols
       wasletter:=false;
     end;
     inc(i);
   end;
   SetLength(result,ldi-1);
+
+  for i:=1 to ldi-1 do
+  begin
+    if result[i] in ['A'..'Z','a'..'z'] then exit;
+  end;
+  result:='';
 end;
 
 function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
@@ -1215,7 +1259,7 @@ end;
 
 //===== Export =====
 
-procedure TTL2Translation.SaveToFile(const fname:AnsiString; astat:tTextStatus);
+procedure TTL2Translation.SaveToFile(const fname:AnsiString; astat:tTextStatus; askip:boolean=false);
 var
   sl:TStringList;
   ls:AnsiString;
@@ -1249,7 +1293,7 @@ begin
         ((lst <>stPartial) or
          (astat=stPartial)) then
         sl.Add(#9#9+sTranslated+arText[i].transl)
-      else
+      else if not askip then
         sl.Add(#9#9+sTranslated+arText[i].origin);
 
       sl.Add(#9+sEndBlock);
