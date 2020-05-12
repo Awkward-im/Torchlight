@@ -1263,7 +1263,7 @@ procedure TTL2Translation.SaveToFile(const fname:AnsiString; astat:tTextStatus; 
 var
   sl:TStringList;
   ls:AnsiString;
-  i,lstart:integer;
+  l,i,lstart:integer;
   lst:tTextStatus;
 begin
   FErrCode:=0;
@@ -1286,17 +1286,27 @@ begin
     lst:=arText[i].atype;
     if lst<>stDeleted then
     begin
-      sl.Add(#9+sBeginBlock);
-      sl.Add(#9#9+sOriginal+arText[i].origin);
-
       if (arText[i].transl<>'') and
         ((lst <>stPartial) or
          (astat=stPartial)) then
-        sl.Add(#9#9+sTranslated+arText[i].transl)
+        l:=1
       else if not askip then
-        sl.Add(#9#9+sTranslated+arText[i].origin);
+        l:=2
+      else
+        l:=0;
 
-      sl.Add(#9+sEndBlock);
+      if l<>0 then
+      begin
+        sl.Add(#9+sBeginBlock);
+        sl.Add(#9#9+sOriginal+arText[i].origin);
+
+        if l=1 then
+          sl.Add(#9#9+sTranslated+arText[i].transl)
+        else if not askip then
+          sl.Add(#9#9+sTranslated+arText[i].origin);
+
+        sl.Add(#9+sEndBlock);
+      end;
     end;
   end;
 
