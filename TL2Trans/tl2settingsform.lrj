@@ -14,7 +14,7 @@
 {"hash":181156261,"name":"ttl2settings.lblprogramlanguage.caption","sourcebytes":[80,114,111,103,114,97,109,32,76,97,110,103,117,97,103,101],"value":"Program Language"},
 {"hash":175324867,"name":"ttl2settings.lbltranslators.caption","sourcebytes":[84,114,97,110,115,108,97,116,111,114,115],"value":"Translators"},
 {"hash":262712828,"name":"ttl2settings.cbautoaspartial.caption","sourcebytes":[77,97,114,107,32,65,117,116,111,99,111,114,114,101,99,116,101,100,32,97,115,32,112,97,114,116,105,97,108],"value":"Mark Autocorrected as partial"},
-{"hash":69305737,"name":"ttl2settings.gbtranslation.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110,32,40,99,108,105,99,107,32,116,111,32,104,105,100,101,47,101,120,112,97,110,100,41],"value":"Translation (click to hide/expand)"},
+{"hash":211498025,"name":"ttl2settings.gbtranslation.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110,32,40,68,98,108,67,108,105,99,107,32,116,111,32,84,111,103,103,108,101,41],"value":"Translation (DblClick to Toggle)"},
 {"hash":194344494,"name":"ttl2settings.gbtranslategoogle.caption","sourcebytes":[71,111,111,103,108,101,32,84,114,97,110,115,108,97,116,105,111,110],"value":"Google Translation"},
 {"hash":105599369,"name":"ttl2settings.lblapikeygoogle.caption","sourcebytes":[65,80,73,32,75,101,121],"value":"API Key"},
 {"hash":240489369,"name":"ttl2settings.lblgetapikeygoogle.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
@@ -22,5 +22,6 @@
 {"hash":105599369,"name":"ttl2settings.lblapikeyyandex.caption","sourcebytes":[65,80,73,32,75,101,121],"value":"API Key"},
 {"hash":240489369,"name":"ttl2settings.lblgetapikeyyandex.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
 {"hash":234828510,"name":"ttl2settings.lblyandexnote.caption","sourcebytes":[84,101,120,116,32,108,101,110,103,116,104,32,105,115,32,110,111,116,32,109,111,114,101,32,116,104,97,110,32,49,48,75,98,46,32,68,97,121,32,108,105,109,105,116,32,105,115,32,49,32,48,48,48,32,48,48,48,32,115,121,109,98,111,108,115,46,32,77,111,110,116,104,32,108,105,109,105,116,32,105,115,32,49,48,32,48,48,48,32,48,48,48,32,115,121,109,98,111,108,115,46],"value":"Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."},
-{"hash":136973012,"name":"ttl2settings.cbreopenprojects.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,115,32,97,116,32,115,116,97,114,116],"value":"Reopen projects at start"}
+{"hash":136973012,"name":"ttl2settings.cbreopenprojects.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,115,32,97,116,32,115,116,97,114,116],"value":"Reopen projects at start"},
+{"hash":5680834,"name":"ttl2settings.gbother.caption","sourcebytes":[79,116,104,101,114],"value":"Other"}
 ]}

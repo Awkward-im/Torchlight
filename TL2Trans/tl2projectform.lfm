@@ -339,7 +339,7 @@ object TL2Project: TTL2Project
   end
   object mnuColor: TPopupMenu
     AutoPopup = False
-    Left = 330
+    Left = 328
     Top = 230
   end
 end

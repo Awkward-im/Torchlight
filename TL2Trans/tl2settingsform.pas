@@ -33,6 +33,7 @@ type
     gbTranslateYandex: TGroupBox;
     gbTranslateGoogle: TGroupBox;
     gbTranslation: TGroupBox;
+    gbOther: TGroupBox;
     lblTranslators: TLabel;
     lblProgramLanguage: TLabel;
     lblAPIKeyGoogle: TLabel;
@@ -61,6 +62,7 @@ type
     procedure btnFontEditClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure gbTranslationClick(Sender: TObject);
     procedure lbLanguageSelectionChange(Sender: TObject; User: boolean);
     procedure lblGetAPIKeyGoogleClick(Sender: TObject);
     procedure lblGetAPIKeyYandexClick(Sender: TObject);
@@ -74,6 +76,7 @@ type
     procedure FillLocalesList;
     procedure FillTranslatorList;
     procedure LoadSettings();
+    procedure SaveGUISettings;
     procedure SaveSettings();
 
   public
@@ -157,6 +160,9 @@ const
   INIFileName = 'TL2Trans.ini';
 
 const
+  MinGroupHeight = 20;
+
+const
   sNSBase       = 'Base';
   sSectSettings = 'Settings';
   sSectFont     = 'Font';
@@ -187,6 +193,8 @@ const
   sFilter       = 'filter';
   sAutoPartial  = 'autoaspartial';
   sReopenFiles  = 'reopenfiles';
+
+  sGroupHeight  = 'groupheight';
 
 const
   defFilter = 'a an the of by to for his her their';
@@ -240,6 +248,18 @@ begin
     asl.Add(config.ReadString(sNSBase+':'+sSectTabs,sTab+IntToStr(i),''));
   end;
 
+  config.Free;
+end;
+
+procedure TTL2Settings.SaveGUISettings;
+var
+  config:TIniFile;
+begin
+  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+
+  config.WriteInteger(sNSBase+':'+sSectSettings,sGroupHeight,gbTranslation.Height);
+
+  config.UpdateFile;
   config.Free;
 end;
 
@@ -358,8 +378,11 @@ begin
   memAPIKeyGoogle.Text:=config.ReadString(sNSBase+':'+sTranslation,sGAPIKey,'');
 
   edTransLang.Text:=config.ReadString(sNSBase+':'+sTranslation,sTransLang   ,MyLanguage);
-  ApplyLoadedLang(  config.ReadString(sNSBase+':'+sTranslation,sPrgTransLang,'en'));
+  ApplyLoadedLang ( config.ReadString(sNSBase+':'+sTranslation,sPrgTransLang,'en'));
   ApplyLoadedTrans( config.ReadString(sNSBase+':'+sTranslation,sTranslator ,'Google'));
+
+  //---
+  gbTranslation.Height:=config.ReadInteger(sNSBase+':'+sSectSettings,sGroupHeight,MinGroupHeight);
 
   config.Free;
 end;
@@ -423,6 +446,19 @@ begin
     end;
   finally
     FontDialog.Free;
+  end;
+end;
+
+procedure TTL2Settings.gbTranslationClick(Sender: TObject);
+begin
+  if gbTranslation.Height<>MinGroupHeight then
+  begin
+    gbTranslation.Tag:=gbTranslation.Height;
+    gbTranslation.Height:=MinGroupHeight;
+  end
+  else
+  begin
+    gbTranslation.Height:=gbTranslation.Tag;
   end;
 end;
 
@@ -561,7 +597,7 @@ end;
 
 procedure TTL2Settings.FormDestroy(Sender: TObject);
 begin
-//  SaveSettings;
+  SaveGUISettings;
 end;
 
 end.

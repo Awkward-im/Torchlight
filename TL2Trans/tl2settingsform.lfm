@@ -300,10 +300,11 @@ object TL2Settings: TTL2Settings
     Top = 40
     Width = 455
     Anchors = [akTop, akLeft, akRight]
-    Caption = 'Translation (click to hide/expand)'
+    Caption = 'Translation (DblClick to Toggle)'
     ClientHeight = 252
     ClientWidth = 451
     TabOrder = 14
+    OnDblClick = gbTranslationClick
     object gbTranslateGoogle: TGroupBox
       Left = 4
       Height = 85
@@ -410,5 +411,17 @@ object TL2Settings: TTL2Settings
     BorderSpacing.Left = 8
     Caption = 'Reopen projects at start'
     TabOrder = 15
+  end
+  object gbOther: TGroupBox
+    AnchorSideTop.Control = gbTranslation
+    AnchorSideTop.Side = asrBottom
+    Left = 412
+    Height = 49
+    Top = 316
+    Width = 455
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Top = 4
+    Caption = 'Other'
+    TabOrder = 16
   end
 end

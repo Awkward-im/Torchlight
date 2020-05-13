@@ -178,6 +178,7 @@ object EditTextForm: TEditTextForm
       Top = 4
       Width = 517
       Anchors = [akTop, akLeft, akRight]
+      OnKeyDown = memTransKeyDown
       ScrollBars = ssAutoVertical
       TabOrder = 0
     end
@@ -268,5 +269,10 @@ object EditTextForm: TEditTextForm
       OnExecute = actTranslateExecute
       ShortCut = 32852
     end
+  end
+  object mnuColor: TPopupMenu
+    AutoPopup = False
+    Left = 176
+    Top = 328
   end
 end

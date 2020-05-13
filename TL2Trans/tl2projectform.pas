@@ -92,8 +92,6 @@ type
     procedure CreateFileTab(idx: integer);
     function  FillColorPopup: boolean;
     function  FillParamPopup: boolean;
-    procedure InsertColor(const acolor: AnsiString);
-    procedure InsertParam(const aparam: AnsiString);
     procedure PopupColorChanged(Sender: TObject);
     procedure PopupParamChanged(Sender: TObject);
     function  ProjectFileScan(const fname:AnsiString; idx, atotal:integer):integer;
@@ -104,7 +102,6 @@ type
     function  GetStatusText:AnsiString;
     function  Preload():boolean;
     procedure ReBoundEditor;
-    function  RemoveColor(const textin: AnsiString; var textout: AnsiString): boolean;
     procedure Search(const atext: AnsiString; aRow: integer);
     procedure SetCellText(arow: integer; const atext: AnsiString);
 
@@ -139,6 +136,7 @@ implementation
 
 uses
   Graphics,
+  TL2DataModule,
   TL2SettingsForm,
   TL2EditText,
   TL2SimForm,
@@ -516,14 +514,9 @@ begin
     TL2ProjectGrid.SetFocus;
 end;
 
-procedure TTL2Project.InsertParam(const aparam:AnsiString);
-begin
-  memEdit.SelText:=aparam;
-end;
-
 procedure TTL2Project.PopupParamChanged(Sender:TObject);
 begin
-  InsertParam(Copy((Sender as TMenuItem).Caption,4));
+  memEdit.SelText:=Copy((Sender as TMenuItem).Caption,4);
 end;
 
 function TTL2Project.FillParamPopup:boolean;
@@ -589,7 +582,7 @@ begin
   
   if lcnt=1 then
   begin
-    InsertParam(params[0]);
+    memEdit.SelText:=params[0];
   end
   else
   begin  
@@ -608,69 +601,9 @@ begin
   end;
 end;
 
-function TTL2Project.RemoveColor(const textin:AnsiString; var textout:AnsiString):boolean;
-var
-  ls:AnsiString;
-  i,j:integer;
-begin
-  result:=false;
-  i:=1;
-  j:=1;
-  SetLength(ls,Length(textin));
-  while i<=Length(textin) do
-  begin
-    if textin[i]<>'|' then
-    begin
-      ls[j]:=textin[i];
-      inc(i);
-      inc(j);
-    end
-    else
-    begin
-      result:=true;
-      inc(i);
-      if      textin[i]='u' then inc(i)
-      else if textin[i]='c' then inc(i,9);
-    end;
-  end;
-  SetLength(ls,j);
-  textout:=ls;
-end;
-
-procedure TTL2Project.InsertColor(const acolor:AnsiString);
-var
-  ls:AnsiString;
-  l:integer;
-begin
-  if memEdit.SelLength>0 then
-  begin
-    ls:=memEdit.SelText;
-    l:=Length(ls);
-    if ((l<2  ) or (ls[l-1]<>'|') or (ls[l]<>'u')) and
-       ((l<>10) or (ls[  1]<>'|') or (ls[2]<>'c')) then
-      ls:=ls+'|u';
-    if (l<10) or (ls[1]<>'|') or (ls[2]<>'c') then
-      ls:=acolor+ls
-    else
-    begin
-      ls[ 3]:=acolor[ 3];
-      ls[ 4]:=acolor[ 4];
-      ls[ 5]:=acolor[ 5];
-      ls[ 6]:=acolor[ 6];
-      ls[ 7]:=acolor[ 7];
-      ls[ 8]:=acolor[ 8];
-      ls[ 9]:=acolor[ 9];
-      ls[10]:=acolor[10];
-    end;
-    memEdit.SelText:=ls;
-  end
-  else
-    memEdit.SelText:=acolor;
-end;
-
 procedure TTL2Project.PopupColorChanged(Sender:TObject);
 begin
-  InsertColor(Copy((Sender as TMenuItem).Caption,4));
+  memEdit.SelText:=InsertColor(memEdit.SelText,Copy((Sender as TMenuItem).Caption,4));
 end;
 
 function TTL2Project.FillColorPopup:boolean;
@@ -736,7 +669,7 @@ begin
   //-- replace without confirmations if one color only
   if lcnt=1 then
   begin
-    InsertColor(colors[0]);
+    memEdit.SelText:=InsertColor(memEdit.SelText,colors[0]);
   end
   //-- Create and call menu if several colors
   else
