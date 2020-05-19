@@ -13,9 +13,9 @@ object fmStat: TfmStat
     Height = 488
     Top = 0
     Width = 741
-    ActivePage = tsItems
+    ActivePage = tsMobs
     Align = alClient
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object tsCommon: TTabSheet
       Caption = 'Common'
@@ -24,14 +24,13 @@ object fmStat: TfmStat
       Caption = 'Mobs'
       ClientHeight = 460
       ClientWidth = 733
-      OnContextPopup = tsMobsContextPopup
       object sgMobs: TStringGrid
         Left = 0
         Height = 460
         Top = 0
         Width = 733
         Align = alClient
-        ColCount = 10
+        ColCount = 11
         ColumnClickSorts = True
         Columns = <        
           item
@@ -83,8 +82,7 @@ object fmStat: TfmStat
             Title.Caption = 'Field9'
             Width = 48
           end>
-        FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
       end
@@ -177,7 +175,7 @@ object fmStat: TfmStat
         Top = 0
         Width = 733
         Align = alClient
-        ColCount = 10
+        ColCount = 11
         ColumnClickSorts = True
         Columns = <        
           item
@@ -202,7 +200,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field5'
+            Title.Caption = 'Field5 (b)'
             Width = 48
           end        
           item
@@ -212,7 +210,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field7'
+            Title.Caption = 'Field7 (b)'
             Width = 48
           end        
           item
@@ -227,11 +225,10 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field10'
+            Title.Caption = 'Field10 (b)'
             Width = 48
           end>
-        FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
       end
@@ -246,7 +243,7 @@ object fmStat: TfmStat
         Top = 0
         Width = 733
         Align = alClient
-        ColCount = 2
+        ColCount = 3
         ColumnClickSorts = True
         Columns = <        
           item
@@ -258,8 +255,7 @@ object fmStat: TfmStat
             Title.Caption = 'Value'
             Width = 64
           end>
-        FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
       end
@@ -274,7 +270,7 @@ object fmStat: TfmStat
         Top = 0
         Width = 733
         Align = alClient
-        ColCount = 2
+        ColCount = 3
         ColumnClickSorts = True
         Columns = <        
           item
@@ -285,8 +281,7 @@ object fmStat: TfmStat
             SizePriority = 0
             Title.Caption = 'Value'
           end>
-        FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
       end
@@ -301,7 +296,7 @@ object fmStat: TfmStat
         Top = 0
         Width = 733
         Align = alClient
-        ColCount = 2
+        ColCount = 3
         ColumnClickSorts = True
         Columns = <        
           item
@@ -312,8 +307,7 @@ object fmStat: TfmStat
             SizePriority = 0
             Title.Caption = 'Value'
           end>
-        FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
       end

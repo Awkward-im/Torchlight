@@ -199,6 +199,7 @@
       <Unit>
         <Filename Value="..\TL2Save\tl2quest.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Quest"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tl2statistic.pas"/>
@@ -231,6 +232,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMap"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formunits.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmUnits"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formUnits"/>
       </Unit>
     </Units>
   </ProjectOptions>

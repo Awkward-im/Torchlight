@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
   Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
   formKeyBinding, formStatistic, formCommon, formSettings,
-  formPet, formChar, formStat, formMap;
+  formPet, formChar, formStat, formMap, formUnits;
 
 type
 
@@ -56,6 +56,7 @@ type
     FMaps      :TfmMap;
     FChar      :TfmChar;
     FStats     :TfmStat;
+    FUnits     :TfmUnits;
     
     SGame:TTL2SaveFile;
     procedure ChangeTree;
@@ -219,6 +220,7 @@ begin
   FMaps      :=TfmMap       .Create(Self); FMaps      .Parent:=MainPanel;
   FChar      :=TfmChar      .Create(Self); FChar      .Parent:=MainPanel;
   FStats     :=TfmStat      .Create(Self); FStats     .Parent:=MainPanel;
+  FUnits     :=TfmUnits     .Create(Self); FUnits     .Parent:=MainPanel;
 
   CreateTree;
   LoadBases;
@@ -383,6 +385,8 @@ begin
   FStatistic .Visible:=false;
   FChar      .Visible:=false;
   FStats     .Visible:=false;
+  FUnits     .Visible:=false;
+
   SetOffset(-1);
 
   case lidx of
@@ -437,8 +441,16 @@ begin
       else
         lidx:=0;
       end;
-      FMaps.FillInfo(SGame,lidx);
-      FMaps.Visible:=true;
+      case tvSaveGame.Selected.level of
+        2: begin
+          FMaps.FillInfo(SGame,lidx);
+          FMaps.Visible:=true;
+        end;
+        3: begin
+          FUnits.FillInfo(SGame,lidx);
+          FUnits.Visible:=true;
+        end;
+      end;
     end;
 
     idxQuests: begin

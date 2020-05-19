@@ -251,115 +251,147 @@ msgid "Mod"
 msgstr ""
 
 #: tfmpet.cbenabled.caption
+msgctxt "tfmpet.cbenabled.caption"
 msgid "Enabled"
 msgstr ""
 
 #: tfmpet.cbimage.text
+msgctxt "tfmpet.cbimage.text"
 msgid "cbImage"
 msgstr ""
 
 #: tfmpet.cbspell1.text
+msgctxt "tfmpet.cbspell1.text"
 msgid "cbSpell1"
 msgstr ""
 
 #: tfmpet.cbspell2.text
+msgctxt "tfmpet.cbspell2.text"
 msgid "cbSpell2"
 msgstr ""
 
 #: tfmpet.cbspell3.text
+msgctxt "tfmpet.cbspell3.text"
 msgid "cbSpell3"
 msgstr ""
 
 #: tfmpet.cbspell4.text
+msgctxt "tfmpet.cbspell4.text"
 msgid "cbSpell4"
 msgstr ""
 
 #: tfmpet.gbaction.caption
+msgctxt "tfmpet.gbaction.caption"
 msgid "Action"
 msgstr ""
 
 #: tfmpet.lbldexterity.caption
+msgctxt "tfmpet.lbldexterity.caption"
 msgid "Dexterity"
 msgstr ""
 
 #: tfmpet.lblexperience.caption
+msgctxt "tfmpet.lblexperience.caption"
 msgid "Experience"
 msgstr ""
 
 #: tfmpet.lblfame.caption
+msgctxt "tfmpet.lblfame.caption"
 msgid "Fame"
 msgstr ""
 
 #: tfmpet.lblfameexp.caption
+msgctxt "tfmpet.lblfameexp.caption"
 msgid "Fame Exp"
 msgstr ""
 
 #: tfmpet.lblfocus.caption
+msgctxt "tfmpet.lblfocus.caption"
 msgid "Focus"
 msgstr ""
 
 #: tfmpet.lblgold.caption
+msgctxt "tfmpet.lblgold.caption"
 msgid "Gold"
 msgstr ""
 
 #: tfmpet.lblhealth.caption
+msgctxt "tfmpet.lblhealth.caption"
 msgid "Health"
 msgstr ""
 
 #: tfmpet.lblheathbonus.caption
+msgctxt "tfmpet.lblheathbonus.caption"
 msgid "Heath Bonus"
 msgstr ""
 
 #: tfmpet.lblimage.caption
+msgctxt "tfmpet.lblimage.caption"
 msgid "Original and current image"
 msgstr ""
 
 #: tfmpet.lbllevel.caption
+msgctxt "tfmpet.lbllevel.caption"
 msgid "Level"
 msgstr ""
 
 #: tfmpet.lblmana.caption
+msgctxt "tfmpet.lblmana.caption"
 msgid "Mana"
 msgstr ""
 
 #: tfmpet.lblmanabonus.caption
+msgctxt "tfmpet.lblmanabonus.caption"
 msgid "Mana Bonus"
 msgstr ""
 
 #: tfmpet.lblmorphtime.caption
+msgctxt "tfmpet.lblmorphtime.caption"
 msgid "Morph Time"
 msgstr ""
 
 #: tfmpet.lblscale.caption
+msgctxt "tfmpet.lblscale.caption"
 msgid "Scale"
 msgstr ""
 
 #: tfmpet.lblskin.caption
+msgctxt "tfmpet.lblskin.caption"
 msgid "Skin"
 msgstr ""
 
 #: tfmpet.lblstrength.caption
+msgctxt "tfmpet.lblstrength.caption"
 msgid "Strength"
 msgstr ""
 
 #: tfmpet.lbltowntime.caption
+msgctxt "tfmpet.lbltowntime.caption"
 msgid "Town Time"
 msgstr ""
 
 #: tfmpet.lblvitality.caption
+msgctxt "tfmpet.lblvitality.caption"
 msgid "Vitality"
 msgstr ""
 
 #: tfmpet.rbactionattack.caption
+msgctxt "tfmpet.rbactionattack.caption"
 msgid "Attack"
 msgstr ""
 
 #: tfmpet.rbactiondefence.caption
+msgctxt "tfmpet.rbactiondefence.caption"
 msgid "Defence"
 msgstr ""
 
 #: tfmpet.rbactionidle.caption
+msgctxt "tfmpet.rbactionidle.caption"
 msgid "Idle"
+msgstr ""
+
+#: tfmquests.btnsavequest.caption
+msgid "Save Quest"
 msgstr ""
 
 #: tfmquests.sgquests.columns[0].title.caption
@@ -605,7 +637,7 @@ msgstr ""
 
 #: tfmstat.sgunknown.columns[4].title.caption
 msgctxt "tfmstat.sgunknown.columns[4].title.caption"
-msgid "Field5"
+msgid "Field5 (b)"
 msgstr ""
 
 #: tfmstat.sgunknown.columns[5].title.caption
@@ -615,7 +647,7 @@ msgstr ""
 
 #: tfmstat.sgunknown.columns[6].title.caption
 msgctxt "tfmstat.sgunknown.columns[6].title.caption"
-msgid "Field7"
+msgid "Field7 (b)"
 msgstr ""
 
 #: tfmstat.sgunknown.columns[7].title.caption
@@ -630,7 +662,7 @@ msgstr ""
 
 #: tfmstat.sgunknown.columns[9].title.caption
 msgctxt "tfmstat.sgunknown.columns[9].title.caption"
-msgid "Field10"
+msgid "Field10 (b)"
 msgstr ""
 
 #: tfmstat.tsarea1.caption
@@ -677,6 +709,151 @@ msgstr ""
 #: tfmstatistic.gbstatistic.caption
 msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
+msgstr ""
+
+#: tfmunits.btnitems.caption
+msgctxt "tfmunits.btnitems.caption"
+msgid "Items"
+msgstr ""
+
+#: tfmunits.cbenabled.caption
+msgctxt "tfmunits.cbenabled.caption"
+msgid "Enabled"
+msgstr ""
+
+#: tfmunits.cbimage.text
+msgctxt "tfmunits.cbimage.text"
+msgid "cbImage"
+msgstr ""
+
+#: tfmunits.cbspell1.text
+msgctxt "tfmunits.cbspell1.text"
+msgid "cbSpell1"
+msgstr ""
+
+#: tfmunits.cbspell2.text
+msgctxt "tfmunits.cbspell2.text"
+msgid "cbSpell2"
+msgstr ""
+
+#: tfmunits.cbspell3.text
+msgctxt "tfmunits.cbspell3.text"
+msgid "cbSpell3"
+msgstr ""
+
+#: tfmunits.cbspell4.text
+msgctxt "tfmunits.cbspell4.text"
+msgid "cbSpell4"
+msgstr ""
+
+#: tfmunits.gbaction.caption
+msgctxt "tfmunits.gbaction.caption"
+msgid "Action"
+msgstr ""
+
+#: tfmunits.lbldexterity.caption
+msgctxt "tfmunits.lbldexterity.caption"
+msgid "Dexterity"
+msgstr ""
+
+#: tfmunits.lblexperience.caption
+msgctxt "tfmunits.lblexperience.caption"
+msgid "Experience"
+msgstr ""
+
+#: tfmunits.lblfame.caption
+msgctxt "tfmunits.lblfame.caption"
+msgid "Fame"
+msgstr ""
+
+#: tfmunits.lblfameexp.caption
+msgctxt "tfmunits.lblfameexp.caption"
+msgid "Fame Exp"
+msgstr ""
+
+#: tfmunits.lblfocus.caption
+msgctxt "tfmunits.lblfocus.caption"
+msgid "Focus"
+msgstr ""
+
+#: tfmunits.lblgold.caption
+msgctxt "tfmunits.lblgold.caption"
+msgid "Gold"
+msgstr ""
+
+#: tfmunits.lblhealth.caption
+msgctxt "tfmunits.lblhealth.caption"
+msgid "Health"
+msgstr ""
+
+#: tfmunits.lblheathbonus.caption
+msgctxt "tfmunits.lblheathbonus.caption"
+msgid "Heath Bonus"
+msgstr ""
+
+#: tfmunits.lblimage.caption
+msgctxt "tfmunits.lblimage.caption"
+msgid "Original and current image"
+msgstr ""
+
+#: tfmunits.lbllevel.caption
+msgctxt "tfmunits.lbllevel.caption"
+msgid "Level"
+msgstr ""
+
+#: tfmunits.lblmana.caption
+msgctxt "tfmunits.lblmana.caption"
+msgid "Mana"
+msgstr ""
+
+#: tfmunits.lblmanabonus.caption
+msgctxt "tfmunits.lblmanabonus.caption"
+msgid "Mana Bonus"
+msgstr ""
+
+#: tfmunits.lblmorphtime.caption
+msgctxt "tfmunits.lblmorphtime.caption"
+msgid "Morph Time"
+msgstr ""
+
+#: tfmunits.lblscale.caption
+msgctxt "tfmunits.lblscale.caption"
+msgid "Scale"
+msgstr ""
+
+#: tfmunits.lblskin.caption
+msgctxt "tfmunits.lblskin.caption"
+msgid "Skin"
+msgstr ""
+
+#: tfmunits.lblstrength.caption
+msgctxt "tfmunits.lblstrength.caption"
+msgid "Strength"
+msgstr ""
+
+#: tfmunits.lbltowntime.caption
+msgctxt "tfmunits.lbltowntime.caption"
+msgid "Town Time"
+msgstr ""
+
+#: tfmunits.lblvitality.caption
+msgctxt "tfmunits.lblvitality.caption"
+msgid "Vitality"
+msgstr ""
+
+#: tfmunits.rbactionattack.caption
+msgctxt "tfmunits.rbactionattack.caption"
+msgid "Attack"
+msgstr ""
+
+#: tfmunits.rbactiondefence.caption
+msgctxt "tfmunits.rbactiondefence.caption"
+msgid "Defence"
+msgstr ""
+
+#: tfmunits.rbactionidle.caption
+msgctxt "tfmunits.rbactionidle.caption"
+msgid "Idle"
 msgstr ""
 
 #: tl2common.rscasual

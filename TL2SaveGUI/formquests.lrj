@@ -3,5 +3,6 @@
 {"hash":308805,"name":"tfmquests.sgquests.columns[1].title.caption","sourcebytes":[68,111,110,101],"value":"Done"},
 {"hash":346165,"name":"tfmquests.sgquests.columns[2].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
 {"hash":345523,"name":"tfmquests.sgquests.columns[3].title.caption","sourcebytes":[77,111,100,115],"value":"Mods"},
-{"hash":1268,"name":"tfmquests.sgquests.columns[4].title.caption","sourcebytes":[73,100],"value":"Id"}
+{"hash":1268,"name":"tfmquests.sgquests.columns[4].title.caption","sourcebytes":[73,100],"value":"Id"},
+{"hash":123544676,"name":"tfmquests.btnsavequest.caption","sourcebytes":[83,97,118,101,32,81,117,101,115,116],"value":"Save Quest"}
 ]}

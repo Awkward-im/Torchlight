@@ -88,7 +88,7 @@ begin
         end;
       end;
   end;
-
+  sgKeyBinding.AutoAdjustColumns;
   sgKeybinding.EndUpdate;
 end;
 

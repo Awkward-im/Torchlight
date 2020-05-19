@@ -120,5 +120,48 @@ begin
   for i:=0 to High(lPet.ModIds) do
     lbModList.AddItem(GetTL2Mod(lPet.ModIds[i]),nil);
 end;
+(*
+procedure TfmPet.bbUpdateClick(Sender: TObject);
+var
+  lPet:TTL2Character;
+  lid:TL2ID;
+  i:integer;
+begin
+  lPet:=aSGame.PetInfo[PetIndex];
+  
+  lPet.Enabled:=cbEnabled.Checked;
+  lPet.Name:=edName.Text;
+{
+  if lPet.OriginId<>TL2IdEmpty then
+    lid:=lPet.OriginId
+  else
+    lid:=lPet.ImageId;
+  edOriginal.Caption:=GetTL2Pet(lid);
+ }
+  Val(edLevel      .Text,lPet.Level      ); 
+  Val(edStrength   .Text,lPet.Strength   );  
+  Val(edDexterity  .Text,lPet.Dexterity  ); 
+  Val(edFocus      .Text,lPet.Focus      ); 
+  Val(edVitality   .Text,lPet.Vitality   ); 
+  Val(edGold       .Text,lPet.Gold       ); 
+  Val(edSkin       .Text,lPet.Skin       ); 
+  Val(edExperience .Text,lPet.Experience );
+  Val(edFame       .Text,lPet.FameLevel  );
+  Val(edFameExp    .Text,lPet.FameExp    );
+  Val(edHealth     .Text,lPet.Health     );
+  Val(edHealthBonus.Text,lPet.HealthBonus);
+  Val(edMana       .Text,lPet.Mana       );
+  Val(edManaBonus  .Text,lPet.ManaBonus  );
+  lPet.Scale:=seScale.Value;
 
+  if      rbActionIdle   .Checked then lPet.Action:=Idle
+  else if rbActionAttack .Checked then lPet.Action:=Attack
+  else if rbActionDefence.Checked then lPet.Action:=Defence;
+{
+  lbModList.Clear;
+  for i:=0 to High(lPet.ModIds) do
+    lbModList.AddItem(GetTL2Mod(lPet.ModIds[i]),nil);
+}
+end;
+*)
 end.

@@ -9,10 +9,11 @@ object fmKeyBinding: TfmKeyBinding
   ClientWidth = 598
   LCLVersion = '2.1.0.0'
   object sgKeyBinding: TStringGrid
-    Left = 8
-    Height = 420
-    Top = 24
-    Width = 512
+    Left = 0
+    Height = 449
+    Top = 0
+    Width = 598
+    Align = alClient
     ColCount = 4
     Columns = <    
       item
