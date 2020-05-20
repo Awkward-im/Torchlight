@@ -12,19 +12,28 @@ type
 
   { TfmPet }
 
+  { TfmChar }
+
   TfmChar = class(TForm)
     cbEnabled : TCheckBox;
-    cbImage   : TComboBox;  lblImage: TLabel;
+    edName     : TEdit;
+    lblSuffix  : TLabel;
+
+    cbImage   : TComboBox;
+    lblImage  : TLabel;
     edOriginal: TEdit;
 
-    cbSpell1: TComboBox;
-    cbSpell2: TComboBox;
-    cbSpell3: TComboBox;
-    cbSpell4: TComboBox;
-    edSpell1: TEdit;
-    edSpell2: TEdit;
-    edSpell3: TEdit;
-    edSpell4: TEdit;
+    seScale: TFloatSpinEdit;  lblScale: TLabel;
+
+    gbCoords: TGroupBox;
+    lblX: TLabel;  edX: TEdit;
+    lblY: TLabel;  edY: TEdit;
+    lblZ: TLabel;  edZ: TEdit;
+
+    cbSpell1: TComboBox;  edSpell1: TEdit;
+    cbSpell2: TComboBox;  edSpell2: TEdit;
+    cbSpell3: TComboBox;  edSpell3: TEdit;
+    cbSpell4: TComboBox;  edSpell4: TEdit;
 
     edLevel      : TEdit;  lblLevel     : TLabel;
     edStrength   : TEdit;  lblStrength  : TLabel;
@@ -43,11 +52,6 @@ type
     edMorphTime  : TEdit;  lblMorphTime : TLabel;
     edTownTime   : TEdit;  lblTownTime  : TLabel;
 
-    seScale: TFloatSpinEdit;  lblScale: TLabel;
-
-    edName     : TEdit;
-    lblSuffix  : TLabel;
-
     lbModList: TListBox;
 
     gbAction: TGroupBox;
@@ -55,11 +59,14 @@ type
     rbActionAttack : TRadioButton;
     rbActionDefence: TRadioButton;
   private
-    SGame:TTL2SaveFile;
+    SChar :TTL2Character;
+
+    function GetMainFlag:boolean;
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile);
+    procedure FillInfo(aChar:TTL2Character);
 
+    property IsMain:boolean read GetMainFlag;
   end;
 
 implementation
@@ -70,46 +77,97 @@ uses
   tl2types,
   tl2db;
 
-procedure TfmChar.FillInfo(aSGame:TTL2SaveFile);
+function TfmChar.GetMainFlag:boolean;
+begin
+  result:=SChar.Sign=$FF;
+end;
+
+procedure TfmChar.FillInfo(aChar:TTL2Character);
 var
-  lChar:TTL2Character;
   lid:TL2ID;
   i:integer;
 begin
-  SGame:=aSGame;
-  lChar:=aSGame.CharInfo;
-  
-  cbEnabled.Checked:=lChar.Enabled;
+  SChar:=aChar;
 
-  edName.Text:=lChar.Name;
-  if lChar.OriginId<>TL2IdEmpty then
-    lid:=lChar.OriginId
+  cbEnabled.Checked:=aChar.Enabled;
+
+  edName.Text:=aChar.Name;
+  if aChar.OriginId<>TL2IdEmpty then
+    lid:=aChar.OriginId
   else
-    lid:=lChar.ImageId;
+    lid:=aChar.ImageId;
   edOriginal.Caption:=GetTL2Class(lid);
 
-  edLevel      .Text:=IntToStr(lChar.Level);
-  edStrength   .Text:=IntToStr(lChar.Strength);
-  edDexterity  .Text:=IntToStr(lChar.Dexterity);
-  edFocus      .Text:=IntToStr(lChar.Focus);
-  edVitality   .Text:=IntToStr(lChar.Vitality);
-  edGold       .Text:=IntToStr(lChar.Gold);
-  edSkin       .Text:=IntToStr(lChar.Skin);
-  edExperience .Text:=IntToStr(lChar.Experience);
-  edFame       .Text:=IntToStr(lChar.FameLevel);
-  edFameExp    .Text:=IntToStr(lChar.FameExp);
-  edHealth     .Text:=FloatToStr(lChar.Health);
-  edHealthBonus.Text:=IntToStr(lChar.HealthBonus);
-  edMana       .Text:=FloatToStr(lChar.Mana);
-  edManaBonus  .Text:=IntToStr(lChar.ManaBonus);
-  seScale.Value:=lChar.Scale;
-  rbActionIdle   .Checked:=lChar.Action=Idle;
-  rbActionAttack .Checked:=lChar.Action=Attack;
-  rbActionDefence.Checked:=lChar.Action=Defence;
+  edLevel      .Text:=IntToStr(aChar.Level);
+  edStrength   .Text:=IntToStr(aChar.Strength);
+  edDexterity  .Text:=IntToStr(aChar.Dexterity);
+  edFocus      .Text:=IntToStr(aChar.Focus);
+  edVitality   .Text:=IntToStr(aChar.Vitality);
+  edGold       .Text:=IntToStr(aChar.Gold);
+  edSkin       .Text:=IntToStr(aChar.Skin);
+  edExperience .Text:=IntToStr(aChar.Experience);
+  edFame       .Text:=IntToStr(aChar.FameLevel);
+  edFameExp    .Text:=IntToStr(aChar.FameExp);
+  edHealth     .Text:=IntToStr(Round(aChar.Health));
+  edHealthBonus.Text:=IntToStr(aChar.HealthBonus);
+  edMana       .Text:=IntToStr(Round(aChar.Mana));
+  edManaBonus  .Text:=IntToStr(aChar.ManaBonus);
+  seScale.Value:=aChar.Scale;
+  rbActionIdle   .Checked:=aChar.Action=Idle;
+  rbActionAttack .Checked:=aChar.Action=Attack;
+  rbActionDefence.Checked:=aChar.Action=Defence;
+
+  edX.Text:=FloatToStrF(aChar.Position.X,ffFixed,-8,2);
+  edY.Text:=FloatToStrF(aChar.Position.Y,ffFixed,-8,2);
+  edZ.Text:=FloatToStrF(aChar.Position.Z,ffFixed,-8,2);
 
   lbModList.Clear;
-  for i:=0 to High(lChar.ModIds) do
-    lbModList.AddItem(GetTL2Mod(lChar.ModIds[i]),nil);
+  for i:=0 to High(aChar.ModIds) do
+    lbModList.AddItem(GetTL2Mod(aChar.ModIds[i]),nil);
 end;
 
+(*
+procedure TfmPet.bbUpdateClick(Sender: TObject);
+var
+  lPet:TTL2Character;
+  lid:TL2ID;
+  i:integer;
+begin
+  lPet:=aSGame.PetInfo[PetIndex];
+
+  lPet.Enabled:=cbEnabled.Checked;
+  lPet.Name:=edName.Text;
+{
+  if lPet.OriginId<>TL2IdEmpty then
+    lid:=lPet.OriginId
+  else
+    lid:=lPet.ImageId;
+  edOriginal.Caption:=GetTL2Pet(lid);
+ }
+  Val(edLevel      .Text,lPet.Level      );
+  Val(edStrength   .Text,lPet.Strength   );
+  Val(edDexterity  .Text,lPet.Dexterity  );
+  Val(edFocus      .Text,lPet.Focus      );
+  Val(edVitality   .Text,lPet.Vitality   );
+  Val(edGold       .Text,lPet.Gold       );
+  Val(edSkin       .Text,lPet.Skin       );
+  Val(edExperience .Text,lPet.Experience );
+  Val(edFame       .Text,lPet.FameLevel  );
+  Val(edFameExp    .Text,lPet.FameExp    );
+  Val(edHealth     .Text,lPet.Health     );
+  Val(edHealthBonus.Text,lPet.HealthBonus);
+  Val(edMana       .Text,lPet.Mana       );
+  Val(edManaBonus  .Text,lPet.ManaBonus  );
+  lPet.Scale:=seScale.Value;
+
+  if      rbActionIdle   .Checked then lPet.Action:=Idle
+  else if rbActionAttack .Checked then lPet.Action:=Attack
+  else if rbActionDefence.Checked then lPet.Action:=Defence;
+{
+  lbModList.Clear;
+  for i:=0 to High(lPet.ModIds) do
+    lbModList.AddItem(GetTL2Mod(lPet.ModIds[i]),nil);
+}
+end;
+*)
 end.

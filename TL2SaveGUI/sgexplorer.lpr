@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   DefaultTranslator,
-  Forms,
+  Forms, anchordockpkg,
   formSaveGame;
 
 {$R *.res}

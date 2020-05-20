@@ -72,10 +72,11 @@ type
     property Time       : Single read FTime;
     property CurrentTime: Single read FCurrentTime;
 
-    property FoW_X: integer read FFoW_X;
-    property FoW_Y: integer read FFoW_Y;
-    property FoW  : PByte   read FFoW;
-    property Name : string  read FName;
+    property FoW_X : integer read FFoW_X;
+    property FoW_Y : integer read FFoW_Y;
+    property FoW   : PByte   read FFoW;
+    property Name  : string  read FName;
+    property Number: dword   read Unkn0;
 
     property MobInfos  : TTL2CharArray   read FMobInfos;
     property UnknList  : TL2IdList       read FUnknList;

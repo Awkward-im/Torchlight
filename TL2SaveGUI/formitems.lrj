@@ -1,0 +1,15 @@
+{"version":1,"strings":[
+{"hash":346165,"name":"tfmitems.lblname.caption","sourcebytes":[78,97,109,101],"value":"Name"},
+{"hash":91798792,"name":"tfmitems.lblprefix.caption","sourcebytes":[80,114,101,102,105,120],"value":"Prefix"},
+{"hash":95145224,"name":"tfmitems.lblsuffix.caption","sourcebytes":[83,117,102,102,105,120],"value":"Suffix"},
+{"hash":5426364,"name":"tfmitems.lbllevel.caption","sourcebytes":[76,101,118,101,108],"value":"Level"},
+{"hash":5941147,"name":"tfmitems.lblstack.caption","sourcebytes":[83,116,97,99,107],"value":"Stack"},
+{"hash":169968708,"name":"tfmitems.lblenchant.caption","sourcebytes":[69,110,99,104,97,110,116,32,99,111,117,110,116],"value":"Enchant count"},
+{"hash":111192878,"name":"tfmitems.lblposition.caption","sourcebytes":[80,111,115,105,116,105,111,110],"value":"Position"},
+{"hash":124758389,"name":"tfmitems.lblpostype.caption","sourcebytes":[108,98,108,80,111,115,84,121,112,101],"value":"lblPosType"},
+{"hash":173677795,"name":"tfmitems.lblsockets.caption","sourcebytes":[83,111,99,107,101,116,115],"value":"Sockets"},
+{"hash":153108869,"name":"tfmitems.lblweapondmg.caption","sourcebytes":[87,101,97,112,111,110,32,68,97,109,97,103,101],"value":"Weapon Damage"},
+{"hash":4756578,"name":"tfmitems.lblarmor.caption","sourcebytes":[65,114,109,111,114],"value":"Armor"},
+{"hash":105072933,"name":"tfmitems.lblarmortype.caption","sourcebytes":[65,114,109,111,114,32,116,121,112,101],"value":"Armor type"},
+{"hash":261502245,"name":"tfmitems.lblarmorbytype.caption","sourcebytes":[108,98,108,65,114,109,111,114,66,121,84,121,112,101],"value":"lblArmorByType"}
+]}

@@ -145,6 +145,7 @@ type
     property Gold           :integer  read FGold            write FGold;
     property Scale          :TL2Float read FScale           write FScale;
     property Skin           :byte     read FSkin            write FSkin;
+
 {
     property Skills   [idx:integer]:TL2IdVal    read  GetSkills;
     property Spells   [idx:integer]:TTL2Spell   read  GetSpells;
@@ -153,7 +154,9 @@ type
     property Passives1[idx:integer]:TTL2Passive read  GetPassives1;
     property Passives2[idx:integer]:TTL2Passive read  GetPassives2;
 }
-    property ModIds:TL2IdList read FModIds;
+    property Items :TTL2ItemList read FItems;
+    property Skills:TL2IdValList read FSkills;
+    property ModIds:TL2IdList    read FModIds;
   end;
 type
   TTL2CharArray = array of TTL2Character;

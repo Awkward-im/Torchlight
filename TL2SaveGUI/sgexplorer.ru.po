@@ -12,6 +12,18 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "Language: ru\n"
 
+#: formbuttons.rsexportdata
+#, fuzzy
+msgctxt "formbuttons.rsexportdata"
+msgid "Export data"
+msgstr "Экспорт данных"
+
+#: formbuttons.rsimportdata
+#, fuzzy
+msgctxt "formbuttons.rsimportdata"
+msgid "Import data"
+msgstr "Импорт данных"
+
 #: formmap.rssavetrigger
 msgid "Save Trigger data"
 msgstr ""
@@ -30,10 +42,12 @@ msgid "Common"
 msgstr "Общее"
 
 #: formsavegame.rsexportdata
+msgctxt "formsavegame.rsexportdata"
 msgid "Export data"
 msgstr "Экспорт данных"
 
 #: formsavegame.rsimportdata
+msgctxt "formsavegame.rsimportdata"
 msgid "Import data"
 msgstr "Импорт данных"
 
@@ -113,6 +127,200 @@ msgstr "Глобальная статистика"
 msgid "Units"
 msgstr "Юниты"
 
+#: tfmbuttons.btndelete.caption
+msgid "Delete"
+msgstr ""
+
+#: tfmbuttons.btnexport.caption
+msgctxt "tfmbuttons.btnexport.caption"
+msgid "Export"
+msgstr ""
+
+#: tfmbuttons.btnimport.caption
+#, fuzzy
+msgctxt "tfmbuttons.btnimport.caption"
+msgid "Import"
+msgstr "Импорт"
+
+#: tfmchar.cbenabled.caption
+#, fuzzy
+msgctxt "tfmchar.cbenabled.caption"
+msgid "Enabled"
+msgstr "Разрешено"
+
+#: tfmchar.cbimage.text
+msgctxt "tfmchar.cbimage.text"
+msgid "cbImage"
+msgstr ""
+
+#: tfmchar.cbspell1.text
+msgctxt "tfmchar.cbspell1.text"
+msgid "cbSpell1"
+msgstr ""
+
+#: tfmchar.cbspell2.text
+msgctxt "tfmchar.cbspell2.text"
+msgid "cbSpell2"
+msgstr ""
+
+#: tfmchar.cbspell3.text
+msgctxt "tfmchar.cbspell3.text"
+msgid "cbSpell3"
+msgstr ""
+
+#: tfmchar.cbspell4.text
+msgctxt "tfmchar.cbspell4.text"
+msgid "cbSpell4"
+msgstr ""
+
+#: tfmchar.gbaction.caption
+#, fuzzy
+msgctxt "tfmchar.gbaction.caption"
+msgid "Action"
+msgstr "Действие"
+
+#: tfmchar.gbcoords.caption
+msgid "Coordinates"
+msgstr ""
+
+#: tfmchar.lbldexterity.caption
+#, fuzzy
+msgctxt "tfmchar.lbldexterity.caption"
+msgid "Dexterity"
+msgstr "Ловкость"
+
+#: tfmchar.lblexperience.caption
+#, fuzzy
+msgctxt "tfmchar.lblexperience.caption"
+msgid "Experience"
+msgstr "Опыт"
+
+#: tfmchar.lblfame.caption
+#, fuzzy
+msgctxt "tfmchar.lblfame.caption"
+msgid "Fame"
+msgstr "Слава"
+
+#: tfmchar.lblfameexp.caption
+#, fuzzy
+msgctxt "tfmchar.lblfameexp.caption"
+msgid "Fame Exp"
+msgstr "Опыт славы"
+
+#: tfmchar.lblfocus.caption
+#, fuzzy
+msgctxt "tfmchar.lblfocus.caption"
+msgid "Focus"
+msgstr "Концентрация"
+
+#: tfmchar.lblgold.caption
+#, fuzzy
+msgctxt "tfmchar.lblgold.caption"
+msgid "Gold"
+msgstr "Золото"
+
+#: tfmchar.lblhealth.caption
+#, fuzzy
+msgctxt "tfmchar.lblhealth.caption"
+msgid "Health"
+msgstr "Здоровье"
+
+#: tfmchar.lblheathbonus.caption
+#, fuzzy
+msgctxt "tfmchar.lblheathbonus.caption"
+msgid "Heath Bonus"
+msgstr "Бонус здоровья"
+
+#: tfmchar.lblimage.caption
+#, fuzzy
+msgctxt "tfmchar.lblimage.caption"
+msgid "Original and current image"
+msgstr "Исходный  и текущий облики"
+
+#: tfmchar.lbllevel.caption
+#, fuzzy
+msgctxt "tfmchar.lbllevel.caption"
+msgid "Level"
+msgstr "Уровень"
+
+#: tfmchar.lblmana.caption
+#, fuzzy
+msgctxt "tfmchar.lblmana.caption"
+msgid "Mana"
+msgstr "Мана"
+
+#: tfmchar.lblmanabonus.caption
+#, fuzzy
+msgctxt "tfmchar.lblmanabonus.caption"
+msgid "Mana Bonus"
+msgstr "Бонус маны"
+
+#: tfmchar.lblmorphtime.caption
+#, fuzzy
+msgctxt "tfmchar.lblmorphtime.caption"
+msgid "Morph Time"
+msgstr "Время морфа"
+
+#: tfmchar.lblscale.caption
+#, fuzzy
+msgctxt "tfmchar.lblscale.caption"
+msgid "Scale"
+msgstr "Масштаб"
+
+#: tfmchar.lblskin.caption
+#, fuzzy
+msgctxt "tfmchar.lblskin.caption"
+msgid "Skin"
+msgstr "Окрас"
+
+#: tfmchar.lblstrength.caption
+#, fuzzy
+msgctxt "tfmchar.lblstrength.caption"
+msgid "Strength"
+msgstr "Сила"
+
+#: tfmchar.lbltowntime.caption
+#, fuzzy
+msgctxt "tfmchar.lbltowntime.caption"
+msgid "Town Time"
+msgstr "Время в городе"
+
+#: tfmchar.lblvitality.caption
+#, fuzzy
+msgctxt "tfmchar.lblvitality.caption"
+msgid "Vitality"
+msgstr "Стойкость"
+
+#: tfmchar.lblx.caption
+msgid "X:"
+msgstr ""
+
+#: tfmchar.lbly.caption
+msgid "Y:"
+msgstr ""
+
+#: tfmchar.lblz.caption
+msgid "Z:"
+msgstr ""
+
+#: tfmchar.rbactionattack.caption
+#, fuzzy
+msgctxt "tfmchar.rbactionattack.caption"
+msgid "Attack"
+msgstr "Атака"
+
+#: tfmchar.rbactiondefence.caption
+#, fuzzy
+msgctxt "tfmchar.rbactiondefence.caption"
+msgid "Defence"
+msgstr "Защита"
+
+#: tfmchar.rbactionidle.caption
+#, fuzzy
+msgctxt "tfmchar.rbactionidle.caption"
+msgid "Idle"
+msgstr "Покой"
+
 #: tfmcommon.cbhardcore.caption
 msgctxt "tfmcommon.cbhardcore.caption"
 msgid "cbHardcore"
@@ -151,6 +359,61 @@ msgstr ""
 #: tfmcommon.lblng.caption
 msgctxt "tfmcommon.lblng.caption"
 msgid "lblNG"
+msgstr ""
+
+#: tfmitems.lblarmor.caption
+msgid "Armor"
+msgstr ""
+
+#: tfmitems.lblarmorbytype.caption
+msgid "lblArmorByType"
+msgstr ""
+
+#: tfmitems.lblarmortype.caption
+msgid "Armor type"
+msgstr ""
+
+#: tfmitems.lblenchant.caption
+msgid "Enchant count"
+msgstr ""
+
+#: tfmitems.lbllevel.caption
+msgctxt "tfmitems.lbllevel.caption"
+msgid "Level"
+msgstr ""
+
+#: tfmitems.lblname.caption
+#, fuzzy
+msgctxt "tfmitems.lblname.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmitems.lblposition.caption
+msgid "Position"
+msgstr ""
+
+#: tfmitems.lblpostype.caption
+msgid "lblPosType"
+msgstr ""
+
+#: tfmitems.lblprefix.caption
+msgid "Prefix"
+msgstr ""
+
+#: tfmitems.lblsockets.caption
+msgid "Sockets"
+msgstr ""
+
+#: tfmitems.lblstack.caption
+msgid "Stack"
+msgstr ""
+
+#: tfmitems.lblsuffix.caption
+msgid "Suffix"
+msgstr ""
+
+#: tfmitems.lblweapondmg.caption
+msgid "Weapon Damage"
 msgstr ""
 
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
@@ -265,146 +528,6 @@ msgctxt "tfmmovies.sgmovies.columns[5].title.caption"
 msgid "Mod"
 msgstr "Мод"
 
-#: tfmpet.cbenabled.caption
-msgctxt "tfmpet.cbenabled.caption"
-msgid "Enabled"
-msgstr "Разрешено"
-
-#: tfmpet.cbimage.text
-msgctxt "tfmpet.cbimage.text"
-msgid "cbImage"
-msgstr ""
-
-#: tfmpet.cbspell1.text
-msgctxt "tfmpet.cbspell1.text"
-msgid "cbSpell1"
-msgstr ""
-
-#: tfmpet.cbspell2.text
-msgctxt "tfmpet.cbspell2.text"
-msgid "cbSpell2"
-msgstr ""
-
-#: tfmpet.cbspell3.text
-msgctxt "tfmpet.cbspell3.text"
-msgid "cbSpell3"
-msgstr ""
-
-#: tfmpet.cbspell4.text
-msgctxt "tfmpet.cbspell4.text"
-msgid "cbSpell4"
-msgstr ""
-
-#: tfmpet.gbaction.caption
-msgctxt "tfmpet.gbaction.caption"
-msgid "Action"
-msgstr "Действие"
-
-#: tfmpet.lbldexterity.caption
-msgctxt "tfmpet.lbldexterity.caption"
-msgid "Dexterity"
-msgstr "Ловкость"
-
-#: tfmpet.lblexperience.caption
-msgctxt "tfmpet.lblexperience.caption"
-msgid "Experience"
-msgstr "Опыт"
-
-#: tfmpet.lblfame.caption
-msgctxt "tfmpet.lblfame.caption"
-msgid "Fame"
-msgstr "Слава"
-
-#: tfmpet.lblfameexp.caption
-msgctxt "tfmpet.lblfameexp.caption"
-msgid "Fame Exp"
-msgstr "Опыт славы"
-
-#: tfmpet.lblfocus.caption
-msgctxt "tfmpet.lblfocus.caption"
-msgid "Focus"
-msgstr "Концентрация"
-
-#: tfmpet.lblgold.caption
-msgctxt "tfmpet.lblgold.caption"
-msgid "Gold"
-msgstr "Золото"
-
-#: tfmpet.lblhealth.caption
-msgctxt "tfmpet.lblhealth.caption"
-msgid "Health"
-msgstr "Здоровье"
-
-#: tfmpet.lblheathbonus.caption
-msgctxt "tfmpet.lblheathbonus.caption"
-msgid "Heath Bonus"
-msgstr "Бонус здоровья"
-
-#: tfmpet.lblimage.caption
-msgctxt "tfmpet.lblimage.caption"
-msgid "Original and current image"
-msgstr "Исходный  и текущий облики"
-
-#: tfmpet.lbllevel.caption
-msgctxt "tfmpet.lbllevel.caption"
-msgid "Level"
-msgstr "Уровень"
-
-#: tfmpet.lblmana.caption
-msgctxt "tfmpet.lblmana.caption"
-msgid "Mana"
-msgstr "Мана"
-
-#: tfmpet.lblmanabonus.caption
-msgctxt "tfmpet.lblmanabonus.caption"
-msgid "Mana Bonus"
-msgstr "Бонус маны"
-
-#: tfmpet.lblmorphtime.caption
-msgctxt "tfmpet.lblmorphtime.caption"
-msgid "Morph Time"
-msgstr "Время морфа"
-
-#: tfmpet.lblscale.caption
-msgctxt "tfmpet.lblscale.caption"
-msgid "Scale"
-msgstr "Масштаб"
-
-#: tfmpet.lblskin.caption
-msgctxt "tfmpet.lblskin.caption"
-msgid "Skin"
-msgstr "Окрас"
-
-#: tfmpet.lblstrength.caption
-msgctxt "tfmpet.lblstrength.caption"
-msgid "Strength"
-msgstr "Сила"
-
-#: tfmpet.lbltowntime.caption
-msgctxt "tfmpet.lbltowntime.caption"
-msgid "Town Time"
-msgstr "Время в городе"
-
-#: tfmpet.lblvitality.caption
-msgctxt "tfmpet.lblvitality.caption"
-msgid "Vitality"
-msgstr "Стойкость"
-
-#: tfmpet.rbactionattack.caption
-msgctxt "tfmpet.rbactionattack.caption"
-msgid "Attack"
-msgstr "Атака"
-
-#: tfmpet.rbactiondefence.caption
-msgctxt "tfmpet.rbactiondefence.caption"
-msgid "Defence"
-msgstr "Защита"
-
-#: tfmpet.rbactionidle.caption
-msgctxt "tfmpet.rbactionidle.caption"
-msgid "Idle"
-msgstr "Покой"
-
 #: tfmquests.btnsavequest.caption
 msgid "Save Quest"
 msgstr ""
@@ -456,6 +579,7 @@ msgstr "Мод"
 #: tfmsavefile.actexport.caption
 #, fuzzy
 #| msgid "Export"
+msgctxt "tfmsavefile.actexport.caption"
 msgid "Export"
 msgstr "Экспорт"
 
@@ -472,6 +596,7 @@ msgid "&Save"
 msgstr "Сохранить"
 
 #: tfmsavefile.actimport.caption
+msgctxt "tfmsavefile.actimport.caption"
 msgid "Import"
 msgstr "Импорт"
 
@@ -506,6 +631,15 @@ msgstr "Очков у мений на уровень"
 #: tfmsettings.lblstatperlvl.caption
 msgid "Stat points per level"
 msgstr "Очков статуса на уровень"
+
+#: tfmskills.sgskills.columns[0].title.caption
+msgid "Skill"
+msgstr ""
+
+#: tfmskills.sgskills.columns[1].title.caption
+msgctxt "tfmskills.sgskills.columns[1].title.caption"
+msgid "Level"
+msgstr ""
 
 #: tfmstat.sgarea1.columns[0].title.caption
 msgctxt "tfmstat.sgarea1.columns[0].title.caption"
@@ -723,174 +857,10 @@ msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
 msgstr "Статистика"
 
-#: tfmunits.btnitems.caption
-#, fuzzy
-msgctxt "tfmunits.btnitems.caption"
-msgid "Items"
-msgstr "Предметы"
-
-#: tfmunits.cbenabled.caption
-#, fuzzy
-msgctxt "tfmunits.cbenabled.caption"
-msgid "Enabled"
-msgstr "Разрешено"
-
-#: tfmunits.cbimage.text
-msgctxt "tfmunits.cbimage.text"
-msgid "cbImage"
+#: tfmunits.btnexport.caption
+msgctxt "tfmunits.btnexport.caption"
+msgid "Export"
 msgstr ""
-
-#: tfmunits.cbspell1.text
-msgctxt "tfmunits.cbspell1.text"
-msgid "cbSpell1"
-msgstr ""
-
-#: tfmunits.cbspell2.text
-msgctxt "tfmunits.cbspell2.text"
-msgid "cbSpell2"
-msgstr ""
-
-#: tfmunits.cbspell3.text
-msgctxt "tfmunits.cbspell3.text"
-msgid "cbSpell3"
-msgstr ""
-
-#: tfmunits.cbspell4.text
-msgctxt "tfmunits.cbspell4.text"
-msgid "cbSpell4"
-msgstr ""
-
-#: tfmunits.gbaction.caption
-#, fuzzy
-msgctxt "tfmunits.gbaction.caption"
-msgid "Action"
-msgstr "Действие"
-
-#: tfmunits.lbldexterity.caption
-#, fuzzy
-msgctxt "tfmunits.lbldexterity.caption"
-msgid "Dexterity"
-msgstr "Ловкость"
-
-#: tfmunits.lblexperience.caption
-#, fuzzy
-msgctxt "tfmunits.lblexperience.caption"
-msgid "Experience"
-msgstr "Опыт"
-
-#: tfmunits.lblfame.caption
-#, fuzzy
-msgctxt "tfmunits.lblfame.caption"
-msgid "Fame"
-msgstr "Слава"
-
-#: tfmunits.lblfameexp.caption
-#, fuzzy
-msgctxt "tfmunits.lblfameexp.caption"
-msgid "Fame Exp"
-msgstr "Опыт славы"
-
-#: tfmunits.lblfocus.caption
-#, fuzzy
-msgctxt "tfmunits.lblfocus.caption"
-msgid "Focus"
-msgstr "Концентрация"
-
-#: tfmunits.lblgold.caption
-#, fuzzy
-msgctxt "tfmunits.lblgold.caption"
-msgid "Gold"
-msgstr "Золото"
-
-#: tfmunits.lblhealth.caption
-#, fuzzy
-msgctxt "tfmunits.lblhealth.caption"
-msgid "Health"
-msgstr "Здоровье"
-
-#: tfmunits.lblheathbonus.caption
-#, fuzzy
-msgctxt "tfmunits.lblheathbonus.caption"
-msgid "Heath Bonus"
-msgstr "Бонус здоровья"
-
-#: tfmunits.lblimage.caption
-#, fuzzy
-msgctxt "tfmunits.lblimage.caption"
-msgid "Original and current image"
-msgstr "Исходный  и текущий облики"
-
-#: tfmunits.lbllevel.caption
-#, fuzzy
-msgctxt "tfmunits.lbllevel.caption"
-msgid "Level"
-msgstr "Уровень"
-
-#: tfmunits.lblmana.caption
-#, fuzzy
-msgctxt "tfmunits.lblmana.caption"
-msgid "Mana"
-msgstr "Мана"
-
-#: tfmunits.lblmanabonus.caption
-#, fuzzy
-msgctxt "tfmunits.lblmanabonus.caption"
-msgid "Mana Bonus"
-msgstr "Бонус маны"
-
-#: tfmunits.lblmorphtime.caption
-#, fuzzy
-msgctxt "tfmunits.lblmorphtime.caption"
-msgid "Morph Time"
-msgstr "Время морфа"
-
-#: tfmunits.lblscale.caption
-#, fuzzy
-msgctxt "tfmunits.lblscale.caption"
-msgid "Scale"
-msgstr "Масштаб"
-
-#: tfmunits.lblskin.caption
-#, fuzzy
-msgctxt "tfmunits.lblskin.caption"
-msgid "Skin"
-msgstr "Окрас"
-
-#: tfmunits.lblstrength.caption
-#, fuzzy
-msgctxt "tfmunits.lblstrength.caption"
-msgid "Strength"
-msgstr "Сила"
-
-#: tfmunits.lbltowntime.caption
-#, fuzzy
-msgctxt "tfmunits.lbltowntime.caption"
-msgid "Town Time"
-msgstr "Время в городе"
-
-#: tfmunits.lblvitality.caption
-#, fuzzy
-msgctxt "tfmunits.lblvitality.caption"
-msgid "Vitality"
-msgstr "Стойкость"
-
-#: tfmunits.rbactionattack.caption
-#, fuzzy
-msgctxt "tfmunits.rbactionattack.caption"
-msgid "Attack"
-msgstr "Атака"
-
-#: tfmunits.rbactiondefence.caption
-#, fuzzy
-msgctxt "tfmunits.rbactiondefence.caption"
-msgid "Defence"
-msgstr "Защита"
-
-#: tfmunits.rbactionidle.caption
-#, fuzzy
-msgctxt "tfmunits.rbactionidle.caption"
-msgid "Idle"
-msgstr "Покой"
 
 #: tl2common.rscasual
 msgid "Casual"

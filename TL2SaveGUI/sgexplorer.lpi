@@ -59,6 +59,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="AnchorDocking"/>
+      </Item>
+      <Item>
         <PackageName Value="LCL"/>
       </Item>
     </RequiredPackages>
@@ -142,14 +145,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSettings"/>
-      </Unit>
-      <Unit>
-        <Filename Value="formpet.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmPet"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="formPet"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tl2stats.pas"/>
@@ -240,6 +235,29 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formUnits"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formskills.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmSkills"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formSkills"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formitems.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmItems"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formItems"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formbuttons.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmButtons"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formButtons"/>
       </Unit>
     </Units>
   </ProjectOptions>

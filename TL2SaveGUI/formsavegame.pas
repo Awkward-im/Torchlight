@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
   Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
-  formKeyBinding, formStatistic, formCommon, formSettings,
-  formPet, formChar, formStat, formMap, formUnits;
+  formButtons, formKeyBinding, formStatistic, formCommon, formSettings,
+  formChar, formStat, formMap, formUnits, formSkills, formItems;
 
 type
 
@@ -21,10 +21,7 @@ type
     actExport  : TAction;
     actImport  : TAction;
     ActionList: TActionList;
-    btnExport: TButton;
-    btnImport: TButton;
     ImageList: TImageList;
-    lblOffset: TLabel;
     MainMenu: TMainMenu;
     mnuFile: TMenuItem;
     mnuFileOpen: TMenuItem;
@@ -33,7 +30,6 @@ type
     mnuFileExit: TMenuItem;
     MainPanel: TPanel;
     LeftPanel: TPanel;
-    pnlTop: TPanel;
     Splitter: TSplitter;
     tvSaveGame: TTreeView;
     procedure actExportExecute(Sender: TObject);
@@ -52,17 +48,17 @@ type
     FKeyBinding:TfmKeyBinding;
     FQuests    :TfmQuests;
     FStatistic :TfmStatistic;
-    FPets      :TfmPet;
     FMaps      :TfmMap;
     FChar      :TfmChar;
     FStats     :TfmStat;
     FUnits     :TfmUnits;
+    FSkills    :TfmSkills;
+    FItems     :TfmItems;
     
     SGame:TTL2SaveFile;
     procedure ChangeTree;
     procedure CreateTree;
     function GetTVIndex: integer;
-    procedure SetOffset(aofs: integer);
   public
 
   end;
@@ -158,6 +154,7 @@ end;
 procedure TfmSaveFile.ChangeTree;
 var
   lNode,lSubNode:TTreeNode;
+  ls:string;
   i,lcnt: integer;
 begin
   lNode:=tvSaveGame.Items[idxSavegame];
@@ -171,31 +168,29 @@ begin
   lcnt:=SGame.PetCount;
   lNode:=tvSaveGame.Items[idxSavegame].Items[idxPets];
   lNode.DeleteChildren;
-//  if lcnt>1 then
+  for i:=0 to lcnt-1 do
   begin
-    for i:=0 to lcnt-1 do
-    begin
-      lSubNode:=tvSaveGame.Items.AddChild(lNode,'pet_'+IntToStr(i));
-      lSubNode.Data:=pointer(SGame.PetInfo[i]);
-      tvSaveGame.Items.AddChild(lSubNode,rsItems);
-    end;
+    lSubNode:=tvSaveGame.Items.AddChild(lNode,SGame.PetInfo[i].Name);
+    lSubNode.Data:=pointer(SGame.PetInfo[i]);
+    tvSaveGame.Items.AddChild(lSubNode,rsItems);
   end;
 
   lcnt:=SGame.MapCount;
   lNode:=tvSaveGame.Items[idxSavegame].Items[idxMaps];
   lNode.DeleteChildren;
-//  if lcnt>1 then
+  for i:=0 to lcnt-1 do
   begin
-    for i:=0 to lcnt-1 do
-    begin
-      lSubNode:=tvSaveGame.Items.AddChild(lNode,'map_'+IntToStr(i));
-      lSubNode.Data:=pointer(SGame.Maps[i]);
-      tvSaveGame.Items.AddChild(lSubNode,rsUnits);
-      tvSaveGame.Items.AddChild(lSubNode,rsProps);
-      if Length(SGame.Maps[i].QuestItems)>0 then
-        tvSaveGame.Items.AddChild(lSubNode,rsQItem);
-    end;
+    ls:=SGame.Maps[i].Name;
+    if SGame.Maps[i].Number>0 then
+      ls:=ls+' ['+IntToStr(SGame.Maps[i].Number)+']';
+    lSubNode:=tvSaveGame.Items.AddChild(lNode,ls);
+    lSubNode.Data:=pointer(SGame.Maps[i]);
+    tvSaveGame.Items.AddChild(lSubNode,rsUnits);
+    tvSaveGame.Items.AddChild(lSubNode,rsProps);
+    if Length(SGame.Maps[i].QuestItems)>0 then
+      tvSaveGame.Items.AddChild(lSubNode,rsQItem);
   end;
+
   tvSaveGame.Items[idxSavegame].Visible:=true;
   tvSaveGame.Select(tvSaveGame.Items[idxSavegame]);
 end;
@@ -209,6 +204,8 @@ end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);
 begin
+  fmButtons  :=TfmButtons   .Create(Self); fmButtons  .Parent:=MainPanel;
+
   FSettings  :=TfmSettings  .Create(Self); FSettings  .Parent:=MainPanel;
   FCommon    :=TfmCommon    .Create(Self); FCommon    .Parent:=MainPanel;
   FMovies    :=TfmMovies    .Create(Self); FMovies    .Parent:=MainPanel;
@@ -216,22 +213,15 @@ begin
   FKeyBinding:=TfmKeyBinding.Create(Self); FKeyBinding.Parent:=MainPanel;
   FQuests    :=TfmQuests    .Create(Self); FQuests    .Parent:=MainPanel;
   FStatistic :=TfmStatistic .Create(Self); FStatistic .Parent:=MainPanel;
-  FPets      :=TfmPet       .Create(Self); FPets      .Parent:=MainPanel;
+  FStats     :=TfmStat      .Create(Self); FStats     .Parent:=MainPanel;
   FMaps      :=TfmMap       .Create(Self); FMaps      .Parent:=MainPanel;
   FChar      :=TfmChar      .Create(Self); FChar      .Parent:=MainPanel;
-  FStats     :=TfmStat      .Create(Self); FStats     .Parent:=MainPanel;
   FUnits     :=TfmUnits     .Create(Self); FUnits     .Parent:=MainPanel;
+  FSkills    :=TfmSkills    .Create(Self); FSkills    .Parent:=MainPanel;
+  FItems     :=TfmItems     .Create(Self); FItems     .Parent:=MainPanel;
 
   CreateTree;
   LoadBases;
-end;
-
-procedure TfmSaveFile.SetOffset(aofs:integer);
-begin
-  if aofs<0 then
-    lblOffset.Caption:=''
-  else
-    lblOffset.Caption:='0x'+HexStr(aofs,8);
 end;
 
 //===== Actions =====
@@ -371,13 +361,16 @@ var
 begin
   lidx:=GetTVIndex;
 
-  actExport.Enabled:=(tvSaveGame.Selected<>nil) and (tvSaveGame.Selected.Data<>nil);
-  actImport.Enabled:=(tvSaveGame.Selected<>nil) and (tvSaveGame.Selected.Data<>nil);
+  fmButtons.btnExport.Enabled:=(tvSaveGame.Selected<>nil) and (tvSaveGame.Selected.Data<>nil);
+  fmButtons.btnImport.Enabled:=false;
+  fmButtons.Offset:=-1;
+  fmButtons.Ext   :=DefaultExt;
+  fmButtons.Name  :=tvSaveGame.Selected.Text;
+  fmButtons.SClass:=TL2BaseClass(tvSaveGame.Selected.Data);
 
   FSettings  .Visible:=false;
   FCommon    .Visible:=false;
   FMovies    .Visible:=false;
-  FPets      .Visible:=false;
   FMaps      .Visible:=false;
   FRecipes   .Visible:=false;
   FKeyBinding.Visible:=false;
@@ -386,8 +379,8 @@ begin
   FChar      .Visible:=false;
   FStats     .Visible:=false;
   FUnits     .Visible:=false;
-
-  SetOffset(-1);
+  FSkills    .Visible:=false;
+  FItems     .Visible:=false;
 
   case lidx of
     -1: begin
@@ -412,26 +405,57 @@ begin
       FKeyBinding.Visible:=true;
     end;
 
-    idxCharacter: begin
-      FChar.FillInfo(SGame);
-      FChar.Visible:=true;
-    end;
-
     idxPlayerStat: begin
       FStatistic.FillInfo(SGame);
       FStatistic.Visible:=true;
     end;
 
-    idxPets: begin
+    idxCharacter: begin
       case tvSaveGame.Selected.level of
         2: lidx:=tvSaveGame.Selected.Index;
         3: lidx:=tvSaveGame.Selected.Parent.Index;
       else
         lidx:=0;
       end;
-      FPets.FillInfo(SGame,lidx);
-      actImport.Enabled:=FPets.IsMainPet;
-      FPets.Visible:=true;
+      case tvSaveGame.Selected.level of
+        1: begin
+          FChar.FillInfo(SGame.CharInfo);
+          FChar.Visible:=true;
+        end;
+        2: begin
+          case lidx of
+            0: begin
+              FSkills.FillInfo(SGame.CharInfo);
+              FSkills.Visible:=true;
+            end;
+            1: begin
+              FItems.FillInfo(SGame.CharInfo.Items);
+              FItems.Visible:=true;
+            end;
+          end;
+        end;
+      end;
+    end;
+
+    idxPets: begin
+      fmButtons.btnImport.Enabled:=true;
+      case tvSaveGame.Selected.level of
+        2: lidx:=tvSaveGame.Selected.Index;
+        3: lidx:=tvSaveGame.Selected.Parent.Index;
+      else
+        lidx:=0;
+      end;
+      case tvSaveGame.Selected.level of
+        1,2: begin
+          FChar.FillInfo(SGame.PetInfo[lidx]);
+          actImport.Enabled:=FChar.IsMain;
+          FChar.Visible:=true;
+        end;
+        3: begin
+          FItems.FillInfo(SGame.PetInfo[lidx].Items);
+          FItems.Visible:=true;
+        end;
+      end;
     end;
 
     idxMaps: begin
@@ -442,19 +466,27 @@ begin
         lidx:=0;
       end;
       case tvSaveGame.Selected.level of
-        2: begin
+        1,2: begin
           FMaps.FillInfo(SGame,lidx);
           FMaps.Visible:=true;
         end;
         3: begin
-          FUnits.FillInfo(SGame,lidx);
-          FUnits.Visible:=true;
+          case tvSaveGame.Selected.Index of
+            0: begin
+              FUnits.FillInfo(SGame,lidx);
+              FUnits.Visible:=true;
+            end;
+            1: begin
+              FItems.FillInfo(SGame.Maps[lidx].PropList);
+              FItems.Visible:=true;
+            end;
+          end;
         end;
       end;
     end;
 
     idxQuests: begin
-      SetOffset(SGame.Quests.DataOffset);
+      fmButtons.Offset:=SGame.Quests.DataOffset;
       FQuests.FillInfo(SGame);
       FQuests.Visible:=true;
     end;

@@ -1,0 +1,5 @@
+{"version":1,"strings":[
+{"hash":80705172,"name":"tfmbuttons.btnexport.caption","sourcebytes":[69,120,112,111,114,116],"value":"Export"},
+{"hash":84178580,"name":"tfmbuttons.btnimport.caption","sourcebytes":[73,109,112,111,114,116],"value":"Import"},
+{"hash":78392485,"name":"tfmbuttons.btndelete.caption","sourcebytes":[68,101,108,101,116,101],"value":"Delete"}
+]}

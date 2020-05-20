@@ -5,71 +5,23 @@ unit formUnits;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
-  tl2save, tl2map;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  ExtCtrls, tl2save, tl2map, formChar;
 
 type
 
   { TfmUnits }
 
   TfmUnits = class(TForm)
-    btnItems: TButton;
-    cbEnabled: TCheckBox;
-    cbImage: TComboBox;
-    cbSpell1: TComboBox;
-    cbSpell2: TComboBox;
-    cbSpell3: TComboBox;
-    cbSpell4: TComboBox;
-    edDexterity: TEdit;
-    edExperience: TEdit;
-    edFame: TEdit;
-    edFameExp: TEdit;
-    edFocus: TEdit;
-    edGold: TEdit;
-    edHealth: TEdit;
-    edHealthBonus: TEdit;
-    edLevel: TEdit;
-    edMana: TEdit;
-    edManaBonus: TEdit;
-    edMorphTime: TEdit;
-    edName: TEdit;
-    edOriginal: TEdit;
-    edSkin: TEdit;
-    edSpell1: TEdit;
-    edSpell2: TEdit;
-    edSpell3: TEdit;
-    edSpell4: TEdit;
-    edStrength: TEdit;
-    edTownTime: TEdit;
-    edVitality: TEdit;
-    gbAction: TGroupBox;
-    lblDexterity: TLabel;
-    lblExperience: TLabel;
-    lblFame: TLabel;
-    lblFameExp: TLabel;
-    lblFocus: TLabel;
-    lblGold: TLabel;
-    lblHealth: TLabel;
-    lblHeathBonus: TLabel;
-    lblImage: TLabel;
-    lblLevel: TLabel;
-    lblMana: TLabel;
-    lblManaBonus: TLabel;
-    lblMorphTime: TLabel;
-    lblScale: TLabel;
-    lblSkin: TLabel;
-    lblStrength: TLabel;
-    lblSuffix: TLabel;
-    lblTownTime: TLabel;
-    lblVitality: TLabel;
-    lbModList: TListBox;
     lbUnitList: TListBox;
-    rbActionAttack: TRadioButton;
-    rbActionDefence: TRadioButton;
-    rbActionIdle: TRadioButton;
-    seScale: TFloatSpinEdit;
+    pnlLeft: TPanel;
+    pnlCharInfo: TPanel;
+    Splitter: TSplitter;
+
+    procedure FormCreate(Sender: TObject);
     procedure lbUnitListSelectionChange(Sender: TObject; User: boolean);
   private
+    FChar:TfmChar;
     SGame:TTL2SaveFile;
     FMap:TTL2Map;
 
@@ -86,55 +38,36 @@ implementation
 {$R *.lfm}
 
 uses
+  formButtons,
   tl2char,
   tl2types,
   tl2db;
 
 procedure TfmUnits.lbUnitListSelectionChange(Sender: TObject; User: boolean);
 var
-  lid:TL2ID;
-  i,j:integer;
   lunit:TTL2Character;
+  i:integer;
 begin
+  FChar.Visible:=false;
   for i:=0 to lbUnitList.Count-1 do
     if lbUnitList.Selected[i] then
     begin
       lunit:=FMap.MobInfos[integer(lbUnitList.Items.Objects[i])];
 
-      cbEnabled.Checked:=lunit.Enabled;
+      fmButtons.btnExport.Enabled:=true;
+      fmButtons.Name  :='unit '+IntToStr(i);
+      fmButtons.SClass:=lunit;
 
-      edName.Text:=lunit.Name;
-      if lunit.OriginId<>TL2IdEmpty then
-        lid:=lunit.OriginId
-      else
-        lid:=lunit.ImageId;
-      edOriginal.Caption:=GetTL2Pet(lid);
-
-      edLevel      .Text:=IntToStr(lunit.Level);
-      edStrength   .Text:=IntToStr(lunit.Strength);
-      edDexterity  .Text:=IntToStr(lunit.Dexterity);
-      edFocus      .Text:=IntToStr(lunit.Focus);
-      edVitality   .Text:=IntToStr(lunit.Vitality);
-      edGold       .Text:=IntToStr(lunit.Gold);
-      edSkin       .Text:=IntToStr(lunit.Skin);
-      edExperience .Text:=IntToStr(lunit.Experience);
-      edFame       .Text:=IntToStr(lunit.FameLevel);
-      edFameExp    .Text:=IntToStr(lunit.FameExp);
-      edHealth     .Text:=FloatToStr(lunit.Health);
-      edHealthBonus.Text:=IntToStr(lunit.HealthBonus);
-      edMana       .Text:=FloatToStr(lunit.Mana);
-      edManaBonus  .Text:=IntToStr(lunit.ManaBonus);
-      seScale.Value:=lunit.Scale;
-      rbActionIdle   .Checked:=lunit.Action=Idle;
-      rbActionAttack .Checked:=lunit.Action=Attack;
-      rbActionDefence.Checked:=lunit.Action=Defence;
-
-      lbModList.Clear;
-      for j:=0 to High(lunit.ModIds) do
-        lbModList.AddItem(GetTL2Mod(lunit.ModIds[j]),nil);
-
+      FChar.FillInfo(lunit);
+      FChar.Visible:=true;
       break;
     end;
+end;
+
+procedure TfmUnits.FormCreate(Sender: TObject);
+begin
+  FChar:=TfmChar.Create(Self);
+  FChar.Parent:=pnlCharInfo;
 end;
 
 procedure TfmUnits.FillInfo(aSGame:TTL2SaveFile; idx:integer);
@@ -149,6 +82,8 @@ begin
   begin
     lbUnitList.AddItem(FMap.MobInfos[i].Name,TObject(i));
   end;
+  fmButtons.btnExport.Enabled:=false;
+  fmButtons.Ext:='.chr';
 end;
 
 end.

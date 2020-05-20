@@ -62,6 +62,27 @@ type
     FUnkn5:array [0..11] of byte;
     FUnkn6:TL2IdValList;
 
+  public
+    property Name:string read FName;
+    property Prefix:string read FPrefix;
+    property Suffix:string read FSuffix;
+    property ID:TL2ID read FItemId;
+    property ModIds:TL2IdList read FModIds write FModIds;
+
+    property Level:integer read FLevel;
+    property Stack:integer read FStackSize write FStackSize;
+    property EnchantCount:integer read FEnchantmentCount write FEnchantmentCount;
+    property Position:integer read FStashPosition;
+    property SocketCount:integer read FSocketCount ; // write FSocketCount;
+    property WeaponDamage:integer read FWeaponDamage;
+    property Armor       :integer read FArmor;
+    property ArmorType   :integer read FArmorType;
+
+    property Effects1:TTL2EffectList read FEffects1 write FEffects1;
+    property Effects2:TTL2EffectList read FEffects2 write FEffects2;
+    property Effects3:TTL2EffectList read FEffects3 write FEffects3;
+    property Augments:TL2StringList read FAugments;
+    property Stats   :TL2IdValList read FStats;
   end;
 
 
@@ -131,7 +152,7 @@ begin
   AStream.Read(FUnkn1,24);
 {
   AStream.ReadQWord;
-  AStream.ReadQWord;     // changing
+  AStream.ReadQWord;     // changing (same as previous)
   AStream.ReadQWord;
 }
   FModIds:=AStream.ReadIdList;
@@ -209,7 +230,7 @@ begin
   // 00 00 00 00 | 00 00 00 00 | <cnt> 00 00 00
   SetLength(FUnkn6,lcnt);
   if lcnt>0 then
-    AStream.Read(FUnkn6[0],lcnt*SizeOf(Tl2IdVal));
+    AStream.Read(FUnkn6[0],lcnt*SizeOf(TL2IdVal));
 
   // dynamic,passive,transfer
   FEffects1:=ReadEffectList(AStream);
