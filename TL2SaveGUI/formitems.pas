@@ -6,39 +6,26 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  tl2item;
+  tl2item, formItem;
 
 type
 
   { TfmItems }
 
   TfmItems = class(TForm)
-    edName  : TEdit;  lblName  : TLabel;  edNameById: TEdit;
-    edPrefix: TEdit;  lblPrefix: TLabel;
-    edSuffix: TEdit;  lblSuffix: TLabel;
-
-    edLevel   : TEdit;  lblLevel   : TLabel;
-    edStack   : TEdit;  lblStack   : TLabel;
-    edEnchant : TEdit;  lblEnchant : TLabel;
-    edPosition: TEdit;  lblPosition: TLabel;  lblPosType: TLabel;
-    edSockets : TEdit;  lblSockets : TLabel;
-
-    edWeaponDmg: TEdit;  lblWeaponDmg: TLabel;
-    edArmor    : TEdit;  lblArmor    : TLabel;
-    edArmorType: TEdit;  lblArmorType: TLabel;  lblArmorByType: TLabel;
-
-    lbModList: TListBox;
-
+    lblCount: TLabel;
     lbItemList: TListBox;
-    pnlLeft: TPanel;
+    pnlLeftTop: TPanel;
     pnlItem: TPanel;
+    pnlLeft: TPanel;
     Splitter: TSplitter;
 
+    procedure FormCreate(Sender: TObject);
     procedure lbItemListSelectionChange(Sender: TObject; User: boolean);
   private
+    FItem:TfmItem;
     FItems:TTL2ItemList;
 
-    procedure FillInfoInt(aItem:TTL2Item);
   public
     procedure FillInfo(aItems:TTL2ItemList);
 
@@ -52,44 +39,34 @@ uses
   formButtons,
   tl2db;
 
-procedure TfmItems.FillInfoInt(aItem:TTL2Item);
-begin
-  edName    .Text := aItem.Name;
-  edNameById.Text := GetTL2Item(aItem.ID);
-  edPrefix  .Text := aItem.Prefix;
-  edSuffix  .Text := aItem.Suffix;
-
-  edLevel   .Text    := IntToStr(aItem.Level);
-  edStack   .Text    := IntToStr(aItem.Stack);
-  edEnchant .Text    := IntToStr(aItem.EnchantCount);
-  edPosition.Text    := IntToStr(aItem.Position);
-  lblPosType.Caption := ''; //!!
-  edSockets.Text     := IntToStr(aItem.SocketCount);
-
-  edWeaponDmg   .Text   := IntToStr(aItem.WeaponDamage);
-  edArmor       .Text   := IntToStr(aItem.Armor);
-  edArmorType   .Text   := IntToStr(aItem.ArmorType);
-  lblArmorByType.Caption:= ''; //!!
-end;
-
 procedure TfmItems.lbItemListSelectionChange(Sender: TObject; User: boolean);
 var
   litem:TTL2Item;
   i:integer;
 begin
+  FItem.Visible:=false;
+
   for i:=0 to lbItemList.Count-1 do
     if lbItemList.Selected[i] then
     begin
+      lblCount.Caption:=IntToStr(i+1)+' / '+IntToStr(lbItemList.Count);
       litem:=FItems[integer(lbItemList.Items.Objects[i])];
 
       fmButtons.btnExport.Enabled:=true;
       fmButtons.Name  :='item '+IntToStr(i);
       fmButtons.SClass:=litem;
 
-      FillInfoInt(litem);
+      FItem.FillInfo(litem);
+      FItem.Visible:=true;
 
       break;
     end;
+end;
+
+procedure TfmItems.FormCreate(Sender: TObject);
+begin
+  FItem:=TfmItem.Create(Self);
+  FItem.Parent:=pnlItem;
 end;
 
 procedure TfmItems.FillInfo(aItems:TTL2ItemList);
@@ -98,14 +75,21 @@ var
   i:integer;
 begin
   FItems:=aItems;
+  FItem.Visible:=false;
 
+  lblCount.Caption:=IntToStr(Length(aItems));
   lbitemList.Clear;
-
-  for i:=0 to High(aItems) do
+  if Length(aItems)>0 then
   begin
-    ls:=aItems[i].Name;
-    if (ls='') or (ls=' ') then ls:='- empty -';
-    lbItemList.AddItem(ls,TObject(i));
+    lbitemList.Sorted:=false;
+    for i:=0 to High(aItems) do
+    begin
+      ls:=aItems[i].Name;
+      if (ls='') or (ls=' ') then ls:='- empty -';
+      lbItemList.AddItem(ls,TObject(i));
+    end;
+    lbitemList.Sorted:=true;
+    lbItemList.ItemIndex:=0;
   end;
 
   fmButtons.btnExport.Enabled:=false;

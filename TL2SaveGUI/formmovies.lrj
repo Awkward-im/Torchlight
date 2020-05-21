@@ -5,5 +5,6 @@
 {"hash":1236,"name":"tfmmovies.sgmovies.columns[3].title.caption","sourcebytes":[73,68],"value":"ID"},
 {"hash":346165,"name":"tfmmovies.sgmovies.columns[4].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
 {"hash":21588,"name":"tfmmovies.sgmovies.columns[5].title.caption","sourcebytes":[77,111,100],"value":"Mod"},
-{"hash":197568645,"name":"tfmmovies.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"}
+{"hash":197568645,"name":"tfmmovies.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"},
+{"hash":117201029,"name":"tfmmovies.lblnote.caption","sourcebytes":[74,117,115,116,34,86,105,101,119,115,34,32,99,111,108,117,109,110,32,105,115,32,101,100,105,116,97,98,108,101],"value":"Just\"Views\" column is editable"}
 ]}

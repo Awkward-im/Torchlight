@@ -130,6 +130,7 @@ constructor TTL2Effect.Create(achar:boolean); overload;
 begin
   inherited Create;
 
+  DataType:=dtEffect;
   FFromChar:=achar;
 end;
 

@@ -74,6 +74,7 @@ constructor TTL2Quest.Create;
 begin
   inherited;
 
+  DataType:=dtQuest;
 end;
 
 destructor TTL2Quest.Destroy;

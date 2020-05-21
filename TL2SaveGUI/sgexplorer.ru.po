@@ -142,36 +142,17 @@ msgctxt "tfmbuttons.btnimport.caption"
 msgid "Import"
 msgstr "Импорт"
 
+#: tfmchar.bbupdate.caption
+#, fuzzy
+msgctxt "tfmchar.bbupdate.caption"
+msgid "&Update"
+msgstr "Обновить"
+
 #: tfmchar.cbenabled.caption
 #, fuzzy
 msgctxt "tfmchar.cbenabled.caption"
 msgid "Enabled"
 msgstr "Разрешено"
-
-#: tfmchar.cbimage.text
-msgctxt "tfmchar.cbimage.text"
-msgid "cbImage"
-msgstr ""
-
-#: tfmchar.cbspell1.text
-msgctxt "tfmchar.cbspell1.text"
-msgid "cbSpell1"
-msgstr ""
-
-#: tfmchar.cbspell2.text
-msgctxt "tfmchar.cbspell2.text"
-msgid "cbSpell2"
-msgstr ""
-
-#: tfmchar.cbspell3.text
-msgctxt "tfmchar.cbspell3.text"
-msgid "cbSpell3"
-msgstr ""
-
-#: tfmchar.cbspell4.text
-msgctxt "tfmchar.cbspell4.text"
-msgid "cbSpell4"
-msgstr ""
 
 #: tfmchar.gbaction.caption
 #, fuzzy
@@ -361,19 +342,152 @@ msgctxt "tfmcommon.lblng.caption"
 msgid "lblNG"
 msgstr ""
 
+#: tfmeffects.caption
+msgid "Effects"
+msgstr ""
+
+#: tfmeffects.lblaugments.caption
+msgctxt "tfmeffects.lblaugments.caption"
+msgid "Augments"
+msgstr ""
+
+#: tfmeffects.sgeffects.columns[0].title.caption
+msgctxt "tfmeffects.sgeffects.columns[0].title.caption"
+msgid "List"
+msgstr ""
+
+#: tfmeffects.sgeffects.columns[1].title.caption
+msgctxt "tfmeffects.sgeffects.columns[1].title.caption"
+msgid "Effect"
+msgstr ""
+
+#: tfmeffects.sgeffects.columns[2].title.caption
+#, fuzzy
+msgctxt "tfmeffects.sgeffects.columns[2].title.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmeffects.sgstats.columns[0].title.caption
+#, fuzzy
+msgctxt "tfmeffects.sgstats.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmeffects.sgstats.columns[1].title.caption
+#, fuzzy
+msgctxt "tfmeffects.sgstats.columns[1].title.caption"
+msgid "Value"
+msgstr "Значение"
+
+#: tfmitem.lblarmor.caption
+msgctxt "tfmitem.lblarmor.caption"
+msgid "Armor"
+msgstr ""
+
+#: tfmitem.lblarmorbytype.caption
+msgctxt "tfmitem.lblarmorbytype.caption"
+msgid "lblArmorByType"
+msgstr ""
+
+#: tfmitem.lblarmortype.caption
+msgctxt "tfmitem.lblarmortype.caption"
+msgid "Armor type"
+msgstr ""
+
+#: tfmitem.lblaugments.caption
+msgctxt "tfmitem.lblaugments.caption"
+msgid "Augments"
+msgstr ""
+
+#: tfmitem.lblenchant.caption
+msgctxt "tfmitem.lblenchant.caption"
+msgid "Enchant count"
+msgstr ""
+
+#: tfmitem.lbllevel.caption
+msgctxt "tfmitem.lbllevel.caption"
+msgid "Level"
+msgstr ""
+
+#: tfmitem.lblname.caption
+#, fuzzy
+msgctxt "tfmitem.lblname.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmitem.lblposition.caption
+msgctxt "tfmitem.lblposition.caption"
+msgid "Position"
+msgstr ""
+
+#: tfmitem.lblpostype.caption
+msgctxt "tfmitem.lblpostype.caption"
+msgid "lblPosType"
+msgstr ""
+
+#: tfmitem.lblprefix.caption
+msgctxt "tfmitem.lblprefix.caption"
+msgid "Prefix"
+msgstr ""
+
+#: tfmitem.lblsockets.caption
+msgctxt "tfmitem.lblsockets.caption"
+msgid "Sockets"
+msgstr ""
+
+#: tfmitem.lblstack.caption
+msgctxt "tfmitem.lblstack.caption"
+msgid "Stack"
+msgstr ""
+
+#: tfmitem.lblsuffix.caption
+msgctxt "tfmitem.lblsuffix.caption"
+msgid "Suffix"
+msgstr ""
+
+#: tfmitem.lblweapondmg.caption
+msgctxt "tfmitem.lblweapondmg.caption"
+msgid "Weapon Damage"
+msgstr ""
+
+#: tfmitem.sgeffects.columns[0].title.caption
+msgctxt "tfmitem.sgeffects.columns[0].title.caption"
+msgid "List"
+msgstr ""
+
+#: tfmitem.sgeffects.columns[1].title.caption
+msgctxt "tfmitem.sgeffects.columns[1].title.caption"
+msgid "Effect"
+msgstr ""
+
+#: tfmitem.sgeffects.columns[2].title.caption
+#, fuzzy
+msgctxt "tfmitem.sgeffects.columns[2].title.caption"
+msgid "Name"
+msgstr "Имя"
+
 #: tfmitems.lblarmor.caption
+msgctxt "tfmitems.lblarmor.caption"
 msgid "Armor"
 msgstr ""
 
 #: tfmitems.lblarmorbytype.caption
+msgctxt "tfmitems.lblarmorbytype.caption"
 msgid "lblArmorByType"
 msgstr ""
 
 #: tfmitems.lblarmortype.caption
+msgctxt "tfmitems.lblarmortype.caption"
 msgid "Armor type"
 msgstr ""
 
+#: tfmitems.lblaugments.caption
+msgctxt "tfmitems.lblaugments.caption"
+msgid "Augments"
+msgstr ""
+
 #: tfmitems.lblenchant.caption
+msgctxt "tfmitems.lblenchant.caption"
 msgid "Enchant count"
 msgstr ""
 
@@ -389,32 +503,55 @@ msgid "Name"
 msgstr "Имя"
 
 #: tfmitems.lblposition.caption
+msgctxt "tfmitems.lblposition.caption"
 msgid "Position"
 msgstr ""
 
 #: tfmitems.lblpostype.caption
+msgctxt "tfmitems.lblpostype.caption"
 msgid "lblPosType"
 msgstr ""
 
 #: tfmitems.lblprefix.caption
+msgctxt "tfmitems.lblprefix.caption"
 msgid "Prefix"
 msgstr ""
 
 #: tfmitems.lblsockets.caption
+msgctxt "tfmitems.lblsockets.caption"
 msgid "Sockets"
 msgstr ""
 
 #: tfmitems.lblstack.caption
+msgctxt "tfmitems.lblstack.caption"
 msgid "Stack"
 msgstr ""
 
 #: tfmitems.lblsuffix.caption
+msgctxt "tfmitems.lblsuffix.caption"
 msgid "Suffix"
 msgstr ""
 
 #: tfmitems.lblweapondmg.caption
+msgctxt "tfmitems.lblweapondmg.caption"
 msgid "Weapon Damage"
 msgstr ""
+
+#: tfmitems.sgeffects.columns[0].title.caption
+msgctxt "tfmitems.sgeffects.columns[0].title.caption"
+msgid "List"
+msgstr ""
+
+#: tfmitems.sgeffects.columns[1].title.caption
+msgctxt "tfmitems.sgeffects.columns[1].title.caption"
+msgid "Effect"
+msgstr ""
+
+#: tfmitems.sgeffects.columns[2].title.caption
+#, fuzzy
+msgctxt "tfmitems.sgeffects.columns[2].title.caption"
+msgid "Name"
+msgstr "Имя"
 
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
 msgid "Key"
@@ -500,6 +637,10 @@ msgstr "Название"
 msgctxt "tfmmovies.bbupdate.caption"
 msgid "&Update"
 msgstr "Обновить"
+
+#: tfmmovies.lblnote.caption
+msgid "Just\"Views\" column is editable"
+msgstr ""
 
 #: tfmmovies.sgmovies.columns[0].title.caption
 msgctxt "tfmmovies.sgmovies.columns[0].title.caption"
@@ -1028,11 +1169,11 @@ msgstr "Зачаровано предметов"
 
 #: tl2statistic.rsexploded
 msgid "Monsters Exploded"
-msgstr "Взорвано монстров"
+msgstr "Взорвано чудовищ"
 
 #: tl2statistic.rsfish
 msgid "Fish Caught"
-msgstr "Рыбы поймано"
+msgstr "Поймано рыбы"
 
 #: tl2statistic.rsgambled
 msgid "Times Gambled"
@@ -1040,7 +1181,7 @@ msgstr "Азартных игр"
 
 #: tl2statistic.rsgold
 msgid "Gold Gathered"
-msgstr "Золота получено"
+msgstr "Собрано золота"
 
 #: tl2statistic.rsleveltime
 msgid "Level Time Played"
@@ -1048,27 +1189,27 @@ msgstr "Времени игралось на уровне"
 
 #: tl2statistic.rsmonsters
 msgid "Monsters Killed"
-msgstr "Монстров убито"
+msgstr "Убито чудовищ"
 
 #: tl2statistic.rsportal
 msgid "Portals Used"
-msgstr "Свитков портала использовано"
+msgstr "Использовано порталов"
 
 #: tl2statistic.rspotions
 msgid "Potions Used"
-msgstr "Зелий использовано"
+msgstr "Выпито зелий"
 
 #: tl2statistic.rsquestsdone
 msgid "Quests completed"
-msgstr "Квестов выполнено"
+msgstr "Выполнено заданий"
 
 #: tl2statistic.rsskills
 msgid "Skills Used"
-msgstr "Умений использовано"
+msgstr "Использовано навыков"
 
 #: tl2statistic.rssteps
 msgid "Steps Taken"
-msgstr "Шагов сделано"
+msgstr "Сделано шагов"
 
 #: tl2statistic.rstotaltime
 msgid "Time Played"
@@ -1076,17 +1217,17 @@ msgstr "Времени игралось"
 
 #: tl2statistic.rstransmuted
 msgid "Items Transmuted"
-msgstr "Предметов преобразовано"
+msgstr "Превращено предметов"
 
 #: tl2statistic.rstraps
 msgid "Traps Sprung"
-msgstr "Ловушек активировано"
+msgstr "Активировано капканов"
 
 #: tl2statistic.rstreasures
 msgid "Lootables Looted"
-msgstr "Сокровищ взято"
+msgstr "Осмотрено тайников"
 
 #: tl2statistic.rsunknownstat
 msgid "Unknown Stat"
-msgstr "Неизвестноая статистика"
+msgstr "Неизвестная статистика"
 

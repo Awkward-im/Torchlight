@@ -32,7 +32,6 @@ implementation
 {$R *.lfm}
 
 uses
-  tl2types,
   tl2db;
 
 procedure TfmQuests.sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);

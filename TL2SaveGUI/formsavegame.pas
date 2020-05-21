@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
   Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
   formButtons, formKeyBinding, formStatistic, formCommon, formSettings,
-  formChar, formStat, formMap, formUnits, formSkills, formItems;
+  formChar, formStat, formMap, formUnits, formSkills, formItems, formEffects;
 
 type
 
@@ -205,6 +205,7 @@ end;
 procedure TfmSaveFile.FormCreate(Sender: TObject);
 begin
   fmButtons  :=TfmButtons   .Create(Self); fmButtons  .Parent:=MainPanel;
+  fmEffects  :=TfmEffects   .Create(Self);
 
   FSettings  :=TfmSettings  .Create(Self); FSettings  .Parent:=MainPanel;
   FCommon    :=TfmCommon    .Create(Self); FCommon    .Parent:=MainPanel;
@@ -219,6 +220,8 @@ begin
   FUnits     :=TfmUnits     .Create(Self); FUnits     .Parent:=MainPanel;
   FSkills    :=TfmSkills    .Create(Self); FSkills    .Parent:=MainPanel;
   FItems     :=TfmItems     .Create(Self); FItems     .Parent:=MainPanel;
+
+  fmButtons.Visible:=true;
 
   CreateTree;
   LoadBases;
@@ -337,16 +340,13 @@ end;
 
 function TfmSaveFile.GetTVIndex:integer;
 begin
+  result:=-1;
+
   if tvSaveGame.Selected=nil then
-  begin
-    result:=-1;
     exit;
-  end;
 
   case tvSaveGame.Selected.level of
-    0: if tvSaveGame.Selected.Index=idxSettings then
-      result:=-1
-    else
+    0: if tvSaveGame.Selected.Index<>idxSettings then
       result:=idxCommon;
     1: result:=tvSaveGame.Selected.Index;
     2: result:=tvSaveGame.Selected.Parent.Index;
@@ -365,8 +365,16 @@ begin
   fmButtons.btnImport.Enabled:=false;
   fmButtons.Offset:=-1;
   fmButtons.Ext   :=DefaultExt;
-  fmButtons.Name  :=tvSaveGame.Selected.Text;
-  fmButtons.SClass:=TL2BaseClass(tvSaveGame.Selected.Data);
+  if (tvSaveGame.Selected<>nil) then
+  begin
+    fmButtons.Name  :=tvSaveGame.Selected.Text;
+    fmButtons.SClass:=TL2BaseClass(tvSaveGame.Selected.Data);
+  end
+  else
+  begin
+    fmButtons.Name  :='';
+    fmButtons.SClass:=nil;
+  end;
 
   FSettings  .Visible:=false;
   FCommon    .Visible:=false;

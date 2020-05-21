@@ -27,6 +27,7 @@ type
     procedure InternalClear;
 
   public
+    constructor Create;
     destructor Destroy; override;
 
     procedure Clear; override;
@@ -37,6 +38,7 @@ type
   private
     FSign           :Byte;
     FSignWord       :Word;
+    FIsChar         :boolean;
 
     FWardrobe       :TL2Boolean;
 
@@ -76,8 +78,8 @@ type
     FPlayer         :string;
 
     // looks like common
-    FCharacterName  :string;
-    FCharacterTitle :string;
+    FName           :string;
+    FSuffix         :string;
     FPosition       :TL2Coord;
     FLevel          :integer;
     FExperience     :integer;
@@ -116,11 +118,13 @@ type
 
   public
     property Action:TTL2Action read FAction write FAction;
+    property IsChar         :boolean  read FIsChar;
     property Sign           :Byte     read FSign;
     property Enabled        :ByteBool read FEnabled         write FEnabled;
     property ImageId        :TL2ID    read FImageId         write FImageId;
     property OriginId       :TL2ID    read FOriginId        write FOriginId;
-    property Name           :string   read FCharacterName   write FCharacterName;
+    property Name           :string   read FName            write FName;
+    property Suffix         :string   read FSuffix          write FSuffix;
     property Player         :string   read FPlayer          write FPlayer;
     property Face           :integer  read FFace            write FFace;
     property Hairstyle      :integer  read FHairstyle       write FHairstyle;
@@ -161,11 +165,18 @@ type
 type
   TTL2CharArray = array of TTL2Character;
 
-function ReadCharData(AStream:TTL2Stream):TTL2Character;
+function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false):TTL2Character;
 
 
 implementation
 
+
+constructor TTL2Character.Create;
+begin
+  inherited;
+
+  DataType:=dtChar;
+end;
 
 destructor TTL2Character.Destroy;
 begin
@@ -204,7 +215,7 @@ end;
 procedure TTL2Character.LoadFromStream(AStream: TTL2Stream);
 var
   i:integer;
-  isPet:boolean;
+//  isPet:boolean;
 begin
   DataSize  :=AStream.ReadDWord;
   DataOffset:=AStream.Position;
@@ -245,8 +256,9 @@ begin
   AStream.ReadByte;     // 0
   AStream.ReadByte;     // 0
 }
-//  if not isPet then
-  if FWardrobe then //!! YES, i know, i know!!!
+
+//  if FWardrobe then //!! YES, i know, i know!!!
+  if FIsChar then
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
   //??  :24 for pet, :55 for char
   FUnkn5:=AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0
@@ -266,12 +278,12 @@ begin
 }
   // can it be a name hash?
   FUnkn17:=AStream.ReadDWord;
-  isPet:=(FUnkn17=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
+//  isPet:=(FUnkn17=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
 
-  FCharacterName :=AStream.ReadShortString(); // :55(pet) Char name
-  FCharacterTitle:=AStream.ReadShortString(); // like mob title "(Teleporting)"
-  if not isPet then                           // maybe this is "PLAYERMAPICONS" from GLOBALS.DAT?
-    FPlayer:=AStream.ReadShortString();       // "PLAYER" !!!!! not exists for pets!!!!!!
+  FName  :=AStream.ReadShortString();    // :55(pet) Char name
+  FSuffix:=AStream.ReadShortString();    // like mob title "(Teleporting)"
+  if FIsChar{not isPet} then                      // maybe this is "PLAYERMAPICONS" from GLOBALS.DAT?
+    FPlayer:=AStream.ReadShortString();  // "PLAYER" !!!!! not exists for pets!!!!!!
   //??
   FUnkn9:=AStream.ReadQWord;
 {
@@ -430,7 +442,7 @@ begin
   AStream.WriteByte (byte(FEnabled) and 1);
   AStream.WriteWord (FUnkn4);
 
-  if FWardrobe then
+  if FIsChar{FWardrobe} then
     AStream.WriteByte(FCheater);
 
   AStream.WriteByte(FUnkn5);
@@ -446,9 +458,9 @@ begin
 
   AStream.WriteDWord(FUnkn17);
 
-  AStream.WriteShortString(FCharacterName); // :55(pet) Char name
-  AStream.WriteShortString(FCharacterTitle);
-  if (FUnkn17<>$FFFFFFFF) then
+  AStream.WriteShortString(FName); // :55(pet) Char name
+  AStream.WriteShortString(FSuffix);
+  if FIsChar{(FUnkn17<>$FFFFFFFF)} then
     AStream.WriteShortString(FPlayer);      // "PLAYER" !!!!! not exists for pets!!!!!!
   
   AStream.WriteQWord(FUnkn9);
@@ -540,9 +552,10 @@ begin
   FixSize  (AStream);
 end;
 
-function ReadCharData(AStream:TTL2Stream):TTL2Character;
+function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false):TTL2Character;
 begin
   result:=TTL2Character.Create();
+  result.FIsChar:=IsChar;
   try
     result.LoadFromStream(AStream);
   except

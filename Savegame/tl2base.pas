@@ -7,11 +7,14 @@ uses
   tl2stream;
 
 type
+  TL2DataType = (dtChar, dtItem, dtEffect, dtMap, dtQuest, dtStat);
+type
   TL2BaseClass = class
   private
     FData      :PByte;
     FDataOffset:PtrUInt;
     FDataSize  :integer;
+    FDataType  :TL2DataType;
 
     FKnownSize :boolean;
     FChanged   :boolean;
@@ -35,9 +38,10 @@ type
     procedure LoadFromStream(AStream:TTL2Stream); virtual; abstract;
     procedure SaveToStream  (AStream:TTL2Stream); virtual; abstract;
     
-    property Data      :PByte   read FData      ; // write FData;
-    property DataOffset:PtrUInt read FDataOffset write FDataOffset;
-    property DataSize  :integer read FDataSize   write SetDataSize;
+    property Data      :PByte       read FData      ; // write FData;
+    property DataOffset:PtrUInt     read FDataOffset write FDataOffset;
+    property DataSize  :integer     read FDataSize   write SetDataSize;
+    property DataType  :TL2DataType read FDataType   write FDataType;
 
     property Changed:boolean read FChanged write FChanged;
   end;

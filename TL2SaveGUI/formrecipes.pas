@@ -31,7 +31,6 @@ implementation
 {$R *.lfm}
 
 uses
-  tl2types,
   tl2db;
 
 procedure TfmRecipes.FillInfo(aSGame:TTL2SaveFile);

@@ -11,5 +11,9 @@
 {"hash":153108869,"name":"tfmitems.lblweapondmg.caption","sourcebytes":[87,101,97,112,111,110,32,68,97,109,97,103,101],"value":"Weapon Damage"},
 {"hash":4756578,"name":"tfmitems.lblarmor.caption","sourcebytes":[65,114,109,111,114],"value":"Armor"},
 {"hash":105072933,"name":"tfmitems.lblarmortype.caption","sourcebytes":[65,114,109,111,114,32,116,121,112,101],"value":"Armor type"},
-{"hash":261502245,"name":"tfmitems.lblarmorbytype.caption","sourcebytes":[108,98,108,65,114,109,111,114,66,121,84,121,112,101],"value":"lblArmorByType"}
+{"hash":261502245,"name":"tfmitems.lblarmorbytype.caption","sourcebytes":[108,98,108,65,114,109,111,114,66,121,84,121,112,101],"value":"lblArmorByType"},
+{"hash":199475507,"name":"tfmitems.lblaugments.caption","sourcebytes":[65,117,103,109,101,110,116,115],"value":"Augments"},
+{"hash":340132,"name":"tfmitems.sgeffects.columns[0].title.caption","sourcebytes":[76,105,115,116],"value":"List"},
+{"hash":79481764,"name":"tfmitems.sgeffects.columns[1].title.caption","sourcebytes":[69,102,102,101,99,116],"value":"Effect"},
+{"hash":346165,"name":"tfmitems.sgeffects.columns[2].title.caption","sourcebytes":[78,97,109,101],"value":"Name"}
 ]}

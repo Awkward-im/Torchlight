@@ -128,34 +128,14 @@ msgctxt "tfmbuttons.btnimport.caption"
 msgid "Import"
 msgstr ""
 
+#: tfmchar.bbupdate.caption
+msgctxt "tfmchar.bbupdate.caption"
+msgid "&Update"
+msgstr ""
+
 #: tfmchar.cbenabled.caption
 msgctxt "tfmchar.cbenabled.caption"
 msgid "Enabled"
-msgstr ""
-
-#: tfmchar.cbimage.text
-msgctxt "tfmchar.cbimage.text"
-msgid "cbImage"
-msgstr ""
-
-#: tfmchar.cbspell1.text
-msgctxt "tfmchar.cbspell1.text"
-msgid "cbSpell1"
-msgstr ""
-
-#: tfmchar.cbspell2.text
-msgctxt "tfmchar.cbspell2.text"
-msgid "cbSpell2"
-msgstr ""
-
-#: tfmchar.cbspell3.text
-msgctxt "tfmchar.cbspell3.text"
-msgid "cbSpell3"
-msgstr ""
-
-#: tfmchar.cbspell4.text
-msgctxt "tfmchar.cbspell4.text"
-msgid "cbSpell4"
 msgstr ""
 
 #: tfmchar.gbaction.caption
@@ -324,19 +304,147 @@ msgctxt "tfmcommon.lblng.caption"
 msgid "lblNG"
 msgstr ""
 
+#: tfmeffects.caption
+msgid "Effects"
+msgstr ""
+
+#: tfmeffects.lblaugments.caption
+msgctxt "tfmeffects.lblaugments.caption"
+msgid "Augments"
+msgstr ""
+
+#: tfmeffects.sgeffects.columns[0].title.caption
+msgctxt "tfmeffects.sgeffects.columns[0].title.caption"
+msgid "List"
+msgstr ""
+
+#: tfmeffects.sgeffects.columns[1].title.caption
+msgctxt "tfmeffects.sgeffects.columns[1].title.caption"
+msgid "Effect"
+msgstr ""
+
+#: tfmeffects.sgeffects.columns[2].title.caption
+msgctxt "tfmeffects.sgeffects.columns[2].title.caption"
+msgid "Name"
+msgstr ""
+
+#: tfmeffects.sgstats.columns[0].title.caption
+msgctxt "tfmeffects.sgstats.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmeffects.sgstats.columns[1].title.caption
+msgctxt "tfmeffects.sgstats.columns[1].title.caption"
+msgid "Value"
+msgstr ""
+
+#: tfmitem.lblarmor.caption
+msgctxt "tfmitem.lblarmor.caption"
+msgid "Armor"
+msgstr ""
+
+#: tfmitem.lblarmorbytype.caption
+msgctxt "tfmitem.lblarmorbytype.caption"
+msgid "lblArmorByType"
+msgstr ""
+
+#: tfmitem.lblarmortype.caption
+msgctxt "tfmitem.lblarmortype.caption"
+msgid "Armor type"
+msgstr ""
+
+#: tfmitem.lblaugments.caption
+msgctxt "tfmitem.lblaugments.caption"
+msgid "Augments"
+msgstr ""
+
+#: tfmitem.lblenchant.caption
+msgctxt "tfmitem.lblenchant.caption"
+msgid "Enchant count"
+msgstr ""
+
+#: tfmitem.lbllevel.caption
+msgctxt "tfmitem.lbllevel.caption"
+msgid "Level"
+msgstr ""
+
+#: tfmitem.lblname.caption
+msgctxt "tfmitem.lblname.caption"
+msgid "Name"
+msgstr ""
+
+#: tfmitem.lblposition.caption
+msgctxt "tfmitem.lblposition.caption"
+msgid "Position"
+msgstr ""
+
+#: tfmitem.lblpostype.caption
+msgctxt "tfmitem.lblpostype.caption"
+msgid "lblPosType"
+msgstr ""
+
+#: tfmitem.lblprefix.caption
+msgctxt "tfmitem.lblprefix.caption"
+msgid "Prefix"
+msgstr ""
+
+#: tfmitem.lblsockets.caption
+msgctxt "tfmitem.lblsockets.caption"
+msgid "Sockets"
+msgstr ""
+
+#: tfmitem.lblstack.caption
+msgctxt "tfmitem.lblstack.caption"
+msgid "Stack"
+msgstr ""
+
+#: tfmitem.lblsuffix.caption
+msgctxt "tfmitem.lblsuffix.caption"
+msgid "Suffix"
+msgstr ""
+
+#: tfmitem.lblweapondmg.caption
+msgctxt "tfmitem.lblweapondmg.caption"
+msgid "Weapon Damage"
+msgstr ""
+
+#: tfmitem.sgeffects.columns[0].title.caption
+msgctxt "tfmitem.sgeffects.columns[0].title.caption"
+msgid "List"
+msgstr ""
+
+#: tfmitem.sgeffects.columns[1].title.caption
+msgctxt "tfmitem.sgeffects.columns[1].title.caption"
+msgid "Effect"
+msgstr ""
+
+#: tfmitem.sgeffects.columns[2].title.caption
+msgctxt "tfmitem.sgeffects.columns[2].title.caption"
+msgid "Name"
+msgstr ""
+
 #: tfmitems.lblarmor.caption
+msgctxt "tfmitems.lblarmor.caption"
 msgid "Armor"
 msgstr ""
 
 #: tfmitems.lblarmorbytype.caption
+msgctxt "tfmitems.lblarmorbytype.caption"
 msgid "lblArmorByType"
 msgstr ""
 
 #: tfmitems.lblarmortype.caption
+msgctxt "tfmitems.lblarmortype.caption"
 msgid "Armor type"
 msgstr ""
 
+#: tfmitems.lblaugments.caption
+msgctxt "tfmitems.lblaugments.caption"
+msgid "Augments"
+msgstr ""
+
 #: tfmitems.lblenchant.caption
+msgctxt "tfmitems.lblenchant.caption"
 msgid "Enchant count"
 msgstr ""
 
@@ -351,31 +459,53 @@ msgid "Name"
 msgstr ""
 
 #: tfmitems.lblposition.caption
+msgctxt "tfmitems.lblposition.caption"
 msgid "Position"
 msgstr ""
 
 #: tfmitems.lblpostype.caption
+msgctxt "tfmitems.lblpostype.caption"
 msgid "lblPosType"
 msgstr ""
 
 #: tfmitems.lblprefix.caption
+msgctxt "tfmitems.lblprefix.caption"
 msgid "Prefix"
 msgstr ""
 
 #: tfmitems.lblsockets.caption
+msgctxt "tfmitems.lblsockets.caption"
 msgid "Sockets"
 msgstr ""
 
 #: tfmitems.lblstack.caption
+msgctxt "tfmitems.lblstack.caption"
 msgid "Stack"
 msgstr ""
 
 #: tfmitems.lblsuffix.caption
+msgctxt "tfmitems.lblsuffix.caption"
 msgid "Suffix"
 msgstr ""
 
 #: tfmitems.lblweapondmg.caption
+msgctxt "tfmitems.lblweapondmg.caption"
 msgid "Weapon Damage"
+msgstr ""
+
+#: tfmitems.sgeffects.columns[0].title.caption
+msgctxt "tfmitems.sgeffects.columns[0].title.caption"
+msgid "List"
+msgstr ""
+
+#: tfmitems.sgeffects.columns[1].title.caption
+msgctxt "tfmitems.sgeffects.columns[1].title.caption"
+msgid "Effect"
+msgstr ""
+
+#: tfmitems.sgeffects.columns[2].title.caption
+msgctxt "tfmitems.sgeffects.columns[2].title.caption"
+msgid "Name"
 msgstr ""
 
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
@@ -457,6 +587,10 @@ msgstr ""
 #: tfmmovies.bbupdate.caption
 msgctxt "tfmmovies.bbupdate.caption"
 msgid "&Update"
+msgstr ""
+
+#: tfmmovies.lblnote.caption
+msgid "Just\"Views\" column is editable"
 msgstr ""
 
 #: tfmmovies.sgmovies.columns[0].title.caption

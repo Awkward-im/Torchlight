@@ -72,6 +72,7 @@ begin
       end;
     end;
   end;
+
   if Length(aSGame.Functions)>0 then
   begin
     for i:=0 to High(aSGame.Functions) do
@@ -88,6 +89,7 @@ begin
         end;
       end;
   end;
+
   sgKeyBinding.AutoAdjustColumns;
   sgKeybinding.EndUpdate;
 end;

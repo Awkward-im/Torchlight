@@ -6,16 +6,16 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
-  tl2save, tl2char;
+  Buttons, tl2char;
 
 type
-
-  { TfmPet }
 
   { TfmChar }
 
   TfmChar = class(TForm)
-    cbEnabled : TCheckBox;
+    bbUpdate: TBitBtn;
+
+    cbEnabled  : TCheckBox;
     edName     : TEdit;
     lblSuffix  : TLabel;
 
@@ -58,15 +58,19 @@ type
     rbActionIdle   : TRadioButton;
     rbActionAttack : TRadioButton;
     rbActionDefence: TRadioButton;
+
+    procedure bbUpdateClick(Sender: TObject);
   private
-    SChar :TTL2Character;
+    FChar :TTL2Character;
 
     function GetMainFlag:boolean;
-
+    function GetCharFlag:boolean;
+    procedure ChangeVisibility;
   public
     procedure FillInfo(aChar:TTL2Character);
 
     property IsMain:boolean read GetMainFlag;
+    property IsChar:boolean read GetCharFlag;
   end;
 
 implementation
@@ -77,9 +81,28 @@ uses
   tl2types,
   tl2db;
 
+function TfmChar.GetCharFlag:boolean;
+begin
+  result:=FChar.IsChar;//(FChar.Player<>''); //!!
+end;
+
 function TfmChar.GetMainFlag:boolean;
 begin
-  result:=SChar.Sign=$FF;
+  result:=(FChar.Sign=$FF);
+end;
+
+procedure TfmChar.ChangeVisibility;
+var
+  lChar:boolean;
+begin
+  lChar:=IsChar;
+
+  cbEnabled  .Visible:=not lChar;
+  lblTownTime.Visible:=not lChar;
+  edTownTime .Visible:=not lChar;
+  lblSkin    .Visible:=not lChar;
+  edSkin     .Visible:=not lChar;
+  gbAction   .Visible:=not lChar;
 end;
 
 procedure TfmChar.FillInfo(aChar:TTL2Character);
@@ -87,16 +110,19 @@ var
   lid:TL2ID;
   i:integer;
 begin
-  SChar:=aChar;
+  FChar:=aChar;
+  ChangeVisibility;
 
   cbEnabled.Checked:=aChar.Enabled;
 
-  edName.Text:=aChar.Name;
+  edName.Text      :=aChar.Name;
+  lblSuffix.Caption:=aChar.Suffix;
+
   if aChar.OriginId<>TL2IdEmpty then
     lid:=aChar.OriginId
   else
     lid:=aChar.ImageId;
-  edOriginal.Caption:=GetTL2Class(lid);
+  edOriginal.Caption:=GetTL2Class(lid); //!!!!!!!!
 
   edLevel      .Text:=IntToStr(aChar.Level);
   edStrength   .Text:=IntToStr(aChar.Strength);
@@ -126,48 +152,44 @@ begin
     lbModList.AddItem(GetTL2Mod(aChar.ModIds[i]),nil);
 end;
 
-(*
-procedure TfmPet.bbUpdateClick(Sender: TObject);
+procedure TfmChar.bbUpdateClick(Sender: TObject);
 var
-  lPet:TTL2Character;
   lid:TL2ID;
   i:integer;
 begin
-  lPet:=aSGame.PetInfo[PetIndex];
-
-  lPet.Enabled:=cbEnabled.Checked;
-  lPet.Name:=edName.Text;
+  FChar.Enabled:=cbEnabled.Checked;
+  FChar.Name:=edName.Text;
 {
-  if lPet.OriginId<>TL2IdEmpty then
-    lid:=lPet.OriginId
+  if FChar.OriginId<>TL2IdEmpty then
+    lid:=FChar.OriginId
   else
-    lid:=lPet.ImageId;
+    lid:=FChar.ImageId;
   edOriginal.Caption:=GetTL2Pet(lid);
  }
-  Val(edLevel      .Text,lPet.Level      );
-  Val(edStrength   .Text,lPet.Strength   );
-  Val(edDexterity  .Text,lPet.Dexterity  );
-  Val(edFocus      .Text,lPet.Focus      );
-  Val(edVitality   .Text,lPet.Vitality   );
-  Val(edGold       .Text,lPet.Gold       );
-  Val(edSkin       .Text,lPet.Skin       );
-  Val(edExperience .Text,lPet.Experience );
-  Val(edFame       .Text,lPet.FameLevel  );
-  Val(edFameExp    .Text,lPet.FameExp    );
-  Val(edHealth     .Text,lPet.Health     );
-  Val(edHealthBonus.Text,lPet.HealthBonus);
-  Val(edMana       .Text,lPet.Mana       );
-  Val(edManaBonus  .Text,lPet.ManaBonus  );
-  lPet.Scale:=seScale.Value;
+  FChar.Level      :=StrToInt(edLevel      .Text);
+  FChar.Strength   :=StrToInt(edStrength   .Text);
+  FChar.Dexterity  :=StrToInt(edDexterity  .Text);
+  FChar.Focus      :=StrToInt(edFocus      .Text);
+  FChar.Vitality   :=StrToInt(edVitality   .Text);
+  FChar.Gold       :=StrToInt(edGold       .Text);
+  FChar.Skin       :=StrToInt(edSkin       .Text);
+  FChar.Experience :=StrToInt(edExperience .Text);
+  FChar.FameLevel  :=StrToInt(edFame       .Text);
+  FChar.FameExp    :=StrToInt(edFameExp    .Text);
+  FChar.Health     :=StrToInt(edHealth     .Text);
+  FChar.HealthBonus:=StrToInt(edHealthBonus.Text);
+  FChar.Mana       :=StrToInt(edMana       .Text);
+  FChar.ManaBonus  :=StrToInt(edManaBonus  .Text);
+  FChar.Scale:=seScale.Value;
 
-  if      rbActionIdle   .Checked then lPet.Action:=Idle
-  else if rbActionAttack .Checked then lPet.Action:=Attack
-  else if rbActionDefence.Checked then lPet.Action:=Defence;
+  if      rbActionIdle   .Checked then FChar.Action:=Idle
+  else if rbActionAttack .Checked then FChar.Action:=Attack
+  else if rbActionDefence.Checked then FChar.Action:=Defence;
 {
   lbModList.Clear;
-  for i:=0 to High(lPet.ModIds) do
-    lbModList.AddItem(GetTL2Mod(lPet.ModIds[i]),nil);
+  for i:=0 to High(FChar.ModIds) do
+    lbModList.AddItem(GetTL2Mod(FChar.ModIds[i]),nil);
 }
 end;
-*)
+
 end.

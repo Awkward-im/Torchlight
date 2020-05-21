@@ -1,6 +1,5 @@
 {"version":1,"strings":[
 {"hash":206017268,"name":"tfmchar.cbenabled.caption","sourcebytes":[69,110,97,98,108,101,100],"value":"Enabled"},
-{"hash":158349237,"name":"tfmchar.cbimage.text","sourcebytes":[99,98,73,109,97,103,101],"value":"cbImage"},
 {"hash":171834101,"name":"tfmchar.lblimage.caption","sourcebytes":[79,114,105,103,105,110,97,108,32,97,110,100,32,99,117,114,114,101,110,116,32,105,109,97,103,101],"value":"Original and current image"},
 {"hash":111209125,"name":"tfmchar.lblmorphtime.caption","sourcebytes":[77,111,114,112,104,32,84,105,109,101],"value":"Morph Time"},
 {"hash":235271509,"name":"tfmchar.lbltowntime.caption","sourcebytes":[84,111,119,110,32,84,105,109,101],"value":"Town Time"},
@@ -17,10 +16,6 @@
 {"hash":168295779,"name":"tfmchar.lblheathbonus.caption","sourcebytes":[72,101,97,116,104,32,66,111,110,117,115],"value":"Heath Bonus"},
 {"hash":342081,"name":"tfmchar.lblmana.caption","sourcebytes":[77,97,110,97],"value":"Mana"},
 {"hash":55475587,"name":"tfmchar.lblmanabonus.caption","sourcebytes":[77,97,110,97,32,66,111,110,117,115],"value":"Mana Bonus"},
-{"hash":128369761,"name":"tfmchar.cbspell1.text","sourcebytes":[99,98,83,112,101,108,108,49],"value":"cbSpell1"},
-{"hash":128369762,"name":"tfmchar.cbspell2.text","sourcebytes":[99,98,83,112,101,108,108,50],"value":"cbSpell2"},
-{"hash":128369763,"name":"tfmchar.cbspell3.text","sourcebytes":[99,98,83,112,101,108,108,51],"value":"cbSpell3"},
-{"hash":128369764,"name":"tfmchar.cbspell4.text","sourcebytes":[99,98,83,112,101,108,108,52],"value":"cbSpell4"},
 {"hash":193743624,"name":"tfmchar.lblstrength.caption","sourcebytes":[83,116,114,101,110,103,116,104],"value":"Strength"},
 {"hash":262986361,"name":"tfmchar.lbldexterity.caption","sourcebytes":[68,101,120,116,101,114,105,116,121],"value":"Dexterity"},
 {"hash":5069507,"name":"tfmchar.lblfocus.caption","sourcebytes":[70,111,99,117,115],"value":"Focus"},
@@ -30,5 +25,6 @@
 {"hash":181333059,"name":"tfmchar.gbcoords.caption","sourcebytes":[67,111,111,114,100,105,110,97,116,101,115],"value":"Coordinates"},
 {"hash":1466,"name":"tfmchar.lblx.caption","sourcebytes":[88,58],"value":"X:"},
 {"hash":1482,"name":"tfmchar.lbly.caption","sourcebytes":[89,58],"value":"Y:"},
-{"hash":1498,"name":"tfmchar.lblz.caption","sourcebytes":[90,58],"value":"Z:"}
+{"hash":1498,"name":"tfmchar.lblz.caption","sourcebytes":[90,58],"value":"Z:"},
+{"hash":197568645,"name":"tfmchar.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"}
 ]}

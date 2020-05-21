@@ -5,9 +5,13 @@ interface
 uses
   tl2types;
 
+{$DEFINE Interface}
+
 function GetTL2Skill(const id:TL2ID; out amod:string; out atype:integer):string; overload;
 function GetTL2Skill(const id:TL2ID; out amod:string  ):string; overload;
 function GetTL2Skill(const id:TL2ID                   ):string; overload;
+function GetTL2Skill(const aname:string; out id:TL2ID ):string; overload;
+{$Include skills.inc}
 
 // can be nice to add list of modids for filtering
 function GetTL2Movie(const id   :TL2ID ; out amod :string; out aviews:integer;
@@ -48,12 +52,12 @@ procedure FreeBases;
 
 //======================================
 
+{$UNDEF Interface}
+
 implementation
 
 uses
-  sqlite3,
-  awksqlite3
-  ;
+  sqlite3;
 
 var
   db:PSQLite3;
@@ -143,7 +147,7 @@ begin
   if db<>nil then
   begin
     Str(id,aSQL);
-    aSQL:='SELECT title,modid,maxviews,name,path FROM movies WHERE id='+aSQL+' LIMIT 1';
+    aSQL:='SELECT title,modid,views,name,path FROM movies WHERE id='+aSQL+' LIMIT 1';
 
     if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
     begin
@@ -214,10 +218,13 @@ end;
 //----- Skill info -----
 
 function GetTL2Skill(const id:TL2ID; out amod:string; out atype:integer):string;
+var
+  lname:string;
 begin
-  amod  :='';
+//  amod  :='';
   atype :=-1;
-  result:=HexStr(id,16);
+//  result:=HexStr(id,16);
+  result:=GetModAndTitle(id,'skills','',amod,lname);
 end;
 
 function GetTL2Skill(const id:TL2ID; out amod:string):string;
@@ -229,12 +236,37 @@ end;
 
 function GetTL2Skill(const id:TL2ID):string;
 var
-  lclass:TL2ID;
   lmod  :string;
   ltype :integer;
 begin
   result:=GetTL2Skill(id,lmod,ltype);
 end;
+
+function GetTL2Skill(const aname:string; out id:TL2ID):string;
+var
+  aSQL:string;
+  vm:pointer;
+begin
+  id    :=TL2IdEmpty;
+  result:=aname;
+
+  if db<>nil then
+  begin
+    aSQL:='SELECT id,title FROM skills WHERE name LIKE '''+aname+'''';
+
+    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        id    :=sqlite3_column_int64(vm,0);
+        result:=sqlite3_column_text (vm,1);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
+{$Include skills.inc}
 
 //----- Stat info -----
 
@@ -343,7 +375,10 @@ begin
       end;
       sqlite3_finalize(vm);
     end;
-  end;
+  end
+  else if id=0 then
+    result:='Torchlight 2';
+
 end;
 
 function GetTL2Mod(const id:TL2ID):string;
@@ -424,6 +459,25 @@ begin
 end;
 
 //===== Database load =====
+
+function CopyFromFile(db:PSQLite3; afname:PChar):integer;
+var
+  pFile  :PSQLite3;        // Database connection opened on zFilename
+  pBackup:PSQLite3Backup;  // Backup object used to copy data
+begin
+  result:=sqlite3_open(afname, @pFile);
+  if result=SQLITE_OK then
+  begin
+    pBackup:=sqlite3_backup_init(db, 'main', pFile, 'main');
+    if pBackup<>nil then
+    begin
+      sqlite3_backup_step  (pBackup, -1);
+      sqlite3_backup_finish(pBackup);
+    end;
+    result:=sqlite3_errcode(db);
+  end;
+  sqlite3_close(pFile);
+end;
 
 function LoadBases:boolean;
 begin

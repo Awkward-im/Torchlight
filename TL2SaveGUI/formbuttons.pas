@@ -61,7 +61,6 @@ end;
 procedure TfmButtons.btnExportClick(Sender: TObject);
 var
   ldlg:TSaveDialog;
-  lclass:TL2BaseClass;
   ls:string;
   lidx:integer;
 begin

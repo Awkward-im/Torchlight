@@ -1,0 +1,269 @@
+object fmItem: TfmItem
+  Left = 344
+  Height = 519
+  Top = 150
+  Width = 619
+  Align = alClient
+  BorderStyle = bsNone
+  ClientHeight = 519
+  ClientWidth = 619
+  LCLVersion = '2.1.0.0'
+  object lblName: TLabel
+    Left = 3
+    Height = 15
+    Top = 3
+    Width = 32
+    Caption = 'Name'
+    ParentColor = False
+  end
+  object lblPrefix: TLabel
+    Left = 3
+    Height = 15
+    Top = 77
+    Width = 29
+    Caption = 'Prefix'
+    ParentColor = False
+  end
+  object lblSuffix: TLabel
+    Left = 3
+    Height = 15
+    Top = 125
+    Width = 29
+    Caption = 'Suffix'
+    ParentColor = False
+  end
+  object edName: TEdit
+    Left = 3
+    Height = 23
+    Top = 23
+    Width = 233
+    TabOrder = 0
+  end
+  object edPrefix: TEdit
+    Left = 3
+    Height = 23
+    Top = 94
+    Width = 233
+    TabOrder = 1
+  end
+  object edSuffix: TEdit
+    Left = 3
+    Height = 23
+    Top = 142
+    Width = 233
+    TabOrder = 2
+  end
+  object lbModList: TListBox
+    Left = 3
+    Height = 113
+    Top = 171
+    Width = 191
+    ItemHeight = 0
+    TabOrder = 3
+  end
+  object edNameById: TEdit
+    Left = 3
+    Height = 23
+    Top = 50
+    Width = 233
+    TabOrder = 4
+  end
+  object lblLevel: TLabel
+    Left = 318
+    Height = 15
+    Top = 3
+    Width = 27
+    Caption = 'Level'
+    ParentColor = False
+  end
+  object lblStack: TLabel
+    Left = 318
+    Height = 15
+    Top = 27
+    Width = 28
+    Caption = 'Stack'
+    ParentColor = False
+  end
+  object edLevel: TEdit
+    Left = 262
+    Height = 19
+    Top = 1
+    Width = 48
+    Alignment = taRightJustify
+    AutoSize = False
+    NumbersOnly = True
+    TabOrder = 5
+  end
+  object edStack: TEdit
+    Left = 262
+    Height = 23
+    Top = 21
+    Width = 48
+    Alignment = taRightJustify
+    NumbersOnly = True
+    TabOrder = 6
+  end
+  object lblEnchant: TLabel
+    Left = 318
+    Height = 15
+    Top = 52
+    Width = 77
+    Caption = 'Enchant count'
+    ParentColor = False
+  end
+  object edEnchant: TEdit
+    Left = 262
+    Height = 23
+    Top = 48
+    Width = 48
+    Alignment = taRightJustify
+    NumbersOnly = True
+    TabOrder = 7
+  end
+  object lblPosition: TLabel
+    Left = 319
+    Height = 15
+    Top = 96
+    Width = 43
+    Caption = 'Position'
+    ParentColor = False
+  end
+  object edPosition: TEdit
+    Left = 246
+    Height = 23
+    Top = 92
+    Width = 64
+    Alignment = taRightJustify
+    NumbersOnly = True
+    TabOrder = 8
+  end
+  object lblPosType: TLabel
+    Left = 262
+    Height = 15
+    Top = 120
+    Width = 58
+    Caption = 'lblPosType'
+    ParentColor = False
+  end
+  object lblSockets: TLabel
+    Left = 318
+    Height = 15
+    Top = 252
+    Width = 40
+    Caption = 'Sockets'
+    ParentColor = False
+  end
+  object edSockets: TEdit
+    Left = 260
+    Height = 23
+    Top = 248
+    Width = 48
+    Alignment = taRightJustify
+    NumbersOnly = True
+    TabOrder = 9
+  end
+  object lblWeaponDmg: TLabel
+    Left = 319
+    Height = 15
+    Top = 144
+    Width = 91
+    Caption = 'Weapon Damage'
+    ParentColor = False
+  end
+  object edWeaponDmg: TEdit
+    Left = 262
+    Height = 23
+    Top = 140
+    Width = 48
+    Alignment = taRightJustify
+    NumbersOnly = True
+    TabOrder = 10
+  end
+  object lblArmor: TLabel
+    Left = 317
+    Height = 15
+    Top = 173
+    Width = 34
+    Caption = 'Armor'
+    ParentColor = False
+  end
+  object edArmor: TEdit
+    Left = 262
+    Height = 23
+    Top = 169
+    Width = 48
+    Alignment = taRightJustify
+    NumbersOnly = True
+    TabOrder = 11
+  end
+  object lblArmorType: TLabel
+    Left = 317
+    Height = 15
+    Top = 202
+    Width = 60
+    Caption = 'Armor type'
+    ParentColor = False
+  end
+  object edArmorType: TEdit
+    Left = 260
+    Height = 23
+    Top = 198
+    Width = 48
+    Alignment = taRightJustify
+    NumbersOnly = True
+    TabOrder = 12
+  end
+  object lblArmorByType: TLabel
+    Left = 260
+    Height = 15
+    Top = 226
+    Width = 86
+    Caption = 'lblArmorByType'
+    ParentColor = False
+  end
+  object lbAugments: TListBox
+    Left = 442
+    Height = 113
+    Top = 27
+    Width = 164
+    ItemHeight = 0
+    TabOrder = 13
+  end
+  object lblAugments: TLabel
+    Left = 442
+    Height = 15
+    Top = 0
+    Width = 164
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Augments'
+    ParentColor = False
+  end
+  object sgEffects: TStringGrid
+    Left = 3
+    Height = 216
+    Top = 296
+    Width = 307
+    ColCount = 3
+    Columns = <    
+      item
+        SizePriority = 0
+        Title.Caption = 'List'
+        Width = 32
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Effect'
+        Width = 48
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Name'
+        Width = 200
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 14
+  end
+end

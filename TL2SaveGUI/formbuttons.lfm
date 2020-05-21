@@ -8,7 +8,6 @@ object fmButtons: TfmButtons
   ClientHeight = 46
   ClientWidth = 483
   LCLVersion = '2.1.0.0'
-  Visible = True
   object btnExport: TButton
     Left = 10
     Height = 25

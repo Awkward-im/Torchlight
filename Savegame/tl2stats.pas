@@ -66,7 +66,7 @@ type
     procedure InternalClear;
 
   public
-    constructor Create();
+    constructor Create;
     destructor  Destroy; override;
 
     procedure Clear; override;
@@ -114,6 +114,7 @@ constructor TTL2Stats.Create;
 begin
   inherited;
 
+  DataType:=dtStat;
 end;
 
 destructor TTL2Stats.Destroy;

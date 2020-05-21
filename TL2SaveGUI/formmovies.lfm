@@ -12,7 +12,7 @@ object fmMovies: TfmMovies
   object sgMovies: TStringGrid
     Left = 0
     Height = 200
-    Top = 0
+    Top = 3
     Width = 536
     Anchors = [akTop, akLeft, akRight]
     ColCount = 6
@@ -59,12 +59,20 @@ object fmMovies: TfmMovies
   object bbUpdate: TBitBtn
     Left = 8
     Height = 30
-    Top = 208
+    Top = 230
     Width = 75
     Caption = '&Update'
     Default = True
     Kind = bkOK
     OnClick = bbUpdateClick
     TabOrder = 1
+  end
+  object lblNote: TLabel
+    Left = 8
+    Height = 15
+    Top = 209
+    Width = 160
+    Caption = 'Just"Views" column is editable'
+    ParentColor = False
   end
 end

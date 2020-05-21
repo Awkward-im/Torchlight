@@ -518,16 +518,22 @@ end;
 
 //----- Classes -----
 
-function AddClassToBase(const anid,aname,atitle,adescr,abase,askill:string):boolean;
+function AddClassToBase(const anid,aname,atitle,adescr,afile,abase,askill:string):boolean;
 var
-  lSQL:string;
+  lSQL,lfile,lbase:string;
   vm:pointer;
+  i:integer;
 begin
   result:=CheckForMod('classes', anid, smodid);
   if not result then
   begin
-    lSQL:='INSERT INTO classes (id, name, title, descr, base, skills, modid) VALUES ('+
-        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+', '''+abase+''', '+
+    lfile:=LowerCase(afile);
+    for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
+    lbase:=LowerCase(abase);
+    for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
+    lSQL:='INSERT INTO classes (id, name, title, descr, file, base, skills, modid) VALUES ('+
+        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+
+        ', '''+lfile+''', '''+lbase+''', '+
         FixedText(askill)+', '' '+smodid+' '')';
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -536,16 +542,6 @@ begin
       result:=true;
     end;
   end;
-end;
-
-function ExtractJustName(const fname:String):String;
-var
-  i:integer;
-begin
-  i:=Length(fname);
-  while (i>1) and (fname[i]<>'.') do dec(i);
-  if i>1 then result:=Copy(fname,1,i-1)
-  else result:=fname;
 end;
 
 procedure AddPlayer(fname:PChar);
@@ -562,7 +558,7 @@ begin
   begin
     if CompareWide(p^.children^[i].name,'BASEFILE') then
     begin
-      lbase:=ExtractJustName(ExtractFileName(string(p^.children^[i].asString)));
+      lbase:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'NAME') then
     begin
@@ -594,7 +590,8 @@ begin
         end;
     end;
   end;
-  if not AddClassToBase(lid,lname,ltitle,ldescr,lbase,lskill) then
+  if lskill=',' then lskill:='';
+  if not AddClassToBase(lid,lname,ltitle,ldescr,fname,lbase,lskill) then
     writeln('can''t update ',fname);
   DeleteNode(p);
 end;

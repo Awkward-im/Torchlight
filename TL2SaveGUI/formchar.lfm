@@ -23,7 +23,6 @@ object fmChar: TfmChar
     Width = 160
     ItemHeight = 15
     TabOrder = 1
-    Text = 'cbImage'
   end
   object lblImage: TLabel
     Left = 8
@@ -269,7 +268,6 @@ object fmChar: TfmChar
     Width = 120
     ItemHeight = 15
     TabOrder = 15
-    Text = 'cbSpell1'
   end
   object edSpell1: TEdit
     Left = 628
@@ -294,7 +292,6 @@ object fmChar: TfmChar
     Width = 120
     ItemHeight = 15
     TabOrder = 18
-    Text = 'cbSpell2'
   end
   object edSpell3: TEdit
     Left = 628
@@ -311,7 +308,6 @@ object fmChar: TfmChar
     Width = 120
     ItemHeight = 15
     TabOrder = 20
-    Text = 'cbSpell3'
   end
   object edSpell4: TEdit
     Left = 628
@@ -328,7 +324,6 @@ object fmChar: TfmChar
     Width = 120
     ItemHeight = 15
     TabOrder = 22
-    Text = 'cbSpell4'
   end
   object edStrength: TEdit
     Left = 326
@@ -493,6 +488,7 @@ object fmChar: TfmChar
       Top = 6
       Width = 56
       AutoSize = False
+      ReadOnly = True
       TabOrder = 0
     end
     object edY: TEdit
@@ -501,6 +497,7 @@ object fmChar: TfmChar
       Top = 30
       Width = 56
       AutoSize = False
+      ReadOnly = True
       TabOrder = 1
     end
     object edZ: TEdit
@@ -509,7 +506,20 @@ object fmChar: TfmChar
       Top = 56
       Width = 56
       AutoSize = False
+      ReadOnly = True
       TabOrder = 2
     end
+  end
+  object bbUpdate: TBitBtn
+    Left = 587
+    Height = 30
+    Top = 411
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = '&Update'
+    Default = True
+    Kind = bkOK
+    OnClick = bbUpdateClick
+    TabOrder = 32
   end
 end

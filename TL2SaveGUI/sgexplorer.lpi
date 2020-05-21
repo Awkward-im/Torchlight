@@ -203,6 +203,7 @@
       <Unit>
         <Filename Value="..\TL2Save\tl2stream.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Stream"/>
       </Unit>
       <Unit>
         <Filename Value="formchar.pas"/>
@@ -256,8 +257,24 @@
         <Filename Value="formbuttons.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmButtons"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formButtons"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formitem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmItem"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formItem"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formeffects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmEffects"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formEffects"/>
       </Unit>
     </Units>
   </ProjectOptions>

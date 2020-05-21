@@ -1,0 +1,9 @@
+{"version":1,"strings":[
+{"hash":197966579,"name":"tfmeffects.caption","sourcebytes":[69,102,102,101,99,116,115],"value":"Effects"},
+{"hash":340132,"name":"tfmeffects.sgeffects.columns[0].title.caption","sourcebytes":[76,105,115,116],"value":"List"},
+{"hash":79481764,"name":"tfmeffects.sgeffects.columns[1].title.caption","sourcebytes":[69,102,102,101,99,116],"value":"Effect"},
+{"hash":346165,"name":"tfmeffects.sgeffects.columns[2].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
+{"hash":199475507,"name":"tfmeffects.lblaugments.caption","sourcebytes":[65,117,103,109,101,110,116,115],"value":"Augments"},
+{"hash":5966629,"name":"tfmeffects.sgstats.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
+{"hash":6063029,"name":"tfmeffects.sgstats.columns[1].title.caption","sourcebytes":[86,97,108,117,101],"value":"Value"}
+]}

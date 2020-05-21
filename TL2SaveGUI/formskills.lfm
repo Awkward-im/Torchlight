@@ -17,6 +17,7 @@ object fmSkills: TfmSkills
     ColCount = 3
     Columns = <    
       item
+        ReadOnly = True
         Title.Caption = 'Skill'
         Width = 200
       end    

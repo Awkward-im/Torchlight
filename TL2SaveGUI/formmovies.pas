@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, Buttons,
-  tl2save,tl2types;
+  StdCtrls, tl2save, tl2types;
 
 type
 
@@ -14,6 +14,7 @@ type
 
   TfmMovies = class(TForm)
     bbUpdate: TBitBtn;
+    lblNote: TLabel;
     sgMovies: TStringGrid;
     procedure bbUpdateClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -48,8 +49,10 @@ var
 begin
   lviews:=StrToIntDef(sgMovies.Cells[colViews,sgMovies.Row],0);
   if (lviews<0) or
-     (lviews>integer(sgMovies.Objects[1,sgMovies.Row])) then lviews:=0;
-  sgMovies.Cells[colViews,sgMovies.Row]:=IntToStr(lviews);
+     (lviews>integer(sgMovies.Objects[1,sgMovies.Row])) then
+  begin
+    sgMovies.Cells[colViews,sgMovies.Row]:='0';
+  end;
 end;
 
 procedure TfmMovies.bbUpdateClick(Sender: TObject);

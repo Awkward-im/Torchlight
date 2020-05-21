@@ -97,6 +97,7 @@ constructor TTL2Item.Create;
 begin
   inherited;
 
+  DataType:=dtItem;
 end;
 
 destructor TTL2Item.Destroy;

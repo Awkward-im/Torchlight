@@ -30,7 +30,8 @@ begin
   ReadModList(FFullModHistory);     // DumpModList('Full mod history'  ,FFullModHistory);
 
   //===== Character Data =====
-  FCharInfo:=ReadCharData(FStream);
+  FCharInfo:=ReadCharData(FStream,true);
+
   //----- Keymapping -----
 
   ReadKeyMappingList;  // DumpKeyMapping;

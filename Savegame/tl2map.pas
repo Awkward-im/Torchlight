@@ -97,6 +97,7 @@ constructor TTL2Map.Create;
 begin
   inherited;
 
+  DataType:=dtMap;
 end;
 
 destructor TTL2Map.Destroy;

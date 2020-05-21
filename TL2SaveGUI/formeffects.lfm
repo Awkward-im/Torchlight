@@ -1,0 +1,75 @@
+object fmEffects: TfmEffects
+  Left = 532
+  Height = 431
+  Top = 226
+  Width = 639
+  Caption = 'Effects'
+  ClientHeight = 431
+  ClientWidth = 639
+  LCLVersion = '2.1.0.0'
+  object sgEffects: TStringGrid
+    Left = 8
+    Height = 216
+    Top = 8
+    Width = 307
+    ColCount = 3
+    Columns = <    
+      item
+        SizePriority = 0
+        Title.Caption = 'List'
+        Width = 32
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Effect'
+        Width = 48
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Name'
+        Width = 200
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 0
+  end
+  object lblAugments: TLabel
+    Left = 442
+    Height = 15
+    Top = 0
+    Width = 164
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Augments'
+    ParentColor = False
+  end
+  object lbAugments: TListBox
+    Left = 442
+    Height = 113
+    Top = 27
+    Width = 164
+    ItemHeight = 0
+    TabOrder = 1
+  end
+  object sgStats: TStringGrid
+    Left = 336
+    Height = 231
+    Top = 192
+    Width = 297
+    ColCount = 2
+    Columns = <    
+      item
+        Title.Caption = 'Title'
+        Width = 200
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Value'
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 2
+  end
+end

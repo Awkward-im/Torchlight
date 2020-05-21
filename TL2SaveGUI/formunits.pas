@@ -13,7 +13,9 @@ type
   { TfmUnits }
 
   TfmUnits = class(TForm)
+    lblCount: TLabel;
     lbUnitList: TListBox;
+    pnlLeftTop: TPanel;
     pnlLeft: TPanel;
     pnlCharInfo: TPanel;
     Splitter: TSplitter;
@@ -40,7 +42,6 @@ implementation
 uses
   formButtons,
   tl2char,
-  tl2types,
   tl2db;
 
 procedure TfmUnits.lbUnitListSelectionChange(Sender: TObject; User: boolean);
@@ -52,6 +53,7 @@ begin
   for i:=0 to lbUnitList.Count-1 do
     if lbUnitList.Selected[i] then
     begin
+      lblCount.Caption:=IntToStr(i+1)+' / '+IntToStr(lbUnitList.Count);
       lunit:=FMap.MobInfos[integer(lbUnitList.Items.Objects[i])];
 
       fmButtons.btnExport.Enabled:=true;
@@ -60,6 +62,7 @@ begin
 
       FChar.FillInfo(lunit);
       FChar.Visible:=true;
+
       break;
     end;
 end;
@@ -76,12 +79,21 @@ var
 begin
   SGame:=aSGame;
   FMap:=aSGame.Maps[idx];
+  FChar.Visible:=false;
 
+  lblCount.Caption:=IntToStr(Length(FMap.MobInfos));
   lbUnitList.Clear;
-  for i:=0 to High(FMap.MobInfos) do
+  if Length(FMap.MobInfos)>0 then
   begin
-    lbUnitList.AddItem(FMap.MobInfos[i].Name,TObject(i));
+    lbUnitList.Sorted:=false;
+    for i:=0 to High(FMap.MobInfos) do
+    begin
+      lbUnitList.AddItem(FMap.MobInfos[i].Name,TObject(i));
+    end;
+    lbUnitList.Sorted:=true;
+    lbUnitList.ItemIndex:=0;
   end;
+
   fmButtons.btnExport.Enabled:=false;
   fmButtons.Ext:='.chr';
 end;
