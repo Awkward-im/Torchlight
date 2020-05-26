@@ -127,6 +127,10 @@ msgstr "Глобальная статистика"
 msgid "Units"
 msgstr "Юниты"
 
+#: formskills.rsfreepoints
+msgid "Free points"
+msgstr ""
+
 #: tfmbuttons.btndelete.caption
 msgid "Delete"
 msgstr ""
@@ -162,6 +166,10 @@ msgstr "Действие"
 
 #: tfmchar.gbcoords.caption
 msgid "Coordinates"
+msgstr ""
+
+#: tfmchar.gbspells.caption
+msgid "Spells"
 msgstr ""
 
 #: tfmchar.lbldexterity.caption
@@ -773,12 +781,46 @@ msgstr "Очков у мений на уровень"
 msgid "Stat points per level"
 msgstr "Очков статуса на уровень"
 
+#: tfmskills.bbupdate.caption
+msgid "Update"
+msgstr ""
+
+#: tfmskills.btnreset.caption
+msgid "Reset"
+msgstr ""
+
+#: tfmskills.cbchecklevel.caption
+msgid "Check Level"
+msgstr ""
+
+#: tfmskills.cbcheckpoints.caption
+msgid "Check Points"
+msgstr ""
+
+#: tfmskills.lblcurrent.caption
+msgid "Current:"
+msgstr ""
+
+#: tfmskills.lblunsaved.caption
+msgid "* Unsaved"
+msgstr ""
+
 #: tfmskills.sgskills.columns[0].title.caption
-msgid "Skill"
+msgctxt "tfmskills.sgskills.columns[0].title.caption"
+msgid "Icon"
 msgstr ""
 
 #: tfmskills.sgskills.columns[1].title.caption
 msgctxt "tfmskills.sgskills.columns[1].title.caption"
+msgid "Skill"
+msgstr ""
+
+#: tfmskills.sgskills.columns[2].title.caption
+msgid "Passive"
+msgstr ""
+
+#: tfmskills.sgskills.columns[4].title.caption
+msgctxt "tfmskills.sgskills.columns[4].title.caption"
 msgid "Level"
 msgstr ""
 
@@ -892,7 +934,7 @@ msgstr ""
 
 #: tfmstat.sgskills.columns[3].title.caption
 msgctxt "tfmstat.sgskills.columns[3].title.caption"
-msgid "Field3"
+msgid "Level"
 msgstr ""
 
 #: tfmstat.sgstat.columns[0].title.caption

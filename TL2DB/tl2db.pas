@@ -7,17 +7,9 @@ uses
 
 {$DEFINE Interface}
 
-function GetTL2Skill(const id:TL2ID; out amod:string; out atype:integer):string; overload;
-function GetTL2Skill(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Skill(const id:TL2ID                   ):string; overload;
-function GetTL2Skill(const aname:string; out id:TL2ID ):string; overload;
 {$Include skills.inc}
 
-// can be nice to add list of modids for filtering
-function GetTL2Movie(const id   :TL2ID ; out amod :string; out aviews:integer;
-                     out   aname:string; out apath:string):string; overload;
-function GetTL2Movie(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Movie(const id:TL2ID                   ):string; overload;
+{$Include movies.inc}
 
 function GetTL2Quest(const id:TL2ID; out amod:string; out aname:string):string; overload;
 function GetTL2Quest(const id:TL2ID; out amod:string  ):string; overload;
@@ -29,14 +21,11 @@ function GetTL2Recipes(const id:TL2ID                 ):string; overload;
 function GetTL2Stat (const id:TL2ID; out amod:string  ):string; overload;
 function GetTL2Stat (const id:TL2ID                   ):string; overload;
 
-function GetTL2Item (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Item (const id:TL2ID                   ):string; overload;
+{$Include items.inc}
 
-function GetTL2Class(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Class(const id:TL2ID                   ):string; overload;
+{$Include classes.inc}
 
-function GetTL2Pet  (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Pet  (const id:TL2ID                   ):string; overload;
+{$Include pets.inc}
 
 function GetTL2Mobs (const id:TL2ID; out amod:string  ):string; overload;
 function GetTL2Mobs (const id:TL2ID                   ):string; overload;
@@ -46,6 +35,9 @@ function GetTL2Mod  (const id:TL2ID                   ):string; overload;
 function GetTL2Mod  (const id:string                  ):string; overload;
 
 function GetTL2KeyType(acode:integer):string;
+
+procedure SetFilter(amods:TTL2ModList);
+procedure SetFilter(amods:TL2IdList);
 
 function LoadBases:boolean;
 procedure FreeBases;
@@ -57,6 +49,7 @@ procedure FreeBases;
 implementation
 
 uses
+  sysutils,
   sqlite3;
 
 var
@@ -96,6 +89,109 @@ resourcestring
 
 //-------------------
 
+type
+ TIntArray   = array of integer;
+ TInt64Array = array of int64;
+
+function splitInt(const astr:string; asep:char):TIntArray;
+var
+  p:PChar;
+  i,lcnt:integer;
+  isminus:boolean;
+begin
+  result:=nil;
+  if astr='' then
+    exit;
+
+  // get array length
+
+  p:=pointer(astr);
+  if p^=asep then inc(p);
+  lcnt:=0;
+  while p^<>#0 do
+  begin
+    if p^=asep then inc(lcnt);
+    inc(p);
+  end;
+  if (p-1)^<>asep then inc(lcnt);
+  SetLength(result,lcnt);
+
+  // fill array
+
+  p:=pointer(astr);
+  if p^=asep then inc(p);
+
+  isminus:=false;
+  result[0]:=0;
+  i:=0;
+  while p^<>#0 do
+  begin
+    if p^='-' then isminus:=true
+    else if p^<>asep then result[i]:=result[i]*10+ORD(p^)-ORD('0')
+    else
+    begin
+      if isminus then
+      begin
+        result[i]:=-result[i];
+        isminus:=false;
+      end;
+      inc(i);
+      if i<lcnt then result[i]:=0;
+    end;
+    inc(p);
+  end;
+end;
+
+function splitInt64(const astr:string; asep:char):TInt64Array;
+var
+  p:PChar;
+  i,lcnt:integer;
+  isminus:boolean;
+begin
+  result:=nil;
+  if astr='' then
+    exit;
+
+  // get array length
+
+  p:=pointer(astr);
+  if p^=asep then inc(p);
+  lcnt:=0;
+  while p^<>#0 do
+  begin
+    if p^=asep then inc(lcnt);
+    inc(p);
+  end;
+  if (p-1)^<>asep then inc(lcnt);
+  SetLength(result,lcnt);
+
+  // fill array
+
+  p:=pointer(astr);
+  if p^=asep then inc(p);
+
+  isminus:=false;
+  result[0]:=0;
+  i:=0;
+  while p^<>#0 do
+  begin
+    if p^='-' then isminus:=true
+    else if p^<>asep then result[i]:=result[i]*10+ORD(p^)-ORD('0')
+    else
+    begin
+      if isminus then
+      begin
+        result[i]:=-result[i];
+        isminus:=false;
+      end;
+      inc(i);
+      if i<lcnt then result[i]:=0;
+    end;
+    inc(p);
+  end;
+end;
+
+//-------------------
 function GetModAndTitle(const id:TL2ID; const abase:string; const awhere:string;
                         out amod:string; out aname:string):string;
 var
@@ -132,51 +228,8 @@ end;
 
 //----- Movie Info -----
 
-function GetTL2Movie(const id   :TL2ID ; out amod :string; out aviews:integer;
-                     out   aname:string; out apath:string ):string;
-var
-  aSQL:string;
-  vm:pointer;
-begin
-  amod  :='';
-  result:=HexStr(id,16);
-  aviews:=1;
-  aname :='';
-  apath :='';
+{$Include movies.inc}
 
-  if db<>nil then
-  begin
-    Str(id,aSQL);
-    aSQL:='SELECT title,modid,views,name,path FROM movies WHERE id='+aSQL+' LIMIT 1';
-
-    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      if sqlite3_step(vm)=SQLITE_ROW then
-      begin
-        result:=sqlite3_column_text (vm,0);
-        amod  :=sqlite3_column_text (vm,1);
-        aviews:=sqlite3_column_int64(vm,2);
-        aname :=sqlite3_column_text (vm,3);
-        apath :=sqlite3_column_text (vm,4);
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end;
-end;
-
-function GetTL2Movie(const id:TL2ID; out amod:string):string; overload;
-var
-  lname:string;
-begin
-  result:=GetModAndTitle(id,'movies','',amod,lname);
-end;
-
-function GetTL2Movie(const id:TL2ID):string; overload;
-var
-  lmodid:string;
-begin
-  result:=GetTL2Movie(id,lmodid);
-end;
 
 //----- Quests -----
 
@@ -217,55 +270,6 @@ end;
 
 //----- Skill info -----
 
-function GetTL2Skill(const id:TL2ID; out amod:string; out atype:integer):string;
-var
-  lname:string;
-begin
-//  amod  :='';
-  atype :=-1;
-//  result:=HexStr(id,16);
-  result:=GetModAndTitle(id,'skills','',amod,lname);
-end;
-
-function GetTL2Skill(const id:TL2ID; out amod:string):string;
-var
-  ltype:integer;
-begin
-  result:=GetTL2Skill(id,amod,ltype);
-end;
-
-function GetTL2Skill(const id:TL2ID):string;
-var
-  lmod  :string;
-  ltype :integer;
-begin
-  result:=GetTL2Skill(id,lmod,ltype);
-end;
-
-function GetTL2Skill(const aname:string; out id:TL2ID):string;
-var
-  aSQL:string;
-  vm:pointer;
-begin
-  id    :=TL2IdEmpty;
-  result:=aname;
-
-  if db<>nil then
-  begin
-    aSQL:='SELECT id,title FROM skills WHERE name LIKE '''+aname+'''';
-
-    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      if sqlite3_step(vm)=SQLITE_ROW then
-      begin
-        id    :=sqlite3_column_int64(vm,0);
-        result:=sqlite3_column_text (vm,1);
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end;
-end;
-
 {$Include skills.inc}
 
 //----- Stat info -----
@@ -286,51 +290,15 @@ end;
 
 //----- Item info -----
 
-function GetTL2Item(const id:TL2ID; out amod:string):string;
-var
-  lname:string;
-begin
-  result:=GetModAndTitle(id,'items','',amod,lname);
-end;
-
-function GetTL2Item(const id:TL2ID):string;
-var
-  lmod:string;
-begin
-  result:=GetTL2Item(id,lmod);
-end;
+{$Include items.inc}
 
 //----- Class info -----
 
-function GetTL2Class(const id:TL2ID; out amod:string):string;
-var
-  lname:string;
-begin
-  result:=GetModAndTitle(id,'classes','',amod,lname);
-end;
-
-function GetTL2Class(const id:TL2ID):string;
-var
-  lmod:string;
-begin
-  result:=GetTL2Class(id,lmod);
-end;
+{$Include classes.inc}
 
 //----- Pet info -----
 
-function GetTL2Pet(const id:TL2ID; out amod:string):string;
-var
-  lname:string;
-begin
-  result:=GetModAndTitle(id,'pets','',amod,lname);
-end;
-
-function GetTL2Pet(const id:TL2ID):string;
-var
-  lmod:string;
-begin
-  result:=GetTL2Pet(id,lmod);
-end;
+{$Include pets.inc}
 
 //----- Mob info -----
 
@@ -408,6 +376,45 @@ begin
       Val(Copy(ls,1,lpos-1),lid);
   end;
   result:=GetTL2Mod(lid);
+end;
+
+//----- Icon -----
+
+function GetTL2Icon(const id:TL2ID; const abase:string):pointer;
+var
+  aSQL:string;
+  vm:pointer;
+  lptr:pbyte;
+  lsize:integer;
+begin
+  result:=nil;
+
+  if db<>nil then
+  begin
+    Str(id,aSQL);
+    aSQL:='SELECT icon FROM '+abase+' WHERE id='''+aSQL+'''';
+
+    lsize:=0;
+
+    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        lsize:=sqlite3_column_bytes(vm,0);
+        if lsize>0 then
+        begin
+          GetMem(result,lsize);
+          lptr:=sqlite3_column_blob(vm,0);
+          move(lptr^,result^,lsize);
+        end;
+      end;
+      sqlite3_finalize(vm);
+    end;
+
+    if lsize=0 then
+    begin
+    end;
+  end;
 end;
 
 //===== Key binding =====
@@ -500,13 +507,39 @@ begin
   if db<>nil then sqlite3_close(db);
 end;
 
-procedure SetFilter(const afilter:string);
+
+procedure SetFilter(amods:TTL2ModList);
+var
+  ls:string;
+  i:integer;
 begin
-  if pos(',',afilter)>0 then
-    filter:='(modid IN ('+afilter+'))'
-  else
-    filter:='(modid='+afilter+')';
-//  'GLOB ''*,'+filter+',*''';
+  filter:='(instr(modid,'' 0 '')>0';
+  if amods<>nil then
+  begin
+    for i:=0 to High(amods) do
+    begin
+      Str(amods[i].id,ls);
+      filter:=filter+') OR (instr(modid,'' '+ls+' '')>0';
+    end;
+  end;
+  filter:=filter+')';
+end;
+
+procedure SetFilter(amods:TL2IdList);
+var
+  ls:string;
+  i:integer;
+begin
+  filter:='(instr(modid,'' 0 '')>0';
+  if amods<>nil then
+  begin
+    for i:=0 to High(amods) do
+    begin
+      Str(amods[i],ls);
+      filter:=filter+') OR (instr(modid,'' '+ls+' '')>0';
+    end;
+  end;
+  filter:=filter+')';
 end;
 
 end.

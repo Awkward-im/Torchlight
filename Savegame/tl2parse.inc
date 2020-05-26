@@ -31,6 +31,10 @@ begin
 
   //===== Character Data =====
   FCharInfo:=ReadCharData(FStream,true);
+{
+  GetTL2Class(FCharInfo.ClassId,lmod,lname);
+  if lname<>FClassString then ; //!!error
+}
 
   //----- Keymapping -----
 
@@ -64,7 +68,7 @@ begin
   lcnt:=FStream.ReadDWord;  // 1 (2 if BiA cative)
   SetLength(FPetInfos,lcnt);
   for i:=0 to lcnt-1 do
-    FPetInfos[i]:=ReadCharData(FStream);
+    FPetInfos[i]:=ReadCharData(FStream,false,true);
   //----- Unknown 2 -----
   FUnknown2:=FStream.ReadBytes(34);
 {

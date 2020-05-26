@@ -44,7 +44,6 @@ implementation
 {$R *.lfm}
 
 uses
-  formButtons,
   tl2db;
 
 procedure TfmItem.FillInfo(aItem:TTL2Item);
@@ -54,7 +53,10 @@ begin
   FItem:=aItem;
   
   edName    .Text := aItem.Name;
-  edNameById.Text := GetTL2Item(aItem.ID);
+  if aItem.IsProp then
+    edNameById.Text := GetTL2Prop(aItem.ID)
+  else
+    edNameById.Text := GetTL2Item(aItem.ID);
   edPrefix  .Text := aItem.Prefix;
   edSuffix  .Text := aItem.Suffix;
 
@@ -103,6 +105,10 @@ begin
     inc(j);
   end;
   sgEffects.EndUpdate;
+
+  lbModList.Clear;
+  for i:=0 to High(aItem.ModIds) do
+    lbModList.AddItem(GetTL2Mod(aItem.ModIds[i]),nil);
 end;
 
 end.

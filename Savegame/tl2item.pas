@@ -34,6 +34,7 @@ type
     FSuffix   :string;
 
     FModIds:TL2IdList;
+    FIsProp:boolean;
 
     FEnchantmentCount:integer;
     FStashPosition   :integer;
@@ -63,10 +64,12 @@ type
     FUnkn6:TL2IdValList;
 
   public
-    property Name:string read FName;
+    property Name  :string read FName;
     property Prefix:string read FPrefix;
     property Suffix:string read FSuffix;
-    property ID:TL2ID read FItemId;
+    property ID    :TL2ID  read FItemId;
+
+    property IsProp:boolean   read FIsProp write FIsProp;
     property ModIds:TL2IdList read FModIds write FModIds;
 
     property Level:integer read FLevel;
@@ -371,6 +374,7 @@ begin
      lpos:=AStream.Position;
       
       result[i]:=TTL2Item.Create;
+      result[i].IsProp:=false;
       try
         result[i].LoadFromStream(AStream);
       except

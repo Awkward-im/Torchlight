@@ -39,12 +39,13 @@ type
     FSign           :Byte;
     FSignWord       :Word;
     FIsChar         :boolean;
+    FIsPet          :boolean;
 
     FWardrobe       :TL2Boolean;
 
     // Pet's corner
-    FImageId,
-    FOriginId       :TL2ID;
+    FMorphId,
+    FClassId        :TL2ID;
     FScale          :TL2Float;
     FSkin           :Byte;
     FEnabled        :TL2Boolean;
@@ -116,13 +117,16 @@ type
     FAugments       :TL2StringList;
     FStats          :TL2IdValList;
 
+    function  GetSpell(idx:integer):TTL2Spell;
+    procedure SetSpell(idx:integer; const aspell:TTL2Spell);
   public
     property Action:TTL2Action read FAction write FAction;
     property IsChar         :boolean  read FIsChar;
+    property IsPet          :boolean  read FIsPet;
     property Sign           :Byte     read FSign;
     property Enabled        :ByteBool read FEnabled         write FEnabled;
-    property ImageId        :TL2ID    read FImageId         write FImageId;
-    property OriginId       :TL2ID    read FOriginId        write FOriginId;
+    property ClassId        :TL2ID    read FClassId         write FClassId;
+    property MorphId        :TL2ID    read FMorphId         write FMorphId;
     property Name           :string   read FName            write FName;
     property Suffix         :string   read FSuffix          write FSuffix;
     property Player         :string   read FPlayer          write FPlayer;
@@ -158,14 +162,15 @@ type
     property Passives1[idx:integer]:TTL2Passive read  GetPassives1;
     property Passives2[idx:integer]:TTL2Passive read  GetPassives2;
 }
-    property Items :TTL2ItemList read FItems;
-    property Skills:TL2IdValList read FSkills;
-    property ModIds:TL2IdList    read FModIds;
+    property Spells[idx:integer]:TTL2Spell read GetSpell write SetSpell;
+    property Items :TTL2ItemList read FItems  {write FItems};
+    property Skills:TL2IdValList read FSkills  write FSkills;
+    property ModIds:TL2IdList    read FModIds  write FModIds;
   end;
 type
   TTL2CharArray = array of TTL2Character;
 
-function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false):TTL2Character;
+function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false; IsPet:boolean=false):TTL2Character;
 
 
 implementation
@@ -183,6 +188,29 @@ begin
   InternalClear;
 
   inherited;
+end;
+
+function TTL2Character.GetSpell(idx:integer):TTL2Spell;
+begin
+  if idx in [0..3] then
+  begin
+    result.name :=FSpells[idx].name;
+    result.level:=FSpells[idx].level;
+  end
+  else
+  begin
+    result.name :='';
+    result.level:=0;
+  end;
+end;
+
+procedure TTL2Character.SetSpell(idx:integer; const aspell:TTL2Spell);
+begin
+  if idx in [0..3] then
+  begin
+    FSpells[idx].name :=aspell.name;
+    FSpells[idx].level:=aspell.level;
+  end;
 end;
 
 procedure TTL2Character.InternalClear;
@@ -225,8 +253,10 @@ begin
   FSign    :=AStream.ReadByte;  // $FF or 02
   FSignWord:=Check(AStream.ReadWord,'char sign_'+HexStr(AStream.Position,8),0);  // 0 (can be $0100)
 	
-  FImageId :=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
-  FOriginId:=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
+  FMorphId:=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
+  FClassId:=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
+  if FClassId=TL2IdEmpty then
+    FClassId:=FMorphId;
 
   FUnkn1:=TL2ID(AStream.ReadQword);    //!! (changing) (F6ED2564.F596F9AA)
 
@@ -423,8 +453,11 @@ begin
   AStream.WriteByte(FSign);      // $FF or 2
   AStream.WriteWord(FSignWord);  // 0 or 0x0100
 
-  AStream.WriteQWord(QWord(FImageId));  // current Class ID (with sex)
-  AStream.WriteQWord(QWord(FOriginId)); // *$FF or base class id (if morphed)
+  AStream.WriteQWord(QWord(FMorphId));    // current Class ID (with sex)
+  if FClassId=FMorphId then
+    AStream.WriteQWord(QWord(TL2IdEmpty)) // *$FF or base class id (if morphed)
+  else
+    AStream.WriteQWord(QWord(FClassId));
   AStream.WriteQWord(QWord(FUnkn1));    //!! (changing) (F6ED2564.F596F9AA)
 
   AStream.WriteByte(FUnkn2);
@@ -552,10 +585,11 @@ begin
   FixSize  (AStream);
 end;
 
-function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false):TTL2Character;
+function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false; IsPet:boolean=false):TTL2Character;
 begin
   result:=TTL2Character.Create();
   result.FIsChar:=IsChar;
+  result.FIsPet :=IsPet;
   try
     result.LoadFromStream(AStream);
   except

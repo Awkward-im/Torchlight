@@ -13,9 +13,9 @@ object fmStat: TfmStat
     Height = 488
     Top = 0
     Width = 741
-    ActivePage = tsMobs
+    ActivePage = tsItems
     Align = alClient
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     object tsCommon: TTabSheet
       Caption = 'Common'
@@ -157,7 +157,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field3'
+            Title.Caption = 'Level'
           end>
         FixedCols = 0
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]

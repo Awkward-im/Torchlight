@@ -185,6 +185,7 @@
       <Unit>
         <Filename Value="..\TL2Save\tl2item.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Item"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tl2map.pas"/>

@@ -8,6 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Spin, StdCtrls,
   Buttons;
 
+const
+  INIFileName   = 'tl2sg.ini';
+
 type
 
   { TfmSettings }
@@ -40,7 +43,6 @@ uses
 { TfmSettings }
 
 const
-  INIFileName   = 'tl2sg.ini';
   sSettings     = 'Settings';
   sShowTech     = 'showtech';
   sHPperLvl     = 'HPperLevel';

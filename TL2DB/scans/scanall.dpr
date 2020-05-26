@@ -68,6 +68,7 @@ type
     id      :string;
     title   :string;
     name    :string;
+    icon    :string;
     atype   :integer;
     scale   :single;
     textures:integer;
@@ -83,9 +84,10 @@ begin
   begin
     Str(aPet.Scale:0:2,lscale);
 
-    lSQL:='INSERT INTO pets (id, name, title, type, scale, skins, modid) VALUES ('+
+    lSQL:='INSERT INTO pets (id, name, title, type, scale, skins, icon, modid) VALUES ('+
         aPet.id+', '+FixedText(apet.name)+', '+FixedText(apet.title)+', '+
-        IntToStr(apet.atype)+', '+lscale+', '+IntToStr(apet.textures)+', '' '+smodid+' '')';
+        IntToStr(apet.atype)+', '+lscale+', '+IntToStr(apet.textures)+
+        ', '''+apet.icon+''', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -125,6 +127,10 @@ begin
         lpet.atype:=0
       else
         lpet.atype:=1;
+    end
+    else if CompareWide(p^.children^[i].name,'ICON') then
+    begin
+      lpet.icon:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'SCALE') then
     begin
@@ -389,7 +395,7 @@ end;
 
 //----- Items -----
 
-function AddItemToBase(const anid,aname,atitle,adescr,auses,aquest:string):boolean;
+function AddItemToBase(const anid,aname,atitle,adescr,aicon,auses,aquest:string):boolean;
 var
   lSQL:string;
   vm:pointer;
@@ -397,10 +403,9 @@ begin
   result:=CheckForMod('items', anid, smodid);
   if not result then
   begin
-    lSQL:='INSERT INTO items (id, name, title, descr, uses, quest, modid) VALUES ('+
+    lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, modid) VALUES ('+
         anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+
-        ', '+auses+', '+aquest+', '' '+smodid+' '')';
-//writeln(lsql);
+        ', '''+aicon+''', '+auses+', '+aquest+', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -414,7 +419,7 @@ end;
 procedure AddItem(fname:PChar);
 var
   p:PTL2Node;
-  ldescr,lid,lname,ltitle,luses,lquest:string;
+  ldescr,lid,lname,ltitle,licon,luses,lquest:string;
   i:integer;
 begin
   p:=ParseDatFile(fname);
@@ -435,6 +440,10 @@ begin
     begin
       ldescr:=p^.children^[i].asString;
     end
+    else if CompareWide(p^.children^[i].name,'ICON') then
+    begin
+      licon:=p^.children^[i].asString;
+    end
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
     begin
       lid:=p^.children^[i].asString;
@@ -450,23 +459,98 @@ begin
       luses:=p^.children^[i].asString;
     end;
   end;
-  if not AddItemToBase(lid,lname,ltitle,ldescr,luses,lquest) then
+  if not AddItemToBase(lid,lname,ltitle,ldescr,licon,luses,lquest) then
+    writeln('can''t update ',fname);
+  DeleteNode(p);
+end;
+
+//----- Props -----
+
+function AddPropToBase(const anid,aname,atitle,aquest:string):boolean;
+var
+  lSQL:string;
+  vm:pointer;
+begin
+  result:=CheckForMod('props', anid, smodid);
+  if not result then
+  begin
+    lSQL:='INSERT INTO props (id, name, title, quest, modid) VALUES ('+
+        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+
+        aquest+', '' '+smodid+' '')';
+
+    if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
+    begin
+      sqlite3_step(vm);
+      sqlite3_finalize(vm);
+      result:=true;
+    end;
+  end;
+end;
+
+procedure AddProp(fname:PChar);
+var
+  p:PTL2Node;
+  lid,lname,ltitle,lquest:string;
+  i:integer;
+begin
+  p:=ParseDatFile(fname);
+  ltitle:='';
+  if Pos('MEDIA\UNITS\PROPS\QUESTPROPS\',fname)>0 then lquest:='1' else lquest:='0';
+  for i:=0 to p^.childcount-1 do
+  begin
+    if CompareWide(p^.children^[i].name,'NAME') then
+    begin
+      lname:=p^.children^[i].asString;
+    end
+    else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
+    begin
+      ltitle:=p^.children^[i].asString;
+    end
+    else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
+    begin
+      lid:=p^.children^[i].asString;
+    end;
+{
+    else if (lquest='0') and CompareWide(p^.children^[i].name,'UNITTYPE') then
+    begin
+    end
+}
+  end;
+  if not AddPropToBase(lid,lname,ltitle,lquest) then
     writeln('can''t update ',fname);
   DeleteNode(p);
 end;
 
 //----- Skills -----
 
-function AddSkillToBase(const anid,aname,atitle,adescr,agraph,ashared:string):boolean;
+type
+  tSkillInfo = record
+    id     :string;
+    name   :string;
+    title  :string;
+    descr  :string;
+    graph  :string;
+    icon   :string;
+    minlvl :string;
+    maxlvl :string;
+    passive:char;
+    shared :char;
+  end;
+
+function AddSkillToBase(const askill:tSkillInfo):boolean;
 var
   lSQL:string;
   vm:pointer;
 begin
-  result:=CheckForMod('skills', anid, smodid);
+  result:=CheckForMod('skills', askill.id, smodid);
   if not result then
   begin
-    lSQL:='INSERT INTO skills (id, name, title, descr, tier, shared, modid) VALUES ('+
-        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+', '''+agraph+''', '+ashared+', '' '+smodid+' '')';
+    lSQL:='INSERT INTO skills (id, name, title, descr, tier, icon,'+
+          ' minlevel, maxlevel, passive, shared, modid) VALUES ('+
+        askill.id+', '+FixedText(askill.name)+', '+FixedText(askill.title)+', '+FixedText(askill.descr)+
+        ', '''+askill.graph+''', '''+askill.icon+''', '+
+        askill.minlvl+', '+askill.maxlvl+', '+askill.passive+', '+askill.shared+', '' '+smodid+' '')';
+
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
       sqlite3_step(vm);
@@ -478,47 +562,109 @@ end;
 
 procedure AddSkill(fname:PChar);
 var
-  p:PTL2Node;
-  ldescr,lgraph,lid,lname,ltitle,lshared:string;
-  i:integer;
+  p,pp,ppp:PTL2Node;
+  lskill:TSkillInfo;
+  levels:array [0..63] of integer;
+  ls:string;
+  i,j,lcnt:integer;
+  haslevels:boolean;
 begin
   p:=ParseDatFile(fname);
-  ltitle:='';
+
+  fillchar(levels,SizeOf(levels),0);
+  fillchar(lskill,sizeof(lskill),0);
+
   if Pos('MEDIA\SKILLS\SHARED',fname)>0 then
-    lshared:='1'
+    lskill.shared:='1'
   else
-    lshared:='0';
+    lskill.shared:='0';
+
+  lskill.passive:='0';
+  lskill.minlvl :='0';
+
+  lcnt:=0;
+  haslevels:=false;
+
   for i:=0 to p^.childcount-1 do
   begin
-    if CompareWide(p^.children^[i].name,'NAME') then
+    pp:=@p^.children^[i];
+
+    if CompareWide(pp^.name,'NAME') then
     begin
-      lname:=p^.children^[i].asString;
+      lskill.name:=pp^.asString;
     end
-    else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
+    else if CompareWide(pp^.name,'DISPLAYNAME') then
     begin
-      ltitle:=p^.children^[i].asString;
+      lskill.title:=pp^.asString;
     end
-    else if CompareWide(p^.children^[i].name,'DESCRIPTION') then
+    else if CompareWide(pp^.name,'DESCRIPTION') then
     begin
-      ldescr:=p^.children^[i].asString;
+      lskill.descr:=pp^.asString;
     end
-    else if CompareWide(p^.children^[i].name,'REQUIREMENT_GRAPH') then
+    else if CompareWide(pp^.name,'BASE_DESCRIPTION') then
     begin
-      lgraph:=p^.children^[i].asString;
+      lskill.descr:=pp^.asString;
     end
-    else if CompareWide(p^.children^[i].name,'UNIQUE_GUID') then
+    else if CompareWide(pp^.name,'REQUIREMENT_GRAPH') then
     begin
-      Str(p^.children^[i].asInteger64,lid);
+      lskill.graph:=pp^.asString;
+    end
+    else if CompareWide(pp^.name,'ACTIVATION_TYPE') then
+    begin
+      if pp^.asString='PASSIVE' then
+        lskill.passive:='1';
+    end
+    else if CompareWide(pp^.name,'SKILL_ICON') then
+    begin
+      lskill.icon:=pp^.asString;
+    end
+    else if CompareWide(pp^.name,'LEVEL_REQUIRED') then
+    begin
+      Str(pp^.asInteger,lskill.minlvl);
+    end
+    else if CompareWide(pp^.name,'UNIQUE_GUID') then
+    begin
+      Str(pp^.asInteger64,lskill.id);
+    end;
+    if (pp^.nodeType=ntGroup) and (Pos('LEVEL',WideString(pp^.name))=1) then
+    begin
+      for j:=0 to pp^.childcount-1 do
+      begin
+        ppp:=@pp^.children^[j];
+        if CompareWide(ppp^.name,'LEVEL_REQUIRED') then
+        begin
+          levels[lcnt]:=ppp^.asInteger;
+          if levels[lcnt]>0 then
+            haslevels:=true;
+        end;
+      end;
+      inc(lcnt);
     end;
   end;
-  if not AddSkillToBase(lid,lname,ltitle,ldescr,lgraph,lshared) then
+
+  if lcnt=0 then
+    lcnt:=1;
+  Str(lcnt,lskill.maxlvl);
+
+  if (lskill.graph='') and haslevels then
+  begin
+    lskill.graph:=',';
+    for i:=0 to lcnt-1 do
+    begin
+      Str(levels[i],ls);
+      lskill.graph:=lskill.graph+ls+',';
+    end;
+  end;
+
+  if not AddSkillToBase(lskill) then
     writeln('can''t update ',fname);
+
   DeleteNode(p);
 end;
 
 //----- Classes -----
 
-function AddClassToBase(const anid,aname,atitle,adescr,afile,abase,askill:string):boolean;
+function AddClassToBase(const anid,aname,atitle,adescr,afile,abase,askill,aicon:string):boolean;
 var
   lSQL,lfile,lbase:string;
   vm:pointer;
@@ -531,10 +677,10 @@ begin
     for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
     lbase:=LowerCase(abase);
     for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
-    lSQL:='INSERT INTO classes (id, name, title, descr, file, base, skills, modid) VALUES ('+
+    lSQL:='INSERT INTO classes (id, name, title, descr, file, base, skills, icon, modid) VALUES ('+
         anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+
         ', '''+lfile+''', '''+lbase+''', '+
-        FixedText(askill)+', '' '+smodid+' '')';
+        FixedText(askill)+', '''+aicon+''', '' '+smodid+' '')';
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
       sqlite3_step(vm);
@@ -547,7 +693,7 @@ end;
 procedure AddPlayer(fname:PChar);
 var
   p:PTL2Node;
-  lskill,ldescr,lid,lname,ltitle,lbase:string;
+  lskill,ldescr,lid,lname,ltitle,lbase,licon:string;
   i,j:integer;
 begin
   p:=ParseDatFile(fname);
@@ -572,6 +718,10 @@ begin
     begin
       ldescr:=p^.children^[i].asString;
     end
+    else if CompareWide(p^.children^[i].name,'ICON') then
+    begin
+      licon:=p^.children^[i].asString;
+    end
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
     begin
       lid:=p^.children^[i].asString;
@@ -591,7 +741,7 @@ begin
     end;
   end;
   if lskill=',' then lskill:='';
-  if not AddClassToBase(lid,lname,ltitle,ldescr,fname,lbase,lskill) then
+  if not AddClassToBase(lid,lname,ltitle,ldescr,fname,lbase,lskill,licon) then
     writeln('can''t update ',fname);
   DeleteNode(p);
 end;
@@ -683,6 +833,13 @@ begin
   // Items
   writeln('Go items!');
   CycleDir('MEDIA\UNITS\ITEMS',@AddItem);
+{
+  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
+  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
+}
+  // Items
+  writeln('Go props!');
+  CycleDir('MEDIA\UNITS\PROPS',@AddProp);
 {
   sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
   sqlite3_exec(db,'Begin Transaction',nil,nil,nil);

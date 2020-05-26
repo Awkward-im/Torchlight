@@ -35,7 +35,7 @@ type
     id    :TL2ID;
     field1:TL2Integer;
     field2:TL2Integer;
-    field3:Byte;
+    level :Byte;
   end;
   tStatSkillArray = array of tStatSkill;
 

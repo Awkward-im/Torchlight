@@ -26,5 +26,6 @@
 {"hash":1466,"name":"tfmchar.lblx.caption","sourcebytes":[88,58],"value":"X:"},
 {"hash":1482,"name":"tfmchar.lbly.caption","sourcebytes":[89,58],"value":"Y:"},
 {"hash":1498,"name":"tfmchar.lblz.caption","sourcebytes":[90,58],"value":"Z:"},
-{"hash":197568645,"name":"tfmchar.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"}
+{"hash":197568645,"name":"tfmchar.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"},
+{"hash":94815027,"name":"tfmchar.gbspells.caption","sourcebytes":[83,112,101,108,108,115],"value":"Spells"}
 ]}

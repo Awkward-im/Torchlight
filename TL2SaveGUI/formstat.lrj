@@ -21,7 +21,7 @@
 {"hash":5966629,"name":"tfmstat.sgskills.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
 {"hash":80724593,"name":"tfmstat.sgskills.columns[1].title.caption","sourcebytes":[70,105,101,108,100,49],"value":"Field1"},
 {"hash":80724594,"name":"tfmstat.sgskills.columns[2].title.caption","sourcebytes":[70,105,101,108,100,50],"value":"Field2"},
-{"hash":80724595,"name":"tfmstat.sgskills.columns[3].title.caption","sourcebytes":[70,105,101,108,100,51],"value":"Field3"},
+{"hash":5426364,"name":"tfmstat.sgskills.columns[3].title.caption","sourcebytes":[76,101,118,101,108],"value":"Level"},
 {"hash":206722702,"name":"tfmstat.tsunknown.caption","sourcebytes":[85,110,107,110,111,119,110],"value":"Unknown"},
 {"hash":80724593,"name":"tfmstat.sgunknown.columns[0].title.caption","sourcebytes":[70,105,101,108,100,49],"value":"Field1"},
 {"hash":80724594,"name":"tfmstat.sgunknown.columns[1].title.caption","sourcebytes":[70,105,101,108,100,50],"value":"Field2"},

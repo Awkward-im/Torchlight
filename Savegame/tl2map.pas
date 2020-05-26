@@ -152,6 +152,7 @@ begin
     lcnt1:=AStream.ReadDWord(); // size
     lpos:=AStream.Position;
     FPropList[i]:=TTL2Item.Create;
+    FPropList[i].IsProp:=true;
     try
       FPropList[i].LoadFromStream(AStream);
     except
@@ -190,6 +191,7 @@ begin
     lcnt1:=AStream.ReadDWord(); // size
     lpos:=AStream.Position;
     FQuestItems[i]:=TTL2Item.Create;
+    FPropList[i].IsProp:=false; //!!!!!!!!!
     try
       FQuestItems[i].LoadFromStream(AStream);
     except

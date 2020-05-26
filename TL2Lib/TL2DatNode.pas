@@ -66,8 +66,11 @@ function WriteDatTree(anode:PTL2Node; fname:PChar):ByteBool; export;
 procedure DeleteNode(var anode:PTL2Node); export;
 function ExtractNode(src:PTL2Node):PTL2Node; export;
 
-// Nodes MUST BE a group
-// action is: 0 - skip; 1 - overwrite; 2 - append
+const
+  actSkip      = 0;
+  actOverwrite = 1;
+  actAppend    = 2;
+// both nodes MUST BE a group
 // groups will append always
 function JoinNode(dst:PTL2Node; var anode:PTL2Node; action:Int32):ByteBool; export;
 
@@ -964,7 +967,7 @@ begin
     lcnode:=@anode^.children^[i];
     if lcnode^.nodetype<>ntDeleted then
     begin
-      if (lcnode^.nodetype=ntGroup) or (action=2) then
+      if (lcnode^.nodetype=ntGroup) or (action=actAppend) then
         lnode:=nil
       else
         lnode:=FindNode(dst,lcnode^.name);
@@ -973,8 +976,11 @@ begin
       begin
         AddNode(dst,lcnode);
       end
-      else if action=1 then
+      else if action=actOverwrite then
       begin
+        //!! clear+set value can be better to keep order
+        // but if no holes before and no autopack,
+        // then all will work as we need
         DeleteNode(lnode);
         AddNode(dst,lcnode);
       end;

@@ -1,4 +1,14 @@
 {"version":1,"strings":[
-{"hash":5906476,"name":"tfmskills.sgskills.columns[0].title.caption","sourcebytes":[83,107,105,108,108],"value":"Skill"},
-{"hash":5426364,"name":"tfmskills.sgskills.columns[1].title.caption","sourcebytes":[76,101,118,101,108],"value":"Level"}
+{"hash":326238,"name":"tfmskills.sgskills.columns[0].title.caption","sourcebytes":[73,99,111,110],"value":"Icon"},
+{"hash":5906476,"name":"tfmskills.sgskills.columns[1].title.caption","sourcebytes":[83,107,105,108,108],"value":"Skill"},
+{"hash":109748373,"name":"tfmskills.sgskills.columns[2].title.caption","sourcebytes":[80,97,115,115,105,118,101],"value":"Passive"},
+{"hash":4294967295,"name":"tfmskills.sgskills.columns[3].title.caption","sourcebytes":[],"value":""},
+{"hash":5426364,"name":"tfmskills.sgskills.columns[4].title.caption","sourcebytes":[76,101,118,101,108],"value":"Level"},
+{"hash":4294967295,"name":"tfmskills.sgskills.columns[5].title.caption","sourcebytes":[],"value":""},
+{"hash":219883308,"name":"tfmskills.cbchecklevel.caption","sourcebytes":[67,104,101,99,107,32,76,101,118,101,108],"value":"Check Level"},
+{"hash":34298979,"name":"tfmskills.cbcheckpoints.caption","sourcebytes":[67,104,101,99,107,32,80,111,105,110,116,115],"value":"Check Points"},
+{"hash":96905381,"name":"tfmskills.bbupdate.caption","sourcebytes":[85,112,100,97,116,101],"value":"Update"},
+{"hash":211337690,"name":"tfmskills.lblcurrent.caption","sourcebytes":[67,117,114,114,101,110,116,58],"value":"Current:"},
+{"hash":5818820,"name":"tfmskills.btnreset.caption","sourcebytes":[82,101,115,101,116],"value":"Reset"},
+{"hash":207200484,"name":"tfmskills.lblunsaved.caption","sourcebytes":[42,32,85,110,115,97,118,101,100],"value":"* Unsaved"}
 ]}

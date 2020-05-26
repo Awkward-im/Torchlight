@@ -2,10 +2,6 @@ unit TL2Common;
 
 interface
 
-uses
-   classes
-  ;
-
 type
   TTL2ParseType = (ptLite, ptStandard, ptDeep, ptDeepest);
 

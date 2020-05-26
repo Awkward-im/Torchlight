@@ -204,6 +204,8 @@ end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);
 begin
+  LoadBases;
+
   fmButtons  :=TfmButtons   .Create(Self); fmButtons  .Parent:=MainPanel;
   fmEffects  :=TfmEffects   .Create(Self);
 
@@ -224,7 +226,6 @@ begin
   fmButtons.Visible:=true;
 
   CreateTree;
-  LoadBases;
 end;
 
 //===== Actions =====
@@ -486,6 +487,10 @@ begin
             end;
             1: begin
               FItems.FillInfo(SGame.Maps[lidx].PropList);
+              FItems.Visible:=true;
+            end;
+            2: begin
+              FItems.FillInfo(SGame.Maps[lidx].QuestItems);
               FItems.Visible:=true;
             end;
           end;

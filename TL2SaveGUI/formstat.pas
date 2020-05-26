@@ -100,7 +100,7 @@ begin
     sgSkills.Cells[0,i+1]:=GetTL2Skill(lstat.Skills[i].id);
     sgSkills.Cells[1,i+1]:=IntToStr(lstat.Skills[i].field1);
     sgSkills.Cells[2,i+1]:=IntToStr(lstat.Skills[i].field2);
-    sgSkills.Cells[3,i+1]:=IntToStr(lstat.Skills[i].field3);
+    sgSkills.Cells[3,i+1]:=IntToStr(lstat.Skills[i].level);
   end;
   sgSkills.EndUpdate;
 

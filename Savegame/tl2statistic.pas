@@ -13,7 +13,7 @@ uses
 resourcestring
   rsTotalTime   = 'Time Played';
   rsGold        = 'Gold Gathered';
-//  rsDifficulty  = 'Difficulty'; //!!!!!!!!!!! Elfly = 7(!!!), lonelfly=2
+  rsUnknownStat = 'Unknown Stat';
   rsSteps       = 'Steps Taken';
   rsQuestsDone  = 'Quests completed';
   rsDeaths      = 'Deaths';
@@ -33,7 +33,6 @@ resourcestring
   rsDmgDealt    = 'Highest Damage Dealt';
   rsLevelTime   = 'Level Time Played';
   rsExploded    = 'Monsters Exploded';
-  rsUnknownStat = 'Unknown Stat';
 
 const
   StatsCount = 22;

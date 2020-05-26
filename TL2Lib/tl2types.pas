@@ -35,6 +35,27 @@ type
     Z: TL2Float;
   end;
 
+type
+  TTL2Mod = packed record
+    id     :TL2ID;
+    version:word;
+  end;
+  TTL2ModList = array of TTL2Mod;
+
+type
+  TTL2Function = packed record
+    id :TL2ID;
+    unk:TL2ID;
+  end;
+  TTL2FunctionList = array of TTL2Function;
+type
+  TTL2KeyMapping = packed record
+    id      :TL2ID;
+    datatype:byte;   // (0=item, 2-skill)
+    key     :word;   // or byte, (byte=3 or 0 for quick keys)
+  end;
+  TTL2KeyMappingList = array of TTL2KeyMapping;
+
 //----- Not real TL2 types -----
 
 type
@@ -53,6 +74,12 @@ type
   TL2SaveFooter = packed record
     filesize:DWord;
   end;
+
+
+//=====  =====
+
+type
+  TTL2Difficulty = (Casual, Normal, Veteran, Expert);
 
 
 implementation
