@@ -71,8 +71,8 @@ type
 
     FStatistic :TTL2Statistic; // OR we can just keep pointer to buffer
 
-    FMap :string;
-    FArea:string;
+    FWaypoint:string;
+    FArea    :string;
 
     Unk1,Unk2,Unk3:DWord;
     UnkCoord:TL2Coord;
@@ -101,10 +101,11 @@ type
     function  GetStatistic (idx:integer):TL2Integer;
     procedure SetStatistic (idx:integer; aval:TL2Integer);
   public
+{
     procedure DumpStatistic;
     procedure DumpKeyMapping;
     procedure DumpModList(const acomment:string; alist:TTL2ModList);
-    
+}    
     property Difficulty  :TTL2Difficulty read FDifficulty   write FDifficulty;
     property Hardcore    :boolean        read FHardcore     write FHardcore;
     property NewGameCycle:integer        read FNewGameCycle write FNewGameCycle;
@@ -121,7 +122,7 @@ type
     property MapCount:integer read GetMapCount;
     property Maps[idx:integer]:TTL2Map read GetMap;
 
-    property Recipes:TL2IdList read FRecipes;
+    property Recipes:TL2IdList read FRecipes write FRecipes;
 
     property Movies    :TL2IdValList          read FMovies;
     property Movie     [idx:integer]:TL2IdVal read GetMovie;
@@ -160,7 +161,7 @@ type
     property MonstersExploded :TL2Integer index statExploded   read GetStatistic write SetStatistic;
 
     property ClassString:string read FClassString;
-    property Map        :string read FMap;
+    property Waypoint   :string read FWaypoint;
     property Area       :string read FArea;
   end;
 
@@ -169,8 +170,8 @@ type
 implementation
 
 uses
-  sysutils,
-  tl2db;
+  sysutils{,
+  tl2db};
 
 resourcestring
   sLoadFailed   = 'Savegame loading failed';
@@ -307,7 +308,7 @@ begin
 end;
 
 //----- Dumps -----
-
+{
 procedure TTL2SaveFile.DumpKeyMapping;
 var
   i:integer;
@@ -370,7 +371,7 @@ begin
       writeln(GetStatDescr(i)+': '+GetStatText(i,FStatistic[i]));
   end;
 end;
-
+}
 //----- Read data -----
 
 procedure TTL2SaveFile.ReadKeyMappingList;
@@ -493,8 +494,6 @@ begin
 end;
 
 procedure TTL2SaveFile.SaveToFile(const aname:string; aencoded:boolean=false);
-type
-  PTL2SaveHeader = ^TL2SaveHeader;
 var
   lsout:TMemoryStream;
   lSaveHeader:TL2SaveHeader;

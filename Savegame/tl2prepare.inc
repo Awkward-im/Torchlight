@@ -39,8 +39,8 @@ begin
 
   WriteStatistic();
 
-  FStream.WriteShortString(FMap);  // map
-  FStream.WriteShortString(FArea); // area (region)
+  FStream.WriteShortString(FArea);     // map
+  FStream.WriteShortString(FWaypoint); // area (region)
 
   //----- Unknown 1 -----
   //!!
@@ -64,6 +64,7 @@ begin
   //----- Unknown 2 -----
   //!!
     FStream.Write(FUnknown2^,34);
+
   //----- Maps -----
 
   WriteMapList(FStream,FMaps);

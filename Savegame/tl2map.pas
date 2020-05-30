@@ -220,7 +220,7 @@ end;
 
 procedure TTL2Map.LoadFromStream(AStream: TTL2Stream);
 var
-  i,lcnt,lcnt1:integer;
+  i,lcnt:integer;
 begin
   DataOffset:=AStream.Position;
 

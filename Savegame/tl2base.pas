@@ -78,17 +78,10 @@ begin
 end;
 
 procedure TL2BaseClass.FixSize(AStream:TStream);
-var
-  lSize:integer;
 begin
-  lSize:=AStream.Position-FDataOffset;
-  if lSize<>FDataSize then
-  begin
-    FDataSize:=lSize;
-    AStream.Position:=FDataOffset-SizeOf(DWord);
-    AStream.WriteDWord(FDataSize);
-    AStream.Position:=AStream.Position+FDataSize;
-  end;
+  AStream.Position:=FDataOffset-SizeOf(DWord);
+  AStream.WriteDWord(FDataSize);
+  AStream.Position:=AStream.Position+FDataSize;
 end;
 
 procedure TL2BaseClass.SaveBlock(AStream:TStream);
@@ -122,6 +115,12 @@ begin
     FDataOffset:=0;
     ReallocMem(  FData ,FDataSize);
     BlockRead (f,FData^,FDataSize);
+    FKnownSize:=PDword(FData)^=FDataSize+SizeOf(DWord);
+    if FKnownSize then
+    begin
+      FDataSize:=PDword(FData)^;
+      move((FData+SizeOf(DWord))^,FData^,FDataSize);
+    end;
     CloseFile (f);
   end;
 {$POP}

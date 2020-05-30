@@ -55,14 +55,19 @@ type
     FStats   :TL2IdValList;
 
     FSign:byte;
+    FFlags:array [0..6] of byte;
+
+    FPosition1:TL2Coord;
+    FPosition2:TL2Coord;
 
     FUnkn1:array [0..23] of byte;
     FUnkn2:array [0..28] of byte;
-    FUnkn3:array [0..94] of byte;
+    FUnkn3:array [0..63] of byte; // coords like for character
     FUnkn4:DWord;
     FUnkn5:array [0..11] of byte;
     FUnkn6:TL2IdValList;
 
+    function GetFlags(idx:integer):boolean;
   public
     property Name  :string read FName;
     property Prefix:string read FPrefix;
@@ -71,6 +76,10 @@ type
 
     property IsProp:boolean   read FIsProp write FIsProp;
     property ModIds:TL2IdList read FModIds write FModIds;
+
+    property Flags[idx:integer]:boolean read GetFlags;
+    property Position1:TL2Coord read FPosition1;
+    property Position2:TL2Coord read FPosition2;
 
     property Level:integer read FLevel;
     property Stack:integer read FStackSize write FStackSize;
@@ -81,11 +90,12 @@ type
     property Armor       :integer read FArmor;
     property ArmorType   :integer read FArmorType;
 
+    property Unkn6   :TL2IdValList   read FUnkn6;
     property Effects1:TTL2EffectList read FEffects1 write FEffects1;
     property Effects2:TTL2EffectList read FEffects2 write FEffects2;
     property Effects3:TTL2EffectList read FEffects3 write FEffects3;
-    property Augments:TL2StringList read FAugments;
-    property Stats   :TL2IdValList read FStats;
+    property Augments:TL2StringList  read FAugments;
+    property Stats   :TL2IdValList   read FStats;
   end;
 
 
@@ -110,6 +120,13 @@ begin
   inherited;
 end;
 
+function TTL2Item.GetFlags(idx:integer):boolean;
+begin
+  if (idx>=0) and (idx<=6) then
+    result:=FFlags[idx]<>0
+  else
+    result:=false;
+end;
 
 procedure TTL2Item.InternalClear;
 var
@@ -164,8 +181,8 @@ begin
   //??
   AStream.Read(FUnkn2,29);
 {
-  AStream.ReadByte;      // 0
-  AStream.ReadQWord;     // *FF
+  AStream.ReadByte;      // 0    (1 - portal?)
+  AStream.ReadQWord;     // *FF  (portal to? not in source)
   AStream.ReadQWord;     // *FF props - not -1  MEDIA\LAYOUTS\ACT1_PASS1\1X1SINGLE_ROOM_A\PAPASS_PB_A.LAYOUT
   AStream.ReadQWord;     // *FF props - not -1  ?
   AStream.ReadDWord;     // 0
@@ -173,42 +190,28 @@ begin
   FEnchantmentCount:=integer(AStream.ReadDWord); // enchantment count // prop=E56DE12D
   FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645 . -1 for props
 
-  //--?? 95 bytes
-  AStream.Read(FUnkn3,95);
-{
-  // 7 times
-  AStream.ReadByte;  // 1  props: 0 0
-  AStream.ReadByte;  // 1         1 1
-  AStream.ReadByte;  // 1         0 0
-  AStream.ReadByte;  // 1         1 0
-  AStream.ReadByte;  // 1         1 1
-  AStream.ReadByte;  // 0         0 1
-  AStream.ReadByte;  // 1         0 0
-  // 7 times
-  AStream.ReadFloat;  // C390C993 = -289.57   num
-  AStream.ReadFloat;  //                       0
-  AStream.ReadFloat;  //                      num
-  AStream.ReadFloat;  //                      num
-  AStream.ReadFloat;  //                       0
-  AStream.ReadFloat;  // 66.27                num
-  AStream.ReadFloat;  //                      1.0
-  // 35<--| --> 60 / 4 = 15
-  AStream.ReadFloat;  // ?
-  AStream.ReadFloat;  // ?
-  AStream.ReadFloat;  // ? = 0
-  AStream.ReadFloat;  // ?
-  AStream.ReadFloat;  // 1.0
-  AStream.ReadDWord;  // ?
-  AStream.ReadDWord;  // 0
-  AStream.ReadDWord;  //   \ qword
-  AStream.ReadDWord;  //   /
-  AStream.ReadFloat;  // ?
-  AStream.ReadDWord;  // 0
-  AStream.ReadDWord;  // 0
-  AStream.ReadDWord;  // 0
-  AStream.ReadDWord;  // 0
-  AStream.ReadFloat;
+  // coordinates
+  AStream.Read(FFlags,7);
+  FPosition1:=AStream.ReadCoord();
+  FPosition2:=AStream.ReadCoord();
+  AStream.Read(FUnkn3,64);
+{ Like for character
+  // direction
+  AStream.ReadCoord;   // Forward
+  AStream.ReadDWord;   // 0
+
+  AStream.ReadCoord;   // Up
+  AStream.ReadDWord;   // 0
+  
+  AStream.ReadCoord;   // Right
+  AStream.ReadDWord;   // 0
+
+  AStream.ReadDWord;   // 0  \
+  AStream.ReadDWord;   // 0  | coord?
+  AStream.ReadDWord;   // 0  /
+  AStream.ReadFloat;   // float=1.0
 }
+
   FLevel      :=integer(AStream.ReadDWord); // 1  for props (22)
   FStackSize  :=integer(AStream.ReadDWord); // -1 for props (1)
   FSocketCount:=integer(AStream.ReadDWord); // 0  for props (A009CC81)
@@ -285,42 +288,12 @@ begin
   AStream.WriteDWord(DWord(FEnchantmentCount)); // enchantment count
   AStream.WriteDWord(DWord(FStashPosition   )); // stash position $285 = 645
 
-  //--?? 95 bytes
-  AStream.Write(FUnkn3,95);
-{
-  // 7 times
-  AStream.ReadByte;  // 1
-  AStream.ReadByte;  // 1
-  AStream.ReadByte;  // 1
-  AStream.ReadByte;  // 1
-  AStream.ReadByte;  // 1
-  AStream.ReadByte;  // 0
-  AStream.ReadByte;  // 1
-  // 7 times
-  AStream.ReadFloat;  // C390C993 = -289.57
-  AStream.ReadFloat;
-  AStream.ReadFloat;
-  AStream.ReadFloat;
-  AStream.ReadFloat;
-  AStream.ReadFloat;  // 66.27
-  AStream.ReadFloat;
-  // 35<--| --> 60 / 4 = 15
-  AStream.ReadFloat;  // ?
-  AStream.ReadFloat;  // ?
-  AStream.ReadFloat;  // ? = 0
-  AStream.ReadFloat;  // ?
-  AStream.ReadFloat;  // 1.0
-  AStream.ReadDWord;  // ?
-  AStream.ReadDWord;  // 0
-  AStream.ReadDWord;  //   \ qword
-  AStream.ReadDWord;  //   /
-  AStream.ReadFloat;  // ?
-  AStream.ReadDWord;  // 0
-  AStream.ReadDWord;  // 0
-  AStream.ReadDWord;  // 0
-  AStream.ReadDWord;  // 0
-  AStream.ReadFloat;
-}
+  // coordinates
+  AStream.Write(FFlags,7);
+  AStream.WriteCoord(FPosition1);
+  AStream.WriteCoord(FPosition2);
+  AStream.Write(FUnkn3,64);
+
   AStream.WriteDWord(FLevel);
   AStream.WriteDWord(dword(FStackSize));
   AStream.WriteDWord(dword(FSocketCount));

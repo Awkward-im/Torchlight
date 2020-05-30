@@ -130,6 +130,8 @@ type
     property Name           :string   read FName            write FName;
     property Suffix         :string   read FSuffix          write FSuffix;
     property Player         :string   read FPlayer          write FPlayer;
+    property MorphTime      :TL2Float read FMorphTime       write FMorphTime;
+    property TownTime       :TL2Float read FTownTime        write FTownTime;
     property Face           :integer  read FFace            write FFace;
     property Hairstyle      :integer  read FHairstyle       write FHairstyle;
     property HairColor      :integer  read FHairColor       write FHairColor;
@@ -293,8 +295,8 @@ begin
   //??  :24 for pet, :55 for char
   FUnkn5:=AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0
 
-  FMorphTime:=AStream.ReadFloat;   // pet morph time
-  FTownTime :=AStream.ReadFloat;   //!!!!!!!!!! time to town,sec?
+  FMorphTime:=AStream.ReadFloat;   // pet morph time, sec
+  FTownTime :=AStream.ReadFloat;   // time to town, sec
   FAction   :=TTL2Action(AStream.ReadDWord);  // 1  (pet status)
   //??
   FUnkn6:=Check(AStream.ReadDWord,'before scale_'+HexStr(AStream.Position,8),1);    // 1

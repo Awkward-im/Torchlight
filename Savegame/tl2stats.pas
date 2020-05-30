@@ -10,48 +10,48 @@ uses
 type
   tStatMob = packed record
     id    :TL2ID;
-    field1:TL2Integer;
-    field2:TL2Integer;
-    field3:TL2Integer;
+    field1:TL2Integer; // ?? amount killed, player+aoe
+    field2:TL2Integer; // ?? amount killed, player+pet
+    exp   :TL2Integer;
     field4:TL2Integer;
     field5:TL2Integer;
     field6:TL2Integer;
     field7:TL2Integer;
-    field8:Word;
+    field8:Word;       // by phys? no :(
     field9:Word;
   end;
   tStatMobArray = array of tStatMob;
 
   tStatItem = packed record
     id    :TL2ID;
-    field1:TL2Integer; // ??
-    field2:TL2Integer;
+    field1:TL2Integer; // ?? word=amount picked (equipped+pots?); word=amount picked(unisable)
+    field2:TL2Integer; // ?? crafted
     field3:TL2Integer; // ??
-    field4:TL2Integer;
+    field4:TL2Integer; // min level? (to recognize)
   end;
   tStatItemArray = array of tStatItem;
 
   tStatSkill = packed record
     id    :TL2ID;
-    field1:TL2Integer;
-    field2:TL2Integer;
+    times :TL2Integer; // ?? manual
+    field2:TL2Integer; // ?? auto
     level :Byte;
   end;
   tStatSkillArray = array of tStatSkill;
 
-  tStatUnknown = packed record
-    field1 :TL2Float;
-    field2 :TL2Integer;
-    field3 :TL2Integer;
-    field4 :TL2Integer;
+  tStatLevelup = packed record
+    uptime :TL2Float;    // time
+    field2 :TL2Integer;  // 27
+    field3 :TL2Integer;  // 54
+    field4 :TL2Integer;  // 7
     field5 :Byte;
-    field6 :TL2Integer; //??
+    field6 :TL2Integer; //?? 26
     field7 :Byte;
-    field8 :TL2Integer;
-    field9 :TL2Integer;
+    field8 :TL2Integer; // like field2
+    field9 :TL2Integer; // like field3
     field10:Byte;
   end;
-  tStatUnknownArray = array of tStatUnknown;
+  tStatLevelUpArray = array of tStatLevelUp;
 
 type
   TTL2StringVal = record
@@ -78,7 +78,7 @@ type
     FStatMobs   :tStatMobArray;     // array [0..39] of byte;
     FStatItems  :tStatItemArray;    // array [0..23] of byte;
     FStatSkills :tStatSkillArray;   // array [0..16] of byte;
-    FStatUnknown:tStatUnknownArray; // array [0..30] of byte;
+    FStatLevelUp:tStatLevelUpArray; // array [0..30] of byte;
     FStatArea1  :TTL2StringValList;
     FStatArea2  :TTL2StringValList;
     FStatStats  :TL2IdValList;
@@ -95,7 +95,7 @@ type
     property Mobs   :tStatMobArray     read FStatMobs;
     property Items  :tStatItemArray    read FStatItems;
     property Skills :tStatSkillArray   read FStatSkills;
-    property Unknown:tStatUnknownArray read FStatUnknown;
+    property LevelUp:tStatLevelUpArray read FStatLevelUp;
     property Area1  :TTL2StringValList read FStatArea1;
     property Area2  :TTL2StringValList read FStatArea2;
     property Stats  :TL2IdValList      read FStatStats;
@@ -129,7 +129,7 @@ begin
   SetLength(FStatMobs   ,0);
   SetLength(FStatItems  ,0);
   SetLength(FStatSkills ,0);
-  SetLength(FStatUnknown,0);
+  SetLength(FStatLevelUp,0);
   SetLength(FStatArea1  ,0);
   SetLength(FStatArea2  ,0);
   SetLength(FStatStats  ,0);
@@ -205,9 +205,9 @@ begin
 
   // ??
   lcnt:=AStream.ReadDWord;
-  SetLength(FStatUnknown,lcnt);
+  SetLength(FStatLevelUp,lcnt);
   if lcnt>0 then
-    AStream.Read(FStatUnknown[0],lcnt*31);
+    AStream.Read(FStatLevelUp[0],lcnt*31);
 {
   4b - 131.87
   4b - ?
@@ -298,9 +298,9 @@ begin
   AStream.Write(FStatSkills[0],Length(FStatSkills)*17);
 
   // ??
-  AStream.WriteDWord(Length(FStatUnknown));
-  if Length(FStatUnknown)>0 then
-    AStream.Write(FStatUnknown[0],Length(FStatUnknown)*31);
+  AStream.WriteDWord(Length(FStatLevelUp));
+  if Length(FStatLevelUp)>0 then
+    AStream.Write(FStatLevelUp[0],Length(FStatLevelUp)*31);
 
   //----- ?? Area (teleports? time on map?) -----
 

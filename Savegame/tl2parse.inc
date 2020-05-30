@@ -45,8 +45,8 @@ begin
   ReadStatistic(); // DumpStatistic;
 
   // for resurrection?
-  FMap :=FStream.ReadShortString(); // map (current place)
-  FArea:=FStream.ReadShortString(); // area (region) (at entrance?)
+  FArea    :=FStream.ReadShortString(); // map (current place)
+  FWaypoint:=FStream.ReadShortString(); // area (region) (at entrance?)
 
   //----- Unknown 1 -----
 
