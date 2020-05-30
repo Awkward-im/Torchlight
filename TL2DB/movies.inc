@@ -1,56 +1,56 @@
 {$IFDEF Interface}
 
-function GetTL2Movie(const id:TL2ID ; out amod :string; out aviews:integer;
+function GetTL2Movie(const aid:TL2ID; out amods:string; out aviews:integer;
                     out aname:string; out apath:string):string; overload;
-function GetTL2Movie(const id:TL2ID ; out amod :string):string; overload;
-function GetTL2Movie(const id:TL2ID                   ):string; overload;
+function GetTL2Movie(const aid:TL2ID; out amods:string):string; overload;
+function GetTL2Movie(const aid:TL2ID                  ):string; overload;
 
 {$ELSE}
 
-function GetTL2Movie(const id   :TL2ID ; out amod :string; out aviews:integer;
+function GetTL2Movie(const aid  :TL2ID ; out amods:string; out aviews:integer;
                      out   aname:string; out apath:string ):string;
 var
-  aSQL:string;
+  lSQL:string;
   vm:pointer;
 begin
-  amod  :='';
-  result:=HexStr(id,16);
+  amods :='';
+  result:=HexStr(aid,16);
   aviews:=1;
   aname :='';
   apath :='';
 
   if db<>nil then
   begin
-    Str(id,aSQL);
-    aSQL:='SELECT title,modid,views,name,path FROM movies WHERE id='+aSQL+' LIMIT 1';
+    Str(aid,lSQL);
+    lSQL:='SELECT title,modid,views,name,path FROM movies WHERE id='+lSQL+' LIMIT 1';
 
-    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
       begin
-        result:=sqlite3_column_text (vm,0);
-        amod  :=sqlite3_column_text (vm,1);
-        aviews:=sqlite3_column_int64(vm,2);
-        aname :=sqlite3_column_text (vm,3);
-        apath :=sqlite3_column_text (vm,4);
+        result:=sqlite3_column_text(vm,0);
+        amods :=sqlite3_column_text(vm,1);
+        aviews:=sqlite3_column_int (vm,2);
+        aname :=sqlite3_column_text(vm,3);
+        apath :=sqlite3_column_text(vm,4);
       end;
       sqlite3_finalize(vm);
     end;
   end;
 end;
 
-function GetTL2Movie(const id:TL2ID; out amod:string):string; overload;
+function GetTL2Movie(const aid:TL2ID; out amods:string):string; overload;
 var
   lname:string;
 begin
-  result:=GetModAndTitle(id,'movies','',amod,lname);
+  result:=GetById(aid,'movies','',amods,lname);
 end;
 
-function GetTL2Movie(const id:TL2ID):string; overload;
+function GetTL2Movie(const aid:TL2ID):string; overload;
 var
-  lmodid:string;
+  lmods:string;
 begin
-  result:=GetTL2Movie(id,lmodid);
+  result:=GetTL2Movie(aid,lmods);
 end;
 
 {$ENDIF}

@@ -1,11 +1,11 @@
 {$IFDEF Interface}
 
-function GetTL2Skill(const id:TL2ID; out amods:string; out aname:string):string; overload;
-function GetTL2Skill(const id:TL2ID; out amods:string):string; overload;
-function GetTL2Skill(const id:TL2ID                  ):string; overload;
-function GetTL2Skill(const aname:string; out id:TL2ID):string; overload;
+function GetTL2Skill(const aid:TL2ID; out amods:string; out aname:string):string; overload;
+function GetTL2Skill(const aid:TL2ID; out amods:string):string; overload;
+function GetTL2Skill(const aid:TL2ID                  ):string; overload;
+function GetTL2Skill(const aname:string; out aid:TL2ID):string; overload;
 
-function GetSkillInfo(const id:TL2ID; out atier:string; out aicon:string):string;
+function GetSkillInfo(const aid:TL2ID; out atier:string; out aicon:string):string;
 
 //----- Skill list -----
 
@@ -27,75 +27,47 @@ type
 procedure CreateSkillList(const aclass:TL2ID; out askills:tSkillArray);
 procedure CreateSpellList(out askills:tSkillArray);
 
-//----- Tiers -----
-
-type
-  tTierArray = array of record
-    name  :string;
-    levels:array of integer;
-  end;
-
-procedure LoadTiers(out atier:tTierArray);
-
 {$ELSE}
 
 //----- Base Skill Info -----
 
-function GetTL2Skill(const id:TL2ID; out amods:string; out aname:string):string;
+function GetTL2Skill(const aid:TL2ID; out amods:string; out aname:string):string;
 begin
-  result:=GetModAndTitle(id,'skills','',amods,aname);
+  result:=GetById(aid,'skills','',amods,aname);
 end;
 
-function GetTL2Skill(const id:TL2ID; out amods:string):string;
+function GetTL2Skill(const aid:TL2ID; out amods:string):string;
 var
   lname:string;
 begin
-  result:=GetTL2Skill(id,amods,lname);
+  result:=GetTL2Skill(aid,amods,lname);
 end;
 
-function GetTL2Skill(const id:TL2ID):string;
+function GetTL2Skill(const aid:TL2ID):string;
 var
   lmods :string;
   lname :string;
 begin
-  result:=GetTL2Skill(id,lmods,lname);
+  result:=GetTL2Skill(aid,lmods,lname);
 end;
 
-function GetTL2Skill(const aname:string; out id:TL2ID):string;
-var
-  aSQL:string;
-  vm:pointer;
+function GetTL2Skill(const aname:string; out aid:TL2ID):string;
 begin
-  id    :=TL2IdEmpty;
-  result:=aname;
-
-  if db<>nil then
-  begin
-    aSQL:='SELECT id,title FROM skills WHERE name LIKE '''+aname+'''';
-
-    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      if sqlite3_step(vm)=SQLITE_ROW then
-      begin
-        id    :=sqlite3_column_int64(vm,0);
-        result:=sqlite3_column_text (vm,1);
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end;
+  result:=GetByName(aname,'skills',aid);
 end;
 
-function GetSkillInfo(const id:TL2ID; out atier:string; out aicon:string):string;
+function GetSkillInfo(const aid:TL2ID; out atier:string; out aicon:string):string;
 var
   lSQL:string;
   vm:pointer;
 begin
-  result :='';
-  atier  :='';
+  result:='';
+  atier :='';
+  aicon :='';
 
   if db<>nil then
   begin
-    Str(id,lSQL);
+    Str(aid,lSQL);
     lSQL:='SELECT descr, tier, icon FROM skills WHERE id='''+lSQL+'''';
 
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
@@ -145,7 +117,7 @@ begin
   if db<>nil then
   begin
     Str(aclass,lbase);
-    lSQL:='SELECT skills, base FROM classes WHERE id='''+lbase+'''';
+    lSQL:='SELECT skills, base FROM classes WHERE id='+lbase;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -242,46 +214,6 @@ begin
   end;
 
   SetLength(askills,0);
-end;
-
-//----- Tiers -----
-
-procedure LoadTiers(out atier:tTierArray);
-var
-  lSQL,ls:string;
-  sa:TIntArray; // TStringArray;
-  vm:pointer;
-  lcnt,i:integer;
-begin
-  if db<>nil then
-  begin
-    SetLength(atier,14); // default for TL2
-    lcnt:=0;
-    lSQL:='SELECT name, value FROM tiers WHERE modid='' 0 ''';
-    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      while sqlite3_step(vm)=SQLITE_ROW do
-      begin
-        if lcnt=High(atier) then SetLength(atier,Length(atier)+1);
-        atier[lcnt].name:=sqlite3_column_text(vm,0);
-        ls:=sqlite3_column_text(vm,1);
-        if ls<>'' then
-        begin
-          sa:=SplitInt(ls,',');
-          SetLength(atier[lcnt].levels,Length(sa));
-          for i:=0 to High(sa) do
-          begin
-            atier[lcnt].levels[i]:=sa[i]; // StrToInt(sa[i]);
-          end;
-        end;
-        inc(lcnt);
-      end;
-      sqlite3_finalize(vm);
-      SetLength(sa,0);
-    end;
-  end
-  else
-    SetLength(atier,0);
 end;
 
 {$ENDIF}

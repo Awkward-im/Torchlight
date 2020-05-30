@@ -11,24 +11,25 @@ uses
 
 {$Include movies.inc}
 
-function GetTL2Quest(const id:TL2ID; out amod:string; out aname:string):string; overload;
-function GetTL2Quest(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Quest(const id:TL2ID                   ):string; overload;
-
-function GetTL2Recipes(const id:TL2ID; out amod:string):string; overload;
-function GetTL2Recipes(const id:TL2ID                 ):string; overload;
-
-function GetTL2Stat (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Stat (const id:TL2ID                   ):string; overload;
-
 {$Include items.inc}
 
 {$Include classes.inc}
 
 {$Include pets.inc}
 
-function GetTL2Mobs (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Mobs (const id:TL2ID                   ):string; overload;
+{$Include settings.inc}
+
+{$Include recipes.inc}
+
+function GetTL2Quest(const id:TL2ID; out amod:string; out aname:string):string; overload;
+function GetTL2Quest(const id:TL2ID; out amod:string  ):string; overload;
+function GetTL2Quest(const id:TL2ID                   ):string; overload;
+
+function GetTL2Stat (const id:TL2ID; out amod:string  ):string; overload;
+function GetTL2Stat (const id:TL2ID                   ):string; overload;
+
+function GetTL2Mob (const id:TL2ID; out amod:string  ):string; overload;
+function GetTL2Mob (const id:TL2ID                   ):string; overload;
 
 function GetTL2Mod  (const id:TL2ID; out aver:integer ):string; overload;
 function GetTL2Mod  (const id:TL2ID                   ):string; overload;
@@ -39,7 +40,7 @@ function GetTL2KeyType(acode:integer):string;
 procedure SetFilter(amods:TTL2ModList);
 procedure SetFilter(amods:TL2IdList);
 
-function LoadBases:boolean;
+function LoadBases(const fname:string=''):boolean;
 procedure FreeBases;
 
 //======================================
@@ -87,7 +88,8 @@ resourcestring
   rsPetSpell3 = 'Pet spell 3';
   rsPetSpell4 = 'Pet spell 4';
 
-//-------------------
+
+//----- Support functions -----
 
 type
  TIntArray   = array of integer;
@@ -191,9 +193,10 @@ begin
   end;
 end;
 
-//-------------------
-function GetModAndTitle(const id:TL2ID; const abase:string; const awhere:string;
-                        out amod:string; out aname:string):string;
+//----- Core functions -----
+
+function GetById(const id:TL2ID; const abase:string; const awhere:string;
+                 out amod:string; out aname:string):string;
 var
   aSQL,lwhere:string;
   vm:pointer;
@@ -226,16 +229,59 @@ begin
   end;
 end;
 
+function GetByName(const aname:string; const abase:string; out id:TL2ID):string;
+var
+  aSQL:string;
+  vm:pointer;
+begin
+  id    :=TL2IdEmpty;
+  result:=aname;
+
+  if db<>nil then
+  begin
+    aSQL:='SELECT id,title FROM '+abase+' WHERE name LIKE '''+aname+'''';
+
+    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        id    :=sqlite3_column_int64(vm,0);
+        result:=sqlite3_column_text (vm,1);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
 //----- Movie Info -----
 
 {$Include movies.inc}
 
+//----- Skill info -----
+
+{$Include skills.inc}
+
+//----- Item info -----
+
+{$Include items.inc}
+
+//----- Class info -----
+
+{$Include classes.inc}
+
+//----- Pet info -----
+
+{$Include pets.inc}
+
+//----- Recipes -----
+
+{$Include recipes.inc}
 
 //----- Quests -----
 
 function GetTL2Quest(const id:TL2ID; out amod:string; out aname:string):string;
 begin
-  result:=GetModAndTitle(id,'quests','',amod,aname);
+  result:=GetById(id,'quests','',amod,aname);
 end;
 
 function GetTL2Quest(const id:TL2ID; out amod:string):string;
@@ -252,33 +298,13 @@ begin
   result:=GetTL2Quest(id,lmodid);
 end;
 
-//----- Recipes -----
-
-function GetTL2Recipes(const id:TL2ID; out amod:string):string; overload;
-var
-  lname:string;
-begin
-  result:=GetModAndTitle(id,'recipes','',amod,lname);
-end;
-
-function GetTL2Recipes(const id:TL2ID):string; overload;
-var
-  lmodid:string;
-begin
-  result:=GetTL2Recipes(id,lmodid);
-end;
-
-//----- Skill info -----
-
-{$Include skills.inc}
-
 //----- Stat info -----
 
 function GetTL2Stat(const id:TL2ID; out amod:string):string;
 var
   lname:string;
 begin
-  result:=GetModAndTitle(id,'stats','',amod,lname);
+  result:=GetById(id,'stats','',amod,lname);
 end;
 
 function GetTL2Stat(const id:TL2ID):string;
@@ -288,32 +314,20 @@ begin
   result:=GetTL2Stat(id,lmod);
 end;
 
-//----- Item info -----
-
-{$Include items.inc}
-
-//----- Class info -----
-
-{$Include classes.inc}
-
-//----- Pet info -----
-
-{$Include pets.inc}
-
 //----- Mob info -----
 
-function GetTL2Mobs(const id:TL2ID; out amod:string):string;
+function GetTL2Mob(const id:TL2ID; out amod:string):string;
 var
   lname:string;
 begin
-  result:=GetModAndTitle(id,'mobs','',amod,lname);
+  result:=GetById(id,'mobs','',amod,lname);
 end;
 
-function GetTL2Mobs(const id:TL2ID):string;
+function GetTL2Mob(const id:TL2ID):string;
 var
   lmod:string;
 begin
-  result:=GetTL2Mobs(id,lmod);
+  result:=GetTL2Mob(id,lmod);
 end;
 
 //----- Mod info -----
@@ -324,7 +338,13 @@ var
   vm:pointer;
   i:integer;
 begin
-  aver  :=0;
+  aver:=0;
+  if id=0 then
+  begin
+    result:='Torchlight 2';
+    exit;
+  end;
+
   result:=HexStr(id,16);
 
   if db<>nil then
@@ -343,9 +363,7 @@ begin
       end;
       sqlite3_finalize(vm);
     end;
-  end
-  else if id=0 then
-    result:='Torchlight 2';
+  end;
 
 end;
 
@@ -376,45 +394,6 @@ begin
       Val(Copy(ls,1,lpos-1),lid);
   end;
   result:=GetTL2Mod(lid);
-end;
-
-//----- Icon -----
-
-function GetTL2Icon(const id:TL2ID; const abase:string):pointer;
-var
-  aSQL:string;
-  vm:pointer;
-  lptr:pbyte;
-  lsize:integer;
-begin
-  result:=nil;
-
-  if db<>nil then
-  begin
-    Str(id,aSQL);
-    aSQL:='SELECT icon FROM '+abase+' WHERE id='''+aSQL+'''';
-
-    lsize:=0;
-
-    if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      if sqlite3_step(vm)=SQLITE_ROW then
-      begin
-        lsize:=sqlite3_column_bytes(vm,0);
-        if lsize>0 then
-        begin
-          GetMem(result,lsize);
-          lptr:=sqlite3_column_blob(vm,0);
-          move(lptr^,result^,lsize);
-        end;
-      end;
-      sqlite3_finalize(vm);
-    end;
-
-    if lsize=0 then
-    begin
-    end;
-  end;
 end;
 
 //===== Key binding =====
@@ -486,18 +465,37 @@ begin
   sqlite3_close(pFile);
 end;
 
-function LoadBases:boolean;
+function LoadBases(const fname:string=''):boolean;
+var
+  f:file of byte;
+  lfname:string;
+  i:integer;
 begin
+//InitializeSqliteANSI();
+
   result:=false;
   db:=nil;
+  if fname='' then lfname:=TL2DataBase else lfname:=fname;
 
-  if sqlite3_open(':memory:',@db)=SQLITE_OK then
+  Assign(f,lfname);
+{$I-}
+  Reset(f);
+  if IOResult=0 then
   begin
-    try
-      result:=CopyFromFile(db,TL2DataBase)=SQLITE_OK;
-    except
-      sqlite3_close(db);
-      db:=nil;
+    i:=FileSize(f);
+    CloseFile(f);
+
+    if i>0 then
+    begin
+      if sqlite3_open(':memory:',@db)=SQLITE_OK then
+      begin
+        try
+          result:=CopyFromFile(db,PChar(lfname))=SQLITE_OK;
+        except
+          sqlite3_close(db);
+          db:=nil;
+        end;
+      end;
     end;
   end;
 end;
@@ -541,5 +539,10 @@ begin
   end;
   filter:=filter+')';
 end;
+
+{$Include settings.inc}
+
+finalization
+//  ReleaseSqlite;
 
 end.
