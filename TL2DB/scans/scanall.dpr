@@ -47,7 +47,8 @@ begin
       if lmodid<>'' then
       begin
         result:=true;
-        if Pos(' '+amodid+' ',lmodid)=0 then
+        if (lmodid = ' 0 ') or
+           (Pos(' '+amodid+' ',lmodid)=0) then
         begin
           sqlite3_finalize(vm);
           lmodid:=lmodid+amodid+' ';
@@ -72,6 +73,9 @@ type
     atype   :integer;
     scale   :single;
     textures:integer;
+    gr_hp   :string;
+    gr_armor:string;
+    gr_dmg  :string;
   end;
 
 function AddPetToBase(var apet:tpetinfo):boolean;
@@ -84,10 +88,12 @@ begin
   begin
     Str(aPet.Scale:0:2,lscale);
 
-    lSQL:='INSERT INTO pets (id, name, title, type, scale, skins, icon, modid) VALUES ('+
+    lSQL:='INSERT INTO pets (id, name, title, type, scale, skins, icon, '+
+          'graph_hp, graph_armor, graph_dmg, modid) VALUES ('+
         aPet.id+', '+FixedText(apet.name)+', '+FixedText(apet.title)+', '+
         IntToStr(apet.atype)+', '+lscale+', '+IntToStr(apet.textures)+
-        ', '''+apet.icon+''', '' '+smodid+' '')';
+        ', '''+apet.icon+''', '''+apet.gr_hp+''', '''+apet.gr_armor+''', '''+apet.gr_dmg+
+        ''', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -120,6 +126,24 @@ begin
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
     begin
       lpet.id:=p^.children^[i].asString;
+    end
+    else if CompareWide(p^.children^[i].name,'ARMOR_GRAPH') then
+    begin
+      lpet.gr_armor:=p^.children^[i].asString;
+      if lpet.gr_armor<>'ARMOR_MINION_BYLEVEL' then
+        writeln('Add ',lpet.gr_armor,' for pet Armor please');
+    end
+    else if CompareWide(p^.children^[i].name,'DAMAGE_GRAPH') then
+    begin
+      lpet.gr_dmg:=p^.children^[i].asString;
+      if lpet.gr_dmg<>'DAMAGE_MINION_BYLEVEL' then
+        writeln('Add ',lpet.gr_dmg,' for pet Damage please');
+    end
+    else if CompareWide(p^.children^[i].name,'HEALTH_GRAPH') then
+    begin
+      lpet.gr_hp:=p^.children^[i].asString;
+      if lpet.gr_hp<>'HEALTH_MINION_BYLEVEL' then
+        writeln('Add ',lpet.gr_hp,' for pet HP please');
     end
     else if CompareWide(p^.children^[i].name,'UNITTYPE') then
     begin
@@ -664,23 +688,51 @@ end;
 
 //----- Classes -----
 
-function AddClassToBase(const anid,aname,atitle,adescr,afile,abase,askill,aicon:string):boolean;
+type
+  tclassinfo = record
+    id       :string;
+    name     :string;
+    title    :string;
+    descr    :string;
+    afile    :string;
+    base     :string;
+    skill    :string;
+    icon     :string;
+    gr_hp    :string;
+    gr_mp    :string;
+    gr_st    :string;
+    gr_sk    :string;
+    gr_fm    :string;
+    strength :string;
+    dexterity:string;
+    magic    :string;
+    defense  :string;
+  end;
+
+function AddClassToBase(const aclass:tclassinfo):boolean;
 var
   lSQL,lfile,lbase:string;
   vm:pointer;
   i:integer;
 begin
-  result:=CheckForMod('classes', anid, smodid);
+  result:=CheckForMod('classes', aclass.id, smodid);
   if not result then
   begin
-    lfile:=LowerCase(afile);
+    lfile:=LowerCase(aclass.afile);
     for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
-    lbase:=LowerCase(abase);
+    lbase:=LowerCase(aclass.base);
     for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
-    lSQL:='INSERT INTO classes (id, name, title, descr, file, base, skills, icon, modid) VALUES ('+
-        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+
-        ', '''+lfile+''', '''+lbase+''', '+
-        FixedText(askill)+', '''+aicon+''', '' '+smodid+' '')';
+    lSQL:='INSERT INTO classes (id, name, title, descr,'+
+          ' file, base, skills, icon,'+
+          ' graph_hp, graph_mp, graph_stat, graph_skill, graph_fame,'+
+          ' strength, dexterity, magic, defense,'+
+          ' modid) VALUES ('+
+        aclass.id+', '+FixedText(aclass.name)+', '+FixedText(aclass.title)+', '+FixedText(aclass.descr)+
+        ', '''+lfile+''', '''+lbase+''', '+FixedText(aclass.skill)+', '''+aclass.icon+
+        ''', '''+aclass.gr_hp+''', '''+aclass.gr_mp+''', '''+aclass.gr_st+
+        ''', '''+aclass.gr_sk+''', '''+aclass.gr_fm+
+        ''', '+aclass.strength+', '+aclass.dexterity+', '+aclass.magic+', '+aclass.defense+
+        ','' '+smodid+' '')';
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
       sqlite3_step(vm);
@@ -693,38 +745,86 @@ end;
 procedure AddPlayer(fname:PChar);
 var
   p:PTL2Node;
-  lskill,ldescr,lid,lname,ltitle,lbase,licon:string;
+  lclass:tclassinfo;
   i,j:integer;
 begin
   p:=ParseDatFile(fname);
-  ltitle:='';
-  lskill:=',';
+  lclass.title:='';
+  lclass.skill:=',';
 
   for i:=0 to p^.childcount-1 do
   begin
     if CompareWide(p^.children^[i].name,'BASEFILE') then
     begin
-      lbase:=p^.children^[i].asString;
+      lclass.base:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'NAME') then
     begin
-      lname:=p^.children^[i].asString;
+      lclass.name:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
     begin
-      ltitle:=p^.children^[i].asString;
+      lclass.title:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'DESCRIPTION') then
     begin
-      ldescr:=p^.children^[i].asString;
+      lclass.descr:=p^.children^[i].asString;
     end
+
+    else if CompareWide(p^.children^[i].name,'STRENGTH') then
+    begin
+      Str(p^.children^[i].asInteger,lclass.strength);
+    end
+    else if CompareWide(p^.children^[i].name,'DEXTERITY') then
+    begin
+      Str(p^.children^[i].asInteger,lclass.dexterity);
+    end
+    else if CompareWide(p^.children^[i].name,'MAGIC') then
+    begin
+      Str(p^.children^[i].asInteger,lclass.magic);
+    end
+    else if CompareWide(p^.children^[i].name,'DEFENSE') then
+    begin
+      Str(p^.children^[i].asInteger,lclass.defense);
+    end
+
     else if CompareWide(p^.children^[i].name,'ICON') then
     begin
-      licon:=p^.children^[i].asString;
+      lclass.icon:=p^.children^[i].asString;
+    end
+    else if CompareWide(p^.children^[i].name,'MANA_GRAPH') then
+    begin
+      lclass.gr_mp:=p^.children^[i].asString;
+      if lclass.gr_mp<>'MANA_PLAYER_GENERIC' then
+        writeln('Add ',lclass.gr_mp,' for class MP please');
+    end
+    else if CompareWide(p^.children^[i].name,'HEALTH_GRAPH') then
+    begin
+      lclass.gr_hp:=p^.children^[i].asString;
+      if lclass.gr_hp<>'HEALTH_PLAYER_GENERIC' then
+        writeln('Add ',lclass.gr_hp,' for class HP please');
+    end
+    else if CompareWide(p^.children^[i].name,'STAT_POINTS_PER_LEVEL') then
+    begin
+      lclass.gr_st:=p^.children^[i].asString;
+      if lclass.gr_st<>'STAT_POINTS_PER_LEVEL' then
+        writeln('Add ',lclass.gr_st,' for class STAT please');
+    end
+    else if CompareWide(p^.children^[i].name,'SKILL_POINTS_PER_LEVEL') then
+    begin
+      lclass.gr_sk:=p^.children^[i].asString;
+      if lclass.gr_sk<>'SKILL_POINTS_PER_LEVEL' then
+        writeln('Add ',lclass.gr_sk,' for class SKILL please');
+    end
+    else if CompareWide(p^.children^[i].name,'SKILL_POINTS_PER_FAME_LEVEL') then
+    begin
+      lclass.gr_fm:=p^.children^[i].asString;
+      if lclass.gr_fm<>'SKILL_POINTS_PER_FAME_LEVEL' then
+        writeln('Add ',lclass.gr_fm,' for class FAME please');
     end
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
     begin
-      lid:=p^.children^[i].asString;
+      lclass.id:=p^.children^[i].asString;
     end;
 
     if CompareWide(p^.children^[i].name,'SKILL') then
@@ -734,14 +834,15 @@ begin
         begin
           if CompareWide(children^[j].name,'NAME') then
           begin
-            lskill:=lskill+string(children^[j].asString)+',';
+            lclass.skill:=lclass.skill+string(children^[j].asString)+',';
             break;
           end;
         end;
     end;
   end;
-  if lskill=',' then lskill:='';
-  if not AddClassToBase(lid,lname,ltitle,ldescr,fname,lbase,lskill,licon) then
+  if lclass.skill=',' then lclass.skill:='';
+  lclass.afile:=fname;
+  if not AddClassToBase(lclass) then
     writeln('can''t update ',fname);
   DeleteNode(p);
 end;
