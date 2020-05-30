@@ -77,6 +77,11 @@ object fmSaveFile: TfmSaveFile
       OnExecute = actFileOpenExecute
       ShortCut = 16463
     end
+    object actFileReload: TAction
+      Caption = '&Reload'
+      OnExecute = actFileReloadExecute
+      ShortCut = 16466
+    end
     object actFileSave: TAction
       Caption = '&Save'
       OnExecute = actFileSaveExecute
@@ -90,12 +95,10 @@ object fmSaveFile: TfmSaveFile
     object actExport: TAction
       Caption = 'Export'
       Enabled = False
-      OnExecute = actExportExecute
     end
     object actImport: TAction
       Caption = 'Import'
       Enabled = False
-      OnExecute = actImportExecute
     end
   end
   object ImageList: TImageList

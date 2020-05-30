@@ -13,6 +13,23 @@ type
   { TfmItem }
 
   TfmItem = class(TForm)
+    edUnkn6: TEdit;
+    gbFlags: TGroupBox;
+    cbFlag1: TCheckBox;
+    cbFlag2: TCheckBox;
+    cbFlag3: TCheckBox;
+    cbFlag4: TCheckBox;
+    cbFlag5: TCheckBox;
+    cbFlag6: TCheckBox;
+    cbFlag7: TCheckBox;
+
+    gbCoords: TGroupBox;
+    lblX: TLabel;  lblY: TLabel;  lblZ: TLabel;
+    edX : TEdit ;  edY : TEdit ;  edZ : TEdit;
+    gbCoords1: TGroupBox;
+    lblX1: TLabel;  lblY1: TLabel;  lblZ1: TLabel;
+    edX1 : TEdit ;  edY1 : TEdit ;  edZ1 : TEdit;
+
     edName  : TEdit;  lblName  : TLabel;  edNameById: TEdit;
     edPrefix: TEdit;  lblPrefix: TLabel;
     edSuffix: TEdit;  lblSuffix: TLabel;
@@ -60,6 +77,14 @@ begin
   edPrefix  .Text := aItem.Prefix;
   edSuffix  .Text := aItem.Suffix;
 
+  edX.Text:=FloatToStrF(aItem.Position1.X,ffFixed,-8,2);
+  edY.Text:=FloatToStrF(aItem.Position1.Y,ffFixed,-8,2);
+  edZ.Text:=FloatToStrF(aItem.Position1.Z,ffFixed,-8,2);
+
+  edX1.Text:=FloatToStrF(aItem.Position2.X,ffFixed,-8,2);
+  edY1.Text:=FloatToStrF(aItem.Position2.Y,ffFixed,-8,2);
+  edZ1.Text:=FloatToStrF(aItem.Position2.Z,ffFixed,-8,2);
+
   edLevel   .Text    := IntToStr(aItem.Level);
   edStack   .Text    := IntToStr(aItem.Stack);
   edEnchant .Text    := IntToStr(aItem.EnchantCount);
@@ -72,6 +97,16 @@ begin
   edArmorType   .Text   := IntToStr(aItem.ArmorType);
   lblArmorByType.Caption:= ''; //!!
 
+  cbFlag1.Checked:=aItem.Flags[0];
+  cbFlag2.Checked:=aItem.Flags[1];
+  cbFlag3.Checked:=aItem.Flags[2];
+  cbFlag4.Checked:=aItem.Flags[3];
+  cbFlag5.Checked:=aItem.Flags[4];
+  cbFlag6.Checked:=aItem.Flags[5];
+  cbFlag7.Checked:=aItem.Flags[6];
+
+  edUnkn6.Text:=IntToStr(Length(aItem.Unkn6));
+
   lbAugments.Clear;
   for i:=0 to High(aItem.Augments) do
     lbAugments.AddItem(aItem.Augments[i],nil);
@@ -82,7 +117,7 @@ begin
   j:=1;
   for i:=0 to High(aItem.Effects1) do
   begin
-    sgEffects.Objects[0,j]:=TObject(i);
+    sgEffects.Objects[0,j]:=TObject(IntPtr(i));
     sgEffects.Cells[0,j]:='1';
     sgEffects.Cells[1,j]:=IntToStr(aItem.Effects1[i].EffectType);
     sgEffects.Cells[2,j]:=aItem.Effects1[i].Name;
@@ -90,7 +125,7 @@ begin
   end;
   for i:=0 to High(aItem.Effects2) do
   begin
-    sgEffects.Objects[0,j]:=TObject(i);
+    sgEffects.Objects[0,j]:=TObject(IntPtr(i));
     sgEffects.Cells[0,j]:='2';
     sgEffects.Cells[1,j]:=IntToStr(aItem.Effects2[i].EffectType);
     sgEffects.Cells[2,j]:=aItem.Effects2[i].Name;
@@ -98,7 +133,7 @@ begin
   end;
   for i:=0 to High(aItem.Effects3) do
   begin
-    sgEffects.Objects[0,j]:=TObject(i);
+    sgEffects.Objects[0,j]:=TObject(IntPtr(i));
     sgEffects.Cells[0,j]:='3';
     sgEffects.Cells[1,j]:=IntToStr(aItem.Effects3[i].EffectType);
     sgEffects.Cells[2,j]:=aItem.Effects3[i].Name;

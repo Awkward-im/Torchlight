@@ -54,7 +54,7 @@ begin
     if lbUnitList.Selected[i] then
     begin
       lblCount.Caption:=IntToStr(i+1)+' / '+IntToStr(lbUnitList.Count);
-      lunit:=FMap.MobInfos[integer(lbUnitList.Items.Objects[i])];
+      lunit:=FMap.MobInfos[IntPtr(lbUnitList.Items.Objects[i])];
 
       fmButtons.btnExport.Enabled:=true;
       fmButtons.Name  :='unit '+IntToStr(i);
@@ -88,7 +88,7 @@ begin
     lbUnitList.Sorted:=false;
     for i:=0 to High(FMap.MobInfos) do
     begin
-      lbUnitList.AddItem(FMap.MobInfos[i].Name,TObject(i));
+      lbUnitList.AddItem(FMap.MobInfos[i].Name,TObject(IntPtr(i)));
     end;
     lbUnitList.Sorted:=true;
     lbUnitList.ItemIndex:=0;

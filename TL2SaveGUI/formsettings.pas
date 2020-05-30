@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Spin, StdCtrls,
-  Buttons;
+  Buttons, EditBtn;
 
 const
   INIFileName   = 'tl2sg.ini';
@@ -18,11 +18,10 @@ type
   TfmSettings = class(TForm)
     bbSave: TBitBtn;
     cbShowTech: TCheckBox;
-    seHPperLvl    : TFloatSpinEdit; lblHPperLvl    : TLabel;
-    seMPperLvl    : TFloatSpinEdit; lblMPperLvl    : TLabel;
-    seStatPerLvl  : TSpinEdit     ; lblStatPerLvl  : TLabel;
-    seSkillPerLvl : TSpinEdit     ; lblSkillPerLvl : TLabel;
-    seSkillPerFame: TSpinEdit     ; lblSkillPerFame: TLabel;
+    edIconDir: TDirectoryEdit;
+    edDBFile: TFileNameEdit;
+    lblDBFile: TLabel;
+    lblIconDir: TLabel;
     procedure bbSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -32,6 +31,8 @@ type
 
   end;
 
+var
+  fmSettings:TfmSettings;
 
 implementation
 
@@ -45,31 +46,17 @@ uses
 const
   sSettings     = 'Settings';
   sShowTech     = 'showtech';
-  sHPperLvl     = 'HPperLevel';
-  sMPperLvl     = 'MPperLevel';
-  sStatPerLvl   = 'StatPerLevel';
-  sSkillPerLvl  = 'SkillPerLevel';
-  sSkillPerFame = 'SkillPerFame';
-
-const
-  DefHPperLvl     = 3.6;
-  DefMPperLvl     = 0.5;
-  DefStatPerLvl   = 5;
-  DefSkillPerLvl  = 1;
-  DefSkillPerFame = 1;
+  sDBFile       = 'dbfile';
+  sIconDir      = 'icondir';
 
 procedure TfmSettings.bbSaveClick(Sender: TObject);
 var
   config:TIniFile;
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
-  config.WriteBool(sSettings,sShowTech,cbShowTech.Checked);
-
-  config.WriteFloat  (sSettings,sHPperLvl    ,seHPperLvl    .Value);
-  config.WriteFloat  (sSettings,sMPperLvl    ,seMPperLvl    .Value);
-  config.WriteInteger(sSettings,sStatPerLvl  ,seStatPerLvl  .Value);
-  config.WriteInteger(sSettings,sSkillPerLvl ,seSkillPerLvl .Value);
-  config.WriteInteger(sSettings,sSkillPerFame,seSkillPerFame.Value);
+  config.WriteBool  (sSettings,sShowTech,cbShowTech.Checked);
+  config.WriteString(sSettings,sDBFile  ,edDBFile  .Text);
+  config.WriteString(sSettings,sIcondir ,edIconDir .Text);
 
   config.UpdateFile;
   config.Free;
@@ -81,19 +68,17 @@ var
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  cbShowTech.Checked:=config.ReadBool(sSettings,sShowTech,false);
-
-  seHPperLvl    .Value:=config.ReadFloat  (sSettings,sHPperLvl    ,DefHPperLvl    );
-  seMPperLvl    .Value:=config.ReadFloat  (sSettings,sMPperLvl    ,DefMPperLvl    );
-  seStatPerLvl  .Value:=config.ReadInteger(sSettings,sStatPerLvl  ,DefStatPerLvl  );
-  seSkillPerLvl .Value:=config.ReadInteger(sSettings,sSkillPerLvl ,DefSkillPerLvl );
-  seSkillPerFame.Value:=config.ReadInteger(sSettings,sSkillPerFame,DefSkillPerFame);
+  cbShowTech.Checked:=config.ReadBool  (sSettings,sShowTech,false);
+  edDBFile  .Text   :=config.ReadString(sSettings,sDBFile  ,'');
+  edIconDir .Text   :=config.ReadString(sSettings,sIconDir ,'icons');
 
   config.Free;
 end;
 
 procedure TfmSettings.FormCreate(Sender: TObject);
 begin
+  fmSettings:=Self;
+
   LoadSettings;
 end;
 

@@ -19,7 +19,7 @@ type
 
     cbCheckLevel : TCheckBox;
     cbCheckPoints: TCheckBox;
-    lblUnsaved: TLabel;
+    cbSaveFull   : TCheckBox;
 
     lblCurrent: TLabel;
 
@@ -30,6 +30,7 @@ type
 
     procedure bbUpdateClick(Sender: TObject);
     procedure btnResetClick(Sender: TObject);
+    procedure cbSaveFullClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer;
@@ -37,19 +38,26 @@ type
     procedure sgSkillsEditButtonClick(Sender: TObject);
     procedure sgSkillsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
   private
+    FConfigured:boolean;
+
     FChar  :TTL2Character;  // reference to player (char level, free points, skills)
     FClass :TL2ID;          // class id (to change skill list)
     FSkills:tSkillArray;    // skills: id, title, maxlevel, tier, icon
     FIcons :array of array [boolean] of TPicture; // skill icons learned/not
     FTiers :tTierArray;     // tier array (!!must be global for mod build)
     FPoints:integer;        // free points for current (unsaved) skill build
-    // skill per lvl/fame - from outside
+    FLevel  :integer;
+    FFame   :integer;
+    FSkLevel:integer;
+    FSkFame :integer;
 
     procedure ClearData;
     procedure CreateIconList();
     function  CheckTier(aval,aidx:integer):boolean;
   public
     procedure FillInfo(aChar:TTL2Character);
+
+    property Configured:boolean read FConfigured write FConfigured;
   end;
 
 
@@ -62,12 +70,13 @@ uses
   formsettings;
 
 resourcestring
-  rsFreePoints = 'Free points';
+  rsFreePoints = 'Free skill points';
 
 const
   sSkills      = 'Skills';
   sCheckLevel  = 'checklevel';
   sCheckPoints = 'checkpoints';
+  sSaveFull    = 'savefulllist';
 
 const
   colIcon    = 0;
@@ -84,6 +93,7 @@ begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
   cbCheckLevel .Checked:=config.ReadBool(sSkills,sCheckLevel ,true);
   cbCheckPoints.Checked:=config.ReadBool(sSkills,sCheckPoints,true);
+  cbSaveFull   .Checked:=config.ReadBool(sSkills,sSaveFull   ,true);
 
   config.Free;
 
@@ -103,7 +113,8 @@ begin
 
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
   config.WriteBool(sSkills,sCheckLevel ,cbCheckLevel .Checked);
-  config.WriteBool(sSkills,sCheckPoints,cbcheckPoints.Checked);
+  config.WriteBool(sSkills,sCheckPoints,cbCheckPoints.Checked);
+  config.WriteBool(sSkills,sSaveFull   ,cbSaveFull   .Checked);
 
   config.UpdateFile;
   config.Free;
@@ -113,16 +124,22 @@ procedure TfmSkills.sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer;
   aRect: TRect; aState: TGridDrawState);
 var
   lRect:TRect;
+  bmp:TBitmap;
   idx:integer;
   isgray:boolean;
 begin
   if (aCol=colIcon) and (aRow>0) then
   begin
-    idx:=integer(sgSkills.Objects[0,aRow]);
+    idx:=IntPtr(sgSkills.Objects[0,aRow]);
     isgray:=sgSkills.Cells[colLevel,aRow]='0';
-    lRect:=aRect;
-    InflateRect(lRect,-1,-1);
-    sgSKills.Canvas.StretchDraw(lRect,FIcons[idx,isgray].Bitmap);
+    bmp:=FIcons[idx,isgray].Bitmap;
+    if (bmp=nil) and isgray then bmp:=FIcons[idx,false].Bitmap;
+    if bmp<>nil then
+    begin
+      lRect:=aRect;
+      InflateRect(lRect,-1,-1);
+      sgSKills.Canvas.StretchDraw(lRect,bmp);
+    end;
   end;
 end;
 
@@ -166,7 +183,7 @@ begin
   begin
     if ((FPoints>0) or not (cbCheckPoints.Checked)) then
     begin
-      idx:=integer(sgSkills.Objects[0,sgSkills.Row]);
+      idx:=IntPtr(sgSkills.Objects[0,sgSkills.Row]);
       if (lval<FSkills[idx].level) and
          ((not cbCheckLevel.Checked) or CheckTier(lval,idx)) then
       begin
@@ -181,7 +198,7 @@ begin
   begin
     sgSkills.Cells[colLevel,sgSkills.Row]:=IntToStr(lval);
     lblCurrent.Caption:=rsFreePoints+': '+IntToStr(FPoints);
-    lblUnsaved.Visible:=true;
+    bbUpdate.Enabled:=true;
   end;
 end;
 
@@ -193,38 +210,11 @@ var
 begin
   if aRow>0 then
   begin
-    idx:=integer(sgSkills.Objects[0,aRow]);
+    idx:=IntPtr(sgSkills.Objects[0,aRow]);
 
     lblName.Caption:=FSkills[idx].title;
     memDesc.Text   :=GetSkillInfo(FSkills[idx].id,ltier,licon);
   end;
-end;
-
-procedure TfmSkills.bbUpdateClick(Sender: TObject);
-var
-  lskills:TL2IdValList;
-  lcnt,i:integer;
-begin
-  lskills:=FChar.Skills;
-  SetLength(lskills,sgSkills.RowCount-1);
-  lcnt:=0;
-  for i:=1 to sgSkills.RowCount-1 do
-  begin
-    lskills[lcnt].value:=StrToInt(sgSkills.Cells[colLevel,i]);
-    if lskills[lcnt].value>0 then
-    begin
-      lskills[lcnt].id:=FSkills[integer(sgSkills.Objects[0,i])].id;
-      inc(lcnt);
-    end;
-  end;
-  SetLength(lskills,lcnt);
-  FChar.Skills :=lskills;
-  FChar.FreeSkillPoints:=FPoints;
-  //!! what about statistic? need to check!
-  //!! what about STAT (history?) need to clear!
-  FChar.Changed:=true;
-  
-  lblUnsaved.Visible:=false;
 end;
 
 procedure TfmSkills.btnResetClick(Sender: TObject);
@@ -236,8 +226,13 @@ begin
     inc(FPoints,StrToInt(sgSkills.Cells[colLevel,i]));
     sgSkills.Cells[colLevel,i]:='0';
   end;
-  lblCurrent.Caption:='Free points: '+IntToStr(FPoints);
-  lblUnsaved.Visible:=true;
+  lblCurrent.Caption:=rsFreePoints+': '+IntToStr(FPoints);
+  bbUpdate.Enabled:=true;
+end;
+
+procedure TfmSkills.cbSaveFullClick(Sender: TObject);
+begin
+  bbUpdate.Enabled:=true;
 end;
 
 procedure TfmSkills.ClearData;
@@ -274,7 +269,7 @@ end;
 procedure TfmSkills.FillInfo(aChar:TTL2Character);
 var
   ls:string;
-  i,j,idx:integer;
+  i,j,idx,dl,df:integer;
 begin
   sgSkills.BeginUpdate;
 
@@ -301,7 +296,7 @@ begin
         if (FSkills[i].tier<>'') and
            (FSkills[i].tier[1]<>',') then
         begin
-          sgSkills.Objects[0,j]:=TObject(i);
+          sgSkills.Objects[0,j]:=TObject(IntPtr(i));
 
           sgSkills.Cells[colName   ,j]:=FSkills[i].title;
           sgSkills.Cells[colPassive,j]:=FSkills[i].passive;
@@ -317,11 +312,10 @@ begin
 
   //--- new build
 
-  if FChar<>aChar then
+  if not FConfigured then
   begin
     FChar:=aChar;
     FPoints:=aChar.FreeSkillPoints;
-    lblCurrent.Caption:=rsFreePoints+': '+IntToStr(FPoints);
 {
   total:=
     FSettings.seSkillPerLvl .Value*(FChar.Level-1);
@@ -330,7 +324,7 @@ begin
 }
     for i:=1 to sgSkills.RowCount-1 do
     begin
-      idx:=integer(sgSkills.Objects[0,i]);
+      idx:=IntPtr(sgSkills.Objects[0,i]);
 
       ls:='0';
       for j:=0 to High(aChar.Skills) do
@@ -342,11 +336,56 @@ begin
         end;
       end;
       sgSkills.Cells[colLevel,i]:=ls;
-
     end;
+
+    GetClassGraphSkill(aChar.ClassId,FSkLevel,FSkFame);
+    FConfigured:=true;
+    bbUpdate.Enabled:=false;
+  end
+
+  //--- Every activation
+  else
+  begin
+    dl:=(aChar.Level    -FLevel)*FSkLevel;
+    df:=(aChar.FameLevel-FFame )*FSkFame;
+    inc(FPoints,dl+df);
   end;
+  FFame :=aChar.FameLevel;
+  FLevel:=aChar.Level;
+
+  lblCurrent.Caption:=rsFreePoints+': '+IntToStr(FPoints);
 
   sgSkills.EndUpdate;
+end;
+
+procedure TfmSkills.bbUpdateClick(Sender: TObject);
+var
+  lskills:TL2IdValList;
+  lcnt,i:integer;
+begin
+  lskills:=FChar.Skills;
+  SetLength(lskills,sgSkills.RowCount-1);
+  lcnt:=0;
+  for i:=1 to sgSkills.RowCount-1 do
+  begin
+    lskills[lcnt].value:=StrToInt(sgSkills.Cells[colLevel,i]);
+    if cbSaveFull.Checked or (lskills[lcnt].value>0) then
+    begin
+      lskills[lcnt].id:=FSkills[IntPtr(sgSkills.Objects[0,i])].id;
+      inc(lcnt);
+    end;
+  end;
+  SetLength(lskills,lcnt);
+  FChar.Skills:=lskills;
+  if FPoints>=0 then
+    FChar.FreeSkillPoints:=FPoints
+  else
+    FChar.FreeSkillPoints:=0;
+  //!! what about statistic? need to check!
+  //!! what about STAT (history?) need to clear!
+  FChar.Changed:=true;
+
+  bbUpdate.Enabled:=false;
 end;
 
 end.

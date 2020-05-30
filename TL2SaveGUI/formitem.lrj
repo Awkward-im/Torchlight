@@ -15,5 +15,14 @@
 {"hash":199475507,"name":"tfmitem.lblaugments.caption","sourcebytes":[65,117,103,109,101,110,116,115],"value":"Augments"},
 {"hash":340132,"name":"tfmitem.sgeffects.columns[0].title.caption","sourcebytes":[76,105,115,116],"value":"List"},
 {"hash":79481764,"name":"tfmitem.sgeffects.columns[1].title.caption","sourcebytes":[69,102,102,101,99,116],"value":"Effect"},
-{"hash":346165,"name":"tfmitem.sgeffects.columns[2].title.caption","sourcebytes":[78,97,109,101],"value":"Name"}
+{"hash":346165,"name":"tfmitem.sgeffects.columns[2].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
+{"hash":250367984,"name":"tfmitem.gbcoords.caption","sourcebytes":[67,111,111,114,100,105,110,97,116,101,115,32,48],"value":"Coordinates 0"},
+{"hash":1466,"name":"tfmitem.lblx.caption","sourcebytes":[88,58],"value":"X:"},
+{"hash":1482,"name":"tfmitem.lbly.caption","sourcebytes":[89,58],"value":"Y:"},
+{"hash":1498,"name":"tfmitem.lblz.caption","sourcebytes":[90,58],"value":"Z:"},
+{"hash":181333059,"name":"tfmitem.gbcoords1.caption","sourcebytes":[67,111,111,114,100,105,110,97,116,101,115],"value":"Coordinates"},
+{"hash":1466,"name":"tfmitem.lblx1.caption","sourcebytes":[88,58],"value":"X:"},
+{"hash":1482,"name":"tfmitem.lbly1.caption","sourcebytes":[89,58],"value":"Y:"},
+{"hash":1498,"name":"tfmitem.lblz1.caption","sourcebytes":[90,58],"value":"Z:"},
+{"hash":5056483,"name":"tfmitem.gbflags.caption","sourcebytes":[70,108,97,103,115],"value":"Flags"}
 ]}

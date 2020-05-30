@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
   Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
-  formButtons, formKeyBinding, formStatistic, formCommon, formSettings,
+  formButtons, formKeyBinding, formStatistic, formSettings,
   formChar, formStat, formMap, formUnits, formSkills, formItems, formEffects;
 
 type
@@ -20,6 +20,7 @@ type
     actFileSave: TAction;
     actExport  : TAction;
     actImport  : TAction;
+    actFileReload: TAction;
     ActionList: TActionList;
     ImageList: TImageList;
     MainMenu: TMainMenu;
@@ -32,17 +33,18 @@ type
     LeftPanel: TPanel;
     Splitter: TSplitter;
     tvSaveGame: TTreeView;
-    procedure actExportExecute(Sender: TObject);
+
     procedure actFileExitExecute(Sender: TObject);
     procedure actFileOpenExecute(Sender: TObject);
+    procedure actFileReloadExecute(Sender: TObject);
     procedure actFileSaveExecute(Sender: TObject);
-    procedure actImportExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure tvSaveGameSelectionChanged(Sender: TObject);
   private
+    FFileName:string;
+
     FSettings  :TfmSettings;
-    FCommon    :TfmCommon;
     FMovies    :TfmMovies;
     FRecipes   :TfmRecipes;
     FKeyBinding:TfmKeyBinding;
@@ -56,6 +58,7 @@ type
     FItems     :TfmItems;
     
     SGame:TTL2SaveFile;
+
     procedure ChangeTree;
     procedure CreateTree;
     function GetTVIndex: integer;
@@ -72,18 +75,14 @@ implementation
 
 uses
   tl2db,
-  tl2stream,
   tl2base;
 
 resourcestring
   rsSaveGameOpen = 'Open Savegame';
   rsSaveGameSave = 'Save Savegame';
-  rsExportData   = 'Export data';
-  rsImportData   = 'Import data';
 
   rsSettings   = 'Settings';
   rsSavegame   = 'Savegame';
-  rsCommon     = 'Common';
   rsMovies     = 'Movies';
   rsModList    = 'Mod list';
   rsKeyMapping = 'KeyMapping';
@@ -108,17 +107,16 @@ const
   idxSettings   =  0;
   idxSavegame   =  1;
 
-  idxCommon     =  0;
-  idxMovies     =  1;
-  idxModList    =  2;
-  idxKeyMapping =  3;
-  idxCharacter  =  4;
-  idxPlayerStat =  5;
-  idxPets       =  6;
-  idxMaps       =  7;
-  idxQuests     =  8;
-  idxRecipes    =  9;
-  idxStatistic  = 10;
+  idxMovies     =  0;
+  idxModList    =  1;
+  idxKeyMapping =  2;
+  idxCharacter  =  3;
+  idxPlayerStat =  4;
+  idxPets       =  5;
+  idxMaps       =  6;
+  idxQuests     =  7;
+  idxRecipes    =  8;
+  idxStatistic  =  9;
 
   { TfmSaveFile }
 
@@ -134,7 +132,6 @@ begin
     Items.AddFirst(nil,rsSettings);
     lroot:=Items.AddChild(nil,rsSavegame);
     lroot.Visible:=false;
-    Items.AddChild(lroot,rsCommon);
     Items.AddChild(lroot,rsMovies);
     Items.AddChild(lroot,rsModList);
     Items.AddChild(lroot,rsKeyMapping);
@@ -142,11 +139,11 @@ begin
     Items.AddChild(lNode,rsSkills);
     Items.AddChild(lNode,rsItems);
     Items.AddChild(lroot,rsPlayerStat);
-    Items.AddChild(lroot,rsPets);       // ??
-    Items.AddChild(lroot,rsMaps);       // ??
+    Items.AddChild(lroot,rsPets);
+    Items.AddChild(lroot,rsMaps);
     Items.AddChild(lroot,rsQuests);
     Items.AddChild(lroot,rsRecipes);
-    Items.AddChild(lroot,rsStatistic);  // fixed amount
+    Items.AddChild(lroot,rsStatistic);
     lroot.Expanded:=true;
   end;
 end;
@@ -204,13 +201,12 @@ end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);
 begin
-  LoadBases;
-
   fmButtons  :=TfmButtons   .Create(Self); fmButtons  .Parent:=MainPanel;
   fmEffects  :=TfmEffects   .Create(Self);
 
   FSettings  :=TfmSettings  .Create(Self); FSettings  .Parent:=MainPanel;
-  FCommon    :=TfmCommon    .Create(Self); FCommon    .Parent:=MainPanel;
+  LoadBases(FSettings.edDBFile.Text);
+
   FMovies    :=TfmMovies    .Create(Self); FMovies    .Parent:=MainPanel;
   FRecipes   :=TfmRecipes   .Create(Self); FRecipes   .Parent:=MainPanel;
   FKeyBinding:=TfmKeyBinding.Create(Self); FKeyBinding.Parent:=MainPanel;
@@ -241,21 +237,30 @@ begin
 //    OpenDialog.InitialDir:='';
 //    OpenDialog.DefaultExt:='';
 //    OpenDialog.Filter    :='';
-//    OpenDialog.Options   :=[];
-    OpenDialog.Title:=rsSaveGameOpen;
+    OpenDialog.Title  :=rsSaveGameOpen;
+    OpenDialog.Options:=[ofFileMustExist];
 
     if OpenDialog.Execute then
     begin
-      SGame.Free;
+      FFileName:=OpenDialog.FileName;
 
-      SGame:=TTL2SaveFile.Create;
-      SGame.LoadFromFile(OpenDialog.FileName);
-      SGame.Parse();
-      ChangeTree;
+      actFileReloadExecute(Sender);
     end;
   finally
     OpenDialog.Free;
   end;
+end;
+
+procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
+begin
+  SGame.Free;
+
+  SGame:=TTL2SaveFile.Create;
+  SGame.LoadFromFile(FFileName);
+  SGame.Parse();
+  ChangeTree;
+
+  FSkills.Configured:=false;
 end;
 
 procedure TfmSaveFile.actFileSaveExecute(Sender: TObject);
@@ -264,7 +269,8 @@ var
 begin
   SaveDialog:=TSaveDialog.Create(nil);
   try
-    SaveDialog.Title:=rsSaveGameSave;
+    SaveDialog.Title     :=rsSaveGameSave;
+    SaveDialog.Options   :=SaveDialog.Options+[ofOverwritePrompt];
     SaveDialog.DefaultExt:='.SVB';
     if SaveDialog.Execute then
     begin
@@ -281,64 +287,6 @@ begin
   Close;
 end;
 
-procedure TfmSaveFile.actImportExecute(Sender: TObject);
-var
-  ldlg:TOpenDialog;
-  lclass:TL2BaseClass;
-  lstrm:TTL2Stream;
-  ls:string;
-  lidx:integer;
-begin
-  lidx:=GetTVIndex;
-
-  lclass:=TL2BaseClass(tvSaveGame.Selected.Data);
-
-  ldlg:=TOpenDialog.Create(nil);
-  try
-    ldlg.FileName  :='';
-    ldlg.DefaultExt:=DefaultExt;
-    ldlg.Title     :=rsImportData;
-    ldlg.Options   :=ldlg.Options;
-    if ldlg.Execute then
-    begin
-      lstrm:=TTL2Stream.Create;
-      lstrm.LoadFromFile(ldlg.FileName);
-      lstrm.Position:=0;
-      lclass.Clear;
-      lclass.LoadFromStream(lstrm);
-      lstrm.Free;
-      tvSaveGameSelectionChanged(Self);
-    end;
-  finally
-    ldlg.Free;
-  end;
-end;
-
-procedure TfmSaveFile.actExportExecute(Sender: TObject);
-var
-  ldlg:TSaveDialog;
-  lclass:TL2BaseClass;
-  ls:string;
-  lidx:integer;
-begin
-  lidx:=GetTVIndex;
-  ls:=tvSaveGame.Selected.Text;
-
-  lclass:=TL2BaseClass(tvSaveGame.Selected.Data);
-
-  ldlg:=TSaveDialog.Create(nil);
-  try
-    ldlg.FileName  :=ls;
-    ldlg.DefaultExt:=DefaultExt;
-    ldlg.Title     :=rsExportData;
-    ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
-    if ldlg.Execute then
-      lclass.SaveToFile(ldlg.FileName);
-  finally
-    ldlg.Free;
-  end;
-end;
-
 function TfmSaveFile.GetTVIndex:integer;
 begin
   result:=-1;
@@ -348,7 +296,7 @@ begin
 
   case tvSaveGame.Selected.level of
     0: if tvSaveGame.Selected.Index<>idxSettings then
-      result:=idxCommon;
+      result:=0;
     1: result:=tvSaveGame.Selected.Index;
     2: result:=tvSaveGame.Selected.Parent.Index;
     3: result:=tvSaveGame.Selected.Parent.Parent.Index;
@@ -378,7 +326,6 @@ begin
   end;
 
   FSettings  .Visible:=false;
-  FCommon    .Visible:=false;
   FMovies    .Visible:=false;
   FMaps      .Visible:=false;
   FRecipes   .Visible:=false;
@@ -394,11 +341,6 @@ begin
   case lidx of
     -1: begin
       FSettings.Visible:=true;
-    end;
-
-    idxCommon: begin
-      FCommon.FillInfo(SGame);
-      FCommon.Visible:=true;
     end;
 
     idxMovies: begin
@@ -428,7 +370,7 @@ begin
       end;
       case tvSaveGame.Selected.level of
         1: begin
-          FChar.FillInfo(SGame.CharInfo);
+          FChar.FillInfo(SGame.CharInfo, SGame);
           FChar.Visible:=true;
         end;
         2: begin

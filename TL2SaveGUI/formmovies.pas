@@ -16,8 +16,8 @@ type
     bbUpdate: TBitBtn;
     lblNote: TLabel;
     sgMovies: TStringGrid;
+
     procedure bbUpdateClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure sgMoviesEditingDone(Sender: TObject);
   private
     SGame:TTL2SaveFile;
@@ -49,10 +49,11 @@ var
 begin
   lviews:=StrToIntDef(sgMovies.Cells[colViews,sgMovies.Row],0);
   if (lviews<0) or
-     (lviews>integer(sgMovies.Objects[1,sgMovies.Row])) then
+     (lviews>IntPtr(sgMovies.Objects[1,sgMovies.Row])) then
   begin
     sgMovies.Cells[colViews,sgMovies.Row]:='0';
   end;
+  bbUpdate.Enabled:=true;
 end;
 
 procedure TfmMovies.bbUpdateClick(Sender: TObject);
@@ -61,14 +62,10 @@ var
 begin
   for i:=1 to sgMovies.RowCount do
   begin
-    SGame.Movies[integer(sgMovies.Objects[0,i])].value:=
+    SGame.Movies[IntPtr(sgMovies.Objects[0,i])].value:=
         StrToInt(sgMovies.Cells[colViews,i]);
   end;
-end;
-
-procedure TfmMovies.FormCreate(Sender: TObject);
-begin
-
+  bbUpdate.Enabled:=false;
 end;
 
 procedure TfmMovies.FillInfo(aSGame:TTL2SaveFile);
@@ -88,8 +85,8 @@ begin
       ltitle:=GetTL2Movie(aSGame.Movies[i].id,lmod,lmax,lname,lpath);
       lmod:=GetTL2Mod(lmod);
 
-      sgMovies.Objects[0,i+1]:=TObject(i);
-      sgMovies.Objects[1,i+1]:=TObject(lmax);
+      sgMovies.Objects[0,i+1]:=TObject(IntPtr(i));
+      sgMovies.Objects[1,i+1]:=TObject(IntPtr(lmax));
 
       sgMovies.Cells[colTitle,i+1]:=ltitle;
       sgMovies.Cells[colViews,i+1]:=IntToStr(aSGame.Movies[i].value);
@@ -101,6 +98,7 @@ begin
     sgMovies.Row:=1;
   end;
   sgMovies.EndUpdate;
+  bbUpdate.Enabled:=false;
 end;
 
 end.

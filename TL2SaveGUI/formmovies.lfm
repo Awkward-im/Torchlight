@@ -7,7 +7,6 @@ object fmMovies: TfmMovies
   BorderStyle = bsNone
   ClientHeight = 306
   ClientWidth = 540
-  OnCreate = FormCreate
   LCLVersion = '2.1.0.0'
   object sgMovies: TStringGrid
     Left = 0

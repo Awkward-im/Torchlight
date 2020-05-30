@@ -61,8 +61,6 @@ end;
 procedure TfmButtons.btnExportClick(Sender: TObject);
 var
   ldlg:TSaveDialog;
-  ls:string;
-  lidx:integer;
 begin
   ldlg:=TSaveDialog.Create(nil);
   try
@@ -81,7 +79,6 @@ procedure TfmButtons.btnImportClick(Sender: TObject);
 var
   ldlg:TOpenDialog;
   lstrm:TTL2Stream;
-  ls:string;
 begin
 
   ldlg:=TOpenDialog.Create(nil);

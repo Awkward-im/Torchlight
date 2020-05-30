@@ -50,7 +50,7 @@ begin
     if lbItemList.Selected[i] then
     begin
       lblCount.Caption:=IntToStr(i+1)+' / '+IntToStr(lbItemList.Count);
-      litem:=FItems[integer(lbItemList.Items.Objects[i])];
+      litem:=FItems[IntPtr(lbItemList.Items.Objects[i])];
 
       fmButtons.btnExport.Enabled:=true;
       fmButtons.Name  :='item '+IntToStr(i);
@@ -86,7 +86,7 @@ begin
     begin
       ls:=aItems[i].Name;
       if (ls='') or (ls=' ') then ls:='- empty -';
-      lbItemList.AddItem(ls,TObject(i));
+      lbItemList.AddItem(ls,TObject(IntPtr(i)));
     end;
     lbitemList.Sorted:=true;
     lbItemList.ItemIndex:=0;

@@ -266,4 +266,212 @@ object fmItem: TfmItem
     RowCount = 1
     TabOrder = 14
   end
+  object gbCoords: TGroupBox
+    Left = 502
+    Height = 101
+    Top = 152
+    Width = 104
+    Caption = 'Coordinates 0'
+    ClientHeight = 81
+    ClientWidth = 100
+    TabOrder = 15
+    object lblX: TLabel
+      Left = 8
+      Height = 15
+      Top = 8
+      Width = 11
+      Caption = 'X:'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object lblY: TLabel
+      Left = 8
+      Height = 15
+      Top = 32
+      Width = 10
+      Caption = 'Y:'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object lblZ: TLabel
+      Left = 8
+      Height = 15
+      Top = 58
+      Width = 10
+      Caption = 'Z:'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object edX: TEdit
+      Left = 32
+      Height = 17
+      Top = 6
+      Width = 56
+      AutoSize = False
+      ReadOnly = True
+      TabOrder = 0
+    end
+    object edY: TEdit
+      Left = 32
+      Height = 17
+      Top = 30
+      Width = 56
+      AutoSize = False
+      ReadOnly = True
+      TabOrder = 1
+    end
+    object edZ: TEdit
+      Left = 32
+      Height = 17
+      Top = 56
+      Width = 56
+      AutoSize = False
+      ReadOnly = True
+      TabOrder = 2
+    end
+  end
+  object gbCoords1: TGroupBox
+    Left = 502
+    Height = 101
+    Top = 256
+    Width = 104
+    Caption = 'Coordinates'
+    ClientHeight = 81
+    ClientWidth = 100
+    TabOrder = 16
+    object lblX1: TLabel
+      Left = 8
+      Height = 15
+      Top = 8
+      Width = 11
+      Caption = 'X:'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object lblY1: TLabel
+      Left = 8
+      Height = 15
+      Top = 32
+      Width = 10
+      Caption = 'Y:'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object lblZ1: TLabel
+      Left = 8
+      Height = 15
+      Top = 58
+      Width = 10
+      Caption = 'Z:'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object edX1: TEdit
+      Left = 32
+      Height = 17
+      Top = 6
+      Width = 56
+      AutoSize = False
+      ReadOnly = True
+      TabOrder = 0
+    end
+    object edY1: TEdit
+      Left = 32
+      Height = 17
+      Top = 30
+      Width = 56
+      AutoSize = False
+      ReadOnly = True
+      TabOrder = 1
+    end
+    object edZ1: TEdit
+      Left = 32
+      Height = 17
+      Top = 56
+      Width = 56
+      AutoSize = False
+      ReadOnly = True
+      TabOrder = 2
+    end
+  end
+  object gbFlags: TGroupBox
+    Left = 430
+    Height = 46
+    Top = 363
+    Width = 176
+    Caption = 'Flags'
+    ClientHeight = 26
+    ClientWidth = 172
+    TabOrder = 17
+    object cbFlag1: TCheckBox
+      Left = 8
+      Height = 19
+      Top = 0
+      Width = 20
+      Enabled = False
+      TabOrder = 0
+    end
+    object cbFlag2: TCheckBox
+      Left = 32
+      Height = 19
+      Top = 0
+      Width = 20
+      Enabled = False
+      TabOrder = 1
+    end
+    object cbFlag3: TCheckBox
+      Left = 56
+      Height = 19
+      Top = 0
+      Width = 20
+      Enabled = False
+      TabOrder = 2
+    end
+    object cbFlag4: TCheckBox
+      Left = 80
+      Height = 19
+      Top = 0
+      Width = 20
+      Enabled = False
+      TabOrder = 3
+    end
+    object cbFlag5: TCheckBox
+      Left = 104
+      Height = 19
+      Top = 0
+      Width = 20
+      Enabled = False
+      TabOrder = 4
+    end
+    object cbFlag6: TCheckBox
+      Left = 128
+      Height = 19
+      Top = 0
+      Width = 20
+      Enabled = False
+      TabOrder = 5
+    end
+    object cbFlag7: TCheckBox
+      Left = 152
+      Height = 19
+      Top = 0
+      Width = 20
+      Enabled = False
+      TabOrder = 6
+    end
+  end
+  object edUnkn6: TEdit
+    Left = 432
+    Height = 23
+    Top = 416
+    Width = 32
+    ReadOnly = True
+    TabOrder = 18
+  end
 end

@@ -13,9 +13,9 @@ object fmStat: TfmStat
     Height = 488
     Top = 0
     Width = 741
-    ActivePage = tsItems
+    ActivePage = tsMobs
     Align = alClient
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object tsCommon: TTabSheet
       Caption = 'Common'
@@ -39,17 +39,17 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field1'
+            Title.Caption = 'Amount 1'
             Width = 48
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field2'
+            Title.Caption = 'Amount 2'
             Width = 48
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field3'
+            Title.Caption = 'Exp'
             Width = 48
           end        
           item
@@ -149,7 +149,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field1'
+            Title.Caption = 'Times'
           end        
           item
             SizePriority = 0
@@ -165,11 +165,11 @@ object fmStat: TfmStat
         TabOrder = 0
       end
     end
-    object tsUnknown: TTabSheet
-      Caption = 'Unknown'
+    object tsLevelUp: TTabSheet
+      Caption = 'LevelUp'
       ClientHeight = 460
       ClientWidth = 733
-      object sgUnknown: TStringGrid
+      object sgLevelUp: TStringGrid
         Left = 0
         Height = 460
         Top = 0
@@ -180,7 +180,7 @@ object fmStat: TfmStat
         Columns = <        
           item
             SizePriority = 0
-            Title.Caption = 'Field1'
+            Title.Caption = 'Time'
             Width = 96
           end        
           item
@@ -252,7 +252,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Value'
+            Title.Caption = 'Time'
             Width = 64
           end>
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
@@ -279,7 +279,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Value'
+            Title.Caption = 'Times ?'
           end>
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1

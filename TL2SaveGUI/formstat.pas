@@ -14,21 +14,15 @@ type
 
   TfmStat = class(TForm)
     PageControl1: TPageControl;
-    sgStat: TStringGrid;
-    sgArea2: TStringGrid;
-    sgArea1: TStringGrid;
-    sgUnknown: TStringGrid;
-    sgSkills: TStringGrid;
-    sgItems: TStringGrid;
-    sgMobs: TStringGrid;
-    tsCommon: TTabSheet;
-    tsMobs: TTabSheet;
-    tsItems: TTabSheet;
-    tsSkills: TTabSheet;
-    tsUnknown: TTabSheet;
-    tsArea1: TTabSheet;
-    tsArea2: TTabSheet;
-    tsStats: TTabSheet;
+
+    tsCommon : TTabSheet;
+    tsMobs   : TTabSheet;  sgMobs   : TStringGrid;
+    tsItems  : TTabSheet;  sgItems  : TStringGrid;
+    tsSkills : TTabSheet;  sgSkills : TStringGrid;
+    tsLevelUp: TTabSheet;  sgLevelUp: TStringGrid;
+    tsArea1  : TTabSheet;  sgArea1  : TStringGrid;
+    tsArea2  : TTabSheet;  sgArea2  : TStringGrid;
+    tsStats  : TTabSheet;  sgStat   : TStringGrid;
   private
 
   public
@@ -64,16 +58,16 @@ begin
   sgMobs.RowCount:=1+Length(lstat.Mobs);
   for i:=0 to High(lstat.Mobs) do
   begin
-    sgMobs.Cells[ 1,i+1]:=GetTL2Mobs(lstat.Mobs[i].id);
-    sgMobs.Cells[ 2,i+1]:=IntToStr(lstat.Mobs[i].field1);
-    sgMobs.Cells[ 3,i+1]:=IntToStr(lstat.Mobs[i].field2);
-    sgMobs.Cells[ 4,i+1]:=IntToStr(lstat.Mobs[i].field3);
-    sgMobs.Cells[ 5,i+1]:=IntToStr(lstat.Mobs[i].field4);
-    sgMobs.Cells[ 6,i+1]:=IntToStr(lstat.Mobs[i].field5);
-    sgMobs.Cells[ 7,i+1]:=IntToStr(lstat.Mobs[i].field6);
-    sgMobs.Cells[ 8,i+1]:=IntToStr(lstat.Mobs[i].field7);
-    sgMobs.Cells[ 9,i+1]:=IntToStr(lstat.Mobs[i].field8);
-    sgMobs.Cells[10,i+1]:=IntToStr(lstat.Mobs[i].field9);
+    sgMobs.Cells[ 1,i+1]:=GetTL2Mob(lstat.Mobs[i].id);
+    sgMobs.Cells[ 2,i+1]:=IntToStr (lstat.Mobs[i].field1);
+    sgMobs.Cells[ 3,i+1]:=IntToStr (lstat.Mobs[i].field2);
+    sgMobs.Cells[ 4,i+1]:=IntToStr (lstat.Mobs[i].exp   );
+    sgMobs.Cells[ 5,i+1]:=IntToStr (lstat.Mobs[i].field4);
+    sgMobs.Cells[ 6,i+1]:=IntToStr (lstat.Mobs[i].field5);
+    sgMobs.Cells[ 7,i+1]:=IntToStr (lstat.Mobs[i].field6);
+    sgMobs.Cells[ 8,i+1]:=IntToStr (lstat.Mobs[i].field7);
+    sgMobs.Cells[ 9,i+1]:=IntToStr (lstat.Mobs[i].field8);
+    sgMobs.Cells[10,i+1]:=IntToStr (lstat.Mobs[i].field9);
   end;
   sgMobs.EndUpdate;
 
@@ -98,32 +92,30 @@ begin
   for i:=0 to High(lstat.Skills) do
   begin
     sgSkills.Cells[0,i+1]:=GetTL2Skill(lstat.Skills[i].id);
-    sgSkills.Cells[1,i+1]:=IntToStr(lstat.Skills[i].field1);
+    sgSkills.Cells[1,i+1]:=IntToStr(lstat.Skills[i].times);
     sgSkills.Cells[2,i+1]:=IntToStr(lstat.Skills[i].field2);
     sgSkills.Cells[3,i+1]:=IntToStr(lstat.Skills[i].level);
   end;
   sgSkills.EndUpdate;
 
-  // unknown
-  sgUnknown.BeginUpdate;
-  sgUnknown.Clear;
-  sgUnknown.RowCount:=1+Length(lstat.Unknown);
-  for i:=0 to High(lstat.Unknown) do
+  // Levelup
+  sgLevelUp.BeginUpdate;
+  sgLevelUp.Clear;
+  sgLevelUp.RowCount:=1+Length(lstat.levelup);
+  for i:=0 to High(lstat.levelup) do
   begin
-    i2f.f:=lstat.Unknown[i].field1;
-//    sgUnknown.Cells[ 1,i+1]:={'0x'+IntToHex(i2f.i,8);//}FloatToStr(lstat.Unknown[i].field1);
-    sgUnknown.Cells[ 1,i+1]:=SecToTime(Trunc(lstat.Unknown[i].field1));
-    sgUnknown.Cells[ 2,i+1]:=IntToStr(lstat.Unknown[i].field2);
-    sgUnknown.Cells[ 3,i+1]:=IntToStr(lstat.Unknown[i].field3);
-    sgUnknown.Cells[ 4,i+1]:=IntToStr(lstat.Unknown[i].field4);
-    sgUnknown.Cells[ 5,i+1]:=IntToStr(lstat.Unknown[i].field5);
-    sgUnknown.Cells[ 6,i+1]:='0x'+IntToHex(lstat.Unknown[i].field6,8);
-    sgUnknown.Cells[ 7,i+1]:=IntToStr(lstat.Unknown[i].field7);
-    sgUnknown.Cells[ 8,i+1]:=IntToStr(lstat.Unknown[i].field8);
-    sgUnknown.Cells[ 9,i+1]:=IntToStr(lstat.Unknown[i].field9);
-    sgUnknown.Cells[10,i+1]:=IntToStr(lstat.Unknown[i].field10);
+    sgLevelUp.Cells[ 1,i+1]:=SecToTime(Trunc(lstat.levelup[i].uptime));
+    sgLevelUp.Cells[ 2,i+1]:=IntToStr(lstat.levelup[i].field2);
+    sgLevelUp.Cells[ 3,i+1]:=IntToStr(lstat.levelup[i].field3);
+    sgLevelUp.Cells[ 4,i+1]:=IntToStr(lstat.levelup[i].field4);
+    sgLevelUp.Cells[ 5,i+1]:=IntToStr(lstat.levelup[i].field5);
+    sgLevelUp.Cells[ 6,i+1]:='0x'+IntToHex(lstat.levelup[i].field6,8);
+    sgLevelUp.Cells[ 7,i+1]:=IntToStr(lstat.levelup[i].field7);
+    sgLevelUp.Cells[ 8,i+1]:=IntToStr(lstat.levelup[i].field8);
+    sgLevelUp.Cells[ 9,i+1]:=IntToStr(lstat.levelup[i].field9);
+    sgLevelUp.Cells[10,i+1]:=IntToStr(lstat.levelup[i].field10);
   end;
-  sgUnknown.EndUpdate;
+  sgLevelUp.EndUpdate;
 
   // area 1
   sgArea1.BeginUpdate;
@@ -156,8 +148,8 @@ begin
   sgStat.RowCount:=1+Length(lstat.Stats);
   for i:=0 to High(lstat.Stats) do
   begin
-    sgStat.Cells[1,i+1]:=GetTL2Mobs(lstat.Stats[i].id);
-    sgStat.Cells[2,i+1]:=IntToStr  (lstat.Stats[i].value);
+    sgStat.Cells[1,i+1]:=GetTL2Mob(lstat.Stats[i].id);
+    sgStat.Cells[2,i+1]:=IntToStr (lstat.Stats[i].value);
   end;
   sgStat.EndUpdate;
 

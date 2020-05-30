@@ -5,20 +5,29 @@ unit formRecipes;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
-  tl2save;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls, Buttons,
+  tl2save, tl2types;
 
 type
 
   { TfmRecipes }
 
   TfmRecipes = class(TForm)
+    bbUpdate: TBitBtn;
+    bbClear: TBitBtn;
     btnDeleteWrong: TButton;
-    btnLearnAll: TButton;
-    btnLearnAvail: TButton;
+    btnLearnAll   : TButton;
+    cbJustActual: TCheckBox;
+    cbHaveTitle: TCheckBox;
     sgRecipes: TStringGrid;
+    procedure bbClearClick(Sender: TObject);
+    procedure bbUpdateClick(Sender: TObject);
+    procedure btnLearnAllClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     SGame:TTL2SaveFile;
+    procedure FillInfoInt(alist: TL2IdList);
 
   public
     procedure FillInfo(aSGame:TTL2SaveFile);
@@ -31,25 +40,94 @@ implementation
 {$R *.lfm}
 
 uses
+  formSettings,
+  INIfiles,
   tl2db;
 
-procedure TfmRecipes.FillInfo(aSGame:TTL2SaveFile);
+const
+  sRecipes    = 'Recipes';
+  sJustActual = 'actual';
+  sHaveTitle  = 'havetitle';
+
+const
+  colTitle = 1;
+  colMod   = 2;
+  colId    = 3;
+
+procedure TfmRecipes.FormCreate(Sender: TObject);
+var
+  config:TIniFile;
+begin
+  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+  cbJustActual.Checked:=config.ReadBool(sRecipes,sJustActual,true);
+  cbHaveTitle .Checked:=config.ReadBool(sRecipes,sHaveTitle ,true);
+
+  config.Free;
+end;
+
+procedure TfmRecipes.FormDestroy(Sender: TObject);
+var
+  config:TIniFile;
+begin
+  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+  config.WriteBool(sRecipes,sJustActual,cbJustActual.Checked);
+  config.WriteBool(sRecipes,sHaveTitle ,cbHaveTitle .Checked);
+
+  config.UpdateFile;
+  config.Free;
+end;
+
+procedure TfmRecipes.bbClearClick(Sender: TObject);
+begin
+  FillInfoInt(nil);
+  bbUpdate.Enabled:=true;
+end;
+
+procedure TfmRecipes.btnLearnAllClick(Sender: TObject);
+begin
+  FillInfoInt(GetRecipesList(cbJustActual.Checked, cbHaveTitle.Checked));
+  bbUpdate.Enabled:=true;
+end;
+
+procedure TfmRecipes.bbUpdateClick(Sender: TObject);
+var
+  lRecipes:TL2IdList;
+  i:integer;
+begin
+  lRecipes:=SGame.Recipes;
+  SetLength(lRecipes,sgRecipes.RowCount-1);
+  for i:=1 to sgRecipes.RowCount-1 do
+  begin
+    lRecipes[i-1]:=StrToInt64(sgRecipes.Cells[colId,i]);
+  end;
+  SGame.Recipes:=lRecipes;
+  bbUpdate.Enabled:=false;
+end;
+
+procedure TfmRecipes.FillInfoInt(alist:TL2IdList);
 var
   i:integer;
   lmod:string;
 begin
   sgRecipes.BeginUpdate;
   sgRecipes.Clear;
-  sgRecipes.RowCount:=Length(aSGame.Recipes);
+  sgRecipes.RowCount:=Length(alist)+1;
 
-  for i:=0 to High(aSGame.Recipes) do
+  for i:=0 to High(alist) do
   begin
-    sgRecipes.Cells[1,i]:=GetTL2Recipes(aSGame.Recipes[i],lmod);
-    sgRecipes.Cells[2,i]:=GetTL2Mod(lmod);
+    sgRecipes.Cells[colId   ,i+1]:=IntToStr(alist[i]);
+    sgRecipes.Cells[colTitle,i+1]:=GetTL2Recipes(alist[i],lmod);
+    sgRecipes.Cells[colMod  ,i+1]:=GetTL2Mod(lmod);
   end;
 
   sgRecipes.EndUpdate;
+end;
 
+procedure TfmRecipes.FillInfo(aSGame:TTL2SaveFile);
+begin
+  FillInfoInt(aSGame.Recipes);
+
+  bbUpdate.Enabled:=false;
   SGame:=aSGame;
 end;
 

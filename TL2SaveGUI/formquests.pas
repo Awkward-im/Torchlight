@@ -101,7 +101,7 @@ begin
     sgQuests.RowCount:=sgQuests.RowCount+Length(aSGame.Quests.QuestsUnDone);
     for i:=0 to High(aSGame.Quests.QuestsUnDone) do
     begin
-      sgQuests.Objects[0,j]:=TObject(i);
+      sgQuests.Objects[0,j]:=TObject(IntPtr(i));
 
       sgQuests.Cells[0,j]:=GetTL2Quest(aSGame.Quests.QuestsUnDone[i].id,lmod,lname);
       sgQuests.Cells[1,j]:='0';
