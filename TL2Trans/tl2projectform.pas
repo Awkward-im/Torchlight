@@ -140,6 +140,7 @@ uses
   TL2SettingsForm,
   TL2EditText,
   TL2SimForm,
+  TL2Text,
   LCLType,
   LazUtf8,
   ClipBrd;

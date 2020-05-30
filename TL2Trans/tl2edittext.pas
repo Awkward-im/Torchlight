@@ -79,7 +79,8 @@ implementation
 uses
   LCLType,
   TL2DataModule,
-  TL2SettingsForm;
+  TL2SettingsForm,
+  TL2Text;
 
 function CRLFtoSlashN(const atext:AnsiString):AnsiString;
 var

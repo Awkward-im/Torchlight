@@ -126,7 +126,8 @@ begin
     lblTotal.Caption:=sTotal+': '+IntToStr(lbSimilars.Items.Count);
   end;
 
-  lbSimilars.ItemIndex:=0;
+  if lbSimilars.Count>0 then
+    lbSimilars.ItemIndex:=0;
 end;
 
 procedure TSimilaristForm.FillDupeList;
