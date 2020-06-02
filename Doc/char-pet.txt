@@ -60,8 +60,8 @@ direction next
 12 bytes - 0 usually
 4 bytes  - (float) Time played, sec
 4 bytes  - (float) 1.0 usually
-4 bytes  - (integer) unused skill points?
-4 bytes  - (integer) unused stat points?
+4 bytes  - (integer) unused stat points
+4 bytes  - (integer) unused skill points
 Mouse buttons: (24 bytes)
   8 bytes - ID of skill on Right mouse button
   8 bytes - ID of skill on Right mouse button (alternative)
