@@ -21,19 +21,19 @@ uses
 
 {$Include recipes.inc}
 
-function GetTL2Quest(const id:TL2ID; out amod:string; out aname:string):string; overload;
-function GetTL2Quest(const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Quest(const id:TL2ID                   ):string; overload;
+function GetTL2Quest(const aid:TL2ID; out amods:string; out aname:string):string; overload;
+function GetTL2Quest(const aid:TL2ID; out amods:string):string; overload;
+function GetTL2Quest(const aid:TL2ID                  ):string; overload;
 
-function GetTL2Stat (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Stat (const id:TL2ID                   ):string; overload;
+function GetTL2Stat (const aid:TL2ID; out amods:string):string; overload;
+function GetTL2Stat (const aid:TL2ID                  ):string; overload;
 
-function GetTL2Mob (const id:TL2ID; out amod:string  ):string; overload;
-function GetTL2Mob (const id:TL2ID                   ):string; overload;
+function GetTL2Mob  (const aid:TL2ID; out amods:string):string; overload;
+function GetTL2Mob  (const aid:TL2ID                  ):string; overload;
 
-function GetTL2Mod  (const id:TL2ID; out aver:integer ):string; overload;
-function GetTL2Mod  (const id:TL2ID                   ):string; overload;
-function GetTL2Mod  (const id:string                  ):string; overload;
+function GetTL2Mod  (const aid:TL2ID; out aver:integer):string; overload;
+function GetTL2Mod  (const aid:TL2ID                  ):string; overload;
+function GetTL2Mod  (const aid:string                 ):string; overload;
 
 function GetTL2KeyType(acode:integer):string;
 
@@ -253,6 +253,28 @@ begin
   end;
 end;
 
+function GetIcon(const aid:TL2ID; const abase:string):string;
+var
+  lSQL:string;
+  vm:pointer;
+begin
+  result:='';
+
+  if db<>nil then
+  begin
+    Str(aid,lSQL);
+    lSQL:='SELECT icon FROM '+abase+' WHERE id='+lSQL;
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        result:=sqlite3_column_text(vm,0);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
 //----- Movie Info -----
 
 {$Include movies.inc}
@@ -279,77 +301,77 @@ end;
 
 //----- Quests -----
 
-function GetTL2Quest(const id:TL2ID; out amod:string; out aname:string):string;
+function GetTL2Quest(const aid:TL2ID; out amods:string; out aname:string):string;
 begin
-  result:=GetById(id,'quests','',amod,aname);
+  result:=GetById(aid,'quests','',amods,aname);
 end;
 
-function GetTL2Quest(const id:TL2ID; out amod:string):string;
+function GetTL2Quest(const aid:TL2ID; out amods:string):string;
 var
   lname:string;
 begin
-  result:=GetTL2Quest(id,amod,lname);
+  result:=GetTL2Quest(aid,amods,lname);
 end;
 
-function GetTL2Quest(const id:TL2ID):string;
+function GetTL2Quest(const aid:TL2ID):string;
 var
-  lmodid:string;
+  lmods:string;
 begin
-  result:=GetTL2Quest(id,lmodid);
+  result:=GetTL2Quest(aid,lmods);
 end;
 
 //----- Stat info -----
 
-function GetTL2Stat(const id:TL2ID; out amod:string):string;
+function GetTL2Stat(const aid:TL2ID; out amods:string):string;
 var
   lname:string;
 begin
-  result:=GetById(id,'stats','',amod,lname);
+  result:=GetById(aid,'stats','',amods,lname);
 end;
 
-function GetTL2Stat(const id:TL2ID):string;
+function GetTL2Stat(const aid:TL2ID):string;
 var
-  lmod:string;
+  lmods:string;
 begin
-  result:=GetTL2Stat(id,lmod);
+  result:=GetTL2Stat(aid,lmods);
 end;
 
 //----- Mob info -----
 
-function GetTL2Mob(const id:TL2ID; out amod:string):string;
+function GetTL2Mob(const aid:TL2ID; out amods:string):string;
 var
   lname:string;
 begin
-  result:=GetById(id,'mobs','',amod,lname);
+  result:=GetById(aid,'mobs','',amods,lname);
 end;
 
-function GetTL2Mob(const id:TL2ID):string;
+function GetTL2Mob(const aid:TL2ID):string;
 var
-  lmod:string;
+  lmods:string;
 begin
-  result:=GetTL2Mob(id,lmod);
+  result:=GetTL2Mob(aid,lmods);
 end;
 
 //----- Mod info -----
 
-function GetTL2Mod(const id:TL2ID; out aver:integer):string;
+function GetTL2Mod(const aid:TL2ID; out aver:integer):string;
 var
   aSQL:string;
   vm:pointer;
   i:integer;
 begin
   aver:=0;
-  if id=0 then
+  if aid=0 then
   begin
     result:='Torchlight 2';
     exit;
   end;
 
-  result:=HexStr(id,16);
+  result:=HexStr(aid,16);
 
   if db<>nil then
   begin
-    Str(id,aSQL);
+    Str(aid,aSQL);
     aSQL:='SELECT title,version FROM mods WHERE id='+aSQL;
 
     i:=sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil);
@@ -367,20 +389,20 @@ begin
 
 end;
 
-function GetTL2Mod(const id:TL2ID):string;
+function GetTL2Mod(const aid:TL2ID):string;
 var
   lver:integer;
 begin
-  result:=GetTL2Mod(id,lver);
+  result:=GetTL2Mod(aid,lver);
 end;
 
-function GetTL2Mod(const id:string):string;
+function GetTL2Mod(const aid:string):string;
 var
   ls:string;
   lid:TL2ID;
   lpos:integer;
 begin
-  ls:=id;
+  ls:=aid;
   if ls='' then
     lid:=0
   else

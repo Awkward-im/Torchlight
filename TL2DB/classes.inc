@@ -1,15 +1,28 @@
 {$IFDEF Interface}
 
+type
+  tClassArray  = array of record
+    id    :TL2ID;
+    name  :string;
+    title :string;
+    icon  :string;
+    gender:char;
+  end;
+
 function GetTL2Class(const aid:TL2ID; out amods:string;
                      out aname:string                 ):string; overload;
 function GetTL2Class(const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Class(const aid:TL2ID                  ):string; overload;
 function GetTL2Class(const aname:string; out aid:TL2ID):string; overload;
 
+function GetClassIcon(const aid:TL2ID):string;
+
 function GetClassInfo(const aid:TL2ID; out aicon:string; out astr, adex, aint, avit:integer):string;
 
 procedure GetClassGraphStat (const aid:TL2ID; out agraph_hp,agraph_mp:string; out agraph_stat:integer);
 procedure GetClassGraphSkill(const aid:TL2ID; out agraph_skill,agraph_fame:integer);
+
+procedure GetClassList(out alist:tClassArray);
 
 {$ELSE}
 
@@ -90,6 +103,11 @@ begin
   end
   else
     result:=GetByName(aname,'classes',aid);
+end;
+
+function GetClassIcon(const aid:TL2ID):string;
+begin
+  result:=GetIcon(aid,'classes');
 end;
 
 //----- Info -----
@@ -189,6 +207,53 @@ begin
       sqlite3_finalize(vm);
     end;
   end;
+end;
+
+
+//----- List -----
+
+procedure GetClassList(out alist:tClassArray);
+var
+  lSQL:string;
+  vm:pointer;
+  i:integer;
+begin
+  if db<>nil then
+  begin
+    i:=0;
+    lSQL:='SELECT count(*) FROM classes WHERE gender<>''''';
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        i:=sqlite3_column_int(vm,0);
+      end;
+      sqlite3_finalize(vm);
+    end;
+
+    if i>0 then
+    begin
+      SetLength(alist,i);
+      lSQL:='SELECT id, name, title, icon, gender FROM classes WHERE gender<>''''';
+
+      if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+      begin
+        i:=0;
+        while sqlite3_step(vm)=SQLITE_ROW do
+        begin
+          alist[i].id    :=sqlite3_column_int64(vm,0);
+          alist[i].name  :=sqlite3_column_text (vm,1);
+          alist[i].title :=sqlite3_column_text (vm,2);
+          alist[i].icon  :=sqlite3_column_text (vm,3);
+          alist[i].gender:=sqlite3_column_text (vm,4)^;
+          inc(i);
+        end;
+        sqlite3_finalize(vm);
+      end;
+    end;
+  end
+  else
+    SetLength(alist,0);
 end;
 
 {$ENDIF}

@@ -590,7 +590,7 @@ var
   lskill:TSkillInfo;
   levels:array [0..63] of integer;
   ls:string;
-  i,j,lcnt:integer;
+  minlevel,i,j,lcnt:integer;
   haslevels:boolean;
 begin
   p:=ParseDatFile(fname);
@@ -608,6 +608,7 @@ begin
 
   lcnt:=0;
   haslevels:=false;
+  minlevel:=0;
 
   for i:=0 to p^.childcount-1 do
   begin
@@ -658,12 +659,25 @@ begin
         if CompareWide(ppp^.name,'LEVEL_REQUIRED') then
         begin
           levels[lcnt]:=ppp^.asInteger;
+          if minlevel>levels[lcnt] then minlevel:=levels[lcnt];
           if levels[lcnt]>0 then
             haslevels:=true;
         end;
       end;
       inc(lcnt);
     end;
+  end;
+
+  if lskill.minlvl='0' then
+  begin
+    if minlevel=0 then
+    begin
+      pp:=FindNode(p,'LEVEL1/EVENT_TRIGGER/AFFIXES/AFFIXLEVEL');
+      if pp<>nil then
+        minlevel:=pp^.AsInteger;
+    end;
+    if minlevel<0 then minlevel:=0;
+    Str(minlevel,lskill.minlvl);
   end;
 
   if lcnt=0 then
@@ -877,8 +891,13 @@ end;
 
 var
   p,pp:PTL2Node;
+  ls:string;
   modid:int64;
+  lcnt:integer;
 begin
+  lcnt:=ParamCount();
+  ls:=ParamStr(1);
+
   p:=ParseDatFile('MOD.DAT');
   pp:=FindNode(p,'MOD_ID');
   modid:=pp^.asInteger64;
@@ -895,67 +914,69 @@ begin
 //  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
 
   // Pets
-  writeln('Go pets!');
-  CycleDir('MEDIA\UNITS\MONSTERS\PETS'           ,@AddPet);
-  CycleDir('MEDIA\UNITS\MONSTERS\WARBOUNDS'      ,@AddPet);
-  CycleDir('MEDIA\UNITS\MONSTERS\BROTHER-IN-ARMS',@AddPet);
-{
-  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
-  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
-}
+  if (lcnt=0) or (ls='pets') then
+  begin
+    writeln('Go pets!');
+    CycleDir('MEDIA\UNITS\MONSTERS\PETS'           ,@AddPet);
+    CycleDir('MEDIA\UNITS\MONSTERS\WARBOUNDS'      ,@AddPet);
+    CycleDir('MEDIA\UNITS\MONSTERS\BROTHER-IN-ARMS',@AddPet);
+  end;
+
   // Quests
-  writeln('Go quests!');
-  CycleDir('MEDIA\QUESTS',@AddQuest);
-{
-  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
-  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
-}
+  if (lcnt=0) or (ls='quests') then
+  begin
+    writeln('Go quests!');
+    CycleDir('MEDIA\QUESTS',@AddQuest);
+  end;
+
   // Stats
-  writeln('Go stats!');
-  CycleDir('MEDIA\STATS',@AddStat);
-{
-  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
-  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
-}
+  if (lcnt=0) or (ls='stats') then
+  begin
+    writeln('Go stats!');
+    CycleDir('MEDIA\STATS',@AddStat);
+  end;
+
   // Recipes
-  writeln('Go recipes!');
-  CycleDir('MEDIA\RECIPES',@AddRecipe);
-{
-  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
-  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
-}
+  if (lcnt=0) or (ls='recipes') then
+  begin
+    writeln('Go recipes!');
+    CycleDir('MEDIA\RECIPES',@AddRecipe);
+  end;
+
   // Mobs
-  writeln('Go mobs!');
-  CycleDir('MEDIA\UNITS\MONSTERS',@AddMob);
-{
-  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
-  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
-}
+  if (lcnt=0) or (ls='mobs') then
+  begin
+    writeln('Go mobs!');
+    CycleDir('MEDIA\UNITS\MONSTERS',@AddMob);
+  end;
+
   // Items
-  writeln('Go items!');
-  CycleDir('MEDIA\UNITS\ITEMS',@AddItem);
-{
-  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
-  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
-}
-  // Items
-  writeln('Go props!');
-  CycleDir('MEDIA\UNITS\PROPS',@AddProp);
-{
-  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
-  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
-}
+  if (lcnt=0) or (ls='items') then
+  begin
+    writeln('Go items!');
+    CycleDir('MEDIA\UNITS\ITEMS',@AddItem);
+  end;
+
+  // Props
+  if (lcnt=0) or (ls='props') then
+  begin
+    writeln('Go props!');
+    CycleDir('MEDIA\UNITS\PROPS',@AddProp);
+  end;
+
   // Skills
-  writeln('Go skills!');
-  CycleDir('MEDIA\SKILLS',@AddSkill);
-{
-  sqlite3_exec(db,'End Transaction'  ,nil,nil,nil);
-  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
-}
+  if (lcnt=0) or (ls='skills') then
+  begin
+    writeln('Go skills!');
+    CycleDir('MEDIA\SKILLS',@AddSkill);
+  end;
 
   // Classes
-  writeln('Go classes!');
-  CycleDir('MEDIA\UNITS\PLAYERS',@AddPlayer);
+  if (lcnt=0) or (ls='classes') then
+  begin
+    writeln('Go classes!');
+    CycleDir('MEDIA\UNITS\PLAYERS',@AddPlayer);
+  end;
 
 //  sqlite3_exec(db,'End Transaction',nil,nil,nil);
   CopyToFile(db,'tl2db2.db');
