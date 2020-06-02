@@ -156,17 +156,10 @@ type
     property Scale          :TL2Float read FScale           write FScale;
     property Skin           :byte     read FSkin            write FSkin;
 
-{
-    property Skills   [idx:integer]:TL2IdVal    read  GetSkills;
-    property Spells   [idx:integer]:TTL2Spell   read  GetSpells;
-    property ModIds   [idx:integer]:TL2ID       read  GetModIds;
-    property Items    [idx:integer]:TTL2Item    read  GetItems;
-    property Passives1[idx:integer]:TTL2Passive read  GetPassives1;
-    property Passives2[idx:integer]:TTL2Passive read  GetPassives2;
-}
     property Spells[idx:integer]:TTL2Spell read GetSpell write SetSpell;
-    property Items :TTL2ItemList read FItems  {write FItems};
     property Skills:TL2IdValList read FSkills  write FSkills;
+    property Stats :TL2IdValList read FStats;
+    property Items :TTL2ItemList read FItems  {write FItems};
     property ModIds:TL2IdList    read FModIds  write FModIds;
   end;
 type
@@ -258,7 +251,10 @@ begin
   FMorphId:=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
   FClassId:=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
   if FClassId=TL2IdEmpty then
+  begin
     FClassId:=FMorphId;
+    FMorphId:=TL2IdEmpty;
+  end;
 
   FUnkn1:=TL2ID(AStream.ReadQword);    //!! (changing) (F6ED2564.F596F9AA)
 
@@ -360,8 +356,8 @@ begin
 }
   FPlayTime:=AStream.ReadFloat;    // play time, sec
   FUnkn13:=AStream.ReadFloat;      // 1.0
-  FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints? (elfly have 28 with 28 in fact)
   FFreeStatPoints :=AStream.ReadDWord; // unallocated statpoints ? (elfly have 35 with 30 in fact)
+  FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints? (elfly have 28 with 28 in fact)
 
   // mouse button skils.
   FRMB1:=TL2ID(AStream.ReadQWord);    // skill ID RMB active = Pet 1st spell?
@@ -455,11 +451,16 @@ begin
   AStream.WriteByte(FSign);      // $FF or 2
   AStream.WriteWord(FSignWord);  // 0 or 0x0100
 
-  AStream.WriteQWord(QWord(FMorphId));    // current Class ID (with sex)
-  if FClassId=FMorphId then
-    AStream.WriteQWord(QWord(TL2IdEmpty)) // *$FF or base class id (if morphed)
-  else
+  if FMorphId=TL2IdEmpty then
+  begin
     AStream.WriteQWord(QWord(FClassId));
+    AStream.WriteQWord(QWord(TL2IdEmpty));
+  end
+  else
+  begin
+    AStream.WriteQWord(QWord(FMorphId));
+    AStream.WriteQWord(QWord(FClassId));
+  end;
   AStream.WriteQWord(QWord(FUnkn1));    //!! (changing) (F6ED2564.F596F9AA)
 
   AStream.WriteByte(FUnkn2);
@@ -531,8 +532,8 @@ begin
 
   AStream.WriteFloat(FPlayTime);        // play time, sec
   AStream.WriteFloat(FUnkn13);          // 1.0
-  AStream.WriteDWord(FFreeSkillPoints); // unallocated skillpoints? (elfly have 28 with 28 in fact)
   AStream.WriteDWord(FFreeStatPoints ); // unallocated statpoints ? (elfly have 35 with 30 in fact)
+  AStream.WriteDWord(FFreeSkillPoints); // unallocated skillpoints? (elfly have 28 with 28 in fact)
 
   // mouse button skils
   AStream.WriteQWord(QWord(FRMB1));    // skill ID RMB active = Pet 1st spell?

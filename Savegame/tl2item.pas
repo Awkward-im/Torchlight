@@ -190,10 +190,19 @@ begin
   FEnchantmentCount:=integer(AStream.ReadDWord); // enchantment count // prop=E56DE12D
   FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645 . -1 for props
 
-  // coordinates
   AStream.Read(FFlags,7);
-  FPosition1:=AStream.ReadCoord();
-  FPosition2:=AStream.ReadCoord();
+{    itm   prop
+  0 - <equipped> flag
+  1 - 1      ?
+  2 - 1
+  3 - 1
+  4 - 1
+  5 - 0
+  6 - <recognized> flag
+}
+  // coordinates
+  FPosition1:=AStream.ReadCoord(); // place where from picked up?
+  FPosition2:=AStream.ReadCoord(); // 0 for equipped?
   AStream.Read(FUnkn3,64);
 { Like for character
   // direction
@@ -233,8 +242,16 @@ begin
 }
   //??
   lcnt:=AStream.ReadWord;
-//  if IsConsole then if lcnt>0 then writeln('item-pre effect at ',HexStr(AStream.Position,8));
-  // 00 00 00 00 | 00 00 00 00 | <cnt> 00 00 00
+(*
+2 bytes  short   number of 12-byte-long damage things
+X bytes  struct  list of 12-byte-long damage things{
+    4 bytes  float  flat damage bonus from non-enchantment sources (all sources summed for given damage type)
+    4 bytes  float  flat damage bonus from enchantment sources (all sources summed for given damage type)
+    4 bytes  int    damage type (0=physical, 1=magical, 2=fire, 3=ice, 4=electric, 5=poison, 6=all)
+    (what about base elemental damage? An entry for an element is added, but both values are zero
+    and the real value is pulled from the item's bindat file)
+}
+*)
   SetLength(FUnkn6,lcnt);
   if lcnt>0 then
     AStream.Read(FUnkn6[0],lcnt*SizeOf(TL2IdVal));
