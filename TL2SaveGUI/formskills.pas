@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
-  Buttons, Types,
+  Buttons, SpinEx, Types,
   tl2char, tl2types, tl2db;
 
 type
@@ -27,15 +27,19 @@ type
     memDesc: TMemo;
 
     sgSkills: TStringGrid;
+    sePoints: TSpinEditEx;
 
     procedure bbUpdateClick(Sender: TObject);
     procedure btnResetClick(Sender: TObject);
     procedure cbSaveFullClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure sePointsChange(Sender: TObject);
     procedure sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
     procedure sgSkillsEditButtonClick(Sender: TObject);
+    procedure sgSkillsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
     procedure sgSkillsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
   private
     FConfigured:boolean;
@@ -54,6 +58,7 @@ type
     procedure ClearData;
     procedure CreateIconList();
     function  CheckTier(aval,aidx:integer):boolean;
+    procedure DoLevelChange(doinc: boolean);
   public
     procedure FillInfo(aChar:TTL2Character);
 
@@ -67,10 +72,8 @@ implementation
 
 uses
   INIFiles,
+  LCLType,
   formsettings;
-
-resourcestring
-  rsFreePoints = 'Free skill points';
 
 const
   sSkills      = 'Skills';
@@ -85,6 +88,24 @@ const
   colMinus   = 3;
   colLevel   = 4;
   colPlus    = 5;
+
+function TfmSkills.CheckTier(aval,aidx:integer):boolean;
+var
+  i,llevel:integer;
+begin
+  result:=true;
+  llevel:=FChar.Level;
+  for i:=0 to High(FTiers) do
+  begin
+    if FSkills[aidx].tier=FTiers[i].name then
+    begin
+      if (aval<Length(FTiers[i].levels)) and
+         (FTiers[i].levels[aval]>llevel) then
+        result:=false;
+      break;
+    end;
+  end;
+end;
 
 procedure TfmSkills.FormCreate(Sender: TObject);
 var
@@ -120,121 +141,6 @@ begin
   config.Free;
 end;
 
-procedure TfmSkills.sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer;
-  aRect: TRect; aState: TGridDrawState);
-var
-  lRect:TRect;
-  bmp:TBitmap;
-  idx:integer;
-  isgray:boolean;
-begin
-  if (aCol=colIcon) and (aRow>0) then
-  begin
-    idx:=IntPtr(sgSkills.Objects[0,aRow]);
-    isgray:=sgSkills.Cells[colLevel,aRow]='0';
-    bmp:=FIcons[idx,isgray].Bitmap;
-    if (bmp=nil) and isgray then bmp:=FIcons[idx,false].Bitmap;
-    if bmp<>nil then
-    begin
-      lRect:=aRect;
-      InflateRect(lRect,-1,-1);
-      sgSKills.Canvas.StretchDraw(lRect,bmp);
-    end;
-  end;
-end;
-
-function TfmSkills.CheckTier(aval,aidx:integer):boolean;
-var
-  i,llevel:integer;
-begin
-  result:=true;
-  llevel:=FChar.Level;
-  for i:=0 to High(FTiers) do
-  begin
-    if FSkills[aidx].tier=FTiers[i].name then
-    begin
-      if (aval<Length(FTiers[i].levels)) and
-         (FTiers[i].levels[aval]>llevel) then
-        result:=false;
-      break;
-    end;
-  end;
-end;
-
-procedure TfmSkills.sgSkillsEditButtonClick(Sender: TObject);
-var
-  lval,idx:integer;
-  lchanged:boolean;
-begin
-  lchanged:=false;
-  lval:=StrToInt(sgSkills.Cells[colLevel,sgSkills.Row]);
-
-  if sgSkills.Col=colMinus then
-  begin
-    if lval>0 then
-    begin
-      dec(lval);
-      inc(FPoints);
-      lchanged:=true;
-    end;
-  end
-
-  else if sgSkills.Col=colPlus then
-  begin
-    if ((FPoints>0) or not (cbCheckPoints.Checked)) then
-    begin
-      idx:=IntPtr(sgSkills.Objects[0,sgSkills.Row]);
-      if (lval<FSkills[idx].level) and
-         ((not cbCheckLevel.Checked) or CheckTier(lval,idx)) then
-      begin
-        inc(lval);
-        dec(FPoints);
-        lchanged:=true;
-      end;
-    end;
-  end;
-
-  if lchanged then
-  begin
-    sgSkills.Cells[colLevel,sgSkills.Row]:=IntToStr(lval);
-    lblCurrent.Caption:=rsFreePoints+': '+IntToStr(FPoints);
-    bbUpdate.Enabled:=true;
-  end;
-end;
-
-procedure TfmSkills.sgSkillsSelectCell(Sender: TObject;
-          aCol, aRow: Integer; var CanSelect: Boolean);
-var
-  licon,ltier:string;
-  idx:integer;
-begin
-  if aRow>0 then
-  begin
-    idx:=IntPtr(sgSkills.Objects[0,aRow]);
-
-    lblName.Caption:=FSkills[idx].title;
-    memDesc.Text   :=GetSkillInfo(FSkills[idx].id,ltier,licon);
-  end;
-end;
-
-procedure TfmSkills.btnResetClick(Sender: TObject);
-var
-  i:integer;
-begin
-  for i:=1 to sgSkills.RowCount-1 do
-  begin
-    inc(FPoints,StrToInt(sgSkills.Cells[colLevel,i]));
-    sgSkills.Cells[colLevel,i]:='0';
-  end;
-  lblCurrent.Caption:=rsFreePoints+': '+IntToStr(FPoints);
-  bbUpdate.Enabled:=true;
-end;
-
-procedure TfmSkills.cbSaveFullClick(Sender: TObject);
-begin
-  bbUpdate.Enabled:=true;
-end;
-
 procedure TfmSkills.ClearData;
 var
   i:integer;
@@ -259,11 +165,134 @@ begin
     FIcons[i,false]:=TPicture.Create;
     FIcons[i,true ]:=TPicture.Create;
     try
-      FIcons[i,false].LoadFromFile('icons\skills\'+FSkills[i].icon+'.png');
-      FIcons[i,true ].LoadFromFile('icons\skills\'+FSkills[i].icon+'_gray.png');
+      FIcons[i,false].LoadFromFile(fmSettings.edIconDir.Text+'\skills\'+FSkills[i].icon+'.png');
+      FIcons[i,true ].LoadFromFile(fmSettings.edIconDir.Text+'\skills\'+FSkills[i].icon+'_gray.png');
     except
     end;
   end;
+end;
+
+procedure TfmSkills.sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer;
+  aRect: TRect; aState: TGridDrawState);
+var
+  lRect:TRect;
+  bmp:TBitmap;
+  idx:integer;
+  isgray:boolean;
+begin
+  if (aCol=colIcon) and (aRow>0) then
+  begin
+    idx:=IntPtr(sgSkills.Objects[0,aRow]);
+    isgray:=sgSkills.Cells[colLevel,aRow]='0';
+    bmp:=FIcons[idx,isgray].Bitmap;
+    if (bmp=nil) and isgray then bmp:=FIcons[idx,false].Bitmap;
+    if bmp<>nil then
+    begin
+      lRect:=aRect;
+      InflateRect(lRect,-1,-1);
+      sgSKills.Canvas.StretchDraw(lRect,bmp);
+    end;
+  end;
+end;
+
+procedure TfmSkills.sgSkillsSelectCell(Sender: TObject;
+          aCol, aRow: Integer; var CanSelect: Boolean);
+var
+  licon,ltier:string;
+  idx:integer;
+begin
+  if aRow>0 then
+  begin
+    idx:=IntPtr(sgSkills.Objects[0,aRow]);
+
+    lblName.Caption:=FSkills[idx].title;
+    memDesc.Text   :=GetSkillInfo(FSkills[idx].id,ltier,licon);
+  end;
+end;
+
+procedure TfmSkills.sgSkillsEditButtonClick(Sender: TObject);
+begin
+  if      sgSkills.Col=colMinus then DoLevelChange(false)
+  else if sgSkills.Col=colPlus  then DoLevelChange(true)
+end;
+
+procedure TfmSkills.sgSkillsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if ((Key=VK_RETURN) or (Key=VK_SPACE)) and
+     (sgSkills.Col in [colMinus, colPlus]) then
+    sgSkillsEditButtonClick(Sender);
+
+  if sgSkills.Col=colLevel then
+  begin
+    case Key of
+      VK_OEM_MINUS, VK_SUBTRACT: DoLevelChange(false);
+      VK_OEM_PLUS , VK_ADD     : DoLevelChange(false);
+    end;
+  end;
+end;
+
+procedure TfmSkills.btnResetClick(Sender: TObject);
+var
+  i:integer;
+begin
+  for i:=1 to sgSkills.RowCount-1 do
+  begin
+    inc(FPoints,StrToInt(sgSkills.Cells[colLevel,i]));
+    sgSkills.Cells[colLevel,i]:='0';
+  end;
+  sePoints.Value:=FPoints;
+  bbUpdate.Enabled:=true;
+end;
+
+procedure TfmSkills.DoLevelChange(doinc:boolean);
+var
+  lval,idx:integer;
+  lchanged:boolean;
+begin
+  lchanged:=false;
+  lval:=StrToInt(sgSkills.Cells[colLevel,sgSkills.Row]);
+
+  if not doinc then
+  begin
+    if lval>0 then
+    begin
+      dec(lval);
+      inc(FPoints);
+      lchanged:=true;
+    end;
+  end
+
+  else
+  begin
+    if ((FPoints>0) or not (cbCheckPoints.Checked)) then
+    begin
+      idx:=IntPtr(sgSkills.Objects[0,sgSkills.Row]);
+      if (lval<FSkills[idx].level) and
+         ((not cbCheckLevel.Checked) or CheckTier(lval,idx)) then
+      begin
+        inc(lval);
+        dec(FPoints);
+        lchanged:=true;
+      end;
+    end;
+  end;
+
+  if lchanged then
+  begin
+    sgSkills.Cells[colLevel,sgSkills.Row]:=IntToStr(lval);
+    sePoints.Value:=FPoints;
+    bbUpdate.Enabled:=true;
+  end;
+end;
+
+procedure TfmSkills.sePointsChange(Sender: TObject);
+begin
+  FPoints:=sePoints.Value;
+end;
+
+procedure TfmSkills.cbSaveFullClick(Sender: TObject);
+begin
+  bbUpdate.Enabled:=true;
 end;
 
 procedure TfmSkills.FillInfo(aChar:TTL2Character);
@@ -353,7 +382,7 @@ begin
   FFame :=aChar.FameLevel;
   FLevel:=aChar.Level;
 
-  lblCurrent.Caption:=rsFreePoints+': '+IntToStr(FPoints);
+  sePoints.Value:=FPoints;
 
   sgSkills.EndUpdate;
 end;

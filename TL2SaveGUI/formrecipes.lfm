@@ -31,12 +31,13 @@ object fmRecipes: TfmRecipes
       end    
       item
         Title.Caption = 'Id'
-        Visible = False
+        Width = 132
       end>
     DefaultColWidth = 48
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowSelect, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
     RowCount = 1
     TabOrder = 0
+    OnKeyDown = sgRecipesKeyDown
   end
   object btnDeleteWrong: TButton
     Left = 400

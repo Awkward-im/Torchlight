@@ -335,6 +335,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formEffects"/>
       </Unit>
+      <Unit>
+        <Filename Value="addons.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

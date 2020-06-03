@@ -137,18 +137,18 @@ object fmItem: TfmItem
     NumbersOnly = True
     TabOrder = 8
   end
-  object lblPosType: TLabel
+  object lblContType: TLabel
     Left = 262
     Height = 15
     Top = 120
-    Width = 58
-    Caption = 'lblPosType'
+    Width = 5
+    Caption = '-'
     ParentColor = False
   end
   object lblSockets: TLabel
     Left = 318
     Height = 15
-    Top = 252
+    Top = 268
     Width = 40
     Caption = 'Sockets'
     ParentColor = False
@@ -156,7 +156,7 @@ object fmItem: TfmItem
   object edSockets: TEdit
     Left = 260
     Height = 23
-    Top = 248
+    Top = 264
     Width = 48
     Alignment = taRightJustify
     NumbersOnly = True
@@ -165,7 +165,7 @@ object fmItem: TfmItem
   object lblWeaponDmg: TLabel
     Left = 319
     Height = 15
-    Top = 144
+    Top = 160
     Width = 91
     Caption = 'Weapon Damage'
     ParentColor = False
@@ -173,7 +173,7 @@ object fmItem: TfmItem
   object edWeaponDmg: TEdit
     Left = 262
     Height = 23
-    Top = 140
+    Top = 156
     Width = 48
     Alignment = taRightJustify
     NumbersOnly = True
@@ -182,7 +182,7 @@ object fmItem: TfmItem
   object lblArmor: TLabel
     Left = 317
     Height = 15
-    Top = 173
+    Top = 189
     Width = 34
     Caption = 'Armor'
     ParentColor = False
@@ -190,7 +190,7 @@ object fmItem: TfmItem
   object edArmor: TEdit
     Left = 262
     Height = 23
-    Top = 169
+    Top = 185
     Width = 48
     Alignment = taRightJustify
     NumbersOnly = True
@@ -199,7 +199,7 @@ object fmItem: TfmItem
   object lblArmorType: TLabel
     Left = 317
     Height = 15
-    Top = 202
+    Top = 218
     Width = 60
     Caption = 'Armor type'
     ParentColor = False
@@ -207,7 +207,7 @@ object fmItem: TfmItem
   object edArmorType: TEdit
     Left = 260
     Height = 23
-    Top = 198
+    Top = 214
     Width = 48
     Alignment = taRightJustify
     NumbersOnly = True
@@ -216,7 +216,7 @@ object fmItem: TfmItem
   object lblArmorByType: TLabel
     Left = 260
     Height = 15
-    Top = 226
+    Top = 242
     Width = 86
     Caption = 'lblArmorByType'
     ParentColor = False
@@ -271,7 +271,7 @@ object fmItem: TfmItem
     Height = 101
     Top = 152
     Width = 104
-    Caption = 'Coordinates 0'
+    Caption = 'Coordinates'
     ClientHeight = 81
     ClientWidth = 100
     TabOrder = 15
@@ -338,7 +338,7 @@ object fmItem: TfmItem
     Height = 101
     Top = 256
     Width = 104
-    Caption = 'Coordinates'
+    Caption = 'Coordinates (main)'
     ClientHeight = 81
     ClientWidth = 100
     TabOrder = 16
@@ -473,5 +473,13 @@ object fmItem: TfmItem
     Width = 32
     ReadOnly = True
     TabOrder = 18
+  end
+  object lblPosType: TLabel
+    Left = 262
+    Height = 15
+    Top = 136
+    Width = 5
+    Caption = '-'
+    ParentColor = False
   end
 end

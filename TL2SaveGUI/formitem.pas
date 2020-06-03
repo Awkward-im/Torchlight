@@ -34,11 +34,12 @@ type
     edPrefix: TEdit;  lblPrefix: TLabel;
     edSuffix: TEdit;  lblSuffix: TLabel;
 
-    edLevel   : TEdit;  lblLevel   : TLabel;
-    edStack   : TEdit;  lblStack   : TLabel;
-    edEnchant : TEdit;  lblEnchant : TLabel;
-    edPosition: TEdit;  lblPosition: TLabel;  lblPosType: TLabel;
-    edSockets : TEdit;  lblSockets : TLabel;
+    edLevel    : TEdit;   lblLevel   : TLabel;
+    edStack    : TEdit;   lblStack   : TLabel;
+    edEnchant  : TEdit;   lblEnchant : TLabel;
+    edPosition : TEdit;   lblPosition: TLabel;
+    lblContType: TLabel;  lblPosType : TLabel;
+    edSockets  : TEdit;   lblSockets : TLabel;
 
     edWeaponDmg: TEdit;  lblWeaponDmg: TLabel;
     edArmor    : TEdit;  lblArmor    : TLabel;
@@ -65,6 +66,7 @@ uses
 
 procedure TfmItem.FillInfo(aItem:TTL2Item);
 var
+  linv,lcont:string;
   i,j:integer;
 begin
   FItem:=aItem;
@@ -81,15 +83,27 @@ begin
   edY.Text:=FloatToStrF(aItem.Position1.Y,ffFixed,-8,2);
   edZ.Text:=FloatToStrF(aItem.Position1.Z,ffFixed,-8,2);
 
-  edX1.Text:=FloatToStrF(aItem.Position2.X,ffFixed,-8,2);
-  edY1.Text:=FloatToStrF(aItem.Position2.Y,ffFixed,-8,2);
-  edZ1.Text:=FloatToStrF(aItem.Position2.Z,ffFixed,-8,2);
+  if (aItem.Position1.X=aItem.Position2.X) and
+     (aItem.Position1.Y=aItem.Position2.Y) and
+     (aItem.Position1.Z=aItem.Position2.Z) then
+  begin
+    gbCoords1.Visible:=false;
+  end
+  else
+  begin
+    gbCoords1.Visible:=true;
+    edX1.Text:=FloatToStrF(aItem.Position2.X,ffFixed,-8,2);
+    edY1.Text:=FloatToStrF(aItem.Position2.Y,ffFixed,-8,2);
+    edZ1.Text:=FloatToStrF(aItem.Position2.Z,ffFixed,-8,2);
+  end;
 
   edLevel   .Text    := IntToStr(aItem.Level);
   edStack   .Text    := IntToStr(aItem.Stack);
   edEnchant .Text    := IntToStr(aItem.EnchantCount);
   edPosition.Text    := IntToStr(aItem.Position);
-  lblPosType.Caption := ''; //!!
+  linv:=GetItemPosition(aItem.Position, lcont);
+  lblContType.Caption := lcont;
+  lblPosType .Caption := linv;
   edSockets.Text     := IntToStr(aItem.SocketCount);
 
   edWeaponDmg   .Text   := IntToStr(aItem.WeaponDamage);

@@ -1,5 +1,12 @@
 {"version":1,"strings":[
 {"hash":78005342,"name":"tfmstat.tscommon.caption","sourcebytes":[67,111,109,109,111,110],"value":"Common"},
+{"hash":48472657,"name":"tfmstat.gbinitial.caption","sourcebytes":[73,110,105,116,105,97,108,32,100,97,116,97],"value":"Initial data"},
+{"hash":47135237,"name":"tfmstat.lblname.caption","sourcebytes":[67,104,97,114,97,99,116,101,114,32,110,97,109,101],"value":"Character name"},
+{"hash":217041795,"name":"tfmstat.lblclass.caption","sourcebytes":[67,104,97,114,97,99,116,101,114,32,99,108,97,115,115],"value":"Character class"},
+{"hash":208127237,"name":"tfmstat.lblpet.caption","sourcebytes":[80,101,116,32,116,121,112,101],"value":"Pet type"},
+{"hash":239638702,"name":"tfmstat.tslearn.caption","sourcebytes":[83,107,105,108,108,32,108,101,97,114,110],"value":"Skill learn"},
+{"hash":18410697,"name":"tfmstat.lblskillhistorytitle.caption","sourcebytes":[83,107,105,108,108,32,108,101,97,114,110,32,111,114,100,101,114,32,104,105,115,116,111,114,121],"value":"Skill learn order history"},
+{"hash":4860802,"name":"tfmstat.bbclearlearnhistory.caption","sourcebytes":[67,108,101,97,114],"value":"Clear"},
 {"hash":345491,"name":"tfmstat.tsmobs.caption","sourcebytes":[77,111,98,115],"value":"Mobs"},
 {"hash":5966629,"name":"tfmstat.sgmobs.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
 {"hash":74207921,"name":"tfmstat.sgmobs.columns[1].title.caption","sourcebytes":[65,109,111,117,110,116,32,49],"value":"Amount 1"},

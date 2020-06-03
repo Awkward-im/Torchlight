@@ -54,6 +54,7 @@ object fmMovies: TfmMovies
     RowCount = 1
     TabOrder = 0
     OnEditingDone = sgMoviesEditingDone
+    OnKeyDown = sgMoviesKeyDown
   end
   object bbUpdate: TBitBtn
     Left = 8

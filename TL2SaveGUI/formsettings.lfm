@@ -70,4 +70,12 @@ object fmSettings: TfmSettings
     Caption = 'Database file'
     ParentColor = False
   end
+  object cbIdAsHex: TCheckBox
+    Left = 8
+    Height = 19
+    Top = 147
+    Width = 133
+    Caption = 'Show IDs in Hex form'
+    TabOrder = 4
+  end
 end

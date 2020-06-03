@@ -8,6 +8,7 @@
 {"hash":219883308,"name":"tfmskills.cbchecklevel.caption","sourcebytes":[67,104,101,99,107,32,76,101,118,101,108],"value":"Check Level"},
 {"hash":34298979,"name":"tfmskills.cbcheckpoints.caption","sourcebytes":[67,104,101,99,107,32,80,111,105,110,116,115],"value":"Check Points"},
 {"hash":96905381,"name":"tfmskills.bbupdate.caption","sourcebytes":[85,112,100,97,116,101],"value":"Update"},
+{"hash":121147075,"name":"tfmskills.lblcurrent.caption","sourcebytes":[70,114,101,101,32,112,111,105,110,116,115],"value":"Free points"},
 {"hash":48555573,"name":"tfmskills.lblname.caption","sourcebytes":[83,107,105,108,108,32,110,97,109,101],"value":"Skill name"},
 {"hash":5818820,"name":"tfmskills.btnreset.caption","sourcebytes":[82,101,115,101,116],"value":"Reset"},
 {"hash":170031252,"name":"tfmskills.cbsavefull.caption","sourcebytes":[83,97,118,101,32,70,117,108,108,32,108,105,115,116],"value":"Save Full list"}

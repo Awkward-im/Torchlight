@@ -8,17 +8,110 @@ object fmStat: TfmStat
   ClientHeight = 488
   ClientWidth = 741
   LCLVersion = '2.1.0.0'
-  object PageControl1: TPageControl
+  object pcStatistic: TPageControl
     Left = 0
     Height = 488
     Top = 0
     Width = 741
-    ActivePage = tsMobs
+    ActivePage = tsLearn
     Align = alClient
     TabIndex = 1
     TabOrder = 0
     object tsCommon: TTabSheet
       Caption = 'Common'
+      ClientHeight = 460
+      ClientWidth = 733
+      object gbInitial: TGroupBox
+        Left = 8
+        Height = 186
+        Top = 8
+        Width = 260
+        Caption = 'Initial data'
+        ClientHeight = 166
+        ClientWidth = 256
+        TabOrder = 0
+        object lblName: TLabel
+          Left = 4
+          Height = 15
+          Top = 0
+          Width = 84
+          Caption = 'Character name'
+          ParentColor = False
+        end
+        object edName: TEdit
+          Left = 4
+          Height = 23
+          Top = 24
+          Width = 248
+          ReadOnly = True
+          TabOrder = 0
+        end
+        object lblClass: TLabel
+          Left = 4
+          Height = 15
+          Top = 56
+          Width = 79
+          Caption = 'Character class'
+          ParentColor = False
+        end
+        object edClass: TEdit
+          Left = 4
+          Height = 23
+          Top = 80
+          Width = 248
+          ReadOnly = True
+          TabOrder = 1
+        end
+        object lblPet: TLabel
+          Left = 4
+          Height = 15
+          Top = 112
+          Width = 43
+          Caption = 'Pet type'
+          ParentColor = False
+        end
+        object edPet: TEdit
+          Left = 4
+          Height = 23
+          Top = 136
+          Width = 248
+          ReadOnly = True
+          TabOrder = 2
+        end
+      end
+    end
+    object tsLearn: TTabSheet
+      Caption = 'Skill learn'
+      ClientHeight = 460
+      ClientWidth = 733
+      object lbSkillHistory: TListBox
+        Left = 8
+        Height = 422
+        Top = 32
+        Width = 314
+        Anchors = [akTop, akLeft, akBottom]
+        ItemHeight = 0
+        TabOrder = 0
+      end
+      object lblSkillHistoryTitle: TLabel
+        Left = 8
+        Height = 15
+        Top = 7
+        Width = 120
+        Caption = 'Skill learn order history'
+        ParentColor = False
+      end
+      object bbClearLearnHistory: TBitBtn
+        Left = 328
+        Height = 30
+        Top = 32
+        Width = 75
+        Cancel = True
+        Caption = 'Clear'
+        Kind = bkCancel
+        OnClick = bbClearLearnHistoryClick
+        TabOrder = 1
+      end
     end
     object tsMobs: TTabSheet
       Caption = 'Mobs'

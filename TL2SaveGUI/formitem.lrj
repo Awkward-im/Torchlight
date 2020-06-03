@@ -6,7 +6,7 @@
 {"hash":5941147,"name":"tfmitem.lblstack.caption","sourcebytes":[83,116,97,99,107],"value":"Stack"},
 {"hash":169968708,"name":"tfmitem.lblenchant.caption","sourcebytes":[69,110,99,104,97,110,116,32,99,111,117,110,116],"value":"Enchant count"},
 {"hash":111192878,"name":"tfmitem.lblposition.caption","sourcebytes":[80,111,115,105,116,105,111,110],"value":"Position"},
-{"hash":124758389,"name":"tfmitem.lblpostype.caption","sourcebytes":[108,98,108,80,111,115,84,121,112,101],"value":"lblPosType"},
+{"hash":45,"name":"tfmitem.lblconttype.caption","sourcebytes":[45],"value":"-"},
 {"hash":173677795,"name":"tfmitem.lblsockets.caption","sourcebytes":[83,111,99,107,101,116,115],"value":"Sockets"},
 {"hash":153108869,"name":"tfmitem.lblweapondmg.caption","sourcebytes":[87,101,97,112,111,110,32,68,97,109,97,103,101],"value":"Weapon Damage"},
 {"hash":4756578,"name":"tfmitem.lblarmor.caption","sourcebytes":[65,114,109,111,114],"value":"Armor"},
@@ -16,13 +16,14 @@
 {"hash":340132,"name":"tfmitem.sgeffects.columns[0].title.caption","sourcebytes":[76,105,115,116],"value":"List"},
 {"hash":79481764,"name":"tfmitem.sgeffects.columns[1].title.caption","sourcebytes":[69,102,102,101,99,116],"value":"Effect"},
 {"hash":346165,"name":"tfmitem.sgeffects.columns[2].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
-{"hash":250367984,"name":"tfmitem.gbcoords.caption","sourcebytes":[67,111,111,114,100,105,110,97,116,101,115,32,48],"value":"Coordinates 0"},
+{"hash":181333059,"name":"tfmitem.gbcoords.caption","sourcebytes":[67,111,111,114,100,105,110,97,116,101,115],"value":"Coordinates"},
 {"hash":1466,"name":"tfmitem.lblx.caption","sourcebytes":[88,58],"value":"X:"},
 {"hash":1482,"name":"tfmitem.lbly.caption","sourcebytes":[89,58],"value":"Y:"},
 {"hash":1498,"name":"tfmitem.lblz.caption","sourcebytes":[90,58],"value":"Z:"},
-{"hash":181333059,"name":"tfmitem.gbcoords1.caption","sourcebytes":[67,111,111,114,100,105,110,97,116,101,115],"value":"Coordinates"},
+{"hash":236829945,"name":"tfmitem.gbcoords1.caption","sourcebytes":[67,111,111,114,100,105,110,97,116,101,115,32,40,109,97,105,110,41],"value":"Coordinates (main)"},
 {"hash":1466,"name":"tfmitem.lblx1.caption","sourcebytes":[88,58],"value":"X:"},
 {"hash":1482,"name":"tfmitem.lbly1.caption","sourcebytes":[89,58],"value":"Y:"},
 {"hash":1498,"name":"tfmitem.lblz1.caption","sourcebytes":[90,58],"value":"Z:"},
-{"hash":5056483,"name":"tfmitem.gbflags.caption","sourcebytes":[70,108,97,103,115],"value":"Flags"}
+{"hash":5056483,"name":"tfmitem.gbflags.caption","sourcebytes":[70,108,97,103,115],"value":"Flags"},
+{"hash":45,"name":"tfmitem.lblpostype.caption","sourcebytes":[45],"value":"-"}
 ]}

@@ -19,6 +19,8 @@ type
 
     procedure bbUpdateClick(Sender: TObject);
     procedure sgMoviesEditingDone(Sender: TObject);
+    procedure sgMoviesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
   private
     SGame:TTL2SaveFile;
 
@@ -33,6 +35,8 @@ implementation
 {$R *.lfm}
 
 uses
+  LCLType,
+  addons,
   tl2db;
 
 const
@@ -47,13 +51,21 @@ procedure TfmMovies.sgMoviesEditingDone(Sender: TObject);
 var
   lviews:integer;
 begin
-  lviews:=StrToIntDef(sgMovies.Cells[colViews,sgMovies.Row],0);
+  lviews:=StrToIntDef(sgMovies.Cells[colViews,sgMovies.Row],-1);
   if (lviews<0) or
      (lviews>IntPtr(sgMovies.Objects[1,sgMovies.Row])) then
   begin
     sgMovies.Cells[colViews,sgMovies.Row]:='0';
   end;
   bbUpdate.Enabled:=true;
+end;
+
+procedure TfmMovies.sgMoviesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key=VK_DELETE) then
+  begin
+    bbUpdate.Enabled:=DeleteSelectedRows(sgMovies);
+  end;
 end;
 
 procedure TfmMovies.bbUpdateClick(Sender: TObject);

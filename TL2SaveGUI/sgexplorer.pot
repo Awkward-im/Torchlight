@@ -11,19 +11,9 @@ msgctxt "formbuttons.rsimportdata"
 msgid "Import data"
 msgstr ""
 
-#: formchar.rscasual
-msgctxt "formchar.rscasual"
-msgid "Casual"
-msgstr ""
-
 #: formchar.rsdexterity
 msgctxt "formchar.rsdexterity"
 msgid "Dexterity"
-msgstr ""
-
-#: formchar.rsexpert
-msgctxt "formchar.rsexpert"
-msgid "Expert"
 msgstr ""
 
 #: formchar.rsfocus
@@ -31,23 +21,9 @@ msgctxt "formchar.rsfocus"
 msgid "Focus"
 msgstr ""
 
-#: formchar.rsfreepoints
-msgid "Free stat points"
-msgstr ""
-
-#: formchar.rsnormal
-msgctxt "formchar.rsnormal"
-msgid "Normal"
-msgstr ""
-
 #: formchar.rsstrength
 msgctxt "formchar.rsstrength"
 msgid "Strength"
-msgstr ""
-
-#: formchar.rsveteran
-msgctxt "formchar.rsveteran"
-msgid "Veteran"
 msgstr ""
 
 #: formchar.rsvitality
@@ -143,10 +119,6 @@ msgstr ""
 msgid "Units"
 msgstr ""
 
-#: formskills.rsfreepoints
-msgid "Free skill points"
-msgstr ""
-
 #: tfmbuttons.btndelete.caption
 msgid "Delete"
 msgstr ""
@@ -183,6 +155,10 @@ msgstr ""
 msgid "Hardcore"
 msgstr ""
 
+#: tfmchar.cbkeepbase.caption
+msgid "Keep base stats"
+msgstr ""
+
 #: tfmchar.gbaction.caption
 msgctxt "tfmchar.gbaction.caption"
 msgid "Action"
@@ -199,6 +175,10 @@ msgstr ""
 
 #: tfmchar.gbdata.caption
 msgid "Levels"
+msgstr ""
+
+#: tfmchar.gbgender.caption
+msgid "Gender"
 msgstr ""
 
 #: tfmchar.gbglobal.caption
@@ -219,7 +199,7 @@ msgid "Area"
 msgstr ""
 
 #: tfmchar.lblcurrent.caption
-msgid "Current view"
+msgid "Morphed view"
 msgstr ""
 
 #: tfmchar.lbldatanote.caption
@@ -258,6 +238,7 @@ msgid "Focus"
 msgstr ""
 
 #: tfmchar.lblfreepoints.caption
+msgctxt "tfmchar.lblfreepoints.caption"
 msgid "Free points"
 msgstr ""
 
@@ -301,15 +282,17 @@ msgid "Morph Time"
 msgstr ""
 
 #: tfmchar.lblname.caption
+msgctxt "tfmchar.lblname.caption"
 msgid "Character name"
+msgstr ""
+
+#: tfmchar.lblnew.caption
+msgctxt "tfmchar.lblnew.caption"
+msgid "New class"
 msgstr ""
 
 #: tfmchar.lblngstate.caption
 msgid "NG State"
-msgstr ""
-
-#: tfmchar.lbloriginal.caption
-msgid "Original view"
 msgstr ""
 
 #: tfmchar.lblscale.caption
@@ -371,6 +354,33 @@ msgctxt "tfmchar.rbactionidle.caption"
 msgid "Idle"
 msgstr ""
 
+#: tfmchar.rbfemale.caption
+msgid "F"
+msgstr ""
+
+#: tfmchar.rbmale.caption
+msgid "M"
+msgstr ""
+
+#: tfmchar.rbunisex.caption
+msgid "?"
+msgstr ""
+
+#: tfmchar.sgstats.columns[0].title.caption
+msgctxt "tfmchar.sgstats.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmchar.sgstats.columns[1].title.caption
+msgctxt "tfmchar.sgstats.columns[1].title.caption"
+msgid "Value"
+msgstr ""
+
+#: tfmchar.sgstats.columns[2].title.caption
+msgctxt "tfmchar.sgstats.columns[2].title.caption"
+msgid "Mod"
+msgstr ""
+
 #: tfmchar.tsaction.caption
 msgid "Actions"
 msgstr ""
@@ -424,12 +434,12 @@ msgstr ""
 
 #: tfmitem.gbcoords.caption
 msgctxt "tfmitem.gbcoords.caption"
-msgid "Coordinates 0"
+msgid "Coordinates"
 msgstr ""
 
 #: tfmitem.gbcoords1.caption
 msgctxt "tfmitem.gbcoords1.caption"
-msgid "Coordinates"
+msgid "Coordinates (main)"
 msgstr ""
 
 #: tfmitem.gbflags.caption
@@ -456,6 +466,11 @@ msgctxt "tfmitem.lblaugments.caption"
 msgid "Augments"
 msgstr ""
 
+#: tfmitem.lblconttype.caption
+msgctxt "tfmitem.lblconttype.caption"
+msgid "-"
+msgstr ""
+
 #: tfmitem.lblenchant.caption
 msgctxt "tfmitem.lblenchant.caption"
 msgid "Enchant count"
@@ -478,7 +493,7 @@ msgstr ""
 
 #: tfmitem.lblpostype.caption
 msgctxt "tfmitem.lblpostype.caption"
-msgid "lblPosType"
+msgid "-"
 msgstr ""
 
 #: tfmitem.lblprefix.caption
@@ -849,6 +864,10 @@ msgstr ""
 msgid "&File"
 msgstr ""
 
+#: tfmsettings.cbidashex.caption
+msgid "Show IDs in Hex form"
+msgstr ""
+
 #: tfmsettings.cbshowtech.caption
 msgid "Show Tech info"
 msgstr ""
@@ -881,6 +900,11 @@ msgstr ""
 msgid "Save Full list"
 msgstr ""
 
+#: tfmskills.lblcurrent.caption
+msgctxt "tfmskills.lblcurrent.caption"
+msgid "Free points"
+msgstr ""
+
 #: tfmskills.lblname.caption
 msgid "Skill name"
 msgstr ""
@@ -902,6 +926,31 @@ msgstr ""
 #: tfmskills.sgskills.columns[4].title.caption
 msgctxt "tfmskills.sgskills.columns[4].title.caption"
 msgid "Level"
+msgstr ""
+
+#: tfmstat.bbclearlearnhistory.caption
+msgid "Clear"
+msgstr ""
+
+#: tfmstat.gbinitial.caption
+msgid "Initial data"
+msgstr ""
+
+#: tfmstat.lblclass.caption
+msgid "Character class"
+msgstr ""
+
+#: tfmstat.lblname.caption
+msgctxt "tfmstat.lblname.caption"
+msgid "Character name"
+msgstr ""
+
+#: tfmstat.lblpet.caption
+msgid "Pet type"
+msgstr ""
+
+#: tfmstat.lblskillhistorytitle.caption
+msgid "Skill learn order history"
 msgstr ""
 
 #: tfmstat.sgarea1.columns[0].title.caption
@@ -1095,6 +1144,10 @@ msgstr ""
 #: tfmstat.tsitems.caption
 msgctxt "tfmstat.tsitems.caption"
 msgid "Items"
+msgstr ""
+
+#: tfmstat.tslearn.caption
+msgid "Skill learn"
 msgstr ""
 
 #: tfmstat.tslevelup.caption

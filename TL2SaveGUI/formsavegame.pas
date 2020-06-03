@@ -52,6 +52,7 @@ type
     FStatistic :TfmStatistic;
     FMaps      :TfmMap;
     FChar      :TfmChar;
+    FPet       :TfmChar;
     FStats     :TfmStat;
     FUnits     :TfmUnits;
     FSkills    :TfmSkills;
@@ -75,6 +76,7 @@ implementation
 
 uses
   tl2db,
+  unitGlobal,
   tl2base;
 
 resourcestring
@@ -196,6 +198,7 @@ end;
 
 procedure TfmSaveFile.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  ClearGameGlobals;
   SGame.Free;
 end;
 
@@ -214,10 +217,12 @@ begin
   FStatistic :=TfmStatistic .Create(Self); FStatistic .Parent:=MainPanel;
   FStats     :=TfmStat      .Create(Self); FStats     .Parent:=MainPanel;
   FMaps      :=TfmMap       .Create(Self); FMaps      .Parent:=MainPanel;
-  FChar      :=TfmChar      .Create(Self); FChar      .Parent:=MainPanel;
   FUnits     :=TfmUnits     .Create(Self); FUnits     .Parent:=MainPanel;
   FSkills    :=TfmSkills    .Create(Self); FSkills    .Parent:=MainPanel;
   FItems     :=TfmItems     .Create(Self); FItems     .Parent:=MainPanel;
+
+  FChar:=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel;
+  FPet :=TfmChar.Create(Self,ciPet   ); FPet .Parent:=MainPanel;
 
   fmButtons.Visible:=true;
 
@@ -234,9 +239,6 @@ begin
 
   OpenDialog:=TOpenDialog.Create(nil);
   try
-//    OpenDialog.InitialDir:='';
-//    OpenDialog.DefaultExt:='';
-//    OpenDialog.Filter    :='';
     OpenDialog.Title  :=rsSaveGameOpen;
     OpenDialog.Options:=[ofFileMustExist];
 
@@ -253,12 +255,15 @@ end;
 
 procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
 begin
+  ClearGameGlobals;
   SGame.Free;
 
   SGame:=TTL2SaveFile.Create;
   SGame.LoadFromFile(FFileName);
   SGame.Parse();
   ChangeTree;
+
+  LoadGameGlobals;
 
   FSkills.Configured:=false;
 end;
@@ -333,6 +338,7 @@ begin
   FQuests    .Visible:=false;
   FStatistic .Visible:=false;
   FChar      .Visible:=false;
+  FPet       .Visible:=false;
   FStats     .Visible:=false;
   FUnits     .Visible:=false;
   FSkills    .Visible:=false;
@@ -398,9 +404,9 @@ begin
       end;
       case tvSaveGame.Selected.level of
         1,2: begin
-          FChar.FillInfo(SGame.PetInfo[lidx]);
-          actImport.Enabled:=FChar.IsMain;
-          FChar.Visible:=true;
+          FPet.FillInfo(SGame.PetInfo[lidx]);
+          actImport.Enabled:=FPet.IsMain;
+          FPet.Visible:=true;
         end;
         3: begin
           FItems.FillInfo(SGame.PetInfo[lidx].Items);

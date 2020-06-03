@@ -25,6 +25,7 @@ type
     procedure btnLearnAllClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure sgRecipesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     SGame:TTL2SaveFile;
     procedure FillInfoInt(alist: TL2IdList);
@@ -40,6 +41,8 @@ implementation
 {$R *.lfm}
 
 uses
+  LCLType,
+  addons,
   formSettings,
   INIfiles,
   tl2db;
@@ -75,6 +78,14 @@ begin
 
   config.UpdateFile;
   config.Free;
+end;
+
+procedure TfmRecipes.sgRecipesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key=VK_DELETE) then
+  begin
+    bbUpdate.Enabled:=DeleteSelectedRows(sgRecipes);
+  end;
 end;
 
 procedure TfmRecipes.bbClearClick(Sender: TObject);
@@ -126,6 +137,8 @@ end;
 procedure TfmRecipes.FillInfo(aSGame:TTL2SaveFile);
 begin
   FillInfoInt(aSGame.Recipes);
+
+  sgRecipes.Columns[colId-1].Visible:=fmSettings.cbShowTech.Checked;
 
   bbUpdate.Enabled:=false;
   SGame:=aSGame;

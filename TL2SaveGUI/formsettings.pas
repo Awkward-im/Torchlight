@@ -18,6 +18,7 @@ type
   TfmSettings = class(TForm)
     bbSave: TBitBtn;
     cbShowTech: TCheckBox;
+    cbIdAsHex: TCheckBox;
     edIconDir: TDirectoryEdit;
     edDBFile: TFileNameEdit;
     lblDBFile: TLabel;
@@ -44,10 +45,11 @@ uses
 { TfmSettings }
 
 const
-  sSettings     = 'Settings';
-  sShowTech     = 'showtech';
-  sDBFile       = 'dbfile';
-  sIconDir      = 'icondir';
+  sSettings = 'Settings';
+  sShowTech = 'showtech';
+  sIdAsHex  = 'idashex';
+  sDBFile   = 'dbfile';
+  sIconDir  = 'icondir';
 
 procedure TfmSettings.bbSaveClick(Sender: TObject);
 var
@@ -55,6 +57,7 @@ var
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
   config.WriteBool  (sSettings,sShowTech,cbShowTech.Checked);
+  config.WriteBool  (sSettings,sIdAsHex ,cbIdAsHex .Checked);
   config.WriteString(sSettings,sDBFile  ,edDBFile  .Text);
   config.WriteString(sSettings,sIcondir ,edIconDir .Text);
 
@@ -69,6 +72,7 @@ begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   cbShowTech.Checked:=config.ReadBool  (sSettings,sShowTech,false);
+  cbIdAsHex .Checked:=config.ReadBool  (sSettings,sIdAsHex ,false);
   edDBFile  .Text   :=config.ReadString(sSettings,sDBFile  ,'');
   edIconDir .Text   :=config.ReadString(sSettings,sIconDir ,'icons');
 

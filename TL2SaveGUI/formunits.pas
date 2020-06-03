@@ -69,12 +69,13 @@ end;
 
 procedure TfmUnits.FormCreate(Sender: TObject);
 begin
-  FChar:=TfmChar.Create(Self);
+  FChar:=TfmChar.Create(Self,ciUnit);
   FChar.Parent:=pnlCharInfo;
 end;
 
 procedure TfmUnits.FillInfo(aSGame:TTL2SaveFile; idx:integer);
 var
+  ls:string;
   i:integer;
 begin
   SGame:=aSGame;
@@ -88,7 +89,8 @@ begin
     lbUnitList.Sorted:=false;
     for i:=0 to High(FMap.MobInfos) do
     begin
-      lbUnitList.AddItem(FMap.MobInfos[i].Name,TObject(IntPtr(i)));
+      if FMap.MobInfos[i].Sign2=0 then ls:='' else ls:='* ';
+      lbUnitList.AddItem(ls+FMap.MobInfos[i].Name,TObject(IntPtr(i)));
     end;
     lbUnitList.Sorted:=true;
     lbUnitList.ItemIndex:=0;
@@ -99,4 +101,3 @@ begin
 end;
 
 end.
-

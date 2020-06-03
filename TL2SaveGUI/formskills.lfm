@@ -46,6 +46,7 @@ object fmSkills: TfmSkills
         ButtonStyle = cbsButtonColumn
         MinSize = 24
         MaxSize = 24
+        SizePriority = 0
         Title.Caption = ''
         Width = 24
       end    
@@ -70,6 +71,7 @@ object fmSkills: TfmSkills
     TabOrder = 0
     OnDrawCell = sgSkillsDrawCell
     OnEditButtonClick = sgSkillsEditButtonClick
+    OnKeyDown = sgSkillsKeyDown
     OnSelectCell = sgSkillsSelectCell
   end
   object cbCheckLevel: TCheckBox
@@ -101,10 +103,11 @@ object fmSkills: TfmSkills
     TabOrder = 6
   end
   object lblCurrent: TLabel
-    Left = 8
-    Height = 1
-    Top = 21
-    Width = 1
+    Left = 61
+    Height = 15
+    Top = 11
+    Width = 58
+    Caption = 'Free points'
     ParentColor = False
   end
   object lblName: TLabel
@@ -141,5 +144,18 @@ object fmSkills: TfmSkills
     Caption = 'Save Full list'
     OnClick = cbSaveFullClick
     TabOrder = 3
+  end
+  object sePoints: TSpinEditEx
+    Left = 8
+    Height = 23
+    Top = 8
+    Width = 48
+    DirectInput = False
+    FocusOnBuddyClick = True
+    MaxLength = 0
+    TabOrder = 7
+    OnChange = sePointsChange
+    MaxValue = 999
+    MinValue = -999
   end
 end

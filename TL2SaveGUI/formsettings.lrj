@@ -1,5 +1,6 @@
 {"version":1,"strings":[
 {"hash":114277359,"name":"tfmsettings.cbshowtech.caption","sourcebytes":[83,104,111,119,32,84,101,99,104,32,105,110,102,111],"value":"Show Tech info"},
 {"hash":250581049,"name":"tfmsettings.lblicondir.caption","sourcebytes":[73,99,111,110,115,32,100,105,114,101,99,116,111,114,121],"value":"Icons directory"},
-{"hash":66894053,"name":"tfmsettings.lbldbfile.caption","sourcebytes":[68,97,116,97,98,97,115,101,32,102,105,108,101],"value":"Database file"}
+{"hash":66894053,"name":"tfmsettings.lbldbfile.caption","sourcebytes":[68,97,116,97,98,97,115,101,32,102,105,108,101],"value":"Database file"},
+{"hash":111254093,"name":"tfmsettings.cbidashex.caption","sourcebytes":[83,104,111,119,32,73,68,115,32,105,110,32,72,101,120,32,102,111,114,109],"value":"Show IDs in Hex form"}
 ]}

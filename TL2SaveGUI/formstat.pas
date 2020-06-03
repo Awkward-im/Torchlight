@@ -6,14 +6,24 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids,
-  tl2save;
+  StdCtrls, Buttons, tl2save;
 
 type
 
   { TfmStat }
 
   TfmStat = class(TForm)
-    PageControl1: TPageControl;
+    bbClearLearnHistory: TBitBtn;
+    gbInitial: TGroupBox;
+    edName : TEdit;
+    lblSkillHistoryTitle: TLabel;
+  lblName : TLabel;
+    edClass: TEdit;  lblClass: TLabel;
+    edPet  : TEdit;  lblPet  : TLabel;
+    lbSkillHistory: TListBox;
+
+    pcStatistic: TPageControl;
+    tsLearn: TTabSheet;
 
     tsCommon : TTabSheet;
     tsMobs   : TTabSheet;  sgMobs   : TStringGrid;
@@ -23,7 +33,9 @@ type
     tsArea1  : TTabSheet;  sgArea1  : TStringGrid;
     tsArea2  : TTabSheet;  sgArea2  : TStringGrid;
     tsStats  : TTabSheet;  sgStat   : TStringGrid;
+    procedure bbClearLearnHistoryClick(Sender: TObject);
   private
+    SGame:TTL2SaveFile;
 
   public
     procedure FillInfo(aSGame:TTL2SaveFile);
@@ -40,6 +52,18 @@ uses
   tl2stats,
   tl2db;
 
+procedure TfmStat.bbClearLearnHistoryClick(Sender: TObject);
+var
+  llist:TL2IdList;
+begin
+  llist:=SGame.History;
+  SetLength(llist,0);
+  SGame.History:=llist;
+
+  lbSkillHistory.Clear;
+  bbClearLearnHistory.Enabled:=false;
+end;
+
 procedure TfmStat.FillInfo(aSGame:TTL2SaveFile);
 var
   lstat:TTL2Stats;
@@ -50,7 +74,20 @@ var
   end;
   i:integer;
 begin
+  SGame:=aSGame;
+
   lstat:=aSGame.Stats;
+
+  // common
+  edName .Text:=lstat.PlayerName;
+  edClass.Text:=lstat.PlayerClass;
+  edPet  .Text:=lstat.PetClass;
+
+  // skill learn history
+  lbSkillHistory.Clear;
+  for i:=0 to High(aSGame.History) do
+    lbSkillHistory.AddItem(GetTL2Skill(aSGame.History[i]),nil);
+  bbClearLearnHistory.Enabled:=Length(aSGame.History)>0;
 
   // mobs
   sgMobs.BeginUpdate;
