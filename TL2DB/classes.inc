@@ -142,7 +142,7 @@ begin
   else
   begin
     Str(aid,lSQL);
-    lSQL:='SELECT icon, descr, strengh, dexterity, magic, defense FROM classes WHERE id='+lSQL;
+    lSQL:='SELECT icon, descr, strength, dexterity, magic, defense FROM classes WHERE id='+lSQL;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then

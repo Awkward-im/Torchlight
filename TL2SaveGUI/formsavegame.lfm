@@ -60,6 +60,12 @@ object fmSaveFile: TfmSaveFile
       object mnuFileSave: TMenuItem
         Action = actFileSave
       end
+      object mnuFileSep2: TMenuItem
+        Caption = '-'
+      end
+      object mnuFileCheat: TMenuItem
+        Action = actFileCheat
+      end
       object mnuFileSep1: TMenuItem
         Caption = '-'
       end
@@ -92,13 +98,9 @@ object fmSaveFile: TfmSaveFile
       OnExecute = actFileExitExecute
       ShortCut = 32883
     end
-    object actExport: TAction
-      Caption = 'Export'
-      Enabled = False
-    end
-    object actImport: TAction
-      Caption = 'Import'
-      Enabled = False
+    object actFileCheat: TAction
+      Caption = 'Clear cheat'
+      OnExecute = actFileCheatExecute
     end
   end
   object ImageList: TImageList

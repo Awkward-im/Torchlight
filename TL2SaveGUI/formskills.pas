@@ -21,48 +21,60 @@ type
     cbCheckPoints: TCheckBox;
     cbSaveFull   : TCheckBox;
 
-    lblCurrent: TLabel;
+    lblFreePoints: TLabel;
 
     lblName : TLabel;
     memDesc: TMemo;
 
     sgSkills: TStringGrid;
-    sePoints: TSpinEditEx;
 
     procedure bbUpdateClick(Sender: TObject);
     procedure btnResetClick(Sender: TObject);
     procedure cbSaveFullClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure sePointsChange(Sender: TObject);
     procedure sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
     procedure sgSkillsEditButtonClick(Sender: TObject);
-    procedure sgSkillsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
-      );
+    procedure sgSkillsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sgSkillsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
   private
     FConfigured:boolean;
 
     FChar  :TTL2Character;  // reference to player (char level, free points, skills)
     FClass :TL2ID;          // class id (to change skill list)
-    FSkills:tSkillArray;    // skills: id, title, maxlevel, tier, icon
+    FSkills:tSkillArray;    // class skills data
     FIcons :array of array [boolean] of TPicture; // skill icons learned/not
-    FTiers :tTierArray;     // tier array (!!must be global for mod build)
-    FPoints:integer;        // free points for current (unsaved) skill build
-    FLevel  :integer;
-    FFame   :integer;
-    FSkLevel:integer;
-    FSkFame :integer;
 
+    FTiers :tTierArray;     // tier array (!!must be global for mod build)
+
+    FPoints    :integer;    // free points for current skill build
+    FLevel     :integer;
+    FFame      :integer;
+    FSkLevel   :integer;
+    FSkFame    :integer;
+    FNewClass  :TL2ID;
+
+    function ApplyBuild(const alist: TL2IdValList): integer;
     procedure ClearData;
     procedure CreateIconList();
     function  CheckTier(aval,aidx:integer):boolean;
     procedure DoLevelChange(doinc: boolean);
+    function GetBuild(): TL2IdValList;
+    procedure SetPlayerClass(const aclass: TL2ID);
+    procedure SetFame (aval:integer);
+    procedure SetLevel(aval:integer);
+    procedure SetChar (achar:TTL2Character);
+
   public
-    procedure FillInfo(aChar:TTL2Character);
+    procedure RefreshInfo();
 
     property Configured:boolean read FConfigured write FConfigured;
+    property FreeSkillPoints:integer read FPoints;
+    property PlayerClass:TL2ID read FClass write FNewClass;
+    property Fame :integer write SetFame;
+    property Level:integer write SetLevel;
+    property Player:TTL2Character read FChar write SetChar;
   end;
 
 
@@ -74,6 +86,9 @@ uses
   INIFiles,
   LCLType,
   formsettings;
+
+resourcestring
+  rsFreePoints = 'Free points';
 
 const
   sSkills      = 'Skills';
@@ -88,6 +103,7 @@ const
   colMinus   = 3;
   colLevel   = 4;
   colPlus    = 5;
+
 
 function TfmSkills.CheckTier(aval,aidx:integer):boolean;
 var
@@ -231,19 +247,6 @@ begin
   end;
 end;
 
-procedure TfmSkills.btnResetClick(Sender: TObject);
-var
-  i:integer;
-begin
-  for i:=1 to sgSkills.RowCount-1 do
-  begin
-    inc(FPoints,StrToInt(sgSkills.Cells[colLevel,i]));
-    sgSkills.Cells[colLevel,i]:='0';
-  end;
-  sePoints.Value:=FPoints;
-  bbUpdate.Enabled:=true;
-end;
-
 procedure TfmSkills.DoLevelChange(doinc:boolean);
 var
   lval,idx:integer;
@@ -280,14 +283,9 @@ begin
   if lchanged then
   begin
     sgSkills.Cells[colLevel,sgSkills.Row]:=IntToStr(lval);
-    sePoints.Value:=FPoints;
+    lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FPoints);
     bbUpdate.Enabled:=true;
   end;
-end;
-
-procedure TfmSkills.sePointsChange(Sender: TObject);
-begin
-  FPoints:=sePoints.Value;
 end;
 
 procedure TfmSkills.cbSaveFullClick(Sender: TObject);
@@ -295,121 +293,183 @@ begin
   bbUpdate.Enabled:=true;
 end;
 
-procedure TfmSkills.FillInfo(aChar:TTL2Character);
+
+procedure TfmSkills.btnResetClick(Sender: TObject);
 var
-  ls:string;
-  i,j,idx,dl,df:integer;
+  i,j:integer;
 begin
-  sgSkills.BeginUpdate;
-
-  //--- new class
-
-  if FClass<>aChar.ClassId then
+  for i:=1 to sgSkills.RowCount-1 do
   begin
-    ClearData;
+    j:=IntPtr(sgSkills.Objects[0,i]);
+    j:=FSkills[j].learn;
 
-    FClass:=aChar.ClassId;
+    inc(FPoints,StrToInt(sgSkills.Cells[colLevel,i])-j);
+    sgSkills.Cells[colLevel,i]:=IntToStr(j);
+  end;
+  sgSkills.Refresh;
+  lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FPoints);
+  bbUpdate.Enabled:=true;
+end;
 
-    sgSkills.Clear;
+procedure TfmSkills.SetPlayerClass(const aclass:TL2ID);
+var
+  lbuild:TL2IdValList;
+  i,j:integer;
+begin
+  if FClass=aclass then
+    exit;
+
+  if FConfigured then
+    lbuild:=GetBuild();
+
+  btnResetClick(Self);
+
+  FClass:=aclass;
+  GetClassGraphSkill(FClass,FSkLevel,FSkFame);
+
+  sgSkills.BeginUpdate;
+  sgSkills.Clear;
+
+  ClearData;
+  CreateSkillList(aclass,FSkills);
+  CreateIconList();
+
+  if FSkills<>nil then
+  begin
+    sgSkills.RowCount:=1+Length(FSkills);
+    j:=1;
+    for i:=0 to High(FSkills) do
+    begin
+      // skip unlearnabled
+      if (FSkills[i].tier<>'') and
+         (FSkills[i].tier[1]<>',') then
+      begin
+        sgSkills.Objects[0,j]:=TObject(IntPtr(i));
+
+        sgSkills.Cells[colName   ,j]:=FSkills[i].title;
+        sgSkills.Cells[colPassive,j]:=FSkills[i].passive;
+        sgSkills.Cells[colMinus  ,j]:='-';
+        sgSkills.Cells[colLevel  ,j]:=IntToStr(FSkills[i].learn);
+        sgSkills.Cells[colPlus   ,j]:='+';
+        inc(j);
+      end;
+    end;
+    sgSkills.RowCount:=j;
+  end
+  else
     sgSkills.RowCount:=1;
 
-    CreateSkillList(FClass,FSkills);
-    CreateIconList();
-    if FSkills<>nil then
-    begin
-      sgSkills.RowCount:=1+Length(FSkills);
-      j:=1;
-      for i:=0 to High(FSkills) do
-      begin
-        // skip unlearnabled
-        if (FSkills[i].tier<>'') and
-           (FSkills[i].tier[1]<>',') then
-        begin
-          sgSkills.Objects[0,j]:=TObject(IntPtr(i));
+  if FConfigured then
+    ApplyBuild(lbuild);
 
-          sgSkills.Cells[colName   ,j]:=FSkills[i].title;
-          sgSkills.Cells[colPassive,j]:=FSkills[i].passive;
-          sgSkills.Cells[colMinus  ,j]:='-';
-          sgSkills.Cells[colLevel  ,j]:='0';
-          sgSkills.Cells[colPlus   ,j]:='+';
-          inc(j);
-        end;
+  sgSkills.EndUpdate;
+
+  bbUpdate.Enabled:=true;
+end;
+
+procedure TfmSkills.SetChar(achar:TTL2Character);
+begin
+  FChar:=achar;
+  SetPlayerClass(FChar.ClassId);
+end;
+
+function TfmSkills.ApplyBuild(const alist:TL2IdValList):integer;
+var
+  ls:string;
+  i,j,idx:integer;
+begin
+  result:=0;
+  sgSkills.BeginUpdate;
+
+  for i:=1 to sgSkills.RowCount-1 do
+  begin
+    idx:=IntPtr(sgSkills.Objects[0,i]);
+
+    for j:=0 to High(alist) do
+    begin
+      if alist[j].id=FSkills[idx].id then
+      begin
+        // calculate used skillpoints (counting initially learned too)
+        dec(FPoints,alist[j].value-FSkills[idx].learn);
+        inc(result,alist[j].value-FSkills[idx].learn);
+        Str(alist[j].value,ls);
+        sgSkills.Cells[colLevel,i]:=ls;
+        break;
       end;
-      sgSkills.RowCount:=j;
     end;
   end;
+  sgSkills.EndUpdate;
+end;
+
+function TfmSkills.GetBuild():TL2IdValList;
+var
+  lcnt,i:integer;
+begin
+  SetLength(result,sgSkills.RowCount-1);
+  lcnt:=0;
+  for i:=1 to sgSkills.RowCount-1 do
+  begin
+    result[lcnt].value:=StrToInt(sgSkills.Cells[colLevel,i]);
+    if cbSaveFull.Checked or (result[lcnt].value>0) then
+    begin
+      result[lcnt].id:=FSkills[IntPtr(sgSkills.Objects[0,i])].id;
+      inc(lcnt);
+    end;
+  end;
+  SetLength(result,lcnt);
+end;
+
+
+procedure TfmSkills.SetFame(aval:integer);
+begin
+  inc(FPoints,(aval-FFame)*FSkFame);
+  FFame:=aval;
+
+  bbUpdate.Enabled:=true;
+end;
+
+procedure TfmSkills.SetLevel(aval:integer);
+begin
+  inc(FPoints,(aval-FLevel)*FSkLevel);
+  FLevel:=aval;
+
+  bbUpdate.Enabled:=true;
+end;
+
+
+procedure TfmSkills.RefreshInfo();
+begin
+
+  //--- new class (or not)
+
+  SetPlayerClass(FNewClass);
 
   //--- new build
 
   if not FConfigured then
   begin
-    FChar:=aChar;
-    FPoints:=aChar.FreeSkillPoints;
-{
-  total:=
-    FSettings.seSkillPerLvl .Value*(FChar.Level-1);
-    FSettings.seSkillPerFame.Value*(FChar.Fame -1);
-  current - calcs from skills OR stat
-}
-    for i:=1 to sgSkills.RowCount-1 do
-    begin
-      idx:=IntPtr(sgSkills.Objects[0,i]);
-
-      ls:='0';
-      for j:=0 to High(aChar.Skills) do
-      begin
-        if aChar.Skills[j].id=FSkills[idx].id then
-        begin
-          Str(aChar.Skills[j].value,ls);
-          break;
-        end;
-      end;
-      sgSkills.Cells[colLevel,i]:=ls;
-    end;
-
-    GetClassGraphSkill(aChar.ClassId,FSkLevel,FSkFame);
     FConfigured:=true;
+
+    ApplyBuild(FChar.Skills);
+    FPoints:=FChar.FreeSkillPoints;
+    FFame  :=FChar.FameLevel;
+    FLevel :=FChar.Level;
+
     bbUpdate.Enabled:=false;
-  end
-
-  //--- Every activation
-  else
-  begin
-    dl:=(aChar.Level    -FLevel)*FSkLevel;
-    df:=(aChar.FameLevel-FFame )*FSkFame;
-    inc(FPoints,dl+df);
   end;
-  FFame :=aChar.FameLevel;
-  FLevel:=aChar.Level;
 
-  sePoints.Value:=FPoints;
-
-  sgSkills.EndUpdate;
+  lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FPoints);
 end;
 
 procedure TfmSkills.bbUpdateClick(Sender: TObject);
-var
-  lskills:TL2IdValList;
-  lcnt,i:integer;
 begin
-  lskills:=FChar.Skills;
-  SetLength(lskills,sgSkills.RowCount-1);
-  lcnt:=0;
-  for i:=1 to sgSkills.RowCount-1 do
-  begin
-    lskills[lcnt].value:=StrToInt(sgSkills.Cells[colLevel,i]);
-    if cbSaveFull.Checked or (lskills[lcnt].value>0) then
-    begin
-      lskills[lcnt].id:=FSkills[IntPtr(sgSkills.Objects[0,i])].id;
-      inc(lcnt);
-    end;
-  end;
-  SetLength(lskills,lcnt);
-  FChar.Skills:=lskills;
-  if FPoints>=0 then
+  FChar.Skills:=GetBuild();
+
+  if FPoints>0 then
     FChar.FreeSkillPoints:=FPoints
   else
     FChar.FreeSkillPoints:=0;
+
   //!! what about statistic? need to check!
   //!! what about STAT (history?) need to clear!
   FChar.Changed:=true;

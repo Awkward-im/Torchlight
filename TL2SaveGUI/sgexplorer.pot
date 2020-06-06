@@ -16,9 +16,22 @@ msgctxt "formchar.rsdexterity"
 msgid "Dexterity"
 msgstr ""
 
+#: formchar.rsfemale
+msgid "female"
+msgstr ""
+
 #: formchar.rsfocus
 msgctxt "formchar.rsfocus"
 msgid "Focus"
+msgstr ""
+
+#: formchar.rsfreepoints
+msgctxt "formchar.rsfreepoints"
+msgid "Free points"
+msgstr ""
+
+#: formchar.rsmale
+msgid "male"
 msgstr ""
 
 #: formchar.rsstrength
@@ -117,6 +130,11 @@ msgstr ""
 
 #: formsavegame.rsunits
 msgid "Units"
+msgstr ""
+
+#: formskills.rsfreepoints
+msgctxt "formskills.rsfreepoints"
+msgid "Free points"
 msgstr ""
 
 #: tfmbuttons.btndelete.caption
@@ -830,9 +848,8 @@ msgctxt "tfmrecipes.sgrecipes.columns[2].title.caption"
 msgid "Id"
 msgstr ""
 
-#: tfmsavefile.actexport.caption
-msgctxt "tfmsavefile.actexport.caption"
-msgid "Export"
+#: tfmsavefile.actfilecheat.caption
+msgid "Clear cheat"
 msgstr ""
 
 #: tfmsavefile.actfileexit.caption
@@ -849,11 +866,6 @@ msgstr ""
 
 #: tfmsavefile.actfilesave.caption
 msgid "&Save"
-msgstr ""
-
-#: tfmsavefile.actimport.caption
-msgctxt "tfmsavefile.actimport.caption"
-msgid "Import"
 msgstr ""
 
 #: tfmsavefile.caption
@@ -900,8 +912,8 @@ msgstr ""
 msgid "Save Full list"
 msgstr ""
 
-#: tfmskills.lblcurrent.caption
-msgctxt "tfmskills.lblcurrent.caption"
+#: tfmskills.lblfreepoints.caption
+msgctxt "tfmskills.lblfreepoints.caption"
 msgid "Free points"
 msgstr ""
 

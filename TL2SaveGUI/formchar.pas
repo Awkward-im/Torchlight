@@ -16,10 +16,11 @@ type
 
   TfmChar = class(TForm)
     bbUpdate: TBitBtn;
+    bbManual: TBitBtn;
     cbKeepBase: TCheckBox;
+    edNewClass: TEdit;
     pnlTop: TPanel;
     pcCharInfo: TPageControl;
-    sePoints: TSpinEditEx;
     sgStats: TStringGrid;
     // Stats
     tsStat: TTabSheet;
@@ -50,7 +51,6 @@ type
     cbNGState   : TComboBox;  lblNGState   : TLabel;
     cbHardcore  : TCheckBox;
 
-
     // View
     tsView: TTabSheet;
     imgIcon : TImage;
@@ -64,7 +64,7 @@ type
     edName: TEdit;  lblName: TLabel;
     lblSuffix: TLabel;
     edClass: TEdit;
-    cbClass      : TComboBox;  lblNew      : TLabel;
+    cbNewClass      : TComboBox;  lblNew      : TLabel;
     cbMorph    : TComboBox;  lblCurrent  : TLabel;
     edMorphTime: TEdit;      lblMorphTime: TLabel;  lblMorphNote: TLabel;
 
@@ -104,15 +104,15 @@ type
     edWaypoint: TEdit;  lblWaypoint: TLabel;
 
     lbModList: TListBox;
+    procedure bbManualClick(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure cbKeepBaseClick(Sender: TObject);
-    procedure sePointsChange(Sender: TObject);
     procedure StatChange(Sender: TObject);
     procedure cbCheckPointsClick(Sender: TObject);
     procedure cbSpellChange   (Sender: TObject);
     procedure cbSpellLvlChange(Sender: TObject);
     procedure cbMorphChange(Sender: TObject);
-    procedure cbClassChange(Sender: TObject);
+    procedure cbNewClassChange(Sender: TObject);
     procedure ToSetUpdate(Sender: TObject);
     procedure rbGenderClick(Sender: TObject);
     procedure seFameChange (Sender: TObject);
@@ -122,6 +122,7 @@ type
   private
     FKind:tCharInfoType;
     FConfigured:boolean;
+
     FSkillForm:TfmSkills;
 
     FSGame:TTL2SaveFile;
@@ -140,12 +141,13 @@ type
     FInt,FBaseInt:integer;
     FVit,FBaseVit:integer;
 
-    FFreePoints:integer;
+    FFreeStatPoints:integer;
+    FUserStatPoints:integer;
 
     procedure DrawPetIcon(aclass: TL2ID; aImg: TImage);
+    procedure FillClassCombo();
     procedure FillPetInfo;
     procedure FillPlayerInfo;
-    procedure FixData;
     function GetClassIndex(id: TL2ID): integer;
 
     function GetMainFlag:boolean;
@@ -154,16 +156,21 @@ type
     procedure SetCharSpell(cb: TComboBox; idx: integer);
     procedure GetCharSpell(cb: TComboBox; idx: integer);
     procedure InitSpellBlock;
-    function SearchAltGender(aclass: TL2ID): integer;
+    function SearchAltGender(aclass: TL2ID; out aname: string): integer;
     procedure UpdatePetInfo();
     procedure UpdatePlayerInfo();
+
+    procedure PreCalcStat;
+    procedure RecalcFreePoints;
+    procedure SetConfigured(aval:boolean);
 
   public
     constructor Create(AOwner:TComponent; atype:tCharInfoType); overload;
     procedure FillInfo(aChar:TTL2Character; aSGame:TTL2SaveFile=nil);
 
-    property IsMain    :boolean read GetMainFlag;
-    property Configured:boolean read FConfigured write FConfigured;
+    property IsMain    :boolean   read GetMainFlag;
+    property Configured:boolean   read FConfigured write SetConfigured;
+    property SkillForm :TfmSkills read FSkillForm  write FSkillForm;
   end;
 
 var
@@ -179,10 +186,14 @@ uses
   unitGlobal;
 
 resourcestring
-  rsStrength  = 'Strength';
-  rsDexterity = 'Dexterity';
-  rsFocus     = 'Focus';
-  rsVitality  = 'Vitality';
+  rsStrength   = 'Strength';
+  rsDexterity  = 'Dexterity';
+  rsFocus      = 'Focus';
+  rsVitality   = 'Vitality';
+  rsFreePoints = 'Free points';
+
+  rsMale   = 'male';
+  rsFemale = 'female';
 
 const
   sStats       = 'Stats';
@@ -193,6 +204,48 @@ const
 function TfmChar.GetMainFlag:boolean;
 begin
   result:=(FChar.Sign=$FF);
+end;
+
+procedure TfmChar.ToSetUpdate(Sender: TObject);
+begin
+  bbUpdate.Enabled:=true;
+end;
+
+procedure TfmChar.SetConfigured(aval:boolean);
+begin
+  FConfigured:=aval;
+  SkillForm.Configured:=false;
+end;
+
+//--- Class change ---
+
+procedure TfmChar.FillClassCombo();
+var
+  ls:string;
+  i:integer;
+begin
+  cbNewClass.Clear;
+  cbNewClass.Sorted:=true;
+  cbNewClass.Items.BeginUpdate;
+  cbNewClass.Items.Capacity:=Length(FClasses); //??
+
+  for i:=0 to High(FClasses) do
+  begin
+    ls:=FClasses[i].title;
+    if (rbMale  .Checked and (FClasses[i].gender='M')) or
+       (rbFemale.Checked and (FClasses[i].gender='F')) then
+    begin
+      cbNewClass.Items.AddObject(FClasses[i].title,TObject(IntPtr(i)));
+    end
+    else if rbUnisex.Checked then
+    begin
+      ls:=FClasses[i].title;
+      if      FClasses[i].gender='M' then ls:=ls+' ('+rsMale  +')'
+      else if FClasses[i].gender='F' then ls:=ls+' ('+rsFemale+')';
+      cbNewClass.Items.AddObject(ls,TObject(IntPtr(i)));
+    end;
+  end;
+  cbNewClass.Items.EndUpdate;
 end;
 
 function TfmChar.GetClassIndex(id:TL2ID):integer;
@@ -210,7 +263,7 @@ begin
   result:=-1;
 end;
 
-function TfmChar.SearchAltGender(aclass:TL2ID):integer;
+function TfmChar.SearchAltGender(aclass:TL2ID; out aname:string):integer;
 var
   ls:string;
   i,idx:integer;
@@ -221,12 +274,12 @@ begin
   if idx<0 then exit; // MUST NOT happend
 
   // 2 - check alter name
-  ls:=FClasses[idx].name;
-  i:=Length(ls);
-  if (i>2) and (ls[i-1]='_') then
+  aname:=FClasses[idx].name;
+  i:=Length(aname);
+  if (i>2) and (aname[i-1]='_') then
   begin
-    if      ls[i]='F' then ls[i]:='M'
-    else if ls[i]='M' then ls[i]:='F'
+    if      aname[i]='F' then aname[i]:='M'
+    else if aname[i]='M' then aname[i]:='F'
     else i:=-1;
   end;
   // 3 - search alter index
@@ -234,7 +287,7 @@ begin
   begin
     for i:=0 to High(FClasses) do
     begin
-      if FClasses[i].name=ls then
+      if FClasses[i].name=aname then
       begin
         result:=i;
         exit;
@@ -249,26 +302,118 @@ begin
        (FClasses[i].id<>aclass) then
     begin
       // really, need to check both mod list too
+      aname:=FClasses[i].name;
       result:=i;
       exit;
     end;
   end;
 end;
 
-procedure TfmChar.ToSetUpdate(Sender: TObject);
+procedure TfmChar.rbGenderClick(Sender: TObject);
+var
+  lname:string;
+  idx,i:integer;
 begin
+  if cbNewClass.ItemIndex<0 then
+  begin
+    idx:=-1;
+    lname:=edClass.Text;
+    i:=Length(FSGame.ClassString);
+    if (i>2) and (FSGame.ClassString[i-1]='_') then
+    begin
+      if      rbFemale.Checked then lname[i]:='F'
+      else if rbMale  .Checked then lname[i]:='M';
+    end;
+  end
+  else
+  begin
+    idx:=IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex]);
+    if (rbMale  .Checked and (FClasses[idx].gender='F')) or
+       (rbFemale.Checked and (FClasses[idx].gender='M')) then
+      idx:=SearchAltGender(FClasses[idx].id,lname);
+  end;
+
+  FillClassCombo();
+  if idx>=0 then
+    for i:=0 to cbNewClass.Items.Count-1 do
+    begin
+      if IntPtr(cbNewClass.Items.Objects[i])=idx then
+      begin
+        cbNewClass.ItemIndex:=i;
+        cbNewClassChange(Sender);
+        break;
+      end;
+    end;
+
+  if cbNewClass.ItemIndex<0 then edNewClass.Text:=lname;
+
+
+  if not rbUnisex.Checked then
+    bbUpdate.Enabled:=true;
+end;
+
+procedure TfmChar.bbManualClick(Sender: TObject);
+var
+  i,idx:integer;
+begin
+  cbNewClass.ItemIndex:=-1;
+   for i:=0 to cbNewClass.Items.Count-1 do
+   begin
+     idx:=IntPtr(cbNewClass.Items.Objects[i]);
+     if FClasses[idx].name=edNewClass.Text then
+     begin
+       cbNewClass.ItemIndex:=i;
+       break;
+     end;
+   end;
+  cbNewClassChange(Sender);
+end;
+
+procedure TfmChar.cbNewClassChange(Sender: TObject);
+var
+  licon:string;
+  idx:integer;
+begin
+  if cbNewClass.ItemIndex>=0 then
+    idx:=IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex])
+  else
+    idx:=-1;
+
+  if FChar.IsChar then
+  begin
+
+    if idx>=0 then
+    begin
+      edNewClass.Text:=FClasses[idx].name;
+      FSkillForm.PlayerClass:=FClasses[idx].id;
+      licon:=FClasses[idx].icon;
+    end
+    else
+      licon:='';
+
+    try
+      if licon='' then licon:='\unknown' else licon:='\characters\'+licon;
+      imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+licon+'.png');
+    except
+      imgIcon.Picture.Clear;
+    end;
+
+  end;
+
+  if FChar.IsPet then
+  begin
+    if idx>=0 then
+    begin
+      DrawPetIcon(FPets[idx].id,imgIcon);
+      if cbMorph.ItemIndex=0 then
+        seScale.Value:=FPets[idx].scale;
+    end;
+  end;
+
   bbUpdate.Enabled:=true;
 end;
 
 //--- Player ---
-
-procedure TfmChar.FixData;
-begin
-  sePoints.Value:=FFreePoints;
-
-  edHealthBonus.Text:=IntToStr((HPTier[seLevel.Value-1]+5) div 10);
-  edManaBonus  .Text:=IntToStr((MPTier[seLevel.Value-1]+5) div 10);
-end;
 
 procedure TfmChar.StatChange(Sender: TObject);
 var
@@ -282,16 +427,12 @@ begin
   else if Sender=seFocus     then pStat:=@FInt
   else if Sender=seVitality  then pStat:=@FVit;
 
-  if      lval>pStat^ then dec(FFreePoints)
-  else if lval<pStat^ then inc(FFreePoints)
-  else exit;
+  if lval=pStat^ then exit;
 
   bbUpdate.Enabled:=true;
   pStat^:=lval;
 
-  cbCheckPointsClick(Sender);
-
-  FixData;
+  RecalcFreePoints;
 end;
 
 procedure TfmChar.seFameChange(Sender: TObject);
@@ -304,12 +445,14 @@ begin
     else
       edFameExp.Text:=IntToStr(FameGate[seFame.Value-1]+1);
     FFame:=seFame.Value;
+
+    if FSkillForm<>nil then FSkillForm.Fame:=FFame;
   end;
 end;
 
 procedure TfmChar.cbCheckPointsClick(Sender: TObject);
 begin
-  if (FFreePoints<=0) and cbCheckPoints.Checked then
+  if (FFreeStatPoints<=0) and cbCheckPoints.Checked then
   begin
     seStrength .MaxValue:=seStrength .Value;
     seDexterity.MaxValue:=seDexterity.Value;
@@ -325,33 +468,7 @@ begin
   end;
 end;
 
-procedure TfmChar.rbGenderClick(Sender: TObject);
-var
-  licon:string;
-  idx:integer;
-begin
-  if cbClass.ItemIndex<0 then exit;
-
-//  idx:=SearchAltGeder();
-  idx:=IntPtr(cbClass.Items.Objects[cbClass.ItemIndex]);
-
-  licon:=FClasses[idx].icon;
-  try
-    if licon='' then licon:='\unknown' else licon:='\characters\'+licon;
-    imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+licon+'.png');
-  except
-    imgIcon.Picture.Clear;
-  end;
-
-  bbUpdate.Enabled:=true;
-end;
-
 //--- Common ---
-
-procedure TfmChar.sePointsChange(Sender: TObject);
-begin
-  FFreePoints:=sePoints.Value;
-end;
 
 procedure TfmChar.seLevelChange(Sender: TObject);
 begin
@@ -363,40 +480,17 @@ begin
     else
       edExperience.Text:=IntToStr(ExpGate[seLevel.Value-2]+1);
 
+    FLevel:=seLevel.Value;
     if FChar.IsChar then
     begin
-      if FLevel<seLevel.Value then
-        inc(FFreePoints,FStatPerLevel)
-      else
-       dec(FFreePoints,FStatPerLevel);
-      cbCheckPointsClick(Sender);
+      RecalcFreePoints;
 
-      FixData;
+      edHealthBonus.Text:=IntToStr((HPTier[seLevel.Value-1]+5) div 10);
+      edManaBonus  .Text:=IntToStr((MPTier[seLevel.Value-1]+5) div 10);
     end;
 
-    FLevel:=seLevel.Value;
+    if FSkillForm<>nil then FSkillForm.Level:=FLevel;
   end;
-end;
-
-procedure TfmChar.cbClassChange(Sender: TObject);
-var
-  idx:integer;
-begin
-  idx:=IntPtr(cbClass.Items.Objects[cbClass.ItemIndex]);
-
-  if FChar.IsChar then
-  begin
-    //!!!!!!!!!!!!!!!!!!!!!!!
-  end;
-
-  if FChar.IsPet then
-  begin
-    DrawPetIcon(FPets[idx].id,imgIcon);
-    if cbMorph.ItemIndex=0 then
-      seScale.Value:=FPets[idx].scale;
-  end;
-
-  bbUpdate.Enabled:=true;
 end;
 
 //--- Pet ---
@@ -422,7 +516,7 @@ begin
   if idx<0 then
   begin
     imgMorph.Picture.Clear;
-    idx:=IntPtr(cbClass.Items.Objects[cbClass.ItemIndex]);
+    idx:=IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex]);
   end
   else
   begin
@@ -539,9 +633,9 @@ begin
   gbGlobal     .Visible:=lChar;
   gbBaseStats  .Visible:=lChar;
   lblFreePoints.Visible:=lChar;
-  sePoints     .Visible:=lChar;
   lblDataNote  .Visible:=lChar;
   cbCheckPoints.Visible:=lChar;
+  cbKeepBase   .Visible:=lChar;
 
   gbData.Enabled:=lChar or lPet;
   seFame.Enabled:=lChar;
@@ -550,7 +644,7 @@ begin
 
   // View
   imgIcon.Visible:=lChar or lPet;
-  cbClass.Visible:=lChar or lPet;
+  cbNewClass.Visible:=lChar or lPet;
   lblNew .Visible:=lChar or lPet;
 
   edMorphTime .Visible:=lPet;
@@ -566,6 +660,7 @@ begin
   gbWardrobe.Visible:=lChar;
   cbCheater .Visible:=lChar;
   gbGender  .Visible:=lChar;
+  edNewClass.Visible:=lChar;
 
   edName    .ReadOnly:=not (lChar or lPet);
   seScale   .ReadOnly:=not (lChar or lPet);
@@ -644,27 +739,29 @@ begin
 end;
 
 //----- Fill Info -----
-{
-// no N and F - add _(male) or _(female)
-// if      gender='M' then ls:=' (male)'
-// else if gender='F' then ls:=' (female)'
-// else ls:='';
-procedure TfmChar.FillClassGender();
-var
-  ls:string;
-  lAltGender:Char; // 'M' or 'F'
+
+procedure TfmChar.PreCalcStat;
 begin
-  ls:='';
-  cbClass.BeginUpdate;
-  cbClass.Clear;
-  for i:=0 to High(FClasses) do
-  begin
-    if FClasses[i].gender<>lAltGender then
-      cbClass.Items.AddObject(FClasses[i].title+ls,i);
-  end;
-  cbClass.EndUpdate;
+  FUserStatPoints:=
+      FFreeStatPoints                         // Free  points
+      -((FChar.Level-1)*FStatPerLevel)        // Bonus points
+      -(FBaseStr+FBaseDex+FBaseInt+FBaseVit)  // Base  points
+      +(FStr+FDex+FInt+FVit);                 // Used  points
 end;
-}
+
+procedure TfmChar.RecalcFreePoints;
+begin
+  FFreeStatPoints:=
+      FUserStatPoints
+      +((FLevel-1)*FStatPerLevel)             // Bonus points
+      +(FBaseStr+FBaseDex+FBaseInt+FBaseVit)  // Base  points
+      -(FStr+FDex+FInt+FVit);                 // Used  points
+
+  lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FFreeStatPoints);
+
+  cbCheckPointsClick(Self);
+end;
+
 procedure TfmChar.FillPlayerInfo;
 var
   licon,ls,ls1:string;
@@ -697,9 +794,6 @@ begin
       MPTier[i]:=DefaultMPbase+i*DefaultMPperLevel;
   end;
 
-  FFreePoints:=FChar.FreeStatPoints;
-  sePoints.Value:=FFreePoints;
-
   // Stats
   lblStrength .Caption:='('+IntToStr(FBaseStr)+') '+rsStrength;
   lblDexterity.Caption:='('+IntToStr(FBaseDex)+') '+rsDexterity;
@@ -711,8 +805,13 @@ begin
   FDex:=FChar.Dexterity; seDexterity.Value:=FDex;
   FInt:=FChar.Focus    ; seFocus    .Value:=FInt;
   FVit:=FChar.Vitality ; seVitality .Value:=FVit;
+
+  FFreeStatPoints:=FChar.FreeStatPoints;
+  lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FFreeStatPoints);
+
   // To prevent Statpoints negative values
   cbCheckPointsClick(Self);
+  PreCalcStat;
 
   edGold.Text:=IntToStr(FChar.Gold);
 
@@ -725,17 +824,6 @@ begin
 
   GetClassList(FClasses);
 
-  cbClass.Clear;
-  cbClass.Sorted:=true;
-  cbClass.Items.BeginUpdate;
-  cbClass.Items.Capacity:=Length(FClasses);
-  for i:=0 to High(FClasses) do
-    cbClass.Items.AddObject(FClasses[i].title,TObject(IntPtr(i)));
-  cbClass.Items.EndUpdate;
-
-  edClass.Text:=GetTL2Class(FChar.ClassId);//FSGame.ClassString;
-  cbClass.Text:=edClass.Text;
-
   // set gender buttons
   i:=GetClassIndex(FChar.ClassId);
   if i>=0 then
@@ -743,7 +831,25 @@ begin
     rbMale  .Checked:=FClasses[i].gender='M';
     rbFemale.Checked:=FClasses[i].gender='F';
     rbUnisex.Checked:=not (FClasses[i].gender in ['F','M']);
+
+    edClass.Text:=GetTL2Class(FChar.ClassId);
+  end
+  else
+  begin
+    edClass.Text:=FSGame.ClassString;
+    // trying to guess
+    rbUnisex.Checked:=true;
+    i:=Length(FSGame.ClassString);
+    if (i>2) and (FSGame.ClassString[i-1]='_') then
+    begin
+      rbFemale.Checked:=FSGame.ClassString[i]='F';
+      rbMale  .Checked:=FSGame.ClassString[i]='M';
+    end;
   end;
+
+  FillClassCombo();
+
+  cbNewClass.Text:=edClass.Text;
 
   cbCheater.Checked:=FChar.Cheater=214;
 
@@ -763,6 +869,11 @@ begin
   edArea    .Text:=FSGame.Area;
   edWaypoint.Text:=FSGame.Waypoint;
 
+  //--- Skill related ---
+
+  FSkillForm.PlayerClass:=FChar.ClassId;
+  FSkillForm.Player     :=FChar;
+  FSkillForm.Configured :=false;
 end;
 
 procedure TfmChar.FillPetInfo;
@@ -803,17 +914,17 @@ begin
 
   edMorphTime.Text:=IntToStr(Round(FChar.MorphTime));
 
-  cbClass.Items.Assign(cbMorph.Items);
-  cbClass.Items.Delete(0);
+  cbNewClass.Items.Assign(cbMorph.Items);
+  cbNewClass.Items.Delete(0);
 
-  cbClass.ItemIndex:=-1;
-  for i:=0 to cbClass.Items.Count-1 do
-    if FPets[IntPtr(cbClass.Items.Objects[i])].id=FChar.ClassId then
+  cbNewClass.ItemIndex:=-1;
+  for i:=0 to cbNewClass.Items.Count-1 do
+    if FPets[IntPtr(cbNewClass.Items.Objects[i])].id=FChar.ClassId then
     begin
-      cbClass.ItemIndex:=i;
+      cbNewClass.ItemIndex:=i;
       break;
     end;
-//  cbClass.Enabled:=cbClass.ItemIndex>=0;
+//  cbNewClass.Enabled:=cbNewClass.ItemIndex>=0;
 
   DrawPetIcon(FChar.ClassId,imgIcon);
 
@@ -908,6 +1019,8 @@ end;
 //----- Update -----
 
 procedure TfmChar.UpdatePlayerInfo();
+var
+  i:integer;
 begin
   //--- Stats
 
@@ -917,8 +1030,8 @@ begin
   FChar.Vitality  :=seVitality .Value;
   FChar.Gold      :=StrToIntDef(edGold.Text,0);
 
-  if FFreePoints>0 then
-    FChar.FreeStatPoints:=FFreePoints
+  if FFreeStatPoints>0 then
+    FChar.FreeStatPoints:=FFreeStatPoints
   else
     FChar.FreeStatPoints:=0;
 
@@ -934,10 +1047,24 @@ begin
   else
     FChar.Cheater:=78;
 
-  FChar.ClassId:=FClasses[IntPtr(cbClass.Items.Objects[cbClass.ItemIndex])].id;
+  if cbNewClass.ItemIndex>=0 then
+  begin
+    i:=IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex]);
+    FChar.ClassId:=FClasses[i].id;
+    FSGame.ClassString:=FClasses[i].name;
+  end
+  else if edNewClass.Text<>'' then
+    FSGame.ClassString:=edNewClass.Text;
 
-  if (FSkillForm<>nil) and (FSkillForm.bbUpdate.Enabled) then
-    FSkillForm.bbUpdateClick(Self);
+  if FSkillForm.bbUpdate.Enabled then
+    FSkillForm.bbUpdateClick(Self)
+  else
+  begin
+    if FSkillForm.FreeSkillPoints>0 then
+      FChar.FreeSkillPoints:=FSkillForm.FreeSkillPoints
+    else
+      FChar.FreeSkillPoints:=0;
+  end;
 end;
 
 procedure TfmChar.UpdatePetInfo();
@@ -945,9 +1072,9 @@ var
   idx:integer;
 begin
   //--- View
-  if cbClass.ItemIndex>=0 then
+  if cbNewClass.ItemIndex>=0 then
   begin
-    FChar.ClassId:=FPets[IntPtr(cbClass.Items.Objects[cbClass.ItemIndex])].id;
+    FChar.ClassId:=FPets[IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex])].id;
   end;
 
   idx:=IntPtr(cbMorph.Items.Objects[cbMorph.ItemIndex]);

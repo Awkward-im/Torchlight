@@ -32,6 +32,7 @@ implementation
 {$R *.lfm}
 
 uses
+  formSettings,
   tl2db;
 
 procedure TfmQuests.sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
@@ -72,8 +73,8 @@ end;
 procedure TfmQuests.FillInfo(aSGame:TTL2SaveFile);
 var
   lname:string;
-  i,j:integer;
   lmod:string;
+  i,j:integer;
 begin
   SGame:=aSGame;
 
@@ -91,7 +92,11 @@ begin
       sgQuests.Cells[1,j]:='1';
       sgQuests.Cells[2,j]:=lname;
       sgQuests.Cells[3,j]:=GetTL2Mod(lmod);
-      sgQuests.Cells[4,j]:=HexStr(aSGame.Quests.QuestsDone[i],16);//IntToStr(aSGame.Quests.QuestsDone[i]);
+      if fmSettings.cbIdAsHex.Checked then
+        lname:=HexStr(aSGame.Quests.QuestsDone[i],16)
+      else
+        lname:=IntToStr(aSGame.Quests.QuestsDone[i]);
+      sgQuests.Cells[4,j]:=lname;
       inc(j);
     end;
   end;
@@ -107,7 +112,11 @@ begin
       sgQuests.Cells[1,j]:='0';
       sgQuests.Cells[2,j]:=lname;
       sgQuests.Cells[3,j]:=GetTL2Mod(lmod);
-      sgQuests.Cells[4,j]:=HexStr(aSGame.Quests.QuestsUnDone[i].id,16);//IntToStr(aSGame.Quests.QuestsUnDone[i].id);
+      if fmSettings.cbIdAsHex.Checked then
+        lname:=HexStr(aSGame.Quests.QuestsUnDone[i].id,16)
+      else
+        lname:=IntToStr(aSGame.Quests.QuestsUnDone[i].id);
+      sgQuests.Cells[4,j]:=lname;
       inc(j);
     end;
   end;
@@ -116,4 +125,3 @@ begin
 end;
 
 end.
-

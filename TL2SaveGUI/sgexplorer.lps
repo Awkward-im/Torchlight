@@ -71,8 +71,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
-        <TopLine Value="352"/>
-        <CursorPos X="30" Y="370"/>
+        <TopLine Value="192"/>
+        <CursorPos X="20" Y="271"/>
+        <FoldState Value=" T3jg0O015 piZkX07k"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -85,9 +86,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMovies"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="14"/>
-        <CursorPos Y="63"/>
-        <FoldState Value=" T7EEF T3i60B3a"/>
+        <TopLine Value="35"/>
+        <CursorPos X="52" Y="67"/>
+        <FoldState Value=" T7EEF T3i60B012@"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -156,8 +157,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formQuests"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="5"/>
-        <CursorPos X="11" Y="20"/>
+        <TopLine Value="99"/>
+        <CursorPos X="57" Y="117"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -168,7 +169,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSettings"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="54"/>
+        <TopLine Value="11"/>
+        <CursorPos Y="26"/>
         <FoldState Value=" T3iA0C1s"/>
         <UsageCount Value="206"/>
       </Unit>
@@ -293,9 +295,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formChar"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1001"/>
-        <CursorPos X="14" Y="1023"/>
+        <TopLine Value="1037"/>
+        <CursorPos X="35" Y="1056"/>
+        <FoldState Value=" T46031 T3lV035 pj5jM0f4]92kC0G]9iYjN03[I4Qjf0J]9kUlI0\113 T1lW02121611712 T6ma01056[C40me261I22B p0tJ24^"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -344,14 +348,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSkills"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="345"/>
-        <CursorPos Y="92"/>
-        <FoldState Value=" T3j50G5 piZjK0D611/"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="229"/>
+        <CursorPos Y="376"/>
+        <FoldState Value=" T3jL0G5 piZjK0D6 pjgkR04[I4Xj80El"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="formitems.pas"/>
@@ -386,7 +387,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItem"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="88"/>
+        <TopLine Value="120"/>
         <CursorPos X="38" Y="114"/>
         <UsageCount Value="200"/>
       </Unit>
@@ -404,9 +405,9 @@
         <Filename Value="addons.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="14"/>
-        <CursorPos X="24" Y="28"/>
-        <UsageCount Value="92"/>
+        <TopLine Value="9"/>
+        <CursorPos X="20" Y="28"/>
+        <UsageCount Value="122"/>
       </Unit>
       <Unit>
         <Filename Value="formcommon.pas"/>
@@ -417,7 +418,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="15"/>
         <CursorPos X="11" Y="35"/>
-        <UsageCount Value="150"/>
+        <UsageCount Value="147"/>
       </Unit>
       <Unit>
         <Filename Value="formchar1.pas"/>
@@ -429,7 +430,7 @@
         <TopLine Value="243"/>
         <CursorPos Y="272"/>
         <FoldState Value=" T3je0P6s"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="unitcommon.pas"/>
@@ -437,7 +438,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="12" Y="70"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="28"/>
       </Unit>
       <Unit>
         <Filename Value="formpet.pas"/>
@@ -448,7 +449,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="138"/>
         <CursorPos X="18" Y="82"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="30"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\LazSVN\lcl\grids.pas"/>
@@ -456,13 +457,13 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="12964"/>
         <CursorPos Y="12979"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\skills.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="191"/>
-        <CursorPos X="24" Y="205"/>
+        <TopLine Value="143"/>
+        <CursorPos X="18" Y="157"/>
         <UsageCount Value="9"/>
       </Unit>
       <Unit>
@@ -470,47 +471,46 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="3920"/>
         <CursorPos Y="3944"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\LazSVN\lcl\include\picture.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="856"/>
         <CursorPos Y="871"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\classes.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="113"/>
         <CursorPos X="33" Y="126"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\settings.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="4"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\recipes.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="22"/>
-        <CursorPos X="8" Y="49"/>
-        <UsageCount Value="3"/>
+        <CursorPos X="25" Y="6"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\pets.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="13" Y="4"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="unitGlobal.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="21"/>
         <CursorPos X="19" Y="33"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\LazSVN\lcl\interfaces\win32\win32wscomctrls.pp"/>
@@ -518,76 +518,136 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="909"/>
         <CursorPos X="76" Y="924"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\items.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="24"/>
         <CursorPos X="45" Y="35"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="6"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="14">
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="formchar.pas"/>
-        <Caret Line="871" TopLine="733"/>
-      </Position>
-      <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="174" TopLine="81"/>
-      </Position>
-      <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="61" Column="40" TopLine="35"/>
-      </Position>
-      <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="220" Column="25" TopLine="204"/>
-      </Position>
-      <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="75" Column="11" TopLine="53"/>
-      </Position>
-      <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="219" Column="19" TopLine="202"/>
-      </Position>
-      <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="220" TopLine="208"/>
+        <Caret Line="754" TopLine="738"/>
       </Position>
       <Position>
         <Filename Value="formchar.pas"/>
-        <Caret Line="652" Column="18" TopLine="606"/>
+        <Caret Line="755" TopLine="738"/>
       </Position>
       <Position>
         <Filename Value="formchar.pas"/>
-        <Caret Line="912" Column="56" TopLine="890"/>
+        <Caret Line="757" TopLine="738"/>
       </Position>
       <Position>
         <Filename Value="formchar.pas"/>
-        <Caret Line="964" Column="19" TopLine="953"/>
+        <Caret Line="758" TopLine="738"/>
       </Position>
       <Position>
         <Filename Value="formchar.pas"/>
-        <Caret Line="965" Column="19" TopLine="955"/>
+        <Caret Line="761" TopLine="738"/>
       </Position>
       <Position>
         <Filename Value="formchar.pas"/>
-        <Caret Line="310" TopLine="310"/>
-      </Position>
-      <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="297" Column="34" TopLine="91"/>
+        <Caret Line="762" TopLine="738"/>
       </Position>
       <Position>
         <Filename Value="formchar.pas"/>
-        <Caret Line="258" Column="6" TopLine="175"/>
+        <Caret Line="764" TopLine="751"/>
       </Position>
       <Position>
         <Filename Value="formchar.pas"/>
-        <Caret Line="1023" Column="14" TopLine="1001"/>
+        <Caret Line="767" TopLine="751"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="768" TopLine="751"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="769" TopLine="751"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="773" TopLine="763"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="776" TopLine="763"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="777" TopLine="763"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="784" TopLine="763"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="224" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="225" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="226" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="227" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="228" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="230" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="799" TopLine="775"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="163" Column="23" TopLine="150"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="212" TopLine="207"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="1110" Column="5" TopLine="575"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="337" Column="40" TopLine="315"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="332" Column="32" TopLine="309"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="330" Column="29" TopLine="311"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="349" Column="57" TopLine="322"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="364" Column="43" TopLine="214"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="875" Column="3" TopLine="854"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -598,7 +658,10 @@
   <Debugging>
     <Watches>
       <Item>
-        <Expression Value="lsql"/>
+        <Expression Value="FPoints"/>
+      </Item>
+      <Item>
+        <Expression Value="aSGame.Quests.QuestsDone[i]"/>
       </Item>
     </Watches>
   </Debugging>

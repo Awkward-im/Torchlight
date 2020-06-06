@@ -130,19 +130,19 @@ begin
     else if CompareWide(p^.children^[i].name,'ARMOR_GRAPH') then
     begin
       lpet.gr_armor:=p^.children^[i].asString;
-      if lpet.gr_armor<>'ARMOR_MINION_BYLEVEL' then
+      if UpCase(lpet.gr_armor)<>'ARMOR_MINION_BYLEVEL' then
         writeln('Add ',lpet.gr_armor,' for pet Armor please');
     end
     else if CompareWide(p^.children^[i].name,'DAMAGE_GRAPH') then
     begin
       lpet.gr_dmg:=p^.children^[i].asString;
-      if lpet.gr_dmg<>'DAMAGE_MINION_BYLEVEL' then
+      if UpCase(lpet.gr_dmg)<>'DAMAGE_MINION_BYLEVEL' then
         writeln('Add ',lpet.gr_dmg,' for pet Damage please');
     end
     else if CompareWide(p^.children^[i].name,'HEALTH_GRAPH') then
     begin
       lpet.gr_hp:=p^.children^[i].asString;
-      if lpet.gr_hp<>'HEALTH_MINION_BYLEVEL' then
+      if UpCase(lpet.gr_hp)<>'HEALTH_MINION_BYLEVEL' then
         writeln('Add ',lpet.gr_hp,' for pet HP please');
     end
     else if CompareWide(p^.children^[i].name,'UNITTYPE') then
@@ -721,6 +721,7 @@ type
     dexterity:string;
     magic    :string;
     defense  :string;
+    gender   :string;
   end;
 
 function AddClassToBase(const aclass:tclassinfo):boolean;
@@ -739,14 +740,15 @@ begin
     lSQL:='INSERT INTO classes (id, name, title, descr,'+
           ' file, base, skills, icon,'+
           ' graph_hp, graph_mp, graph_stat, graph_skill, graph_fame,'+
-          ' strength, dexterity, magic, defense,'+
+          ' gender, strength, dexterity, magic, defense,'+
           ' modid) VALUES ('+
         aclass.id+', '+FixedText(aclass.name)+', '+FixedText(aclass.title)+', '+FixedText(aclass.descr)+
         ', '''+lfile+''', '''+lbase+''', '+FixedText(aclass.skill)+', '''+aclass.icon+
         ''', '''+aclass.gr_hp+''', '''+aclass.gr_mp+''', '''+aclass.gr_st+
-        ''', '''+aclass.gr_sk+''', '''+aclass.gr_fm+
+        ''', '''+aclass.gr_sk+''', '''+aclass.gr_fm+''', '''+aclass.gender+
         ''', '+aclass.strength+', '+aclass.dexterity+', '+aclass.magic+', '+aclass.defense+
         ','' '+smodid+' '')';
+    
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
       sqlite3_step(vm);
@@ -760,11 +762,18 @@ procedure AddPlayer(fname:PChar);
 var
   p:PTL2Node;
   lclass:tclassinfo;
+  lunittype,lsname,lslevel:string;
   i,j:integer;
 begin
   p:=ParseDatFile(fname);
+
   lclass.title:='';
   lclass.skill:=',';
+  lclass.strength :='0';
+  lclass.dexterity:='0';
+  lclass.magic    :='0';
+  lclass.defense  :='0';
+  lunittype   :='';
 
   for i:=0 to p^.childcount-1 do
   begin
@@ -783,6 +792,11 @@ begin
     else if CompareWide(p^.children^[i].name,'DESCRIPTION') then
     begin
       lclass.descr:=p^.children^[i].asString;
+    end
+
+    else if CompareWide(p^.children^[i].name,'UNITTYPE') then
+    begin
+      lunittype:=p^.children^[i].asString;
     end
 
     else if CompareWide(p^.children^[i].name,'STRENGTH') then
@@ -809,31 +823,31 @@ begin
     else if CompareWide(p^.children^[i].name,'MANA_GRAPH') then
     begin
       lclass.gr_mp:=p^.children^[i].asString;
-      if lclass.gr_mp<>'MANA_PLAYER_GENERIC' then
+      if UpCase(lclass.gr_mp)<>'MANA_PLAYER_GENERIC' then
         writeln('Add ',lclass.gr_mp,' for class MP please');
     end
     else if CompareWide(p^.children^[i].name,'HEALTH_GRAPH') then
     begin
       lclass.gr_hp:=p^.children^[i].asString;
-      if lclass.gr_hp<>'HEALTH_PLAYER_GENERIC' then
+      if UpCase(lclass.gr_hp)<>'HEALTH_PLAYER_GENERIC' then
         writeln('Add ',lclass.gr_hp,' for class HP please');
     end
     else if CompareWide(p^.children^[i].name,'STAT_POINTS_PER_LEVEL') then
     begin
       lclass.gr_st:=p^.children^[i].asString;
-      if lclass.gr_st<>'STAT_POINTS_PER_LEVEL' then
+      if UpCase(lclass.gr_st)<>'STAT_POINTS_PER_LEVEL' then
         writeln('Add ',lclass.gr_st,' for class STAT please');
     end
     else if CompareWide(p^.children^[i].name,'SKILL_POINTS_PER_LEVEL') then
     begin
       lclass.gr_sk:=p^.children^[i].asString;
-      if lclass.gr_sk<>'SKILL_POINTS_PER_LEVEL' then
+      if UpCase(lclass.gr_sk)<>'SKILL_POINTS_PER_LEVEL' then
         writeln('Add ',lclass.gr_sk,' for class SKILL please');
     end
     else if CompareWide(p^.children^[i].name,'SKILL_POINTS_PER_FAME_LEVEL') then
     begin
       lclass.gr_fm:=p^.children^[i].asString;
-      if lclass.gr_fm<>'SKILL_POINTS_PER_FAME_LEVEL' then
+      if UpCase(lclass.gr_fm)<>'SKILL_POINTS_PER_FAME_LEVEL' then
         writeln('Add ',lclass.gr_fm,' for class FAME please');
     end
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
@@ -843,22 +857,58 @@ begin
 
     if CompareWide(p^.children^[i].name,'SKILL') then
     begin
+      lsname :='';
+      lslevel:='';
       with p^.children^[i] do
         for j:=0 to childcount-1 do
         begin
           if CompareWide(children^[j].name,'NAME') then
           begin
-            lclass.skill:=lclass.skill+string(children^[j].asString)+',';
-            break;
+            lsname:=children^[j].asString;
+          end
+          else if CompareWide(children^[j].name,'LEVEL') then
+          begin
+            Str(children^[j].asInteger,lslevel);
           end;
         end;
+
+      if lsname<>'' then
+      begin
+        if lslevel<>'' then lsname:=lsname+'#'+lslevel;
+        lclass.skill:=lclass.skill+lsname+',';
+      end;
+
     end;
+
   end;
+  DeleteNode(p);
+
+  lclass.gender:='';
+  if lunittype<>'' then
+  begin
+    p:=ParseDatFile(PChar('MEDIA\UNITTYPES\'+lunittype+'.DAT'));
+    if p<>nil then
+      for i:=0 to p^.childcount-1 do
+      begin
+        if CompareWide(p^.children^[i].asString,'PLAYER_FEMALE') then
+        begin
+          lclass.gender:='F';
+          break;
+        end
+        else if CompareWide(p^.children^[i].asString,'PLAYER_MALE') then
+        begin
+          lclass.gender:='M';
+          break;
+        end
+
+      end;
+    DeleteNode(p);
+  end;
+
   if lclass.skill=',' then lclass.skill:='';
   lclass.afile:=fname;
   if not AddClassToBase(lclass) then
     writeln('can''t update ',fname);
-  DeleteNode(p);
 end;
 
 //----- main cycle -----

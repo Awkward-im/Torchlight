@@ -469,8 +469,8 @@ begin
     if Assigned(OnError) then
     begin
       OnError(errCantOpen,fname,0);
-      exit;
     end;
+    exit;
   end;
 
   i:=FileSize(f);

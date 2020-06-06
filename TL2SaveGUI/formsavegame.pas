@@ -18,12 +18,13 @@ type
     actFileExit: TAction;
     actFileOpen: TAction;
     actFileSave: TAction;
-    actExport  : TAction;
-    actImport  : TAction;
     actFileReload: TAction;
+    actFileCheat: TAction;
     ActionList: TActionList;
     ImageList: TImageList;
     MainMenu: TMainMenu;
+    mnuFileSep2: TMenuItem;
+    mnuFileCheat: TMenuItem;
     mnuFile: TMenuItem;
     mnuFileOpen: TMenuItem;
     mnuFileSave: TMenuItem;
@@ -38,6 +39,7 @@ type
     procedure actFileOpenExecute(Sender: TObject);
     procedure actFileReloadExecute(Sender: TObject);
     procedure actFileSaveExecute(Sender: TObject);
+    procedure actFileCheatExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure tvSaveGameSelectionChanged(Sender: TObject);
@@ -191,7 +193,7 @@ begin
   end;
 
   tvSaveGame.Items[idxSavegame].Visible:=true;
-  tvSaveGame.Select(tvSaveGame.Items[idxSavegame]);
+  tvSaveGame.Select(tvSaveGame.Items[idxSavegame].Items[idxCharacter]);
 end;
 
 //===== Form =====
@@ -221,7 +223,7 @@ begin
   FSkills    :=TfmSkills    .Create(Self); FSkills    .Parent:=MainPanel;
   FItems     :=TfmItems     .Create(Self); FItems     .Parent:=MainPanel;
 
-  FChar:=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel;
+  FChar:=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel; FChar.SkillForm:=FSkills;
   FPet :=TfmChar.Create(Self,ciPet   ); FPet .Parent:=MainPanel;
 
   fmButtons.Visible:=true;
@@ -261,11 +263,10 @@ begin
   SGame:=TTL2SaveFile.Create;
   SGame.LoadFromFile(FFileName);
   SGame.Parse();
-  ChangeTree;
-
   LoadGameGlobals;
+  FChar.Configured:=false;
 
-  FSkills.Configured:=false;
+  ChangeTree;
 end;
 
 procedure TfmSaveFile.actFileSaveExecute(Sender: TObject);
@@ -284,6 +285,15 @@ begin
     end;
   finally
     SaveDialog.Free;
+  end;
+end;
+
+procedure TfmSaveFile.actFileCheatExecute(Sender: TObject);
+begin
+  if SGame<>nil then
+  begin
+    SGame.ClearCheat;
+    tvSaveGameSelectionChanged(Sender);
   end;
 end;
 
@@ -382,7 +392,7 @@ begin
         2: begin
           case lidx of
             0: begin
-              FSkills.FillInfo(SGame.CharInfo);
+              FSkills.RefreshInfo();
               FSkills.Visible:=true;
             end;
             1: begin
@@ -405,7 +415,6 @@ begin
       case tvSaveGame.Selected.level of
         1,2: begin
           FPet.FillInfo(SGame.PetInfo[lidx]);
-          actImport.Enabled:=FPet.IsMain;
           FPet.Visible:=true;
         end;
         3: begin

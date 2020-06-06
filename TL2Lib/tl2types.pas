@@ -17,6 +17,7 @@ type
 //===== complex =====
 
 const
+  TL2Cheat   = 238;
   TL2IdEmpty = TL2ID(-1);
 
 type

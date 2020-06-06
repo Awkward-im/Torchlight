@@ -21,11 +21,13 @@ type
     tier   : string;
     icon   : string;
     level  : integer;
+    learn  : integer;
     passive: char;
   end;
 
-procedure CreateSkillList(const aclass:TL2ID; out askills:tSkillArray);
-procedure CreateSpellList(out askills:tSkillArray);
+function  GetSkillListPoints(const aclass:TL2ID):integer;
+procedure CreateSkillList   (const aclass:TL2ID; out askills:tSkillArray);
+procedure CreateSpellList   (out askills:tSkillArray);
 
 {$ELSE}
 
@@ -135,12 +137,36 @@ begin
   end;
 end;
 
+function GetSkillListPoints(const aclass:TL2ID):integer;
+var
+  sl:TStringArray;
+  ls:string;
+  i,ltmp:integer;
+begin
+  result:=0;
+  ls:=GetSkillNames(aclass);
+  if ls<>'' then
+  begin
+    sl:=ls.Split(',');
+
+    for i:=0 to High(sl) do
+    begin
+      ltmp:=Pos('#',sl[i]);
+      if ltmp>0 then
+      begin
+        Val(PChar(sl[i])+ltmp,ltmp);
+        inc(result,ltmp);
+      end;
+    end;
+  end;
+end;
+
 procedure CreateSkillList(const aclass:TL2ID; out askills:tSkillArray);
 var
   lSQL,ls:string;
   sl:TStringArray;
   vm:pointer;
-  i:integer;
+  i,lvl,lpos:integer;
 begin
   ls:=GetSkillNames(aclass);
   if ls<>'' then
@@ -150,8 +176,20 @@ begin
     SetLength(askills,Length(sl));
     for i:=0 to High(sl) do
     begin
+      ls:=sl[i];
+      lpos:=Pos('#',ls);
+      if lpos=0 then
+      begin
+        lvl:=0;
+      end
+      else
+      begin
+        Val(Copy(ls,  lpos+1),lvl);
+        ls:=Copy(ls,1,lpos-1);
+      end;
+      
       lSQL:='SELECT id, title, maxlevel, tier, icon, passive FROM skills'+
-            ' WHERE name LIKE '''+sl[i]+'''';
+            ' WHERE name LIKE '''+ls+'''';
       if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
       begin
         if sqlite3_step(vm)=SQLITE_ROW then
@@ -162,6 +200,7 @@ begin
           askills[i].tier   :=sqlite3_column_text (vm,3);
           askills[i].icon   :=sqlite3_column_text (vm,4);
           askills[i].passive:=CHR(sqlite3_column_int(vm,5)+ORD('0'));
+          askills[i].learn  :=lvl;
         end;
         sqlite3_finalize(vm);
       end;

@@ -14,9 +14,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsStat
+    ActivePage = tsView
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -384,7 +384,7 @@ object fmChar: TfmChar
         end
       end
       object lblFreePoints: TLabel
-        Left = 312
+        Left = 256
         Height = 15
         Top = 208
         Width = 58
@@ -408,18 +408,6 @@ object fmChar: TfmChar
         OnClick = cbCheckPointsClick
         TabOrder = 3
       end
-      object sePoints: TSpinEditEx
-        Left = 256
-        Height = 23
-        Top = 206
-        Width = 48
-        DirectInput = False
-        MaxLength = 0
-        TabOrder = 4
-        OnChange = sePointsChange
-        MaxValue = 9999
-        MinValue = -9999
-      end
       object cbKeepBase: TCheckBox
         Left = 256
         Height = 19
@@ -427,7 +415,7 @@ object fmChar: TfmChar
         Width = 100
         Caption = 'Keep base stats'
         OnClick = cbKeepBaseClick
-        TabOrder = 5
+        TabOrder = 4
       end
     end
     object tsView: TTabSheet
@@ -445,7 +433,7 @@ object fmChar: TfmChar
       object edName: TEdit
         Left = 4
         Height = 23
-        Top = 23
+        Top = 24
         Width = 312
         OnChange = ToSetUpdate
         TabOrder = 0
@@ -556,6 +544,7 @@ object fmChar: TfmChar
         Width = 131
         Caption = '* Permanent time is 5555'
         ParentColor = False
+        Visible = False
       end
       object cbSkins: TComboBox
         Left = 128
@@ -601,7 +590,7 @@ object fmChar: TfmChar
         Anchors = [akTop, akRight]
         Stretch = True
       end
-      object cbClass: TComboBox
+      object cbNewClass: TComboBox
         Left = 368
         Height = 23
         Top = 164
@@ -609,7 +598,7 @@ object fmChar: TfmChar
         Anchors = [akTop, akRight]
         AutoSize = False
         ItemHeight = 15
-        OnChange = cbClassChange
+        OnChange = cbNewClassChange
         Style = csDropDownList
         TabOrder = 8
       end
@@ -649,6 +638,26 @@ object fmChar: TfmChar
           OnClick = rbGenderClick
           TabOrder = 2
         end
+      end
+      object edNewClass: TEdit
+        Left = 368
+        Height = 23
+        Top = 195
+        Width = 256
+        Anchors = [akTop, akRight]
+        TabOrder = 11
+      end
+      object bbManual: TBitBtn
+        Left = 336
+        Height = 30
+        Top = 192
+        Width = 27
+        Anchors = [akTop, akRight]
+        Default = True
+        Kind = bkYes
+        Margin = 3
+        OnClick = bbManualClick
+        TabOrder = 12
       end
     end
     object tsAction: TTabSheet
@@ -994,7 +1003,6 @@ object fmChar: TfmChar
       Top = 6
       Width = 75
       Caption = '&Update'
-      Default = True
       Kind = bkOK
       OnClick = bbUpdateClick
       TabOrder = 0

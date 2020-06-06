@@ -5,6 +5,5 @@
 {"hash":193738068,"name":"tfmsavefile.actfilereload.caption","sourcebytes":[38,82,101,108,111,97,100],"value":"&Reload"},
 {"hash":2857157,"name":"tfmsavefile.actfilesave.caption","sourcebytes":[38,83,97,118,101],"value":"&Save"},
 {"hash":4710148,"name":"tfmsavefile.actfileexit.caption","sourcebytes":[69,38,120,105,116],"value":"E&xit"},
-{"hash":80705172,"name":"tfmsavefile.actexport.caption","sourcebytes":[69,120,112,111,114,116],"value":"Export"},
-{"hash":84178580,"name":"tfmsavefile.actimport.caption","sourcebytes":[73,109,112,111,114,116],"value":"Import"}
+{"hash":69451780,"name":"tfmsavefile.actfilecheat.caption","sourcebytes":[67,108,101,97,114,32,99,104,101,97,116],"value":"Clear cheat"}
 ]}

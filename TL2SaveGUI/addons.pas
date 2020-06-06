@@ -17,12 +17,17 @@ var
   ar:array of integer;
 }
 begin
+  result:=false;
+
   col:=agrid.ColCount-1;
 
   for i:=agrid.RowCount-1 downto agrid.FixedRows do
     if agrid.IsCellSelected[agrid.Col,i] then
+    begin
       agrid.Objects[col,i]:=TObject(1);
-  
+      result:=true;
+    end;
+
   for i:=agrid.RowCount-1 downto agrid.FixedRows do
     if agrid.Objects[col,i]<>nil then
       agrid.DeleteRow(i);
