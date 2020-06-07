@@ -19,6 +19,24 @@ begin
   result:=#39+StringReplace(astr,#39,#39#39,[rfReplaceAll])+#39;
 end;
 
+function ExtractFileNameOnly(const AFilename: string): string;
+var
+  StartPos: Integer;
+  ExtPos: Integer;
+begin
+  StartPos:=length(AFilename)+1;
+  while (StartPos>1)
+  and not (AFilename[StartPos-1] in AllowDirectorySeparators)
+  {$IF defined(Windows) or defined(HASAMIGA)}and (AFilename[StartPos-1]<>':'){$ENDIF}
+  do
+    dec(StartPos);
+  ExtPos:=length(AFilename);
+  while (ExtPos>=StartPos) and (AFilename[ExtPos]<>'.') do
+    dec(ExtPos);
+  if (ExtPos<StartPos) then ExtPos:=length(AFilename)+1;
+  Result:=copy(AFilename,StartPos,ExtPos-StartPos);
+end;
+
 function CompareWide(s1,s2:PWideChar):boolean;
 begin
   if s1=s2 then exit(true);
@@ -154,7 +172,7 @@ begin
     end
     else if CompareWide(p^.children^[i].name,'ICON') then
     begin
-      lpet.icon:=p^.children^[i].asString;
+      lpet.icon:=ExtractFileNameOnly(p^.children^[i].asString);
     end
     else if CompareWide(p^.children^[i].name,'SCALE') then
     begin
@@ -466,7 +484,7 @@ begin
     end
     else if CompareWide(p^.children^[i].name,'ICON') then
     begin
-      licon:=p^.children^[i].asString;
+      licon:=ExtractFileNameOnly(p^.children^[i].asString);
     end
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
     begin
@@ -818,7 +836,7 @@ begin
 
     else if CompareWide(p^.children^[i].name,'ICON') then
     begin
-      lclass.icon:=p^.children^[i].asString;
+      lclass.icon:=ExtractFileNameOnly(p^.children^[i].asString);
     end
     else if CompareWide(p^.children^[i].name,'MANA_GRAPH') then
     begin

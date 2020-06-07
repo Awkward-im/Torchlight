@@ -461,7 +461,7 @@ object fmChar: TfmChar
         Left = 4
         Height = 23
         Top = 164
-        Width = 256
+        Width = 288
         ItemHeight = 15
         OnChange = cbMorphChange
         Style = csDropDownList
@@ -556,10 +556,10 @@ object fmChar: TfmChar
         TabOrder = 6
       end
       object gbWardrobe: TGroupBox
-        Left = 368
+        Left = 336
         Height = 190
         Top = 227
-        Width = 256
+        Width = 288
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Wardrobe'
         TabOrder = 9
@@ -591,10 +591,10 @@ object fmChar: TfmChar
         Stretch = True
       end
       object cbNewClass: TComboBox
-        Left = 368
+        Left = 336
         Height = 23
         Top = 164
-        Width = 256
+        Width = 288
         Anchors = [akTop, akRight]
         AutoSize = False
         ItemHeight = 15

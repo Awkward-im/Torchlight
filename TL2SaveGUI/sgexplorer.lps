@@ -73,7 +73,6 @@
         <UnitName Value="formSaveGame"/>
         <TopLine Value="154"/>
         <CursorPos Y="269"/>
-        <FoldState Value=" T3jg0O415E"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -297,9 +296,9 @@
         <UnitName Value="formChar"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="170"/>
-        <CursorPos Y="373"/>
-        <FoldState Value=" T46031 T3lV035 pj6jN0f3 piZk00D[I47jc034]9Qjf0J]9kYlM0\2]IPlJ0S2 T1lW0212161171]G6mb01056[C40mf261I22BA"/>
+        <TopLine Value="899"/>
+        <CursorPos X="14" Y="911"/>
+        <FoldState Value=" T46031 T3lV035 pj6jN0f3 piZk00D[I47jc034]9Qjf0J412]BPqG0S2 T1lW0212161171]G6mb01056[C40mf261I22B4"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -407,7 +406,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="9"/>
         <CursorPos X="20" Y="28"/>
-        <UsageCount Value="123"/>
+        <UsageCount Value="124"/>
       </Unit>
       <Unit>
         <Filename Value="formcommon.pas"/>
@@ -502,8 +501,9 @@
       <Unit>
         <Filename Value="..\TL2DB\pets.inc"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="13" Y="4"/>
-        <UsageCount Value="1"/>
+        <TopLine Value="17"/>
+        <CursorPos X="53" Y="42"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="unitGlobal.pas"/>
@@ -529,26 +529,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="230" TopLine="217"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="799" TopLine="775"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="163" Column="23" TopLine="150"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="212" TopLine="207"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1110" Column="5" TopLine="575"/>
-      </Position>
       <Position>
         <Filename Value="formchar.pas"/>
         <Caret Line="337" Column="40" TopLine="315"/>
@@ -648,6 +628,26 @@
       <Position>
         <Filename Value="formchar.pas"/>
         <Caret Line="391" Column="15" TopLine="389"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="373" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="908" Column="37" TopLine="900"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="889" Column="13" TopLine="601"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="909" Column="32" TopLine="895"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="940" Column="40" TopLine="929"/>
       </Position>
     </JumpHistory>
     <RunParams>

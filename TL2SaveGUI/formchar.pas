@@ -886,6 +886,7 @@ end;
 
 procedure TfmChar.FillPetInfo;
 var
+  ls:string;
   i:integer;
 begin
   //--- Stats ---
@@ -902,8 +903,14 @@ begin
   cbMorph.Items.BeginUpdate;
   cbMorph.Items.Capacity:=Length(FPets);
   cbMorph.Items.AddObject('',TObject(IntPtr(-1)));
+//  TStringList(cbMorph.Items).Duplicates:=dupAccept;
   for i:=0 to High(FPets) do
-    cbMorph.Items.AddObject(FPets[i].title,TObject(IntPtr(i)));
+  begin
+    ls:=FPets[i].title;
+    if ls='' then ls:=FPets[i].name
+    else ls:=ls+ ' ('+FPets[i].name+')';
+    cbMorph.Items.AddObject(ls,TObject(IntPtr(i)));
+  end;
   cbMorph.Items.EndUpdate;
 
   cbMorph.ItemIndex:=0;
@@ -926,6 +933,17 @@ begin
   cbNewClass.Items.Delete(0);
 
   cbNewClass.ItemIndex:=-1;
+{
+for i:=0 to cbNewClass.Items.Count-1 do
+  begin
+    j:=IntPtr(cbNewClass.Items.Objects[i]);
+    if FPets[j].title='Berserker' then
+    begin
+      ShowMessage(inttostr(i)+', '+FPets[j].name+' = '+
+      IntTostr(FPets[j].id)+'<< '+InttoStr(FChar.ClassId));
+    end;
+  end;
+  }
   for i:=0 to cbNewClass.Items.Count-1 do
     if FPets[IntPtr(cbNewClass.Items.Objects[i])].id=FChar.ClassId then
     begin
