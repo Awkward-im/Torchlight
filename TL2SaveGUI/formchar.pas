@@ -232,6 +232,8 @@ begin
   for i:=0 to High(FClasses) do
   begin
     ls:=FClasses[i].title;
+    if ls='' then continue;
+
     if (rbMale  .Checked and (FClasses[i].gender='M')) or
        (rbFemale.Checked and (FClasses[i].gender='F')) then
     begin
@@ -239,7 +241,6 @@ begin
     end
     else if rbUnisex.Checked then
     begin
-      ls:=FClasses[i].title;
       if      FClasses[i].gender='M' then ls:=ls+' ('+rsMale  +')'
       else if FClasses[i].gender='F' then ls:=ls+' ('+rsFemale+')';
       cbNewClass.Items.AddObject(ls,TObject(IntPtr(i)));
@@ -317,7 +318,7 @@ begin
   if cbNewClass.ItemIndex<0 then
   begin
     idx:=-1;
-    lname:=edClass.Text;
+    lname:=FSGame.ClassString;
     i:=Length(FSGame.ClassString);
     if (i>2) and (FSGame.ClassString[i-1]='_') then
     begin
@@ -392,12 +393,15 @@ begin
       licon:='';
 
     try
-      if licon='' then licon:='\unknown' else licon:='\characters\'+licon;
-      imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+licon+'.png');
+      if licon<>'' then
+        imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\characters\'+licon+'.png');
     except
-      imgIcon.Picture.Clear;
+      try
+        imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
+      except
+        imgIcon.Picture.Clear;
+      end;
     end;
-
   end;
 
   if FChar.IsPet then
@@ -854,10 +858,14 @@ begin
   cbCheater.Checked:=FChar.Cheater=214;
 
   try
-    if licon='' then licon:='\unknown' else licon:='\characters\'+licon;
-    imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+licon+'.png');
+    if licon<>'' then
+      imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\characters\'+licon+'.png');
   except
-    imgIcon.Picture.Clear;
+    try
+      imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
+    except
+      imgIcon.Picture.Clear;
+    end;
   end;
 
   //----- Action

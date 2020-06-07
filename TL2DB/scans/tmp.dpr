@@ -5,7 +5,7 @@ var
   ls,lls:string;
   i:integer;
 begin
-  p:=parsedatfile('FAMEGATE.DAT');
+  p:=parsedatfile(PChar(ParamStr(1)));
 
   ls:='';
   for i:=0 to p^.childcount-1 do

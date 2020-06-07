@@ -47,7 +47,7 @@ begin
       if lmodid<>'' then
       begin
         result:=true;
-        if (lmodid = ' 0 ') or
+        if (lmodid <> ' 0 ') and
            (Pos(' '+amodid+' ',lmodid)=0) then
         begin
           sqlite3_finalize(vm);
@@ -92,7 +92,7 @@ begin
           'graph_hp, graph_armor, graph_dmg, modid) VALUES ('+
         aPet.id+', '+FixedText(apet.name)+', '+FixedText(apet.title)+', '+
         IntToStr(apet.atype)+', '+lscale+', '+IntToStr(apet.textures)+
-        ', '''+apet.icon+''', '''+apet.gr_hp+''', '''+apet.gr_armor+''', '''+apet.gr_dmg+
+        ', '+FixedText(apet.icon)+', '''+apet.gr_hp+''', '''+apet.gr_armor+''', '''+apet.gr_dmg+
         ''', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
@@ -429,7 +429,7 @@ begin
   begin
     lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, modid) VALUES ('+
         anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+
-        ', '''+aicon+''', '+auses+', '+aquest+', '' '+smodid+' '')';
+        ', '+FixedText(aicon)+', '+auses+', '+aquest+', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -572,7 +572,7 @@ begin
     lSQL:='INSERT INTO skills (id, name, title, descr, tier, icon,'+
           ' minlevel, maxlevel, passive, shared, modid) VALUES ('+
         askill.id+', '+FixedText(askill.name)+', '+FixedText(askill.title)+', '+FixedText(askill.descr)+
-        ', '''+askill.graph+''', '''+askill.icon+''', '+
+        ', '''+askill.graph+''', '+FixedText(askill.icon)+', '+
         askill.minlvl+', '+askill.maxlvl+', '+askill.passive+', '+askill.shared+', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
@@ -743,8 +743,8 @@ begin
           ' gender, strength, dexterity, magic, defense,'+
           ' modid) VALUES ('+
         aclass.id+', '+FixedText(aclass.name)+', '+FixedText(aclass.title)+', '+FixedText(aclass.descr)+
-        ', '''+lfile+''', '''+lbase+''', '+FixedText(aclass.skill)+', '''+aclass.icon+
-        ''', '''+aclass.gr_hp+''', '''+aclass.gr_mp+''', '''+aclass.gr_st+
+        ', '''+lfile+''', '''+lbase+''', '+FixedText(aclass.skill)+', '+FixedText(aclass.icon)+
+        ', '''+aclass.gr_hp+''', '''+aclass.gr_mp+''', '''+aclass.gr_st+
         ''', '''+aclass.gr_sk+''', '''+aclass.gr_fm+''', '''+aclass.gender+
         ''', '+aclass.strength+', '+aclass.dexterity+', '+aclass.magic+', '+aclass.defense+
         ','' '+smodid+' '')';
@@ -773,7 +773,7 @@ begin
   lclass.dexterity:='0';
   lclass.magic    :='0';
   lclass.defense  :='0';
-  lunittype   :='';
+  lunittype:='';
 
   for i:=0 to p^.childcount-1 do
   begin
@@ -903,6 +903,15 @@ begin
 
       end;
     DeleteNode(p);
+  end;
+  if lclass.gender='' then
+  begin
+    i:=Length(lclass.name);
+    if lclass.name[i-1]='_' then
+    begin
+      if UpCase(lclass.name[i])='M' then lclass.gender:='M';
+      if UpCase(lclass.name[i])='F' then lclass.gender:='F';
+    end;
   end;
 
   if lclass.skill=',' then lclass.skill:='';
