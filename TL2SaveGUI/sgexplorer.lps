@@ -71,6 +71,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="154"/>
         <CursorPos Y="269"/>
         <UsageCount Value="200"/>
@@ -294,14 +295,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formChar"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="899"/>
-        <CursorPos X="14" Y="911"/>
-        <FoldState Value=" T46031 T3lV035 pj6jN0f3 piZk00D[I47jc034]9Qjf0J412]BPqG0S2 T1lW0212161171]G6mb01056[C40mf261I22B4"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="469"/>
+        <CursorPos X="20" Y="594"/>
+        <FoldState Value=" T46031 T3lW035 pj6jN0f4]91kB0D[I47jc03[I4Qjf0J]9kPlD0{92]JPlb0S2 T1lX0212171261 p0sT0G1 T6mc010751]Z0mg]SI22Bf"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="formstat.pas"/>
@@ -386,8 +384,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItem"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="120"/>
-        <CursorPos X="38" Y="114"/>
+        <TopLine Value="204"/>
+        <CursorPos Y="226"/>
+        <FoldState Value=" T3iR0T;"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -406,7 +405,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="9"/>
         <CursorPos X="20" Y="28"/>
-        <UsageCount Value="124"/>
+        <UsageCount Value="126"/>
       </Unit>
       <Unit>
         <Filename Value="formcommon.pas"/>
@@ -528,128 +527,7 @@
         <UsageCount Value="6"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="337" Column="40" TopLine="315"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="332" Column="32" TopLine="309"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="330" Column="29" TopLine="311"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="349" Column="57" TopLine="322"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="364" Column="43" TopLine="214"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="875" Column="3" TopLine="854"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="269" TopLine="154"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="395" TopLine="376"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="396" Column="15" TopLine="376"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="378" TopLine="372"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="379" TopLine="372"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="383" TopLine="372"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="386" TopLine="372"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="388" TopLine="372"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="415" TopLine="401"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="388" TopLine="373"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="390" Column="14" TopLine="373"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="415" TopLine="401"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="389" TopLine="378"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="390" TopLine="378"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="415" TopLine="401"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="390" TopLine="376"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="395" TopLine="376"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="396" TopLine="376"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="391" Column="15" TopLine="389"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="373" TopLine="170"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="908" Column="37" TopLine="900"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="889" Column="13" TopLine="601"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="909" Column="32" TopLine="895"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="940" Column="40" TopLine="929"/>
-      </Position>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>

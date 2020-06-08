@@ -144,6 +144,7 @@ type
     FFreeStatPoints:integer;
     FUserStatPoints:integer;
 
+    procedure DrawCharIcon(const aname: string; aImg: TImage);
     procedure DrawPetIcon(aclass: TL2ID; aImg: TImage);
     procedure FillClassCombo();
     procedure FillPetInfo;
@@ -392,16 +393,7 @@ begin
     else
       licon:='';
 
-    try
-      if licon<>'' then
-        imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\characters\'+licon+'.png');
-    except
-      try
-        imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
-      except
-        imgIcon.Picture.Clear;
-      end;
-    end;
+    DrawCharIcon(licon,imgIcon);
   end;
 
   if FChar.IsPet then
@@ -418,6 +410,26 @@ begin
 end;
 
 //--- Player ---
+
+procedure TfmChar.DrawCharIcon(const aname:string; aImg:TImage);
+var
+  lname:string;
+begin
+  lname:=aname;
+  if lname<>'' then
+    try
+      aImg.Picture.LoadFromFile(lname);
+    except
+      lname:='';
+    end;
+
+  if lname='' then
+    try
+      aImg.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
+    except
+      aImg.Picture.Clear;
+    end;
+end;
 
 procedure TfmChar.StatChange(Sender: TObject);
 var
@@ -857,16 +869,7 @@ begin
 
   cbCheater.Checked:=FChar.Cheater=214;
 
-  try
-    if licon<>'' then
-      imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\characters\'+licon+'.png');
-  except
-    try
-      imgIcon.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
-    except
-      imgIcon.Picture.Clear;
-    end;
-  end;
+  DrawCharIcon(licon,imgIcon);
 
   //----- Action
 

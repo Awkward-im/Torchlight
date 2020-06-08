@@ -482,4 +482,11 @@ object fmItem: TfmItem
     Caption = '-'
     ParentColor = False
   end
+  object imgItem: TImage
+    Left = 510
+    Height = 96
+    Top = 416
+    Width = 96
+    Stretch = True
+  end
 end

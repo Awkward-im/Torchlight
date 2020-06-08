@@ -24,6 +24,7 @@ type
     cbFlag7: TCheckBox;
 
     gbCoords: TGroupBox;
+    imgItem: TImage;
     lblX: TLabel;  lblY: TLabel;  lblZ: TLabel;
     edX : TEdit ;  edY : TEdit ;  edZ : TEdit;
     gbCoords1: TGroupBox;
@@ -51,6 +52,7 @@ type
 
   private
     FItem:TTL2Item;
+    procedure DrawItemIcon(aItem: TTL2Item; aImg: TImage);
 
   public
     procedure FillInfo(aItem:TTL2Item);
@@ -62,7 +64,72 @@ implementation
 {$R *.lfm}
 
 uses
+  lazfileutils,
+  formSettings,
   tl2db;
+
+function CycleDir(const adir,aicon:string):string;
+var
+  sr:TSearchRec;
+  lname:AnsiString;
+begin
+  result:='';
+  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
+  begin
+    repeat
+      lname:=adir+'\'+sr.Name;
+      if (sr.Attr and faDirectory)=faDirectory then
+      begin
+        if (sr.Name<>'.') and (sr.Name<>'..') then
+        begin
+          result:=CycleDir(lname,aicon);
+          if result<>'' then break;
+        end;
+      end
+      else
+      begin
+        if UpCase(ExtractFileNameOnly(lname))=aicon then
+        begin
+          result:=lname;
+          break;
+        end;
+      end;
+    until FindNext(sr)<>0;
+    FindClose(sr);
+  end;
+end;
+
+function GetIconFileName(aItem:TTL2Item):string;
+var
+  licon:string;
+begin
+  licon:=GetItemIcon(aItem.ID);
+  if licon<>'' then
+    result:=CycleDir(fmSettings.edIconDir.Text,UpCase(licon))
+  else
+    result:='';
+end;
+
+procedure TfmItem.DrawItemIcon(aItem:TTL2Item; aImg:TImage);
+var
+  licon:string;
+begin
+  licon:=GetIconFileName(aItem);
+
+  if licon<>'' then
+    try
+      aImg.Picture.LoadFromFile(licon);
+    except
+      licon:='';
+    end;
+
+  if licon='' then
+    try
+      aImg.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
+    except
+      aImg.Picture.Clear;
+    end;
+end;
 
 procedure TfmItem.FillInfo(aItem:TTL2Item);
 var
@@ -154,6 +221,8 @@ begin
     inc(j);
   end;
   sgEffects.EndUpdate;
+
+  DrawItemIcon(aItem,imgItem);
 
   lbModList.Clear;
   for i:=0 to High(aItem.ModIds) do
