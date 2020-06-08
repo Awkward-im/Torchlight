@@ -1,7 +1,8 @@
 {$IFDEF Interface}
 
-function GetTL2Item(const aid:TL2ID  ; out amods:string):string; overload;
-function GetTL2Item(const aid:TL2ID                    ):string; overload;
+function GetTL2Item (const aid:TL2ID  ; out amods:string):string; overload;
+function GetTL2Item (const aid:TL2ID                    ):string; overload;
+function GetItemIcon(const aid:TL2ID):string;
 function GetItemPosition(apos:integer; out cont :string):string;
 
 function GetTL2Prop(const aid:TL2ID  ; out amods:string):string; overload;
@@ -23,6 +24,11 @@ var
   lmods:string;
 begin
   result:=GetTL2Item(aid,lmods);
+end;
+
+function GetItemIcon(const aid:TL2ID):string;
+begin
+  result:=GetIcon(aid,'items');
 end;
 
 function GetItemPosition(apos:integer; out cont:string):string;

@@ -458,15 +458,52 @@ begin
   end;
 end;
 
+function GetBaseIcon(const fname:string):string;
+var
+  p:PTL2Node;
+  lbase:string;
+  i:integer;
+begin
+  result:='';
+  lbase :='';
+  p:=ParseDatFile(PChar(fname));
+  if p=nil then
+  begin
+    writeln('bad? ',fname);
+    exit;
+  end;
+
+  for i:=0 to p^.childcount-1 do
+  begin
+    if CompareWide(p^.children^[i].name,'ICON') then
+    begin
+      result:=p^.children^[i].asString;
+      break;
+    end;
+    if CompareWide(p^.children^[i].name,'BASEFILE') then
+    begin
+      lbase:=p^.children^[i].asString;
+    end;
+  end;
+
+  if (result='') and (lbase<>'') then
+    result:=GetBaseIcon(lbase);
+
+  DeleteNode(p);
+end;
+
 procedure AddItem(fname:PChar);
 var
   p:PTL2Node;
+  lbase:string;
   ldescr,lid,lname,ltitle,licon,luses,lquest:string;
   i:integer;
 begin
   p:=ParseDatFile(fname);
   ltitle:='';
   luses:='0';
+  lbase:='';
+
   if Pos('MEDIA\UNITS\ITEMS\QUEST_ITEMS\',fname)>0 then lquest:='1' else lquest:='0';
   for i:=0 to p^.childcount-1 do
   begin
@@ -486,6 +523,10 @@ begin
     begin
       licon:=ExtractFileNameOnly(p^.children^[i].asString);
     end
+    else if CompareWide(p^.children^[i].name,'BASEFILE') then
+    begin
+      lbase:=p^.children^[i].asString;
+    end
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
     begin
       lid:=p^.children^[i].asString;
@@ -501,6 +542,9 @@ begin
       luses:=p^.children^[i].asString;
     end;
   end;
+  if (licon='') and (lbase<>'') then
+    licon:=GetBaseIcon(lbase);
+
   if not AddItemToBase(lid,lname,ltitle,ldescr,licon,luses,lquest) then
     writeln('can''t update ',fname);
   DeleteNode(p);
