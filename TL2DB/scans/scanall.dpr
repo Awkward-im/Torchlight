@@ -437,17 +437,31 @@ end;
 
 //----- Items -----
 
-function AddItemToBase(const anid,aname,atitle,adescr,aicon,auses,aquest:string):boolean;
+type
+  tItemInfo = record
+    id   :string;
+    name :string;
+    title:string;
+    descr:string;
+    icon :string;
+    auses:string;
+    quest:string;
+    afile:string;
+    base :string;
+  end;
+
+function AddItemToBase(const aitem:tItemInfo):boolean;
 var
   lSQL:string;
   vm:pointer;
 begin
-  result:=CheckForMod('items', anid, smodid);
+  result:=CheckForMod('items', aitem.id, smodid);
   if not result then
   begin
-    lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, modid) VALUES ('+
-        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(adescr)+
-        ', '+FixedText(aicon)+', '+auses+', '+aquest+', '' '+smodid+' '')';
+    lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, file, base, modid) VALUES ('+
+        aitem.id+', '+FixedText(aitem.name)+', '+FixedText(aitem.title)+', '+FixedText(aitem.descr)+
+        ', '+FixedText(aitem.icon)+', '+aitem.auses+', '+aitem.quest+
+        ', '+FixedText(aitem.afile)+', '+FixedText(aitem.base)+', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -469,7 +483,7 @@ begin
   p:=ParseDatFile(PChar(fname));
   if p=nil then
   begin
-    writeln('bad? ',fname);
+    writeln('can''t load: ',fname);
     exit;
   end;
 
@@ -495,57 +509,58 @@ end;
 procedure AddItem(fname:PChar);
 var
   p:PTL2Node;
-  lbase:string;
-  ldescr,lid,lname,ltitle,licon,luses,lquest:string;
+  litem:tItemInfo;
   i:integer;
 begin
   p:=ParseDatFile(fname);
-  ltitle:='';
-  luses:='0';
-  lbase:='';
+  litem.title:='';
+  litem.auses:='0';
+  litem.base :='';
+  litem.afile:=fname;
 
-  if Pos('MEDIA\UNITS\ITEMS\QUEST_ITEMS\',fname)>0 then lquest:='1' else lquest:='0';
+  if Pos('MEDIA\UNITS\ITEMS\QUEST_ITEMS\',fname)>0 then litem.quest:='1' else litem.quest:='0';
   for i:=0 to p^.childcount-1 do
   begin
     if CompareWide(p^.children^[i].name,'NAME') then
     begin
-      lname:=p^.children^[i].asString;
+      litem.name:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
     begin
-      ltitle:=p^.children^[i].asString;
+      litem.title:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'DESCRIPTION') then
     begin
-      ldescr:=p^.children^[i].asString;
+      litem.descr:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'ICON') then
     begin
-      licon:=ExtractFileNameOnly(p^.children^[i].asString);
+      litem.icon:=ExtractFileNameOnly(p^.children^[i].asString);
     end
     else if CompareWide(p^.children^[i].name,'BASEFILE') then
     begin
-      lbase:=p^.children^[i].asString;
+      litem.base:=p^.children^[i].asString;
     end
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
     begin
-      lid:=p^.children^[i].asString;
+      litem.id:=p^.children^[i].asString;
     end
-    else if (lquest='0') and CompareWide(p^.children^[i].name,'UNITTYPE') then
+    else if (litem.quest='0') and CompareWide(p^.children^[i].name,'UNITTYPE') then
     begin
       if CompareWide(p^.children^[i].asString,'LEVEL ITEM') or 
          CompareWide(p^.children^[i].asString,'QUESTITEM') then
-           lquest:='1';
+           litem.quest:='1';
     end
     else if CompareWide(p^.children^[i].name,'USES') then
     begin
-      luses:=p^.children^[i].asString;
+      litem.auses:=p^.children^[i].asString;
     end;
   end;
-  if (licon='') and (lbase<>'') then
-    licon:=GetBaseIcon(lbase);
+  if (litem.icon='') and (litem.base<>'') then
+    litem.icon:=GetBaseIcon(litem.base);
+  if litem.icon='' then writeln('No icon for ',fname);
 
-  if not AddItemToBase(lid,lname,ltitle,ldescr,licon,luses,lquest) then
+  if not AddItemToBase(litem) then
     writeln('can''t update ',fname);
   DeleteNode(p);
 end;

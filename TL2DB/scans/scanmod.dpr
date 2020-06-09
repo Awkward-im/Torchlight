@@ -1,10 +1,54 @@
 uses
   sysutils,
-  classes,
-  sqlite3conn, sqldb,
-  tl2db;
+  TL2ModInfo,
+  awksqlite3,
+  sqlite3;
 
-procedure CycleDir(sl:TStringList; const adir:AnsiString);
+var
+  db:PSQLite3;
+
+function FixedText(const astr:string):string;
+begin
+  result:=#39+StringReplace(astr,#39,#39#39,[rfReplaceAll])+#39;
+end;
+
+function CompareWide(s1,s2:PWideChar):boolean;
+begin
+  if s1=s2 then exit(true);
+  if ((s1=nil) and (s2^=#0)) or
+     ((s2=nil) and (s1^=#0)) then exit(true);
+  repeat
+    if s1^<>s2^ then exit(false);
+    if s1^=#0 then exit(true);
+    inc(s1);
+    inc(s2);
+  until false;
+end;
+
+//===================================
+
+procedure AddTheMod(const fname:string);
+var
+  lSQL:string;
+  vm:pointer;
+  lmod:TTL2ModInfo;
+begin
+  if ReadModInfo(PChar(fname),lmod) then
+  begin
+    lSQL:='INSERT INTO Mods (id,title,version,gamever,author,descr,website,download) '+
+          ' VALUES ('+IntToStr(lmod.modid)+', '+FixedText(lmod.title)+', '+IntToStr(lmod.modver)+
+          ', '+IntToStr(lmod.gamever)+', '+FixedText(lmod.author)+', '+FixedText(lmod.descr)+
+          ', '+FixedText(lmod.website)+', '+FixedText(lmod.download)+')';
+
+    if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
+    begin
+      sqlite3_step(vm);
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
+procedure CycleDir(const adir:String);
 var
   sr:TSearchRec;
   lname:AnsiString;
@@ -16,13 +60,13 @@ begin
       if (sr.Attr and faDirectory)=faDirectory then
       begin
         if (sr.Name<>'.') and (sr.Name<>'..') then
-          CycleDir(sl, lname);
+          CycleDir(lname);
       end
       else
       begin
         if UpCase(ExtractFileExt(lname))='.MOD' then
         begin
-          sl.Add(lname);
+AddTheMod(lname);
         end;
       end;
     until FindNext(sr)<>0;
@@ -30,108 +74,16 @@ begin
   end;
 end;
 
-
-var
-  SQLConnection: TSQLite3Connection = nil;
-  SQLQuery: TSQLQuery;
-  SQLTransaction: TSQLTransaction;
-
-procedure InitDatabase;
 begin
-  SQLConnection := TSQLite3Connection.Create(nil);
-//  Connected := False;
-//  LoginPrompt := False;
-//  KeepConnection := False;
-  SQLConnection.Transaction := SQLTransaction;
-
-  SQLTransaction := TSQLTransaction.Create(nil);
-//  Active := False;
-  SQLTransaction.Database := SQLConnection;
-
-  SQLQuery := TSQLQuery.Create(nil);
-  SQLQuery.Options     := [sqoAutoCommit];
-  SQLQuery.Database    := SQLConnection;
-  SQLQuery.Transaction := SQLTransaction;
-
-end;
-
-function OpenDatabase(const name:string):boolean;
-var
-  newFile:boolean;
-begin
-  if SQLConnection = nil then
-    InitDatabase;
-
-  SQLConnection.Close;
-  SQLConnection.DatabaseName := name;
-  newFile := not FileExists(SQLConnection.DatabaseName);
-  SQLConnection.Open;
-
-  if newFile then
+  sqlite3_open(':memory:',@db);
+  if CopyFromFile(db,'tl2db2.db')<>SQLITE_OK then
   begin
-//    CloseDatabase; //??
-  end
-  else
-  begin
-  end;
-  result := not newFile;
-end;
-
-procedure CloseDatabase;
-begin
-  if SQLConnection<>nil then
-  begin
-    SQLQuery.Close;
-    SQLTransaction.Active := False;
-    SQLConnection.Connected := False;
-
-    SQLQuery.Free;
-    SQLTransaction.Free;
-    SQLConnection.Free;
-    SQLConnection := nil;
-  end;
-end;
-
-var
-  sl,slm:TStringList;
-  lmod:TTL2ModInfo;
-  i:integer;
-begin
-  sl :=TStringList.Create;
-  slm:=TStringList.Create;
-
-  CycleDir(sl,'.');
-
-  OpenDatabase('tl2db.db');
-  writeln(sl.count);
-  if sl.Count>0 then
-  begin
-    SQLTransaction.StartTransaction;
-    SQLQuery.SQL.Text:='INSERT INTO Mods (id,title,version,gamever,author,descr,website,download) '+
-                       ' VALUES (:id,:title,:version,:gamever,:author,:descr,:website,:download)';
-    for i:=0 to sl.Count-1 do
-    begin
-      if ReadModInfo(sl[i],lmod) then
-      begin
-        SQLQuery.Params.ParamByName('id'      ).AsLargeInt:=int64(lmod.modid);
-        SQLQuery.Params.ParamByName('title'   ).AsString  :=lmod.title;
-        SQLQuery.Params.ParamByName('version' ).AsInteger :=lmod.modver;
-        SQLQuery.Params.ParamByName('gamever' ).AsLargeInt:=int64(lmod.gamever);
-        SQLQuery.Params.ParamByName('author'  ).AsString  :=lmod.author;
-        SQLQuery.Params.ParamByName('descr'   ).AsString  :=lmod.descr;
-        SQLQuery.Params.ParamByName('website' ).AsString  :=lmod.website;
-        SQLQuery.Params.ParamByName('download').AsString  :=lmod.download;
-        SQLQuery.ExecSQL;
-
-        slm.Add(IntToHex(lmod.modid,16)+#9+lmod.title+#9+IntToStr(lmod.modver)+
-             #9+IntToHex(lmod.gamever,16));
-      end;
-    end;
-    SQLTransaction.Commit;
-    //    slm.SaveToFile('modlist.csv');
+    writeln('can''t open');
+    exit;
   end;
 
-  CloseDatabase;
-  sl.Free;
-  slm.Free;
+  CycleDir('.');
+
+  CopyToFile(db,'tl2db2.db');
+  sqlite3_close(db);
 end.
