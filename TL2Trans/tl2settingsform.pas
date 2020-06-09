@@ -382,7 +382,10 @@ begin
   ApplyLoadedTrans( config.ReadString(sNSBase+':'+sTranslation,sTranslator ,'Google'));
 
   //---
-  gbTranslation.Height:=config.ReadInteger(sNSBase+':'+sSectSettings,sGroupHeight,MinGroupHeight);
+  i:=config.ReadInteger(sNSBase+':'+sSectSettings,sGroupHeight,MinGroupHeight);
+  if i<MinGroupHeight then i:=MinGroupHeight;
+  gbTranslation.Tag:=gbTranslation.Height;
+  gbTranslation.Height:=i;
 
   config.Free;
 end;
@@ -451,7 +454,7 @@ end;
 
 procedure TTL2Settings.gbTranslationClick(Sender: TObject);
 begin
-  if gbTranslation.Height<>MinGroupHeight then
+  if gbTranslation.Height>MinGroupHeight then
   begin
     gbTranslation.Tag:=gbTranslation.Height;
     gbTranslation.Height:=MinGroupHeight;
