@@ -65,11 +65,13 @@ begin
 
   //===== Pet Data =====
 
-  lcnt:=FStream.ReadDWord;  // 1 (2 if BiA cative)
+  lcnt:=FStream.ReadDWord;
   SetLength(FPetInfos,lcnt);
   for i:=0 to lcnt-1 do
     FPetInfos[i]:=ReadCharData(FStream,false,true);
+
   //----- Unknown 2 -----
+
   FUnknown2:=FStream.ReadBytes(34);
 {
     Check(FStream.ReadDWord,'pre-map 1',0);
@@ -90,20 +92,20 @@ begin
   //----- Unknown 3 -----
 
   lpos:=FStream.Position;
-
-  lcnt:=FStream.ReadDWord;
+  {}
+  lcnt:=FStream.ReadDWord;    //?? active portal list
   for i:=0 to lcnt-1 do
   begin
     FStream.ReadShortString;  // area
-    FStream.ReadDWord;        //
-    FStream.ReadDWord;        //
-    FStream.ReadDWord;        // 27684953
+    FStream.ReadDWord;        // count? $35-$3C
+    FStream.ReadDWord;        // 0 usually. 1 sometime
+    FStream.ReadDWord;        // ?
 
-    lcnt1:=FStream.ReadDWord;
+    lcnt1:=FStream.ReadDWord; // usually, 0. sometime 1. maybe can be more
     for j:=0 to lcnt1-1 do
-      FStream.ReadDword;
+      FStream.ReadDword;      // 0 usually
   end;
-  
+  {}
   FUnkn3Size:=FStream.Position-lpos;
   FStream.Position:=lpos;
   FUnknown3:=FStream.ReadBytes(FUnkn3Size);

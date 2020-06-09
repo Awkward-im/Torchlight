@@ -37,7 +37,8 @@ type
 
   private
     FSign           :Byte;
-    FSignWord       :Word;
+    FSign1          :Byte;
+    FSign2          :Byte;
     FIsChar         :boolean;
     FIsPet          :boolean;
 
@@ -124,6 +125,8 @@ type
     property IsChar         :boolean  read FIsChar;
     property IsPet          :boolean  read FIsPet;
     property Sign           :Byte     read FSign;
+    property Sign1          :Byte     read FSign1;
+    property Sign2          :Byte     read FSign2;
     property Enabled        :ByteBool read FEnabled         write FEnabled;
     property ClassId        :TL2ID    read FClassId         write FClassId;
     property MorphId        :TL2ID    read FMorphId         write FMorphId;
@@ -246,7 +249,8 @@ begin
   // signature
   // can be word+byte, can be 3 bytes. last looks like bool
   FSign    :=AStream.ReadByte;  // $FF or 02
-  FSignWord:=Check(AStream.ReadWord,'char sign_'+HexStr(AStream.Position,8),0);  // 0 (can be $0100)
+  FSign1   :=AStream.ReadByte;  // 0
+  FSign2   :=AStream.ReadByte;  // 0 or (sometime)
 	
   FMorphId:=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
   FClassId:=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
@@ -448,8 +452,9 @@ begin
   DataOffset:=AStream.Position;
 
   // signature
-  AStream.WriteByte(FSign);      // $FF or 2
-  AStream.WriteWord(FSignWord);  // 0 or 0x0100
+  AStream.WriteByte(FSign );  // $FF or 2
+  AStream.WriteByte(FSign1);  // 0
+  AStream.WriteByte(FSign2);  // 0, or 1
 
   if FMorphId=TL2IdEmpty then
   begin

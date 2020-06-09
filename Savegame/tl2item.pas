@@ -94,6 +94,7 @@ type
     property Effects1:TTL2EffectList read FEffects1 write FEffects1;
     property Effects2:TTL2EffectList read FEffects2 write FEffects2;
     property Effects3:TTL2EffectList read FEffects3 write FEffects3;
+
     property Augments:TL2StringList  read FAugments;
     property Stats   :TL2IdValList   read FStats;
   end;

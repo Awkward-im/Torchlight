@@ -9,6 +9,8 @@ uses
   tl2common,
   tl2types,
   tl2map,
+  tl2item,
+  tl2effects,
   tl2quest,
   tl2stats,
   tl2char;
@@ -34,6 +36,8 @@ type
 
     function  Parse():boolean;
     function  Prepare:boolean;
+
+    procedure ClearCheat;
 
   //--- TL2 save part
   private
@@ -122,6 +126,7 @@ type
     property MapCount:integer read GetMapCount;
     property Maps[idx:integer]:TTL2Map read GetMap;
 
+    property History:TL2IdList read FHistory write FHistory;
     property Recipes:TL2IdList read FRecipes write FRecipes;
 
     property Movies    :TL2IdValList          read FMovies;
@@ -160,7 +165,7 @@ type
     property LevelTime        :TL2Integer index statLevelTime  read GetStatistic write SetStatistic;
     property MonstersExploded :TL2Integer index statExploded   read GetStatistic write SetStatistic;
 
-    property ClassString:string read FClassString;
+    property ClassString:string read FClassString write FClassString;
     property Waypoint   :string read FWaypoint;
     property Area       :string read FArea;
   end;
@@ -453,6 +458,40 @@ begin
 end;
 
 //----- processing -----
+
+procedure ClearCheatItems(aItems:TTL2ItemList);
+var
+  i,j:integer;
+  l,d:TTL2EffectList;
+begin
+  for i:=0 to High(aItems) do
+  begin
+    for j:=0 to High(aItems[i].Effects1) do
+    begin
+      if aItems[i].Effects1[j].EffectType=TL2Cheat then
+      begin
+        l:=aItems[i].Effects1;
+//        d:=l;
+        aItems[i].Effects1[j].Free;
+        Delete(l,j,1);
+//        SetLength(d,0);
+        aItems[i].Effects1:=l;
+        break;
+      end;
+    end;
+  end;
+end;
+
+procedure TTL2SaveFile.ClearCheat;
+var
+  i:integer;
+begin
+  // Character items
+  ClearCheatItems(CharInfo.Items);
+  // Pet items
+  for i:=0 to PetCount-1 do
+    ClearCheatItems(PetInfo[i].Items);
+end;
 
 {$I TL2Parse.inc}
 

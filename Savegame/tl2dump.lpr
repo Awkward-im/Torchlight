@@ -2,12 +2,12 @@ program tl2dump;
 
 {$mode objfpc}{$H+}
 
-uses tl2save,tl2db;
+uses tl2save{,tl2db};
 
 var
   tr:TTL2SaveFile;
 begin
-  LoadBases;
+//  LoadBases;
   tr:=TTL2SaveFile.Create;
   tr.LoadFromFile(ParamStr(1));
   tr.Parse();

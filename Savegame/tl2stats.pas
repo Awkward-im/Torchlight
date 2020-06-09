@@ -92,6 +92,10 @@ type
     FStatClass:string;
     FStatPet  :string;
   public
+    property PlayerName :string read FStatName;
+    property PlayerClass:string read FStatClass;
+    property PetClass   :string read FStatPet;
+
     property Mobs   :tStatMobArray     read FStatMobs;
     property Items  :tStatItemArray    read FStatItems;
     property Skills :tStatSkillArray   read FStatSkills;
