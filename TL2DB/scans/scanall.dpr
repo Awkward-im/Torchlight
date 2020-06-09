@@ -3,6 +3,7 @@ uses
   sqlite3
   ,awkSQLite3
   ,sysutils
+  ,TL2ModInfo
   ,TL2DatNode
   ;
 
@@ -1025,6 +1026,49 @@ begin
   end;
 end;
 
+//----- MOD info -----
+
+procedure AddTheMod();
+var
+  lSQL,lid:string;
+  vm:pointer;
+  lver:integer;
+  lmod:TTL2ModInfo;
+begin
+  if ReadModInfo('MOD.DAT',lmod) then
+  begin
+    lid :=IntToStr(lmod.modid);
+    lSQL:='SELECT version FROM Mods WHERE id='+lid;
+    lver:=0;
+    if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_OK then
+        lver:=sqlite3_column_int(vm,0);
+      sqlite3_finalize(vm);
+    end;
+
+    if lver<>0 then
+    begin
+      if lmod.modver>=lver then exit;
+      lSQL:='UPDATE Mods SET version='+IntToStr(lmod.modver)+' WHERE id='+lid;
+    end
+    else
+    begin
+      lSQL:='INSERT INTO Mods (id,title,version,gamever,author,descr,website,download) '+
+            ' VALUES ('+lid+', '+FixedText(lmod.title)+', '+IntToStr(lmod.modver)+
+            ', '+IntToStr(lmod.gamever)+', '+FixedText(lmod.author)+', '+FixedText(lmod.descr)+
+            ', '+FixedText(lmod.website)+', '+FixedText(lmod.download)+')';
+    end;
+    if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
+    begin
+      sqlite3_step(vm);
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
+//===== Body =====
+
 var
   p,pp:PTL2Node;
   ls:string;
@@ -1033,6 +1077,8 @@ var
 begin
   lcnt:=ParamCount();
   ls:=ParamStr(1);
+
+  AddTheMod();
 
   p:=ParseDatFile('MOD.DAT');
   pp:=FindNode(p,'MOD_ID');
