@@ -706,11 +706,11 @@ begin
       ntNote,
       ntUnknown   : ls:=anode.asString;
       ntInteger   : Str(anode.asInteger  ,ls);
-      ntFloat     : Str(anode.asFloat    ,ls);
+      ntFloat     : Str(anode.asFloat:0:4,ls);
       ntInteger64 : Str(anode.asInteger64,ls);
       ntUnsigned  : Str(anode.asUnsigned ,ls);
       // custom
-      ntDouble    : Str(anode.asDouble   ,ls);
+      ntDouble    : Str(anode.asDouble:0:4,ls);
       // user
       ntWord      : Str(anode.asWord     ,ls);
       ntByte      : Str(anode.asByte     ,ls);
