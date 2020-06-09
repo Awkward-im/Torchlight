@@ -393,28 +393,27 @@ begin
 
   if (Key=VK_DELETE) then
   begin
-    if (Shift=[ssAlt]) and (TL2ProjectGrid.Col=colTrans) then
+    if TL2ProjectGrid.Col=colTrans then
     begin
-      i:=TL2ProjectGrid.Row;
-      idx:=IntPtr(TL2ProjectGrid.Objects[0,i]);
-      if data.Trans[idx]<>'' then
-        ls:=data.Trans[idx]
-      else
-        ls:=data.Line[idx];
-      if RemoveColor(ls,ls) then
+      if Shift=[ssAlt] then
       begin
-        data.Trans[idx]:=ls;
-        data.State[idx]:=stPartial;
-        TL2ProjectGrid.Cells[colPartial,i]:='1';
-        TL2ProjectGrid.Cells[colTrans  ,i]:=ls;
-        Modified:=true;
-        OnSBUpdate(Self);
-        Key:=0;
-      end;
-    end
-    else
-    begin
-      if (TL2ProjectGrid.Col=colTrans) then
+        i:=TL2ProjectGrid.Row;
+        idx:=IntPtr(TL2ProjectGrid.Objects[0,i]);
+        if data.Trans[idx]<>'' then
+          ls:=data.Trans[idx]
+        else
+          ls:=data.Line[idx];
+        if RemoveColor(ls,ls) then
+        begin
+          data.Trans[idx]:=ls;
+          data.State[idx]:=stPartial;
+          TL2ProjectGrid.Cells[colPartial,i]:='1';
+          TL2ProjectGrid.Cells[colTrans  ,i]:=ls;
+          Modified:=true;
+          OnSBUpdate(Self);
+        end;
+      end
+      else
       begin
         for i:=1 to TL2ProjectGrid.RowCount-1 do
         begin
@@ -432,40 +431,34 @@ begin
           end;
         end;
         OnSBUpdate(Self);
-{
-        i:=TL2ProjectGrid.Row;
-        if TL2ProjectGrid.Cells[colTrans,i]<>'' then
-        begin
-          idx:=IntPtr(TL2ProjectGrid.Objects[0,i]);
-          data.Trans[idx]:='';
-          data.State[idx]:=stOriginal;
-          TL2ProjectGrid.Cells[colPartial,i]:='0';
-          TL2ProjectGrid.Cells[colTrans  ,i]:='';
-          Modified:=true;
-          OnSBUpdate(Self);
-        end;
-}
-      end
-      else
-      begin
-        if MessageDlg(sDoDelete,mtConfirmation,[mbOk,mbCancel],0)=mrOk then
-        begin
-          for i:=TL2ProjectGrid.RowCount-1 downto 1 do
-          begin
-            if TL2ProjectGrid.IsCellSelected[TL2ProjectGrid.Col,i] then
-            begin
-              idx:=IntPtr(TL2ProjectGrid.Objects[0,i]);
-              data.State[idx]:=stDeleted;
-              TL2ProjectGrid.DeleteRow(i);
-            end;
-          end;
-
-          Modified:=true;
-          OnSBUpdate(Self);
-        end;
       end;
-      Key:=0;
+    end
+    else
+    begin
+      if MessageDlg(sDoDelete,mtConfirmation,[mbOk,mbCancel],0)=mrOk then
+      begin
+        for i:=TL2ProjectGrid.RowCount-1 downto 1 do
+        begin
+          if TL2ProjectGrid.IsCellSelected[TL2ProjectGrid.Col,i] then
+          begin
+            TL2ProjectGrid.Objects[1,i]:=TObject(1);
+          end;
+        end;
+        for i:=TL2ProjectGrid.RowCount-1 downto 1 do
+        begin
+          if TL2ProjectGrid.Objects[1,i]<>nil then
+          begin
+            idx:=IntPtr(TL2ProjectGrid.Objects[0,i]);
+            data.State[idx]:=stDeleted;
+            TL2ProjectGrid.DeleteRow(i);
+          end;
+        end;
+
+        Modified:=true;
+        OnSBUpdate(Self);
+      end;
     end;
+    Key:=0;
   end;
 
   if (Key=VK_RETURN) and
