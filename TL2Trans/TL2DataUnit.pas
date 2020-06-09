@@ -1030,7 +1030,7 @@ begin
       begin
         i:=CheckSourceFile(lname, allText);
         if i>=0 then
-          sl.AddObject(lname,TObject(i));
+          sl.AddObject(lname,TObject(IntPtr(i)));
       end;
     until FindNext(sr)<>0;
     FindClose(sr);
@@ -1071,7 +1071,7 @@ begin
           end;
         end;
 
-      ReadSrcFile(sl[i],integer(sl.Objects[i]),llen);
+      ReadSrcFile(sl[i],IntPtr(sl.Objects[i]),llen);
     end;
   end;
 

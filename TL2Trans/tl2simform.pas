@@ -119,7 +119,7 @@ begin
     while i<data.Lines do
     begin
       if data.SimIndex[i]>=0 then
-        lbSimilars.AddItem(data.Line[i],TObject(i));
+        lbSimilars.AddItem(data.Line[i],TObject(IntPtr(i)));
       inc(i);
     end;
 

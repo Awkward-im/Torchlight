@@ -263,7 +263,7 @@ var
   lPopItem:TMenuItem;
   ls:AnsiString;
   params :array [0..maxparams-1] of String[31];
-  idx,i,lcnt,llen:integer;
+  i,lcnt,llen:integer;
 begin
   result:=false;
   mnuColor.Items.Clear;
@@ -349,7 +349,7 @@ var
   lPopItem:TMenuItem;
   ls:AnsiString;
   colors :array [0..maxcolors-1] of String[10]; //#124'cAARRGGBB', 10 times per text must be enough
-  idx,i,llcnt,lcnt,llen:integer;
+  i,llcnt,lcnt,llen:integer;
 begin
   result:=false;
   mnuColor.Items.Clear;

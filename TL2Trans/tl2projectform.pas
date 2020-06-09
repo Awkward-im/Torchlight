@@ -136,7 +136,6 @@ implementation
 
 uses
   Graphics,
-  TL2DataModule,
   TL2SettingsForm,
   TL2EditText,
   TL2SimForm,
@@ -417,6 +416,23 @@ begin
     begin
       if (TL2ProjectGrid.Col=colTrans) then
       begin
+        for i:=1 to TL2ProjectGrid.RowCount-1 do
+        begin
+          if TL2ProjectGrid.IsCellSelected[colTrans,i] then
+          begin
+            if TL2ProjectGrid.Cells[colTrans,i]<>'' then
+            begin
+              idx:=IntPtr(TL2ProjectGrid.Objects[0,i]);
+              data.Trans[idx]:='';
+              data.State[idx]:=stOriginal;
+              TL2ProjectGrid.Cells[colPartial,i]:='0';
+              TL2ProjectGrid.Cells[colTrans  ,i]:='';
+              Modified:=true;
+            end;
+          end;
+        end;
+        OnSBUpdate(Self);
+{
         i:=TL2ProjectGrid.Row;
         if TL2ProjectGrid.Cells[colTrans,i]<>'' then
         begin
@@ -428,6 +444,7 @@ begin
           Modified:=true;
           OnSBUpdate(Self);
         end;
+}
       end
       else
       begin
@@ -1664,7 +1681,7 @@ begin
     if (lstatus in [stPartial,stReady]) then                  // Translation
       TL2ProjectGrid.Cells[colTrans,aRow]:=ltrans;
 
-    TL2ProjectGrid.Objects[0,aRow]:=TObject(idx);
+    TL2ProjectGrid.Objects[0,aRow]:=TObject(IntPtr(idx));
     result:=true;
   end;
 end;

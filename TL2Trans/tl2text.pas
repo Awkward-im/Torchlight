@@ -246,8 +246,7 @@ begin
       '<','[': begin
         k:=i;
         // value type
-        if astr[i]='<' then j:=0
-        else if astr[i]='[' then
+        if astr[i]='[' then
         begin
           if (i<Length(astr)) and (astr[i+1]='[') then 
           begin
@@ -256,7 +255,9 @@ begin
           end
           else 
             j:=1;
-        end;
+        end
+        else // if astr[i]='<'
+          j:=0;
         inc(i);
 
         while (i<=Length(astr)) and (astr[i] in ['A'..'Z','a'..'z','0'..'9',':']) do inc(i);
