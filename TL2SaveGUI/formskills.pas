@@ -391,7 +391,7 @@ begin
       begin
         // calculate used skillpoints (counting initially learned too)
         dec(FPoints,alist[j].value-FSkills[idx].learn);
-        inc(result,alist[j].value-FSkills[idx].learn);
+        inc(result ,alist[j].value-FSkills[idx].learn);
         Str(alist[j].value,ls);
         sgSkills.Cells[colLevel,i]:=ls;
         break;
