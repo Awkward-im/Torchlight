@@ -599,7 +599,7 @@ object fmChar: TfmChar
         AutoSize = False
         ItemHeight = 15
         OnChange = cbNewClassChange
-        Style = csDropDownList
+        ReadOnly = True
         TabOrder = 8
       end
       object gbGender: TGroupBox
@@ -713,11 +713,11 @@ object fmChar: TfmChar
         object cbSpell1: TComboBox
           Left = 43
           Height = 23
-          Top = 9
+          Top = 8
           Width = 221
           ItemHeight = 15
           OnChange = cbSpellChange
-          Style = csDropDownList
+          ReadOnly = True
           TabOrder = 0
         end
         object cbSpell2: TComboBox
@@ -727,7 +727,7 @@ object fmChar: TfmChar
           Width = 221
           ItemHeight = 15
           OnChange = cbSpellChange
-          Style = csDropDownList
+          ReadOnly = True
           TabOrder = 2
         end
         object cbSpell3: TComboBox
@@ -737,7 +737,7 @@ object fmChar: TfmChar
           Width = 221
           ItemHeight = 15
           OnChange = cbSpellChange
-          Style = csDropDownList
+          ReadOnly = True
           TabOrder = 4
         end
         object cbSpell4: TComboBox
@@ -747,7 +747,7 @@ object fmChar: TfmChar
           Width = 221
           ItemHeight = 15
           OnChange = cbSpellChange
-          Style = csDropDownList
+          ReadOnly = True
           TabOrder = 6
         end
         object cbSpellLvl1: TComboBox
@@ -757,7 +757,7 @@ object fmChar: TfmChar
           Width = 38
           ItemHeight = 15
           OnChange = cbSpellLvlChange
-          Style = csDropDownList
+          ReadOnly = True
           TabOrder = 1
         end
         object cbSpellLvl2: TComboBox
@@ -767,7 +767,7 @@ object fmChar: TfmChar
           Width = 38
           ItemHeight = 15
           OnChange = cbSpellLvlChange
-          Style = csDropDownList
+          ReadOnly = True
           TabOrder = 3
         end
         object cbSpellLvl3: TComboBox
@@ -777,7 +777,7 @@ object fmChar: TfmChar
           Width = 38
           ItemHeight = 15
           OnChange = cbSpellLvlChange
-          Style = csDropDownList
+          ReadOnly = True
           TabOrder = 5
         end
         object cbSpellLvl4: TComboBox
@@ -787,7 +787,7 @@ object fmChar: TfmChar
           Width = 38
           ItemHeight = 15
           OnChange = cbSpellLvlChange
-          Style = csDropDownList
+          ReadOnly = True
           TabOrder = 7
         end
         object Image1: TImage

@@ -200,13 +200,16 @@ begin
   begin
     idx:=IntPtr(sgSkills.Objects[0,aRow]);
     isgray:=sgSkills.Cells[colLevel,aRow]='0';
-    bmp:=FIcons[idx,isgray].Bitmap;
-    if (bmp=nil) and isgray then bmp:=FIcons[idx,false].Bitmap;
-    if bmp<>nil then
+    if FIcons<>nil then
     begin
-      lRect:=aRect;
-      InflateRect(lRect,-1,-1);
-      sgSKills.Canvas.StretchDraw(lRect,bmp);
+      bmp:=FIcons[idx,isgray].Bitmap;
+      if (bmp=nil) and isgray then bmp:=FIcons[idx,false].Bitmap;
+      if bmp<>nil then
+      begin
+        lRect:=aRect;
+        InflateRect(lRect,-1,-1);
+        sgSKills.Canvas.StretchDraw(lRect,bmp);
+      end;
     end;
   end;
 end;
@@ -217,7 +220,7 @@ var
   licon,ltier:string;
   idx:integer;
 begin
-  if aRow>0 then
+  if (FSkills<>nil) and (aRow>0) then
   begin
     idx:=IntPtr(sgSkills.Objects[0,aRow]);
 
@@ -270,8 +273,9 @@ begin
     if ((FPoints>0) or not (cbCheckPoints.Checked)) then
     begin
       idx:=IntPtr(sgSkills.Objects[0,sgSkills.Row]);
-      if (lval<FSkills[idx].level) and
-         ((not cbCheckLevel.Checked) or CheckTier(lval,idx)) then
+      if (FSkills=nil) or // !!
+         ((lval<FSkills[idx].level) and
+         ((not cbCheckLevel.Checked) or CheckTier(lval,idx))) then
       begin
         inc(lval);
         dec(FPoints);
@@ -298,13 +302,26 @@ procedure TfmSkills.btnResetClick(Sender: TObject);
 var
   i,j:integer;
 begin
-  for i:=1 to sgSkills.RowCount-1 do
+  if FSkills<>nil then //!!
   begin
-    j:=IntPtr(sgSkills.Objects[0,i]);
-    j:=FSkills[j].learn;
+    for i:=1 to sgSkills.RowCount-1 do
+    begin
+      j:=IntPtr(sgSkills.Objects[0,i]);
+      j:=FSkills[j].learn;
 
-    inc(FPoints,StrToInt(sgSkills.Cells[colLevel,i])-j);
-    sgSkills.Cells[colLevel,i]:=IntToStr(j);
+      inc(FPoints,StrToInt(sgSkills.Cells[colLevel,i])-j);
+      sgSkills.Cells[colLevel,i]:=IntToStr(j);
+    end;
+{
+  end
+  else
+  begin
+    for i:=1 to sgSkills.RowCount-1 do
+    begin
+      inc(FPoints,StrToInt(sgSkills.Cells[colLevel,i]));
+      sgSkills.Cells[colLevel,i]:='0';
+    end;
+}
   end;
   sgSkills.Refresh;
   lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FPoints);
@@ -334,6 +351,8 @@ begin
   CreateSkillList(aclass,FSkills);
   CreateIconList();
 
+  sgSkills.Columns[colIcon   ].Visible:=FSkills<>nil;
+  sgSkills.Columns[colPassive].Visible:=FSkills<>nil;
   if FSkills<>nil then
   begin
     sgSkills.RowCount:=1+Length(FSkills);
@@ -357,7 +376,14 @@ begin
     sgSkills.RowCount:=j;
   end
   else
-    sgSkills.RowCount:=1;
+  begin
+    sgSkills.RowCount:=1+Length(FChar.Skills);
+  end;
+  for i:=1 to sgSkills.RowCount-1 do
+  begin
+    sgSkills.Cells[colMinus,i]:='-';
+    sgSkills.Cells[colPlus ,i]:='+';
+  end;
 
   if FConfigured then
     ApplyBuild(lbuild);
@@ -379,23 +405,33 @@ var
   i,j,idx:integer;
 begin
   result:=0;
+//  if FSkills=nil then exit;
+
   sgSkills.BeginUpdate;
 
   for i:=1 to sgSkills.RowCount-1 do
   begin
-    idx:=IntPtr(sgSkills.Objects[0,i]);
-
-    for j:=0 to High(alist) do
+    if FSkills<>nil then
     begin
-      if alist[j].id=FSkills[idx].id then
+      idx:=IntPtr(sgSkills.Objects[0,i]);
+
+      for j:=0 to High(alist) do
       begin
-        // calculate used skillpoints (counting initially learned too)
-        dec(FPoints,alist[j].value-FSkills[idx].learn);
-        inc(result ,alist[j].value-FSkills[idx].learn);
-        Str(alist[j].value,ls);
-        sgSkills.Cells[colLevel,i]:=ls;
-        break;
+        if alist[j].id=FSkills[idx].id then
+        begin
+          // calculate used skillpoints (counting initially learned too)
+          dec(FPoints,alist[j].value-FSkills[idx].learn);
+          inc(result ,alist[j].value-FSkills[idx].learn);
+          Str(alist[j].value,ls);
+          sgSkills.Cells[colLevel,i]:=ls;
+          break;
+        end;
       end;
+    end
+    else
+    begin
+      sgSkills.Cells[colName ,i]:=IntToStr(FChar.Skills[i-1].id); // !! 10 or 16
+      sgSkills.Cells[colLevel,i]:=IntToStr(FChar.Skills[i-1].value);
     end;
   end;
   sgSkills.EndUpdate;
@@ -412,7 +448,13 @@ begin
     result[lcnt].value:=StrToInt(sgSkills.Cells[colLevel,i]);
     if cbSaveFull.Checked or (result[lcnt].value>0) then
     begin
-      result[lcnt].id:=FSkills[IntPtr(sgSkills.Objects[0,i])].id;
+      if FSkills<>nil then // !!
+        result[lcnt].id:=FSkills[IntPtr(sgSkills.Objects[0,i])].id
+      else
+      begin
+        // check 10 or 16 base system?
+        result[lcnt].id:=StrToInt64(sgSkills.Cells[colName,i]);
+      end;
       inc(lcnt);
     end;
   end;

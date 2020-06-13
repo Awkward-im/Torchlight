@@ -677,6 +677,7 @@ begin
   cbCheater .Visible:=lChar;
   gbGender  .Visible:=lChar;
   edNewClass.Visible:=lChar;
+  bbManual  .Visible:=lChar;
 
   edName    .ReadOnly:=not (lChar or lPet);
   seScale   .ReadOnly:=not (lChar or lPet);

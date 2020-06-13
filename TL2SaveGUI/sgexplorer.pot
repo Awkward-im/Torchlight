@@ -876,6 +876,18 @@ msgstr ""
 msgid "&File"
 msgstr ""
 
+#: tfmsettings.cbbackup.caption
+msgid "Make backups"
+msgstr ""
+
+#: tfmsettings.cbbasic.caption
+msgid "Basic info only"
+msgstr ""
+
+#: tfmsettings.cbclass.caption
+msgid "Change player class"
+msgstr ""
+
 #: tfmsettings.cbidashex.caption
 msgid "Show IDs in Hex form"
 msgstr ""
@@ -884,12 +896,38 @@ msgstr ""
 msgid "Show Tech info"
 msgstr ""
 
+#: tfmsettings.gbedit.caption
+msgid "What to edit"
+msgstr ""
+
+#: tfmsettings.gbshow.caption
+msgid "What to show"
+msgstr ""
+
 #: tfmsettings.lbldbfile.caption
 msgid "Database file"
 msgstr ""
 
 #: tfmsettings.lblicondir.caption
 msgid "Icons directory"
+msgstr ""
+
+#: tfmsettings.rbadditional.caption
+msgctxt "tfmsettings.rbadditional.caption"
+msgid "Additional data"
+msgstr ""
+
+#: tfmsettings.rbbaseonly.caption
+msgctxt "tfmsettings.rbbaseonly.caption"
+msgid "Show basic info only"
+msgstr ""
+
+#: tfmsettings.rbdetailed.caption
+msgid "Detailed"
+msgstr ""
+
+#: tfmsettings.rbshowall.caption
+msgid "Show All"
 msgstr ""
 
 #: tfmskills.bbupdate.caption

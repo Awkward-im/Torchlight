@@ -57,6 +57,9 @@ object fmSaveFile: TfmSaveFile
       object mnuFileOpen: TMenuItem
         Action = actFileOpen
       end
+      object mnuFileReload: TMenuItem
+        Action = actFileReload
+      end
       object mnuFileSave: TMenuItem
         Action = actFileSave
       end

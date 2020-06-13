@@ -23,6 +23,7 @@ type
     ActionList: TActionList;
     ImageList: TImageList;
     MainMenu: TMainMenu;
+    mnuFileReload: TMenuItem;
     mnuFileSep2: TMenuItem;
     mnuFileCheat: TMenuItem;
     mnuFile: TMenuItem;
@@ -156,7 +157,7 @@ procedure TfmSaveFile.ChangeTree;
 var
   lNode,lSubNode:TTreeNode;
   ls:string;
-  i,lcnt: integer;
+  lmode, i,lcnt: integer;
 begin
   lNode:=tvSaveGame.Items[idxSavegame];
   lNode.Visible:=true;
@@ -166,6 +167,16 @@ begin
   lNode.Items[idxQuests   ].Data:=pointer(SGame.Quests);
   lNode.Items[idxStatistic].Data:=pointer(SGame.Stats);
 
+  lmode:=GetShowMode;
+  lNode.Items[idxCharacter ].Items[1].Visible:=lmode>smMore;
+  lNode.Items[idxKeyMapping].Visible:=lmode>smJustBase;
+  lNode.Items[idxMovies    ].Visible:=lmode>smJustBase;
+  lNode.Items[idxModList   ].Visible:=lmode>smJustBase;
+  lNode.Items[idxQuests    ].Visible:=lmode>smJustBase;
+  lNode.Items[idxRecipes   ].Visible:=lmode>smJustBase;
+  lNode.Items[idxMaps      ].Visible:=lmode>smJustBase;
+  lNode.Items[idxStatistic ].Visible:=lmode=smFull;
+
   lcnt:=SGame.PetCount;
   lNode:=tvSaveGame.Items[idxSavegame].Items[idxPets];
   lNode.DeleteChildren;
@@ -173,7 +184,8 @@ begin
   begin
     lSubNode:=tvSaveGame.Items.AddChild(lNode,SGame.PetInfo[i].Name);
     lSubNode.Data:=pointer(SGame.PetInfo[i]);
-    tvSaveGame.Items.AddChild(lSubNode,rsItems);
+    if lmode>smMore then
+      tvSaveGame.Items.AddChild(lSubNode,rsItems);
   end;
 
   lcnt:=SGame.MapCount;
@@ -186,14 +198,18 @@ begin
       ls:=ls+' ['+IntToStr(SGame.Maps[i].Number)+']';
     lSubNode:=tvSaveGame.Items.AddChild(lNode,ls);
     lSubNode.Data:=pointer(SGame.Maps[i]);
-    tvSaveGame.Items.AddChild(lSubNode,rsUnits);
-    tvSaveGame.Items.AddChild(lSubNode,rsProps);
-    if Length(SGame.Maps[i].QuestItems)>0 then
-      tvSaveGame.Items.AddChild(lSubNode,rsQItem);
+    if lmode>smMore then
+    begin
+      tvSaveGame.Items.AddChild(lSubNode,rsUnits);
+      tvSaveGame.Items.AddChild(lSubNode,rsProps);
+      if Length(SGame.Maps[i].QuestItems)>0 then
+        tvSaveGame.Items.AddChild(lSubNode,rsQItem);
+    end;
   end;
 
   tvSaveGame.Items[idxSavegame].Visible:=true;
   tvSaveGame.Select(tvSaveGame.Items[idxSavegame].Items[idxCharacter]);
+
 end;
 
 //===== Form =====
