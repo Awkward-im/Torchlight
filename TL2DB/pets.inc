@@ -120,7 +120,9 @@ begin
     end;
   end
   else
-    SetLength(alist,0);
+  begin
+    alist:=Copy(DefaultPets);
+  end;
 end;
 
 {$ENDIF}
