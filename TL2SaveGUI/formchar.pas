@@ -596,17 +596,17 @@ var
   lspell:TTL2Spell;
   lcb:TComboBox;
 begin
+  lcb:=TComboBox(cb.Tag);
   if (cb.ItemIndex>=0) and
      (IntPtr(cb.Items.Objects[cb.ItemIndex])>=0) then
   begin
-    lcb:=TComboBox(cb.Tag);
-    lspell.name :=SpellList[IntPtr(cb .Items.Objects[cb .ItemIndex])].name;
+    lspell.name :=SpellList[IntPtr( cb.Items.Objects[ cb.ItemIndex])].name;
     lspell.level:=          IntPtr(lcb.Items.Objects[lcb.ItemIndex]);
   end
   else
   begin
-    lspell.name :='';
-    lspell.level:=0;
+    lspell.name:=cb.Text;
+    Val(lcb.Text,lspell.level);
   end;
   FChar.Spells[idx]:=lspell;
 end;
@@ -624,10 +624,14 @@ begin
     cbSpell1.Items.AddObject(SpellList[i].title,TObject(IntPtr(i)));
   cbSpell1.Items.EndUpdate;
 
+  cbSpell2.Items:=cbSpell1.Items;
+  cbSpell3.Items:=cbSpell1.Items;
+  cbSpell4.Items:=cbSpell1.Items;
+{
   cbSpell2.Items.Assign(cbSpell1.Items);
   cbSpell3.Items.Assign(cbSpell1.Items);
   cbSpell4.Items.Assign(cbSpell1.Items);
-
+}
   GetCharSpell(cbSpell1,0);
   GetCharSpell(cbSpell2,1);
   GetCharSpell(cbSpell3,2);
@@ -937,17 +941,7 @@ begin
   cbNewClass.Items.Delete(0);
 
   cbNewClass.ItemIndex:=-1;
-{
-for i:=0 to cbNewClass.Items.Count-1 do
-  begin
-    j:=IntPtr(cbNewClass.Items.Objects[i]);
-    if FPets[j].title='Berserker' then
-    begin
-      ShowMessage(inttostr(i)+', '+FPets[j].name+' = '+
-      IntTostr(FPets[j].id)+'<< '+InttoStr(FChar.ClassId));
-    end;
-  end;
-  }
+
   for i:=0 to cbNewClass.Items.Count-1 do
     if FPets[IntPtr(cbNewClass.Items.Objects[i])].id=FChar.ClassId then
     begin
