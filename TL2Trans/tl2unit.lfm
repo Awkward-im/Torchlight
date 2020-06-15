@@ -124,6 +124,7 @@ object MainTL2TransForm: TMainTL2TransForm
     Images = TL2DataModule.TL2ImageList
     TabOrder = 3
     OnChange = TL2PageControlChange
+    OnCloseTabClicked = TL2PageControlCloseTabClicked
     OnMouseUp = TL2PageControlMouseUp
     Options = [nboShowCloseButtons, nboDoChangeOnSetIndex]
   end

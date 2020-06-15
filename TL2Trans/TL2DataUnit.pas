@@ -979,6 +979,7 @@ var
   lsign:word;
 begin
   result:=-1;
+  if UpCase(ExtractFileName(fname))='MOD.DAT' then exit;
 
   lext:=UpCase(ExtractFileExt(fname));
 

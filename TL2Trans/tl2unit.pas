@@ -80,6 +80,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure HelpAboutExecute(Sender: TObject);
     procedure TL2PageControlChange(Sender: TObject);
+    procedure TL2PageControlCloseTabClicked(Sender: TObject);
     procedure TL2PageControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure TL2ShellTreeViewDblClick(Sender: TObject);
@@ -156,6 +157,11 @@ begin
   fileExport.Enabled:=b;
 
   UpdateStatusBar(ActiveProject);
+end;
+
+procedure TMainTL2TransForm.TL2PageControlCloseTabClicked(Sender: TObject);
+begin
+  ClosePageExecute(Sender);
 end;
 
 procedure TMainTL2TransForm.TL2PageControlMouseUp(Sender: TObject;
@@ -466,6 +472,8 @@ procedure TMainTL2TransForm.OpenProject(const fname:string; silent:boolean=false
 var
   lname:string;
 begin
+  if not FileExists(fname) then exit;
+
   lname:=ExtractJustName(ExtractFileName(fname));
 
   NewTab(lname);
