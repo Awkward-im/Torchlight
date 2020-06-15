@@ -66,6 +66,7 @@ type
     procedure ChangeTree;
     procedure CreateTree;
     function GetTVIndex: integer;
+    procedure MakeBackup(const fname: string);
   public
 
   end;
@@ -285,6 +286,16 @@ begin
   ChangeTree;
 end;
 
+procedure TfmSaveFile.MakeBackup(const fname:string);
+var
+  ldir,lname:string;
+begin
+  ldir:=ExtractFilePath(fname)+'\Backup';
+  if not DirectoryExists(ldir) then
+    MkDir(ldir);
+  RenameFile(fname,ldir+'\'+ExtractFileName(fname)+'.'+TimeToStr(Time()));
+end;
+
 procedure TfmSaveFile.actFileSaveExecute(Sender: TObject);
 var
   SaveDialog: TSaveDialog;
@@ -296,6 +307,9 @@ begin
     SaveDialog.DefaultExt:='.SVB';
     if SaveDialog.Execute then
     begin
+      if (FileExists(SaveDialog.FileName)) and fmSettings.cbBackup.Checked then
+        MakeBackup(SaveDialog.FileName);
+
       SGame.Prepare;
       SGame.SaveToFile(SaveDialog.FileName);
     end;
