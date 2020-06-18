@@ -23,5 +23,6 @@
 {"hash":240489369,"name":"ttl2settings.lblgetapikeyyandex.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
 {"hash":234828510,"name":"ttl2settings.lblyandexnote.caption","sourcebytes":[84,101,120,116,32,108,101,110,103,116,104,32,105,115,32,110,111,116,32,109,111,114,101,32,116,104,97,110,32,49,48,75,98,46,32,68,97,121,32,108,105,109,105,116,32,105,115,32,49,32,48,48,48,32,48,48,48,32,115,121,109,98,111,108,115,46,32,77,111,110,116,104,32,108,105,109,105,116,32,105,115,32,49,48,32,48,48,48,32,48,48,48,32,115,121,109,98,111,108,115,46],"value":"Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."},
 {"hash":136973012,"name":"ttl2settings.cbreopenprojects.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,115,32,97,116,32,115,116,97,114,116],"value":"Reopen projects at start"},
-{"hash":5680834,"name":"ttl2settings.gbother.caption","sourcebytes":[79,116,104,101,114],"value":"Other"}
+{"hash":5680834,"name":"ttl2settings.gbother.caption","sourcebytes":[79,116,104,101,114],"value":"Other"},
+{"hash":7060910,"name":"ttl2settings.cbremovetags.caption","sourcebytes":[82,101,109,111,118,101,32,116,97,103,115,32,111,110,32,116,114,97,110,115,108,97,116,105,111,110],"value":"Remove tags on translation"}
 ]}

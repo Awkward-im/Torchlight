@@ -1,7 +1,7 @@
 object TL2Settings: TTL2Settings
-  Left = 389
+  Left = 384
   Height = 561
-  Top = 387
+  Top = 208
   Width = 875
   BorderStyle = bsNone
   ClientHeight = 561
@@ -422,6 +422,16 @@ object TL2Settings: TTL2Settings
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 4
     Caption = 'Other'
+    ClientHeight = 29
+    ClientWidth = 451
     TabOrder = 16
+    object cbRemoveTags: TCheckBox
+      Left = 8
+      Height = 19
+      Top = 0
+      Width = 164
+      Caption = 'Remove tags on translation'
+      TabOrder = 0
+    end
   end
 end

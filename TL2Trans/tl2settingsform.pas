@@ -24,6 +24,7 @@ type
     cbImportParts: TCheckBox;
     cbAutoAsPartial: TCheckBox;
     cbReopenProjects: TCheckBox;
+    cbRemoveTags: TCheckBox;
     edImportDir: TDirectoryEdit;
     edDefaultFile: TFileNameEdit;
     edFilterWords: TEdit;
@@ -103,6 +104,7 @@ uses
   iso639,
   trclass,
 
+  TL2Text,
   TL2DataModule;
 
 resourcestring
@@ -114,9 +116,15 @@ resourcestring
 function Translate(const src:AnsiString):AnsiString;
 var
   ltr:TTranslateBase;
+  ls:string;
   lcode:integer;
 begin
   result:=src;
+
+  if TL2Settings.cbRemoveTags.Checked then
+    ls:=RemoveTags(src)
+  else
+    ls:=src;
 
   case LowerCase(TL2Settings.lbTranslators.Items[
                  TL2Settings.lbTranslators.ItemIndex]) of
@@ -193,6 +201,7 @@ const
   sFilter       = 'filter';
   sAutoPartial  = 'autoaspartial';
   sReopenFiles  = 'reopenfiles';
+  sRemoveTags   = 'removetags';
 
   sGroupHeight  = 'groupheight';
 
@@ -316,6 +325,9 @@ begin
   config.WriteString(sNSBase+':'+sTranslation,sTranslator,
     lbTranslators.Items[lbTranslators.ItemIndex]);
 
+  //--- Other
+  config.WriteBool(sNSBase+':'+sSectSettings,sRemoveTags,cbRemoveTags.Checked);
+
   //--- Special
   config.WriteString(sNSBase+':'+sSectSettings,sFilter,edFilterWords.Caption);
 
@@ -369,6 +381,9 @@ begin
   if Pos('underline',ls)<>0 then lstyle:=lstyle+[fsUnderline];
   if Pos('strikeout',ls)<>0 then lstyle:=lstyle+[fsStrikeOut];
   TL2DM.TL2Font.Style:=lstyle;
+
+  //--- Other
+  cbRemoveTags.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sRemoveTags,true);
 
   //--- Special
   edFilterWords.Caption:=config.ReadString(sNSBase+':'+sSectSettings,sFilter,defFilter);

@@ -1,0 +1,34 @@
+TL1:
+  Version = 0x00000001
+  Attrib name in file
+  Text is UTF16LE
+TL2:
+  Version = 0x00000002
+  Attrib name in Tags.dat
+  Text is UTF16LE
+TL3:
+  Version = 0x06
+  Attrib name in Tags.dat
+  Text is UTF8
+
+1b or 4b - version
+4b - amount of dictionary entries
+  4b - hash
+  2b - name length
+  xb - name
+------------------------
+4b - id (name) of group
+4b - elements amount
+  4b - id (name) of tag
+  4b - element type
+      t_integer      = 1
+      t_float        = 2
+      t_double       = 3
+      t_unsigned_int = 4
+      t_string       = 5
+      t_bool         = 6
+      t_integer64    = 7
+      t_translate    = 8
+  4b or 8b - data (8b is for int64 or double)
+4b - sub-group amount
+<next group block>

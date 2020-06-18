@@ -103,7 +103,7 @@ msgstr "Заметки"
 
 #: tl2projectform.saffected
 msgid " line(s) affected"
-msgstr "строк(а/и) исправлено"
+msgstr " строк(а/и) исправлено"
 
 #: tl2projectform.sall
 msgid "&All"
@@ -273,7 +273,7 @@ msgstr "Собрать &Перевод"
 
 #: tmaintl2transform.filebuild.hint
 msgid "Build translation"
-msgstr ""
+msgstr "Построить перевод"
 
 #: tmaintl2transform.fileexit.caption
 msgid "E&xit"
@@ -348,13 +348,11 @@ msgid "About program"
 msgstr "О программе"
 
 #: tmaintl2transform.helpnotes.caption
-#, fuzzy
 msgctxt "tmaintl2transform.helpnotes.caption"
 msgid "Show Notes"
 msgstr "Показать заметки"
 
 #: tmaintl2transform.helpnotes.hint
-#, fuzzy
 msgctxt "tmaintl2transform.helpnotes.hint"
 msgid "Show Notes"
 msgstr "Показать заметки"
@@ -574,6 +572,18 @@ msgstr "Экспорт частично переведённого текста"
 msgid "Mark imported lines as partial"
 msgstr "Пометить импортированное как частичное"
 
+#: ttl2settings.cbremovetags.caption
+msgid "Remove tags on translation"
+msgstr "Удалять теги перед переводом"
+
+#: ttl2settings.cbreopenprojects.caption
+msgid "Reopen projects at start"
+msgstr "Переоткрыть проекты при запуске"
+
+#: ttl2settings.gbother.caption
+msgid "Other"
+msgstr "Прочее"
+
 #: ttl2settings.gbtranslategoogle.caption
 msgid "Google Translation"
 msgstr "Перевод Google"
@@ -582,6 +592,11 @@ msgstr "Перевод Google"
 msgctxt "ttl2settings.gbtranslateyandex.caption"
 msgid "Yandex Translation"
 msgstr "Перевод Яндекса"
+
+#: ttl2settings.gbtranslation.caption
+msgctxt "ttl2settings.gbtranslation.caption"
+msgid "Translation (DblClick to Toggle)"
+msgstr "Перевод (Двойной клик для переключения)"
 
 #: ttl2settings.lbladdfile.caption
 msgid "Additional files"
@@ -647,4 +662,3 @@ msgstr "Рабочий каталог"
 msgctxt "ttl2settings.lblyandexnote.caption"
 msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr "Размер текста - не более 10Кб. Дневной лимит - 1 000 000 символов, месячный - 10 000 000 символов."
-

@@ -554,6 +554,18 @@ msgstr "Exportar texto traducido parcialmente"
 msgid "Mark imported lines as partial"
 msgstr "Marcar lineas importadas como parciales"
 
+#: ttl2settings.cbremovetags.caption
+msgid "Remove tags on translation"
+msgstr "Eliminar etiquetas en la traducción"
+
+#: ttl2settings.cbreopenprojects.caption
+msgid "Reopen projects at start"
+msgstr "Reapertura de proyectos al inicio"
+
+#: ttl2settings.gbother.caption
+msgid "Other"
+msgstr "Otro"
+
 #: ttl2settings.gbtranslategoogle.caption
 msgid "Google Translation"
 msgstr "Traduccion Google"
@@ -561,6 +573,11 @@ msgstr "Traduccion Google"
 #: ttl2settings.gbtranslateyandex.caption
 msgid "Yandex Translation"
 msgstr "Traduccion Yandex"
+
+#: ttl2settings.gbtranslation.caption
+msgctxt "ttl2settings.gbtranslation.caption"
+msgid "Translation (DblClick to Toggle)"
+msgstr "Traducción (DblClick to Alternar)"
 
 #: ttl2settings.lbladdfile.caption
 msgid "Additional files"

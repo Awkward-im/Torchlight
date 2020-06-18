@@ -532,12 +532,29 @@ msgstr ""
 msgid "Mark imported lines as partial"
 msgstr ""
 
+#: ttl2settings.cbremovetags.caption
+msgid "Remove tags on translation"
+msgstr ""
+
+#: ttl2settings.cbreopenprojects.caption
+msgid "Reopen projects at start"
+msgstr ""
+
+#: ttl2settings.gbother.caption
+msgid "Other"
+msgstr ""
+
 #: ttl2settings.gbtranslategoogle.caption
 msgid "Google Translation"
 msgstr ""
 
 #: ttl2settings.gbtranslateyandex.caption
 msgid "Yandex Translation"
+msgstr ""
+
+#: ttl2settings.gbtranslation.caption
+msgctxt "ttl2settings.gbtranslation.caption"
+msgid "Translation (DblClick to Toggle)"
 msgstr ""
 
 #: ttl2settings.lbladdfile.caption

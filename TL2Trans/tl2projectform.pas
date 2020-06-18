@@ -1459,6 +1459,7 @@ begin
       lcnt:=0;
       for fcnt:=0 to OpenDialog.Files.Count-1 do
       begin
+        ldata.LoadInfo(OpenDialog.Files[fcnt]);
         if ldata.LoadFromFile(OpenDialog.Files[fcnt])>0 then
         begin
           OnSBUpdate(Self,sImporting+' '+OpenDialog.Files[fcnt]+' - '+sCheckTheSame);

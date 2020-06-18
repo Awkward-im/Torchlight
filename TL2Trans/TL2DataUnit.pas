@@ -592,7 +592,7 @@ end;
 function TTL2Translation.LoadFromFile(const fname:AnsiString):integer;
 var
   slin:TStringList;
-  s,lsrc:AnsiString;
+  s,lsrc,ldst:AnsiString;
   lcnt,lline:integer;
   i,stage:integer;
 begin
@@ -623,75 +623,98 @@ begin
     if s<>'' then
     begin
       case stage of
+        // <STRING>ORIGINAL:
+        // <STRING>TRANSLATION:
+        // [/TRANSLATION]
+        3: begin
+          i:=0;
+          if (lsrc='') then
+          begin
+            i:=Pos(sOriginal,s);
+            if i<>0 then lsrc:=Copy(s,i+Length(sOriginal));
+          end;
+
+          if (i=0) and (ldst='') then
+          begin
+            i:=Pos(sTranslated,s);
+            if i<>0 then ldst:=Copy(s,i+Length(sTranslated));
+          end;
+
+          if (i=0) then
+          begin
+            if Pos(sEndBlock,s)<>0 then
+            begin
+              stage:=2;
+
+              if (lsrc<>'') and (ldst<>'') then
+              begin
+                result:=0;
+                i:=AddString(lsrc,ldst);
+                if i>0 then
+                begin
+                  if Length(TmpInfo)>0 then
+                  begin
+                    arText[i-1].aref:=TmpInfo[lcnt]._ref;
+                    if TmpInfo[lcnt]._part then
+                      arText[i-1].atype:=stPartial;
+                  end
+                  else
+                  begin
+                    arText[i-1].aref:=-1;
+                  end;
+                  inc(result);
+                end
+                else
+                begin
+                  if Length(TmpInfo)>0 then
+                    AddDouble(-i-1,TmpInfo[lcnt]._ref)
+                  else
+                    AddDouble(-i-1,-1);
+                end;
+                inc(lcnt);
+              end
+              else if lsrc='' then
+              begin
+                Error(3,fname,lline); // no original text
+                result:=-3;
+                break;
+              end
+              else if ldst='' then
+              begin
+                Error(4,fname,lline); // no translated text
+                result:=-4;
+                break;
+              end;
+
+            end
+            else
+            begin
+              Error(5,fname,lline); // no end of block
+              result:=-5;
+//??            break;
+            end;
+          end;
+
+        end;
+
+        // [TRANSLATION] and [/TRANSLATIONS]
         2: begin
-          if      Pos(sBeginBlock,s)<>0 then stage:=3
-          else if Pos(sEndFile   ,s)<>0 then break // end of file
+          if Pos(sBeginBlock,s)<>0 then
+          begin
+            stage:=3;
+            lsrc:='';
+            ldst:='';
+          end
+          else if Pos(sEndFile,s)<>0 then break // end of file
           else
           begin
             Error(2,fname,lline); // no block start
             result:=-2;
-            break;
+//??            break;
           end;
         end;
-        3: begin
-          i:=Pos(sOriginal,s);
-          if i<>0 then
-          begin
-            stage:=4;
-            lsrc:=Copy(s,i+Length(sOriginal),Length(s));
-          end
-          else
-          begin
-            Error(3,fname,lline); // no original text
-            result:=-3;
-            break;
-          end;
-        end;
-        4: begin
-          if Pos(sTranslated,s)<>0 then
-          begin
-            stage:=5;
-            i:=AddString(lsrc,Copy(s,i+Length(sTranslated)));
-            if i>0 then
-            begin
-              if Length(TmpInfo)>0 then
-              begin
-                arText[i-1].aref:=TmpInfo[lcnt]._ref;
-                if TmpInfo[lcnt]._part then
-                  arText[i-1].atype:=stPartial;
-              end
-              else
-              begin
-                arText[i-1].aref:=-1;
-              end;
-              inc(result);
-            end
-            else
-            begin
-              if Length(TmpInfo)>0 then
-                AddDouble(-i-1,TmpInfo[lcnt]._ref)
-              else
-                AddDouble(-i-1,-1);
-            end;
-            inc(lcnt);
-          end
-          else 
-          begin
-            Error(4,fname,lline); // no translated text
-            result:=-4;
-            break;
-          end;
-        end;
-        5: begin
-          if Pos(sEndBlock,s)<>0 then
-            stage:=2
-          else
-          begin
-            Error(5,fname,lline); // no end of block
-            result:=-5;
-            break;
-          end;
-        end;
+
+        // [TRANSLATIONS]
         1: begin
           if Pos(sBeginFile,s)<>0 then
             stage:=2
@@ -706,6 +729,7 @@ begin
     end;
     inc(lline);
   end;
+
   // if it was preload, we points to project start
   if Mode in [tmDefault,tmMod] then
     cntStart:=cntText;
@@ -829,24 +853,29 @@ end;
 procedure TTL2Translation.LoadInfo(const aname:AnsiString);
 var
   lstrm:tMemoryStream;
+  ls:string;
   i,lsize:integer;
 begin
-  lstrm:=tMemoryStream.Create;
-  try
-    lstrm.LoadFromFile(ChangeFileExt(aname,'.ref'));
-    ref.LoadFromStream(lstrm);
+  ls:=ChangeFileExt(aname,'.ref');
+  if FileExists(ls) then
+  begin
+    lstrm:=tMemoryStream.Create;
+    try
+      lstrm.LoadFromFile(ls);
+      ref.LoadFromStream(lstrm);
 
-    lsize:=lstrm.ReadDWord();
-    SetLength(TmpInfo,lsize);
+      lsize:=lstrm.ReadDWord();
+      SetLength(TmpInfo,lsize);
 
-    for i:=0 to lsize-1 do
-    begin
-      TmpInfo[i]._ref :=integer(lstrm.ReadDWord());
-      TmpInfo[i]._part:=lstrm.ReadByte ()<>0;
+      for i:=0 to lsize-1 do
+      begin
+        TmpInfo[i]._ref :=integer(lstrm.ReadDWord());
+        TmpInfo[i]._part:=lstrm.ReadByte ()<>0;
+      end;
+    except
     end;
-  except
+    lstrm.Free;
   end;
-  lstrm.Free;
 end;
 
 //===== Basic =====

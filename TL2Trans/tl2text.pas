@@ -2,6 +2,8 @@ unit TL2Text;
 
 interface
 
+function RemoveTags(const src:AnsiString):AnsiString;
+
 function RemoveColor(const textin:AnsiString; var textout:AnsiString):boolean;
 function InsertColor(const aselected, acolor:AnsiString):AnsiString;
 
@@ -82,6 +84,12 @@ begin
   end;
   SetLength(ls,j);
   textout:=ls;
+end;
+
+function RemoveTags(const src:AnsiString):AnsiString;
+begin
+  RemoveColor(src,result);
+  result:=StringReplace(result,'\n',' ',[rfReplaceAll]);
 end;
 
 procedure SetFilterWords(const atext:AnsiString);
