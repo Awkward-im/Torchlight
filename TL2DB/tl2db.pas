@@ -51,7 +51,7 @@ implementation
 
 uses
   sysutils,
-  sqlite3;
+  sqlite3dyn;
 
 var
   db:PSQLite3;
@@ -493,12 +493,30 @@ var
   lfname:string;
   i:integer;
 begin
-//InitializeSqliteANSI();
-
   result:=false;
   db:=nil;
+
+  try
+    InitializeSQlite();
+  except
+    exit;
+  end;
+
   if fname='' then lfname:=TL2DataBase else lfname:=fname;
 
+  if fileExists(lfname) then
+  begin
+    if sqlite3_open(':memory:',@db)=SQLITE_OK then
+    begin
+      try
+        result:=CopyFromFile(db,PChar(lfname))=SQLITE_OK;
+      except
+        sqlite3_close(db);
+        db:=nil;
+      end;
+    end;
+  end;
+(*
   Assign(f,lfname);
 {$I-}
   Reset(f);
@@ -520,11 +538,13 @@ begin
       end;
     end;
   end;
+*)
 end;
 
 procedure FreeBases;
 begin
   if db<>nil then sqlite3_close(db);
+  ReleaseSqlite;
 end;
 
 
