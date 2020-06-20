@@ -1,3 +1,5 @@
+DAT ANIMATION etc binary format
+
 TL1:
   Version = 0x00000001
   Attrib name in file

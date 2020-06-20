@@ -18,9 +18,13 @@ function  ReadInteger    (var buf:PByte):Int32; export;
 function  ReadUnsigned   (var buf:PByte):UInt32; export;
 function  ReadInteger64  (var buf:PByte):Int64; export;
 function  ReadFloat      (var buf:PByte):Single; export;
+function  ReadDouble     (var buf:PByte):Double; export;
 procedure ReadData       (var buf:PByte; var dst; alen:integer); export;
 function  ReadByteString (var buf:PByte):PWideChar; export;
 function  ReadShortString(var buf:PByte):PWideChar; export;
+
+function  ReadShortStringUTF8(var buf:PByte):PAnsiChar; export;
+
 //procedure WriteByteString (var buf:PByte; const astr:string);
 //procedure WriteShortString(var buf:PByte; const astr:string);
 
@@ -34,6 +38,7 @@ procedure WriteInteger    (var buf:PByte; aval:Int32); export;
 procedure WriteUnsigned   (var buf:PByte; aval:UInt32); export;
 procedure WriteInteger64  (var buf:PByte; aval:Int64); export;
 procedure WriteFloat      (var buf:PByte; aval:Single); export;
+procedure WriteDouble     (var buf:PByte; aval:Double); export;
 procedure WriteData       (var buf:PByte; var aval; alen:integer); export;
 procedure WriteByteString (var buf:PByte; aval:PWideChar); export;
 procedure WriteShortString(var buf:PByte; aval:PWideChar); export;
@@ -93,6 +98,11 @@ begin
   result:=pSingle(buf)^; inc(buf,SizeOf(Single));
 end;
 
+function ReadDouble(var buf:PByte):Double;
+begin
+  result:=pDouble(buf)^; inc(buf,SizeOf(Double));
+end;
+
 procedure ReadData(var buf:PByte; var dst; alen:integer);
 begin
   move(buf^,pByte(@dst)^,alen); inc(buf,alen);
@@ -122,6 +132,21 @@ begin
   begin
     GetMem(result,(lsize+1)*SizeOf(WideChar));
     ReadData(buf,result^,lsize*SizeOf(WideChar));
+    result[lsize]:=#0;
+  end
+  else
+    result:=nil;
+end;
+
+function ReadShortStringUTF8(var buf:PByte):PAnsiChar;
+var
+  lsize:cardinal;
+begin
+  lsize:=ReadWord(buf);
+  if lsize>0 then
+  begin
+    GetMem(result,(lsize+1));
+    ReadData(buf,result^,lsize);
     result[lsize]:=#0;
   end
   else
@@ -168,6 +193,11 @@ end;
 procedure WriteFloat(var buf:PByte; aval:Single);
 begin
   pSingle(buf)^:=aval; inc(buf,SizeOf(Single));
+end;
+
+procedure WriteDouble(var buf:PByte; aval:Double);
+begin
+  pDouble(buf)^:=aval; inc(buf,SizeOf(Double));
 end;
 
 procedure WriteData(var buf:PByte; var aval; alen:integer);

@@ -1,0 +1,67 @@
+TL2:
+[Layout]
+	<INTEGER>VERSION:4
+	<UNSIGNED INT>COUNT:2
+	[OBJECTS]
+		[BASEOBJECT]
+			[PROPERTIES]
+				<STRING>DESCRIPTOR:Sound
+				<STRING>NAME:Sound
+				<INTEGER64>PARENTID:-1
+				<INTEGER64>ID:8165396734222092315
+				<FLOAT>RADIUS:10
+				<STRING>GUID:-8509989225752030754
+			[/PROPERTIES]
+		[/BASEOBJECT]
+		[BASEOBJECT]
+			[PROPERTIES]
+				<STRING>DESCRIPTOR:Layout Link Particle
+				<STRING>NAME:Layout Link Particle
+				<INTEGER64>PARENTID:-1
+				<INTEGER64>ID:1074874838815905910
+				<STRING>LAYOUT FILE:MEDIA/PARTICLES/OBJECTS/RED_PORTAL.LAYOUT
+			[/PROPERTIES]
+		[/BASEOBJECT]
+	[/OBJECTS]
+[/Layout]
+
+  1b - 0x0B = version
+  1b - = 4 = <INTEGER>VERSION: 4
+  4b = ?? offset
+  2b - = 2 = <UNSIGNED INT>COUNT: 2
+
+  [OBJECTS]
+    [BASEOBJECT]
+      4b - length (included)
+      [PROPERTIES]
+        1b - 0x0D (OBJECT, NAME:Sound)
+        8b - <INTEGER64>ID:8165396734222092315
+
+        2b - length (excluding)
+        1b - 0x64 (NAME:RADIUS, TYPEOFDATA:FLOAT, CATEGORY:SOUND)
+        4b - <FLOAT>RADIUS:10
+
+        2b - length (excluding)
+        1b - 0x67 (not found in objects.dat)
+        2b+xb = <STRING>GUID:-8509989225752030754
+
+        00 00 + 00 00 00 00  (children)
+
+      [/PROPERTIES]
+    [/BASEOBJECT]
+    [BASEOBJECT]
+       4b - length (included)
+      [PROPERTIES]
+       1b - = 0x07 (OBJECT, NAME:Layout Link Particle)
+       8b - <INTEGER64>ID:1074874838815905910
+
+       ?? 00 00 01
+
+       2b - length (excluding)
+       1b - 0x62 = (NAME:LAYOUT FILE, TYPEOFDATA:STRING, CATEGORY:RESOURCES)
+       2b+xb     = <STRING>LAYOUT FILE:MEDIA/PARTICLES/OBJECTS/RED_PORTAL.LAYOUT
+      [/PROPERTIES]
+      00 00 + 
+      00 00 00 00   (children)
+    [/BASEOBJECT]
+  [/OBJECTS]
