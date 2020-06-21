@@ -37,6 +37,7 @@ object TL2Project: TTL2Project
       Top = 8
       Width = 23
       Action = actHideReady
+      AllowAllUp = True
       GroupIndex = 3
     end
     object sbExportFile: TSpeedButton
@@ -73,6 +74,7 @@ object TL2Project: TTL2Project
       Top = 8
       Width = 23
       Action = actShowSimilar
+      Visible = False
     end
     object sbShowDoubles: TSpeedButton
       Left = 239
@@ -131,6 +133,7 @@ object TL2Project: TTL2Project
       Top = 8
       Width = 23
       Action = actPartAsReady
+      Visible = False
     end
     object sbShowTemplate: TSpeedButton
       Left = 56
@@ -140,6 +143,7 @@ object TL2Project: TTL2Project
       Action = actShowTemplate
       AllowAllUp = True
       GroupIndex = 4
+      Visible = False
     end
     object sbCheck: TSpeedButton
       Left = 312
@@ -332,7 +336,7 @@ object TL2Project: TTL2Project
     end
     object actCheckTranslation: TAction
       Hint = 'Check for notes of translation'
-      ImageIndex = 17
+      ImageIndex = 25
       OnExecute = actCheckTranslationExecute
       ShortCut = 32848
     end

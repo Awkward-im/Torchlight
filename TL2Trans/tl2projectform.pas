@@ -1647,7 +1647,8 @@ begin
 
   if actHideReady.Checked and
     (ltrans<>'') and
-    (lstatus=stReady) then exit;
+    ((lstatus=stReady) or
+     (TL2Settings.cbHidePartial.Checked)) then exit;
 
   lsrc:=data.Line [idx];
 
@@ -1712,6 +1713,12 @@ procedure TTL2Project.FormCreate(Sender: TObject);
 begin
   data.Init;
   data.OnFileScan:=@ProjectFileScan;
+
+{$IFDEF DEBUG}
+  sbShowSimilar .Visible:=true;
+  sbShowDoubles .Visible:=true;
+  sbShowTemplate.Visible:=true;
+{$ENDIF}
 
   SetFilterWords(TL2Settings.edFilterWords.Caption);
   Preload();

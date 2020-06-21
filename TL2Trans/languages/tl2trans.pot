@@ -528,6 +528,14 @@ msgstr ""
 msgid "Export partially translated text"
 msgstr ""
 
+#: ttl2settings.cbhidepartial.caption
+msgid "Hide Partial with Translated"
+msgstr ""
+
+#: ttl2settings.cbhidepartial.hint
+msgid "Hide partially translated with translated by \"Hide ready\" button"
+msgstr ""
+
 #: ttl2settings.cbimportparts.caption
 msgid "Mark imported lines as partial"
 msgstr ""

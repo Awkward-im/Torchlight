@@ -550,6 +550,14 @@ msgstr "Marcar autocorregido como parcial"
 msgid "Export partially translated text"
 msgstr "Exportar texto traducido parcialmente"
 
+#: ttl2settings.cbhidepartial.caption
+msgid "Hide Partial with Translated"
+msgstr ""
+
+#: ttl2settings.cbhidepartial.hint
+msgid "Hide partially translated with translated by \"Hide ready\" button"
+msgstr ""
+
 #: ttl2settings.cbimportparts.caption
 msgid "Mark imported lines as partial"
 msgstr "Marcar lineas importadas como parciales"
@@ -642,3 +650,4 @@ msgstr "Carpeta de trabajo"
 #: ttl2settings.lblyandexnote.caption
 msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr "Tamaño del texto es inferior a 10Kb. Limite diario es 1.000.000 caracteres. Limite mensual es 10.000.000 caracteres."
+

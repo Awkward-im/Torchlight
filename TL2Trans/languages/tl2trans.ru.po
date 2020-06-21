@@ -568,6 +568,14 @@ msgstr "Пометить Автоисправление частичным"
 msgid "Export partially translated text"
 msgstr "Экспорт частично переведённого текста"
 
+#: ttl2settings.cbhidepartial.caption
+msgid "Hide Partial with Translated"
+msgstr "Скрывать неполный перевод вместе с полным"
+
+#: ttl2settings.cbhidepartial.hint
+msgid "Hide partially translated with translated by \"Hide ready\" button"
+msgstr "Скрывать частично переведёные строки по действию \"скрывать переведённые\""
+
 #: ttl2settings.cbimportparts.caption
 msgid "Mark imported lines as partial"
 msgstr "Пометить импортированное как частичное"

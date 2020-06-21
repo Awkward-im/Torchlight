@@ -5,9 +5,6 @@
 {"hash":247520259,"name":"ttl2settings.lbladdfile.caption","sourcebytes":[65,100,100,105,116,105,111,110,97,108,32,102,105,108,101,115],"value":"Additional files"},
 {"hash":2857157,"name":"ttl2settings.bbsavesettings.caption","sourcebytes":[38,83,97,118,101],"value":"&Save"},
 {"hash":133808644,"name":"ttl2settings.cbexportparts.caption","sourcebytes":[69,120,112,111,114,116,32,112,97,114,116,105,97,108,108,121,32,116,114,97,110,115,108,97,116,101,100,32,116,101,120,116],"value":"Export partially translated text"},
-{"hash":2807380,"name":"ttl2settings.bbfontedit.caption","sourcebytes":[38,70,111,110,116],"value":"&Font"},
-{"hash":200534807,"name":"ttl2settings.lblfilter.caption","sourcebytes":[87,111,114,100,115,32,116,111,32,101,120,99,108,117,100,101,32,102,114,111,109,32,99,111,109,112,97,114,105,110,103],"value":"Words to exclude from comparing"},
-{"hash":107700020,"name":"ttl2settings.lblfilternote.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,32,116,111,32,97,112,112,108,121,32,110,101,119,32,108,105,115,116],"value":"Reopen project to apply new list"},
 {"hash":175233177,"name":"ttl2settings.lblimportdir.caption","sourcebytes":[73,109,112,111,114,116,105,110,103,32,102,105,108,101,115,32,100,105,114,101,99,116,111,114,121],"value":"Importing files directory"},
 {"hash":180741772,"name":"ttl2settings.cbimportparts.caption","sourcebytes":[77,97,114,107,32,105,109,112,111,114,116,101,100,32,108,105,110,101,115,32,97,115,32,112,97,114,116,105,97,108],"value":"Mark imported lines as partial"},
 {"hash":114234821,"name":"ttl2settings.lbllang.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110,32,108,97,110,103,117,97,103,101],"value":"Translation language"},
@@ -22,7 +19,12 @@
 {"hash":105599369,"name":"ttl2settings.lblapikeyyandex.caption","sourcebytes":[65,80,73,32,75,101,121],"value":"API Key"},
 {"hash":240489369,"name":"ttl2settings.lblgetapikeyyandex.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
 {"hash":234828510,"name":"ttl2settings.lblyandexnote.caption","sourcebytes":[84,101,120,116,32,108,101,110,103,116,104,32,105,115,32,110,111,116,32,109,111,114,101,32,116,104,97,110,32,49,48,75,98,46,32,68,97,121,32,108,105,109,105,116,32,105,115,32,49,32,48,48,48,32,48,48,48,32,115,121,109,98,111,108,115,46,32,77,111,110,116,104,32,108,105,109,105,116,32,105,115,32,49,48,32,48,48,48,32,48,48,48,32,115,121,109,98,111,108,115,46],"value":"Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."},
-{"hash":136973012,"name":"ttl2settings.cbreopenprojects.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,115,32,97,116,32,115,116,97,114,116],"value":"Reopen projects at start"},
 {"hash":5680834,"name":"ttl2settings.gbother.caption","sourcebytes":[79,116,104,101,114],"value":"Other"},
-{"hash":7060910,"name":"ttl2settings.cbremovetags.caption","sourcebytes":[82,101,109,111,118,101,32,116,97,103,115,32,111,110,32,116,114,97,110,115,108,97,116,105,111,110],"value":"Remove tags on translation"}
+{"hash":7060910,"name":"ttl2settings.cbremovetags.caption","sourcebytes":[82,101,109,111,118,101,32,116,97,103,115,32,111,110,32,116,114,97,110,115,108,97,116,105,111,110],"value":"Remove tags on translation"},
+{"hash":200534807,"name":"ttl2settings.lblfilter.caption","sourcebytes":[87,111,114,100,115,32,116,111,32,101,120,99,108,117,100,101,32,102,114,111,109,32,99,111,109,112,97,114,105,110,103],"value":"Words to exclude from comparing"},
+{"hash":107700020,"name":"ttl2settings.lblfilternote.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,32,116,111,32,97,112,112,108,121,32,110,101,119,32,108,105,115,116],"value":"Reopen project to apply new list"},
+{"hash":2807380,"name":"ttl2settings.bbfontedit.caption","sourcebytes":[38,70,111,110,116],"value":"&Font"},
+{"hash":136973012,"name":"ttl2settings.cbreopenprojects.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,115,32,97,116,32,115,116,97,114,116],"value":"Reopen projects at start"},
+{"hash":242355710,"name":"ttl2settings.cbhidepartial.hint","sourcebytes":[72,105,100,101,32,112,97,114,116,105,97,108,108,121,32,116,114,97,110,115,108,97,116,101,100,32,119,105,116,104,32,116,114,97,110,115,108,97,116,101,100,32,98,121,32,34,72,105,100,101,32,114,101,97,100,121,34,32,98,117,116,116,111,110],"value":"Hide partially translated with translated by \"Hide ready\" button"},
+{"hash":120270388,"name":"ttl2settings.cbhidepartial.caption","sourcebytes":[72,105,100,101,32,80,97,114,116,105,97,108,32,119,105,116,104,32,84,114,97,110,115,108,97,116,101,100],"value":"Hide Partial with Translated"}
 ]}

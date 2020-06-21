@@ -94,7 +94,7 @@ object TL2Settings: TTL2Settings
     ParentColor = False
   end
   object lbAddFileList: TListBox
-    Left = 8
+    Left = 7
     Height = 157
     Top = 395
     Width = 364
@@ -112,7 +112,7 @@ object TL2Settings: TTL2Settings
     Default = True
     Kind = bkOK
     OnClick = bbSaveSettingsClick
-    TabOrder = 9
+    TabOrder = 13
   end
   object sbAddonUp: TSpeedButton
     Left = 377
@@ -162,43 +162,6 @@ object TL2Settings: TTL2Settings
     Caption = 'Export partially translated text'
     TabOrder = 4
   end
-  object bbFontEdit: TBitBtn
-    Left = 7
-    Height = 26
-    Top = 341
-    Width = 70
-    AutoSize = True
-    Caption = '&Font'
-    Images = TL2DataModule.TL2ImageList
-    ImageIndex = 4
-    OnClick = btnFontEditClick
-    TabOrder = 7
-  end
-  object edFilterWords: TEdit
-    Left = 8
-    Height = 23
-    Top = 289
-    Width = 364
-    TabOrder = 6
-  end
-  object lblFilter: TLabel
-    Left = 8
-    Height = 15
-    Top = 271
-    Width = 364
-    AutoSize = False
-    Caption = 'Words to exclude from comparing'
-    ParentColor = False
-  end
-  object lblFilterNote: TLabel
-    Left = 8
-    Height = 17
-    Top = 318
-    Width = 364
-    AutoSize = False
-    Caption = 'Reopen project to apply new list'
-    ParentColor = False
-  end
   object edImportDir: TDirectoryEdit
     Left = 8
     Height = 23
@@ -243,7 +206,7 @@ object TL2Settings: TTL2Settings
     Height = 23
     Top = 4
     Width = 114
-    TabOrder = 10
+    TabOrder = 9
   end
   object lbLanguage: TListBox
     Left = 412
@@ -253,7 +216,7 @@ object TL2Settings: TTL2Settings
     Anchors = [akLeft, akBottom]
     ItemHeight = 0
     OnSelectionChange = lbLanguageSelectionChange
-    TabOrder = 11
+    TabOrder = 10
   end
   object lblProgramLanguage: TLabel
     Left = 412
@@ -273,7 +236,7 @@ object TL2Settings: TTL2Settings
     Width = 167
     Anchors = [akLeft, akBottom]
     ItemHeight = 0
-    TabOrder = 12
+    TabOrder = 11
   end
   object lblTranslators: TLabel
     Left = 608
@@ -292,16 +255,16 @@ object TL2Settings: TTL2Settings
     Top = 248
     Width = 176
     Caption = 'Mark Autocorrected as partial'
-    TabOrder = 13
+    TabOrder = 6
   end
   object gbTranslation: TGroupBox
     Left = 412
-    Height = 272
+    Height = 20
     Top = 40
     Width = 455
     Anchors = [akTop, akLeft, akRight]
     Caption = 'Translation (DblClick to Toggle)'
-    ClientHeight = 252
+    ClientHeight = 0
     ClientWidth = 451
     TabOrder = 14
     OnDblClick = gbTranslationClick
@@ -314,7 +277,7 @@ object TL2Settings: TTL2Settings
       Caption = 'Google Translation'
       ClientHeight = 65
       ClientWidth = 441
-      TabOrder = 0
+      TabOrder = 1
       object lblAPIKeyGoogle: TLabel
         Left = 4
         Height = 15
@@ -356,7 +319,7 @@ object TL2Settings: TTL2Settings
       Caption = 'Yandex Translation'
       ClientHeight = 122
       ClientWidth = 441
-      TabOrder = 1
+      TabOrder = 0
       object lblAPIKeyYandex: TLabel
         Left = 4
         Height = 15
@@ -401,30 +364,19 @@ object TL2Settings: TTL2Settings
       end
     end
   end
-  object cbReopenProjects: TCheckBox
-    AnchorSideLeft.Control = bbFontEdit
-    AnchorSideLeft.Side = asrBottom
-    Left = 85
-    Height = 19
-    Top = 344
-    Width = 144
-    BorderSpacing.Left = 8
-    Caption = 'Reopen projects at start'
-    TabOrder = 15
-  end
   object gbOther: TGroupBox
     AnchorSideTop.Control = gbTranslation
     AnchorSideTop.Side = asrBottom
     Left = 412
-    Height = 49
-    Top = 316
+    Height = 301
+    Top = 64
     Width = 455
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 4
     Caption = 'Other'
-    ClientHeight = 29
+    ClientHeight = 281
     ClientWidth = 451
-    TabOrder = 16
+    TabOrder = 12
     object cbRemoveTags: TCheckBox
       Left = 8
       Height = 19
@@ -433,5 +385,64 @@ object TL2Settings: TTL2Settings
       Caption = 'Remove tags on translation'
       TabOrder = 0
     end
+    object lblFilter: TLabel
+      Left = 8
+      Height = 15
+      Top = 32
+      Width = 364
+      AutoSize = False
+      Caption = 'Words to exclude from comparing'
+      ParentColor = False
+    end
+    object edFilterWords: TEdit
+      Left = 8
+      Height = 23
+      Top = 48
+      Width = 364
+      TabOrder = 1
+    end
+    object lblFilterNote: TLabel
+      Left = 8
+      Height = 17
+      Top = 80
+      Width = 364
+      AutoSize = False
+      Caption = 'Reopen project to apply new list'
+      ParentColor = False
+    end
+    object bbFontEdit: TBitBtn
+      Left = 8
+      Height = 26
+      Top = 248
+      Width = 70
+      Anchors = [akLeft, akBottom]
+      AutoSize = True
+      Caption = '&Font'
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 4
+      OnClick = btnFontEditClick
+      TabOrder = 3
+    end
+    object cbReopenProjects: TCheckBox
+      AnchorSideLeft.Side = asrBottom
+      Left = 8
+      Height = 19
+      Top = 112
+      Width = 144
+      BorderSpacing.Left = 8
+      Caption = 'Reopen projects at start'
+      TabOrder = 2
+    end
+  end
+  object cbHidePartial: TCheckBox
+    Left = 8
+    Height = 19
+    Hint = 'Hide partially translated with translated by "Hide ready" button'
+    Top = 272
+    Width = 165
+    Caption = 'Hide Partial with Translated'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 7
   end
 end

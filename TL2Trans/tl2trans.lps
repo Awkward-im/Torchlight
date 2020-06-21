@@ -9,7 +9,7 @@
         <Filename Value="tl2trans.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="23" Y="21"/>
+        <CursorPos X="49" Y="25"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -19,8 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
-        <TopLine Value="370"/>
-        <CursorPos X="34" Y="378"/>
+        <TopLine Value="435"/>
+        <CursorPos X="12" Y="220"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -29,12 +29,10 @@
         <Filename Value="tl2dataunit.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2DataUnit"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="680"/>
-        <CursorPos X="26" Y="701"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="528"/>
+        <CursorPos X="8" Y="542"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2edittext.pas"/>
@@ -44,9 +42,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2EditText"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="72"/>
-        <CursorPos Y="72"/>
-        <FoldState Value=" T46031 T7FIl T8iC2[E43iW0G2 pibjI08A T6iX012 T1iZ0D3]PcjQ029 T0id28A~"/>
+        <TopLine Value="336"/>
+        <CursorPos X="29" Y="361"/>
+        <FoldState Value=" T7FIs T8iF271T"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -67,10 +65,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TL2DataModule"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos Y="32"/>
-        <FoldState Value=" T4602 T7EJ9 T8I211 T3X03]71Y021*"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="16"/>
+        <CursorPos X="18" Y="32"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2projectform.pas"/>
@@ -78,9 +78,11 @@
         <ComponentName Value="TL2Project"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="493"/>
-        <CursorPos Y="507"/>
+        <TopLine Value="1635"/>
+        <CursorPos Y="1718"/>
+        <FoldState Value=" T46031 TLoG0709 p0+d24]H7IG{S T8j12J]FM-g8]73l9074 pj6jN0Z2 pkVlV0W]9iejZ]?]9cj20t4]9ZkE0u[j42kR0E3]Ig]sL2]I3jU036]IajC0Y6]Idl30K3]9Jk60l112 T1lA06[!4YjR0U]tkOlT0T[!4Xk20!5]kUmA0n[a5kL0D[R5jQ0H]jia]s2017]BckV063 T6lP02L p0@5015 T0lW246 piZiH829]^9iU4G7[/4iE2.[}V5O8D8[Z572JA]Z2jQ655]IciZ84F[r4kR46]IjJi16cB[{&apos;5d27D]9blE6904B7E TKzJ05}"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -92,12 +94,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="489"/>
-        <CursorPos X="19" Y="502"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="195"/>
+        <CursorPos X="61" Y="219"/>
+        <FoldState Value=" T3jU0i4 pjHmA0@6]91l1068 piYjJ03I"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2simform.pas"/>
@@ -107,10 +108,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SimForm"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="14"/>
-        <CursorPos X="41" Y="79"/>
-        <FoldState Value=" T46011 TLj2032 T7DKJ T8P24]L3i50I013 T1i60H[A50iC]S14 T6iQ012E"/>
-        <UsageCount Value="196"/>
+        <TopLine Value="10"/>
+        <CursorPos Y="133"/>
+        <FoldState Value=" T46011 TLj203]87DKJ T8P24]D3i50I4 T1j60F T0j82Cl"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="tl2refunit.pas"/>
@@ -120,7 +121,7 @@
         <TopLine Value="228"/>
         <CursorPos Y="255"/>
         <FoldState Value=" TL004 T4901 T8E2C]7CGH9 TMNO]C3iT0K912 T6iU013 T1iW0H[I50iY269,"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="103"/>
       </Unit>
       <Unit>
         <Filename Value="tl2notesform.pas"/>
@@ -133,7 +134,7 @@
         <TopLine Value="46"/>
         <CursorPos X="34" Y="59"/>
         <FoldState Value=" T46021 T7EEQ T8a21]D3iI0B7 piajK09 T1iJ0A313 T6jA012 T0je234E"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="95"/>
       </Unit>
       <Unit>
         <Filename Value="iso639.pas"/>
@@ -142,33 +143,36 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="43"/>
       </Unit>
       <Unit>
         <Filename Value="trclass.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="TRClass"/>
         <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="35"/>
+        <TopLine Value="516"/>
+        <CursorPos X="10" Y="531"/>
+        <UsageCount Value="43"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2text.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Text"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="541"/>
+        <CursorPos X="11" Y="561"/>
+        <UsageCount Value="25"/>
       </Unit>
     </Units>
+    <OtherDefines Count="1">
+      <Define0 Value="DEBUG"/>
+    </OtherDefines>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="tl2projectform.pas"/>
-        <Line Value="334"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="astr"/>

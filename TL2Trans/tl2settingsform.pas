@@ -18,16 +18,17 @@ type
   { TTL2Settings }
 
   TTL2Settings = class(TForm)
-    bbSaveSettings: TBitBtn;
     bbFontEdit: TBitBtn;
+    bbSaveSettings: TBitBtn;
     cbExportParts: TCheckBox;
     cbImportParts: TCheckBox;
     cbAutoAsPartial: TCheckBox;
-    cbReopenProjects: TCheckBox;
     cbRemoveTags: TCheckBox;
+    cbReopenProjects: TCheckBox;
+    cbHidePartial: TCheckBox;
+    edFilterWords: TEdit;
     edImportDir: TDirectoryEdit;
     edDefaultFile: TFileNameEdit;
-    edFilterWords: TEdit;
     edRootDir: TDirectoryEdit;
     edTransLang: TEdit;
     edWorkDir: TDirectoryEdit;
@@ -35,13 +36,13 @@ type
     gbTranslateGoogle: TGroupBox;
     gbTranslation: TGroupBox;
     gbOther: TGroupBox;
+    lblFilter: TLabel;
+    lblFilterNote: TLabel;
     lblTranslators: TLabel;
     lblProgramLanguage: TLabel;
     lblAPIKeyGoogle: TLabel;
     lblGetAPIKeyGoogle: TLabel;
     lblImportDir: TLabel;
-    lblFilterNote: TLabel;
-    lblFilter: TLabel;
     lblLang: TLabel;
     lblYandexNote: TLabel;
     lblGetAPIKeyYandex: TLabel;
@@ -202,6 +203,7 @@ const
   sAutoPartial  = 'autoaspartial';
   sReopenFiles  = 'reopenfiles';
   sRemoveTags   = 'removetags';
+  sHidePartial  = 'hidepartial';
 
   sGroupHeight  = 'groupheight';
 
@@ -292,6 +294,7 @@ begin
   config.WriteBool(sNSBase+':'+sSectSettings,sImportParts,cbImportParts   .Checked);
   config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAutoAsPartial .Checked);
   config.WriteBool(sNSBase+':'+sSectSettings,sReopenFiles,cbReopenProjects.Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sHidePartial,cbHidePartial   .Checked);
 
   //--- Addons
   config.EraseSection(sNSBase+':'+sSectAddon);
@@ -356,6 +359,7 @@ begin
   cbImportParts   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sImportParts,false);
   cbAutoAsPartial .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
   cbReopenProjects.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sReopenFiles,false);
+  cbHidePartial   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sHidePartial,false);
 
   //--- Addons
   lcnt:=config.ReadInteger(sNSBase+':'+sSectAddon,sAddFiles,0);

@@ -200,11 +200,12 @@ object EditTextForm: TEditTextForm
       ParentColor = False
     end
     object bbCancel: TBitBtn
-      Left = 370
+      Left = 368
       Height = 30
       Top = 3
       Width = 75
       Anchors = [akRight, akBottom]
+      Cancel = True
       DefaultCaption = True
       Kind = bkCancel
       ModalResult = 2

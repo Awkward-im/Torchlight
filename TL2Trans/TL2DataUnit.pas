@@ -677,13 +677,13 @@ begin
               begin
                 Error(3,fname,lline); // no original text
                 result:=-3;
-                break;
+//!!                break;
               end
               else if ldst='' then
               begin
                 Error(4,fname,lline); // no translated text
                 result:=-4;
-                break;
+//!!                break;
               end;
 
             end
