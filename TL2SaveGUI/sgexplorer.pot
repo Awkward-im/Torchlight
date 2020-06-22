@@ -77,6 +77,10 @@ msgstr ""
 msgid "Movies"
 msgstr ""
 
+#: formsavegame.rsnobase
+msgid "Can't load database"
+msgstr ""
+
 #: formsavegame.rspets
 msgid "Pets and allies"
 msgstr ""

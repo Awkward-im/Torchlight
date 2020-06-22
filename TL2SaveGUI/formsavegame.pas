@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
   Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
-  formButtons, formKeyBinding, formStatistic, formSettings,
+  formButtons, formKeyBinding, formStatistic, formSettings, formModList,
   formChar, formStat, formMap, formUnits, formSkills, formItems, formEffects;
 
 type
@@ -49,6 +49,7 @@ type
 
     FSettings  :TfmSettings;
     FMovies    :TfmMovies;
+    FModList   :TfmModList;
     FRecipes   :TfmRecipes;
     FKeyBinding:TfmKeyBinding;
     FQuests    :TfmQuests;
@@ -105,6 +106,7 @@ resourcestring
   rsUnits  = 'Units';
   rsProps  = 'Props';
   rsQItem  = 'Quest items';
+  rsNoBase = 'Can''t load database';
 
 const
   DefaultExt = '.dmp';
@@ -222,14 +224,19 @@ begin
 end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);
+var
+  i:integer;
 begin
   fmButtons  :=TfmButtons   .Create(Self); fmButtons  .Parent:=MainPanel;
   fmEffects  :=TfmEffects   .Create(Self);
 
   FSettings  :=TfmSettings  .Create(Self); FSettings  .Parent:=MainPanel;
-  LoadBases(FSettings.edDBFile.Text);
+  i:=LoadBases(FSettings.edDBFile.Text);
+  if i<>0 then
+    ShowMessage(rsNoBase+' '+IntToStr(i));
 
   FMovies    :=TfmMovies    .Create(Self); FMovies    .Parent:=MainPanel;
+  FModList   :=TfmModList   .Create(Self); FModList   .Parent:=MainPanel;
   FRecipes   :=TfmRecipes   .Create(Self); FRecipes   .Parent:=MainPanel;
   FKeyBinding:=TfmKeyBinding.Create(Self); FKeyBinding.Parent:=MainPanel;
   FQuests    :=TfmQuests    .Create(Self); FQuests    .Parent:=MainPanel;
@@ -288,7 +295,7 @@ end;
 
 procedure TfmSaveFile.MakeBackup(const fname:string);
 var
-  ldir,lname:string;
+  ldir:string;
 begin
   ldir:=ExtractFilePath(fname)+'\Backup';
   if not DirectoryExists(ldir) then
@@ -372,6 +379,7 @@ begin
 
   FSettings  .Visible:=false;
   FMovies    .Visible:=false;
+  FModList   .Visible:=false;
   FMaps      .Visible:=false;
   FRecipes   .Visible:=false;
   FKeyBinding.Visible:=false;
@@ -395,6 +403,7 @@ begin
     end;
 
     idxModList: begin
+      FModList.Visible:=true;
     end;
 
     idxKeyMapping: begin
@@ -417,7 +426,7 @@ begin
       case tvSaveGame.Selected.level of
         1: begin
           FChar.FillInfo(SGame.CharInfo, SGame);
-          FChar.Visible:=true;
+           FChar.Visible:=true;
         end;
         2: begin
           case lidx of

@@ -1038,6 +1038,7 @@ begin
 
   bbUpdate.Enabled:=false;
   FConfigured:=true;
+//  seLevel.SetFocus;
 end;
 
 //----- Update -----

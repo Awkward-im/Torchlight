@@ -50,6 +50,9 @@
         </CompilerOptions>
       </Item>
       <Item Name="Linux">
+        <MacroValues Count="1">
+          <Macro2 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
@@ -58,6 +61,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
+            <Libraries Value="D:\SVN\UpLazTrunk\cross\lib\x86_64-linux\"/>
             <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils\SQL"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
@@ -111,9 +115,9 @@
         </CompilerOptions>
       </Item>
       <SharedMatrixOptions Count="3">
-        <Item1 ID="081133727363" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
-        <Item2 ID="139172329324" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
-        <Item3 ID="078178333524" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
+        <Item1 ID="078178333524" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
+        <Item2 ID="610419731812" Modes="Linux" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+        <Item3 ID="002106091841" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
@@ -338,6 +342,14 @@
       <Unit>
         <Filename Value="addons.pas"/>
         <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formmodlist.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmModList"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formModList"/>
       </Unit>
     </Units>
   </ProjectOptions>
