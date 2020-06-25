@@ -81,14 +81,18 @@ end;
 
 procedure GetPetList(out alist:tPetArray);
 var
-  lSQL:string;
+  lwhere,lSQL:string;
   vm:pointer;
   i:integer;
 begin
   if db<>nil then
   begin
+    if ModFilter<>'' then
+      lwhere:=' WHERE '+ModFilter
+    else
+      lwhere:='';
     i:=0;
-    lSQL:='SELECT count(*) FROM pets';
+    lSQL:='SELECT count(*) FROM pets'+lwhere;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -101,7 +105,7 @@ begin
     if i>0 then
     begin
       SetLength(alist,i);
-      lSQL:='SELECT id, name, title, scale, icon FROM pets';
+      lSQL:='SELECT id, name, title, scale, icon FROM pets'+lwhere;
 
       if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
       begin

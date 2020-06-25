@@ -39,8 +39,11 @@ function GetTL2KeyType(acode:integer):string;
 
 procedure SetFilter(amods:TTL2ModList);
 procedure SetFilter(amods:TL2IdList);
+procedure RestFilter;
+function  IsInModList(const alist:string; aid:TL2ID):boolean;
+function  IsInModList(const alist:string; amods:TTL2ModList):boolean;
 
-function LoadBases(const fname:string=''):boolean;
+function  LoadBases(const fname:string=''):integer;
 procedure FreeBases;
 
 //======================================
@@ -54,8 +57,8 @@ uses
   sqlite3dyn;
 
 var
-  db:PSQLite3;
-  filter:string;
+  db:PSQLite3=nil;
+  ModFilter:string='';
 
 const
   TL2DataBase = 'tl2db2.db';
@@ -487,13 +490,11 @@ begin
   sqlite3_close(pFile);
 end;
 
-function LoadBases(const fname:string=''):boolean;
+function LoadBases(const fname:string=''):integer;
 var
-  f:file of byte;
   lfname:string;
-  i:integer;
 begin
-  result:=false;
+  result:=-1;
   db:=nil;
 
   try
@@ -509,36 +510,18 @@ begin
     if sqlite3_open(':memory:',@db)=SQLITE_OK then
     begin
       try
-        result:=CopyFromFile(db,PChar(lfname))=SQLITE_OK;
+        result:=CopyFromFile(db,PChar(lfname));
       except
         sqlite3_close(db);
         db:=nil;
+        result:=-1002;
       end;
-    end;
-  end;
-(*
-  Assign(f,lfname);
-{$I-}
-  Reset(f);
-  if IOResult=0 then
-  begin
-    i:=FileSize(f);
-    CloseFile(f);
-
-    if i>0 then
-    begin
-      if sqlite3_open(':memory:',@db)=SQLITE_OK then
-      begin
-        try
-          result:=CopyFromFile(db,PChar(lfname))=SQLITE_OK;
-        except
-          sqlite3_close(db);
-          db:=nil;
-        end;
-      end;
-    end;
-  end;
-*)
+    end
+    else
+      result:=-1001;
+  end
+  else
+    result:=-1000;
 end;
 
 procedure FreeBases;
@@ -553,16 +536,16 @@ var
   ls:string;
   i:integer;
 begin
-  filter:='(instr(modid,'' 0 '')>0';
+  ModFilter:='((modid='' 0 '')';
   if amods<>nil then
   begin
     for i:=0 to High(amods) do
     begin
       Str(amods[i].id,ls);
-      filter:=filter+') OR (instr(modid,'' '+ls+' '')>0';
+      ModFilter:=ModFilter+' OR (instr(modid,'' '+ls+' '')>0)';
     end;
   end;
-  filter:=filter+')';
+  ModFilter:=ModFilter+')';
 end;
 
 procedure SetFilter(amods:TL2IdList);
@@ -570,16 +553,53 @@ var
   ls:string;
   i:integer;
 begin
-  filter:='(instr(modid,'' 0 '')>0';
+  ModFilter:='((modid='' 0 '')';
   if amods<>nil then
   begin
     for i:=0 to High(amods) do
     begin
       Str(amods[i],ls);
-      filter:=filter+') OR (instr(modid,'' '+ls+' '')>0';
+      ModFilter:=ModFilter+' OR (instr(modid,'' '+ls+' '')>0)';
     end;
   end;
-  filter:=filter+')';
+  ModFilter:=ModFilter+')';
+end;
+
+procedure RestFilter;
+begin
+  ModFilter:='';
+end;
+
+function IsInModList(const alist:string; aid:TL2ID):boolean;
+var
+  ls:string;
+  i:integer;
+begin
+  result:=true;
+
+  if alist=' 0 ' then exit;
+
+  Str(aid,ls);
+  if Pos(' '+ls+' ',alist)<=0 then
+    result:=false;
+end;
+
+function IsInModList(const alist:string; amods:TTL2ModList):boolean;
+var
+  ls:string;
+  i:integer;
+begin
+  result:=true;
+
+  if alist=' 0 ' then exit;
+
+  for i:=0 to High(amods) do
+  begin
+    Str(amods[i].id,ls);
+    if Pos(' '+ls+' ',alist)>0 then exit;
+  end;
+
+  result:=false;
 end;
 
 {$Include settings.inc}

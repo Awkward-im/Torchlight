@@ -173,6 +173,7 @@ function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false; IsPet:boolean=fa
 
 implementation
 
+//----- Init / Free -----
 
 constructor TTL2Character.Create;
 begin
@@ -187,6 +188,30 @@ begin
 
   inherited;
 end;
+
+procedure TTL2Character.InternalClear;
+var
+  i:integer;
+begin
+  SetLength(FSkills,0);
+  SetLength(FModIds,0);
+
+  for i:=0 to High(FItems   ) do FItems   [i].Free;  SetLength(FItems,0);
+  for i:=0 to High(FEffects1) do FEffects1[i].Free;  SetLength(FEffects1,0);
+  for i:=0 to High(FEffects2) do FEffects2[i].Free;  SetLength(FEffects2,0);
+  for i:=0 to High(FEffects3) do FEffects3[i].Free;  SetLength(FEffects3,0);
+
+  SetLength(FAugments,0);
+end;
+
+procedure TTL2Character.Clear;
+begin
+  InternalClear;
+
+  Inherited;
+end;
+
+//----- Properties -----
 
 function TTL2Character.GetSpell(idx:integer):TTL2Spell;
 begin
@@ -211,32 +236,7 @@ begin
   end;
 end;
 
-procedure TTL2Character.InternalClear;
-var
-  i:integer;
-begin
-  SetLength(FSkills,0);
-  SetLength(FModIds,0);
-
-  for i:=0 to High(FItems) do FItems[i].Free;
-  SetLength(FItems,0);
-
-  for i:=0 to High(FEffects1) do FEffects1[i].Free;
-  SetLength(FEffects1,0);
-  for i:=0 to High(FEffects2) do FEffects2[i].Free;
-  SetLength(FEffects2,0);
-  for i:=0 to High(FEffects3) do FEffects3[i].Free;
-  SetLength(FEffects3,0);
-
-  SetLength(FAugments,0);
-end;
-
-procedure TTL2Character.Clear;
-begin
-  InternalClear;
-
-  Inherited;
-end;
+//----- Load / Save -----
 
 procedure TTL2Character.LoadFromStream(AStream: TTL2Stream);
 var
@@ -360,6 +360,7 @@ begin
 }
   FPlayTime:=AStream.ReadFloat;    // play time, sec
   FUnkn13:=AStream.ReadFloat;      // 1.0
+
   FFreeStatPoints :=AStream.ReadDWord; // unallocated statpoints ? (elfly have 35 with 30 in fact)
   FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints? (elfly have 28 with 28 in fact)
 

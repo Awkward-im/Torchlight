@@ -144,7 +144,6 @@ type
     
     property TimePlayed       :TL2Integer index statTotalTime  read GetStatistic write SetStatistic;
     property GoldGathered     :TL2Integer index statGold       read GetStatistic write SetStatistic;
-//    property GameDifficulty   :TL2Integer index statDifficulty read GetStatistic write SetStatistic;
     property StepsTaken       :TL2Integer index statSteps      read GetStatistic write SetStatistic;
     property QuestsDone       :TL2Integer index statQuests     read GetStatistic write SetStatistic;
     property Deaths           :TL2Integer index statDeaths     read GetStatistic write SetStatistic;

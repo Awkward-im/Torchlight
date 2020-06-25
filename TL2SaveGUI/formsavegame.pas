@@ -287,6 +287,7 @@ begin
   SGame:=TTL2SaveFile.Create;
   SGame.LoadFromFile(FFileName);
   SGame.Parse();
+  SetFilter(SGame.BoundMods);
   LoadGameGlobals;
   FChar.Configured:=false;
 
