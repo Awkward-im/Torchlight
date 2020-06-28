@@ -27,12 +27,14 @@ type
     memDesc: TMemo;
 
     sgSkills: TStringGrid;
+    seFreePoints: TSpinEditEx;
 
     procedure bbUpdateClick(Sender: TObject);
     procedure btnResetClick(Sender: TObject);
     procedure cbSaveFullClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure seFreePointsChange(Sender: TObject);
     procedure sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
     procedure sgSkillsEditButtonClick(Sender: TObject);
@@ -86,9 +88,6 @@ uses
   INIFiles,
   LCLType,
   formsettings;
-
-resourcestring
-  rsFreePoints = 'Free points';
 
 const
   sSkills      = 'Skills';
@@ -155,6 +154,11 @@ begin
 
   config.UpdateFile;
   config.Free;
+end;
+
+procedure TfmSkills.seFreePointsChange(Sender: TObject);
+begin
+  FPoints:=seFreePoints.Value;
 end;
 
 procedure TfmSkills.ClearData;
@@ -287,7 +291,7 @@ begin
   if lchanged then
   begin
     sgSkills.Cells[colLevel,sgSkills.Row]:=IntToStr(lval);
-    lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FPoints);
+    seFreePoints.Value:=FPoints;
     bbUpdate.Enabled:=true;
   end;
 end;
@@ -296,7 +300,6 @@ procedure TfmSkills.cbSaveFullClick(Sender: TObject);
 begin
   bbUpdate.Enabled:=true;
 end;
-
 
 procedure TfmSkills.btnResetClick(Sender: TObject);
 var
@@ -324,7 +327,7 @@ begin
 }
   end;
   sgSkills.Refresh;
-  lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FPoints);
+  seFreePoints.Value:=FPoints;
   bbUpdate.Enabled:=true;
 end;
 
@@ -500,7 +503,7 @@ begin
     bbUpdate.Enabled:=false;
   end;
 
-  lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FPoints);
+  seFreePoints.Value:=FPoints;
 end;
 
 procedure TfmSkills.bbUpdateClick(Sender: TObject);

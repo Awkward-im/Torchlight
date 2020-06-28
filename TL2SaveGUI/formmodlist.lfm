@@ -1,33 +1,201 @@
 object fmModList: TfmModList
-  Left = 471
+  Left = 330
   Height = 470
-  Top = 209
-  Width = 731
+  Top = 165
+  Width = 701
+  Align = alClient
+  BorderStyle = bsNone
   ClientHeight = 470
-  ClientWidth = 731
+  ClientWidth = 701
   LCLVersion = '2.1.0.0'
-  object lbBound: TListBox
-    Left = 16
-    Height = 187
-    Top = 16
-    Width = 325
-    ItemHeight = 0
+  object sbUp: TSpeedButton
+    Left = 352
+    Height = 22
+    Top = 148
+    Width = 23
+    Images = fmSaveFile.ImageList
+    ImageIndex = 1
+    OnClick = sbUpClick
+  end
+  object sbDown: TSpeedButton
+    Left = 352
+    Height = 22
+    Top = 185
+    Width = 23
+    Images = fmSaveFile.ImageList
+    ImageIndex = 0
+    OnClick = sbDownClick
+  end
+  object sbAdd: TSpeedButton
+    Left = 352
+    Height = 22
+    Top = 20
+    Width = 23
+    Images = fmSaveFile.ImageList
+    ImageIndex = 2
+    OnClick = sbAddClick
+  end
+  object sbDelete: TSpeedButton
+    Left = 352
+    Height = 22
+    Top = 68
+    Width = 23
+    Images = fmSaveFile.ImageList
+    ImageIndex = 3
+    OnClick = sbDeleteClick
+  end
+  object bbClear: TBitBtn
+    Left = 392
+    Height = 30
+    Top = 177
+    Width = 75
+    Caption = 'Clear'
+    Kind = bkAbort
+    OnClick = bbClearClick
     TabOrder = 0
   end
-  object lbRecent: TListBox
-    Left = 16
-    Height = 187
-    Top = 248
-    Width = 325
-    ItemHeight = 0
+  object bbUpdate: TBitBtn
+    Left = 617
+    Height = 30
+    Top = 177
+    Width = 75
+    Caption = '&Update'
+    Default = True
+    Kind = bkOK
+    OnClick = bbUpdateClick
     TabOrder = 1
   end
-  object lbFull: TListBox
-    Left = 368
+  object lblBound: TLabel
+    Left = 4
+    Height = 15
+    Top = 4
+    Width = 35
+    Caption = 'Bound'
+    ParentColor = False
+  end
+  object lblRecent: TLabel
+    Left = 4
+    Height = 15
+    Top = 232
+    Width = 36
+    Caption = 'Recent'
+    ParentColor = False
+  end
+  object lblFull: TLabel
+    Left = 352
+    Height = 15
+    Top = 232
+    Width = 58
+    Caption = 'Full history'
+    ParentColor = False
+  end
+  object sgBound: TStringGrid
+    Left = 4
+    Height = 187
+    Top = 20
+    Width = 340
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 3
+    Columns = <    
+      item
+        Title.Caption = 'Title'
+        Width = 181
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Ver'
+        Width = 48
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Id'
+        Width = 107
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 2
+    ColWidths = (
+      181
+      48
+      107
+    )
+  end
+  object sgRecent: TStringGrid
+    Left = 4
     Height = 187
     Top = 248
-    Width = 325
-    ItemHeight = 0
-    TabOrder = 2
+    Width = 340
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 3
+    Columns = <    
+      item
+        Title.Caption = 'Title'
+        Width = 181
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Ver'
+        Width = 48
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Id'
+        Width = 107
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 3
+    ColWidths = (
+      181
+      48
+      107
+    )
+  end
+  object sgFull: TStringGrid
+    Left = 352
+    Height = 187
+    Top = 248
+    Width = 340
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 3
+    Columns = <    
+      item
+        Title.Caption = 'Title'
+        Width = 181
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Ver'
+        Width = 48
+      end    
+      item
+        SizePriority = 0
+        Title.Caption = 'Id'
+        Width = 107
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 4
+    ColWidths = (
+      181
+      48
+      107
+    )
+  end
+  object cbModList: TComboBox
+    Left = 392
+    Height = 23
+    Top = 20
+    Width = 300
+    ItemHeight = 15
+    Sorted = True
+    Style = csDropDownList
+    TabOrder = 5
   end
 end

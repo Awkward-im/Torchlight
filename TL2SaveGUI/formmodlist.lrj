@@ -1,0 +1,16 @@
+{"version":1,"strings":[
+{"hash":4860802,"name":"tfmmodlist.bbclear.caption","sourcebytes":[67,108,101,97,114],"value":"Clear"},
+{"hash":197568645,"name":"tfmmodlist.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"},
+{"hash":4811844,"name":"tfmmodlist.lblbound.caption","sourcebytes":[66,111,117,110,100],"value":"Bound"},
+{"hash":93035604,"name":"tfmmodlist.lblrecent.caption","sourcebytes":[82,101,99,101,110,116],"value":"Recent"},
+{"hash":198613241,"name":"tfmmodlist.lblfull.caption","sourcebytes":[70,117,108,108,32,104,105,115,116,111,114,121],"value":"Full history"},
+{"hash":5966629,"name":"tfmmodlist.sgbound.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
+{"hash":23746,"name":"tfmmodlist.sgbound.columns[1].title.caption","sourcebytes":[86,101,114],"value":"Ver"},
+{"hash":1268,"name":"tfmmodlist.sgbound.columns[2].title.caption","sourcebytes":[73,100],"value":"Id"},
+{"hash":5966629,"name":"tfmmodlist.sgrecent.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
+{"hash":23746,"name":"tfmmodlist.sgrecent.columns[1].title.caption","sourcebytes":[86,101,114],"value":"Ver"},
+{"hash":1268,"name":"tfmmodlist.sgrecent.columns[2].title.caption","sourcebytes":[73,100],"value":"Id"},
+{"hash":5966629,"name":"tfmmodlist.sgfull.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
+{"hash":23746,"name":"tfmmodlist.sgfull.columns[1].title.caption","sourcebytes":[86,101,114],"value":"Ver"},
+{"hash":1268,"name":"tfmmodlist.sgfull.columns[2].title.caption","sourcebytes":[73,100],"value":"Id"}
+]}

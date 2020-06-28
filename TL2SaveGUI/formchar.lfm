@@ -384,9 +384,9 @@ object fmChar: TfmChar
         end
       end
       object lblFreePoints: TLabel
-        Left = 296
+        Left = 363
         Height = 15
-        Top = 208
+        Top = 204
         Width = 58
         Caption = 'Free points'
         ParentColor = False
@@ -406,7 +406,7 @@ object fmChar: TfmChar
         Width = 89
         Caption = 'Check points'
         OnClick = cbCheckPointsClick
-        TabOrder = 3
+        TabOrder = 4
       end
       object cbKeepBase: TCheckBox
         Left = 296
@@ -415,7 +415,18 @@ object fmChar: TfmChar
         Width = 100
         Caption = 'Keep base stats'
         OnClick = cbKeepBaseClick
-        TabOrder = 4
+        TabOrder = 5
+      end
+      object seFreePoints: TSpinEditEx
+        Left = 296
+        Height = 23
+        Top = 200
+        Width = 60
+        MaxLength = 0
+        TabOrder = 3
+        OnChange = seFreePointsChange
+        MaxValue = 1000
+        MinValue = -50
       end
     end
     object tsView: TTabSheet

@@ -372,7 +372,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Times ?'
+            Title.Caption = 'Level'
           end>
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1

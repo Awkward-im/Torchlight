@@ -22,6 +22,7 @@ type
     pnlTop: TPanel;
     pcCharInfo: TPageControl;
     sgStats: TStringGrid;
+    seFreePoints: TSpinEditEx;
     // Stats
     tsStat: TTabSheet;
 
@@ -107,6 +108,7 @@ type
     procedure bbManualClick(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure cbKeepBaseClick(Sender: TObject);
+    procedure seFreePointsChange(Sender: TObject);
     procedure StatChange(Sender: TObject);
     procedure cbCheckPointsClick(Sender: TObject);
     procedure cbSpellChange   (Sender: TObject);
@@ -484,6 +486,12 @@ begin
   end;
 end;
 
+procedure TfmChar.seFreePointsChange(Sender: TObject);
+begin
+  FFreeStatPoints:=seFreePoints.Value;
+  PreCalcStat;
+end;
+
 //--- Common ---
 
 procedure TfmChar.seLevelChange(Sender: TObject);
@@ -652,6 +660,7 @@ begin
   // Stats
   gbGlobal     .Visible:=lChar;
   gbBaseStats  .Visible:=lChar;
+  seFreePoints .Visible:=lChar;
   lblFreePoints.Visible:=lChar;
   lblDataNote  .Visible:=lChar;
   cbCheckPoints.Visible:=lChar;
@@ -778,7 +787,7 @@ begin
       +(FBaseStr+FBaseDex+FBaseInt+FBaseVit)  // Base  points
       -(FStr+FDex+FInt+FVit);                 // Used  points
 
-  lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FFreeStatPoints);
+  seFreePoints.Value:=FFreeStatPoints;
 
   cbCheckPointsClick(Self);
 end;
@@ -828,7 +837,7 @@ begin
   FVit:=FChar.Vitality ; seVitality .Value:=FVit;
 
   FFreeStatPoints:=FChar.FreeStatPoints;
-  lblFreePoints.Caption:=rsFreePoints+': '+IntToStr(FFreeStatPoints);
+  seFreePoints.Value:=FFreeStatPoints;
 
   // To prevent Statpoints negative values
   cbCheckPointsClick(Self);

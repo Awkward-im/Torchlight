@@ -103,9 +103,9 @@ object fmSkills: TfmSkills
     TabOrder = 6
   end
   object lblFreePoints: TLabel
-    Left = 8
+    Left = 72
     Height = 15
-    Top = 11
+    Top = 15
     Width = 58
     Caption = 'Free points'
     ParentColor = False
@@ -144,5 +144,17 @@ object fmSkills: TfmSkills
     Caption = 'Save Full list'
     OnClick = cbSaveFullClick
     TabOrder = 3
+  end
+  object seFreePoints: TSpinEditEx
+    Left = 8
+    Height = 23
+    Top = 11
+    Width = 59
+    MaxLength = 0
+    NumbersOnly = True
+    TabOrder = 7
+    OnChange = seFreePointsChange
+    MaxValue = 200
+    MinValue = -100
   end
 end

@@ -52,6 +52,10 @@ msgstr ""
 msgid "Save Unknown data"
 msgstr ""
 
+#: formmodlist.rsdoclear
+msgid "Are you sure to clear mod list?"
+msgstr ""
+
 #: formsavegame.rscharacter
 msgid "Character"
 msgstr ""
@@ -749,6 +753,73 @@ msgctxt "tfmmap.sglayouts.columns[0].title.caption"
 msgid "Title"
 msgstr ""
 
+#: tfmmodlist.bbclear.caption
+msgctxt "tfmmodlist.bbclear.caption"
+msgid "Clear"
+msgstr ""
+
+#: tfmmodlist.bbupdate.caption
+msgctxt "tfmmodlist.bbupdate.caption"
+msgid "&Update"
+msgstr ""
+
+#: tfmmodlist.lblbound.caption
+msgid "Bound"
+msgstr ""
+
+#: tfmmodlist.lblfull.caption
+msgid "Full history"
+msgstr ""
+
+#: tfmmodlist.lblrecent.caption
+msgid "Recent"
+msgstr ""
+
+#: tfmmodlist.sgbound.columns[0].title.caption
+msgctxt "tfmmodlist.sgbound.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmmodlist.sgbound.columns[1].title.caption
+msgctxt "tfmmodlist.sgbound.columns[1].title.caption"
+msgid "Ver"
+msgstr ""
+
+#: tfmmodlist.sgbound.columns[2].title.caption
+msgctxt "tfmmodlist.sgbound.columns[2].title.caption"
+msgid "Id"
+msgstr ""
+
+#: tfmmodlist.sgfull.columns[0].title.caption
+msgctxt "tfmmodlist.sgfull.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmmodlist.sgfull.columns[1].title.caption
+msgctxt "tfmmodlist.sgfull.columns[1].title.caption"
+msgid "Ver"
+msgstr ""
+
+#: tfmmodlist.sgfull.columns[2].title.caption
+msgctxt "tfmmodlist.sgfull.columns[2].title.caption"
+msgid "Id"
+msgstr ""
+
+#: tfmmodlist.sgrecent.columns[0].title.caption
+msgctxt "tfmmodlist.sgrecent.columns[0].title.caption"
+msgid "Title"
+msgstr ""
+
+#: tfmmodlist.sgrecent.columns[1].title.caption
+msgctxt "tfmmodlist.sgrecent.columns[1].title.caption"
+msgid "Ver"
+msgstr ""
+
+#: tfmmodlist.sgrecent.columns[2].title.caption
+msgctxt "tfmmodlist.sgrecent.columns[2].title.caption"
+msgid "Id"
+msgstr ""
+
 #: tfmmovies.bbupdate.caption
 msgctxt "tfmmovies.bbupdate.caption"
 msgid "&Update"
@@ -983,6 +1054,7 @@ msgid "Level"
 msgstr ""
 
 #: tfmstat.bbclearlearnhistory.caption
+msgctxt "tfmstat.bbclearlearnhistory.caption"
 msgid "Clear"
 msgstr ""
 
