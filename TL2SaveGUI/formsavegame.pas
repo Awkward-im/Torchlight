@@ -227,14 +227,11 @@ procedure TfmSaveFile.FormCreate(Sender: TObject);
 var
   i:integer;
 begin
-  fmButtons  :=TfmButtons   .Create(Self); fmButtons  .Parent:=MainPanel;
-  fmEffects  :=TfmEffects   .Create(Self);
-
   FSettings  :=TfmSettings  .Create(Self); FSettings  .Parent:=MainPanel;
   i:=LoadBases(FSettings.edDBFile.Text);
-  if i<>0 then
-    ShowMessage(rsNoBase+' '+IntToStr(i));
+//  if i<>0 then ShowMessage(rsNoBase+' '+IntToStr(i));
 
+  fmButtons  :=TfmButtons   .Create(Self); fmButtons  .Parent:=MainPanel;
   FMovies    :=TfmMovies    .Create(Self); FMovies    .Parent:=MainPanel;
   FModList   :=TfmModList   .Create(Self); FModList   .Parent:=MainPanel;
   FRecipes   :=TfmRecipes   .Create(Self); FRecipes   .Parent:=MainPanel;
@@ -249,6 +246,8 @@ begin
 
   FChar:=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel; FChar.SkillForm:=FSkills;
   FPet :=TfmChar.Create(Self,ciPet   ); FPet .Parent:=MainPanel;
+
+  fmEffects:=TfmEffects.Create(Self);
 
   fmButtons.Visible:=true;
 
@@ -363,6 +362,7 @@ var
 begin
   lidx:=GetTVIndex;
 
+  //--- Buttons
   fmButtons.btnExport.Enabled:=(tvSaveGame.Selected<>nil) and (tvSaveGame.Selected.Data<>nil);
   fmButtons.btnImport.Enabled:=false;
   fmButtons.Offset:=-1;
@@ -398,12 +398,15 @@ begin
       FSettings.Visible:=true;
     end;
 
+    // have editable data (manual)
     idxMovies: begin
       FMovies.FillInfo(SGame);
       FMovies.Visible:=true;
     end;
 
+    // have editable data
     idxModList: begin
+      FModList.FillInfo(SGame);
       FModList.Visible:=true;
     end;
 
@@ -412,11 +415,13 @@ begin
       FKeyBinding.Visible:=true;
     end;
 
+    // have editable data (manual)
     idxPlayerStat: begin
       FStatistic.FillInfo(SGame);
       FStatistic.Visible:=true;
     end;
 
+    // have editable data (manual)
     idxCharacter: begin
       case tvSaveGame.Selected.level of
         2: lidx:=tvSaveGame.Selected.Index;
@@ -444,6 +449,7 @@ begin
       end;
     end;
 
+    // have editable data (manual)
     idxPets: begin
       fmButtons.btnImport.Enabled:=true;
       case tvSaveGame.Selected.level of
@@ -495,17 +501,20 @@ begin
       end;
     end;
 
+    // have editable data
     idxQuests: begin
       fmButtons.Offset:=SGame.Quests.DataOffset;
       FQuests.FillInfo(SGame);
       FQuests.Visible:=true;
     end;
 
+    // have editable data
     idxRecipes: begin
       FRecipes.FillInfo(SGame);
       FRecipes.Visible:=true;
     end;
 
+    // have editable data
     idxStatistic: begin
       FStats.FillInfo(SGame);
       FStats.Visible:=true;

@@ -11,34 +11,57 @@ All datas almost unknown yet, sorry
 4 bytes  - (integer) list count
 x bytes  - list elements, 40 bytes each
     8  bytes - (Integer64) Mob ID
-    32 bytes - mob data
+    4  bytes - ?? amount killed, player+aoe
+    4  bytes - ?? amount killed, player+pet
+    4  bytes - experience (summ)
+    4  bytes
+    4  bytes
+    4  bytes
+    4  bytes
+    2  bytes - ?
+    2  bytes - ?
 
 -- items
 4 bytes  - (integer) list count
 x bytes  - list elements, 24 bytes each
     8  bytes - (Integer64) Item ID
-    16 bytes - data
+    4  bytes - ?? word=amount picked (equipped+pots?); word=amount picked(unusable)
+    4  bytes - ?? crafted
+    4  bytes - 
+    4  bytes - ?? min level (to recognize)
 
 -- skills
 4 bytes  - (integer) list count
 x bytes  - list of elements, 17 bytes each
     8 bytes - (Integer64) Skill ID
-    9 bytes - data
+    4 bytes - ?? manual cast times
+    4 bytes - ?? auto cast times
+    1 byte  - ?? skill level
 
--- something
+-- Levelups
 4 bytes  - (integer) list count
 x bytes  - list of elements, 31 bytes each
+    4 bytes - float, time from previous up
+    4 bytes - ?? field2
+    4 bytes - ?? field3
+    4 bytes
+    1 byte
+    4 bytes
+    1 byte
+    4 bytes - like field2
+    4 bytes - like field3
+    1 byte
 
--- something about areas
+-- areas
 4 bytes  - (integer) list count
    x bytes - list
      x bytes - (ShortString) area name
-     4 bytes - value
+     4 bytes - value, looks like time on location, sec
 
 4 bytes  - (integer) list count
    x bytes - list
      x bytes - (ShortString) area name
-     4 bytes - value
+     4 bytes - value, looks like player level at first entrance
 
 -- Unknown
 9 bytes - 1 byte and 4 2-bytes data?
