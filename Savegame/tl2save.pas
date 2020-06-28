@@ -115,9 +115,9 @@ type
     property NewGameCycle:integer        read FNewGameCycle write FNewGameCycle;
     property GameTime    :single         read FGameTime     write FGameTime; //!! control!!
 
-    property BoundMods       :TTL2ModList read FBoundMods;
-    property RecentModHistory:TTL2ModList read FRecentModHistory;
-    property FullModHistory  :TTL2ModList read FFullModHistory;
+    property BoundMods       :TTL2ModList read FBoundMods         write FBoundMods;
+    property RecentModHistory:TTL2ModList read FRecentModHistory  write FRecentModHistory;
+    property FullModHistory  :TTL2ModList read FFullModHistory    write FFullModHistory;
 
     property CharInfo:TTL2Character read FCharInfo;
     property PetCount:integer read GetPetCount;

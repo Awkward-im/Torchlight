@@ -24,7 +24,7 @@ type
 
   tStatItem = packed record
     id    :TL2ID;
-    field1:TL2Integer; // ?? word=amount picked (equipped+pots?); word=amount picked(unisable)
+    field1:TL2Integer; // ?? word=amount picked (equipped+pots?); word=amount picked(unusable)
     field2:TL2Integer; // ?? crafted
     field3:TL2Integer; // ??
     field4:TL2Integer; // min level? (to recognize)
@@ -213,7 +213,7 @@ begin
   if lcnt>0 then
     AStream.Read(FStatLevelUp[0],lcnt*31);
 {
-  4b - 131.87
+  4b - time to level up
   4b - ?
   4b - ?
   4b - ?
@@ -225,23 +225,25 @@ begin
   1b
 }
 
-  //----- ?? Area (teleports? time on map?) -----
+  //----- Area -----
   // usually, count and titles are the same
 
+  //--- time on location ---
   lcnt:=AStream.ReadDWord;
   SetLength(FStatArea1,lcnt);
   for i:=0 to lcnt-1 do
   begin
     FStatArea1[i].name :=AStream.ReadShortString;
-    FStatArea1[i].value:=AStream.ReadDWord;
+    FStatArea1[i].value:=AStream.ReadDWord;       // time on location?
   end;
 
+  //--- player level at first entrance ---
   lcnt:=AStream.ReadDWord;
   SetLength(FStatArea2,lcnt);
   for i:=0 to lcnt-1 do
   begin
     FStatArea2[i].name :=AStream.ReadShortString;
-    FStatArea2[i].value:=AStream.ReadDWord;
+    FStatArea2[i].value:=AStream.ReadDWord;        // char level
   end;
 
   //----- ?? Unknown -----
@@ -306,7 +308,7 @@ begin
   if Length(FStatLevelUp)>0 then
     AStream.Write(FStatLevelUp[0],Length(FStatLevelUp)*31);
 
-  //----- ?? Area (teleports? time on map?) -----
+  //----- ?? Area, time on location and player level -----
 
   AStream.WriteDWord(Length(FStatArea1));
   for i:=0 to High(FStatArea1) do
