@@ -7,6 +7,9 @@ uses
   ,TL2DatNode
   ;
 
+const
+  GameRoot = 'G:\Games\Torchlight 2\';
+
 var
   smodid:string;
   db:PSQLite3;
@@ -453,16 +456,21 @@ type
 
 function AddItemToBase(const aitem:tItemInfo):boolean;
 var
-  lSQL:string;
+  lSQL,lfile,lbase:string;
   vm:pointer;
+  i:integer;
 begin
   result:=CheckForMod('items', aitem.id, smodid);
   if not result then
   begin
+    lfile:=LowerCase(aitem.afile);
+    for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
+    lbase:=LowerCase(aitem.base);
+    for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
     lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, file, base, modid) VALUES ('+
         aitem.id+', '+FixedText(aitem.name)+', '+FixedText(aitem.title)+', '+FixedText(aitem.descr)+
         ', '+FixedText(aitem.icon)+', '+aitem.auses+', '+aitem.quest+
-        ', '+FixedText(aitem.afile)+', '+FixedText(aitem.base)+', '' '+smodid+' '')';
+        ', '+FixedText(lfile)+', '+FixedText(lbase)+', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -484,8 +492,12 @@ begin
   p:=ParseDatFile(PChar(fname));
   if p=nil then
   begin
-    writeln('can''t load: ',fname);
-    exit;
+    p:=ParseDatFile(PChar(GameRoot+fname));
+    if p=nil then
+    begin
+      writeln('can''t load: ',fname);
+      exit;
+    end;
   end;
 
   for i:=0 to p^.childcount-1 do
@@ -494,6 +506,11 @@ begin
     begin
       result:=p^.children^[i].asString;
       break;
+    end;
+    if CompareWide(p^.children^[i].name,'GAMBLER_ICON') then
+    begin
+      if result='' then
+        result:=p^.children^[i].asString;
     end;
     if CompareWide(p^.children^[i].name,'BASEFILE') then
     begin
@@ -538,6 +555,11 @@ begin
     begin
       litem.icon:=ExtractFileNameOnly(p^.children^[i].asString);
     end
+    else if CompareWide(p^.children^[i].name,'GAMBLER_ICON') then
+    begin
+      if litem.icon='' then
+        litem.icon:=ExtractFileNameOnly(p^.children^[i].asString);
+    end
     else if CompareWide(p^.children^[i].name,'BASEFILE') then
     begin
       litem.base:=p^.children^[i].asString;
@@ -558,7 +580,7 @@ begin
     end;
   end;
   if (litem.icon='') and (litem.base<>'') then
-    litem.icon:=GetBaseIcon(litem.base);
+    litem.icon:=ExtractFileNameOnly(GetBaseIcon(litem.base));
   if litem.icon='' then writeln('No icon for ',fname);
 
   if not AddItemToBase(litem) then

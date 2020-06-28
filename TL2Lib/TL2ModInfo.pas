@@ -5,17 +5,26 @@ unit TL2ModInfo;
 interface
 
 type
+  // fields are rearranged
   TTL2ModInfo = record
-    modid      :Int64;
-    gamever    :QWord;
-    offData    :DWord;
-    offDir     :DWord;
-    title      :PWideChar;
-    author     :PWideChar;
-    descr      :PWideChar;
-    website    :PWideChar;
-    download   :PWideChar;
-    modver     :Word;
+    modid   :Int64;
+    gamever :QWord;
+    offData :DWord;
+    offDir  :DWord;
+    title   :PWideChar;
+    author  :PWideChar;
+    descr   :PWideChar;
+    website :PWideChar;
+    download:PWideChar;
+    flags   :DWord;
+    reqHash :Int64;
+    reqs    :array of record
+      name:PWideChar;
+      id  :Int64;
+      ver :Word;
+    end;
+    dels    :array of PWideChar;
+    modver  :Word;
   end;
 
 function  ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean; export;
@@ -32,8 +41,8 @@ begin
   lsize:=pword(aptr)^; inc(aptr,2);
   if lsize>0 then
   begin
-    GetMem(result,(lsize+1)*SizeOf(WideChar));
-    move(aptr^,result^,lsize*SizeOf(WideChar));
+    GetMem    (result ,(lsize+1)*SizeOf(WideChar));
+    move(aptr^,result^, lsize   *SizeOf(WideChar));
     result[lsize]:=#0;
     inc(aptr,lsize*SizeOf(WideChar));
   end
@@ -46,7 +55,7 @@ var
   buf:array [0..16383] of byte;
   f:file of byte;
   p:pbyte;
-  i:integer;
+  i,lcnt:integer;
 begin
   result:=false;
 
@@ -88,16 +97,45 @@ begin
   amod.descr   :=ReadShortString(p);
   amod.website :=ReadShortString(p);
   amod.download:=ReadShortString(p);
-  amod.modid   :=PInt64(p)^; // offset=[$0C]-24
+  amod.modid   :=pInt64(p)^; inc(p,8);
+  //-
+  amod.flags   :=pDWord(p)^; inc(p,4);
+  amod.reqHash :=pInt64(p)^; inc(p,8);
+  lcnt:=pWord(p)^; inc(p,2);
+  SetLength(amod.reqs,lcnt);
+  for i:=0 to lcnt-1 do
+  begin
+    amod.reqs[i].name:=ReadShortString(p);
+    amod.reqs[i].id  :=pInt64(p)^; inc(p,8);
+    amod.reqs[i].ver :=pWord (p)^; inc(p,2);
+  end;
+  lcnt:=pWord(p)^; inc(p,2);
+  SetLength(amod.dels,lcnt);
+  for i:=0 to lcnt-1 do
+    amod.dels[i]:=ReadShortString(p);
 end;
 
 procedure ClearModInfo(var amod:TTL2ModInfo);
+var
+  i:integer;
 begin
   if amod.title   <>nil then FreeMem(amod.title);
   if amod.author  <>nil then FreeMem(amod.author);
   if amod.descr   <>nil then FreeMem(amod.descr);
   if amod.website <>nil then FreeMem(amod.website);
   if amod.download<>nil then FreeMem(amod.download);
+  if Length(amod.reqs)>0 then
+  begin
+    for i:=0 to High(amod.reqs) do
+      FreeMem(amod.reqs[i].name);
+    SetLength(amod.reqs,0);
+  end;
+  if Length(amod.dels)>0 then
+  begin
+    for i:=0 to High(amod.dels) do
+      FreeMem(amod.dels[i]);
+    SetLength(amod.dels,0);
+  end;
 end;
 
 exports

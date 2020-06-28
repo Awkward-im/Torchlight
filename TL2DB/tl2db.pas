@@ -21,6 +21,8 @@ uses
 
 {$Include recipes.inc}
 
+{$Include mods.inc}
+
 function GetTL2Quest(const aid:TL2ID; out amods:string; out aname:string):string; overload;
 function GetTL2Quest(const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Quest(const aid:TL2ID                  ):string; overload;
@@ -30,10 +32,6 @@ function GetTL2Stat (const aid:TL2ID                  ):string; overload;
 
 function GetTL2Mob  (const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Mob  (const aid:TL2ID                  ):string; overload;
-
-function GetTL2Mod  (const aid:TL2ID; out aver:integer):string; overload;
-function GetTL2Mod  (const aid:TL2ID                  ):string; overload;
-function GetTL2Mod  (const aid:string                 ):string; overload;
 
 function GetTL2KeyType(acode:integer):string;
 
@@ -357,69 +355,7 @@ end;
 
 //----- Mod info -----
 
-function GetTL2Mod(const aid:TL2ID; out aver:integer):string;
-var
-  aSQL:string;
-  vm:pointer;
-  i:integer;
-begin
-  aver:=0;
-  if aid=0 then
-  begin
-    result:='Torchlight 2';
-    exit;
-  end;
-
-  result:=HexStr(aid,16);
-
-  if db<>nil then
-  begin
-    Str(aid,aSQL);
-    aSQL:='SELECT title,version FROM mods WHERE id='+aSQL;
-
-    i:=sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil);
-    if i=SQLITE_OK then
-    begin
-      i:=sqlite3_step(vm);
-      if i=SQLITE_ROW then
-      begin
-        result:=sqlite3_column_text(vm,0);
-        aver  :=sqlite3_column_int (vm,1);
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end;
-
-end;
-
-function GetTL2Mod(const aid:TL2ID):string;
-var
-  lver:integer;
-begin
-  result:=GetTL2Mod(aid,lver);
-end;
-
-function GetTL2Mod(const aid:string):string;
-var
-  ls:string;
-  lid:TL2ID;
-  lpos:integer;
-begin
-  ls:=aid;
-  if ls='' then
-    lid:=0
-  else
-  begin
-    if ls[1]=' ' then ls:=Copy(ls,1);
-    if ls[Length(ls)]=' ' then SetLength(ls,High(ls));
-    lpos:=pos(' ',ls);
-    if lpos=0 then
-      Val(ls,lid)
-    else
-      Val(Copy(ls,1,lpos-1),lid);
-  end;
-  result:=GetTL2Mod(lid);
-end;
+{$Include mods.inc}
 
 //===== Key binding =====
 
@@ -573,7 +509,6 @@ end;
 function IsInModList(const alist:string; aid:TL2ID):boolean;
 var
   ls:string;
-  i:integer;
 begin
   result:=true;
 
