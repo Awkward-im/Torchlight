@@ -6,6 +6,26 @@ uses
   paszlib,
   TL2ModInfo;
 
+const
+  pftDat       = $00;
+  pftLayout    = $01;
+  pftMesh      = $02;
+  pftSkeleton  = $03;
+  pftDds       = $04;
+  pftPng       = $05;
+  pftOgg       = $06;
+  pftDirectory = $07;
+  pftMaterial  = $08;
+  pftRaw       = $09;
+  pftImageSet  = $0B;
+  pftTtf       = $0C;
+  pftFont      = $0D;
+  pftAnimation = $10;
+  pftHie       = $11;
+  pftScheme    = $12;
+  pftLookNFeel = $13;
+  pftMpd       = $14;
+
 procedure Unpack(f:TStream; const aname:WideString; ofs:dword; asize:dword);
 var
   lf:file of byte;
@@ -17,28 +37,37 @@ begin
   f.Position:=ofs;
   usize:=f.ReadDWord;
   csize:=f.ReadDWord;
+writeln(aname,'; a=',asize,', u=',usize,', c=',csize);
   if usize<>asize then
   begin
     writeln('wrong usize for ',aname);
     exit;
   end;
-  GetMem(buf,csize);
-  f.Read(buf^,csize);
-  GetMem(dst,usize);
+  if csize>0 then
+  begin
+    GetMem(buf ,csize);
+    f.Read(buf^,csize);
+    GetMem(dst ,usize);
 
-	strm.avail_in := 0;
-	strm.next_in  := Z_NULL;
-	ret := inflateInit(strm);
+  	strm.avail_in := 0;
+  	strm.next_in  := Z_NULL;
+  	ret := inflateInit(strm);
+  	strm.avail_in := csize;
+  	strm.next_in  := buf;
 
-	strm.avail_in := csize;
-	strm.next_in  := buf;
+  	strm.avail_out := usize;
+  	strm.next_out  := dst;
 
-	strm.avail_out := usize;
-	strm.next_out  := dst;
+  	ret := inflate(strm, Z_FINISH);
 
-	ret := inflate(strm, Z_FINISH);
-
-	inflateEnd(strm);
+  	inflateEnd(strm);
+  end
+  else
+  begin
+    buf:=nil;
+    GetMem(dst ,usize);
+    f.Read(dst^,usize);
+  end;
 
 	AssignFile(lf,aname);
 	Rewrite(lf);
@@ -91,7 +120,7 @@ begin
       loffs :=f.ReadDWord;
       lusize:=f.ReadDWord;
       ft    :=f.ReadQWord;
-      if ltype=7 then sl.Add(wpath+ws);
+      if ltype=pftDirectory then sl.Add(wpath+ws);
     end;
   end;
 
@@ -121,7 +150,7 @@ begin
       loffs :=f.ReadDWord;
       lusize:=f.ReadDWord;
       ft    :=f.ReadQWord;
-      if ltype<>7 then
+      if ltype<>pftDirectory then
       begin
         Unpack(fin,wpath+ws,mi.offData+loffs,lusize);
       end;

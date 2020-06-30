@@ -10,6 +10,9 @@ type
       t_unknown,t_integer,t_float,t_double,t_unsigned_int,
       t_string,t_bool,t_integer64,t_translate);
 
+const
+  deepincr = 2;
+  
 var
   tags,sl,slout:TStringList;
 
@@ -20,13 +23,17 @@ var
   lid:integer;
 begin
   tmptags:=TStringList.Create;
-  tmptags.LoadFromFile('tags.dat',TEncoding.Unicode);
-  i:=1;
-  while i<(tmptags.count-1) do
-  begin
-    Val(Copy(tmptags[i+1],Pos(':',tmptags[i+1])+1),lid);
-    tags.AddObject(Copy(tmptags[i],Pos(':',tmptags[i])+1),TObject(IntPtr(lid)));
-    inc(i,2);
+  try
+    tmptags.LoadFromFile('tags.dat',TEncoding.Unicode);
+    i:=1;
+    tags.Capacity:=tmptags.count div 2;
+    while i<(tmptags.count-1) do
+    begin
+      Val(Copy(tmptags[i+1],Pos(':',tmptags[i+1])+1),lid);
+      tags.AddObject(Copy(tmptags[i],Pos(':',tmptags[i])+1),TObject(IntPtr(lid)));
+      inc(i,2);
+    end;
+  except
   end;
   tmptags.Free;
 end;
@@ -67,7 +74,7 @@ var
 procedure DoParseBlock(var lptr:pByte);
 var
   lblock,i,lcnt,lsub,ltype:integer;
-  lstr:string;
+  lstr,ls:string;
   lint:integer;
   lfloat:single;
   ldouble:double;
@@ -77,55 +84,55 @@ begin
   lblock:=ReadInteger(lptr);
 
   slout.Add(StringOfChar(' ',deep)+'['+GetTagStr(lblock)+']');
-  inc(deep,2);
+  inc(deep,deepincr);
+  ls:=StringOfChar(' ',deep);
 
   lcnt:=ReadInteger(lptr);
   for i:=0 to lcnt-1 do
   begin
-    write(StringOfChar(' ',deep));
     lid:=ReadInteger(lptr);
     ltype:=ReadDword(lptr);
     case TAttribute(ltype) of
 		  t_integer: begin
 		    lint:=ReadInteger(lptr);
-		    slout.Add(StringOfChar(' ',deep)+'<INTEGER>'+GetTagStr(lid)+':'+IntToStr(lint));
+		    slout.Add(ls+'<INTEGER>'+GetTagStr(lid)+':'+IntToStr(lint));
 		  end;
 		  t_unsigned_int: begin
 		    lint:=ReadInteger(lptr);
-		    slout.Add(StringOfChar(' ',deep)+'<UNSIGNED INT>'+GetTagStr(lid)+':'+IntToStr(dword(lint)));
+		    slout.Add(ls+'<UNSIGNED INT>'+GetTagStr(lid)+':'+IntToStr(dword(lint)));
 		  end;
 		  t_bool: begin
 		    lint:=ReadInteger(lptr);
 		    if lint=0 then
-  		    slout.Add(StringOfChar(' ',deep)+'<BOOL>'+GetTagStr(lid)+':false')
+  		    slout.Add(ls+'<BOOL>'+GetTagStr(lid)+':false')
 		    else
-          slout.Add(StringOfChar(' ',deep)+'<BOOL>'+GetTagStr(lid)+':true');
+          slout.Add(ls+'<BOOL>'+GetTagStr(lid)+':true');
 		  end;
 		  t_string: begin
 		    lint:=ReadInteger(lptr);
-		    slout.Add(StringOfChar(' ',deep)+'<STRING>'+GetTagStr(lid)+':'+GetStr(lint));
+		    slout.Add(ls+'<STRING>'+GetTagStr(lid)+':'+GetStr(lint));
 		  end;
 		  t_translate: begin
 		    lint:=ReadInteger(lptr);
-		    slout.Add(StringOfChar(' ',deep)+'<TRANSLATE>'+GetTagStr(lid)+':'+GetStr(lint));
+		    slout.Add(ls+'<TRANSLATE>'+GetTagStr(lid)+':'+GetStr(lint));
 		  end;
 		  t_float: begin
 		    lfloat:=ReadFloat(lptr);
 		    Str(lfloat:0:4,lstr);
-		    slout.Add(StringOfChar(' ',deep)+'<FLOAT>'+GetTagStr(lid)+':'+lstr);
+		    slout.Add(ls+'<FLOAT>'+GetTagStr(lid)+':'+lstr);
 		  end;
 		  t_double: begin
 		    ldouble:=ReadDouble(lptr);
 		    Str(ldouble:0:4,lstr);
-		    slout.Add(StringOfChar(' ',deep)+'<DOUBLE>'+GetTagStr(lid)+':'+lstr);
+		    slout.Add(ls+'<DOUBLE>'+GetTagStr(lid)+':'+lstr);
 		  end;
 		  t_integer64: begin
 		    lint64:=ReadInteger64(lptr);
-		    slout.Add(StringOfChar(' ',deep)+'<INTEGER64>'+GetTagStr(lid)+':'+IntToStr(lint64));
+		    slout.Add(ls+'<INTEGER64>'+GetTagStr(lid)+':'+IntToStr(lint64));
 		  end;
 		else
 		  lint:=ReadInteger(lptr);
-		  slout.Add(StringOfChar(' ',deep)+'<'+IntToStr(ltype)+'>'+GetTagStr(lid)+':'+IntToStr(lint));
+		  slout.Add(ls+'<'+IntToStr(ltype)+'>'+GetTagStr(lid)+':'+IntToStr(lint));
     end;
   end;
 
@@ -133,7 +140,7 @@ begin
   for i:=0 to lsub-1 do
     DoParseBlock(lptr);
 
-  dec(deep,2);
+  dec(deep,deepincr);
   slout.Add(StringOfChar(' ',deep)+'[/'+GetTagStr(lblock)+']');
 end;
 
@@ -141,24 +148,29 @@ procedure DoParse(buf:pByte);
 var
   lptr:pByte;
   lstr:PAnsiChar;
+  lstrw:PWideChar;
   lver:byte;
   i,lcnt:integer;
   lid:integer;
 begin
-  sl:=TStringList.Create;
   lptr:=buf;
   lver:=ReadByte(lptr);       // 6 = version?
-  lcnt:=ReadInteger(lptr);    // ??
-  for i:=0 to lcnt-1 do
+  if lver=6 then
   begin
-    lid :=ReadInteger(lptr);          // ??
-    lstr:=ReadShortStringUTF8(lptr);
-    sl.AddObject(lstr,TObject(UIntPtr(lid)));
-    FreeMem(lstr);
-  end;
+    sl:=TStringList.Create;
+    lcnt:=ReadInteger(lptr);
+    sl.Capacity:=lcnt;
+    for i:=0 to lcnt-1 do
+    begin
+      lid :=ReadInteger(lptr);
+      lstr:=ReadShortStringUTF8(lptr);
+      sl.AddObject(lstr,TObject(UIntPtr(lid)));
+      FreeMem(lstr);
+    end;
 
-  DoParseBlock(lptr);
-  sl.Free;
+    DoParseBlock(lptr);
+    sl.Free;
+  end;
 end;
 
 procedure DoProcessFile(const fname:string);
@@ -202,10 +214,11 @@ begin
       begin
         lext:=UpCase(ExtractFileExt(lname));
         if (lext='.DAT') or
-           (lext='.LAYOUT') or
+//           (lext='.LAYOUT') or
            (lext='.ANIMATION') then
         begin
-          DoProcessFile(lname);
+          if UpCase(ExtractFileName(lname))<>'TAGS.DAT' then
+            DoProcessFile(lname);
         end;
       end;
     until FindNext(sr)<>0;
@@ -216,6 +229,9 @@ end;
 begin
   tags:=TStringList.Create;
   LoadTags();
-  cycleDir('.');
+  if ParamCount=0 then
+    cycleDir('.')
+  else
+    doprocessfile(paramstr(1));
   tags.Free;
 end.
