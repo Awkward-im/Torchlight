@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  Grids, tl2save, tl2types;
+  Grids, tl2save, tl2types, tl2db;
 
 type
 
@@ -36,7 +36,8 @@ type
     FSGame:TTL2SaveFile;
 
     procedure FillGrid(agrid: TStringGrid; alist: TTL2ModList);
-    procedure FillGridRow(agrid: TStringGrid; arow: integer; amod: TTL2Mod);
+    procedure FillGridRow(agrid: TStringGrid; arow: integer; const amod: TTL2Mod);
+    procedure FillGridRow(agrid: TStringGrid; arow: integer; const amod: TModData);
 
   public
     procedure FillInfo(aSGame: TTL2SaveFile);
@@ -51,8 +52,7 @@ implementation
 {$R *.lfm}
 
 uses
-  formSettings,
-  tl2db;
+  formSettings;
 
 { TfmModList }
 
@@ -104,34 +104,6 @@ begin
   end;
 end;
 
-procedure TfmModList.sbAddClick(Sender: TObject);
-var
-  lid:TL2ID;
-  i:integer;
-  found:boolean;
-begin
-  if sgBound.RowCount<11 then
-  begin
-    found:=false;
-    lid:=;
-    for i:=1 to sgBound.Rowcount-1 do
-    begin
-      found:=StrToInt(sgBound.Cells[2,i])=lid;
-      if found then break;
-    end;
-    if not found then
-    begin
-      i:=cbModList.ItemIndex;
-      if i>=0 then
-      begin
-        sgBound.RowCount:=sgBound.RowCount+1;
-        FillGridRow(sgBound,sgBound.RowCount-1,
-            [cbModList.Items.Objects[i]]);
-      end;
-    end;
-  end;
-end;
-
 procedure TfmModList.bbClearClick(Sender: TObject);
 begin
   if MessageDlg(rsDoClear,mtConfirmation,[mbOk,mbCancel],0,mbOk)=mrOk then
@@ -144,30 +116,47 @@ begin
   end;
 end;
 
-procedure TfmModList.bbUpdateClick(Sender: TObject);
+procedure TfmModList.sbAddClick(Sender: TObject);
 var
-  llist:TTL2ModList;
-  i:integer;
+  lid:TL2ID;
+  llist:tModDataArray;
+  i,idx:integer;
+  found:boolean;
 begin
-  if sgBound.RowCount=0 then
-    FSGame.BoundMods:=nil
-  else
+  if sgBound.RowCount<11 then
   begin
-    SetLength(llist,sgBound.RowCount-1);
-    for i:=1 to sgBound.RowCount-1 do
+    idx:=cbModList.ItemIndex;
+    if idx>=0 then
     begin
-
-
+      llist:=GetModList;
+      idx:=IntPtr(cbModList.Items.Objects[idx]);
+      lid:=llist[idx].id;
+      found:=false;
+      for i:=1 to sgBound.Rowcount-1 do
+      begin
+        found:=StrToInt(sgBound.Cells[2,i])=lid;
+        if found then break;
+      end;
+      if not found then
+      begin
+        sgBound.RowCount:=sgBound.RowCount+1;
+        FillGridRow(sgBound,sgBound.RowCount-1,llist[idx]);
+      end;
     end;
-    FSGame.BoundMods:=llist;
   end;
-
-  if sgRecent.RowCount=0 then FSGame.RecentModHistory:=nil;
-  if sgFull  .RowCount=0 then FSGame.FullModHistory  :=nil;
-  bbUpdate.Enabled:=false;
 end;
 
-procedure TfmModList.FillGridRow(agrid:TStringGrid; arow:integer; amod:TTL2Mod);
+procedure TfmModList.FillGridRow(agrid:TStringGrid; arow:integer; const amod:TModData);
+begin
+  agrid.Cells[0,arow]:=amod.title;
+  agrid.Cells[1,arow]:=IntToStr(amod.version);
+  if fmSettings.cbIdAsHex.Checked then
+    agrid.Cells[2,arow]:='0x'+HexStr(amod.id,16)
+  else
+    agrid.Cells[2,arow]:=IntToStr(amod.id);
+end;
+
+procedure TfmModList.FillGridRow(agrid:TStringGrid; arow:integer; const amod:TTL2Mod);
 begin
   agrid.Cells[0,arow]:=GetTL2Mod(amod.id);
   agrid.Cells[1,arow]:=IntToStr(amod.version);
@@ -194,13 +183,17 @@ begin
 end;
 
 procedure TfmModList.FillInfo(aSGame:TTL2SaveFile);
+var
+  llist:tModDataArray;
+  i:integer;
 begin
   FSGame:=aSGame;
 
+  llist:=GetModList;
   cbModList.Clear;
-  cbModList.Items.Capacity:=Length();
-  for i:=0 to High() do
-    cbModList.AddItem(,TObject(IntPtr()));
+  cbModList.Items.Capacity:=Length(llist);
+  for i:=0 to High(llist) do
+    cbModList.AddItem(llist[i].title,TObject(IntPtr(i)));
 
   FillGrid(sgBound ,FSGame.BoundMods);
   FillGrid(sgRecent,FSGame.RecentModHistory);
@@ -209,5 +202,27 @@ begin
   bbUpdate.Enabled:=false;
 end;
 
-end.
+procedure TfmModList.bbUpdateClick(Sender: TObject);
+var
+  llist:TTL2ModList;
+  i:integer;
+begin
+  if sgBound.RowCount=0 then
+    FSGame.BoundMods:=nil
+  else
+  begin
+    SetLength(llist,sgBound.RowCount-1);
+    for i:=1 to sgBound.RowCount-1 do
+    begin
+      llist[i-1].version:=StrToInt  (sgBound.Cells[1,i]);
+      llist[i-1].id     :=StrToInt64(sgBound.Cells[2,i]);
+    end;
+    FSGame.BoundMods:=llist;
+  end;
 
+  if sgRecent.RowCount=0 then FSGame.RecentModHistory:=nil;
+  if sgFull  .RowCount=0 then FSGame.FullModHistory  :=nil;
+  bbUpdate.Enabled:=false;
+end;
+
+end.

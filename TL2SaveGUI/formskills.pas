@@ -158,7 +158,11 @@ end;
 
 procedure TfmSkills.seFreePointsChange(Sender: TObject);
 begin
-  FPoints:=seFreePoints.Value;
+  if FPoints<>seFreePoints.Value then
+  begin
+    FPoints:=seFreePoints.Value;
+    bbUpdate.Enabled:=true;
+  end;
 end;
 
 procedure TfmSkills.ClearData;

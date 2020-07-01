@@ -2,8 +2,9 @@
 
 type
   TModData = record
-     id   :TL2ID;
-     title:string;
+     id     :TL2ID;
+     title  :string;
+     version:word;
    end;
   tModDataArray = array of TModData;
 
@@ -11,9 +12,13 @@ function GetTL2Mod(const aid:TL2ID; out aver:integer):string; overload;
 function GetTL2Mod(const aid:TL2ID                  ):string; overload;
 function GetTL2Mod(const aid:string                 ):string; overload;
 
-procedure GetModList(out alist:tModDataArray);
+function GetModList:tModDataArray;
 
 {$ELSE}
+
+var
+  GlobalModList:tModDataArray = nil;
+
 
 function GetTL2Mod(const aid:TL2ID; out aver:integer):string;
 var
@@ -32,19 +37,34 @@ begin
 
   if db<>nil then
   begin
-    Str(aid,lSQL);
-    lSQL:='SELECT title,version FROM mods WHERE id='+lSQL;
-
-    i:=sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil);
-    if i=SQLITE_OK then
+    if GlobalModList<>nil then
     begin
-      i:=sqlite3_step(vm);
-      if i=SQLITE_ROW then
+      for i:=0 to High(GlobalModList) do
       begin
-        result:=sqlite3_column_text(vm,0);
-        aver  :=sqlite3_column_int (vm,1);
+        if aid=GlobalModList[i].id then
+        begin
+          aver  :=GlobalModList[i].version;
+          result:=GlobalModList[i].title;
+          break;
+        end;
       end;
-      sqlite3_finalize(vm);
+    end
+    else
+    begin
+      Str(aid,lSQL);
+      lSQL:='SELECT title,version FROM mods WHERE id='+lSQL;
+
+      i:=sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil);
+      if i=SQLITE_OK then
+      begin
+        i:=sqlite3_step(vm);
+        if i=SQLITE_ROW then
+        begin
+          result:=sqlite3_column_text(vm,0);
+          aver  :=sqlite3_column_int (vm,1);
+        end;
+        sqlite3_finalize(vm);
+      end;
     end;
   end;
 
@@ -79,44 +99,48 @@ begin
   result:=GetTL2Mod(lid);
 end;
 
-procedure GetModList(out alist:tModDataArray);
+function GetModList:tModDataArray;
 var
   lSQL:string;
   vm:pointer;
-  i,lcnt:integer;
+  i:integer;
 begin
-  alist:=nil;
-
-  if db<>nil then
+  if GlobalModList=nil then
   begin
-    lSQL:='SELECT count(*) FROM mods';
-    i:=0;
-    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    if db<>nil then
     begin
-      if sqlite3_step(vm)=SQLITE_ROW then
+      lSQL:='SELECT count(*) FROM mods';
+      i:=0;
+      if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
       begin
-        i:=sqlite3_column_int(vm,0);
-      end;
-      sqlite3_finalize(vm);
-    end;
-
-    if i>0 then
-    begin
-      SetLength(alist,i);
-      lSQL:='SELECT id,title FROM mods';
-      i:=sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil);
-      if i=SQLITE_OK then
-      begin
-        i:=0;
-        while sqlite3_step(vm)=SQLITE_ROW do
+        if sqlite3_step(vm)=SQLITE_ROW then
         begin
-          alist[i].id   :=sqlite3_column_int (vm,0);
-          alist[i].title:=sqlite3_column_text(vm,1);
+          i:=sqlite3_column_int(vm,0);
         end;
         sqlite3_finalize(vm);
       end;
+
+      if i>0 then
+      begin
+        SetLength(GlobalModList,i);
+        lSQL:='SELECT id,title,version FROM mods';
+        i:=sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil);
+        if i=SQLITE_OK then
+        begin
+          i:=0;
+          while sqlite3_step(vm)=SQLITE_ROW do
+          begin
+            GlobalModList[i].id     :=sqlite3_column_int64(vm,0);
+            GlobalModList[i].title  :=sqlite3_column_text (vm,1);
+            GlobalModList[i].version:=sqlite3_column_int  (vm,2);
+            inc(i);
+          end;
+          sqlite3_finalize(vm);
+        end;
+      end;
     end;
   end;
+  result:=GlobalModList;
 end;
 
 {$ENDIF}

@@ -95,10 +95,10 @@ object fmModList: TfmModList
     Top = 20
     Width = 340
     AutoEdit = False
-    AutoFillColumns = True
     ColCount = 3
     Columns = <    
       item
+        SizePriority = 0
         Title.Caption = 'Title'
         Width = 181
       end    
@@ -113,7 +113,7 @@ object fmModList: TfmModList
         Width = 107
       end>
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goDblClickAutoSize, goSmoothScroll]
     RowCount = 1
     TabOrder = 2
     ColWidths = (
@@ -128,10 +128,10 @@ object fmModList: TfmModList
     Top = 248
     Width = 340
     AutoEdit = False
-    AutoFillColumns = True
     ColCount = 3
     Columns = <    
       item
+        SizePriority = 0
         Title.Caption = 'Title'
         Width = 181
       end    
@@ -146,7 +146,7 @@ object fmModList: TfmModList
         Width = 107
       end>
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goDblClickAutoSize, goSmoothScroll]
     RowCount = 1
     TabOrder = 3
     ColWidths = (
@@ -161,10 +161,10 @@ object fmModList: TfmModList
     Top = 248
     Width = 340
     AutoEdit = False
-    AutoFillColumns = True
     ColCount = 3
     Columns = <    
       item
+        SizePriority = 0
         Title.Caption = 'Title'
         Width = 181
       end    
@@ -179,7 +179,7 @@ object fmModList: TfmModList
         Width = 107
       end>
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goDblClickAutoSize, goSmoothScroll]
     RowCount = 1
     TabOrder = 4
     ColWidths = (

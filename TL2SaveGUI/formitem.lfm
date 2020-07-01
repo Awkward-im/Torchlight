@@ -412,9 +412,12 @@ object fmItem: TfmItem
     object cbFlag1: TCheckBox
       Left = 8
       Height = 19
+      Hint = 'Equipped'
       Top = 0
       Width = 20
       Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
     end
     object cbFlag2: TCheckBox
@@ -423,6 +426,8 @@ object fmItem: TfmItem
       Top = 0
       Width = 20
       Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
     end
     object cbFlag3: TCheckBox
@@ -431,6 +436,8 @@ object fmItem: TfmItem
       Top = 0
       Width = 20
       Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 2
     end
     object cbFlag4: TCheckBox
@@ -439,6 +446,8 @@ object fmItem: TfmItem
       Top = 0
       Width = 20
       Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 3
     end
     object cbFlag5: TCheckBox
@@ -447,6 +456,8 @@ object fmItem: TfmItem
       Top = 0
       Width = 20
       Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 4
     end
     object cbFlag6: TCheckBox
@@ -455,14 +466,19 @@ object fmItem: TfmItem
       Top = 0
       Width = 20
       Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 5
     end
     object cbFlag7: TCheckBox
       Left = 152
       Height = 19
+      Hint = 'Recognized'
       Top = 0
       Width = 20
       Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 6
     end
   end

@@ -28,7 +28,7 @@ end;
 
 function GetItemIcon(const aid:TL2ID):string;
 begin
-  result:=GetIcon(aid,'items');
+  result:=GetTextValue(aid,'items','icon');
 end;
 
 function GetItemPosition(apos:integer; out cont:string):string;

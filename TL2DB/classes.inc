@@ -107,7 +107,7 @@ end;
 
 function GetClassIcon(const aid:TL2ID):string;
 begin
-  result:=GetIcon(aid,'classes');
+  result:=GetTextValue(aid,'classes','icon');
 end;
 
 //----- Info -----

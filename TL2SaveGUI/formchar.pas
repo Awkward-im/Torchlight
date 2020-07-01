@@ -488,8 +488,12 @@ end;
 
 procedure TfmChar.seFreePointsChange(Sender: TObject);
 begin
-  FFreeStatPoints:=seFreePoints.Value;
-  PreCalcStat;
+  if FFreeStatPoints<>seFreePoints.Value then
+  begin
+    FFreeStatPoints:=seFreePoints.Value;
+    bbUpdate.Enabled:=true;
+    PreCalcStat;
+  end;
 end;
 
 //--- Common ---

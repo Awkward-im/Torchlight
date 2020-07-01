@@ -74,7 +74,7 @@ end;
 
 function GetPetIcon(const aid:TL2ID):string;
 begin
-  result:=GetIcon(aid,'pets');
+  result:=GetTextValue(aid,'pets','icon');
 end;
 
 //----- List -----

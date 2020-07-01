@@ -443,15 +443,16 @@ end;
 
 type
   tItemInfo = record
-    id   :string;
-    name :string;
-    title:string;
-    descr:string;
-    icon :string;
-    auses:string;
-    quest:string;
-    afile:string;
-    base :string;
+    id      :string;
+    name    :string;
+    title   :string;
+    descr   :string;
+    icon    :string;
+    auses   :string;
+    quest   :string;
+    afile   :string;
+    base    :string;
+    unittype:string;
   end;
 
 function AddItemToBase(const aitem:tItemInfo):boolean;
@@ -467,9 +468,10 @@ begin
     for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
     lbase:=LowerCase(aitem.base);
     for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
-    lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, file, base, modid) VALUES ('+
+    lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, unittype,'+
+          ' file, base, modid) VALUES ('+
         aitem.id+', '+FixedText(aitem.name)+', '+FixedText(aitem.title)+', '+FixedText(aitem.descr)+
-        ', '+FixedText(aitem.icon)+', '+aitem.auses+', '+aitem.quest+
+        ', '+FixedText(aitem.icon)+', '+aitem.auses+', '+aitem.quest+', '+FixedText(aitem.unittype)+
         ', '+FixedText(lfile)+', '+FixedText(lbase)+', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
@@ -479,6 +481,44 @@ begin
       result:=true;
     end;
   end;
+end;
+
+function GetBaseUnitType(const fname:string):string;
+var
+  p:PTL2Node;
+  lbase:string;
+  i:integer;
+begin
+  result:='';
+  lbase :='';
+  p:=ParseDatFile(PChar(fname));
+  if p=nil then
+  begin
+    p:=ParseDatFile(PChar(GameRoot+fname));
+    if p=nil then
+    begin
+      writeln('can''t load: ',fname);
+      exit;
+    end;
+  end;
+
+  for i:=0 to p^.childcount-1 do
+  begin
+    if CompareWide(p^.children^[i].name,'UNITTYPE') then
+    begin
+      result:=p^.children^[i].asString;
+      break;
+    end;
+    if CompareWide(p^.children^[i].name,'BASEFILE') then
+    begin
+      lbase:=p^.children^[i].asString;
+    end;
+  end;
+
+  if (result='') and (lbase<>'') then
+    result:=GetBaseUnitType(lbase);
+
+  DeleteNode(p);
 end;
 
 function GetBaseIcon(const fname:string):string;
@@ -568,10 +608,12 @@ begin
     begin
       litem.id:=p^.children^[i].asString;
     end
-    else if (litem.quest='0') and CompareWide(p^.children^[i].name,'UNITTYPE') then
+    else if CompareWide(p^.children^[i].name,'UNITTYPE') then
     begin
-      if CompareWide(p^.children^[i].asString,'LEVEL ITEM') or 
-         CompareWide(p^.children^[i].asString,'QUESTITEM') then
+      litem.unittype:=p^.children^[i].asString;
+      if (litem.quest='0') and (
+         (litem.unittype='LEVEL ITEM') or 
+         (litem.unittype='QUESTITEM')) then
            litem.quest:='1';
     end
     else if CompareWide(p^.children^[i].name,'USES') then
@@ -579,8 +621,11 @@ begin
       litem.auses:=p^.children^[i].asString;
     end;
   end;
-  if (litem.icon='') and (litem.base<>'') then
-    litem.icon:=ExtractFileNameOnly(GetBaseIcon(litem.base));
+  if (litem.base<>'') then
+  begin
+    if (litem.unittype='') then litem.unittype:=GetBaseUnitType(litem.base);
+    if (litem.icon    ='') then litem.icon    :=ExtractFileNameOnly(GetBaseIcon(litem.base));
+  end;
   if litem.icon='' then writeln('No icon for ',fname);
 
   if not AddItemToBase(litem) then

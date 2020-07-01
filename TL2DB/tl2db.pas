@@ -35,11 +35,14 @@ function GetTL2Mob  (const aid:TL2ID                  ):string; overload;
 
 function GetTL2KeyType(acode:integer):string;
 
+function GetTextValue(const aid:TL2ID; const abase, afield:string):string;
+
 procedure SetFilter(amods:TTL2ModList);
 procedure SetFilter(amods:TL2IdList);
 procedure RestFilter;
-function  IsInModList(const alist:string; aid:TL2ID):boolean;
-function  IsInModList(const alist:string; amods:TTL2ModList):boolean;
+function  IsInModList(const alist:string; aid:TL2ID        ):boolean; overload;
+function  IsInModList(const alist:string; amods:TTL2ModList):TL2ID  ; overload;
+function  IsInModList(aid:TL2ID         ; amods:TTL2ModList):boolean; overload;
 
 function  LoadBases(const fname:string=''):integer;
 procedure FreeBases;
@@ -254,7 +257,7 @@ begin
   end;
 end;
 
-function GetIcon(const aid:TL2ID; const abase:string):string;
+function GetTextValue(const aid:TL2ID; const abase, afield:string):string;
 var
   lSQL:string;
   vm:pointer;
@@ -264,7 +267,7 @@ begin
   if db<>nil then
   begin
     Str(aid,lSQL);
-    lSQL:='SELECT icon FROM '+abase+' WHERE id='+lSQL;
+    lSQL:='SELECT '+afield+' FROM '+abase+' WHERE id='+lSQL;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -519,21 +522,42 @@ begin
     result:=false;
 end;
 
-function IsInModList(const alist:string; amods:TTL2ModList):boolean;
+function IsInModList(const alist:string; amods:TTL2ModList):TL2ID;
 var
   ls:string;
   i:integer;
 begin
-  result:=true;
-
-  if alist=' 0 ' then exit;
+  if alist=' 0 ' then
+  begin
+    result:=0;
+    exit;
+  end;
 
   for i:=0 to High(amods) do
   begin
     Str(amods[i].id,ls);
-    if Pos(' '+ls+' ',alist)>0 then exit;
+    if Pos(' '+ls+' ',alist)>0 then
+    begin
+      result:=amods[i].id;
+      exit;
+    end;
   end;
 
+  result:=TL2IdEmpty;
+end;
+
+function IsInModList(aid:TL2ID; amods:TTL2ModList):boolean;
+var
+  i:integer;
+begin
+  for i:=0 to High(amods) do
+  begin
+    if aid=amods[i].id then
+    begin
+      result:=true;
+      exit;
+    end;
+  end;
   result:=false;
 end;
 
