@@ -16,6 +16,7 @@ type
     bbUpdate: TBitBtn;
     gbStatistic: TGroupBox;
 
+    procedure cbStatChange(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -77,6 +78,7 @@ begin
       ReadOnly   :=not IsStatEditable(i);
       Enabled    :=IsStatEditable(i);
       NumbersOnly:=IsStatNumeric(i);
+      OnChange   :=@cbStatChange;
       Visible    :=True;
     end;
     with TLabel.Create(Self) do
@@ -104,6 +106,16 @@ begin
   bbUpdate.Top:=gbStatistic.Top+gbStatistic.Height+8;
 end;
 
+procedure TfmStatistic.cbStatChange(Sender: TObject);
+begin
+{
+if StatEdits[i].Enabled then
+  begin
+    SGame.Statistic[i]:=StrToInt(StatEdits[i].Text);
+}
+  bbUpdate.Enabled:=true;
+end;
+
 procedure TfmStatistic.bbUpdateClick(Sender: TObject);
 var
   i:integer;
@@ -115,6 +127,7 @@ begin
       SGame.Statistic[i]:=StrToInt(StatEdits[i].Text);
     end;
   end;
+  bbUpdate.Enabled:=false;
 end;
 
 procedure TfmStatistic.FillInfo(aSGame:TTL2SaveFile);
@@ -127,6 +140,7 @@ begin
   end;
 
   SGame:=aSGame;
+  bbUpdate.Enabled:=false;
 end;
 
 end.
