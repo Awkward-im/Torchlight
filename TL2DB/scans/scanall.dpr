@@ -453,6 +453,7 @@ type
     afile   :string;
     base    :string;
     unittype:string;
+    stack   :string;
   end;
 
 function AddItemToBase(const aitem:tItemInfo):boolean;
@@ -468,11 +469,11 @@ begin
     for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
     lbase:=LowerCase(aitem.base);
     for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
-    lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, unittype,'+
+    lSQL:='INSERT INTO items (id, name, title, descr, icon, uses, quest, unittype, stack'+
           ' file, base, modid) VALUES ('+
         aitem.id+', '+FixedText(aitem.name)+', '+FixedText(aitem.title)+', '+FixedText(aitem.descr)+
         ', '+FixedText(aitem.icon)+', '+aitem.auses+', '+aitem.quest+', '+FixedText(aitem.unittype)+
-        ', '+FixedText(lfile)+', '+FixedText(lbase)+', '' '+smodid+' '')';
+        ', '+aitem.stack+', '+FixedText(lfile)+', '+FixedText(lbase)+', '' '+smodid+' '')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -575,6 +576,7 @@ begin
   litem.auses:='0';
   litem.base :='';
   litem.afile:=fname;
+  litem.stack:='1';
 
   if Pos('MEDIA\UNITS\ITEMS\QUEST_ITEMS\',fname)>0 then litem.quest:='1' else litem.quest:='0';
   for i:=0 to p^.childcount-1 do
@@ -603,6 +605,10 @@ begin
     else if CompareWide(p^.children^[i].name,'BASEFILE') then
     begin
       litem.base:=p^.children^[i].asString;
+    end
+    else if CompareWide(p^.children^[i].name,'MAXSTACKSIZE') then
+    begin
+      Str(p^.children^[i].asInteger,litem.stack);
     end
     else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
     begin
