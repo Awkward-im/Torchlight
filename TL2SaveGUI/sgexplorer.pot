@@ -458,6 +458,19 @@ msgctxt "tfmeffects.sgstats.columns[1].title.caption"
 msgid "Value"
 msgstr ""
 
+#: tfmitem.bbupdate.caption
+msgctxt "tfmitem.bbupdate.caption"
+msgid "&Update"
+msgstr ""
+
+#: tfmitem.cbflag1.hint
+msgid "Equipped"
+msgstr ""
+
+#: tfmitem.cbflag7.hint
+msgid "Recognized"
+msgstr ""
+
 #: tfmitem.gbcoords.caption
 msgctxt "tfmitem.gbcoords.caption"
 msgid "Coordinates"

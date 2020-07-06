@@ -14,9 +14,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsStat
+    ActivePage = tsStatistic
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -981,6 +981,7 @@ object fmChar: TfmChar
         ColumnClickSorts = True
         Columns = <        
           item
+            ReadOnly = True
             Title.Caption = 'Title'
             Width = 220
           end        
@@ -989,13 +990,15 @@ object fmChar: TfmChar
             Title.Caption = 'Value'
           end        
           item
+            ReadOnly = True
             Title.Caption = 'Mod'
             Width = 190
           end>
         FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll]
         RowCount = 1
         TabOrder = 1
+        OnEditingDone = sgStatsEditingDone
       end
     end
   end

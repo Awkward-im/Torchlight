@@ -6,13 +6,14 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Grids, tl2item;
+  Grids, Buttons, tl2item, tl2char;
 
 type
 
   { TfmItem }
 
   TfmItem = class(TForm)
+    bbUpdate: TBitBtn;
     edUnkn6: TEdit;
     gbFlags: TGroupBox;
     cbFlag1: TCheckBox;
@@ -49,13 +50,18 @@ type
     lbModList : TListBox;
     lbAugments: TListBox;  lblAugments: TLabel;
     sgEffects : TStringGrid;
+    procedure bbUpdateClick(Sender: TObject);
+    procedure edSocketsChange(Sender: TObject);
+    procedure edStackChange(Sender: TObject);
 
   private
     FItem:TTL2Item;
+    FChar:TTL2Character;
+    FMaxStack:integer;
     procedure DrawItemIcon(aItem: TTL2Item; aImg: TImage);
 
   public
-    procedure FillInfo(aItem:TTL2Item);
+    procedure FillInfo(aItem:TTL2Item; aChar:TTL2Character=nil);
 
   end;
 
@@ -67,6 +73,29 @@ uses
   lazfileutils,
   formSettings,
   tl2db;
+
+procedure TfmItem.edStackChange(Sender: TObject);
+begin
+  if FMaxStack<0 then FMaxStack:=GtItemStack(FItem.ID);
+  if StrToIntDef(edStack.Text,1)>FMaxStack then
+    edStack.Text:=IntToStr(FMaxStack);
+  bbUpdate.Visible:=true;
+end;
+
+procedure TfmItem.edSocketsChange(Sender: TObject);
+begin
+  if StrToIntDef(edSockets.Text,0)>4 then
+    edSockets.Text:='4';
+  bbUpdate.Visible:=true;
+end;
+
+procedure TfmItem.bbUpdateClick(Sender: TObject);
+begin
+  FItem.Stack:=StrToIntDef(edStack.Text,1);
+  FItem.Changed:=true;
+  if FChar<>nil then FChar.Changed:=true;
+  bbUpdate.Visible:=false;
+end;
 
 function CycleDir(const adir,aicon:string):string;
 var
@@ -131,12 +160,17 @@ begin
     end;
 end;
 
-procedure TfmItem.FillInfo(aItem:TTL2Item);
+procedure TfmItem.FillInfo(aItem:TTL2Item; aChar:TTL2Character=nil);
 var
   linv,lcont:string;
   i,j:integer;
 begin
   FItem:=aItem;
+  FChar:=aChar;
+  FMaxStack:=-1;
+
+  edStack  .ReadOnly:=FChar=nil;
+  edSockets.ReadOnly:=FChar=nil;
   
   edName    .Text := aItem.Name;
   if aItem.IsProp then
@@ -227,6 +261,8 @@ begin
   lbModList.Clear;
   for i:=0 to High(aItem.ModIds) do
     lbModList.AddItem(GetTL2Mod(aItem.ModIds[i]),nil);
+
+  bbUpdate.Visible:=false;
 end;
 
 end.

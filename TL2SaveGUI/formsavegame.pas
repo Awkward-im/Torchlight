@@ -15,22 +15,25 @@ type
   { TfmSaveFile }
 
   TfmSaveFile = class(TForm)
-    actFileExit: TAction;
-    actFileOpen: TAction;
-    actFileSave: TAction;
     actFileReload: TAction;
-    actFileCheat: TAction;
     ActionList: TActionList;
+    actFileExit  : TAction;
+    actFileOpen  : TAction;
+    actFileSave  : TAction;
+    actFileReload: TAction;
+    actFileCheat : TAction;
     ImageList: TImageList;
     MainMenu: TMainMenu;
-    mnuFileReload: TMenuItem;
     mnuFileSep2: TMenuItem;
     mnuFileCheat: TMenuItem;
     mnuFile: TMenuItem;
-    mnuFileOpen: TMenuItem;
-    mnuFileSave: TMenuItem;
-    mnuFileSep1: TMenuItem;
-    mnuFileExit: TMenuItem;
+    mnuFileOpen  : TMenuItem;
+    mnuFileSave  : TMenuItem;
+    mnuFileReload: TMenuItem;
+    mnuFileSep1  : TMenuItem;
+    mnuFileCheat : TMenuItem;
+    mnuFileSep2  : TMenuItem;
+    mnuFileExit  : TMenuItem;
     MainPanel: TPanel;
     LeftPanel: TPanel;
     Splitter: TSplitter;
@@ -295,12 +298,13 @@ end;
 
 procedure TfmSaveFile.MakeBackup(const fname:string);
 var
-  ldir:string;
+  ldir,ls:string;
 begin
   ldir:=ExtractFilePath(fname)+'\Backup';
   if not DirectoryExists(ldir) then
     MkDir(ldir);
-  RenameFile(fname,ldir+'\'+ExtractFileName(fname)+'.'+TimeToStr(Time()));
+  ls:=StringReplace(TimeToStr(Time()),':','-',[rfReplaceAll]);
+  RenameFile(fname,ldir+'\'+ExtractFileName(fname)+'.'+ls);
 end;
 
 procedure TfmSaveFile.actFileSaveExecute(Sender: TObject);
@@ -441,7 +445,7 @@ begin
               FSkills.Visible:=true;
             end;
             1: begin
-              FItems.FillInfo(SGame.CharInfo.Items);
+              FItems.FillInfo(SGame.CharInfo.Items, SGame.CharInfo);
               FItems.Visible:=true;
             end;
           end;
@@ -464,7 +468,7 @@ begin
           FPet.Visible:=true;
         end;
         3: begin
-          FItems.FillInfo(SGame.PetInfo[lidx].Items);
+          FItems.FillInfo(SGame.PetInfo[lidx].Items, SGame.PetInfo);
           FItems.Visible:=true;
         end;
       end;

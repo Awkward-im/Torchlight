@@ -27,5 +27,6 @@
 {"hash":5056483,"name":"tfmitem.gbflags.caption","sourcebytes":[70,108,97,103,115],"value":"Flags"},
 {"hash":146829940,"name":"tfmitem.cbflag1.hint","sourcebytes":[69,113,117,105,112,112,101,100],"value":"Equipped"},
 {"hash":98736916,"name":"tfmitem.cbflag7.hint","sourcebytes":[82,101,99,111,103,110,105,122,101,100],"value":"Recognized"},
-{"hash":45,"name":"tfmitem.lblpostype.caption","sourcebytes":[45],"value":"-"}
+{"hash":45,"name":"tfmitem.lblpostype.caption","sourcebytes":[45],"value":"-"},
+{"hash":197568645,"name":"tfmitem.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"}
 ]}

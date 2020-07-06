@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  tl2item, formItem;
+  tl2item, tl2char, formItem;
 
 type
 
@@ -24,10 +24,11 @@ type
     procedure lbItemListSelectionChange(Sender: TObject; User: boolean);
   private
     FItem:TfmItem;
+    FChar:TTL2Character;
     FItems:TTL2ItemList;
 
   public
-    procedure FillInfo(aItems:TTL2ItemList);
+    procedure FillInfo(aItems:TTL2ItemList; aChar:TTL2Character=nil);
 
   end;
 
@@ -56,7 +57,7 @@ begin
       fmButtons.Name  :='item '+IntToStr(i);
       fmButtons.SClass:=litem;
 
-      FItem.FillInfo(litem);
+      FItem.FillInfo(litem, FChar);
       FItem.Visible:=true;
 
       break;
@@ -69,12 +70,14 @@ begin
   FItem.Parent:=pnlItem;
 end;
 
-procedure TfmItems.FillInfo(aItems:TTL2ItemList);
+procedure TfmItems.FillInfo(aItems:TTL2ItemList; aChar:TTL2Character=nil);
 var
   ls:String;
   i:integer;
 begin
   FItems:=aItems;
+  FChar :=aChar;
+
   FItem.Visible:=false;
 
   lblCount.Caption:=IntToStr(Length(aItems));

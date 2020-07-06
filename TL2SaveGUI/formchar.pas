@@ -109,6 +109,7 @@ type
     procedure bbUpdateClick(Sender: TObject);
     procedure cbKeepBaseClick(Sender: TObject);
     procedure seFreePointsChange(Sender: TObject);
+    procedure sgStatsEditingDone(Sender: TObject);
     procedure StatChange(Sender: TObject);
     procedure cbCheckPointsClick(Sender: TObject);
     procedure cbSpellChange   (Sender: TObject);
@@ -496,6 +497,11 @@ begin
   end;
 end;
 
+procedure TfmChar.sgStatsEditingDone(Sender: TObject);
+begin
+  bbUpdate.Enabled:=true;
+end;
+
 //--- Common ---
 
 procedure TfmChar.seLevelChange(Sender: TObject);
@@ -717,6 +723,7 @@ begin
   lblArea    .Visible:=lChar;
   edWaypoint .Visible:=lChar;
   lblWaypoint.Visible:=lChar;
+  sgStats.Columns[1].ReadOnly:=not lChar;
 
 end;
 
@@ -1042,6 +1049,7 @@ begin
   sgStats.RowCount:=1+Length(FChar.Stats);
   for i:=0 to High(FChar.Stats) do
   begin
+    sgStats.Objects[0,i+1]:=TObject(IntPtr(i));
     sgStats.Cells[0,i+1]:=GetTL2Stat(FChar.Stats[i].id,ls);
     sgStats.Cells[1,i+1]:=IntToStr  (FChar.Stats[i].value);
     sgStats.Cells[2,i+1]:=GetTL2Mod(ls);
@@ -1058,7 +1066,7 @@ end;
 
 procedure TfmChar.UpdatePlayerInfo();
 var
-  i:integer;
+  i,idx:integer;
 begin
   //--- Stats
 
@@ -1102,6 +1110,16 @@ begin
       FChar.FreeSkillPoints:=FSkillForm.FreeSkillPoints
     else
       FChar.FreeSkillPoints:=0;
+  end;
+
+  //--- Statistic
+  if sgStats.Modified then
+  begin
+    for i:=1 to sgStats.RowCount-1 do
+    begin
+      idx:=IntPtr(sgStats.Objects[0,i]);
+      Val(sgStats.Cells[1,i],FChar.Stats[idx].value);
+    end;
   end;
 end;
 
