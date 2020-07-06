@@ -81,7 +81,8 @@ begin
 
   FStream.WriteWord(Length(FHistory)); // same as next history list count
   FStream.WriteWord(Length(FHistory));
-  FStream.Write(FHistory[0],Length(FHistory)*SizeOf(TL2ID));
+  if Length(FHistory)>0 then
+    FStream.Write(FHistory[0],Length(FHistory)*SizeOf(TL2ID));
 
   //----- Recipes -----
 
