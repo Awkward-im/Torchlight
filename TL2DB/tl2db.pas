@@ -23,12 +23,11 @@ uses
 
 {$Include mods.inc}
 
+{$Include stats.inc}
+
 function GetTL2Quest(const aid:TL2ID; out amods:string; out aname:string):string; overload;
 function GetTL2Quest(const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Quest(const aid:TL2ID                  ):string; overload;
-
-function GetTL2Stat (const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Stat (const aid:TL2ID                  ):string; overload;
 
 function GetTL2Mob  (const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Mob  (const aid:TL2ID                  ):string; overload;
@@ -36,6 +35,7 @@ function GetTL2Mob  (const aid:TL2ID                  ):string; overload;
 function GetTL2KeyType(acode:integer):string;
 
 function GetTextValue(const aid:TL2ID; const abase, afield:string):string;
+function GetIntValue (const aid:TL2ID; const abase, afield:string):integer;
 
 procedure SetFilter(amods:TTL2ModList);
 procedure SetFilter(amods:TL2IdList);
@@ -279,6 +279,28 @@ begin
   end;
 end;
 
+function GetIntValue(const aid:TL2ID; const abase, afield:string):integer;
+var
+  lSQL:string;
+  vm:pointer;
+begin
+  result:=-1;
+
+  if db<>nil then
+  begin
+    Str(aid,lSQL);
+    lSQL:='SELECT '+afield+' FROM '+abase+' WHERE id='+lSQL;
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        result:=sqlite3_column_int(vm,0);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
 //----- Movie Info -----
 
 {$Include movies.inc}
@@ -326,19 +348,7 @@ end;
 
 //----- Stat info -----
 
-function GetTL2Stat(const aid:TL2ID; out amods:string):string;
-var
-  lname:string;
-begin
-  result:=GetById(aid,'stats','',amods,lname);
-end;
-
-function GetTL2Stat(const aid:TL2ID):string;
-var
-  lmods:string;
-begin
-  result:=GetTL2Stat(aid,lmods);
-end;
+{$Include stats.inc}
 
 //----- Mob info -----
 

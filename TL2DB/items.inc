@@ -3,6 +3,7 @@
 function GetTL2Item (const aid:TL2ID  ; out amods:string):string; overload;
 function GetTL2Item (const aid:TL2ID                    ):string; overload;
 function GetItemIcon(const aid:TL2ID):string;
+function GtItemStack(const aid:TL2ID):integer;
 function GetItemPosition(apos:integer; out cont :string):string;
 
 function GetTL2Prop(const aid:TL2ID  ; out amods:string):string; overload;
@@ -29,6 +30,11 @@ end;
 function GetItemIcon(const aid:TL2ID):string;
 begin
   result:=GetTextValue(aid,'items','icon');
+end;
+
+function GtItemStack(const aid:TL2ID):integer;
+begin
+  result:=GetIntValue(aid,'items','stack');
 end;
 
 function GetItemPosition(apos:integer; out cont:string):string;
