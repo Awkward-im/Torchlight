@@ -139,14 +139,33 @@ end;
 
 function GetSkillListPoints(const aclass:TL2ID):integer;
 var
-  sl:TStringArray;
+//  sl:TStringArray;
   ls:string;
-  i,ltmp:integer;
+  pc:PChar;
+  i{,ltmp}:integer;
 begin
   result:=0;
   ls:=GetSkillNames(aclass);
   if ls<>'' then
   begin
+    pc:=pointer(ls);
+    while pc^<>#0 do
+    begin
+      if pc^='#' then
+      begin
+        inc(pc);
+        i:=0;
+        while pc^ in ['0'..'9'] do
+        begin
+          i:=i*10+ORD(pc^)-ORD('0');
+          inc(pc);
+        end;
+        inc(result,i);
+        continue;
+      end;
+      inc(pc);
+    end;
+{  
     sl:=ls.Split(',');
 
     for i:=0 to High(sl) do
@@ -158,6 +177,7 @@ begin
         inc(result,ltmp);
       end;
     end;
+}
   end;
 end;
 
