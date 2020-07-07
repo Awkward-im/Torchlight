@@ -15,7 +15,6 @@ type
   { TfmSaveFile }
 
   TfmSaveFile = class(TForm)
-    actFileReload: TAction;
     ActionList: TActionList;
     actFileExit  : TAction;
     actFileOpen  : TAction;
@@ -24,8 +23,6 @@ type
     actFileCheat : TAction;
     ImageList: TImageList;
     MainMenu: TMainMenu;
-    mnuFileSep2: TMenuItem;
-    mnuFileCheat: TMenuItem;
     mnuFile: TMenuItem;
     mnuFileOpen  : TMenuItem;
     mnuFileSave  : TMenuItem;
@@ -49,6 +46,7 @@ type
     procedure tvSaveGameSelectionChanged(Sender: TObject);
   private
     FFileName:string;
+    SGEPage:TForm;
 
     FSettings  :TfmSettings;
     FMovies    :TfmMovies;
@@ -68,6 +66,7 @@ type
     SGame:TTL2SaveFile;
 
     procedure ChangeTree;
+    procedure CloseSaveGame;
     procedure CreateTree;
     function GetTVIndex: integer;
     procedure MakeBackup(const fname: string);
@@ -257,6 +256,14 @@ begin
   CreateTree;
 end;
 
+procedure TfmSaveFile.CloseSaveGame;
+begin
+  if SGEPage<>nil then SGEPage.Visible:=false;
+  SGEPage:=nil;
+
+  SGame.Free;
+end;
+
 //===== Actions =====
 
 procedure TfmSaveFile.actFileOpenExecute(Sender: TObject);
@@ -284,7 +291,7 @@ end;
 procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
 begin
   ClearGameGlobals;
-  SGame.Free;
+  CloseSaveGame;
 
   SGame:=TTL2SaveFile.Create;
   SGame.LoadFromFile(FFileName);
@@ -382,50 +389,39 @@ begin
     fmButtons.SClass:=nil;
   end;
 
-  FSettings  .Visible:=false;
-  FMovies    .Visible:=false;
-  FModList   .Visible:=false;
-  FMaps      .Visible:=false;
-  FRecipes   .Visible:=false;
-  FKeyBinding.Visible:=false;
-  FQuests    .Visible:=false;
-  FStatistic .Visible:=false;
-  FChar      .Visible:=false;
-  FPet       .Visible:=false;
-  FStats     .Visible:=false;
-  FUnits     .Visible:=false;
-  FSkills    .Visible:=false;
-  FItems     .Visible:=false;
+  if SGEPage<>nil then
+    SGEPage.Visible:=false;
 
   case lidx of
     -1: begin
-      FSettings.Visible:=true;
+      SGEPage:=FSettings;
     end;
 
-    // have editable data (manual)
+    // single, have editable data (manual)
     idxMovies: begin
       FMovies.FillInfo(SGame);
-      FMovies.Visible:=true;
+      SGEPage:=FMovies;
     end;
 
-    // have editable data
+    // single, have editable data
     idxModList: begin
       FModList.FillInfo(SGame);
-      FModList.Visible:=true;
+      SGEPage:=FModList;
     end;
 
+    // single
     idxKeyMapping: begin
       FKeyBinding.FillInfo(SGame);
-      FKeyBinding.Visible:=true;
+      SGEPage:=FKeyBinding;
     end;
 
-    // have editable data (manual)
+    // single, have editable data (manual)
     idxPlayerStat: begin
       FStatistic.FillInfo(SGame);
-      FStatistic.Visible:=true;
+      SGEPage:=FStatistic;
     end;
 
-    // have editable data (manual)
+    // single, have editable data (manual)
     idxCharacter: begin
       case tvSaveGame.Selected.level of
         2: lidx:=tvSaveGame.Selected.Index;
@@ -435,18 +431,21 @@ begin
       end;
       case tvSaveGame.Selected.level of
         1: begin
+          fmButtons.Offset:=SGame.CharInfo.DataOffset;
           FChar.FillInfo(SGame.CharInfo, SGame);
-           FChar.Visible:=true;
+          SGEPage:=FChar;
         end;
+
         2: begin
           case lidx of
             0: begin
               FSkills.RefreshInfo();
-              FSkills.Visible:=true;
+              SGEPage:=FSkills;
             end;
+
             1: begin
               FItems.FillInfo(SGame.CharInfo.Items, SGame.CharInfo);
-              FItems.Visible:=true;
+              SGEPage:=FItems;
             end;
           end;
         end;
@@ -464,12 +463,13 @@ begin
       end;
       case tvSaveGame.Selected.level of
         1,2: begin
+          fmButtons.Offset:=SGame.PetInfo[lidx].DataOffset;
           FPet.FillInfo(SGame.PetInfo[lidx]);
-          FPet.Visible:=true;
+          SGEPage:=FPet;
         end;
         3: begin
           FItems.FillInfo(SGame.PetInfo[lidx].Items, SGame.PetInfo);
-          FItems.Visible:=true;
+          SGEPage:=FItems;
         end;
       end;
     end;
@@ -484,46 +484,49 @@ begin
       case tvSaveGame.Selected.level of
         1,2: begin
           FMaps.FillInfo(SGame,lidx);
-          FMaps.Visible:=true;
+          fmButtons.Offset:=SGame.Maps[lidx].DataOffset;
+          SGEPage:=FMaps;
         end;
         3: begin
           case tvSaveGame.Selected.Index of
             0: begin
               FUnits.FillInfo(SGame,lidx);
-              FUnits.Visible:=true;
+              SGEPage:=FUnits;
             end;
             1: begin
               FItems.FillInfo(SGame.Maps[lidx].PropList);
-              FItems.Visible:=true;
+              SGEPage:=FItems;
             end;
             2: begin
               FItems.FillInfo(SGame.Maps[lidx].QuestItems);
-              FItems.Visible:=true;
+              SGEPage:=FItems;
             end;
           end;
         end;
       end;
     end;
 
-    // have editable data
+    // single, have editable data
     idxQuests: begin
       fmButtons.Offset:=SGame.Quests.DataOffset;
       FQuests.FillInfo(SGame);
-      FQuests.Visible:=true;
+      SGEPage:=FQuests;
     end;
 
-    // have editable data
+    // single, have editable data
     idxRecipes: begin
       FRecipes.FillInfo(SGame);
-      FRecipes.Visible:=true;
+      SGEPage:=FRecipes;
     end;
 
-    // have editable data
+    // single, have editable data
     idxStatistic: begin
       FStats.FillInfo(SGame);
-      FStats.Visible:=true;
+      SGEPage:=FStats;
     end;
   end;
+  if SGEPage<>nil then
+    SGEPage.Visible:=true;
 end;
 
 end.

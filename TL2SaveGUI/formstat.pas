@@ -162,9 +162,7 @@ begin
   begin
     sgArea1.Cells[1,i+1]:=lstat.Area1[i].name;
     i2f.i:=lstat.Area1[i].value;
-    sgArea1.Cells[2,i+1]:=//{'0x'+HexStr(i2f.i,8);//}FloatToStr(i2f.f);
-        SecToTime(Trunc(i2f.f));
-//    IntToStr(trunc(i2f.f))+':'+IntToStr(Trunc(Frac(i2f.f)*60));
+    sgArea1.Cells[2,i+1]:= SecToTime(Trunc(i2f.f));
   end;
   sgArea1.EndUpdate;
 
