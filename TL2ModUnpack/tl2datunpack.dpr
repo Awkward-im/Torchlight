@@ -184,7 +184,8 @@ begin
     BlockRead(f,buf^,l);
     slout:=TStringList.Create;
     DoParse(buf);
-    slout.SaveToFile(fname+'.TXT');
+    slout.WriteBOM:=true;
+    slout.SaveToFile(fname+'.TXT',TEncoding.Unicode);
     slout.Free;
     FreeMem(buf);
     Close(f);
