@@ -468,7 +468,7 @@ begin
           SGEPage:=FPet;
         end;
         3: begin
-          FItems.FillInfo(SGame.PetInfo[lidx].Items, SGame.PetInfo);
+          FItems.FillInfo(SGame.PetInfo[lidx].Items, SGame.PetInfo[lidx]);
           SGEPage:=FItems;
         end;
       end;

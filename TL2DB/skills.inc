@@ -184,13 +184,73 @@ end;
 procedure CreateSkillList(const aclass:TL2ID; out askills:tSkillArray);
 var
   lSQL,ls:string;
-  sl:TStringArray;
+  ltmp:string[127];
+  pc:PChar;
+//  sl:TStringArray;
   vm:pointer;
-  i,lvl,lpos:integer;
+  i,lvl{,lpos}:integer;
 begin
   ls:=GetSkillNames(aclass);
   if ls<>'' then
   begin
+    pc:=pointer(ls);
+    if pc^=',' then inc(pc); // must be always
+    i:=0;
+    while pc^<>#0 do
+    begin
+      if pc^=',' then inc(i);
+      inc(pc);
+    end;
+    SetLength(askills,i);
+
+    if i>0 then
+    begin
+      pc:=pointer(ls);
+      if pc^=',' then inc(pc); // must be always
+      ltmp:='';
+      lvl :=0;
+      i:=0;
+      while pc^<>#0 do
+      begin
+        case pc^ of
+          '#': begin
+            inc(pc);
+            while pc^ in ['0'..'9'] do
+            begin
+              lvl:=lvl*10+ORD(pc^)-ORD('0');
+              inc(pc);
+            end;
+            continue;
+          end;
+
+          ',': begin
+            lSQL:='SELECT id, title, maxlevel, tier, icon, passive FROM skills'+
+                  ' WHERE name LIKE '''+ltmp+'''';
+            if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+            begin
+              if sqlite3_step(vm)=SQLITE_ROW then
+              begin
+                askills[i].id     :=sqlite3_column_int64(vm,0);
+                askills[i].title  :=sqlite3_column_text (vm,1);
+                askills[i].level  :=sqlite3_column_int  (vm,2);
+                askills[i].tier   :=sqlite3_column_text (vm,3);
+                askills[i].icon   :=sqlite3_column_text (vm,4);
+                askills[i].passive:=CHR(sqlite3_column_int(vm,5)+ORD('0'));
+                askills[i].learn  :=lvl;
+              end;
+              sqlite3_finalize(vm);
+            end;
+            inc(i);
+            ltmp:='';
+            lvl :=0;
+          end;
+        else
+          ltmp:=ltmp+pc^;
+        end;
+        inc(pc);
+      end;
+    end;
+{
     sl:=ls.Split(',');
 
     SetLength(askills,Length(sl));
@@ -225,6 +285,7 @@ begin
         sqlite3_finalize(vm);
       end;
     end;
+}
   end
   else
     SetLength(askills,0);
