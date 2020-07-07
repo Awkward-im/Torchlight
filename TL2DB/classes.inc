@@ -163,6 +163,7 @@ procedure GetClassGraphStat(const aid:TL2ID; out agraph_hp,agraph_mp:string; out
 var
   lSQL:string;
   vm:pointer;
+  i:integer;
 begin
   agraph_hp  :='';
   agraph_mp  :='';
@@ -178,7 +179,8 @@ begin
       begin
         agraph_hp  :=sqlite3_column_text(vm,0);
         agraph_mp  :=sqlite3_column_text(vm,1);
-        agraph_stat:=StrToIntDef(GetGraph(sqlite3_column_text(vm,2)),DefStatPerLvl);
+        Val(GetGraph(sqlite3_column_text(vm,2)),agraph_stat,i);
+        if i>0 then agraph_stat:=DefStatPerLvl;
       end;
       sqlite3_finalize(vm);
     end;
@@ -189,6 +191,7 @@ procedure GetClassGraphSkill(const aid:TL2ID; out agraph_skill,agraph_fame:integ
 var
   lSQL:string;
   vm:pointer;
+  i:integer;
 begin
   agraph_skill:=DefSkillPerLvl;
   agraph_fame :=DefSkillPerFame;
@@ -201,8 +204,8 @@ begin
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
       begin
-        agraph_skill:=StrToIntDef(GetGraph(sqlite3_column_text(vm,0)),DefSkillPerLvl);
-        agraph_fame :=StrToIntDef(GetGraph(sqlite3_column_text(vm,1)),DefSkillPerFame);
+        Val(GetGraph(sqlite3_column_text(vm,0)),agraph_skill,i); if i>0 then agraph_skill:=DefSkillPerLvl;
+        Val(GetGraph(sqlite3_column_text(vm,1)),agraph_fame ,i); if i>0 then agraph_fame :=DefSkillPerFame;
       end;
       sqlite3_finalize(vm);
     end;

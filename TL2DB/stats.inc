@@ -3,12 +3,10 @@
 function GetTL2Stat(const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Stat(const aid:TL2ID                  ):string; overload;
 
-function GetStatIdx(const alist:TL2IdValList; const aid  :TL2ID ):integer; overload;
-function GetStatIdx(const alist:TL2IdValList; const aname:string):integer; overload;
-
-{$ELSE}
-
 const
+  DefStatStat  = 0;
+  DefStatSkill = 1;
+
   DefaultStats: array [0..1] of record
     id:TL2ID;
     name:string;
@@ -16,6 +14,11 @@ const
     (id:-7998006427425498932; name:'current_player_stat_pts' ),
     (id:8015721566365339376 ; name:'current_player_skill_pts')
   );
+
+function GetStatIdx(const alist:TL2IdValList; const aid  :TL2ID ):integer; overload;
+function GetStatIdx(const alist:TL2IdValList; const aname:string):integer; overload;
+
+{$ELSE}
 
 
 function GetTL2Stat(const aid:TL2ID; out amods:string):string;
