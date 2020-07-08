@@ -7,23 +7,25 @@ uses
 
 {$DEFINE Interface}
 
-{$Include skills.inc}
+{$Include tl2db_skills.inc}
 
-{$Include movies.inc}
+{$Include tl2db_movies.inc}
 
-{$Include items.inc}
+{$Include tl2db_items.inc}
 
-{$Include classes.inc}
+{$Include tl2db_classes.inc}
 
-{$Include pets.inc}
+{$Include tl2db_pets.inc}
 
-{$Include settings.inc}
+{$Include tl2db_settings.inc}
 
-{$Include recipes.inc}
+{$Include tl2db_recipes.inc}
 
-{$Include mods.inc}
+{$Include tl2db_mods.inc}
 
-{$Include stats.inc}
+{$Include tl2db_stats.inc}
+
+{$Include tl2db_keys.inc}
 
 function GetTL2Quest(const aid:TL2ID; out amods:string; out aname:string):string; overload;
 function GetTL2Quest(const aid:TL2ID; out amods:string):string; overload;
@@ -31,8 +33,6 @@ function GetTL2Quest(const aid:TL2ID                  ):string; overload;
 
 function GetTL2Mob  (const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Mob  (const aid:TL2ID                  ):string; overload;
-
-function GetTL2KeyType(acode:integer):string;
 
 function GetTextValue(const aid:TL2ID; const abase, afield:string):string;
 function GetIntValue (const aid:TL2ID; const abase, afield:string):integer;
@@ -54,7 +54,7 @@ procedure FreeBases;
 implementation
 
 uses
-  sysutils,
+//  sysutils,
   sqlite3dyn;
 
 var
@@ -64,38 +64,9 @@ var
 const
   TL2DataBase = 'tl2db2.db';
 
-resourcestring
-  rsSet = 'Set';
-  rsQK1 = 'Quckslot 1';
-  rsQK2 = 'Quckslot 2';
-  rsQK3 = 'Quckslot 3';
-  rsQK4 = 'Quckslot 4';
-  rsQK5 = 'Quckslot 5';
-  rsQK6 = 'Quckslot 6';
-  rsQK7 = 'Quckslot 7';
-  rsQK8 = 'Quckslot 8';
-  rsQK9 = 'Quckslot 9';
-  rsQK0 = 'Quckslot 0';
-  rsLMB    = 'Left mouse button';
-  rsRMB    = 'Right mouse button';
-  rsRMBAlt = 'Right mouse button (alternative)';
-  rsHP     = 'Best Health Potion';
-  rsMP     = 'Best Mana Potion';
-  rsPetHP  = 'Best Pet Health Potion';
-  rsPetMP  = 'Best Pet Mana Potion';
-  rsSpell1    = 'Spell 1';
-  rsSpell2    = 'Spell 2';
-  rsSpell3    = 'Spell 3';
-  rsSpell4    = 'Spell 4';
-  rsPetSpell1 = 'Pet spell 1';
-  rsPetSpell2 = 'Pet spell 2';
-  rsPetSpell3 = 'Pet spell 3';
-  rsPetSpell4 = 'Pet spell 4';
-
-
 //----- Support functions -----
 
-{$Include split.inc}
+{$Include tl2db_split.inc}
 
 //----- Core functions -----
 
@@ -203,31 +174,42 @@ end;
 
 //----- Movie Info -----
 
-{$Include movies.inc}
+{$Include tl2db_movies.inc}
 
 //----- Skill info -----
 
-{$Include skills.inc}
+{$Include tl2db_skills.inc}
 
 //----- Item info -----
 
-{$Include items.inc}
+{$Include tl2db_items.inc}
 
 //----- Class info -----
 
-{$Include classes.inc}
+{$Include tl2db_classes.inc}
 
 //----- Pet info -----
 
-{$Include pets.inc}
+{$Include tl2db_pets.inc}
 
 //----- Recipes -----
 
-{$Include recipes.inc}
+{$Include tl2db_recipes.inc}
 
 //----- Stat info -----
 
-{$Include stats.inc}
+{$Include tl2db_stats.inc}
+
+//----- Mod info -----
+
+{$Include tl2db_mods.inc}
+
+//===== Key binding =====
+
+{$Include tl2db_keys.inc}
+
+
+{$Include tl2db_settings.inc}
 
 //----- Quests -----
 
@@ -264,58 +246,6 @@ var
   lmods:string;
 begin
   result:=GetTL2Mob(aid,lmods);
-end;
-
-//----- Mod info -----
-
-{$Include mods.inc}
-
-//===== Key binding =====
-
-function GetTL2KeyType(acode:integer):string;
-begin
-  case acode of
-    0..99: begin // just for 3 hotbars atm
-      if acode>=10 then
-      begin
-        Str(acode div 10,result);
-        result:=rsSet+' '+result+': ';
-      end
-      else
-        result:='';
-
-      case (acode mod 10) of
-        0: result:=result+rsQK1;
-        1: result:=result+rsQK2;
-        2: result:=result+rsQK3;
-        3: result:=result+rsQK4;
-        4: result:=result+rsQK5;
-        5: result:=result+rsQK6;
-        6: result:=result+rsQK7;
-        7: result:=result+rsQK8;
-        8: result:=result+rsQK9;
-        9: result:=result+rsQK0;
-      end;
-    end;
-
-    $3E8: result:=rsLMB;
-    $3E9: result:=rsRMB;
-    $3EA: result:=rsRMBAlt;
-    $3EB: result:=rsSpell1;
-    $3EC: result:=rsSpell2;
-    $3ED: result:=rsSpell3;
-    $3EE: result:=rsSpell4;
-    $3EF: result:=rsPetSpell1;
-    $3F0: result:=rsPetSpell2;
-    $3F1: result:=rsPetSpell3;
-    $3F2: result:=rsPetSpell4;
-    $3F3: result:=rsHP;
-    $3F4: result:=rsMP;
-    $3F5: result:=rsPetHP;
-    $3F6: result:=rsPetMP;
-  else
-    result:='';
-  end;
 end;
 
 //===== Database load =====
@@ -476,8 +406,6 @@ begin
   end;
   result:=false;
 end;
-
-{$Include settings.inc}
 
 finalization
 //  ReleaseSqlite;
