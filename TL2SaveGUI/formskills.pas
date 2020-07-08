@@ -397,7 +397,7 @@ begin
 
   sgSkills.EndUpdate;
 
-  bbUpdate.Enabled:=true;
+  bbUpdate.Enabled:=FConfigured;
 end;
 
 procedure TfmSkills.SetChar(achar:TTL2Character);

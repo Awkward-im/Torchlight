@@ -907,9 +907,9 @@ begin
 
   //--- Skill related ---
 
+  FSkillForm.Configured :=false;
   FSkillForm.PlayerClass:=FChar.ClassId;
   FSkillForm.Player     :=FChar;
-  FSkillForm.Configured :=false;
 end;
 
 procedure TfmChar.FillPetInfo;

@@ -98,6 +98,7 @@ object fmSkills: TfmSkills
     Anchors = [akRight, akBottom]
     Caption = 'Update'
     Default = True
+    Enabled = False
     Kind = bkOK
     OnClick = bbUpdateClick
     TabOrder = 6
