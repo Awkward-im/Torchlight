@@ -118,6 +118,8 @@ type
     FAugments       :TL2StringList;
     FStats          :TL2IdValList;
 
+    function  GetStat(const iname:string):TL2Integer;
+    procedure SetStat(const iname:string; aval:TL2Integer);
     function  GetSpell(idx:integer):TTL2Spell;
     procedure SetSpell(idx:integer; const aspell:TTL2Spell);
   public
@@ -159,7 +161,8 @@ type
     property Scale          :TL2Float read FScale           write FScale;
     property Skin           :byte     read FSkin            write FSkin;
 
-    property Spells[idx:integer]:TTL2Spell read GetSpell write SetSpell;
+    property Stat  [iname:string]:TL2Integer read GetStat  write SetStat;
+    property Spells[idx:integer ]:TTL2Spell  read GetSpell write SetSpell;
     property Skills:TL2IdValList read FSkills  write FSkills;
     property Stats :TL2IdValList read FStats;
     property Items :TTL2ItemList read FItems  {write FItems};
@@ -172,7 +175,10 @@ function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false; IsPet:boolean=fa
 
 
 implementation
-
+{
+uses
+  tl2db;
+}
 //----- Init / Free -----
 
 constructor TTL2Character.Create;
@@ -212,6 +218,30 @@ begin
 end;
 
 //----- Properties -----
+
+function TTL2Character.GetStat(const iname:string):TL2Integer;
+var
+  i:integer;
+begin
+{
+  i:=GetStatIdx(Stats,iname);
+  if i>=0 then
+    result:=Stats[i].value
+  else
+}
+    result:=0;
+end;
+
+procedure TTL2Character.SetStat(const iname:string; aval:TL2Integer);
+var
+  i:integer;
+begin
+{
+  i:=GetStatIdx(Stats,iname);
+  if i>=0 then
+    Stats[i].value:=aval;
+}
+end;
 
 function TTL2Character.GetSpell(idx:integer):TTL2Spell;
 begin
@@ -435,6 +465,24 @@ begin
 }
   FStats:=AStream.ReadIdValList;
 
+  //----- Fixes -----
+{
+  if FIsChar then
+  begin
+    i:=GetStatIdx(FStats,DefaultStats[DefStatStat].id);
+    if i>=0 then
+    begin
+      if      FFreeStatPoints<FStats[i].value then FFreeStatPoints:=FStats[i].value
+      else if FFreeStatPoints>FStats[i].value then FStats[i].value:=FFreeStatPoints;
+    end;
+    i:=GetStatIdx(FStats,DefaultStats[DefStatSkill].id);
+    if i>=0 then
+    begin
+      if      FFreeSkillPoints<FStats[i].value then FFreeSkillPoints:=FStats[i].value
+      else if FFreeSkillPoints>FStats[i].value then FStats[i].value:=FFreeSkillPoints;
+    end;
+  end;
+}
   LoadBlock(AStream);
 end;
 
@@ -452,6 +500,24 @@ begin
 
   DataOffset:=AStream.Position;
 
+  //----- Fixes -----
+{
+  if FIsChar then
+  begin
+    i:=GetStatIdx(FStats,DefaultStats[DefStatStat].id);
+    if i>=0 then
+    begin
+      if      FFreeStatPoints<FStats[i].value then FFreeStatPoints:=FStats[i].value
+      else if FFreeStatPoints>FStats[i].value then FStats[i].value:=FFreeStatPoints;
+    end;
+    i:=GetStatIdx(FStats,DefaultStats[DefStatSkill].id);
+    if i>=0 then
+    begin
+      if      FFreeSkillPoints<FStats[i].value then FFreeSkillPoints:=FStats[i].value
+      else if FFreeSkillPoints>FStats[i].value then FStats[i].value:=FFreeSkillPoints;
+    end;
+  end;
+}
   // signature
   AStream.WriteByte(FSign );  // $FF or 2
   AStream.WriteByte(FSign1);  // 0

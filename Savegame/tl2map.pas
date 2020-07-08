@@ -3,14 +3,12 @@ unit TL2Map;
 interface
 
 uses
-  sysutils,
-  classes,
   tl2types,
   tl2base,
   tl2stream,
   tl2char,
-  tl2item,
-  tl2common;
+  tl2common,
+  tl2item;
 
 type
   TTL2Map     = class;

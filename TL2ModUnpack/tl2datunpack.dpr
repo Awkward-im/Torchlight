@@ -161,7 +161,7 @@ begin
   begin
     lid :=ReadInteger(lptr);
     lstr:=ReadShortString(lptr);
-    sl.AddObject(String(lstr),TObject(UIntPtr(lid)));
+    sl.AddObject(UTF8Encode(WideString(lstr)),TObject(UIntPtr(lid)));
     FreeMem(lstr);
   end;
 

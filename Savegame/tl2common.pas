@@ -2,36 +2,12 @@ unit TL2Common;
 
 interface
 
-type
-  TTL2ParseType = (ptLite, ptStandard, ptDeep, ptDeepest);
-
-type
-  gc_BaseClass = (Berserker, Embermage, Engineer, Outlander);
-
-procedure SaveDump(const aname:string; aptr:pByte; asize:cardinal);
 function Check(aval:qword; const albl:string; aright:qword):qword;
 function SecToTime ( sec:cardinal):string;
 function MSecToTime(msec:cardinal):string;
 
-function GetDifficulty(acode:integer):string;
 
 implementation
-
-resourcestring
-  rsCasual  = 'Casual';
-  rsNormal  = 'Normal';
-  rsVeteran = 'Veteran';
-  rsExpert  = 'Expert';
-
-procedure SaveDump(const aname:string; aptr:pByte; asize:cardinal);
-var
-  f:file of byte;
-begin
-  AssignFile(f,aname);
-  Rewrite(f);
-  BlockWrite(f,aptr^,asize);
-  CloseFile(f);
-end;
 
 function Check(aval:qword; const albl:string; aright:qword):qword;
 begin
@@ -67,18 +43,6 @@ end;
 function MSecToTime(msec:cardinal):string;
 begin
   result:=SecToTime(msec div 1000);
-end;
-
-function GetDifficulty(acode:integer):string;
-begin
-  case acode of
-    0: result:=rsCasual;
-    1: result:=rsNormal;
-    2: result:=rsVeteran;
-    3: result:=rsExpert;
-  else
-    result:='';
-  end;
 end;
 
 end.

@@ -124,10 +124,6 @@ begin
   DataSize  :=AStream.ReadDWord;
   DataOffset:=AStream.Position;
 
-{$IFDEF DEBUG}
-//  ToFile('quests.dmp');
-{$ENDIF}
-
   //--- Finished quests
 
   FQuestsDone:=AStream.ReadIdList;

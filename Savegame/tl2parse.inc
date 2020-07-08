@@ -38,11 +38,11 @@ begin
 
   //----- Keymapping -----
 
-  ReadKeyMappingList;  // DumpKeyMapping;
+  ReadKeyMappingList;
 
   //----- Statistic -----
 
-  ReadStatistic(); // DumpStatistic;
+  ReadStatistic();
 
   // for resurrection?
   FArea    :=FStream.ReadShortString(); // map (current place)

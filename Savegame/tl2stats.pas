@@ -111,7 +111,6 @@ function ReadLastBlock(AStream:TTL2Stream):TTL2Stats;
 implementation
 
 uses
-  Classes,
   TL2Common;
 
 constructor TTL2Stats.Create;

@@ -28,9 +28,6 @@ type
 
     procedure Clear;
 
-{
-    Out: FStream with Header, decoded data, footer
-}
     procedure LoadFromFile(const aname:string);
     procedure SaveToFile  (const aname:string; aencoded:boolean=false);
 
@@ -105,11 +102,6 @@ type
     function  GetStatistic (idx:integer):TL2Integer;
     procedure SetStatistic (idx:integer; aval:TL2Integer);
   public
-{
-    procedure DumpStatistic;
-    procedure DumpKeyMapping;
-    procedure DumpModList(const acomment:string; alist:TTL2ModList);
-}    
     property Difficulty  :TTL2Difficulty read FDifficulty   write FDifficulty;
     property Hardcore    :boolean        read FHardcore     write FHardcore;
     property NewGameCycle:integer        read FNewGameCycle write FNewGameCycle;
@@ -172,10 +164,6 @@ type
 //====================
 
 implementation
-
-uses
-  sysutils{,
-  tl2db};
 
 resourcestring
   sLoadFailed   = 'Savegame loading failed';
@@ -311,71 +299,6 @@ begin
     result:=nil;
 end;
 
-//----- Dumps -----
-{
-procedure TTL2SaveFile.DumpKeyMapping;
-var
-  i:integer;
-begin
-  if IsConsole then
-  begin
-    if Length(FKeyMapping)>0 then
-    begin
-      writeln('Key Mapping'#13#10+
-              '-----------');
-      for i:=0 to High(FKeyMapping) do
-        with FKeyMapping[i] do
-        begin
-          if      datatype=0 then writeln(GetTL2Item (id),'  item  ' ,GetTL2KeyType(key))
-          else if datatype=2 then writeln(GetTL2Skill(id),'  skill  ',GetTL2KeyType(key))
-          else                    writeln(GetTL2Skill(id),'  ['+inttostr(datatype)+']  ',GetTL2KeyType(key));
-        end;
-      writeln;
-    end;
-    if Length(FFunctions)>0 then
-    begin
-      writeln('Functions'#13#10+
-              '---------');
-      for i:=0 to High(FFunctions) do
-        with FFunctions[i] do
-        begin
-          if id<>TL2IdEmpty then writeln('F',i+1,' - ',GetTL2Skill(id));
-        end;
-    end;
-  end;
-end;
-
-procedure TTL2SaveFile.DumpModList(const acomment:string; alist:TTL2ModList);
-var
-  i,lver:integer;
-begin
-  if IsConsole then
-    if Length(alist)>0 then
-    begin
-      writeln(acomment,#13#10+
-              '-----------');
-      for i:=0 to High(alist) do
-        with alist[i] do
-        begin
-          writeln(GetTL2Mod(id,lver),' v.',version);
-        end;
-      writeln;
-    end;
-end;
-
-procedure TTL2SaveFile.DumpStatistic;
-var
-  i:integer;
-begin
-  if IsConsole then
-  begin
-    writeln('Statistic'#13#10+
-            '---------');
-    for i:=0 to StatsCount-1 do
-      writeln(GetStatDescr(i)+': '+GetStatText(i,FStatistic[i]));
-  end;
-end;
-}
 //----- Read data -----
 
 procedure TTL2SaveFile.ReadKeyMappingList;
@@ -461,7 +384,7 @@ end;
 procedure ClearCheatItems(aItems:TTL2ItemList);
 var
   i,j:integer;
-  l,d:TTL2EffectList;
+  l:TTL2EffectList;
 begin
   for i:=0 to High(aItems) do
   begin
@@ -470,10 +393,8 @@ begin
       if aItems[i].Effects1[j].EffectType=TL2Cheat then
       begin
         l:=aItems[i].Effects1;
-//        d:=l;
         aItems[i].Effects1[j].Free;
         Delete(l,j,1);
-//        SetLength(d,0);
         aItems[i].Effects1:=l;
         break;
       end;
@@ -504,7 +425,7 @@ var
   lSaveFooter:TL2SaveFooter;
 begin
   if FStream<>nil then
-    FreeAndNil(FStream);
+    FStream.Free;
 
   FStream:=TTL2Stream.Create;
   try

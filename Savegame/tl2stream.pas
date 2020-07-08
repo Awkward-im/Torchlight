@@ -10,8 +10,6 @@ uses
 type
   TTL2Stream = class(TMemoryStream)
   public
-    procedure SaveTheRest(const fname:string);
-    
     // read
     function  ReadBytes(asize:cardinal):pointer;
     function  ReadByteString ():string;
@@ -34,17 +32,6 @@ type
   end;
 
 implementation
-
-
-procedure TTL2Stream.SaveTheRest(const fname:string);
-var
-  f:file of byte;
-begin
-  AssignFile(f,fname);
-  Rewrite(f);
-  BlockWrite(f,PByte(Memory+Position)^,(Size-4-Position));
-  CloseFile(f);
-end;
 
 //----- Read data -----
 
