@@ -175,10 +175,10 @@ function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false; IsPet:boolean=fa
 
 
 implementation
-{
+
 uses
   tl2db;
-}
+
 //----- Init / Free -----
 
 constructor TTL2Character.Create;
@@ -206,8 +206,8 @@ begin
   for i:=0 to High(FEffects1) do FEffects1[i].Free;  SetLength(FEffects1,0);
   for i:=0 to High(FEffects2) do FEffects2[i].Free;  SetLength(FEffects2,0);
   for i:=0 to High(FEffects3) do FEffects3[i].Free;  SetLength(FEffects3,0);
-
   SetLength(FAugments,0);
+  SetLength(FStats,0);
 end;
 
 procedure TTL2Character.Clear;
@@ -223,12 +223,11 @@ function TTL2Character.GetStat(const iname:string):TL2Integer;
 var
   i:integer;
 begin
-{
+
   i:=GetStatIdx(Stats,iname);
   if i>=0 then
     result:=Stats[i].value
   else
-}
     result:=0;
 end;
 
@@ -236,11 +235,9 @@ procedure TTL2Character.SetStat(const iname:string; aval:TL2Integer);
 var
   i:integer;
 begin
-{
   i:=GetStatIdx(Stats,iname);
   if i>=0 then
     Stats[i].value:=aval;
-}
 end;
 
 function TTL2Character.GetSpell(idx:integer):TTL2Spell;
@@ -466,7 +463,7 @@ begin
   FStats:=AStream.ReadIdValList;
 
   //----- Fixes -----
-{
+
   if FIsChar then
   begin
     i:=GetStatIdx(FStats,DefaultStats[DefStatStat].id);
@@ -482,7 +479,7 @@ begin
       else if FFreeSkillPoints>FStats[i].value then FStats[i].value:=FFreeSkillPoints;
     end;
   end;
-}
+
   LoadBlock(AStream);
 end;
 
@@ -501,7 +498,7 @@ begin
   DataOffset:=AStream.Position;
 
   //----- Fixes -----
-{
+
   if FIsChar then
   begin
     i:=GetStatIdx(FStats,DefaultStats[DefStatStat].id);
@@ -517,7 +514,7 @@ begin
       else if FFreeSkillPoints>FStats[i].value then FStats[i].value:=FFreeSkillPoints;
     end;
   end;
-}
+
   // signature
   AStream.WriteByte(FSign );  // $FF or 2
   AStream.WriteByte(FSign1);  // 0

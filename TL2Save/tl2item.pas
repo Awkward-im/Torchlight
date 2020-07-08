@@ -27,6 +27,8 @@ type
     procedure LoadFromStream(AStream: TTL2Stream); override;
     procedure SaveToStream  (AStream: TTL2Stream); override;
 
+    function CheckForMods(alist:TTL2ModList):boolean;
+
   private
     FItemId   :TL2ID;
     FName     :string;
@@ -106,6 +108,8 @@ procedure WriteItemList(AStream:TTL2Stream; alist:TTL2ItemList);
 
 implementation
 
+uses
+  tl2db;
 
 constructor TTL2Item.Create;
 begin
@@ -138,13 +142,9 @@ begin
     FSocketables[i].Free;
   SetLength(FSocketables,0);
 
-  for i:=0 to High(FEffects1) do FEffects1[i].Free;
-  SetLength(FEffects1,0);
-  for i:=0 to High(FEffects2) do FEffects2[i].Free;
-  SetLength(FEffects2,0);
-  for i:=0 to High(FEffects3) do FEffects3[i].Free;
-  SetLength(FEffects3,0);
-
+  for i:=0 to High(FEffects1) do FEffects1[i].Free;  SetLength(FEffects1,0);
+  for i:=0 to High(FEffects2) do FEffects2[i].Free;  SetLength(FEffects2,0);
+  for i:=0 to High(FEffects3) do FEffects3[i].Free;  SetLength(FEffects3,0);
   SetLength(FAugments,0);
   SetLength(FStats,0);
 
@@ -383,6 +383,53 @@ begin
   AStream.WriteDWord(Length(alist));
   for i:=0 to High(alist) do
     alist[i].SaveToStream(AStream);
+end;
+
+function TTL2Item.CheckForMods(alist:TTL2ModList):boolean;
+var
+  llist:TL2IdList;
+  lmodid:TL2ID;
+  lmods:string;
+  i:integer;
+begin
+  result:=true;
+
+  // 1 - Check for unmodded
+  if ModIds=nil then
+    exit;
+
+  if alist<>nil then
+  begin
+    // 2 - Check for item mod in mod list
+    llist:=nil;
+    for i:=0 to High(ModIds) do
+    begin
+      if IsInModList(ModIds[i],alist) then
+      begin
+        SetLength(llist,Length(llist)+1);
+        llist[High(llist)]:=ModIds[i];
+      end;
+    end;
+    if Length(llist)<>Length(ModIds) then
+      ModIds:=llist;
+    if Length(llist)>0 then exit;
+
+    // 3 - item have mod list but not in savegame mod list, trying to add/replace
+//    lmods:=GetTextValue(id,'items','modid');
+    GetTL2Item(id,lmods);
+    lmodid:=IsInModList(lmods, alist);
+    if lmodid<>TL2IdEmpty then
+    begin
+      llist:=ModIds;
+      SetLength(llist,Length(llist)+1);
+      llist[High(llist)]:=lmodid;
+      ModIds:=llist;
+      Changed:=true;
+      exit;
+    end;
+  end;
+
+  // 4 - replace one item by another
 end;
 
 end.
