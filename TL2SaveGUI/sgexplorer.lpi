@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils\SQL"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -62,7 +62,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <Libraries Value="D:\SVN\UpLazTrunk\cross\lib\x86_64-linux\"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils\SQL"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -90,7 +90,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils\SQL"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -157,18 +157,6 @@
         <UnitName Value="formMovies"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2DB\tl2db.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\tl2types.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="formstatistic.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmStatistic"/>
@@ -207,66 +195,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSettings"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2stats.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Stats"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2char.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Char"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2save.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2base.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Base"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2effects.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Effects"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2parse.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2prepare.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2common.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2item.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Item"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2map.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Map"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2quest.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Quest"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2statistic.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2stream.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Stream"/>
       </Unit>
       <Unit>
         <Filename Value="formchar.pas"/>
@@ -351,6 +279,74 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formModList"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\tl2db.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\tl2types.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2stats.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Stats"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2char.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Char"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2save.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2base.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Base"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2effects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Effects"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2parse.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2prepare.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2common.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2item.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Item"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2map.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Map"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2quest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Quest"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2statistic.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2stream.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Stream"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -361,7 +357,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-      <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils\SQL"/>
+      <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

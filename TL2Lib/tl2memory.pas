@@ -6,9 +6,7 @@ interface
 uses
   tl2types;
 
-//function ReadIdList         (var buf:PByte):TL2IdList;
-//function ReadShortStringList(var buf:PByte):TL2StringList;
-function  ReadCoord      (var buf:PByte):TL2Coord; export;
+//----- Read -----
 
 function  ReadByte       (var buf:PByte):Byte; export;
 function  ReadWord       (var buf:PByte):Word; export;
@@ -19,16 +17,19 @@ function  ReadUnsigned   (var buf:PByte):UInt32; export;
 function  ReadInteger64  (var buf:PByte):Int64; export;
 function  ReadFloat      (var buf:PByte):Single; export;
 function  ReadDouble     (var buf:PByte):Double; export;
+
 procedure ReadData       (var buf:PByte; var dst; alen:integer); export;
+function  ReadCoord      (var buf:PByte):TL2Coord; export;
+
 function  ReadByteString (var buf:PByte):PWideChar; export;
 function  ReadShortString(var buf:PByte):PWideChar; export;
-
 function  ReadShortStringUTF8(var buf:PByte):PAnsiChar; export;
 
-//procedure WriteByteString (var buf:PByte; const astr:string);
-//procedure WriteShortString(var buf:PByte; const astr:string);
+//function  ReadShortStringList(var buf:PByte):TL2StringList; export;
+function  ReadIdList     (var buf:PByte):TL2IdList; export;
+function  ReadIdValList  (var buf:PByte):TL2IdValList; export;
 
-procedure WriteCoord      (var buf:PByte; var aval:TL2Coord); export;
+//----- write -----
 
 procedure WriteByte       (var buf:PByte; aval:Byte); export;
 procedure WriteWord       (var buf:PByte; aval:Word); export;
@@ -39,22 +40,22 @@ procedure WriteUnsigned   (var buf:PByte; aval:UInt32); export;
 procedure WriteInteger64  (var buf:PByte; aval:Int64); export;
 procedure WriteFloat      (var buf:PByte; aval:Single); export;
 procedure WriteDouble     (var buf:PByte; aval:Double); export;
+
 procedure WriteData       (var buf:PByte; var aval; alen:integer); export;
+procedure WriteCoord      (var buf:PByte; var aval:TL2Coord); export;
+
 procedure WriteByteString (var buf:PByte; aval:PWideChar); export;
 procedure WriteShortString(var buf:PByte; aval:PWideChar); export;
 
+procedure WriteIdList     (var buf:PByte; alist:TL2IdList); export;
+procedure WriteIdValList  (var buf:PByte; alist:TL2IdValList); export;
+
+//procedure WriteShortStringList(var buf:PByte; alist:TL2StringList); export;
+//procedure WriteByteString (var buf:PByte; const astr:string);
+//procedure WriteShortString(var buf:PByte; const astr:string);
+
+
 implementation
-
-
-procedure SaveDump(const aname:PChar; aptr:pByte; asize:cardinal);
-var
-  f:file of byte;
-begin
-  AssignFile(f,aname);
-  Rewrite(f);
-  BlockWrite(f,aptr^,asize);
-  CloseFile(f);
-end;
 
 //----- Basic Read -----
 
@@ -226,13 +227,13 @@ begin
 end;
 
 //----- Complex read -----
-{
+
 function ReadIdList(var buf:PByte):TL2IdList;
 var
   lcnt:cardinal;
 begin
   result:=nil;
-  lcnt:=ReadDWord(buf);
+  lcnt:=ReadDword(buf);
   if lcnt>0 then
   begin
     SetLength(result,lcnt);
@@ -240,6 +241,19 @@ begin
   end;
 end;
 
+function ReadIdValList(var buf:PByte):TL2IdValList;
+var
+  lcnt:cardinal;
+begin
+  result:=nil;
+  lcnt:=ReadDword(buf);
+  if lcnt>0 then
+  begin
+    SetLength(result,lcnt);
+    ReadData(buf,result[0],lcnt*SizeOf(TL2IdVal));
+  end;
+end;
+{
 function ReadShortStringList(var buf:PByte):TL2StringList;
 var
   lcnt:cardinal;
@@ -262,32 +276,43 @@ end;
 
 
 //----- Complex write -----
-{
-procedure WriteByteString(var buf:PByte; const astr:PWideChar);
-var
-  llen:integer;
-begin
-  lllen:=Length(astr);
-  WriteByte(buf,llen);
-  if llen>0 then
-    WriteData(buf,astr,llen*SizeOf(WideChar));
-end;
-
-procedure WriteShortString(var buf:PByte; const astr:PWideChar);
-var
-  llen:integer;
-begin
-  lllen:=Length(astr);
-  WriteWord(buf,llen);
-  if llen>0 then
-    WriteData(buf,astr,llen*SizeOf(WideChar));
-end;
-}
 
 procedure WriteCoord(var buf:PByte; var aval:TL2Coord);
 begin
   WriteData(buf,aval,SizeOf(TL2Coord));
 end;
+{
+procedure WriteShortStringList(var buf:PByte; alist:TL2StringList);
+var
+  lcnt,i:integer;
+begin
+  lcnt:=Length(alist);
+  WriteWord(buf,cardinal(lcnt));
+  for i:=0 to lcnt-1 do
+    WriteShortString(buf,alist[i]);
+end;
+}
+procedure WriteIdList(var buf:PByte; alist:TL2IdList);
+var
+  lcnt:cardinal;
+begin
+  lcnt:=Length(alist);
+  WriteWord(buf,lcnt);
+  if lcnt>0 then
+    WriteData(buf,alist[0],lcnt*SizeOf(TL2ID));
+end;
+
+procedure WriteIdValList(var buf:PByte; alist:TL2IdValList);
+var
+  lcnt:cardinal;
+begin
+  lcnt:=Length(alist);
+  WriteWord(buf,lcnt);
+  if lcnt>0 then
+    WriteData(buf,alist[0],lcnt*SizeOf(TL2IdVal));
+end;
+
+//===== Exports =====
 
 exports
   ReadByte,
@@ -301,7 +326,11 @@ exports
   ReadData,
   ReadByteString,
   ReadShortString,
+  ReadShortStringUTF8,
 
+//  ReadShortStringList,
+  ReadIdList,
+  ReadIdValList,
   ReadCoord,
 
   WriteByte,
@@ -316,6 +345,9 @@ exports
   WriteByteString,
   WriteShortString,
 
+//  WriteShortStringList,
+  WriteIdList,
+  WriteIdValList,
   WriteCoord
 
   ;
