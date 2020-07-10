@@ -1,0 +1,90 @@
+Список модов
+
+Classes
+-------
+blade_dancer
+CustomClassNoSkills
+CustomClassWithSkills
+Dragoon
+duelist
+Ethereal Blade
+Fury_Class
+Guardian_Class
+gyt_emberblade
+izau_theolentist
+Lightwarden
+Nethermancer Class
+preacher
+Reaver
+red_mage
+Summoner
+tenebris 2.0.5
+tenebris 2.1
+voidseeker
+WeaponsMaster
+witch_class_beta
+Scattershot из Rhagius_Class_Pack
+Cleaver из Rhagius_Class_Pack
+Bulwark из Rhagius_Class_Pack
+Archer
+Assassin
+Monk
+Druid
+Prophet
+Psion
+Blighted
+Otaku Fighter
+Классы из Synergies
+
+Items
+-----
+Ancient_Items
+arkhamsarmory
+Consumables Expansion
+Enchantable_Pet_Accessories
+Rippers_Armory
+thetoycollector
+Thrashers_Armory
+Variant Items
+
+Maps
+----
+endless dungeon
+Path_Of_Torchlight_Prt_2
+
+GUI & Other
+-----------
+Effects_List_Overhaul
+Equipment_Slots_Overhaul
+Journal
+RAXZ_GAMEPLAY_TWEAKS v.18
+TIIUI+ESOBC
+
+Packs
+-----
+DrewsCompilation
+Synergies and Essentials Compatibility Patch v.65
+SynergiesALL_Addons v.18
+TORCHFULL_FINAL_ADD-ON
+
+Pets
+----
+anarchmorepets
+Fish Details
+HUMANS_AS_PETS2
+Variant Pets
+xev's_pets
+
+Skills
+------
+general_passives
+Mastery
+Spell Pack (AG)
+Skill Expansion v.2
+
+Плюс
+----
+Частичные переводы Synergies и Essientials от
+  Abramoff (https://steamcommunity.com/sharedfiles/filedetails/?id=245644717)
+и
+  SirJerrald (https://steamcommunity.com/sharedfiles/filedetails/?id=1608117969)
