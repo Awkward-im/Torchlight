@@ -44,13 +44,13 @@ Ctrl-F         - Change font
 Ctrl-N         - Show tree to start scan for new project
 Ctrl-O         - Open saved project
 Ctrl-S         - Save project
-Shift-Ctrl-S   - Save project as...
-Alt-H          - Notes window
-Alt-F4         - Exit program
 Ctrl-F4        - Close project tab
 Ctrl-Tab       - Next tab
 Shift-Ctrl-Tab - Prev tab
+Shift-Ctrl-S   - Save project as...
 Alt-0..Alt-9   - Go to tab ¹0-9
+Alt-H          - Notes window
+Alt-F4         - Exit program
 
 Middle-click on tab will close it
 Double-click or Enter on Tree node will choose directory to scan
@@ -58,19 +58,20 @@ Double-click or Enter on Tree node will choose directory to scan
 
 Project Hotkeys:
 ----------------
-Ctrl-A    - Select original text column
-Ctrl-I    - Import from clipboard
-Ctrl-R    - Call replace dialog
-Ctrl-T    - Translate current line with yandex translate service
-Alt-F     - Toggle filter/search mode
-Alt-I     - Import file(s)
-Alt-N     - Toggle full/short file name
-Alt-P     - Check for notes of translation
-Alt-R     - Toggle hide/show translated lines
-Alt-S     - Open source file referred by file and tag
-Alt-Del   - Set translation without color info
-Alt-Right - Search next
-Del       - Delete translated text / delete line(s)
+Ctrl-A       - Select original text column
+Ctrl-I       - Import from clipboard
+Ctrl-R       - Call replace dialog
+Ctrl-T       - Translate current line with yandex translate service
+Shift-Ctrl-C - copy selected cells (current column only) without tags
+Alt-F        - Toggle filter/search mode
+Alt-I        - Import file(s)
+Alt-N        - Toggle full/short file name
+Alt-P        - Check for notes of translation
+Alt-R        - Toggle hide/show translated lines
+Alt-S        - Open source file referred by file and tag
+Alt-Del      - Set translation without color info
+Alt-Right    - Search next
+Del          - Delete translated text / delete line(s)
 
 Double-Click opens text editor window
 =====

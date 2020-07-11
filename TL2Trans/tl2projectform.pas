@@ -1409,14 +1409,23 @@ procedure TTL2Project.ExportFileClick(Sender: TObject);
 var
   sl:TStringList;
   SaveDialog: TSaveDialog;
+  ls:string;
   i:integer;
+  lshift:boolean;
 begin
+  lshift:=GetKeyState(VK_SHIFT)<0;
   sl:=TStringList.Create;
   try
     for i:=1 to TL2ProjectGrid.RowCount-1 do
     begin
-      if TL2ProjectGrid.IsCellSelected[colOrigin,i] then
-        sl.Add(TL2ProjectGrid.Cells[colOrigin,i]);
+      if TL2ProjectGrid.IsCellSelected[TL2ProjectGrid.Col,i] then
+      begin
+        ls:=TL2ProjectGrid.Cells[TL2ProjectGrid.Col,i];
+        if lshift then
+          sl.Add(RemoveTags(ls))
+        else
+          sl.Add(ls);
+      end;
     end;
 
     SaveDialog:=TSaveDialog.Create(nil);
@@ -1500,15 +1509,22 @@ end;
 procedure TTL2Project.ExportClipBrdClick(Sender: TObject);
 var
   sl:TStringList;
+  ls:string;
   i:integer;
+  lshift:boolean;
 begin
+  lshift:=GetKeyState(VK_SHIFT)<0;
   sl:=TStringList.Create;
   try
     for i:=1 to TL2ProjectGrid.RowCount-1 do
     begin
-      if TL2ProjectGrid.IsCellSelected[TL2ProjectGrid.Col{colOrigin},i] then
+      if TL2ProjectGrid.IsCellSelected[TL2ProjectGrid.Col,i] then
       begin
-        sl.Add(TL2ProjectGrid.Cells[TL2ProjectGrid.Col{colOrigin},i]);
+        ls:=TL2ProjectGrid.Cells[TL2ProjectGrid.Col,i];
+        if lshift then
+          sl.Add(RemoveTags(ls))
+        else
+          sl.Add(ls);
       end;
     end;
 
