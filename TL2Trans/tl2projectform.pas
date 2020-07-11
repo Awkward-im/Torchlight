@@ -1601,9 +1601,17 @@ var
 begin
   idx:=IntPtr(TL2ProjectGrid.Objects[0,arow]);
   data.Trans[idx]:=atext;
-  data.State[idx]:=stReady;
-  TL2ProjectGrid.Cells[colTrans  ,arow]:=atext;
-  TL2ProjectGrid.Cells[colPartial,arow]:='0';
+  TL2ProjectGrid.Cells[colTrans,arow]:=atext;
+  if TL2Settings.cbImportParts.Checked then
+  begin
+    data.State[idx]:=stPartial;
+    TL2ProjectGrid.Cells[colPartial,arow]:='1';
+  end
+  else
+  begin
+    data.State[idx]:=stReady;
+    TL2ProjectGrid.Cells[colPartial,arow]:='0';
+  end;
 end;
 
 procedure TTL2Project.PasteFromClipBrd();
