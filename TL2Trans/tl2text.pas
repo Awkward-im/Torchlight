@@ -64,15 +64,15 @@ var
 begin
   result:=false;
   i:=1;
-  j:=1;
+  j:=0;
   SetLength(ls,Length(textin));
   while i<=Length(textin) do
   begin
     if textin[i]<>'|' then
     begin
+      inc(j);
       ls[j]:=textin[i];
       inc(i);
-      inc(j);
     end
     else
     begin

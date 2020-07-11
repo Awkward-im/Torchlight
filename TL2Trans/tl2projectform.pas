@@ -142,6 +142,7 @@ uses
   TL2Text,
   LCLType,
   LazUtf8,
+  lclintf,
   ClipBrd;
 
 resourcestring
@@ -464,6 +465,12 @@ begin
   if (Key=VK_RETURN) and
      (TL2ProjectGrid.Col=colTrans) then
     TL2ProjectGrid.EditorMode:=true;
+
+  if (Shift=[ssCtrl,ssShift]) and (Key=VK_C) then
+  begin
+    ExportClipBrdClick(self);
+    Key:=0;
+  end;
 
   if (Shift=[ssCtrl]) then
   begin
