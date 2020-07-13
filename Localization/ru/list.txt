@@ -1,10 +1,12 @@
-РЎРїРёСЃРѕРє РјРѕРґРѕРІ
+Список модов
 
 Classes
 -------
 blade_dancer
+classless
 CustomClassNoSkills
 CustomClassWithSkills
+Deathknight
 Dragoon
 duelist
 Ethereal Blade
@@ -23,9 +25,9 @@ tenebris 2.1
 voidseeker
 WeaponsMaster
 witch_class_beta
-Scattershot РёР· Rhagius_Class_Pack
-Cleaver РёР· Rhagius_Class_Pack
-Bulwark РёР· Rhagius_Class_Pack
+Scattershot из Rhagius_Class_Pack
+Cleaver из Rhagius_Class_Pack
+Bulwark из Rhagius_Class_Pack
 Archer
 Assassin
 Monk
@@ -34,13 +36,15 @@ Prophet
 Psion
 Blighted
 Otaku Fighter
-РљР»Р°СЃСЃС‹ РёР· Synergies
+Классы из Synergies
+Классы из первого Torchlight
 
 Items
 -----
 Ancient_Items
 arkhamsarmory
 Consumables Expansion
+Cosmetic armor skins
 Enchantable_Pet_Accessories
 Rippers_Armory
 thetoycollector
@@ -82,9 +86,9 @@ Mastery
 Spell Pack (AG)
 Skill Expansion v.2
 
-РџР»СЋСЃ
+Плюс
 ----
-Р§Р°СЃС‚РёС‡РЅС‹Рµ РїРµСЂРµРІРѕРґС‹ Synergies Рё Essientials РѕС‚
+Частичные переводы Synergies и Essientials от
   Abramoff (https://steamcommunity.com/sharedfiles/filedetails/?id=245644717)
-Рё
+и
   SirJerrald (https://steamcommunity.com/sharedfiles/filedetails/?id=1608117969)
