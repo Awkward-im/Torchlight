@@ -1,0 +1,76 @@
+1 - Archer way
+  1  - Double Strafe (several shots [arc?])
+  2  - knocking back
+  3  - Ricochet
+  4  - Piercing
+  5  - attacking bird
+  6  - Arrow storm (phys aoe)
+  7  - ghost wolf attack
+  11 - Mastery: Distance and Damage
+  12 - Crit chance for bows
+  13 - Chance of magic damage
+
+2 - Music for all (support)
+  1  - (duration) improve Concentration (damage)
+  2  - (duration) increase Speedup
+  3  - Paralize/confuse enemy
+  4  - [howl] Enemy Debuff
+  5  - (duration, immobilize yourself) Recovery area/aura
+  6  - chance: Let enemy fight for you
+  7  - random summon: plant/ground/fire/frost wall, ground/frost/fire wave
+  11 - more dodge and hp
+  12 - lower price/requirements?
+  13 - Mastery (casttime, cooldown)
+
+3 - Sound of God (bard) main element - fire / lightning
+  1  - Magic damage (sound waves)
+  2  - [TELEPORT ALT] Jump Rift - heal is not necessary
+  3  - [Storm Burst] Pull, hit, and knock back
+  4  - (duration) [Summon Nether Imp]
+  5  - chance of enemy exploding (on death)
+  6  - fire storm (AOE) (like meteor)
+  7  - (duration) avatar (ally)
+  11 - Chance of gold and fish
+  12 - chance execution
+  13 - improve fire and phys Damage
+
+3 - Sound of God (Dancer) main element - ice / lightning
+  1  - Magic damage (wind)
+  2  - [TELEPORT ALT] Jump Rift - heal is not necessary
+  3  - (duration) Aura: chance of poisoning, bleeding, shock, teleport
+  4  - (duration) Aura: dodge + hp/mp recover
+  5  - fast multiply blades strikes? bleeding strikes of whip? with additional (magic) damage?
+  6  - ice/electric storm (AOE)
+  7  - avatar (ally)
+  11 - Chance of magic items for dancer
+  12 - chance and damage of crit
+  13 - improve ice and (lightning/phys, depends of weapon implementation: whip or marakasa) Damage
+
+good choice: music/dance combos
+
+weapon:
+  bow        - 2-hand
+  pistol     - 1-hand, 2-wield
+  guitar     - 2-hand weapon (staff)
+  violin     - 2-hand weapon (staff)
+  whip       - 1-hand (sword)
+  dirk       - 1-hand (sword/claw)
+  marakas    - 1-hand 2-wield (wand)
+  tambourine - 1-hand 2-wield (wand) 
+
+Bard   - bow, guitar
+Dancer - bow, whip, tambourine, marakas
+
+Редко вступающие в прямой конфликт, барды вплетают в свои песни магию,
+что позволяет им избежать смерти, поддержать союзников и ослабить врагов.
+Rarely in direct conflict, bards weave magic into their songs to avoid death,
+support allies, and weaken enemies.
+
+Танцовщицы - прекрасные и опасные недотроги. Чарующий танец, яд и клинок - вот в чём их сила.
+Dancers are beautiful and dangerous touchy persons. The magic dance, the poison, and the blade -
+ that's their power.
+
+Музыканты - всеобщие любимцы, но не очень хорошие воины.
+Musicians are everyone's favorites, but not very good warriors.
+
+Changebar as flute
