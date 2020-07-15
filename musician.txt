@@ -1,4 +1,6 @@
-1 - Archer way
+skills:
+---------
+1 - Archer way (almost all can be changed to another)
   1  - Double Strafe (several shots [arc?])
   2  - knocking back
   3  - Ricochet
@@ -9,10 +11,12 @@
   11 - Mastery: Distance and Damage
   12 - Crit chance for bows
   13 - Chance of magic damage
+Benefits of archer way: chance of drop special items like "notes" which can be used later as
+consumables for music skills or combos. It can be an item or just stat.
 
 2 - Music for all (support)
-  1  - (duration) improve Concentration (damage)
-  2  - (duration) increase Speedup
+  1  - (duration) Buff: improve Concentration (damage)
+  2  - (duration) Buff: increase Speedup
   3  - Paralize/confuse enemy
   4  - [howl] Enemy Debuff
   5  - (duration, immobilize yourself) Recovery area/aura
@@ -27,11 +31,11 @@
   2  - [TELEPORT ALT] Jump Rift - heal is not necessary
   3  - [Storm Burst] Pull, hit, and knock back
   4  - (duration) [Summon Nether Imp]
-  5  - chance of enemy exploding (on death)
+  5  - (!!create another??) chance of enemy exploding (on death)
   6  - fire storm (AOE) (like meteor)
   7  - (duration) avatar (ally)
   11 - Chance of gold and fish
-  12 - chance execution
+  12 - (!!create another??) chance execution
   13 - improve fire and phys Damage
 
 3 - Sound of God (Dancer) main element - ice / lightning
@@ -47,8 +51,10 @@
   13 - improve ice and (lightning/phys, depends of weapon implementation: whip or marakasa) Damage
 
 good choice: music/dance combos
-
+Full Chargebar: no mana cost, speedup, damage+25%
+======================================
 weapon:
+------
   bow        - 2-hand
   pistol     - 1-hand, 2-wield
   guitar     - 2-hand weapon (staff)
@@ -58,19 +64,31 @@ weapon:
   marakas    - 1-hand 2-wield (wand)
   tambourine - 1-hand 2-wield (wand) 
 
-Bard   - bow, guitar
-Dancer - bow, whip, tambourine, marakas
+Bard - bow, guitar.
+Good thing can be a HP penalty on every direct attack by guitar or count for guitar:
+if you using it in direct attack, it will increase point of weapon. and when it will reach some value,
+weapon will stay unusable at least, until you repair it on master in city
+Dancer - bow, whip, knife, tambourine, marakas
+======================================
+description:
+-------------
 
 Редко вступающие в прямой конфликт, барды вплетают в свои песни магию,
 что позволяет им избежать смерти, поддержать союзников и ослабить врагов.
+--
 Rarely in direct conflict, bards weave magic into their songs to avoid death,
 support allies, and weaken enemies.
 
 Танцовщицы - прекрасные и опасные недотроги. Чарующий танец, яд и клинок - вот в чём их сила.
+--
 Dancers are beautiful and dangerous touchy persons. The magic dance, the poison, and the blade -
  that's their power.
 
 Музыканты - всеобщие любимцы, но не очень хорошие воины.
+--
 Musicians are everyone's favorites, but not very good warriors.
-
+======================================
+UI:
+---
 Changebar as flute
+additional hotbar for notes (like music lines) (spells or "note" items)
