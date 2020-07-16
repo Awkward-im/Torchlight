@@ -1,168 +1,300 @@
+class description:
+------------------
+- Bard is class which uses ranged weapon to make large distance attacks and obtain special items
+  (musical notes). support skills are for temporal buffs  (mainly for allies like co-party members
+  or pets/summons). Magic line is for solo attacks preferred on close distance.
+- Dancer class similar with bard but have another solo skills coz not "sings" but "dancing". Main 
+  feature of that skills are not to let be hitted. But still make damage.
+- Musical notes are items to make combos or use in other skills as catalizator.
+  (highest skill level don't use these items?)
+
 skills:
 ---------
 1 - Archer way (almost all can be changed to another)
   1  - Double Strafe (several shots [arc?])
+  levelup:
+  tiers:
+  ru: 
+  --
+  en: 
+  ----------------------
   2  - knocking back
+  levelup:
+  tiers:
+  ru: 
+  --
+  en: 
+  ----------------------
   3  - Ricochet
+  levelup:
+  tiers:
+  ru: 
+  --
+  en: 
+  ----------------------
   4  - Piercing
+  levelup:
+  tiers:
+  ru: 
+  --
+  en: 
+  ----------------------
   5  - attacking bird
+  levelup:
+  tiers:
+  ru: 
+  --
+  en: 
+  ----------------------
   6  - Arrow storm (phys aoe)
+  levelup:
+  tiers:
+  ru: 
+  --
+  en: 
+  ----------------------
   7  - ghost wolf attack
+  levelup:
+  tiers:
+  ru: 
+  --
+  en: 
+  ----------------------
   11 - Mastery: Distance and Damage
+  levelup: higher distance and damage
+  ru: 
+  --
+  en: 
+  ----------------------
   12 - Crit chance for bows
+  levelup: higher chance
+  ru: 
+  --
+  en: 
+  ----------------------
   13 - Chance of magic damage
+  levelup: higher chance
+  ru: 
+  --
+  en: 
+  ----------------------
 Benefits of archer way: chance of drop special items like "notes" which can be used later as
 consumables for music skills or combos. It can be an item or just stat.
 -----------------------------------------------------------------
 2 - Music for all (support)
   1  - (duration) Buff: improve Concentration (damage)
+  levelup:
+  tiers:
+  ru: 
   --
+  en: 
   ----------------------
   2  - (duration) Buff: increase Speedup
-  Под весёлую песню или зажигательный танец ноги сами несут в пляс.
+  levelup: increase duration.
+  tiers:  increate speedup; allies too
+  ru: Под весёлую песню или зажигательный танец ноги сами несут в пляс.
   --
-  Under a cheerful song or incendiary dance, the feet themselves carry the dance.
+  en: Under a cheerful song or incendiary dance, the feet themselves carry the dance.
   ----------------------
-  3  - Paralize/confuse enemy
-  Ваши враги - тоже зрители. Чем выше искусство исполнителя, тем завороженнее они следят за зрелищем.
+  3  - confuse enemy
+  levelup: increase chance
+  tiers: paralize chance; 3 - increaze duration
+  ru: Ваши враги - тоже зрители. Чем выше искусство исполнителя, тем завороженнее они следят за зрелищем.
   Пока длится выступление, мало кто решится прервать исполнителя, только последний мерзавец.
   --
-  Your enemies are also spectators. The higher the performer's skill, the more entranced they are by
+  en: Your enemies are also spectators. The higher the performer's skill, the more entranced they are by
   the spectacle. While the performance lasts, few people will dare to interrupt the performer, only
   the last scoundrel.
   --------------------
   4  - [howl] Enemy Debuff
-  Ты отвлекаешь друзей от боли, а врагов от своих планов. Они ослабевают свой контроль над происходящим.
+  levelup: increase chance (80% initial), increase duration
+  tiers: additional chance; larger area
+  ru: Ты отвлекаешь друзей от боли, а врагов от своих планов. Они ослабевают свой контроль над происходящим.
   Именно этот момент самый подходящий, чтобы поразить их не только выступлением, но и оружием.
   --
-  You distract your friends from their pain and your enemies from your plans. They weaken their control over
+  en: You distract your friends from their pain and your enemies from your plans. They weaken their control over
   what is happening. This is the most appropriate moment to hit them not only with a performance,
   but also with a weapon.
   ----------------------
   5  - (duration, immobilize yourself) Recovery area/aura
-  Вкладывая всю душу в выступление, музыкант способен излечить не только душу, но и тело.
+  levelup: increaze recovering
+  tiers: 1 - increase duration; 2 - decrease immobilize duration; 3 - remove immobilize?
+  ru: Вкладывая всю душу в выступление, музыкант способен излечить не только душу, но и тело.
   "Магия?", спросите вы. "Искусство", отвечу я.
   --
-  By putting all your soul into the performance, the musician is able to heal not only the soul,
+  en: By putting all your soul into the performance, the musician is able to heal not only the soul,
   but also the body. "Magic?" you ask. "Art," I say.
   ---------------------
-  6  - chance: Let enemy fight for you
-  Талант исполнителя способен привлечь на свою сторону даже отъявленного негодяя. Или нет.
+  6  - chance: Let enemy fight for you (for some time or death)
+  levelup: increase chance
+  tiers: more targets to affect; longer duration
+  ru: Талант исполнителя способен привлечь на свою сторону даже отъявленного негодяя. Или нет.
   --
-  The talent of a performer can attract even a notorious scoundrel to his side. Or not.
+  en: The talent of a performer can attract even a notorious scoundrel to his side. Or not.
   ---------------------
   7  - random summon: plant/ground/fire/frost wall, ground/frost/fire wave
-  Сама природа восстаёт против того, чтоб вас прервали
+  levelup: increase degree, distance
+  tiers: additional effects (increase walls amount)
+  ru: Сама природа восстаёт против того, чтоб вас прервали
   --
-  Nature itself rebels against the fact that you were interrupted
+  en: Nature itself rebels against the fact that you were interrupted
   ----------------------
   11 - more dodge and hp
-  Со временем, ты становишься опытнее, кто-то увеличивает силу, а кто-то - ловкость. Каждому своё.
+  levelup: increase stats
+  ru: Со временем, ты становишься опытнее, кто-то увеличивает силу, а кто-то - ловкость. Каждому своё.
   --
-  Over time, you become more experienced, someone increases strength, and someone-dexterity. To each his own.
+  en: Over time, you become more experienced, someone increases strength, and someone-dexterity. To each his own.
   ----------------------
   12 - lower price/requirements?
-  Кто может отказать певцу с чудесным голосом или соблазнительной танцовщице? Даже торговец, несмотря
+  levelup: increase effect
+  ru: Кто может отказать певцу с чудесным голосом или соблазнительной танцовщице? Даже торговец, несмотря
   на свою жадность, готов снизить цену на свой товар.
   --
-  Who can refuse a singer with a wonderful voice or a seductive dancer? Even the merchant, despite
+  en: Who can refuse a singer with a wonderful voice or a seductive dancer? Even the merchant, despite
   his greed, is willing to lower the price of his product.
   ---------------------
   13 - Mastery (casttime, cooldown)
-  Выступление - это труд. Тренировки необходимы и чем они активнее, чем крупнее талант, тем выше и мастерство.
+  levelup: shorter casttime and cooldown
+  ru: Выступление - это труд. Тренировки необходимы и чем они активнее, чем крупнее талант, тем выше и мастерство.
   --
-  Performance is work. Training is necessary and the more active they are, the greater the talent, the higher the skill.
+  en: Performance is work. Training is necessary and the more active they are, the greater the talent, the higher the skill.
 ------------------------------------------------------------------------
 3 - Sound of God (bard) main element - fire / lightning
   1  - Magic damage (sound waves)
-  Звук - это не только движение ветра. Это сила!
+  levelup:
+  tiers:
+  ru: Звук - это не только движение ветра. Это сила!
   --
-  Sound is not just the movement of the wind. This is power!
+  en: Sound is not just the movement of the wind. This is power!
   -----------------------
   2  - [TELEPORT ALT] Jump Rift - heal is not necessary
-  Когда тебя заслушались и не заметили, как ты ушёл
+  levelup:
+  tiers:
+  ru: Когда тебя заслушались и не заметили, как ты ушёл
   --
-  When you were listened to and not noticed, as you left
+  en: When you were listened to and not noticed, as you left
   -----------------------
   3  - [Storm Burst] Pull, hit, and knock back
-  Не подходи слишком близко! Не смей мешать певцу исполнить свою песню.
+  levelup:
+  tiers:
+  ru: Не подходи слишком близко! Не смей мешать певцу исполнить свою песню.
   --
-  Don't get too close! Don't you dare stop the singer from performing his song.
+  en: Don't get too close! Don't you dare stop the singer from performing his song.
   -----------------------
   4  - (duration) [Summon Nether Imp]
+  levelup:
+  tiers:
+  ru: 
   --
+  en: 
   -----------------------
   5  - (!!create another??) chance of enemy exploding (on death)
+  levelup:
+  tiers:
+  ru: 
   --
+  en: 
   -----------------------
   6  - fire storm (AOE) (like meteor)
-  Слышали фразу: "Его выступление - просто огонь!" Так вот, это не пустой звук.
+  levelup:
+  tiers:
+  ru: Слышали фразу: "Его выступление - просто огонь!" Так вот, это не пустой звук.
   --
-  Have you heard the phrase: "His performance is just fire!" Now, this is not an empty word.
+  en: Have you heard the phrase: "His performance is just fire!" Now, this is not an empty word.
   -----------------------
   7  - (duration) avatar (ally)
-  Хор поёт громче. А бьёт больнее.
+  levelup:
+  tiers:
+  ru: Хор поёт громче. А бьёт больнее.
   --
-  The choir sings louder. And it hurts more.
+  en: The choir sings louder. And it hurts more.
   -----------------------
   11 - Chance of gold and fish
-  Деньги, пиво и рыбалка. Что ещё нужно для хорошего отдыха?
+  levelup: higher chance
+  ru: Деньги, пиво и рыбалка. Что ещё нужно для хорошего отдыха?
   --
-  Money, beer, and fishing. What else do you need for a good holiday?
+  en: Money, beer, and fishing. What else do you need for a good holiday?
   -----------------------
   12 - (!!create another??) chance execution
+  levelup:
+  ru: 
   --
+  en: 
   -----------------------
   13 - improve fire and phys Damage
+  levelup: higher damage
+  ru: 
   --
+  en: 
 ----------------------------------------------------------------
 3 - Sound of God (Dancer) main element - ice / lightning
   1  - Magic damage (wind)
-  Смотри, чтоб тебя не задело вихрем танца!
+  levelup:
+  tiers:
+  ru: Смотри, чтоб тебя не задело вихрем танца!
   --
-  Don't let the whirlwind of the dance hit you!
+  en: Don't let the whirlwind of the dance hit you!
   -----------------------
   2  - [TELEPORT ALT] Jump Rift - heal is not necessary
-  Прыжок, ещё прыжок...
+  levelup:
+  tiers:
+  ru: Прыжок, ещё прыжок...
   --
-  Jump, another jump...
+  en: Jump, another jump...
   -----------------------
   3  - (duration) Aura: chance of poisoning, bleeding, shock, teleport
-  Смотреть, но не трогать!
+  levelup: higher chance
+  tiers: 0 - bleeding; 1 - poisoning; 2 - shocked; 3 - freeze or teleport
+  ru: Смотреть, но не трогать!
   --
-  Look, but don't touch!
+  en: Look, but don't touch!
   ------------------------
   4  - (duration) Aura: dodge + hp/mp recover
-  Иногда приходится остановиться, чтобы перевести дух
+  levelup:
+  tiers:
+  ru: Иногда приходится остановиться, чтобы перевести дух
   --
-  Sometimes you have to stop to catch your breath
+  en: Sometimes you have to stop to catch your breath
   -----------------------
   5  - fast multiply blades strikes? bleeding strikes of whip? with additional (magic) damage?
-  Не распускай руки, а то потеряешь их. Возможно, вместе с жизнью.
+  levelup:
+  tiers:
+  ru: Не распускай руки, а то потеряешь их. Возможно, вместе с жизнью.
   --
-  Don't let go of your hands, or you'll lose them. Perhaps with life.
+  en: Don't let go of your hands, or you'll lose them. Perhaps with life.
   -----------------------
   6  - ice/electric storm (AOE)
-  Воздух застывает и потрескивает от напряжения. Какой зажигательный танец!
+  levelup:
+  tiers:
+  ru: Воздух застывает и потрескивает от напряжения. Какой зажигательный танец!
   --
-  The air freezes and crackles with tension. What a rousing dance!
+  en: The air freezes and crackles with tension. What a rousing dance!
   -----------------------
   7  - avatar (ally)
-  Твой танец так быстр, что кажется, будто вас уже двое.
+  levelup:
+  tiers:
+  ru: Твой танец так быстр, что кажется, будто вас уже двое.
   --
-  Your dance is so fast, it feels like there are two of you already.
+  en: Your dance is so fast, it feels like there are two of you already.
   ------------------------
   11 - Chance of magic items for dancer
-  Лучшие друзья девушки - это бриллианты? А как насчёт магических безделушек?
+  levelup: higher chance
+  ru: Лучшие друзья девушки - это бриллианты? А как насчёт магических безделушек?
   --
-  A girl's best friends are diamonds? What about magic trinkets?
+  en: A girl's best friends are diamonds? What about magic trinkets?
   ------------------------
   12 - chance and damage of crit
+  levelup: higher chance
+  ru: 
   --
+  en: 
   -----------------------
   13 - improve ice and (lightning/phys, depends of weapon implementation: whip or marakasa) Damage
+  levelup: higher damage
+  ru:
+  --
+  en: 
 
-good choice: music/dance combos
 Full Chargebar: no mana cost, speedup, damage+25%
 ======================================
 weapon:
@@ -180,6 +312,7 @@ Bard - bow, guitar.
 Good thing can be a HP penalty on every direct attack by guitar or count for guitar:
 if you using it in direct attack, it will increase point of weapon. and when it will reach some value,
 weapon will stay unusable at least, until you repair it on master in city
+
 Dancer - bow, whip, knife, tambourine, marakas
 ======================================
 description:
