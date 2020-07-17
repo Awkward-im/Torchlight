@@ -8,9 +8,17 @@ class description:
 - Musical notes are items to make combos or use in other skills as catalizator.
   (highest skill level don't use these items?)
 
+stats:
+-------
+strength  = 5
+dexterity = 10
+focus     = 15
+vitality  = 5
+
 skills:
 ---------
 1 - Archer way (almost all can be changed to another)
+can be copied from another ranged classes like archer and outlander
   1  - Double Strafe (several shots [arc?])
   levelup:
   tiers:
@@ -117,6 +125,7 @@ consumables for music skills or combos. It can be an item or just stat.
   but also with a weapon.
   ----------------------
   5  - (duration, immobilize yourself) Recovery area/aura
+  F/X: flying notes
   levelup: increaze recovering
   tiers: 1 - increase duration; 2 - decrease immobilize duration; 3 - remove immobilize?
   ru: Вкладывая всю душу в выступление, музыкант способен излечить не только душу, но и тело.
@@ -161,15 +170,16 @@ consumables for music skills or combos. It can be an item or just stat.
 ------------------------------------------------------------------------
 3 - Sound of God (bard) main element - fire / lightning
   1  - Magic damage (sound waves)
-  levelup:
-  tiers:
+  F/X: flying notes
+  levelup: damage
+  tiers: distance
   ru: Звук - это не только движение ветра. Это сила!
   --
   en: Sound is not just the movement of the wind. This is power!
   -----------------------
   2  - [TELEPORT ALT] Jump Rift - heal is not necessary
-  levelup:
-  tiers:
+  levelup: cooldown and mana
+  tiers: distance
   ru: Когда тебя заслушались и не заметили, как ты ушёл
   --
   en: When you were listened to and not noticed, as you left
@@ -196,15 +206,15 @@ consumables for music skills or combos. It can be an item or just stat.
   en: 
   -----------------------
   6  - fire storm (AOE) (like meteor)
-  levelup:
-  tiers:
+  levelup: cloodown and damage
+  tiers: area; duration; burning?
   ru: Слышали фразу: "Его выступление - просто огонь!" Так вот, это не пустой звук.
   --
   en: Have you heard the phrase: "His performance is just fire!" Now, this is not an empty word.
   -----------------------
   7  - (duration) avatar (ally)
-  levelup:
-  tiers:
+  levelup: damage
+  tiers: duration; skill?
   ru: Хор поёт громче. А бьёт больнее.
   --
   en: The choir sings louder. And it hurts more.
@@ -229,15 +239,15 @@ consumables for music skills or combos. It can be an item or just stat.
 ----------------------------------------------------------------
 3 - Sound of God (Dancer) main element - ice / lightning
   1  - Magic damage (wind)
-  levelup:
-  tiers:
+  levelup: damage
+  tiers: distance
   ru: Смотри, чтоб тебя не задело вихрем танца!
   --
   en: Don't let the whirlwind of the dance hit you!
   -----------------------
   2  - [TELEPORT ALT] Jump Rift - heal is not necessary
-  levelup:
-  tiers:
+  levelup: cooldown and mana
+  tiers: distance
   ru: Прыжок, ещё прыжок...
   --
   en: Jump, another jump...
@@ -250,29 +260,29 @@ consumables for music skills or combos. It can be an item or just stat.
   en: Look, but don't touch!
   ------------------------
   4  - (duration) Aura: dodge + hp/mp recover
-  levelup:
-  tiers:
+  levelup: amount
+  tiers: duration; allies 75%; allies 100%
   ru: Иногда приходится остановиться, чтобы перевести дух
   --
   en: Sometimes you have to stop to catch your breath
   -----------------------
   5  - fast multiply blades strikes? bleeding strikes of whip? with additional (magic) damage?
-  levelup:
-  tiers:
+  levelup: damage and cooldown
+  tiers: 270 degree arc; 3 - knock back
   ru: Не распускай руки, а то потеряешь их. Возможно, вместе с жизнью.
   --
   en: Don't let go of your hands, or you'll lose them. Perhaps with life.
   -----------------------
   6  - ice/electric storm (AOE)
-  levelup:
-  tiers:
+  levelup: damage and area
+  tiers: chance to freeze; shock chance; higher chance
   ru: Воздух застывает и потрескивает от напряжения. Какой зажигательный танец!
   --
   en: The air freezes and crackles with tension. What a rousing dance!
   -----------------------
   7  - avatar (ally)
-  levelup:
-  tiers:
+  levelup: damage
+  tiers: duration; HP
   ru: Твой танец так быстр, что кажется, будто вас уже двое.
   --
   en: Your dance is so fast, it feels like there are two of you already.
@@ -337,3 +347,4 @@ UI:
 ---
 Changebar as flute
 additional hotbar for notes (like music lines) (spells or "note" items)
+musical skill cast must have their own sound effects.
