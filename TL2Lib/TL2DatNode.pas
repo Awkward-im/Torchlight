@@ -25,6 +25,7 @@ const
   // user
   ntWord      = 10;
   ntByte      = 11;
+  ntVector    = $FC;
   ntBinary    = $FD;
   ntDeleted   = $FE;
   ntUnknown   = $FF;
@@ -354,12 +355,14 @@ begin
         anode^.asString:=CopyWide(aval);
       end;
       ntBool     : begin
-       if ((aval[0]='1') and (aval[1]=#0)) or
+       if (aval<>nil) and (
+          ((aval[0]='1') and (aval[1]=#0)) or
           ((aval[0] in ['t','T']) and
            (aval[1] in ['r','R']) and
            (aval[2] in ['u','U']) and
            (aval[3] in ['e','E']) and
-           (aval[4]=#0)) then anode^.asBoolean:=true;
+           (aval[4]=#0))
+          ) then anode^.asBoolean:=true;
       end;
       // custom
       ntDouble   : Val(aval,anode^.asDouble);
@@ -632,7 +635,7 @@ var
   larr:array [0..127] of WideChar;
   ls:WideString;
   pc:PWideChar;
-  i,j,llen:integer;
+  i,j,k,llen:integer;
 begin
   result:=true;
 
@@ -706,7 +709,33 @@ begin
       ntNote,
       ntUnknown   : ls:=anode.asString;
       ntInteger   : Str(anode.asInteger  ,ls);
-      ntFloat     : Str(anode.asFloat:0:4,ls);
+      ntFloat     : begin
+        Str(anode.asFloat:0:4,ls);
+        j:=Length(ls);
+{
+        k:=1;
+        while k<=j do
+          if ls[k]<>'.' then inc(k)
+          else break;
+        if k>j then k:=2;
+        while j>=k do
+        begin
+          if (ls[j]='0') or (ls[j]='.') then dec(j)
+          else break;
+        end;
+}
+        while j>1 do
+        begin
+          if      (ls[j]='0') then dec(j)
+          else if (ls[j]='.') then
+          begin
+            dec(j);
+            break;
+          end
+          else break;
+        end;
+        if j<>Length(ls) then SetLength(ls,j);
+      end;
       ntInteger64 : Str(anode.asInteger64,ls);
       ntUnsigned  : Str(anode.asUnsigned ,ls);
       // custom
@@ -870,7 +899,6 @@ begin
       inc(p2);
     end;
     p1^:=#0;
-
     if lname[0]=#0 then exit;
 
     // 2 - search this part

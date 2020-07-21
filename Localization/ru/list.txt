@@ -1,4 +1,4 @@
-Список модов
+РЎРїРёСЃРѕРє РјРѕРґРѕРІ
 
 Classes
 -------
@@ -25,9 +25,9 @@ tenebris 2.1
 voidseeker
 WeaponsMaster
 witch_class_beta
-Scattershot из Rhagius_Class_Pack
-Cleaver из Rhagius_Class_Pack
-Bulwark из Rhagius_Class_Pack
+Scattershot РёР· Rhagius_Class_Pack
+Cleaver РёР· Rhagius_Class_Pack
+Bulwark РёР· Rhagius_Class_Pack
 Archer
 Assassin
 Monk
@@ -36,8 +36,8 @@ Prophet
 Psion
 Blighted
 Otaku Fighter
-Классы из Synergies
-Классы из первого Torchlight
+РљР»Р°СЃСЃС‹ РёР· Synergies
+РљР»Р°СЃСЃС‹ РёР· РїРµСЂРІРѕРіРѕ Torchlight
 
 Items
 -----
@@ -86,9 +86,9 @@ Mastery
 Spell Pack (AG)
 Skill Expansion v.2
 
-Плюс
+РџР»СЋСЃ
 ----
-Частичные переводы Synergies и Essientials от
+Р§Р°СЃС‚РёС‡РЅС‹Рµ РїРµСЂРµРІРѕРґС‹ Synergies Рё Essientials РѕС‚
   Abramoff (https://steamcommunity.com/sharedfiles/filedetails/?id=245644717)
-и
+Рё
   SirJerrald (https://steamcommunity.com/sharedfiles/filedetails/?id=1608117969)

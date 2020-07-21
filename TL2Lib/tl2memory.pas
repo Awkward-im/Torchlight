@@ -23,7 +23,8 @@ function  ReadCoord      (var buf:PByte):TL2Coord; export;
 
 function  ReadByteString (var buf:PByte):PWideChar; export;
 function  ReadShortString(var buf:PByte):PWideChar; export;
-function  ReadShortStringUTF8(var buf:PByte):PAnsiChar; export;
+function  ReadDwordString(var buf:PByte):PWideChar; export;
+function  ReadShortStringUTF8(var buf:PByte):PWideChar; export;
 
 //function  ReadShortStringList(var buf:PByte):TL2StringList; export;
 function  ReadIdList     (var buf:PByte):TL2IdList; export;
@@ -139,16 +140,37 @@ begin
     result:=nil;
 end;
 
-function ReadShortStringUTF8(var buf:PByte):PAnsiChar;
+function ReadDwordString(var buf:PByte):PWideChar;
 var
+  lsize:cardinal;
+begin
+  lsize:=ReadDWord(buf);
+  if lsize>0 then
+  begin
+    GetMem(result,(lsize+1)*SizeOf(WideChar));
+    ReadData(buf,result^,lsize*SizeOf(WideChar));
+    result[lsize]:=#0;
+  end
+  else
+    result:=nil;
+end;
+
+function ReadShortStringUTF8(var buf:PByte):PWideChar;
+var
+  ls:WideString;
+  lutf8:PAnsiChar;
   lsize:cardinal;
 begin
   lsize:=ReadWord(buf);
   if lsize>0 then
   begin
-    GetMem(result,(lsize+1));
-    ReadData(buf,result^,lsize);
-    result[lsize]:=#0;
+    GetMem(lutf8,(lsize+1));
+    ReadData(buf,lutf8^,lsize);
+    lutf8[lsize]:=#0;
+    ls:=UTF8Decode(lutf8);
+    FreeMem(lutf8);
+    GetMem(result,(Length(ls)+1)*SizeOf(WideChar));
+    move(PWideChar(ls)^,result^,(Length(ls)+1)*SizeOf(WideChar));
   end
   else
     result:=nil;

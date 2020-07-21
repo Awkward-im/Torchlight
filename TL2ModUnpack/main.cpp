@@ -57,6 +57,7 @@ public:
 			return p>=ep;
 		}
 	};
+
 	struct c_put {
 		char*buf,*p,*e;
 		size_t bufsize;
@@ -86,6 +87,7 @@ public:
 		void pu16(u16 v) {put(v);}
 		void pu8(u8 v) {put(v);}
 	};
+
 	struct c_attribute {
 		enum {t_integer=1,t_float,t_double,t_unsigned_int,t_string,t_bool,t_integer64,t_translate};
 		u32 type;
@@ -102,22 +104,27 @@ public:
 		c_attribute(u32 type,u32 name,u64 val64) : type(type), name(name), val64(val64) {}
 		static c_attribute integer(u32 name,u32 val) {return c_attribute(t_integer,name,val);}
 	};
+
 	struct c_node {
 		u32 name;
 		list<c_attribute> alist;
 		list<c_node> nlist;
 	};
+
 	c_adm() : next_str_id(0x1000) {}
 	list<c_node> nodelist;
 	map<u32,wstring> stringmap;
 	u32 next_str_id;
+
 	u32 add_str(const wchar_t*str,size_t len) {
 		u32 id = next_str_id++;
 		while (stringmap.find(id)!=stringmap.end()) id=next_str_id++;
 		stringmap[id] = wstring(str,len);
 		return id;
 	}
+
 	const wchar_t*get_str(u32 id) {return stringmap[id].c_str();}
+
 	void load(const void*buf,size_t len) {
 		c_get g(buf,len);
 		struct c_nestack {
@@ -202,6 +209,7 @@ public:
 		nodelist = nstack.top().node.nlist;
 
 	}
+
 	void dump_node(const c_node&n,wstring&s) {
 		s += wformat(L"[%ls]\r\n",get_str(n.name));
 		for (list<c_attribute>::const_iterator i=n.alist.begin();i!=n.alist.end();++i) {
@@ -241,12 +249,14 @@ public:
 		}
 		s += wformat(L"[/%ls]\r\n",get_str(n.name));
 	}
+
 	void dump(wstring&s) {
 		s=L"";
 		for (list<c_node>::const_iterator i=nodelist.begin();i!=nodelist.end();++i) {
 			dump_node(*i,s);
 		}
 	}
+
 	void parse(const wchar_t*p) {
 		int line = 1;
 		stack<c_node> nstack;
@@ -322,6 +332,7 @@ public:
 		if (nstack.size()!=1) xcept("unexpected eof, there are %d open tags",nstack.size()-1);
 		nodelist = nstack.top().nlist;
 	}
+
 	void save_node(const c_node&node,c_put&out) {
 		out.pu32(node.name);
 		out.pu32(node.alist.size());
@@ -356,6 +367,7 @@ public:
 			save_node(*i,out);
 		}
 	}
+
 	void save(c_put&out) {
 		out.reset();
 		out.pu32(1);
@@ -421,7 +433,8 @@ int main(int argc,const char**argv) {
 			fwrite(p.getbuf(),p.size(),1,f);
 			fclose(f);
 			printf("saved as '%s'\n",fn.c_str());
-		} else {
+		}
+		else {
 			string fn = string(n,ext-n);
 			if (!*ext) fn+=".dat";
 			printf("loading adm file...\n");

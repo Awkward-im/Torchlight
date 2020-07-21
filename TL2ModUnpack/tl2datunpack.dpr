@@ -1,7 +1,7 @@
-{$I-}
+﻿{$I-}
 
 uses
-  Classes,sysutils,
+  sysutils,
   TL2DatNode,
   TL2Memory;
 
@@ -10,163 +10,146 @@ type
       t_unknown,t_integer,t_float,t_double,t_unsigned_int,
       t_string,t_bool,t_integer64,t_translate);
 
-const
-  deepincr = 2;
-  
 var
-  tags,sl,slout:TStringList;
-
-procedure LoadTags;
-var
-  tmptags:TStringList;
-  i:integer;
-  lid:integer;
-begin
-  tmptags:=TStringList.Create;
-  try
-    tmptags.LoadFromFile('tags.dat',TEncoding.Unicode);
-    i:=1;
-    tags.Capacity:=tmptags.count div 2;
-    while i<(tmptags.count-1) do
-    begin
-      Val(Copy(tmptags[i+1],Pos(':',tmptags[i+1])+1),lid);
-      tags.AddObject(Copy(tmptags[i],Pos(':',tmptags[i])+1),TObject(IntPtr(lid)));
-      inc(i,2);
-    end;
-  except
+  fver:byte;
+  slout,tags:PTL2Node;
+  sl:array of record
+    id  :integer;
+    astr:PWideChar;
   end;
-  tmptags.Free;
-end;
+  numbuffer:array [0..31] of WideChar;
 
-function GetTagStr(aid:integer):string;
+function GetStr(aid:integer):PWideChar;
 var
   i:integer;
 begin
-  for i:=0 to tags.count-1 do
+  for i:=0 to High(sl) do
   begin
-    if IntPtr(tags.Objects[i])=aid then
+    if sl[i].id=aid then
     begin
-      result:=tags[i];
+      result:=sl[i].astr;
       exit;
     end;
   end;
-  Str(aid,result);
+  result:=nil;
 end;
 
-function GetStr(aid:integer):string;
+function GetTagStr(aid:integer):PWideChar;
 var
+  lsw:WideString;
   i:integer;
 begin
-  for i:=0 to sl.Count-1 do
+  if fver=1 then
   begin
-    if UIntPtr(sl.Objects[i])=aid then
+    result:=GetStr(aid);
+    exit;
+  end;
+
+  i:=1;
+  while i<tags^.childcount do
+  begin
+    if tags^.children^[i].asInteger=aid then
     begin
-      result:=sl[i];
+      result:=tags^.children^[i-1].asString;
       exit;
     end;
+    inc(i,2);
   end;
-  result:='';
+  Str(aid,lsw);
+  numbuffer:=lsw;
+  result:=@numbuffer;
 end;
 
+procedure DoParseBlock(var anode:PTL2Node; var aptr:pByte);
 var
-  deep:integer;
-
-procedure DoParseBlock(var lptr:pByte);
-var
+  lnode:PTL2Node;
   lblock,i,lcnt,lsub,ltype:integer;
-  lstr,ls:string;
   lint:integer;
   lfloat:single;
   ldouble:double;
   lint64:int64;
   lid:integer;
 begin
-  lblock:=ReadInteger(lptr);
+  lblock:=ReadInteger(aptr);
 
-  slout.Add(StringOfChar(' ',deep)+'['+GetTagStr(lblock)+']');
-  inc(deep,deepincr);
-  ls:=StringOfChar(' ',deep);
+  lnode:=AddGroup(anode,GetTagStr(lblock));
+  if anode=nil then anode:=lnode;
 
-  lcnt:=ReadInteger(lptr);
+  lcnt:=ReadInteger(aptr);
   for i:=0 to lcnt-1 do
   begin
-    lid:=ReadInteger(lptr);
-    ltype:=ReadDword(lptr);
+    lid:=ReadInteger(aptr);
+    ltype:=ReadDword(aptr);
     case TAttribute(ltype) of
 		  t_integer: begin
-		    lint:=ReadInteger(lptr);
-		    slout.Add(ls+'<INTEGER>'+GetTagStr(lid)+':'+IntToStr(lint));
+		    lint:=ReadInteger(aptr);
+		    AddInteger(lnode,GetTagStr(lid),lint);
 		  end;
 		  t_unsigned_int: begin
-		    lint:=ReadInteger(lptr);
-		    slout.Add(ls+'<UNSIGNED INT>'+GetTagStr(lid)+':'+IntToStr(dword(lint)));
+		    lint:=ReadInteger(aptr);
+		    AddUnsigned(lnode,GetTagStr(lid),lint);
 		  end;
 		  t_bool: begin
-		    lint:=ReadInteger(lptr);
-		    if lint=0 then
-  		    slout.Add(ls+'<BOOL>'+GetTagStr(lid)+':false')
-		    else
-          slout.Add(ls+'<BOOL>'+GetTagStr(lid)+':true');
+		    lint:=ReadInteger(aptr);
+        AddBool(lnode,GetTagStr(lid),lint<>0);
 		  end;
 		  t_string: begin
-		    lint:=ReadInteger(lptr);
-		    slout.Add(ls+'<STRING>'+GetTagStr(lid)+':'+GetStr(lint));
+		    lint:=ReadInteger(aptr);
+		    AddText(lnode,GetTagStr(lid),GetStr(lint),ntString);
 		  end;
 		  t_translate: begin
-		    lint:=ReadInteger(lptr);
-		    slout.Add(ls+'<TRANSLATE>'+GetTagStr(lid)+':'+GetStr(lint));
+		    lint:=ReadInteger(aptr);
+		    AddText(lnode,GetTagStr(lid),GetStr(lint),ntTranslate);
 		  end;
 		  t_float: begin
-		    lfloat:=ReadFloat(lptr);
-		    Str(lfloat:0:4,lstr);
-		    slout.Add(ls+'<FLOAT>'+GetTagStr(lid)+':'+lstr);
+		    lfloat:=ReadFloat(aptr);
+		    AddFloat(lnode,GetTagStr(lid),lfloat);
 		  end;
 		  t_double: begin
-		    ldouble:=ReadDouble(lptr);
-		    Str(ldouble:0:4,lstr);
-		    slout.Add(ls+'<DOUBLE>'+GetTagStr(lid)+':'+lstr);
+		    ldouble:=ReadDouble(aptr);
+		    AddDouble(lnode,GetTagStr(lid),ldouble);
 		  end;
 		  t_integer64: begin
-		    lint64:=ReadInteger64(lptr);
-		    slout.Add(ls+'<INTEGER64>'+GetTagStr(lid)+':'+IntToStr(lint64));
+		    lint64:=ReadInteger64(aptr);
+		    AddInteger64(lnode,GetTagStr(lid),lint64);
 		  end;
 		else
-		  lint:=ReadInteger(lptr);
-		  slout.Add(ls+'<'+IntToStr(ltype)+'>'+GetTagStr(lid)+':'+IntToStr(lint));
+		  lint:=ReadInteger(aptr);
+		  AddCustom(lnode,GetTagStr(lid),
+		      PWideChar(WideString(IntToStr(lint))),   //!!!!!!!!111
+		      PWideChar(WideString(IntToStr(ltype)))); //!!!!!!!!!1
     end;
   end;
 
-  lsub:=ReadInteger(lptr);
+  lsub:=ReadInteger(aptr);
   for i:=0 to lsub-1 do
-    DoParseBlock(lptr);
-
-  dec(deep,deepincr);
-  slout.Add(StringOfChar(' ',deep)+'[/'+GetTagStr(lblock)+']');
+    DoParseBlock(lnode,aptr);
 end;
 
 procedure DoParse(buf:pByte);
 var
   lptr:pByte;
-  lstr:PWideChar;
-  lver:byte;
   i,lcnt:integer;
-  lid:integer;
 begin
   lptr:=buf;
-  lver:=Readinteger(lptr);
-  sl:=TStringList.Create;
+  fver:=ReadByte(lptr);
+  if fver<=2 then inc(lptr,3);
   lcnt:=ReadInteger(lptr);
-  sl.Capacity:=lcnt;
+  SetLength(sl,lcnt);
   for i:=0 to lcnt-1 do
   begin
-    lid :=ReadInteger(lptr);
-    lstr:=ReadShortString(lptr);
-    sl.AddObject(UTF8Encode(WideString(lstr)),TObject(UIntPtr(lid)));
-    FreeMem(lstr);
+    sl[i].id:=ReadInteger(lptr);
+    case fver of
+      1: sl[i].astr:=ReadDwordString(lptr);      // TL1
+      2: sl[i].astr:=ReadShortString(lptr);      // TL2
+      6: sl[i].astr:=ReadShortStringUTF8(lptr);  // Hob
+    end;
   end;
 
-  DoParseBlock(lptr);
-  sl.Free;
+  DoParseBlock(slout,lptr);
+  for i:=0 to lcnt-1 do
+    FreeMem(sl[i].astr);
+  SetLength(sl,0);
 end;
 
 procedure DoProcessFile(const fname:string);
@@ -182,11 +165,10 @@ begin
     l:=FileSize(f);
     GetMem(buf,l);
     BlockRead(f,buf^,l);
-    slout:=TStringList.Create;
+    slout:=nil;
     DoParse(buf);
-    slout.WriteBOM:=true;
-    slout.SaveToFile(fname+'.TXT',TEncoding.Unicode);
-    slout.Free;
+    WriteDatTree(slout,PChar(fname+'.TXT'));
+    DeleteNode(slout);
     FreeMem(buf);
     Close(f);
   end;
@@ -224,11 +206,10 @@ begin
 end;
 
 begin
-  tags:=TStringList.Create;
-  LoadTags();
+  tags:=ParseDatFile('tags.dat');
   if ParamCount=0 then
     cycleDir('.')
   else
     doprocessfile(paramstr(1));
-  tags.Free;
+  DeleteNode(tags);
 end.
