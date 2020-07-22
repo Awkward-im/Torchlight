@@ -32,7 +32,7 @@ type
     tsLevelUp: TTabSheet;  sgLevelUp: TStringGrid;
     tsArea1  : TTabSheet;  sgArea1  : TStringGrid;
     tsArea2  : TTabSheet;  sgArea2  : TStringGrid;
-    tsStats  : TTabSheet;  sgStat   : TStringGrid;
+    tsKillers: TTabSheet;  sgKillers: TStringGrid;
     procedure bbClearLearnHistoryClick(Sender: TObject);
   private
     SGame:TTL2SaveFile;
@@ -177,16 +177,16 @@ begin
   end;
   sgArea2.EndUpdate;
 
-  // stats
-  sgStat.BeginUpdate;
-  sgStat.Clear;
-  sgStat.RowCount:=1+Length(lstat.Stats);
-  for i:=0 to High(lstat.Stats) do
+  // killers
+  sgKillers.BeginUpdate;
+  sgKillers.Clear;
+  sgKillers.RowCount:=1+Length(lstat.Killers);
+  for i:=0 to High(lstat.Killers) do
   begin
-    sgStat.Cells[1,i+1]:=GetTL2Mob(lstat.Stats[i].id);
-    sgStat.Cells[2,i+1]:=IntToStr (lstat.Stats[i].value);
+    sgKillers.Cells[1,i+1]:=GetTL2Mob(lstat.Killers[i].id);
+    sgKillers.Cells[2,i+1]:=IntToStr (lstat.Killers[i].value);
   end;
-  sgStat.EndUpdate;
+  sgKillers.EndUpdate;
 
 end;
 

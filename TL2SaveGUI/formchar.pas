@@ -416,17 +416,19 @@ end;
 
 procedure TfmChar.DrawCharIcon(const aname:string; aImg:TImage);
 var
-  lname:string;
+  licon:string;
 begin
-  lname:=aname;
-  if lname<>'' then
+  licon:=aname;
+  if licon<>'' then
+  begin
     try
-      aImg.Picture.LoadFromFile(lname);
+      aImg.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\characters\'+licon+'.png');
     except
-      lname:='';
+      licon:='';
     end;
+  end;
 
-  if lname='' then
+  if licon='' then
     try
       aImg.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
     except

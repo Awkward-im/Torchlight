@@ -379,11 +379,11 @@ object fmStat: TfmStat
         TabOrder = 0
       end
     end
-    object tsStats: TTabSheet
-      Caption = 'Mobs-stat'
+    object tsKillers: TTabSheet
+      Caption = 'Killers'
       ClientHeight = 460
       ClientWidth = 733
-      object sgStat: TStringGrid
+      object sgKillers: TStringGrid
         Left = 0
         Height = 460
         Top = 0
@@ -393,12 +393,12 @@ object fmStat: TfmStat
         ColumnClickSorts = True
         Columns = <        
           item
-            Title.Caption = 'Title'
+            Title.Caption = 'Enemy'
             Width = 150
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Value'
+            Title.Caption = 'Amount'
           end>
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1

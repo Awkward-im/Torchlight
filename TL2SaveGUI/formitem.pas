@@ -14,6 +14,7 @@ type
 
   TfmItem = class(TForm)
     bbUpdate: TBitBtn;
+    bbClearMod: TBitBtn;
     edUnkn6: TEdit;
     gbFlags: TGroupBox;
     cbFlag1: TCheckBox;
@@ -50,6 +51,7 @@ type
     lbModList : TListBox;
     lbAugments: TListBox;  lblAugments: TLabel;
     sgEffects : TStringGrid;
+    procedure bbClearModClick(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure edSocketsChange(Sender: TObject);
     procedure edStackChange(Sender: TObject);
@@ -95,6 +97,14 @@ begin
   FItem.Changed:=true;
   if FChar<>nil then FChar.Changed:=true;
   bbUpdate.Visible:=false;
+end;
+
+procedure TfmItem.bbClearModClick(Sender: TObject);
+begin
+  FItem.ModIds:=nil;
+  lbModList.Clear;
+  bbClearMod.Visible:=false;
+  bbUpdate.Visible:=true;
 end;
 
 function CycleDir(const adir,aicon:string):string;
@@ -261,6 +271,7 @@ begin
   lbModList.Clear;
   for i:=0 to High(aItem.ModIds) do
     lbModList.AddItem(GetTL2Mod(aItem.ModIds[i]),nil);
+  bbClearMod.Visible:=Length(aItem.ModIds)<>0;
 
   bbUpdate.Visible:=false;
 end;

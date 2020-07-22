@@ -82,6 +82,8 @@ begin
 
   lblCount.Caption:=IntToStr(Length(aItems));
   lbitemList.Clear;
+  fmButtons.btnExport.Enabled:=false;
+  fmButtons.Ext:='.itm';
   if Length(aItems)>0 then
   begin
     lbitemList.Sorted:=false;
@@ -95,8 +97,6 @@ begin
     lbItemList.ItemIndex:=0;
   end;
 
-  fmButtons.btnExport.Enabled:=false;
-  fmButtons.Ext:='.itm';
 end;
 
 end.

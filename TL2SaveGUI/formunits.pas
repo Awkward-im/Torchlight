@@ -84,6 +84,8 @@ begin
 
   lblCount.Caption:=IntToStr(Length(FMap.MobInfos));
   lbUnitList.Clear;
+  fmButtons.btnExport.Enabled:=false;
+  fmButtons.Ext:='.chr';
   if Length(FMap.MobInfos)>0 then
   begin
     lbUnitList.Sorted:=false;
@@ -95,9 +97,6 @@ begin
     lbUnitList.Sorted:=true;
     lbUnitList.ItemIndex:=0;
   end;
-
-  fmButtons.btnExport.Enabled:=false;
-  fmButtons.Ext:='.chr';
 end;
 
 end.

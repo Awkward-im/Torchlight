@@ -9,6 +9,11 @@ uses
   Buttons, EditBtn, ComCtrls;
 
 const
+  LM_TL2_COMMAND  = $400 + 1;
+  TL2_INIT    = 0;
+  TL2_SETTING = 1;
+
+const
   INIFileName   = 'tl2sg.ini';
 
 type
@@ -63,6 +68,9 @@ uses
   IniFiles;
 
 { TfmSettings }
+
+const
+  SavePath = '"Documents\My Games\Runic Games\Torchlight 2\save\"';
 
 const
   sSettings   = 'Settings';

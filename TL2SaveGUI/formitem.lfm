@@ -57,7 +57,7 @@ object fmItem: TfmItem
     Left = 3
     Height = 113
     Top = 171
-    Width = 191
+    Width = 202
     ItemHeight = 0
     TabOrder = 3
   end
@@ -514,7 +514,7 @@ object fmItem: TfmItem
     Stretch = True
   end
   object bbUpdate: TBitBtn
-    Left = 318
+    Left = 317
     Height = 31
     Top = 480
     Width = 75
@@ -523,5 +523,18 @@ object fmItem: TfmItem
     Kind = bkOK
     OnClick = bbUpdateClick
     TabOrder = 19
+  end
+  object bbClearMod: TBitBtn
+    Left = 210
+    Height = 26
+    Hint = 'Clear mod list'
+    Top = 171
+    Width = 26
+    Kind = bkAbort
+    Margin = 2
+    OnClick = bbClearModClick
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 20
   end
 end

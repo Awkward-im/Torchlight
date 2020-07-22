@@ -12,12 +12,13 @@ type
   { TfmEffects }
 
   TfmEffects = class(TForm)
-    lbAugments: TListBox;  lblAugments: TLabel;
-    sgEffects : TStringGrid;
-    sgStats   : TStringGrid;
+    lbAugments: TListBox;     lblAugments: TLabel;
+    sgEffects : TStringGrid;  lblEffects : TLabel;
+    sgStats   : TStringGrid;  lblStats   : TLabel;
   private
 
   public
+    procedure UpdateWindow();
 
   end;
 
@@ -27,6 +28,11 @@ var
 implementation
 
 {$R *.lfm}
+
+procedure TfmEffects.UpdateWindow();
+begin
+
+end;
 
 end.
 
