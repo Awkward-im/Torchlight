@@ -1,5 +1,8 @@
 {$IFDEF Interface}
 
+const
+  TL2GameID = ' 0 ';
+
 type
   TModData = record
      id     :TL2ID;

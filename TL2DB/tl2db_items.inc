@@ -1,13 +1,14 @@
 {$IFDEF Interface}
 
-function GetTL2Item (const aid:TL2ID  ; out amods:string):string; overload;
-function GetTL2Item (const aid:TL2ID                    ):string; overload;
+function GetTL2Item (const aid:TL2ID; out amods:string):string; overload;
+function GetTL2Item (const aid:TL2ID                  ):string; overload;
 function GetItemIcon(const aid:TL2ID):string;
 function GtItemStack(const aid:TL2ID):integer;
 function GetItemPosition(apos:integer; out cont :string):string;
+function GetAlt(const aid:TL2ID; alist:TTL2ModList):TL2ID;
 
-function GetTL2Prop(const aid:TL2ID  ; out amods:string):string; overload;
-function GetTL2Prop(const aid:TL2ID                    ):string; overload;
+function GetTL2Prop(const aid:TL2ID; out amods:string):string; overload;
+function GetTL2Prop(const aid:TL2ID                  ):string; overload;
 
 {$ELSE}
 
@@ -59,6 +60,67 @@ begin
         cont  :=sqlite3_column_text(vm,2);
       end;
       sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
+function GetAlt(const aid:TL2ID; alist:TTL2ModList):TL2ID;
+var
+  lunittype,lmods:string;
+  lSQL:string;
+  vm:pointer;
+  i:integer;
+begin
+  lmods:=GetTL2Item(aid);
+
+  // 1 - item is unmodded
+  if lmods=TL2GameID then
+  begin
+    result:=aid;
+    exit;
+  end;
+
+  result:=TL2IdEmpty;
+
+  // 2 - search in mod list
+  if IsInModList(lmods,alist)<>TL2IdEmpty then
+  begin
+    result:=aid;
+    exit;
+  end;
+
+  lunittype:='';
+  Str(aid,lSQL);
+  lSQL:='SELECT unittype FROM items WHERE id='+lSQL;
+  if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+      lunittype:=sqlite3_column_text(vm,0);
+    sqlite3_finalize(vm);
+  end;
+  if lunittype='' then exit;
+  
+  // 3 - search alternative in unmodded items
+  lSQL:='SELECT id FROM items WHERE modid='' 0 '' AND unittype='''+lunittype+''' LIMIT 1';
+  if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+      result:=sqlite3_column_int64(vm,0);
+    sqlite3_finalize(vm);
+  end;
+  if result<>TL2IdEmpty then exit;
+
+  // 4 - search alternative in mods
+  for i:=0 to High(alist) do
+  begin
+    Str(alist[i].id,lSQL);
+    lSQL:='SELECT id FROM items WHERE modid LIKE '' '+lSQL+' '' AND unittype='''+lunittype+''' LIMIT 1';
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+        result:=sqlite3_column_int64(vm,0);
+      sqlite3_finalize(vm);
+      if result<>TL2IdEmpty then exit;
     end;
   end;
 end;
