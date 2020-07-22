@@ -10,6 +10,10 @@ type
       t_unknown,t_integer,t_float,t_double,t_unsigned_int,
       t_string,t_bool,t_integer64,t_translate);
 
+const
+  IdLogicGroup = 36;
+  IdTimeline   = 35;
+
 type
   TLayChunkHeader = packed record
     asize:integer; // including size
@@ -26,7 +30,7 @@ var
   objcount:integer;
   _filestart:pbyte;
   lver:byte;
-  slout,tags,sobj:PTL2Node;
+  slout,tags:PTL2Node;
   numbuffer:array [0..31] of WideChar;
 
 function CompareWide(s1,s2:PWideChar):boolean;
@@ -94,37 +98,63 @@ writeln('UNKNOWN PROPRETY TYPE ',string(widestring(pcw)));
 end;
 
 function GetObjectStr(aid:integer; out aobj:PTL2Node):PWideChar;
+label GotIt;
 var
-  lobj:PTL2Node;
+  sobj,gobj,lobj:PTL2Node;
   lsw:WideString;
-  i,j:integer;
+  lobjs,lchilds,i,j:integer;
 begin
   aobj:=nil;
-  // obj points to "OBJECT GROUP"
-  // cycle through OBJECT
-  for i:=0 to sobj^.childcount-1 do
+
+  for lobjs:=0 to tags^.childcount-1 do
   begin
-    lobj:=@sobj^.children^[i];
-    // cycle through object fields
-    for j:=0 to lobj^.childcount-1 do
+    // for all scenes
+    if tags^.children^[lobjs].Name='SCENE' then
     begin
-      if CompareWide(lobj^.children^[j].Name,'ID') then
+      sobj:=@tags^.children^[lobjs];
+      for lchilds:=0 to sobj^.childcount-1 do
       begin
-        if lobj^.children^[j].asInteger=aid then
-          aobj:=lobj;
-        break;
+        // for object group
+        if sobj^.children^[lchilds].Name='OBJECT GROUP' then
+        begin
+          gobj:=@sobj^.children^[lchilds];
+          
+          // for all objects
+          for i:=0 to gobj^.childcount-1 do
+          begin
+            lobj:=@gobj^.children^[i];
+            // get object ID
+            for j:=0 to lobj^.childcount-1 do
+            begin
+              if CompareWide(lobj^.children^[j].Name,'ID') then
+              begin
+                if lobj^.children^[j].asInteger=aid then
+                begin
+                  aobj:=lobj;
+                  goto GotIt;
+                end;
+                break;
+              end;
+            end;
+          end;
+
+          break;
+        end;
       end;
     end;
-    if aobj<>nil then break;
   end;
-  for i:=0 to aobj^.childcount-1 do
-  begin
-    if CompareWide(aobj^.children^[i].Name,'NAME') then
+
+GotIt:
+
+  if aobj<>nil then
+    for i:=0 to aobj^.childcount-1 do
     begin
-      result:=aobj^.children^[i].asString;
-      exit;
+      if CompareWide(aobj^.children^[i].Name,'NAME') then
+      begin
+        result:=aobj^.children^[i].asString;
+        exit;
+      end;
     end;
-  end;
 
   Str(aid,lsw);
   numbuffer:=lsw;
@@ -134,15 +164,22 @@ end;
 
 procedure DoParseBlock(var anode:PTL2Node; var aptr:pByte; const aparent:Int64);
 var
-  llnode,lnk,bnode,lobj,lnode:PTL2Node;
+  bnode,lobj,lnode:PTL2Node;
+
+  ltltype:integer;
+  tlnode:PTL2Node;
+
+  tldata,tlobject,tlpoint:PTL2Node;
+  ltlobjs,ltlprops,ltlpoints:integer;
+
+  lgroup,lglnk,lgobj:PTL2Node;
+  lgroups,lglinks:integer;
+
   ch :TLayChunkHeader;
   sch:TLaySubChunkHeader;
   pname,pcw:PWideChar;
-  lsize,llcnt,i,j,lcnt:integer;
-  lint:integer;
-  lfloat:single;
-  ldouble:double;
-  lint64:int64;
+  lsize,i,j,k,lcnt:integer;
+
   laptr,llptr:pbyte;
 begin
   bnode:=AddGroup(anode,'BASEOBJECT');
@@ -169,11 +206,11 @@ begin
 
   //--- Properties
 
-  lcnt:=ReadByte(aptr); // ?? count?
+  lcnt:=ReadByte(aptr);
   for i:=0 to lcnt-1 do
   begin
     laptr:=aptr;
-    sch.asize:=ReadWord(aptr);
+    sch.asize:=ReadWord(aptr); // 
     if sch.asize=0 then
     begin
 writeln('size=0');
@@ -181,90 +218,136 @@ writeln('size=0');
     end;
     sch.atype:=ReadByte(aptr);
     case GetPropInfo(lobj,sch.atype,pname) of
-      ntBool: begin
-		    lint:=ReadInteger(aptr);
-        AddBool(lnode,pname,lint<>0);
-      end;
-      ntInteger: begin
-		    lint:=ReadInteger(aptr);
-		    AddInteger(lnode,pname,lint);
-      end;
-      ntUnsigned: begin
-		    lint:=ReadInteger(aptr);
-		    AddUnsigned(lnode,pname,lint);
-      end;
-      ntFloat: begin
-		    lfloat:=ReadFloat(aptr);
-		    AddFloat(lnode,pname,lfloat);
-      end;
-      ntDouble: begin
-		    ldouble:=ReadDouble(aptr);
-		    AddDouble(lnode,pname,ldouble);
-      end;
-      ntInteger64: begin
-		    lint64:=ReadInteger64(aptr);
-		    AddInteger64(lnode,pname,lint64);
-      end;
+      ntBool     : AddBool     (lnode,pname,ReadInteger  (aptr)<>0);
+      ntInteger  : AddInteger  (lnode,pname,ReadInteger  (aptr));
+      ntUnsigned : AddUnsigned (lnode,pname,ReadDWord    (aptr));
+      ntFloat    : AddFloat    (lnode,pname,ReadFloat    (aptr));
+      ntDouble   : AddDouble   (lnode,pname,ReadDouble   (aptr));
+      ntInteger64: AddInteger64(lnode,pname,ReadInteger64(aptr));
       ntString: begin
 		    pcw:=ReadShortString(aptr);
 		    AddText(lnode,pname,pcw,ntString);
 		    FreeMem(pcw);
       end;
       ntVector: begin
-        lfloat:=ReadFloat(aptr);
-        AddFloat(lnode,PWideChar(WideString(pname)+'X'),lfloat);
-        lfloat:=ReadFloat(aptr);
-        AddFloat(lnode,PWideChar(WideString(pname)+'Y'),lfloat);
-        lfloat:=ReadFloat(aptr);
-        AddFloat(lnode,PWideChar(WideString(pname)+'Z'),lfloat);
+        AddFloat(lnode,PWideChar(WideString(pname)+'X'),ReadFloat(aptr));
+        AddFloat(lnode,PWideChar(WideString(pname)+'Y'),ReadFloat(aptr));
+        AddFloat(lnode,PWideChar(WideString(pname)+'Z'),ReadFloat(aptr));
       end;
     else
-writeln(HexStr(laptr-_filestart,8),' prop type ',sch.atype,' size ',sch.asize);
-    inc(aptr,sch.asize-1);
+writeln(HexStr(laptr-_filestart,8),' obj type ',ch.atype,'; prop type ',sch.atype,' size ',sch.asize);
+      inc(aptr,sch.asize-1);
     end;
   end;
 
-  //--- Logic group
-
-  lsize:=ReadInteger(aptr); //!!
+  lsize:=ReadInteger(aptr); //!! exclude, plus 2
   if lsize>0 then
   begin
-    lcnt:=ReadByte(aptr);
-    writeln('size = ',lsize,'; count=',lcnt);
-    lnode:=AddGroup(lnode,'LOGICGROUP');
-    for i:=0 to lcnt-1 do
-    begin
-      llnode:=AddGroup(lnode,'LOGICOBJECT');
-      lint:=ReadByte(aptr);
-      AddUnsigned(llnode,'ID',lint);
-      lint64:=ReadInteger64(aptr);
-      AddInteger64(llnode,'OBJECTID',lint64);
-      lfloat:=ReadFloat(aptr);
-      AddFloat(llnode,'X',lfloat);
-      lfloat:=ReadFloat(aptr);
-      AddFloat(llnode,'Y',lfloat);
-      lsize:=ReadInteger(aptr); //!!
 
-      llcnt:=ReadByte(aptr);
-      for j:=0 to llcnt-1 do
+  //--- Timeline
+    if ch.atype = IdTimeline then
+    begin
+      tldata:=AddGroup(lnode,'TIMELINEDATA');
+      AddInteger64(tldata,'ID',ch.id);
+      ltlobjs:=ReadByte(aptr);
+      for i:=0 to ltlobjs-1 do
       begin
-        lnk:=AddGroup(llnode,'LOGICLINK');
-        lint:=ReadByte(aptr);
-        AddInteger(lnk,'LINKINGTO',lint);
-        pcw:=ReadShortString(aptr);
-        AddText(lnk,'OUTPUTNAME',pcw,ntString);
-        FreeMem(pcw);
-        pcw:=ReadShortString(aptr);
-        AddText(lnk,'INPUTNAME',pcw,ntString);
-        FreeMem(pcw);
+        tlobject:=AddGroup(tldata,'TIMELINEOBJECT');
+        AddInteger64(tlobject,'OBJECTID',ReadInteger64(aptr));
+        
+        ltlprops:=ReadByte(aptr);
+        for j:=0 to ltlprops-1 do
+        begin
+          ltltype:=0;
+          laptr:=aptr;
+
+          // Property
+          pcw:=ReadShortString(aptr);
+          if pcw<>nil then
+          begin
+            ltltype:=1;
+            tlnode:=AddGroup(tlobject,'TIMELINEOBJECTPROPERTY');
+            AddText(tlnode,'OBJECTPROPERTYNAME',pcw,ntString);
+            FreeMem(pcw);
+          end;
+          // Event
+          pcw:=ReadShortString(aptr);
+          if pcw<>nil then
+          begin
+            if ltltype<>0 then
+            begin
+writeln('Double Timeline type at ',HexStr(aptr-_filestart,8));
+            end;
+            ltltype:=2;
+            tlnode:=AddGroup(tlobject,'TIMELINEOBJECTEVENT');
+            AddText(tlnode,'OBJECTEVENTNAME',pcw,ntString);
+            FreeMem(pcw);
+          end;
+
+          if ltltype=0 then
+          begin
+writeln('Unknown Timeline type at ',HexStr(laptr-_filestart,8));
+            continue;
+          end;
+
+          ltlpoints:=ReadByte(aptr);
+          for k:=0 to ltlpoints-1 do
+          begin
+//writeln('point ',k);
+            tlpoint:=AddGroup(tlnode,'TIMELINEPOINT');
+            AddFloat(tlpoint,'TIMEPERCENT',ReadFloat(aptr));
+            case ReadByte(aptr) of
+              0: AddText(tlpoint,'INTERPOLATION','Linear'           ,ntString);
+              1: AddText(tlpoint,'INTERPOLATION','Linear Round'     ,ntString);
+              2: AddText(tlpoint,'INTERPOLATION','Linear Round Down',ntString);
+              3: AddText(tlpoint,'INTERPOLATION','Linear Round Up'  ,ntString);
+              4: AddText(tlpoint,'INTERPOLATION','No interpolation' ,ntString);
+              5: AddText(tlpoint,'INTERPOLATION','Quaternion'       ,ntString);
+              6: AddText(tlpoint,'INTERPOLATION','Spline'           ,ntString);
+            end;
+            if ltltype=1 then
+            begin
+              pcw:=ReadShortString(aptr);
+//writeln('point value ',string(widestring(pcw)));
+              AddText(tlpoint,'VALUE',pcw,ntString);
+              FreeMem(pcw);
+            end;
+          end;
+        end;
       end;
     end;
+
+    //--- Logic group
+    if ch.atype = idLogicGroup then
+    begin
+      lgroups:=ReadByte(aptr);
+      lgroup:=AddGroup(lnode,'LOGICGROUP');
+      for i:=0 to lgroups-1 do
+      begin
+        lgobj:=AddGroup(lgroup,'LOGICOBJECT');
+        AddUnsigned (lgobj,'ID'      ,ReadByte     (aptr));
+        AddInteger64(lgobj,'OBJECTID',ReadInteger64(aptr));
+        AddFloat    (lgobj,'X'       ,ReadFloat    (aptr));
+        AddFloat    (lgobj,'Y'       ,ReadFloat    (aptr));
+
+        lsize:=ReadInteger(aptr); //!!
+
+        lglinks:=ReadByte(aptr);
+        for j:=0 to lglinks-1 do
+        begin
+          lglnk:=AddGroup(lgobj,'LOGICLINK');
+          AddInteger(lglnk,'LINKINGTO',ReadByte(aptr));
+          pcw :=ReadShortString(aptr); AddText(lglnk,'OUTPUTNAME',pcw,ntString); FreeMem(pcw);
+          pcw :=ReadShortString(aptr); AddText(lglnk,'INPUTNAME' ,pcw,ntString); FreeMem(pcw);
+        end;
+      end;
+    end;
+
   end;
 
   //--- Children
 
   lcnt:=ReadWord(aptr);
-writeln('child ',lcnt);
   if lcnt>0 then
   begin
     lnode:=AddGroup(bnode,'CHILDREN');
@@ -294,7 +377,7 @@ begin
     llayver:=ReadByte(lptr); // Layout version
     AddInteger(slout,'VERSION',llayver);
     lc:=AddUnsigned(slout,'COUNT',0);
-    ReadDWord(lptr); // ofs?? of what?!
+    ReadDWord(lptr); // offset
     lcnt:=ReadWord (lptr); // root baseobject count
     lobj:=AddGroup(slout,'OBJECTS');
     for i:=0 to lcnt-1 do
@@ -357,7 +440,6 @@ end;
 
 begin
   tags:=ParseDatFile('objects.dat');
-  sobj:=FindNode(tags,'SCENE\OBJECT GROUP\');
   if ParamCount=0 then
     cycleDir('.')
   else

@@ -1,0 +1,42 @@
+recognize by directory?
+	
+	[SCENE]
+		<STRING>NAME:Scratch Pad
+		<UNSIGNED INT>ID:0
+	[SCENE]
+		<STRING>NAME:Particle Creator
+		<UNSIGNED INT>ID:1
+	[SCENE]
+		<STRING>NAME:UI  -- 54
+		<UNSIGNED INT>ID:2
+	[SCENE]
+		<STRING>NAME:Layout  -- 4
+		<UNSIGNED INT>ID:3
+
+
+=============
+Sound, id:103 - <STRING>GUID
+=============
+Stat(84), id:65 - <STRING>STAT STATIC ONE:PLAYER SKILL PTS TO SPEND
+
+descriptor = text
+TEXT: bla-bla -> Translate
+<STRING>CATEGORY:TEXT FIELDS TO CHANGE
+
+				[PROPERTY]
+					<STRING>NAME:TOOL TIP
+					<STRING>DESCRIPTION:The tool tip of this window.
+					<STRING>TYPEOFDATA:STRING
+					<INTEGER>ID:35
+					<STRING>CATEGORY:ADVANCED
+					<STRING>EDITORTYPE:newlinelist
+				[/PROPERTY]
+
+								[PROPERTY]
+					<STRING>NAME:TEXT
+					<STRING>DESCRIPTION:The text that will appear.
+					<STRING>TYPEOFDATA:STRING
+					<INTEGER>ID:65
+					<STRING>CATEGORY:TEXT
+					<STRING>EDITORTYPE:uitext
+				[/PROPERTY]
