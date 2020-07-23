@@ -74,7 +74,7 @@ type
     property Name  :string read FName;
     property Prefix:string read FPrefix;
     property Suffix:string read FSuffix;
-    property ID    :TL2ID  read FItemId;
+    property ID    :TL2ID  read FItemId write FItemId;
 
     property IsProp:boolean   read FIsProp write FIsProp;
     property ModIds:TL2IdList read FModIds write FModIds;
@@ -388,11 +388,11 @@ end;
 function TTL2Item.CheckForMods(alist:TTL2ModList):boolean;
 var
   llist:TL2IdList;
-  lmodid:TL2ID;
+  lid,lmodid:TL2ID;
   lmods:string;
   i:integer;
 begin
-  result:=true;
+  result:=false;
 
   // 1 - Check for unmodded
   if ModIds=nil then
@@ -401,6 +401,8 @@ begin
   if alist<>nil then
   begin
     // 2 - Check for item mod in mod list
+    // check: item mod from savegame is in global savegame mod list
+    // remove additional (theoretically) item mods which not presents as global
     llist:=nil;
     for i:=0 to High(ModIds) do
     begin
@@ -411,25 +413,58 @@ begin
       end;
     end;
     if Length(llist)<>Length(ModIds) then
+    begin
       ModIds:=llist;
+      result:=true;
+      Changed:=true;
+    end;
     if Length(llist)>0 then exit;
 
     // 3 - item have mod list but not in savegame mod list, trying to add/replace
-//    lmods:=GetTextValue(id,'items','modid');
-    GetTL2Item(id,lmods);
+    // (!!ModId must be nil already!!)
+    lmods:=GetItemMods(id);
     lmodid:=IsInModList(lmods, alist);
     if lmodid<>TL2IdEmpty then
     begin
-      llist:=ModIds;
-      SetLength(llist,Length(llist)+1);
-      llist[High(llist)]:=lmodid;
-      ModIds:=llist;
+      if lmodid=0 then
+        ModIds:=nil
+      else
+      begin
+        llist:=ModIds;
+        SetLength(llist,Length(llist)+1);
+        llist[High(llist)]:=lmodid;
+        ModIds:=llist;
+      end;
+      result:=true;
       Changed:=true;
       exit;
     end;
   end;
 
   // 4 - replace one item by another
+  // savegame mod list is empty OR
+  // no common mods between item and savegame
+  // !! what about item name ??
+  lmodid:=GetAlt(id,alist,lid);
+//writeln('id:', id,'; new id:',lid,'; mod id:',lmodid);
+  if lmodid<>TL2IdEmpty then
+  begin
+    if lid<>id then
+    begin
+      id:=lid;
+      if lmodid=0 then ModIds:=nil
+      else
+      begin
+        SetLength(llist,1);
+        llist[0]:=lmodid;
+        ModIds:=llist;
+      end;
+    end;
+    result:=true;
+    Changed:=true;
+    exit;
+  end;
+
 end;
 
 end.

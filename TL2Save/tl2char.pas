@@ -358,10 +358,10 @@ begin
   AStream.ReadCoord;   // Forward
   AStream.ReadDWord;   // 0
 
-  AStream.ReadCoord;   // Up
+  AStream.ReadCoord;   // Up or Right
   AStream.ReadDWord;   // 0
   
-  AStream.ReadCoord;   // Right
+  AStream.ReadCoord;   // Right or Up
   AStream.ReadDWord;   // 0
 
   AStream.ReadDWord;   // 0  \

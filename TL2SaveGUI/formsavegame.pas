@@ -15,6 +15,7 @@ type
   { TfmSaveFile }
 
   TfmSaveFile = class(TForm)
+    acfFileFixModded: TAction;
     ActionList: TActionList;
     actFileExit  : TAction;
     actFileOpen  : TAction;
@@ -23,6 +24,7 @@ type
     actFileCheat : TAction;
     ImageList: TImageList;
     MainMenu: TMainMenu;
+    mnuFileFixModded: TMenuItem;
     mnuFile: TMenuItem;
     mnuFileOpen  : TMenuItem;
     mnuFileSave  : TMenuItem;
@@ -36,6 +38,7 @@ type
     Splitter: TSplitter;
     tvSaveGame: TTreeView;
 
+    procedure acfFileFixModdedExecute(Sender: TObject);
     procedure actFileExitExecute(Sender: TObject);
     procedure actFileOpenExecute(Sender: TObject);
     procedure actFileReloadExecute(Sender: TObject);
@@ -341,6 +344,15 @@ begin
   if SGame<>nil then
   begin
     SGame.ClearCheat;
+    tvSaveGameSelectionChanged(Sender);
+  end;
+end;
+
+procedure TfmSaveFile.acfFileFixModdedExecute(Sender: TObject);
+begin
+  if SGame<>nil then
+  begin
+    SGame.FixModdedItems;
     tvSaveGameSelectionChanged(Sender);
   end;
 end;

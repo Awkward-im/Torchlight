@@ -81,7 +81,7 @@ type
     FStatLevelUp:tStatLevelUpArray; // array [0..30] of byte;
     FStatArea1  :TTL2StringValList;
     FStatArea2  :TTL2StringValList;
-    FStatStats  :TL2IdValList;
+    FStatKillers:TL2IdValList;
 
     FUnkn    :DWord;
     FUnkn17  :array [0..16] of byte;
@@ -102,7 +102,7 @@ type
     property LevelUp:tStatLevelUpArray read FStatLevelUp;
     property Area1  :TTL2StringValList read FStatArea1;
     property Area2  :TTL2StringValList read FStatArea2;
-    property Stats  :TL2IdValList      read FStatStats;
+    property Killers:TL2IdValList      read FStatKillers;
   end;
 
 function ReadLastBlock(AStream:TTL2Stream):TTL2Stats;
@@ -135,7 +135,7 @@ begin
   SetLength(FStatLevelUp,0);
   SetLength(FStatArea1  ,0);
   SetLength(FStatArea2  ,0);
-  SetLength(FStatStats  ,0);
+  SetLength(FStatKillers,0);
 end;
 
 procedure TTL2Stats.Clear;
@@ -249,14 +249,20 @@ begin
 
   AStream.Read(FUnkn9[0],9);
 {
-  //?? byte, word, dword (word+word), word
-  AStream.ReadDword; // 03 00 00 00  | 01 00 00 18
-  AStream.ReadDWord; // 00 00 00 06  | 00 00 00 00
-  AStream.ReadByte;  // 00           | 00
+  ## | < 0 > | < 1 > | < 2 > | < 3 > |
+  00 | 01 00 | 00 00 | 00 00 | 00 00 | zero
+  00 | 0F 00 | 03 00 | 00 00 | 00 00 | Zorro (cheat)
+  02 | 00 00 | 00 00 | 08 00 | 00 00 | ElTheo
+  02 | 09 00 | 00 00 | 0A 00 | 00 00 | Timon
+  01 | 00 00 | 18 00 | 00 00 | 00 00 | Lonelfly 24
+  01 | 00 00 | 23 00 | 00 00 | 00 00 | Elfly    35
+  03 | 00 00 | 00 00 | 00 00 | 02 00 | Archer
+  02 | 00 00 | 00 00 | 05 00 | 00 00 | Tenebris
+  02 | 00 00 | 00 00 | 01 00 | 0C 00 | ElPro
 }
-  //----- ?? [Mob] stats -----
+  //----- Player killers -----
 
-  FStatStats:=AStream.ReadIdValList;
+  FStatKillers:=AStream.ReadIdValList;
 
   FUnknLast:=Check(AStream.ReadDWord,'pre-end',0);
 
@@ -327,9 +333,9 @@ begin
 
   AStream.Write(FUnkn9[0],9);
 
-  //----- ?? [Mob] stats -----
+  //----- Player killers -----
 
-  AStream.WriteIdValList(FStatStats);
+  AStream.WriteIdValList(FStatKillers);
 
   AStream.WriteDWord(FUnknLast);
 

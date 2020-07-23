@@ -134,7 +134,6 @@ var
   vm:pointer;
 begin
   result:='';
-
   if db<>nil then
   begin
     Str(aid,lSQL);
@@ -361,7 +360,7 @@ var
 begin
   result:=true;
 
-  if alist=' 0 ' then exit;
+  if alist=TL2GameID then exit;
 
   Str(aid,ls);
   if Pos(' '+ls+' ',alist)<=0 then
@@ -373,7 +372,7 @@ var
   ls:string;
   i:integer;
 begin
-  if alist=' 0 ' then
+  if alist=TL2GameID then
   begin
     result:=0;
     exit;

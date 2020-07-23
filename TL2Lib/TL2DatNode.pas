@@ -635,7 +635,8 @@ var
   larr:array [0..127] of WideChar;
   ls:WideString;
   pc:PWideChar;
-  i,j,k,llen:integer;
+  i,j,llen:integer;
+//  k:integer;
 begin
   result:=true;
 
