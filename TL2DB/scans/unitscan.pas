@@ -1,4 +1,27 @@
 {$I-}
+unit unitscan;
+
+interface
+
+function PrepareScan(
+    const apath:string;
+    aupdateall:boolean=false;
+    const aroot:string=''):boolean;
+procedure FinishScan;
+
+
+function ScanPets:integer;
+function ScanQuests:integer;
+function ScanMobs:integer;
+function ScanItems:integer;
+function ScanProps:integer;
+function ScanRecipes:integer;
+function ScanStats:integer;
+function ScanSkills:integer;
+function ScanClasses:integer;
+
+implementation
+
 uses
   sqlite3
   ,awkSQLite3
@@ -11,7 +34,8 @@ const
   GameRoot = 'G:\Games\Torchlight 2\';
 
 var
-  smodid:string;
+  DoUpdate:boolean;
+  RootDir,ScanDir,smodid:string;
   db:PSQLite3;
 
 type
@@ -54,12 +78,12 @@ begin
   until false;
 end;
 
-function CheckForMod(const atable,anid,amodid:string):boolean;
+function CheckForMod(const atable,anid,amodid:string):string;
 var
   lSQL,lmodid:string;
   vm:pointer;
 begin
-  result:=false;
+  lmodid:='';
   lSQL:='SELECT modid FROM '+atable+' WHERE id='+anid;
   if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
   begin
@@ -68,7 +92,6 @@ begin
       lmodid:=sqlite3_column_text(vm,0);
       if lmodid<>'' then
       begin
-        result:=true;
         if (lmodid <> ' 0 ') and
            (Pos(' '+amodid+' ',lmodid)=0) then
         begin
@@ -82,6 +105,7 @@ begin
     end;
     sqlite3_finalize(vm);
   end;
+  result:=lmodid;
 end;
 
 //----- Pet -----
@@ -102,12 +126,15 @@ type
 
 function AddPetToBase(var apet:tpetinfo):boolean;
 var
-  lSQL,lscale:string;
+  lmodid,lSQL,lscale:string;
   vm:pointer;
 begin
-  result:=CheckForMod('pets', aPet.id, smodid);
-  if not result then
+  lmodid:=CheckForMod('pets', aPet.id, smodid);
+  if DoUpdate or (lmodid='') then
   begin
+    if lmodid='' then lmodid:=' '+smodid+' '
+    else ; // 'delete from pets where id='+aPet.id
+
     Str(aPet.Scale:0:2,lscale);
 
     lSQL:='INSERT INTO pets (id, name, title, type, scale, skins, icon, '+
@@ -115,7 +142,7 @@ begin
         aPet.id+', '+FixedText(apet.name)+', '+FixedText(apet.title)+', '+
         IntToStr(apet.atype)+', '+lscale+', '+IntToStr(apet.textures)+
         ', '+FixedText(apet.icon)+', '''+apet.gr_hp+''', '''+apet.gr_armor+''', '''+apet.gr_dmg+
-        ''', '' '+smodid+' '')';
+        ''', '''+smodid+''')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -495,7 +522,7 @@ begin
   p:=ParseDatFile(PChar(fname));
   if p=nil then
   begin
-    p:=ParseDatFile(PChar(GameRoot+fname));
+    p:=ParseDatFile(PChar(RootDir+fname));
     if p=nil then
     begin
       writeln('can''t load: ',fname);
@@ -533,7 +560,7 @@ begin
   p:=ParseDatFile(PChar(fname));
   if p=nil then
   begin
-    p:=ParseDatFile(PChar(GameRoot+fname));
+    p:=ParseDatFile(PChar(RootDir+fname));
     if p=nil then
     begin
       writeln('can''t load: ',fname);
@@ -1103,15 +1130,15 @@ end;
 
 procedure AddTheMod();
 var
-  lSQL,lid:string;
+  lSQL:string;
   vm:pointer;
   lver:integer;
   lmod:TTL2ModInfo;
 begin
   if ReadModInfo('MOD.DAT',lmod) then
   begin
-    lid :=IntToStr(lmod.modid);
-    lSQL:='SELECT version FROM Mods WHERE id='+lid;
+    smodid :=IntToStr(lmod.modid);
+    lSQL:='SELECT version FROM Mods WHERE id='+smodid;
     lver:=0;
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -1123,12 +1150,12 @@ begin
     if lver<>0 then
     begin
       if lmod.modver>=lver then exit;
-      lSQL:='UPDATE Mods SET version='+IntToStr(lmod.modver)+' WHERE id='+lid;
+      lSQL:='UPDATE Mods SET version='+IntToStr(lmod.modver)+' WHERE id='+smodid;
     end
     else
     begin
       lSQL:='INSERT INTO Mods (id,title,version,gamever,author,descr,website,download) '+
-            ' VALUES ('+lid+', '+FixedText(lmod.title)+', '+IntToStr(lmod.modver)+
+            ' VALUES ('+smodid+', '+FixedText(lmod.title)+', '+IntToStr(lmod.modver)+
             ', '+IntToStr(lmod.gamever)+', '+FixedText(lmod.author)+', '+FixedText(lmod.descr)+
             ', '+FixedText(lmod.website)+', '+FixedText(lmod.download)+')';
     end;
@@ -1138,102 +1165,100 @@ begin
       sqlite3_finalize(vm);
     end;
   end;
+  smodid:='';
 end;
 
 //===== Body =====
 
-var
-  p,pp:PTL2Node;
-  ls:string;
-  modid:int64;
-  lcnt:integer;
+function ScanPets:integer;
 begin
-  lcnt:=ParamCount();
-  ls:=ParamStr(1);
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\UNITS\MONSTERS\PETS'           ,@AddPet);
+  CycleDir(ScanDir+'MEDIA\UNITS\MONSTERS\WARBOUNDS'      ,@AddPet);
+  CycleDir(ScanDir+'MEDIA\UNITS\MONSTERS\BROTHER-IN-ARMS',@AddPet);
+end;
 
+function ScanQuests:integer;
+begin
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\QUESTS',@AddQuest);
+end;
+
+function ScanMobs:integer;
+begin
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\UNITS\MONSTERS',@AddMob);
+end;
+
+function ScanItems:integer;
+begin
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\UNITS\ITEMS',@AddItem);
+end;
+
+function ScanProps:integer;
+begin
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\UNITS\PROPS',@AddProp);
+end;
+
+function ScanRecipes:integer;
+begin
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\RECIPES',@AddRecipe);
+end;
+
+function ScanStats:integer;
+begin
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\STATS',@AddStat);
+end;
+
+function ScanSkills:integer;
+begin
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\SKILLS',@AddSkill);
+end;
+
+function ScanClasses:integer;
+begin
+  result:=0;
+  CycleDir(ScanDir+'MEDIA\UNITS\PLAYERS',@AddPlayer);
+end;
+
+
+function PrepareScan(
+    const apath:string;
+    aupdateall:boolean=false;
+    const aroot:string=''):boolean;
+begin
   AddTheMod();
+  result:=smodid<>'';
+  if not result then exit;
 
-  p:=ParseDatFile('MOD.DAT');
-  pp:=FindNode(p,'MOD_ID');
-  modid:=pp^.asInteger64;
-  DeleteNode(p);
+  DoUpdate:=aupdateall;
 
-  Str(modid,smodid);
+  ScanDir:=apath;
+  if ScanDir[Length(ScanDir)]<>'\' then
+    ScanDir:=ScanDir+'\';
+
+  if aroot<>'' then
+  begin
+    RootDir:=aroot;
+    if RootDir[Length(RootDir)]<>'\' then
+      RootDir:=RootDir+'\';
+  end
+  else
+    RootDir:=GameRoot;
 
   sqlite3_open(':memory:',@db);
-  if CopyFromFile(db,'tl2db2.db')<>SQLITE_OK then
-  begin
-    writeln('can''t open');
-    exit;
-  end;
-//  sqlite3_exec(db,'Begin Transaction',nil,nil,nil);
+  result:=CopyFromFile(db,'tl2db2.db')=SQLITE_OK;
+end;
 
-  // Pets
-  if (lcnt=0) or (ls='pets') then
-  begin
-    writeln('Go pets!');
-    CycleDir('MEDIA\UNITS\MONSTERS\PETS'           ,@AddPet);
-    CycleDir('MEDIA\UNITS\MONSTERS\WARBOUNDS'      ,@AddPet);
-    CycleDir('MEDIA\UNITS\MONSTERS\BROTHER-IN-ARMS',@AddPet);
-  end;
-
-  // Quests
-  if (lcnt=0) or (ls='quests') then
-  begin
-    writeln('Go quests!');
-    CycleDir('MEDIA\QUESTS',@AddQuest);
-  end;
-
-  // Stats
-  if (lcnt=0) or (ls='stats') then
-  begin
-    writeln('Go stats!');
-    CycleDir('MEDIA\STATS',@AddStat);
-  end;
-
-  // Recipes
-  if (lcnt=0) or (ls='recipes') then
-  begin
-    writeln('Go recipes!');
-    CycleDir('MEDIA\RECIPES',@AddRecipe);
-  end;
-
-  // Mobs
-  if (lcnt=0) or (ls='mobs') then
-  begin
-    writeln('Go mobs!');
-    CycleDir('MEDIA\UNITS\MONSTERS',@AddMob);
-  end;
-
-  // Items
-  if (lcnt=0) or (ls='items') then
-  begin
-    writeln('Go items!');
-    CycleDir('MEDIA\UNITS\ITEMS',@AddItem);
-  end;
-
-  // Props
-  if (lcnt=0) or (ls='props') then
-  begin
-    writeln('Go props!');
-    CycleDir('MEDIA\UNITS\PROPS',@AddProp);
-  end;
-
-  // Skills
-  if (lcnt=0) or (ls='skills') then
-  begin
-    writeln('Go skills!');
-    CycleDir('MEDIA\SKILLS',@AddSkill);
-  end;
-
-  // Classes
-  if (lcnt=0) or (ls='classes') then
-  begin
-    writeln('Go classes!');
-    CycleDir('MEDIA\UNITS\PLAYERS',@AddPlayer);
-  end;
-
-//  sqlite3_exec(db,'End Transaction',nil,nil,nil);
+procedure FinishScan;
+begin
   CopyToFile(db,'tl2db2.db');
   sqlite3_close(db);
+end;
+
 end.

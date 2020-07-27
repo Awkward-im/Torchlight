@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="scanall.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="14" Y="13"/>
+        <UsageCount Value="22"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formscanall.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmScan"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formScanAll"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="31"/>
+        <CursorPos Y="55"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitscan.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1140"/>
+        <CursorPos X="29" Y="1154"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\TL2Lib\TL2DatNode.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="21"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\TL2Lib\TL2ModInfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="21"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\utils\SQL\awkSQLite3.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="27">
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Column="17"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="135" Column="14" TopLine="108"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="8"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="61" Column="39" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="63" Column="39" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="58" Column="30" TopLine="46"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="67" Column="36" TopLine="47"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="69" Column="72" TopLine="48"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="43" Column="20" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="30"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1233" Column="12" TopLine="1219"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1129" TopLine="1122"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1177" Column="5" TopLine="1148"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1164" Column="14" TopLine="1143"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1215" Column="3" TopLine="1215"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="34" Column="11" TopLine="10"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="522" Column="28" TopLine="497"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="559" Column="28" TopLine="535"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="34" Column="3" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1220" Column="17" TopLine="1220"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="37" Column="15" TopLine="16"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1231" Column="12" TopLine="1202"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="27" Column="4" TopLine="12"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1154" Column="29" TopLine="1140"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="58" Column="28" TopLine="41"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>
