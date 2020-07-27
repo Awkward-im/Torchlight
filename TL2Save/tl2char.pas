@@ -8,6 +8,7 @@ uses
   tl2common,
   tl2types,
   tl2base,
+  tl2active,
   tl2effects,
   tl2item;
 
@@ -22,7 +23,7 @@ type
   TTL2SpellList = array [0..3] of TTL2Spell;
 
 type
-  TTL2Character = class(TL2BaseClass)
+  TTL2Character = class(TL2ActiveClass)
   private
     procedure InternalClear;
 
@@ -36,7 +37,6 @@ type
     procedure SaveToStream  (AStream: TTL2Stream); override;
 
   private
-    FSign           :Byte;
     FSign1          :Byte;
     FSign2          :Byte;
     FIsChar         :boolean;
@@ -45,11 +45,9 @@ type
     FWardrobe       :TL2Boolean;
 
     // Pet's corner
-    FMorphId,
-    FClassId        :TL2ID;
+    FMorphId        :TL2ID;
     FScale          :TL2Float;
     FSkin           :Byte;
-    FEnabled        :TL2Boolean;
     FMorphTime      :TL2Float;
     FTownTime       :TL2Float;
     FAction         :TTL2Action;
@@ -64,7 +62,6 @@ type
     FUnkn7          :array [0..23] of byte;
     FUnkn17         :DWord;
     FUnkn9          :QWord;
-    FUnkn10         :array [0..63] of byte;
     FUnkn11         :DWord;
     FUnkn12         :array [0..11] of byte;
     FUnkn13         :TL2Float;
@@ -80,10 +77,6 @@ type
     FPlayer         :string;
 
     // looks like common
-    FName           :string;
-    FSuffix         :string;
-    FPosition       :TL2Coord;
-    FLevel          :integer;
     FExperience     :integer;
     FFameLevel      :integer;
     FFameExp        :integer;
@@ -101,7 +94,7 @@ type
     FGold           :integer;
     FSkills         :TL2IdValList;
     FSpells         :TTL2SpellList;
-    FModIds         :TL2IdList;
+    FItems          :TTL2ItemList;
 
     // buttons
     FRMB1 :TL2ID;
@@ -110,30 +103,21 @@ type
     FARMB1:TL2ID;
     FARMB2:TL2ID;
     FALMB :TL2ID;
-    
-    FItems          :TTL2ItemList;
-    FEffects1       :TTL2EffectList;
-    FEffects2       :TTL2EffectList;
-    FEffects3       :TTL2EffectList;
-    FAugments       :TL2StringList;
-    FStats          :TL2IdValList;
 
+    function  GetDBMods():string; override;
     function  GetStat(const iname:string):TL2Integer;
     procedure SetStat(const iname:string; aval:TL2Integer);
     function  GetSpell(idx:integer):TTL2Spell;
     procedure SetSpell(idx:integer; const aspell:TTL2Spell);
   public
+    function CheckForMods(alist:TTL2ModList):boolean;
+
     property Action:TTL2Action read FAction write FAction;
     property IsChar         :boolean  read FIsChar;
     property IsPet          :boolean  read FIsPet;
-    property Sign           :Byte     read FSign;
     property Sign1          :Byte     read FSign1;
     property Sign2          :Byte     read FSign2;
-    property Enabled        :ByteBool read FEnabled         write FEnabled;
-    property ClassId        :TL2ID    read FClassId         write FClassId;
     property MorphId        :TL2ID    read FMorphId         write FMorphId;
-    property Name           :string   read FName            write FName;
-    property Suffix         :string   read FSuffix          write FSuffix;
     property Player         :string   read FPlayer          write FPlayer;
     property MorphTime      :TL2Float read FMorphTime       write FMorphTime;
     property TownTime       :TL2Float read FTownTime        write FTownTime;
@@ -141,8 +125,6 @@ type
     property Hairstyle      :integer  read FHairstyle       write FHairstyle;
     property HairColor      :integer  read FHairColor       write FHairColor;
     property Cheater        :byte     read FCheater         write FCheater;
-    property Position       :TL2Coord read FPosition        write FPosition;
-    property Level          :integer  read FLevel           write FLevel;
     property Experience     :integer  read FExperience      write FExperience;
     property FameLevel      :integer  read FFameLevel       write FFameLevel;
     property FameExp        :integer  read FFameExp         write FFameExp;
@@ -161,12 +143,9 @@ type
     property Scale          :TL2Float read FScale           write FScale;
     property Skin           :byte     read FSkin            write FSkin;
 
-    property Stat  [iname:string]:TL2Integer read GetStat  write SetStat;
     property Spells[idx:integer ]:TTL2Spell  read GetSpell write SetSpell;
     property Skills:TL2IdValList read FSkills  write FSkills;
-    property Stats :TL2IdValList read FStats;
     property Items :TTL2ItemList read FItems  {write FItems};
-    property ModIds:TL2IdList    read FModIds  write FModIds;
   end;
 type
   TTL2CharArray = array of TTL2Character;
@@ -200,14 +179,11 @@ var
   i:integer;
 begin
   SetLength(FSkills,0);
-  SetLength(FModIds,0);
+  for i:=0 to High(FItems) do
+    FItems[i].Free;
+  SetLength(FItems,0);
 
-  for i:=0 to High(FItems   ) do FItems   [i].Free;  SetLength(FItems,0);
-  for i:=0 to High(FEffects1) do FEffects1[i].Free;  SetLength(FEffects1,0);
-  for i:=0 to High(FEffects2) do FEffects2[i].Free;  SetLength(FEffects2,0);
-  for i:=0 to High(FEffects3) do FEffects3[i].Free;  SetLength(FEffects3,0);
-  SetLength(FAugments,0);
-  SetLength(FStats,0);
+  inherited;
 end;
 
 procedure TTL2Character.Clear;
@@ -218,6 +194,17 @@ begin
 end;
 
 //----- Properties -----
+
+function TTL2Character.GetDBMods():string;
+begin
+  if FDBMods='' then
+  begin
+    if      FIsChar then FDBMods:=GetClassMods(FID)
+    else if FIsPet  then FDBMods:=GetPetMods(FID)
+    else                 FDBMods:=GetMobMods(FID);
+  end;
+  result:=FDBMods;
+end;
 
 function TTL2Character.GetStat(const iname:string):TL2Integer;
 var
@@ -270,26 +257,33 @@ var
   i:integer;
 //  isPet:boolean;
 begin
+DbgLn('start char');
   DataSize  :=AStream.ReadDWord;
   DataOffset:=AStream.Position;
 
   // signature
   // can be word+byte, can be 3 bytes. last looks like bool
   FSign    :=AStream.ReadByte;  // $FF or 02
-  FSign1   :=AStream.ReadByte;  // 0
-  FSign2   :=AStream.ReadByte;  // 0 or (sometime)
+  FSign1   :=Check(AStream.ReadByte,'sign 1 '+HexStr(AStream.Position,8),0);  // 0
+  FSign2   :=Check(AStream.ReadByte,'sign 2 '+HexStr(AStream.Position,8),0);  // 0 or (sometime)
+  {
+    1 - hidden?
+  }
 	
   FMorphId:=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
-  FClassId:=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
-  if FClassId=TL2IdEmpty then
+  FID     :=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
+  if FID=TL2IdEmpty then
   begin
-    FClassId:=FMorphId;
+    FID     :=FMorphId;
     FMorphId:=TL2IdEmpty;
   end;
 
   FUnkn1:=TL2ID(AStream.ReadQword);    //!! (changing) (F6ED2564.F596F9AA)
 
-  FUnkn2   :=Check(AStream.ReadByte,'pre-wardrobe_'+HexStr(AStream.Position,8),0);
+  FUnkn2:=Check(AStream.ReadByte,'pre-wardrobe_'+HexStr(AStream.Position,8),0);
+{
+  1 for some mobs
+}
   FWardrobe:=AStream.ReadByte<>0;     // not sure but why not?
   if FWardrobe then
   begin
@@ -308,25 +302,39 @@ begin
   end;
   //??
   FUnkn3:=Check(AStream.ReadDWord,'pre-pet enabled_'+HexStr(AStream.Position,8),0);    // 0
+{
+  22 for one NPC
+}
   FEnabled:=AStream.ReadByte<>0; // 1 (pet - enabled)
   //??
   FUnkn4:=Check(AStream.ReadWord,'post-pet enabled_'+HexStr(AStream.Position,8),0);
 {
-  AStream.ReadByte;     // 0
-  AStream.ReadByte;     // 0
+  256 for [quest] boss bloatfang, alpha...
+  1 for invisibleturretmonster, snake Cacklespit
+  AStream.ReadByte;     // 0 ??non-cross
+  AStream.ReadByte;     // 0 ??BOSS??
 }
 
 //  if FWardrobe then //!! YES, i know, i know!!!
   if FIsChar then
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
   //??  :24 for pet, :55 for char
-  FUnkn5:=AStream.ReadByte;     // pet: elfly=4, lonelfly=0, rage=0
+  FUnkn5:=Check(AStream.ReadByte,'after cheat_'+HexStr(AStream.Position,8),0);
+  // pet: elfly=4, lonelfly=0, rage=0
+  {mobs: 0 or 4
+  barricade=6, invturretmonster,statue,
+  }
 
   FMorphTime:=AStream.ReadFloat;   // pet morph time, sec
   FTownTime :=AStream.ReadFloat;   // time to town, sec
   FAction   :=TTL2Action(AStream.ReadDWord);  // 1  (pet status)
   //??
   FUnkn6:=Check(AStream.ReadDWord,'before scale_'+HexStr(AStream.Position,8),1);    // 1
+{
+  0 for horse, frog and snake
+  2 for mobs
+  7 for Barricade, statue
+}
   FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
   //??
   AStream.Read(FUnkn7,24);
@@ -340,35 +348,18 @@ begin
 //  isPet:=(FUnkn17=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
 
   FName  :=AStream.ReadShortString();    // :55(pet) Char name
+DbgLn('name:'+string(widestring(fname)));
   FSuffix:=AStream.ReadShortString();    // like mob title "(Teleporting)"
   if FIsChar{not isPet} then                      // maybe this is "PLAYERMAPICONS" from GLOBALS.DAT?
-    FPlayer:=AStream.ReadShortString();  // "PLAYER" !!!!! not exists for pets!!!!!!
+    FPlayer:=AStream.ReadShortString();  // "PLAYER" (prefix) !!!!! not exists for pets!!!!!!
   //??
   FUnkn9:=AStream.ReadQWord;
 {
   AStream.ReadDWord;    // 0
   AStream.ReadDWord;    // 0 (SEE: Statistic=unknown) elfly=7, rage=2, lonelfly=2, zorro=0
 }
-  FPosition:=AStream.ReadCoord; //!!!!!!!!
+  AStream.Read(FOrientation,SizeOf(FOrientation));
 
-  //??
-  AStream.Read(FUnkn10,64);
-{
-  // direction
-  AStream.ReadCoord;   // Forward
-  AStream.ReadDWord;   // 0
-
-  AStream.ReadCoord;   // Up or Right
-  AStream.ReadDWord;   // 0
-  
-  AStream.ReadCoord;   // Right or Up
-  AStream.ReadDWord;   // 0
-
-  AStream.ReadDWord;   // 0  \
-  AStream.ReadDWord;   // 0  | coord?
-  AStream.ReadDWord;   // 0  /
-  AStream.ReadFloat;   // float=1.0
-}
   FLevel      :=AStream.ReadDWord;    // level
   FExperience :=AStream.ReadDWord;    // exp
   FFameLevel  :=AStream.ReadDWord;    // fame level
@@ -386,7 +377,10 @@ begin
   AStream.ReadDWord;    // 0
 }
   FPlayTime:=AStream.ReadFloat;    // play time, sec
-  FUnkn13:=AStream.ReadFloat;      // 1.0
+  FUnkn13:=Check(AStream.ReadFloat,'afterplaytime',1.0);      // 1.0
+  {
+  barricade,statue,frog=0 (but not snake)
+  }
 
   FFreeStatPoints :=AStream.ReadDWord; // unallocated statpoints ? (elfly have 35 with 30 in fact)
   FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints? (elfly have 28 with 28 in fact)
@@ -480,6 +474,7 @@ begin
     end;
   end;
 
+DbgLn('end char'#13#10'---------');
   LoadBlock(AStream);
 end;
 
@@ -522,13 +517,13 @@ begin
 
   if FMorphId=TL2IdEmpty then
   begin
-    AStream.WriteQWord(QWord(FClassId));
+    AStream.WriteQWord(QWord(FID));
     AStream.WriteQWord(QWord(TL2IdEmpty));
   end
   else
   begin
     AStream.WriteQWord(QWord(FMorphId));
-    AStream.WriteQWord(QWord(FClassId));
+    AStream.WriteQWord(QWord(FID));
   end;
   AStream.WriteQWord(QWord(FUnkn1));    //!! (changing) (F6ED2564.F596F9AA)
 
@@ -570,23 +565,8 @@ begin
   
   AStream.WriteQWord(FUnkn9);
 
-  AStream.WriteCoord(FPosition);
+  AStream.Write(FOrientation,SizeOf(FOrientation));
 
-  // Orientation
-  AStream.Write(FUnkn10,64);
-{
-  AStream.ReadCoord;   // Forward
-  AStream.ReadDWord;   // 0
-  AStream.ReadCoord;   // Right
-  AStream.ReadDWord;   // 0
-  AStream.ReadCoord;   // Up
-  AStream.ReadDWord;   // 0
-
-  AStream.ReadDWord;   // 0
-  AStream.ReadDWord;   // 0
-  AStream.ReadDWord;   // 0
-  AStream.ReadFloat;   // float=1.0
-}
   AStream.WriteDWord(FLevel);        // level
   AStream.WriteDWord(FExperience);   // exp
   AStream.WriteDWord(FFameLevel);    // fame level
@@ -667,6 +647,23 @@ begin
   except
     if IsConsole then writeln('got char exception at ',HexStr(result.DataOffset,8));
     AStream.Position:=result.DataOffset+result.DataSize;
+  end;
+end;
+
+//----- Other -----
+
+function TTL2Character.CheckForMods(alist:TTL2ModList):boolean;
+begin
+  result:=inherited CheckForMods(alist);
+
+  // really, "not char" means "just pet" here
+  // means, ModIds is nil
+  // so, we just replace pet type by one of standard type
+  if not (result or FIsChar) then
+  begin
+    FID:=GetDefaultPet();
+    Changed:=true;
+    result:=true;
   end;
 end;
 

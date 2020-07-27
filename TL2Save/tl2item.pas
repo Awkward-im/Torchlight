@@ -7,6 +7,7 @@ uses
   tl2stream,
   tl2common,
   tl2base,
+  tl2active,
   tl2types,
   tl2Effects;
 
@@ -14,7 +15,7 @@ type
   TTL2Item = class;
   TTL2ItemList = array of TTL2Item;
 type
-  TTL2Item = class(TL2BaseClass)
+  TTL2Item = class(TL2ActiveClass)
   private
     procedure InternalClear;
 
@@ -30,18 +31,13 @@ type
     function CheckForMods(alist:TTL2ModList):boolean;
 
   private
-    FItemId   :TL2ID;
-    FName     :string;
     FPrefix   :string;
-    FSuffix   :string;
 
-    FModIds:TL2IdList;
     FIsProp:boolean;
 
     FEnchantmentCount:integer;
     FStashPosition   :integer;
 
-    FLevel      :integer;
     FStackSize  :integer;
     FSocketCount:integer;
     FSocketables:TTL2ItemList;
@@ -50,55 +46,40 @@ type
     FArmor       :integer;
     FArmorType   :integer;
 
-    FEffects1:TTL2EffectList;
-    FEffects2:TTL2EffectList;
-    FEffects3:TTL2EffectList;
-    FAugments:TL2StringList;
-    FStats   :TL2IdValList;
-
-    FSign:byte;
     FFlags:array [0..6] of byte;
 
     FPosition1:TL2Coord;
-    FPosition2:TL2Coord;
 
     FUnkn1:array [0..23] of byte;
     FUnkn2:array [0..28] of byte;
-    FUnkn3:array [0..63] of byte; // coords like for character
     FUnkn4:DWord;
     FUnkn5:array [0..11] of byte;
     FUnkn6:TL2IdValList;
 
+    FUseState:integer;
+
+    function GetDBMods():string; override;
     function GetFlags(idx:integer):boolean;
+    function GetUsability:boolean;
+//    function GetDBModList(aid:TL2ID):string; override;
   public
-    property Name  :string read FName;
     property Prefix:string read FPrefix;
-    property Suffix:string read FSuffix;
-    property ID    :TL2ID  read FItemId write FItemId;
 
     property IsProp:boolean   read FIsProp write FIsProp;
-    property ModIds:TL2IdList read FModIds write FModIds;
 
     property Flags[idx:integer]:boolean read GetFlags;
     property Position1:TL2Coord read FPosition1;
-    property Position2:TL2Coord read FPosition2;
+    property IsUsable:boolean read GetUsability;
 
-    property Level:integer read FLevel;
-    property Stack:integer read FStackSize write FStackSize;
+    property Stack       :integer read FStackSize write FStackSize;
     property EnchantCount:integer read FEnchantmentCount write FEnchantmentCount;
-    property Position:integer read FStashPosition;
-    property SocketCount:integer read FSocketCount ; // write FSocketCount;
+    property Position    :integer read FStashPosition;
+    property SocketCount :integer read FSocketCount ; // write FSocketCount;
     property WeaponDamage:integer read FWeaponDamage;
     property Armor       :integer read FArmor;
     property ArmorType   :integer read FArmorType;
 
     property Unkn6   :TL2IdValList   read FUnkn6;
-    property Effects1:TTL2EffectList read FEffects1 write FEffects1;
-    property Effects2:TTL2EffectList read FEffects2 write FEffects2;
-    property Effects3:TTL2EffectList read FEffects3 write FEffects3;
-
-    property Augments:TL2StringList  read FAugments;
-    property Stats   :TL2IdValList   read FStats;
   end;
 
 
@@ -116,6 +97,7 @@ begin
   inherited;
 
   DataType:=dtItem;
+  FUseState:=-1;
 end;
 
 destructor TTL2Item.Destroy;
@@ -123,6 +105,22 @@ begin
   InternalClear;
 
   inherited;
+end;
+
+function TTL2Item.GetDBMods():string;
+begin
+  if FDBMods='' then
+    FDBMods:=GetItemMods(FID);
+  result:=FDBMods;
+end;
+
+function TTL2Item.GetUsability:boolean;
+begin
+  if FUseState<0 then
+  begin
+    FUseState:=GetItemUsability(id);
+  end;
+  result:=FUseState>0;
 end;
 
 function TTL2Item.GetFlags(idx:integer):boolean;
@@ -137,18 +135,13 @@ procedure TTL2Item.InternalClear;
 var
   i:integer;
 begin
-  SetLength(FModIds,0);
   for i:=0 to High(FSocketables) do
     FSocketables[i].Free;
   SetLength(FSocketables,0);
 
-  for i:=0 to High(FEffects1) do FEffects1[i].Free;  SetLength(FEffects1,0);
-  for i:=0 to High(FEffects2) do FEffects2[i].Free;  SetLength(FEffects2,0);
-  for i:=0 to High(FEffects3) do FEffects3[i].Free;  SetLength(FEffects3,0);
-  SetLength(FAugments,0);
-  SetLength(FStats,0);
-
   SetLength(FUnkn6,0);
+
+  inherited;
 end;
 
 procedure TTL2Item.Clear;
@@ -165,7 +158,7 @@ begin
   DataOffset:=AStream.Position;
 
   FSign:=Check(AStream.ReadByte,'item sign_'+HexStr(AStream.Position,8),2); // "2" (0 for gold)
-  FItemId:=TL2ID(AStream.ReadQWord);  // Item ID
+  FID    :=TL2ID(AStream.ReadQWord);  // Item ID
   FName  :=AStream.ReadShortString(); // name
   FPrefix:=AStream.ReadShortString(); // prefix
   FSuffix:=AStream.ReadShortString(); // suffix
@@ -192,35 +185,19 @@ begin
   FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645 . -1 for props
 
   AStream.Read(FFlags,7);
+check(FFlags[4],'unknown item flag',1);
 {    itm   prop
   0 - <equipped> flag
-  1 - 1      ?
+  1 - <enabled>
   2 - 1
   3 - 1
-  4 - 1
-  5 - 0
+  4 - 1 <??visible>
+  5 - 0 <??keep after activation>
   6 - <recognized> flag
 }
   // coordinates
   FPosition1:=AStream.ReadCoord(); // place where from picked up?
-  FPosition2:=AStream.ReadCoord(); // 0 for equipped?
-  AStream.Read(FUnkn3,64);
-{ Like for character
-  // direction
-  AStream.ReadCoord;   // Forward
-  AStream.ReadDWord;   // 0
-
-  AStream.ReadCoord;   // Up
-  AStream.ReadDWord;   // 0
-  
-  AStream.ReadCoord;   // Right
-  AStream.ReadDWord;   // 0
-
-  AStream.ReadDWord;   // 0  \
-  AStream.ReadDWord;   // 0  | coord?
-  AStream.ReadDWord;   // 0  /
-  AStream.ReadFloat;   // float=1.0
-}
+  AStream.Read(FOrientation,SizeOf(FOrientation));
 
   FLevel      :=integer(AStream.ReadDWord); // 1  for props (22)
   FStackSize  :=integer(AStream.ReadDWord); // -1 for props (1)
@@ -229,7 +206,7 @@ begin
   FSocketables:=ReadItemList(AStream);
 
   //??
-  FUnkn4:=AStream.ReadDWord;  // 0
+  FUnkn4:=Check(AStream.ReadDWord,'before weap dmg_'+HexStr(AStream.Position,8),0);  // 0
   FWeaponDamage:=integer(AStream.ReadDWord); // -1 for props
   FArmor       :=integer(AStream.ReadDWord); // -1 for props
   FArmorType   :=integer(AStream.ReadDWord); //  0 for props (2)
@@ -280,7 +257,7 @@ begin
   DataOffset:=AStream.Position;
 
   AStream.WriteByte(FSign);            // "2" (0 for gold)
-  AStream.WriteQWord(QWord(FItemId));  // Item ID
+  AStream.WriteQWord(QWord(FID));      // Item ID
   AStream.WriteShortString(FName);     // name
   AStream.WriteShortString(FPrefix);   // prefix
   AStream.WriteShortString(FSuffix);   // suffix
@@ -306,11 +283,11 @@ begin
   AStream.WriteDWord(DWord(FEnchantmentCount)); // enchantment count
   AStream.WriteDWord(DWord(FStashPosition   )); // stash position $285 = 645
 
-  // coordinates
   AStream.Write(FFlags,7);
+
+  // coordinates
   AStream.WriteCoord(FPosition1);
-  AStream.WriteCoord(FPosition2);
-  AStream.Write(FUnkn3,64);
+  AStream.Write(FOrientation,SizeOf(FOrientation));
 
   AStream.WriteDWord(FLevel);
   AStream.WriteDWord(dword(FStackSize));
@@ -389,82 +366,36 @@ function TTL2Item.CheckForMods(alist:TTL2ModList):boolean;
 var
   llist:TL2IdList;
   lid,lmodid:TL2ID;
-  lmods:string;
-  i:integer;
 begin
-  result:=false;
+  result:=inherited CheckForMods(alist);
 
-  // 1 - Check for unmodded
-  if ModIds=nil then
-    exit;
-
-  if alist<>nil then
+  if not result then
   begin
-    // 2 - Check for item mod in mod list
-    // check: item mod from savegame is in global savegame mod list
-    // remove additional (theoretically) item mods which not presents as global
-    llist:=nil;
-    for i:=0 to High(ModIds) do
+    if alist<>nil then
     begin
-      if IsInModList(ModIds[i],alist) then
+      // Check : alternative object with same unittype
+      // Action: replace one item by another
+      // Remark: change JUST id, not name etc
+      lmodid:=GetAlt(id,alist,lid);
+      if lmodid<>TL2IdEmpty then
       begin
-        SetLength(llist,Length(llist)+1);
-        llist[High(llist)]:=ModIds[i];
+        if lid<>id then
+        begin
+          id:=lid;
+          if lmodid=0 then
+            ModIds:=nil
+          else
+          begin
+            SetLength(llist,1);
+            llist[0]:=lmodid;
+            ModIds:=llist;
+          end;
+        end;
+        result:=true;
+        Changed:=true;
       end;
-    end;
-    if Length(llist)<>Length(ModIds) then
-    begin
-      ModIds:=llist;
-      result:=true;
-      Changed:=true;
-    end;
-    if Length(llist)>0 then exit;
-
-    // 3 - item have mod list but not in savegame mod list, trying to add/replace
-    // (!!ModId must be nil already!!)
-    lmods:=GetItemMods(id);
-    lmodid:=IsInModList(lmods, alist);
-    if lmodid<>TL2IdEmpty then
-    begin
-      if lmodid=0 then
-        ModIds:=nil
-      else
-      begin
-        llist:=ModIds;
-        SetLength(llist,Length(llist)+1);
-        llist[High(llist)]:=lmodid;
-        ModIds:=llist;
-      end;
-      result:=true;
-      Changed:=true;
-      exit;
     end;
   end;
-
-  // 4 - replace one item by another
-  // savegame mod list is empty OR
-  // no common mods between item and savegame
-  // !! what about item name ??
-  lmodid:=GetAlt(id,alist,lid);
-//writeln('id:', id,'; new id:',lid,'; mod id:',lmodid);
-  if lmodid<>TL2IdEmpty then
-  begin
-    if lid<>id then
-    begin
-      id:=lid;
-      if lmodid=0 then ModIds:=nil
-      else
-      begin
-        SetLength(llist,1);
-        llist[0]:=lmodid;
-        ModIds:=llist;
-      end;
-    end;
-    result:=true;
-    Changed:=true;
-    exit;
-  end;
-
 end;
 
 end.

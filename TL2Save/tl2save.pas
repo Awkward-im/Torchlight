@@ -35,8 +35,8 @@ type
     function  Parse():boolean;
     function  Prepare:boolean;
 
-    procedure ClearCheat;
-    procedure FixModdedItems;
+    function ClearCheat:boolean;
+    function FixModdedItems:boolean;
 
   //--- TL2 save part
   private
@@ -406,17 +406,25 @@ begin
   end;
 end;
 
-procedure TTL2SaveFile.ClearCheat;
+function TTL2SaveFile.ClearCheat:boolean;
 var
   i:integer;
 begin
+  result:=false;
+
   // Character items
   if ClearCheatItems(CharInfo.Items) then
+  begin
     CharInfo.Changed:=true;
+    result:=true;
+  end;
   // Pet items
   for i:=0 to PetCount-1 do
     if ClearCheatItems(PetInfo[i].Items) then
+    begin
       PetInfo[i].Changed:=true;
+      result:=true;
+    end;
 end;
 
 {$I TL2Parse.inc}
@@ -425,7 +433,6 @@ end;
 
 function TTL2SaveFile.FixItems(aItems:TTL2ItemList):boolean;
 var
-  lmodid,lid:TL2ID;
   i:integer;
 begin
   result:=false;
@@ -433,52 +440,32 @@ begin
   begin
     if aItems[i].ModIds<>nil then
     begin
-
-      lid:=aItems[i].id;
-      if aItems[i].ModIds<>nil then
-        lmodid:=aItems[i].ModIds[0]
-      else
-        lmodid:=TL2IdEmpty;
-
       if aItems[i].CheckForMods(BoundMods) then
       begin
-        if aItems[i].id<>lid then
-        begin
-          result:=true;
-          write('id changed from ',lid,' to ',aItems[i].Id);
-        end;
-        if aItems[i].ModIds<>nil then
-        begin
-          if lmodid<>aItems[i].ModIds[0] then
-          begin
-//writeln('mod not empty. was ',lmodid,' and now ',aItems[i].ModIds[0]);
-            result:=true;
-//            write('; Mod id changed from ',lmodid,' to ',aItems[i].ModIds[0]);
-          end;
-        end
-        else
-        begin
-          if lmodid<>TL2IdEmpty then
-            result:=true;
-//writeln('mod IS empty');
-        end;
-
+        if aItems[i].Changed then result:=true;
       end;
     end;
   end;
 end;
 
-procedure TTL2SaveFile.FixModdedItems;
+function TTL2SaveFile.FixModdedItems:boolean;
 var
   i:integer;
 begin
+  result:=false;
   // Character items
   if FixItems(CharInfo.Items) then
+  begin
     CharInfo.Changed:=true;
+    result:=true;
+  end;
   // Pet items
   for i:=0 to PetCount-1 do
     if FixItems(PetInfo[i].Items) then
+    begin
       PetInfo[i].Changed:=true;
+      result:=true;
+    end;
 end;
 
 //===== Global savegame class things =====

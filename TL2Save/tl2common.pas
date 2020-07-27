@@ -2,12 +2,20 @@ unit TL2Common;
 
 interface
 
+procedure DbgLn(const atxt:string);
 function Check(aval:qword; const albl:string; aright:qword):qword;
+function Check(aval:single; const albl:string; aright:single):single;
 function SecToTime ( sec:cardinal):string;
 function MSecToTime(msec:cardinal):string;
 
 
 implementation
+
+procedure DbgLn(const atxt:string);
+begin
+  if IsConsole then
+    writeln(atxt);
+end;
 
 function Check(aval:qword; const albl:string; aright:qword):qword;
 begin
@@ -16,6 +24,15 @@ begin
   if aval<>aright then
     if IsConsole then
       writeln('!!Unknown value ',aval,' at label ',albl,' must be [',aright,']');
+end;
+
+function Check(aval:single; const albl:string; aright:single):single;
+begin
+  result:=aval;
+
+  if aval<>aright then
+    if IsConsole then
+      writeln('!!Unknown value ',aval:0:4,' at label ',albl,' must be [',aright:0:4,']');
 end;
 
 function SecToTime(sec:cardinal):string;
