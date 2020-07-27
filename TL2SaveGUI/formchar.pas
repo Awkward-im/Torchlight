@@ -152,6 +152,7 @@ type
     procedure FillClassCombo();
     procedure FillPetInfo;
     procedure FillPlayerInfo;
+    procedure FixPlayerInfo;
     function GetClassIndex(id: TL2ID): integer;
 
     function GetMainFlag:boolean;
@@ -805,6 +806,15 @@ begin
   cbCheckPointsClick(Self);
 end;
 
+procedure TfmChar.FixPlayerInfo;
+var
+  i:integer;
+begin
+  lbModList.Clear;
+  for i:=0 to High(FChar.ModIds) do
+    lbModList.AddItem(GetTL2Mod(FChar.ModIds[i]),nil);
+end;
+
 procedure TfmChar.FillPlayerInfo;
 var
   licon,ls,ls1:string;
@@ -812,7 +822,7 @@ var
 begin
   //--- Stat ---
 
-  GetClassInfo(FChar.ClassId,licon,FBaseStr,FBaseDex,FBaseInt,FBaseVit);
+  GetClassInfo(FChar.ID,licon,FBaseStr,FBaseDex,FBaseInt,FBaseVit);
 
   seLevel.MaxValue:=Length(ExpGate);
   seFame .MaxValue:=Length(FameGate);
@@ -820,7 +830,7 @@ begin
 
   // Graphs
 
-  GetClassGraphStat(FChar.ClassId,ls,ls1,FStatPerLevel);
+  GetClassGraphStat(FChar.ID,ls,ls1,FStatPerLevel);
   HPTier:=GetGraphArray(ls );
   MPTier:=GetGraphArray(ls1);
 
@@ -868,14 +878,14 @@ begin
   GetClassList(FClasses);
 
   // set gender buttons
-  i:=GetClassIndex(FChar.ClassId);
+  i:=GetClassIndex(FChar.ID);
   if i>=0 then
   begin
     rbMale  .Checked:=FClasses[i].gender='M';
     rbFemale.Checked:=FClasses[i].gender='F';
     rbUnisex.Checked:=not (FClasses[i].gender in ['F','M']);
 
-    edClass.Text:=GetTL2Class(FChar.ClassId);
+    edClass.Text:=GetTL2Class(FChar.ID);
   end
   else
   begin
@@ -910,7 +920,7 @@ begin
   //--- Skill related ---
 
   FSkillForm.Configured :=false;
-  FSkillForm.PlayerClass:=FChar.ClassId;
+  FSkillForm.PlayerClass:=FChar.ID;
   FSkillForm.Player     :=FChar;
 end;
 
@@ -945,7 +955,7 @@ begin
 
   cbMorph.ItemIndex:=0;
   if (FChar.MorphId<>TL2IdEmpty) and
-     (FChar.MorphId<>FChar.ClassId) then
+     (FChar.MorphId<>FChar.ID) then
   begin
     for i:=1 to cbMorph.Items.Count-1 do
       if FPets[IntPtr(cbMorph.Items.Objects[i])].id=FChar.MorphId then
@@ -965,18 +975,18 @@ begin
   cbNewClass.ItemIndex:=-1;
 
   for i:=0 to cbNewClass.Items.Count-1 do
-    if FPets[IntPtr(cbNewClass.Items.Objects[i])].id=FChar.ClassId then
+    if FPets[IntPtr(cbNewClass.Items.Objects[i])].id=FChar.ID then
     begin
       cbNewClass.ItemIndex:=i;
       break;
     end;
 //  cbNewClass.Enabled:=cbNewClass.ItemIndex>=0;
 
-  DrawPetIcon(FChar.ClassId,imgIcon);
+  DrawPetIcon(FChar.ID,imgIcon);
 
-  edClass.Text:=GetTL2Pet(FChar.ClassId);
-  if edClass.Text=HexStr(FChar.ClassId,16) then
-     edClass.Text:=GetTL2Mob(FChar.ClassId);
+  edClass.Text:=GetTL2Pet(FChar.ID);
+  if edClass.Text=HexStr(FChar.ID,16) then
+     edClass.Text:=GetTL2Mob(FChar.ID);
 
   edSkin.Text:=IntToStr(ShortInt(FChar.Skin));
 
@@ -1001,7 +1011,11 @@ var
   ls:string;
   i:integer;
 begin
-  if FConfigured and (FKind=ciPlayer) then exit;
+  if FConfigured and (FKind=ciPlayer) then
+  begin
+    FixPlayerInfo();
+    exit;
+  end;
 
   FSGame:=aSGame;
   FChar :=aChar;
@@ -1010,7 +1024,7 @@ begin
   else if FChar.IsPet  then FillPetInfo()
   else
   begin
-    edClass.Text:=GetTL2Mob(FChar.ClassId);
+    edClass.Text:=GetTL2Mob(FChar.ID);
     seLevel.MaxValue:=999;
     seFame .MaxValue:=1;
   end;
@@ -1038,9 +1052,9 @@ begin
 
   //--- Statistic ---
 
-  edX.Text:=FloatToStrF(FChar.Position.X,ffFixed,-8,2);
-  edY.Text:=FloatToStrF(FChar.Position.Y,ffFixed,-8,2);
-  edZ.Text:=FloatToStrF(FChar.Position.Z,ffFixed,-8,2);
+  edX.Text:=FloatToStrF(FChar.Coord.X,ffFixed,-8,2);
+  edY.Text:=FloatToStrF(FChar.Coord.Y,ffFixed,-8,2);
+  edZ.Text:=FloatToStrF(FChar.Coord.Z,ffFixed,-8,2);
 
   lbModList.Clear;
   for i:=0 to High(FChar.ModIds) do
@@ -1098,7 +1112,7 @@ begin
   if cbNewClass.ItemIndex>=0 then
   begin
     i:=IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex]);
-    FChar.ClassId:=FClasses[i].id;
+    FChar.ID:=FClasses[i].id;
     FSGame.ClassString:=FClasses[i].name;
   end
   else if edNewClass.Text<>'' then
@@ -1132,7 +1146,7 @@ begin
   //--- View
   if cbNewClass.ItemIndex>=0 then
   begin
-    FChar.ClassId:=FPets[IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex])].id;
+    FChar.ID:=FPets[IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex])].id;
   end;
 
   idx:=IntPtr(cbMorph.Items.Objects[cbMorph.ItemIndex]);
@@ -1156,7 +1170,12 @@ begin
 end;
 
 procedure TfmChar.bbUpdateClick(Sender: TObject);
+var
+  ls:string;
 begin
+  ls:=Application.MainForm.Caption;
+  ls[1]:='*';
+  Application.MainForm.Caption:=ls;
 
   //--- Stat
 

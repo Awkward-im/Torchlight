@@ -1,4 +1,6 @@
 {"version":1,"strings":[
+{"hash":233510156,"name":"tfmmodlist.hint","sourcebytes":[208,154,208,190,208,191,208,184,209,128,208,190,208,178,208,176,209,130,209,140],"value":"\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C"},
+{"hash":114636524,"name":"tfmmodlist.caption","sourcebytes":[208,154,208,190,208,191,208,184,209,128,208,190,208,178,38,208,176,209,130,209,140],"value":"\u041A\u043E\u043F\u0438\u0440\u043E\u0432&\u0430\u0442\u044C"},
 {"hash":4860802,"name":"tfmmodlist.bbclear.caption","sourcebytes":[67,108,101,97,114],"value":"Clear"},
 {"hash":197568645,"name":"tfmmodlist.bbupdate.caption","sourcebytes":[38,85,112,100,97,116,101],"value":"&Update"},
 {"hash":4811844,"name":"tfmmodlist.lblbound.caption","sourcebytes":[66,111,117,110,100],"value":"Bound"},
@@ -12,5 +14,6 @@
 {"hash":1268,"name":"tfmmodlist.sgrecent.columns[2].title.caption","sourcebytes":[73,100],"value":"Id"},
 {"hash":5966629,"name":"tfmmodlist.sgfull.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
 {"hash":23746,"name":"tfmmodlist.sgfull.columns[1].title.caption","sourcebytes":[86,101,114],"value":"Ver"},
-{"hash":1268,"name":"tfmmodlist.sgfull.columns[2].title.caption","sourcebytes":[73,100],"value":"Id"}
+{"hash":1268,"name":"tfmmodlist.sgfull.columns[2].title.caption","sourcebytes":[73,100],"value":"Id"},
+{"hash":210738884,"name":"tfmmodlist.sbclipboard.hint","sourcebytes":[67,111,112,121,32,108,105,115,116,32,116,111,32,99,108,105,112,98,111,97,114,100],"value":"Copy list to clipboard"}
 ]}

@@ -1,13 +1,16 @@
 object fmModList: TfmModList
   Left = 330
   Height = 470
+  Hint = 'Копировать'
   Top = 165
   Width = 701
   Align = alClient
   BorderStyle = bsNone
+  Caption = 'Копиров&ать'
   ClientHeight = 470
   ClientWidth = 701
   LCLVersion = '2.1.0.0'
+  Visible = True
   object sbUp: TSpeedButton
     Left = 352
     Height = 22
@@ -112,10 +115,12 @@ object fmModList: TfmModList
         Title.Caption = 'Id'
         Width = 107
       end>
+    ExtendedSelect = False
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowMoving, goDblClickAutoSize, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowMoving, goDblClickAutoSize, goSmoothScroll, goSelectionActive]
     RowCount = 1
     TabOrder = 2
+    OnAfterSelection = sgBoundAfterSelection
     ColWidths = (
       181
       48
@@ -197,5 +202,17 @@ object fmModList: TfmModList
     Sorted = True
     Style = csDropDownList
     TabOrder = 5
+  end
+  object sbClipboard: TSpeedButton
+    Left = 352
+    Height = 22
+    Hint = 'Copy list to clipboard'
+    Top = 113
+    Width = 23
+    Images = fmSaveFile.ImageList
+    ImageIndex = 4
+    OnClick = sbClipboardClick
+    ShowHint = True
+    ParentShowHint = False
   end
 end

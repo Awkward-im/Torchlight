@@ -403,7 +403,7 @@ end;
 procedure TfmSkills.SetChar(achar:TTL2Character);
 begin
   FChar:=achar;
-  SetPlayerClass(FChar.ClassId);
+  SetPlayerClass(FChar.ID);
 end;
 
 function TfmSkills.ApplyBuild(const alist:TL2IdValList):integer;
@@ -511,7 +511,13 @@ begin
 end;
 
 procedure TfmSkills.bbUpdateClick(Sender: TObject);
+var
+  ls:string;
 begin
+  ls:=Application.MainForm.Caption;
+  ls[1]:='*';
+  Application.MainForm.Caption:=ls;
+
   FChar.Skills:=GetBuild();
 
   if FPoints>0 then

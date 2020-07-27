@@ -15,30 +15,31 @@ type
   { TfmSaveFile }
 
   TfmSaveFile = class(TForm)
-    acfFileFixModded: TAction;
     ActionList: TActionList;
-    actFileExit  : TAction;
-    actFileOpen  : TAction;
-    actFileSave  : TAction;
-    actFileReload: TAction;
-    actFileCheat : TAction;
+    actFileExit     : TAction;
+    actFileOpen     : TAction;
+    actFileSave     : TAction;
+    actFileReload   : TAction;
+    actFileCheat    : TAction;
+    actFileFixModded: TAction;
     ImageList: TImageList;
+    imgIcons: TImageList;
     MainMenu: TMainMenu;
-    mnuFileFixModded: TMenuItem;
     mnuFile: TMenuItem;
-    mnuFileOpen  : TMenuItem;
-    mnuFileSave  : TMenuItem;
-    mnuFileReload: TMenuItem;
-    mnuFileSep1  : TMenuItem;
-    mnuFileCheat : TMenuItem;
-    mnuFileSep2  : TMenuItem;
-    mnuFileExit  : TMenuItem;
+    mnuFileOpen     : TMenuItem;
+    mnuFileSave     : TMenuItem;
+    mnuFileReload   : TMenuItem;
+    mnuFileSep1     : TMenuItem;
+    mnuFileCheat    : TMenuItem;
+    mnuFileFixModded: TMenuItem;
+    mnuFileSep2     : TMenuItem;
+    mnuFileExit     : TMenuItem;
     MainPanel: TPanel;
     LeftPanel: TPanel;
     Splitter: TSplitter;
     tvSaveGame: TTreeView;
 
-    procedure acfFileFixModdedExecute(Sender: TObject);
+    procedure actFileFixModdedExecute(Sender: TObject);
     procedure actFileExitExecute(Sender: TObject);
     procedure actFileOpenExecute(Sender: TObject);
     procedure actFileReloadExecute(Sender: TObject);
@@ -284,6 +285,11 @@ begin
     begin
       FFileName:=OpenDialog.FileName;
 
+      actFileReload   .Enabled:=true;
+      actFileSave     .Enabled:=true;
+      actFileCheat    .Enabled:=true;
+      actFileFixModded.Enabled:=true;
+
       actFileReloadExecute(Sender);
     end;
   finally
@@ -302,6 +308,8 @@ begin
   SetFilter(SGame.BoundMods);
   LoadGameGlobals;
   FChar.Configured:=false;
+
+  Caption:='  '+FFileName;
 
   ChangeTree;
 end;
@@ -333,6 +341,8 @@ begin
 
       SGame.Prepare;
       SGame.SaveToFile(SaveDialog.FileName);
+
+      Caption:='  '+FFileName;
     end;
   finally
     SaveDialog.Free;
@@ -343,16 +353,35 @@ procedure TfmSaveFile.actFileCheatExecute(Sender: TObject);
 begin
   if SGame<>nil then
   begin
-    SGame.ClearCheat;
+    if SGame.ClearCheat then
+      Caption:='* '+FFileName;
     tvSaveGameSelectionChanged(Sender);
   end;
 end;
 
-procedure TfmSaveFile.acfFileFixModdedExecute(Sender: TObject);
+procedure TfmSaveFile.actFileFixModdedExecute(Sender: TObject);
+var
+  i:integer;
 begin
   if SGame<>nil then
   begin
+    if not SGame.CharInfo.CheckForMods(SGame.BoundMods) then
+    begin
+      ShowMessage('Sorry, your character class '+GetTL2Class(SGame.CharInfo.ID)+
+                  ' was not found for current mod list.'#13#10+
+                  'Change it manually.');
+      exit;
+    end;
+    for i:=0 to SGame.PetCount-1 do
+      if not SGame.PetInfo[i].CheckForMods(SGame.BoundMods) then
+      begin
+        ShowMessage('Your pet type was not found in current mod list and was replaced by default one.');
+      end;
+
     SGame.FixModdedItems;
+
+    Caption:='* '+FFileName;
+
     tvSaveGameSelectionChanged(Sender);
   end;
 end;

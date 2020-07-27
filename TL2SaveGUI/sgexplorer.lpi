@@ -264,6 +264,7 @@
         <Filename Value="formeffects.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmEffects"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formEffects"/>
       </Unit>
@@ -346,6 +347,11 @@
         <Filename Value="..\TL2Save\tl2stream.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Stream"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2active.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Active"/>
       </Unit>
     </Units>
   </ProjectOptions>

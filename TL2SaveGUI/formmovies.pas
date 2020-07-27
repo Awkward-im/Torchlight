@@ -70,8 +70,13 @@ end;
 
 procedure TfmMovies.bbUpdateClick(Sender: TObject);
 var
+  ls:string;
   i:integer;
 begin
+  ls:=Application.MainForm.Caption;
+  ls[1]:='*';
+  Application.MainForm.Caption:=ls;
+
   for i:=1 to sgMovies.RowCount do
   begin
     SGame.Movies[IntPtr(sgMovies.Objects[0,i])].value:=

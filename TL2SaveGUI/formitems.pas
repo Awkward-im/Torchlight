@@ -6,22 +6,20 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  tl2item, tl2char, formItem;
+  ComCtrls, tl2item, tl2char, formItem;
 
 type
 
   { TfmItems }
 
   TfmItems = class(TForm)
-    lblCount: TLabel;
-    lbItemList: TListBox;
-    pnlLeftTop: TPanel;
+    lvItemList: TListView;
     pnlItem: TPanel;
     pnlLeft: TPanel;
     Splitter: TSplitter;
 
     procedure FormCreate(Sender: TObject);
-    procedure lbItemListSelectionChange(Sender: TObject; User: boolean);
+    procedure lvItemListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
   private
     FItem:TfmItem;
     FChar:TTL2Character;
@@ -38,30 +36,32 @@ implementation
 
 uses
   formButtons,
+  tl2types,
   tl2db;
 
-procedure TfmItems.lbItemListSelectionChange(Sender: TObject; User: boolean);
+const
+  imgGold     = 0;
+  imgEquipped = 1;
+  imgUnknown  = 2;
+  imgUsable   = 3;
+  imgModded   = 4;
+
+procedure TfmItems.lvItemListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 var
   litem:TTL2Item;
-  i:integer;
 begin
-  FItem.Visible:=false;
+  if Selected then
+  begin
+    lvItemList.Columns[0].Caption:=IntToStr(Item.Index+1)+' / '+IntToStr(lvItemList.Items.Count);
+    litem:=FItems[UIntPtr(Item.Data)];
 
-  for i:=0 to lbItemList.Count-1 do
-    if lbItemList.Selected[i] then
-    begin
-      lblCount.Caption:=IntToStr(i+1)+' / '+IntToStr(lbItemList.Count);
-      litem:=FItems[IntPtr(lbItemList.Items.Objects[i])];
+    fmButtons.btnExport.Enabled:=true;
+    fmButtons.Name  :='item '+IntToStr(Item.Index);
+    fmButtons.SClass:=litem;
 
-      fmButtons.btnExport.Enabled:=true;
-      fmButtons.Name  :='item '+IntToStr(i);
-      fmButtons.SClass:=litem;
-
-      FItem.FillInfo(litem, FChar);
-      FItem.Visible:=true;
-
-      break;
-    end;
+    FItem.FillInfo(litem,FChar);
+    FItem.Visible:=true;
+  end;
 end;
 
 procedure TfmItems.FormCreate(Sender: TObject);
@@ -73,28 +73,41 @@ end;
 procedure TfmItems.FillInfo(aItems:TTL2ItemList; aChar:TTL2Character=nil);
 var
   ls:String;
-  i:integer;
+  litem:TTL2Item;
+  i,limg:integer;
 begin
   FItems:=aItems;
   FChar :=aChar;
 
   FItem.Visible:=false;
 
-  lblCount.Caption:=IntToStr(Length(aItems));
-  lbitemList.Clear;
   fmButtons.btnExport.Enabled:=false;
   fmButtons.Ext:='.itm';
+  lvItemList.Clear;
+  lvItemList.Columns[0].Caption:=IntToStr(Length(aItems));
   if Length(aItems)>0 then
   begin
-    lbitemList.Sorted:=false;
     for i:=0 to High(aItems) do
     begin
       ls:=aItems[i].Name;
       if (ls='') or (ls=' ') then ls:='- empty -';
-      lbItemList.AddItem(ls,TObject(IntPtr(i)));
+      lvItemList.AddItem(ls,TObject(IntPtr(i)));
     end;
-    lbitemList.Sorted:=true;
-    lbItemList.ItemIndex:=0;
+    // Assign images
+    for i:=0 to lvItemList.Items.Count-1 do
+    begin
+      litem:=FItems[UIntPtr(lvItemList.Items[i].Data)];
+      limg:=-1;
+      if litem.ID=TL2IdEmpty     then limg:=imgGold
+      else if litem.Flags[0]     then limg:=imgEquipped
+      else if not litem.Flags[6] then limg:=imgUnknown
+      else if litem.IsUsable     then limg:=imgUsable
+      else if litem.ModIds<>nil  then limg:=imgModded;
+      lvItemList.Items[i].ImageIndex:=limg;
+    end;
+    lvItemList.SortColumn:=0;
+    lvItemList.Sort;
+    lvItemList.ItemIndex:=0;
   end;
 
 end;

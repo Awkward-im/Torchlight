@@ -6,22 +6,20 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, tl2save, tl2map, formChar;
+  ExtCtrls, ComCtrls, tl2save, tl2map, formChar;
 
 type
 
   { TfmUnits }
 
   TfmUnits = class(TForm)
-    lblCount: TLabel;
-    lbUnitList: TListBox;
-    pnlLeftTop: TPanel;
+    lvUnitList: TListView;
     pnlLeft: TPanel;
     pnlCharInfo: TPanel;
     Splitter: TSplitter;
 
     procedure FormCreate(Sender: TObject);
-    procedure lbUnitListSelectionChange(Sender: TObject; User: boolean);
+    procedure lvUnitListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
   private
     FChar:TfmChar;
     SGame:TTL2SaveFile;
@@ -44,27 +42,26 @@ uses
   tl2char,
   tl2db;
 
-procedure TfmUnits.lbUnitListSelectionChange(Sender: TObject; User: boolean);
+const
+  imgModded = 4;
+  imgDead   = 7;
+
+procedure TfmUnits.lvUnitListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 var
   lunit:TTL2Character;
-  i:integer;
 begin
-  FChar.Visible:=false;
-  for i:=0 to lbUnitList.Count-1 do
-    if lbUnitList.Selected[i] then
-    begin
-      lblCount.Caption:=IntToStr(i+1)+' / '+IntToStr(lbUnitList.Count);
-      lunit:=FMap.MobInfos[IntPtr(lbUnitList.Items.Objects[i])];
+  if Selected then
+  begin
+    lvUnitList.Columns[0].Caption:=IntToStr(Item.Index+1)+' / '+IntToStr(lvUnitList.Items.Count);
+    lunit:=FMap.MobInfos[UIntPtr(Item.Data)];
 
-      fmButtons.btnExport.Enabled:=true;
-      fmButtons.Name  :='unit '+IntToStr(i);
-      fmButtons.SClass:=lunit;
+    fmButtons.btnExport.Enabled:=true;
+    fmButtons.Name  :='unit '+IntToStr(Item.Index);
+    fmButtons.SClass:=lunit;
 
-      FChar.FillInfo(lunit);
-      FChar.Visible:=true;
-
-      break;
-    end;
+    FChar.FillInfo(lunit);
+    FChar.Visible:=true;
+  end;
 end;
 
 procedure TfmUnits.FormCreate(Sender: TObject);
@@ -76,26 +73,36 @@ end;
 procedure TfmUnits.FillInfo(aSGame:TTL2SaveFile; idx:integer);
 var
   ls:string;
-  i:integer;
+  lunit:TTL2Character;
+  i,limg:integer;
 begin
   SGame:=aSGame;
   FMap:=aSGame.Maps[idx];
   FChar.Visible:=false;
 
-  lblCount.Caption:=IntToStr(Length(FMap.MobInfos));
-  lbUnitList.Clear;
   fmButtons.btnExport.Enabled:=false;
   fmButtons.Ext:='.chr';
+  lvUnitList.Clear;
+  lvUnitList.Columns[0].Caption:=IntToStr(Length(FMap.MobInfos));
   if Length(FMap.MobInfos)>0 then
   begin
-    lbUnitList.Sorted:=false;
     for i:=0 to High(FMap.MobInfos) do
     begin
-      if FMap.MobInfos[i].Sign2=0 then ls:='' else ls:='* ';
-      lbUnitList.AddItem(ls+FMap.MobInfos[i].Name,TObject(IntPtr(i)));
+      if FMap.MobInfos[i].Sign2=0 then ls:='' else ls:='['+IntToStr(FMap.MobInfos[i].Sign2)+'] ';
+      lvUnitList.AddItem(ls+FMap.MobInfos[i].Name,TObject(IntPtr(i)));
     end;
-    lbUnitList.Sorted:=true;
-    lbUnitList.ItemIndex:=0;
+    // Assign images
+    for i:=0 to lvUnitList.Items.Count-1 do
+    begin
+      lunit:=FMap.MobInfos[UIntPtr(lvUnitList.Items[i].Data)];
+      limg:=-1;
+      if      lunit.Health=0    then limg:=imgDead
+      else if lunit.ModIds<>nil then limg:=imgModded;
+      lvUnitList.Items[i].ImageIndex:=limg;
+    end;
+    lvUnitList.SortColumn:=0;
+    lvUnitList.Sort;
+    lvUnitList.ItemIndex:=0;
   end;
 end;
 

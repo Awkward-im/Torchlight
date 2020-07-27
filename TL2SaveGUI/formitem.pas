@@ -6,17 +6,15 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Grids, Buttons, tl2item, tl2char;
+  Grids, Buttons, ComCtrls, tl2item, tl2char;
 
 type
 
   { TfmItem }
 
   TfmItem = class(TForm)
-    bbUpdate: TBitBtn;
     bbClearMod: TBitBtn;
-    edUnkn6: TEdit;
-    gbFlags: TGroupBox;
+    bbUpdate: TBitBtn;
     cbFlag1: TCheckBox;
     cbFlag2: TCheckBox;
     cbFlag3: TCheckBox;
@@ -24,33 +22,63 @@ type
     cbFlag5: TCheckBox;
     cbFlag6: TCheckBox;
     cbFlag7: TCheckBox;
-
+    cbActivated: TCheckBox;
+    cbEquipped: TCheckBox;
+    cbRecognized: TCheckBox;
+    cbEnabled: TCheckBox;
+    cbVisible: TCheckBox;
+    edArmor: TEdit;
+    edArmorType: TEdit;
+    edEnchant: TEdit;
+    edItemId: TEdit;
+    edLevel: TEdit;
+    edName: TEdit;
+    edNameById: TEdit;
+    edPosition: TEdit;
+    edPrefix: TEdit;
+    edSockets: TEdit;
+    edStack: TEdit;
+    edSuffix: TEdit;
+    edUnkn6: TEdit;
+    edWeaponDmg: TEdit;
+    edX: TEdit;
+    edX1: TEdit;
+    edY: TEdit;
+    edY1: TEdit;
+    edZ: TEdit;
+    edZ1: TEdit;
     gbCoords: TGroupBox;
-    imgItem: TImage;
-    lblX: TLabel;  lblY: TLabel;  lblZ: TLabel;
-    edX : TEdit ;  edY : TEdit ;  edZ : TEdit;
     gbCoords1: TGroupBox;
-    lblX1: TLabel;  lblY1: TLabel;  lblZ1: TLabel;
-    edX1 : TEdit ;  edY1 : TEdit ;  edZ1 : TEdit;
+    gbFlags: TGroupBox;
+    imgItem: TImage;
+    lblArmor: TLabel;
+    lblArmorByType: TLabel;
+    lblArmorType: TLabel;
+    lblContType: TLabel;
+    lblEnchant: TLabel;
+    lblLevel: TLabel;
+    lblName: TLabel;
+    lblPosition: TLabel;
+    lblPosType: TLabel;
+    lblPrefix: TLabel;
+    lblSockets: TLabel;
+    lblStack: TLabel;
+    lblSuffix: TLabel;
+    lblWeaponDmg: TLabel;
+    lblX: TLabel;
+    lblX1: TLabel;
+    lblY: TLabel;
+    lblY1: TLabel;
+    lblZ: TLabel;
+    lblZ1: TLabel;
+    lbModList: TListBox;
 
-    edName  : TEdit;  lblName  : TLabel;  edNameById: TEdit;
-    edPrefix: TEdit;  lblPrefix: TLabel;
-    edSuffix: TEdit;  lblSuffix: TLabel;
 
-    edLevel    : TEdit;   lblLevel   : TLabel;
-    edStack    : TEdit;   lblStack   : TLabel;
-    edEnchant  : TEdit;   lblEnchant : TLabel;
-    edPosition : TEdit;   lblPosition: TLabel;
-    lblContType: TLabel;  lblPosType : TLabel;
-    edSockets  : TEdit;   lblSockets : TLabel;
-
-    edWeaponDmg: TEdit;  lblWeaponDmg: TLabel;
-    edArmor    : TEdit;  lblArmor    : TLabel;
-    edArmorType: TEdit;  lblArmorType: TLabel;  lblArmorByType: TLabel;
-
-    lbModList : TListBox;
-    lbAugments: TListBox;  lblAugments: TLabel;
-    sgEffects : TStringGrid;
+    pcItemInfo: TPageControl;
+    tsOtherInfo: TTabSheet;
+    tsPropInfo: TTabSheet;
+    tsCommonInfo: TTabSheet;
+    tsItemInfo: TTabSheet;
     procedure bbClearModClick(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure edSocketsChange(Sender: TObject);
@@ -78,21 +106,33 @@ uses
 
 procedure TfmItem.edStackChange(Sender: TObject);
 begin
-  if FMaxStack<0 then FMaxStack:=GtItemStack(FItem.ID);
-  if StrToIntDef(edStack.Text,1)>FMaxStack then
-    edStack.Text:=IntToStr(FMaxStack);
-  bbUpdate.Visible:=true;
+  if not edStack.ReadOnly then
+  begin
+    if FMaxStack<0 then FMaxStack:=GtItemStack(FItem.ID);
+    if StrToIntDef(edStack.Text,1)>FMaxStack then
+      edStack.Text:=IntToStr(FMaxStack);
+    bbUpdate.Visible:=true;
+  end;
 end;
 
 procedure TfmItem.edSocketsChange(Sender: TObject);
 begin
-  if StrToIntDef(edSockets.Text,0)>4 then
-    edSockets.Text:='4';
-  bbUpdate.Visible:=true;
+  if not edSockets.ReadOnly then
+  begin
+    if StrToIntDef(edSockets.Text,0)>4 then
+      edSockets.Text:='4';
+    bbUpdate.Visible:=true;
+  end;
 end;
 
 procedure TfmItem.bbUpdateClick(Sender: TObject);
+var
+  ls:string;
 begin
+  ls:=Application.MainForm.Caption;
+  ls[1]:='*';
+  Application.MainForm.Caption:=ls;
+
   FItem.Stack:=StrToIntDef(edStack.Text,1);
   FItem.Changed:=true;
   if FChar<>nil then FChar.Changed:=true;
@@ -189,27 +229,32 @@ begin
     edNameById.Text := GetTL2Item(aItem.ID);
   edPrefix  .Text := aItem.Prefix;
   edSuffix  .Text := aItem.Suffix;
+  if fmSettings.cbIdAsHex.Checked then
+    edItemId.Text:='0x'+HexStr(aItem.ID,16)
+  else
+    edItemId.Text:=IntToStr(aItem.ID);
 
   edX.Text:=FloatToStrF(aItem.Position1.X,ffFixed,-8,2);
   edY.Text:=FloatToStrF(aItem.Position1.Y,ffFixed,-8,2);
   edZ.Text:=FloatToStrF(aItem.Position1.Z,ffFixed,-8,2);
 
-  if (aItem.Position1.X=aItem.Position2.X) and
-     (aItem.Position1.Y=aItem.Position2.Y) and
-     (aItem.Position1.Z=aItem.Position2.Z) then
+  if (aItem.Position1.X=aItem.Coord.X) and
+     (aItem.Position1.Y=aItem.Coord.Y) and
+     (aItem.Position1.Z=aItem.Coord.Z) then
   begin
     gbCoords1.Visible:=false;
   end
   else
   begin
     gbCoords1.Visible:=true;
-    edX1.Text:=FloatToStrF(aItem.Position2.X,ffFixed,-8,2);
-    edY1.Text:=FloatToStrF(aItem.Position2.Y,ffFixed,-8,2);
-    edZ1.Text:=FloatToStrF(aItem.Position2.Z,ffFixed,-8,2);
+    edX1.Text:=FloatToStrF(aItem.Coord.X,ffFixed,-8,2);
+    edY1.Text:=FloatToStrF(aItem.Coord.Y,ffFixed,-8,2);
+    edZ1.Text:=FloatToStrF(aItem.Coord.Z,ffFixed,-8,2);
   end;
 
   edLevel   .Text    := IntToStr(aItem.Level);
   edStack   .Text    := IntToStr(aItem.Stack);
+
   edEnchant .Text    := IntToStr(aItem.EnchantCount);
   edPosition.Text    := IntToStr(aItem.Position);
   linv:=GetItemPosition(aItem.Position, lcont);
@@ -222,16 +267,16 @@ begin
   edArmorType   .Text   := IntToStr(aItem.ArmorType);
   lblArmorByType.Caption:= ''; //!!
 
-  cbFlag1.Checked:=aItem.Flags[0];
-  cbFlag2.Checked:=aItem.Flags[1];
+  cbFlag1.Checked:=aItem.Flags[0]; cbEquipped  .Checked:=aItem.Flags[0];
+  cbFlag2.Checked:=aItem.Flags[1]; cbEnabled   .Checked:=aItem.Flags[1];
   cbFlag3.Checked:=aItem.Flags[2];
   cbFlag4.Checked:=aItem.Flags[3];
-  cbFlag5.Checked:=aItem.Flags[4];
+  cbFlag5.Checked:=aItem.Flags[4]; cbVisible   .Checked:=aItem.Flags[4];
   cbFlag6.Checked:=aItem.Flags[5];
-  cbFlag7.Checked:=aItem.Flags[6];
+  cbFlag7.Checked:=aItem.Flags[6]; cbRecognized.Checked:=aItem.Flags[6];
 
   edUnkn6.Text:=IntToStr(Length(aItem.Unkn6));
-
+ {
   lbAugments.Clear;
   for i:=0 to High(aItem.Augments) do
     lbAugments.AddItem(aItem.Augments[i],nil);
@@ -265,7 +310,7 @@ begin
     inc(j);
   end;
   sgEffects.EndUpdate;
-
+}
   DrawItemIcon(aItem,imgItem);
 
   lbModList.Clear;

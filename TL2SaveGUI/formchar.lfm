@@ -14,9 +14,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsStatistic
+    ActivePage = tsStat
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'

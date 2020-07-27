@@ -26,15 +26,19 @@ type
     sbDown: TSpeedButton;
     sbAdd: TSpeedButton;
     sbDelete: TSpeedButton;
+    sbClipboard: TSpeedButton;
     procedure bbClearClick(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure sbAddClick(Sender: TObject);
+    procedure sbClipboardClick(Sender: TObject);
     procedure sbDeleteClick(Sender: TObject);
     procedure sbDownClick(Sender: TObject);
     procedure sbUpClick(Sender: TObject);
+    procedure sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
   private
     FSGame:TTL2SaveFile;
 
+    procedure CheckButtons;
     procedure FillGrid(agrid: TStringGrid; alist: TTL2ModList);
     procedure FillGridRow(agrid: TStringGrid; arow: integer; const amod: TTL2Mod);
     procedure FillGridRow(agrid: TStringGrid; arow: integer; const amod: TModData);
@@ -52,17 +56,31 @@ implementation
 {$R *.lfm}
 
 uses
+  ClipBrd,
   formSettings;
 
 { TfmModList }
 
 resourcestring
-  rsDoClear = 'Are you sure to clear mod list?';
+  rsDoClear  = 'Are you sure to clear mod list?';
+  rsReminder = 'Don''t forget to check modded objects.'#13#10+
+               'Or use "Fix Modded objects" item from Main menu';
+
+procedure TfmModList.CheckButtons;
+begin
+  sbDelete   .Enabled:=sgBound.RowCount>1;
+  sbUp       .Enabled:=sgBound.Row>1;
+  sbDown     .Enabled:=sgBound.Row<sgBound.RowCount-1;
+  sbClipboard.Enabled:=sgBound.RowCount>1;
+end;
 
 procedure TfmModList.sbUpClick(Sender: TObject);
 var
   i:integer;
 begin
+  sgBound.MoveColRow(false,sgBound.Row,sgBound.Row-1);
+  CheckButtons;
+{
   for i:=2 to sgBound.RowCount-1 do
   begin
     if sgBound.IsCellSelected[0,i] then
@@ -72,12 +90,21 @@ begin
       break;
     end;
   end;
+}
+end;
+
+procedure TfmModList.sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
+begin
+  CheckButtons;
 end;
 
 procedure TfmModList.sbDownClick(Sender: TObject);
 var
   i:integer;
 begin
+  sgBound.MoveColRow(false,sgBound.Row,sgBound.Row+1);
+  CheckButtons;
+{
   for i:=1 to sgBound.RowCount-2 do
   begin
     if sgBound.IsCellSelected[0,i] then
@@ -87,12 +114,16 @@ begin
       break;
     end;
   end;
+}
 end;
 
 procedure TfmModList.sbDeleteClick(Sender: TObject);
 var
   i:integer;
 begin
+  sgBound.DeleteRow(sgBound.Row);
+  CheckButtons;
+{
   for i:=1 to sgBound.RowCount-1 do
   begin
     if sgBound.IsCellSelected[0,i] then
@@ -102,6 +133,7 @@ begin
       break;
     end;
   end;
+}
 end;
 
 procedure TfmModList.bbClearClick(Sender: TObject);
@@ -112,6 +144,7 @@ begin
     sgRecent.Clear;
     sgFull  .Clear;
 
+    CheckButtons;
     bbUpdate.Enabled:=true;
   end;
 end;
@@ -132,17 +165,37 @@ begin
       idx:=IntPtr(cbModList.Items.Objects[idx]);
       lid:=llist[idx].id;
       found:=false;
-      for i:=1 to sgBound.Rowcount-1 do
+      for i:=1 to sgBound.RowCount-1 do
       begin
         found:=StrToInt(sgBound.Cells[2,i])=lid;
         if found then break;
       end;
       if not found then
       begin
-        sgBound.RowCount:=sgBound.RowCount+1;
+        if sgBound.RowCount=0 then
+          sgBound.RowCount:=2
+        else
+          sgBound.RowCount:=sgBound.RowCount+1;
         FillGridRow(sgBound,sgBound.RowCount-1,llist[idx]);
       end;
     end;
+  end;
+  CheckButtons;
+end;
+
+procedure TfmModList.sbClipboardClick(Sender: TObject);
+var
+  sl:TStringList;
+  i:integer;
+begin
+  sl:=TStringList.Create;
+  try
+    for i:=1 to sgBound.RowCount-1 do
+      sl.Add(sgBound.Cells[0,i]+' v.'+sgBound.Cells[1,i]);
+
+    Clipboard.asText:=sl.Text;
+  finally
+    sl.Free;
   end;
 end;
 
@@ -199,14 +252,20 @@ begin
   FillGrid(sgRecent,FSGame.RecentModHistory);
   FillGrid(sgFull  ,FSGame.FullModHistory);
 
+  CheckButtons;
+  SetFilter(FSGame.BoundMods);
   bbUpdate.Enabled:=false;
 end;
 
 procedure TfmModList.bbUpdateClick(Sender: TObject);
 var
   llist:TTL2ModList;
+  ls:string;
   i:integer;
 begin
+  ls:=Application.MainForm.Caption;
+  ls[1]:='*';
+  Application.MainForm.Caption:=ls;
   if sgBound.RowCount=0 then
     FSGame.BoundMods:=nil
   else
@@ -223,6 +282,7 @@ begin
   if sgRecent.RowCount=0 then FSGame.RecentModHistory:=nil;
   if sgFull  .RowCount=0 then FSGame.FullModHistory  :=nil;
   bbUpdate.Enabled:=false;
+  ShowMessage(rsReminder);
 end;
 
 end.

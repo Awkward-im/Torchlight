@@ -25,9 +25,10 @@ type
     FExt  :string;
 
     procedure SetOffset(aofs:integer);
+    procedure SetClass(aclass:TL2BaseClass);
 
   public
-    property SClass:TL2BaseClass read FClass write FClass;
+    property SClass:TL2BaseClass read FClass write SetClass;
     property Name:string         read FName  write FName;
     property Ext:string          read FExt   write FExt;
 
@@ -56,6 +57,15 @@ begin
     lblOffset.Caption:=''
   else
     lblOffset.Caption:='0x'+HexStr(aofs,8);
+end;
+
+procedure TfmButtons.SetClass(aclass:TL2BaseClass);
+begin
+  FClass:=aclass;
+  if aclass<>nil then
+    SetOffset(aclass.DataOffset)
+  else
+    SetOffset(-1);
 end;
 
 procedure TfmButtons.btnExportClick(Sender: TObject);

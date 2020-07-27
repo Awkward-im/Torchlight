@@ -53,7 +53,7 @@
         <Filename Value="sgexplorer.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="25"/>
+        <CursorPos Y="20"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -63,8 +63,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
-        <TopLine Value="160"/>
-        <CursorPos X="16" Y="218"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="166"/>
+        <CursorPos X="56" Y="276"/>
+        <FoldState Value=" T7GG- T3kA0O3 piejV0G4]9bjM084#"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -83,28 +85,6 @@
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2DB\tl2db.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="346"/>
-        <CursorPos X="41" Y="361"/>
-        <UsageCount Value="200"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\tl2types.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="200"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UsageCount Value="205"/>
-      </Unit>
-      <Unit>
         <Filename Value="formstatistic.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmStatistic"/>
@@ -112,8 +92,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formStatistic"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="39"/>
-        <CursorPos X="20" Y="56"/>
+        <TopLine Value="66"/>
+        <CursorPos X="21" Y="81"/>
         <UsageCount Value="202"/>
       </Unit>
       <Unit>
@@ -159,126 +139,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSettings"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="119"/>
-        <CursorPos X="3" Y="141"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="14" Y="13"/>
         <UsageCount Value="206"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2stats.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Stats"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="118"/>
-        <CursorPos X="25" Y="132"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2char.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Char"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="582"/>
-        <CursorPos X="40" Y="607"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2save.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="482"/>
-        <CursorPos Y="496"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2base.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Base"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="67"/>
-        <CursorPos Y="81"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2effects.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Effects"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="61"/>
-        <CursorPos X="15" Y="76"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2parse.inc"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="105"/>
-        <CursorPos X="12" Y="134"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2prepare.inc"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="25"/>
-        <CursorPos Y="33"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2common.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2item.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Item"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="48"/>
-        <CursorPos X="6" Y="58"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2map.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Map"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="208"/>
-        <CursorPos X="9" Y="223"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2quest.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Quest"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="229"/>
-        <CursorPos X="40" Y="254"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2statistic.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="201"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Save\tl2stream.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Stream"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="76"/>
-        <CursorPos X="14" Y="91"/>
-        <UsageCount Value="201"/>
       </Unit>
       <Unit>
         <Filename Value="formchar.pas"/>
@@ -288,9 +151,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formChar"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="359"/>
-        <CursorPos Y="489"/>
-        <FoldState Value=" T3lY035 pj6jN0f4]91kB0D6]9Bk103[I4Wk40J]9kPlD0^2]IQlS0S2R"/>
+        <TopLine Value="794"/>
+        <CursorPos X="31" Y="815"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -326,8 +188,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formUnits"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="74"/>
-        <CursorPos X="43" Y="92"/>
+        <TopLine Value="26"/>
+        <CursorPos X="20" Y="42"/>
+        <FoldState Value=" T3i50G2^"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -338,9 +201,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSkills"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="235"/>
-        <CursorPos X="23" Y="101"/>
-        <FoldState Value=" T3jK0G6 pifjS0D5 pj2jR0+6]9Al30E!"/>
+        <TopLine Value="390"/>
+        <CursorPos X="26" Y="406"/>
+        <FoldState Value=" T3jK0G6 pj2jW0D525r"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -351,9 +214,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItems"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="20"/>
-        <CursorPos Y="42"/>
-        <FoldState Value=" T3f0M2y"/>
+        <TopLine Value="39"/>
+        <CursorPos Y="60"/>
+        <FoldState Value=" T3iN041?"/>
         <UsageCount Value="204"/>
       </Unit>
       <Unit>
@@ -364,8 +227,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formButtons"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="59"/>
-        <CursorPos Y="64"/>
+        <TopLine Value="50"/>
+        <CursorPos X="19" Y="68"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -376,19 +239,20 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItem"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="204"/>
-        <CursorPos Y="226"/>
-        <FoldState Value=" T3iR0T;"/>
+        <TopLine Value="221"/>
+        <CursorPos X="39" Y="246"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="formeffects.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmEffects"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formEffects"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="28" Y="15"/>
+        <TopLine Value="4"/>
+        <CursorPos Y="22"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -397,7 +261,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="9"/>
         <CursorPos X="20" Y="28"/>
-        <UsageCount Value="155"/>
+        <UsageCount Value="201"/>
       </Unit>
       <Unit>
         <Filename Value="formmodlist.pas"/>
@@ -406,13 +270,155 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formModList"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="114"/>
-        <CursorPos X="25" Y="36"/>
-        <UsageCount Value="38"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="36"/>
+        <CursorPos Y="260"/>
+        <FoldState Value=" T3iP066 pjBjV0E5X"/>
+        <UsageCount Value="84"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\tl2db.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="346"/>
+        <CursorPos X="27" Y="368"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\tl2types.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2stats.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Stats"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="118"/>
+        <CursorPos X="25" Y="132"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2char.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Char"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="168"/>
+        <CursorPos X="11" Y="183"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2save.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="490"/>
+        <CursorPos Y="539"/>
+        <FoldState Value=" T440B T7IH{; T8K242 piZig2v T3l60LA]Gbjf0E7]9djY0F31111 T6l702D T1lA0HB]TXkD068[9580R1[c60lE2CBx"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2base.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Base"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="67"/>
+        <CursorPos Y="81"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2effects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Effects"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="127"/>
+        <CursorPos Y="146"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2parse.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="105"/>
+        <CursorPos X="12" Y="134"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2prepare.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="67"/>
+        <CursorPos X="35" Y="90"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2common.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2item.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Item"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="90"/>
+        <CursorPos X="8" Y="113"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2map.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Map"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="208"/>
+        <CursorPos X="9" Y="223"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2quest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Quest"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="229"/>
+        <CursorPos X="40" Y="254"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2statistic.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="97"/>
+        <CursorPos X="29" Y="112"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2stream.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Stream"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="76"/>
+        <CursorPos X="14" Y="91"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tl2active.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Active"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="72"/>
+        <CursorPos X="18" Y="86"/>
+        <UsageCount Value="25"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
+        <UsageCount Value="205"/>
       </Unit>
       <Unit>
         <Filename Value="formcommon.pas"/>
@@ -423,7 +429,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="15"/>
         <CursorPos X="11" Y="35"/>
-        <UsageCount Value="145"/>
+        <UsageCount Value="142"/>
       </Unit>
       <Unit>
         <Filename Value="formchar1.pas"/>
@@ -435,7 +441,7 @@
         <TopLine Value="243"/>
         <CursorPos Y="272"/>
         <FoldState Value=" T3je0P6s"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="unitcommon.pas"/>
@@ -443,7 +449,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="12" Y="70"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="23"/>
       </Unit>
       <Unit>
         <Filename Value="formpet.pas"/>
@@ -454,69 +460,69 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="138"/>
         <CursorPos X="18" Y="82"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="25"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\LazSVN\lcl\grids.pas"/>
         <UnitName Value="Grids"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="10082"/>
-        <CursorPos Y="10097"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="5381"/>
+        <CursorPos Y="5397"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\skills.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="143"/>
-        <CursorPos X="18" Y="157"/>
-        <UsageCount Value="7"/>
+        <TopLine Value="190"/>
+        <CursorPos Y="204"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\LazSVN\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="3920"/>
         <CursorPos Y="3944"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\LazSVN\lcl\include\picture.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="856"/>
         <CursorPos Y="871"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\classes.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="214"/>
         <CursorPos Y="221"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\settings.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="4"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\recipes.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="6"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\pets.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="98"/>
         <CursorPos Y="124"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="unitGlobal.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="21"/>
         <CursorPos X="19" Y="33"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\LazSVN\lcl\interfaces\win32\win32wscomctrls.pp"/>
@@ -524,14 +530,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="909"/>
         <CursorPos X="76" Y="924"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\items.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="24"/>
         <CursorPos X="45" Y="35"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\UpLazTrunk\lazarus\lcl\interfaces\gtk3\gtk3cellrenderer.pas"/>
@@ -539,107 +545,88 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="76"/>
         <CursorPos X="129" Y="92"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\UpLazTrunk\lazarus\lcl\interfaces\gtk3\gtk3objects.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="302"/>
         <CursorPos X="27" Y="318"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\LazSVN\lcl\include\treeview.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="46"/>
         <CursorPos Y="61"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\mods.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="42"/>
+        <CursorPos Y="46"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\SVN\LazSVN\lcl\themes.pas"/>
+        <UnitName Value="Themes"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="517"/>
+        <CursorPos X="22" Y="532"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\tl2db_items.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="29"/>
+        <CursorPos Y="46"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\tl2db_classes.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="246"/>
+        <CursorPos X="31" Y="271"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="20">
+    <JumpHistory HistoryIndex="8">
       <Position>
         <Filename Value="formsavegame.pas"/>
-        <Caret Line="223" TopLine="211"/>
+        <Caret Line="372" TopLine="362"/>
       </Position>
       <Position>
         <Filename Value="formsavegame.pas"/>
-        <Caret Line="225" TopLine="205"/>
+        <Caret Line="373" Column="17" TopLine="362"/>
       </Position>
       <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="39" Column="21" TopLine="29"/>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="230" TopLine="224"/>
       </Position>
       <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="38" Column="21" TopLine="28"/>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="233" Column="31" TopLine="225"/>
       </Position>
       <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="39" Column="21" TopLine="29"/>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="391" TopLine="359"/>
       </Position>
       <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="38" Column="21" TopLine="28"/>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="277" TopLine="224"/>
       </Position>
       <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="39" Column="21" TopLine="29"/>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="329" Column="63" TopLine="224"/>
       </Position>
       <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="38" Column="21" TopLine="28"/>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="277" Column="56" TopLine="225"/>
       </Position>
       <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="146" Column="40" TopLine="123"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="75" Column="16" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="161" TopLine="136"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="52" Column="8" TopLine="24"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="9" Column="27"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="134" Column="29" TopLine="132"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="133" TopLine="104"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="129" Column="35" TopLine="119"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="113" Column="12" TopLine="97"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="91" Column="17" TopLine="73"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="54" TopLine="54"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="174" Column="48" TopLine="147"/>
-      </Position>
-      <Position>
-        <Filename Value="formmodlist.pas"/>
-        <Caret Line="172" Column="9" TopLine="149"/>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="276" Column="56" TopLine="166"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -650,7 +637,10 @@
   <Debugging>
     <Watches>
       <Item>
-        <Expression Value="lnode"/>
+        <Expression Value="aChar"/>
+      </Item>
+      <Item>
+        <Expression Value="aChar.FModIds"/>
       </Item>
     </Watches>
   </Debugging>

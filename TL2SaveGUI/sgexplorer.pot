@@ -56,6 +56,12 @@ msgstr ""
 msgid "Are you sure to clear mod list?"
 msgstr ""
 
+#: formmodlist.rsreminder
+msgid ""
+"Don't forget to check modded objects.\n"
+"Or use \"Fix Modded objects\" item from Main menu"
+msgstr ""
+
 #: formsavegame.rscharacter
 msgid "Character"
 msgstr ""
@@ -138,11 +144,6 @@ msgstr ""
 
 #: formsavegame.rsunits
 msgid "Units"
-msgstr ""
-
-#: formskills.rsfreepoints
-msgctxt "formskills.rsfreepoints"
-msgid "Free points"
 msgstr ""
 
 #: tfmbuttons.btndelete.caption
@@ -412,6 +413,7 @@ msgid "Actions"
 msgstr ""
 
 #: tfmchar.tsstat.caption
+msgctxt "tfmchar.tsstat.caption"
 msgid "Stats"
 msgstr ""
 
@@ -425,12 +427,23 @@ msgid "View"
 msgstr ""
 
 #: tfmeffects.caption
+msgctxt "tfmeffects.caption"
 msgid "Effects"
 msgstr ""
 
 #: tfmeffects.lblaugments.caption
 msgctxt "tfmeffects.lblaugments.caption"
 msgid "Augments"
+msgstr ""
+
+#: tfmeffects.lbleffects.caption
+msgctxt "tfmeffects.lbleffects.caption"
+msgid "Effects"
+msgstr ""
+
+#: tfmeffects.lblstats.caption
+msgctxt "tfmeffects.lblstats.caption"
+msgid "Stats"
 msgstr ""
 
 #: tfmeffects.sgeffects.columns[0].title.caption
@@ -448,6 +461,11 @@ msgctxt "tfmeffects.sgeffects.columns[2].title.caption"
 msgid "Name"
 msgstr ""
 
+#: tfmeffects.sgeffects.columns[3].title.caption
+msgctxt "tfmeffects.sgeffects.columns[3].title.caption"
+msgid "Value"
+msgstr ""
+
 #: tfmeffects.sgstats.columns[0].title.caption
 msgctxt "tfmeffects.sgstats.columns[0].title.caption"
 msgid "Title"
@@ -458,17 +476,46 @@ msgctxt "tfmeffects.sgstats.columns[1].title.caption"
 msgid "Value"
 msgstr ""
 
+#: tfmitem.bbclearmod.hint
+msgid "Clear mod list"
+msgstr ""
+
 #: tfmitem.bbupdate.caption
 msgctxt "tfmitem.bbupdate.caption"
 msgid "&Update"
 msgstr ""
 
+#: tfmitem.cbactivated.caption
+msgid "cbActivated"
+msgstr ""
+
+#: tfmitem.cbenabled.caption
+msgctxt "tfmitem.cbenabled.caption"
+msgid "Enabled"
+msgstr ""
+
+#: tfmitem.cbequipped.caption
+msgctxt "tfmitem.cbequipped.caption"
+msgid "Equipped"
+msgstr ""
+
 #: tfmitem.cbflag1.hint
+msgctxt "tfmitem.cbflag1.hint"
 msgid "Equipped"
 msgstr ""
 
 #: tfmitem.cbflag7.hint
+msgctxt "tfmitem.cbflag7.hint"
 msgid "Recognized"
+msgstr ""
+
+#: tfmitem.cbrecognized.caption
+msgctxt "tfmitem.cbrecognized.caption"
+msgid "Recognized"
+msgstr ""
+
+#: tfmitem.cbvisible.caption
+msgid "?Visible"
 msgstr ""
 
 #: tfmitem.gbcoords.caption
@@ -478,7 +525,7 @@ msgstr ""
 
 #: tfmitem.gbcoords1.caption
 msgctxt "tfmitem.gbcoords1.caption"
-msgid "Coordinates (main)"
+msgid "Altered"
 msgstr ""
 
 #: tfmitem.gbflags.caption
@@ -498,11 +545,6 @@ msgstr ""
 #: tfmitem.lblarmortype.caption
 msgctxt "tfmitem.lblarmortype.caption"
 msgid "Armor type"
-msgstr ""
-
-#: tfmitem.lblaugments.caption
-msgctxt "tfmitem.lblaugments.caption"
-msgid "Augments"
 msgstr ""
 
 #: tfmitem.lblconttype.caption
@@ -590,19 +632,21 @@ msgctxt "tfmitem.lblz1.caption"
 msgid "Z:"
 msgstr ""
 
-#: tfmitem.sgeffects.columns[0].title.caption
-msgctxt "tfmitem.sgeffects.columns[0].title.caption"
-msgid "List"
+#: tfmitem.tscommoninfo.caption
+msgctxt "tfmitem.tscommoninfo.caption"
+msgid "Common"
 msgstr ""
 
-#: tfmitem.sgeffects.columns[1].title.caption
-msgctxt "tfmitem.sgeffects.columns[1].title.caption"
-msgid "Effect"
+#: tfmitem.tsiteminfo.caption
+msgid "Item"
 msgstr ""
 
-#: tfmitem.sgeffects.columns[2].title.caption
-msgctxt "tfmitem.sgeffects.columns[2].title.caption"
-msgid "Name"
+#: tfmitem.tsotherinfo.caption
+msgid "Other"
+msgstr ""
+
+#: tfmitem.tspropinfo.caption
+msgid "Prop"
 msgstr ""
 
 #: tfmitems.lblarmor.caption
@@ -776,6 +820,16 @@ msgctxt "tfmmodlist.bbupdate.caption"
 msgid "&Update"
 msgstr ""
 
+#: tfmmodlist.caption
+msgctxt "tfmmodlist.caption"
+msgid "Копиров&ать"
+msgstr ""
+
+#: tfmmodlist.hint
+msgctxt "tfmmodlist.hint"
+msgid "Копировать"
+msgstr ""
+
 #: tfmmodlist.lblbound.caption
 msgid "Bound"
 msgstr ""
@@ -786,6 +840,10 @@ msgstr ""
 
 #: tfmmodlist.lblrecent.caption
 msgid "Recent"
+msgstr ""
+
+#: tfmmodlist.sbclipboard.hint
+msgid "Copy list to clipboard"
 msgstr ""
 
 #: tfmmodlist.sgbound.columns[0].title.caption
@@ -942,6 +1000,11 @@ msgstr ""
 
 #: tfmsavefile.actfileexit.caption
 msgid "E&xit"
+msgstr ""
+
+#: tfmsavefile.actfilefixmodded.caption
+msgctxt "tfmsavefile.actfilefixmodded.caption"
+msgid "Fix Modded objects"
 msgstr ""
 
 #: tfmsavefile.actfileopen.caption
@@ -1319,26 +1382,6 @@ msgstr ""
 #: tfmunits.btnexport.caption
 msgctxt "tfmunits.btnexport.caption"
 msgid "Export"
-msgstr ""
-
-#: tl2common.rscasual
-msgctxt "tl2common.rscasual"
-msgid "Casual"
-msgstr ""
-
-#: tl2common.rsexpert
-msgctxt "tl2common.rsexpert"
-msgid "Expert"
-msgstr ""
-
-#: tl2common.rsnormal
-msgctxt "tl2common.rsnormal"
-msgid "Normal"
-msgstr ""
-
-#: tl2common.rsveteran
-msgctxt "tl2common.rsveteran"
-msgid "Veteran"
 msgstr ""
 
 #: tl2db.rshp

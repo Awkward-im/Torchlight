@@ -246,7 +246,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field2'
+            Title.Caption = 'By Pet?'
           end        
           item
             SizePriority = 0
