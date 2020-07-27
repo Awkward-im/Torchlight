@@ -6,6 +6,7 @@ function GetItemMods(const aid:TL2ID):string;
 function GetItemIcon(const aid:TL2ID):string;
 function GtItemStack(const aid:TL2ID):integer;
 function GetItemPosition(apos:integer; out cont :string):string;
+function GetItemUsability(const aid:TL2ID):integer;
 function GetAlt(const aid:TL2ID; alist:TTL2ModList; out newid:TL2ID):TL2ID;
 
 function GetTL2Prop(const aid:TL2ID; out amods:string):string; overload;
@@ -37,6 +38,11 @@ end;
 function GetItemIcon(const aid:TL2ID):string;
 begin
   result:=GetTextValue(aid,'items','icon');
+end;
+
+function GetItemUsability(const aid:TL2ID):integer;
+begin
+  result:=GetIntValue(aid,'items','usable');
 end;
 
 function GtItemStack(const aid:TL2ID):integer;

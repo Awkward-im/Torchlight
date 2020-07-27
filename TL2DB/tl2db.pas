@@ -33,6 +33,7 @@ function GetTL2Quest(const aid:TL2ID                  ):string; overload;
 
 function GetTL2Mob  (const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Mob  (const aid:TL2ID                  ):string; overload;
+function GetMobMods (const aid:TL2ID):string;
 
 function GetTextValue(const aid:TL2ID; const abase, afield:string):string;
 function GetIntValue (const aid:TL2ID; const abase, afield:string):integer;
@@ -247,12 +248,36 @@ begin
   result:=GetTL2Mob(aid,lmods);
 end;
 
+function GetMobMods(const aid:TL2ID):string;
+begin
+  result:=GetTextValue(aid,'mobs','modid');
+end;
+
 //===== Database load =====
+
+function CopyToFile(db:PSQLite3; afname:PChar):integer;
+var
+  pFile  :PSQLite3;
+  pBackup:PSQLite3Backup;
+begin
+  result:=sqlite3_open(afname, @pFile);
+  if result=SQLITE_OK then
+  begin
+    pBackup:=sqlite3_backup_init(pFile, 'main', db, 'main');
+    if pBackup<>nil then
+    begin
+      sqlite3_backup_step  (pBackup, -1);
+      sqlite3_backup_finish(pBackup);
+    end;
+    result:=sqlite3_errcode(pFile);
+  end;
+  sqlite3_close(pFile);
+end;
 
 function CopyFromFile(db:PSQLite3; afname:PChar):integer;
 var
-  pFile  :PSQLite3;        // Database connection opened on zFilename
-  pBackup:PSQLite3Backup;  // Backup object used to copy data
+  pFile  :PSQLite3;
+  pBackup:PSQLite3Backup;
 begin
   result:=sqlite3_open(afname, @pFile);
   if result=SQLITE_OK then

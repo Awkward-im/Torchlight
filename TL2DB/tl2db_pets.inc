@@ -12,9 +12,11 @@ type
 function GetTL2Pet (const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Pet (const aid:TL2ID                  ):string; overload;
 
+function GetPetMods(const aid:TL2ID):string;
 function GetPetIcon(const aid:TL2ID):string;
 
 procedure GetPetList(out alist:tPetArray);
+function  GetDefaultPet:TL2ID;
 
 {$ELSE}
 
@@ -77,6 +79,11 @@ begin
   result:=GetTextValue(aid,'pets','icon');
 end;
 
+function GetPetMods(const aid:TL2ID):string;
+begin
+  result:=GetTextValue(aid,'pets','modid');
+end;
+
 //----- List -----
 
 procedure GetPetList(out alist:tPetArray);
@@ -127,6 +134,11 @@ begin
   begin
     alist:=Copy(DefaultPets);
   end;
+end;
+
+function GetDefaultPet:TL2ID;
+begin
+  result:=DefaultPets[0].id;
 end;
 
 {$ENDIF}

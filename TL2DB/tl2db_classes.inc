@@ -15,6 +15,8 @@ function GetTL2Class(const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Class(const aid:TL2ID                  ):string; overload;
 function GetTL2Class(const aname:string; out aid:TL2ID):string; overload;
 
+function GetClassMods(const aid:TL2ID):string;
+
 function GetClassIcon(const aid:TL2ID):string;
 
 function GetClassInfo(const aid:TL2ID; out aicon:string; out astr, adex, aint, avit:integer):string;
@@ -67,6 +69,11 @@ begin
   end
   else
     result:=GetById(aid,'classes','',amods,aname);
+end;
+
+function GetClassMods(const aid:TL2ID):string;
+begin
+  result:=GetTextValue(aid,'classes','modid');
 end;
 
 function GetTL2Class(const aid:TL2ID; out amods:string):string;
@@ -261,7 +268,17 @@ begin
     end;
   end
   else
-    SetLength(alist,0);
+  begin
+    SetLength(alist,Length(DefaultClasses));
+    for i:=0 to High(DefaultClasses) do
+    begin
+      alist[i].id    :=DefaultClasses[i].id;
+      alist[i].name  :=DefaultClasses[i].name;
+      alist[i].title :=DefaultClasses[i].title;
+      alist[i].icon  :='';
+      alist[i].gender:=DefaultClasses[i].name[Length(DefaultClasses[i].name)];
+    end;
+  end;
 end;
 
 {$ENDIF}
