@@ -179,7 +179,7 @@ consumables for music skills or combos. It can be an item or just stat.
   -----------------------
   2  - [TELEPORT ALT] Jump Rift - heal is not necessary
   levelup: cooldown and mana
-  tiers: distance
+  tiers: distance; exlosion note at start point
   ru: Когда тебя заслушались и не заметили, как ты ушёл
   --
   en: When you were listened to and not noticed, as you left
@@ -247,7 +247,7 @@ consumables for music skills or combos. It can be an item or just stat.
   -----------------------
   2  - [TELEPORT ALT] Jump Rift - heal is not necessary
   levelup: cooldown and mana
-  tiers: distance
+  tiers: distance; poison cloud at start point;3 - knock back mobs at dest point
   ru: Прыжок, ещё прыжок...
   --
   en: Jump, another jump...
