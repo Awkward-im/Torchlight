@@ -3,9 +3,9 @@ Character, pet or mob (combined)
 ================================
 if data not defined, it filled by 0xFF bytes usually
 
-1 byte   - signature (0xFF for player or pet, 0x02 for others)
+1 byte   - signature (0xFF for player or main pet, 0x02 for others)
 1 byte   - (bool?) 0
-1 byte   - (bool?) 0 usually (but saw 1 too)
+1 byte   - looks like "hidden" flag
 8 bytes  - ID of current character image (like morphed pet)
 8 bytes  - ID (original) if pet morphed
 8 bytes  - unknown (changeable data)
@@ -38,7 +38,7 @@ if not pet (char only)
   x bytes - (ShortString) 'PLAYER' - don't know what is for
 4 bytes  - 0 usually
 4 bytes  - Looks like unknown player statistic value (same number)
-12 bytes - (3 float) char coords
+12 bytes - (3 float) "Position"
 direction next
   12 bytes - (3 float) i think, "Forward"
   4 bytes  - (float?) 0 usually
@@ -46,7 +46,7 @@ direction next
   4 bytes  - (float?) 0 usually
   12 bytes - (3 float) i think, "Right"
   4 bytes  - (float?) 0 usually
-  12 bytes - unknown, 0 usually
+  12 bytes - (3 float), 0 usually, "Scale"
   4 bytes  - (float) 1.0 usually
 4 bytes  - (integer) level
 4 bytes  - (integer) Experience
@@ -78,10 +78,10 @@ Spells - 4 times
   x bytes - (ShartString) spell name
   4 bytes - Spell level
 8 bytes  - unknown (0)
-4 bytes  - has 0 for char, 0x0197 for pet (magic def/atk?)
-4 bytes  - has 0 for char, 0x0197 for pet
-4 bytes  - has 0 for char, 0x0197 for pet
-4 bytes  - has 0 for char, 0x0197 for pet
+4 bytes  - has 0 for char, armor fire
+4 bytes  - has 0 for char, armor ice
+4 bytes  - has 0 for char, armor electric
+4 bytes  - has 0 for char, armor poison
 4 bytes  - 0 usually
 4 bytes  - (integer) strength
 4 bytes  - (integer) dexterity

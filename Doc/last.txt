@@ -64,9 +64,12 @@ x bytes  - list of elements, 31 bytes each
      4 bytes - value, looks like player level at first entrance
 
 -- Unknown
-9 bytes - 1 byte and 4 2-bytes data?
+9 bytes - unknown
+  looks like
+  1b   - number of next "word"
+  4*2b - values
 
--- Stats (like achievments mainly, Check MEDIA\STAT folder)
+-- player killers
 4 bytes - list count.
 x bytes - list of elements, 12 bytes each
   8 bytes - (Integer64) - STAT ID
