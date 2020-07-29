@@ -31,7 +31,7 @@ type
     function CheckForMods(alist:TTL2ModList):boolean;
 
   private
-    FPrefix   :string;
+    FPrefix:string;
 
     FIsProp:boolean;
 
@@ -157,9 +157,11 @@ var
 begin
   DataOffset:=AStream.Position;
 
+DbgLn('start item');
   FSign:=Check(AStream.ReadByte,'item sign_'+HexStr(AStream.Position,8),2); // "2" (0 for gold)
   FID    :=TL2ID(AStream.ReadQWord);  // Item ID
   FName  :=AStream.ReadShortString(); // name
+DbgLn('item name '+string(widestring(FName)));
   FPrefix:=AStream.ReadShortString(); // prefix
   FSuffix:=AStream.ReadShortString(); // suffix
 
@@ -242,6 +244,7 @@ X bytes  struct  list of 12-byte-long damage things{
   FAugments:=AStream.ReadShortStringList;
 
   FStats:=AStream.ReadIdValList;
+DbgLn('end item'#13#10'---------');
 
   LoadBlock(AStream);
 end;

@@ -22,6 +22,7 @@ type
 
   TfmSettings = class(TForm)
     bbSave: TBitBtn;
+    cbReloadDB: TCheckBox;
     rbAdditional: TRadioButton;
     rbBaseOnly: TRadioButton;
     rbShowAll: TRadioButton;
@@ -82,6 +83,7 @@ const
   sClass      = 'editclass';
   sBasic      = 'editbasic';
   sBackup     = 'backup';
+  sReloadDB   = 'reloaddb';
 
 var
   ShowMode:integer;
@@ -100,6 +102,7 @@ begin
   config.WriteString (sSettings,sDBFile    ,edDBFile    .Text);
   config.WriteString (sSettings,sIcondir   ,edIconDir   .Text);
   config.WriteBool   (sSettings,sBackup    ,cbBackup    .Checked);
+  config.WriteBool   (sSettings,sReloadDB  ,cbReloadDB  .Checked);
 
   config.WriteInteger(sSettings,sShowWhat  ,ShowMode);
   config.WriteBool   (sSettings,sShowTech  ,cbShowTech  .Checked);
@@ -121,6 +124,7 @@ begin
   edDBFile    .Text   :=config.ReadString (sSettings,sDBFile    ,'');
   edIconDir   .Text   :=config.ReadString (sSettings,sIconDir   ,'icons');
   cbBackup    .Checked:=config.ReadBool   (sSettings,sBackup    ,true);
+  cbReloadDB  .Checked:=config.ReadBool   (sSettings,sReloadDB  ,false);
 
   ShowMode            :=config.ReadInteger(sSettings,sShowWhat  ,smJustBase);
   cbShowTech  .Checked:=config.ReadBool   (sSettings,sShowTech  ,false);

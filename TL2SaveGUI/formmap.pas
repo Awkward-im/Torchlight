@@ -13,7 +13,6 @@ type
   { TfmMap }
 
   TfmMap = class(TForm)
-    btnQItemExport: TButton;
     btnTriggerExport: TButton;
     sgLayouts: TStringGrid;
     lblTotalTime: TLabel;
@@ -22,14 +21,12 @@ type
     lblCTimeValue: TLabel;
     lblMapName: TLabel;
     lblName: TLabel;
-    lblQuestItem : TLabel;  lblQItemCount: TLabel;
     lblTriggers: TLabel;  lblTriggerCount: TLabel;
     lblMatrix  : TLabel;  lblMatrixValue : TLabel;
     lblLayouts: TLabel;
     lbUnknList:TListBox;
     sgLayData: TStringGrid;
     procedure btnTriggerExportClick(Sender: TObject);
-    procedure btnQItemExportClick(Sender: TObject);
   private
     SGame:TTL2SaveFile;
     MapIndex:integer;
@@ -48,10 +45,11 @@ implementation
 
 uses
   tl2db,
-  tl2common;
+  tl2common,
+  formSettings;
 
 resourcestring
-  rsSaveUnknown = 'Save Unknown data';
+//  rsSaveUnknown = 'Save Unknown data';
   rsSaveTrigger = 'Save Trigger data';
 
 procedure TfmMap.btnTriggerExportClick(Sender: TObject);
@@ -83,38 +81,6 @@ begin
   ldlg.Free;
 end;
 
-procedure TfmMap.btnQItemExportClick(Sender: TObject);
-var
-  lMap:TTL2Map;
-  ldlg:TSaveDialog;
-  lstrm:TMemoryStream;
-  i:integer;
-begin
-  lMap:=SGame.Maps[MapIndex];
-  ldlg:=TSaveDialog.Create(nil);
-  ldlg.Title:=rsSaveUnknown;
-  ldlg.DefaultExt:='.dmp';
-  if ldlg.Execute then
-  begin
-    if Length(lMap.QuestItems)>0 then
-    begin
-      lstrm:=TMemoryStream.Create;
-      try
-        lstrm.WriteDWord(Length(lMap.QuestItems));
-        for i:=0 to High(lMap.QuestItems) do
-        begin
-          lstrm.WriteDWord(lMap.QuestItems[i].DataSize);
-          lMap.QuestItems[i].SaveBlock(lstrm);
-        end;
-        lstrm.SaveToFile(ldlg.FileName);
-      finally
-        lstrm.Free;
-      end;
-    end;
-  end;
-  ldlg.Free;
-end;
-
 procedure TfmMap.FillInfo(aSGame:TTL2SaveFile; idx:integer);
 var
   lMap:TTL2Map;
@@ -132,7 +98,6 @@ begin
 //    IntToStr(trunc(     lMap.CurrentTime))+':'+
 //    IntToStr(Trunc(Frac(lMap.CurrentTime)*60));
   lblTriggerCount.Caption:=IntToStr(Length(lMap.Triggers));
-  lblQItemCount.Caption:=IntToStr(Length(lMap.QuestItems));
   lblMatrixValue .Caption:=IntToStr(lMap.FoW_X)+' x '+IntToStr(lMap.FoW_Y);
 
   lbUnknList.Clear;
@@ -149,9 +114,17 @@ begin
   sgLayData.RowCount:=1+Length(lMap.LayData);
   for i:=0 to High(lMap.LayData) do
   begin
-    sgLayData.Cells[0,i+1]:='0x'+IntToHex(lMap.LayData[i].id,16);
+    if fmSettings.cbIdAsHex.Checked then
+    begin
+      sgLayData.Cells[0,i+1]:='0x'+IntToHex(lMap.LayData[i].id,16);
+      sgLayData.Cells[2,i+1]:='0x'+IntToHex(lMap.LayData[i].unkn,16);
+    end
+    else
+    begin
+      sgLayData.Cells[0,i+1]:=IntToStr(lMap.LayData[i].id);
+      sgLayData.Cells[2,i+1]:=IntToStr(lMap.LayData[i].unkn);
+    end;
     sgLayData.Cells[1,i+1]:=IntToStr(lMap.LayData[i].value);
-    sgLayData.Cells[2,i+1]:='0x'+IntToHex(lMap.LayData[i].unkn,16);
   end;
 end;
 

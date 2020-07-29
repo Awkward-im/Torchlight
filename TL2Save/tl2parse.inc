@@ -114,10 +114,12 @@ begin
 
   FQuests:=ReadQuests(FStream);
 
-  //----- ?? Skill [??learn] history (check order) -----
+  //-----  Skill [learn] history (check order) -----
 
   lcnt :=FStream.ReadWord; // same as next history list count
   lcnt1:=FStream.ReadWord;
+if lcnt<>lcnt1 then
+DbgLn('skill learn count: '+HexStr(lcnt,4)+'x'+HexStr(lcnt1,4));
   SetLength(FHistory,lcnt1);
   if lcnt1>0 then
     FStream.Read(FHistory[0],lcnt1*SizeOf(TL2ID));
@@ -129,7 +131,7 @@ begin
   if lcnt>0 then
     FStream.Read(FRecipes[0],lcnt*SizeOf(TL2ID));
 
-  //===== REST of file (statistic??) =====
+  //===== REST of file (statistic) =====
 
   FLastBlock:=ReadLastBlock(FStream);
 

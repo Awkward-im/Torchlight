@@ -55,12 +55,12 @@ begin
     lvUnitList.Columns[0].Caption:=IntToStr(Item.Index+1)+' / '+IntToStr(lvUnitList.Items.Count);
     lunit:=FMap.MobInfos[UIntPtr(Item.Data)];
 
-    fmButtons.btnExport.Enabled:=true;
-    fmButtons.Name  :='unit '+IntToStr(Item.Index);
-    fmButtons.SClass:=lunit;
-
     FChar.FillInfo(lunit);
     FChar.Visible:=true;
+
+    fmButtons.btnExport.Enabled:=true;
+    fmButtons.Name  :='unit ['+IntToStr(Item.Index)+'] '+lunit.Name;
+    fmButtons.SClass:=lunit;
   end;
 end;
 
@@ -88,7 +88,7 @@ begin
   begin
     for i:=0 to High(FMap.MobInfos) do
     begin
-      if FMap.MobInfos[i].Sign2=0 then ls:='' else ls:='['+IntToStr(FMap.MobInfos[i].Sign2)+'] ';
+      if not FMap.MobInfos[i].Hidden then ls:='' else ls:='[*] ';
       lvUnitList.AddItem(ls+FMap.MobInfos[i].Name,TObject(IntPtr(i)));
     end;
     // Assign images

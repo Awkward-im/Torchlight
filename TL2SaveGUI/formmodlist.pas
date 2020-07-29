@@ -75,22 +75,9 @@ begin
 end;
 
 procedure TfmModList.sbUpClick(Sender: TObject);
-var
-  i:integer;
 begin
   sgBound.MoveColRow(false,sgBound.Row,sgBound.Row-1);
   CheckButtons;
-{
-  for i:=2 to sgBound.RowCount-1 do
-  begin
-    if sgBound.IsCellSelected[0,i] then
-    begin
-      sgBound.MoveColRow(false,i,i-1);
-      bbUpdate.Enabled:=true;
-      break;
-    end;
-  end;
-}
 end;
 
 procedure TfmModList.sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
@@ -99,41 +86,15 @@ begin
 end;
 
 procedure TfmModList.sbDownClick(Sender: TObject);
-var
-  i:integer;
 begin
   sgBound.MoveColRow(false,sgBound.Row,sgBound.Row+1);
   CheckButtons;
-{
-  for i:=1 to sgBound.RowCount-2 do
-  begin
-    if sgBound.IsCellSelected[0,i] then
-    begin
-      sgBound.MoveColRow(false,i,i+1);
-      bbUpdate.Enabled:=true;
-      break;
-    end;
-  end;
-}
 end;
 
 procedure TfmModList.sbDeleteClick(Sender: TObject);
-var
-  i:integer;
 begin
   sgBound.DeleteRow(sgBound.Row);
   CheckButtons;
-{
-  for i:=1 to sgBound.RowCount-1 do
-  begin
-    if sgBound.IsCellSelected[0,i] then
-    begin
-      sgBound.DeleteRow(i);
-      bbUpdate.Enabled:=true;
-      break;
-    end;
-  end;
-}
 end;
 
 procedure TfmModList.bbClearClick(Sender: TObject);

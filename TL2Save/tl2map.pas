@@ -221,6 +221,7 @@ var
   i,lcnt:integer;
 begin
   DataOffset:=AStream.Position;
+DbgLn('start map');
 
   //??
   Unkn0:=Check(AStream.ReadDword,'map 0_'+HexStr(AStream.Position,8),0); // 0, 2, 1 - for repeated
@@ -229,12 +230,17 @@ begin
   FTime       :=AStream.ReadFloat;
 
   //??
-  UnknF:=AStream.ReadFloat; // 1.0 3A83126F for Zorro  0,00100000004749745
+  UnknF:=Check(AStream.ReadFloat,'map pre-name '+HexStr(AStream.Position,8),1.0);
+  // 1.0 3A83126F for Zorro  0,00100000004749745
 
   FName:=AStream.ReadShortString;
 
   //??
   Unkn1:=Check(AStream.ReadWord,'pre-matrix of '+UTF8Encode(FName),0);   // 0 (1 for Lesya)
+  {  !! check char.
+    1 - NPC or not interact?
+    256 for Alpha - quest boss?
+  }
 
   //----- i guess, this is Fog of War setings (what else?)
 
@@ -252,11 +258,12 @@ begin
   if lcnt>0 then
     AStream.Read(FLayData[0],lcnt*SizeOf(TTL2LayData));
 
+  //??
   FUnknList:=AStream.ReadIdList;
 
-  //----- units: Mobs and similar? -----
+  //----- Units: Mobs and NPCs -----
 
-  lcnt:=AStream.ReadDWord;  // mob count?
+  lcnt:=AStream.ReadDWord;
   SetLength(FMobInfos,lcnt);
   for i:=0 to lcnt-1 do
   begin
@@ -285,6 +292,7 @@ begin
   //??
   Check(AStream.ReadDWord,'map-end_'+HexStr(AStream.Position,8),0); // 0
 
+DbgLn('end map'#13#10'---------');
   LoadBlock(AStream);
 end;
 
@@ -329,6 +337,7 @@ begin
   if Length(FLayData)>0 then
     AStream.Write(FLayData[0],Length(FLayData)*SizeOf(TTL2LayData));
 
+  //??
   AStream.WriteIdList(FUnknList);
 
   //----- units: Mobs and similar? -----
@@ -338,7 +347,7 @@ begin
     FMobInfos[i].SaveToStream(AStream);
 
   //----- Props (Items) -----
-  //!! Check on same as items
+
   WritePropList(AStream);
 
   //----- Quest items -----

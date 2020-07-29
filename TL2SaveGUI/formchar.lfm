@@ -14,9 +14,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsStat
+    ActivePage = tsItems
     Align = alClient
-    TabIndex = 0
+    TabIndex = 5
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -436,7 +436,7 @@ object fmChar: TfmChar
       object lblMorphTime: TLabel
         Left = 92
         Height = 15
-        Top = 199
+        Top = 239
         Width = 66
         Caption = 'Morph Time'
         ParentColor = False
@@ -460,7 +460,7 @@ object fmChar: TfmChar
       object lblNew: TLabel
         Left = 368
         Height = 15
-        Top = 144
+        Top = 184
         Width = 256
         Alignment = taRightJustify
         Anchors = [akTop, akLeft, akRight]
@@ -471,34 +471,17 @@ object fmChar: TfmChar
       object cbMorph: TComboBox
         Left = 4
         Height = 23
-        Top = 164
+        Top = 204
         Width = 288
         ItemHeight = 15
         OnChange = cbMorphChange
         Style = csDropDownList
         TabOrder = 3
       end
-      object edSkin: TEdit
-        Left = 4
-        Height = 23
-        Top = 271
-        Width = 48
-        NumbersOnly = True
-        OnChange = ToSetUpdate
-        TabOrder = 5
-      end
-      object lblSkin: TLabel
-        Left = 60
-        Height = 15
-        Top = 274
-        Width = 22
-        Caption = 'Skin'
-        ParentColor = False
-      end
       object seScale: TFloatSpinEdit
         Left = 4
         Height = 23
-        Top = 109
+        Top = 147
         Width = 65
         Increment = 0.05
         MaxValue = 2
@@ -510,7 +493,7 @@ object fmChar: TfmChar
       object lblScale: TLabel
         Left = 78
         Height = 15
-        Top = 114
+        Top = 152
         Width = 27
         Caption = 'Scale'
         ParentColor = False
@@ -518,7 +501,7 @@ object fmChar: TfmChar
       object edMorphTime: TEdit
         Left = 4
         Height = 23
-        Top = 195
+        Top = 235
         Width = 80
         NumbersOnly = True
         OnChange = ToSetUpdate
@@ -543,7 +526,7 @@ object fmChar: TfmChar
       object lblCurrent: TLabel
         Left = 4
         Height = 15
-        Top = 144
+        Top = 184
         Width = 76
         Caption = 'Morphed view'
         ParentColor = False
@@ -551,29 +534,11 @@ object fmChar: TfmChar
       object lblMorphNote: TLabel
         Left = 4
         Height = 15
-        Top = 226
+        Top = 266
         Width = 131
         Caption = '* Permanent time is 5555'
         ParentColor = False
         Visible = False
-      end
-      object cbSkins: TComboBox
-        Left = 128
-        Height = 23
-        Top = 271
-        Width = 192
-        ItemHeight = 15
-        Style = csDropDownList
-        TabOrder = 6
-      end
-      object gbWardrobe: TGroupBox
-        Left = 336
-        Height = 190
-        Top = 227
-        Width = 288
-        Anchors = [akTop, akLeft, akRight]
-        Caption = 'Wardrobe'
-        TabOrder = 9
       end
       object cbCheater: TCheckBox
         Left = 4
@@ -583,7 +548,7 @@ object fmChar: TfmChar
         Anchors = [akLeft, akBottom]
         Caption = 'Cheater'
         OnChange = ToSetUpdate
-        TabOrder = 10
+        TabOrder = 7
       end
       object edClass: TEdit
         Left = 4
@@ -604,14 +569,14 @@ object fmChar: TfmChar
       object cbNewClass: TComboBox
         Left = 336
         Height = 23
-        Top = 164
+        Top = 204
         Width = 288
         Anchors = [akTop, akRight]
         AutoSize = False
         ItemHeight = 15
         OnChange = cbNewClassChange
         ReadOnly = True
-        TabOrder = 8
+        TabOrder = 6
       end
       object gbGender: TGroupBox
         Left = 271
@@ -621,7 +586,7 @@ object fmChar: TfmChar
         Caption = 'Gender'
         ClientHeight = 40
         ClientWidth = 116
-        TabOrder = 7
+        TabOrder = 5
         object rbMale: TRadioButton
           Left = 8
           Height = 19
@@ -653,22 +618,71 @@ object fmChar: TfmChar
       object edNewClass: TEdit
         Left = 368
         Height = 23
-        Top = 195
+        Top = 235
         Width = 256
         Anchors = [akTop, akRight]
-        TabOrder = 11
+        TabOrder = 8
       end
       object bbManual: TBitBtn
         Left = 336
         Height = 30
-        Top = 192
+        Top = 232
         Width = 27
         Anchors = [akTop, akRight]
         Default = True
         Kind = bkYes
         Margin = 3
         OnClick = bbManualClick
-        TabOrder = 12
+        TabOrder = 9
+      end
+      object edClassId: TEdit
+        Left = 4
+        Height = 23
+        Top = 109
+        Width = 256
+        ReadOnly = True
+        TabOrder = 10
+      end
+    end
+    object tsWardrobe: TTabSheet
+      Caption = 'Wardrobe'
+      ClientHeight = 432
+      ClientWidth = 632
+      TabVisible = False
+      object gbWardrobe: TGroupBox
+        Left = 336
+        Height = 190
+        Top = 227
+        Width = 288
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Wardrobe'
+        TabOrder = 0
+      end
+      object cbSkins: TComboBox
+        Left = 128
+        Height = 23
+        Top = 271
+        Width = 192
+        ItemHeight = 15
+        Style = csDropDownList
+        TabOrder = 1
+      end
+      object lblSkin: TLabel
+        Left = 60
+        Height = 15
+        Top = 274
+        Width = 22
+        Caption = 'Skin'
+        ParentColor = False
+      end
+      object edSkin: TEdit
+        Left = 4
+        Height = 23
+        Top = 271
+        Width = 48
+        NumbersOnly = True
+        OnChange = ToSetUpdate
+        TabOrder = 2
       end
     end
     object tsAction: TTabSheet
@@ -865,10 +879,10 @@ object fmChar: TfmChar
       ClientHeight = 432
       ClientWidth = 632
       object lbModList: TListBox
-        Left = 8
+        Left = 120
         Height = 129
-        Top = 280
-        Width = 344
+        Top = 275
+        Width = 304
         ItemHeight = 0
         TabOrder = 2
       end
@@ -877,6 +891,7 @@ object fmChar: TfmChar
         Height = 15
         Top = 256
         Width = 24
+        Anchors = [akTop, akLeft, akRight]
         Caption = 'Area'
         ParentColor = False
       end
@@ -885,6 +900,7 @@ object fmChar: TfmChar
         Height = 15
         Top = 306
         Width = 51
+        Anchors = [akTop, akLeft, akRight]
         Caption = 'Waypoint'
         ParentColor = False
       end
@@ -893,6 +909,7 @@ object fmChar: TfmChar
         Height = 23
         Top = 328
         Width = 192
+        Anchors = [akTop, akLeft, akRight]
         ReadOnly = True
         TabOrder = 4
       end
@@ -901,6 +918,7 @@ object fmChar: TfmChar
         Height = 23
         Top = 275
         Width = 192
+        Anchors = [akTop, akLeft, akRight]
         ReadOnly = True
         TabOrder = 3
       end
@@ -977,6 +995,7 @@ object fmChar: TfmChar
         Height = 238
         Top = 8
         Width = 504
+        Anchors = [akTop, akLeft, akRight]
         ColCount = 3
         ColumnClickSorts = True
         Columns = <        
@@ -1000,6 +1019,17 @@ object fmChar: TfmChar
         TabOrder = 1
         OnEditingDone = sgStatsEditingDone
       end
+      object lblModList: TLabel
+        Left = 120
+        Height = 15
+        Top = 256
+        Width = 43
+        Caption = 'Mod list'
+        ParentColor = False
+      end
+    end
+    object tsItems: TTabSheet
+      Caption = 'Items'
     end
   end
   object pnlTop: TPanel

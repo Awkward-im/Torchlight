@@ -108,7 +108,7 @@ object fmItem: TfmItem
       object gbCoords: TGroupBox
         Left = 496
         Height = 101
-        Top = 3
+        Top = 120
         Width = 104
         Anchors = [akTop, akRight]
         Caption = 'Coordinates'
@@ -174,9 +174,9 @@ object fmItem: TfmItem
         end
       end
       object gbFlags: TGroupBox
-        Left = 248
+        Left = 3
         Height = 46
-        Top = 168
+        Top = 264
         Width = 176
         Caption = 'Flags'
         ClientHeight = 26
@@ -314,9 +314,9 @@ object fmItem: TfmItem
         Visible = False
       end
       object edUnkn6: TEdit
-        Left = 560
+        Left = 280
         Height = 23
-        Top = 224
+        Top = 327
         Width = 40
         ReadOnly = True
         TabOrder = 13
@@ -324,7 +324,7 @@ object fmItem: TfmItem
       object gbCoords1: TGroupBox
         Left = 496
         Height = 101
-        Top = 114
+        Top = 231
         Width = 104
         Caption = 'Altered'
         ClientHeight = 81

@@ -25,11 +25,6 @@ msgctxt "formchar.rsfocus"
 msgid "Focus"
 msgstr ""
 
-#: formchar.rsfreepoints
-msgctxt "formchar.rsfreepoints"
-msgid "Free points"
-msgstr ""
-
 #: formchar.rsmale
 msgid "male"
 msgstr ""
@@ -46,10 +41,6 @@ msgstr ""
 
 #: formmap.rssavetrigger
 msgid "Save Trigger data"
-msgstr ""
-
-#: formmap.rssaveunknown
-msgid "Save Unknown data"
 msgstr ""
 
 #: formmodlist.rsdoclear
@@ -80,15 +71,12 @@ msgid "Maps"
 msgstr ""
 
 #: formsavegame.rsmodlist
+msgctxt "formsavegame.rsmodlist"
 msgid "Mod list"
 msgstr ""
 
 #: formsavegame.rsmovies
 msgid "Movies"
-msgstr ""
-
-#: formsavegame.rsnobase
-msgid "Can't load database"
 msgstr ""
 
 #: formsavegame.rspets
@@ -218,6 +206,7 @@ msgid "Spells"
 msgstr ""
 
 #: tfmchar.gbwardrobe.caption
+msgctxt "tfmchar.gbwardrobe.caption"
 msgid "Wardrobe"
 msgstr ""
 
@@ -297,6 +286,11 @@ msgstr ""
 #: tfmchar.lblmanabonus.caption
 msgctxt "tfmchar.lblmanabonus.caption"
 msgid "Mana Bonus"
+msgstr ""
+
+#: tfmchar.lblmodlist.caption
+msgctxt "tfmchar.lblmodlist.caption"
+msgid "Mod list"
 msgstr ""
 
 #: tfmchar.lblmorphnote.caption
@@ -412,6 +406,11 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
+#: tfmchar.tsitems.caption
+msgctxt "tfmchar.tsitems.caption"
+msgid "Items"
+msgstr ""
+
 #: tfmchar.tsstat.caption
 msgctxt "tfmchar.tsstat.caption"
 msgid "Stats"
@@ -424,6 +423,11 @@ msgstr ""
 
 #: tfmchar.tsview.caption
 msgid "View"
+msgstr ""
+
+#: tfmchar.tswardrobe.caption
+msgctxt "tfmchar.tswardrobe.caption"
+msgid "Wardrobe"
 msgstr ""
 
 #: tfmeffects.caption
@@ -751,11 +755,6 @@ msgctxt "tfmkeybinding.sgkeybinding.columns[3].title.caption"
 msgid "Mod"
 msgstr ""
 
-#: tfmmap.btnqitemexport.caption
-msgctxt "tfmmap.btnqitemexport.caption"
-msgid "E"
-msgstr ""
-
 #: tfmmap.btntriggerexport.caption
 msgctxt "tfmmap.btntriggerexport.caption"
 msgid "E"
@@ -766,7 +765,7 @@ msgid "Current Time?"
 msgstr ""
 
 #: tfmmap.lbllayouts.caption
-msgid "Layouts"
+msgid "Used Layouts"
 msgstr ""
 
 #: tfmmap.lblmatrix.caption
@@ -776,11 +775,6 @@ msgstr ""
 #: tfmmap.lblname.caption
 msgctxt "tfmmap.lblname.caption"
 msgid "Name"
-msgstr ""
-
-#: tfmmap.lblquestitem.caption
-msgctxt "tfmmap.lblquestitem.caption"
-msgid "Quest items"
 msgstr ""
 
 #: tfmmap.lbltotaltime.caption
@@ -1041,6 +1035,10 @@ msgstr ""
 
 #: tfmsettings.cbidashex.caption
 msgid "Show IDs in Hex form"
+msgstr ""
+
+#: tfmsettings.cbreloaddb.caption
+msgid "Reload database with savegame load"
 msgstr ""
 
 #: tfmsettings.cbshowtech.caption

@@ -64,9 +64,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="166"/>
-        <CursorPos X="56" Y="276"/>
-        <FoldState Value=" T7GG- T3kA0O3 piejV0G4]9bjM084#"/>
+        <TopLine Value="277"/>
+        <CursorPos Y="317"/>
+        <FoldState Value=" T7GG- T3kA0O3 pigjX0G116]Bdke0}e@"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -140,7 +140,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSettings"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="14" Y="13"/>
+        <TopLine Value="73"/>
+        <CursorPos X="71"/>
+        <FoldState Value=" T7MGQ T3j40346"/>
         <UsageCount Value="206"/>
       </Unit>
       <Unit>
@@ -151,8 +153,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formChar"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="794"/>
-        <CursorPos X="31" Y="815"/>
+        <TopLine Value="1082"/>
+        <CursorPos Y="1103"/>
+        <FoldState Value=" T3lf035 pj6jN0f4]93kD0D6 piX]IS[R4fke0J]9kblR0{1012]Ugn20e1d"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -175,9 +178,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMap"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="6"/>
-        <CursorPos Y="86"/>
-        <FoldState Value=" T46021 T7EBP T8W23]D3iD0R2 T6iE03]81iI0M]80iQ2C5 TMjg011D"/>
+        <TopLine Value="15"/>
+        <CursorPos X="17" Y="49"/>
+        <FoldState Value=" T4602 T7EBM T8T231 T3iB0R3"/>
         <UsageCount Value="204"/>
       </Unit>
       <Unit>
@@ -189,7 +192,7 @@
         <UnitName Value="formUnits"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="26"/>
-        <CursorPos X="20" Y="42"/>
+        <CursorPos Y="49"/>
         <FoldState Value=" T3i50G2^"/>
         <UsageCount Value="201"/>
       </Unit>
@@ -201,9 +204,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSkills"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="390"/>
-        <CursorPos X="26" Y="406"/>
-        <FoldState Value=" T3jK0G6 pj2jW0D525r"/>
+        <TopLine Value="3"/>
+        <CursorPos Y="16"/>
+        <FoldState Value=" T7FE; T3jK0G6 pj2jW0D525F"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -214,9 +217,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItems"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="39"/>
-        <CursorPos Y="60"/>
-        <FoldState Value=" T3iN041?"/>
+        <TopLine Value="27"/>
+        <CursorPos Y="49"/>
+        <FoldState Value=" T3i50G2^"/>
         <UsageCount Value="204"/>
       </Unit>
       <Unit>
@@ -239,8 +242,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItem"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="221"/>
-        <CursorPos X="39" Y="246"/>
+        <TopLine Value="294"/>
+        <CursorPos X="61" Y="295"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -271,10 +274,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formModList"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="36"/>
-        <CursorPos Y="260"/>
-        <FoldState Value=" T3iP066 pjBjV0E5X"/>
-        <UsageCount Value="84"/>
+        <TopLine Value="63"/>
+        <CursorPos Y="77"/>
+        <FoldState Value=" T3iP068 pibjI083$"/>
+        <UsageCount Value="86"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\tl2db.pas"/>
@@ -307,8 +310,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Char"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="168"/>
-        <CursorPos X="11" Y="183"/>
+        <TopLine Value="23"/>
+        <CursorPos Y="26"/>
+        <FoldState Value=" T7PI{gp"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -377,8 +381,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Map"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="208"/>
-        <CursorPos X="9" Y="223"/>
+        <CursorPos Y="141"/>
+        <FoldState Value=" T7TCu T3j7056 pj8jR0A2 pkCkS0F1a"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -414,7 +418,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="72"/>
         <CursorPos X="18" Y="86"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="27"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
@@ -590,16 +594,22 @@
         <CursorPos X="31" Y="271"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\tl2db_recipes.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="10"/>
+        <FoldState Value=" T3G051+"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\sqlite3.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1173"/>
+        <CursorPos X="2" Y="1190"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="8">
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="372" TopLine="362"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="373" Column="17" TopLine="362"/>
-      </Position>
+    <JumpHistory HistoryIndex="12">
       <Position>
         <Filename Value="formsavegame.pas"/>
         <Caret Line="230" TopLine="224"/>
@@ -628,6 +638,30 @@
         <Filename Value="formsavegame.pas"/>
         <Caret Line="276" Column="56" TopLine="166"/>
       </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="9" Column="23"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="241" Column="35" TopLine="166"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="309" TopLine="277"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="241" Column="8" TopLine="166"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="116" Column="3" TopLine="101"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="9" Column="23"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -635,6 +669,15 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="formsavegame.pas"/>
+        <Line Value="317"/>
+      </Item>
+    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="aChar"/>

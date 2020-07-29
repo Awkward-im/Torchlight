@@ -38,7 +38,7 @@ type
 
   private
     FSign1          :Byte;
-    FSign2          :Byte;
+    FHidden         :TL2Boolean;
     FIsChar         :boolean;
     FIsPet          :boolean;
 
@@ -56,7 +56,8 @@ type
     FUnkn1          :TL2ID;
     FUnkn2          :Byte;
     FUnkn3          :DWord;
-    FUnkn4          :Word;
+    FUnkn4_1        :byte;
+    FUnkn4_2        :byte;
     FUnkn5          :Byte;
     FUnkn6          :DWord;
     FUnkn7          :array [0..23] of byte;
@@ -65,17 +66,23 @@ type
     FUnkn11         :DWord;
     FUnkn12         :array [0..11] of byte;
     FUnkn13         :TL2Float;
-    FUnkn14         :array [0..27] of byte;
+    FUnkn14_1,
+    FUnkn14_2,
+    FUnkn14_3       :DWord;
     FUnkn15         :array [0..15] of byte;
 
     // player's Wardrobe etc
-    FWardUnkn       :array [0..35] of byte;
+    FWardUnkn       :array [0..8] of dword;
     FFace           :integer;
     FHairstyle      :integer;
     FHairColor      :integer;
     FCheater        :byte;
     FPlayer         :string;
 
+    FArmorFire      :integer;
+    FArmorIce       :integer;
+    FArmorElectric  :integer;
+    FArmorPoison    :integer;
     // looks like common
     FExperience     :integer;
     FFameLevel      :integer;
@@ -113,35 +120,39 @@ type
     function CheckForMods(alist:TTL2ModList):boolean;
 
     property Action:TTL2Action read FAction write FAction;
-    property IsChar         :boolean  read FIsChar;
-    property IsPet          :boolean  read FIsPet;
-    property Sign1          :Byte     read FSign1;
-    property Sign2          :Byte     read FSign2;
-    property MorphId        :TL2ID    read FMorphId         write FMorphId;
-    property Player         :string   read FPlayer          write FPlayer;
-    property MorphTime      :TL2Float read FMorphTime       write FMorphTime;
-    property TownTime       :TL2Float read FTownTime        write FTownTime;
-    property Face           :integer  read FFace            write FFace;
-    property Hairstyle      :integer  read FHairstyle       write FHairstyle;
-    property HairColor      :integer  read FHairColor       write FHairColor;
-    property Cheater        :byte     read FCheater         write FCheater;
-    property Experience     :integer  read FExperience      write FExperience;
-    property FameLevel      :integer  read FFameLevel       write FFameLevel;
-    property FameExp        :integer  read FFameExp         write FFameExp;
-    property Health         :TL2Float read FHealth          write FHealth;
-    property HealthBonus    :integer  read FHealthBonus     write FHealthBonus;
-    property Mana           :TL2Float read FMana            write FMana;
-    property ManaBonus      :integer  read FManaBonus       write FManaBonus;
-    property PlayTime       :TL2Float read FPlayTime        write FPlayTime;
-    property FreeSkillPoints:integer  read FFreeSkillPoints write FFreeSkillPoints;
-    property FreeStatPoints :integer  read FFreeStatPoints  write FFreeStatPoints;
-    property Strength       :integer  read FStrength        write FStrength;
-    property Dexterity      :integer  read FDexterity       write FDexterity;
-    property Vitality       :integer  read FVitality        write FVitality;
-    property Focus          :integer  read FFocus           write FFocus;
-    property Gold           :integer  read FGold            write FGold;
-    property Scale          :TL2Float read FScale           write FScale;
-    property Skin           :byte     read FSkin            write FSkin;
+    property IsChar         :boolean    read FIsChar;
+    property IsPet          :boolean    read FIsPet;
+    property Sign1          :Byte       read FSign1;
+    property Hidden         :TL2Boolean read FHidden          write FHidden;
+    property MorphId        :TL2ID      read FMorphId         write FMorphId;
+    property Player         :string     read FPlayer          write FPlayer;
+    property MorphTime      :TL2Float   read FMorphTime       write FMorphTime;
+    property TownTime       :TL2Float   read FTownTime        write FTownTime;
+    property Face           :integer    read FFace            write FFace;
+    property Hairstyle      :integer    read FHairstyle       write FHairstyle;
+    property HairColor      :integer    read FHairColor       write FHairColor;
+    property Cheater        :byte       read FCheater         write FCheater;
+    property Experience     :integer    read FExperience      write FExperience;
+    property FameLevel      :integer    read FFameLevel       write FFameLevel;
+    property FameExp        :integer    read FFameExp         write FFameExp;
+    property Health         :TL2Float   read FHealth          write FHealth;
+    property HealthBonus    :integer    read FHealthBonus     write FHealthBonus;
+    property Mana           :TL2Float   read FMana            write FMana;
+    property ManaBonus      :integer    read FManaBonus       write FManaBonus;
+    property PlayTime       :TL2Float   read FPlayTime        write FPlayTime;
+    property FreeSkillPoints:integer    read FFreeSkillPoints write FFreeSkillPoints;
+    property FreeStatPoints :integer    read FFreeStatPoints  write FFreeStatPoints;
+    property ArmorFire      :integer    read FArmorFire       write FArmorFire;
+    property ArmorIce       :integer    read FArmorIce        write FArmorIce;
+    property ArmorElectric  :integer    read FArmorElectric   write FArmorElectric;
+    property ArmorPoison    :integer    read FArmorPoison     write FArmorPoison;
+    property Strength       :integer    read FStrength        write FStrength;
+    property Dexterity      :integer    read FDexterity       write FDexterity;
+    property Vitality       :integer    read FVitality        write FVitality;
+    property Focus          :integer    read FFocus           write FFocus;
+    property Gold           :integer    read FGold            write FGold;
+    property Scale          :TL2Float   read FScale           write FScale;
+    property Skin           :byte       read FSkin            write FSkin;
 
     property Spells[idx:integer ]:TTL2Spell  read GetSpell write SetSpell;
     property Skills:TL2IdValList read FSkills  write FSkills;
@@ -262,36 +273,48 @@ DbgLn('start char');
   DataOffset:=AStream.Position;
 
   // signature
-  // can be word+byte, can be 3 bytes. last looks like bool
-  FSign    :=AStream.ReadByte;  // $FF or 02
+  FSign    :=AStream.ReadByte;  // $FF (main char and pet) or 02 (monsters, additional pets)
   FSign1   :=Check(AStream.ReadByte,'sign 1 '+HexStr(AStream.Position,8),0);  // 0
-  FSign2   :=Check(AStream.ReadByte,'sign 2 '+HexStr(AStream.Position,8),0);  // 0 or (sometime)
-  {
-    1 - hidden?
-  }
+{
+  1 for Dwarven Sentry Top
+}
+  FHidden  :=AStream.ReadByte<>0;
 	
-  FMorphId:=TL2ID(AStream.ReadQWord);    // current Class ID (with sex)
-  FID     :=TL2ID(AStream.ReadQword);    // *$FF or base class id (if morphed)
+  FMorphId:=TL2ID(AStream.ReadQWord); // current Class ID (with sex)
+  FID     :=TL2ID(AStream.ReadQword); // *$FF or base class id (if morphed)
   if FID=TL2IdEmpty then
   begin
     FID     :=FMorphId;
     FMorphId:=TL2IdEmpty;
   end;
-
-  FUnkn1:=TL2ID(AStream.ReadQword);    //!! (changing) (F6ED2564.F596F9AA)
-
+  //??
+  FUnkn1:=TL2ID(AStream.ReadQword);   //!! (changing) (F6ED2564.F596F9AA)
+  //??
   FUnkn2:=Check(AStream.ReadByte,'pre-wardrobe_'+HexStr(AStream.Position,8),0);
 {
-  1 for some mobs
+  1 - ??NPC?? and Brazier too
+  but "Rusted Dwarven Mechanoid"?? inactive state maybe?
+  forest gargoyle
 }
   FWardrobe:=AStream.ReadByte<>0;     // not sure but why not?
   if FWardrobe then
   begin
+if not FIsChar then DbgLn('!!non-player wardrobe_'+HexStr(AStream.Position,8));
     FFace     :=AStream.ReadDWord;    // face
     FHairStyle:=AStream.ReadDWord;    // hairstyle
     FHairColor:=AStream.ReadDWord;    // haircolor (+bandana for outlander)
     // !!*$FF = 36
     AStream.Read(FWardUnkn,36);
+if (FWardUnkn[0]<>$FFFFFFFF) or
+(FWardUnkn[1]<>$FFFFFFFF) or
+(FWardUnkn[2]<>$FFFFFFFF) or
+(FWardUnkn[3]<>$FFFFFFFF) or
+(FWardUnkn[4]<>$FFFFFFFF) or
+(FWardUnkn[5]<>$FFFFFFFF) or
+(FWardUnkn[6]<>$FFFFFFFF) or
+(FWardUnkn[7]<>$FFFFFFFF) or
+(FWardUnkn[8]<>$FFFFFFFF) then
+DbgLn('!!unknown wardrobe at '+HexStr(AStream.Position,8));
 {
     AStream.ReadQWord;
     AStream.ReadQWord;
@@ -303,17 +326,12 @@ DbgLn('start char');
   //??
   FUnkn3:=Check(AStream.ReadDWord,'pre-pet enabled_'+HexStr(AStream.Position,8),0);    // 0
 {
-  22 for one NPC
+  22 for one NPC (quest? assist?)
 }
   FEnabled:=AStream.ReadByte<>0; // 1 (pet - enabled)
   //??
-  FUnkn4:=Check(AStream.ReadWord,'post-pet enabled_'+HexStr(AStream.Position,8),0);
-{
-  256 for [quest] boss bloatfang, alpha...
-  1 for invisibleturretmonster, snake Cacklespit
-  AStream.ReadByte;     // 0 ??non-cross
-  AStream.ReadByte;     // 0 ??BOSS??
-}
+  FUnkn4_1:=AStream.ReadByte;    // ??non-interract??
+  FUnkn4_2:=AStream.ReadByte;    // ??BOSS??
 
 //  if FWardrobe then //!! YES, i know, i know!!!
   if FIsChar then
@@ -321,19 +339,22 @@ DbgLn('start char');
   //??  :24 for pet, :55 for char
   FUnkn5:=Check(AStream.ReadByte,'after cheat_'+HexStr(AStream.Position,8),0);
   // pet: elfly=4, lonelfly=0, rage=0
-  {mobs: 0 or 4
-  barricade=6, invturretmonster,statue,
-  }
+{
+  mobs: 0 or 4
+  6 = Brazier, barricade, invturretmonster,statue,
+  3 = champions? skelet-mage and spore
+  4 - magic doll
+}
 
   FMorphTime:=AStream.ReadFloat;   // pet morph time, sec
   FTownTime :=AStream.ReadFloat;   // time to town, sec
-  FAction   :=TTL2Action(AStream.ReadDWord);  // 1  (pet status)
+  FAction   :=TTL2Action(AStream.ReadDWord);  // pet action (idle, defense, attack)
   //??
-  FUnkn6:=Check(AStream.ReadDWord,'before scale_'+HexStr(AStream.Position,8),1);    // 1
+  FUnkn6:=AStream.ReadDWord;       // Monster action
 {
-  0 for horse, frog and snake
-  2 for mobs
-  7 for Barricade, statue
+  0 for horse, frog and snake = idle
+  2 for mobs                  = attack
+  7 for Barricade, statue     = passive
 }
   FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
   //??
@@ -343,7 +364,7 @@ DbgLn('start char');
   AStream.ReadQWord;    // -1
   AStream.ReadQWord;    // -1
 }
-  // can it be a name hash?
+  //??
   FUnkn17:=AStream.ReadDWord;
 //  isPet:=(FUnkn17=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
 
@@ -378,7 +399,7 @@ DbgLn('name:'+string(widestring(fname)));
 }
   FPlayTime:=AStream.ReadFloat;    // play time, sec
   FUnkn13:=Check(AStream.ReadFloat,'afterplaytime',1.0);      // 1.0
-  {
+  { ?? motion radius
   barricade,statue,frog=0 (but not snake)
   }
 
@@ -406,17 +427,15 @@ DbgLn('name:'+string(widestring(fname)));
     FSpells[i].level:=AStream.ReadDWord;       // spell level
   end;
 
-  //!!-- 28 bytes
-  // something defensive/offensive? Physical, [Magical,] Fire, Ice, Electric, Poison, All
-  AStream.Read(Funkn14,28);
-{
-  AStream.ReadQWord;    // 0 same as pets
-  AStream.ReadDWord;    // 0, Elfly pet = $0197 (407)
-  AStream.ReadDWord;    // 0, Elfly pet = $0197
-  AStream.ReadDWord;    // 0, Elfly pet = $0197
-  AStream.ReadDWord;    // 0, Elfly pet = $0197
-  AStream.ReadDWord;    // 0 same as pets
-}
+  //??
+  FUnkn14_1:=Check(AStream.ReadDword,'FUnkn14_1 '+HexStr(AStream.Position,8),0);
+  FUnkn14_2:=Check(AStream.ReadDword,'FUnkn14_2 '+HexStr(AStream.Position,8),0);
+  FArmorFire    :=AStream.ReadDword;
+  FArmorIce     :=AStream.ReadDword;
+  FArmorElectric:=AStream.ReadDword;
+  FArmorPoison  :=AStream.ReadDword;
+  FUnkn14_3:=Check(AStream.ReadDword,'FUnkn14_3 '+HexStr(AStream.Position,8),0);
+
   FStrength :=AStream.ReadDWord;    // strength      0 for pet
   FDexterity:=AStream.ReadDWord;    // dexterity     0 for pet
   FVitality :=AStream.ReadDWord;    // vitality      10\ sure, pet have hp/mp bonuses
@@ -513,7 +532,7 @@ begin
   // signature
   AStream.WriteByte(FSign );  // $FF or 2
   AStream.WriteByte(FSign1);  // 0
-  AStream.WriteByte(FSign2);  // 0, or 1
+  AStream.WriteByte(byte(FHidden) and 1);
 
   if FMorphId=TL2IdEmpty then
   begin
@@ -540,7 +559,8 @@ begin
 
   AStream.WriteDWord(FUnkn3);
   AStream.WriteByte (byte(FEnabled) and 1);
-  AStream.WriteWord (FUnkn4);
+  AStream.WriteByte (FUnkn4_1);
+  AStream.WriteByte (FUnkn4_2);
 
   if FIsChar{FWardrobe} then
     AStream.WriteByte(FCheater);
@@ -603,7 +623,13 @@ begin
     AStream.WriteDWord      (FSpells[i].level); // spell level
   end;
 
-  AStream.Write(FUnkn14,28);
+  AStream.WriteDWord(FUnkn14_1);
+  AStream.WriteDWord(FUnkn14_2);
+  AStream.WriteDWord(FArmorFire);
+  AStream.WriteDWord(FArmorIce);
+  AStream.WriteDWord(FArmorElectric);
+  AStream.WriteDWord(FArmorPoison);
+  AStream.WriteDWord(FUnkn14_3);
 
   AStream.WriteDWord(FStrength );    // strength      0 for pet
   AStream.WriteDWord(FDexterity);    // dexterity     0 for pet

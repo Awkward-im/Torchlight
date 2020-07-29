@@ -55,12 +55,12 @@ begin
     lvItemList.Columns[0].Caption:=IntToStr(Item.Index+1)+' / '+IntToStr(lvItemList.Items.Count);
     litem:=FItems[UIntPtr(Item.Data)];
 
-    fmButtons.btnExport.Enabled:=true;
-    fmButtons.Name  :='item '+IntToStr(Item.Index);
-    fmButtons.SClass:=litem;
-
     FItem.FillInfo(litem,FChar);
     FItem.Visible:=true;
+
+    fmButtons.btnExport.Enabled:=true;
+    fmButtons.Name  :='item ['+IntToStr(Item.Index)+'] '+litem.Name;
+    fmButtons.SClass:=litem;
   end;
 end;
 

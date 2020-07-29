@@ -11,7 +11,7 @@ object fmMap: TfmMap
   object lblMatrix: TLabel
     Left = 8
     Height = 15
-    Top = 27
+    Top = 51
     Width = 33
     Caption = 'Matrix'
     ParentColor = False
@@ -19,7 +19,7 @@ object fmMap: TfmMap
   object lblMatrixValue: TLabel
     Left = 100
     Height = 15
-    Top = 27
+    Top = 51
     Width = 80
     Alignment = taCenter
     AutoSize = False
@@ -34,33 +34,20 @@ object fmMap: TfmMap
     TabOrder = 1
   end
   object lblLayouts: TLabel
-    Left = 640
+    Left = 186
     Height = 15
     Top = 8
-    Width = 41
-    Caption = 'Layouts'
-    ParentColor = False
-  end
-  object lblQuestItem: TLabel
-    Left = 8
-    Height = 15
-    Top = 78
-    Width = 63
-    Caption = 'Quest items'
-    ParentColor = False
-  end
-  object lblQItemCount: TLabel
-    Left = 100
-    Height = 15
-    Top = 78
-    Width = 50
+    Width = 522
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
     AutoSize = False
+    Caption = 'Used Layouts'
     ParentColor = False
   end
   object lblTriggers: TLabel
     Left = 8
     Height = 15
-    Top = 51
+    Top = 75
     Width = 43
     Caption = 'Triggers'
     ParentColor = False
@@ -68,7 +55,7 @@ object fmMap: TfmMap
   object lblTriggerCount: TLabel
     Left = 100
     Height = 15
-    Top = 51
+    Top = 75
     Width = 50
     AutoSize = False
     ParentColor = False
@@ -108,30 +95,21 @@ object fmMap: TfmMap
     ParentColor = False
   end
   object lblMapName: TLabel
-    Left = 63
+    Left = 8
     Height = 15
-    Top = 8
-    Width = 158
+    Top = 27
+    Width = 172
     AutoSize = False
     ParentColor = False
   end
-  object btnQItemExport: TButton
+  object btnTriggerExport: TButton
     Left = 157
     Height = 20
     Top = 75
     Width = 23
     Caption = 'E'
-    OnClick = btnQItemExportClick
-    TabOrder = 2
-  end
-  object btnTriggerExport: TButton
-    Left = 157
-    Height = 20
-    Top = 51
-    Width = 23
-    Caption = 'E'
     OnClick = btnTriggerExportClick
-    TabOrder = 3
+    TabOrder = 2
   end
   object lblTotalTime: TLabel
     Left = 8
@@ -176,14 +154,12 @@ object fmMap: TfmMap
       item
         ReadOnly = True
         Title.Caption = 'Title'
+        Width = 64
       end>
     FixedCols = 0
     FixedRows = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
     RowCount = 0
-    TabOrder = 4
-    ColWidths = (
-      64
-    )
+    TabOrder = 3
   end
 end

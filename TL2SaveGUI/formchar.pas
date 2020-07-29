@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
   Spin, ExtCtrls, Buttons, Grids, SpinEx,
-  tl2types, tl2save, tl2char, tl2db, formSkills;
+  tl2types, tl2save, tl2char, tl2db, formSkills, formItems;
 
 type
   tCharInfoType = (ciPlayer, ciPet, ciUnit);
@@ -18,11 +18,9 @@ type
     bbUpdate: TBitBtn;
     bbManual: TBitBtn;
     cbKeepBase: TCheckBox;
-    edNewClass: TEdit;
     pnlTop: TPanel;
     pcCharInfo: TPageControl;
     sgStats: TStringGrid;
-    seFreePoints: TSpinEditEx;
     // Stats
     tsStat: TTabSheet;
 
@@ -32,7 +30,7 @@ type
     seFocus    : TSpinEditEx;  lblFocus     : TLabel;
     seVitality : TSpinEditEx;  lblVitality  : TLabel;
 
-    lblFreePoints: TLabel;
+    seFreePoints: TSpinEditEx; lblFreePoints: TLabel;
     cbCheckPoints: TCheckBox;
 
     gbData: TGroupBox;
@@ -64,15 +62,20 @@ type
 
     edName: TEdit;  lblName: TLabel;
     lblSuffix: TLabel;
+
+    edClassId: TEdit;
+    edNewClass: TEdit;
     edClass: TEdit;
     cbNewClass      : TComboBox;  lblNew      : TLabel;
     cbMorph    : TComboBox;  lblCurrent  : TLabel;
     edMorphTime: TEdit;      lblMorphTime: TLabel;  lblMorphNote: TLabel;
-
-    edSkin: TEdit;  lblSkin: TLabel;  cbSkins: TComboBox;
     seScale: TFloatSpinEdit;  lblScale: TLabel;
 
     cbCheater: TCheckBox;
+
+    // Wardrobe
+    tsWardrobe: TTabSheet;
+    edSkin: TEdit;  lblSkin: TLabel;  cbSkins: TComboBox;
 
     gbWardrobe: TGroupBox;
 
@@ -104,7 +107,11 @@ type
     edArea    : TEdit;  lblArea    : TLabel;
     edWaypoint: TEdit;  lblWaypoint: TLabel;
 
-    lbModList: TListBox;
+    lbModList: TListBox; lblModList: TLabel;
+
+    // Items
+    tsItems: TTabSheet;
+    
     procedure bbManualClick(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure cbKeepBaseClick(Sender: TObject);
@@ -127,6 +134,7 @@ type
     FConfigured:boolean;
 
     FSkillForm:TfmSkills;
+    FItems    :TfmItems;
 
     FSGame:TTL2SaveFile;
     FChar :TTL2Character;
@@ -195,7 +203,6 @@ resourcestring
   rsDexterity  = 'Dexterity';
   rsFocus      = 'Focus';
   rsVitality   = 'Vitality';
-  rsFreePoints = 'Free points';
 
   rsMale   = 'male';
   rsFemale = 'female';
@@ -447,7 +454,7 @@ begin
   if      Sender=seStrength  then pStat:=@FStr
   else if Sender=seDexterity then pStat:=@FDex
   else if Sender=seFocus     then pStat:=@FInt
-  else if Sender=seVitality  then pStat:=@FVit;
+  else{if Sender=seVitality  then}pStat:=@FVit;
 
   if lval=pStat^ then exit;
 
@@ -708,6 +715,9 @@ begin
   edName    .ReadOnly:=not (lChar or lPet);
   seScale   .ReadOnly:=not (lChar or lPet);
 
+  // Wardrobe
+  tsWardrobe.Visible:=lChar or lPet;
+
   // Actions
   tsAction.TabVisible:=lChar or lPet;
 
@@ -728,6 +738,8 @@ begin
   lblWaypoint.Visible:=lChar;
   sgStats.Columns[1].ReadOnly:=not lChar;
 
+  // Items
+  tsItems.Visible:=not (lChar or lPet);
 end;
 
 procedure TfmChar.FormDestroy(Sender: TObject);
@@ -759,6 +771,7 @@ begin
 
   FKind:=atype;
   FConfigured:=false;
+  FItems:=nil;
 
   SetupVisualPart;
 
@@ -769,7 +782,7 @@ begin
       cbCheckPoints.Checked:=config.ReadBool(sStats,sCheckPoints,true);
       config.Free;
 
-      pcCharInfo.ActivePage:=tsStat;
+      pcCharInfo.ActivePage:=tsView;
     end;
 
     ciPet: begin
@@ -777,7 +790,11 @@ begin
     end;
 
     ciUnit: begin
-      pcCharInfo.ActivePage:=tsStat;
+      FItems:=TfmItems.Create(self);
+      FItems.Parent:=tsItems;
+      FItems.Visible:=true;
+
+      pcCharInfo.ActivePage:=tsView;
     end;
   end;
 end;
@@ -988,6 +1005,8 @@ begin
   if edClass.Text=HexStr(FChar.ID,16) then
      edClass.Text:=GetTL2Mob(FChar.ID);
 
+  //--- Wardrobe ---
+
   edSkin.Text:=IntToStr(ShortInt(FChar.Skin));
 
   //--- Action ---
@@ -1045,8 +1064,14 @@ begin
 
   edName.Text      :=FChar.Name;
   lblSuffix.Caption:=FChar.Suffix;
+  if fmSettings.cbIdAsHex.Checked then
+    edClassId.Text:='0x'+HexStr(FChar.ID,16)
+  else
+    edClassId.Text:=IntToStr(FChar.ID);
 
   seScale.Value:=FChar.Scale;
+
+  //--- Wardrobe ---
 
   //--- Action ---
 
@@ -1072,6 +1097,13 @@ begin
   end;
 
   sgStats.EndUpdate;
+
+  //--- Items ---
+
+  if FItems<>nil then
+  begin
+    FItems.FillInfo(FChar.Items, FChar);
+  end;
 
   bbUpdate.Enabled:=false;
   FConfigured:=true;

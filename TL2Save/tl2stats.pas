@@ -83,7 +83,8 @@ type
     FStatArea2  :TTL2StringValList;
     FStatKillers:TL2IdValList;
 
-    FUnkn    :DWord;
+    FUnkn1    :Word;
+    FUnkn2    :Word;
     FUnkn17  :array [0..16] of byte;
     FUnkn9   :array [0.. 8] of byte;
     FUnknLast:DWord;
@@ -152,18 +153,19 @@ begin
   DataSize  :=AStream.ReadDWord;
   DataOffset:=AStream.Position;
   
-  FUnkn:=Check(AStream.ReadDWord,'last block 1_'+HexStr(AStream.Position,8),1);
-
+  FUnkn1:=Check(AStream.ReadWord,'last block 1_'+HexStr(AStream.Position,8),1);
+  FUnkn2:=Check(AStream.ReadWord,'last block 2_'+HexStr(AStream.Position,8),0);
+  //??
   AStream.Read(FUnkn17[0],17);
 {
   AStream.ReadDWord; // 3DF65D40 = 0.12
-  AStream.ReadDword; // 40
+  AStream.ReadDword; // 0x####0040
   AStream.ReadDWord; // 3DF65D40 = 0.12
-  AStream.ReadDWord; // 0x##40
+  AStream.ReadDWord; // 0x######40
 
   AStream.ReadByte;  // 0
 }
-  // ?? mobs
+  // mobs
   lcnt:=AStream.ReadDWord;
   SetLength(FStatMobs,lcnt);
   if lcnt>0 then
@@ -172,7 +174,7 @@ begin
   8b - mob id (media/units/monsters)
   4b - x?
   4b - y?
-  4b - ?
+  4b - exp
   4b - 
   4b - 
   4b - ?
@@ -181,7 +183,7 @@ begin
   2b
 }
 
-  // ?? items
+  // items
   lcnt:=AStream.ReadDWord;
   SetLength(FStatItems,lcnt);
   if lcnt>0 then
@@ -194,7 +196,7 @@ begin
   4b - amount?
 }
 
-  // ?? skills
+  // skills
   lcnt:=AStream.ReadDWord;
   SetLength(FStatSkills,lcnt);
   if lcnt>0 then
@@ -206,7 +208,7 @@ begin
   1b - 
 }
 
-  // ??
+  // levelups
   lcnt:=AStream.ReadDWord;
   SetLength(FStatLevelUp,lcnt);
   if lcnt>0 then
@@ -259,6 +261,7 @@ begin
   03 | 00 00 | 00 00 | 00 00 | 02 00 | Archer
   02 | 00 00 | 00 00 | 05 00 | 00 00 | Tenebris
   02 | 00 00 | 00 00 | 01 00 | 0C 00 | ElPro
+  03 | 00 00 | 00 00 | 00 00 | 06 00 | ElDrui
 }
   //----- Player killers -----
 
@@ -289,31 +292,32 @@ begin
 
   DataOffset:=AStream.Position;
 
-  AStream.WriteDWord(FUnkn);
+  AStream.WriteWord(FUnkn1);
+  AStream.WriteWord(FUnkn2);
 
   AStream.Write(FUnkn17[0],17);
 
-  // ?? mobs
+  // mobs
   AStream.WriteDWord(Length(FStatMobs));
   if Length(FStatMobs)>0 then
     AStream.Write(FStatMobs[0],Length(FStatMobs)*40);
 
-  // ?? items
+  // items
   AStream.WriteDWord(Length(FStatItems));
   if Length(FStatItems)>0 then
     AStream.Write(FStatItems[0],Length(FStatItems)*24);
 
-  // ?? skills
+  // skills
   AStream.WriteDWord(Length(FStatSkills));
   if Length(FStatSkills)>0 then
   AStream.Write(FStatSkills[0],Length(FStatSkills)*17);
 
-  // ??
+  // levelups
   AStream.WriteDWord(Length(FStatLevelUp));
   if Length(FStatLevelUp)>0 then
     AStream.Write(FStatLevelUp[0],Length(FStatLevelUp)*31);
 
-  //----- ?? Area, time on location and player level -----
+  //----- Area, time on location and player level -----
 
   AStream.WriteDWord(Length(FStatArea1));
   for i:=0 to High(FStatArea1) do

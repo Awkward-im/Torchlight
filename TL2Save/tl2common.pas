@@ -23,7 +23,7 @@ begin
 
   if aval<>aright then
     if IsConsole then
-      writeln('!!Unknown value ',aval,' at label ',albl,' must be [',aright,']');
+      writeln('  Unknown value ',aval,' at label ',albl,' must be [',aright,']');
 end;
 
 function Check(aval:single; const albl:string; aright:single):single;
@@ -32,7 +32,7 @@ begin
 
   if aval<>aright then
     if IsConsole then
-      writeln('!!Unknown value ',aval:0:4,' at label ',albl,' must be [',aright:0:4,']');
+      writeln(' Unknown value ',aval:0:4,' at label ',albl,' must be [',aright:0:4,']');
 end;
 
 function SecToTime(sec:cardinal):string;
