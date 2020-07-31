@@ -45,15 +45,18 @@ begin
     exit;
   end;
 
-  i:=1;
-  while i<tags^.childcount do
+  if tags<>nil then
   begin
-    if tags^.children^[i].asInteger=aid then
+    i:=1;
+    while i<tags^.childcount do
     begin
-      result:=tags^.children^[i-1].asString;
-      exit;
+      if tags^.children^[i].asInteger=aid then
+      begin
+        result:=tags^.children^[i-1].asString;
+        exit;
+      end;
+      inc(i,2);
     end;
-    inc(i,2);
   end;
   Str(aid,lsw);
   numbuffer:=lsw;
@@ -193,7 +196,6 @@ begin
       begin
         lext:=UpCase(ExtractFileExt(lname));
         if (lext='.DAT') or
-//           (lext='.LAYOUT') or
            (lext='.ANIMATION') then
         begin
           if UpCase(ExtractFileName(lname))<>'TAGS.DAT' then

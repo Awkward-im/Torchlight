@@ -117,8 +117,8 @@ begin
   lsize:=ReadByte(buf);
   if lsize>0 then
   begin
-    GetMem(result,(lsize+1)*SizeOf(WideChar));
-    ReadData(buf,result^,lsize*SizeOf(WideChar));
+    GetMem  (    result ,(lsize+1)*SizeOf(WideChar));
+    ReadData(buf,result^, lsize   *SizeOf(WideChar));
     result[lsize]:=#0;
   end
   else
@@ -132,8 +132,8 @@ begin
   lsize:=ReadWord(buf);
   if lsize>0 then
   begin
-    GetMem(result,(lsize+1)*SizeOf(WideChar));
-    ReadData(buf,result^,lsize*SizeOf(WideChar));
+    GetMem  (    result ,(lsize+1)*SizeOf(WideChar));
+    ReadData(buf,result^, lsize   *SizeOf(WideChar));
     result[lsize]:=#0;
   end
   else
@@ -147,8 +147,8 @@ begin
   lsize:=ReadDWord(buf);
   if lsize>0 then
   begin
-    GetMem(result,(lsize+1)*SizeOf(WideChar));
-    ReadData(buf,result^,lsize*SizeOf(WideChar));
+    GetMem  (    result ,(lsize+1)*SizeOf(WideChar));
+    ReadData(buf,result^, lsize   *SizeOf(WideChar));
     result[lsize]:=#0;
   end
   else
@@ -159,11 +159,26 @@ function ReadShortStringUTF8(var buf:PByte):PWideChar;
 var
   ls:WideString;
   lutf8:PAnsiChar;
+  i:integer;
   lsize:cardinal;
 begin
   lsize:=ReadWord(buf);
   if lsize>0 then
   begin
+    GetMem(result,(lsize+1)*SizeOf(WideChar));
+    i:=UTF8ToUnicode(result,lsize+1,PChar(buf),lsize);
+    inc(buf,lsize);
+    if i>0 then
+    begin
+      ReallocMem(result,(i+1)*SizeOf(WideChar));
+      result[i]:=#0;
+    end
+    else
+    begin
+      FreeMem(result);
+      result:=nil;
+    end;
+{    
     GetMem(lutf8,(lsize+1));
     ReadData(buf,lutf8^,lsize);
     lutf8[lsize]:=#0;
@@ -171,6 +186,7 @@ begin
     FreeMem(lutf8);
     GetMem(result,(Length(ls)+1)*SizeOf(WideChar));
     move(PWideChar(ls)^,result^,(Length(ls)+1)*SizeOf(WideChar));
+}
   end
   else
     result:=nil;
