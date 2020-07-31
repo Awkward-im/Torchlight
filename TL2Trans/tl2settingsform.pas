@@ -165,8 +165,8 @@ end;
 resourcestring
   sOpenAddon = 'Choose additional file';
 
-const
-  INIFileName = 'TL2Trans.ini';
+var
+  INIFileName:string;
 
 const
   MinGroupHeight = 20;
@@ -576,7 +576,7 @@ var
 begin
   lbLanguage.Clear;
   lbLanguage.AddItem('en - English',nil);
-  if FindFirst('languages\*.po',faAnyFile,sr)=0 then
+  if FindFirst(ExtractFilePath(ParamStr(0))+'languages\*.po',faAnyFile,sr)=0 then
   begin
     repeat
       lname:=sr.Name;
@@ -611,6 +611,8 @@ begin
 
   edDefaultFile.Filter:=DefaultFilter;
   edDefaultFile.DefaultExt:=DefaultExt;
+
+  INIFileName:=ChangeFileExt(ParamStr(0),'.ini');
 
   FillLocalesList;
   FillTranslatorList;

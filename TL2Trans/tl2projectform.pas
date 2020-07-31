@@ -1715,7 +1715,14 @@ end;
 procedure TTL2Project.FillProjectGrid(const afilter:AnsiString);
 var
   i,lline:integer;
+  lSavedRow,lSavedIdx:integer;
 begin
+  lSavedRow:=0;
+  if TL2ProjectGrid.Row<1 then
+    lSavedIdx:=0
+  else
+    lSavedIdx:=IntPtr(TL2ProjectGrid.Objects[0,TL2ProjectGrid.Row]);
+
   TL2ProjectGrid.Clear;
   TL2ProjectGrid.BeginUpdate;
   lline := 1;
@@ -1724,6 +1731,10 @@ begin
 
   for i:=(cntBaseLines+cntModLines) to data.Lines-1 do
   begin
+
+    if (lSavedRow=0) and (lSavedIdx<=i) then
+      lSavedRow:=lline;
+
     if FillProjectSGRow(lline,i,afilter) then
       inc(lline);
   end;
@@ -1731,11 +1742,13 @@ begin
   TL2ProjectGrid.RowCount:=lline;
   TL2ProjectGrid.EndUpdate;
 
-  TL2ProjectGrid.Row:=1;
+  TL2ProjectGrid.Row:=lSavedRow;
+
   if (afilter='') and Self.Active then
   begin
     TL2ProjectGrid.SetFocus;
   end;
+  TL2ProjectGrid.TopRow:=TL2ProjectGrid.Row;
 end;
 
 //----- Form -----

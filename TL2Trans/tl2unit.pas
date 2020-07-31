@@ -267,6 +267,12 @@ var
 begin
   CreateSettingsTab;
   Self.Font.Assign(TL2DM.TL2Font);
+  if ParamCount()>0 then
+  begin
+    OpenProject(ParamStr(1),true);
+    TL2Settings.cbReopenProjects.Checked:=false;
+  end;
+
   if TL2Settings.cbReopenProjects.Checked then
   begin
     lsl:=TStringList.Create;

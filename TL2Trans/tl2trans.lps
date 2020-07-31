@@ -19,8 +19,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
-        <TopLine Value="435"/>
-        <CursorPos X="12" Y="220"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="222"/>
+        <CursorPos X="3" Y="275"/>
+        <FoldState Value=" T3jg087 pj0jS0I01219]D1nF0a6("/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -65,12 +67,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TL2DataModule"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="16"/>
         <CursorPos X="18" Y="32"/>
         <UsageCount Value="202"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2projectform.pas"/>
@@ -78,11 +78,10 @@
         <ComponentName Value="TL2Project"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1635"/>
-        <CursorPos Y="1718"/>
-        <FoldState Value=" T46031 TLoG0709 p0+d24]H7IG{S T8j12J]FM-g8]73l9074 pj6jN0Z2 pkVlV0W]9iejZ]?]9cj20t4]9ZkE0u[j42kR0E3]Ig]sL2]I3jU036]IajC0Y6]Idl30K3]9Jk60l112 T1lA06[!4YjR0U]tkOlT0T[!4Xk20!5]kUmA0n[a5kL0D[R5jQ0H]jia]s2017]BckV063 T6lP02L p0@5015 T0lW246 piZiH829]^9iU4G7[/4iE2.[}V5O8D8[Z572JA]Z2jQ655]IciZ84F[r4kR46]IjJi16cB[{&apos;5d27D]9blE6904B7E TKzJ05}"/>
+        <TopLine Value="1728"/>
+        <CursorPos X="44" Y="1751"/>
+        <FoldState Value=" T4603 TLoH07 T7IG{S T8j12J1 T3lA074 pj6jN0Z2 pkblb0W2 T1lB06]QiYjR0U11].6lQ024[A40lX246]TZiH829];9iU4G2O7 TKzQ05d"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -94,11 +93,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="195"/>
-        <CursorPos X="61" Y="219"/>
-        <FoldState Value=" T3jU0i4 pjHmA0@6]91l1068 piYjJ03I"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="219"/>
+        <CursorPos X="21" Y="169"/>
+        <FoldState Value=" T3jU0i4 pjHmA0@6]91l1068 piajL03."/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2simform.pas"/>
@@ -121,7 +121,7 @@
         <TopLine Value="228"/>
         <CursorPos Y="255"/>
         <FoldState Value=" TL004 T4901 T8E2C]7CGH9 TMNO]C3iT0K912 T6iU013 T1iW0H[I50iY269,"/>
-        <UsageCount Value="103"/>
+        <UsageCount Value="105"/>
       </Unit>
       <Unit>
         <Filename Value="tl2notesform.pas"/>
@@ -134,7 +134,7 @@
         <TopLine Value="46"/>
         <CursorPos X="34" Y="59"/>
         <FoldState Value=" T46021 T7EEQ T8a21]D3iI0B7 piajK09 T1iJ0A313 T6jA012 T0je234E"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="97"/>
       </Unit>
       <Unit>
         <Filename Value="iso639.pas"/>
@@ -143,7 +143,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="45"/>
       </Unit>
       <Unit>
         <Filename Value="trclass.pas"/>
@@ -152,7 +152,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="516"/>
         <CursorPos X="10" Y="531"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="45"/>
       </Unit>
       <Unit>
         <Filename Value="tl2text.pas"/>
@@ -161,7 +161,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="541"/>
         <CursorPos X="11" Y="561"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="27"/>
       </Unit>
     </Units>
     <OtherDefines Count="1">
@@ -172,23 +172,4 @@
       <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
-  <Debugging>
-    <Watches>
-      <Item>
-        <Expression Value="astr"/>
-      </Item>
-      <Item>
-        <Expression Value="i"/>
-      </Item>
-      <Item>
-        <Expression Value="k"/>
-      </Item>
-      <Item>
-        <Expression Value="j"/>
-      </Item>
-      <Item>
-        <Expression Value="astr[i]"/>
-      </Item>
-    </Watches>
-  </Debugging>
 </CONFIG>
