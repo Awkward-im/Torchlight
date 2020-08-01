@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
   Spin, ExtCtrls, Buttons, Grids, SpinEx,
-  tl2types, tl2save, tl2char, tl2db, formSkills, formItems;
+  tl2types, tl2save, tl2char, tl2db, formSkills, formItems, formEffects;
 
 type
   tCharInfoType = (ciPlayer, ciPet, ciUnit);
@@ -16,14 +16,13 @@ type
 
   TfmChar = class(TForm)
     bbUpdate: TBitBtn;
-    bbManual: TBitBtn;
-    cbKeepBase: TCheckBox;
     pnlTop: TPanel;
     pcCharInfo: TPageControl;
-    sgStats: TStringGrid;
+
     // Stats
     tsStat: TTabSheet;
 
+    cbKeepBase: TCheckBox;
     gbBaseStats: TGroupBox;
     seStrength : TSpinEditEx;  lblStrength  : TLabel;
     seDexterity: TSpinEditEx;  lblDexterity : TLabel;
@@ -56,17 +55,18 @@ type
     imgMorph: TImage;
 
     gbGender: TGroupBox;
-    rbMale : TRadioButton;
+    rbMale  : TRadioButton;
     rbFemale: TRadioButton;
     rbUnisex: TRadioButton;
 
     edName: TEdit;  lblName: TLabel;
     lblSuffix: TLabel;
 
+    bbManual: TBitBtn;
     edClassId: TEdit;
     edNewClass: TEdit;
     edClass: TEdit;
-    cbNewClass      : TComboBox;  lblNew      : TLabel;
+    cbNewClass : TComboBox;  lblNew      : TLabel;
     cbMorph    : TComboBox;  lblCurrent  : TLabel;
     edMorphTime: TEdit;      lblMorphTime: TLabel;  lblMorphNote: TLabel;
     seScale: TFloatSpinEdit;  lblScale: TLabel;
@@ -99,6 +99,8 @@ type
     // Statistic
     tsStatistic: TTabSheet;
 
+    sgStats: TStringGrid;
+
     gbCoords: TGroupBox;
     edX: TEdit;  lblX: TLabel;
     edY: TEdit;  lblY: TLabel;
@@ -108,6 +110,9 @@ type
     edWaypoint: TEdit;  lblWaypoint: TLabel;
 
     lbModList: TListBox; lblModList: TLabel;
+
+    // Other
+    tsOtherInfo: TTabSheet;
 
     // Items
     tsItems: TTabSheet;
@@ -130,6 +135,10 @@ type
     procedure FormDestroy(Sender: TObject);
 
   private
+    FEffects:TfmEffects;
+
+    OldCheckPointsState:boolean;
+
     FKind:tCharInfoType;
     FConfigured:boolean;
 
@@ -692,9 +701,9 @@ begin
   bbUpdate.Visible:=lChar or lPet;
 
   // View
-  imgIcon.Visible:=lChar or lPet;
+  imgIcon   .Visible:=lChar or lPet;
   cbNewClass.Visible:=lChar or lPet;
-  lblNew .Visible:=lChar or lPet;
+  lblNew    .Visible:=lChar or lPet;
 
   edMorphTime .Visible:=lPet;
   lblMorphTime.Visible:=lPet;
@@ -702,11 +711,8 @@ begin
   lblCurrent  .Visible:=lPet;
   cbMorph     .Visible:=lPet;
   imgMorph    .Visible:=lPet;
-  edSkin      .Visible:=lPet;
-  lblSkin     .Visible:=lPet;
   cbSkins     .Visible:=false;//lPet;
 
-  gbWardrobe.Visible:=lChar;
   cbCheater .Visible:=lChar;
   gbGender  .Visible:=lChar;
   edNewClass.Visible:=lChar;
@@ -716,7 +722,10 @@ begin
   seScale   .ReadOnly:=not (lChar or lPet);
 
   // Wardrobe
-  tsWardrobe.Visible:=lChar or lPet;
+  tsWardrobe.TabVisible:=lChar or lPet;
+  gbWardrobe.Visible:=lChar;
+  edSkin      .Visible:=lPet;
+  lblSkin     .Visible:=lPet;
 
   // Actions
   tsAction.TabVisible:=lChar or lPet;
@@ -739,7 +748,7 @@ begin
   sgStats.Columns[1].ReadOnly:=not lChar;
 
   // Items
-  tsItems.Visible:=not (lChar or lPet);
+  tsItems.TabVisible:=not (lChar or lPet);
 end;
 
 procedure TfmChar.FormDestroy(Sender: TObject);
@@ -752,7 +761,7 @@ begin
   SetLength(HPTier,0);
   SetLength(MPTier,0);
 
-  if FKind=ciPlayer then
+  if (FKind=ciPlayer) and (OldCheckPointsState<>cbCheckPoints.Checked) then
   begin
     config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
     config.WriteBool(sStats,sCheckPoints,cbCheckPoints.Checked);
@@ -773,6 +782,10 @@ begin
   FConfigured:=false;
   FItems:=nil;
 
+  FEffects:=TfmEffects.Create(Self);
+  FEffects.Parent:=tsOtherInfo;
+  FEffects.Visible:=true;
+
   SetupVisualPart;
 
   case FKind of
@@ -780,6 +793,7 @@ begin
     ciPlayer: begin
       config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
       cbCheckPoints.Checked:=config.ReadBool(sStats,sCheckPoints,true);
+      OldCheckPointsState:=cbCheckPoints.Checked;
       config.Free;
 
       pcCharInfo.ActivePage:=tsView;
@@ -1097,6 +1111,10 @@ begin
   end;
 
   sgStats.EndUpdate;
+
+  //--- Other ---
+
+  FEffects.FillInfo(FChar);
 
   //--- Items ---
 

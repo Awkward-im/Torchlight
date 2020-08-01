@@ -28,6 +28,9 @@ type
     procedure sgRecipesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     SGame:TTL2SaveFile;
+    OldActualState   :boolean;
+    OldHaveTitleState:boolean;
+
     procedure FillInfoInt(alist: TL2IdList);
 
   public
@@ -64,6 +67,8 @@ begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
   cbJustActual.Checked:=config.ReadBool(sRecipes,sJustActual,true);
   cbHaveTitle .Checked:=config.ReadBool(sRecipes,sHaveTitle ,true);
+  OldActualState   :=cbJustActual.Checked;
+  OldHaveTitleState:=cbHaveTitle .Checked;
 
   config.Free;
 end;
@@ -72,12 +77,16 @@ procedure TfmRecipes.FormDestroy(Sender: TObject);
 var
   config:TIniFile;
 begin
-  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
-  config.WriteBool(sRecipes,sJustActual,cbJustActual.Checked);
-  config.WriteBool(sRecipes,sHaveTitle ,cbHaveTitle .Checked);
+  if (OldActualState   <>cbJustActual.Checked) or
+     (OldHaveTitleState<>cbHaveTitle .Checked) then
+  begin
+    config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+    config.WriteBool(sRecipes,sJustActual,cbJustActual.Checked);
+    config.WriteBool(sRecipes,sHaveTitle ,cbHaveTitle .Checked);
 
-  config.UpdateFile;
-  config.Free;
+    config.UpdateFile;
+    config.Free;
+  end;
 end;
 
 procedure TfmRecipes.sgRecipesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

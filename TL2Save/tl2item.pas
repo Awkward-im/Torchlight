@@ -153,15 +153,15 @@ end;
 
 procedure TTL2Item.LoadFromStream(AStream: TTL2Stream);
 var
-  lcnt:integer;
+ldebug:string;
+  i,lcnt:integer;
 begin
   DataOffset:=AStream.Position;
-
-DbgLn('start item');
-  FSign:=Check(AStream.ReadByte,'item sign_'+HexStr(AStream.Position,8),2); // "2" (0 for gold)
+ldebug:='';
+  FSign:=AStream.ReadByte; // "2" (0 for gold)
+if (FSign<>0) and (FSign<>2) then ldebug:=ldebug+'sign '+HexStr(AStream.Position,8)+#13#10;
   FID    :=TL2ID(AStream.ReadQWord);  // Item ID
   FName  :=AStream.ReadShortString(); // name
-DbgLn('item name '+string(widestring(FName)));
   FPrefix:=AStream.ReadShortString(); // prefix
   FSuffix:=AStream.ReadShortString(); // suffix
 
@@ -187,7 +187,7 @@ DbgLn('item name '+string(widestring(FName)));
   FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645 . -1 for props
 
   AStream.Read(FFlags,7);
-check(FFlags[4],'unknown item flag',1);
+if FFlags[4]<>1 then ldebug:=ldebug+'unknown item flag at '+HexStr(AStream.Position,8)+#13#10;
 {    itm   prop
   0 - <equipped> flag
   1 - <enabled>
@@ -208,7 +208,8 @@ check(FFlags[4],'unknown item flag',1);
   FSocketables:=ReadItemList(AStream);
 
   //??
-  FUnkn4:=Check(AStream.ReadDWord,'before weap dmg_'+HexStr(AStream.Position,8),0);  // 0
+  FUnkn4:=AStream.ReadDWord;  // 0
+if FUnkn4<>0 then ldebug:=ldebug+'before weap dmg_'+HexStr(AStream.Position,8)+#13#10;
   FWeaponDamage:=integer(AStream.ReadDWord); // -1 for props
   FArmor       :=integer(AStream.ReadDWord); // -1 for props
   FArmorType   :=integer(AStream.ReadDWord); //  0 for props (2)
@@ -237,19 +238,23 @@ X bytes  struct  list of 12-byte-long damage things{
     AStream.Read(FUnkn6[0],lcnt*SizeOf(TL2IdVal));
 
   // dynamic,passive,transfer
-  FEffects1:=ReadEffectList(AStream);
-  FEffects2:=ReadEffectList(AStream);
-  FEffects3:=ReadEffectList(AStream);
+  for i:=0 to 2 do
+    FEffects[i]:=ReadEffectList(AStream);
 
   FAugments:=AStream.ReadShortStringList;
 
   FStats:=AStream.ReadIdValList;
-DbgLn('end item'#13#10'---------');
+if ldebug<>'' then
+DbgLn('start item '+string(widestring(FName))+#13#10+
+ldebug+
+'end item'#13#10'---------');
 
   LoadBlock(AStream);
 end;
 
 procedure TTL2Item.SaveToStream(AStream: TTL2Stream);
+var
+  i:integer;
 begin
   if not Changed then
   begin
@@ -319,9 +324,8 @@ begin
 //  AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
   
   // dynamic,passive,transfer
-  WriteEffectList(AStream,FEffects1);
-  WriteEffectList(AStream,FEffects2);
-  WriteEffectList(AStream,FEffects3);
+  for i:=0 to 2 do
+    WriteEffectList(AStream,FEffects[i]);
 
   AStream.WriteShortStringList(FAugments);
 

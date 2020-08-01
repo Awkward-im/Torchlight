@@ -60,16 +60,17 @@ type
     FUnkn4_2        :byte;
     FUnkn5          :Byte;
     FUnkn6          :DWord;
-    FUnkn7          :array [0..23] of byte;
+    FUnkn7          :array [0..2] of TL2ID;
     FUnkn17         :DWord;
-    FUnkn9          :QWord;
+    FUnkn9_1        :DWord;
+    FUnkn9_2        :DWord;
     FUnkn11         :DWord;
-    FUnkn12         :array [0..11] of byte;
+    FUnkn12         :array [0..2] of dword;
     FUnkn13         :TL2Float;
     FUnkn14_1,
     FUnkn14_2,
     FUnkn14_3       :DWord;
-    FUnkn15         :array [0..15] of byte;
+    FUnkn15         :array [0..3] of dword;
 
     // player's Wardrobe etc
     FWardUnkn       :array [0..8] of dword;
@@ -274,7 +275,8 @@ DbgLn('start char');
 
   // signature
   FSign    :=AStream.ReadByte;  // $FF (main char and pet) or 02 (monsters, additional pets)
-  FSign1   :=Check(AStream.ReadByte,'sign 1 '+HexStr(AStream.Position,8),0);  // 0
+  FSign1   :=AStream.ReadByte;  // 0
+Check(FSign1,'sign 1 '+HexStr(AStream.Position,8),0);
 {
   1 for Dwarven Sentry Top
 }
@@ -288,9 +290,10 @@ DbgLn('start char');
     FMorphId:=TL2IdEmpty;
   end;
   //??
-  FUnkn1:=TL2ID(AStream.ReadQword);   //!! (changing) (F6ED2564.F596F9AA)
+  FUnkn1:=TL2ID(AStream.ReadQword);   //!! runtime ID
   //??
-  FUnkn2:=Check(AStream.ReadByte,'pre-wardrobe_'+HexStr(AStream.Position,8),0);
+  FUnkn2:=AStream.ReadByte;
+Check(FUnkn2,'pre-wardrobe_'+HexStr(AStream.Position,8),0);
 {
   1 - ??NPC?? and Brazier too
   but "Rusted Dwarven Mechanoid"?? inactive state maybe?
@@ -324,7 +327,8 @@ DbgLn('!!unknown wardrobe at '+HexStr(AStream.Position,8));
 }
   end;
   //??
-  FUnkn3:=Check(AStream.ReadDWord,'pre-pet enabled_'+HexStr(AStream.Position,8),0);    // 0
+  FUnkn3:=AStream.ReadDWord;  // 0
+Check(FUnkn3,'pre-pet enabled_'+HexStr(AStream.Position,8),0);
 {
   22 for one NPC (quest? assist?)
 }
@@ -337,7 +341,8 @@ DbgLn('!!unknown wardrobe at '+HexStr(AStream.Position,8));
   if FIsChar then
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
   //??  :24 for pet, :55 for char
-  FUnkn5:=Check(AStream.ReadByte,'after cheat_'+HexStr(AStream.Position,8),0);
+  FUnkn5:=AStream.ReadByte;
+Check(FUnkn5,'after cheat_'+HexStr(AStream.Position,8),0);
   // pet: elfly=4, lonelfly=0, rage=0
 {
   mobs: 0 or 4
@@ -359,9 +364,12 @@ DbgLn('!!unknown wardrobe at '+HexStr(AStream.Position,8));
   FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
   //??
   AStream.Read(FUnkn7,24);
+if Funkn7[0]<>TL2IdEmpty then DbgLn('  [0]='+HexStr(Funkn7[0],16)+' after scale '+HexStr(AStream.Position,8));
+if Funkn7[1]<>TL2IdEmpty then DbgLn('  [1]='+HexStr(Funkn7[1],16)+' after scale '+HexStr(AStream.Position,8));
+if Funkn7[2]<>TL2IdEmpty then DbgLn('  [2]='+HexStr(Funkn7[2],16)+' after scale '+HexStr(AStream.Position,8));
 {
-  AStream.ReadQWord;    // ? player = FFFFFFFF, pet - no
-  AStream.ReadQWord;    // -1
+  AStream.ReadQWord;    // !! "master" runtime ID, player or "unit spawner"
+  AStream.ReadQWord;    // -1 /unit spawner/ in some layouts
   AStream.ReadQWord;    // -1
 }
   //??
@@ -374,11 +382,14 @@ DbgLn('name:'+string(widestring(fname)));
   if FIsChar{not isPet} then                      // maybe this is "PLAYERMAPICONS" from GLOBALS.DAT?
     FPlayer:=AStream.ReadShortString();  // "PLAYER" (prefix) !!!!! not exists for pets!!!!!!
   //??
-  FUnkn9:=AStream.ReadQWord;
+  FUnkn9_1:=AStream.ReadDWord; // 0
+Check(FUnkn9_1,'after player '+HexStr(AStream.Position,8),0);
+  FUnkn9_2:=AStream.ReadDWord; // 0 (SEE: Statistic=unknown) elfly=7, rage=2, lonelfly=2, zorro=0
+Check(FUnkn9_2,'like unkstat '+HexStr(AStream.Position,8),0);
 {
-  AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0 (SEE: Statistic=unknown) elfly=7, rage=2, lonelfly=2, zorro=0
+  maybe flag mask? 0,1,2,[4],7...
 }
+
   AStream.Read(FOrientation,SizeOf(FOrientation));
 
   FLevel      :=AStream.ReadDWord;    // level
@@ -387,18 +398,23 @@ DbgLn('name:'+string(widestring(fname)));
   FFameExp    :=AStream.ReadDWord;    // fame exp
   FHealth     :=AStream.ReadFloat;    // current HP
   FHealthBonus:=AStream.ReadDWord;    // health bonus (pet=full hp)
-  FUnkn11:=Check(AStream.ReadDWord,'stat_'+HexStr(AStream.Position,8),0);  // 0 ?? charge maybe? or armor?
+  FUnkn11     :=AStream.ReadDWord;    // 0
+Check(FUnkn11,'stat_'+HexStr(AStream.Position,8),0);
   FMana       :=AStream.ReadFloat;    // current MP
   FManaBonus  :=AStream.ReadDWord;    // Mana bonus   (pet=full mp)
   //??
   AStream.Read(FUnkn12,12);
+if Funkn12[0]<>0 then DbgLn('  [0]='+HexStr(Funkn12[0],8)+' after stat '+HexStr(AStream.Position,8));
+if Funkn12[1]<>0 then DbgLn('  [1]='+HexStr(Funkn12[1],8)+' after stat '+HexStr(AStream.Position,8));
+if Funkn12[2]<>0 then DbgLn('  [2]='+HexStr(Funkn12[2],8)+' after stat '+HexStr(AStream.Position,8));
 {
   AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0
+  AStream.ReadDWord;    // 0 (lvl 3=120; 1=100, 4=130, 22=310) = stat "Experience_Monster"
   AStream.ReadDWord;    // 0
 }
   FPlayTime:=AStream.ReadFloat;    // play time, sec
-  FUnkn13:=Check(AStream.ReadFloat,'afterplaytime',1.0);      // 1.0
+  FUnkn13:=AStream.ReadFloat;      // 1.0
+Check(FUnkn13,'afterplaytime',1.0);
   { ?? motion radius
   barricade,statue,frog=0 (but not snake)
   }
@@ -428,13 +444,16 @@ DbgLn('name:'+string(widestring(fname)));
   end;
 
   //??
-  FUnkn14_1:=Check(AStream.ReadDword,'FUnkn14_1 '+HexStr(AStream.Position,8),0);
-  FUnkn14_2:=Check(AStream.ReadDword,'FUnkn14_2 '+HexStr(AStream.Position,8),0);
+  FUnkn14_1:=AStream.ReadDword;      //?? phys
+Check(FUnkn14_1,'FUnkn14_1 '+HexStr(AStream.Position,8),0);
+  FUnkn14_2:=AStream.ReadDword;      //?? magic
+Check(FUnkn14_2,'FUnkn14_2 '+HexStr(AStream.Position,8),0);
   FArmorFire    :=AStream.ReadDword;
   FArmorIce     :=AStream.ReadDword;
   FArmorElectric:=AStream.ReadDword;
   FArmorPoison  :=AStream.ReadDword;
-  FUnkn14_3:=Check(AStream.ReadDword,'FUnkn14_3 '+HexStr(AStream.Position,8),0);
+  FUnkn14_3:=AStream.ReadDword;      //?? all emements
+Check(FUnkn14_3,'FUnkn14_3 '+HexStr(AStream.Position,8),0);
 
   FStrength :=AStream.ReadDWord;    // strength      0 for pet
   FDexterity:=AStream.ReadDWord;    // dexterity     0 for pet
@@ -443,8 +462,12 @@ DbgLn('name:'+string(widestring(fname)));
   FGold     :=AStream.ReadDWord;    // gold          0
   //??
   AStream.Read(Funkn15,16);
+if Funkn15[0]<>0         then DbgLn('  [0]='+HexStr(Funkn15[0],8)+' after gold '+HexStr(AStream.Position,8));
+if Funkn15[1]<>$FFFFFFFF then DbgLn('  [1]='+HexStr(Funkn15[1],8)+' after gold '+HexStr(AStream.Position,8));
+if Funkn15[2]<>$FFFFFFFF then DbgLn('  [2]='+HexStr(Funkn15[2],8)+' after gold '+HexStr(AStream.Position,8));
+if Funkn15[3]<>$FFFFFFFF then DbgLn('  [3]='+HexStr(Funkn15[3],8)+' after gold '+HexStr(AStream.Position,8));
 {
-  AStream.ReadDWord;    // $FF=-1 / 1/0 (elfly)      0
+  AStream.ReadDWord;    // $FF=-1 / 1/0 (elfly) ?? snake, scarab, npcs,statue, brazier
   AStream.ReadQWord;    // FF same as pets
   AStream.ReadDWord;    // FF same as pets
 }
@@ -460,9 +483,8 @@ DbgLn('name:'+string(widestring(fname)));
   //----- Effects -----
   // dynamic,passive,transfer
 
-  FEffects1:=ReadEffectList(AStream,true);
-  FEffects2:=ReadEffectList(AStream,true);
-  FEffects3:=ReadEffectList(AStream,true);
+  for i:=0 to 2 do
+    FEffects[i]:=ReadEffectList(AStream,true);
 
   FAugments:=AStream.ReadShortStringList;
   
@@ -583,7 +605,8 @@ begin
   if FIsChar{(FUnkn17<>$FFFFFFFF)} then
     AStream.WriteShortString(FPlayer);      // "PLAYER" !!!!! not exists for pets!!!!!!
   
-  AStream.WriteQWord(FUnkn9);
+  AStream.WriteDWord(FUnkn9_1);
+  AStream.WriteDWord(FUnkn9_2);
 
   AStream.Write(FOrientation,SizeOf(FOrientation));
 
@@ -649,9 +672,8 @@ begin
   //----- Effects -----
   // dynamic,passive,transfer
 
-  WriteEffectList(AStream,FEffects1);
-  WriteEffectList(AStream,FEffects2);
-  WriteEffectList(AStream,FEffects3);
+  for i:=0 to 2 do
+    WriteEffectList(AStream,FEffects[i]);
 
   AStream.WriteShortStringList(FAugments);
   

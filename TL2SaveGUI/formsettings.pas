@@ -13,9 +13,6 @@ const
   TL2_INIT    = 0;
   TL2_SETTING = 1;
 
-const
-  INIFileName   = 'tl2sg.ini';
-
 type
 
   { TfmSettings }
@@ -50,6 +47,7 @@ type
 
 var
   fmSettings:TfmSettings;
+  INIFileName:string;
 
 
 const
@@ -144,6 +142,8 @@ end;
 procedure TfmSettings.FormCreate(Sender: TObject);
 begin
   fmSettings:=Self;
+
+  INIFileName:=ChangeFileExt(ParamStr(0),'.ini');
 
   LoadSettings;
 end;

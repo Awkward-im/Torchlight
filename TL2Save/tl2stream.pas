@@ -49,6 +49,15 @@ begin
   lsize:=ReadByte;
   if lsize>0 then
   begin
+{
+    SetLength(result,lsize*3);
+    i:=UnicodeToUtf8(PChar(result),Length(result),PWideChar(self.Memory+self.Position),lsize);
+    if i>0 then
+    begin
+      SetLength(result,i);
+    end;
+}    
+    
     SetLength(ws,lsize);
     Read(ws[1],lsize*SizeOf(WideChar));
     result:=UTF8Encode(ws);

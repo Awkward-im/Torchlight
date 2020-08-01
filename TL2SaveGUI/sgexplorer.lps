@@ -53,7 +53,7 @@
         <Filename Value="sgexplorer.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="20"/>
+        <CursorPos X="32" Y="19"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -63,10 +63,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="277"/>
-        <CursorPos Y="317"/>
-        <FoldState Value=" T7GG- T3kA0O3 pigjX0G116]Bdke0}e@"/>
+        <TopLine Value="269"/>
+        <CursorPos Y="306"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -115,9 +113,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formRecipes"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="47"/>
-        <CursorPos Y="83"/>
-        <FoldState Value=" T3iG097K"/>
+        <TopLine Value="50"/>
+        <CursorPos Y="63"/>
+        <FoldState Value=" T3iJ0B7w"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -140,9 +138,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSettings"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="73"/>
-        <CursorPos X="71"/>
-        <FoldState Value=" T7MGQ T3j40346"/>
+        <TopLine Value="71"/>
+        <CursorPos Y="142"/>
+        <FoldState Value=" T3j2034^"/>
         <UsageCount Value="206"/>
       </Unit>
       <Unit>
@@ -152,11 +150,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formChar"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1082"/>
-        <CursorPos Y="1103"/>
-        <FoldState Value=" T3lf035 pj6jN0f4]93kD0D6 piX]IS[R4fke0J]9kblR0{1012]Ugn20e1d"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="753"/>
+        <CursorPos Y="1042"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="formstat.pas"/>
@@ -204,9 +203,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSkills"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="3"/>
+        <TopLine Value="10"/>
         <CursorPos Y="16"/>
-        <FoldState Value=" T7FE; T3jK0G6 pj2jW0D525F"/>
+        <FoldState Value=" T7FE@ T3jO0G6 pjAje0D5]92jR0+[I5l30KZ"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -218,7 +217,7 @@
         <UnitName Value="formItems"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="27"/>
-        <CursorPos Y="49"/>
+        <CursorPos X="32" Y="39"/>
         <FoldState Value=" T3i50G2^"/>
         <UsageCount Value="204"/>
       </Unit>
@@ -242,8 +241,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItem"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="294"/>
-        <CursorPos X="61" Y="295"/>
+        <TopLine Value="270"/>
+        <CursorPos Y="285"/>
+        <FoldState Value=" T7EC&apos; T3jI057u"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -253,10 +253,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formEffects"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="4"/>
-        <CursorPos Y="22"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="93"/>
+        <CursorPos X="14" Y="107"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="addons.pas"/>
@@ -277,7 +280,7 @@
         <TopLine Value="63"/>
         <CursorPos Y="77"/>
         <FoldState Value=" T3iP068 pibjI083$"/>
-        <UsageCount Value="86"/>
+        <UsageCount Value="96"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\tl2db.pas"/>
@@ -338,8 +341,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Effects"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="127"/>
-        <CursorPos Y="146"/>
+        <TopLine Value="125"/>
+        <CursorPos X="12" Y="139"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -418,7 +421,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="72"/>
         <CursorPos X="18" Y="86"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
@@ -470,8 +473,8 @@
         <Filename Value="D:\SVN\LazSVN\lcl\grids.pas"/>
         <UnitName Value="Grids"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="5381"/>
-        <CursorPos Y="5397"/>
+        <TopLine Value="10085"/>
+        <CursorPos Y="10100"/>
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
@@ -608,59 +611,134 @@
         <CursorPos X="2" Y="1190"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\tl2db_stats.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="16" Y="22"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="12">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="230" TopLine="224"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="153" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="233" Column="31" TopLine="225"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="154" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="391" TopLine="359"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="155" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="277" TopLine="224"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="156" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="329" Column="63" TopLine="224"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="150" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="277" Column="56" TopLine="225"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="149" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="276" Column="56" TopLine="166"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="150" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="9" Column="23"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="149" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="241" Column="35" TopLine="166"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="150" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="309" TopLine="277"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="149" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="241" Column="8" TopLine="166"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="158" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="116" Column="3" TopLine="101"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="153" Column="26" TopLine="137"/>
       </Position>
       <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="9" Column="23"/>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="137" TopLine="131"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="162" TopLine="136"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="1121" TopLine="1108"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="141" Column="16" TopLine="137"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="143" TopLine="137"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="145" TopLine="137"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="788" Column="2" TopLine="620"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="133" TopLine="47"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="149" Column="15" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="47" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="85" Column="65" TopLine="73"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="146" Column="27" TopLine="131"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="145" Column="22" TopLine="131"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="176" Column="53" TopLine="157"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="151" Column="35" TopLine="126"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="89" Column="42" TopLine="77"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="17" Column="40" TopLine="15"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="107" Column="56" TopLine="93"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -669,21 +747,30 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="formsavegame.pas"/>
-        <Line Value="317"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="aChar"/>
+        <Expression Value="leffect"/>
       </Item>
       <Item>
-        <Expression Value="aChar.FModIds"/>
+        <Expression Value="leffect.fproperties"/>
+      </Item>
+      <Item>
+        <Expression Value="ls"/>
+      </Item>
+      <Item>
+        <Expression Value="FObject"/>
+      </Item>
+      <Item>
+        <Expression Value="aobj"/>
+      </Item>
+      <Item>
+        <Expression Value="arow"/>
+      </Item>
+      <Item>
+        <Expression Value="acol"/>
+      </Item>
+      <Item>
+        <Expression Value="sgeffects"/>
       </Item>
     </Watches>
   </Debugging>

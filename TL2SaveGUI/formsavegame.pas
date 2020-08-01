@@ -258,6 +258,12 @@ begin
   fmButtons.Visible:=true;
 
   CreateTree;
+
+  if ParamCount()>0 then
+  begin
+    FFileName:=ParamStr(1);
+    actFileReloadExecute(Sender);
+  end;
 end;
 
 procedure TfmSaveFile.CloseSaveGame;
@@ -284,12 +290,6 @@ begin
     if OpenDialog.Execute then
     begin
       FFileName:=OpenDialog.FileName;
-
-      actFileReload   .Enabled:=true;
-      actFileSave     .Enabled:=true;
-      actFileCheat    .Enabled:=true;
-      actFileFixModded.Enabled:=true;
-
       actFileReloadExecute(Sender);
     end;
   finally
@@ -299,6 +299,11 @@ end;
 
 procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
 begin
+  actFileReload   .Enabled:=true;
+  actFileSave     .Enabled:=true;
+  actFileCheat    .Enabled:=true;
+  actFileFixModded.Enabled:=true;
+
   ClearGameGlobals;
   CloseSaveGame;
 

@@ -1,6 +1,7 @@
 {}
 function TTL2SaveFile.Parse():boolean;
 var
+  ls:string;
   lpos,i,j,lcnt,lcnt1:integer;
 begin
   result:=true;
@@ -14,8 +15,9 @@ begin
   FHardcore    :=FStream.ReadByte<>0;
   FNewGameCycle:=FStream.ReadByte;
 
-  //!!
-  Unk1:=Check(FStream.ReadDWord,'save_label_1',0); // 0
+  //??
+  Unk1:=FStream.ReadDWord; // 0
+Check(Unk1,'save_label_1 '+HexStr(FStream.Position,8),0);
 
   FGameTime:=FStream.ReadFloat; // game time (hh.mm)
 
@@ -49,10 +51,10 @@ begin
   FWaypoint:=FStream.ReadShortString(); // area (region) (at entrance?)
 
   //----- Unknown 1 -----
-
-  //!!
-  Unk2    :=Check(FStream.ReadDWord,'save_label_2',0); // 0
-  UnkCoord:=FStream.ReadCoord; // usually [-999, -999, -999]
+  //??
+  Unk2    :=FStream.ReadDWord;  // 0 ??count of use
+Check(Unk2,'save_label_2 '+HexStr(FStream.Position,8),0);
+  UnkCoord:=FStream.ReadCoord; // usually [-999, -999, -999] 0xC479C000
 
   //----- User portal -----
 
@@ -60,8 +62,9 @@ begin
   FPortalCoord :=FStream.ReadCoord();
   FPortalPlace :=FStream.ReadShortString(); // User portal location
 
-  //!!
-  Unk3:=Check(FStream.ReadDWord,'pre-pet',1);  // usually, 1 but can be zero too
+  //??
+  Unk3:=FStream.ReadDWord;
+Check(Unk3,'save pre-pet '+HexStr(FStream.Position,8),1);  // usually, 1 but can be zero too
 
   //===== Pet Data =====
 
@@ -71,8 +74,9 @@ begin
     FPetInfos[i]:=ReadCharData(FStream,false,true);
 
   //----- Unknown 2 -----
-
+  //??
   FUnknown2:=FStream.ReadBytes(34);
+for i:=0 to 33 do Check(FUnknown2[i],'pre-map['+HexStr(i,2)+'] '+HexStr(FStream.Position,8),0);
 {
     Check(FStream.ReadDWord,'pre-map 1',0);
     Check(FStream.ReadDWord,'pre-map 2',0);
@@ -89,21 +93,23 @@ begin
 
   FMaps:=ReadMapList(FStream);
 
-  //----- Unknown 3 -----
-
+  //----- Visited areas (like in last block) -----
+  //??
   lpos:=FStream.Position;
   {}
   lcnt:=FStream.ReadDWord;    //?? active portal list
   for i:=0 to lcnt-1 do
   begin
-    FStream.ReadShortString;  // area
-    FStream.ReadDWord;        // count? $35-$3C
-    FStream.ReadDWord;        // 0 usually. 1 sometime
-    FStream.ReadDWord;        // ?
+    ls:=FStream.ReadShortString;  // area
+DbgLn('save area: '+ls);
+    FStream.ReadDWord; // player level
+    FStream.ReadDWord; // ??additional floors? 1 stage = 0;
+DbgLn('  '+HexStr(FStream.ReadDWord,8)); // ?
 
-    lcnt1:=FStream.ReadDWord; // usually, 0. sometime 1. maybe can be more
+    lcnt1:=FStream.ReadDWord; // activated portals?
     for j:=0 to lcnt1-1 do
-      FStream.ReadDword;      // 0 usually
+      Check(FStream.ReadDword,'save-area subarray '+HexStr(FStream.Position,8),0); // 0 usually
+DbgLn('end area'#13#10'---------');
   end;
   {}
   FUnkn3Size:=FStream.Position-lpos;

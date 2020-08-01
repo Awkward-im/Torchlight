@@ -42,9 +42,7 @@ type
 
     FDBMods  :string;
     FModIds  :TL2IdList;
-    FEffects1:TTL2EffectList;
-    FEffects2:TTL2EffectList;
-    FEffects3:TTL2EffectList;
+    FEffects :array [0..2] of TTL2EffectList;
     FAugments:TL2StringList;
     FStats   :TL2IdValList;
 
@@ -53,6 +51,8 @@ type
   private
     function  GetStat(const iname:string):TL2Integer;
     procedure SetStat(const iname:string; aval:TL2Integer);
+    function  GetEffects(idx:integer):TTL2EffectList;
+    procedure SetEffects(idx:integer; aval:TTL2EffectList);
 
   public
     // true - mod found/replaced; false - unsupported mod
@@ -67,9 +67,7 @@ type
     property Coord  :TL2Coord   read FOrientation.FPosition;
 
     property ModIds  :TL2IdList      read FModIds   write FModIds;
-    property Effects1:TTL2EffectList read FEffects1 write FEffects1;
-    property Effects2:TTL2EffectList read FEffects2 write FEffects2;
-    property Effects3:TTL2EffectList read FEffects3 write FEffects3;
+    property Effects[idx:integer]:TTL2EffectList read GetEffects write SetEffects;
     property Augments:TL2StringList  read FAugments;
     property Stats   :TL2IdValList   read FStats;
     property Stat[iname:string]:TL2Integer read GetStat  write SetStat;
@@ -97,15 +95,18 @@ end;
 
 procedure TL2ActiveClass.InternalClear;
 var
-  i:integer;
+  i,j:integer;
 begin
   FDBMods:='';
   
   SetLength(FModIds,0);
 
-  for i:=0 to High(FEffects1) do FEffects1[i].Free;  SetLength(FEffects1,0);
-  for i:=0 to High(FEffects2) do FEffects2[i].Free;  SetLength(FEffects2,0);
-  for i:=0 to High(FEffects3) do FEffects3[i].Free;  SetLength(FEffects3,0);
+  for i:=0 to 2 do
+  begin
+    for j:=0 to High(FEffects[i]) do
+      FEffects[i][j].Free;
+    SetLength(FEffects[i],0);
+  end;
 
   SetLength(FAugments,0);
   SetLength(FStats,0);
@@ -118,6 +119,7 @@ begin
   Inherited;
 end;
 
+//----- properties -----
 
 function TL2ActiveClass.GetDBMods():string;
 begin
@@ -144,6 +146,24 @@ begin
   if i>=0 then
     Stats[i].value:=aval;
 end;
+
+function TL2ActiveClass.GetEffects(idx:integer):TTL2EffectList;
+begin
+  if (idx>=0) and (idx<=2) then
+    result:=FEffects[idx]
+  else
+    result:=FEffects[0]
+end;
+
+procedure TL2ActiveClass.SetEffects(idx:integer; aval:TTL2EffectList);
+begin
+  if (idx>=0) and (idx<=2) then
+    FEffects[idx]:=aval
+  else
+    FEffects[0]:=aval
+end;
+
+//----- Other -----
 
 function TL2ActiveClass.CheckForMods(alist:TTL2ModList):boolean;
 var

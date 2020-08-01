@@ -43,6 +43,10 @@ type
   private
     FConfigured:boolean;
 
+    OldCheckLevel :boolean;
+    OldCheckPoints:boolean;
+    OldSaveFull   :boolean;
+
     FChar  :TTL2Character;  // reference to player (char level, free points, skills)
     FClass :TL2ID;          // class id (to change skill list)
     FSkills:tSkillArray;    // class skills data
@@ -130,6 +134,9 @@ begin
   cbCheckLevel .Checked:=config.ReadBool(sSkills,sCheckLevel ,true);
   cbCheckPoints.Checked:=config.ReadBool(sSkills,sCheckPoints,true);
   cbSaveFull   .Checked:=config.ReadBool(sSkills,sSaveFull   ,true);
+  OldCheckLevel :=cbCheckLevel .Checked;
+  OldCheckPoints:=cbCheckPoints.Checked;
+  OldSaveFull   :=cbSaveFull   .Checked;
 
   config.Free;
 
@@ -147,13 +154,18 @@ begin
     SetLength(FTiers[i].levels,0);
   SetLength(FTiers,0);
 
-  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
-  config.WriteBool(sSkills,sCheckLevel ,cbCheckLevel .Checked);
-  config.WriteBool(sSkills,sCheckPoints,cbCheckPoints.Checked);
-  config.WriteBool(sSkills,sSaveFull   ,cbSaveFull   .Checked);
+  if (OldCheckLevel <>cbCheckLevel .Checked) or
+     (OldCheckPoints<>cbCheckPoints.Checked) or
+     (OldSaveFull   <>cbSaveFull   .Checked) then
+  begin
+    config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+    config.WriteBool(sSkills,sCheckLevel ,cbCheckLevel .Checked);
+    config.WriteBool(sSkills,sCheckPoints,cbCheckPoints.Checked);
+    config.WriteBool(sSkills,sSaveFull   ,cbSaveFull   .Checked);
 
-  config.UpdateFile;
-  config.Free;
+    config.UpdateFile;
+    config.Free;
+  end;
 end;
 
 procedure TfmSkills.seFreePointsChange(Sender: TObject);

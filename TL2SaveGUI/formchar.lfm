@@ -14,9 +14,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsItems
+    ActivePage = tsOtherInfo
     Align = alClient
-    TabIndex = 5
+    TabIndex = 4
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -874,6 +874,9 @@ object fmChar: TfmChar
         TabOrder = 2
       end
     end
+    object tsOtherInfo: TTabSheet
+      Caption = 'Other'
+    end
     object tsStatistic: TTabSheet
       Caption = 'Statistic'
       ClientHeight = 432
@@ -887,20 +890,24 @@ object fmChar: TfmChar
         TabOrder = 2
       end
       object lblArea: TLabel
-        Left = 600
+        Left = 534
         Height = 15
         Top = 256
-        Width = 24
+        Width = 90
+        Alignment = taRightJustify
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = False
         Caption = 'Area'
         ParentColor = False
       end
       object lblWaypoint: TLabel
-        Left = 573
+        Left = 432
         Height = 15
         Top = 306
-        Width = 51
+        Width = 192
+        Alignment = taRightJustify
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = False
         Caption = 'Waypoint'
         ParentColor = False
       end

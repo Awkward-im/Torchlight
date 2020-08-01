@@ -385,24 +385,25 @@ end;
 
 function ClearCheatItems(aItems:TTL2ItemList):boolean;
 var
-  i,j:integer;
+  i,j,k:integer;
   l:TTL2EffectList;
 begin
   result:=false;
   for i:=0 to High(aItems) do
   begin
-    for j:=0 to High(aItems[i].Effects1) do
-    begin
-      if aItems[i].Effects1[j].EffectType=TL2Cheat then
+    for k:=0 to 2 do
+      for j:=0 to High(aItems[i].Effects[k]) do
       begin
-        l:=aItems[i].Effects1;
-        aItems[i].Effects1[j].Free;
-        Delete(l,j,1);
-        aItems[i].Effects1:=l;
-        result:=true;
-        break;
+        if aItems[i].Effects[k][j].EffectType=TL2Cheat then
+        begin
+          l:=aItems[i].Effects[k];
+          aItems[i].Effects[k][j].Free;
+          Delete(l,j,1);
+          aItems[i].Effects[k]:=l;
+          result:=true;
+          break;
+        end;
       end;
-    end;
   end;
 end;
 

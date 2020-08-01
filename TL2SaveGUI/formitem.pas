@@ -6,15 +6,20 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, ComCtrls, tl2item, tl2char;
+  Buttons, ComCtrls, formEffects, tl2item, tl2char;
 
 type
 
   { TfmItem }
 
   TfmItem = class(TForm)
-    bbClearMod: TBitBtn;
+    pcItemInfo: TPageControl;
+    tsCommonInfo: TTabSheet;
+
+    // Common
     bbUpdate: TBitBtn;
+
+    gbFlags: TGroupBox;
     cbFlag1: TCheckBox;
     cbFlag2: TCheckBox;
     cbFlag3: TCheckBox;
@@ -22,72 +27,65 @@ type
     cbFlag5: TCheckBox;
     cbFlag6: TCheckBox;
     cbFlag7: TCheckBox;
-    cbActivated: TCheckBox;
-    cbEquipped: TCheckBox;
-    cbRecognized: TCheckBox;
-    cbEnabled: TCheckBox;
-    cbVisible: TCheckBox;
-    edArmor: TEdit;
-    edArmorType: TEdit;
-    edEnchant: TEdit;
-    edItemId: TEdit;
-    edLevel: TEdit;
-    edName: TEdit;
-    edNameById: TEdit;
-    edPosition: TEdit;
-    edPrefix: TEdit;
-    edSockets: TEdit;
-    edStack: TEdit;
-    edSuffix: TEdit;
-    edUnkn6: TEdit;
-    edWeaponDmg: TEdit;
-    edX: TEdit;
-    edX1: TEdit;
-    edY: TEdit;
-    edY1: TEdit;
-    edZ: TEdit;
-    edZ1: TEdit;
+
+    cbEnabled   : TCheckBox;
+    cbVisible   : TCheckBox;
+
+    edItemId   : TEdit;
+    edLevel    : TEdit;  lblLevel: TLabel;
+    edName     : TEdit;  lblName: TLabel;
+    edNameById : TEdit;
+    edPrefix   : TEdit;  lblPrefix: TLabel;
+    edSuffix   : TEdit;  lblSuffix: TLabel;
+    edUnkn6    : TEdit;
+
     gbCoords: TGroupBox;
+    edX : TEdit;  lblX : TLabel;
+    edY : TEdit;  lblY : TLabel;
+    edZ : TEdit;  lblZ : TLabel;
+
     gbCoords1: TGroupBox;
-    gbFlags: TGroupBox;
+    edX1: TEdit;  lblX1: TLabel;
+    edY1: TEdit;  lblY1: TLabel;
+    edZ1: TEdit;  lblZ1: TLabel;
+
     imgItem: TImage;
-    lblArmor: TLabel;
-    lblArmorByType: TLabel;
-    lblArmorType: TLabel;
-    lblContType: TLabel;
-    lblEnchant: TLabel;
-    lblLevel: TLabel;
-    lblName: TLabel;
-    lblPosition: TLabel;
-    lblPosType: TLabel;
-    lblPrefix: TLabel;
-    lblSockets: TLabel;
-    lblStack: TLabel;
-    lblSuffix: TLabel;
-    lblWeaponDmg: TLabel;
-    lblX: TLabel;
-    lblX1: TLabel;
-    lblY: TLabel;
-    lblY1: TLabel;
-    lblZ: TLabel;
-    lblZ1: TLabel;
+
     lbModList: TListBox;
+    bbClearMod: TBitBtn;
 
-
-    pcItemInfo: TPageControl;
-    tsOtherInfo: TTabSheet;
-    tsPropInfo: TTabSheet;
-    tsCommonInfo: TTabSheet;
+    // Item
     tsItemInfo: TTabSheet;
+    cbEquipped  : TCheckBox;
+    cbRecognized: TCheckBox;
+    edPosition : TEdit;  lblPosition : TLabel;  lblPosType: TLabel;  lblContType: TLabel;
+    edArmor    : TEdit;  lblArmor    : TLabel;
+    edArmorType: TEdit;  lblArmorType: TLabel;  lblArmorByType: TLabel;
+    edEnchant  : TEdit;  lblEnchant  : TLabel;
+    edWeaponDmg: TEdit;  lblWeaponDmg: TLabel;
+    edSockets  : TEdit;  lblSockets  : TLabel;
+    edStack    : TEdit;  lblStack    : TLabel;
+
+    // Prop
+    tsPropInfo: TTabSheet;
+    cbActivated : TCheckBox;
+
+    // Other
+    tsOtherInfo: TTabSheet;
+
     procedure bbClearModClick(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure edSocketsChange(Sender: TObject);
     procedure edStackChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
+    FEffects:TfmEffects;
+
     FItem:TTL2Item;
     FChar:TTL2Character;
     FMaxStack:integer;
+
     procedure DrawItemIcon(aItem: TTL2Item; aImg: TImage);
 
   public
@@ -103,6 +101,13 @@ uses
   lazfileutils,
   formSettings,
   tl2db;
+
+procedure TfmItem.FormCreate(Sender: TObject);
+begin
+  FEffects:=TfmEffects.Create(Self);
+  FEffects.Parent:=tsOtherInfo;
+  FEffects.Visible:=true;
+end;
 
 procedure TfmItem.edStackChange(Sender: TObject);
 begin
@@ -276,40 +281,12 @@ begin
   cbFlag7.Checked:=aItem.Flags[6]; cbRecognized.Checked:=aItem.Flags[6];
 
   edUnkn6.Text:=IntToStr(Length(aItem.Unkn6));
- {
+
+  FEffects.FillInfo(aItem);
+{
   lbAugments.Clear;
   for i:=0 to High(aItem.Augments) do
     lbAugments.AddItem(aItem.Augments[i],nil);
-
-  sgEffects.BeginUpdate;
-  sgEffects.Clear;
-  sgEffects.RowCount:=1+Length(aItem.Effects1)+Length(aItem.Effects2)+Length(aItem.Effects3);
-  j:=1;
-  for i:=0 to High(aItem.Effects1) do
-  begin
-    sgEffects.Objects[0,j]:=TObject(IntPtr(i));
-    sgEffects.Cells[0,j]:='1';
-    sgEffects.Cells[1,j]:=IntToStr(aItem.Effects1[i].EffectType);
-    sgEffects.Cells[2,j]:=aItem.Effects1[i].Name;
-    inc(j);
-  end;
-  for i:=0 to High(aItem.Effects2) do
-  begin
-    sgEffects.Objects[0,j]:=TObject(IntPtr(i));
-    sgEffects.Cells[0,j]:='2';
-    sgEffects.Cells[1,j]:=IntToStr(aItem.Effects2[i].EffectType);
-    sgEffects.Cells[2,j]:=aItem.Effects2[i].Name;
-    inc(j);
-  end;
-  for i:=0 to High(aItem.Effects3) do
-  begin
-    sgEffects.Objects[0,j]:=TObject(IntPtr(i));
-    sgEffects.Cells[0,j]:='3';
-    sgEffects.Cells[1,j]:=IntToStr(aItem.Effects3[i].EffectType);
-    sgEffects.Cells[2,j]:=aItem.Effects3[i].Name;
-    inc(j);
-  end;
-  sgEffects.EndUpdate;
 }
   DrawItemIcon(aItem,imgItem);
 

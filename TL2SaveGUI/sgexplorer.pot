@@ -411,6 +411,11 @@ msgctxt "tfmchar.tsitems.caption"
 msgid "Items"
 msgstr ""
 
+#: tfmchar.tsotherinfo.caption
+msgctxt "tfmchar.tsotherinfo.caption"
+msgid "Other"
+msgstr ""
+
 #: tfmchar.tsstat.caption
 msgctxt "tfmchar.tsstat.caption"
 msgid "Stats"
@@ -435,9 +440,28 @@ msgctxt "tfmeffects.caption"
 msgid "Effects"
 msgstr ""
 
-#: tfmeffects.lblaugments.caption
-msgctxt "tfmeffects.lblaugments.caption"
-msgid "Augments"
+#: tfmeffects.lblactivation.caption
+msgid "Activation"
+msgstr ""
+
+#: tfmeffects.lblbaseclass.caption
+msgid "Base Class"
+msgstr ""
+
+#: tfmeffects.lbldamagetype.caption
+msgid "Damage type"
+msgstr ""
+
+#: tfmeffects.lbldisplay.caption
+msgid "Display"
+msgstr ""
+
+#: tfmeffects.lblduration.caption
+msgid "Duration"
+msgstr ""
+
+#: tfmeffects.lbleffectname.caption
+msgid "Effect Name"
 msgstr ""
 
 #: tfmeffects.lbleffects.caption
@@ -445,9 +469,43 @@ msgctxt "tfmeffects.lbleffects.caption"
 msgid "Effects"
 msgstr ""
 
-#: tfmeffects.lblstats.caption
-msgctxt "tfmeffects.lblstats.caption"
-msgid "Stats"
+#: tfmeffects.lblgraph.caption
+msgid "Graph"
+msgstr ""
+
+#: tfmeffects.lblicon.caption
+msgctxt "tfmeffects.lblicon.caption"
+msgid "Icon"
+msgstr ""
+
+#: tfmeffects.lbllevel.caption
+msgctxt "tfmeffects.lbllevel.caption"
+msgid "Level"
+msgstr ""
+
+#: tfmeffects.lbllinkname.caption
+msgid "Link Name"
+msgstr ""
+
+#: tfmeffects.lblparticles.caption
+msgid "Particles"
+msgstr ""
+
+#: tfmeffects.lblproperties.caption
+msgid "Properties"
+msgstr ""
+
+#: tfmeffects.lblsource.caption
+msgid "Source"
+msgstr ""
+
+#: tfmeffects.lblunittheme.caption
+msgid "Unit Theme"
+msgstr ""
+
+#: tfmeffects.lblunknown.caption
+msgctxt "tfmeffects.lblunknown.caption"
+msgid "Unknown"
 msgstr ""
 
 #: tfmeffects.sgeffects.columns[0].title.caption
@@ -463,11 +521,6 @@ msgstr ""
 #: tfmeffects.sgeffects.columns[2].title.caption
 msgctxt "tfmeffects.sgeffects.columns[2].title.caption"
 msgid "Name"
-msgstr ""
-
-#: tfmeffects.sgeffects.columns[3].title.caption
-msgctxt "tfmeffects.sgeffects.columns[3].title.caption"
-msgid "Value"
 msgstr ""
 
 #: tfmeffects.sgstats.columns[0].title.caption
@@ -646,6 +699,7 @@ msgid "Item"
 msgstr ""
 
 #: tfmitem.tsotherinfo.caption
+msgctxt "tfmitem.tsotherinfo.caption"
 msgid "Other"
 msgstr ""
 
