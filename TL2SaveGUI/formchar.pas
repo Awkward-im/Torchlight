@@ -223,7 +223,7 @@ const
   sCheckPoints = 'checkpoints';
 
 const
-  dirSpellIcon = 'spells';
+  dirSpellIcon = 'skills'; // 'spells';
   dirCharIcon  = 'characters';
   dirPetIcon   = 'pets';
 
