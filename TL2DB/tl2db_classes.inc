@@ -29,6 +29,9 @@ procedure GetClassList(out alist:tClassArray);
 {$ELSE}
 
 const
+  dbClassTable = 'classes';
+
+const
   DefaultClasses: array [0..7] of record
     id   :TL2ID;
     name :string;
@@ -68,12 +71,12 @@ begin
     result:='';
   end
   else
-    result:=GetById(aid,'classes','',amods,aname);
+    result:=GetById(aid,dbClassTable,'',amods,aname);
 end;
 
 function GetClassMods(const aid:TL2ID):string;
 begin
-  result:=GetTextValue(aid,'classes','modid');
+  result:=GetTextValue(aid,dbClassTable,'modid');
 end;
 
 function GetTL2Class(const aid:TL2ID; out amods:string):string;
@@ -109,12 +112,12 @@ begin
     result:='';
   end
   else
-    result:=GetByName(aname,'classes',aid);
+    result:=GetByName(aname,dbClassTable,aid);
 end;
 
 function GetClassIcon(const aid:TL2ID):string;
 begin
-  result:=GetTextValue(aid,'classes','icon');
+  result:=GetTextValue(aid,dbClassTable,'icon');
 end;
 
 //----- Info -----
@@ -149,7 +152,8 @@ begin
   else
   begin
     Str(aid,lSQL);
-    lSQL:='SELECT icon, descr, strength, dexterity, magic, defense FROM classes WHERE id='+lSQL;
+    lSQL:='SELECT icon, descr, strength, dexterity, magic, defense FROM '+dbClassTable+
+          ' WHERE id='+lSQL;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -179,7 +183,8 @@ begin
   if db<>nil then
   begin
     Str(aid,lSQL);
-    lSQL:='SELECT graph_hp, graph_mp, graph_stat FROM classes WHERE id='+lSQL;
+    lSQL:='SELECT graph_hp, graph_mp, graph_stat FROM '+dbClassTable+
+          ' WHERE id='+lSQL;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -206,7 +211,8 @@ begin
   if db<>nil then
   begin
     Str(aid,lSQL);
-    lSQL:='SELECT graph_skill, graph_fame FROM classes WHERE id='+lSQL;
+    lSQL:='SELECT graph_skill, graph_fame FROM '+dbClassTable+
+          ' WHERE id='+lSQL;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -236,7 +242,8 @@ begin
       lwhere:='';
 
     i:=0;
-    lSQL:='SELECT count(*) FROM classes WHERE gender<>'''''+lwhere;
+    lSQL:='SELECT count(*) FROM '+dbClassTable+
+          ' WHERE gender<>'''''+lwhere;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -249,7 +256,8 @@ begin
     if i>0 then
     begin
       SetLength(alist,i);
-      lSQL:='SELECT id, name, title, icon, gender FROM classes WHERE gender<>'''''+lwhere;
+      lSQL:='SELECT id, name, title, icon, gender FROM '+dbClassTable+
+            ' WHERE gender<>'''''+lwhere;
 
       if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
       begin

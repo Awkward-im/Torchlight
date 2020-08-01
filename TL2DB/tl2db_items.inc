@@ -8,11 +8,16 @@ function GtItemStack(const aid:TL2ID):integer;
 function GetItemPosition(apos:integer; out cont :string):string;
 function GetItemUsability(const aid:TL2ID):integer;
 function GetAlt(const aid:TL2ID; alist:TTL2ModList; out newid:TL2ID):TL2ID;
+function IsItem(const aid:TL2ID):boolean;
 
 function GetTL2Prop(const aid:TL2ID; out amods:string):string; overload;
 function GetTL2Prop(const aid:TL2ID                  ):string; overload;
 
 {$ELSE}
+
+const
+  dbItemTable = 'items';
+  dbPropTable = 'props';
 
 //----- Items -----
 
@@ -20,7 +25,7 @@ function GetTL2Item(const aid:TL2ID; out amods:string):string;
 var
   lname:string;
 begin
-  result:=GetById(aid,'items','',amods,lname);
+  result:=GetById(aid,dbItemTable,'',amods,lname);
 end;
 
 function GetTL2Item(const aid:TL2ID):string;
@@ -32,22 +37,27 @@ end;
 
 function GetItemMods(const aid:TL2ID):string;
 begin
-  result:=GetTextValue(aid,'items','modid');
+  result:=GetTextValue(aid,dbItemTable,'modid');
 end;
 
 function GetItemIcon(const aid:TL2ID):string;
 begin
-  result:=GetTextValue(aid,'items','icon');
+  result:=GetTextValue(aid,dbItemTable,'icon');
 end;
 
 function GetItemUsability(const aid:TL2ID):integer;
 begin
-  result:=GetIntValue(aid,'items','usable');
+  result:=GetIntValue(aid,dbItemTable,'usable');
 end;
 
 function GtItemStack(const aid:TL2ID):integer;
 begin
-  result:=GetIntValue(aid,'items','stack');
+  result:=GetIntValue(aid,dbItemTable,'stack');
+end;
+
+function IsItem(const aid:TL2ID):boolean;
+begin
+  result:=GetItemMods(aid)<>'';
 end;
 
 function GetItemPosition(apos:integer; out cont:string):string;
@@ -102,11 +112,12 @@ begin
   // Right now, search just by unittype without any other properties
 
   newid:=TL2IdEmpty;
-  lunittype:=GetTextValue(aid,'items','unittype');
+  lunittype:=GetTextValue(aid,dbItemTable,'unittype');
   if lunittype='' then exit;
 
   // 3 - search alternative in unmodded items
-  lSQL:='SELECT id FROM items WHERE modid='' 0 '' AND unittype='''+lunittype+''' LIMIT 1';
+  lSQL:='SELECT id FROM '+dbItemTable+
+        ' WHERE modid='' 0 '' AND unittype='''+lunittype+''' LIMIT 1';
   if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
@@ -120,7 +131,8 @@ begin
   for i:=0 to High(alist) do
   begin
     Str(alist[i].id,lSQL);
-    lSQL:='SELECT id FROM items WHERE modid LIKE '' '+lSQL+' '' AND unittype='''+lunittype+''' LIMIT 1';
+    lSQL:='SELECT id FROM '+dbItemTable+
+          ' WHERE modid LIKE '' '+lSQL+' '' AND unittype='''+lunittype+''' LIMIT 1';
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -143,7 +155,7 @@ function GetTL2Prop(const aid:TL2ID; out amods:string):string;
 var
   lname:string;
 begin
-  result:=GetById(aid,'props','',amods,lname);
+  result:=GetById(aid,dbPropTable,'',amods,lname);
 end;
 
 function GetTL2Prop(const aid:TL2ID):string;

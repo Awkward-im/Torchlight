@@ -37,6 +37,7 @@ begin
       ls:='';
 
     lSQL:='SELECT count(*) FROM recipes'+ls;
+    i:=0;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then

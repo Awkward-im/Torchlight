@@ -21,6 +21,9 @@ function  GetDefaultPet:TL2ID;
 {$ELSE}
 
 const
+  dbPetTable = 'pets';
+
+const
   DefaultPets: tPetArray = (
     (id:-8880591480184383566; name:'Pet_Cat'        ; title:'Cat'        ; scale:0.65; icon:''),
     (id:-8742058185063171412; name:'Pet_Jackalbeast'; title:'Jackalbeast'; scale:0.75; icon:''),
@@ -64,7 +67,7 @@ begin
     result:='';
   end
   else
-    result:=GetById(aid,'pets','',amods,lname);
+    result:=GetById(aid,dbPetTable,'',amods,lname);
 end;
 
 function GetTL2Pet(const aid:TL2ID):string;
@@ -76,12 +79,12 @@ end;
 
 function GetPetIcon(const aid:TL2ID):string;
 begin
-  result:=GetTextValue(aid,'pets','icon');
+  result:=GetTextValue(aid,dbPetTable,'icon');
 end;
 
 function GetPetMods(const aid:TL2ID):string;
 begin
-  result:=GetTextValue(aid,'pets','modid');
+  result:=GetTextValue(aid,dbPetTable,'modid');
 end;
 
 //----- List -----
@@ -99,7 +102,7 @@ begin
     else
       lwhere:='';
     i:=0;
-    lSQL:='SELECT count(*) FROM pets'+lwhere;
+    lSQL:='SELECT count(*) FROM '+dbPetTable+lwhere;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -112,7 +115,7 @@ begin
     if i>0 then
     begin
       SetLength(alist,i);
-      lSQL:='SELECT id, name, title, scale, icon FROM pets'+lwhere;
+      lSQL:='SELECT id, name, title, scale, icon FROM '+dbPetTable+lwhere;
 
       if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
       begin

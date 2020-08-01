@@ -253,91 +253,7 @@ begin
   result:=GetTextValue(aid,'mobs','modid');
 end;
 
-//===== Database load =====
-
-function CopyToFile(db:PSQLite3; afname:PChar):integer;
-var
-  pFile  :PSQLite3;
-  pBackup:PSQLite3Backup;
-begin
-  result:=sqlite3_open(afname, @pFile);
-  if result=SQLITE_OK then
-  begin
-    pBackup:=sqlite3_backup_init(pFile, 'main', db, 'main');
-    if pBackup<>nil then
-    begin
-      sqlite3_backup_step  (pBackup, -1);
-      sqlite3_backup_finish(pBackup);
-    end;
-    result:=sqlite3_errcode(pFile);
-  end;
-  sqlite3_close(pFile);
-end;
-
-function CopyFromFile(db:PSQLite3; afname:PChar):integer;
-var
-  pFile  :PSQLite3;
-  pBackup:PSQLite3Backup;
-begin
-  result:=sqlite3_open(afname, @pFile);
-  if result=SQLITE_OK then
-  begin
-    pBackup:=sqlite3_backup_init(db, 'main', pFile, 'main');
-    if pBackup<>nil then
-    begin
-      sqlite3_backup_step  (pBackup, -1);
-      sqlite3_backup_finish(pBackup);
-    end;
-    result:=sqlite3_errcode(db);
-  end;
-  sqlite3_close(pFile);
-end;
-
-function LoadBases(const fname:string=''):integer;
-var
-  f:file of byte;
-  lfname:string;
-begin
-  result:=-1;
-  db:=nil;
-
-  try
-    InitializeSQlite();
-  except
-    exit;
-  end;
-
-  if fname='' then lfname:=TL2DataBase else lfname:=fname;
-
-{$I-}
-  AssignFile(f,lfname);
-  Reset(f);
-  if IOResult=0 then
-//  if FileExists(lfname) then
-  begin
-    CloseFile(f);
-    if sqlite3_open(':memory:',@db)=SQLITE_OK then
-    begin
-      try
-        result:=CopyFromFile(db,PChar(lfname));
-      except
-        sqlite3_close(db);
-        db:=nil;
-        result:=-1002;
-      end;
-    end
-    else
-      result:=-1001;
-  end
-  else
-    result:=-1000;
-end;
-
-procedure FreeBases;
-begin
-  if db<>nil then sqlite3_close(db);
-  ReleaseSqlite;
-end;
+//-----  -----
 
 
 procedure SetFilter(amods:TTL2ModList);
@@ -430,6 +346,93 @@ begin
   end;
   result:=false;
 end;
+
+//===== Database load =====
+
+function CopyToFile(db:PSQLite3; afname:PChar):integer;
+var
+  pFile  :PSQLite3;
+  pBackup:PSQLite3Backup;
+begin
+  result:=sqlite3_open(afname, @pFile);
+  if result=SQLITE_OK then
+  begin
+    pBackup:=sqlite3_backup_init(pFile, 'main', db, 'main');
+    if pBackup<>nil then
+    begin
+      sqlite3_backup_step  (pBackup, -1);
+      sqlite3_backup_finish(pBackup);
+    end;
+    result:=sqlite3_errcode(pFile);
+  end;
+  sqlite3_close(pFile);
+end;
+
+function CopyFromFile(db:PSQLite3; afname:PChar):integer;
+var
+  pFile  :PSQLite3;
+  pBackup:PSQLite3Backup;
+begin
+  result:=sqlite3_open(afname, @pFile);
+  if result=SQLITE_OK then
+  begin
+    pBackup:=sqlite3_backup_init(db, 'main', pFile, 'main');
+    if pBackup<>nil then
+    begin
+      sqlite3_backup_step  (pBackup, -1);
+      sqlite3_backup_finish(pBackup);
+    end;
+    result:=sqlite3_errcode(db);
+  end;
+  sqlite3_close(pFile);
+end;
+
+function LoadBases(const fname:string=''):integer;
+var
+  f:file of byte;
+  lfname:string;
+begin
+  result:=-1;
+  db:=nil;
+
+  try
+    InitializeSQlite();
+  except
+    exit;
+  end;
+
+  if fname='' then lfname:=TL2DataBase else lfname:=fname;
+
+{$I-}
+  AssignFile(f,lfname);
+  Reset(f);
+  if IOResult=0 then
+//  if FileExists(lfname) then
+  begin
+    CloseFile(f);
+    if sqlite3_open(':memory:',@db)=SQLITE_OK then
+    begin
+      try
+        result:=CopyFromFile(db,PChar(lfname));
+      except
+        sqlite3_close(db);
+        db:=nil;
+        result:=-1002;
+      end;
+    end
+    else
+      result:=-1001;
+  end
+  else
+    result:=-1000;
+end;
+
+procedure FreeBases;
+begin
+  if db<>nil then sqlite3_close(db);
+  ReleaseSqlite;
+end;
+
 
 finalization
 //  ReleaseSqlite;
