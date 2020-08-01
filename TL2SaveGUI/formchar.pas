@@ -165,6 +165,7 @@ type
     FUserStatPoints:integer;
 
     procedure DrawCharIcon(const aname: string; aImg: TImage);
+    procedure DrawIconInt(const aname, adir: string; aImg: TImage);
     procedure DrawPetIcon(aclass: TL2ID; aImg: TImage);
     procedure FillClassCombo();
     procedure FillPetInfo;
@@ -204,6 +205,7 @@ implementation
 
 uses
   INIFiles,
+  addons,
   formSettings,
   unitGlobal;
 
@@ -219,6 +221,11 @@ resourcestring
 const
   sStats       = 'Stats';
   sCheckPoints = 'checkpoints';
+
+const
+  dirSpellIcon = 'spells';
+  dirCharIcon  = 'characters';
+  dirPetIcon   = 'pets';
 
 //----- Support -----
 
@@ -429,17 +436,16 @@ begin
   bbUpdate.Enabled:=true;
 end;
 
-//--- Player ---
-
-procedure TfmChar.DrawCharIcon(const aname:string; aImg:TImage);
+procedure TfmChar.DrawIconInt(const aname,adir:string; aImg:TImage);
 var
   licon:string;
 begin
-  licon:=aname;
+  licon:=SearchForFileName(fmSettings.edIconDir.Text+'\'+adir+'\',UpCase(aname));
+
   if licon<>'' then
   begin
     try
-      aImg.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\characters\'+licon+'.png');
+      aImg.Picture.LoadFromFile(licon);
     except
       licon:='';
     end;
@@ -451,6 +457,13 @@ begin
     except
       aImg.Picture.Clear;
     end;
+end;
+
+//--- Player ---
+
+procedure TfmChar.DrawCharIcon(const aname:string; aImg:TImage);
+begin
+  DrawIconInt(aname,dirCharIcon,aImg);
 end;
 
 procedure TfmChar.StatChange(Sender: TObject);
@@ -549,16 +562,8 @@ end;
 //--- Pet ---
 
 procedure TfmChar.DrawPetIcon(aclass:TL2ID; aImg:TImage);
-var
-  licon:string;
 begin
-  licon:=GetPetIcon(aclass);
-  if licon='' then licon:='\unknown' else licon:='\pets\'+licon;
-  try
-    aImg.Picture.LoadFromFile(fmSettings.edIconDir.Text+licon+'.png');
-  except
-    aImg.Picture.Clear;
-  end;
+  DrawIconInt(GetPetIcon(aclass),dirPetIcon,aImg);
 end;
 
 procedure TfmChar.cbMorphChange(Sender: TObject);
@@ -585,6 +590,7 @@ end;
 procedure TfmChar.cbSpellChange(Sender: TObject);
 var
   cb:TComboBox;
+  licon:string;
   i,idx:integer;
 begin
   bbUpdate.Enabled:=true;
@@ -602,11 +608,13 @@ begin
         for i:=1 to SpellList[idx].level do
           cb.Items.AddObject(IntToStr(i),TObject(IntPtr(i)));
         cb.ItemIndex:=0;
-        try
-          TImage(cb.Tag).Picture.LoadFromFile(
-             fmSettings.edIconDir.Text+'\skills\'+SpellList[idx].icon+'.png');
-        except
-        end;
+
+        licon:=SearchForFileName(fmSettings.edIconDir.Text+'\'+dirSpellIcon+'\',UpCase(SpellList[idx].icon));
+        if licon<>'' then
+          try
+            TImage(cb.Tag).Picture.LoadFromFile(licon);
+          except
+          end;
       end;
     end;
   end;

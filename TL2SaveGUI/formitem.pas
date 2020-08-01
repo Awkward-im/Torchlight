@@ -100,6 +100,7 @@ implementation
 uses
   lazfileutils,
   formSettings,
+  addons,
   tl2db;
 
 procedure TfmItem.FormCreate(Sender: TObject);
@@ -152,46 +153,9 @@ begin
   bbUpdate.Visible:=true;
 end;
 
-function CycleDir(const adir,aicon:string):string;
-var
-  sr:TSearchRec;
-  lname:AnsiString;
-begin
-  result:='';
-  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
-  begin
-    repeat
-      lname:=adir+'\'+sr.Name;
-      if (sr.Attr and faDirectory)=faDirectory then
-      begin
-        if (sr.Name<>'.') and (sr.Name<>'..') then
-        begin
-          result:=CycleDir(lname,aicon);
-          if result<>'' then break;
-        end;
-      end
-      else
-      begin
-        if UpCase(ExtractFileNameOnly(lname))=aicon then
-        begin
-          result:=lname;
-          break;
-        end;
-      end;
-    until FindNext(sr)<>0;
-    FindClose(sr);
-  end;
-end;
-
 function GetIconFileName(aItem:TTL2Item):string;
-var
-  licon:string;
 begin
-  licon:=GetItemIcon(aItem.ID);
-  if licon<>'' then
-    result:=CycleDir(fmSettings.edIconDir.Text,UpCase(licon))
-  else
-    result:='';
+  result:=SearchForFileName(fmSettings.edIconDir.Text,UpCase(GetItemIcon(aItem.ID)))
 end;
 
 procedure TfmItem.DrawItemIcon(aItem:TTL2Item; aImg:TImage);
