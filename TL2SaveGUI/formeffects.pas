@@ -55,6 +55,7 @@ implementation
 uses
   tl2effects,
   tl2base,
+  tl2char,
   tl2db;
 
 procedure TfmEffects.ClearData;
@@ -66,6 +67,7 @@ begin
   edGraph     .Text:='';
   edParticles .Text:='';
   edIcon      .Text:='';
+  edBaseClass .Text:='';
 
   for i:=0 to clbFlags.Items.Count-1 do
   begin
@@ -140,7 +142,12 @@ begin
   lblBaseClass.Visible:=FObject.DataType=dtChar;
   edBaseClass .Visible:=FObject.DataType=dtChar;
   if edBaseClass.Visible then
-    edBaseClass.Text:=GetTL2Class(leffect.ClassId);
+  begin
+    if      (FObject as TTL2Character).IsChar then ls:=GetTL2Class(leffect.ClassId)
+    else if (FObject as TTL2Character).IsPet  then ls:=GetTL2Pet  (leffect.ClassId)
+    else                                           ls:=GetTL2Mob  (leffect.ClassId);
+    edBaseClass.Text:=ls;
+  end;
 end;
 
 procedure TfmEffects.FillInfo(aobj:TL2ActiveClass);
