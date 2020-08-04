@@ -26,7 +26,7 @@ if data not defined, it filled by 0xFF bytes usually
 4 bytes  - (float) time, sec of pet morph (decreasing)
 4 bytes  - (float) time, sec to pet town travel (decreasing)
 4 bytes  - (integer) pet action: idle = 0, attack = 1, defence = 2
-4 bytes  - unknown
+4 bytes  - (integer) alignment (neutral,good, evil etc)
 4 bytes  - (float) scale (used for pets usually)
 8 bytes  - (integer64) -1 for char, unknown for pets
 16 bytes - -1 usually
@@ -57,9 +57,11 @@ direction next
 4 bytes  - unknown, 0 usually
 4 bytes  - (float) current Mana
 4 bytes  -  integer) Mana bonus
-12 bytes - 0 usually
+4 bytes  - unknown, 0 usually
+4 bytes  - (integer) reward - exp
+4 bytes  - (integer) reward - fame
 4 bytes  - (float) Time played, sec
-4 bytes  - (float) 1.0 usually
+4 bytes  - (float) Bravery = 1.0 usually
 4 bytes  - (integer) unused stat points
 4 bytes  - (integer) unused skill points
 Mouse buttons: (24 bytes)

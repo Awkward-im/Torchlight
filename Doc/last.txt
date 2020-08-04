@@ -46,7 +46,7 @@ x bytes  - list of elements, 31 bytes each
     4 bytes - ?? field3
     4 bytes
     1 byte
-    4 bytes
+    4 bytes - gold obtained per level (pickup and trade) really, 3 bytes . hibyte - unknown
     1 byte
     4 bytes - like field2
     4 bytes - like field3
