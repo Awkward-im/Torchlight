@@ -50,14 +50,15 @@ type
 
     FPosition1:TL2Coord;
 
-    FUnkn1:array [0..23] of byte;
+    FUnkn1:array [0..2] of TL2ID;
     FUnkn2:array [0..28] of byte;
     FUnkn4:DWord;
-    FUnkn5:array [0..11] of byte;
+    FUnkn5:array [0..2] of DWord;
     FUnkn6:TL2IdValList;
 
     FUseState:integer;
 
+    function GetPropFlag:boolean;
     function GetDBMods():string; override;
     function GetFlags(idx:integer):boolean;
     function GetUsability:boolean;
@@ -65,7 +66,7 @@ type
   public
     property Prefix:string read FPrefix;
 
-    property IsProp:boolean   read FIsProp write FIsProp;
+    property IsProp:boolean read GetPropFlag;
 
     property Flags[idx:integer]:boolean read GetFlags;
     property Position1:TL2Coord read FPosition1;
@@ -79,7 +80,7 @@ type
     property Armor       :integer read FArmor;
     property ArmorType   :integer read FArmorType;
 
-    property Unkn6   :TL2IdValList   read FUnkn6;
+    property Unkn6:TL2IdValList   read FUnkn6;
   end;
 
 
@@ -105,6 +106,11 @@ begin
   InternalClear;
 
   inherited;
+end;
+
+function TTL2Item.GetPropFlag:boolean;
+begin
+  result:=FUnkn2[0]<>0;
 end;
 
 function TTL2Item.GetDBMods():string;
@@ -168,20 +174,22 @@ if (FSign<>0) and (FSign<>2) then ldebug:=ldebug+'sign '+HexStr(AStream.Position
   //??
   AStream.Read(FUnkn1,24);
 {
-  AStream.ReadQWord;
-  AStream.ReadQWord;     // changing (same as previous)
-  AStream.ReadQWord;
+  AStream.ReadQWord; // props: object ID in levelset layout
+  AStream.ReadQWord; //
+  AStream.ReadQWord; //
 }
   FModIds:=AStream.ReadIdList;
 
   //??
   AStream.Read(FUnkn2,29);
+if FUnkn2[0]>1 then ldebug:=ldebug+'funk2 '+HexStr(AStream.Position,8)+#13#10;
+if pDWord(@FUnkn2[25])^<>0 then ldebug:=ldebug+'funk2(last) '+HexStr(AStream.Position,8)+#13#10;
 {
-  AStream.ReadByte;      // 0    (1 - portal?)
-  AStream.ReadQWord;     // *FF  (portal to? not in source)
-  AStream.ReadQWord;     // *FF props - not -1  MEDIA\LAYOUTS\ACT1_PASS1\1X1SINGLE_ROOM_A\PAPASS_PB_A.LAYOUT
-  AStream.ReadQWord;     // *FF props - not -1  ?
-  AStream.ReadDWord;     // 0
+  AStream.ReadByte;  // 0 (1 - "Layout link")
+  AStream.ReadQWord; // -1 or "Layout Link" ID on location
+  AStream.ReadQWord; // -1 or "Unit spawner"
+  AStream.ReadQWord; // -1 or unknown (for unit spawner)
+  AStream.ReadDWord; // 0
 }
   FEnchantmentCount:=integer(AStream.ReadDWord); // enchantment count // prop=E56DE12D
   FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645 . -1 for props
@@ -201,22 +209,26 @@ if FFlags[4]<>1 then ldebug:=ldebug+'unknown item flag at '+HexStr(AStream.Posit
   FPosition1:=AStream.ReadCoord(); // place where from picked up?
   AStream.Read(FOrientation,SizeOf(FOrientation));
 
-  FLevel      :=integer(AStream.ReadDWord); // 1  for props (22)
-  FStackSize  :=integer(AStream.ReadDWord); // -1 for props (1)
-  FSocketCount:=integer(AStream.ReadDWord); // 0  for props (A009CC81)
+  FLevel      :=integer(AStream.ReadDWord); //
+  FStackSize  :=integer(AStream.ReadDWord); // -1 (or 0-1 for 2-state) props
+  FSocketCount:=integer(AStream.ReadDWord); // 0  or unknown for props
 
   FSocketables:=ReadItemList(AStream);
 
   //??
   FUnkn4:=AStream.ReadDWord;  // 0
 if FUnkn4<>0 then ldebug:=ldebug+'before weap dmg_'+HexStr(AStream.Position,8)+#13#10;
-  FWeaponDamage:=integer(AStream.ReadDWord); // -1 for props
-  FArmor       :=integer(AStream.ReadDWord); // -1 for props
-  FArmorType   :=integer(AStream.ReadDWord); //  0 for props (2)
+  FWeaponDamage:=integer(AStream.ReadDWord); // -1 for non-weapon
+  FArmor       :=integer(AStream.ReadDWord); // -1 for non-armor
+  FArmorType   :=integer(AStream.ReadDWord); // 0 for items, 0-15 for props
 
   //??
   AStream.Read(FUnkn5,12);
+if FUnkn5[0]<>$FFFFFFFF then ldebug:=ldebug+'Unkn5[0]='+HexStr(FUnkn5[0],8)+' at '+HexStr(AStream.Position,8)+#13#10;
+if FUnkn5[1]<>$FFFFFFFF then ldebug:=ldebug+'Unkn5[1]='+HexStr(FUnkn5[1],8)+' at '+HexStr(AStream.Position,8)+#13#10;
+if FUnkn5[2]<>$FFFFFFFF then ldebug:=ldebug+'Unkn5[2]='+HexStr(FUnkn5[2],8)+' at '+HexStr(AStream.Position,8)+#13#10;
 {
+  37 gold = 3*454; 48 = 0; 109, 51 = 211 - same values for same location?
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
   AStream.ReadDWord; // *FF
@@ -289,7 +301,7 @@ begin
   AStream.ReadDWord;     // 0
 }
   AStream.WriteDWord(DWord(FEnchantmentCount)); // enchantment count
-  AStream.WriteDWord(DWord(FStashPosition   )); // stash position $285 = 645
+  AStream.WriteDWord(DWord(FStashPosition   )); // stash position
 
   AStream.Write(FFlags,7);
 
@@ -320,8 +332,6 @@ begin
   AStream.WriteWord(Length(FUnkn6));
   if Length(FUnkn6)>0 then
     AStream.Write(FUnkn6[0],Length(FUnkn6)*SizeOf(TL2IdVal));
-//  lcnt:=AStream.ReadWord;
-//  AStream.Seek(lcnt*12,soCurrent); // 8+4 ?
   
   // dynamic,passive,transfer
   for i:=0 to 2 do
@@ -349,7 +359,7 @@ begin
      lpos:=AStream.Position;
       
       result[i]:=TTL2Item.Create;
-      result[i].IsProp:=false;
+//!!      result[i].IsProp:=false;
       try
         result[i].LoadFromStream(AStream);
       except

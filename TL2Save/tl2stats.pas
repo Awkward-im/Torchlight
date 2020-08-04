@@ -25,9 +25,9 @@ type
   tStatItem = packed record
     id    :TL2ID;
     field1:TL2Integer; // ?? word=amount picked (equipped+pots?); word=amount picked(unusable)
-    field2:TL2Integer; // ?? crafted
-    field3:TL2Integer; // ??
-    field4:TL2Integer; // min level? (to recognize)
+    field2:TL2Integer; // ?? crafted                word+word
+    field3:TL2Integer; // ??                        word+word
+    field4:TL2Integer; // min level? (to recognize) word+word
   end;
   tStatItemArray = array of tStatItem;
 
@@ -40,15 +40,15 @@ type
   tStatSkillArray = array of tStatSkill;
 
   tStatLevelup = packed record
-    uptime :TL2Float;    // time
-    field2 :TL2Integer;  // 27
-    field3 :TL2Integer;  // 54
-    field4 :TL2Integer;  // 7
-    field5 :Byte;
-    field6 :TL2Integer; //?? 26
-    field7 :Byte;
-    field8 :TL2Integer; // like field2
-    field9 :TL2Integer; // like field3
+    uptime :TL2Float;   // time
+    field2 :TL2Integer; // 27 phys dmg?
+    field3 :TL2Integer; // 54 magic dmg?
+    field4 :TL2Integer; // ?? amount of attacks?
+    field5 :Byte;       // ?? flag=equipped manually? or amount on pet?
+    field6 :TL2Integer; // plus gold per level (picked and shop) ??hibyte/word (01/02)
+    field7 :Byte;       // maybe word (with byte from Field06)
+    field8 :TL2Integer; // like field2 (not always)
+    field9 :TL2Integer; // like field3 (not always)
     field10:Byte;
   end;
   tStatLevelUpArray = array of tStatLevelUp;

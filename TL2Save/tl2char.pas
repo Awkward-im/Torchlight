@@ -14,6 +14,31 @@ uses
 
 type
   TTL2Action = (Idle, Attack, Defence);
+type
+  TTL2AIType = (
+    NORMAL,
+    RANGEDEFENDER,
+    DEFENDER,
+    RANGECASTER,
+    CIRCLER,
+    RESURRECTER,
+    DUMMY,
+    SUPPORT
+  );
+
+type
+  TTL2Alignment = (
+    NEUTRAL,
+    GOOD,
+    EVIL,
+    ALL,
+    BERSERK,
+    EVILBERSERK,
+    GOODBERSERK,
+    SMASHABLE,
+    NEUTRALHOSTILE,
+    EVILONLY
+  );
 
 type
   TTL2Spell = record
@@ -51,6 +76,9 @@ type
     FMorphTime      :TL2Float;
     FTownTime       :TL2Float;
     FAction         :TTL2Action;
+    FAlignment      :TTL2Alignment;
+    FBravery        :TL2Float;
+    FAIType         :TTL2AIType;
 
     // unknowns
     FUnkn1          :TL2ID;
@@ -58,15 +86,12 @@ type
     FUnkn3          :DWord;
     FUnkn4_1        :byte;
     FUnkn4_2        :byte;
-    FUnkn5          :Byte;
-    FUnkn6          :DWord;
     FUnkn7          :array [0..2] of TL2ID;
     FUnkn17         :DWord;
     FUnkn9_1        :DWord;
     FUnkn9_2        :DWord;
     FUnkn11         :DWord;
-    FUnkn12         :array [0..2] of dword;
-    FUnkn13         :TL2Float;
+    FUnkn12         :DWord;
     FUnkn14_1,
     FUnkn14_2,
     FUnkn14_3       :DWord;
@@ -80,6 +105,8 @@ type
     FCheater        :byte;
     FPlayer         :string;
 
+    FRewardExp      :integer;
+    FRewardFame     :integer;
     FArmorFire      :integer;
     FArmorIce       :integer;
     FArmorElectric  :integer;
@@ -154,6 +181,8 @@ type
     property Gold           :integer    read FGold            write FGold;
     property Scale          :TL2Float   read FScale           write FScale;
     property Skin           :byte       read FSkin            write FSkin;
+    property RewardExp      :integer    read FRewardExp       write FRewardExp;
+    property RewardFame     :integer    read FRewardFame      write FRewardFame;
 
     property Spells[idx:integer ]:TTL2Spell  read GetSpell write SetSpell;
     property Skills:TL2IdValList read FSkills  write FSkills;
@@ -308,7 +337,8 @@ if not FIsChar then DbgLn('!!non-player wardrobe_'+HexStr(AStream.Position,8));
     FHairColor:=AStream.ReadDWord;    // haircolor (+bandana for outlander)
     // !!*$FF = 36
     AStream.Read(FWardUnkn,36);
-if (FWardUnkn[0]<>$FFFFFFFF) or
+if
+(FWardUnkn[0]<>$FFFFFFFF) or
 (FWardUnkn[1]<>$FFFFFFFF) or
 (FWardUnkn[2]<>$FFFFFFFF) or
 (FWardUnkn[3]<>$FFFFFFFF) or
@@ -330,6 +360,7 @@ DbgLn('!!unknown wardrobe at '+HexStr(AStream.Position,8));
   FUnkn3:=AStream.ReadDWord;  // 0
 Check(FUnkn3,'pre-pet enabled_'+HexStr(AStream.Position,8),0);
 {
+  1=Nether-Thrall; 2=snowfang or 4=skeleton (like alignment)
   22 for one NPC (quest? assist?)
 }
   FEnabled:=AStream.ReadByte<>0; // 1 (pet - enabled)
@@ -337,36 +368,21 @@ Check(FUnkn3,'pre-pet enabled_'+HexStr(AStream.Position,8),0);
   FUnkn4_1:=AStream.ReadByte;    // ??non-interract??
   FUnkn4_2:=AStream.ReadByte;    // ??BOSS??
 
-//  if FWardrobe then //!! YES, i know, i know!!!
   if FIsChar then
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
-  //??  :24 for pet, :55 for char
-  FUnkn5:=AStream.ReadByte;
-Check(FUnkn5,'after cheat_'+HexStr(AStream.Position,8),0);
-  // pet: elfly=4, lonelfly=0, rage=0
-{
-  mobs: 0 or 4
-  6 = Brazier, barricade, invturretmonster,statue,
-  3 = champions? skelet-mage and spore
-  4 - magic doll
-}
-
+  //  :24 for pet, :55 for char
+  FAIType   :=TTL2AIType(AStream.ReadByte);
   FMorphTime:=AStream.ReadFloat;   // pet morph time, sec
   FTownTime :=AStream.ReadFloat;   // time to town, sec
-  FAction   :=TTL2Action(AStream.ReadDWord);  // pet action (idle, defense, attack)
-  //??
-  FUnkn6:=AStream.ReadDWord;       // Monster action
-{
-  0 for horse, frog and snake = idle
-  2 for mobs                  = attack
-  7 for Barricade, statue     = passive
-}
+  FAction   :=TTL2Action(AStream.ReadDWord);     // pet action (idle, defense, attack)
+  FAlignment:=TTL2Alignment(AStream.ReadDWord);  // Alignment
+
   FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
   //??
   AStream.Read(FUnkn7,24);
-if Funkn7[0]<>TL2IdEmpty then DbgLn('  [0]='+HexStr(Funkn7[0],16)+' after scale '+HexStr(AStream.Position,8));
-if Funkn7[1]<>TL2IdEmpty then DbgLn('  [1]='+HexStr(Funkn7[1],16)+' after scale '+HexStr(AStream.Position,8));
-if Funkn7[2]<>TL2IdEmpty then DbgLn('  [2]='+HexStr(Funkn7[2],16)+' after scale '+HexStr(AStream.Position,8));
+if Funkn7[0]<>TL2IdEmpty then DbgLn('  after scale[0]='+HexStr(Funkn7[0],16)+' at '+HexStr(AStream.Position,8));
+if Funkn7[1]<>TL2IdEmpty then DbgLn('  after scale[1]='+HexStr(Funkn7[1],16)+' at '+HexStr(AStream.Position,8));
+if Funkn7[2]<>TL2IdEmpty then DbgLn('  after scale[2]='+HexStr(Funkn7[2],16)+' at '+HexStr(AStream.Position,8));
 {
   AStream.ReadQWord;    // !! "master" runtime ID, player or "unit spawner"
   AStream.ReadQWord;    // -1 /unit spawner/ in some layouts
@@ -375,11 +391,12 @@ if Funkn7[2]<>TL2IdEmpty then DbgLn('  [2]='+HexStr(Funkn7[2],16)+' after scale 
   //??
   FUnkn17:=AStream.ReadDWord;
 //  isPet:=(FUnkn17=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
+if FUnkn17<>$FFFFFFFF then DbgLn('pre-name is '+HexStr(FUnkn17,8));
 
   FName  :=AStream.ReadShortString();    // :55(pet) Char name
 DbgLn('name:'+string(widestring(fname)));
   FSuffix:=AStream.ReadShortString();    // like mob title "(Teleporting)"
-  if FIsChar{not isPet} then                      // maybe this is "PLAYERMAPICONS" from GLOBALS.DAT?
+  if FIsChar then
     FPlayer:=AStream.ReadShortString();  // "PLAYER" (prefix) !!!!! not exists for pets!!!!!!
   //??
   FUnkn9_1:=AStream.ReadDWord; // 0
@@ -398,41 +415,33 @@ Check(FUnkn9_2,'like unkstat '+HexStr(AStream.Position,8),0);
   FFameExp    :=AStream.ReadDWord;    // fame exp
   FHealth     :=AStream.ReadFloat;    // current HP
   FHealthBonus:=AStream.ReadDWord;    // health bonus (pet=full hp)
+  //??
   FUnkn11     :=AStream.ReadDWord;    // 0
-Check(FUnkn11,'stat_'+HexStr(AStream.Position,8),0);
+if FUnkn11<>0 then DbgLn(' after hp '+HexStr(FUnkn11,8)+' at '+HexStr(AStream.Position,8));
   FMana       :=AStream.ReadFloat;    // current MP
   FManaBonus  :=AStream.ReadDWord;    // Mana bonus   (pet=full mp)
   //??
-  AStream.Read(FUnkn12,12);
-if Funkn12[0]<>0 then DbgLn('  [0]='+HexStr(Funkn12[0],8)+' after stat '+HexStr(AStream.Position,8));
-if Funkn12[1]<>0 then DbgLn('  [1]='+HexStr(Funkn12[1],8)+' after stat '+HexStr(AStream.Position,8));
-if Funkn12[2]<>0 then DbgLn('  [2]='+HexStr(Funkn12[2],8)+' after stat '+HexStr(AStream.Position,8));
-{
-  AStream.ReadDWord;    // 0
-  AStream.ReadDWord;    // 0 (lvl 3=120; 1=100, 4=130, 22=310) = stat "Experience_Monster"
-  AStream.ReadDWord;    // 0
-}
-  FPlayTime:=AStream.ReadFloat;    // play time, sec
-  FUnkn13:=AStream.ReadFloat;      // 1.0
-Check(FUnkn13,'afterplaytime',1.0);
-  { ?? motion radius
-  barricade,statue,frog=0 (but not snake)
-  }
+  FUnkn12     :=AStream.ReadDWord;    // 0
+if Funkn12<>0 then DbgLn('  after mana '+HexStr(Funkn12,8)+' at '+HexStr(AStream.Position,8));
 
-  FFreeStatPoints :=AStream.ReadDWord; // unallocated statpoints ? (elfly have 35 with 30 in fact)
-  FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints? (elfly have 28 with 28 in fact)
+  FRewardExp  :=AStream.ReadDWord;    // Reward exp (stat "Experience_Monster")
+  FRewardFame :=AStream.ReadDWord;    // Reward fame
 
-  // mouse button skils.
-  FRMB1:=TL2ID(AStream.ReadQWord);    // skill ID RMB active = Pet 1st spell?
-  FRMB2:=TL2ID(AStream.ReadQWord);    // skill ID RMB secondary
-  FLMB :=TL2ID(AStream.ReadQWord);    // skill ID LMB
+  FPlayTime   :=AStream.ReadFloat;    // play time, sec
+  FBravery    :=AStream.ReadFloat;
+
+  FFreeStatPoints :=AStream.ReadDWord; // unallocated statpoints
+  FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints
+
+  // mouse button skills.
+  FRMB1 :=TL2ID(AStream.ReadQWord);    // skill ID RMB active = Pet 1st spell?
+  FRMB2 :=TL2ID(AStream.ReadQWord);    // skill ID RMB secondary
+  FLMB  :=TL2ID(AStream.ReadQWord);    // skill ID LMB
   // second weapon set (!!!!!!!!!) not for pets
   FARMB1:=TL2ID(AStream.ReadQWord);    // skill ID RMB active
   FARMB2:=TL2ID(AStream.ReadQWord);    // skill ID RMB secondary
   FALMB :=TL2ID(AStream.ReadQWord);    // skill ID LMB
-{  Pet: 6x4b = Nizza: 27BA7400, 27BA6E00,
 
-}
   // CURRENT Skill list. depends of current weapon (passive mainly)
   FSkills:=AStream.ReadIdValList;
 
@@ -462,14 +471,14 @@ Check(FUnkn14_3,'FUnkn14_3 '+HexStr(AStream.Position,8),0);
   FGold     :=AStream.ReadDWord;    // gold          0
   //??
   AStream.Read(Funkn15,16);
-if Funkn15[0]<>0         then DbgLn('  [0]='+HexStr(Funkn15[0],8)+' after gold '+HexStr(AStream.Position,8));
-if Funkn15[1]<>$FFFFFFFF then DbgLn('  [1]='+HexStr(Funkn15[1],8)+' after gold '+HexStr(AStream.Position,8));
-if Funkn15[2]<>$FFFFFFFF then DbgLn('  [2]='+HexStr(Funkn15[2],8)+' after gold '+HexStr(AStream.Position,8));
-if Funkn15[3]<>$FFFFFFFF then DbgLn('  [3]='+HexStr(Funkn15[3],8)+' after gold '+HexStr(AStream.Position,8));
+if Funkn15[0]<>0         then DbgLn('  after gold[0]='+HexStr(Funkn15[0],8)+' at '+HexStr(AStream.Position,8));
+if PInt64(@Funkn15[1])^<>-1 then
+DbgLn('  after gold[1]='+HexStr(Funkn15[2],8)+HexStr(Funkn15[1],8)+' at '+HexStr(AStream.Position,8));
+if Funkn15[3]<>$FFFFFFFF then DbgLn('  after gold[3]='+HexStr(Funkn15[3],8)+' at '+HexStr(AStream.Position,8));
 {
-  AStream.ReadDWord;    // $FF=-1 / 1/0 (elfly) ?? snake, scarab, npcs,statue, brazier
-  AStream.ReadQWord;    // FF same as pets
-  AStream.ReadDWord;    // FF same as pets
+  AStream.ReadDWord;    // -1 at start; 0..11
+  AStream.ReadQWord;    // FF  or QUEST_GUID
+  AStream.ReadDWord;    // FF  "3" - quest state?
 }
   FSkin:=AStream.ReadByte;  // FF OR pet texture (color)
 
@@ -584,57 +593,57 @@ begin
   AStream.WriteByte (FUnkn4_1);
   AStream.WriteByte (FUnkn4_2);
 
-  if FIsChar{FWardrobe} then
+  if FIsChar then
     AStream.WriteByte(FCheater);
 
-  AStream.WriteByte(FUnkn5);
-
+  AStream.WriteByte(ord(FAIType));
   AStream.WriteFloat(FMorphTime);
-  AStream.WriteFloat(FTownTime);     // time to town,sec?
-  AStream.WriteDWord(ord(FAction));  // 1  (pet status)
-
-  AStream.WriteDWord(FUnkn6);  // 1
-  AStream.WriteFloat(FScale);  // scale (1.0 for char) (pet size)
+  AStream.WriteFloat(FTownTime);        // time to town,sec?
+  AStream.WriteDWord(ord(FAction));     // 1  (pet status)
+  AStream.WriteDWord(ord(FAlignment));  // 1
+  AStream.WriteFloat(FScale);           // scale (1.0 for char) (pet size)
   
   AStream.Write(FUnkn7,24);
 
   AStream.WriteDWord(FUnkn17);
 
-  AStream.WriteShortString(FName); // :55(pet) Char name
+  AStream.WriteShortString(FName);
   AStream.WriteShortString(FSuffix);
   if FIsChar{(FUnkn17<>$FFFFFFFF)} then
-    AStream.WriteShortString(FPlayer);      // "PLAYER" !!!!! not exists for pets!!!!!!
+    AStream.WriteShortString(FPlayer);  // "PLAYER" !!!!! not exists for pets!!!!!!
   
   AStream.WriteDWord(FUnkn9_1);
   AStream.WriteDWord(FUnkn9_2);
 
   AStream.Write(FOrientation,SizeOf(FOrientation));
 
-  AStream.WriteDWord(FLevel);        // level
-  AStream.WriteDWord(FExperience);   // exp
-  AStream.WriteDWord(FFameLevel);    // fame level
-  AStream.WriteDWord(FFameExp);      // fame
-  AStream.WriteFloat(FHealth);       // current HP
-  AStream.WriteDWord(FHealthBonus);  // health bonus (pet=full hp)
+  AStream.WriteDWord(FLevel);           // level
+  AStream.WriteDWord(FExperience);      // exp
+  AStream.WriteDWord(FFameLevel);       // fame level
+  AStream.WriteDWord(FFameExp);         // fame
+  AStream.WriteFloat(FHealth);          // current HP
+  AStream.WriteDWord(FHealthBonus);     // health bonus (pet=full hp)
   AStream.WriteDWord(FUnkn11);
-  AStream.WriteFloat(FMana);         // current MP
-  AStream.WriteDWord(FManaBonus);    // Mana bonus   (pet=full mp)
+  AStream.WriteFloat(FMana);            // current MP
+  AStream.WriteDWord(FManaBonus);       // Mana bonus   (pet=full mp)
 
-  AStream.Write(FUnkn12,12);
+  AStream.WriteDWord(FUnkn12);
+  AStream.WriteDWord(FRewardExp);       // reward - exp
+  AStream.WriteDWord(FRewardFame);      // reward - fame
 
   AStream.WriteFloat(FPlayTime);        // play time, sec
-  AStream.WriteFloat(FUnkn13);          // 1.0
+  AStream.WriteFloat(FBravery);         // 1.0
   AStream.WriteDWord(FFreeStatPoints ); // unallocated statpoints ? (elfly have 35 with 30 in fact)
   AStream.WriteDWord(FFreeSkillPoints); // unallocated skillpoints? (elfly have 28 with 28 in fact)
 
   // mouse button skils
-  AStream.WriteQWord(QWord(FRMB1));    // skill ID RMB active = Pet 1st spell?
-  AStream.WriteQWord(QWord(FRMB2));    // skill ID RMB secondary
-  AStream.WriteQWord(QWord(FLMB));     // skill ID LMB
+  AStream.WriteQWord(QWord(FRMB1));     // skill ID RMB active = Pet 1st spell?
+  AStream.WriteQWord(QWord(FRMB2));     // skill ID RMB secondary
+  AStream.WriteQWord(QWord(FLMB));      // skill ID LMB
   // second weapon set
-  AStream.WriteQWord(QWord(FARMB1));   // skill ID RMB active
-  AStream.WriteQWord(QWord(FARMB2));   // skill ID RMB secondary
-  AStream.WriteQWord(QWord(FALMB));    // skill ID LMB
+  AStream.WriteQWord(QWord(FARMB1));    // skill ID RMB active
+  AStream.WriteQWord(QWord(FARMB2));    // skill ID RMB secondary
+  AStream.WriteQWord(QWord(FALMB));     // skill ID LMB
 
   // CURRENT Skill list. depends of current weapon (passive mainly)
   AStream.WriteIdValList(FSkills);
