@@ -114,16 +114,8 @@ begin
   sgLayData.RowCount:=1+Length(lMap.LayData);
   for i:=0 to High(lMap.LayData) do
   begin
-    if fmSettings.cbIdAsHex.Checked then
-    begin
-      sgLayData.Cells[0,i+1]:='0x'+IntToHex(lMap.LayData[i].id,16);
-      sgLayData.Cells[2,i+1]:='0x'+IntToHex(lMap.LayData[i].unkn,16);
-    end
-    else
-    begin
-      sgLayData.Cells[0,i+1]:=IntToStr(lMap.LayData[i].id);
-      sgLayData.Cells[2,i+1]:=IntToStr(lMap.LayData[i].unkn);
-    end;
+    sgLayData.Cells[0,i+1]:=TextId  (lMap.LayData[i].id);
+    sgLayData.Cells[2,i+1]:=TextId  (lMap.LayData[i].unkn);
     sgLayData.Cells[1,i+1]:=IntToStr(lMap.LayData[i].value);
   end;
 end;

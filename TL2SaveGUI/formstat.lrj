@@ -27,7 +27,7 @@
 {"hash":94503731,"name":"tfmstat.tsskills.caption","sourcebytes":[83,107,105,108,108,115],"value":"Skills"},
 {"hash":5966629,"name":"tfmstat.sgskills.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
 {"hash":5964739,"name":"tfmstat.sgskills.columns[1].title.caption","sourcebytes":[84,105,109,101,115],"value":"Times"},
-{"hash":80724594,"name":"tfmstat.sgskills.columns[2].title.caption","sourcebytes":[70,105,101,108,100,50],"value":"Field2"},
+{"hash":162884671,"name":"tfmstat.sgskills.columns[2].title.caption","sourcebytes":[66,121,32,80,101,116,63],"value":"By Pet?"},
 {"hash":5426364,"name":"tfmstat.sgskills.columns[3].title.caption","sourcebytes":[76,101,118,101,108],"value":"Level"},
 {"hash":46973328,"name":"tfmstat.tslevelup.caption","sourcebytes":[76,101,118,101,108,85,112],"value":"LevelUp"},
 {"hash":372789,"name":"tfmstat.sglevelup.columns[0].title.caption","sourcebytes":[84,105,109,101],"value":"Time"},
@@ -35,7 +35,7 @@
 {"hash":80724595,"name":"tfmstat.sglevelup.columns[2].title.caption","sourcebytes":[70,105,101,108,100,51],"value":"Field3"},
 {"hash":80724596,"name":"tfmstat.sglevelup.columns[3].title.caption","sourcebytes":[70,105,101,108,100,52],"value":"Field4"},
 {"hash":41148809,"name":"tfmstat.sglevelup.columns[4].title.caption","sourcebytes":[70,105,101,108,100,53,32,40,98,41],"value":"Field5 (b)"},
-{"hash":80724598,"name":"tfmstat.sglevelup.columns[5].title.caption","sourcebytes":[70,105,101,108,100,54],"value":"Field6"},
+{"hash":321060,"name":"tfmstat.sglevelup.columns[5].title.caption","sourcebytes":[71,111,108,100],"value":"Gold"},
 {"hash":41804169,"name":"tfmstat.sglevelup.columns[6].title.caption","sourcebytes":[70,105,101,108,100,55,32,40,98,41],"value":"Field7 (b)"},
 {"hash":80724600,"name":"tfmstat.sglevelup.columns[7].title.caption","sourcebytes":[70,105,101,108,100,56],"value":"Field8"},
 {"hash":80724601,"name":"tfmstat.sglevelup.columns[8].title.caption","sourcebytes":[70,105,101,108,100,57],"value":"Field9"},
@@ -45,8 +45,8 @@
 {"hash":372789,"name":"tfmstat.sgarea1.columns[1].title.caption","sourcebytes":[84,105,109,101],"value":"Time"},
 {"hash":76067634,"name":"tfmstat.tsarea2.caption","sourcebytes":[65,114,101,97,32,50],"value":"Area 2"},
 {"hash":5966629,"name":"tfmstat.sgarea2.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
-{"hash":184796527,"name":"tfmstat.sgarea2.columns[1].title.caption","sourcebytes":[84,105,109,101,115,32,63],"value":"Times ?"},
-{"hash":157613780,"name":"tfmstat.tsstats.caption","sourcebytes":[77,111,98,115,45,115,116,97,116],"value":"Mobs-stat"},
-{"hash":5966629,"name":"tfmstat.sgstat.columns[0].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
-{"hash":6063029,"name":"tfmstat.sgstat.columns[1].title.caption","sourcebytes":[86,97,108,117,101],"value":"Value"}
+{"hash":5426364,"name":"tfmstat.sgarea2.columns[1].title.caption","sourcebytes":[76,101,118,101,108],"value":"Level"},
+{"hash":33762499,"name":"tfmstat.tskillers.caption","sourcebytes":[75,105,108,108,101,114,115],"value":"Killers"},
+{"hash":5000265,"name":"tfmstat.sgkillers.columns[0].title.caption","sourcebytes":[69,110,101,109,121],"value":"Enemy"},
+{"hash":75787348,"name":"tfmstat.sgkillers.columns[1].title.caption","sourcebytes":[65,109,111,117,110,116],"value":"Amount"}
 ]}

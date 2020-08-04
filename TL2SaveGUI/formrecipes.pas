@@ -131,8 +131,8 @@ end;
 
 procedure TfmRecipes.FillInfoInt(alist:TL2IdList);
 var
-  i:integer;
   lmod:string;
+  i:integer;
 begin
   sgRecipes.BeginUpdate;
   sgRecipes.Clear;
@@ -140,9 +140,9 @@ begin
 
   for i:=0 to High(alist) do
   begin
-    sgRecipes.Cells[colId   ,i+1]:=IntToStr(alist[i]);
     sgRecipes.Cells[colTitle,i+1]:=GetTL2Recipes(alist[i],lmod);
     sgRecipes.Cells[colMod  ,i+1]:=GetTL2Mod(lmod);
+    sgRecipes.Cells[colId   ,i+1]:=TextId(alist[i]);
   end;
 
   sgRecipes.EndUpdate;

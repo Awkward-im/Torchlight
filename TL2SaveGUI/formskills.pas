@@ -449,7 +449,7 @@ begin
     end
     else
     begin
-      sgSkills.Cells[colName ,i]:=IntToStr(FChar.Skills[i-1].id); // !! 10 or 16
+      sgSkills.Cells[colName ,i]:=TextId  (FChar.Skills[i-1].id);
       sgSkills.Cells[colLevel,i]:=IntToStr(FChar.Skills[i-1].value);
     end;
   end;

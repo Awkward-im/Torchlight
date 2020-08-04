@@ -1,7 +1,7 @@
 object fmStat: TfmStat
-  Left = 511
+  Left = 504
   Height = 488
-  Top = 267
+  Top = 262
   Width = 741
   Align = alClient
   BorderStyle = bsNone
@@ -13,9 +13,9 @@ object fmStat: TfmStat
     Height = 488
     Top = 0
     Width = 741
-    ActivePage = tsLearn
+    ActivePage = tsArea2
     Align = alClient
-    TabIndex = 1
+    TabIndex = 7
     TabOrder = 0
     object tsCommon: TTabSheet
       Caption = 'Common'
@@ -298,7 +298,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field6'
+            Title.Caption = 'Gold'
             Width = 72
           end        
           item

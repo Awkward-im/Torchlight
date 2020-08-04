@@ -43,6 +43,7 @@ object fmUnits: TfmUnits
         item
           Width = 164
         end>
+      HideSelection = False
       ReadOnly = True
       SmallImages = fmSaveFile.imgIcons
       SortType = stText

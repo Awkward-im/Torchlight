@@ -14,9 +14,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsOtherInfo
+    ActivePage = tsView
     Align = alClient
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -491,7 +491,7 @@ object fmChar: TfmChar
         Value = 0.5
       end
       object lblScale: TLabel
-        Left = 78
+        Left = 80
         Height = 15
         Top = 152
         Width = 27

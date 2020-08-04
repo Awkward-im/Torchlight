@@ -1079,14 +1079,6 @@ msgstr ""
 msgid "Make backups"
 msgstr ""
 
-#: tfmsettings.cbbasic.caption
-msgid "Basic info only"
-msgstr ""
-
-#: tfmsettings.cbclass.caption
-msgid "Change player class"
-msgstr ""
-
 #: tfmsettings.cbidashex.caption
 msgid "Show IDs in Hex form"
 msgstr ""
@@ -1095,12 +1087,12 @@ msgstr ""
 msgid "Reload database with savegame load"
 msgstr ""
 
-#: tfmsettings.cbshowtech.caption
-msgid "Show Tech info"
+#: tfmsettings.cbshowall.caption
+msgid "Show all"
 msgstr ""
 
-#: tfmsettings.gbedit.caption
-msgid "What to edit"
+#: tfmsettings.cbshowtech.caption
+msgid "Show Tech info"
 msgstr ""
 
 #: tfmsettings.gbshow.caption
@@ -1113,24 +1105,6 @@ msgstr ""
 
 #: tfmsettings.lblicondir.caption
 msgid "Icons directory"
-msgstr ""
-
-#: tfmsettings.rbadditional.caption
-msgctxt "tfmsettings.rbadditional.caption"
-msgid "Additional data"
-msgstr ""
-
-#: tfmsettings.rbbaseonly.caption
-msgctxt "tfmsettings.rbbaseonly.caption"
-msgid "Show basic info only"
-msgstr ""
-
-#: tfmsettings.rbdetailed.caption
-msgid "Detailed"
-msgstr ""
-
-#: tfmsettings.rbshowall.caption
-msgid "Show All"
 msgstr ""
 
 #: tfmskills.bbupdate.caption
@@ -1224,7 +1198,7 @@ msgstr ""
 
 #: tfmstat.sgarea2.columns[1].title.caption
 msgctxt "tfmstat.sgarea2.columns[1].title.caption"
-msgid "Times ?"
+msgid "Level"
 msgstr ""
 
 #: tfmstat.sgitems.columns[0].title.caption
@@ -1250,6 +1224,14 @@ msgstr ""
 #: tfmstat.sgitems.columns[4].title.caption
 msgctxt "tfmstat.sgitems.columns[4].title.caption"
 msgid "Field4"
+msgstr ""
+
+#: tfmstat.sgkillers.columns[0].title.caption
+msgid "Enemy"
+msgstr ""
+
+#: tfmstat.sgkillers.columns[1].title.caption
+msgid "Amount"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[0].title.caption
@@ -1279,7 +1261,7 @@ msgstr ""
 
 #: tfmstat.sglevelup.columns[5].title.caption
 msgctxt "tfmstat.sglevelup.columns[5].title.caption"
-msgid "Field6"
+msgid "Gold"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[6].title.caption
@@ -1364,22 +1346,12 @@ msgstr ""
 
 #: tfmstat.sgskills.columns[2].title.caption
 msgctxt "tfmstat.sgskills.columns[2].title.caption"
-msgid "Field2"
+msgid "By Pet?"
 msgstr ""
 
 #: tfmstat.sgskills.columns[3].title.caption
 msgctxt "tfmstat.sgskills.columns[3].title.caption"
 msgid "Level"
-msgstr ""
-
-#: tfmstat.sgstat.columns[0].title.caption
-msgctxt "tfmstat.sgstat.columns[0].title.caption"
-msgid "Title"
-msgstr ""
-
-#: tfmstat.sgstat.columns[1].title.caption
-msgctxt "tfmstat.sgstat.columns[1].title.caption"
-msgid "Value"
 msgstr ""
 
 #: tfmstat.tsarea1.caption
@@ -1400,6 +1372,10 @@ msgctxt "tfmstat.tsitems.caption"
 msgid "Items"
 msgstr ""
 
+#: tfmstat.tskillers.caption
+msgid "Killers"
+msgstr ""
+
 #: tfmstat.tslearn.caption
 msgid "Skill learn"
 msgstr ""
@@ -1415,10 +1391,6 @@ msgstr ""
 #: tfmstat.tsskills.caption
 msgctxt "tfmstat.tsskills.caption"
 msgid "Skills"
-msgstr ""
-
-#: tfmstat.tsstats.caption
-msgid "Mobs-stat"
 msgstr ""
 
 #: tfmstatistic.bbupdate.caption

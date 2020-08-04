@@ -713,16 +713,7 @@ begin
   cbNewClass.Visible:=lChar or lPet;
   lblNew    .Visible:=lChar or lPet;
 
-  edMorphTime .Visible:=lPet;
-  lblMorphTime.Visible:=lPet;
-  lblMorphNote.Visible:=lPet;
-  lblCurrent  .Visible:=lPet;
-  cbMorph     .Visible:=lPet;
-  imgMorph    .Visible:=lPet;
-  cbSkins     .Visible:=false;//lPet;
-
   cbCheater .Visible:=lChar;
-  gbGender  .Visible:=lChar;
   edNewClass.Visible:=lChar;
   bbManual  .Visible:=lChar;
 
@@ -730,10 +721,10 @@ begin
   seScale   .ReadOnly:=not (lChar or lPet);
 
   // Wardrobe
-  tsWardrobe.TabVisible:=lChar or lPet;
-  gbWardrobe.Visible:=lChar;
+  gbWardrobe  .Visible:=lChar;
   edSkin      .Visible:=lPet;
   lblSkin     .Visible:=lPet;
+  cbSkins     .Visible:=false;//lPet;
 
   // Actions
   tsAction.TabVisible:=lChar or lPet;
@@ -977,40 +968,19 @@ begin
 
   GetPetList(FPets);
 
-  cbMorph.Clear;
-  cbMorph.Sorted:=true;
-  cbMorph.Items.BeginUpdate;
-  cbMorph.Items.Capacity:=Length(FPets);
-  cbMorph.Items.AddObject('',TObject(IntPtr(-1)));
-//  TStringList(cbMorph.Items).Duplicates:=dupAccept;
+
+  cbNewClass.Clear;
+  cbNewClass.Sorted:=true;
+  cbNewClass.Items.BeginUpdate;
+  cbNewClass.Items.Capacity:=Length(FPets);
   for i:=0 to High(FPets) do
   begin
     ls:=FPets[i].title;
     if ls='' then ls:=FPets[i].name
     else ls:=ls+ ' ('+FPets[i].name+')';
-    cbMorph.Items.AddObject(ls,TObject(IntPtr(i)));
+    cbNewClass.Items.AddObject(ls,TObject(IntPtr(i)));
   end;
-  cbMorph.Items.EndUpdate;
-
-  cbMorph.ItemIndex:=0;
-  if (FChar.MorphId<>TL2IdEmpty) and
-     (FChar.MorphId<>FChar.ID) then
-  begin
-    for i:=1 to cbMorph.Items.Count-1 do
-      if FPets[IntPtr(cbMorph.Items.Objects[i])].id=FChar.MorphId then
-      begin
-        DrawPetIcon(FChar.MorphId,imgMorph);
-        cbMorph.ItemIndex:=i;
-        break;
-      end;
-  end;
-  if cbMorph.ItemIndex<=0 then imgMorph.Picture.Clear;
-
-  edMorphTime.Text:=IntToStr(Round(FChar.MorphTime));
-
-  cbNewClass.Items.Assign(cbMorph.Items);
-  cbNewClass.Items.Delete(0);
-
+  cbNewClass.Items.EndUpdate;
   cbNewClass.ItemIndex:=-1;
 
   for i:=0 to cbNewClass.Items.Count-1 do
@@ -1020,6 +990,28 @@ begin
       break;
     end;
 //  cbNewClass.Enabled:=cbNewClass.ItemIndex>=0;
+
+  if cbMorph.Visible then
+  begin
+    cbMorph.Items.Assign(cbNewClass.Items);
+    cbMorph.Items.InsertObject(0,'',TObject(IntPtr(-1)));
+
+    cbMorph.ItemIndex:=0;
+    if (FChar.MorphId<>TL2IdEmpty) and
+       (FChar.MorphId<>FChar.ID) then
+    begin
+      for i:=1 to cbMorph.Items.Count-1 do
+        if FPets[IntPtr(cbMorph.Items.Objects[i])].id=FChar.MorphId then
+        begin
+          DrawPetIcon(FChar.MorphId,imgMorph);
+          cbMorph.ItemIndex:=i;
+          break;
+        end;
+    end;
+    if cbMorph.ItemIndex<=0 then imgMorph.Picture.Clear;
+
+    edMorphTime.Text:=IntToStr(Round(FChar.MorphTime));
+  end;
 
   DrawPetIcon(FChar.ID,imgIcon);
 
@@ -1051,12 +1043,32 @@ procedure TfmChar.FillInfo(aChar:TTL2Character; aSGame:TTL2SaveFile=nil);
 var
   ls:string;
   i:integer;
+  lshowall,lChar,lPet:boolean;
 begin
   if FConfigured and (FKind=ciPlayer) then
   begin
     FixPlayerInfo();
     exit;
   end;
+
+  lshowall:=fmSettings.cbShowAll.Checked;
+  lChar:=FKind=ciPlayer;
+  lPet :=FKind=ciPet;
+
+  // View
+  edMorphTime .Visible:=lPet and lshowall;
+  lblMorphTime.Visible:=lPet and lshowall;
+  lblMorphNote.Visible:=lPet and lshowall;
+  lblCurrent  .Visible:=lPet and lshowall;
+  cbMorph     .Visible:=lPet and lshowall;
+  imgMorph    .Visible:=lPet and lshowall;
+  gbGender  .Visible:=lChar and lshowall;
+  seScale   .Visible :=lshowall;
+  lblScale  .Visible :=lshowall;
+  // Wardrobe
+  tsWardrobe.TabVisible:=(lChar or lPet) and lshowall;
+  // Other
+  tsOtherInfo.TabVisible:=lshowall;
 
   FSGame:=aSGame;
   FChar :=aChar;
@@ -1084,12 +1096,9 @@ begin
 
   //--- View ---
 
-  edName.Text      :=FChar.Name;
+  edName   .Text   :=FChar.Name;
+  edClassId.Text   :=TextId(FChar.ID);
   lblSuffix.Caption:=FChar.Suffix;
-  if fmSettings.cbIdAsHex.Checked then
-    edClassId.Text:='0x'+HexStr(FChar.ID,16)
-  else
-    edClassId.Text:=IntToStr(FChar.ID);
 
   seScale.Value:=FChar.Scale;
 
@@ -1122,14 +1131,15 @@ begin
 
   //--- Other ---
 
-  FEffects.FillInfo(FChar);
+  if tsOtherInfo.TabVisible then
+    FEffects.FillInfo(FChar);
 
   //--- Items ---
-
-  if FItems<>nil then
-  begin
-    FItems.FillInfo(FChar.Items, FChar);
-  end;
+  if tsItems.TabVisible then
+    if FItems<>nil then
+    begin
+      FItems.FillInfo(FChar.Items, FChar);
+    end;
 
   bbUpdate.Enabled:=false;
   FConfigured:=true;
@@ -1207,14 +1217,23 @@ begin
     FChar.ID:=FPets[IntPtr(cbNewClass.Items.Objects[cbNewClass.ItemIndex])].id;
   end;
 
-  idx:=IntPtr(cbMorph.Items.Objects[cbMorph.ItemIndex]);
-  if idx>=0 then
-    FChar.MorphId:=FPets[idx].id
-  else
-    FChar.MorphId:=TL2IdEmpty;
+  if cbMorph.Visible then
+  begin
+    idx:=IntPtr(cbMorph.Items.Objects[cbMorph.ItemIndex]);
+    if idx>=0 then
+      FChar.MorphId:=FPets[idx].id
+    else
+      FChar.MorphId:=TL2IdEmpty;
 
-  FChar.MorphTime:=StrToIntDef(edMorphTime.Text,0);
-  FChar.Skin     :=Byte(StrToIntDef(edSkin.Text,-1));
+    FChar.MorphTime:=StrToIntDef(edMorphTime.Text,0);
+  end;
+
+  //--- Wardrobe
+
+  if tsWardrobe.TabVisible then
+  begin
+    FChar.Skin:=Byte(StrToIntDef(edSkin.Text,-1));
+  end;
 
   //--- Action
 
@@ -1251,12 +1270,16 @@ begin
   FChar.Name :=edName .Text;
   FChar.Scale:=seScale.Value;
 
+  //--- Wardrobe
+
   //--- Action
 
   SetCharSpell(cbSpell1,0);
   SetCharSpell(cbSpell2,1);
   SetCharSpell(cbSpell3,2);
   SetCharSpell(cbSpell4,3);
+
+  //--- Other
 
   //--- Statistic
 

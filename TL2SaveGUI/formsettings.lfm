@@ -64,17 +64,17 @@ object fmSettings: TfmSettings
   end
   object gbShow: TGroupBox
     Left = 8
-    Height = 192
+    Height = 96
     Top = 160
     Width = 201
     Caption = 'What to show'
-    ClientHeight = 172
+    ClientHeight = 76
     ClientWidth = 197
     TabOrder = 3
     object cbShowTech: TCheckBox
       Left = 8
       Height = 19
-      Top = 116
+      Top = 24
       Width = 102
       Caption = 'Show Tech info'
       TabOrder = 0
@@ -82,72 +82,18 @@ object fmSettings: TfmSettings
     object cbIdAsHex: TCheckBox
       Left = 8
       Height = 19
-      Top = 140
+      Top = 48
       Width = 133
       Caption = 'Show IDs in Hex form'
       TabOrder = 1
     end
-    object rbBaseOnly: TRadioButton
+    object cbShowAll: TCheckBox
       Left = 8
       Height = 19
-      Top = 8
-      Width = 129
-      Caption = 'Show basic info only'
-      OnClick = rbShowModeClick
+      Top = 0
+      Width = 64
+      Caption = 'Show all'
       TabOrder = 2
-    end
-    object rbAdditional: TRadioButton
-      Left = 8
-      Height = 19
-      Top = 32
-      Width = 101
-      Caption = 'Additional data'
-      OnClick = rbShowModeClick
-      TabOrder = 3
-    end
-    object rbDetailed: TRadioButton
-      Left = 8
-      Height = 19
-      Top = 56
-      Width = 63
-      Caption = 'Detailed'
-      OnClick = rbShowModeClick
-      TabOrder = 4
-    end
-    object rbShowAll: TRadioButton
-      Left = 8
-      Height = 19
-      Top = 80
-      Width = 66
-      Caption = 'Show All'
-      OnClick = rbShowModeClick
-      TabOrder = 5
-    end
-  end
-  object gbEdit: TGroupBox
-    Left = 328
-    Height = 120
-    Top = 168
-    Width = 185
-    Caption = 'What to edit'
-    ClientHeight = 100
-    ClientWidth = 181
-    TabOrder = 4
-    object cbBasic: TCheckBox
-      Left = 8
-      Height = 19
-      Top = 8
-      Width = 97
-      Caption = 'Basic info only'
-      TabOrder = 0
-    end
-    object cbClass: TCheckBox
-      Left = 8
-      Height = 19
-      Top = 32
-      Width = 124
-      Caption = 'Change player class'
-      TabOrder = 1
     end
   end
   object cbBackup: TCheckBox
@@ -156,7 +102,7 @@ object fmSettings: TfmSettings
     Top = 128
     Width = 96
     Caption = 'Make backups'
-    TabOrder = 5
+    TabOrder = 4
   end
   object cbReloadDB: TCheckBox
     Left = 8
@@ -164,6 +110,7 @@ object fmSettings: TfmSettings
     Top = 360
     Width = 214
     Caption = 'Reload database with savegame load'
-    TabOrder = 6
+    TabOrder = 5
+    Visible = False
   end
 end

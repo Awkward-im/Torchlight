@@ -191,17 +191,13 @@ begin
   edStack  .ReadOnly:=FChar=nil;
   edSockets.ReadOnly:=FChar=nil;
   
-  edName    .Text := aItem.Name;
   if aItem.IsProp then
-    edNameById.Text := GetTL2Prop(aItem.ID)
+    edNameById.Text:=GetTL2Prop(aItem.ID)
   else
-    edNameById.Text := GetTL2Item(aItem.ID);
-  edPrefix  .Text := aItem.Prefix;
-  edSuffix  .Text := aItem.Suffix;
-  if fmSettings.cbIdAsHex.Checked then
-    edItemId.Text:='0x'+HexStr(aItem.ID,16)
-  else
-    edItemId.Text:=IntToStr(aItem.ID);
+    edNameById.Text:=GetTL2Item(aItem.ID);
+  edName  .Text:=aItem.Name;
+  edPrefix.Text:=aItem.Prefix;
+  edSuffix.Text:=aItem.Suffix;
 
   edX.Text:=FloatToStrF(aItem.Position1.X,ffFixed,-8,2);
   edY.Text:=FloatToStrF(aItem.Position1.Y,ffFixed,-8,2);
@@ -227,8 +223,8 @@ begin
   edEnchant .Text    := IntToStr(aItem.EnchantCount);
   edPosition.Text    := IntToStr(aItem.Position);
   linv:=GetItemPosition(aItem.Position, lcont);
-  lblContType.Caption := lcont;
-  lblPosType .Caption := linv;
+  lblContType.Caption:= lcont;
+  lblPosType .Caption:= linv;
   edSockets.Text     := IntToStr(aItem.SocketCount);
 
   edWeaponDmg   .Text   := IntToStr(aItem.WeaponDamage);
@@ -244,9 +240,31 @@ begin
   cbFlag6.Checked:=aItem.Flags[5];
   cbFlag7.Checked:=aItem.Flags[6]; cbRecognized.Checked:=aItem.Flags[6];
 
-  edUnkn6.Text:=IntToStr(Length(aItem.Unkn6));
+  //--- Setup changing visibility
 
-  FEffects.FillInfo(aItem);
+  if fmSettings.cbShowTech.Checked then
+  begin
+    edItemId.Visible:=true;
+    edItemId.Text:=TextId(aItem.ID);
+    edUnkn6 .Visible:=true;
+    edUnkn6 .Text:=IntToStr(Length(aItem.Unkn6));
+  end
+  else
+  begin
+    edItemId.Visible:=false;
+    edUnkn6 .Visible:=false;
+  end;
+
+  if fmSettings.cbShowAll.Checked then
+  begin
+    tsOtherInfo.TabVisible:=true;
+    FEffects.FillInfo(aItem);
+  end
+  else
+  begin
+    tsOtherInfo.TabVisible:=false;
+  end;
+
 {
   lbAugments.Clear;
   for i:=0 to High(aItem.Augments) do

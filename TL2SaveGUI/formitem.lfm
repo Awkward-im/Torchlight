@@ -327,6 +327,7 @@ object fmItem: TfmItem
         Height = 101
         Top = 231
         Width = 104
+        Anchors = [akTop, akRight]
         Caption = 'Altered'
         ClientHeight = 81
         ClientWidth = 100

@@ -166,7 +166,8 @@ procedure TfmSaveFile.ChangeTree;
 var
   lNode,lSubNode:TTreeNode;
   ls:string;
-  lmode, i,lcnt: integer;
+  i,lcnt: integer;
+  lshowall:boolean;
 begin
   lNode:=tvSaveGame.Items[idxSavegame];
   lNode.Visible:=true;
@@ -176,15 +177,15 @@ begin
   lNode.Items[idxQuests   ].Data:=pointer(SGame.Quests);
   lNode.Items[idxStatistic].Data:=pointer(SGame.Stats);
 
-  lmode:=GetShowMode;
-  lNode.Items[idxCharacter ].Items[1].Visible:=lmode>smMore;
-  lNode.Items[idxKeyMapping].Visible:=lmode>smJustBase;
-  lNode.Items[idxMovies    ].Visible:=lmode>smJustBase;
-  lNode.Items[idxModList   ].Visible:=lmode>smJustBase;
-  lNode.Items[idxQuests    ].Visible:=lmode>smJustBase;
-  lNode.Items[idxRecipes   ].Visible:=lmode>smJustBase;
-  lNode.Items[idxMaps      ].Visible:=lmode>smJustBase;
-  lNode.Items[idxStatistic ].Visible:=lmode=smFull;
+  lshowall:=fmSettings.cbShowAll.Checked;
+  lNode.Items[idxCharacter ].Items[1].Visible:=lshowall;
+  lNode.Items[idxKeyMapping].Visible:=lshowall;
+  lNode.Items[idxMovies    ].Visible:=lshowall;
+  lNode.Items[idxModList   ].Visible:=lshowall;
+  lNode.Items[idxQuests    ].Visible:=lshowall;
+  lNode.Items[idxRecipes   ].Visible:=lshowall;
+  lNode.Items[idxMaps      ].Visible:=lshowall;
+  lNode.Items[idxStatistic ].Visible:=lshowall;
 
   lcnt:=SGame.PetCount;
   lNode:=tvSaveGame.Items[idxSavegame].Items[idxPets];
@@ -193,7 +194,7 @@ begin
   begin
     lSubNode:=tvSaveGame.Items.AddChild(lNode,SGame.PetInfo[i].Name);
     lSubNode.Data:=pointer(SGame.PetInfo[i]);
-    if lmode>smMore then
+    if lshowall then
       tvSaveGame.Items.AddChild(lSubNode,rsItems);
   end;
 
@@ -207,7 +208,7 @@ begin
       ls:=ls+' ['+IntToStr(SGame.Maps[i].Number)+']';
     lSubNode:=tvSaveGame.Items.AddChild(lNode,ls);
     lSubNode.Data:=pointer(SGame.Maps[i]);
-    if lmode>smMore then
+    if lshowall then
     begin
       tvSaveGame.Items.AddChild(lSubNode,rsUnits);
       tvSaveGame.Items.AddChild(lSubNode,rsProps);
@@ -405,7 +406,7 @@ begin
 
   case tvSaveGame.Selected.level of
     0: if tvSaveGame.Selected.Index<>idxSettings then
-      result:=0;
+      result:=idxCharacter;
     1: result:=tvSaveGame.Selected.Index;
     2: result:=tvSaveGame.Selected.Parent.Index;
     3: result:=tvSaveGame.Selected.Parent.Parent.Index;

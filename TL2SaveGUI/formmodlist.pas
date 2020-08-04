@@ -164,20 +164,14 @@ procedure TfmModList.FillGridRow(agrid:TStringGrid; arow:integer; const amod:TMo
 begin
   agrid.Cells[0,arow]:=amod.title;
   agrid.Cells[1,arow]:=IntToStr(amod.version);
-  if fmSettings.cbIdAsHex.Checked then
-    agrid.Cells[2,arow]:='0x'+HexStr(amod.id,16)
-  else
-    agrid.Cells[2,arow]:=IntToStr(amod.id);
+  agrid.Cells[2,arow]:=TextId  (amod.id);
 end;
 
 procedure TfmModList.FillGridRow(agrid:TStringGrid; arow:integer; const amod:TTL2Mod);
 begin
   agrid.Cells[0,arow]:=GetTL2Mod(amod.id);
-  agrid.Cells[1,arow]:=IntToStr(amod.version);
-  if fmSettings.cbIdAsHex.Checked then
-    agrid.Cells[2,arow]:='0x'+HexStr(amod.id,16)
-  else
-    agrid.Cells[2,arow]:=IntToStr(amod.id);
+  agrid.Cells[1,arow]:=IntToStr (amod.version);
+  agrid.Cells[2,arow]:=TextId   (amod.id);
 end;
 
 procedure TfmModList.FillGrid(agrid:TStringGrid; alist:TTL2ModList);

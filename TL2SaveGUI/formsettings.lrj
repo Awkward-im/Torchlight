@@ -4,13 +4,7 @@
 {"hash":13179367,"name":"tfmsettings.gbshow.caption","sourcebytes":[87,104,97,116,32,116,111,32,115,104,111,119],"value":"What to show"},
 {"hash":114277359,"name":"tfmsettings.cbshowtech.caption","sourcebytes":[83,104,111,119,32,84,101,99,104,32,105,110,102,111],"value":"Show Tech info"},
 {"hash":111254093,"name":"tfmsettings.cbidashex.caption","sourcebytes":[83,104,111,119,32,73,68,115,32,105,110,32,72,101,120,32,102,111,114,109],"value":"Show IDs in Hex form"},
-{"hash":193685609,"name":"tfmsettings.rbbaseonly.caption","sourcebytes":[83,104,111,119,32,98,97,115,105,99,32,105,110,102,111,32,111,110,108,121],"value":"Show basic info only"},
-{"hash":216820545,"name":"tfmsettings.rbadditional.caption","sourcebytes":[65,100,100,105,116,105,111,110,97,108,32,100,97,116,97],"value":"Additional data"},
-{"hash":212338196,"name":"tfmsettings.rbdetailed.caption","sourcebytes":[68,101,116,97,105,108,101,100],"value":"Detailed"},
-{"hash":258556860,"name":"tfmsettings.rbshowall.caption","sourcebytes":[83,104,111,119,32,65,108,108],"value":"Show All"},
-{"hash":13122948,"name":"tfmsettings.gbedit.caption","sourcebytes":[87,104,97,116,32,116,111,32,101,100,105,116],"value":"What to edit"},
-{"hash":115641849,"name":"tfmsettings.cbbasic.caption","sourcebytes":[66,97,115,105,99,32,105,110,102,111,32,111,110,108,121],"value":"Basic info only"},
-{"hash":183822931,"name":"tfmsettings.cbclass.caption","sourcebytes":[67,104,97,110,103,101,32,112,108,97,121,101,114,32,99,108,97,115,115],"value":"Change player class"},
+{"hash":258565052,"name":"tfmsettings.cbshowall.caption","sourcebytes":[83,104,111,119,32,97,108,108],"value":"Show all"},
 {"hash":222444307,"name":"tfmsettings.cbbackup.caption","sourcebytes":[77,97,107,101,32,98,97,99,107,117,112,115],"value":"Make backups"},
 {"hash":34762148,"name":"tfmsettings.cbreloaddb.caption","sourcebytes":[82,101,108,111,97,100,32,100,97,116,97,98,97,115,101,32,119,105,116,104,32,115,97,118,101,103,97,109,101,32,108,111,97,100],"value":"Reload database with savegame load"}
 ]}

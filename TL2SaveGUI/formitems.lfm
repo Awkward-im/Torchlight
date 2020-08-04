@@ -35,6 +35,7 @@ object fmItems: TfmItems
         item
           Width = 164
         end>
+      HideSelection = False
       ParentFont = False
       ReadOnly = True
       SmallImages = fmSaveFile.imgIcons
