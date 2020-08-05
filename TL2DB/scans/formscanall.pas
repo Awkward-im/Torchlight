@@ -61,6 +61,10 @@ begin
     exit;
   if not PrepareScan(tvMain.Path) then exit;
 
+  // Wardrobe
+  memLog.Append('Go wardrobe!');
+  ScanWardrobe();
+
   // Pets
   if cbPets.Checked then
   begin

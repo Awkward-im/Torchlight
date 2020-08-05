@@ -10,6 +10,7 @@ function PrepareScan(
 procedure FinishScan;
 
 
+function ScanWardrobe:integer;
 function ScanPets:integer;
 function ScanQuests:integer;
 function ScanMobs:integer;
@@ -82,30 +83,129 @@ function CheckForMod(const atable,anid,amodid:string):string;
 var
   lSQL,lmodid:string;
   vm:pointer;
+  lmodfound:boolean;
 begin
-  lmodid:='';
+  // let mean: ID not found
+  result:=' '+amodid+' ';
+
   lSQL:='SELECT modid FROM '+atable+' WHERE id='+anid;
   if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
     begin
       lmodid:=sqlite3_column_text(vm,0);
+      // ID was found
       if lmodid<>'' then
       begin
-        if (lmodid <> ' 0 ') and
-           (Pos(' '+amodid+' ',lmodid)=0) then
+        lmodfound:=(lmodid=' 0 ') or (Pos(result,lmodid)>0);
+        if DoUpdate then
         begin
-          sqlite3_finalize(vm);
-          lmodid:=lmodid+amodid+' ';
-          lSQL:='UPDATE '+atable+' SET modid='''+lmodid+''' WHERE id='+anid;
-          sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil);
-          sqlite3_step(vm);
+          // ID found, mod found, update all - return esisting mod line
+          if lmodfound then result:=lmodid
+          // ID found, mod not found, update all - return new mod line
+          else result:=lmodid+amodid+' ';
+        end
+        else
+        begin
+          // ID found, mod not found, not update all - modify mod
+          if not lmodfound then
+          begin
+            sqlite3_finalize(vm);
+            lmodid:=lmodid+amodid+' ';
+            lSQL:='UPDATE '+atable+' SET modid='''+lmodid+''' WHERE id='+anid;
+            sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil);
+            sqlite3_step(vm);
+          end;
+          // ID found, mod found, not update all - skip all
+          result:='';
         end;
       end;
     end;
     sqlite3_finalize(vm);
   end;
-  result:=lmodid;
+  if result<>'' then result:=''''+result+'''';
+end;
+
+//----- Wardrobe -----
+
+type
+  twardrobeinfo = record
+    id    :string;
+    name  :string;
+    atype :string;
+    gender:string;
+  end;
+
+function AddWardrobeToBase(var adata:twardrobeinfo):boolean;
+var
+  lmodid,lSQL:string;
+  vm:pointer;
+begin
+  result:=false;
+
+  lmodid:=CheckForMod('wardrobe', adata.id, smodid);
+  if lmodid<>'' then
+  begin
+    lSQL:='REPLACE INTO wardrobe (id, name, type, gender, modid) VALUES ('+
+        adata.id+', '+FixedText(adata.name)+', '+FixedText(adata.atype)+', '''+adata.gender+
+        ''', '+lmodid+')';
+
+    if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
+    begin
+      sqlite3_step(vm);
+      sqlite3_finalize(vm);
+      result:=true;
+    end;
+  end;
+end;
+
+function ScanWardrobe:integer;
+var
+  p,pp:PTL2Node;
+  ls:string;
+  ldata:twardrobeinfo;
+  i,j:integer;
+begin
+  result:=0;
+  p:=ParseDatFile('MEDIA\WARDROBE\WARDROBESETS.DAT');
+  if p<>nil then
+  begin
+
+    for j:=0 to p^.childcount-1 do
+    begin
+      if CompareWide(p^.children^[j].name,'FEATURE') then
+      begin
+        pp:=@p^.children^[j];
+        for i:=0 to pp^.childcount-1 do
+        begin
+          if CompareWide(pp^.children^[i].name,'NAME') then
+          begin
+            ldata.name:=pp^.children^[i].asString;
+          end
+          else if CompareWide(pp^.children^[i].name,'TYPE') then
+          begin
+            ldata.atype:=pp^.children^[i].asString;
+          end
+          else if CompareWide(pp^.children^[i].name,'GUID') then
+          begin
+            Str(pp^.children^[i].asInteger64,ldata.id);
+          end
+          else if CompareWide(pp^.children^[i].name,'CLASS') then
+          begin
+            ls:=pp^.children^[i].asString;
+            ldata.gender:=UpCase(ls[length(ls)]);
+          end;
+        end;
+
+        if not AddWardrobeToBase(ldata) then
+          writeln('can''t update ',ldata.name)
+        else
+          inc(result);
+      end;
+    end;
+
+    DeleteNode(p);
+  end;
 end;
 
 //----- Pet -----
@@ -129,20 +229,19 @@ var
   lmodid,lSQL,lscale:string;
   vm:pointer;
 begin
-  lmodid:=CheckForMod('pets', aPet.id, smodid);
-  if DoUpdate or (lmodid='') then
-  begin
-    if lmodid='' then lmodid:=' '+smodid+' '
-    else ; // 'delete from pets where id='+aPet.id
+  result:=false;
 
+  lmodid:=CheckForMod('pets', aPet.id, smodid);
+  if lmodid<>'' then
+  begin
     Str(aPet.Scale:0:2,lscale);
 
-    lSQL:='INSERT INTO pets (id, name, title, type, scale, skins, icon, '+
+    lSQL:='REPLACE INTO pets (id, name, title, type, scale, skins, icon, '+
           'graph_hp, graph_armor, graph_dmg, modid) VALUES ('+
         aPet.id+', '+FixedText(apet.name)+', '+FixedText(apet.title)+', '+
         IntToStr(apet.atype)+', '+lscale+', '+IntToStr(apet.textures)+
         ', '+FixedText(apet.icon)+', '''+apet.gr_hp+''', '''+apet.gr_armor+''', '''+apet.gr_dmg+
-        ''', '''+smodid+''')';
+        ''', '+lmodid+')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -223,15 +322,17 @@ end;
 
 function AddQuestToBase(const aname:string; aId:int64; const atitle:string):boolean;
 var
-  lSQL,sid:string;
+  lmodid,lSQL,sid:string;
   vm:pointer;
 begin
+  result:=false;
+
   Str(aid,sid);
-  result:=CheckForMod('quests', sid, smodid);
-  if not result then
+  lmodid:=CheckForMod('quests', sid, smodid);
+  if lmodid<>'' then
   begin
-    lSQL:='INSERT INTO quests (id, name, title, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '' '+smodid+' '')';
+    lSQL:='REPLACE INTO quests (id, name, title, modid) VALUES ('+
+        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+lmodid+')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -285,17 +386,19 @@ end;
 
 function AddStatToBase(const aname:string; aId:int64; const atitle:string; asaves:boolean):boolean;
 var
-  lSQL,sid,ssaves:string;
+  lmodid,lSQL,sid,ssaves:string;
   vm:pointer;
 begin
+  result:=false;
+
   Str(aid,sid);
-  result:=CheckForMod('stats', sid, smodid);
-  if not result then
+  lmodid:=CheckForMod('stats', sid, smodid);
+  if lmodid<>'' then
   begin
     if asaves then ssaves:='1' else ssaves:='0';
 
-    lSQL:='INSERT INTO stats (id, name, title, saves, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+ssaves+', '' '+smodid+' '')';
+    lSQL:='REPLACE INTO stats (id, name, title, saves, modid) VALUES ('+
+        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+ssaves+', '+lmodid+')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -345,15 +448,17 @@ end;
 
 function AddRecipeToBase(const aname:string; aId:int64; const atitle:string):boolean;
 var
-  lSQL,sid:string;
+  lmodid,lSQL,sid:string;
   vm:pointer;
 begin
+  result:=false;
+
   Str(aid,sid);
-  result:=CheckForMod('recipes', sid, smodid);
-  if not result then
+  lmodid:=CheckForMod('recipes', sid, smodid);
+  if lmodid<>'' then
   begin
-    lSQL:='INSERT INTO recipes (id, name, title, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '' '+smodid+' '')';
+    lSQL:='REPLACE INTO recipes (id, name, title, modid) VALUES ('+
+        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+lmodid+')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -412,14 +517,16 @@ end;
 
 function AddMobToBase(const anid,aname,atitle:string):boolean;
 var
-  lSQL:string;
+  lmodid,lSQL:string;
   vm:pointer;
 begin
-  result:=CheckForMod('mobs', anid, smodid);
-  if not result then
+  result:=false;
+
+  lmodid:=CheckForMod('mobs', anid, smodid);
+  if lmodid<>'' then
   begin
-    lSQL:='INSERT INTO mobs (id, name, title, modid) VALUES ('+
-        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '' '+smodid+' '')';
+    lSQL:='REPLACE INTO mobs (id, name, title, modid) VALUES ('+
+        anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+lmodid+')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -485,22 +592,25 @@ type
 
 function AddItemToBase(const aitem:tItemInfo):boolean;
 var
-  lSQL,lfile,lbase:string;
+  lmodid,lSQL,lfile,lbase:string;
   vm:pointer;
   i:integer;
 begin
-  result:=CheckForMod('items', aitem.id, smodid);
-  if not result then
+  result:=false;
+
+  lmodid:=CheckForMod('items', aitem.id, smodid);
+  if lmodid<>'' then
   begin
     lfile:=LowerCase(aitem.afile);
     for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
     lbase:=LowerCase(aitem.base);
     for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
-    lSQL:='INSERT INTO items (id, name, title, descr, icon, usable, quest, unittype, stack'+
+
+    lSQL:='REPLACE INTO items (id, name, title, descr, icon, usable, quest, unittype, stack'+
           ' file, base, modid) VALUES ('+
         aitem.id+', '+FixedText(aitem.name)+', '+FixedText(aitem.title)+', '+FixedText(aitem.descr)+
         ', '+FixedText(aitem.icon)+', '+aitem.ausable+', '+aitem.quest+', '+FixedText(aitem.unittype)+
-        ', '+aitem.stack+', '+FixedText(lfile)+', '+FixedText(lbase)+', '' '+smodid+' '')';
+        ', '+aitem.stack+', '+FixedText(lfile)+', '+FixedText(lbase)+', '+lmodid+')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -670,15 +780,17 @@ end;
 
 function AddPropToBase(const anid,aname,atitle,aquest:string):boolean;
 var
-  lSQL:string;
+  lmodid,lSQL:string;
   vm:pointer;
 begin
-  result:=CheckForMod('props', anid, smodid);
-  if not result then
+  result:=false;
+
+  lmodid:=CheckForMod('props', anid, smodid);
+  if lmodid<>'' then
   begin
-    lSQL:='INSERT INTO props (id, name, title, quest, modid) VALUES ('+
+    lSQL:='REPLACE INTO props (id, name, title, quest, modid) VALUES ('+
         anid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+
-        aquest+', '' '+smodid+' '')';
+        aquest+', '+lmodid+')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -741,17 +853,19 @@ type
 
 function AddSkillToBase(const askill:tSkillInfo):boolean;
 var
-  lSQL:string;
+  lmodid,lSQL:string;
   vm:pointer;
 begin
-  result:=CheckForMod('skills', askill.id, smodid);
-  if not result then
+  result:=false;
+
+  lmodid:=CheckForMod('skills', askill.id, smodid);
+  if lmodid<>'' then
   begin
-    lSQL:='INSERT INTO skills (id, name, title, descr, tier, icon,'+
+    lSQL:='REPLACE INTO skills (id, name, title, descr, tier, icon,'+
           ' minlevel, maxlevel, passive, shared, modid) VALUES ('+
         askill.id+', '+FixedText(askill.name)+', '+FixedText(askill.title)+', '+FixedText(askill.descr)+
         ', '''+askill.graph+''', '+FixedText(askill.icon)+', '+
-        askill.minlvl+', '+askill.maxlvl+', '+askill.passive+', '+askill.shared+', '' '+smodid+' '')';
+        askill.minlvl+', '+askill.maxlvl+', '+askill.passive+', '+askill.shared+', '+lmodid+')';
 
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
@@ -904,18 +1018,21 @@ type
 
 function AddClassToBase(const aclass:tclassinfo):boolean;
 var
-  lSQL,lfile,lbase:string;
+  lmodid,lSQL,lfile,lbase:string;
   vm:pointer;
   i:integer;
 begin
-  result:=CheckForMod('classes', aclass.id, smodid);
-  if not result then
+  result:=false;
+
+  lmodid:=CheckForMod('classes', aclass.id, smodid);
+  if lmodid<>'' then
   begin
     lfile:=LowerCase(aclass.afile);
     for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
     lbase:=LowerCase(aclass.base);
     for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
-    lSQL:='INSERT INTO classes (id, name, title, descr,'+
+
+    lSQL:='REPLACE INTO classes (id, name, title, descr,'+
           ' file, base, skills, icon,'+
           ' graph_hp, graph_mp, graph_stat, graph_skill, graph_fame,'+
           ' gender, strength, dexterity, magic, defense,'+
@@ -925,7 +1042,7 @@ begin
         ', '''+aclass.gr_hp+''', '''+aclass.gr_mp+''', '''+aclass.gr_st+
         ''', '''+aclass.gr_sk+''', '''+aclass.gr_fm+''', '''+aclass.gender+
         ''', '+aclass.strength+', '+aclass.dexterity+', '+aclass.magic+', '+aclass.defense+
-        ','' '+smodid+' '')';
+        ', '+lmodid+')';
     
     if sqlite3_prepare_v2(db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin

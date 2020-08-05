@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Default"/>
+    <BuildModes Active="Debug"/>
     <Units>
       <Unit>
         <Filename Value="scanall.lpr"/>
@@ -19,9 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formScanAll"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="31"/>
-        <CursorPos Y="55"/>
+        <TopLine Value="45"/>
+        <CursorPos X="37" Y="50"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -29,9 +28,10 @@
       <Unit>
         <Filename Value="unitscan.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1140"/>
-        <CursorPos X="29" Y="1154"/>
+        <TopLine Value="430"/>
+        <CursorPos X="29" Y="448"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit>
@@ -63,7 +63,7 @@
         <UsageCount Value="20"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="27">
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="formscanall.pas"/>
         <Caret Column="17"/>
@@ -172,6 +172,14 @@
       <Position>
         <Filename Value="formscanall.pas"/>
         <Caret Line="58" Column="28" TopLine="41"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="50" Column="37" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="890" Column="18" TopLine="876"/>
       </Position>
     </JumpHistory>
     <RunParams>
