@@ -42,6 +42,7 @@ type
 
   private
     FName :string;
+    FIsTown:TL2Boolean;
     FMobInfos:TTL2CharArray;
 
     FTime,               // total time on location?
@@ -51,7 +52,9 @@ type
     FFoW  : PByte;
 
     Unkn0:DWord;
-    Unkn1:Word;
+    Unkn1:Byte;
+    Unkn2:DWord;
+    Unkn3:DWord;
     UnknF:TL2Float;
 
     FUnknList  : TL2IdList;
@@ -231,15 +234,20 @@ DbgLn('start map');
 
   //??
   UnknF:=Check(AStream.ReadFloat,'map pre-name '+HexStr(AStream.Position,8),1.0);
+  {
+    0.001 - looks like NOT for towns
+    but slaversden = 1
+  }
   // 1.0 3A83126F for Zorro  0,00100000004749745
 
   FName:=AStream.ReadShortString;
+DbgLn('map name: '+FName);
 
+  FIsTown:=AStream.ReadByte<>0;
   //??
-  Unkn1:=Check(AStream.ReadWord,'pre-matrix of '+UTF8Encode(FName),0);   // 0 (1 for Lesya)
-  {  !! check char.
-    1 - NPC or not interact?
-    256 for Alpha - quest boss?
+  Unkn1:=Check(AStream.ReadByte,'pre-matrix of '+UTF8Encode(FName),0);   // 0 (1 for Lesya)
+  {  
+    1 for Sawmill - quest boss?
   }
 
   //----- i guess, this is Fog of War setings (what else?)
@@ -249,7 +257,7 @@ DbgLn('start map');
   FFoW  :=AStream.ReadBytes(FFoW_X*FFoW_Y*SizeOf(TL2Float));
 
   //??
-  Check(AStream.ReadDWord,'pre-layouts_'+HexStr(AStream.Position,8),0); // 0
+  Unkn2:=Check(AStream.ReadDWord,'pre-layouts_'+HexStr(AStream.Position,8),0); // 0
 
   //----- Layout data -----
 
@@ -290,7 +298,7 @@ DbgLn('start map');
   FLayoutList:=AStream.ReadShortStringList;
 
   //??
-  Check(AStream.ReadDWord,'map-end_'+HexStr(AStream.Position,8),0); // 0
+  Unkn3:=Check(AStream.ReadDWord,'map-end_'+HexStr(AStream.Position,8),0); // 0
 
 DbgLn('end map'#13#10'---------');
   LoadBlock(AStream);
@@ -319,8 +327,9 @@ begin
 
   AStream.WriteShortString(FName);
 
+  AStream.WriteByte(ord(FIsTown));
   //??
-  AStream.WriteWord(Unkn1);
+  AStream.WriteByte(Unkn1);
 
   //----- i guess, this is Fog of War setings (what else?)
 
@@ -329,7 +338,7 @@ begin
   AStream.Write(FFoW^,FFoW_X*FFoW_Y*SizeOf(TL2Float));
 
   //??
-  AStream.WriteDWord(0);
+  AStream.WriteDWord(Unkn2);
 
   //----- Layout data -----
 
@@ -365,7 +374,7 @@ begin
   AStream.WriteShortStringList(FLayoutList);
 
   //??
-  AStream.WriteDWord(0);
+  AStream.WriteDWord(Unkn3);
 
   LoadBlock(AStream);
 end;

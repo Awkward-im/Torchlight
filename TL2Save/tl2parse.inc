@@ -78,6 +78,8 @@ Check(Unk3,'save pre-pet '+HexStr(FStream.Position,8),1);  // usually, 1 but can
   FUnknown2:=FStream.ReadBytes(34);
 for i:=0 to 33 do Check(FUnknown2[i],'pre-map['+HexStr(i,2)+'] '+HexStr(FStream.Position,8),0);
 {
+  Timon: pre-map[01]=1
+
     Check(FStream.ReadDWord,'pre-map 1',0);
     Check(FStream.ReadDWord,'pre-map 2',0);
     Check(FStream.ReadDWord,'pre-map 3',0);
