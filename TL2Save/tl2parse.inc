@@ -55,6 +55,7 @@ Check(Unk1,'save_label_1 '+HexStr(FStream.Position,8),0);
   Unk2    :=FStream.ReadDWord;  // 0 ??count of use
 Check(Unk2,'save_label_2 '+HexStr(FStream.Position,8),0);
   UnkCoord:=FStream.ReadCoord; // usually [-999, -999, -999] 0xC479C000
+Check(UnkCoord.X,'save coord '+HexStr(FStream.Position,8),-999);
 
   //----- User portal -----
 
@@ -76,7 +77,7 @@ Check(Unk3,'save pre-pet '+HexStr(FStream.Position,8),1);  // usually, 1 but can
   //----- Unknown 2 -----
   //??
   FUnknown2:=FStream.ReadBytes(34);
-for i:=0 to 33 do Check(FUnknown2[i],'pre-map['+HexStr(i,2)+'] '+HexStr(FStream.Position,8),0);
+for i:=0 to 33 do Check(FUnknown2[i],'save pre-map['+HexStr(i,2)+'] '+HexStr(FStream.Position,8),0);
 {
   Timon: pre-map[01]=1
 

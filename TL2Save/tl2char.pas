@@ -366,8 +366,12 @@ Check(FUnkn3,'pre-pet enabled_'+HexStr(AStream.Position,8),0);
   FEnabled:=AStream.ReadByte<>0; // 1 (pet - enabled)
   //??
   FUnkn4_1:=AStream.ReadByte;    // ??non-interract??
+if FUnkn4_1<>0 then DbgLn('  idk really at '+HexStr(AStream.Position,8));
+{
+ some of NPCs; chests; snakes and frogs
+}
   FUnkn4_2:=AStream.ReadByte;    // ??BOSS??
-
+if FUnkn4_2<>0 then DbgLn('  like a boss at '+HexStr(AStream.Position,8));
   if FIsChar then
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
   //  :24 for pet, :55 for char
@@ -394,7 +398,7 @@ if Funkn7[2]<>TL2IdEmpty then DbgLn('  after scale[2]='+HexStr(Funkn7[2],16)+' a
 if FUnkn17<>$FFFFFFFF then DbgLn('pre-name is '+HexStr(FUnkn17,8));
 
   FName  :=AStream.ReadShortString();    // :55(pet) Char name
-DbgLn('name:'+string(widestring(fname)));
+DbgLn('  name:'+string(widestring(fname)));
   FSuffix:=AStream.ReadShortString();    // like mob title "(Teleporting)"
   if FIsChar then
     FPlayer:=AStream.ReadShortString();  // "PLAYER" (prefix) !!!!! not exists for pets!!!!!!

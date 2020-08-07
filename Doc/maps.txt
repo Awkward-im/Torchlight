@@ -9,7 +9,8 @@ Don't have saved size. So, to skip it, we need to process some data.
 4 bytes - (float) - total time spended by user on location
 4 bytes - (float) - Unknown. at least, looks like Float. idk what is for
 x bytes - (ShortString) - name of location
-2 bytes - Idk, maybe "sub-location name" maybe flags. 0 usually
+1 byte  - (byte) looks like "isTown" flag
+1 byte  - (byte) idk, 0 usually, "1" just for Sawmill location (Alpha territory)
 
 4 bytes - (integer) X
 4 bytes - (integer) Y
