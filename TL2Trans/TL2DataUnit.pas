@@ -646,7 +646,7 @@ begin
             begin
               stage:=2;
 
-              if (lsrc<>'') and (ldst<>'') then
+              if (lsrc<>'') {and (ldst<>'')} then
               begin
                 result:=0;
                 i:=AddString(lsrc,ldst);
@@ -678,12 +678,14 @@ begin
                 Error(3,fname,lline); // no original text
                 result:=-3;
 //!!                break;
+{
               end
               else if ldst='' then
               begin
                 Error(4,fname,lline); // no translated text
                 result:=-4;
 //!!                break;
+}
               end;
 
             end

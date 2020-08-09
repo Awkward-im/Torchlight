@@ -1026,6 +1026,8 @@ begin
   begin
     Modified:=true;
     OnSBUpdate(Self);
+    pnlFolders.Visible:=true;
+    FillFoldersCombo();
     FillProjectGrid('');
   //!!  actShowDoubles.Visible:=data.Doubles<>0;
   end;
@@ -1062,25 +1064,37 @@ begin
       lroot:=true;
       cbFolder.Items.Add(sRoot);
     end
-    else if (not litems) and (Pos('MEDIA\UNITS\ITEMS',ls)=1) then
+    else if (Pos('MEDIA\UNITS\ITEMS',ls)=1) then
     begin
-      litems:=true;
-      cbFolder.Items.Add('ITEMS');
+      if (not litems) then
+      begin
+        litems:=true;
+        cbFolder.Items.Add('ITEMS');
+      end;
     end
-    else if (not lmonsters) and (Pos('MEDIA\UNITS\MONSTERS',ls)=1) then
+    else if {(not lmonsters) and} (Pos('MEDIA\UNITS\MONSTERS',ls)=1) then
     begin
-      lmonsters:=true;
-      cbFolder.Items.Add('MONSTERS');
+      if (not lmonsters) then
+      begin
+        lmonsters:=true;
+        cbFolder.Items.Add('MONSTERS');
+      end;
     end
-    else if (not lplayers) and (Pos('MEDIA\UNITS\PLAYERS',ls)=1) then
+    else if (Pos('MEDIA\UNITS\PLAYERS',ls)=1) then
     begin
-      lplayers:=true;
-      cbFolder.Items.Add('PLAYERS');
+      if (not lplayers) then
+      begin
+        lplayers:=true;
+        cbFolder.Items.Add('PLAYERS');
+      end;
     end
-    else if (not lprops) and (Pos('MEDIA\UNITS\PROPS',ls)=1) then
+    else if (Pos('MEDIA\UNITS\PROPS',ls)=1) then
     begin
-      lprops:=true;
-      cbFolder.Items.Add('PROPS');
+      if (not lprops) then
+      begin
+        lprops:=true;
+        cbFolder.Items.Add('PROPS');
+      end;
     end
     else
     begin
@@ -1090,7 +1104,15 @@ begin
         if ls[j] in ['\','/'] then
         begin
           ls:=Copy(ls,7,j-7);
-          cbFolder.Items.Add(ls);
+
+          j:=1;
+          while j<cbFolder.Items.Count do
+          begin
+            if ls=cbFolder.Items[j] then break;
+            inc(j);
+          end;
+          if j=cbFolder.Items.Count then
+            cbFolder.Items.Add(ls);
           break;
         end;
         inc(j);

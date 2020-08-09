@@ -151,7 +151,7 @@ msgstr "Экспорт завершён. Создан файл"
 
 #: tl2projectform.sfolderall
 msgid "- All -"
-msgstr ""
+msgstr "- Все -"
 
 #: tl2projectform.simporting
 msgid "Importing"
@@ -171,7 +171,7 @@ msgstr "Всего замен"
 
 #: tl2projectform.sroot
 msgid "-- Root --"
-msgstr ""
+msgstr "-- Корень  --"
 
 #: tl2projectform.ssbtext
 #, object-pascal-format
@@ -532,7 +532,7 @@ msgstr "Использовать онлайн-перевод"
 
 #: ttl2project.cbfolder.hint
 msgid "Top-level folder filter"
-msgstr ""
+msgstr "Фильтр папок верхнего уровня"
 
 #: ttl2project.tl2projectgrid.columns[0].title.caption
 msgid "File"
@@ -682,4 +682,3 @@ msgstr "Рабочий каталог"
 msgctxt "ttl2settings.lblyandexnote.caption"
 msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr "Размер текста - не более 10Кб. Дневной лимит - 1 000 000 символов, месячный - 10 000 000 символов."
-
