@@ -148,6 +148,10 @@ msgstr "ESC para cancelar"
 msgid "Export finished. Create file"
 msgstr "Exportación Finalizada. Cree Archivo"
 
+#: tl2projectform.sfolderall
+msgid "- All -"
+msgstr ""
+
 #: tl2projectform.simporting
 msgid "Importing"
 msgstr "Importando"
@@ -163,6 +167,10 @@ msgstr "&Proyecto"
 #: tl2projectform.sreplaces
 msgid "Total replaces"
 msgstr "Reemplazos totales"
+
+#: tl2projectform.sroot
+msgid "-- Root --"
+msgstr ""
 
 #: tl2projectform.ssbtext
 #, object-pascal-format
@@ -507,6 +515,10 @@ msgstr "Mostar texto de plantilla"
 msgid "Use online translate service"
 msgstr "Usar servicio de traducción online"
 
+#: ttl2project.cbfolder.hint
+msgid "Top-level folder filter"
+msgstr ""
+
 #: ttl2project.tl2projectgrid.columns[0].title.caption
 msgid "File"
 msgstr "Archivo"
@@ -650,3 +662,4 @@ msgstr "Carpeta de trabajo"
 #: ttl2settings.lblyandexnote.caption
 msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr "Tamaño del texto es inferior a 10Kb. Limite diario es 1.000.000 caracteres. Limite mensual es 10.000.000 caracteres."
+

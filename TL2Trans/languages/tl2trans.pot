@@ -128,6 +128,10 @@ msgstr ""
 msgid "Export finished. Create file"
 msgstr ""
 
+#: tl2projectform.sfolderall
+msgid "- All -"
+msgstr ""
+
 #: tl2projectform.simporting
 msgid "Importing"
 msgstr ""
@@ -142,6 +146,10 @@ msgstr ""
 
 #: tl2projectform.sreplaces
 msgid "Total replaces"
+msgstr ""
+
+#: tl2projectform.sroot
+msgid "-- Root --"
 msgstr ""
 
 #: tl2projectform.ssbtext
@@ -483,6 +491,10 @@ msgstr ""
 
 #: ttl2project.acttranslate.hint
 msgid "Use online translate service"
+msgstr ""
+
+#: ttl2project.cbfolder.hint
+msgid "Top-level folder filter"
 msgstr ""
 
 #: ttl2project.tl2projectgrid.columns[0].title.caption

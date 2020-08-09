@@ -17,49 +17,54 @@ type
   { TTL2Project }
 
   TTL2Project = class(TForm)
-    actFileName: TAction;
-    actHideReady: TAction;
-    actExportFile: TAction;
+    alProject: TActionList;
+    actFileName     : TAction;
+    actHideReady    : TAction;
+    actExportFile   : TAction;
     actExportClipBrd: TAction;
-    actImportFile: TAction;
+    actImportFile   : TAction;
     actImportClipBrd: TAction;
     actCheckTranslation: TAction;
-    actStopScan: TAction;
-    actOpenSource: TAction;
-    actShowTemplate: TAction;
-    actPartAsReady: TAction;
-    actTranslate: TAction;
-    actReplace: TAction;
-    actFindNext: TAction;
-    actShowSimilar: TAction;
-    actShowDoubles: TAction;
-    actFilter: TAction;
-    alProject: TActionList;
-    edProjectFilter: TEdit;
+    actStopScan     : TAction;
+    actOpenSource   : TAction;
+    actShowTemplate : TAction;
+    actPartAsReady  : TAction;
+    actTranslate    : TAction;
+    actReplace      : TAction;
+    actFindNext     : TAction;
+    actShowSimilar  : TAction;
+    actShowDoubles  : TAction;
+    actFilter       : TAction;
     memEdit: TMemo;
     mnuColor: TPopupMenu;
-    sbHideReady: TSpeedButton;
-    sbProjectFilter: TSpeedButton;
-    sbFileName: TSpeedButton;
-    sbExportClipBrd: TSpeedButton;
-    sbExportFile: TSpeedButton;
-    sbImportClipBrd: TSpeedButton;
-    sbImportFile: TSpeedButton;
-    sbShowSimilar: TSpeedButton;
-    sbShowDoubles: TSpeedButton;
-    sbReplace: TSpeedButton;
-    sbTranslate: TSpeedButton;
-    sbFindNext: TSpeedButton;
-    cbPartAsReady: TSpeedButton;
-    sbShowTemplate: TSpeedButton;
-    sbCheck: TSpeedButton;
+    pnlTop     : TPanel;
+    pnlFolders : TPanel;
+    cbFolder   : TComboBox;
+    splTopPanel: TSplitter;
     TL2ProjectFilterPanel: TPanel;
+    edProjectFilter: TEdit;
+    sbHideReady    : TSpeedButton;
+    sbProjectFilter: TSpeedButton;
+    sbFileName     : TSpeedButton;
+    sbExportClipBrd: TSpeedButton;
+    sbExportFile   : TSpeedButton;
+    sbImportClipBrd: TSpeedButton;
+    sbImportFile   : TSpeedButton;
+    sbShowSimilar  : TSpeedButton;
+    sbShowDoubles  : TSpeedButton;
+    sbReplace      : TSpeedButton;
+    sbTranslate    : TSpeedButton;
+    sbFindNext     : TSpeedButton;
+    cbPartAsReady  : TSpeedButton;
+    sbShowTemplate : TSpeedButton;
+    sbCheck        : TSpeedButton;
     TL2ProjectGrid: TStringGrid;
     procedure actCheckTranslationExecute(Sender: TObject);
     procedure actOpenSourceExecute(Sender: TObject);
     procedure actPartAsReadyExecute(Sender: TObject);
     procedure actShowTemplateExecute(Sender: TObject);
     procedure actStopScanExecute(Sender: TObject);
+    procedure cbFolderChange(Sender: TObject);
     procedure edProjectFilterChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
@@ -88,7 +93,9 @@ type
   private
     doStopScan:boolean;
     FSBUpdate:TSBUpdateEvent;
+    FFolderFilter: String;
 
+    procedure FillFoldersCombo();
     procedure CreateFileTab(idx: integer);
     function  FillColorPopup: boolean;
     function  FillParamPopup: boolean;
@@ -146,6 +153,8 @@ uses
   ClipBrd;
 
 resourcestring
+  sFolderAll      = '- All -';    // minus+space to be first
+  sRoot           = '-- Root --'; // minus+minus+space to be second
   sWarning        = 'Warning';
   sBuildRead      = 'Build translation. Read';
   sBuildWrite     = 'Build translation in file.';
@@ -1022,6 +1031,75 @@ begin
   end;
 end;
 
+procedure TTL2Project.FillFoldersCombo();
+var
+  ls:string;
+  i,j:integer;
+  lroot,litems,lmonsters,lplayers,lprops:boolean;
+begin
+  lroot    :=false;
+  litems   :=false;
+  lmonsters:=false;
+  lplayers :=false;
+  lprops   :=false;
+
+  cbFolder.Clear;
+  cbFolder.Sorted:=true;
+  cbFolder.Items.Add(sFolderAll);
+  for i:=0 to data.Referals-1 do
+  begin
+    ls:=data._File[i];
+    for j:=Length(ls) downto 1 do
+    begin
+      if ls[j] in ['\','/'] then
+      begin
+        ls:=Copy(ls,1,j);
+        break;
+      end;
+    end;
+    if (not lroot) and (ls='MEDIA\') then
+    begin
+      lroot:=true;
+      cbFolder.Items.Add(sRoot);
+    end
+    else if (not litems) and (Pos('MEDIA\UNITS\ITEMS',ls)=1) then
+    begin
+      litems:=true;
+      cbFolder.Items.Add('ITEMS');
+    end
+    else if (not lmonsters) and (Pos('MEDIA\UNITS\MONSTERS',ls)=1) then
+    begin
+      lmonsters:=true;
+      cbFolder.Items.Add('MONSTERS');
+    end
+    else if (not lplayers) and (Pos('MEDIA\UNITS\PLAYERS',ls)=1) then
+    begin
+      lplayers:=true;
+      cbFolder.Items.Add('PLAYERS');
+    end
+    else if (not lprops) and (Pos('MEDIA\UNITS\PROPS',ls)=1) then
+    begin
+      lprops:=true;
+      cbFolder.Items.Add('PROPS');
+    end
+    else
+    begin
+      j:=7;
+      while j<=Length(ls) do
+      begin
+        if ls[j] in ['\','/'] then
+        begin
+          ls:=Copy(ls,7,j-7);
+          cbFolder.Items.Add(ls);
+          break;
+        end;
+        inc(j);
+      end;
+    end;
+  end;
+  cbFolder.ItemIndex:=0;
+end;
+
 function TTL2Project.Load(const fname:AnsiString; silent:boolean=false):boolean;
 var
   ls:AnsiString;
@@ -1050,9 +1128,12 @@ begin
     TL2ProjectGrid.Columns[colFile-1].Visible:=false;
     TL2ProjectGrid.Columns[colTag -1].Visible:=false;
     actFileName.Enabled:=false;
+    pnlFolders.Visible:=false;
   end
   else
   begin
+    pnlFolders.Visible:=true;
+    FillFoldersCombo();
     if data.SrcDir='' then
     begin
       ls:=TL2Settings.edRootDir.Text;
@@ -1237,6 +1318,17 @@ begin
 end;
 
 //----- Buttons ans Editfield -----
+
+procedure TTL2Project.cbFolderChange(Sender: TObject);
+begin
+  if cbFolder.ItemIndex=0 then
+    FFolderFilter:=''
+  else if (cbFolder.ItemIndex=1) and (cbFolder.Items[1][1]='-') then
+    FFolderFilter:='\'
+  else
+    FFolderFilter:=cbFolder.Items[cbFolder.ItemIndex];
+  edProjectFilterChange(Sender);
+end;
 
 procedure TTL2Project.edProjectFilterChange(Sender: TObject);
 var
@@ -1666,7 +1758,7 @@ end;
 function TTL2Project.FillProjectSGRow(aRow, idx:integer;
           const afilter:AnsiString):boolean;
 var
-  ls,lsrc,ltrans:AnsiString;
+  ls,lpath,lsrc,ltrans:AnsiString;
   lstatus:tTextStatus;
 begin
   result:=false;
@@ -1691,6 +1783,18 @@ begin
     if data.Referals>0 then
     begin
       ls:=data._File[idx];
+
+      if FFolderFilter<>'' then
+      begin
+        lpath:=Copy(ExtractFilePath(ls),7);
+        if (lpath='') xor (FFolderFilter='\') then exit;
+        if lpath<>'' then
+        begin
+          if (Pos(FFolderFilter,lpath)<>1) and
+             (Pos('UNITS'+DirectorySeparator+FFolderFilter,lpath)<>1) then exit;
+        end;
+      end;
+
       if actFileName.Checked then
         ls:=ExtractFileName(ls);
       TL2ProjectGrid.Cells[colFile,aRow]:=ls;                 // File

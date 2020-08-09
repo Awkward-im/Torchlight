@@ -5,6 +5,7 @@
 {"hash":6063029,"name":"ttl2project.tl2projectgrid.columns[3].title.caption","sourcebytes":[86,97,108,117,101],"value":"Value"},
 {"hash":354452,"name":"ttl2project.tl2projectgrid.columns[4].title.caption","sourcebytes":[80,97,114,116],"value":"Part"},
 {"hash":175319054,"name":"ttl2project.tl2projectgrid.columns[5].title.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110],"value":"Translation"},
+{"hash":152783778,"name":"ttl2project.cbfolder.hint","sourcebytes":[84,111,112,45,108,101,118,101,108,32,102,111,108,100,101,114,32,102,105,108,116,101,114],"value":"Top-level folder filter"},
 {"hash":236401283,"name":"ttl2project.actfilename.hint","sourcebytes":[83,104,111,114,116,32,102,105,108,101,32,110,97,109,101,115],"value":"Short file names"},
 {"hash":161978595,"name":"ttl2project.acthideready.hint","sourcebytes":[72,105,100,101,32,116,114,97,110,115,108,97,116,101,100,32,108,105,110,101,115],"value":"Hide translated lines"},
 {"hash":88913668,"name":"ttl2project.actshowtemplate.hint","sourcebytes":[83,104,111,119,32,116,101,109,112,108,97,116,101,32,116,101,120,116],"value":"Show template text"},
