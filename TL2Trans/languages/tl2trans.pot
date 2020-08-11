@@ -102,12 +102,8 @@ msgstr ""
 msgid "Build translation in file."
 msgstr ""
 
-#: tl2projectform.schecksimilar
-msgid "Check for similar text"
-msgstr ""
-
-#: tl2projectform.scheckthesame
-msgid "Check for same text"
+#: tl2projectform.scheckline
+msgid "Check importing translations"
 msgstr ""
 
 #: tl2projectform.sdoautocorrect

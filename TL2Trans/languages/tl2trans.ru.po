@@ -121,13 +121,9 @@ msgstr "Строим перевод. Читаем"
 msgid "Build translation in file."
 msgstr "Записываем перевод в файл."
 
-#: tl2projectform.schecksimilar
-msgid "Check for similar text"
-msgstr "Проверка на похожий текст"
-
-#: tl2projectform.scheckthesame
-msgid "Check for same text"
-msgstr "Проверка на такой же текст"
+#: tl2projectform.scheckline
+msgid "Check importing translations"
+msgstr "Проверка импорта перевода"
 
 #: tl2projectform.sdoautocorrect
 msgid "Autocorrect all these notices?"

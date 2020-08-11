@@ -104,7 +104,7 @@ type
     procedure PopupParamChanged(Sender: TObject);
     function  ProjectFileScan(const fname:AnsiString; idx, atotal:integer):integer;
     procedure PasteFromClipBrd();
-    function  CheckLine(const asrc, atrans: AnsiString; asame:Boolean; astate:tTextStatus=stReady): boolean;
+    function  CheckLine(const asrc, atrans: AnsiString; astate:tTextStatus=stReady): boolean;
     procedure FillProjectGrid(const afilter: AnsiString);
     function  FillProjectSGRow(aRow, idx: integer; const afilter: AnsiString): boolean;
     function  GetStatusText:AnsiString;
@@ -170,8 +170,7 @@ resourcestring
                     'Project files: %d; tags: %d; lines: %d | ' +
                     'Translated: %d; patially: %d | Doubles: %d';
   sImporting      = 'Importing';
-  sCheckTheSame   = 'Check for same text';
-  sCheckSimilar   = 'Check for similar text';
+  sCheckLine      = 'Check importing translations';
   sDoDelete       = 'Are you sure to delete selected line(s)?'#13#10+
                     'This text will be just hidden until you save and reload project.';
   sStopScan       = 'Do you want to break scan? It clear full scan process.';
@@ -245,50 +244,47 @@ begin
   end;
 end;
 
-function TTL2Project.CheckLine(const asrc,atrans:AnsiString; asame:boolean;
+function TTL2Project.CheckLine(const asrc,atrans:AnsiString;
          astate:tTextStatus=stReady):boolean;
 var
   ls:AnsiString;
   i,p:integer;
-  lpart:boolean;
+  lstate:tTextStatus;
 begin
   result:=false;
-  if atrans='' then exit;
+  if atrans='' then exit; // astate=stOriginal
 
-  if asame then
+  ls:=FilteredString(asrc);
+  for i:=1 to TL2ProjectGrid.RowCount-1 do
   begin
-    lpart:=TL2Settings.cbImportParts.Checked;
-    for i:=1 to TL2ProjectGrid.RowCount-1 do
+    p:=IntPtr(TL2ProjectGrid.Objects[0,i]);
+    lstate:=data.State[p];
+    if lstate<>stReady then
     begin
-      p:=IntPtr(TL2ProjectGrid.Objects[0,i]);
+      // 100% same
       if asrc=data.Line[p] then
       begin
-        if data.State[p] in [stOriginal,stPartial] then
+        if lstate=stPurePart then
         begin
-          data.Trans[p]:=atrans;
-          if lpart or (astate=stPartial) then
-            data.State[p]:=stPartial
-          else
-            data.State[p]:=stReady;
-          result:=true;
+          if astate=stReady then
+          begin
+            result:=true;
+            data.Trans[p]:=atrans;
+            data.state[p]:=stReady;
+          end;
         end
-        else if (data.Trans[p]<>atrans) then
+        else // if (lstate=stOriginal) or (lstate=Partial) then
         begin
-          //!! not sure what need to ask, just skip atm
+          result:=true;
+          data.Trans[p]:=atrans;
+          if astate=stReady   then data.state[p]:=stReady;
+          if astate=stPartial then data.State[p]:=stPurePart;
         end;
-        exit;
-      end;
-    end;
-  end
-  else
-  begin
-    ls:=FilteredString(asrc);
-    for i:=1 to TL2ProjectGrid.RowCount-1 do
-    begin
-      p:=IntPtr(TL2ProjectGrid.Objects[0,i]);
-      if data.State[p]=stOriginal then
+      end
+      // just similar
+      else if ls=data.Template[p] then
       begin
-        if ls=data.Template[p] then
+        if lstate=stOriginal then
         begin
           data.Trans[p]:=ReplaceTranslation(atrans,data.Line[p]);
           data.State[p]:=stPartial;
@@ -1619,27 +1615,18 @@ begin
         ldata.LoadInfo(OpenDialog.Files[fcnt]);
         if ldata.LoadFromFile(OpenDialog.Files[fcnt])>0 then
         begin
-          OnSBUpdate(Self,sImporting+' '+OpenDialog.Files[fcnt]+' - '+sCheckTheSame);
-          // Check for the same
+          OnSBUpdate(Self,sImporting+' '+OpenDialog.Files[fcnt]+' - '+sCheckLine);
           for i:=0 to ldata.Lines-1 do
           begin
-            if CheckLine(ldata.Line[i],ldata.Trans[i],true,ldata.State[i]) then
-            begin
-              inc(lcnt);
-            end;
-          end;
-
-          OnSBUpdate(Self,sImporting+' '+OpenDialog.Files[fcnt]+' - '+sCheckSimilar);
-          // Check for similar
-          for i:=0 to ldata.Lines-1 do
-          begin
-            if CheckLine(ldata.Line[i],ldata.Trans[i],false) then
+            if CheckLine(ldata.Line[i],ldata.Trans[i],ldata.State[i]) then
             begin
               inc(lcnt);
             end;
           end;
         end;
       end;
+      for i:=0 to data.Lines-1 do
+         if data.State[i]=stPurePart then data.State[i]:=stPartial;
       ShowMessage(sReplaces+' = '+IntToStr(lcnt));
       if lcnt>0 then
       begin
@@ -1688,14 +1675,14 @@ var
   s,lsrc,ltrans:AnsiString;
   sl:TStringList;
   p,lline:integer;
-  lcnt:integer;
+  lcnt,i:integer;
 begin
   sl:=TStringList.Create;
   try
     sl.Text:=Clipboard.asText;
 
     lcnt:=0;
-    // Same
+
     for lline:=0 to sl.Count-1 do
     begin
       s:=sl[lline];
@@ -1705,24 +1692,12 @@ begin
       begin
         lsrc:=Copy(s,1,p-1);
         ltrans:=Copy(s,p+1);
-        if CheckLine(lsrc,ltrans,true) then
+        if CheckLine(lsrc,ltrans) then
           inc(lcnt);
       end
     end;
-    // Similar
-    for lline:=0 to sl.Count-1 do
-    begin
-      s:=sl[lline];
-      // Split to parts
-      p:=Pos(#9,s);
-      if p>0 then
-      begin
-        lsrc:=Copy(s,1,p-1);
-        ltrans:=Copy(s,p+1);
-        if CheckLine(lsrc,ltrans,false) then
-          inc(lcnt);
-      end
-    end;
+    for i:=0 to data.Lines-1 do
+       if data.State[i]=stPurePart then data.State[i]:=stPartial;
 
     ShowMessage(sReplaces+' = '+IntToStr(lcnt));
     if lcnt>0 then
