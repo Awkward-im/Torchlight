@@ -231,15 +231,20 @@ const
 procedure TTL2Settings.SaveTabs(asl:TStringList);
 var
   config:TIniFile;
-  i:integer;
+  i,lcnt:integer;
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  config.WriteInteger(sNSBase+':'+sSectTabs,sTabs,asl.Count);
+  lcnt:=0;
   for i:=0 to asl.Count-1 do
   begin
-    config.WriteString(sNSBase+':'+sSectTabs,sTab+IntToStr(i+1),asl[i]);
+    if asl[i]<>'' then
+    begin
+      config.WriteString(sNSBase+':'+sSectTabs,sTab+IntToStr(i+1),asl[i]);
+      inc(lcnt);
+    end;
   end;
+  config.WriteInteger(sNSBase+':'+sSectTabs,sTabs,lcnt);
 
   config.UpdateFile;
   config.Free;

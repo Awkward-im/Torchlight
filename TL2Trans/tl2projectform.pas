@@ -1321,10 +1321,13 @@ begin
   sl.Free;
   (Self.Parent.Parent as TPageControl).ActivePage:=ts;
   lmemo.SetFocus;
+{
   lmemo.CaretPos :=Point(xpos-1,data.FileLine[idx]-1);
   lmemo.SelStart :=Pos(data.Attrib[idx],lmemo.Text)-1;
   lmemo.SelLength:=Length(data.Attrib[idx]);
-
+}
+  lmemo.SelStart :=Pos(data.Attrib[idx]+':'+data.Line[idx],lmemo.Text)-1;
+  lmemo.SelLength:=Length(data.Attrib[idx]);
 end;
 
 procedure TTL2Project.TL2ProjectGridDblClick(Sender: TObject);

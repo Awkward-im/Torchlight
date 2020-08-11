@@ -20,7 +20,8 @@ type
     stOriginal,  // not translated
     stPartial,   // translated just partially
     stReady,     // translated
-    stDeleted);  // prepared to delete (don't save)
+    stDeleted,   // prepared to delete (don't save)
+    stPurePart); // at Import only: 100% same original, but partial translation
 
 type
   tDATString = record

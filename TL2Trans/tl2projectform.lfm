@@ -292,7 +292,7 @@ object TL2Project: TTL2Project
       GroupIndex = 3
       Hint = 'Hide translated lines'
       ImageIndex = 24
-      OnExecute = edProjectFilterChange
+      OnExecute = actHideReadyExecute
       ShortCut = 32850
     end
     object actShowTemplate: TAction

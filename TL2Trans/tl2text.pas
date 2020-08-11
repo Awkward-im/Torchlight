@@ -180,21 +180,39 @@ begin
         case astr[i] of
           'a'..'z': begin
             // Suffixes
+            p:=pointer(astr)+i-1;
+            // ex. master's
+            if (i>2) and (p^='s') and
+               ((p-1)^ in ['''','`']) and
+               ((p-2)^ in sWord) and
+               not ((p+1)^ in sWord) then
+            begin
+             inc(i);
+             continue;
+            end;
             if wasletter then
             begin
-              p:=pointer(astr)+i-1;
+              // Ex. mastered or provides
               if (p^='e') and ((p+1)^ in ['d','s']) and
                  not ((p+2)^ in sWord) then
               begin
                 inc(i,2);
                 continue;
               end
+              // mastering
               else if (p^='i') and ((p+1)^='n') and
                   ((p+2)^='g') and not ((p+3)^ in sWord) then
               begin
                 inc(i,3);
                 continue;
+              end
+              // ex. Sells
+              else if (p^='s') and not ((p+1)^ in sWord) then
+              begin
+               inc(i);
+               continue;
               end;
+
             end;
 
             // regular letters
