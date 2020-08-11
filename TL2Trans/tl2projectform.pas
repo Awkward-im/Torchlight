@@ -60,6 +60,7 @@ type
     sbCheck        : TSpeedButton;
     TL2ProjectGrid: TStringGrid;
     procedure actCheckTranslationExecute(Sender: TObject);
+    procedure actHideReadyExecute(Sender: TObject);
     procedure actOpenSourceExecute(Sender: TObject);
     procedure actPartAsReadyExecute(Sender: TObject);
     procedure actShowTemplateExecute(Sender: TObject);
@@ -95,7 +96,7 @@ type
     FSBUpdate:TSBUpdateEvent;
     FFolderFilter: String;
 
-    procedure FillFoldersCombo();
+    procedure FillFoldersCombo(asetidx: boolean);
     procedure CreateFileTab(idx: integer);
     function  FillColorPopup: boolean;
     function  FillParamPopup: boolean;
@@ -365,6 +366,16 @@ begin
   end
   else
     ShowMessage(sNoWarnings);
+end;
+
+procedure TTL2Project.actHideReadyExecute(Sender: TObject);
+var
+  ls:string;
+begin
+  ls:=cbFolder.Text;
+  FillFoldersCombo(false);
+  cbFolder.Text:=ls;
+  cbFolderChange(Sender);
 end;
 
 //----- Visual -----
@@ -1027,13 +1038,13 @@ begin
     Modified:=true;
     OnSBUpdate(Self);
     pnlFolders.Visible:=true;
-    FillFoldersCombo();
+    FillFoldersCombo(true);
     FillProjectGrid('');
   //!!  actShowDoubles.Visible:=data.Doubles<>0;
   end;
 end;
 
-procedure TTL2Project.FillFoldersCombo();
+procedure TTL2Project.FillFoldersCombo(asetidx:boolean);
 var
   ls:string;
   i,j:integer;
@@ -1047,9 +1058,16 @@ begin
 
   cbFolder.Clear;
   cbFolder.Sorted:=true;
+  cbFolder.Items.BeginUpdate;
   cbFolder.Items.Add(sFolderAll);
   for i:=0 to data.Referals-1 do
   begin
+    if actHideReady.Checked then
+    begin
+      if (data.state[i]=stReady) or
+        ((data.Trans[i]<>'') and (TL2Settings.cbHidePartial.Checked)) then continue;
+    end;
+
     ls:=data._File[i];
     for j:=Length(ls) downto 1 do
     begin
@@ -1119,7 +1137,9 @@ begin
       end;
     end;
   end;
-  cbFolder.ItemIndex:=0;
+  cbFolder.Items.EndUpdate;
+  if asetidx then
+    cbFolder.ItemIndex:=0;
 end;
 
 function TTL2Project.Load(const fname:AnsiString; silent:boolean=false):boolean;
@@ -1155,7 +1175,7 @@ begin
   else
   begin
     pnlFolders.Visible:=true;
-    FillFoldersCombo();
+    FillFoldersCombo(true);
     if data.SrcDir='' then
     begin
       ls:=TL2Settings.edRootDir.Text;
@@ -1304,6 +1324,7 @@ begin
   lmemo.CaretPos :=Point(xpos-1,data.FileLine[idx]-1);
   lmemo.SelStart :=Pos(data.Attrib[idx],lmemo.Text)-1;
   lmemo.SelLength:=Length(data.Attrib[idx]);
+
 end;
 
 procedure TTL2Project.TL2ProjectGridDblClick(Sender: TObject);
@@ -1343,6 +1364,9 @@ end;
 
 procedure TTL2Project.cbFolderChange(Sender: TObject);
 begin
+  if cbFolder.ItemIndex<0 then
+     cbFolder.ItemIndex:=0;
+
   if cbFolder.ItemIndex=0 then
     FFolderFilter:=''
   else if (cbFolder.ItemIndex=1) and (cbFolder.Items[1][1]='-') then
