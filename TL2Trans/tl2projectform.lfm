@@ -2,10 +2,10 @@ object TL2Project: TTL2Project
   Left = 328
   Height = 520
   Top = 234
-  Width = 912
+  Width = 930
   BorderStyle = bsNone
   ClientHeight = 520
-  ClientWidth = 912
+  ClientWidth = 930
   KeyPreview = True
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -16,7 +16,7 @@ object TL2Project: TTL2Project
     Left = 0
     Height = 480
     Top = 40
-    Width = 912
+    Width = 930
     Align = alClient
     AutoEdit = False
     AutoFillColumns = True
@@ -57,7 +57,7 @@ object TL2Project: TTL2Project
       end    
       item
         Title.Caption = 'Translation'
-        Width = 347
+        Width = 365
       end>
     DefaultColWidth = 48
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
@@ -78,7 +78,7 @@ object TL2Project: TTL2Project
       0
       269
       28
-      347
+      365
     )
   end
   object memEdit: TMemo
@@ -97,19 +97,19 @@ object TL2Project: TTL2Project
     Left = 0
     Height = 40
     Top = 0
-    Width = 912
+    Width = 930
     Align = alTop
     ClientHeight = 40
-    ClientWidth = 912
+    ClientWidth = 930
     TabOrder = 2
     object TL2ProjectFilterPanel: TPanel
-      Left = 152
+      Left = 348
       Height = 38
       Top = 1
-      Width = 759
+      Width = 581
       Align = alClient
       ClientHeight = 38
-      ClientWidth = 759
+      ClientWidth = 581
       TabOrder = 0
       object sbFileName: TSpeedButton
         Left = 8
@@ -138,14 +138,14 @@ object TL2Project: TTL2Project
         Action = actExportFile
       end
       object sbExportClipBrd: TSpeedButton
-        Left = 152
+        Left = 149
         Height = 22
         Top = 8
         Width = 23
         Action = actExportClipBrd
       end
       object sbImportClipBrd: TSpeedButton
-        Left = 178
+        Left = 175
         Height = 22
         Top = 8
         Width = 23
@@ -159,7 +159,7 @@ object TL2Project: TTL2Project
         Action = actImportFile
       end
       object sbShowSimilar: TSpeedButton
-        Left = 213
+        Left = 207
         Height = 22
         Top = 8
         Width = 23
@@ -167,14 +167,14 @@ object TL2Project: TTL2Project
         Visible = False
       end
       object sbShowDoubles: TSpeedButton
-        Left = 239
+        Left = 233
         Height = 22
         Top = 8
         Width = 23
         Action = actShowDoubles
       end
       object sbReplace: TSpeedButton
-        Left = 391
+        Left = 293
         Height = 22
         Top = 8
         Width = 23
@@ -182,7 +182,7 @@ object TL2Project: TTL2Project
         Anchors = [akTop, akRight]
       end
       object sbTranslate: TSpeedButton
-        Left = 365
+        Left = 267
         Height = 22
         Top = 8
         Width = 23
@@ -190,7 +190,7 @@ object TL2Project: TTL2Project
         Anchors = [akTop, akRight]
       end
       object sbProjectFilter: TSpeedButton
-        Left = 416
+        Left = 318
         Height = 22
         Top = 8
         Width = 23
@@ -201,16 +201,16 @@ object TL2Project: TTL2Project
         ShowCaption = False
       end
       object edProjectFilter: TEdit
-        Left = 459
+        Left = 350
         Height = 23
         Top = 6
-        Width = 266
+        Width = 197
         Anchors = [akTop, akRight]
         OnChange = edProjectFilterChange
         TabOrder = 0
       end
       object sbFindNext: TSpeedButton
-        Left = 731
+        Left = 553
         Height = 22
         Top = 8
         Width = 23
@@ -218,7 +218,7 @@ object TL2Project: TTL2Project
         Anchors = [akTop, akRight]
       end
       object cbPartAsReady: TSpeedButton
-        Left = 280
+        Left = 264
         Height = 22
         Top = 8
         Width = 23
@@ -236,7 +236,7 @@ object TL2Project: TTL2Project
         Visible = False
       end
       object sbCheck: TSpeedButton
-        Left = 312
+        Left = 292
         Height = 22
         Top = 8
         Width = 23
@@ -247,31 +247,58 @@ object TL2Project: TTL2Project
       Left = 1
       Height = 38
       Top = 1
-      Width = 151
+      Width = 167
       Align = alLeft
       ClientHeight = 38
-      ClientWidth = 151
+      ClientWidth = 167
       TabOrder = 1
-      object splTopPanel: TSplitter
-        Left = 145
-        Height = 36
-        Top = 1
-        Width = 5
-        Align = alRight
-        ResizeAnchor = akRight
-      end
       object cbFolder: TComboBox
-        Left = 4
+        Left = 6
         Height = 23
         Hint = 'Top-level folder filter'
         Top = 6
-        Width = 137
+        Width = 154
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 15
         OnChange = cbFolderChange
         ReadOnly = True
-        TabOrder = 1
+        TabOrder = 0
       end
+    end
+    object splFolder: TSplitter
+      Left = 168
+      Height = 38
+      Top = 1
+      Width = 5
+    end
+    object pnlSkills: TPanel
+      Left = 173
+      Height = 38
+      Top = 1
+      Width = 170
+      Align = alLeft
+      ClientHeight = 38
+      ClientWidth = 170
+      TabOrder = 2
+      Visible = false
+      object cbSkills: TComboBox
+        Left = 8
+        Height = 23
+        Top = 6
+        Width = 153
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ItemHeight = 15
+        OnChange = cbSkillsChange
+        ReadOnly = True
+        TabOrder = 0
+      end
+    end
+    object splSkills: TSplitter
+      Left = 343
+      Height = 38
+      Top = 1
+      Width = 5
+      Visible = false
     end
   end
   object alProject: TActionList

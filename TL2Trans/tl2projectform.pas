@@ -35,12 +35,15 @@ type
     actShowSimilar  : TAction;
     actShowDoubles  : TAction;
     actFilter       : TAction;
+    cbSkills: TComboBox;
     memEdit: TMemo;
     mnuColor: TPopupMenu;
+    pnlSkills: TPanel;
     pnlTop     : TPanel;
     pnlFolders : TPanel;
     cbFolder   : TComboBox;
-    splTopPanel: TSplitter;
+    splSkills: TSplitter;
+    splFolder: TSplitter;
     TL2ProjectFilterPanel: TPanel;
     edProjectFilter: TEdit;
     sbHideReady    : TSpeedButton;
@@ -66,6 +69,7 @@ type
     procedure actShowTemplateExecute(Sender: TObject);
     procedure actStopScanExecute(Sender: TObject);
     procedure cbFolderChange(Sender: TObject);
+    procedure cbSkillsChange(Sender: TObject);
     procedure edProjectFilterChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
@@ -100,6 +104,7 @@ type
     procedure CreateFileTab(idx: integer);
     function  FillColorPopup: boolean;
     function  FillParamPopup: boolean;
+    procedure FillSkillsCombo();
     procedure PopupColorChanged(Sender: TObject);
     procedure PopupParamChanged(Sender: TObject);
     function  ProjectFileScan(const fname:AnsiString; idx, atotal:integer):integer;
@@ -1040,10 +1045,79 @@ begin
   end;
 end;
 
-procedure TTL2Project.FillFoldersCombo(asetidx:boolean);
+procedure TTL2Project.FillSkillsCombo();
 var
   ls:string;
   i,j:integer;
+  lroot:boolean;
+begin
+  lroot:=false;
+
+  cbSkills.Clear;
+  cbSkills.Sorted:=true;
+  cbSkills.Items.BeginUpdate;
+  cbSkills.Items.Add(sFolderAll);
+  for i:=0 to data.Referals-1 do
+  begin
+    if actHideReady.Checked then
+    begin
+      if (data.state[i]=stReady) or
+        ((data.Trans[i]<>'') and (TL2Settings.cbHidePartial.Checked)) then continue;
+    end;
+
+    ls:=data._File[i];
+
+    if (Pos('MEDIA\SKILLS',ls)=1) then
+    begin
+      for j:=Length(ls) downto 1 do
+      begin
+        if ls[j] in ['\','/'] then
+        begin
+          ls:=Copy(ls,14,j-14);
+          break;
+        end;
+      end;
+
+      if ls='' then
+      begin
+        if not lroot then
+        begin
+          lroot:=true;
+          cbSkills.Items.Add(sRoot);
+        end;
+        continue;
+      end;
+
+      j:=1;
+      while j<=Length(ls) do
+      begin
+        if ls[j] in ['\','/'] then
+        begin
+          ls:=Copy(ls,1,j-1);
+
+          j:=1;
+          while j<cbSkills.Items.Count do
+          begin
+            if ls=cbSkills.Items[j] then break;
+            inc(j);
+          end;
+          if j=cbSkills.Items.Count then
+            cbSkills.Items.Add(ls);
+          break;
+        end;
+        inc(j);
+      end;
+
+    end;
+  end;
+  cbSkills.Items.EndUpdate;
+  cbSkills.ItemIndex:=0;
+end;
+
+procedure TTL2Project.FillFoldersCombo(asetidx:boolean);
+var
+  ls:string;
+  lidx,i,j:integer;
   lroot,litems,lmonsters,lplayers,lprops:boolean;
 begin
   lroot    :=false;
@@ -1078,36 +1152,33 @@ begin
       lroot:=true;
       cbFolder.Items.Add(sRoot);
     end
-    else if (Pos('MEDIA\UNITS\ITEMS',ls)=1) then
+    else if (Pos('MEDIA\UNITS',ls)=1) then
     begin
-      if (not litems) then
-      begin
-        litems:=true;
-        cbFolder.Items.Add('ITEMS');
-      end;
-    end
-    else if {(not lmonsters) and} (Pos('MEDIA\UNITS\MONSTERS',ls)=1) then
-    begin
-      if (not lmonsters) then
-      begin
-        lmonsters:=true;
-        cbFolder.Items.Add('MONSTERS');
-      end;
-    end
-    else if (Pos('MEDIA\UNITS\PLAYERS',ls)=1) then
-    begin
-      if (not lplayers) then
-      begin
-        lplayers:=true;
-        cbFolder.Items.Add('PLAYERS');
-      end;
-    end
-    else if (Pos('MEDIA\UNITS\PROPS',ls)=1) then
-    begin
-      if (not lprops) then
-      begin
-        lprops:=true;
-        cbFolder.Items.Add('PROPS');
+      // second letter of folder
+      case ls[14] of
+        'T': if (not litems) then
+        begin
+          litems:=true;
+          cbFolder.Items.Add('ITEMS');
+        end;
+
+        'O': if (not lmonsters) then
+        begin
+          lmonsters:=true;
+          cbFolder.Items.Add('MONSTERS');
+        end;
+
+        'L': if (not lplayers) then
+        begin
+          lplayers:=true;
+          cbFolder.Items.Add('PLAYERS');
+        end;
+
+        'R': if (not lprops) then
+        begin
+          lprops:=true;
+          cbFolder.Items.Add('PROPS');
+        end;
       end;
     end
     else
@@ -1135,7 +1206,10 @@ begin
   end;
   cbFolder.Items.EndUpdate;
   if asetidx then
+  begin
     cbFolder.ItemIndex:=0;
+    cbFolderChange(Self);
+  end;
 end;
 
 function TTL2Project.Load(const fname:AnsiString; silent:boolean=false):boolean;
@@ -1264,7 +1338,7 @@ var
   lmemo:TMemo;
   sl:TStringList;
   ls:AnsiString;
-  i,xpos:integer;
+  i:integer;
 begin
   if data.SrcDir<>'' then
     ls:=data.SrcDir
@@ -1284,14 +1358,9 @@ begin
     sl.Free;
     exit;
   end;
-  xpos:=1;
   for i:=0 to sl.Count-1 do
   begin
     sl[i]:=StringReplace(sl[i],#9,'    ',[rfReplaceAll]);
-    if i=(data.FileLine[idx]-1) then
-    begin
-      xpos:=Pos(data.Attrib[idx],sl[i]);
-    end;
   end;
 
   ts:=(Self.Parent.Parent as TPageControl).AddTabSheet;
@@ -1317,11 +1386,6 @@ begin
   sl.Free;
   (Self.Parent.Parent as TPageControl).ActivePage:=ts;
   lmemo.SetFocus;
-{
-  lmemo.CaretPos :=Point(xpos-1,data.FileLine[idx]-1);
-  lmemo.SelStart :=Pos(data.Attrib[idx],lmemo.Text)-1;
-  lmemo.SelLength:=Length(data.Attrib[idx]);
-}
   lmemo.SelStart :=Pos(data.Attrib[idx]+':'+data.Line[idx],lmemo.Text)-1;
   lmemo.SelLength:=Length(data.Attrib[idx]);
 end;
@@ -1372,6 +1436,33 @@ begin
     FFolderFilter:='\'
   else
     FFolderFilter:=cbFolder.Items[cbFolder.ItemIndex];
+
+  if FFolderFilter='SKILLS' then
+  begin
+    FillSkillsCombo();
+    pnlSkills.Visible:=true;
+    splSkills.Visible:=true;
+  end
+  else
+  begin
+    pnlSkills.Visible:=false;
+    splSkills.Visible:=false;
+  end;
+  edProjectFilterChange(Sender);
+end;
+
+procedure TTL2Project.cbSkillsChange(Sender: TObject);
+begin
+  if cbSkills.ItemIndex<0 then
+     cbSkills.ItemIndex:=0;
+
+  if cbSkills.ItemIndex=0 then
+    FFolderFilter:='SKILLS'
+  else if (cbSkills.ItemIndex=1) and (cbSkills.Items[1][1]='-') then
+    FFolderFilter:='SKILLS\'
+  else
+    FFolderFilter:='SKILLS\'+cbSkills.Items[cbSkills.ItemIndex]+'\';
+
   edProjectFilterChange(Sender);
 end;
 
@@ -1596,6 +1687,7 @@ procedure TTL2Project.ImportFileClick(Sender: TObject);
 var
   ldata:TTL2Translation;
   OpenDialog: TOpenDialog;
+ls,lls:string;
   lcnt,i,fcnt:integer;
 begin
   OpenDialog:=TOpenDialog.Create(nil);
@@ -1616,8 +1708,15 @@ begin
         if ldata.LoadFromFile(OpenDialog.Files[fcnt])>0 then
         begin
           OnSBUpdate(Self,sImporting+' '+OpenDialog.Files[fcnt]+' - '+sCheckLine);
+if ldata.Lines>100 then
+begin
+ls:=' / '+IntToStr(ldata.Lines);
+lls:=sImporting+' '+OpenDialog.Files[fcnt]+' - '+sCheckLine+' ';
+end;
           for i:=0 to ldata.Lines-1 do
           begin
+if (i>0) and ((i mod 100)=0) then
+OnSBUpdate(Self,lls+IntToStr(i)+ls);
             if CheckLine(ldata.Line[i],ldata.Trans[i],ldata.State[i]) then
             begin
               inc(lcnt);
@@ -1627,7 +1726,6 @@ begin
       end;
       for i:=0 to data.Lines-1 do
          if data.State[i]=stPurePart then data.State[i]:=stPartial;
-      ShowMessage(sReplaces+' = '+IntToStr(lcnt));
       if lcnt>0 then
       begin
         Modified:=true;
@@ -1635,6 +1733,7 @@ begin
       end;
       OnSBUpdate(Self);
       ldata.Free;
+      ShowMessage(sReplaces+' = '+IntToStr(lcnt));
     end;
   finally
     OpenDialog.Free;
@@ -1814,6 +1913,8 @@ begin
         if (lpath='') xor (FFolderFilter='\') then exit;
         if lpath<>'' then
         begin
+          if (FFolderFilter='SKILLS\') and (lpath<>'SKILLS\') then exit;
+
           if (Pos(FFolderFilter,lpath)<>1) and
              (Pos('UNITS'+DirectorySeparator+FFolderFilter,lpath)<>1) then exit;
         end;
@@ -1877,6 +1978,8 @@ begin
     TL2ProjectGrid.SetFocus;
   end;
   TL2ProjectGrid.TopRow:=TL2ProjectGrid.Row;
+
+  TL2ProjectGrid.Cells[0,0]:=IntToStr(TL2ProjectGrid.RowCount-1);
 end;
 
 //----- Form -----
