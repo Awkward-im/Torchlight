@@ -223,10 +223,11 @@ end;
 
 procedure TTL2Reference.LoadFromStream(astrm:TStream);
 var
-  i,lrefsize,lsize:integer;
+  lpos,i,lrefsize,lsize:integer;
 begin
   try
     lrefsize:=astrm.Position+astrm.ReadDWord();
+    lpos:=astrm.Position;
 
     cntFiles:=astrm.ReadDWord();
     SetLength(arFiles,cntFiles);
@@ -244,7 +245,7 @@ begin
     for i:=0 to cntRef-1 do
       astrm.ReadBuffer(arRef[i],lsize);
 
-    if astrm.Position<lrefsize then
+    if astrm.Position<(lpos+lrefsize) then
     begin
       Root:=astrm.ReadAnsiString();
     end

@@ -1814,7 +1814,10 @@ procedure TTL2Project.SetCellText(arow:integer; const atext:AnsiString);
 var
   idx:integer;
 begin
+  if atext='' then exit;
   idx:=IntPtr(TL2ProjectGrid.Objects[0,arow]);
+  if atext=data.Line[idx] then exit;
+
   data.Trans[idx]:=atext;
   TL2ProjectGrid.Cells[colTrans,arow]:=atext;
   if TL2Settings.cbImportParts.Checked then
