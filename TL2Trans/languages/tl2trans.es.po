@@ -122,7 +122,7 @@ msgstr "Crear traduccion en archivo."
 
 #: tl2projectform.scheckline
 msgid "Check importing translations"
-msgstr ""
+msgstr "Comprobar la importación de traducciones"
 
 #: tl2projectform.sdoautocorrect
 msgid "Autocorrect all these notices?"
@@ -146,7 +146,7 @@ msgstr "Exportación Finalizada. Cree Archivo"
 
 #: tl2projectform.sfolderall
 msgid "- All -"
-msgstr ""
+msgstr "- Todo -"
 
 #: tl2projectform.simporting
 msgid "Importing"
@@ -166,7 +166,7 @@ msgstr "Reemplazos totales"
 
 #: tl2projectform.sroot
 msgid "-- Root --"
-msgstr ""
+msgstr "-- arraigar --"
 
 #: tl2projectform.ssbtext
 #, object-pascal-format
@@ -513,7 +513,7 @@ msgstr "Usar servicio de traducción online"
 
 #: ttl2project.cbfolder.hint
 msgid "Top-level folder filter"
-msgstr ""
+msgstr "Filtro de carpeta de nivel superior"
 
 #: ttl2project.tl2projectgrid.columns[0].title.caption
 msgid "File"
@@ -658,4 +658,3 @@ msgstr "Carpeta de trabajo"
 #: ttl2settings.lblyandexnote.caption
 msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr "Tamaño del texto es inferior a 10Kb. Limite diario es 1.000.000 caracteres. Limite mensual es 10.000.000 caracteres."
-
