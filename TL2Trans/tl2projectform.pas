@@ -1426,6 +1426,8 @@ end;
 //----- Buttons ans Editfield -----
 
 procedure TTL2Project.cbFolderChange(Sender: TObject);
+var
+  ls:string;
 begin
   if cbFolder.ItemIndex<0 then
      cbFolder.ItemIndex:=0;
@@ -1439,12 +1441,23 @@ begin
 
   if FFolderFilter='SKILLS' then
   begin
+    if cbSkills.ItemIndex>=0 then
+      ls:=cbSkills.Text
+    else
+      ls:='';
     FillSkillsCombo();
     pnlSkills.Visible:=true;
     splSkills.Visible:=true;
+    if ls<>'' then
+    begin
+      cbSkills.Text:=ls;
+      cbSkillsChange(Sender);
+      exit;
+    end;
   end
   else
   begin
+    cbSkills.ItemIndex:=-1;
     pnlSkills.Visible:=false;
     splSkills.Visible:=false;
   end;
