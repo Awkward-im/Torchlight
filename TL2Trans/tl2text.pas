@@ -106,9 +106,9 @@ end;
 }
 function FilteredString(const astr:AnsiString):AnsiString;
 const
-  sWord = ['A'..'Z','_','a'..'z','0'..'9'];
+  sWord = ['A'..'Z','a'..'z'{'_','0'..'9'}];
 var
-  lword:String[15];
+  lword:String[63];
   p:PAnsiChar;
   i,j,k,ldi:integer;
   b,wasletter:boolean;
@@ -135,7 +135,7 @@ begin
         wasletter:=false;
       end;
 
-      '_','+','%': begin
+      {'_',}'+','%': begin
         result[ldi]:=astr[i];
         inc(ldi);
         wasletter:=false;
@@ -152,7 +152,6 @@ begin
           lword:='';
           while p^ in sWord do
           begin
-            // numbers will convert to crap but we don't worry about it
             if p^ in ['A'..'Z'] then
               lword:=lword+AnsiChar(ORD(p^)+ORD('a')-ORD('A'))
             else
@@ -177,11 +176,15 @@ begin
           end;
         end;
 
+{
+  calculate word len, save index then decrease for numbers
+  and compare it
+}
         case astr[i] of
           'a'..'z': begin
             // Suffixes
             p:=pointer(astr)+i-1;
-            // ex. master's
+            // ['s] ex. master's
             if (i>2) and (p^='s') and
                ((p-1)^ in ['''','`']) and
                ((p-2)^ in sWord) and
@@ -192,21 +195,21 @@ begin
             end;
             if wasletter then
             begin
-              // Ex. mastered or provides
+              // [-ed, -es] Ex. mastered or provides
               if (p^='e') and ((p+1)^ in ['d','s']) and
                  not ((p+2)^ in sWord) then
               begin
                 inc(i,2);
                 continue;
               end
-              // mastering
+              // [-ing] mastering
               else if (p^='i') and ((p+1)^='n') and
                   ((p+2)^='g') and not ((p+3)^ in sWord) then
               begin
                 inc(i,3);
                 continue;
               end
-              // ex. Sells
+              // [-s] ex. Sells
               else if (p^='s') and not ((p+1)^ in sWord) then
               begin
                inc(i);
@@ -413,6 +416,11 @@ begin
         lsrc[j]:=pc[i]; inc(j); inc(i);
       end;
 }
+      // number at word end=number
+      while pc[i-1] in ['0'..'9'] do
+      begin
+        dec(j); dec(i);
+      end;
     end
     //--- Numbers starting from point
     else if (pc[i]='.') and (pc[i+1] in ['0'..'9']) then
@@ -533,6 +541,7 @@ begin
         inc(i);
       end;
 }
+      while pc[i-1] in ['0'..'9'] do dec(i);
     end
     //--- Numbers starting from dot
     else if (pc[i]='.') and (pc[i+1] in ['0'..'9']) then

@@ -53,7 +53,7 @@ type
     FErrCode: integer;
     FErrLine: integer;
 
-    ref:TTL2Reference;
+    fRef:TTL2Reference;
     
     arText  : array of tDATString;
     cntText : integer; // lines totally
@@ -96,6 +96,7 @@ type
     function  GetSample(idx:integer):AnsiString;
     function  GetFile  (idx:integer):AnsiString;
     function  GetAttrib(idx:integer):AnsiString;
+    function  GetSkillFlag(idx:integer):boolean;
     function  GetSource(idx:integer):AnsiString;
     procedure SetTrans (idx:integer; const translated: AnsiString);
     function  GetTrans (idx:integer):AnsiString;
@@ -128,9 +129,6 @@ type
 
     property OnFileScan:TOnFileScan read FOnFileScan write FOnFileScan;
     // statistic
-    property Tags    :integer read GetTagAmount;
-    property Files   :integer read GetFileAmount;
-    property Referals:integer read GetRefAmount;
     property Lines   :integer read cntText;
     property Doubles :integer read FDoubles;
 
@@ -145,10 +143,17 @@ type
     property Filter:tSearchFilter read FFilter write SetFilter;
 
     // reference
+    property Ref:TTL2Reference read fRef;
+
+    property Tags    :integer read GetTagAmount;
+    property Files   :integer read GetFileAmount;
+    property Referals:integer read GetRefAmount;
     property SrcDir:AnsiString read GetSrcDir write SetSrcDir;
     property FileLine[idx:integer]:integer     read GetFileLine;
     property _File   [idx:integer]:AnsiString  read GetFile;
     property Attrib  [idx:integer]:AnsiString  read GetAttrib;
+    property IsSkill [idx:integer]:boolean     read GetSkillFlag;
+
     // lines
     property Template[idx:integer]:AnsiString  read GetTemplate;
     property SimIndex[idx:integer]:integer     read GetSimIndex;
@@ -385,6 +390,22 @@ begin
   result:=ref.FileCount;
 end;
 
+function TTL2Translation.GetSkillFlag(idx:integer):boolean;
+begin
+  if (idx>=0) and (idx<cntText) then
+    result:=ref.IsSkill[arText[idx].aref]
+  else
+    result:=false;
+end;
+
+function TTL2Translation.GetFileLine(idx:integer):integer;
+begin
+  if (idx>=0) and (idx<cntText) then
+    result:=ref.GetLine(arText[idx].aref)
+  else
+    result:=-1;
+end;
+
 function TTL2Translation.GetFile(idx:integer):AnsiString;
 begin
   result:='';
@@ -396,14 +417,6 @@ begin
       result:=ref.GetFile(arText[idx].aref);
     end;
   end;
-end;
-
-function TTL2Translation.GetFileLine(idx:integer):integer;
-begin
-  if (idx>=0) and (idx<cntText) then
-    result:=ref.GetLine(arText[idx].aref)
-  else
-    result:=-1;
 end;
 
 function TTL2Translation.GetAttrib(idx:integer):AnsiString;
@@ -435,12 +448,12 @@ begin
       // dupe in project files
       if oldref>=0 then
       begin
-        ref.Dupe[oldref]:=ref.Dupe[oldref]-1;
-        ref.Dupe[aref  ]:=oldref+1;
+        fRef.Dupe[oldref]:=fRef.Dupe[oldref]-1;
+        fRef.Dupe[aref  ]:=oldref+1;
       end
       // dupe in preloads
       else
-        ref.Dupe[aref]:=0;
+        fRef.Dupe[aref]:=0;
     end;
 
     inc(FDoubles);
@@ -821,12 +834,12 @@ end;
 procedure TTL2Translation.SaveInfo(const aname:AnsiString);
 var
   lstrm:tMemoryStream;
-  i,lcnt,lpos:integer;
+  i,lcnt,lpos,lpos1:integer;
   lst:tTextStatus;
 begin
   lstrm:=tMemoryStream.Create;
   try
-    ref.SaveToStream(lstrm);
+    fRef.SaveToStream(lstrm);
     lstrm.Position:=lstrm.Size;
     lpos:=lstrm.Size;
     lstrm.WriteDWord(0);
@@ -844,8 +857,20 @@ begin
           lstrm.WriteByte(0);
       end;
     end;
+    lpos1:=lstrm.Position;
     lstrm.Position:=lpos;
     lstrm.WriteDWord(lcnt);
+    lstrm.Position:=lpos1;
+
+    lstrm.WriteByte(1);
+    for i:=cntStart to cntText-1 do
+    begin
+      lst:=arText[i].atype;
+      if lst<>stDeleted then
+      begin
+        lstrm.WriteAnsiString(arText[i].filter);
+      end;
+    end;
 
     lstrm.SaveToFile(ChangeFileExt(aname,'.ref'));
   finally
@@ -857,7 +882,7 @@ procedure TTL2Translation.LoadInfo(const aname:AnsiString);
 var
   lstrm:tMemoryStream;
   ls:string;
-  i,lsize:integer;
+  i,lsize,ltype:integer;
 begin
   ls:=ChangeFileExt(aname,'.ref');
   if FileExists(ls) then
@@ -865,7 +890,7 @@ begin
     lstrm:=tMemoryStream.Create;
     try
       lstrm.LoadFromFile(ls);
-      ref.LoadFromStream(lstrm);
+      fRef.LoadFromStream(lstrm);
 
       lsize:=lstrm.ReadDWord();
       SetLength(TmpInfo,lsize);
@@ -874,6 +899,18 @@ begin
       begin
         TmpInfo[i]._ref :=integer(lstrm.ReadDWord());
         TmpInfo[i]._part:=lstrm.ReadByte ()<>0;
+      end;
+
+      if lstrm.Position<lstrm.Size then
+      begin
+        ltype:=lstrm.ReadByte();
+        if ltype=1 then
+        begin
+          for i:=0 to lsize-1 do
+          begin
+//            TmpInfo[i].filter:=lstrm.ReadAnsiString();
+          end;
+        end;
       end;
     except
     end;
@@ -887,7 +924,7 @@ procedure TTL2Translation.Free;
 begin
   SetLength(arText  ,0);
 
-  ref.Free;
+  fRef.Free;
 end;
 
 procedure TTL2Translation.Init;
@@ -897,7 +934,7 @@ begin
 
   noteIndex:=-1;
 
-  ref.Init;
+  fRef.Init;
 end;
 
 //===== Read sources =====
@@ -987,7 +1024,7 @@ begin
       ls:=Copy(s,i,Length(s));
       if (ls<>'') and (ls<>' ') then
       begin
-        lref:=ref.AddRef(lfile,ltag,lline+1);
+        lref:=fRef.AddRef(lfile,ltag,lline+1);
         
         i:=AddString(ls,'');
         if i>0 then
@@ -1090,7 +1127,7 @@ begin
 
   if sl.Count>0 then
   begin
-    ref.Root:=lRootScanDir;
+    fRef.Root:=lRootScanDir;
     llen:=Length(lRootScanDir)+2; // to get relative filepath+name later
     for i:=0 to sl.Count-1 do
     begin

@@ -260,9 +260,10 @@ begin
   if atrans='' then exit; // astate=stOriginal
 
   ls:=FilteredString(asrc);
-  for i:=1 to TL2ProjectGrid.RowCount-1 do
+  for p:=0 to data.Lines-1 do
+//  for i:=1 to TL2ProjectGrid.RowCount-1 do  //!!
   begin
-    p:=IntPtr(TL2ProjectGrid.Objects[0,i]);
+//    p:=IntPtr(TL2ProjectGrid.Objects[0,i]); //!!
     lstate:=data.State[p];
     if lstate<>stReady then
     begin
@@ -1067,7 +1068,8 @@ begin
 
     ls:=data._File[i];
 
-    if (Pos('MEDIA\SKILLS',ls)=1) then
+    if data.IsSkill[i] then
+//    if (Pos('MEDIA\SKILLS',ls)=1) then
     begin
       for j:=Length(ls) downto 1 do
       begin
@@ -1093,7 +1095,7 @@ begin
       begin
         if ls[j] in ['\','/'] then
         begin
-          ls:=Copy(ls,1,j-1);
+          SetLength(ls,j-1); // ls:=Copy(ls,1,j-1);
 
           j:=1;
           while j<cbSkills.Items.Count do
@@ -1118,13 +1120,14 @@ procedure TTL2Project.FillFoldersCombo(asetidx:boolean);
 var
   ls:string;
   lidx,i,j:integer;
-  lroot,litems,lmonsters,lplayers,lprops:boolean;
+  lskill,lroot,litems,lmonsters,lplayers,lprops:boolean;
 begin
   lroot    :=false;
   litems   :=false;
   lmonsters:=false;
   lplayers :=false;
   lprops   :=false;
+  lskill   :=false;
 
   cbFolder.Clear;
   cbFolder.Sorted:=true;
@@ -1151,6 +1154,14 @@ begin
     begin
       lroot:=true;
       cbFolder.Items.Add(sRoot);
+    end
+    else if data.IsSkill[i] then
+    begin
+      if not lskill then
+      begin
+        lskill:=true;
+        cbFolder.Items.Add('SKILLS');
+      end
     end
     else if (Pos('MEDIA\UNITS',ls)=1) then
     begin

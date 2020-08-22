@@ -10,11 +10,14 @@ interface
 uses
   Classes;
 
+const
+  RefSizeV1 = SizeOf(Integer)*4;
+
 type
   TTL2Reference = object
   private
     type
-      tRefData = record
+      tRefData = packed record
         // constant part (fills on scan)
         _file: integer;
         _tag : integer;
@@ -23,6 +26,7 @@ type
         _dup : integer; // =0 = dupe in preloads
                         // >0 = ref # +1
                         // <0 - base, count of doubles
+        _flag: integer;
       end;
 
   private
@@ -39,15 +43,21 @@ type
     function AddFile(const fname:AnsiString):integer;
     function AddTag (const atag :AnsiString):integer;
 
-    function  GetDup(idx:integer):integer;
-    procedure SetDup(idx:integer; aval:integer);
+    function  GetOpt(idx,aflag:integer):boolean;
+    procedure SetOpt(idx,aflag:integer; aval:boolean);
+    function  GetFlag(idx:integer):integer;
+    procedure SetFlag(idx:integer; aval:integer);
+    function  GetDup (idx:integer):integer;
+    procedure SetDup (idx:integer; aval:integer);
+    procedure SetRoot(const aroot:String);
+    function  GetRoot():string;
   
   public
     procedure Init;
     procedure Free;
 
     function AddRef(const afile,atag:AnsiString; aline:integer):integer;
-    function GetRef(idx:integer; var afile,atag:AnsiString; var aline:integer):boolean;
+    function GetRef(idx:integer; var afile,atag:AnsiString):integer;
 
     function GetLine(idx:integer):integer;
     function GetFile(idx:integer):AnsiString;
@@ -56,16 +66,22 @@ type
     procedure SaveToStream  (astrm:TStream);
     procedure LoadFromStream(astrm:TStream);
 
-    property  Root:AnsiString read fRoot write fRoot;
+    property  Root:AnsiString read GetRoot write SetRoot;
 
     property  RefCount :integer read cntRef;
     property  FileCount:integer read cntFiles;
     property  TagCount :integer read cntTags;
-    property  Dupe[idx:integer]:integer read GetDup write SetDup;
+
+    property  Dupe[idx:integer]:integer read GetDup  write SetDup;
+    property  Flag[idx:integer]:integer read GetFlag write SetFlag;
+    property  IsSkill[idx:integer]:boolean index 1 read GetOpt write SetOpt;
   end;
 
 
 implementation
+
+const
+  rfIsSkill = 1;
 
 const
   increment = 50;
@@ -125,23 +141,31 @@ begin
     _tag :=AddTag (atag);
     _line:=aline;
     _dup :=-1;
+    _flag:=0;
+//!!
+    if Pos('SKILLS'+DirectorySeparator,afile)=7 then
+      _flag:=_flag or rfIsSkill;
   end;
   result:=cntRef;
   inc(cntRef);
 end;
 
-function TTL2Reference.GetRef(idx:integer; var afile,atag:AnsiString; var aline:integer):boolean;
+function TTL2Reference.GetRef(idx:integer; var afile,atag:AnsiString):integer;
 begin
   if (idx>=0) and (idx<cntRef) then
   begin
-    result:=true;
-    afile:=arFiles[arRef[idx]._file];
-    atag :=arTags [arRef[idx]._tag];
-    aline:=arRef[idx]._line;
+    with arRef[idx] do
+    begin
+      afile :=arFiles[_file];
+      atag  :=arTags [_tag];
+      result:=_line;
+    end;
   end
   else
-    result:=false;
+    result:=-1;
 end;
+
+//--- File line ---
 
 function TTL2Reference.GetLine(idx:integer):integer;
 begin
@@ -151,6 +175,8 @@ begin
     result:=-1;
 end;
 
+//--- File (path+name) ---
+
 function TTL2Reference.GetFile(idx:integer):AnsiString;
 begin
   if (idx>=0) and (idx<cntRef) then
@@ -159,6 +185,8 @@ begin
     result:='';
 end;
 
+//--- Attrib (tag) ---
+
 function TTL2Reference.GetTag(idx:integer):AnsiString;
 begin
   if (idx>=0) and (idx<cntRef) then
@@ -166,6 +194,23 @@ begin
   else
     result:='';
 end;
+
+//----- Properties -----
+
+//--- Root ---
+
+procedure TTL2Reference.SetRoot(const aroot:String);
+begin
+  if fRoot<>aroot then
+    fRoot:=aroot;
+end;
+
+function TTL2Reference.GetRoot():string;
+begin
+  result:=fRoot;
+end;
+
+//--- Duplicates ---
 
 function TTL2Reference.GetDup(idx:integer):integer;
 begin
@@ -179,6 +224,45 @@ procedure TTL2Reference.SetDup(idx:integer; aval:integer);
 begin
   if (idx>=0) and (idx<cntRef) then
     arRef[idx]._dup:=aval;
+end;
+
+//--- Option flag ---
+
+function TTL2Reference.GetFlag(idx:integer):integer;
+begin
+  if (idx>=0) and (idx<cntRef) then
+    result:=arRef[idx]._flag
+  else
+    result:=0;
+end;
+
+procedure TTL2Reference.SetFlag(idx:integer; aval:integer);
+begin
+  if (idx>=0) and (idx<cntRef) then
+    arRef[idx]._flag:=aval;
+end;
+
+//--- Separate option ---
+
+function TTL2Reference.GetOpt(idx,aflag:integer):boolean;
+begin
+  if (idx>=0) and (idx<cntRef) then
+    result:=(arRef[idx]._flag and aflag)<>0
+  else
+    result:=false;
+end;
+
+procedure TTL2Reference.SetOpt(idx,aflag:integer; aval:boolean);
+var
+  f:integer;
+begin
+  if (idx>=0) and (idx<cntRef) then
+  begin
+    f:=(arRef[idx]._flag and not aflag);
+    if aval then
+      f:=f or aflag;
+    arRef[idx]._flag:=f;
+  end;
 end;
 
 //-----  -----
@@ -223,11 +307,13 @@ end;
 
 procedure TTL2Reference.LoadFromStream(astrm:TStream);
 var
-  lpos,i,lrefsize,lsize:integer;
+  lflag,lpos,i,lrefsize,lsize:integer;
 begin
+  lpos    :=astrm.Position;
+  lrefsize:=0;
   try
-    lrefsize:=astrm.Position+astrm.ReadDWord();
-    lpos:=astrm.Position;
+    lrefsize:=astrm.ReadDWord();
+    inc(lpos,SizeOf(DWord));
 
     cntFiles:=astrm.ReadDWord();
     SetLength(arFiles,cntFiles);
@@ -242,8 +328,23 @@ begin
     cntRef:=astrm.ReadDWord();
     SetLength(arRef,cntRef);
     lsize:=astrm.ReadWord();
-    for i:=0 to cntRef-1 do
-      astrm.ReadBuffer(arRef[i],lsize);
+    if lsize=SizeOf(tRefData) then
+      astrm.ReadBuffer(arRef[0],SizeOf(tRefData)*cntRef)
+    else
+    begin
+      for i:=0 to cntRef-1 do
+        astrm.ReadBuffer(arRef[i],lsize);
+
+      if lsize=RefSizeV1 then
+        for i:=0 to cntRef-1 do
+        begin
+          lflag:=0;
+          if Pos('SKILLS'+DirectorySeparator,arFiles[arRef[i]._file])=7 then
+            lflag:=lflag or rfIsSkill;
+          arRef[i]._flag:=lflag;
+        end;
+
+    end;
 
     if astrm.Position<(lpos+lrefsize) then
     begin
@@ -253,6 +354,8 @@ begin
       Root:='';
   except
   end;
+
+  astrm.Position:=lpos+lrefsize;
 end;
 
 //-----  -----
