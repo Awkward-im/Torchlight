@@ -30,6 +30,7 @@ object fmMap: TfmMap
     Height = 203
     Top = 248
     Width = 256
+    ExtendedSelect = False
     ItemHeight = 0
     TabOrder = 1
   end
@@ -65,7 +66,7 @@ object fmMap: TfmMap
     Height = 203
     Top = 248
     Width = 436
-    ColCount = 3
+    ColCount = 4
     Columns = <    
       item
         Title.Caption = 'Layout''s part'
@@ -81,8 +82,7 @@ object fmMap: TfmMap
         Title.Caption = 'Unknown'
         Width = 150
       end>
-    FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goDblClickAutoSize, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
     RowCount = 1
     TabOrder = 0
   end

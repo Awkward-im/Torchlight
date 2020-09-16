@@ -25,32 +25,37 @@ x bytes  - list elements, 40 bytes each
 4 bytes  - (integer) list count
 x bytes  - list elements, 24 bytes each
     8  bytes - (Integer64) Item ID
-    4  bytes - ?? word=amount picked (equipped+pots?); word=amount picked(unusable)
-    4  bytes - ?? crafted
-    4  bytes - 
-    4  bytes - ?? min level (to recognize)
+    2  bytes - normal items
+    2  bytes - blue items
+    2  bytes - green items
+    4  bytes - ?? golden
+    2  bytes - set items (if from set, same as blue items usually)
+    2  bytes - Maximum of bonuses amount
+    2  bytes - 
 
 -- skills
 4 bytes  - (integer) list count
 x bytes  - list of elements, 17 bytes each
     8 bytes - (Integer64) Skill ID
     4 bytes - ?? manual cast times
-    4 bytes - ?? auto cast times
-    1 byte  - ?? skill level
+    4 bytes - ?? pet/auto cast times
+    1 byte  - skill level
 
 -- Levelups
 4 bytes  - (integer) list count
 x bytes  - list of elements, 31 bytes each
     4 bytes - float, time from previous up
-    4 bytes - ?? field2
-    4 bytes - ?? field3
-    4 bytes
-    1 byte
-    4 bytes - gold obtained per level (pickup and trade) really, 3 bytes . hibyte - unknown
-    1 byte
-    4 bytes - like field2
-    4 bytes - like field3
-    1 byte
+    4 bytes - Looks like minimum phys attack, separate for left/right, but not always
+    4 bytes - Looks like maximum phys attack, separate for left/right, but not always
+    4 bytes -
+    1 byte  -
+    2 bytes - gold obtained per level (pickup and trade)
+    1 byte  - same as next byte
+    1 byte  -
+    1 byte  -
+    4 bytes - Min phys attack for left hand
+    4 bytes - Max phys attack for left hand
+    1 byte  -
 
 -- areas
 4 bytes  - (integer) list count

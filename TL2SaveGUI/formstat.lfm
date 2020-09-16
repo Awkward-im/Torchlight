@@ -13,9 +13,9 @@ object fmStat: TfmStat
     Height = 488
     Top = 0
     Width = 741
-    ActivePage = tsArea2
+    ActivePage = tsLearn
     Align = alClient
-    TabIndex = 7
+    TabIndex = 1
     TabOrder = 0
     object tsCommon: TTabSheet
       Caption = 'Common'
@@ -178,10 +178,11 @@ object fmStat: TfmStat
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
+        OnCompareCells = sgCompareCells
       end
     end
     object tsItems: TTabSheet
-      Caption = 'Items'
+      Caption = 'Picked Items'
       ClientHeight = 460
       ClientWidth = 733
       object sgItems: TStringGrid
@@ -190,7 +191,7 @@ object fmStat: TfmStat
         Top = 0
         Width = 733
         Align = alClient
-        ColCount = 6
+        ColCount = 9
         ColumnClickSorts = True
         Columns = <        
           item
@@ -199,28 +200,44 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field1'
-            Width = 72
+            Title.Caption = 'Normal'
+            Width = 48
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field2'
-            Width = 72
+            Title.Caption = 'Blue'
+            Width = 48
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field3'
-            Width = 72
+            Title.Caption = 'Green'
+            Width = 48
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field4'
-            Width = 72
+            Title.Caption = '?Gold(4b)'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = '?IsSet'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Max.Bonuses'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field7'
+            Width = 48
           end>
         DefaultColWidth = 48
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
+        OnCompareCells = sgCompareCells
       end
     end
     object tsSkills: TTabSheet
@@ -256,6 +273,7 @@ object fmStat: TfmStat
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
         RowCount = 1
         TabOrder = 0
+        OnCompareCells = sgCompareCells
       end
     end
     object tsLevelUp: TTabSheet
@@ -268,9 +286,13 @@ object fmStat: TfmStat
         Top = 0
         Width = 733
         Align = alClient
-        ColCount = 11
+        ColCount = 13
         ColumnClickSorts = True
         Columns = <        
+          item
+            Title.Caption = 'Level'
+            Width = 48
+          end        
           item
             SizePriority = 0
             Title.Caption = 'Time'
@@ -278,12 +300,12 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field2'
+            Title.Caption = 'MinPhys'
             Width = 48
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field3'
+            Title.Caption = 'MaxPhys'
             Width = 48
           end        
           item
@@ -299,7 +321,7 @@ object fmStat: TfmStat
           item
             SizePriority = 0
             Title.Caption = 'Gold'
-            Width = 72
+            Width = 56
           end        
           item
             SizePriority = 0
@@ -308,26 +330,38 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field8'
+            Title.Caption = 'Field8 (b)'
             Width = 48
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field9'
+            Title.Caption = 'Field9 (b)'
             Width = 48
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field10 (b)'
+            Title.Caption = 'MinRightPhys'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'MaxRightPhys'
+            Width = 48
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Field12 (b)'
             Width = 48
           end>
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]
         RowCount = 1
         TabOrder = 0
+        OnCompareCells = sgCompareCells
       end
     end
     object tsArea1: TTabSheet
-      Caption = 'Area 1'
+      Caption = 'Area Time'
       ClientHeight = 460
       ClientWidth = 733
       object sgArea1: TStringGrid
@@ -351,10 +385,11 @@ object fmStat: TfmStat
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
+        OnCompareCells = sgCompareCells
       end
     end
     object tsArea2: TTabSheet
-      Caption = 'Area 2'
+      Caption = 'Area Level'
       ClientHeight = 460
       ClientWidth = 733
       object sgArea2: TStringGrid
@@ -377,10 +412,11 @@ object fmStat: TfmStat
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
+        OnCompareCells = sgCompareCells
       end
     end
     object tsKillers: TTabSheet
-      Caption = 'Killers'
+      Caption = 'Died From'
       ClientHeight = 460
       ClientWidth = 733
       object sgKillers: TStringGrid
@@ -403,6 +439,7 @@ object fmStat: TfmStat
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
         RowCount = 1
         TabOrder = 0
+        OnCompareCells = sgCompareCells
       end
     end
   end

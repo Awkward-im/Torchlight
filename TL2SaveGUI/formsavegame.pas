@@ -5,10 +5,10 @@ unit formSaveGame;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls,
-  Menus, ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
+  Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls, Menus,
+  ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
   formButtons, formKeyBinding, formStatistic, formSettings, formModList,
-  formChar, formStat, formMap, formUnits, formSkills, formItems, formEffects;
+  formChar, formStat, formMap, formUnits, formSkills, formItems;
 
 type
 
@@ -86,6 +86,7 @@ implementation
 {$R *.lfm}
 
 uses
+  LCLIntf,
   tl2db,
   unitGlobal,
   tl2base;
@@ -112,7 +113,7 @@ resourcestring
   rsUnits  = 'Units';
   rsProps  = 'Props';
   rsQItem  = 'Quest items';
-  rsNoBase = 'Can''t load database';
+//  rsNoBase = 'Can''t load database';
 
 const
   DefaultExt = '.dmp';
@@ -231,30 +232,23 @@ begin
 end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);
+{
 var
   i:integer;
+}
 begin
-  FSettings  :=TfmSettings  .Create(Self); FSettings  .Parent:=MainPanel;
-  i:=LoadBases(FSettings.edDBFile.Text);
+  FSettings:=TfmSettings.Create(Self);
+  FSettings.Parent:=MainPanel;
+  {i:=}LoadBases(FSettings.edDBFile.Text);
 //  if i<>0 then ShowMessage(rsNoBase+' '+IntToStr(i));
 
-  fmButtons  :=TfmButtons   .Create(Self); fmButtons  .Parent:=MainPanel;
-  FMovies    :=TfmMovies    .Create(Self); FMovies    .Parent:=MainPanel;
-  FModList   :=TfmModList   .Create(Self); FModList   .Parent:=MainPanel;
-  FRecipes   :=TfmRecipes   .Create(Self); FRecipes   .Parent:=MainPanel;
-  FKeyBinding:=TfmKeyBinding.Create(Self); FKeyBinding.Parent:=MainPanel;
-  FQuests    :=TfmQuests    .Create(Self); FQuests    .Parent:=MainPanel;
-  FStatistic :=TfmStatistic .Create(Self); FStatistic .Parent:=MainPanel;
-  FStats     :=TfmStat      .Create(Self); FStats     .Parent:=MainPanel;
-  FMaps      :=TfmMap       .Create(Self); FMaps      .Parent:=MainPanel;
-  FUnits     :=TfmUnits     .Create(Self); FUnits     .Parent:=MainPanel;
-  FSkills    :=TfmSkills    .Create(Self); FSkills    .Parent:=MainPanel;
-  FItems     :=TfmItems     .Create(Self); FItems     .Parent:=MainPanel;
+  fmButtons:=TfmButtons.Create(Self);
+  fmButtons.Parent:=MainPanel;
 
-  FChar:=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel; FChar.SkillForm:=FSkills;
-  FPet :=TfmChar.Create(Self,ciPet   ); FPet .Parent:=MainPanel;
-
-  fmEffects:=TfmEffects.Create(Self);
+  FItems :=TfmItems .Create(Self); FItems .Parent:=MainPanel;
+  FSkills:=TfmSkills.Create(Self); FSkills.Parent:=MainPanel;
+  FChar  :=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel; FChar.SkillForm:=FSkills;
+  FPet   :=TfmChar.Create(Self,ciPet   ); FPet .Parent:=MainPanel;
 
   fmButtons.Visible:=true;
 
@@ -271,6 +265,16 @@ procedure TfmSaveFile.CloseSaveGame;
 begin
   if SGEPage<>nil then SGEPage.Visible:=false;
   SGEPage:=nil;
+
+  FreeAndNil(FMovies);
+  FreeAndNil(FModList);
+  FreeAndNil(FRecipes);
+  FreeAndNil(FKeyBinding);
+  FreeAndNil(FQuests);
+  FreeAndNil(FStatistic);
+  FreeAndNil(FMaps);
+  FreeAndNil(FStats);
+  FreeAndNil(FUnits);
 
   SGame.Free;
 end;
@@ -299,6 +303,10 @@ begin
 end;
 
 procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
+{
+var
+  i:integer;
+}
 begin
   actFileReload   .Enabled:=true;
   actFileSave     .Enabled:=true;
@@ -313,6 +321,13 @@ begin
   SGame.Parse();
   SetFilter(SGame.BoundMods);
   LoadGameGlobals;
+{
+  for i:=0 to MainPanel.ControlCount-1 do
+  begin
+    if MainPanel.Controls[i] is TForm then
+      PostMessage(TForm(MainPanel.Controls[i]).Handle,LM_TL2_COMMAND,TL2_INIT,0);
+  end;
+}
   FChar.Configured:=false;
 
   Caption:='  '+FFileName;
@@ -446,25 +461,45 @@ begin
 
     // single, have editable data (manual)
     idxMovies: begin
-      FMovies.FillInfo(SGame);
+      if FMovies=nil then
+      begin
+        FMovies:=TfmMovies.Create(Self);
+        FMovies.Parent:=MainPanel;
+        FMovies.FillInfo(SGame);
+      end;
       SGEPage:=FMovies;
     end;
 
     // single, have editable data
     idxModList: begin
-      FModList.FillInfo(SGame);
+      if FModList=nil then
+      begin
+        FModList:=TfmModList.Create(Self);
+        FModList.Parent:=MainPanel;
+        FModList.FillInfo(SGame);
+      end;
       SGEPage:=FModList;
     end;
 
     // single
     idxKeyMapping: begin
-      FKeyBinding.FillInfo(SGame);
+      if FKeyBinding=nil then
+      begin
+        FKeyBinding:=TfmKeyBinding.Create(Self);
+        FKeyBinding.Parent:=MainPanel;
+        FKeyBinding.FillInfo(SGame);
+      end;
       SGEPage:=FKeyBinding;
     end;
 
     // single, have editable data (manual)
     idxPlayerStat: begin
-      FStatistic.FillInfo(SGame);
+      if FStatistic=nil then
+      begin
+        FStatistic:=TfmStatistic.Create(Self);
+        FStatistic.Parent:=MainPanel;
+        FStatistic.FillInfo(SGame);
+      end;
       SGEPage:=FStatistic;
     end;
 
@@ -530,6 +565,11 @@ begin
       end;
       case tvSaveGame.Selected.level of
         1,2: begin
+          if FMaps=nil then
+          begin
+            FMaps:=TfmMap.Create(Self);
+            FMaps.Parent:=MainPanel;
+          end;
           FMaps.FillInfo(SGame,lidx);
           fmButtons.Offset:=SGame.Maps[lidx].DataOffset;
           SGEPage:=FMaps;
@@ -537,6 +577,11 @@ begin
         3: begin
           case tvSaveGame.Selected.Index of
             0: begin
+              if FUnits=nil then
+              begin
+                FUnits:=TfmUnits.Create(Self);
+                FUnits.Parent:=MainPanel;
+              end;
               FUnits.FillInfo(SGame,lidx);
               SGEPage:=FUnits;
             end;
@@ -555,20 +600,36 @@ begin
 
     // single, have editable data
     idxQuests: begin
-      fmButtons.Offset:=SGame.Quests.DataOffset;
-      FQuests.FillInfo(SGame);
+      if FQuests=nil then
+      begin
+        fmButtons.Offset:=SGame.Quests.DataOffset;
+        FQuests:=TfmQuests.Create(Self);
+        FQuests.Parent:=MainPanel;
+        FQuests.FillInfo(SGame);
+      end;
       SGEPage:=FQuests;
     end;
 
     // single, have editable data
     idxRecipes: begin
-      FRecipes.FillInfo(SGame);
+      if FRecipes=nil then
+      begin
+        FRecipes:=TfmRecipes.Create(Self);
+        FRecipes.Parent:=MainPanel;
+        FRecipes.FillInfo(SGame);
+      end;
       SGEPage:=FRecipes;
     end;
 
     // single, have editable data
     idxStatistic: begin
-      FStats.FillInfo(SGame);
+      if FStats=nil then
+      begin
+        fmButtons.Offset:=SGame.Stats.DataOffset;
+        FStats:=TfmStat.Create(Self);
+        FStats.Parent:=MainPanel;
+        FStats.FillInfo(SGame);
+      end;
       SGEPage:=FStats;
     end;
   end;

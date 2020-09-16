@@ -100,9 +100,11 @@ begin
       limg:=-1;
       if litem.ID=TL2IdEmpty     then limg:=imgGold
       else if litem.Flags[0]     then limg:=imgEquipped
-      else if not litem.Flags[6] then limg:=imgUnknown
       else if litem.IsUsable     then limg:=imgUsable
+      else if not litem.Flags[6] then limg:=imgUnknown
       else if litem.ModIds<>nil  then limg:=imgModded;
+
+if litem.IsProp then limg:=6;
       lvItemList.Items[i].ImageIndex:=limg;
     end;
     lvItemList.SortColumn:=0;

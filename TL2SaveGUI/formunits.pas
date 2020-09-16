@@ -95,9 +95,11 @@ begin
     for i:=0 to lvUnitList.Items.Count-1 do
     begin
       lunit:=FMap.MobInfos[UIntPtr(lvUnitList.Items[i].Data)];
+
       limg:=-1;
       if      lunit.Health=0    then limg:=imgDead
       else if lunit.ModIds<>nil then limg:=imgModded;
+
       lvUnitList.Items[i].ImageIndex:=limg;
     end;
     lvUnitList.SortColumn:=0;

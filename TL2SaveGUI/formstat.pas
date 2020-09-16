@@ -34,6 +34,8 @@ type
     tsArea2  : TTabSheet;  sgArea2  : TStringGrid;
     tsKillers: TTabSheet;  sgKillers: TStringGrid;
     procedure bbClearLearnHistoryClick(Sender: TObject);
+    procedure sgCompareCells(Sender: TObject; ACol, ARow, BCol,
+      BRow: Integer; var Result: integer);
   private
     SGame:TTL2SaveFile;
 
@@ -62,6 +64,26 @@ begin
 
   lbSkillHistory.Clear;
   bbClearLearnHistory.Enabled:=false;
+end;
+
+procedure TfmStat.sgCompareCells(Sender: TObject; ACol, ARow, BCol,
+  BRow: Integer; var Result: integer);
+var
+  s1,s2:string;
+begin
+  s1:=(Sender as TStringGrid).Cells[ACol,ARow];
+  s2:=(Sender as TStringGrid).Cells[BCol,BRow];
+  if (ACol=0) or
+    ((ACol>1) and (Pos(':',TStringGrid(Sender).Cells[ACol,ARow])=0)) then
+  begin
+    result:=StrToIntDef(s1,0)-
+            StrToIntDef(s2,0);
+  end
+  else
+    result:=CompareStr(s1,s2);
+
+  if (Sender as TStringGrid).SortOrder=soDescending then
+    result:=-result;
 end;
 
 procedure TfmStat.FillInfo(aSGame:TTL2SaveFile);
@@ -115,10 +137,13 @@ begin
   for i:=0 to High(lstat.Items) do
   begin
     sgItems.Cells[1,i+1]:=GetTL2Item(lstat.Items[i].id);
-    sgItems.Cells[2,i+1]:='0x'+IntToHex(lstat.Items[i].field1,8);
-    sgItems.Cells[3,i+1]:='0x'+IntToHex(lstat.Items[i].field2,8);
-    sgItems.Cells[4,i+1]:='0x'+IntToHex(lstat.Items[i].field3,8);
-    sgItems.Cells[5,i+1]:='0x'+IntToHex(lstat.Items[i].field4,8);
+    sgItems.Cells[2,i+1]:=IntToStr  (lstat.Items[i].Normals);
+    sgItems.Cells[3,i+1]:=IntToStr  (lstat.Items[i].Blues);
+    sgItems.Cells[4,i+1]:=IntToStr  (lstat.Items[i].Greens);
+    sgItems.Cells[5,i+1]:=IntToStr  (lstat.Items[i].Golden);
+    sgItems.Cells[6,i+1]:=IntToStr  (lstat.Items[i].IsSet);
+    sgItems.Cells[7,i+1]:=IntToStr  (lstat.Items[i].Bonuses);
+    sgItems.Cells[8,i+1]:=IntToStr  (lstat.Items[i].field7);
   end;
   sgItems.EndUpdate;
 
@@ -141,16 +166,19 @@ begin
   sgLevelUp.RowCount:=1+Length(lstat.levelup);
   for i:=0 to High(lstat.levelup) do
   begin
+    sgLevelUp.Cells[ 0,i+1]:=IntToStr(i+2);
     sgLevelUp.Cells[ 1,i+1]:=SecToTime(Trunc(lstat.levelup[i].uptime));
-    sgLevelUp.Cells[ 2,i+1]:=IntToStr(lstat.levelup[i].field2);
-    sgLevelUp.Cells[ 3,i+1]:=IntToStr(lstat.levelup[i].field3);
+    sgLevelUp.Cells[ 2,i+1]:=IntToStr(lstat.levelup[i].MinPhys);
+    sgLevelUp.Cells[ 3,i+1]:=IntToStr(lstat.levelup[i].MaxPhys);
     sgLevelUp.Cells[ 4,i+1]:=IntToStr(lstat.levelup[i].field4);
     sgLevelUp.Cells[ 5,i+1]:=IntToStr(lstat.levelup[i].field5);
-    sgLevelUp.Cells[ 6,i+1]:='0x'+IntToHex(lstat.levelup[i].field6,8);
+    sgLevelUp.Cells[ 6,i+1]:=IntToStr(lstat.levelup[i].GoldGet);
     sgLevelUp.Cells[ 7,i+1]:=IntToStr(lstat.levelup[i].field7);
-    sgLevelUp.Cells[ 8,i+1]:=IntToStr(lstat.levelup[i].field8);
-    sgLevelUp.Cells[ 9,i+1]:=IntToStr(lstat.levelup[i].field9);
-    sgLevelUp.Cells[10,i+1]:=IntToStr(lstat.levelup[i].field10);
+    sgLevelUp.Cells[ 8,i+1]:=IntToStr(lstat.levelup[i].field7);
+    sgLevelUp.Cells[ 9,i+1]:=IntToStr(lstat.levelup[i].field8);
+    sgLevelUp.Cells[10,i+1]:=IntToStr(lstat.levelup[i].RightMinPhys);
+    sgLevelUp.Cells[11,i+1]:=IntToStr(lstat.levelup[i].RightMaxPhys);
+    sgLevelUp.Cells[12,i+1]:=IntToStr(lstat.levelup[i].field12);
   end;
   sgLevelUp.EndUpdate;
 

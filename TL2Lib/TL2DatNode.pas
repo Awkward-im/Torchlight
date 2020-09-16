@@ -25,7 +25,9 @@ const
   // user
   ntWord      = 10;
   ntByte      = 11;
-  ntVector    = $FC;
+  ntVector4   = $FA;
+  ntVector2   = $FB;
+  ntVector3   = $FC;
   ntBinary    = $FD;
   ntDeleted   = $FE;
   ntUnknown   = $FF;

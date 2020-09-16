@@ -1208,22 +1208,35 @@ msgstr ""
 
 #: tfmstat.sgitems.columns[1].title.caption
 msgctxt "tfmstat.sgitems.columns[1].title.caption"
-msgid "Field1"
+msgid "Normal"
 msgstr ""
 
 #: tfmstat.sgitems.columns[2].title.caption
 msgctxt "tfmstat.sgitems.columns[2].title.caption"
-msgid "Field2"
+msgid "Blue"
 msgstr ""
 
 #: tfmstat.sgitems.columns[3].title.caption
 msgctxt "tfmstat.sgitems.columns[3].title.caption"
-msgid "Field3"
+msgid "Green"
 msgstr ""
 
 #: tfmstat.sgitems.columns[4].title.caption
 msgctxt "tfmstat.sgitems.columns[4].title.caption"
-msgid "Field4"
+msgid "?Gold(4b)"
+msgstr ""
+
+#: tfmstat.sgitems.columns[5].title.caption
+msgid "?IsSet"
+msgstr ""
+
+#: tfmstat.sgitems.columns[6].title.caption
+msgid "Max.Bonuses"
+msgstr ""
+
+#: tfmstat.sgitems.columns[7].title.caption
+msgctxt "tfmstat.sgitems.columns[7].title.caption"
+msgid "Field7"
 msgstr ""
 
 #: tfmstat.sgkillers.columns[0].title.caption
@@ -1236,52 +1249,67 @@ msgstr ""
 
 #: tfmstat.sglevelup.columns[0].title.caption
 msgctxt "tfmstat.sglevelup.columns[0].title.caption"
-msgid "Time"
+msgid "Level"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[10].title.caption
+msgctxt "tfmstat.sglevelup.columns[10].title.caption"
+msgid "MinLeftPhys"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[11].title.caption
+msgctxt "tfmstat.sglevelup.columns[11].title.caption"
+msgid "MaxLeftPhys"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[12].title.caption
+msgctxt "tfmstat.sglevelup.columns[12].title.caption"
+msgid "Field12 (b)"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[1].title.caption
 msgctxt "tfmstat.sglevelup.columns[1].title.caption"
-msgid "Field2"
+msgid "Time"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[2].title.caption
 msgctxt "tfmstat.sglevelup.columns[2].title.caption"
-msgid "Field3"
+msgid "MinPhys"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[3].title.caption
 msgctxt "tfmstat.sglevelup.columns[3].title.caption"
-msgid "Field4"
+msgid "MaxPhys"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[4].title.caption
 msgctxt "tfmstat.sglevelup.columns[4].title.caption"
-msgid "Field5 (b)"
+msgid "Field4"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[5].title.caption
 msgctxt "tfmstat.sglevelup.columns[5].title.caption"
-msgid "Gold"
+msgid "Field5 (b)"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[6].title.caption
 msgctxt "tfmstat.sglevelup.columns[6].title.caption"
-msgid "Field7 (b)"
+msgid "Gold"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[7].title.caption
 msgctxt "tfmstat.sglevelup.columns[7].title.caption"
-msgid "Field8"
+msgid "Field7 (b)"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[8].title.caption
 msgctxt "tfmstat.sglevelup.columns[8].title.caption"
-msgid "Field9"
+msgid "Field8 (b)"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[9].title.caption
 msgctxt "tfmstat.sglevelup.columns[9].title.caption"
-msgid "Field10 (b)"
+msgid "Field9 (b)"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[0].title.caption
@@ -1355,11 +1383,11 @@ msgid "Level"
 msgstr ""
 
 #: tfmstat.tsarea1.caption
-msgid "Area 1"
+msgid "Area Time"
 msgstr ""
 
 #: tfmstat.tsarea2.caption
-msgid "Area 2"
+msgid "Area Level"
 msgstr ""
 
 #: tfmstat.tscommon.caption
@@ -1369,11 +1397,11 @@ msgstr ""
 
 #: tfmstat.tsitems.caption
 msgctxt "tfmstat.tsitems.caption"
-msgid "Items"
+msgid "Picked Items"
 msgstr ""
 
 #: tfmstat.tskillers.caption
-msgid "Killers"
+msgid "Died From"
 msgstr ""
 
 #: tfmstat.tslearn.caption

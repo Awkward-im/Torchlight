@@ -14,8 +14,8 @@ type
     field2:TL2Integer; // ?? amount killed, player+pet
     exp   :TL2Integer;
     field4:TL2Integer;
-    field5:TL2Integer;
-    field6:TL2Integer;
+    field5:TL2Integer; // <= field1
+    field6:TL2Integer; // <= field1
     field7:TL2Integer;
     field8:Word;       // by phys? no :(
     field9:Word;
@@ -23,11 +23,15 @@ type
   tStatMobArray = array of tStatMob;
 
   tStatItem = packed record
-    id    :TL2ID;
-    field1:TL2Integer; // ?? word=amount picked (equipped+pots?); word=amount picked(unusable)
-    field2:TL2Integer; // ?? crafted                word+word
-    field3:TL2Integer; // ??                        word+word
-    field4:TL2Integer; // min level? (to recognize) word+word
+    id     :TL2ID;
+    Normals:Word;       // amount of picked normals
+    Blues  :Word;       // amount of picked blue
+    Greens :Word;       // amount of picked green
+    Golden :TL2Integer; // ?? golden?
+    IsSet  :Word;       // set? looks like amount like Blues (can be same w/o set?!)
+    Bonuses:Word;       // Max bonus amount on item
+                        // (cannon have 2 , greathammer have 1 by default, not calculates)
+    field7 :Word;       // ?? 
   end;
   tStatItemArray = array of tStatItem;
 
@@ -41,15 +45,17 @@ type
 
   tStatLevelup = packed record
     uptime :TL2Float;   // time
-    field2 :TL2Integer; // 27 phys dmg?
-    field3 :TL2Integer; // 54 magic dmg?
-    field4 :TL2Integer; // ?? amount of attacks?
-    field5 :Byte;       // ?? flag=equipped manually? or amount on pet?
-    field6 :TL2Integer; // plus gold per level (picked and shop) ??hibyte/word (01/02)
-    field7 :Byte;       // maybe word (with byte from Field06)
-    field8 :TL2Integer; // like field2 (not always)
-    field9 :TL2Integer; // like field3 (not always)
-    field10:Byte;
+    MinPhys:TL2Integer; // ?? Min Phys Attack (not summarize) kept non-zero
+    MaxPhys:TL2Integer; // ?? Max Phys Attack (not summarize) kept non-zero
+    field4 :TL2Integer; // ?? amount of attacks? triggers?
+    field5 :Byte;       // warps activated?
+    GoldGet:Word;       // plus gold per level (picked and shop)
+    field7 :Byte;       // 7 & 8 usually the same
+    field8 :Byte;       // 7 & 8 usually the same
+    field9 :Byte;
+    RightMinPhys:TL2Integer; // Current Right Min Phys Attack
+    RightMaxPhys:TL2Integer; // Current Right Max Phys Attack
+    field12:Byte;
   end;
   tStatLevelUpArray = array of tStatLevelUp;
 

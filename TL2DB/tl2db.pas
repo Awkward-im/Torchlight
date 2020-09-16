@@ -239,6 +239,8 @@ var
   lname:string;
 begin
   result:=GetById(aid,'mobs','',amods,lname);
+  if amods='' then result:=GetById(aid,'pets'   ,'',amods,lname);
+  if amods='' then result:=GetById(aid,'classes','',amods,lname);
 end;
 
 function GetTL2Mob(const aid:TL2ID):string;

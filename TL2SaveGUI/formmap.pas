@@ -102,7 +102,7 @@ begin
 
   lbUnknList.Clear;
   for i:=0 to High(lMap.UnknList) do
-    lbUnknList.AddItem('0x'+IntToHex(lMap.UnknList[i],16),nil);
+    lbUnknList.AddItem(TextId(lMap.UnknList[i]),nil);
 
   sgLayouts.Clear;
   sgLayouts.RowCount:=Length(lMap.LayoutList);
@@ -114,9 +114,9 @@ begin
   sgLayData.RowCount:=1+Length(lMap.LayData);
   for i:=0 to High(lMap.LayData) do
   begin
-    sgLayData.Cells[0,i+1]:=TextId  (lMap.LayData[i].id);
-    sgLayData.Cells[2,i+1]:=TextId  (lMap.LayData[i].unkn);
-    sgLayData.Cells[1,i+1]:=IntToStr(lMap.LayData[i].value);
+    sgLayData.Cells[1,i+1]:=TextId  (lMap.LayData[i].id);
+    sgLayData.Cells[2,i+1]:=IntToStr(lMap.LayData[i].value);
+    sgLayData.Cells[3,i+1]:=TextId  (lMap.LayData[i].unkn);
   end;
 end;
 
