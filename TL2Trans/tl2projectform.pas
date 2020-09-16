@@ -109,7 +109,8 @@ type
     procedure PopupParamChanged(Sender: TObject);
     function  ProjectFileScan(const fname:AnsiString; idx, atotal:integer):integer;
     procedure PasteFromClipBrd();
-    function  CheckLine(const asrc, atrans: AnsiString; astate:tTextStatus=stReady): boolean;
+    function  CheckLine(const asrc, atrans: AnsiString;
+        const atmpl:AnsiString=''; astate:tTextStatus=stReady): boolean;
     procedure FillProjectGrid(const afilter: AnsiString);
     function  FillProjectSGRow(aRow, idx: integer; const afilter: AnsiString): boolean;
     function  GetStatusText:AnsiString;
@@ -250,7 +251,7 @@ begin
 end;
 
 function TTL2Project.CheckLine(const asrc,atrans:AnsiString;
-         astate:tTextStatus=stReady):boolean;
+         const atmpl:AnsiString=''; astate:tTextStatus=stReady):boolean;
 var
   ls:AnsiString;
   i,p:integer;
@@ -259,42 +260,51 @@ begin
   result:=false;
   if atrans='' then exit; // astate=stOriginal
 
-  ls:=FilteredString(asrc);
-  for p:=0 to data.Lines-1 do
+  if atmpl='' then
+    ls:=FilteredString(asrc)
+  else
+    ls:=atmpl;
+
+  // for all project (not preload) lines
+  for p:=(cntBaseLines+cntModLines) to data.Lines-1 do
 //  for i:=1 to TL2ProjectGrid.RowCount-1 do  //!!
   begin
 //    p:=IntPtr(TL2ProjectGrid.Objects[0,i]); //!!
     lstate:=data.State[p];
     if lstate<>stReady then
     begin
-      // 100% same
-      if asrc=data.Line[p] then
+      // similar or same
+      if ls=data.Template[p] then
       begin
-        if lstate=stPurePart then
+        // 100% same
+        if asrc=data.Line[p] then
         begin
-          if astate=stReady then
+          if lstate=stPurePart then
+          begin
+            if astate=stReady then
+            begin
+              result:=true;
+              data.Trans[p]:=atrans;
+              data.state[p]:=stReady;
+            end;
+          end
+          else // if (lstate=stOriginal) or (lstate=Partial) then
           begin
             result:=true;
             data.Trans[p]:=atrans;
-            data.state[p]:=stReady;
+            if astate=stReady   then data.state[p]:=stReady;
+            if astate=stPartial then data.State[p]:=stPurePart;
           end;
         end
-        else // if (lstate=stOriginal) or (lstate=Partial) then
+        // just similar
+        else
         begin
-          result:=true;
-          data.Trans[p]:=atrans;
-          if astate=stReady   then data.state[p]:=stReady;
-          if astate=stPartial then data.State[p]:=stPurePart;
-        end;
-      end
-      // just similar
-      else if ls=data.Template[p] then
-      begin
-        if lstate=stOriginal then
-        begin
-          data.Trans[p]:=ReplaceTranslation(atrans,data.Line[p]);
-          data.State[p]:=stPartial;
-          result:=true;
+          if lstate=stOriginal then
+          begin
+            data.Trans[p]:=ReplaceTranslation(atrans,data.Line[p]);
+            data.State[p]:=stPartial;
+            result:=true;
+          end;
         end;
       end;
     end;
@@ -1741,7 +1751,8 @@ end;
           begin
 if (i>0) and ((i mod 100)=0) then
 OnSBUpdate(Self,lls+IntToStr(i)+ls);
-            if CheckLine(ldata.Line[i],ldata.Trans[i],ldata.State[i]) then
+            if CheckLine(ldata.Line[i],ldata.Trans[i],
+                ldata.template[i],ldata.State[i]) then
             begin
               inc(lcnt);
             end;
@@ -1952,9 +1963,9 @@ begin
       TL2ProjectGrid.Cells[colFile,aRow]:=ls;                 // File
       TL2ProjectGrid.Cells[colTag ,aRow]:=data.Attrib[idx];   // Tag
     end;
-
+{$IFDEF DEBUG}
     TL2ProjectGrid.Cells[colFilter,aRow]:=data.Template[idx]; // Template
-
+{$ENDIF}
     TL2ProjectGrid.Cells[colOrigin,aRow]:=lsrc;               // Value
     if (lstatus<>stPartial) then                              // Part
       TL2ProjectGrid.Cells[colPartial,aRow]:='0'

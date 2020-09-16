@@ -26,7 +26,7 @@ type
 type
   tDATString = record
     origin: AnsiString;
-    filter: AnsiString;
+    tmpl  : AnsiString;
     transl: AnsiString;
     aref  : integer; // reference to original placement
     sample: integer;
@@ -79,13 +79,13 @@ type
      =0 = not found
      <0 = partially
     }
-    function SearchString(const atext,afilter:AnsiString):integer;
+    function SearchString(const atext,atmpl:AnsiString):integer;
     {
       >0 =  (idx+1) (=current lines amount)
       <0 = -(idx+1) (found the same)
       =0 = not added (empty source)
     }
-    function  AddString(const aorig,atrans:AnsiString):integer;
+    function AddString(const aorig, atrans, atmpl: AnsiString): integer;
     procedure AddDouble(atext,aref:integer);
 
     function  GetRefAmount :integer;
@@ -238,6 +238,7 @@ const
 
 var
   TmpInfo:array of record
+    tmpl :string;
     _ref :integer;
     _part:boolean;
   end = nil;
@@ -357,7 +358,7 @@ end;
 function TTL2Translation.GetTemplate(idx:integer):AnsiString;
 begin
   if (idx>=0) and (idx<cntText) then
-    result:=arText[idx].filter
+    result:=arText[idx].tmpl
   else
     result:='';
 end;
@@ -462,7 +463,7 @@ end;
 
 //----- Search & Filter -----
 
-function TTL2Translation.SearchString(const atext,afilter:AnsiString):integer;
+function TTL2Translation.SearchString(const atext,atmpl:AnsiString):integer;
 var
   i,first,tries:integer;
 begin
@@ -472,7 +473,7 @@ begin
   tries:=0;
   for i:=0 to cntText-1 do
   begin
-    if (afilter=arText[i].filter) then
+    if (atmpl=arText[i].tmpl) then
     begin
       // 100% the same
       if atext=arText[i].origin then
@@ -503,9 +504,9 @@ begin
   end;
 end;
 
-function TTL2Translation.AddString(const aorig,atrans:AnsiString):integer;
+function TTL2Translation.AddString(const aorig,atrans,atmpl:AnsiString):integer;
 var
-  lorig,ltrans,lfilter:AnsiString;
+  lorig,ltrans,ltmpl:AnsiString;
   ltype:tTextStatus;
   i:integer;
 begin
@@ -534,13 +535,17 @@ begin
     end;
   end;
 
-  lfilter:=FilteredString(lorig);
+  if atmpl='' then
+    ltmpl:=FilteredString(lorig)
+  else
+    ltmpl:=atmpl;
+
   //!!!
-  if lfilter='' then exit;
+  if ltmpl='' then exit;
 
   if filter=flFiltered then
   begin
-    i:=SearchString(lorig,lfilter);
+    i:=SearchString(lorig,ltmpl);
     if i>0 then
     begin
       result:=-i;
@@ -580,7 +585,7 @@ begin
   arText[cntText].atype :=ltype;
 
   arText[cntText].origin:=lorig;
-  arText[cntText].filter:=lfilter;
+  arText[cntText].tmpl:=ltmpl;
 
   inc(cntText);
   result:=cntText;
@@ -606,7 +611,7 @@ end;
 function TTL2Translation.LoadFromFile(const fname:AnsiString):integer;
 var
   slin:TStringList;
-  s,lsrc,ldst:AnsiString;
+  ls,s,lsrc,ldst:AnsiString;
   lcnt,lline:integer;
   i,stage:integer;
 begin
@@ -663,7 +668,13 @@ begin
               if (lsrc<>'') {and (ldst<>'')} then
               begin
                 result:=0;
-                i:=AddString(lsrc,ldst);
+
+                if Length(TmpInfo)>0 then
+                  ls:=TmpInfo[lcnt].tmpl
+                else
+                  ls:='';
+
+                i:=AddString(lsrc,ldst,ls);
                 if i>0 then
                 begin
                   if Length(TmpInfo)>0 then
@@ -868,7 +879,7 @@ begin
       lst:=arText[i].atype;
       if lst<>stDeleted then
       begin
-        lstrm.WriteAnsiString(arText[i].filter);
+        lstrm.WriteAnsiString(arText[i].tmpl);
       end;
     end;
 
@@ -908,7 +919,7 @@ begin
         begin
           for i:=0 to lsize-1 do
           begin
-//            TmpInfo[i].filter:=lstrm.ReadAnsiString();
+            TmpInfo[i].tmpl:=lstrm.ReadAnsiString();
           end;
         end;
       end;
@@ -1026,7 +1037,7 @@ begin
       begin
         lref:=fRef.AddRef(lfile,ltag,lline+1);
         
-        i:=AddString(ls,'');
+        i:=AddString(ls,'','');
         if i>0 then
           arText[i-1].aref:=lref
         else

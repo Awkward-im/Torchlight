@@ -29,9 +29,11 @@
         <Filename Value="tl2dataunit.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2DataUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="896"/>
-        <CursorPos X="3" Y="911"/>
+        <TopLine Value="548"/>
+        <CursorPos Y="578"/>
+        <FoldState Value=" T44021 TMvg82 TCQF7]ELa04015 T7i5K{Z T8i62w]P3mW048 piYjD09B]9ajX0d0111213 T1mX039[W5O05B[N4 p0uH042 T0n228D]TZlg2L715419126[k4pD2645]a6r901AC"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -78,8 +80,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1446"/>
-        <CursorPos X="12" Y="1455"/>
+        <TopLine Value="1952"/>
+        <CursorPos X="5" Y="1966"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -154,12 +156,10 @@
         <Filename Value="tl2text.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Text"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="99"/>
-        <CursorPos X="21" Y="109"/>
+        <CursorPos Y="116"/>
         <UsageCount Value="60"/>
-        <Loaded Value="True"/>
       </Unit>
     </Units>
     <RunParams>
@@ -189,6 +189,9 @@
       </Item>
       <Item>
         <Expression Value="ldst"/>
+      </Item>
+      <Item>
+        <Expression Value="i"/>
       </Item>
     </Watches>
   </Debugging>

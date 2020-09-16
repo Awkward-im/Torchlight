@@ -235,6 +235,8 @@ var
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
+  config.EraseSection(sNSBase+':'+sSectTabs);
+
   lcnt:=0;
   for i:=0 to asl.Count-1 do
   begin
