@@ -16,6 +16,7 @@ type
     descr   :PWideChar;
     website :PWideChar;
     download:PWideChar;
+    filename:PWideChar;
     flags   :DWord;
     reqHash :Int64;
     reqs    :array of record
@@ -32,7 +33,6 @@ procedure ClearModInfo(var amod:TTL2ModInfo); export;
 
 
 implementation
-
 
 function ReadShortString(var aptr:pbyte):PWideChar;
 var
@@ -84,6 +84,8 @@ begin
   inc(p,2);
 
   result:=true;
+
+//  amod.filename:=UTF8Decode(fname);
 
   amod.modver  :=pWord(p)^; inc(p,2);
   amod.gamever :=             (QWord(pWord(p)^) shl 48); inc(p,2);

@@ -11,15 +11,17 @@ uses
 function  ReadByte       (var buf:PByte):Byte; export;
 function  ReadWord       (var buf:PByte):Word; export;
 function  ReadDWord      (var buf:PByte):DWord; export;
+function  ReadShort      (var buf:PByte):Int16; export;
+
+procedure ReadData       (var buf:PByte; var dst; alen:integer); export;
+function  ReadCoord      (var buf:PByte):TL2Coord; export;
+
 function  ReadBool       (var buf:PByte):ByteBool; export;
 function  ReadInteger    (var buf:PByte):Int32; export;
 function  ReadUnsigned   (var buf:PByte):UInt32; export;
 function  ReadInteger64  (var buf:PByte):Int64; export;
 function  ReadFloat      (var buf:PByte):Single; export;
 function  ReadDouble     (var buf:PByte):Double; export;
-
-procedure ReadData       (var buf:PByte; var dst; alen:integer); export;
-function  ReadCoord      (var buf:PByte):TL2Coord; export;
 
 function  ReadByteString (var buf:PByte):PWideChar; export;
 function  ReadShortString(var buf:PByte):PWideChar; export;
@@ -35,15 +37,17 @@ function  ReadIdValList  (var buf:PByte):TL2IdValList; export;
 procedure WriteByte       (var buf:PByte; aval:Byte); export;
 procedure WriteWord       (var buf:PByte; aval:Word); export;
 procedure WriteDWord      (var buf:PByte; aval:DWord); export;
+procedure WriteShort      (var buf:PByte; aval:Int16); export;
+
+procedure WriteData       (var buf:PByte; var aval; alen:integer); export;
+procedure WriteCoord      (var buf:PByte; var aval:TL2Coord); export;
+
 procedure WriteBool       (var buf:PByte; aval:ByteBool); export;
 procedure WriteInteger    (var buf:PByte; aval:Int32); export;
 procedure WriteUnsigned   (var buf:PByte; aval:UInt32); export;
 procedure WriteInteger64  (var buf:PByte; aval:Int64); export;
 procedure WriteFloat      (var buf:PByte; aval:Single); export;
 procedure WriteDouble     (var buf:PByte; aval:Double); export;
-
-procedure WriteData       (var buf:PByte; var aval; alen:integer); export;
-procedure WriteCoord      (var buf:PByte; var aval:TL2Coord); export;
 
 procedure WriteByteString (var buf:PByte; aval:PWideChar); export;
 procedure WriteShortString(var buf:PByte; aval:PWideChar); export;
@@ -78,6 +82,11 @@ end;
 function ReadBool(var buf:PByte):ByteBool;
 begin
   result:=pByte(buf)^<>0; inc(buf);
+end;
+
+function ReadShort(var buf:PByte):Int16;
+begin
+  result:=pInt16(buf)^; inc(buf,SizeOf(Int16));
 end;
 
 function ReadInteger(var buf:PByte):Int32;
@@ -127,10 +136,10 @@ end;
 
 function ReadShortString(var buf:PByte):PWideChar;
 var
-  lsize:cardinal;
+  lsize:Integer;
 begin
-  lsize:=ReadWord(buf);
-  if (lsize>0) and (lsize<$FFFF) then
+  lsize:=ReadShort(buf);
+  if lsize>0 then
   begin
     GetMem  (    result ,(lsize+1)*SizeOf(WideChar));
     ReadData(buf,result^, lsize   *SizeOf(WideChar));
@@ -142,9 +151,9 @@ end;
 
 function ReadDwordString(var buf:PByte):PWideChar;
 var
-  lsize:cardinal;
+  lsize:integer;
 begin
-  lsize:=ReadDWord(buf);
+  lsize:=ReadInteger(buf);
   if lsize>0 then
   begin
     GetMem  (    result ,(lsize+1)*SizeOf(WideChar));
@@ -160,10 +169,11 @@ var
 //  ls:WideString;
 //  lutf8:PAnsiChar;
   i:integer;
-  lsize:cardinal;
+  lsize:integer;
 begin
-  lsize:=ReadWord(buf);
-  if (lsize>0) and (lsize<$FFFF) then
+  lsize:=ReadShort(buf);
+
+  if lsize>0 then
   begin
     GetMem(result,(lsize+1)*SizeOf(WideChar));
     i:=UTF8ToUnicode(result,lsize,PChar(buf),lsize);
@@ -212,6 +222,11 @@ end;
 procedure WriteBool(var buf:PByte; aval:ByteBool);
 begin
   if aval then pByte(buf)^:=1 else pByte(buf)^:=0; inc(buf);
+end;
+
+procedure WriteShort(var buf:PByte; aval:Int16);
+begin
+  pInt16(buf)^:=aval; inc(buf,SizeOf(Int16));
 end;
 
 procedure WriteInteger(var buf:PByte; aval:Int32);

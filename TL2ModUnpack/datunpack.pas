@@ -6,20 +6,17 @@ uses
   TL2DatNode;
 
 
-function DoParseDat(buf:pByte):PTL2Node;
-
+function DoParseDat (buf:pByte):pointer;
+function IsProperDat(buf:pByte):boolean;
 
 implementation
 
 uses
   sysutils,
   rgglobal,
+  rgdict,
+  rgtypes,
   TL2Memory;
-
-type
-  TAttribute = (
-      t_not_set,t_integer,t_float,t_double,t_unsigned_int,
-      t_string,t_bool,t_integer64,t_translate,t_note);
 
 var
   locdict:array of record
@@ -27,8 +24,7 @@ var
     astr:PWideChar;
   end;
 var
-  aliases:TDict;
-  tried:boolean;
+  tdict,dict,cdict,aliases:pointer;
   buffer:WideString;
   fver:byte;
 
@@ -47,10 +43,10 @@ begin
   result:=nil;
 end;
 
-function GetTagStr(aid:dword):PWideChar;
-var
-  i:integer;
+function GetStr(aid:dword):PWideChar;
 begin
+  if aid=0 then exit(nil);
+
   result:=nil;
 
   if fver=verTL1 then
@@ -59,113 +55,97 @@ begin
     if result<>nil then exit;
   end;
 
-  if not tried then
-  begin
-    tried:=true;
-    LoadDictCustom(aliases,'dataliases.txt');
-  end;
+  if aliases=pointer(-1) then LoadTags(aliases,'dataliases.txt');
+  result:=GetTagStr(aliases,aid);
 
-  if aliases<>nil then
+  if result=nil then
   begin
-    for i:=0 to High(aliases) do
+    if dict=pointer(-1) then LoadTags(dict);
+    result:=GetTagStr(dict,aid);
+
+    if result=nil then
     begin
-      if aliases[i].hash=aid then
-      begin
-        buffer:=WideString(aliases[i].name);
-        result:=pointer(buffer);
-        exit;
-      end;
+      if cdict=pointer(-1) then LoadTags(cdict,'hashed.txt');
+      result:=GetTagStr(cdict,aid);
+    end;
+
+    if result=nil then
+    begin
+      if tdict=pointer(-1) then LoadTags(tdict,'tagdict.txt');
+      result:=GetTagStr(tdict,aid);
     end;
   end;
 
-  if dict=nil then LoadDict;
-  if dict<>nil then
+  if result=nil then
   begin
-    for i:=0 to High(dict) do
+    //!!!!!!
+    if fver<>verTL1 then
     begin
-      if dict[i].hash=aid then
-      begin
-        buffer:=WideString(dict[i].name);
-        result:=pointer(buffer);
-        exit;
-      end;
+      result:=GetLocalStr(aid);
+      if result<>nil then exit;
     end;
-  end;
 
-  if cdict=nil then LoadDictCustom(cdict,'hashed.txt');
-  if cdict<>nil then
-  begin
-    for i:=0 to High(cdict) do
+    Str(aid,buffer);
+    result:=pointer(buffer);
+
+    if hashlog<>nil then
     begin
-      if cdict[i].hash=aid then
-      begin
-        buffer:=WideString(cdict[i].name);
-        result:=pointer(buffer);
-        exit;
-      end;
+  //writeln(curfname);
+      hashlog.Add(IntToStr(aid));
     end;
-  end;
-
-  Str(aid,buffer);
-  result:=pointer(buffer);
-
-  if hashlog<>nil then
-  begin
-//writeln(curfname);
-    hashlog.Add(IntToStr(aid));
   end;
 end;
 
-procedure DoParseBlock(var anode:PTL2Node; var aptr:pByte);
+procedure DoParseBlock(var anode:pointer; var aptr:pByte);
 var
   ldouble:double;
   lint64:int64;
-  lnode:PTL2Node;
+  lnode:pointer;
   lname:PWideChar;
   lfloat:single;
   i,lcnt,lsub,ltype:integer;
   lint:integer;
   luint:longword;
 begin
-  lnode:=AddGroup(anode,GetTagStr(ReadDWord(aptr)));
+  lnode:=AddGroup(anode,GetStr(ReadDWord(aptr)));
   if anode=nil then anode:=lnode;
 
   lcnt:=ReadInteger(aptr);
   for i:=0 to lcnt-1 do
   begin
-    lname:=GetTagStr(ReadDWord(aptr));
+    lname:=GetStr(ReadDWord(aptr));
     ltype:=ReadDword(aptr);
 
-    case TAttribute(ltype) of
-		  t_integer: begin
+    case ltype of
+		  rgInteger: begin
 		    lint:=ReadInteger(aptr);
 		    AddInteger(lnode,lname,lint);
 		  end;
-		  t_unsigned_int: begin
+		  rgUnsigned: begin
 		    luint:=ReadDWord(aptr);
 		    AddUnsigned(lnode,lname,luint);
 		  end;
-		  t_bool: begin
+		  rgBool: begin
 		    lint:=ReadInteger(aptr);
         AddBool(lnode,lname,lint<>0);
 		  end;
-		  t_string: begin
+		  rgString: begin
 		    luint:=ReadDWord(aptr);
-		    AddText(lnode,lname,GetLocalStr(luint),ntString);
+		    AddString(lnode,lname,GetLocalStr(luint));
 		  end;
-		  t_translate: begin
+		  rgTranslate: begin
 		    luint:=ReadDWord(aptr);
-		    AddText(lnode,lname,GetLocalStr(luint),ntTranslate);
+		    AddTranslate(lnode,lname,GetLocalStr(luint));
 		  end;
-		  t_float: begin
+		  rgFloat: begin
 		    lfloat:=ReadFloat(aptr);
 		    AddFloat(lnode,lname,lfloat);
 		  end;
-		  t_double: begin
+		  rgDouble: begin
 		    ldouble:=ReadDouble(aptr);
 		    AddDouble(lnode,lname,ldouble);
 		  end;
-		  t_integer64: begin
+		  rgInteger64: begin
 		    lint64:=ReadInteger64(aptr);
 		    AddInteger64(lnode,lname,lint64);
 		  end;
@@ -182,7 +162,7 @@ begin
     DoParseBlock(lnode,aptr);
 end;
 
-function DoParseDat(buf:pByte):PTL2Node;
+function DoParseDat(buf:pByte):pointer;
 var
   lptr:pByte;
   i,lcnt:integer;
@@ -211,7 +191,8 @@ begin
     case fver of
       verTL1: locdict[i].astr:=ReadDwordString(lptr);
       verTL2: locdict[i].astr:=ReadShortString(lptr);
-      verHob: locdict[i].astr:=ReadShortStringUTF8(lptr);
+      verHob,
+      verRG : locdict[i].astr:=ReadShortStringUTF8(lptr);
     end;
   end;
 
@@ -224,10 +205,26 @@ begin
   for i:=0 to lcnt-1 do
     FreeMem(locdict[i].astr);
   SetLength(locdict,0);
+
+end;
+
+function IsProperDat(buf:pByte):boolean;
+begin
+  result:=buf^ in [1, 2, 6];
 end;
 
 initialization
 
-  tried:=false;
+  aliases:=pointer(-1);
+  dict   :=pointer(-1);
+  cdict  :=pointer(-1);
+  tdict  :=pointer(-1);
+
+finalization
+  
+  if aliases<>pointer(-1) then FreeTags(aliases);
+  if dict   <>pointer(-1) then FreeTags(dict);
+  if cdict  <>pointer(-1) then FreeTags(cdict);
+  if tdict  <>pointer(-1) then FreeTags(tdict);
 
 end.

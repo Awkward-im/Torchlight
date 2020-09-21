@@ -8,24 +8,50 @@ uses
   datunpack,
   layunpack,
   
-  TL2DatNode,
-  TL2Memory;
+  TL2DatNode;
 
+const
+  GoodExtArray : array of string = (
+    '.DAT',
+    '.ANIMATION',
+    '.TEMPLATE',
+    '.HIE',
+    '.WDAT',
+    '.LAYOUT'
+  );
 
 procedure DoProcessFile(const fname:string);
 var
   f:file of byte;
   buf:pByte;
-  slout:PTL2Node;
+  slout:pointer;
   lext:string;
   ltype,l:integer;
 begin
   ltype:=0;
   lext:=UpCase(ExtractFileExt(fname));
-  if (lext='.DAT') or (lext='.ANIMATION') then ltype:=1
-  else if (lext='.LAYOUT') then ltype:=2;
 
-  if ltype>0 then
+  if (lext='.LAYOUT') then ltype:=2
+  else
+  begin
+    for l:=0 to High(GoodExtArray) do
+      if lext=GoodExtArray[l] then
+      begin
+        ltype:=1;
+        break;
+      end;
+    if ltype=0 then
+    begin
+      for l:=0 to High(GoodExtArray) do
+        if Pos(GoodExtArray[l]+'.',lext)>0 then
+        begin
+          ltype:=-1;
+          break;
+        end;
+    end;
+  end;
+  
+  if ltype<>0 then
   begin
     AssignFile(f,fname);
     Reset(f);
@@ -37,13 +63,12 @@ begin
       CloseFile(f);
 
       slout:=nil;
-    
       curfname:=fname;
 
-      if ltype=1 then
-        slout:=DoParseDat(buf)
-      else if ltype=2 then
-        slout:=DoParseLayout(buf);
+      if      ltype=1             then slout:=DoParseDat   (buf)
+      else if ltype=2             then slout:=DoParseLayout(buf)
+      else if IsProperDat   (buf) then slout:=DoParseDat   (buf)
+      else if IsProperLayout(buf) then slout:=DoParseLayout(buf);
 
       FreeMem(buf);
 

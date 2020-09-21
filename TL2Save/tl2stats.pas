@@ -28,10 +28,11 @@ type
     Blues  :Word;       // amount of picked blue
     Greens :Word;       // amount of picked green
     Golden :TL2Integer; // ?? golden?
+    // really, can be two words. gold and ?... purple?
     IsSet  :Word;       // set? looks like amount like Blues (can be same w/o set?!)
     Bonuses:Word;       // Max bonus amount on item
                         // (cannon have 2 , greathammer have 1 by default, not calculates)
-    field7 :Word;       // ?? 
+    Bought :Word;       // Purchased from NPC
   end;
   tStatItemArray = array of tStatItem;
 

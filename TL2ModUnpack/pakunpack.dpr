@@ -42,11 +42,13 @@ begin
   usize:=f.ReadDWord;
   csize:=f.ReadDWord;
 writeln(aname,'; a=',asize,', u=',usize,', c=',csize);
+{
   if usize<>asize then
   begin
     writeln('wrong usize for ',aname);
     exit;
   end;
+}
   if csize>0 then
   begin
     GetMem(buf ,csize);
@@ -82,7 +84,10 @@ writeln(aname,'; a=',asize,', u=',usize,', c=',csize);
   FreeMem(dst);
 end;
 
-procedure ReadDirectory(fin,f:TStream; const mi:TTL2ModInfo);
+var
+  offData:integer;
+
+procedure ReadDirectory(fin,f:TStream);
 var
   sl:TStringList;
   wpath,ws:WideString;
@@ -93,11 +98,6 @@ var
   llen:word;
   ltype:byte;
 begin
-  f.ReadWord (); // version/signature
-  f.ReadDWord(); // checksum?
-  llen:=f.ReadWord();
-  SetLength(ws,llen);
-  f.Read(ws[1],llen*SizeOf(WideChar));
   lcnt0:=f.ReadDWord; // entries? directories?
   lcnt:=f.ReadDWord; // files?
 
@@ -112,7 +112,7 @@ begin
       SetLength(wpath,llen);
       f.Read(wpath[1],llen*SizeOf(WideChar));
     end;
-writeln('"',string(wpath),'"');
+//writeln('"',string(wpath),'"');
     lcnt1:=f.ReadDWord();
     for j:=0 to lcnt1-1 do
     begin
@@ -121,15 +121,16 @@ writeln('"',string(wpath),'"');
       llen :=f.ReadWord;
       SetLength(ws,llen);
       f.Read(ws[1],llen*SizeOf(WideChar));
-writeln('  "',string(ws),'"');
+//writeln('  "',string(ws),'"');
       loffs :=f.ReadDWord;
       lusize:=f.ReadDWord;
-      ft    :=f.ReadQWord;
-      if ltype=pftDirectory then sl.Add(wpath+ws);
+//      ft    :=f.ReadQWord;
+      if ltype=8 then sl.Add(wpath+ws);
     end;
   end;
-
+sl.SaveToFile('dir.txt');
   sl.Sort;
+sl.SaveToFile('dir-sorted.txt');
   for i:=0 to sl.Count-1 do
     CreateDir(sl[i]);
   sl.Free;
@@ -154,10 +155,10 @@ writeln('  "',string(ws),'"');
       f.Read(ws[1],llen*SizeOf(WideChar));
       loffs :=f.ReadDWord;
       lusize:=f.ReadDWord;
-      ft    :=f.ReadQWord;
-      if ltype<>pftDirectory then
+//      ft    :=f.ReadQWord;
+      if ltype<>8 then
       begin
-        Unpack(fin,wpath+ws,mi.offData+loffs,lusize);
+        Unpack(fin,wpath+ws,loffs,lusize);
       end;
     end;
   end;
@@ -166,15 +167,16 @@ end;
 
 var
   f,m:TStream;
-  mi:TTL2ModInfo;
 begin
-  ReadModInfo(pointer(ParamStr(1)),mi);
   f:=TFileStream.Create(ParamStr(1),fmOpenRead);
+  f.Position:=6;
+  offData:=f.ReadDWord();
+
   m:=TMemoryStream.Create;
-  f.Position:=mi.offDir;
+  f.Position:=offData;
   m.CopyFrom(f,f.Size-f.Position);
   m.Position:=0;
-  ReadDirectory(f,m,mi);
+  ReadDirectory(f,m);
   f.Free;
   m.Free;
 end.

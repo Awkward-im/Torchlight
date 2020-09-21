@@ -31,7 +31,7 @@ x bytes  - list elements, 24 bytes each
     4  bytes - ?? golden
     2  bytes - set items (if from set, same as blue items usually)
     2  bytes - Maximum of bonuses amount
-    2  bytes - 
+    2  bytes - Bought (purchased from shop)
 
 -- skills
 4 bytes  - (integer) list count

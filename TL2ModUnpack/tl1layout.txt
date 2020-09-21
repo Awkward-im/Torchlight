@@ -1,0 +1,65 @@
+  lChunkType:=ReadDword(aptr)
+
+  lChunkId:=ReadInteger64(aptr);
+  lparent :=ReadInteger64(aptr);
+
+  //--- Chunk Info
+
+{
+  lname:=GetStr(lChunkHash);
+  AddText(lnode,'DESCRIPTOR',lname,ntString);
+}
+  AddInteger64(lnode,'ID',lChunkId);
+  pcw:=ReadDWordString(aptr);
+  if pcw<>nil then
+  begin
+    AddText(lnode,'NAME',pcw,ntString);
+    FreeMem(pcw);
+  end
+  else
+    AddText(lnode,'NAME',lname,ntString);
+
+  AddInteger64(lnode,'PARENTID',lparent);
+
+  //--- Properties
+
+  lcnt:=ReadDWord(aptr);
+  for i:=0 to lcnt-1 do
+    ReadDword(aptr);
+
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // 2
+  // ALL#0
+  inc(aptr,8);
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr);
+  ReadDWord(aptr); // 2
+  ReadDWord(aptr);
+  ReadDWord(aptr);
+
+  ReadDWord(aptr); // 5 or 6
+  // CLASS:DESTROYER#0
+  ReadDWord(aptr); // 2
+  ReadDWord(aptr);
+  ReadDWord(aptr);
+  ReadDWord(aptr); // 2
+  ReadDWord(aptr);
+  ReadDWord(aptr);
+  ReadDWord(aptr); // 2
+  ReadDWord(aptr);
+  ReadDWord(aptr);
+  ReadDWord(aptr); // 2
+  ReadDWord(aptr);
+  ReadDWord(aptr);
+  ReadDWord(aptr); // 1
+  ReadDWord(aptr); // children offset
+  ReadDWord(aptr); // next "children" (other object) offset
+
+  ReadDWord(aptr); // 0 = tag Group?
