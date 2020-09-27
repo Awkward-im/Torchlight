@@ -91,8 +91,8 @@ var
   lstat:TTL2Stats;
   i2f:record
   case boolean of
-    false: (i:TL2Integer);
-    true : (f:TL2Float);
+    false: (i:TRGInteger);
+    true : (f:TRGFloat);
   end;
   i:integer;
 begin

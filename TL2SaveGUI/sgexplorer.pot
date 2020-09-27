@@ -1236,7 +1236,7 @@ msgstr ""
 
 #: tfmstat.sgitems.columns[7].title.caption
 msgctxt "tfmstat.sgitems.columns[7].title.caption"
-msgid "Field7"
+msgid "Bought"
 msgstr ""
 
 #: tfmstat.sgkillers.columns[0].title.caption
@@ -1254,12 +1254,12 @@ msgstr ""
 
 #: tfmstat.sglevelup.columns[10].title.caption
 msgctxt "tfmstat.sglevelup.columns[10].title.caption"
-msgid "MinLeftPhys"
+msgid "MinRightPhys"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[11].title.caption
 msgctxt "tfmstat.sglevelup.columns[11].title.caption"
-msgid "MaxLeftPhys"
+msgid "MaxRightPhys"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[12].title.caption

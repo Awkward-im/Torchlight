@@ -1167,7 +1167,7 @@ begin
 
   // global
   FSGame.NewGameCycle:=cbNGState.ItemIndex;
-  FSGame.Difficulty  :=TTL2Difficulty(cbDifficulty.ItemIndex);
+  FSGame.Difficulty  :=TL2Difficulty(cbDifficulty.ItemIndex);
   FSGame.Hardcore    :=cbHardcore.Checked;
 
   //--- View

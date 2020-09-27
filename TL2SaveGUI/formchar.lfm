@@ -365,7 +365,10 @@ object fmChar: TfmChar
           NumbersOnly = True
           TabOrder = 2
           OnChange = seFameChange
+          MinValue = 0
+          NullValue = 0
           Spacing = 2
+          Value = 0
         end
         object seLevel: TSpinEditEx
           Left = 4
@@ -379,6 +382,7 @@ object fmChar: TfmChar
           TabOrder = 0
           OnChange = seLevelChange
           MinValue = 1
+          NullValue = 0
           Spacing = 2
           Value = 1
         end
@@ -427,6 +431,8 @@ object fmChar: TfmChar
         OnChange = seFreePointsChange
         MaxValue = 1000
         MinValue = -50
+        NullValue = 0
+        Value = 0
       end
     end
     object tsView: TTabSheet
