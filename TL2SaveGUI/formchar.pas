@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
   Spin, ExtCtrls, Buttons, Grids, SpinEx,
-  tl2types, tl2save, tl2char, tl2db, formSkills, formItems, formEffects;
+  rgglobal, tl2save, tl2char, tl2db, formSkills, formItems, formEffects;
 
 type
   tCharInfoType = (ciPlayer, ciPet, ciUnit);
@@ -166,12 +166,12 @@ type
 
     procedure DrawCharIcon(const aname: string; aImg: TImage);
     procedure DrawIconInt(const aname, adir: string; aImg: TImage);
-    procedure DrawPetIcon(aclass: TL2ID; aImg: TImage);
+    procedure DrawPetIcon(aclass: TRGID; aImg: TImage);
     procedure FillClassCombo();
     procedure FillPetInfo;
     procedure FillPlayerInfo;
     procedure FixPlayerInfo;
-    function GetClassIndex(id: TL2ID): integer;
+    function GetClassIndex(id: TRGID): integer;
 
     function GetMainFlag:boolean;
     procedure SetupVisualPart;
@@ -179,7 +179,7 @@ type
     procedure SetCharSpell(cb: TComboBox; idx: integer);
     procedure GetCharSpell(cb: TComboBox; idx: integer);
     procedure InitSpellBlock;
-    function SearchAltGender(aclass: TL2ID; out aname: string): integer;
+    function SearchAltGender(aclass: TRGID; out aname: string): integer;
     procedure UpdatePetInfo();
     procedure UpdatePlayerInfo();
 
@@ -277,7 +277,7 @@ begin
   cbNewClass.Items.EndUpdate;
 end;
 
-function TfmChar.GetClassIndex(id:TL2ID):integer;
+function TfmChar.GetClassIndex(id:TRGID):integer;
 var
   i:integer;
 begin
@@ -292,7 +292,7 @@ begin
   result:=-1;
 end;
 
-function TfmChar.SearchAltGender(aclass:TL2ID; out aname:string):integer;
+function TfmChar.SearchAltGender(aclass:TRGID; out aname:string):integer;
 var
   ls:string;
   i,idx:integer;
@@ -561,7 +561,7 @@ end;
 
 //--- Pet ---
 
-procedure TfmChar.DrawPetIcon(aclass:TL2ID; aImg:TImage);
+procedure TfmChar.DrawPetIcon(aclass:TRGID; aImg:TImage);
 begin
   DrawIconInt(GetPetIcon(aclass),dirPetIcon,aImg);
 end;
@@ -627,7 +627,7 @@ end;
 
 procedure TfmChar.GetCharSpell(cb:TComboBox; idx:integer);
 var
-  lid:TL2ID;
+  lid:TRGID;
   lspell:TTL2Spell;
 begin
   lspell:=FChar.Spells[idx];
@@ -997,7 +997,7 @@ begin
     cbMorph.Items.InsertObject(0,'',TObject(IntPtr(-1)));
 
     cbMorph.ItemIndex:=0;
-    if (FChar.MorphId<>TL2IdEmpty) and
+    if (FChar.MorphId<>RGIdEmpty) and
        (FChar.MorphId<>FChar.ID) then
     begin
       for i:=1 to cbMorph.Items.Count-1 do
@@ -1223,7 +1223,7 @@ begin
     if idx>=0 then
       FChar.MorphId:=FPets[idx].id
     else
-      FChar.MorphId:=TL2IdEmpty;
+      FChar.MorphId:=RGIdEmpty;
 
     FChar.MorphTime:=StrToIntDef(edMorphTime.Text,0);
   end;

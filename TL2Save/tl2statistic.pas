@@ -8,7 +8,7 @@ unit TL2Statistic;
 interface
 
 uses
-  TL2Types;
+  rgglobal;
 
 resourcestring
   rsTotalTime   = 'Time Played';
@@ -61,11 +61,11 @@ const
   statExploded   = 21; // mobs exploded
 
 type
-  TTL2Statistic = array [0..StatsCount-1] of TL2Integer;
+  TTL2Statistic = array [0..StatsCount-1] of TRGInteger;
 
 
 function GetStatDescr  (idx:integer):string;
-function GetStatText   (idx:integer; aval:TL2Integer):string;
+function GetStatText   (idx:integer; aval:TRGInteger):string;
 function IsStatEditable(idx:integer):boolean;
 function IsStatNumeric (idx:integer):boolean;
 
@@ -105,7 +105,7 @@ begin
   end;
 end;
 
-function GetStatText(idx:integer; aval:TL2Integer):string;
+function GetStatText(idx:integer; aval:TRGInteger):string;
 begin
   case idx of
     statTotalTime,

@@ -82,13 +82,13 @@ begin
   FStream.WriteWord(Length(FHistory)); // same as next history list count
   FStream.WriteWord(Length(FHistory));
   if Length(FHistory)>0 then
-    FStream.Write(FHistory[0],Length(FHistory)*SizeOf(TL2ID));
+    FStream.Write(FHistory[0],Length(FHistory)*SizeOf(TRGID));
 
   //----- Recipes -----
 
   FStream.WriteWord(Length(FRecipes));
   if Length(FRecipes)>0 then
-    FStream.Write(FRecipes[0],Length(FRecipes)*SizeOf(TL2ID));
+    FStream.Write(FRecipes[0],Length(FRecipes)*SizeOf(TRGID));
 
   //===== REST of file =====
 

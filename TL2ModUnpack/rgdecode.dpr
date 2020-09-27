@@ -5,10 +5,11 @@ uses
   sysutils,
 
   rgglobal,
+  rgdatnode,
+
+  deglobal,
   datunpack,
-  layunpack,
-  
-  TL2DatNode;
+  layunpack;
 
 const
   GoodExtArray : array of string = (
@@ -42,6 +43,7 @@ begin
       end;
     if ltype=0 then
     begin
+      lext:=UpCase(fname);
       for l:=0 to High(GoodExtArray) do
         if Pos(GoodExtArray[l]+'.',lext)>0 then
         begin
@@ -64,11 +66,10 @@ begin
 
       slout:=nil;
       curfname:=fname;
-
-      if      ltype=1             then slout:=DoParseDat   (buf)
-      else if ltype=2             then slout:=DoParseLayout(buf)
-      else if IsProperDat   (buf) then slout:=DoParseDat   (buf)
-      else if IsProperLayout(buf) then slout:=DoParseLayout(buf);
+      if      (ltype=1)           and (ftype< 2) then slout:=DoParseDat   (buf)
+      else if (ltype=2)           and (ftype<>1) then slout:=DoParseLayout(buf)
+      else if IsProperDat   (buf) and (ftype< 2) then slout:=DoParseDat   (buf)
+      else if IsProperLayout(buf) and (ftype<>1) then slout:=DoParseLayout(buf);
 
       FreeMem(buf);
 
@@ -112,13 +113,29 @@ begin
 {$IFDEF DEBUG}
   hashlog:=TStringList.Create;
   hashlog.Sorted:=True;
+
+  laydesclog:=TStringList.Create;
+  laydesclog.Sorted:=True;
+  laydatlog:=TStringList.Create;
+  laydatlog.Sorted:=True;
+
+  datloclog:=TStringList.Create;
+  datloclog.Sorted:=True;
+  datlog:=TStringList.Create;
+  datlog.Sorted:=True;
 {$ENDIF}
 
   //--- Process
 
-  if ParamCount=0 then
+  if      ParamStr(1)='-d' then ftype:=1
+  else if ParamStr(1)='-l' then ftype:=2
+  else if ParamStr(1)='-n' then ftype:=3
+  else ftype:=0;
+
+  if (ParamCount=0) or (ftype<>0) then
   begin
     sl:=TStringList.Create;
+    // Make file list at start to skip freshly created decoded files
     CycleDir('.');
     for i:=0 to sl.Count-1 do
       DoProcessFile(sl[i]);
@@ -133,5 +150,19 @@ begin
   hashlog.Sort;
   hashlog.SaveToFile('hashes.txt');
   hashlog.Free;
+
+  laydesclog.Sort;
+  laydesclog.SaveToFile('laydesclog.txt');
+  laydesclog.Free;
+  laydatlog.Sort;
+  laydatlog.SaveToFile('laydatlog.txt');
+  laydatlog.Free;
+
+  datloclog.Sort;
+  datloclog.SaveToFile('datloclog.txt');
+  datloclog.Free;
+  datlog.Sort;
+  datlog.SaveToFile('datlog.txt');
+  datlog.Free;
 {$ENDIF}
 end.

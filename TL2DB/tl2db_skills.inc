@@ -1,21 +1,21 @@
 {$IFDEF Interface}
 
-function GetTL2Skill(const aid:TL2ID; out amods:string; out aname:string):string; overload;
-function GetTL2Skill(const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Skill(const aid:TL2ID                  ):string; overload;
-function GetTL2Skill(const aname:string; out aid:TL2ID):string; overload;
+function GetTL2Skill(const aid:TRGID; out amods:string; out aname:string):string; overload;
+function GetTL2Skill(const aid:TRGID; out amods:string):string; overload;
+function GetTL2Skill(const aid:TRGID                  ):string; overload;
+function GetTL2Skill(const aname:string; out aid:TRGID):string; overload;
 
-function GetSkillInfo(const aid:TL2ID; out atier:string; out aicon:string):string;
+function GetSkillInfo(const aid:TRGID; out atier:string; out aicon:string):string;
 
 //----- Skill list -----
 
 // Get skill names list for class name separated by commas
 // Recursion through base files
-function GetSkillNames(const aclass:TL2ID):string;
+function GetSkillNames(const aclass:TRGID):string;
 
 type
   tSkillArray = array of record
-    id     : TL2ID;
+    id     : TRGID;
     name   : string;
     title  : string;
     tier   : string;
@@ -25,27 +25,27 @@ type
     passive: char;
   end;
 
-function  GetSkillListPoints(const aclass:TL2ID):integer;
-procedure CreateSkillList   (const aclass:TL2ID; out askills:tSkillArray);
+function  GetSkillListPoints(const aclass:TRGID):integer;
+procedure CreateSkillList   (const aclass:TRGID; out askills:tSkillArray);
 procedure CreateSpellList   (out askills:tSkillArray);
 
 {$ELSE}
 
 //----- Base Skill Info -----
 
-function GetTL2Skill(const aid:TL2ID; out amods:string; out aname:string):string;
+function GetTL2Skill(const aid:TRGID; out amods:string; out aname:string):string;
 begin
   result:=GetById(aid,'skills','',amods,aname);
 end;
 
-function GetTL2Skill(const aid:TL2ID; out amods:string):string;
+function GetTL2Skill(const aid:TRGID; out amods:string):string;
 var
   lname:string;
 begin
   result:=GetTL2Skill(aid,amods,lname);
 end;
 
-function GetTL2Skill(const aid:TL2ID):string;
+function GetTL2Skill(const aid:TRGID):string;
 var
   lmods :string;
   lname :string;
@@ -53,12 +53,12 @@ begin
   result:=GetTL2Skill(aid,lmods,lname);
 end;
 
-function GetTL2Skill(const aname:string; out aid:TL2ID):string;
+function GetTL2Skill(const aname:string; out aid:TRGID):string;
 begin
   result:=GetByName(aname,'skills',aid);
 end;
 
-function GetSkillInfo(const aid:TL2ID; out atier:string; out aicon:string):string;
+function GetSkillInfo(const aid:TRGID; out atier:string; out aicon:string):string;
 var
   lSQL:string;
   vm:pointer;
@@ -109,7 +109,7 @@ begin
   end;
 end;
 
-function GetSkillNames(const aclass:TL2ID):string;
+function GetSkillNames(const aclass:TRGID):string;
 var
   lSQL,lbase:string;
   vm:pointer;
@@ -137,7 +137,7 @@ begin
   end;
 end;
 
-function GetSkillListPoints(const aclass:TL2ID):integer;
+function GetSkillListPoints(const aclass:TRGID):integer;
 var
 //  sl:TStringArray;
   ls:string;
@@ -181,7 +181,7 @@ begin
   end;
 end;
 
-procedure CreateSkillList(const aclass:TL2ID; out askills:tSkillArray);
+procedure CreateSkillList(const aclass:TRGID; out askills:tSkillArray);
 var
   lSQL,ls:string;
   ltmp:string[127];

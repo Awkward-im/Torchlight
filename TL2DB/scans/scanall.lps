@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="14" Y="13"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
       </Unit>
       <Unit>
         <Filename Value="formscanall.pas"/>
@@ -19,20 +19,20 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formScanAll"/>
-        <TopLine Value="45"/>
-        <CursorPos X="37" Y="50"/>
-        <UsageCount Value="22"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="113"/>
+        <CursorPos X="22" Y="135"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitscan.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="430"/>
-        <CursorPos X="29" Y="448"/>
-        <UsageCount Value="22"/>
+        <TopLine Value="1350"/>
+        <CursorPos Y="1358"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -42,16 +42,15 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\TL2Lib\TL2ModInfo.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="117"/>
+        <CursorPos Y="81"/>
+        <UsageCount Value="22"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\..\utils\SQL\awkSQLite3.pas"/>
@@ -60,126 +59,88 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="19">
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Column="17"/>
+        <Filename Value="unitscan.pas"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="135" Column="14" TopLine="108"/>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1381" Column="5" TopLine="1352"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="8"/>
-      </Position>
-      <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="61" Column="39" TopLine="43"/>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="170" Column="26" TopLine="157"/>
       </Position>
       <Position>
         <Filename Value="formscanall.pas"/>
-        <Caret Line="63" Column="39" TopLine="45"/>
+        <Caret Line="62" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1356" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1357" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1358" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1373" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1356" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1254" TopLine="1245"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1255" TopLine="1245"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1285" TopLine="1271"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1254" TopLine="1248"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1356" TopLine="1341"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1254" TopLine="1239"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1255" TopLine="1239"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1364" TopLine="1343"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="1358" TopLine="1350"/>
       </Position>
       <Position>
         <Filename Value="formscanall.pas"/>
-        <Caret Line="58" Column="30" TopLine="46"/>
+        <Caret Line="65" TopLine="45"/>
       </Position>
       <Position>
         <Filename Value="formscanall.pas"/>
-        <Caret Line="67" Column="36" TopLine="47"/>
-      </Position>
-      <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="69" Column="72" TopLine="48"/>
-      </Position>
-      <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="43" Column="20" TopLine="43"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="30"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="1233" Column="12" TopLine="1219"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="1129" TopLine="1122"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="1177" Column="5" TopLine="1148"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="1164" Column="14" TopLine="1143"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="1215" Column="3" TopLine="1215"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="34" Column="11" TopLine="10"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="522" Column="28" TopLine="497"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="559" Column="28" TopLine="535"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="34" Column="3" TopLine="19"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="1220" Column="17" TopLine="1220"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="37" Column="15" TopLine="16"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="1231" Column="12" TopLine="1202"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="27" Column="4" TopLine="12"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="1154" Column="29" TopLine="1140"/>
-      </Position>
-      <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="58" Column="28" TopLine="41"/>
-      </Position>
-      <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="50" Column="37" TopLine="45"/>
-      </Position>
-      <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="890" Column="18" TopLine="876"/>
+        <Caret Line="66" TopLine="45"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -187,4 +148,11 @@
       <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="fname"/>
+      </Item>
+    </Watches>
+  </Debugging>
 </CONFIG>

@@ -1,20 +1,20 @@
 {$IFDEF Interface}
 
-function GetTL2Recipes(const id:TL2ID; out amod:string):string; overload;
-function GetTL2Recipes(const id:TL2ID                 ):string; overload;
+function GetTL2Recipes(const id:TRGID; out amod:string):string; overload;
+function GetTL2Recipes(const id:TRGID                 ):string; overload;
 
 function GetRecipesList(aactual,atitled:boolean):TL2IdList;
 
 {$ELSE}
 
-function GetTL2Recipes(const id:TL2ID; out amod:string):string; overload;
+function GetTL2Recipes(const id:TRGID; out amod:string):string; overload;
 var
   lname:string;
 begin
   result:=GetById(id,'recipes','',amod,lname);
 end;
 
-function GetTL2Recipes(const id:TL2ID):string; overload;
+function GetTL2Recipes(const id:TRGID):string; overload;
 var
   lmodid:string;
 begin

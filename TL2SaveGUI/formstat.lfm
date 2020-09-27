@@ -230,7 +230,7 @@ object fmStat: TfmStat
           end        
           item
             SizePriority = 0
-            Title.Caption = 'Field7'
+            Title.Caption = 'Bought'
             Width = 48
           end>
         DefaultColWidth = 48

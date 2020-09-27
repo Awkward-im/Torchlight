@@ -3,9 +3,10 @@ unit TL2Map;
 interface
 
 uses
-  tl2types,
+  Classes,
+  rgglobal,
   tl2base,
-  tl2stream,
+  rgstream,
   tl2char,
   tl2common,
   tl2item;
@@ -20,9 +21,9 @@ type
 
 type
   TTL2LayData = packed record
-    id   : TL2ID;       // example: Unit Trigger in MEDIA\LAYOUTS\ACT1\1X1_CLIFF_S0E1W1_LANDMARK_BANDITCAMP\1X1_CLIFF_S0E1W1_PB_LANDMARK_BANDITCAMP.LAYOUT
-    value: TL2Integer;
-    unkn : TL2ID; //??
+    id   : TRGID;       // example: Unit Trigger in MEDIA\LAYOUTS\ACT1\1X1_CLIFF_S0E1W1_LANDMARK_BANDITCAMP\1X1_CLIFF_S0E1W1_PB_LANDMARK_BANDITCAMP.LAYOUT
+    value: TRGInteger;
+    unkn : TRGID; //??
   end;
   TTL2LayDataList = array of TTL2LayData;
 
@@ -37,12 +38,12 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream); override;
-    procedure SaveToStream  (AStream: TTL2Stream); override;
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream  (AStream: TStream); override;
 
   private
     FName :string;
-    FIsTown:TL2Boolean;
+    FIsTown:Boolean;
     FMobInfos:TTL2CharArray;
 
     FTime,               // total time on location?
@@ -55,7 +56,7 @@ type
     Unkn1:Byte;
     Unkn2:DWord;
     Unkn3:DWord;
-    UnknF:TL2Float;
+    UnknF:TRGFloat;
 
     FUnknList  : TL2IdList;
     FLayoutList: TL2StringList;
@@ -64,10 +65,10 @@ type
     FQuestItems: TTL2ItemList;
     FLayData   : TTL2LayDataList;
 
-    procedure ReadPropList   (AStream: TTL2Stream);
-    procedure WritePropList  (AStream: TTL2Stream);
-    procedure ReadQuestItems (AStream: TTL2Stream);
-    procedure WriteQuestItems(AStream: TTL2Stream);
+    procedure ReadPropList   (AStream: TStream);
+    procedure WritePropList  (AStream: TStream);
+    procedure ReadQuestItems (AStream: TStream);
+    procedure WriteQuestItems(AStream: TStream);
 
   public
     property Time       : Single read FTime;
@@ -88,8 +89,8 @@ type
     property LayData   : TTL2LayDataList read FLayData;
   end;
 
-function  ReadMapList (AStream:TTL2Stream):TTL2MapList;
-procedure WriteMapList(AStream:TTL2Stream; amaplist:TTL2MapList);
+function  ReadMapList (AStream:TStream):TTL2MapList;
+procedure WriteMapList(AStream:TStream; amaplist:TTL2MapList);
 
 
 implementation
@@ -141,7 +142,7 @@ begin
   inherited;
 end;
 
-procedure TTL2Map.ReadPropList(AStream: TTL2Stream);
+procedure TTL2Map.ReadPropList(AStream: TStream);
 var
   lcnt1,lpos,lcnt,i:integer;
 begin
@@ -168,7 +169,7 @@ begin
   end;
 end;
 
-procedure TTL2Map.WritePropList(AStream: TTL2Stream);
+procedure TTL2Map.WritePropList(AStream: TStream);
 var
   i:integer;
 begin
@@ -180,7 +181,7 @@ begin
   end;
 end;
 
-procedure TTL2Map.ReadQuestItems(AStream: TTL2Stream);
+procedure TTL2Map.ReadQuestItems(AStream: TStream);
 var
   i,lcnt,lcnt1,lpos:integer;
 begin
@@ -207,7 +208,7 @@ begin
   end;
 end;
 
-procedure TTL2Map.WriteQuestItems(AStream: TTL2Stream);
+procedure TTL2Map.WriteQuestItems(AStream: TStream);
 var
   i:integer;
 begin
@@ -219,7 +220,7 @@ begin
   end;
 end;
 
-procedure TTL2Map.LoadFromStream(AStream: TTL2Stream);
+procedure TTL2Map.LoadFromStream(AStream: TStream);
 var
   i,lcnt:integer;
 begin
@@ -254,7 +255,7 @@ DbgLn('map name: '+FName);
 
   FFoW_X:=AStream.ReadDWord;
   FFoW_Y:=AStream.ReadDWord;
-  FFoW  :=AStream.ReadBytes(FFoW_X*FFoW_Y*SizeOf(TL2Float));
+  FFoW  :=AStream.ReadBytes(FFoW_X*FFoW_Y*SizeOf(TRGFloat));
 
   //??
   Unkn2:=Check(AStream.ReadDWord,'pre-layouts_'+HexStr(AStream.Position,8),0); // 0
@@ -304,7 +305,7 @@ DbgLn('end map'#13#10'---------');
   LoadBlock(AStream);
 end;
 
-procedure TTL2Map.SaveToStream(AStream: TTL2Stream);
+procedure TTL2Map.SaveToStream(AStream: TStream);
 var
   i:integer;
 begin
@@ -335,7 +336,7 @@ begin
 
   AStream.WriteDWord(FFoW_X);
   AStream.WriteDWord(FFoW_Y);
-  AStream.Write(FFoW^,FFoW_X*FFoW_Y*SizeOf(TL2Float));
+  AStream.Write(FFoW^,FFoW_X*FFoW_Y*SizeOf(TRGFloat));
 
   //??
   AStream.WriteDWord(Unkn2);
@@ -379,7 +380,7 @@ begin
   LoadBlock(AStream);
 end;
 
-function ReadMapList(AStream:TTL2Stream):TTL2MapList;
+function ReadMapList(AStream:TStream):TTL2MapList;
 var
   i,lcnt:integer;
 begin
@@ -396,7 +397,7 @@ begin
   end;
 end;
 
-procedure WriteMapList(AStream:TTL2Stream; amaplist:TTL2MapList);
+procedure WriteMapList(AStream:TStream; amaplist:TTL2MapList);
 var
   i:integer;
 begin

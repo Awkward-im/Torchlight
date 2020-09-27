@@ -36,7 +36,7 @@ implementation
 
 uses
   formButtons,
-  tl2types,
+  rgglobal,
   tl2db;
 
 const
@@ -98,7 +98,7 @@ begin
     begin
       litem:=FItems[UIntPtr(lvItemList.Items[i].Data)];
       limg:=-1;
-      if litem.ID=TL2IdEmpty     then limg:=imgGold
+      if litem.ID=RGIdEmpty      then limg:=imgGold
       else if litem.Flags[0]     then limg:=imgEquipped
       else if litem.IsUsable     then limg:=imgUsable
       else if not litem.Flags[6] then limg:=imgUnknown

@@ -5,9 +5,9 @@ interface
 
 uses
   Classes,
-  TL2Types,
+  rgglobal,
   TL2Base,
-  TL2Stream;
+  rgstream;
 
 type
   TTL2EffectDamageType = (Physical, Magical, Fire, Ice, Electric, Poison, All);
@@ -54,8 +54,8 @@ type
 
 type
   TTL2Stat = packed record
-    id        :TL2ID;
-    percentage:TL2Float;
+    id        :TRGID;
+    percentage:TRGFloat;
   end;
 
 type
@@ -72,8 +72,8 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream); override;
-    procedure SaveToStream  (AStream: TTL2Stream); override;
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream  (AStream: TStream); override;
 
   private
     FFlags       :TTL2EffectFlags;
@@ -81,22 +81,22 @@ type
     FLinkName    :string;
     FGraph       :string;
     FParticles   :string;
-    FUnitThemeId :TL2ID;
-    FClassId     :TL2ID;
+    FUnitThemeId :TRGID;
+    FClassId     :TRGID;
     FFromChar    :boolean;
-    FProperties  :array of TL2Float;
+    FProperties  :array of TRGFloat;
     FStats       :array of TTL2Stat;
     FEffectType  :integer;
     FDamageType  :TTL2EffectDamageType;
     FActivation  :TTL2EffectActivation;
     FLevel       :integer;
-    FDuration    :TL2Float;
-    FUnknown1    :TL2Float;
-    FDisplayValue:TL2Float;
+    FDuration    :TRGFloat;
+    FUnknown1    :TRGFloat;
+    FDisplayValue:TRGFloat;
     FSource      :TTL2EffectSource;
     FIcon        :string;
 
-    function GetProperties(idx:integer):TL2Float; overload;
+    function GetProperties(idx:integer):TRGFloat; overload;
     function GetProperties:integer;               overload;
     function GetStats:integer;                    overload;
     function GetStats     (idx:integer):TTL2Stat; overload;
@@ -107,24 +107,24 @@ type
     property LinkName    :string                    read FLinkName     write FLinkName;
     property Graph       :string                    read FGraph        write FGraph;
     property Particles   :string                    read FParticles    write FParticles;
-    property UnitThemeId :TL2ID                     read FUnitThemeId  write FUnitThemeId;
-    property ClassId     :TL2ID                     read FClassId      write FClassId;
-    property Properties  [idx:integer]:TL2Float     read GetProperties; //!!
+    property UnitThemeId :TRGID                     read FUnitThemeId  write FUnitThemeId;
+    property ClassId     :TRGID                     read FClassId      write FClassId;
+    property Properties  [idx:integer]:TRGFloat     read GetProperties; //!!
     property Stats       [idx:integer]:TTL2Stat     read GetStats     ; //!!
     property EffectType  :integer                   read FEffectType   write FEffectType;
     property DamageType  :TTL2EffectDamageType      read FDamageType   write FDamageType;
     property Activation  :TTL2EffectActivation      read FActivation   write FActivation;
     property Level       :integer                   read FLevel        write FLevel;
-    property Duration    :TL2Float                  read FDuration     write FDuration;
-    property DisplayValue:TL2Float                  read FDisplayValue write FDisplayValue;
+    property Duration    :TRGFloat                  read FDuration     write FDuration;
+    property DisplayValue:TRGFloat                  read FDisplayValue write FDisplayValue;
     property Source      :TTL2EffectSource          read FSource       write FSource;
-    property Unknown     :TL2Float                  read FUnknown1     write FUnknown1;
+    property Unknown     :TRGFloat                  read FUnknown1     write FUnknown1;
     property Icon        :string                    read FIcon         write FIcon;
   end;
 
 
-function  ReadEffectList (AStream:TTL2Stream; atrans:boolean=false):TTL2EffectList;
-procedure WriteEffectList(AStream:TTL2Stream; alist:TTL2EffectList);
+function  ReadEffectList (AStream:TStream; atrans:boolean=false):TTL2EffectList;
+procedure WriteEffectList(AStream:TStream; alist:TTL2EffectList);
 
 function GetEffectType      (idx:integer):string;
 function GetEffectDamageType(aval:TTL2EffectDamageType):string;
@@ -474,13 +474,13 @@ begin
     result:=FStats[idx]
   else
   begin
-    result.id:=TL2IdEmpty;
+    result.id:=RGIdEmpty;
     result.percentage:=0;
   end;
 end;
 
 
-procedure TTL2Effect.LoadFromStream(AStream: TTL2Stream);
+procedure TTL2Effect.LoadFromStream(AStream: TStream);
 var
   lcnt:integer;
 begin
@@ -499,17 +499,17 @@ begin
     FParticles:=AStream.ReadShortString();
 
   if modHasUnitTheme in FFlags then
-    FUnitThemeId:=TL2ID(AStream.ReadQWord);
+    FUnitThemeId:=TRGID(AStream.ReadQWord);
 
   if FFromChar then
-    FClassId:=TL2ID(AStream.ReadQWord);
+    FClassId:=TRGID(AStream.ReadQWord);
 
   // 5 properties max
 
   lcnt:=AStream.ReadByte();
   SetLength(FProperties,lcnt);
   if lcnt>0 then
-    AStream.Read(FProperties[0],lcnt*SizeOf(TL2Float));
+    AStream.Read(FProperties[0],lcnt*SizeOf(TRGFloat));
 
   lcnt:=AStream.ReadWord;
   SetLength(FStats,lcnt);
@@ -531,7 +531,7 @@ begin
   LoadBlock(AStream);
 end;
 
-procedure TTL2Effect.SaveToStream(AStream: TTL2Stream);
+procedure TTL2Effect.SaveToStream(AStream: TStream);
 begin
   if not Changed then
   begin
@@ -561,7 +561,7 @@ begin
 
   AStream.WriteByte(Length(FProperties));
   if Length(FProperties)>0 then
-    AStream.Write(FProperties[0],Length(FProperties)*SizeOf(TL2Float));
+    AStream.Write(FProperties[0],Length(FProperties)*SizeOf(TRGFloat));
 
   AStream.WriteWord(Length(FStats));
   if Length(FStats)>0 then
@@ -586,7 +586,7 @@ begin
   LoadBlock(AStream);
 end;
 
-function ReadEffectList(AStream:TTL2Stream; atrans:boolean=false):TTL2EffectList;
+function ReadEffectList(AStream:TStream; atrans:boolean=false):TTL2EffectList;
 var
   i,lcnt:integer;
 begin
@@ -603,7 +603,7 @@ begin
   end;
 end;
 
-procedure WriteEffectList(AStream:TTL2Stream; alist:TTL2EffectList);
+procedure WriteEffectList(AStream:TStream; alist:TTL2EffectList);
 var
   i:integer;
 begin

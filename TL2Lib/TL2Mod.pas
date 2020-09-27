@@ -2,65 +2,153 @@ unit TL2Mod;
 
 interface
 
-uses
-  TL2ModInfo;
-
-// PAK and MOD content file types
-const
-  pftDat       = $00;
-  pftLayout    = $01;
-  pftMesh      = $02;
-  pftSkeleton  = $03;
-  pftDds       = $04;
-  pftPng       = $05;
-  pftOgg       = $06;
-  pftDirectory = $07;
-  pftMaterial  = $08;
-  pftRaw       = $09;
-  //
-  pftImageSet  = $0B;
-  pftTtf       = $0C;
-  pftFont      = $0D;
-  //
-  //
-  pftAnimation = $10;
-  pftHie       = $11;
-  pftOther     = $12;
-  pftScheme    = $13;
-  pftLookNFeel = $14;
-  pftMpd       = $15;
+type
+  // fields are rearranged
+  TTL2ModInfo = record
+    modid   :Int64;
+    gamever :QWord;
+    offData :DWord;
+    offMan  :DWord;
+    title   :PWideChar;
+    author  :PWideChar;
+    descr   :PWideChar;
+    website :PWideChar;
+    download:PWideChar;
+    filename:PWideChar;
+    flags   :DWord;
+    reqHash :Int64;
+    reqs    :array of record
+      name:PWideChar;
+      id  :Int64;
+      ver :Word;
+    end;
+    dels    :array of PWideChar;
+    modver  :Word;
+  end;
 
 type
-  TPAKHeader = record
+  TTL2ModTech = packed record
+    version:Word; // 4
+    modver :Word;
+    gamever:array [0..3] of Word;
+    offData:DWord;
+    offMan :DWord;
   end;
-type
-  TMANHeader = record
-    sign    :word;
-    checksum:dword;
-    root    :PWideChar; //??
-    cnt     :dword;     // total entries?
-    entrycnt:dword;     // with files?
-  end;
-type
-  TModDirEntry = record  // real field order
-    filetime:UInt64;     // 6
-    filename:PWideChar;  // 3
-    checksum:dword;      // 1
-    offset  :dword;      // 4
-    u_size  :dword;      // 5
-    filetype:byte;       // 2
-  end;
+
+function  ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean; export;
+procedure ClearModInfo(var amod:TTL2ModInfo); export;
+
+function LoadModConfiguration(strFilePath:PChar; var amod:TTL2ModInfo):boolean;
+function SaveModConfiguration(const amod:TTL2ModInfo; strFilePath:PChar):boolean;
+
 
 implementation
 
 uses
-  TL2DatNode;
+  rgglobal,
+  rgmemory,
+  rgnode;
+
+//----- MOD Header -----
+
+function ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean;
+var
+  buf:array [0..16383] of byte;
+  f:file of byte;
+  p:pbyte;
+  i,lcnt:integer;
+begin
+  result:=false;
+
+  AssignFile(f,fname);
+  try
+    Reset(f);
+    i:=FileSize(f);
+    if i>SizeOf(buf) then i:=SizeOf(buf);
+    BlockRead(f,buf[0],i);
+  except
+    i:=0;
+  end;
+  CloseFile(f);
+
+  if i<(2+2+8+4+4+2*5+8) then exit; // minimal size of used header data
+
+  p:=@buf[0];
+
+  // wrong signature
+  if pword(p)^<>4 then
+  begin
+    amod.modid:=-1;
+    amod.title:=nil;
+    exit;
+  end;
+  inc(p,2);
+
+  result:=true;
+
+//  amod.filename:=UTF8Decode(fname);
+
+  amod.modver  :=memReadWord(p);
+  amod.gamever :=             (QWord(memReadWord(p)) shl 48);
+  amod.gamever :=amod.gamever+(QWord(memReadWord(p)) shl 32);
+  amod.gamever :=amod.gamever+(DWord(memReadWord(p)) shl 16);
+  amod.gamever :=amod.gamever+memReadWord(p);
+  amod.offData :=memReadDWord(p);
+  amod.offMan  :=memReadDWord(p);
+  amod.title   :=memReadShortString(p);
+  amod.author  :=memReadShortString(p);
+  amod.descr   :=memReadShortString(p);
+  amod.website :=memReadShortString(p);
+  amod.download:=memReadShortString(p);
+  amod.modid   :=memReadInteger64(p);
+  //-
+  amod.flags   :=memReadDWord(p);
+  amod.reqHash :=memReadInteger64(p);
+  lcnt:=memReadWord(p);
+  SetLength(amod.reqs,lcnt);
+  for i:=0 to lcnt-1 do
+  begin
+    amod.reqs[i].name:=memReadShortString(p);
+    amod.reqs[i].id  :=memReadInteger64(p);
+    amod.reqs[i].ver :=memReadWord(p);
+  end;
+  lcnt:=memReadWord(p);
+  SetLength(amod.dels,lcnt);
+  for i:=0 to lcnt-1 do
+    amod.dels[i]:=memReadShortString(p);
+end;
+
+procedure ClearModInfo(var amod:TTL2ModInfo);
+var
+  i:integer;
+begin
+  if amod.title   <>nil then FreeMem(amod.title);
+  if amod.author  <>nil then FreeMem(amod.author);
+  if amod.descr   <>nil then FreeMem(amod.descr);
+  if amod.website <>nil then FreeMem(amod.website);
+  if amod.download<>nil then FreeMem(amod.download);
+  if Length(amod.reqs)>0 then
+  begin
+    for i:=0 to High(amod.reqs) do
+      FreeMem(amod.reqs[i].name);
+    SetLength(amod.reqs,0);
+  end;
+  if Length(amod.dels)>0 then
+  begin
+    for i:=0 to High(amod.dels) do
+      FreeMem(amod.dels[i]);
+    SetLength(amod.dels,0);
+  end;
+end;
+
+//----- MOD.DAT -----
 
 function LoadModConfiguration(strFilePath:PChar; var amod:TTL2ModInfo):boolean;
 var
   lnode,lroot,lgroup:pointer;
+  pcw:PWideChar;
   ls:string;
-  i:integer;
+  i,j,lcnt:integer;
 begin
   result:=false;
 
@@ -71,43 +159,59 @@ begin
 
   lroot:=ParseDatFile(PChar(ls));
   if lroot=nil then exit;
-{
-  if not WideCompare(lroot^.Name,'MOD') then exit;
-  for i:=0 to lroot^.childcount-1 do
+
+  if not CompareWide(GetNodeName(lroot),'MOD') then exit;
+
+  for i:=0 to GetChildCount(lroot)-1 do
   begin
-    lnode:=lroot^.children[i];
-    if WideCompare(lnode^.Name,'NAME') then
+    lnode:=GetChild(lroot,i);
+    pcw:=GetNodeName(lnode);
+    if      CompareWide(pcw,'NAME'         ) then CopyWide(amod.title   ,AsString(lnode))
+    else if CompareWide(pcw,'AUTHOR'       ) then CopyWide(amod.author  ,AsString(lnode))
+    else if CompareWide(pcw,'DESCRIPTION'  ) then CopyWide(amod.descr   ,AsString(lnode))
+    else if CompareWide(pcw,'WEBSITE'      ) then CopyWide(amod.website ,AsString(lnode))
+    else if CompareWide(pcw,'DOWNLOAD_URL' ) then CopyWide(amod.download,AsString(lnode))
+    else if CompareWide(pcw,'MOD_FILE_NAME') then CopyWide(amod.filename,AsString(lnode))
+    else if CompareWide(pcw,'VERSION'      ) then amod.modver:=AsInteger  (lnode)
+    else if CompareWide(pcw,'MOD_ID'       ) then amod.modid :=AsInteger64(lnode)
+    else if CompareWide(pcw,'REMOVE_FILES' ) then
     begin
+      if GetNodeType(lnode)=rgGroup then
+      begin
+        SetLength(amod.dels,GetChildCount(lnode));
+        lcnt:=0;
+        for j:=0 to High(amod.dels) do
+        begin
+          lgroup:=GetChild(lnode,j);
+          if CompareWide(GetNodeName(lgroup),'FILE') then
+          begin
+            CopyWide(amod.dels[lcnt],AsString(lgroup));
+            inc(lcnt);
+          end;
+        end;
+        SetLength(amod.dels,lcnt);
+      end;
     end
-    else if WideCompare(lnode^.Name,'MOD_ID') then
+    else if CompareWide(pcw,'REQUIRED_MODS') then
     begin
-    end
-    else if WideCompare(lnode^.Name,'AUTHOR') then
-    begin
-    end
-    else if WideCompare(lnode^.Name,'DESCRIPTION') then
-    begin
-    end
-    else if WideCompare(lnode^.Name,'WEBSITE') then
-    begin
-    end
-    else if WideCompare(lnode^.Name,'DOWNLOAD_URL') then
-    begin
-    end
-    else if WideCompare(lnode^.Name,'VERSION') then
-    begin
-    end
-    else if WideCompare(lnode^.Name,'MOD_FILE_NAME') then
-    begin
-    end
-    else if WideCompare(lnode^.Name,'REMOVE_FILES') then
-    begin
-    end
-    else if WideCompare(lnode^.Name,'REQUIRED_MODS') then
-    begin
+      if GetNodeType(lnode)=rgGroup then
+      begin
+        SetLength(amod.dels,GetChildCount(lnode));
+        lcnt:=0;
+        for j:=0 to High(amod.dels) do
+        begin
+          lgroup:=GetChild(lnode,j);
+          if CompareWide(GetNodeName(lgroup),'ID') then
+          begin
+            amod.reqs[lcnt].id:=AsInteger(lgroup);
+            inc(lcnt);
+          end;
+        end;
+        SetLength(amod.dels,lcnt);
+      end;
     end;
   end;
-}
+
   DeleteNode(lroot);
 end;
 
@@ -150,5 +254,6 @@ begin
 
   DeleteNode(lroot);
 end;
+
 
 end.

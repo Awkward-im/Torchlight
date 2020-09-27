@@ -1,33 +1,33 @@
-unit TL2Stream;
+unit RGStream;
 
 interface
 
 uses
   classes
-  ,tl2types;
+  ,rgglobal;
 
 
 type
-  TTL2Stream = class(TMemoryStream)
+  TTL2Stream = class helper for TStream
   public
     // read
     function  ReadBytes(asize:cardinal):pointer;
     function  ReadByteString ():string;
     function  ReadShortString():string;
-    function  ReadFloat:TL2Float;
-    function  ReadCoord:TL2Coord;
+    function  ReadFloat:single;
+    function  ReadCoord:TVector3;
     function  ReadShortStringList:TL2StringList;
-    function  ReadIdList:TL2IdList;
-    function  ReadIdValList:TL2IdValList;
+    function  ReadIdList:TL2IDList;
+    function  ReadIdValList:TL2IDValList;
 
     // write
     procedure WriteByteString (const astr:string);
     procedure WriteShortString(const astr:string);
-    procedure WriteFloat(aval:TL2Float);
-    procedure WriteCoord(aval:TL2Coord);
+    procedure WriteFloat(aval:single);
+    procedure WriteCoord(aval:TVector3);
     procedure WriteShortStringList(alist:TL2StringList);
-    procedure WriteIdList(alist:TL2IdList);
-    procedure WriteIdValList(alist:TL2IdValList);
+    procedure WriteIdList(alist:TL2IDList);
+    procedure WriteIdValList(alist:TL2IDValList);
     procedure WriteFiller(alen:cardinal);
   end;
 
@@ -82,12 +82,12 @@ begin
     result:='';
 end;
 
-function TTL2Stream.ReadFloat:TL2Float;
+function TTL2Stream.ReadFloat:single;
 begin
   Read(result,sizeOf(result));
 end;
 
-function TTL2Stream.ReadCoord:TL2Coord;
+function TTL2Stream.ReadCoord:TVector3;
 begin
   Read(result,sizeOf(result));
 end;
@@ -107,7 +107,7 @@ begin
   end;
 end;
 
-function TTL2Stream.ReadIdList:TL2IdList;
+function TTL2Stream.ReadIdList:TL2IDList;
 var
   lcnt:cardinal;
 begin
@@ -116,11 +116,11 @@ begin
   if lcnt>0 then
   begin
     SetLength(result,lcnt);
-    Read(result[0],lcnt*SizeOf(TL2ID));
+    Read(result[0],lcnt*SizeOf(TRGID));
   end;
 end;
 
-function TTL2Stream.ReadIdValList:TL2IdValList;
+function TTL2Stream.ReadIdValList:TL2IDValList;
 var
   lcnt:cardinal;
 begin
@@ -129,7 +129,7 @@ begin
   if lcnt>0 then
   begin
     SetLength(result,lcnt);
-    Read(result[0],lcnt*SizeOf(TL2IdVal));
+    Read(result[0],lcnt*SizeOf(TL2IDVal));
   end;
 end;
 
@@ -163,12 +163,12 @@ begin
     WriteWord(0);
 end;
 
-procedure TTL2Stream.WriteFloat(aval:TL2Float);
+procedure TTL2Stream.WriteFloat(aval:single);
 begin
   Write(aval,SizeOf(aval));
 end;
 
-procedure TTL2Stream.WriteCoord(aval:TL2Coord);
+procedure TTL2Stream.WriteCoord(aval:TVector3);
 begin
   Write(aval,SizeOf(aval));
 end;
@@ -184,24 +184,24 @@ begin
     WriteShortString(alist[i]);
 end;
 
-procedure TTL2Stream.WriteIdList(alist:TL2IdList);
+procedure TTL2Stream.WriteIdList(alist:TL2IDList);
 var
   lcnt:cardinal;
 begin
   lcnt:=Length(alist);
   WriteDWord(lcnt);
   if lcnt>0 then
-    Write(alist[0],lcnt*SizeOf(TL2ID));
+    Write(alist[0],lcnt*SizeOf(TRGID));
 end;
 
-procedure TTL2Stream.WriteIdValList(alist:TL2IdValList);
+procedure TTL2Stream.WriteIdValList(alist:TL2IDValList);
 var
   lcnt:cardinal;
 begin
   lcnt:=Length(alist);
   WriteDWord(lcnt);
   if lcnt>0 then
-    Write(alist[0],lcnt*SizeOf(TL2IdVal));
+    Write(alist[0],lcnt*SizeOf(TL2IDVal));
 end;
 
 procedure TTL2Stream.WriteFiller(alen:cardinal);

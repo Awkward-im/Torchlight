@@ -3,12 +3,12 @@ unit TL2Item;
 interface
 
 uses
-  classes,
-  tl2stream,
+  Classes,
+  rgstream,
   tl2common,
   tl2base,
   tl2active,
-  tl2types,
+  rgglobal,
   tl2Effects;
 
 type
@@ -25,15 +25,15 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream); override;
-    procedure SaveToStream  (AStream: TTL2Stream); override;
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream  (AStream: TStream); override;
 
     function CheckForMods(alist:TTL2ModList):boolean;
 
   private
     FPrefix:string;
 
-    FIsProp:boolean;
+//    FIsProp:boolean;
 
     FEnchantmentCount:integer;
     FStashPosition   :integer;
@@ -48,9 +48,9 @@ type
 
     FFlags:array [0..6] of byte;
 
-    FPosition1:TL2Coord;
+    FPosition1:TVector3;
 
-    FUnkn1:array [0..2] of TL2ID;
+    FUnkn1:array [0..2] of TRGID;
     FUnkn2:array [0..28] of byte;
     FUnkn4:DWord;
     FUnkn5:array [0..2] of DWord;
@@ -62,14 +62,14 @@ type
     function GetDBMods():string; override;
     function GetFlags(idx:integer):boolean;
     function GetUsability:boolean;
-//    function GetDBModList(aid:TL2ID):string; override;
+//    function GetDBModList(aid:TRGID):string; override;
   public
     property Prefix:string read FPrefix;
 
     property IsProp:boolean read GetPropFlag;
 
     property Flags[idx:integer]:boolean read GetFlags;
-    property Position1:TL2Coord read FPosition1;
+    property Position1:TVector3 read FPosition1;
     property IsUsable:boolean read GetUsability;
 
     property Stack       :integer read FStackSize write FStackSize;
@@ -84,8 +84,8 @@ type
   end;
 
 
-function  ReadItemList (AStream:TTL2Stream):TTL2ItemList;
-procedure WriteItemList(AStream:TTL2Stream; alist:TTL2ItemList);
+function  ReadItemList (AStream:TStream):TTL2ItemList;
+procedure WriteItemList(AStream:TStream; alist:TTL2ItemList);
 
 
 implementation
@@ -157,7 +157,7 @@ begin
   inherited;
 end;
 
-procedure TTL2Item.LoadFromStream(AStream: TTL2Stream);
+procedure TTL2Item.LoadFromStream(AStream: TStream);
 var
 ldebug:string;
   i,lcnt:integer;
@@ -166,7 +166,7 @@ begin
 ldebug:='';
   FSign:=AStream.ReadByte; // "2" (0 for gold)
 if (FSign<>0) and (FSign<>2) then ldebug:=ldebug+'sign '+HexStr(AStream.Position,8)+#13#10;
-  FID    :=TL2ID(AStream.ReadQWord);  // Item ID
+  FID    :=TRGID(AStream.ReadQWord);  // Item ID
   FName  :=AStream.ReadShortString(); // name
   FPrefix:=AStream.ReadShortString(); // prefix
   FSuffix:=AStream.ReadShortString(); // suffix
@@ -264,7 +264,7 @@ ldebug+
   LoadBlock(AStream);
 end;
 
-procedure TTL2Item.SaveToStream(AStream: TTL2Stream);
+procedure TTL2Item.SaveToStream(AStream: TStream);
 var
   i:integer;
 begin
@@ -344,7 +344,7 @@ begin
   LoadBlock(AStream);
 end;
 
-function ReadItemList(AStream:TTL2Stream):TTL2ItemList;
+function ReadItemList(AStream:TStream):TTL2ItemList;
 var
   i,lcnt:integer;
   lpos:cardinal;
@@ -370,7 +370,7 @@ begin
   end;
 end;
 
-procedure WriteItemList(AStream:TTL2Stream; alist:TTL2ItemList);
+procedure WriteItemList(AStream:TStream; alist:TTL2ItemList);
 var
   i:integer;
 begin
@@ -382,7 +382,7 @@ end;
 function TTL2Item.CheckForMods(alist:TTL2ModList):boolean;
 var
   llist:TL2IdList;
-  lid,lmodid:TL2ID;
+  lid,lmodid:TRGID;
 begin
   result:=inherited CheckForMods(alist);
 
@@ -394,7 +394,7 @@ begin
       // Action: replace one item by another
       // Remark: change JUST id, not name etc
       lmodid:=GetAlt(id,alist,lid);
-      if lmodid<>TL2IdEmpty then
+      if lmodid<>RGIdEmpty then
       begin
         if lid<>id then
         begin

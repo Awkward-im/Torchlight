@@ -3,7 +3,7 @@ unit tl2db;
 interface
 
 uses
-  tl2types;
+  rgglobal;
 
 {$DEFINE Interface}
 
@@ -27,23 +27,23 @@ uses
 
 {$Include tl2db_keys.inc}
 
-function GetTL2Quest(const aid:TL2ID; out amods:string; out aname:string):string; overload;
-function GetTL2Quest(const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Quest(const aid:TL2ID                  ):string; overload;
+function GetTL2Quest(const aid:TRGID; out amods:string; out aname:string):string; overload;
+function GetTL2Quest(const aid:TRGID; out amods:string):string; overload;
+function GetTL2Quest(const aid:TRGID                  ):string; overload;
 
-function GetTL2Mob  (const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Mob  (const aid:TL2ID                  ):string; overload;
-function GetMobMods (const aid:TL2ID):string;
+function GetTL2Mob  (const aid:TRGID; out amods:string):string; overload;
+function GetTL2Mob  (const aid:TRGID                  ):string; overload;
+function GetMobMods (const aid:TRGID):string;
 
-function GetTextValue(const aid:TL2ID; const abase, afield:string):string;
-function GetIntValue (const aid:TL2ID; const abase, afield:string):integer;
+function GetTextValue(const aid:TRGID; const abase, afield:string):string;
+function GetIntValue (const aid:TRGID; const abase, afield:string):integer;
 
 procedure SetFilter(amods:TTL2ModList);
 procedure SetFilter(amods:TL2IdList);
 procedure RestFilter;
-function  IsInModList(const alist:string; aid:TL2ID        ):boolean; overload;
-function  IsInModList(const alist:string; amods:TTL2ModList):TL2ID  ; overload;
-function  IsInModList(aid:TL2ID         ; amods:TTL2ModList):boolean; overload;
+function  IsInModList(const alist:string; aid:TRGID        ):boolean; overload;
+function  IsInModList(const alist:string; amods:TTL2ModList):TRGID  ; overload;
+function  IsInModList(aid:TRGID         ; amods:TTL2ModList):boolean; overload;
 
 function  LoadBases(const fname:string=''):integer;
 procedure FreeBases;
@@ -71,7 +71,7 @@ const
 
 //----- Core functions -----
 
-function GetById(const id:TL2ID; const abase:string; const awhere:string;
+function GetById(const id:TRGID; const abase:string; const awhere:string;
                  out amod:string; out aname:string):string;
 var
   aSQL,lwhere:string;
@@ -105,12 +105,12 @@ begin
   end;
 end;
 
-function GetByName(const aname:string; const abase:string; out id:TL2ID):string;
+function GetByName(const aname:string; const abase:string; out id:TRGID):string;
 var
   aSQL:string;
   vm:pointer;
 begin
-  id    :=TL2IdEmpty;
+  id    :=RGIdEmpty;
   result:=aname;
 
   if db<>nil then
@@ -129,7 +129,7 @@ begin
   end;
 end;
 
-function GetTextValue(const aid:TL2ID; const abase, afield:string):string;
+function GetTextValue(const aid:TRGID; const abase, afield:string):string;
 var
   lSQL:string;
   vm:pointer;
@@ -150,7 +150,7 @@ begin
   end;
 end;
 
-function GetIntValue(const aid:TL2ID; const abase, afield:string):integer;
+function GetIntValue(const aid:TRGID; const abase, afield:string):integer;
 var
   lSQL:string;
   vm:pointer;
@@ -213,19 +213,19 @@ end;
 
 //----- Quests -----
 
-function GetTL2Quest(const aid:TL2ID; out amods:string; out aname:string):string;
+function GetTL2Quest(const aid:TRGID; out amods:string; out aname:string):string;
 begin
   result:=GetById(aid,'quests','',amods,aname);
 end;
 
-function GetTL2Quest(const aid:TL2ID; out amods:string):string;
+function GetTL2Quest(const aid:TRGID; out amods:string):string;
 var
   lname:string;
 begin
   result:=GetTL2Quest(aid,amods,lname);
 end;
 
-function GetTL2Quest(const aid:TL2ID):string;
+function GetTL2Quest(const aid:TRGID):string;
 var
   lmods:string;
 begin
@@ -234,7 +234,7 @@ end;
 
 //----- Mob info -----
 
-function GetTL2Mob(const aid:TL2ID; out amods:string):string;
+function GetTL2Mob(const aid:TRGID; out amods:string):string;
 var
   lname:string;
 begin
@@ -243,14 +243,14 @@ begin
   if amods='' then result:=GetById(aid,'classes','',amods,lname);
 end;
 
-function GetTL2Mob(const aid:TL2ID):string;
+function GetTL2Mob(const aid:TRGID):string;
 var
   lmods:string;
 begin
   result:=GetTL2Mob(aid,lmods);
 end;
 
-function GetMobMods(const aid:TL2ID):string;
+function GetMobMods(const aid:TRGID):string;
 begin
   result:=GetTextValue(aid,'mobs','modid');
 end;
@@ -297,7 +297,7 @@ begin
   ModFilter:='';
 end;
 
-function IsInModList(const alist:string; aid:TL2ID):boolean;
+function IsInModList(const alist:string; aid:TRGID):boolean;
 var
   ls:string;
 begin
@@ -310,7 +310,7 @@ begin
     result:=false;
 end;
 
-function IsInModList(const alist:string; amods:TTL2ModList):TL2ID;
+function IsInModList(const alist:string; amods:TTL2ModList):TRGID;
 var
   ls:string;
   i:integer;
@@ -331,10 +331,10 @@ begin
     end;
   end;
 
-  result:=TL2IdEmpty;
+  result:=RGIdEmpty;
 end;
 
-function IsInModList(aid:TL2ID; amods:TTL2ModList):boolean;
+function IsInModList(aid:TRGID; amods:TTL2ModList):boolean;
 var
   i:integer;
 begin

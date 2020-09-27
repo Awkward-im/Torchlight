@@ -1,13 +1,13 @@
 {$IFDEF Interface}
 
-function GetTL2Movie(const aid:TL2ID; out amods:string; out aviews:integer;
+function GetTL2Movie(const aid:TRGID; out amods:string; out aviews:integer;
                     out aname:string; out apath:string):string; overload;
-function GetTL2Movie(const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Movie(const aid:TL2ID                  ):string; overload;
+function GetTL2Movie(const aid:TRGID; out amods:string):string; overload;
+function GetTL2Movie(const aid:TRGID                  ):string; overload;
 
 {$ELSE}
 
-function GetTL2Movie(const aid  :TL2ID ; out amods:string; out aviews:integer;
+function GetTL2Movie(const aid  :TRGID ; out amods:string; out aviews:integer;
                      out   aname:string; out apath:string ):string;
 var
   lSQL:string;
@@ -39,14 +39,14 @@ begin
   end;
 end;
 
-function GetTL2Movie(const aid:TL2ID; out amods:string):string; overload;
+function GetTL2Movie(const aid:TRGID; out amods:string):string; overload;
 var
   lname:string;
 begin
   result:=GetById(aid,'movies','',amods,lname);
 end;
 
-function GetTL2Movie(const aid:TL2ID):string; overload;
+function GetTL2Movie(const aid:TRGID):string; overload;
 var
   lmods:string;
 begin

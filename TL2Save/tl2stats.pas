@@ -3,31 +3,32 @@ unit TL2Stats;
 interface
 
 uses
-  TL2Types,
-  TL2Stream,
+  Classes,
+  rgglobal,
+  rgstream,
   TL2Base;
 
 type
   tStatMob = packed record
-    id    :TL2ID;
-    field1:TL2Integer; // ?? amount killed, player+aoe
-    field2:TL2Integer; // ?? amount killed, player+pet
-    exp   :TL2Integer;
-    field4:TL2Integer;
-    field5:TL2Integer; // <= field1
-    field6:TL2Integer; // <= field1
-    field7:TL2Integer;
+    id    :TRGID;
+    field1:TRGInteger; // ?? amount killed, player+aoe
+    field2:TRGInteger; // ?? amount killed, player+pet
+    exp   :TRGInteger;
+    field4:TRGInteger;
+    field5:TRGInteger; // <= field1
+    field6:TRGInteger; // <= field1
+    field7:TRGInteger;
     field8:Word;       // by phys? no :(
     field9:Word;
   end;
   tStatMobArray = array of tStatMob;
 
   tStatItem = packed record
-    id     :TL2ID;
+    id     :TRGID;
     Normals:Word;       // amount of picked normals
     Blues  :Word;       // amount of picked blue
     Greens :Word;       // amount of picked green
-    Golden :TL2Integer; // ?? golden?
+    Golden :TRGInteger; // ?? golden?
     // really, can be two words. gold and ?... purple?
     IsSet  :Word;       // set? looks like amount like Blues (can be same w/o set?!)
     Bonuses:Word;       // Max bonus amount on item
@@ -37,25 +38,25 @@ type
   tStatItemArray = array of tStatItem;
 
   tStatSkill = packed record
-    id    :TL2ID;
-    times :TL2Integer; // ?? manual
-    field2:TL2Integer; // ?? auto
+    id    :TRGID;
+    times :TRGInteger; // ?? manual
+    field2:TRGInteger; // ?? auto
     level :Byte;
   end;
   tStatSkillArray = array of tStatSkill;
 
   tStatLevelup = packed record
-    uptime :TL2Float;   // time
-    MinPhys:TL2Integer; // ?? Min Phys Attack (not summarize) kept non-zero
-    MaxPhys:TL2Integer; // ?? Max Phys Attack (not summarize) kept non-zero
-    field4 :TL2Integer; // ?? amount of attacks? triggers?
+    uptime :TRGFloat;   // time
+    MinPhys:TRGInteger; // ?? Min Phys Attack (not summarize) kept non-zero
+    MaxPhys:TRGInteger; // ?? Max Phys Attack (not summarize) kept non-zero
+    field4 :TRGInteger; // ?? amount of attacks? triggers?
     field5 :Byte;       // warps activated?
     GoldGet:Word;       // plus gold per level (picked and shop)
     field7 :Byte;       // 7 & 8 usually the same
     field8 :Byte;       // 7 & 8 usually the same
     field9 :Byte;
-    RightMinPhys:TL2Integer; // Current Right Min Phys Attack
-    RightMaxPhys:TL2Integer; // Current Right Max Phys Attack
+    RightMinPhys:TRGInteger; // Current Right Min Phys Attack
+    RightMaxPhys:TRGInteger; // Current Right Max Phys Attack
     field12:Byte;
   end;
   tStatLevelUpArray = array of tStatLevelUp;
@@ -63,7 +64,7 @@ type
 type
   TTL2StringVal = record
     name :string;
-    value:TL2Integer;
+    value:TRGInteger;
   end;
   TTL2StringValList = array of TTL2StringVal;
 
@@ -78,8 +79,8 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream); override;
-    procedure SaveToStream  (AStream: TTL2Stream); override;
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream  (AStream: TStream); override;
 
   private
     FStatMobs   :tStatMobArray;     // array [0..39] of byte;
@@ -113,7 +114,7 @@ type
     property Killers:TL2IdValList      read FStatKillers;
   end;
 
-function ReadLastBlock(AStream:TTL2Stream):TTL2Stats;
+function ReadLastBlock(AStream:TStream):TTL2Stats;
 
 
 implementation
@@ -153,7 +154,7 @@ begin
   inherited;
 end;
 
-procedure TTL2Stats.LoadFromStream(AStream:TTL2Stream);
+procedure TTL2Stats.LoadFromStream(AStream:TStream);
 var
   i,lcnt:integer;
 begin
@@ -285,7 +286,7 @@ begin
   LoadBlock(AStream);
 end;
 
-procedure TTL2Stats.SaveToStream(AStream:TTL2Stream);
+procedure TTL2Stats.SaveToStream(AStream:TStream);
 var
   i:integer;
 begin
@@ -361,7 +362,7 @@ begin
 end;
 
 
-function ReadLastBlock(AStream:TTL2Stream):TTL2Stats;
+function ReadLastBlock(AStream:TStream):TTL2Stats;
 begin
   result:=TTL2Stats.Create;
   result.LoadFromStream(AStream);

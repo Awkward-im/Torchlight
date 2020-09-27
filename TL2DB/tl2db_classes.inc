@@ -2,27 +2,27 @@
 
 type
   tClassArray  = array of record
-    id    :TL2ID;
+    id    :TRGID;
     name  :string;
     title :string;
     icon  :string;
     gender:char;
   end;
 
-function GetTL2Class(const aid:TL2ID; out amods:string;
+function GetTL2Class(const aid:TRGID; out amods:string;
                      out aname:string                 ):string; overload;
-function GetTL2Class(const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Class(const aid:TL2ID                  ):string; overload;
-function GetTL2Class(const aname:string; out aid:TL2ID):string; overload;
+function GetTL2Class(const aid:TRGID; out amods:string):string; overload;
+function GetTL2Class(const aid:TRGID                  ):string; overload;
+function GetTL2Class(const aname:string; out aid:TRGID):string; overload;
 
-function GetClassMods(const aid:TL2ID):string;
+function GetClassMods(const aid:TRGID):string;
 
-function GetClassIcon(const aid:TL2ID):string;
+function GetClassIcon(const aid:TRGID):string;
 
-function GetClassInfo(const aid:TL2ID; out aicon:string; out astr, adex, aint, avit:integer):string;
+function GetClassInfo(const aid:TRGID; out aicon:string; out astr, adex, aint, avit:integer):string;
 
-procedure GetClassGraphStat (const aid:TL2ID; out agraph_hp,agraph_mp:string; out agraph_stat:integer);
-procedure GetClassGraphSkill(const aid:TL2ID; out agraph_skill,agraph_fame:integer);
+procedure GetClassGraphStat (const aid:TRGID; out agraph_hp,agraph_mp:string; out agraph_stat:integer);
+procedure GetClassGraphSkill(const aid:TRGID; out agraph_skill,agraph_fame:integer);
 
 procedure GetClassList(out alist:tClassArray);
 
@@ -33,7 +33,7 @@ const
 
 const
   DefaultClasses: array [0..7] of record
-    id   :TL2ID;
+    id   :TRGID;
     name :string;
     title:string;
     str  :integer;
@@ -51,7 +51,7 @@ const
     (id:3691889278338232797 ; name:'Hum_Arbiter_M'  ; title:'Embermage'; str: 5; dex:10; int:15; vit:10)
   );
 
-function GetTL2Class(const aid:TL2ID; out amods:string; out aname:string):string;
+function GetTL2Class(const aid:TRGID; out amods:string; out aname:string):string;
 var
   i:integer;
 begin
@@ -74,26 +74,26 @@ begin
     result:=GetById(aid,dbClassTable,'',amods,aname);
 end;
 
-function GetClassMods(const aid:TL2ID):string;
+function GetClassMods(const aid:TRGID):string;
 begin
   result:=GetTextValue(aid,dbClassTable,'modid');
 end;
 
-function GetTL2Class(const aid:TL2ID; out amods:string):string;
+function GetTL2Class(const aid:TRGID; out amods:string):string;
 var
   lname:string;
 begin
   result:=GetTL2Class(aid,amods,lname);
 end;
 
-function GetTL2Class(const aid:TL2ID):string;
+function GetTL2Class(const aid:TRGID):string;
 var
   lmods:string;
 begin
   result:=GetTL2Class(aid,lmods);
 end;
 
-function GetTL2Class(const aname:string; out aid:TL2ID):string;
+function GetTL2Class(const aname:string; out aid:TRGID):string;
 var
   i:integer;
 begin
@@ -108,21 +108,21 @@ begin
         exit;
       end;
     end;
-    aid   :=TL2IdEmpty;
+    aid   :=RGIdEmpty;
     result:='';
   end
   else
     result:=GetByName(aname,dbClassTable,aid);
 end;
 
-function GetClassIcon(const aid:TL2ID):string;
+function GetClassIcon(const aid:TRGID):string;
 begin
   result:=GetTextValue(aid,dbClassTable,'icon');
 end;
 
 //----- Info -----
 
-function GetClassInfo(const aid:TL2ID; out aicon:string; out astr, adex, aint, avit:integer):string;
+function GetClassInfo(const aid:TRGID; out aicon:string; out astr, adex, aint, avit:integer):string;
 var
   lSQL:string;
   vm:pointer;
@@ -170,7 +170,7 @@ begin
   end;
 end;
 
-procedure GetClassGraphStat(const aid:TL2ID; out agraph_hp,agraph_mp:string; out agraph_stat:integer);
+procedure GetClassGraphStat(const aid:TRGID; out agraph_hp,agraph_mp:string; out agraph_stat:integer);
 var
   lSQL:string;
   vm:pointer;
@@ -199,7 +199,7 @@ begin
   end;
 end;
 
-procedure GetClassGraphSkill(const aid:TL2ID; out agraph_skill,agraph_fame:integer);
+procedure GetClassGraphSkill(const aid:TRGID; out agraph_skill,agraph_fame:integer);
 var
   lSQL:string;
   vm:pointer;

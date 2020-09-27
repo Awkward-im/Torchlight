@@ -11,7 +11,7 @@ begin
   //===== Starting data =====
 
   FClassString :=FStream.ReadShortString();
-  FDifficulty  :=TTL2Difficulty(FStream.ReadDWord);
+  FDifficulty  :=TL2Difficulty(FStream.ReadDWord);
   FHardcore    :=FStream.ReadByte<>0;
   FNewGameCycle:=FStream.ReadByte;
 
@@ -131,14 +131,14 @@ if lcnt<>lcnt1 then
 DbgLn('skill learn count: '+HexStr(lcnt,4)+'x'+HexStr(lcnt1,4));
   SetLength(FHistory,lcnt1);
   if lcnt1>0 then
-    FStream.Read(FHistory[0],lcnt1*SizeOf(TL2ID));
+    FStream.Read(FHistory[0],lcnt1*SizeOf(TRGID));
 
   //----- Recipes -----
 
   lcnt:=FStream.ReadWord;
   SetLength(FRecipes,lcnt);
   if lcnt>0 then
-    FStream.Read(FRecipes[0],lcnt*SizeOf(TL2ID));
+    FStream.Read(FRecipes[0],lcnt*SizeOf(TRGID));
 
   //===== REST of file (statistic) =====
 

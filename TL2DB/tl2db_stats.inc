@@ -1,41 +1,41 @@
 {$IFDEF Interface}
 
-function GetTL2Stat(const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Stat(const aid:TL2ID                  ):string; overload;
+function GetTL2Stat(const aid:TRGID; out amods:string):string; overload;
+function GetTL2Stat(const aid:TRGID                  ):string; overload;
 
 const
   DefStatStat  = 0;
   DefStatSkill = 1;
 
   DefaultStats: array [0..1] of record
-    id:TL2ID;
+    id:TRGID;
     name:string;
   end = (
     (id:-7998006427425498932; name:'current_player_stat_pts' ),
     (id:8015721566365339376 ; name:'current_player_skill_pts')
   );
 
-function GetStatIdx(const alist:TL2IdValList; const aid  :TL2ID ):integer; overload;
+function GetStatIdx(const alist:TL2IdValList; const aid  :TRGID ):integer; overload;
 function GetStatIdx(const alist:TL2IdValList; const aname:string):integer; overload;
 
 {$ELSE}
 
 
-function GetTL2Stat(const aid:TL2ID; out amods:string):string;
+function GetTL2Stat(const aid:TRGID; out amods:string):string;
 var
   lname:string;
 begin
   result:=GetById(aid,'stats','',amods,lname);
 end;
 
-function GetTL2Stat(const aid:TL2ID):string;
+function GetTL2Stat(const aid:TRGID):string;
 var
   lmods:string;
 begin
   result:=GetTL2Stat(aid,lmods);
 end;
 
-function GetStatIdx(const alist:TL2IdValList; const aid:TL2ID):integer;
+function GetStatIdx(const alist:TL2IdValList; const aid:TRGID):integer;
 var
   i:integer;
 begin
@@ -43,7 +43,7 @@ begin
   if Length(alist)=0 then
     exit;
 
-  if aid<>TL2IdEmpty then
+  if aid<>RGIdEmpty then
   begin
     for i:=0 to High(alist) do
     begin
@@ -58,7 +58,7 @@ end;
 
 function GetStatIdx(const alist:TL2IdValList; const aname:string):integer;
 var
-  lid:TL2ID;
+  lid:TRGID;
   ls:string;
   i:integer;
 begin
@@ -69,7 +69,7 @@ begin
   Val(aname,lid);
   if lid=0 then
   begin
-    lid:=TL2IdEmpty;
+    lid:=RGIdEmpty;
     ls:=LowerCase(aname);
     for i:=0 to High(DefaultStats) do
     begin
@@ -80,7 +80,7 @@ begin
       end;
     end;
 
-    if lid=TL2IdEmpty then
+    if lid=RGIdEmpty then
       GetByName(ls,'stats',lid);
   end;
 

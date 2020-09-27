@@ -49,7 +49,7 @@ implementation
 {$R *.lfm}
 
 uses
-  tl2types,
+  rgglobal,
   tl2common,
   tl2stats,
   tl2db;
@@ -143,7 +143,7 @@ begin
     sgItems.Cells[5,i+1]:=IntToStr  (lstat.Items[i].Golden);
     sgItems.Cells[6,i+1]:=IntToStr  (lstat.Items[i].IsSet);
     sgItems.Cells[7,i+1]:=IntToStr  (lstat.Items[i].Bonuses);
-    sgItems.Cells[8,i+1]:=IntToStr  (lstat.Items[i].field7);
+    sgItems.Cells[8,i+1]:=IntToStr  (lstat.Items[i].Bought);
   end;
   sgItems.EndUpdate;
 

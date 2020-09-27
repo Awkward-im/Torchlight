@@ -1,17 +1,17 @@
 {$IFDEF Interface}
 
-function GetTL2Item (const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Item (const aid:TL2ID                  ):string; overload;
-function GetItemMods(const aid:TL2ID):string;
-function GetItemIcon(const aid:TL2ID):string;
-function GtItemStack(const aid:TL2ID):integer;
+function GetTL2Item (const aid:TRGID; out amods:string):string; overload;
+function GetTL2Item (const aid:TRGID                  ):string; overload;
+function GetItemMods(const aid:TRGID):string;
+function GetItemIcon(const aid:TRGID):string;
+function GtItemStack(const aid:TRGID):integer;
 function GetItemPosition(apos:integer; out cont :string):string;
-function GetItemUsability(const aid:TL2ID):integer;
-function GetAlt(const aid:TL2ID; alist:TTL2ModList; out newid:TL2ID):TL2ID;
-function IsItem(const aid:TL2ID):boolean;
+function GetItemUsability(const aid:TRGID):integer;
+function GetAlt(const aid:TRGID; alist:TTL2ModList; out newid:TRGID):TRGID;
+function IsItem(const aid:TRGID):boolean;
 
-function GetTL2Prop(const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Prop(const aid:TL2ID                  ):string; overload;
+function GetTL2Prop(const aid:TRGID; out amods:string):string; overload;
+function GetTL2Prop(const aid:TRGID                  ):string; overload;
 
 {$ELSE}
 
@@ -21,41 +21,41 @@ const
 
 //----- Items -----
 
-function GetTL2Item(const aid:TL2ID; out amods:string):string;
+function GetTL2Item(const aid:TRGID; out amods:string):string;
 var
   lname:string;
 begin
   result:=GetById(aid,dbItemTable,'',amods,lname);
 end;
 
-function GetTL2Item(const aid:TL2ID):string;
+function GetTL2Item(const aid:TRGID):string;
 var
   lmods:string;
 begin
   result:=GetTL2Item(aid,lmods);
 end;
 
-function GetItemMods(const aid:TL2ID):string;
+function GetItemMods(const aid:TRGID):string;
 begin
   result:=GetTextValue(aid,dbItemTable,'modid');
 end;
 
-function GetItemIcon(const aid:TL2ID):string;
+function GetItemIcon(const aid:TRGID):string;
 begin
   result:=GetTextValue(aid,dbItemTable,'icon');
 end;
 
-function GetItemUsability(const aid:TL2ID):integer;
+function GetItemUsability(const aid:TRGID):integer;
 begin
   result:=GetIntValue(aid,dbItemTable,'usable');
 end;
 
-function GtItemStack(const aid:TL2ID):integer;
+function GtItemStack(const aid:TRGID):integer;
 begin
   result:=GetIntValue(aid,dbItemTable,'stack');
 end;
 
-function IsItem(const aid:TL2ID):boolean;
+function IsItem(const aid:TRGID):boolean;
 begin
   result:=GetItemMods(aid)<>'';
 end;
@@ -86,7 +86,7 @@ begin
   end;
 end;
 
-function GetAlt(const aid:TL2ID; alist:TTL2ModList; out newid:TL2ID):TL2ID;
+function GetAlt(const aid:TRGID; alist:TTL2ModList; out newid:TRGID):TRGID;
 var
   lmods,lunittype:string;
   lSQL:string;
@@ -105,13 +105,13 @@ begin
     exit;
 
   // 2 - search in mod list
-  if IsInModList(lmods,alist)<>TL2IdEmpty then
+  if IsInModList(lmods,alist)<>RGIdEmpty then
     exit;
 
   //-- Here is replacing existing item by similar
   // Right now, search just by unittype without any other properties
 
-  newid:=TL2IdEmpty;
+  newid:=RGIdEmpty;
   lunittype:=GetTextValue(aid,dbItemTable,'unittype');
   if lunittype='' then exit;
 
@@ -124,7 +124,7 @@ begin
       newid:=sqlite3_column_int64(vm,0);
     sqlite3_finalize(vm);
   end;
-  if newid<>TL2IdEmpty then
+  if newid<>RGIdEmpty then
     exit;
 
   // 4 - search alternative in modded items
@@ -138,7 +138,7 @@ begin
       if sqlite3_step(vm)=SQLITE_ROW then
         newid:=sqlite3_column_int64(vm,0);
       sqlite3_finalize(vm);
-      if newid<>TL2IdEmpty then
+      if newid<>RGIdEmpty then
       begin
         result:=alist[i].id;
         exit;
@@ -146,19 +146,19 @@ begin
     end;
   end;
 
-  result:=TL2IdEmpty;
+  result:=RGIdEmpty;
 end;
 
 //----- Props -----
 
-function GetTL2Prop(const aid:TL2ID; out amods:string):string;
+function GetTL2Prop(const aid:TRGID; out amods:string):string;
 var
   lname:string;
 begin
   result:=GetById(aid,dbPropTable,'',amods,lname);
 end;
 
-function GetTL2Prop(const aid:TL2ID):string;
+function GetTL2Prop(const aid:TRGID):string;
 var
   lmods:string;
 begin

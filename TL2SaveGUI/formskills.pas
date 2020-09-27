@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
   Buttons, SpinEx, Types,
-  tl2char, tl2types, tl2db;
+  tl2char, rgglobal, tl2db;
 
 type
 
@@ -48,7 +48,7 @@ type
     OldSaveFull   :boolean;
 
     FChar  :TTL2Character;  // reference to player (char level, free points, skills)
-    FClass :TL2ID;          // class id (to change skill list)
+    FClass :TRGID;          // class id (to change skill list)
     FSkills:tSkillArray;    // class skills data
     FIcons :array of array [boolean] of TPicture; // skill icons learned/not
 
@@ -59,7 +59,7 @@ type
     FFame      :integer;
     FSkLevel   :integer;
     FSkFame    :integer;
-    FNewClass  :TL2ID;
+    FNewClass  :TRGID;
 
     function ApplyBuild(const alist: TL2IdValList): integer;
     procedure ClearData;
@@ -67,7 +67,7 @@ type
     function  CheckTier(aval,aidx:integer):boolean;
     procedure DoLevelChange(doinc: boolean);
     function GetBuild(): TL2IdValList;
-    procedure SetPlayerClass(const aclass: TL2ID);
+    procedure SetPlayerClass(const aclass: TRGID);
     procedure SetFame (aval:integer);
     procedure SetLevel(aval:integer);
     procedure SetChar (achar:TTL2Character);
@@ -77,7 +77,7 @@ type
 
     property Configured:boolean read FConfigured write FConfigured;
     property FreeSkillPoints:integer read FPoints;
-    property PlayerClass:TL2ID read FClass write FNewClass;
+    property PlayerClass:TRGID read FClass write FNewClass;
     property Fame :integer write SetFame;
     property Level:integer write SetLevel;
     property Player:TTL2Character read FChar write SetChar;
@@ -347,7 +347,7 @@ begin
   bbUpdate.Enabled:=true;
 end;
 
-procedure TfmSkills.SetPlayerClass(const aclass:TL2ID);
+procedure TfmSkills.SetPlayerClass(const aclass:TRGID);
 var
   lbuild:TL2IdValList;
   i,j:integer;

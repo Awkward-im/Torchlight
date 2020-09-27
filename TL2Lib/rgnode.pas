@@ -1,10 +1,4 @@
-{
-  All text from nodes must not be changed manually. If you want to change property text, you need to use
-  corresponding function. other values can be changed freely.
-  Text file MUST have root node.
-   
-}
-unit TL2DatNode;
+unit RGNode;
 
 interface
 
@@ -24,17 +18,15 @@ function ChangeNode   (anode:pointer; aval :PWideChar):ByteBool;
 
 //--- Write data ---
 
-//----- Write data -----
-
-procedure AsBool     (anode:pointer; aval:ByteBool);
-procedure AsInteger  (anode:pointer; aval:Int32);
-procedure AsUnsigned (anode:pointer; aval:UInt32);
-procedure AsFloat    (anode:pointer; aval:single);
-procedure AsDouble   (anode:pointer; aval:double);
-procedure AsInteger64(anode:pointer; aval:Int64);
-procedure AsString   (anode:pointer; aval:PWideChar);
-procedure AsTranslate(anode:pointer; aval:PWideChar);
-procedure AsNote     (anode:pointer; aval:PWideChar);
+function AsBool     (anode:pointer; aval:ByteBool ):ByteBool; 
+function AsInteger  (anode:pointer; aval:Int32    ):Int32;    
+function AsUnsigned (anode:pointer; aval:UInt32   ):UInt32;   
+function AsFloat    (anode:pointer; aval:single   ):single;   
+function AsDouble   (anode:pointer; aval:double   ):double;   
+function AsInteger64(anode:pointer; aval:Int64    ):Int64;    
+function AsString   (anode:pointer; aval:PWideChar):PWideChar;
+function AsTranslate(anode:pointer; aval:PWideChar):PWideChar;
+function AsNote     (anode:pointer; aval:PWideChar):PWideChar;
 
 //--- Read data ---
 
@@ -70,7 +62,7 @@ function AddCustom   (aparent:pointer; aname:PWideChar; aval:PWideChar; atype:PW
 implementation
 
 uses
-  rgtypes;
+  rgglobal;
 
 type
   PATL2Node = ^TATL2Node;
@@ -132,30 +124,6 @@ begin
 end;
 
 //===== Support =====
-
-function CopyWide(asrc:PWideChar):PWideChar;
-var
-  llen:integer;
-begin
-  if (asrc=nil) or (asrc^=#0) then exit(nil);
-  llen:=Length(asrc)+1;
-  GetMem(    result ,llen*SizeOf(WideChar));
-  move(asrc^,result^,llen*SizeOf(WideChar));
-end;
-
-function CompareWide(s1,s2:PWideChar):boolean;
-begin
-  if s1=s2 then exit(true);
-  if ((s1=nil) and (s2^=#0)) or
-     ((s2=nil) and (s1^=#0)) then exit(true);
-
-  repeat
-    if s1^<>s2^ then exit(false);
-    if s1^= #0  then exit(true);
-    inc(s1);
-    inc(s2);
-  until false;
-end;
 
 type
   TBytes = array of byte;
@@ -772,49 +740,61 @@ end;
 
 //----- Write data -----
 
-procedure AsBool(anode:pointer; aval:ByteBool);
+function AsBool(anode:pointer; aval:ByteBool):ByteBool;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype=rgBool) then
     PTL2Node(anode)^.asBoolean:=aval;
+
+  result:=aval;
 end;
 
-procedure AsInteger(anode:pointer; aval:Int32);
+function AsInteger(anode:pointer; aval:Int32):Int32;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype in [rgInteger,rgUnsigned]) then
     PTL2Node(anode)^.asInteger:=aval;
+
+  result:=aval;
 end;
 
-procedure AsUnsigned(anode:pointer; aval:UInt32);
+function AsUnsigned(anode:pointer; aval:UInt32):UInt32;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype in [rgInteger,rgUnsigned]) then
     PTL2Node(anode)^.asUnsigned:=aval;
+
+  result:=aval;
 end;
 
-procedure AsFloat(anode:pointer; aval:single);
+function AsFloat(anode:pointer; aval:single):single;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype=rgFloat) then
     PTL2Node(anode)^.asFloat:=aval;
+
+  result:=aval;
 end;
 
-procedure AsDouble(anode:pointer; aval:double);
+function AsDouble(anode:pointer; aval:double):double;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype=rgDouble) then
     PTL2Node(anode)^.asDouble:=aval;
+
+  result:=aval;
 end;
 
-procedure AsInteger64(anode:pointer; aval:Int64);
+function AsInteger64(anode:pointer; aval:Int64):Int64;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype=rgInteger64) then
     PTL2Node(anode)^.asInteger64:=aval;
+
+  result:=aval;
 end;
 
-procedure AsString(anode:pointer; aval:PWideChar);
+function AsString(anode:pointer; aval:PWideChar):PWideChar;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
@@ -822,9 +802,11 @@ begin
     FreeMem(PTL2Node(anode)^.asString);
     PTL2Node(anode)^.asString:=CopyWide(aval);
   end;
+
+  result:=aval;
 end;
 
-procedure AsTranslate(anode:pointer; aval:PWideChar);
+function AsTranslate(anode:pointer; aval:PWideChar):PWideChar;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
@@ -832,9 +814,11 @@ begin
     FreeMem(PTL2Node(anode)^.asString);
     PTL2Node(anode)^.asString:=CopyWide(aval);
   end;
+
+  result:=aval;
 end;
 
-procedure AsNote(anode:pointer; aval:PWideChar);
+function AsNote(anode:pointer; aval:PWideChar):PWideChar;
 begin
   if (anode<>nil) and
      (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
@@ -842,6 +826,8 @@ begin
     FreeMem(PTL2Node(anode)^.asString);
     PTL2Node(anode)^.asString:=CopyWide(aval);
   end;
+
+  result:=aval;
 end;
 
 //----- Read data -----

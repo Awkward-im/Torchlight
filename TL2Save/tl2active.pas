@@ -3,7 +3,7 @@ unit TL2Active;
 interface
 
 uses
-  TL2Types,
+  rgglobal,
   TL2Base,
   TL2Effects;
 
@@ -19,25 +19,18 @@ type
     procedure Clear; override;
 
   protected
-    FID     :TL2ID;
+    FID     :TRGID;
     FName   :string;
     FSuffix :string;
     FLevel  :integer;
 
     FSign   :Byte;
-    FEnabled:TL2Boolean;
+    FEnabled:Boolean;
 
     // Orientation
     FOrientation:packed record
-      FPosition     :TL2Coord;
-      FForward      :TL2Coord;
-      FForwardValue :TL2Float;
-      FUp           :TL2Coord;
-      FUpValue      :TL2Float;
-      FRight        :TL2Coord;
-      FRightValue   :TL2Float;
-      FScale        :TL2Coord;
-      FScaleValue   :TL2Float;
+      FPosition     :TVector3;
+      FRotation     :array [0..3,0..3] of TRGFloat;
     end;
 
     FDBMods  :string;
@@ -49,8 +42,8 @@ type
     function  GetDBMods():string; virtual;
 
   private
-    function  GetStat(const iname:string):TL2Integer;
-    procedure SetStat(const iname:string; aval:TL2Integer);
+    function  GetStat(const iname:string):TRGInteger;
+    procedure SetStat(const iname:string; aval:TRGInteger);
     function  GetEffects(idx:integer):TTL2EffectList;
     procedure SetEffects(idx:integer; aval:TTL2EffectList);
 
@@ -60,17 +53,17 @@ type
 
     property Name   :string     read FName    write FName;
     property Suffix :string     read FSuffix  write FSuffix;
-    property ID     :TL2ID      read FID      write FID;
+    property ID     :TRGID      read FID      write FID;
     property Level  :integer    read FLevel   write FLevel;
     property Sign   :Byte       read FSign    write FSign;
-    property Enabled:TL2Boolean read FEnabled write FEnabled;
-    property Coord  :TL2Coord   read FOrientation.FPosition;
+    property Enabled:Boolean    read FEnabled write FEnabled;
+    property Coord  :TVector3   read FOrientation.FPosition;
 
     property ModIds  :TL2IdList      read FModIds   write FModIds;
     property Effects[idx:integer]:TTL2EffectList read GetEffects write SetEffects;
     property Augments:TL2StringList  read FAugments;
     property Stats   :TL2IdValList   read FStats;
-    property Stat[iname:string]:TL2Integer read GetStat  write SetStat;
+    property Stat[iname:string]:TRGInteger read GetStat  write SetStat;
   end;
 
 
@@ -126,7 +119,7 @@ begin
   result:=FDBMods;
 end;
 
-function TL2ActiveClass.GetStat(const iname:string):TL2Integer;
+function TL2ActiveClass.GetStat(const iname:string):TRGInteger;
 var
   i:integer;
 begin
@@ -138,7 +131,7 @@ begin
     result:=0;
 end;
 
-procedure TL2ActiveClass.SetStat(const iname:string; aval:TL2Integer);
+procedure TL2ActiveClass.SetStat(const iname:string; aval:TRGInteger);
 var
   i:integer;
 begin
@@ -168,7 +161,7 @@ end;
 function TL2ActiveClass.CheckForMods(alist:TTL2ModList):boolean;
 var
   llist:TL2IdList;
-  lmodid:TL2ID;
+  lmodid:TRGID;
   lmods:string;
   i:integer;
 begin
@@ -204,7 +197,7 @@ begin
     lmods:=GetDBMods;
 
     lmodid:=IsInModList(lmods, alist);
-    if lmodid<>TL2IdEmpty then
+    if lmodid<>RGIdEmpty then
     begin
       if lmodid<>0 then
       begin

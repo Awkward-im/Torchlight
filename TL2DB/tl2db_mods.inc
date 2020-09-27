@@ -5,14 +5,14 @@ const
 
 type
   TModData = record
-     id     :TL2ID;
+     id     :TRGID;
      title  :string;
      version:word;
    end;
   tModDataArray = array of TModData;
 
-function GetTL2Mod(const aid:TL2ID; out aver:integer):string; overload;
-function GetTL2Mod(const aid:TL2ID                  ):string; overload;
+function GetTL2Mod(const aid:TRGID; out aver:integer):string; overload;
+function GetTL2Mod(const aid:TRGID                  ):string; overload;
 function GetTL2Mod(const aid:string                 ):string; overload;
 
 function GetModList:tModDataArray;
@@ -23,7 +23,7 @@ var
   GlobalModList:tModDataArray = nil;
 
 
-function GetTL2Mod(const aid:TL2ID; out aver:integer):string;
+function GetTL2Mod(const aid:TRGID; out aver:integer):string;
 var
   lSQL:string;
   vm:pointer;
@@ -73,7 +73,7 @@ begin
 
 end;
 
-function GetTL2Mod(const aid:TL2ID):string;
+function GetTL2Mod(const aid:TRGID):string;
 var
   lver:integer;
 begin
@@ -83,7 +83,7 @@ end;
 function GetTL2Mod(const aid:string):string;
 var
   ls:string;
-  lid:TL2ID;
+  lid:TRGID;
   lpos:integer;
 begin
   ls:=aid;

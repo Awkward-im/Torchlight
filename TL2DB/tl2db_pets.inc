@@ -2,21 +2,21 @@
 
 type
   tPetArray = array of record
-    id   :TL2ID;
+    id   :TRGID;
     name :string;
     title:string;
     scale:single;
     icon :string;
   end;
 
-function GetTL2Pet (const aid:TL2ID; out amods:string):string; overload;
-function GetTL2Pet (const aid:TL2ID                  ):string; overload;
+function GetTL2Pet (const aid:TRGID; out amods:string):string; overload;
+function GetTL2Pet (const aid:TRGID                  ):string; overload;
 
-function GetPetMods(const aid:TL2ID):string;
-function GetPetIcon(const aid:TL2ID):string;
+function GetPetMods(const aid:TRGID):string;
+function GetPetIcon(const aid:TRGID):string;
 
 procedure GetPetList(out alist:tPetArray);
-function  GetDefaultPet:TL2ID;
+function  GetDefaultPet:TRGID;
 
 {$ELSE}
 
@@ -48,7 +48,7 @@ const
     (id:7846508072355823983 ; name:'Pet_HoneyBadger'; title:'Badger'     ; scale:1   ; icon:'')
   );
 
-function GetTL2Pet(const aid:TL2ID; out amods:string):string;
+function GetTL2Pet(const aid:TRGID; out amods:string):string;
 var
   lname:string;
   i:integer;
@@ -70,19 +70,19 @@ begin
     result:=GetById(aid,dbPetTable,'',amods,lname);
 end;
 
-function GetTL2Pet(const aid:TL2ID):string;
+function GetTL2Pet(const aid:TRGID):string;
 var
   lmods:string;
 begin
   result:=GetTL2Pet(aid,lmods);
 end;
 
-function GetPetIcon(const aid:TL2ID):string;
+function GetPetIcon(const aid:TRGID):string;
 begin
   result:=GetTextValue(aid,dbPetTable,'icon');
 end;
 
-function GetPetMods(const aid:TL2ID):string;
+function GetPetMods(const aid:TRGID):string;
 begin
   result:=GetTextValue(aid,dbPetTable,'modid');
 end;
@@ -139,7 +139,7 @@ begin
   end;
 end;
 
-function GetDefaultPet:TL2ID;
+function GetDefaultPet:TRGID;
 begin
   result:=DefaultPets[0].id;
 end;

@@ -4,9 +4,9 @@ interface
 
 uses
   classes,
-  tl2stream,
+  rgstream,
   tl2common,
-  tl2types,
+  rgglobal,
   tl2base,
   tl2active,
   tl2effects,
@@ -58,35 +58,35 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream); override;
-    procedure SaveToStream  (AStream: TTL2Stream); override;
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream  (AStream: TStream); override;
 
   private
     FSign1          :Byte;
-    FHidden         :TL2Boolean;
+    FHidden         :Boolean;
     FIsChar         :boolean;
     FIsPet          :boolean;
 
-    FWardrobe       :TL2Boolean;
+    FWardrobe       :Boolean;
 
     // Pet's corner
-    FMorphId        :TL2ID;
-    FScale          :TL2Float;
+    FMorphId        :TRGID;
+    FScale          :TRGFloat;
     FSkin           :Byte;
-    FMorphTime      :TL2Float;
-    FTownTime       :TL2Float;
+    FMorphTime      :TRGFloat;
+    FTownTime       :TRGFloat;
     FAction         :TTL2Action;
     FAlignment      :TTL2Alignment;
-    FBravery        :TL2Float;
+    FBravery        :TRGFloat;
     FAIType         :TTL2AIType;
 
     // unknowns
-    FUnkn1          :TL2ID;
+    FUnkn1          :TRGID;
     FUnkn2          :Byte;
     FUnkn3          :DWord;
     FUnkn4_1        :byte;
     FUnkn4_2        :byte;
-    FUnkn7          :array [0..2] of TL2ID;
+    FUnkn7          :array [0..2] of TRGID;
     FUnkn17         :DWord;
     FUnkn9_1        :DWord;
     FUnkn9_2        :DWord;
@@ -115,11 +115,11 @@ type
     FExperience     :integer;
     FFameLevel      :integer;
     FFameExp        :integer;
-    FHealth         :TL2Float;
+    FHealth         :TRGFloat;
     FHealthBonus    :integer;
-    FMana           :TL2Float;
+    FMana           :TRGFloat;
     FManaBonus      :integer;
-    FPlayTime       :TL2Float;
+    FPlayTime       :TRGFloat;
     FFreeSkillPoints:integer;
     FFreeStatPoints :integer;
     FStrength       :integer;
@@ -132,16 +132,16 @@ type
     FItems          :TTL2ItemList;
 
     // buttons
-    FRMB1 :TL2ID;
-    FRMB2 :TL2ID;
-    FLMB  :TL2ID;
-    FARMB1:TL2ID;
-    FARMB2:TL2ID;
-    FALMB :TL2ID;
+    FRMB1 :TRGID;
+    FRMB2 :TRGID;
+    FLMB  :TRGID;
+    FARMB1:TRGID;
+    FARMB2:TRGID;
+    FALMB :TRGID;
 
     function  GetDBMods():string; override;
-    function  GetStat(const iname:string):TL2Integer;
-    procedure SetStat(const iname:string; aval:TL2Integer);
+    function  GetStat(const iname:string):TRGInteger;
+    procedure SetStat(const iname:string; aval:TRGInteger);
     function  GetSpell(idx:integer):TTL2Spell;
     procedure SetSpell(idx:integer; const aspell:TTL2Spell);
   public
@@ -151,11 +151,11 @@ type
     property IsChar         :boolean    read FIsChar;
     property IsPet          :boolean    read FIsPet;
     property Sign1          :Byte       read FSign1;
-    property Hidden         :TL2Boolean read FHidden          write FHidden;
-    property MorphId        :TL2ID      read FMorphId         write FMorphId;
+    property Hidden         :Boolean    read FHidden          write FHidden;
+    property MorphId        :TRGID      read FMorphId         write FMorphId;
     property Player         :string     read FPlayer          write FPlayer;
-    property MorphTime      :TL2Float   read FMorphTime       write FMorphTime;
-    property TownTime       :TL2Float   read FTownTime        write FTownTime;
+    property MorphTime      :TRGFloat   read FMorphTime       write FMorphTime;
+    property TownTime       :TRGFloat   read FTownTime        write FTownTime;
     property Face           :integer    read FFace            write FFace;
     property Hairstyle      :integer    read FHairstyle       write FHairstyle;
     property HairColor      :integer    read FHairColor       write FHairColor;
@@ -163,11 +163,11 @@ type
     property Experience     :integer    read FExperience      write FExperience;
     property FameLevel      :integer    read FFameLevel       write FFameLevel;
     property FameExp        :integer    read FFameExp         write FFameExp;
-    property Health         :TL2Float   read FHealth          write FHealth;
+    property Health         :TRGFloat   read FHealth          write FHealth;
     property HealthBonus    :integer    read FHealthBonus     write FHealthBonus;
-    property Mana           :TL2Float   read FMana            write FMana;
+    property Mana           :TRGFloat   read FMana            write FMana;
     property ManaBonus      :integer    read FManaBonus       write FManaBonus;
-    property PlayTime       :TL2Float   read FPlayTime        write FPlayTime;
+    property PlayTime       :TRGFloat   read FPlayTime        write FPlayTime;
     property FreeSkillPoints:integer    read FFreeSkillPoints write FFreeSkillPoints;
     property FreeStatPoints :integer    read FFreeStatPoints  write FFreeStatPoints;
     property ArmorFire      :integer    read FArmorFire       write FArmorFire;
@@ -179,7 +179,7 @@ type
     property Vitality       :integer    read FVitality        write FVitality;
     property Focus          :integer    read FFocus           write FFocus;
     property Gold           :integer    read FGold            write FGold;
-    property Scale          :TL2Float   read FScale           write FScale;
+    property Scale          :TRGFloat   read FScale           write FScale;
     property Skin           :byte       read FSkin            write FSkin;
     property RewardExp      :integer    read FRewardExp       write FRewardExp;
     property RewardFame     :integer    read FRewardFame      write FRewardFame;
@@ -191,7 +191,7 @@ type
 type
   TTL2CharArray = array of TTL2Character;
 
-function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false; IsPet:boolean=false):TTL2Character;
+function ReadCharData(AStream:TStream; IsChar:boolean=false; IsPet:boolean=false):TTL2Character;
 
 
 implementation
@@ -247,7 +247,7 @@ begin
   result:=FDBMods;
 end;
 
-function TTL2Character.GetStat(const iname:string):TL2Integer;
+function TTL2Character.GetStat(const iname:string):TRGInteger;
 var
   i:integer;
 begin
@@ -259,7 +259,7 @@ begin
     result:=0;
 end;
 
-procedure TTL2Character.SetStat(const iname:string; aval:TL2Integer);
+procedure TTL2Character.SetStat(const iname:string; aval:TRGInteger);
 var
   i:integer;
 begin
@@ -293,7 +293,7 @@ end;
 
 //----- Load / Save -----
 
-procedure TTL2Character.LoadFromStream(AStream: TTL2Stream);
+procedure TTL2Character.LoadFromStream(AStream: TStream);
 var
   i:integer;
 //  isPet:boolean;
@@ -311,15 +311,15 @@ Check(FSign1,'sign 1 '+HexStr(AStream.Position,8),0);
 }
   FHidden  :=AStream.ReadByte<>0;
 	
-  FMorphId:=TL2ID(AStream.ReadQWord); // current Class ID (with sex)
-  FID     :=TL2ID(AStream.ReadQword); // *$FF or base class id (if morphed)
-  if FID=TL2IdEmpty then
+  FMorphId:=TRGID(AStream.ReadQWord); // current Class ID (with sex)
+  FID     :=TRGID(AStream.ReadQword); // *$FF or base class id (if morphed)
+  if FID=RGIdEmpty then
   begin
     FID     :=FMorphId;
-    FMorphId:=TL2IdEmpty;
+    FMorphId:=RGIdEmpty;
   end;
   //??
-  FUnkn1:=TL2ID(AStream.ReadQword);   //!! runtime ID
+  FUnkn1:=TRGID(AStream.ReadQword);   //!! runtime ID
   //??
   FUnkn2:=AStream.ReadByte;
 Check(FUnkn2,'pre-wardrobe_'+HexStr(AStream.Position,8),0);
@@ -384,9 +384,9 @@ if FUnkn4_2<>0 then DbgLn('  like a boss at '+HexStr(AStream.Position,8));
   FScale:=AStream.ReadFloat;   // scale (1.0 for char) (pet size)
   //??
   AStream.Read(FUnkn7,24);
-if Funkn7[0]<>TL2IdEmpty then DbgLn('  after scale[0]='+HexStr(Funkn7[0],16)+' at '+HexStr(AStream.Position,8));
-if Funkn7[1]<>TL2IdEmpty then DbgLn('  after scale[1]='+HexStr(Funkn7[1],16)+' at '+HexStr(AStream.Position,8));
-if Funkn7[2]<>TL2IdEmpty then DbgLn('  after scale[2]='+HexStr(Funkn7[2],16)+' at '+HexStr(AStream.Position,8));
+if Funkn7[0]<>RGIdEmpty then DbgLn('  after scale[0]='+HexStr(Funkn7[0],16)+' at '+HexStr(AStream.Position,8));
+if Funkn7[1]<>RGIdEmpty then DbgLn('  after scale[1]='+HexStr(Funkn7[1],16)+' at '+HexStr(AStream.Position,8));
+if Funkn7[2]<>RGIdEmpty then DbgLn('  after scale[2]='+HexStr(Funkn7[2],16)+' at '+HexStr(AStream.Position,8));
 {
   AStream.ReadQWord;    // !! "master" runtime ID, player or "unit spawner"
   AStream.ReadQWord;    // -1 /unit spawner/ in some layouts
@@ -438,13 +438,13 @@ if Funkn12<>0 then DbgLn('  after mana '+HexStr(Funkn12,8)+' at '+HexStr(AStream
   FFreeSkillPoints:=AStream.ReadDWord; // unallocated skillpoints
 
   // mouse button skills.
-  FRMB1 :=TL2ID(AStream.ReadQWord);    // skill ID RMB active = Pet 1st spell?
-  FRMB2 :=TL2ID(AStream.ReadQWord);    // skill ID RMB secondary
-  FLMB  :=TL2ID(AStream.ReadQWord);    // skill ID LMB
+  FRMB1 :=TRGID(AStream.ReadQWord);    // skill ID RMB active = Pet 1st spell?
+  FRMB2 :=TRGID(AStream.ReadQWord);    // skill ID RMB secondary
+  FLMB  :=TRGID(AStream.ReadQWord);    // skill ID LMB
   // second weapon set (!!!!!!!!!) not for pets
-  FARMB1:=TL2ID(AStream.ReadQWord);    // skill ID RMB active
-  FARMB2:=TL2ID(AStream.ReadQWord);    // skill ID RMB secondary
-  FALMB :=TL2ID(AStream.ReadQWord);    // skill ID LMB
+  FARMB1:=TRGID(AStream.ReadQWord);    // skill ID RMB active
+  FARMB2:=TRGID(AStream.ReadQWord);    // skill ID RMB secondary
+  FALMB :=TRGID(AStream.ReadQWord);    // skill ID LMB
 
   // CURRENT Skill list. depends of current weapon (passive mainly)
   FSkills:=AStream.ReadIdValList;
@@ -532,7 +532,7 @@ DbgLn('end char'#13#10'---------');
   LoadBlock(AStream);
 end;
 
-procedure TTL2Character.SaveToStream(AStream: TTL2Stream);
+procedure TTL2Character.SaveToStream(AStream: TStream);
 var
   i:integer;
 begin
@@ -569,10 +569,10 @@ begin
   AStream.WriteByte(FSign1);  // 0
   AStream.WriteByte(byte(FHidden) and 1);
 
-  if FMorphId=TL2IdEmpty then
+  if FMorphId=RGIdEmpty then
   begin
     AStream.WriteQWord(QWord(FID));
-    AStream.WriteQWord(QWord(TL2IdEmpty));
+    AStream.WriteQWord(QWord(RGIdEmpty));
   end
   else
   begin
@@ -698,7 +698,7 @@ begin
   FixSize  (AStream);
 end;
 
-function ReadCharData(AStream:TTL2Stream; IsChar:boolean=false; IsPet:boolean=false):TTL2Character;
+function ReadCharData(AStream:TStream; IsChar:boolean=false; IsPet:boolean=false):TTL2Character;
 begin
   result:=TTL2Character.Create();
   result.FIsChar:=IsChar;

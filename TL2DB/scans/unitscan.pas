@@ -28,7 +28,8 @@ uses
   ,awkSQLite3
   ,sysutils
   ,TL2ModInfo
-  ,TL2DatNode
+  ,RGGlobal
+  ,RGDatNode
   ;
 
 const
@@ -64,19 +65,6 @@ begin
     dec(ExtPos);
   if (ExtPos<StartPos) then ExtPos:=length(AFilename)+1;
   Result:=copy(AFilename,StartPos,ExtPos-StartPos);
-end;
-
-function CompareWide(s1,s2:PWideChar):boolean;
-begin
-  if s1=s2 then exit(true);
-  if ((s1=nil) and (s2^=#0)) or
-     ((s2=nil) and (s1^=#0)) then exit(true);
-  repeat
-    if s1^<>s2^ then exit(false);
-    if s1^=#0 then exit(true);
-    inc(s1);
-    inc(s2);
-  until false;
 end;
 
 function CheckForMod(const atable,anid,amodid:string):string;
@@ -161,38 +149,32 @@ end;
 
 function ScanWardrobe:integer;
 var
-  p,pp:PTL2Node;
+  p,pp,lnode:pointer;
+  pcw:PWideChar;
   ls:string;
   ldata:twardrobeinfo;
   i,j:integer;
 begin
   result:=0;
-  p:=ParseDatFile('MEDIA\WARDROBE\WARDROBESETS.DAT');
+  p:=ParseDatFile(Pchar(ScanDir+'MEDIA\WARDROBE\WARDROBESETS.DAT'));
   if p<>nil then
   begin
 
-    for j:=0 to p^.childcount-1 do
+    for j:=0 to GetChildCount(p)-1 do
     begin
-      if CompareWide(p^.children^[j].name,'FEATURE') then
+      pp:=GetChild(p,j);
+      if CompareWide(GetNodeName(pp),'FEATURE') then
       begin
-        pp:=@p^.children^[j];
-        for i:=0 to pp^.childcount-1 do
+        for i:=0 to GetChildCount(pp)-1 do
         begin
-          if CompareWide(pp^.children^[i].name,'NAME') then
+          lnode:=GetChild(pp,i);
+          pcw:=GetNodeName(lnode);
+          if      CompareWide(pcw,'NAME' ) then ldata.name :=AsString(lnode)
+          else if CompareWide(pcw,'TYPE' ) then ldata.atype:=AsString(lnode)
+          else if CompareWide(pcw,'GUID' ) then Str(AsInteger64(lnode),ldata.id)
+          else if CompareWide(pcw,'CLASS') then
           begin
-            ldata.name:=pp^.children^[i].asString;
-          end
-          else if CompareWide(pp^.children^[i].name,'TYPE') then
-          begin
-            ldata.atype:=pp^.children^[i].asString;
-          end
-          else if CompareWide(pp^.children^[i].name,'GUID') then
-          begin
-            Str(pp^.children^[i].asInteger64,ldata.id);
-          end
-          else if CompareWide(pp^.children^[i].name,'CLASS') then
-          begin
-            ls:=pp^.children^[i].asString;
+            ls:=asString(lnode);
             ldata.gender:=UpCase(ls[length(ls)]);
           end;
         end;
@@ -254,63 +236,48 @@ end;
 
 procedure AddPet(fname:PChar);
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   lpet:tpetinfo;
   i:integer;
 begin
   p:=ParseDatFile(fname);
   lpet.scale:=1.0;
   lpet.textures:=0;
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if CompareWide(p^.children^[i].name,'NAME') then
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if      CompareWide(pcw,'NAME'                 ) then lpet.name    :=AsString(lnode)
+    else if CompareWide(pcw,'DISPLAYNAME'          ) then lpet.title   :=AsString(lnode)
+    else if CompareWide(pcw,'UNIT_GUID'            ) then lpet.id      :=AsString(lnode)
+    else if CompareWide(pcw,'SCALE'                ) then lpet.scale   :=AsFloat (lnode)
+    else if CompareWide(pcw,'ICON'                 ) then lpet.icon    :=ExtractFileNameOnly(AsString(lnode))
+    else if CompareWide(pcw,'TEXTURE_OVERRIDE_LIST') then lpet.textures:=GetChildCount(lnode)
+    else if CompareWide(pcw,'ARMOR_GRAPH') then
     begin
-      lpet.name:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
-    begin
-      lpet.title:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
-    begin
-      lpet.id:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'ARMOR_GRAPH') then
-    begin
-      lpet.gr_armor:=p^.children^[i].asString;
+      lpet.gr_armor:=AsString(lnode);
       if UpCase(lpet.gr_armor)<>'ARMOR_MINION_BYLEVEL' then
         writeln('Add ',lpet.gr_armor,' for pet Armor please');
     end
-    else if CompareWide(p^.children^[i].name,'DAMAGE_GRAPH') then
+    else if CompareWide(pcw,'DAMAGE_GRAPH') then
     begin
-      lpet.gr_dmg:=p^.children^[i].asString;
+      lpet.gr_dmg:=AsString(lnode);
       if UpCase(lpet.gr_dmg)<>'DAMAGE_MINION_BYLEVEL' then
         writeln('Add ',lpet.gr_dmg,' for pet Damage please');
     end
-    else if CompareWide(p^.children^[i].name,'HEALTH_GRAPH') then
+    else if CompareWide(pcw,'HEALTH_GRAPH') then
     begin
-      lpet.gr_hp:=p^.children^[i].asString;
+      lpet.gr_hp:=AsString(lnode);
       if UpCase(lpet.gr_hp)<>'HEALTH_MINION_BYLEVEL' then
         writeln('Add ',lpet.gr_hp,' for pet HP please');
     end
-    else if CompareWide(p^.children^[i].name,'UNITTYPE') then
+    else if CompareWide(pcw,'UNITTYPE') then
     begin
-      if CompareWide(p^.children^[i].asString,'STARTING PET') then
+      if CompareWide(AsString(lnode),'STARTING PET') then
         lpet.atype:=0
       else
         lpet.atype:=1;
-    end
-    else if CompareWide(p^.children^[i].name,'ICON') then
-    begin
-      lpet.icon:=ExtractFileNameOnly(p^.children^[i].asString);
-    end
-    else if CompareWide(p^.children^[i].name,'SCALE') then
-    begin
-      lpet.scale:=p^.children^[i].asFloat;
-    end
-    else if CompareWide(p^.children^[i].name,'TEXTURE_OVERRIDE_LIST') then
-    begin
-      lpet.textures:=p^.children^[i].childcount;
     end;
   end;
   if not AddPetToBase(lpet) then
@@ -345,7 +312,8 @@ end;
 
 procedure AddQuest(fname:PChar);
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   name,title:string;
   lid:int64;
   i:integer;
@@ -354,22 +322,15 @@ begin
   title:='';
   lid:=-1;
 
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if p^.children^[i].nodetype<>ntGroup then
+    lnode:=GetChild(p,i);
+    if GetNodeType(lnode)<>rgGroup then
     begin
-      if CompareWide(p^.children^[i].name,'NAME') then
-      begin
-        name:=p^.children^[i].asString;
-      end
-      else if CompareWide(p^.children^[i].name,'QUEST_GUID') then
-      begin
-        lid:=p^.children^[i].asInteger64;
-      end
-      else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
-      begin
-        title:=p^.children^[i].asString;
-      end;
+      pcw:=GetNodeName(lnode);
+      if      CompareWide(pcw,'NAME'       ) then name :=AsString   (lnode)
+      else if CompareWide(pcw,'QUEST_GUID' ) then lid  :=AsInteger64(lnode)
+      else if CompareWide(pcw,'DISPLAYNAME') then title:=AsString   (lnode);
     end;
   end;
   if lid<>-1 then
@@ -411,7 +372,8 @@ end;
 
 procedure AddStat(fname:PChar);
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   name,title:string;
   lid:int64;
   saves:boolean;
@@ -420,24 +382,14 @@ begin
   p:=ParseDatFile(fname);
   title:='';
   saves:=false;
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if CompareWide(p^.children^[i].name,'NAME') then
-    begin
-      name:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'UNIQUE_GUID') then
-    begin
-      lid:=p^.children^[i].asInteger64;
-    end
-    else if CompareWide(p^.children^[i].name,'SAVES') then
-    begin
-      saves:=p^.children^[i].asBoolean;
-    end
-    else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
-    begin
-      title:=p^.children^[i].asString;
-    end;
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if      CompareWide(pcw,'NAME'       ) then name :=AsString   (lnode)
+    else if CompareWide(pcw,'UNIQUE_GUID') then lid  :=AsInteger64(lnode)
+    else if CompareWide(pcw,'SAVES'      ) then saves:=AsBool     (lnode)
+    else if CompareWide(pcw,'DISPLAYNAME') then title:=AsString   (lnode);
   end;
   if not AddStatToBase(name,lid,title,saves) then
     writeln('can''t update ',fname);
@@ -471,7 +423,8 @@ end;
 
 procedure AddRecipe(fname:PChar);
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   name,title:string;
   lid:int64;
   i,mask:integer;
@@ -481,24 +434,26 @@ begin
   lid:=-1;
 
   mask:=0;
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if p^.children^[i].nodetype<>ntGroup then
+    lnode:=GetChild(p,i);
+    if GetNodeType(lnode)<>rgGroup then
     begin
-      if CompareWide(p^.children^[i].name,'NAME') then
+      pcw:=GetNodeName(lnode);
+      if CompareWide(pcw,'NAME') then
       begin
         mask:=mask or 1;
-        name:=p^.children^[i].asString;
+        name:=AsString(lnode);
       end
-      else if CompareWide(p^.children^[i].name,'GUID') then
+      else if CompareWide(pcw,'GUID') then
       begin
         mask:=mask or 2;
-        lid:=p^.children^[i].asInteger64;
+        lid:=AsInteger64(lnode);
       end
-      else if CompareWide(p^.children^[i].name,'RESULT') then
+      else if CompareWide(pcw,'RESULT') then
       begin
         mask:=mask or 4;
-        title:=p^.children^[i].asString;
+        title:=AsString(lnode);
       end;
       if mask=7 then break;
     end;
@@ -539,7 +494,8 @@ end;
 
 procedure AddMob(fname:PChar);
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   lid,lname,ltitle:string;
   i,mask:integer;
 begin
@@ -549,22 +505,24 @@ begin
 
   p:=ParseDatFile(fname);
   mask:=0;
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if CompareWide(p^.children^[i].name,'NAME') then
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if CompareWide(pcw,'NAME') then
     begin
       mask:=mask or 1;
-      lname:=p^.children^[i].asString;
+      lname:=AsString(lnode);
     end
-    else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
+    else if CompareWide(pcw,'DISPLAYNAME') then
     begin
       mask:=mask or 2;
-      ltitle:=p^.children^[i].asString;
+      ltitle:=AsString(lnode);
     end
-    else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
+    else if CompareWide(pcw,'UNIT_GUID') then
     begin
       mask:=mask or 4;
-      lid:=p^.children^[i].asString;
+      lid:=AsString(lnode);
     end;
     if mask=7 then break;
   end;
@@ -623,7 +581,8 @@ end;
 
 function GetBaseUnitType(const fname:string):string;
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   lbase:string;
   i:integer;
 begin
@@ -640,16 +599,18 @@ begin
     end;
   end;
 
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if CompareWide(p^.children^[i].name,'UNITTYPE') then
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if CompareWide(pcw,'UNITTYPE') then
     begin
-      result:=p^.children^[i].asString;
+      result:=AsString(lnode);
       break;
     end;
-    if CompareWide(p^.children^[i].name,'BASEFILE') then
+    if CompareWide(pcw,'BASEFILE') then
     begin
-      lbase:=p^.children^[i].asString;
+      lbase:=AsString(lnode);
     end;
   end;
 
@@ -661,7 +622,8 @@ end;
 
 function GetBaseIcon(const fname:string):string;
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   lbase:string;
   i:integer;
 begin
@@ -678,21 +640,22 @@ begin
     end;
   end;
 
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if CompareWide(p^.children^[i].name,'ICON') then
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if CompareWide(pcw,'ICON') then
     begin
-      result:=p^.children^[i].asString;
+      result:=AsString(lnode);
       break;
     end;
-    if CompareWide(p^.children^[i].name,'GAMBLER_ICON') then
+    if (result='') and (CompareWide(pcw,'GAMBLER_ICON')) then
     begin
-      if result='' then
-        result:=p^.children^[i].asString;
+      result:=AsString(lnode);
     end;
-    if CompareWide(p^.children^[i].name,'BASEFILE') then
+    if CompareWide(pcw,'BASEFILE') then
     begin
-      lbase:=p^.children^[i].asString;
+      lbase:=AsString(lnode);
     end;
   end;
 
@@ -704,7 +667,8 @@ end;
 
 procedure AddItem(fname:PChar);
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   litem:tItemInfo;
   i:integer;
 begin
@@ -716,54 +680,30 @@ begin
   litem.stack  :='1';
 
   if Pos('MEDIA\UNITS\ITEMS\QUEST_ITEMS\',fname)>0 then litem.quest:='1' else litem.quest:='0';
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if CompareWide(p^.children^[i].name,'NAME') then
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if      CompareWide(pcw,'NAME'        ) then litem.name   :=AsString(lnode)
+    else if CompareWide(pcw,'DISPLAYNAME' ) then litem.title  :=AsString(lnode)
+    else if CompareWide(pcw,'DESCRIPTION' ) then litem.descr  :=AsString(lnode)
+    else if CompareWide(pcw,'BASEFILE'    ) then litem.base   :=AsString(lnode)
+    else if CompareWide(pcw,'UNIT_GUID'   ) then litem.id     :=AsString(lnode)
+    else if CompareWide(pcw,'USES'        ) then litem.ausable:=AsString(lnode)
+    else if CompareWide(pcw,'MAXSTACKSIZE') then Str(AsInteger(lnode),litem.stack)
+    else if CompareWide(pcw,'ICON'        ) then litem.icon:=ExtractFileNameOnly(AsString(lnode))
+    else if (litem.icon='') and CompareWide(pcw,'GAMBLER_ICON') then
+      litem.icon:=ExtractFileNameOnly(AsString(lnode))
+    else if CompareWide(pcw,'UNITTYPE') then
     begin
-      litem.name:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
-    begin
-      litem.title:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'DESCRIPTION') then
-    begin
-      litem.descr:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'ICON') then
-    begin
-      litem.icon:=ExtractFileNameOnly(p^.children^[i].asString);
-    end
-    else if CompareWide(p^.children^[i].name,'GAMBLER_ICON') then
-    begin
-      if litem.icon='' then
-        litem.icon:=ExtractFileNameOnly(p^.children^[i].asString);
-    end
-    else if CompareWide(p^.children^[i].name,'BASEFILE') then
-    begin
-      litem.base:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'MAXSTACKSIZE') then
-    begin
-      Str(p^.children^[i].asInteger,litem.stack);
-    end
-    else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
-    begin
-      litem.id:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'UNITTYPE') then
-    begin
-      litem.unittype:=p^.children^[i].asString;
+      litem.unittype:=AsString(lnode);
       if (litem.quest='0') and (
          (litem.unittype='LEVEL ITEM') or 
          (litem.unittype='QUESTITEM')) then
            litem.quest:='1';
-    end
-    else if CompareWide(p^.children^[i].name,'USES') then
-    begin
-      litem.ausable:=p^.children^[i].asString;
     end;
   end;
+
   if (litem.base<>'') then
   begin
     if (litem.unittype='') then litem.unittype:=GetBaseUnitType(litem.base);
@@ -803,27 +743,21 @@ end;
 
 procedure AddProp(fname:PChar);
 var
-  p:PTL2Node;
+  p,lnode:pointer;
+  pcw:PWideChar;
   lid,lname,ltitle,lquest:string;
   i:integer;
 begin
   p:=ParseDatFile(fname);
   ltitle:='';
   if Pos('MEDIA\UNITS\PROPS\QUESTPROPS\',fname)>0 then lquest:='1' else lquest:='0';
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if CompareWide(p^.children^[i].name,'NAME') then
-    begin
-      lname:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
-    begin
-      ltitle:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
-    begin
-      lid:=p^.children^[i].asString;
-    end;
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if      CompareWide(pcw,'NAME'       ) then lname :=AsString(lnode)
+    else if CompareWide(pcw,'DISPLAYNAME') then ltitle:=AsString(lnode)
+    else if CompareWide(pcw,'UNIT_GUID'  ) then lid   :=AsString(lnode);
 {
     else if (lquest='0') and CompareWide(p^.children^[i].name,'UNITTYPE') then
     begin
@@ -878,7 +812,8 @@ end;
 
 procedure AddSkill(fname:PChar);
 var
-  p,pp,ppp:PTL2Node;
+  p,pp,ppp:pointer;
+  pcw:PWideChar;
   lskill:TSkillInfo;
   levels:array [0..63] of integer;
   ls:string;
@@ -902,55 +837,33 @@ begin
   haslevels:=false;
   minlevel:=0;
 
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    pp:=@p^.children^[i];
+    pp:=GetChild(p,i);
+    pcw:=GetNodeName(pp);
 
-    if CompareWide(pp^.name,'NAME') then
+    if      CompareWide(pcw,'NAME'             ) then lskill.name :=AsString(pp)
+    else if CompareWide(pcw,'DISPLAYNAME'      ) then lskill.title:=AsString(pp)
+    else if CompareWide(pcw,'DESCRIPTION'      ) then lskill.descr:=AsString(pp)
+    else if CompareWide(pcw,'BASE_DESCRIPTION' ) then lskill.descr:=AsString(pp)
+    else if CompareWide(pcw,'REQUIREMENT_GRAPH') then lskill.graph:=AsString(pp)
+    else if CompareWide(pcw,'SKILL_ICON'       ) then lskill.icon :=AsString(pp)
+    else if CompareWide(pcw,'LEVEL_REQUIRED'   ) then Str(AsInteger  (pp),lskill.minlvl)
+    else if CompareWide(pcw,'UNIQUE_GUID'      ) then Str(AsInteger64(pp),lskill.id)
+    else if CompareWide(pcw,'ACTIVATION_TYPE'  ) then
     begin
-      lskill.name:=pp^.asString;
-    end
-    else if CompareWide(pp^.name,'DISPLAYNAME') then
-    begin
-      lskill.title:=pp^.asString;
-    end
-    else if CompareWide(pp^.name,'DESCRIPTION') then
-    begin
-      lskill.descr:=pp^.asString;
-    end
-    else if CompareWide(pp^.name,'BASE_DESCRIPTION') then
-    begin
-      lskill.descr:=pp^.asString;
-    end
-    else if CompareWide(pp^.name,'REQUIREMENT_GRAPH') then
-    begin
-      lskill.graph:=pp^.asString;
-    end
-    else if CompareWide(pp^.name,'ACTIVATION_TYPE') then
-    begin
-      if pp^.asString='PASSIVE' then
+      if CompareWide(AsString(pp),'PASSIVE') then
         lskill.passive:='1';
-    end
-    else if CompareWide(pp^.name,'SKILL_ICON') then
-    begin
-      lskill.icon:=pp^.asString;
-    end
-    else if CompareWide(pp^.name,'LEVEL_REQUIRED') then
-    begin
-      Str(pp^.asInteger,lskill.minlvl);
-    end
-    else if CompareWide(pp^.name,'UNIQUE_GUID') then
-    begin
-      Str(pp^.asInteger64,lskill.id);
     end;
-    if (pp^.nodeType=ntGroup) and (Pos('LEVEL',WideString(pp^.name))=1) then
+
+    if (GetNodeType(pp)=rgGroup) and (Pos('LEVEL',WideString(pcw))=1) then
     begin
-      for j:=0 to pp^.childcount-1 do
+      for j:=0 to GetChildCount(pp)-1 do
       begin
-        ppp:=@pp^.children^[j];
-        if CompareWide(ppp^.name,'LEVEL_REQUIRED') then
+        ppp:=GetChild(pp,j);
+        if CompareWide(GetNodeName(ppp),'LEVEL_REQUIRED') then
         begin
-          levels[lcnt]:=ppp^.asInteger;
+          levels[lcnt]:=asInteger(ppp);
           if minlevel>levels[lcnt] then minlevel:=levels[lcnt];
           if levels[lcnt]>0 then
             haslevels:=true;
@@ -966,7 +879,7 @@ begin
     begin
       pp:=FindNode(p,'LEVEL1/EVENT_TRIGGER/AFFIXES/AFFIXLEVEL');
       if pp<>nil then
-        minlevel:=pp^.AsInteger;
+        minlevel:=AsInteger(pp);
     end;
     if minlevel<0 then minlevel:=0;
     Str(minlevel,lskill.minlvl);
@@ -1055,7 +968,8 @@ end;
 
 procedure AddPlayer(fname:PChar);
 var
-  p:PTL2Node;
+  p,pp,lnode:pointer;
+  pcw:PWideChar;
   lclass:tclassinfo;
   lunittype,lsname,lslevel:string;
   i,j:integer;
@@ -1070,102 +984,63 @@ begin
   lclass.defense  :='0';
   lunittype:='';
 
-  for i:=0 to p^.childcount-1 do
+  for i:=0 to GetChildCount(p)-1 do
   begin
-    if CompareWide(p^.children^[i].name,'BASEFILE') then
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if      CompareWide(pcw,'BASEFILE'   ) then lclass.base :=AsString(lnode)
+    else if CompareWide(pcw,'NAME'       ) then lclass.name :=AsString(lnode)
+    else if CompareWide(pcw,'DISPLAYNAME') then lclass.title:=AsString(lnode)
+    else if CompareWide(pcw,'DESCRIPTION') then lclass.descr:=AsString(lnode)
+    else if CompareWide(pcw,'UNITTYPE'   ) then lunittype   :=AsString(lnode)
+    else if CompareWide(pcw,'UNIT_GUID'  ) then lclass.id   :=AsString(lnode)
+    else if CompareWide(pcw,'STRENGTH'   ) then Str(AsInteger(lnode),lclass.strength)
+    else if CompareWide(pcw,'DEXTERITY'  ) then Str(AsInteger(lnode),lclass.dexterity)
+    else if CompareWide(pcw,'MAGIC'      ) then Str(AsInteger(lnode),lclass.magic)
+    else if CompareWide(pcw,'DEFENSE'    ) then Str(AsInteger(lnode),lclass.defense)
+    else if CompareWide(pcw,'ICON'       ) then lclass.icon:=ExtractFileNameOnly(AsString(lnode))
+    else if CompareWide(pcw,'MANA_GRAPH') then
     begin
-      lclass.base:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'NAME') then
-    begin
-      lclass.name:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'DISPLAYNAME') then
-    begin
-      lclass.title:=p^.children^[i].asString;
-    end
-    else if CompareWide(p^.children^[i].name,'DESCRIPTION') then
-    begin
-      lclass.descr:=p^.children^[i].asString;
-    end
-
-    else if CompareWide(p^.children^[i].name,'UNITTYPE') then
-    begin
-      lunittype:=p^.children^[i].asString;
-    end
-
-    else if CompareWide(p^.children^[i].name,'STRENGTH') then
-    begin
-      Str(p^.children^[i].asInteger,lclass.strength);
-    end
-    else if CompareWide(p^.children^[i].name,'DEXTERITY') then
-    begin
-      Str(p^.children^[i].asInteger,lclass.dexterity);
-    end
-    else if CompareWide(p^.children^[i].name,'MAGIC') then
-    begin
-      Str(p^.children^[i].asInteger,lclass.magic);
-    end
-    else if CompareWide(p^.children^[i].name,'DEFENSE') then
-    begin
-      Str(p^.children^[i].asInteger,lclass.defense);
-    end
-
-    else if CompareWide(p^.children^[i].name,'ICON') then
-    begin
-      lclass.icon:=ExtractFileNameOnly(p^.children^[i].asString);
-    end
-    else if CompareWide(p^.children^[i].name,'MANA_GRAPH') then
-    begin
-      lclass.gr_mp:=p^.children^[i].asString;
+      lclass.gr_mp:=AsString(lnode);
       if UpCase(lclass.gr_mp)<>'MANA_PLAYER_GENERIC' then
         writeln('Add ',lclass.gr_mp,' for class MP please');
     end
-    else if CompareWide(p^.children^[i].name,'HEALTH_GRAPH') then
+    else if CompareWide(pcw,'HEALTH_GRAPH') then
     begin
-      lclass.gr_hp:=p^.children^[i].asString;
+      lclass.gr_hp:=AsString(lnode);
       if UpCase(lclass.gr_hp)<>'HEALTH_PLAYER_GENERIC' then
         writeln('Add ',lclass.gr_hp,' for class HP please');
     end
-    else if CompareWide(p^.children^[i].name,'STAT_POINTS_PER_LEVEL') then
+    else if CompareWide(pcw,'STAT_POINTS_PER_LEVEL') then
     begin
-      lclass.gr_st:=p^.children^[i].asString;
+      lclass.gr_st:=AsString(lnode);
       if UpCase(lclass.gr_st)<>'STAT_POINTS_PER_LEVEL' then
         writeln('Add ',lclass.gr_st,' for class STAT please');
     end
-    else if CompareWide(p^.children^[i].name,'SKILL_POINTS_PER_LEVEL') then
+    else if CompareWide(pcw,'SKILL_POINTS_PER_LEVEL') then
     begin
-      lclass.gr_sk:=p^.children^[i].asString;
+      lclass.gr_sk:=AsString(lnode);
       if UpCase(lclass.gr_sk)<>'SKILL_POINTS_PER_LEVEL' then
         writeln('Add ',lclass.gr_sk,' for class SKILL please');
     end
-    else if CompareWide(p^.children^[i].name,'SKILL_POINTS_PER_FAME_LEVEL') then
+    else if CompareWide(pcw,'SKILL_POINTS_PER_FAME_LEVEL') then
     begin
-      lclass.gr_fm:=p^.children^[i].asString;
+      lclass.gr_fm:=AsString(lnode);
       if UpCase(lclass.gr_fm)<>'SKILL_POINTS_PER_FAME_LEVEL' then
         writeln('Add ',lclass.gr_fm,' for class FAME please');
-    end
-    else if CompareWide(p^.children^[i].name,'UNIT_GUID') then
-    begin
-      lclass.id:=p^.children^[i].asString;
     end;
 
-    if CompareWide(p^.children^[i].name,'SKILL') then
+    if CompareWide(pcw,'SKILL') then
     begin
       lsname :='';
       lslevel:='';
-      with p^.children^[i] do
-        for j:=0 to childcount-1 do
-        begin
-          if CompareWide(children^[j].name,'NAME') then
-          begin
-            lsname:=children^[j].asString;
-          end
-          else if CompareWide(children^[j].name,'LEVEL') then
-          begin
-            Str(children^[j].asInteger,lslevel);
-          end;
-        end;
+      for j:=0 to GetChildCount(lnode)-1 do
+      begin
+        pp:=GetChild(lnode,j);
+        pcw:=GetNodeName(pp);
+        if      CompareWide(pcw,'NAME' ) then lsname:=AsString(pp)
+        else if CompareWide(pcw,'LEVEL') then Str(AsInteger(pp),lslevel);
+      end;
 
       if lsname<>'' then
       begin
@@ -1183,14 +1058,15 @@ begin
   begin
     p:=ParseDatFile(PChar('MEDIA\UNITTYPES\'+lunittype+'.DAT'));
     if p<>nil then
-      for i:=0 to p^.childcount-1 do
+      for i:=0 to GetChildCount(p)-1 do
       begin
-        if CompareWide(p^.children^[i].asString,'PLAYER_FEMALE') then
+        pcw:=AsString(GetChild(p,i));
+        if CompareWide(pcw,'PLAYER_FEMALE') then
         begin
           lclass.gender:='F';
           break;
         end
-        else if CompareWide(p^.children^[i].asString,'PLAYER_MALE') then
+        else if CompareWide(pcw,'PLAYER_MALE') then
         begin
           lclass.gender:='M';
           break;
@@ -1252,7 +1128,7 @@ var
   lver:integer;
   lmod:TTL2ModInfo;
 begin
-  if ReadModInfo('MOD.DAT',lmod) then
+  if ReadModInfo(PChar(ScanDir+'MOD.DAT'),lmod) then
   begin
     smodid :=IntToStr(lmod.modid);
     lSQL:='SELECT version FROM Mods WHERE id='+smodid;
@@ -1348,16 +1224,24 @@ function PrepareScan(
     const apath:string;
     aupdateall:boolean=false;
     const aroot:string=''):boolean;
+var
+  p,pp:pointer;
 begin
-  AddTheMod();
+  ScanDir:=apath;
+  if ScanDir[Length(ScanDir)]<>'\' then
+    ScanDir:=ScanDir+'\';
+
+//  AddTheMod();
+
+  p:=ParseDatFile(PChar(ScanDir+'MOD.DAT'));
+  pp:=FindNode(p,'MOD_ID');
+  Str(AsInteger64(pp),smodid);
+  DeleteNode(p);
+
   result:=smodid<>'';
   if not result then exit;
 
   DoUpdate:=aupdateall;
-
-  ScanDir:=apath;
-  if ScanDir[Length(ScanDir)]<>'\' then
-    ScanDir:=ScanDir+'\';
 
   if aroot<>'' then
   begin

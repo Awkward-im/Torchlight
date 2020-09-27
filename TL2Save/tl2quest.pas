@@ -16,18 +16,18 @@ interface
 
 uses
   Classes,
-  TL2Types,
+  rgglobal,
   TL2Base,
   TL2Common,
-  TL2Stream;
+  rgstream;
 
 
 type
   TTL2QuestData = record
-    id  :TL2ID;
-    q1  :TL2ID;
-    d1  :TL2Integer;
-    d2  :TL2Integer;
+    id  :TRGID;
+    q1  :TRGID;
+    d1  :TRGInteger;
+    d2  :TRGInteger;
     len :integer;
     data:PByte;
 
@@ -46,8 +46,8 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TTL2Stream); override;
-    procedure SaveToStream  (AStream: TTL2Stream); override;
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream  (AStream: TStream); override;
 
   private
     FQuestsDone  :TL2IdList;
@@ -64,7 +64,7 @@ type
   end;
 
 
-function ReadQuests(AStream:TTL2Stream):TTL2Quest;
+function ReadQuests(AStream:TStream):TTL2Quest;
 
 
 implementation
@@ -116,7 +116,7 @@ end;
 
 //----- Save / load -----
 
-procedure TTL2Quest.LoadFromStream(AStream: TTL2Stream);
+procedure TTL2Quest.LoadFromStream(AStream: TStream);
 var
   i,lcnt:integer;
   loffset:integer;
@@ -139,10 +139,10 @@ begin
     begin
       ofs:=AStream.Position;
 
-      id:=TL2ID(AStream.ReadQWord);
-      q1:=TL2ID(Check(AStream.ReadQWord,'quest_8_'+HexStr(AStream.Position,8),QWord(TL2IdEmpty)));
+      id:=TRGID(AStream.ReadQWord);
+      q1:=TRGID(Check(AStream.ReadQWord,'quest_8_'+HexStr(AStream.Position,8),QWord(RGIdEmpty)));
       d1:=AStream.ReadDWord;
-      d2:=TL2Integer(Check(AStream.ReadDWord,'quest_4_'+HexStr(AStream.Position,8),$FFFFFFFF));
+      d2:=TRGInteger(Check(AStream.ReadDWord,'quest_4_'+HexStr(AStream.Position,8),$FFFFFFFF));
 
       len :=(DataOffset+loffset)-AStream.Position;
       data:=AStream.ReadBytes(len);
@@ -152,7 +152,7 @@ begin
   LoadBlock(AStream);
 end;
 
-procedure TTL2Quest.SaveToStream(AStream: TTL2Stream);
+procedure TTL2Quest.SaveToStream(AStream: TStream);
 var
   i:integer;
 begin
@@ -241,7 +241,7 @@ end;
     00 00 00 00
 *)
 
-function ReadQuests(AStream:TTL2Stream):TTL2Quest;
+function ReadQuests(AStream:TStream):TTL2Quest;
 begin
   result:=TTL2Quest.Create;
   try

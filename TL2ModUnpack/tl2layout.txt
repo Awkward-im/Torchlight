@@ -40,3 +40,57 @@ TEXT: bla-bla -> Translate
 					<STRING>CATEGORY:TEXT
 					<STRING>EDITORTYPE:uitext
 				[/PROPERTY]
+
+
+offset to binary:
+<STRING>[DE]ACTIVE THEMES
+				[PROPERTY]
+					<STRING>NAME:ACTIVE THEMES
+					<STRING>DESCRIPTION:Themes that must be active for this group to show.
+					<STRING>TYPEOFDATA:INT64
+0x70					<INTEGER>ID:112
+					<STRING>CATEGORY:THEMES
+					<STRING>EDITORTYPE:theme
+				[/PROPERTY]
+				[PROPERTY]
+					<STRING>NAME:DEACTIVE THEMES
+					<STRING>DESCRIPTION:Themes that must NOT be active for this group to show.
+					<STRING>TYPEOFDATA:INT64
+0x71					<INTEGER>ID:113
+					<STRING>CATEGORY:THEMES
+					<STRING>EDITORTYPE:theme
+				[/PROPERTY]
+------------
+8b = -1
+6b = 0
+4b = 06
+4b = -1
+11b = 0
+2b = 03
+8b = id of Group object
+1b = 0
+4b = 1
+1b = 1
+4b = 0xED=237
+4b = -1
+3b = 0
+4b = 1
+8b - id for ACTIVE THEMES
+6b = 0
+8b = id
+1b = 0
+4b = 1
+1b = 1
+4b = 0x0275  prop offset?
+4b = -1
+13b = 0
+8b = id
+1b = 0
+4b = 1
+1b = 1
+4b = 0x458E  prop offset?
+4b = -1
+7b = 0
+4b = 1
+8b - id for DEACTIVE THEME
+2b = 0

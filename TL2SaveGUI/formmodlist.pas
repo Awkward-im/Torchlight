@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  Grids, tl2save, tl2types, tl2db;
+  Grids, tl2save, rgglobal, tl2db;
 
 type
 
@@ -112,7 +112,7 @@ end;
 
 procedure TfmModList.sbAddClick(Sender: TObject);
 var
-  lid:TL2ID;
+  lid:TRGID;
   llist:tModDataArray;
   i,idx:integer;
   found:boolean;

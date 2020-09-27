@@ -28,8 +28,8 @@ implementation
 
 uses
   Classes,
-  TL2DatNode,
-  rgtypes;
+  rgglobal,
+  rgnode;
 
 const
   defdictname = 'dictionary.txt';
@@ -46,19 +46,6 @@ type
     hash:dword;
   end;
 
-function CompareWide(s1,s2:PWideChar):boolean;
-begin
-  if s1=s2 then exit(true);
-  if ((s1=nil) and (s2^=#0)) or
-     ((s2=nil) and (s1^=#0)) then exit(true);
-  repeat
-    if s1^<>s2^ then exit(false);
-    if s1^=#0 then exit(true);
-    inc(s1);
-    inc(s2);
-  until false;
-end;
-
 {$PUSH}
 {$O-}
 function RGHash(instr:PChar; alen:integer):dword;
@@ -70,6 +57,8 @@ begin
     result:=(result SHR 27) xor (result SHL 5) xor ORD(instr[i]);
 end;
 {$POP}
+
+//===== DAT tags =====
 
 var
   strbuf:WideString;
@@ -277,6 +266,9 @@ begin
     TDict(adict):=LoadList(ls);
 end;
 
+//===== Layout =====
+
+//----- Objects.dat -----
 
 function LoadObjectInfo(const fname:string=''):pointer;
 var
@@ -375,6 +367,27 @@ begin
     end;
   end;
 end;
+
+//----- Processed -----
+
+type
+  TPropInfo = record
+    name   :string;
+    name_v2:string;
+    id     :dword; // byte
+    id_v2  :dword;
+    ptype  :integer;
+  end;
+type
+  TObjInfo = record
+    name   :string;
+    name_v2:string;
+    id     :dword;
+    id_v2  :dword;
+    props  :array of TPropInfo;
+  end;
+type
+  TLayInfo = array of TObjInfo;
 
 
 initialization

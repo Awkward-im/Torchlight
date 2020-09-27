@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls, Buttons,
-  tl2save, tl2types;
+  tl2save, rgglobal;
 
 type
 

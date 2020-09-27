@@ -2,10 +2,6 @@ unit layunpack;
 
 interface
 
-uses
-  TL2DatNode;
-
-
 function DoParseLayout (buf:pByte):pointer;
 function IsProperLayout(buf:pByte):boolean;
 
@@ -15,11 +11,13 @@ implementation
 uses
   sysutils,
   rgglobal,
+  rgnode,
   rgdict,
-  rgtypes,
-  TL2Memory;
+  rgmemory,
+  deglobal;
 
 var
+  dodesc:boolean;
   tdict,aliases,dict,cdict:pointer;
   _filestart:PByte;
   buffer:WideString;
@@ -31,9 +29,12 @@ var
 function ReadStr(var aptr:PByte):PWideChar;
 begin
   case fver of
-    verTL2: result:=ReadShortString(aptr);
+//    verTL1: result:=memReadDWordString(aptr);
+    verTL2: result:=memReadShortString(aptr);
     verHob,
-    verRG : result:=ReadShortStringUTF8(aptr);
+    verRG : result:=memReadShortStringUTF8(aptr);
+  else
+    result:=nil;
   end;
 end;
 
@@ -64,6 +65,16 @@ begin
     end;
   end;
 
+{$IFDEF DEBUG}
+if result<>nil then
+begin
+  if dodesc then
+    laydesclog.Add(IntToStr(aid)+':'+string(WideString(result)))
+  else
+    laydatlog.Add(IntToStr(aid)+':'+string(WideString(result)));
+end;
+{$ENDIF}
+
   if result=nil then
   begin
     Str(aid,buffer);
@@ -72,7 +83,8 @@ begin
     if hashlog<>nil then
     begin
   //writeln(curfname);
-      hashlog.Add(IntToStr(aid));
+      if (ftype<>3) or dodesc then
+      hashlog.Add('LAY:'+IntToStr(aid));
     end;
   end;
 end;
@@ -89,30 +101,31 @@ var
   lgroups,lglinks,i,j:integer;
 begin
   lgroup:=AddGroup(anode,'LOGICGROUP');
-  lgroups:=ReadByte(aptr);
+  lgroups:=memReadByte(aptr);
   for i:=0 to lgroups-1 do
   begin
     lgobj:=AddGroup(lgroup,'LOGICOBJECT');
-    AddUnsigned (lgobj,'ID'      ,ReadByte     (aptr));
-    AddInteger64(lgobj,'OBJECTID',ReadInteger64(aptr));
-    AddFloat    (lgobj,'X'       ,ReadFloat    (aptr));
-    AddFloat    (lgobj,'Y'       ,ReadFloat    (aptr));
+    AddUnsigned (lgobj,'ID'      ,memReadByte     (aptr));
+    AddInteger64(lgobj,'OBJECTID',memReadInteger64(aptr));
+    AddFloat    (lgobj,'X'       ,memReadFloat    (aptr));
+    AddFloat    (lgobj,'Y'       ,memReadFloat    (aptr));
 
-    lsize:=ReadInteger(aptr); // absolute offset of next
+    lsize:=memReadInteger(aptr); // absolute offset of next
 
-    lglinks:=ReadByte(aptr);
+    lglinks:=memReadByte(aptr);
     for j:=0 to lglinks-1 do
     begin
       lglnk:=AddGroup(lgobj,'LOGICLINK');
-      AddInteger(lglnk,'LINKINGTO' ,ReadByte(aptr));
+      AddInteger(lglnk,'LINKINGTO' ,memReadByte(aptr));
       case fver of
         verTL2: begin
-          pcw :=ReadShortString(aptr); AddString(lglnk,'OUTPUTNAME',pcw); FreeMem(pcw);
-          pcw :=ReadShortString(aptr); AddString(lglnk,'INPUTNAME' ,pcw); FreeMem(pcw);
+          pcw :=memReadShortString(aptr); AddString(lglnk,'OUTPUTNAME',pcw); FreeMem(pcw);
+          pcw :=memReadShortString(aptr); AddString(lglnk,'INPUTNAME' ,pcw); FreeMem(pcw);
         end;
-        verHob: begin
-          AddString(lglnk,'OUTPUTNAME',GetStr(ReadDWord(aptr)));
-          AddString(lglnk,'INPUTNAME' ,GetStr(ReadDWord(aptr)));
+        verHob,
+        verRG : begin
+          AddString(lglnk,'OUTPUTNAME',GetStr(memReadDWord(aptr)));
+          AddString(lglnk,'INPUTNAME' ,GetStr(memReadDWord(aptr)));
         end;
       end;
     end;
@@ -129,13 +142,13 @@ begin
   tldata:=AddGroup(anode,'TIMELINEDATA');
   AddInteger64(tldata,'ID',aid);
 
-  ltlobjs:=ReadByte(aptr);
+  ltlobjs:=memReadByte(aptr);
   for i:=0 to ltlobjs-1 do
   begin
     tlobject:=AddGroup(tldata,'TIMELINEOBJECT');
-    AddInteger64(tlobject,'OBJECTID',ReadInteger64(aptr));
+    AddInteger64(tlobject,'OBJECTID',memReadInteger64(aptr));
     
-    ltlprops:=ReadByte(aptr);
+    ltlprops:=memReadByte(aptr);
     for j:=0 to ltlprops-1 do
     begin
       ltltype:=0;
@@ -171,14 +184,14 @@ if IsConsole then writeln('Unknown Timeline type at ',HexStr(laptr-_filestart,8)
         tlnode:=AddGroup(tlobject,'??TIMELINEUNKNOWN');
       end;
 
-      ltlpoints:=ReadByte(aptr);
+      ltlpoints:=memReadByte(aptr);
       for k:=0 to ltlpoints-1 do
       begin
 //writeln('point ',k);
         tlpoint:=AddGroup(tlnode,'TIMELINEPOINT');
-        AddFloat(tlpoint,'TIMEPERCENT',ReadFloat(aptr));
+        AddFloat(tlpoint,'TIMEPERCENT',memReadFloat(aptr));
 
-        lint:=ReadByte(aptr);
+        lint:=memReadByte(aptr);
         case lint of
           0: pcw:='Linear';
           1: pcw:='Linear Round';
@@ -196,16 +209,16 @@ if IsConsole then writeln('Unknown Timeline type at ',HexStr(laptr-_filestart,8)
         begin
           if ltltype=1 then
           begin
-            pcw:=ReadShortString(aptr);
+            pcw:=memReadShortString(aptr);
 //writeln('point value ',string(widestring(pcw)));
             AddString(tlpoint,'VALUE',pcw);
             FreeMem(pcw);
           end;
         end;
 
-        if fver=verHob then
+        if (fver=verHob) or (fver=verRG) then
         begin
-          pcw:=ReadShortStringUTF8(aptr);
+          pcw:=memReadShortStringUTF8(aptr);
           if pcw<>nil then
           begin
             ltltype:=1;
@@ -215,7 +228,7 @@ if IsConsole then writeln('Unknown Timeline type at ',HexStr(laptr-_filestart,8)
 
           if (ltltype=0) or (ltltype=1) then
           begin
-            pcw:=ReadShortStringUTF8(aptr);
+            pcw:=memReadShortStringUTF8(aptr);
             if pcw<>nil then
             begin
               ltltype:=1;
@@ -239,36 +252,37 @@ var
   pcw,lname:PWideChar;
   ltype,lsize:integer;
 begin
-  lsize:=ReadWord(aptr);
+  lsize:=memReadWord(aptr);
   if lsize=0 then exit;
-  ltype:=ReadByte(aptr);
   lptr:=aptr;
+  ltype:=memReadByte(aptr);
 
   case GetObjectProperty(aobj,ltype,lname) of
-    rgBool     : AddBool     (anode,lname,ReadInteger  (aptr)<>0);
-    rgInteger  : AddInteger  (anode,lname,ReadInteger  (aptr));
-    rgUnsigned : AddUnsigned (anode,lname,ReadDWord    (aptr));
-    rgFloat    : AddFloat    (anode,lname,ReadFloat    (aptr));
-    rgInteger64: AddInteger64(anode,lname,ReadInteger64(aptr));
+    rgBool     : AddBool     (anode,lname,memReadInteger  (aptr)<>0);
+    rgInteger  : AddInteger  (anode,lname,memReadInteger  (aptr));
+    rgUnsigned : AddUnsigned (anode,lname,memReadDWord    (aptr));
+    rgFloat    : AddFloat    (anode,lname,memReadFloat    (aptr));
+    rgInteger64: AddInteger64(anode,lname,memReadInteger64(aptr));
     rgString: begin
-	    pcw:=ReadShortString(aptr);
+	    pcw:=memReadShortString(aptr);
 	    AddString(anode,lname,pcw);
 	    FreeMem(pcw);
     end;
     rgVector2: begin
-      AddFloat(anode,PWideChar(WideString(lname)+'X'),ReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'Y'),ReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'X'),memReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'Y'),memReadFloat(aptr));
     end;
     rgVector3: begin
-      AddFloat(anode,PWideChar(WideString(lname)+'X'),ReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'Y'),ReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'Z'),ReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'X'),memReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'Y'),memReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'Z'),memReadFloat(aptr));
     end;
+    // Quaternion
     rgVector4: begin
-      AddFloat(anode,PWideChar(WideString(lname)+'X1'),ReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'Y1'),ReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'X2'),ReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'Y2'),ReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'X'),memReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'Y'),memReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'Z'),memReadFloat(aptr));
+      AddFloat(anode,PWideChar(WideString(lname)+'W'),memReadFloat(aptr));
     end;
   else
     AddInteger(anode,'??UNKNOWN',lsize-4);
@@ -282,24 +296,26 @@ end;
 
 procedure ReadPropertyHob(var anode:pointer; var aptr:pByte);
 var
+  lmatrix:TMatrix4x4;
+  lq:TVector4;
   pcw,lname:PWideChar;
   lptr:pByte;
   lsize,llen:integer;
   ldw:dword;
 begin
-  lsize:=ReadWord(aptr);
+  lsize:=memReadWord(aptr);
   if lsize=0 then exit;
 //writeln('prop ',i+1,'/',lcnt,' size ',llsize,' at ',HexStr(aptr-_filestart,8));
   lptr:=aptr;
 
-  lname:=GetStr(ReadDWord(aptr));
+  lname:=GetStr(memReadDWord(aptr));
 
   //!!!! We don't have type info atm so trying to guess
   
   // standard: boolean, unsigned, integer, float
   if lsize=8 then
   begin
-    ldw:=ReadDWord(aptr);
+    ldw:=memReadDWord(aptr);
     //!! can be boolean - we can't get difference
     if ldw in [0,1] then
       AddInteger(anode,lname,integer(ldw))
@@ -325,13 +341,13 @@ begin
     end
     else
     begin
-      llen:=ReadWord(aptr);
+      llen:=memReadWord(aptr);
       dec(aptr,2);
 
       // text
       if llen=lsize-6 then
       begin
-        pcw:=ReadShortStringUTF8(aptr);
+        pcw:=memReadShortStringUTF8(aptr);
         AddString(anode,lname,pcw);
         FreeMem(pcw);
       end
@@ -339,24 +355,39 @@ begin
       // id OR Vector2
       else if lsize=12 then
       begin
-        AddInteger64(anode,lname,ReadInteger64(aptr));
+        AddInteger64(anode,lname,memReadInteger64(aptr));
       end
 
       // Vector3
       else if lsize=16 then
       begin
-        AddFloat(anode,PWideChar(WideString(lname)+'X'),ReadFloat(aptr));
-        AddFloat(anode,PWideChar(WideString(lname)+'Y'),ReadFloat(aptr));
-        AddFloat(anode,PWideChar(WideString(lname)+'Z'),ReadFloat(aptr));
+        AddFloat(anode,PWideChar(WideString(lname)+'X'),memReadFloat(aptr));
+        AddFloat(anode,PWideChar(WideString(lname)+'Y'),memReadFloat(aptr));
+        AddFloat(anode,PWideChar(WideString(lname)+'Z'),memReadFloat(aptr));
       end
 
       // Vector4
       else if lsize=20 then
       begin
-        AddFloat(anode,PWideChar(WideString(lname)+'X1'),ReadFloat(aptr));
-        AddFloat(anode,PWideChar(WideString(lname)+'Y1'),ReadFloat(aptr));
-        AddFloat(anode,PWideChar(WideString(lname)+'X2'),ReadFloat(aptr));
-        AddFloat(anode,PWideChar(WideString(lname)+'Y2'),ReadFloat(aptr));
+        lq.X:=memReadFloat(aptr); AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
+        lq.Y:=memReadFloat(aptr); AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
+        lq.Z:=memReadFloat(aptr); AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
+        lq.W:=memReadFloat(aptr); AddFloat(anode,PWideChar(WideString(lname)+'W'),lq.W);
+
+        //!!!!
+        if CompareWide(lname,'ORIENTATION') then
+        begin
+           QuaternionToMatrix(lq,lmatrix);
+           if lmatrix[0,0]<>0 then AddFloat(anode,'RIGHTX'  ,lmatrix[0,0]);
+           if lmatrix[0,1]<>0 then AddFloat(anode,'RIGHTY'  ,lmatrix[0,1]);
+           if lmatrix[0,2]<>0 then AddFloat(anode,'RIGHTZ'  ,lmatrix[0,2]);
+           if lmatrix[1,0]<>0 then AddFloat(anode,'UPX'     ,lmatrix[1,0]);
+           if lmatrix[1,1]<>0 then AddFloat(anode,'UPY'     ,lmatrix[1,1]);
+           if lmatrix[1,2]<>0 then AddFloat(anode,'UPZ'     ,lmatrix[1,2]);
+           if lmatrix[2,0]<>0 then AddFloat(anode,'FORWARDX',lmatrix[2,0]);
+           if lmatrix[2,1]<>0 then AddFloat(anode,'FORWARDY',lmatrix[2,1]);
+           if lmatrix[2,2]<>0 then AddFloat(anode,'FORWARDZ',lmatrix[2,2]);
+        end;
       end
 
       //!! unknown
@@ -374,7 +405,7 @@ end;
 
 //--- TL1
 (*
-procedure DoParseBlockTL1(var anode:PTL2Node; var aptr:pByte; const aparent:Int64);
+procedure DoParseBlockTL1(var anode:pointer; var aptr:pByte; const aparent:Int64);
 var
   lChunkId:Int64;
   lparent:Int64;
@@ -503,10 +534,10 @@ begin
 
   //--- Chunk Header
 
-  lChunkSize:=ReadInteger(aptr);
+  lChunkSize:=memReadInteger(aptr);
 //  if lChunkSize=0 then exit;
-  lChunkType:=ReadByte(aptr);
-  lChunkId  :=ReadInteger64(aptr);
+  lChunkType:=memReadByte(aptr);
+  lChunkId  :=memReadInteger64(aptr);
 
   //--- Chunk Info
 
@@ -514,7 +545,7 @@ begin
   pname:=GetObjectName(lobj);
 
   AddString(lnode,'DESCRIPTOR',pname);
-  pcw:=ReadShortString(aptr);
+  pcw:=memReadShortString(aptr);
   if pcw<>nil then
   begin
     AddString(lnode,'NAME',pcw);
@@ -527,7 +558,7 @@ begin
 
   //--- Properties
 
-  lcnt:=ReadByte(aptr);
+  lcnt:=memReadByte(aptr);
   for i:=0 to lcnt-1 do
   begin
     ReadPropertyTL2(lnode,lobj,aptr);
@@ -535,7 +566,7 @@ begin
 
   //--- Additional data
 
-  lsize:=ReadInteger(aptr);
+  lsize:=memReadInteger(aptr);
   if lsize>0 then
   begin
 
@@ -557,7 +588,7 @@ begin
 
   //--- Children
 
-  lcnt:=ReadWord(aptr);
+  lcnt:=memReadWord(aptr);
   if lcnt>0 then
   begin
     lnode:=AddGroup(bnode,'CHILDREN');
@@ -594,18 +625,20 @@ begin
 
   //--- Chunk Header
 
-  lChunkSize:=ReadDWord(aptr);
+  lChunkSize:=memReadDWord(aptr);
   if lChunkSize=0 then exit;
 
-  lChunkHash:=ReadDWord(aptr);
-  lChunkId  :=ReadInteger64(aptr);
+  lChunkHash:=memReadDWord(aptr);
+  lChunkId  :=memReadInteger64(aptr);
 
   //--- Chunk Info
 
+  dodesc:=true;
   lname:=GetStr(lChunkHash);
+  dodesc:=false;
   AddString(lnode,'DESCRIPTOR',lname);
   AddInteger64(lnode,'ID',lChunkId);
-  pcw:=ReadShortStringUTF8(aptr);
+  pcw:=memReadShortStringUTF8(aptr);
   if pcw<>nil then
   begin
     AddString(lnode,'NAME',pcw);
@@ -618,7 +651,7 @@ begin
 
   //--- Properties
 
-  lcnt:=ReadByte(aptr);
+  lcnt:=memReadByte(aptr);
   for i:=0 to lcnt-1 do
   begin
     ReadPropertyHob(lnode,aptr);
@@ -626,7 +659,7 @@ begin
 
   //--- Additional data
 
-  lsize:=ReadInteger(aptr);
+  lsize:=memReadInteger(aptr);
   llptr:=aptr;
   if lsize>0 then
   begin
@@ -660,7 +693,7 @@ begin
 
   //--- Children
 
-  lcnt:=ReadWord(aptr);
+  lcnt:=memReadWord(aptr);
   if lcnt>0 then
   begin
     lnode:=AddGroup(bnode,'CHILDREN');
@@ -684,19 +717,23 @@ var
 begin
   result:=nil;
 
+  dodesc:=false;
   _filestart:=buf;
   lptr:=buf;
 
-  fver:=ReadByte(lptr);
+  fver:=memReadByte(lptr);
   if fver=$5A then
   begin
     inc(lptr,7);
   end;
 
   case fver of
+    5  : fver:=verRG;
     8  : fver:=verHob;
     11 : fver:=verTL2;
     $5A: fver:=verTL1;
+  else
+    exit;
   end;
 
   if objInfo=pointer(-1) then
@@ -732,15 +769,15 @@ begin
     else pcw:='Layout';
     
     result:=AddGroup(nil,pcw);
-    llayver:=ReadByte(lptr);             // Layout version
+    llayver:=memReadByte(lptr);             // Layout version
     AddInteger(result,'VERSION',llayver);
 
     objcount:=0;
     lc:=AddUnsigned(result,'COUNT',0);
-    ReadDWord(lptr);                     // offset
+    memReadDWord(lptr);                     // offset
 
     lobj:=AddGroup(result,'OBJECTS');
-    lcnt:=ReadWord (lptr);               // root baseobject count
+    lcnt:=memReadWord (lptr);               // root baseobject count
     for i:=0 to lcnt-1 do
       DoParseBlockTL2(lobj,lptr,-1);
 
@@ -755,40 +792,54 @@ begin
     inc(lptr);
 
     result:=AddGroup(nil,'Layout');
-    lcnt:=ReadDWord(lptr);
+    lcnt:=memReadDWord(lptr);
     AddUnsigned(result,'COUNT',lcnt);
-    ReadDword(lptr);                // offset
+    memReadDword(lptr);                // offset
 
-    ReadByte(lptr);                 // 1
-    pcw:=ReadShortStringUTF8(lptr); // LEVEL
+    memReadByte(lptr);                 // 1
+    pcw:=memReadShortStringUTF8(lptr); // LEVEL
     AddString(result,'TYPE',pcw);
     FreeMem(pcw);
     inc(lptr);                      // 0
     inc(lptr);                      // 4
-    ldata:=ReadDWord(lptr);         // absolute offset to data
-    pcw:=ReadShortString(lptr);
+    ldata:=memReadDWord(lptr);         // absolute offset to data
+    pcw:=memReadShortString(lptr);
     if pcw<>nil then
     begin
       AddString(result,'BASE',pcw);
       FreeMem(pcw);
     end;
     inc(lptr,6*SizeOf(single));   // 6*4
-    b1:=ReadByte(lptr)<>0;          // 1 usually
-    b2:=ReadByte(lptr)<>0;          // 0 usually but can be a 1
-    b3:=ReadByte(lptr)<>0;          // 0 usually
+    b1:=memReadByte(lptr)<>0;          // 1 usually
+    b2:=memReadByte(lptr)<>0;          // 0 usually but can be a 1
+    b3:=memReadByte(lptr)<>0;          // 0 usually
 
     if b2 then
     begin
-      pcw:=ReadShortStringUTF8(lptr);
+      pcw:=memReadShortStringUTF8(lptr);
       AddString(result,'LAYOUT_TITLE',pcw);
       FreeMem(pcw);
-      AddInteger64(result,'LAYOUT_ID',ReadInteger64(lptr));
+      AddInteger64(result,'LAYOUT_ID',memReadInteger64(lptr));
     end;
 
     lptr:=_filestart+ldata;
 
     lobj:=AddGroup(result,'OBJECTS');
-    lcnt:=ReadWord (lptr);
+    lcnt:=memReadWord (lptr);
+    for i:=0 to lcnt-1 do
+      DoParseBlockHob(lobj,lptr,-1);
+  end;
+
+  //--- RG ---
+  if fver=verRG then
+  begin
+    inc(lptr);
+    memReadDWord(lptr);
+    inc(lptr);
+    result:=AddGroup(nil,'Layout');
+    lcnt:=memReadWord(lptr);
+    AddUnsigned(result,'COUNT',lcnt);
+    lobj:=AddGroup(result,'OBJECTS');
     for i:=0 to lcnt-1 do
       DoParseBlockHob(lobj,lptr,-1);
   end;

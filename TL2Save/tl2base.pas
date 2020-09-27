@@ -4,7 +4,7 @@ interface
 
 uses
   Classes,
-  tl2stream;
+  rgstream;
 
 type
   TL2DataType = (dtChar, dtItem, dtEffect, dtMap, dtQuest, dtStat);
@@ -35,8 +35,8 @@ type
     procedure LoadBlock(AStream:TStream);
     procedure SaveBlock(AStream:TStream);
 
-    procedure LoadFromStream(AStream:TTL2Stream); virtual; abstract;
-    procedure SaveToStream  (AStream:TTL2Stream); virtual; abstract;
+    procedure LoadFromStream(AStream:TStream); virtual; abstract;
+    procedure SaveToStream  (AStream:TStream); virtual; abstract;
     
     property Data      :PByte       read FData      ; // write FData;
     property DataOffset:PtrUInt     read FDataOffset write FDataOffset;

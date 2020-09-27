@@ -5,9 +5,9 @@ interface
 uses
   classes,
   tl2statistic,
-  tl2stream,
+  rgstream,
   tl2common,
-  tl2types,
+  rgglobal,
   tl2map,
   tl2item,
   tl2effects,
@@ -19,7 +19,7 @@ type
   TTL2SaveFile = class
   //--- common part
   private
-    FStream:TTL2Stream;
+    FStream:TStream;
 
     procedure Error(const atext:string);
     function FixItems(aItems:TTL2ItemList):boolean;
@@ -53,7 +53,7 @@ type
     FPetInfos:TTL2CharArray;
 
     FClassString :string;
-    FDifficulty  :TTL2Difficulty;
+    FDifficulty  :TL2Difficulty;
     FHardcore    :boolean;
     FNewGameCycle:integer;
     FGameTime    :single;
@@ -78,12 +78,12 @@ type
     FArea    :string;
 
     Unk1,Unk2,Unk3:DWord;
-    UnkCoord:TL2Coord;
+    UnkCoord:TVector3;
 
     //----- User portal -----
 
     FPortalOpened:ByteBool;
-    FPortalCoord :TL2Coord;
+    FPortalCoord :TVector3;
     FPortalPlace :string;
 
     function  ReadStatistic():boolean;
@@ -101,10 +101,10 @@ type
     function  GetMovie     (idx:integer):TL2IdVal;
     function  GetMap       (idx:integer):TTL2Map;
 
-    function  GetStatistic (idx:integer):TL2Integer;
-    procedure SetStatistic (idx:integer; aval:TL2Integer);
+    function  GetStatistic (idx:integer):TRGInteger;
+    procedure SetStatistic (idx:integer; aval:TRGInteger);
   public
-    property Difficulty  :TTL2Difficulty read FDifficulty   write FDifficulty;
+    property Difficulty  :TL2Difficulty  read FDifficulty   write FDifficulty;
     property Hardcore    :boolean        read FHardcore     write FHardcore;
     property NewGameCycle:integer        read FNewGameCycle write FNewGameCycle;
     property GameTime    :single         read FGameTime     write FGameTime; //!! control!!
@@ -134,29 +134,29 @@ type
     property Stats :TTL2Stats read FLastBlock;
 
     // Statistic
-    property Statistic[idx:integer]:TL2Integer read GetStatistic write SetStatistic;
+    property Statistic[idx:integer]:TRGInteger read GetStatistic write SetStatistic;
     
-    property TimePlayed       :TL2Integer index statTotalTime  read GetStatistic write SetStatistic;
-    property GoldGathered     :TL2Integer index statGold       read GetStatistic write SetStatistic;
-    property StepsTaken       :TL2Integer index statSteps      read GetStatistic write SetStatistic;
-    property QuestsDone       :TL2Integer index statQuests     read GetStatistic write SetStatistic;
-    property Deaths           :TL2Integer index statDeaths     read GetStatistic write SetStatistic;
-    property MonstersKilled   :TL2Integer index statMonsters   read GetStatistic write SetStatistic;
-    property ChampionsKilled  :TL2Integer index statChampions  read GetStatistic write SetStatistic;
-    property SkillsUsed       :TL2Integer index statSkills     read GetStatistic write SetStatistic;
-    property LootablesLooted  :TL2Integer index statTreasures  read GetStatistic write SetStatistic;
-    property TrapsSprung      :TL2Integer index statTraps      read GetStatistic write SetStatistic;
-    property BreakablesBroken :TL2Integer index statBroken     read GetStatistic write SetStatistic;
-    property PotionsUsed      :TL2Integer index statPotions    read GetStatistic write SetStatistic;
-    property PortalsUsed      :TL2Integer index statPortals    read GetStatistic write SetStatistic;
-    property FishCaught       :TL2Integer index statFish       read GetStatistic write SetStatistic;
-    property TimesGambled     :TL2Integer index statGambled    read GetStatistic write SetStatistic;
-    property ItemsEnchanted   :TL2Integer index statEnchanted  read GetStatistic write SetStatistic;
-    property ItemsTransmuted  :TL2Integer index statTransmuted read GetStatistic write SetStatistic;
-    property DamageTaken      :TL2Integer index statDmgTaken   read GetStatistic write SetStatistic;
-    property DamageDealt      :TL2Integer index statDmgDealt   read GetStatistic write SetStatistic;
-    property LevelTime        :TL2Integer index statLevelTime  read GetStatistic write SetStatistic;
-    property MonstersExploded :TL2Integer index statExploded   read GetStatistic write SetStatistic;
+    property TimePlayed       :TRGInteger index statTotalTime  read GetStatistic write SetStatistic;
+    property GoldGathered     :TRGInteger index statGold       read GetStatistic write SetStatistic;
+    property StepsTaken       :TRGInteger index statSteps      read GetStatistic write SetStatistic;
+    property QuestsDone       :TRGInteger index statQuests     read GetStatistic write SetStatistic;
+    property Deaths           :TRGInteger index statDeaths     read GetStatistic write SetStatistic;
+    property MonstersKilled   :TRGInteger index statMonsters   read GetStatistic write SetStatistic;
+    property ChampionsKilled  :TRGInteger index statChampions  read GetStatistic write SetStatistic;
+    property SkillsUsed       :TRGInteger index statSkills     read GetStatistic write SetStatistic;
+    property LootablesLooted  :TRGInteger index statTreasures  read GetStatistic write SetStatistic;
+    property TrapsSprung      :TRGInteger index statTraps      read GetStatistic write SetStatistic;
+    property BreakablesBroken :TRGInteger index statBroken     read GetStatistic write SetStatistic;
+    property PotionsUsed      :TRGInteger index statPotions    read GetStatistic write SetStatistic;
+    property PortalsUsed      :TRGInteger index statPortals    read GetStatistic write SetStatistic;
+    property FishCaught       :TRGInteger index statFish       read GetStatistic write SetStatistic;
+    property TimesGambled     :TRGInteger index statGambled    read GetStatistic write SetStatistic;
+    property ItemsEnchanted   :TRGInteger index statEnchanted  read GetStatistic write SetStatistic;
+    property ItemsTransmuted  :TRGInteger index statTransmuted read GetStatistic write SetStatistic;
+    property DamageTaken      :TRGInteger index statDmgTaken   read GetStatistic write SetStatistic;
+    property DamageDealt      :TRGInteger index statDmgDealt   read GetStatistic write SetStatistic;
+    property LevelTime        :TRGInteger index statLevelTime  read GetStatistic write SetStatistic;
+    property MonstersExploded :TRGInteger index statExploded   read GetStatistic write SetStatistic;
 
     property ClassString:string read FClassString write FClassString;
     property Waypoint   :string read FWaypoint;
@@ -254,7 +254,7 @@ begin
     result:=nil;
 end;
 
-function TTL2SaveFile.GetStatistic(idx:integer):TL2Integer;
+function TTL2SaveFile.GetStatistic(idx:integer):TRGInteger;
 begin
   if (idx>=0) and (idx<StatsCount) then
     result:=FStatistic[idx]
@@ -264,7 +264,7 @@ begin
     result:=0;
 end;
 
-procedure TTL2SaveFile.SetStatistic(idx:integer; aval:TL2Integer);
+procedure TTL2SaveFile.SetStatistic(idx:integer; aval:TRGInteger);
 begin
   if (idx>=0) and (idx<StatsCount) then
     FStatistic[idx]:=aval;
@@ -276,7 +276,7 @@ begin
     result:=FMovies[idx]
   else
   begin
-    result.id   :=TL2IdEmpty;
+    result.id   :=RGIdEmpty;
     result.value:=0;
   end;
 end;
@@ -287,7 +287,7 @@ begin
     result:=FKeyMapping[idx]
   else
   begin
-    result.id      :=TL2IdEmpty;
+    result.id      :=RGIdEmpty;
     result.datatype:=0;
     result.key     :=0;
   end;
@@ -335,13 +335,13 @@ var
   lcnt:cardinal;
 begin
   lcnt:=FStream.ReadDWord;
-  if lcnt>=StatsCount then // SizeOf(FStatistic) div SizeOf(TL2Integer)
+  if lcnt>=StatsCount then // SizeOf(FStatistic) div SizeOf(TRGInteger)
   begin
     result:=true;
     FStream.Read(FStatistic,SizeOf(FStatistic));
     // unknown statistic
     if lcnt>StatsCount then
-      FStream.Seek(lcnt*SizeOf(TL2Integer)-SizeOf(FStatistic),soCurrent);
+      FStream.Seek(lcnt*SizeOf(TRGInteger)-SizeOf(FStatistic),soCurrent);
   end
   else
     result:=false;
@@ -479,9 +479,9 @@ begin
   if FStream<>nil then
     FStream.Free;
 
-  FStream:=TTL2Stream.Create;
+  FStream:=TMemoryStream.Create;
   try
-    FStream.LoadFromFile(aname);
+    TMemoryStream(FStream).LoadFromFile(aname);
 
     if FStream.Size<(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)) then
       Error(sWrongSize);
@@ -497,8 +497,8 @@ begin
       Error(sWrongFooter);
     
     if lSaveHeader.Encoded then
-      Decode(FStream.Memory+ SizeOf(lSaveHeader),
-             FStream.Size  -(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
+      Decode(TMemoryStream(FStream).Memory+ SizeOf(lSaveHeader),
+                           FStream .Size  -(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
   except
     Error(sLoadFailed);
   end;
@@ -513,8 +513,8 @@ begin
   lSaveHeader.Sign    :=$44;
   lSaveHeader.Encoded :=aencoded;
   lSaveHeader.Checksum:=CalcCheckSum(
-    FStream.Memory+SizeOf(lSaveHeader),
-    FStream.Size-(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
+    TMemoryStream(FStream).Memory+ SizeOf(lSaveHeader),
+                  FStream .Size  -(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
 
   lsout:=TMemoryStream.Create;
   try

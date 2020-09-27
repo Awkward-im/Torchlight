@@ -43,7 +43,7 @@ implementation
 {$R *.lfm}
 
 uses
-  tl2stream;
+  rgstream;
 
 { TfmButtons }
 
@@ -88,7 +88,7 @@ end;
 procedure TfmButtons.btnImportClick(Sender: TObject);
 var
   ldlg:TOpenDialog;
-  lstrm:TTL2Stream;
+  lstrm:TMemoryStream;
 begin
 
   ldlg:=TOpenDialog.Create(nil);
@@ -99,7 +99,7 @@ begin
     ldlg.Options   :=ldlg.Options;
     if ldlg.Execute then
     begin
-      lstrm:=TTL2Stream.Create;
+      lstrm:=TMemoryStream.Create;
       lstrm.LoadFromFile(ldlg.FileName);
       lstrm.Position:=0;
       FClass.Clear;

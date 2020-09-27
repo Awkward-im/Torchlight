@@ -59,7 +59,9 @@ procedure TfmScan.bbScanClick(Sender: TObject);
 begin
   if MessageDlg(sDoTheScan,sDoProcessScan,mtConfirmation,[mbOk,mbCancel],0)<>mrOk then
     exit;
+  memLog.Append('Preparing...');
   if not PrepareScan(tvMain.Path) then exit;
+  memLog.Append('Ok, prepared!');
 
   // Wardrobe
   memLog.Append('Go wardrobe!');
@@ -128,7 +130,9 @@ begin
     ScanClasses();
   end;
 
+  memLog.Append('Saving...');
   FinishScan;
+  memLog.Append('Done!');
 end;
 
 procedure TfmScan.tvMainDblClick(Sender: TObject);

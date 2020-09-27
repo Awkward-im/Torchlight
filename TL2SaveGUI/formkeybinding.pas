@@ -27,7 +27,7 @@ implementation
 {$R *.lfm}
 
 uses
-  tl2types,
+  rgglobal,
   tl2db;
 
 procedure TfmKeyBinding.FillInfo(aSGame:TTL2SaveFile);
@@ -78,7 +78,7 @@ begin
     for i:=0 to High(aSGame.Functions) do
       with aSGame.Functions[i] do
       begin
-        if id<>TL2IdEmpty then
+        if id<>RGIdEmpty then
         begin
           j:=sgKeyBinding.RowCount;
           sgKeyBinding.RowCount:=sgKeyBinding.RowCount+1;
