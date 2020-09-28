@@ -3,9 +3,11 @@
 uses
   classes,
   sysutils,
+  inifiles,
 
   rgglobal,
   rgdatnode,
+  rgdict,
 
   deglobal,
   datunpack,
@@ -104,6 +106,34 @@ begin
   end;
 end;
 
+
+procedure ProcessINI;
+var
+  lini:TINIFile;
+  i,lcnt:integer;
+begin
+  lini:=TINIFile.Create(ChangeFileExt(ParamStr(0),'.INI'));
+  lcnt:=lini.ReadInteger('dicts','count',0);
+  if lcnt=0 then
+  begin
+    SetLength(dicts,3);
+    LoadTags(dicts[0],'dictionary.txt');
+    LoadTags(dicts[0],'hashed.txt');
+    LoadTags(dicts[0],'tagdict.txt');
+  end
+  else
+  begin
+    SetLength(dicts,lcnt);
+    for i:=1 to lcnt do
+    begin
+      LoadTags(dicts[i-1],lini.ReadString('dicts','dict'+IntToStr(i),''));
+    end;
+  end;
+
+  ReadLayINI(lini);
+  lini.Free;
+end;
+
 var
   i:integer;
 
@@ -114,6 +144,9 @@ begin
   hashlog:=TStringList.Create;
   hashlog.Sorted:=True;
 
+  hashlog1:=TStringList.Create;
+  hashlog1.Sorted:=True;
+
   laydesclog:=TStringList.Create;
   laydesclog.Sorted:=True;
   laydatlog:=TStringList.Create;
@@ -121,6 +154,10 @@ begin
 
   datloclog:=TStringList.Create;
   datloclog.Sorted:=True;
+
+  datloclog1:=TStringList.Create;
+  datloclog1.Sorted:=True;
+  
   datlog:=TStringList.Create;
   datlog.Sorted:=True;
 {$ENDIF}
@@ -131,6 +168,8 @@ begin
   else if ParamStr(1)='-l' then ftype:=2
   else if ParamStr(1)='-n' then ftype:=3
   else ftype:=0;
+
+  ProcessINI;
 
   if (ParamCount=0) or (ftype<>0) then
   begin
@@ -146,10 +185,18 @@ begin
 
   //--- Finalization
 
+  for i:=0 to High(dicts) do
+    FreeTags(dicts[i]);
+  SetLength(dicts,0);
+
 {$IFDEF DEBUG}
   hashlog.Sort;
   hashlog.SaveToFile('hashes.txt');
   hashlog.Free;
+
+  hashlog1.Sort;
+  hashlog1.SaveToFile('hashes1.txt');
+  hashlog1.Free;
 
   laydesclog.Sort;
   laydesclog.SaveToFile('laydesclog.txt');
@@ -161,6 +208,11 @@ begin
   datloclog.Sort;
   datloclog.SaveToFile('datloclog.txt');
   datloclog.Free;
+
+  datloclog1.Sort;
+  datloclog1.SaveToFile('dathashloclog.txt');
+  datloclog1.Free;
+
   datlog.Sort;
   datlog.SaveToFile('datlog.txt');
   datlog.Free;

@@ -2,8 +2,12 @@ unit layunpack;
 
 interface
 
+uses
+  inifiles;
+
 function DoParseLayout (buf:pByte):pointer;
 function IsProperLayout(buf:pByte):boolean;
+procedure ReadLayINI(aini:TINIFile);
 
 
 implementation
@@ -18,12 +22,13 @@ uses
 
 var
   dodesc:boolean;
-  tdict,aliases,dict,cdict:pointer;
+  aliases:pointer;
   _filestart:PByte;
   buffer:WideString;
   objcount:integer;
   objInfo:pointer;
   fver:Byte;
+  m00,m01,m02,m10,m11,m12,m20,m21,m22:Widestring;
 
 
 function ReadStr(var aptr:PByte):PWideChar;
@@ -39,29 +44,21 @@ begin
 end;
 
 function GetStr(aid:dword):PWideChar;
+var
+  i:integer;
 begin
   if aid=0 then exit(nil);
 
   result:=nil;
 
-  if aliases=pointer(-1) then LoadTags(aliases,'layaliases.txt');
   result:=GetTagStr(aliases,aid);
 
   if result=nil then
   begin
-    if dict=pointer(-1) then LoadTags(dict);
-    result:=GetTagStr(dict,aid);
-
-    if result=nil then
+    for i:=0 to High(dicts) do
     begin
-      if cdict=pointer(-1) then LoadTags(cdict,'hashed.txt');
-      result:=GetTagStr(cdict,aid);
-    end;
-
-    if result=nil then
-    begin
-      if tdict=pointer(-1) then LoadTags(tdict,'tagdict.txt');
-      result:=GetTagStr(tdict,aid);
+      result:=GetTagStr(dicts[i],aid);
+      if result<>nil then break;
     end;
   end;
 
@@ -84,7 +81,8 @@ end;
     begin
   //writeln(curfname);
       if (ftype<>3) or dodesc then
-      hashlog.Add('LAY:'+IntToStr(aid));
+      hashlog.Add(IntToStr(aid));
+      hashlog1.Add('LAY:'+IntToStr(aid));
     end;
   end;
 end;
@@ -378,15 +376,15 @@ begin
         if CompareWide(lname,'ORIENTATION') then
         begin
            QuaternionToMatrix(lq,lmatrix);
-           if lmatrix[0,0]<>0 then AddFloat(anode,'RIGHTX'  ,lmatrix[0,0]);
-           if lmatrix[0,1]<>0 then AddFloat(anode,'RIGHTY'  ,lmatrix[0,1]);
-           if lmatrix[0,2]<>0 then AddFloat(anode,'RIGHTZ'  ,lmatrix[0,2]);
-           if lmatrix[1,0]<>0 then AddFloat(anode,'UPX'     ,lmatrix[1,0]);
-           if lmatrix[1,1]<>0 then AddFloat(anode,'UPY'     ,lmatrix[1,1]);
-           if lmatrix[1,2]<>0 then AddFloat(anode,'UPZ'     ,lmatrix[1,2]);
-           if lmatrix[2,0]<>0 then AddFloat(anode,'FORWARDX',lmatrix[2,0]);
-           if lmatrix[2,1]<>0 then AddFloat(anode,'FORWARDY',lmatrix[2,1]);
-           if lmatrix[2,2]<>0 then AddFloat(anode,'FORWARDZ',lmatrix[2,2]);
+           if lmatrix[2,0]<>0 then AddFloat(anode,pointer(m20){'FORWARDX'},lmatrix[2,0]);
+           if lmatrix[1,0]<>0 then AddFloat(anode,pointer(m10){'FORWARDY'},lmatrix[1,0]);
+           if lmatrix[0,0]<>0 then AddFloat(anode,pointer(m00){'FORWARDZ'},lmatrix[0,0]);
+           if lmatrix[2,1]<>0 then AddFloat(anode,pointer(m21){'UPX'     },lmatrix[2,1]);
+           if lmatrix[1,1]<>0 then AddFloat(anode,pointer(m11){'UPY'     },lmatrix[1,1]);
+           if lmatrix[0,1]<>0 then AddFloat(anode,pointer(m01){'UPZ'     },lmatrix[0,1]);
+           if lmatrix[2,2]<>0 then AddFloat(anode,pointer(m22){'RIGHTX'  },lmatrix[2,2]);
+           if lmatrix[1,2]<>0 then AddFloat(anode,pointer(m12){'RIGHTY'  },lmatrix[1,2]);
+           if lmatrix[0,2]<>0 then AddFloat(anode,pointer(m02){'RIGHTZ'  },lmatrix[0,2]);
         end;
       end
 
@@ -736,9 +734,6 @@ begin
     exit;
   end;
 
-  if objInfo=pointer(-1) then
-    objInfo:=LoadObjectInfo();
-
   //--- TL1 ---
 
   if fver=verTL1 then
@@ -850,20 +845,27 @@ begin
   result:=buf^ in [5, 8, 11, $5A];
 end;
 
+procedure ReadLayINI(aini:TINIFile);
+begin
+  m00:=aini.ReadString('matrix_xy','00','RIGHTX');
+  m01:=aini.ReadString('matrix_xy','01','UPX');
+  m02:=aini.ReadString('matrix_xy','02','FORWARDX');
+  m10:=aini.ReadString('matrix_xy','10','RIGHTY');
+  m11:=aini.ReadString('matrix_xy','11','UPY');
+  m12:=aini.ReadString('matrix_xy','12','FORWARDY');
+  m20:=aini.ReadString('matrix_xy','20','RIGHTZ');
+  m21:=aini.ReadString('matrix_xy','21','UPZ');
+  m22:=aini.ReadString('matrix_xy','22','FORWARDZ');
+end;
+
 initialization
 
-  aliases:=pointer(-1);
-  dict   :=pointer(-1);
-  cdict  :=pointer(-1);
-  tdict  :=pointer(-1);
-  objInfo:=pointer(-1);
+  LoadTags(aliases,'layaliases.txt');
+  objInfo:=LoadObjectInfo();
 
 finalization
   
-  if aliases<>pointer(-1) then FreeTags(aliases);
-  if dict   <>pointer(-1) then FreeTags(dict);
-  if cdict  <>pointer(-1) then FreeTags(cdict);
-  if tdict  <>pointer(-1) then FreeTags(tdict);
-  if objInfo<>pointer(-1) then FreeObjectInfo(objInfo);
+  if aliases<>nil then FreeTags(aliases);
+  if objInfo<>nil then FreeObjectInfo(objInfo);
 
 end.

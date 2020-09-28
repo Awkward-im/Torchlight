@@ -2,72 +2,78 @@ unit RGPAK;
 
 interface
 
+//--- TL2 File Types
+const
+    tl2Dat       = $00; // .DAT
+    tl2Layout    = $01; // .LAYOUT
+    tl2Mesh      = $02; // .MESH
+    tl2Skeleton  = $03; // .SKELETON
+    tl2Dds       = $04; // .DDS
+    tl2Png       = $05; // .PNG
+    tl2Sound     = $06; // .WAV .OGG
+    tl2Directory = $07;
+    tl2Material  = $08; // .MATERIAL
+    tl2Raw       = $09; // .RAW
+    tl2Reserved1 = $0A;
+    tl2ImageSet  = $0B; // .IMAGESET
+    tl2Ttf       = $0C; // .TTF
+    tl2Font      = $0D; // .FONT
+    tl2Reserved2 = $0E;
+    tl2Reserved3 = $0F;
+    tl2Animation = $10; // .ANIMATION
+    tl2Hie       = $11; // .HIE
+    tl2Other     = $12; // ('Removed' Directory)
+    tl2Scheme    = $13; // .SCHEME
+    tl2LookNFeel = $14; // .LOOKNFEEL ??
+    tl2Mpd       = $15; // .MPP .MPD
+    tl2Reserved4 = $16;
+    tl2Bik       = $17; // .BIK ?? (unpacked)
+    tl2Jpg       = $18; // .JPG
+
+//--- Hob File Types
+const
+    hobUnknown    = $00;
+    hobModel      = $01; // .MDL .MESH
+    hobSkeleton   = $02; // .SKELETON
+    hobDds        = $03; // .DDS
+    hobImage      = $04; // .BMP .PNG .TGA
+    hobReserved1  = $05;
+    hobSound      = $06; // .OGG .WAV
+    hobReserved2  = $07;
+    hobDirectory  = $08;
+    hobMaterial   = $09; // .MATERIAL
+    hobRaw        = $0A; // .RAW
+    hobReserved3  = $0B;
+    hobImageset   = $0C; // .IMAGESET
+    hobTtf        = $0D; // .TTF
+    hobReserved4  = $0E;
+    hobDat        = $0F; // .DAT
+    hobLayout     = $10; // .LAYOUT
+    hobAnimation  = $11; // .ANIMATION
+    hobReserved5  = $12;
+    hobReserved6  = $13;
+    hobReserved7  = $14;
+    hobReserved8  = $15;
+    hobReserved9  = $16;
+    hobReserved10 = $17;
+    hobProgram    = $18; // .PROGRAM
+    hobFontDef    = $19; // .FONTDEF
+    hobCompositor = $1A; // .COMPOSITOR
+    hobShader     = $1B; // .FRAG .FX .HLSL .VERT
+    hobReserved11 = $1C;
+    hobPu         = $1D; // .PU
+    hobAnno       = $1E; // .ANNO
+    hobSBin       = $1F; // .SBIN
+    hobWDat       = $20; // .WDAT
+
 type
-  TTL2FileTypes = (
-    tl2Dat,       // $00 // .DAT
-    tl2Layout,    // $01 // .LAYOUT
-    tl2Mesh,      // $02 // .MESH
-    tl2Skeleton,  // $03 // .SKELETON
-    tl2Dds,       // $04 // .DDS
-    tl2Png,       // $05 // .PNG
-    tl2Ogg,       // $06 // .WAV, .OGG
-    tl2Directory, // $07
-    tl2Material,  // $08 // .MATERIAL
-    tl2Raw,       // $09 // .RAW
-    tl2Reserved1, // $0A
-    tl2ImageSet,  // $0B // .IMAGESET
-    tl2Ttf,       // $0C // .TTF
-    tl2Font,      // $0D // .FONT
-    tl2Reserved2, // $0E
-    tl2Reserved3, // $0F
-    tl2Animation, // $10 // .ANIMATION
-    tl2Hie,       // $11 // .HIE
-    tl2Other,     // $12 // ('Removed' Directory)
-    tl2Scheme,    // $13 // .SCHEME
-    tl2LookNFeel, // $14 // .LOOKNFEEL ??
-    tl2Mpd,       // $15 // .MPP, .MPD
-    tl2Reserved4, // $16
-    tl2Bik,       // $17 // .BIK ?? (unpacked)
-    tlJpg         // $18 // .JPG
-  );
-  TV1Type = set of TTL2FileTypes;
-type
-  THobFileTypes = (
-    hobUnknown,    // $00
-    hobModel,      // $01 // .MDL, .MESH
-    hobSkeleton,   // $02 // .SKELETON
-    hobDds,        // $03 // .DDS
-    hobImage,      // $04 // .BMP, .PNG, .TGA
-    hobReserved1,  // $05
-    hobSound,      // $06 // .OGG, .WAV
-    hobReserved2,  // $07
-    hobDirectory,  // $08
-    hobMaterial,   // $09 // .MATERIAL
-    hobRaw,        // $0A // .RAW
-    hobReserved3,  // $0B
-    hobImageset,   // $0C // .IMAGESET
-    hobTtf,        // $0D // .TTF
-    hobReserved4,  // $0E
-    hobDat,        // $0F // .DAT
-    hobLayout,     // $10 // .LAYOUT
-    hobAnimation,  // $11 // .ANIMATION
-    hobReserved5,  // $12
-    hobReserved6,  // $13
-    hobReserved7,  // $14
-    hobReserved8,  // $15
-    hobReserved9,  // $16
-    hobReserved10, // $17
-    hobProgram,    // $18 // .PROGRAM
-    hobFontDef,    // $19 // .FONTDEF
-    hobCompositor, // $1A // .COMPOSITOR
-    hobShader,     // $1B // .FRAG, .FX, .HLSL, .VERT
-    hobReserved11, // $1C
-    hobPu,         // $1D // .PU
-    hobAnno,       // $1E // .ANNO
-    hobSBin,       // $1F // .SBIN
-    hobWDat        // $20 // .WDAT
-  );
-  TV2Type = set of THobFileTypes;
+  PPAKExtInfo = ^TPAKExtInfo;
+  TPAKExtInfo = record
+    _type   :byte;
+    _pack   :bytebool;
+    _compile:bytebool;
+    _ext    :string;
+  end;
 
 type
   TTL2PAKHeader = packed record
@@ -87,6 +93,7 @@ type
     size_c:UInt32;      // 0 means "no compression
   end;
 type
+  PMANFileInfo = ^TMANFileInfo;
   TMANFileInfo = record // not real field order
     ftime   :UInt64;    // TL2 only
     name    :PWideChar;
@@ -98,6 +105,7 @@ type
     ftype   :byte;
   end;
 type
+  PMANDirEntry = ^TMANDirEntry;
   TMANDirEntry = record
     name:PWideChar;
     Files:array of TMANFileInfo;
@@ -116,11 +124,14 @@ function ReadManifest(const fname:string; var aver:integer; deep:boolean=false):
 procedure FreeManifest(var aptr:pointer);
 procedure DumpManifest(aman:pointer);
 
+function SearchFile(aman:pointer; const fname:string):PMANFileInfo;
+
 
 implementation
 
 uses
   classes,
+  sysutils,
   rgglobal,
   rgstream,
   rgmemory,
@@ -136,6 +147,8 @@ function NameToFileType(aname:PWideChar):byte;
 begin
 end;
 }
+
+//----- Manifest -----
 
 function ParseManifest(aptr:PByte; aver:integer):pointer;
 var
@@ -365,5 +378,137 @@ if size_s<>size_u then writeln('!!');
   end;
 end;
 
+//===== Files =====
+
+//----- Search -----
+
+function SearchFile(aman:pointer; const fname:string):PMANFileInfo;
+var
+  lman:PPAKManifest absolute aman;
+  lentry:PMANDirEntry;
+  lpath,lname:string;
+  lwpath,lwname:PWideChar;
+  i,j:integer;
+begin
+  lpath:=ExtractFilePath(fname);
+  lname:=ExtractFileName(fname);
+  lwpath:=pointer(lpath);
+  lwname:=pointer(lname);
+
+  for i:=0 to High(lman^.Entries) do
+  begin
+    lentry:=@lman^.Entries[i];
+    //!! char case
+    if CompareWide(lentry^.name,lwpath) then
+    begin
+      for j:=0 to High(lentry^.Files) do
+      begin
+        if CompareWide(lentry^.Files[j].name,lwname) then
+        begin
+          exit(@lentry^.Files[j]);
+        end;
+      end;
+
+      break;
+    end;
+  end;
+
+  result:=nil;
+end;
+
+//----- types -----
+
+type
+  PTableExt = ^TTableExt;
+  TTableExt = array of TPAKExtInfo;
+const
+  TableExtTL2:TTableExt = (
+    (_type:tl2Dat      ; _pack:true ; _compile:true ; _ext:'.DAT'),
+    (_type:tl2Layout   ; _pack:true ; _compile:true ; _ext:'.LAYOUT'),
+    (_type:tl2Mesh     ; _pack:true ; _compile:false; _ext:'.MESH'),
+    (_type:tl2Skeleton ; _pack:true ; _compile:false; _ext:'.SKELETON'),
+    (_type:tl2Dds      ; _pack:true ; _compile:false; _ext:'.DDS'),
+    (_type:tl2Png      ; _pack:false; _compile:false; _ext:'.PNG'),
+    (_type:tl2Sound    ; _pack:true ; _compile:false; _ext:'.WAV'),
+    (_type:tl2Sound    ; _pack:false; _compile:false; _ext:'.OGG'),
+    (_type:tl2Material ; _pack:true ; _compile:false; _ext:'.MATERIAL'),
+    (_type:tl2Raw      ; _pack:true ; _compile:true ; _ext:'.RAW'),
+    (_type:tl2Imageset ; _pack:true ; _compile:false; _ext:'.IMAGESET'),
+    (_type:tl2Ttf      ; _pack:true ; _compile:false; _ext:'.TTF'),
+    (_type:tl2Font     ; _pack:true ; _compile:false; _ext:'.FONT'),
+    (_type:tl2Animation; _pack:true ; _compile:true ; _ext:'.ANIMATION'),
+    (_type:tl2Hie      ; _pack:true ; _compile:true ; _ext:'.HIE'),
+    (_type:tl2Scheme   ; _pack:true ; _compile:false; _ext:'.SCHEME'),
+    (_type:tl2LookNFeel; _pack:true ; _compile:false; _ext:'.LOOKNFEEL'),
+    (_type:tl2Mpd      ; _pack:true ; _compile:false; _ext:'.MPP'),
+    (_type:tl2Mpd      ; _pack:true ; _compile:false; _ext:'.MPD'),
+    (_type:tl2Bik      ; _pack:false; _compile:false; _ext:'.BIK'),
+    (_type:tl2Jpg      ; _pack:false; _compile:false; _ext:'.JPG'),
+    (_type:tl2Directory; _pack:false; _compile:false; _ext:'')
+  );
+  
+  TableExtHob:TTableExt = (
+    (_type:hobModel     ; _pack:true ; _compile:false; _ext:'.MDL'),
+    (_type:hobModel     ; _pack:true ; _compile:false; _ext:'.MESH'),
+    (_type:hobSkeleton  ; _pack:true ; _compile:false; _ext:'.SKELETON'),
+    (_type:hobDds       ; _pack:true ; _compile:false; _ext:'.DDS'),
+    (_type:hobImage     ; _pack:true ; _compile:false; _ext:'.BMP'),
+    (_type:hobImage     ; _pack:false; _compile:false; _ext:'.PNG'),
+    (_type:hobImage     ; _pack:true ; _compile:false; _ext:'.TGA'),
+    (_type:hobSound     ; _pack:false; _compile:false; _ext:'.OGG'),
+    (_type:hobSound     ; _pack:true ; _compile:false; _ext:'.WAV'),
+    (_type:hobMaterial  ; _pack:true ; _compile:false; _ext:'.MATERIAL'),
+    (_type:hobRaw       ; _pack:true ; _compile:true ; _ext:'.RAW'),
+    (_type:hobImageset  ; _pack:true ; _compile:true ; _ext:'.IMAGESET'),
+    (_type:hobTtf       ; _pack:true ; _compile:false; _ext:'.TTF'),
+    (_type:hobDat       ; _pack:true ; _compile:true ; _ext:'.DAT'),
+    (_type:hobLayout    ; _pack:true ; _compile:true ; _ext:'.LAYOUT'),
+    (_type:hobAnimation ; _pack:true ; _compile:true ; _ext:'.ANIMATION'),
+    (_type:hobProgram   ; _pack:true ; _compile:false; _ext:'.PROGRAM'),
+    (_type:hobFontDef   ; _pack:true ; _compile:false; _ext:'.FONTDEF'),
+    (_type:hobCompositor; _pack:true ; _compile:false; _ext:'.COMPOSITOR'),
+    (_type:hobShader    ; _pack:true ; _compile:false; _ext:'.FRAG'),
+    (_type:hobShader    ; _pack:true ; _compile:false; _ext:'.FX'),
+    (_type:hobShader    ; _pack:true ; _compile:false; _ext:'.HLSL'),
+    (_type:hobShader    ; _pack:true ; _compile:false; _ext:'.VERT'),
+    (_type:hobPu        ; _pack:true ; _compile:false; _ext:'.PU'),
+    (_type:hobAnno      ; _pack:true ; _compile:false; _ext:'.ANNO'),
+    (_type:hobSBin      ; _pack:true ; _compile:false; _ext:'.SBIN'),
+    (_type:hobWDat      ; _pack:true ; _compile:true ; _ext:'.WDAT'),
+    (_type:hobDirectory ; _pack:false; _compile:false; _ext:'')
+  );
+
+function GetExtInfo(const fname:string; ver:integer):PPAKExtInfo;
+var
+  lext:string;
+  lptr:PTableExt;
+  i:integer;
+begin
+  lext:=UpCase(ExtractFileExt(fname));
+  if ver=verTL2 then
+    lptr:=@TableExtTL2
+  else
+    lptr:=@TableExtHob;
+
+  for i:=0 to High(lptr^) do
+  begin
+    if lext=lptr^[i]._ext then
+      exit(@lptr^[i]);
+  end;
+  //!! Check for text form
+  if lext='.TXT' then
+  begin
+    // RAW.TXT
+    // IMAGESET.TXT
+    // DAT.TXT
+    // LAYOUT.TXT
+    // ANIMATION.TXT
+    // HIE.TXT
+    // WDAT.TXT
+  end;
+  //!! Check for directory
+
+  result:=nil;
+end;
 
 end.

@@ -1,0 +1,29 @@
+rgglobal.pas   - support
+
+rgnode.pas     - DAT-like Tree parser/builder
+  rgglobal
+
+rgdict.pas     - list, tags.dat, dictionary.text and objects.dat reader, dict maker
+  classes
+  rgglobal
+  rgnode
+
+rgpak.pas      - PAK (MOD) file reader/unpacker
+  classes
+  rgglobal
+  rgmemory
+  rgstream
+  tl2mod
+  paszlib
+
+RGMemory.pas   - RW memory
+  rgglobal
+
+RGStream.pas   - RW stream
+  classes
+  rgglobal
+
+TL2Mod.pas - MOD header and MOD.DAT processor
+  rgglobal
+  rgmemory
+  rgnode

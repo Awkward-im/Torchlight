@@ -22,7 +22,7 @@ var
     astr:PWideChar;
   end;
 var
-  tdict,dict,cdict,aliases:pointer;
+  aliases:pointer;
   buffer:WideString;
   fver:byte;
 
@@ -42,6 +42,8 @@ begin
 end;
 
 function GetStr(aid:dword):PWideChar;
+var
+  i:integer;
 begin
   if aid=0 then exit(nil);
 
@@ -54,33 +56,24 @@ begin
     exit;
   end;
 
-  if aliases=pointer(-1) then LoadTags(aliases,'dataliases.txt');
   result:=GetTagStr(aliases,aid);
 
   if result=nil then
   begin
-    if dict=pointer(-1) then LoadTags(dict);
-    result:=GetTagStr(dict,aid);
-
+    for i:=0 to High(dicts) do
+    begin
+      result:=GetTagStr(dicts[i],aid);
+      if result<>nil then break;
+    end;
+{
     if result=nil then
     begin
-      if cdict=pointer(-1) then LoadTags(cdict,'hashed.txt');
-      result:=GetTagStr(cdict,aid);
-
-      if result=nil then
+  //    if fver<>verTL1 then
       begin
-        if tdict=pointer(-1) then LoadTags(tdict,'tagdict.txt');
-        result:=GetTagStr(tdict,aid);
-
-        if result=nil then
-        begin
-      //    if fver<>verTL1 then
-          begin
-            result:=GetLocalStr(aid);
-          end;
-        end;
+        result:=GetLocalStr(aid);
       end;
     end;
+}
   end;
 
 {$IFDEF DEBUG}
@@ -94,8 +87,9 @@ if result<>nil then datlog.Add(IntToStr(aid)+':'+string(WideString(result)));
 
     if hashlog<>nil then
     begin
+      hashlog.Add(IntToStr(aid));
   //writeln(curfname);
-      hashlog.Add('DAT:'+IntToStr(aid));
+      hashlog1.Add('DAT:'+IntToStr(aid));
     end;
   end;
 end;
@@ -172,7 +166,14 @@ begin
       verRG : locdict[i].astr:=memReadShortStringUTF8(lptr);
     end;
 {$IFDEF DEBUG}
-datloclog.Add(IntToStr(locdict[i].id)+':'+string(WideString(locdict[i].astr)));
+datloclog.Add(IntToStr(
+//RGHash(pointer(string(WideString(locdict[i].astr))),Length(locdict[i].astr))
+  locdict[i].id
+)+':'+string(WideString(locdict[i].astr)));
+
+datloclog1.Add(IntToStr(
+RGHash(pointer(string(WideString(locdict[i].astr))),Length(locdict[i].astr))
+)+':'+string(WideString(locdict[i].astr)));
 {$ENDIF}
   end;
 
@@ -195,16 +196,10 @@ end;
 
 initialization
 
-  aliases:=pointer(-1);
-  dict   :=pointer(-1);
-  cdict  :=pointer(-1);
-  tdict  :=pointer(-1);
+  LoadTags(aliases,'dataliases.txt');
 
 finalization
   
-  if aliases<>pointer(-1) then FreeTags(aliases);
-  if dict   <>pointer(-1) then FreeTags(dict);
-  if cdict  <>pointer(-1) then FreeTags(cdict);
-  if tdict  <>pointer(-1) then FreeTags(tdict);
+  if aliases<>nil then FreeTags(aliases);
 
 end.
