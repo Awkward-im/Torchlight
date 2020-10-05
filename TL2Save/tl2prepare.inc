@@ -31,6 +31,7 @@ begin
   //===== Character Data =====
 
   FCharInfo.SaveToStream(FStream);
+
   //----- Keymapping -----
 
   WriteKeyMappingList;

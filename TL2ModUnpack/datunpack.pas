@@ -172,7 +172,7 @@ datloclog.Add(IntToStr(
 )+':'+string(WideString(locdict[i].astr)));
 
 datloclog1.Add(IntToStr(
-RGHash(pointer(string(WideString(locdict[i].astr))),Length(locdict[i].astr))
+RGHash(locdict[i].astr,Length(locdict[i].astr))
 )+':'+string(WideString(locdict[i].astr)));
 {$ENDIF}
   end;

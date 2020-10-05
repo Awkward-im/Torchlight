@@ -32,6 +32,7 @@ Check(Unk1,'save_label_1 '+HexStr(FStream.Position,8),0);
   ReadModList(FFullModHistory);     // DumpModList('Full mod history'  ,FFullModHistory);
 
   //===== Character Data =====
+
   FCharInfo:=ReadCharData(FStream,true);
 {
   GetTL2Class(FCharInfo.ClassId,lmod,lname);

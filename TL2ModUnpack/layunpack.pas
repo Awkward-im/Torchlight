@@ -376,15 +376,15 @@ begin
         if CompareWide(lname,'ORIENTATION') then
         begin
            QuaternionToMatrix(lq,lmatrix);
-           if lmatrix[2,0]<>0 then AddFloat(anode,pointer(m20){'FORWARDX'},lmatrix[2,0]);
-           if lmatrix[1,0]<>0 then AddFloat(anode,pointer(m10){'FORWARDY'},lmatrix[1,0]);
-           if lmatrix[0,0]<>0 then AddFloat(anode,pointer(m00){'FORWARDZ'},lmatrix[0,0]);
-           if lmatrix[2,1]<>0 then AddFloat(anode,pointer(m21){'UPX'     },lmatrix[2,1]);
-           if lmatrix[1,1]<>0 then AddFloat(anode,pointer(m11){'UPY'     },lmatrix[1,1]);
-           if lmatrix[0,1]<>0 then AddFloat(anode,pointer(m01){'UPZ'     },lmatrix[0,1]);
-           if lmatrix[2,2]<>0 then AddFloat(anode,pointer(m22){'RIGHTX'  },lmatrix[2,2]);
-           if lmatrix[1,2]<>0 then AddFloat(anode,pointer(m12){'RIGHTY'  },lmatrix[1,2]);
-           if lmatrix[0,2]<>0 then AddFloat(anode,pointer(m02){'RIGHTZ'  },lmatrix[0,2]);
+           {if lmatrix[2,0]<>0 then} AddFloat(anode,pointer(m20),lmatrix[2,0]);
+           {if lmatrix[1,0]<>0 then} AddFloat(anode,pointer(m10),lmatrix[1,0]);
+           {if lmatrix[0,0]<>0 then} AddFloat(anode,pointer(m00),lmatrix[0,0]);
+           {if lmatrix[2,1]<>0 then} AddFloat(anode,pointer(m21),lmatrix[2,1]);
+           {if lmatrix[1,1]<>0 then} AddFloat(anode,pointer(m11),lmatrix[1,1]);
+           {if lmatrix[0,1]<>0 then} AddFloat(anode,pointer(m01),lmatrix[0,1]);
+           {if lmatrix[2,2]<>0 then} AddFloat(anode,pointer(m22),lmatrix[2,2]);
+           {if lmatrix[1,2]<>0 then} AddFloat(anode,pointer(m12),lmatrix[1,2]);
+           {if lmatrix[0,2]<>0 then} AddFloat(anode,pointer(m02),lmatrix[0,2]);
         end;
       end
 

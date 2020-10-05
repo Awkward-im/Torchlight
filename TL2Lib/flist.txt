@@ -10,9 +10,10 @@ rgdict.pas     - list, tags.dat, dictionary.text and objects.dat reader, dict ma
 
 rgpak.pas      - PAK (MOD) file reader/unpacker
   classes
+  sysutils
   rgglobal
   rgmemory
-  rgstream
+//  rgstream
   tl2mod
   paszlib
 

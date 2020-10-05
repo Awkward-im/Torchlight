@@ -80,7 +80,7 @@ can be copied from another ranged classes like archer and outlander
   --
   en: 
   ----------------------
-  13 - Chance of magic damage
+  13 - "Rob Be Good" Chance of magic damage
   levelup: higher chance
   ru: 
   --
@@ -89,7 +89,7 @@ can be copied from another ranged classes like archer and outlander
 Benefits of archer way: chance of drop special items like "notes" which can be used later as
 consumables for music skills or combos. It can be an item or just stat.
 -----------------------------------------------------------------
-2 - Music for all (support)
+2 - "Music for all" (support)
   1  - (duration) Buff: improve Concentration (damage)
   levelup:
   tiers:
@@ -97,7 +97,7 @@ consumables for music skills or combos. It can be an item or just stat.
   --
   en: 
   ----------------------
-  2  - (duration) Buff: increase Speedup
+  2  - "Dance whirl" (duration) Buff: increase Speedup
   levelup: increase duration.
   tiers:  increate speedup; allies too
   ru: Под весёлую песню или зажигательный танец ноги сами несут в пляс.
@@ -124,7 +124,7 @@ consumables for music skills or combos. It can be an item or just stat.
   what is happening. This is the most appropriate moment to hit them not only with a performance,
   but also with a weapon.
   ----------------------
-  5  - (duration, immobilize yourself) Recovery area/aura
+  5 "I will survive" - (duration, immobilize yourself) Recovery area/aura
   F/X: flying notes
   levelup: increaze recovering
   tiers: 1 - increase duration; 2 - decrease immobilize duration; 3 - remove immobilize?
@@ -168,7 +168,7 @@ consumables for music skills or combos. It can be an item or just stat.
   --
   en: Performance is work. Training is necessary and the more active they are, the greater the talent, the higher the skill.
 ------------------------------------------------------------------------
-3 - Sound of God (bard) main element - fire / lightning
+3 - "Sound of God" (bard) main element - fire / lightning
   1  - Magic damage (sound waves)
   F/X: flying notes
   levelup: damage
@@ -177,49 +177,49 @@ consumables for music skills or combos. It can be an item or just stat.
   --
   en: Sound is not just the movement of the wind. This is power!
   -----------------------
-  2  - [TELEPORT ALT] Jump Rift - heal is not necessary
+  2  - "Like butterfly" [TELEPORT ALT] Jump Rift - heal is not necessary
   levelup: cooldown and mana
   tiers: distance; exlosion note at start point
   ru: Когда тебя заслушались и не заметили, как ты ушёл
   --
   en: When you were listened to and not noticed, as you left
   -----------------------
-  3  - [Storm Burst] Pull, hit, and knock back
+  3  - "Deadly Tide" [Storm Burst] Pull, hit, and knock back
   levelup:
   tiers:
   ru: Не подходи слишком близко! Не смей мешать певцу исполнить свою песню.
   --
   en: Don't get too close! Don't you dare stop the singer from performing his song.
   -----------------------
-  4  - (duration) [Summon Nether Imp]
+  4  - "Me and my" (duration) [Summon Nether Imp]
   levelup:
   tiers:
   ru: 
   --
   en: 
   -----------------------
-  5  - (!!create another??) chance of enemy exploding (on death)
+  5  - "Six-string samurai" (!!create another??) bleeding? chance of enemy exploding (on death)
   levelup:
   tiers:
   ru: 
   --
   en: 
   -----------------------
-  6  - fire storm (AOE) (like meteor)
+  6  - "From the spark" fire storm (AOE) (like meteor)
   levelup: cloodown and damage
   tiers: area; duration; burning?
   ru: Слышали фразу: "Его выступление - просто огонь!" Так вот, это не пустой звук.
   --
   en: Have you heard the phrase: "His performance is just fire!" Now, this is not an empty word.
   -----------------------
-  7  - (duration) avatar (ally)
+  7  - "Chorus" (duration) avatar (ally)
   levelup: damage
   tiers: duration; skill?
   ru: Хор поёт громче. А бьёт больнее.
   --
   en: The choir sings louder. And it hurts more.
   -----------------------
-  11 - Chance of gold and fish
+  11 "Dream come true" - Chance of gold and fish
   levelup: higher chance
   ru: Деньги, пиво и рыбалка. Что ещё нужно для хорошего отдыха?
   --
@@ -238,21 +238,21 @@ consumables for music skills or combos. It can be an item or just stat.
   en: 
 ----------------------------------------------------------------
 3 - Sound of God (Dancer) main element - ice / lightning
-  1  - Magic damage (wind)
+  1  "Magic dance" - Magic damage (wind)
   levelup: damage
   tiers: distance
   ru: Смотри, чтоб тебя не задело вихрем танца!
   --
   en: Don't let the whirlwind of the dance hit you!
   -----------------------
-  2  - [TELEPORT ALT] Jump Rift - heal is not necessary
+  2  - "Like butterfly" [TELEPORT ALT] Jump Rift - heal is not necessary
   levelup: cooldown and mana
   tiers: distance; poison cloud at start point;3 - knock back mobs at dest point
   ru: Прыжок, ещё прыжок...
   --
   en: Jump, another jump...
   -----------------------
-  3  - (duration) Aura: chance of poisoning, bleeding, shock, teleport
+  3  - "Do not touch" (duration) Aura: chance of poisoning, bleeding, shock, teleport
   levelup: higher chance
   tiers: 0 - bleeding; 1 - poisoning; 2 - shocked; 3 - freeze or teleport
   ru: Смотреть, но не трогать!
@@ -266,34 +266,34 @@ consumables for music skills or combos. It can be an item or just stat.
   --
   en: Sometimes you have to stop to catch your breath
   -----------------------
-  5  - fast multiply blades strikes? bleeding strikes of whip? with additional (magic) damage?
+  5  - "Saber Dance" fast multiply blades strikes? bleeding strikes of whip? with additional (magic) damage?
   levelup: damage and cooldown
   tiers: 270 degree arc; 3 - knock back
   ru: Не распускай руки, а то потеряешь их. Возможно, вместе с жизнью.
   --
   en: Don't let go of your hands, or you'll lose them. Perhaps with life.
   -----------------------
-  6  - ice/electric storm (AOE)
+  6  - "Dirty dances" ice/electric storm (AOE)
   levelup: damage and area
   tiers: chance to freeze; shock chance; higher chance
   ru: Воздух застывает и потрескивает от напряжения. Какой зажигательный танец!
   --
   en: The air freezes and crackles with tension. What a rousing dance!
   -----------------------
-  7  - avatar (ally)
+  7  "Twins" - avatar (ally)
   levelup: damage
   tiers: duration; HP
   ru: Твой танец так быстр, что кажется, будто вас уже двое.
   --
   en: Your dance is so fast, it feels like there are two of you already.
   ------------------------
-  11 - Chance of magic items for dancer
+  11 - "Best friends" Chance of magic items for dancer
   levelup: higher chance
   ru: Лучшие друзья девушки - это бриллианты? А как насчёт магических безделушек?
   --
   en: A girl's best friends are diamonds? What about magic trinkets?
   ------------------------
-  12 - chance and damage of crit
+  12 - "Critical days" chance and damage of crit
   levelup: higher chance
   ru: 
   --
@@ -316,7 +316,8 @@ weapon:
   whip       - 1-hand (sword)
   dirk       - 1-hand (sword/claw)
   marakas    - 1-hand 2-wield (wand)
-  tambourine - 1-hand 2-wield (wand) 
+  tambourine - 1-hand 2-wield (wand)
+  Shield = guitar/violin case? (can be replaced on equipment like cape?)
 
 Bard - bow, guitar.
 Good thing can be a HP penalty on every direct attack by guitar or count for guitar:
