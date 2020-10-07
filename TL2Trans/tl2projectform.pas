@@ -1960,18 +1960,19 @@ begin
 
       if actFileName.Checked then
         ls:=ExtractFileName(ls);
-      TL2ProjectGrid.Cells[colFile,aRow]:=ls;                 // File
-      TL2ProjectGrid.Cells[colTag ,aRow]:=data.Attrib[idx];   // Tag
+      TL2ProjectGrid.Cells[colFile,aRow]:=ls;                   // File
+      TL2ProjectGrid.Cells[colTag ,aRow]:=data.Attrib[idx];     // Tag
     end;
-{$IFDEF DEBUG}
-    TL2ProjectGrid.Cells[colFilter,aRow]:=data.Template[idx]; // Template
-{$ENDIF}
-    TL2ProjectGrid.Cells[colOrigin,aRow]:=lsrc;               // Value
-    if (lstatus<>stPartial) then                              // Part
+
+    if sbShowTemplate.Visible then
+      TL2ProjectGrid.Cells[colFilter,aRow]:=data.Template[idx]; // Template
+
+    TL2ProjectGrid.Cells[colOrigin,aRow]:=lsrc;                 // Value
+    if (lstatus<>stPartial) then                                // Part
       TL2ProjectGrid.Cells[colPartial,aRow]:='0'
     else
       TL2ProjectGrid.Cells[colPartial,aRow]:='1';
-    if (lstatus in [stPartial,stReady]) then                  // Translation
+    if (lstatus in [stPartial,stReady]) then                    // Translation
       TL2ProjectGrid.Cells[colTrans,aRow]:=ltrans;
 
     TL2ProjectGrid.Objects[0,aRow]:=TObject(IntPtr(idx));
@@ -2027,11 +2028,18 @@ begin
   data.Init;
   data.OnFileScan:=@ProjectFileScan;
 
-{$IFDEF DEBUG}
-  sbShowSimilar .Visible:=true;
-  sbShowDoubles .Visible:=true;
-  sbShowTemplate.Visible:=true;
-{$ENDIF}
+  if TL2Settings.cbShowDebug.Checked then
+  begin
+    sbShowSimilar .Visible:=true;
+    sbShowDoubles .Visible:=true;
+    sbShowTemplate.Visible:=true;
+  end
+  else
+  begin
+    sbShowSimilar .Visible:=false;
+    sbShowDoubles .Visible:=false;
+    sbShowTemplate.Visible:=false;
+  end;
 
   SetFilterWords(TL2Settings.edFilterWords.Caption);
   Preload();

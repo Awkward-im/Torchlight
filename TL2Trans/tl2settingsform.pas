@@ -26,6 +26,7 @@ type
     cbRemoveTags: TCheckBox;
     cbReopenProjects: TCheckBox;
     cbHidePartial: TCheckBox;
+    cbShowDebug: TCheckBox;
     edFilterWords: TEdit;
     edImportDir: TDirectoryEdit;
     edDefaultFile: TFileNameEdit;
@@ -204,6 +205,7 @@ const
   sReopenFiles  = 'reopenfiles';
   sRemoveTags   = 'removetags';
   sHidePartial  = 'hidepartial';
+  sShowDebug    = 'showdebug';
 
   sGroupHeight  = 'groupheight';
 
@@ -337,6 +339,7 @@ begin
 
   //--- Other
   config.WriteBool(sNSBase+':'+sSectSettings,sRemoveTags,cbRemoveTags.Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sShowDebug ,cbShowDebug .Checked);
 
   //--- Special
   config.WriteString(sNSBase+':'+sSectSettings,sFilter,edFilterWords.Caption);
@@ -395,6 +398,7 @@ begin
 
   //--- Other
   cbRemoveTags.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sRemoveTags,true);
+  cbShowDebug .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sShowDebug ,false);
 
   //--- Special
   edFilterWords.Caption:=config.ReadString(sNSBase+':'+sSectSettings,sFilter,defFilter);

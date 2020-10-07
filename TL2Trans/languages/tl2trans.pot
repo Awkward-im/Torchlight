@@ -556,6 +556,10 @@ msgstr ""
 msgid "Reopen projects at start"
 msgstr ""
 
+#: ttl2settings.cbshowdebug.caption
+msgid "Show Debug Options"
+msgstr ""
+
 #: ttl2settings.gbother.caption
 msgid "Other"
 msgstr ""

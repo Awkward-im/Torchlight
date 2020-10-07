@@ -578,6 +578,10 @@ msgstr "Eliminar etiquetas en la traducción"
 msgid "Reopen projects at start"
 msgstr "Reapertura de proyectos al inicio"
 
+#: ttl2settings.cbshowdebug.caption
+msgid "Show Debug Options"
+msgstr "Mostrar opciones de depuración"
+
 #: ttl2settings.gbother.caption
 msgid "Other"
 msgstr "Otro"
@@ -658,3 +662,4 @@ msgstr "Carpeta de trabajo"
 #: ttl2settings.lblyandexnote.caption
 msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr "Tamaño del texto es inferior a 10Kb. Limite diario es 1.000.000 caracteres. Limite mensual es 10.000.000 caracteres."
+

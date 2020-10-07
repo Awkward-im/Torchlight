@@ -7,6 +7,7 @@ object TL2Notes: TTL2Notes
   ClientHeight = 378
   ClientWidth = 252
   OnCreate = FormCreate
+  ShowHint = True
   LCLVersion = '2.1.0.0'
   object pnlTop: TPanel
     Left = 0

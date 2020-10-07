@@ -74,36 +74,43 @@ begin
   with (Owner as TTL2Project) do
   begin
     lblTextLine.Caption:=IntToStr(data.FileLine[i]);
-    lblTextFile.Caption:=data._File[i];
+    lblTextFile.Caption:=data._File [i];
     lblTextTag .Caption:=data.Attrib[i];
-    memText.Text       :=data.Line[i];
+    memText.Text       :=data.Line  [i];
     i:=data.SimIndex[i];
     lblSimLine .Caption:=IntToStr(data.FileLine[i]);
-    lblSimFile .Caption:=data._File[i];
+    lblSimFile .Caption:=data._File [i];
     lblSimTag  .Caption:=data.Attrib[i];
-    memSim.Text        :=data.Line[i];
+    memSim.Text        :=data.Line  [i];
   end;
 end;
 
 procedure TSimilaristForm.lbDupesSelectionChange(Sender: TObject; User: boolean);
-{
 var
-  dub:pDoubleData;
-}
+  lridx,i:integer;
 begin
   with (Owner as TTL2Project) do
   begin
-{
-    dub:=data.Double[IntPtr(lbSimilars.Items.Objects[lbSimilars.ItemIndex])];
-    lblTextLine.Caption:=IntToStr  (dub^.sLine);
-    lblTextFile.Caption:=data._File[dub^.sFile];
-    memText.Text       :=data.Line [dub^.sText];
-    memSim.Text        :=data.Trans[dub^.sText];
-    if dub^.sTag>=0 then
-      lblTextTag.Caption:=data.Attrib[dub^.sTag]
-    else
-      lblTextTag.Caption:='';
-}
+    lridx:=IntPtr(lbSimilars.Items.Objects[lbSimilars.ItemIndex]);
+    lblTextLine.Caption:=IntToStr(data.ref.GetLine(lridx));
+    lblTextFile.Caption:=data.ref.GetFile(lridx);
+    lblTextTag .Caption:=data.ref.GetTag (lridx);
+    lridx:=data.ref.Dupe[lridx]-1;
+    lblSimLine .Caption:=IntToStr(data.ref.GetLine(lridx));
+    lblSimFile .Caption:=data.ref.GetFile(lridx);
+    lblSimTag  .Caption:=data.ref.GetTag (lridx);
+
+    memText.Text:='';
+    memSim .Text:='';
+    for i:=0 to data.Lines-1 do
+    begin
+      if lridx=data.refs[i] then
+      begin
+        memText.Text:=data.Line [i];
+        memSim .Text:=data.Trans[i];
+        break;
+      end;
+    end;
   end;
 end;
 
@@ -132,23 +139,25 @@ end;
 
 procedure TSimilaristForm.FillDupeList;
 var
-  i:integer;
+  i,j:integer;
 begin
   lbSimilars.Clear;
 
   with (Owner as TTL2Project) do
   begin
     i:=0;
-{
     while i<data.Referals do
     begin
       j:=data.ref.Dupe[i];
       // search line index where ref.dup<-1
-      txt:=SearchForRef();
-      lbSimilars.AddItem(data.Line[data.Double[i]^.stext],TObject(i));
+      // =0 = dupe in preloads
+      // >0 = ref # +1
+      // <0 - base, count of doubles
+//      txt:=SearchForRef();
+      if j>0 then
+        lbSimilars.AddItem(data.ref.GetFile(i),TObject(IntPtr(i)));
       inc(i);
     end;
-}
     lblTotal.Caption:=sTotal+': '+IntToStr(lbSimilars.Items.Count);
   end;
 

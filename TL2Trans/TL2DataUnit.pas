@@ -94,6 +94,8 @@ type
     function  GetSimIndex(idx:integer):integer;
     function  GetTemplate(idx:integer):AnsiString;
     function  GetSample(idx:integer):AnsiString;
+
+    function  GetRef   (idx:integer):integer;
     function  GetFile  (idx:integer):AnsiString;
     function  GetAttrib(idx:integer):AnsiString;
     function  GetSkillFlag(idx:integer):boolean;
@@ -159,6 +161,8 @@ type
     property SimIndex[idx:integer]:integer     read GetSimIndex;
     property Sample  [idx:integer]:AnsiString  read GetSample;
     property State   [idx:integer]:tTextStatus read GetStatus write SetStatus;
+    //
+    property Refs    [idx:integer]:integer     read GetRef;
 
     property Line    [idx:integer]:AnsiString  read GetSource;
     property Trans   [idx:integer]:AnsiString  read GetTrans  write SetTrans;
@@ -389,6 +393,14 @@ end;
 function TTL2Translation.GetFileAmount:integer;
 begin
   result:=ref.FileCount;
+end;
+
+function TTL2Translation.GetRef(idx:integer):integer;
+begin
+  if (idx>=0) and (idx<cntText) then
+    result:=arText[idx].aref
+  else
+    result:=0;
 end;
 
 function TTL2Translation.GetSkillFlag(idx:integer):boolean;

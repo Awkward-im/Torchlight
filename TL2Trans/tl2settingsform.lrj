@@ -25,6 +25,7 @@
 {"hash":107700020,"name":"ttl2settings.lblfilternote.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,32,116,111,32,97,112,112,108,121,32,110,101,119,32,108,105,115,116],"value":"Reopen project to apply new list"},
 {"hash":2807380,"name":"ttl2settings.bbfontedit.caption","sourcebytes":[38,70,111,110,116],"value":"&Font"},
 {"hash":136973012,"name":"ttl2settings.cbreopenprojects.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,115,32,97,116,32,115,116,97,114,116],"value":"Reopen projects at start"},
+{"hash":157038147,"name":"ttl2settings.cbshowdebug.caption","sourcebytes":[83,104,111,119,32,68,101,98,117,103,32,79,112,116,105,111,110,115],"value":"Show Debug Options"},
 {"hash":242355710,"name":"ttl2settings.cbhidepartial.hint","sourcebytes":[72,105,100,101,32,112,97,114,116,105,97,108,108,121,32,116,114,97,110,115,108,97,116,101,100,32,119,105,116,104,32,116,114,97,110,115,108,97,116,101,100,32,98,121,32,34,72,105,100,101,32,114,101,97,100,121,34,32,98,117,116,116,111,110],"value":"Hide partially translated with translated by \"Hide ready\" button"},
 {"hash":120270388,"name":"ttl2settings.cbhidepartial.caption","sourcebytes":[72,105,100,101,32,80,97,114,116,105,97,108,32,119,105,116,104,32,84,114,97,110,115,108,97,116,101,100],"value":"Hide Partial with Translated"}
 ]}

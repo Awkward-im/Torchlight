@@ -1,7 +1,7 @@
 {
-  impossible to make unit coz we need source lines?
-  by other side, we make REF, not storage
-  parent will add ref and then need to change DUP?
+  This object don't have any text info.
+  It saves just text reference info like: file-line-tag
+  and reference to base placement for doubles
 }
 unit TL2RefUnit;
 
@@ -72,9 +72,9 @@ type
     property  FileCount:integer read cntFiles;
     property  TagCount :integer read cntTags;
 
-    property  Dupe[idx:integer]:integer read GetDup  write SetDup;
-    property  Flag[idx:integer]:integer read GetFlag write SetFlag;
-    property  IsSkill[idx:integer]:boolean index 1 read GetOpt write SetOpt;
+    property  Dupe   [idx:integer]:integer         read GetDup  write SetDup;
+    property  Flag   [idx:integer]:integer         read GetFlag write SetFlag;
+    property  IsSkill[idx:integer]:boolean index 1 read GetOpt  write SetOpt;
   end;
 
 

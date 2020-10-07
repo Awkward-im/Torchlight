@@ -433,6 +433,15 @@ object TL2Settings: TTL2Settings
       Caption = 'Reopen projects at start'
       TabOrder = 2
     end
+    object cbShowDebug: TCheckBox
+      Left = 8
+      Height = 19
+      Top = 224
+      Width = 132
+      Anchors = [akLeft, akBottom]
+      Caption = 'Show Debug Options'
+      TabOrder = 4
+    end
   end
   object cbHidePartial: TCheckBox
     Left = 8

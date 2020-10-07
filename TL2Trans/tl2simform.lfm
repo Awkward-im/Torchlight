@@ -9,9 +9,10 @@ object SimilaristForm: TSimilaristForm
   LCLVersion = '2.1.0.0'
   object lbSimilars: TListBox
     Left = 8
-    Height = 327
-    Top = 8
-    Width = 310
+    Height = 309
+    Top = 6
+    Width = 648
+    Anchors = [akTop, akLeft, akRight, akBottom]
     ItemHeight = 0
     TabOrder = 0
   end
@@ -20,6 +21,7 @@ object SimilaristForm: TSimilaristForm
     Height = 15
     Top = 344
     Width = 60
+    Anchors = [akLeft, akBottom]
     AutoSize = False
     ParentColor = False
   end
@@ -28,7 +30,7 @@ object SimilaristForm: TSimilaristForm
     Height = 15
     Top = 344
     Width = 576
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akLeft, akRight, akBottom]
     AutoSize = False
     ParentColor = False
   end
@@ -37,7 +39,7 @@ object SimilaristForm: TSimilaristForm
     Height = 91
     Top = 370
     Width = 648
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
   end
   object memSim: TMemo
@@ -45,7 +47,7 @@ object SimilaristForm: TSimilaristForm
     Height = 91
     Top = 472
     Width = 648
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akLeft, akRight, akBottom]
     TabOrder = 2
   end
   object lblTextTag: TLabel
@@ -54,6 +56,7 @@ object SimilaristForm: TSimilaristForm
     Top = 320
     Width = 328
     Alignment = taRightJustify
+    Anchors = [akRight, akBottom]
     AutoSize = False
     ParentColor = False
   end
@@ -62,6 +65,7 @@ object SimilaristForm: TSimilaristForm
     Height = 15
     Top = 576
     Width = 60
+    Anchors = [akLeft, akBottom]
     AutoSize = False
     ParentColor = False
   end
@@ -70,6 +74,7 @@ object SimilaristForm: TSimilaristForm
     Height = 15
     Top = 576
     Width = 576
+    Anchors = [akLeft, akRight, akBottom]
     AutoSize = False
     ParentColor = False
   end
@@ -79,14 +84,17 @@ object SimilaristForm: TSimilaristForm
     Top = 600
     Width = 328
     Alignment = taRightJustify
+    Anchors = [akRight, akBottom]
     AutoSize = False
     ParentColor = False
   end
   object lblTotal: TLabel
-    Left = 328
-    Height = 1
-    Top = 21
-    Width = 1
+    Left = 8
+    Height = 15
+    Top = 320
+    Width = 189
+    Anchors = [akLeft, akBottom]
+    AutoSize = False
     ParentColor = False
   end
 end
