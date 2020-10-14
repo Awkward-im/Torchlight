@@ -2,6 +2,9 @@ unit RGPAK;
 
 interface
 
+uses
+  classes;
+
 //--- TL2 File Types
 const
     tl2Dat       = $00; // .DAT
@@ -118,13 +121,17 @@ type
     fname:string;
     fsize:dword;
     data :dword;
+//    dsize:dword;
+    man  :dword;
+//    msize:dword;
     ver  :integer;
     // not necessary fields
     root :PWideChar; // same as first directory, MEDIA (usually)
     total:integer;   // total "file" elements. Can be calculated when needs
   end;
 
-
+//function  GetPAKInfo (astrm:TStream; out api:TPAKInfo):boolean;
+function  GetPAKInfo (const fname:string; out api:TPAKInfo):boolean;
 function  ReadPAKInfo(const fname:string; deep:boolean=false):pointer;
 procedure FreePAKInfo(var aptr:pointer);
 procedure DumpPAKInfo(aptr:pointer);
@@ -135,7 +142,6 @@ function SearchFile(aptr:pointer; const fname:string):PMANFileInfo;
 implementation
 
 uses
-  classes,
   sysutils,
   rgglobal,
 //  rgstream,
@@ -226,134 +232,155 @@ end;
 
 {$PUSH}
 {$I-}
-function ReadPAKInfo(const fname:string; deep:boolean=false):pointer;
+function GetPAKInfo(const fname:string; out api:TPAKInfo):boolean;
 var
   f:file of byte;
   buf:array [0..SizeOf(TTL2ModTech)-1] of byte;
   lhdr:TPAKHeader absolute buf;
   lmi:TTL2ModTech absolute buf;
-  lfhdr:TPAKFileHeader;
-  lpi:PPAKInfo;
-  ltmp:PByte;
-//  lst:TMemoryStream;
-  lofs:DWord;
-  i,j,lsize:integer;
 begin
-  result:=nil;
+  result:=false;
 
   Assign(f,fname);
   Reset(f);
 
   if IOResult<>0 then exit;
 
-  BlockRead(f,buf,SizeOf(buf));
-  ltmp:=nil;
+  result:=true;
 
-  lpi:=AllocMem(SizeOf(TPAKInfo));
-  lpi^.fsize:=FileSize(f);
+  BlockRead(f,buf,SizeOf(buf));
+
+  FillChar(api,SizeOf(api),0);
+  api.fsize:=FileSize(f);
+  api.fname:=fname;
 
   // check PAK version
   if lhdr.Reserved=0 then
   begin
-    if      lhdr.Version=1 then lpi^.ver:=verRG
-    else if lhdr.Version=5 then lpi^.ver:=verHob;
+    if      lhdr.Version=1 then api.ver:=verRG
+    else if lhdr.Version=5 then api.ver:=verHob;
 
-    lofs:=lhdr.ManOffset;
+    api.man:=lhdr.ManOffset;
   end
   else
   begin
+    // if we have MOD header
     if (lmi.version=4) and (lmi.gamever[0]=1) then
     begin
-      lpi^.ver :=verTL2Mod;
-      lpi^.data:=lmi.offData;
-
-      lofs:=lmi.offMan;
+      api.ver :=verTL2Mod;
+      api.data:=lmi.offData;
+      api.man :=lmi.offMan;
     end
     else
     begin
-      lpi^.ver:=verTL2;
-
-      Close(f);
-      Assign(f,fname+'.MAN');
-      Reset(f);
-      if IOResult<>0 then exit;
-
-      lofs:=0;
+      api.ver:=verTL2;
     end;
   end;
 
-  lsize:=FileSize(f)-lofs;
-  if lsize>0 then
-  begin
-    GetMem(ltmp,lsize);
-    Seek(f,lofs);
-    BlockRead(f,ltmp^,lsize);
-    ParseManifest(lpi,ltmp);
-    FreeMem(ltmp);
-  end;
-
-  if deep then
-  begin
-    if lpi^.ver=verTL2 then
-    begin
-      Close(f);
-      Assign(f,fname);
-      Reset(f);
-    end;
-
-    lsize:=FileSize(f);
-    if lsize<=MaxSizeForMem then
-    begin
-      GetMem(ltmp,lofs);
-      Seek(f,0);
-      BlockRead(f,ltmp^,lofs);
-    end
-    else
-      ltmp:=nil;
-{
-    if lsize<=MaxSizeForMem then
-    begin
-      lst:=TMemoryStream.Create();
-      lst.LoadFromFile(fname);
-    end
-    else
-      lst:=nil;
-}
-    for i:=0 to High(lpi^.Entries) do
-    begin
-      for j:=0 to High(lpi^.Entries[i].Files) do
-      begin
-        with lpi^.Entries[i].Files[j] do
-          if offset<>0 then
-          begin
-            if ltmp<>nil then
-            begin
-              size_u:=PPAKFileHeader(ltmp+lpi^.data+offset)^.size_u;
-              size_c:=PPAKFileHeader(ltmp+lpi^.data+offset)^.size_c;
-{
-            if lst<>nil then
-            begin
-              size_u:=PPAKFileHeader(lst.Memory[lpi^.data+offset]).size_u;
-              size_c:=PPAKFileHeader(lst.Memory[lpi^.data+offset]).size_c;
-}
-            end
-            else
-            begin
-              Seek(f,lpi^.data+offset);
-              BlockRead(f,lfhdr,SizeOf(lfhdr));
-              size_u:=lfhdr.size_u;
-              size_c:=lfhdr.size_c;
-            end;
-          end;
-      end;
-    end;
-    if ltmp<>nil then FreeMem(ltmp);
-//    if lst<>nil then lst.Free;
-  end;
-  
   Close(f);
+end;
 
-  result:=lpi;
+function ReadPAKInfo(const fname:string; deep:boolean=false):pointer;
+var
+  f:file of byte;
+  lfhdr:TPAKFileHeader;
+  lpi:PPAKInfo;
+  ltmp:PByte;
+//  lst:TMemoryStream;
+  i,j,lsize:integer;
+begin
+  result:=nil;
+
+  lpi:=AllocMem(SizeOf(TPAKInfo));
+  // Get common info
+  if GetPAKInfo(fname, lpi^) then
+  begin
+    result:=lpi;
+
+    // read manifest
+
+    if lpi^.ver=verTL2 then
+      Assign(f,lpi^.fname+'.MAN')
+    else
+      Assign(f,lpi^.fname);
+
+    Reset(f);
+
+    lsize:=FileSize(f)-lpi^.man;
+    if lsize>0 then
+    begin
+      GetMem(ltmp,lsize);
+      Seek(f,lpi^.man);
+      BlockRead(f,ltmp^,lsize);
+      ParseManifest(lpi,ltmp);
+      FreeMem(ltmp);
+    end;
+
+    // fill filesize info
+
+    if deep then
+    begin
+      if lpi^.ver=verTL2 then
+      begin
+        Close(f);
+        Assign(f,lpi^.fname);
+        Reset(f);
+      end;
+
+      lsize:=lpi^.fsize;
+      if lsize<=MaxSizeForMem then
+      begin
+        GetMem(ltmp,lsize);
+        Seek(f,0);
+        BlockRead(f,ltmp^,lsize);
+      end
+      else
+        ltmp:=nil;
+{
+      if lsize<=MaxSizeForMem then
+      begin
+        lst:=TMemoryStream.Create();
+        lst.LoadFromFile(fname);
+      end
+      else
+        lst:=nil;
+}
+      for i:=0 to High(lpi^.Entries) do
+      begin
+        for j:=0 to High(lpi^.Entries[i].Files) do
+        begin
+          with lpi^.Entries[i].Files[j] do
+            if offset<>0 then
+            begin
+              if ltmp<>nil then
+              begin
+                size_u:=PPAKFileHeader(ltmp+lpi^.data+offset)^.size_u;
+                size_c:=PPAKFileHeader(ltmp+lpi^.data+offset)^.size_c;
+{
+              if lst<>nil then
+              begin
+                size_u:=PPAKFileHeader(lst.Memory[lpi^.data+offset]).size_u;
+                size_c:=PPAKFileHeader(lst.Memory[lpi^.data+offset]).size_c;
+}
+              end
+              else
+              begin
+                Seek(f,lpi^.data+offset);
+                BlockRead(f,lfhdr,SizeOf(lfhdr));
+                size_u:=lfhdr.size_u;
+                size_c:=lfhdr.size_c;
+              end;
+            end;
+        end;
+      end;
+      if ltmp<>nil then FreeMem(ltmp);
+//      if lst<>nil then lst.Free;
+    end;
+    
+    Close(f);
+  end
+  else
+    FreeMem(lpi);
 end;
 {$POP}
 
