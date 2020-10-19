@@ -17,7 +17,8 @@ begin
     halt;
   end;
 
-  if GetPAKInfo(ParamStr(1),lpak) then
+  lpak.fname:=ParamStr(1);
+  if GetPAKInfo(lpak,piNoParse) then
   begin
     if lpak.ver=verTL2Mod then
     begin
