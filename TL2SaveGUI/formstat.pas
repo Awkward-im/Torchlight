@@ -15,12 +15,11 @@ type
   TfmStat = class(TForm)
     bbClearLearnHistory: TBitBtn;
     gbInitial: TGroupBox;
-    edName : TEdit;
-    lblSkillHistoryTitle: TLabel;
-  lblName : TLabel;
+    edName : TEdit;  lblName : TLabel;
     edClass: TEdit;  lblClass: TLabel;
     edPet  : TEdit;  lblPet  : TLabel;
-    lbSkillHistory: TListBox;
+    lbSkillHistory      : TListBox;
+    lblSkillHistoryTitle: TLabel;
 
     pcStatistic: TPageControl;
     tsLearn: TTabSheet;
@@ -33,9 +32,11 @@ type
     tsArea1  : TTabSheet;  sgArea1  : TStringGrid;
     tsArea2  : TTabSheet;  sgArea2  : TStringGrid;
     tsKillers: TTabSheet;  sgKillers: TStringGrid;
+
     procedure bbClearLearnHistoryClick(Sender: TObject);
     procedure sgCompareCells(Sender: TObject; ACol, ARow, BCol,
       BRow: Integer; var Result: integer);
+
   private
     SGame:TTL2SaveFile;
 
@@ -219,4 +220,3 @@ begin
 end;
 
 end.
-

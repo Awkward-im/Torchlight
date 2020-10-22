@@ -113,6 +113,8 @@ resourcestring
   rsUnits  = 'Units';
   rsProps  = 'Props';
   rsQItem  = 'Quest items';
+
+  rsNoSaveGame = 'Can''t load savegame file';
 //  rsNoBase = 'Can''t load database';
 
 const
@@ -308,31 +310,35 @@ var
   i:integer;
 }
 begin
-  actFileReload   .Enabled:=true;
-  actFileSave     .Enabled:=true;
-  actFileCheat    .Enabled:=true;
-  actFileFixModded.Enabled:=true;
+  try
+    ClearGameGlobals;
+    CloseSaveGame;
 
-  ClearGameGlobals;
-  CloseSaveGame;
-
-  SGame:=TTL2SaveFile.Create;
-  SGame.LoadFromFile(FFileName);
-  SGame.Parse();
-  SetFilter(SGame.BoundMods);
-  LoadGameGlobals;
+    SGame:=TTL2SaveFile.Create;
+    SGame.LoadFromFile(FFileName);
+    SGame.Parse();
+    SetFilter(SGame.BoundMods);
+    LoadGameGlobals;
 {
-  for i:=0 to MainPanel.ControlCount-1 do
-  begin
-    if MainPanel.Controls[i] is TForm then
-      PostMessage(TForm(MainPanel.Controls[i]).Handle,LM_TL2_COMMAND,TL2_INIT,0);
-  end;
+    for i:=0 to MainPanel.ControlCount-1 do
+    begin
+      if MainPanel.Controls[i] is TForm then
+        PostMessage(TForm(MainPanel.Controls[i]).Handle,LM_TL2_COMMAND,TL2_INIT,0);
+    end;
 }
-  FChar.Configured:=false;
+    FChar.Configured:=false;
 
-  Caption:='  '+FFileName;
+    Caption:='  '+FFileName;
 
-  ChangeTree;
+    ChangeTree;
+
+    actFileReload   .Enabled:=true;
+    actFileSave     .Enabled:=true;
+    actFileCheat    .Enabled:=true;
+    actFileFixModded.Enabled:=true;
+  except
+    ShowMessage(rsNoSaveGame+' '+FFileName);
+  end;
 end;
 
 procedure TfmSaveFile.MakeBackup(const fname:string);

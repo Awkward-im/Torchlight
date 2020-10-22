@@ -225,11 +225,11 @@ consumables for music skills or combos. It can be an item or just stat.
   --
   en: Money, beer, and fishing. What else do you need for a good holiday?
   -----------------------
-  12 - (!!create another??) chance execution
-  levelup:
-  ru: 
+  12 - sound amplifiers with knock-back effect
+  levelup: distance, cooldown, target amount
+  ru: Заложило уши? Отойди!
   --
-  en: 
+  en: Too loud? Stay away!
   -----------------------
   13 - improve fire and phys Damage
   levelup: higher damage

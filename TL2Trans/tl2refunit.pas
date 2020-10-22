@@ -72,16 +72,18 @@ type
     property  FileCount:integer read cntFiles;
     property  TagCount :integer read cntTags;
 
-    property  Dupe   [idx:integer]:integer         read GetDup  write SetDup;
-    property  Flag   [idx:integer]:integer         read GetFlag write SetFlag;
-    property  IsSkill[idx:integer]:boolean index 1 read GetOpt  write SetOpt;
+    property  Dupe       [idx:integer]:integer         read GetDup  write SetDup;
+    property  Flag       [idx:integer]:integer         read GetFlag write SetFlag;
+    property  IsSkill    [idx:integer]:boolean index 1 read GetOpt  write SetOpt;
+    property  IsTranslate[idx:integer]:boolean index 2 read GetOpt  write SetOpt;
   end;
 
 
 implementation
 
 const
-  rfIsSkill = 1;
+  rfIsSkill     = 1;
+  rfIsTranslate = 2;
 
 const
   increment = 50;
@@ -139,12 +141,15 @@ begin
   begin
     _file:=AddFile(afile);
     _tag :=AddTag (atag);
-    _line:=aline;
+    _line:=ABS(aline);
     _dup :=-1;
     _flag:=0;
 //!!
     if Pos('SKILLS'+DirectorySeparator,afile)=7 then
       _flag:=_flag or rfIsSkill;
+
+    if aline<0 then
+      _flag:=_flag or rfIsTranslate;
   end;
   result:=cntRef;
   inc(cntRef);

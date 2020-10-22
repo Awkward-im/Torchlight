@@ -19,6 +19,7 @@ type
     lblOffset: TLabel;
     procedure btnExportClick(Sender: TObject);
     procedure btnImportClick(Sender: TObject);
+
   private
     FClass:TL2BaseClass;
     FName :string;
@@ -41,9 +42,6 @@ var
 implementation
 
 {$R *.lfm}
-
-uses
-  rgstream;
 
 { TfmButtons }
 
@@ -114,4 +112,3 @@ begin
 end;
 
 end.
-

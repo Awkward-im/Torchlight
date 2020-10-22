@@ -59,6 +59,7 @@ begin
     FItem.Visible:=true;
 
     fmButtons.btnExport.Enabled:=true;
+    fmButtons.Ext   :='.itm';
     fmButtons.Name  :='item ['+IntToStr(Item.Index)+'] '+litem.Name;
     fmButtons.SClass:=litem;
   end;
@@ -80,9 +81,8 @@ begin
   FChar :=aChar;
 
   FItem.Visible:=false;
-
   fmButtons.btnExport.Enabled:=false;
-  fmButtons.Ext:='.itm';
+
   lvItemList.Clear;
   lvItemList.Columns[0].Caption:=IntToStr(Length(aItems));
   if Length(aItems)>0 then
@@ -105,6 +105,7 @@ begin
       else if litem.ModIds<>nil  then limg:=imgModded;
 
 if litem.IsProp then limg:=6;
+
       lvItemList.Items[i].ImageIndex:=limg;
     end;
     lvItemList.SortColumn:=0;

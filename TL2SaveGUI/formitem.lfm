@@ -14,9 +14,9 @@ object fmItem: TfmItem
     Height = 478
     Top = 0
     Width = 619
-    ActivePage = tsItemInfo
+    ActivePage = tsCommonInfo
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tsCommonInfo: TTabSheet
       Caption = 'Common'
@@ -51,7 +51,7 @@ object fmItem: TfmItem
         Height = 23
         Top = 23
         Width = 233
-        ReadOnly = True
+        OnChange = edNameChange
         TabOrder = 0
       end
       object edPrefix: TEdit

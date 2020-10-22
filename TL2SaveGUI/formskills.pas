@@ -265,7 +265,7 @@ begin
   begin
     case Key of
       VK_OEM_MINUS, VK_SUBTRACT: DoLevelChange(false);
-      VK_OEM_PLUS , VK_ADD     : DoLevelChange(false);
+      VK_OEM_PLUS , VK_ADD     : DoLevelChange(true);
     end;
   end;
 end;
@@ -386,9 +386,9 @@ begin
 
         sgSkills.Cells[colName   ,j]:=FSkills[i].title;
         sgSkills.Cells[colPassive,j]:=FSkills[i].passive;
-        sgSkills.Cells[colMinus  ,j]:='-';
+//        sgSkills.Cells[colMinus  ,j]:='-';
         sgSkills.Cells[colLevel  ,j]:=IntToStr(FSkills[i].learn);
-        sgSkills.Cells[colPlus   ,j]:='+';
+//        sgSkills.Cells[colPlus   ,j]:='+';
         inc(j);
       end;
     end;
@@ -398,6 +398,7 @@ begin
   begin
     sgSkills.RowCount:=1+Length(FChar.Skills);
   end;
+
   for i:=1 to sgSkills.RowCount-1 do
   begin
     sgSkills.Cells[colMinus,i]:='-';

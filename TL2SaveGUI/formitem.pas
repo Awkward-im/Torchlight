@@ -28,12 +28,12 @@ type
     cbFlag6: TCheckBox;
     cbFlag7: TCheckBox;
 
-    cbEnabled   : TCheckBox;
-    cbVisible   : TCheckBox;
+    cbEnabled: TCheckBox;
+    cbVisible: TCheckBox;
 
     edItemId   : TEdit;
     edLevel    : TEdit;  lblLevel: TLabel;
-    edName     : TEdit;  lblName: TLabel;
+    edName     : TEdit;  lblName : TLabel;
     edNameById : TEdit;
     edPrefix   : TEdit;  lblPrefix: TLabel;
     edSuffix   : TEdit;  lblSuffix: TLabel;
@@ -74,9 +74,10 @@ type
     tsOtherInfo: TTabSheet;
 
     procedure bbClearModClick(Sender: TObject);
-    procedure bbUpdateClick(Sender: TObject);
+    procedure bbUpdateClick  (Sender: TObject);
+    procedure edNameChange   (Sender: TObject);
     procedure edSocketsChange(Sender: TObject);
-    procedure edStackChange(Sender: TObject);
+    procedure edStackChange  (Sender: TObject);
     procedure FormCreate(Sender: TObject);
 
   private
@@ -131,6 +132,11 @@ begin
   end;
 end;
 
+procedure TfmItem.edNameChange(Sender: TObject);
+begin
+  bbUpdate.Visible:=true;
+end;
+
 procedure TfmItem.bbUpdateClick(Sender: TObject);
 var
   ls:string;
@@ -139,6 +145,7 @@ begin
   ls[1]:='*';
   Application.MainForm.Caption:=ls;
 
+  FItem.Name:=edName.Text;
   FItem.Stack:=StrToIntDef(edStack.Text,1);
   FItem.Changed:=true;
   if FChar<>nil then FChar.Changed:=true;
@@ -182,7 +189,7 @@ end;
 procedure TfmItem.FillInfo(aItem:TTL2Item; aChar:TTL2Character=nil);
 var
   linv,lcont:string;
-  i,j:integer;
+  i:integer;
 begin
   FItem:=aItem;
   FChar:=aChar;

@@ -50,7 +50,7 @@ type
     MinPhys:TRGInteger; // ?? Min Phys Attack (not summarize) kept non-zero
     MaxPhys:TRGInteger; // ?? Max Phys Attack (not summarize) kept non-zero
     field4 :TRGInteger; // ?? amount of attacks? triggers?
-    field5 :Byte;       // warps activated?
+    field5 :Byte;       // warps activated? ??Gold Chest opened??
     GoldGet:Word;       // plus gold per level (picked and shop)
     field7 :Byte;       // 7 & 8 usually the same
     field8 :Byte;       // 7 & 8 usually the same

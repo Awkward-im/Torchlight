@@ -79,6 +79,10 @@ msgstr ""
 msgid "Movies"
 msgstr ""
 
+#: formsavegame.rsnosavegame
+msgid "Can't load savegame file"
+msgstr ""
+
 #: formsavegame.rspets
 msgid "Pets and allies"
 msgstr ""

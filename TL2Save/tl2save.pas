@@ -29,7 +29,7 @@ type
 
     procedure Clear;
 
-    procedure LoadFromFile(const aname:string);
+    function  LoadFromFile(const aname:string):boolean;
     procedure SaveToFile  (const aname:string; aencoded:boolean=false);
 
     function  Parse():boolean;
@@ -471,11 +471,13 @@ end;
 
 //===== Global savegame class things =====
 
-procedure TTL2SaveFile.LoadFromFile(const aname:string);
+function TTL2SaveFile.LoadFromFile(const aname:string):boolean;
 var
   lSaveHeader:TL2SaveHeader;
   lSaveFooter:TL2SaveFooter;
 begin
+  result:=false;
+
   if FStream<>nil then
     FStream.Free;
 
@@ -484,21 +486,32 @@ begin
     TMemoryStream(FStream).LoadFromFile(aname);
 
     if FStream.Size<(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)) then
+    begin
       Error(sWrongSize);
+      Exit;
+    end;
 
     FStream.Read(lSaveHeader,SizeOf(lSaveHeader));
     if lSaveHeader.Sign<>$44 then
+    begin
       Error(sWrongVersion);
+      Exit;
+    end;
 
     FStream.Seek(-SizeOf(lSaveFooter),soEnd);
     FStream.Read(lSaveFooter,SizeOf(lSaveFooter));
 
     if lSaveFooter.filesize<>FStream.Size then
+    begin
       Error(sWrongFooter);
+      Exit;
+    end;
     
     if lSaveHeader.Encoded then
       Decode(TMemoryStream(FStream).Memory+ SizeOf(lSaveHeader),
                            FStream .Size  -(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
+
+    result:=true;
   except
     Error(sLoadFailed);
   end;
@@ -596,9 +609,6 @@ procedure TTL2SaveFile.Error(const atext:string);
 begin
   if IsConsole then
     writeln(atext);
-
-  Free;
-  Halt;
 end;
 
 end.

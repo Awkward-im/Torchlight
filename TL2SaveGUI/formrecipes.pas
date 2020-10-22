@@ -20,12 +20,14 @@ type
     cbJustActual: TCheckBox;
     cbHaveTitle: TCheckBox;
     sgRecipes: TStringGrid;
-    procedure bbClearClick(Sender: TObject);
-    procedure bbUpdateClick(Sender: TObject);
+
+    procedure bbClearClick    (Sender: TObject);
+    procedure bbUpdateClick   (Sender: TObject);
     procedure btnLearnAllClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure FormCreate (Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure sgRecipesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+
   private
     SGame:TTL2SaveFile;
     OldActualState   :boolean;

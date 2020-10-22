@@ -27,14 +27,15 @@ type
     sbAdd: TSpeedButton;
     sbDelete: TSpeedButton;
     sbClipboard: TSpeedButton;
-    procedure bbClearClick(Sender: TObject);
-    procedure bbUpdateClick(Sender: TObject);
-    procedure sbAddClick(Sender: TObject);
     procedure sbClipboardClick(Sender: TObject);
-    procedure sbDeleteClick(Sender: TObject);
-    procedure sbDownClick(Sender: TObject);
-    procedure sbUpClick(Sender: TObject);
+    procedure bbClearClick    (Sender: TObject);
+    procedure bbUpdateClick   (Sender: TObject);
+    procedure sbAddClick      (Sender: TObject);
+    procedure sbDeleteClick   (Sender: TObject);
+    procedure sbDownClick     (Sender: TObject);
+    procedure sbUpClick       (Sender: TObject);
     procedure sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
+
   private
     FSGame:TTL2SaveFile;
 

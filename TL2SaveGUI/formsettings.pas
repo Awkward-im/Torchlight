@@ -16,17 +16,17 @@ type
   TfmSettings = class(TForm)
     bbSave: TBitBtn;
     cbReloadDB: TCheckBox;
-    cbShowAll: TCheckBox;
+    cbShowAll : TCheckBox;
     cbShowTech: TCheckBox;
-    cbIdAsHex: TCheckBox;
-    cbBackup: TCheckBox;
-    edIconDir: TDirectoryEdit;
-    edDBFile: TFileNameEdit;
+    cbIdAsHex : TCheckBox;
+    cbBackup  : TCheckBox;
+    edIconDir : TDirectoryEdit;  lblIconDir: TLabel;
+    edDBFile  : TFileNameEdit;   lblDBFile : TLabel;
     gbShow: TGroupBox;
-    lblDBFile: TLabel;
-    lblIconDir: TLabel;
+
     procedure bbSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+
   private
     procedure LoadSettings;
 
@@ -119,4 +119,3 @@ begin
 end;
 
 end.
-

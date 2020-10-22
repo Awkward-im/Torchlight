@@ -966,7 +966,7 @@ procedure TTL2Translation.ReadSrcFile(const fname:AnsiString; atype:integer; aro
 var
   slin:TStringList;
   s,ls,ltag,lfile:AnsiString;
-  lref,lline:integer;
+  lfline,lref,lline:integer;
   i,j:integer;
 begin
   FErrCode:=0;
@@ -1005,6 +1005,7 @@ begin
         ltag:='';
         i:=j;                     // 'no tag' version (really?)
       end;
+      lfline:=-(lline+1);
     end
     // <STRING> tag for some cases
     else
@@ -1012,6 +1013,7 @@ begin
       j:=pos(sString,s);
       if j>0 then
       begin
+        lfline:=lline+1;
         // <STRING>DESCRIPTION: case (old GUTS?)
         if pos(sString+sDescription+':',s)>0 then
         begin
@@ -1047,7 +1049,7 @@ begin
       ls:=Copy(s,i,Length(s));
       if (ls<>'') and (ls<>' ') then
       begin
-        lref:=fRef.AddRef(lfile,ltag,lline+1);
+        lref:=fRef.AddRef(lfile,ltag,lfline);
         
         i:=AddString(ls,'','');
         if i>0 then

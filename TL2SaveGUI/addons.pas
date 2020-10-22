@@ -13,6 +13,16 @@ implementation
 uses
   SysUtils;
 
+const
+  dirstart = 1024;
+  dirdelta = 32;
+var
+  dirlist:array of record
+    full:string;
+    name:string;
+  end;
+  dircnt:integer;
+
 // from LazFileUtils
 function ExtractFileNameOnly(const AFilename: string): string;
 var
@@ -32,6 +42,72 @@ begin
   Result:=copy(AFilename,StartPos,ExtPos-StartPos);
 end;
 
+procedure GetDirList(const adir:string);
+var
+  sr:TSearchRec;
+  lname:string;
+begin
+
+  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
+  begin
+    repeat
+      lname:=adir+'\'+sr.Name;
+      if (sr.Attr and faDirectory)=faDirectory then
+      begin
+        if (sr.Name<>'.') and (sr.Name<>'..') then
+        begin
+          GetDirList(adir+'\'+sr.Name);
+        end;
+      end
+      else
+      begin
+        if dircnt>=Length(dirlist) then
+        begin
+          if Length(dirlist)=0 then
+            SetLength(dirlist,dirstart)
+          else
+            SetLength(dirlist,Length(dirlist)+dirdelta);
+        end;
+        dirlist[dircnt].full:=adir+'\'+sr.Name;
+        dirlist[dircnt].name:=UpCase(ExtractFileNameOnly(sr.Name));
+        inc(dircnt);
+
+      end;
+    until FindNext(sr)<>0;
+    FindClose(sr);
+  end;
+end;
+
+procedure MakeDirList(const aroot:string);
+begin
+  SetLength(dirlist,0);
+  dircnt:=0;
+  GetDirList(aroot);
+end;
+
+procedure FreeDirList();
+begin
+  SetLength(dirlist,0);
+end;
+
+function SearchForFileName(const adir,aname:string):string;
+var
+  i:integer;
+begin
+  for i:=0 to High(dirlist) do
+  begin
+    if Pos(adir,dirlist[i].full)=1 then
+    begin
+      if dirlist[i].name=aname then
+      begin
+        result:=dirlist[i].full;
+        exit;
+      end;
+    end;
+  end;
+  result:='';
+end;
+{
 function SearchForFileName(const adir,aname:string):string;
 var
   sr:TSearchRec;
@@ -64,7 +140,7 @@ begin
     FindClose(sr);
   end;
 end;
-
+}
 function DeleteSelectedRows(agrid:TStringGrid):boolean;
 var
   i,col:integer;
@@ -95,7 +171,7 @@ begin
     if agrid.IsCellSelected[agrid.Col,i] then
        inc(lcnt);
   result:=lcnt>0;
-  SetLength(ar,lcnt);
+  SetLength(ar,lcnt); // agrid.RowCount
   // 2 - create numbers list
   lcnt:=0;
   for i:=agrid.RowCount-1 downto agrid.FixedRows do
@@ -112,5 +188,14 @@ begin
   SetLength(ar,0);
 }
 end;
+
+
+initialization
+
+  MakeDirList(ExtractFileDir(ParamStr(0)));
+
+finalization
+
+  FreeDirList;
 
 end.

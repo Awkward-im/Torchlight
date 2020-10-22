@@ -16,8 +16,8 @@ type
     btnSaveQuest: TButton;
     sgQuests: TStringGrid;
     procedure btnSaveQuestClick(Sender: TObject);
-    procedure sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer;
-      var CanSelect: Boolean);
+    procedure sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
+
   private
     SGame:TTL2SaveFile;
 

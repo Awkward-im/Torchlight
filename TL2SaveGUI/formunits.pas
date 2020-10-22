@@ -59,6 +59,7 @@ begin
     FChar.Visible:=true;
 
     fmButtons.btnExport.Enabled:=true;
+    fmButtons.Ext   :='.chr';
     fmButtons.Name  :='unit ['+IntToStr(Item.Index)+'] '+lunit.Name;
     fmButtons.SClass:=lunit;
   end;
@@ -78,10 +79,10 @@ var
 begin
   SGame:=aSGame;
   FMap:=aSGame.Maps[idx];
-  FChar.Visible:=false;
 
+  FChar.Visible:=false;
   fmButtons.btnExport.Enabled:=false;
-  fmButtons.Ext:='.chr';
+
   lvUnitList.Clear;
   lvUnitList.Columns[0].Caption:=IntToStr(Length(FMap.MobInfos));
   if Length(FMap.MobInfos)>0 then
