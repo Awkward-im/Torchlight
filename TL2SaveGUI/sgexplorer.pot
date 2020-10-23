@@ -57,6 +57,12 @@ msgstr ""
 msgid "Character"
 msgstr ""
 
+#: formsavegame.rsclassnotfound
+msgid ""
+" was not found for current mod list.\n"
+"Change it manually."
+msgstr ""
+
 #: formsavegame.rsitems
 msgctxt "formsavegame.rsitems"
 msgid "Items"
@@ -81,6 +87,10 @@ msgstr ""
 
 #: formsavegame.rsnosavegame
 msgid "Can't load savegame file"
+msgstr ""
+
+#: formsavegame.rspetnotfound
+msgid "Your pet type was not found in current mod list and was replaced by default one."
 msgstr ""
 
 #: formsavegame.rspets
@@ -128,6 +138,10 @@ msgstr ""
 #: formsavegame.rsskills
 msgctxt "formsavegame.rsskills"
 msgid "Skills"
+msgstr ""
+
+#: formsavegame.rssorry
+msgid "Sorry, your character class "
 msgstr ""
 
 #: formsavegame.rsstatistic

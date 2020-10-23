@@ -116,6 +116,9 @@ resourcestring
 
   rsNoSaveGame = 'Can''t load savegame file';
 //  rsNoBase = 'Can''t load database';
+  rsPetNotFound   = 'Your pet type was not found in current mod list and was replaced by default one.';
+  rsSorry         = 'Sorry, your character class ';
+  rsClassNotFound = ' was not found for current mod list.'#13#10'Change it manually.';
 
 const
   DefaultExt = '.dmp';
@@ -394,15 +397,13 @@ begin
   begin
     if not SGame.CharInfo.CheckForMods(SGame.BoundMods) then
     begin
-      ShowMessage('Sorry, your character class '+GetTL2Class(SGame.CharInfo.ID)+
-                  ' was not found for current mod list.'#13#10+
-                  'Change it manually.');
+      ShowMessage(rsSorry+GetTL2Class(SGame.CharInfo.ID)+rsClassNotFound);
       exit;
     end;
     for i:=0 to SGame.PetCount-1 do
       if not SGame.PetInfo[i].CheckForMods(SGame.BoundMods) then
       begin
-        ShowMessage('Your pet type was not found in current mod list and was replaced by default one.');
+        ShowMessage(rsPetNotFound);
       end;
 
     SGame.FixModdedItems;
@@ -608,7 +609,7 @@ begin
     idxQuests: begin
       if FQuests=nil then
       begin
-        fmButtons.Offset:=SGame.Quests.DataOffset;
+        fmButtons.Offset:=SGame.Quests.DataOffset; //!!
         FQuests:=TfmQuests.Create(Self);
         FQuests.Parent:=MainPanel;
         FQuests.FillInfo(SGame);
@@ -631,7 +632,7 @@ begin
     idxStatistic: begin
       if FStats=nil then
       begin
-        fmButtons.Offset:=SGame.Stats.DataOffset;
+        fmButtons.Offset:=SGame.Stats.DataOffset; //!!
         FStats:=TfmStat.Create(Self);
         FStats.Parent:=MainPanel;
         FStats.FillInfo(SGame);

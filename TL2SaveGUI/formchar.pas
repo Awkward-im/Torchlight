@@ -343,6 +343,8 @@ var
   lname:string;
   idx,i:integer;
 begin
+  if not FConfigured then exit;
+
   if cbNewClass.ItemIndex<0 then
   begin
     idx:=-1;
@@ -1062,9 +1064,9 @@ begin
   lblCurrent  .Visible:=lPet and lshowall;
   cbMorph     .Visible:=lPet and lshowall;
   imgMorph    .Visible:=lPet and lshowall;
-  gbGender  .Visible:=lChar and lshowall;
-  seScale   .Visible :=lshowall;
-  lblScale  .Visible :=lshowall;
+  gbGender    .Visible:=lChar and lshowall;
+  seScale     .Visible:=lshowall;
+  lblScale    .Visible:=lshowall;
   // Wardrobe
   tsWardrobe.TabVisible:=(lChar or lPet) and lshowall;
   // Other
