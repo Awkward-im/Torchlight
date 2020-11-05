@@ -70,33 +70,6 @@ const
     hobWDat       = $20; // .WDAT
 
 type
-  PPAKExtInfo = ^TPAKExtInfo;
-  TPAKExtInfo = record
-    _type   :byte;
-    _pack   :bytebool;
-    _compile:bytebool;
-    _ext    :string;
-  end;
-
-type
-  TTL2PAKHeader = packed record
-    MaxCSize:dword;     // maximal packed file size in PAK
-    CheckSum:dword;     // at least, it looks like
-  end;
-type
-  TPAKHeader = packed record
-    Version  :word;
-    Reserved :dword;
-    ManOffset:dword;
-    MaxUSize :dword;    // largest UNpacked file size??
-  end;
-type
-  PPAKFileHeader = ^TPAKFileHeader;
-  TPAKFileHeader = packed record
-    size_u:UInt32;
-    size_c:UInt32;      // 0 means "no compression
-  end;
-type
   PMANFileInfo = ^TMANFileInfo;
   TMANFileInfo = record // not real field order
     ftime   :UInt64;    // TL2 only
@@ -118,16 +91,17 @@ type
   PPAKInfo = ^TPAKInfo;
   TPAKInfo = record
     Entries:array of TMANDirEntry;
-    fname:string;
-    fsize:dword;
-    data :dword;
+    fname  :string;
+    fsize  :dword;
+    data   :dword;
 //    dsize:dword;
-    man  :dword;
+    man    :dword;
 //    msize:dword;
-    ver  :integer;
+    ver    :integer;
     // not necessary fields
-    root :PWideChar; // same as first directory, MEDIA (usually)
-    total:integer;   // total "file" elements. Can be calculated when needs
+    root   :PWideChar; // same as first directory, MEDIA (usually)
+    total  :integer;   // total "file" elements. Can be calculated when needs
+    maxsize:integer;   // max [unpacked] file size
   end;
 
 const
@@ -140,12 +114,14 @@ procedure FreePAKInfo(var   ainfo:TPAKInfo);
 procedure DumpPAKInfo(const ainfo:TPAKInfo);
 
 function SearchFile(aptr:pointer; const fname:string):PMANFileInfo;
+function UnpackAll (apak:pointer; const adir:string):boolean;
 
 
 implementation
 
 uses
   sysutils,
+  bufstream,
   rgglobal,
 //  rgstream,
   rgmemory,
@@ -153,7 +129,9 @@ uses
   paszlib;
 
 const
-  MaxSizeForMem = 24*1024*1024;
+  MaxSizeForMem   = 24*1024*1024;
+  BufferStartSize = 64*1024;
+  BufferPageSize  = 04*1024;
 {
 function FileTypeToText(atype:byte):PWideChar;
 begin
@@ -164,11 +142,33 @@ begin
 end;
 }
 
+type
+  TTL2PAKHeader = packed record
+    MaxCSize:dword;     // maximal packed file size in PAK
+    CheckSum:dword;     // at least, it looks like
+  end;
+type
+  TPAKHeader = packed record
+    Version  :word;
+    Reserved :dword;
+    ManOffset:dword;
+    MaxUSize :dword;    // largest UNpacked file size
+  end;
+type
+  PPAKFileHeader = ^TPAKFileHeader;
+  TPAKFileHeader = packed record
+    size_u:UInt32;
+    size_c:UInt32;      // 0 means "no compression
+  end;
+
 //----- Manifest -----
 
 procedure ParseManifest(var ainfo:TPakInfo; aptr:PByte);
 var
   i,j:integer;
+{$IFDEF DEBUG}
+  lcnt:integer;
+{$ENDIF}
 begin
   case ainfo.ver of
     verTL2Mod,
@@ -189,12 +189,18 @@ begin
     exit;
   end;
 
+{$IFDEF DEBUG}
+  lcnt:=ainfo.total;
+{$ENDIF}
   for i:=0 to High(ainfo.Entries) do
   begin
     ainfo.Entries[i].name:=memReadShortString(aptr);
     SetLength(ainfo.Entries[i].Files,memReadDWord(aptr));
     for j:=0 to High(ainfo.Entries[i].Files) do
     begin
+{$IFDEF DEBUG}
+      dec(lcnt);
+{$ENDIF}
       with ainfo.Entries[i].Files[j] do
       begin
         checksum:=memReadDWord(aptr);
@@ -209,26 +215,10 @@ begin
       end;
     end;
   end;
-end;
-
-procedure FreePAKInfo(var ainfo:TPAKInfo);
-var
-  i,j:integer;
-begin
-  FreeMem(ainfo.root);
-  for i:=0 to High(ainfo.Entries) do
-  begin
-    FreeMem(ainfo.Entries[i].name);
-    for j:=0 to High(ainfo.Entries[i].Files) do
-    begin
-      FreeMem(ainfo.Entries[i].Files[j].name);
-    end;
-    SetLength(ainfo.Entries[i].Files,0);
-  end;
-  SetLength(ainfo.Entries,0);
-  ainfo.fname:='';
-  FillChar(ainfo,SizeOf(ainfo),0);
-  ainfo.ver:=verUnk;
+{$IFDEF DEBUG}
+  if IsConsole then
+    writeln('Total: ',ainfo.total,'; childs: ',Length(ainfo.Entries),'; rest: ',lcnt);
+{$ENDIF}
 end;
 
 {$PUSH}
@@ -243,7 +233,7 @@ var
 
   lfhdr:TPAKFileHeader;
   ltmp:PByte;
-//  lst:TMemoryStream;
+  lst:TStream;
   i,j,lsize:integer;
 begin
   result:=false;
@@ -292,7 +282,7 @@ begin
     Exit;
   end;
 
-  // read manifest
+  //--- Parse: read manifest
 
   if ainfo.ver=verTL2 then
   begin
@@ -319,32 +309,28 @@ begin
     Exit;
   end;
 
-  // fill filesize info
-
-  if ainfo.ver=verTL2 then
-  begin
-    Close(f);
-    Assign(f,ainfo.fname);
-    Reset(f);
-  end;
+  //--- Full Parse: fill filesize info
 
   if ainfo.fsize<=MaxSizeForMem then
   begin
+    if ainfo.ver=verTL2 then
+    begin
+      Close(f);
+      Assign(f,ainfo.fname);
+      Reset(f);
+    end;
+
     GetMem(ltmp,ainfo.fsize);
     Seek(f,0);
     BlockRead(f,ltmp^,ainfo.fsize);
   end
   else
-    ltmp:=nil;
-{
-  if ainfo.fsize<=MaxSizeForMem then
   begin
-    lst:=TMemoryStream.Create();
-    lst.LoadFromFile(fname);
-  end
-  else
-    lst:=nil;
-}
+    lst:=TBufferedFileStream.Create(ainfo.fname,fmOpenRead);
+
+    ltmp:=nil;
+  end;
+
   for i:=0 to High(ainfo.Entries) do
   begin
     for j:=0 to High(ainfo.Entries[i].Files) do
@@ -356,93 +342,121 @@ begin
           begin
             size_u:=PPAKFileHeader(ltmp+ainfo.data+offset)^.size_u;
             size_c:=PPAKFileHeader(ltmp+ainfo.data+offset)^.size_c;
-{
-          if lst<>nil then
-          begin
-            size_u:=PPAKFileHeader(lst.Memory[ainfo.data+offset]).size_u;
-            size_c:=PPAKFileHeader(lst.Memory[ainfo.data+offset]).size_c;
-}
           end
           else
           begin
+            lst.Seek(ainfo.data+offset,soBeginning);
+            lst.ReadBuffer(lfhdr,SizeOf(lfhdr));
+{
             Seek(f,ainfo.data+offset);
             BlockRead(f,lfhdr,SizeOf(lfhdr));
+}
             size_u:=lfhdr.size_u;
             size_c:=lfhdr.size_c;
           end;
         end;
     end;
   end;
-  if ltmp<>nil then FreeMem(ltmp);
-//    if lst<>nil then lst.Free;
+
+  if ltmp<>nil then
+    FreeMem(ltmp)
+  else
+    lst.Free;
   
   Close(f);
 end;
 {$POP}
 
-function Unpack(aptr:PByte):pointer;
+
+procedure FreePAKInfo(var ainfo:TPAKInfo);
 var
-  strm:TZStream;
-  usize,csize:dword;
+  i,j:integer;
 begin
-  usize:=memReadDWord(aptr);
-  csize:=memReadDWord(aptr);
-
-  if csize>0 then
+  FreeMem(ainfo.root);
+  for i:=0 to High(ainfo.Entries) do
   begin
-  	strm.avail_in:=0;
-  	strm.next_in :=Z_NULL;
-  	if inflateInit(strm)<>Z_OK then exit(nil);
+    FreeMem(ainfo.Entries[i].name);
+    for j:=0 to High(ainfo.Entries[i].Files) do
+    begin
+      FreeMem(ainfo.Entries[i].Files[j].name);
+    end;
+    SetLength(ainfo.Entries[i].Files,0);
   end;
-
-  GetMem(result,usize);
-
-  if csize>0 then
-  begin
-  	strm.avail_in :=csize;
-  	strm.next_in  :=aptr;
-  	strm.avail_out:=usize;
-  	strm.next_out :=result;
-
-  	if inflate(strm, Z_FINISH)<>Z_OK then; //!!
-
-  	inflateEnd(strm);
-  end
-  else
-    memReadData(aptr,result^,usize);
+  SetLength(ainfo.Entries,0);
+  ainfo.fname:='';
+  FillChar(ainfo,SizeOf(ainfo),0);
+  ainfo.ver:=verUnk;
 end;
+
 
 procedure DumpPAKInfo(const ainfo:TPAKInfo);
 var
+  ls:string;
   i,j:integer;
   lpack,lfiles,lprocess,ldir:integer;
+  lmaxp,lmaxu,lcnt:integer;
 begin
   writeln('Root: ',String(WideString(ainfo.Root)));
   lfiles:=0;
   lprocess:=0;
   ldir:=0;
   lpack:=0;
+  lcnt:=ainfo.total;
+  lmaxp:=0;
+  lmaxu:=0;
   for i:=0 to High(ainfo.Entries) do
   begin
     writeln(IntToStr(i+1),'  Directory: ',string(WideString(ainfo.Entries[i].name)));
     for j:=0 to High(ainfo.Entries[i].Files) do
     begin
+      dec(lcnt);
       with ainfo.Entries[i].Files[j] do
       begin
-if size_c>0 then inc(lpack);
-if ftype=tl2Directory then inc(ldir)
+if ABS(ainfo.ver)=verTL2 then
+begin
+  if ftype=tl2Directory then
+  begin
+    inc(ldir);
+    ls:='    Dir: ';
+  end
+  else
+  begin
+    inc(lfiles);
+    ls:='    File: ';
+if size_s=0       then write('##');
+  end;
+  if ftype in [tl2Dat,tl2Layout,tl2Animation] then inc(lprocess);
+end
 else
 begin
-  inc(lfiles);
-  if ftype in [tl2Dat,tl2Layout,tl2Animation] then inc(lprocess);
+  if ftype=hobDirectory then
+  begin
+    inc(ldir);
+    ls:='    Dir: ';
+  end
+  else
+  begin
+    inc(lfiles);
+    ls:='    File: ';
+if size_s=0       then write('##');
+  end;
+  if ftype in [hobWDat,hobDat,hobLayout,hobAnimation] then inc(lprocess);
 end;
-        writeln('    File: ',string(widestring(name)),'; type:',ftype,'; source size:',size_s,
+if size_c>0 then inc(lpack);
+if lmaxp<size_c then lmaxp:=size_c;
+if lmaxu<size_u then lmaxu:=size_u;
+
+if size_s<>size_u then write('!!');
+        writeln(ls,string(widestring(name)),'; type:',ftype,'; source size:',size_s,
         '; compr:',size_c,'; unpacked:',size_u);
-//if size_s<>size_u then writeln('!!');
       end;
     end;
   end;
-  writeln('Packed ',lpack,#13#10'Files ',lfiles,#13#10'Process ',lprocess,#13#10'Dirs ',ldir,#13#10'Total ',lfiles+ldir+lprocess);
+  writeln('Total: ',ainfo.total,'; childs: ',Length(ainfo.Entries),'; rest: ',lcnt);
+  writeln('Max packed size: '  ,lmaxp,' (0x'+HexStr(lmaxp,8),')');
+  writeln('Max unpacked size: ',lmaxu,' (0x'+HexStr(lmaxu,8),')');
+  writeln('Packed ',lpack,#13#10'Files ',lfiles,#13#10'Process ',
+          lprocess,#13#10'Dirs ',ldir,#13#10'Total ',lfiles+ldir+lprocess);
 end;
 
 //===== Files =====
@@ -485,7 +499,30 @@ begin
   result:=nil;
 end;
 
+procedure GetMaxSizes(const api:TPAKInfo; out acmax,aumax:integer);
+begin
+  if ABS(api.ver)=verTL2 then
+  begin
+    aumax:=0;
+    acmax:=api.maxsize;
+  end
+  else
+  begin
+    acmax:=0;
+    aumax:=api.maxsize;
+  end;
+end;
+
 //----- types -----
+
+type
+  PPAKExtInfo = ^TPAKExtInfo;
+  TPAKExtInfo = record
+    _type   :byte;
+    _pack   :bytebool;
+    _compile:bytebool;
+    _ext    :string;
+  end;
 
 type
   PTableExt = ^TTableExt;
@@ -581,100 +618,175 @@ begin
 end;
 
 //----- Unpack -----
+
+function Unpack(aptr:PByte):pointer;
+var
+  strm:TZStream;
+  usize,csize:dword;
+begin
+  usize:=memReadDWord(aptr);
+  csize:=memReadDWord(aptr);
+
+  if csize>0 then
+  begin
+  	strm.avail_in:=0;
+  	strm.next_in :=Z_NULL;
+  	if inflateInit(strm)<>Z_OK then exit(nil);
+  end;
+
+  GetMem(result,usize);
+
+  if csize>0 then
+  begin
+  	strm.avail_in :=csize;
+  	strm.next_in  :=aptr;
+  	strm.avail_out:=usize;
+  	strm.next_out :=result;
+
+  	if inflate(strm, Z_FINISH)<>Z_OK then; //!!
+
+  	inflateEnd(strm);
+  end
+  else
+    memReadData(aptr,result^,usize);
+end;
+
 {$PUSH}
 {$I-}
-procedure UnpackAll(apak:pointer; const adir:string);
+//!! filter needs
+function UnpackAll(apak:pointer; const adir:string):boolean;
 var
-  f,fo:file of byte;
+  f:file of byte;
   lpi:PPAKInfo absolute apak;
-  ldir:String;
+  ldir,lcurdir:WideString;
   lfhdr:TPAKFileHeader;
-  lst:TMemoryStream;
-  lptr,lin,lout:PByte;
-  i,j:integer;
+  lst:TBufferedFileStream;
+  buf,lptr,lin,lout:PByte;
+  lcsize,lusize,i,j:integer;
 begin
   if lpi^.fsize<=MaxSizeForMem then
   begin
-    lst:=TMemoryStream.Create();
-    lst.LoadFromFile(lpi^.fname);
+    lst:=nil;
+
+    Assign(f,lpi^.fname);
+    Reset(f);
+    if IOResult<>0 then exit(false);
+
+    GetMem   (  buf ,lpi^.fsize);
+    BlockRead(f,buf^,lpi^.fsize);
+
+    Close(f);
   end
   else
   begin
-    lst:=nil;
-    Assign(f,lpi^.fname);
-    Reset(f);
-    if IOResult<>0 then exit;
+    try
+      lst:=TBufferedFileStream.Create(lpi^.fname,fmOpenRead);
+    except
+      exit(false);
+    end;
+    buf:=nil;
   end;
 
   if adir<>'' then
-    ldir:=adir+'\'
+    ldir:=WideString(adir)+'\'
   else
     ldir:='';
 
-  CreateDir(ldir+'MEDIA');
+  lcsize:=0;
+  lusize:=0;
+  lout:=nil;
+  lin :=nil;
+
+  CreateDir(ldir+'MEDIA'); //!! ainfo.root
 
   for i:=0 to High(lpi^.Entries) do
   begin
-    ForceDirectories(ldir+lpi^.Entries[i].name);
+    //!! dir filter here
+    lcurdir:=ldir+WideString(lpi^.Entries[i].name);
+    if lcurdir<>'' then
+      ForceDirectories(lcurdir);
+
     for j:=0 to High(lpi^.Entries[i].Files) do
     begin
       with lpi^.Entries[i].Files[j] do
       begin
-        if offset<>0 then
+        if (offset>0) and (size_s>0) then
         begin
-          if lst<>nil then
+          //!! file fileter here
+          // Memory
+          if buf<>nil then
           begin
-            lst.Position:=lpi^.data+offset;
-            lfhdr.size_u:=lst.ReadDword;
-            lfhdr.size_c:=lst.ReadDword;
+            lptr:=buf+lpi^.data+offset;
+            lfhdr.size_u:=PPAKFileHeader(lptr)^.size_u;
+            lfhdr.size_c:=PPAKFileHeader(lptr)^.size_c;
+            inc(lptr,SizeOf(TPAKFileHeader));
+
+            if lfhdr.size_c>0 then
+            begin
+              if lusize<lfhdr.size_u then
+              begin
+                lusize:=Align(lfhdr.size_u,BufferPageSize);
+                if lusize<BufferStartSize then lusize:=BufferStartSize;
+                ReallocMem(lout,lusize);
+              end;
+              uncompress(
+                  PChar(lout),lfhdr.size_u,
+                  PChar(lptr),lfhdr.size_c);
+              lptr:=lout;
+            end;
+          end
+          // File
+          else
+          begin
+            lst.Seek(lpi^.data+offset,soBeginning);
+            lst.ReadBuffer(lfhdr,SizeOf(lfhdr));
+
+            if lusize<lfhdr.size_u then
+            begin
+              lusize:=Align(lfhdr.size_u,BufferPageSize);
+              if lusize<BufferStartSize then lusize:=BufferStartSize;
+              ReallocMem(lout,lusize);
+            end;
+            lptr:=lout;
 
             if lfhdr.size_c=0 then
             begin
-              lout:=nil;
-              lptr:=lst.Memory+lst.Position;
+              lst.ReadBuffer(lout^,lfhdr.size_u);
             end
             else
             begin
-              GetMem(lout,lfhdr.size_u);
-              lptr:=lout;
-              uncompress(PChar(lout),lfhdr.size_u, lst.Memory+lst.Position,lfhdr.size_c);
-            end;
-          end
-          else
-          begin
-            Seek(f,lpi^.data+offset);
-            BlockRead(f,lfhdr,SizeOf(TPAKFileHeader));
-            GetMem(lout,lfhdr.size_u);
-            lptr:=lout;
-            if lfhdr.size_c=0 then
-            begin
-              BlockRead(f,lout^,lfhdr.size_u);
-            end
-            else
-            begin
-              GetMem(lin,lfhdr.size_c);
-              BlockRead(f,lin^,lfhdr.size_c);
-              uncompress(PChar(lout),lfhdr.size_u, PChar(lin),lfhdr.size_c);
-              FreeMem(lin);
+              if lcsize<lfhdr.size_c then
+              begin
+                lcsize:=Align(lfhdr.size_c,BufferPageSize);
+                if lcsize<BufferStartSize then lcsize:=BufferStartSize;
+                ReallocMem(lin,lcsize);
+              end;
+              lst.Readbuffer(lin^,lfhdr.size_c);
+              uncompress(
+                  PChar(lout),lfhdr.size_u,
+                  PChar(lin ),lfhdr.size_c);
             end;
           end;
+
           //!!
-          Assign(fo,WideString(lpi^.Entries[i].name)+WideString(lpi^.Entries[i].Files[j].name));
+          Assign (f,lcurdir+WideString(lpi^.Entries[i].Files[j].name));
           Rewrite(f);
           if IOResult=0 then
           begin
             BlockWrite(f,lptr^,lfhdr.size_u);
             Close(f);
           end;
-          if lout<>nil then FreeMem(lout);
         end;
       end;
     end;
   end;
+  if lout<>nil then FreeMem(lout);
+  if lin <>nil then FreeMem(lin);
 
   if lst<>nil then lst.Free
-  else Close(f);
+  else FreeMem(buf);
 
+  result:=true;
 end;
 {$POP}
 
