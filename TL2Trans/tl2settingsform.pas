@@ -150,7 +150,7 @@ begin
   try
     ltr.LangSrc :='en';
     ltr.LangDst :=TL2Settings.edTransLang.Text;
-    ltr.Original:=src;
+    ltr.Original:=ls;
     lcode:=ltr.Translate;
     if lcode<>0 then
       ShowMessage('Error ('+IntToStr(lcode)+'): '+ltr.ResultNote)

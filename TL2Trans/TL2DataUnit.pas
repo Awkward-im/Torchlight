@@ -545,6 +545,7 @@ begin
       end;
       i:=0;
     end;
+  else
   end;
 
   if atmpl='' then
@@ -645,6 +646,8 @@ begin
 
   lline:=0;
   lcnt:=0;
+  lsrc:='';
+  ldst:='';
 
   stage:=1;
 

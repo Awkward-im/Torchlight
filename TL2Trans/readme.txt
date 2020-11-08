@@ -58,6 +58,7 @@ Double-click or Enter on Tree node will choose directory to scan
 
 Project Hotkeys:
 ----------------
+Enter        - Edit current translation cell
 Ctrl-A       - Select original text column
 Ctrl-I       - Import from clipboard
 Ctrl-R       - Call replace dialog
@@ -79,6 +80,7 @@ Double-Click opens text editor window
 Text Edit in Cell hotkeys:
 -------------------------
 (Mainly for non-latin locales. These insertions replaces selected text)
+Enter   - Finish to edit translation cell
 Alt-C   - Insert color tag from original text
 Alt-N   - Insert \n (new line) signature
 Alt-U   - Insert |u (end colored text) signature

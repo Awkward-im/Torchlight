@@ -254,7 +254,7 @@ function TTL2Project.CheckLine(const asrc,atrans:AnsiString;
          const atmpl:AnsiString=''; astate:tTextStatus=stReady):boolean;
 var
   ls:AnsiString;
-  i,p:integer;
+  p:integer;
   lstate:tTextStatus;
 begin
   result:=false;
@@ -1129,7 +1129,7 @@ end;
 procedure TTL2Project.FillFoldersCombo(asetidx:boolean);
 var
   ls:string;
-  lidx,i,j:integer;
+  i,j:integer;
   lskill,lroot,litems,lmonsters,lplayers,lprops:boolean;
 begin
   lroot    :=false;

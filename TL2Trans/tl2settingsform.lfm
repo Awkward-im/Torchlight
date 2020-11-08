@@ -349,6 +349,7 @@ object TL2Settings: TTL2Settings
         Font.Style = [fsUnderline]
         ParentColor = False
         ParentFont = False
+        Visible = False
         OnClick = lblGetAPIKeyYandexClick
       end
       object lblYandexNote: TLabel

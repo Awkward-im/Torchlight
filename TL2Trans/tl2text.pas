@@ -4,7 +4,7 @@ interface
 
 function RemoveTags(const src:AnsiString):AnsiString;
 
-function RemoveColor(const textin:AnsiString; var textout:AnsiString):boolean;
+function RemoveColor(const textin:AnsiString; out textout:AnsiString):boolean;
 function InsertColor(const aselected, acolor:AnsiString):AnsiString;
 
 function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
@@ -57,7 +57,7 @@ begin
     result:=acolor;
 end;
 
-function RemoveColor(const textin:AnsiString; var textout:AnsiString):boolean;
+function RemoveColor(const textin:AnsiString; out textout:AnsiString):boolean;
 var
   ls:AnsiString;
   i,j:integer;
@@ -65,6 +65,7 @@ begin
   result:=false;
   i:=1;
   j:=0;
+  ls:='';
   SetLength(ls,Length(textin));
   while i<=Length(textin) do
   begin
@@ -153,7 +154,7 @@ begin
           while p^ in sWord do
           begin
             if p^ in ['A'..'Z'] then
-              lword:=lword+AnsiChar(ORD(p^)+ORD('a')-ORD('A'))
+              lword:=lword+AnsiChar(ORD(p^)+(ORD('a')-ORD('A')))
             else
               lword:=lword+p^;
             inc(p);
@@ -322,7 +323,7 @@ const
 var
   colors :array [0.. 7] of String[10]; //#124'cAARRGGBB', 8 times per text must be enough
   numbers:array [0..15] of String[9];
-  rome   :array [0.. 7] of String[7];
+  rome   :array [0..15] of String[7];
   lr:String[7];
   pc:PAnsiChar;
   lsrc,ldst:AnsiString;
@@ -338,6 +339,7 @@ begin
   i:=0;
   j:=1;
   pc:=pointer(srcText);
+  lsrc:='';
   SetLength(lsrc,Length(srcText)+16*10);
   while pc[i]<>#0 do
   begin
@@ -398,10 +400,29 @@ begin
       end
       else
       begin
-        lsrc[j]:='%'; inc(j);
-        lsrc[j]:='r'; inc(j);
-        rome[lcntSR]:=lr;
-        inc(lcntSR);
+        // Check for "I" as Rome number or word
+        if (Length(lr)=1) and (lr[1]='I') then
+        begin
+             // 1 - at the end of text
+          if ((i+2)>=Length(srcText)) or
+             // 2 - after "-" sign
+             ((k>0) and (pc[k-1]='-')) or
+             // 3 - end of phrase (including end of line and color tag)
+             (pc[i] in ['.',',','!','?','\','|']) then
+          begin
+            lsrc[j]:='%'; inc(j);
+            lsrc[j]:='r'; inc(j);
+            rome[lcntSR]:=lr;
+            inc(lcntSR);
+          end;
+        end
+        else
+        begin
+          lsrc[j]:='%'; inc(j);
+          lsrc[j]:='r'; inc(j);
+          rome[lcntSR]:=lr;
+          inc(lcntSR);
+        end;
       end;
     end
     //--- Words
@@ -525,8 +546,25 @@ begin
       end
       else
       begin
-        rome[lcntDR]:=lr;
-        inc(lcntDR);
+        // Check for "I" as Rome number or word
+        if (Length(lr)=1) and (lr[1]='I') then
+        begin
+             // 1 - at the end of text
+          if ((i+2)>=Length(srcText)) or
+             // 2 - after "-" sign
+             ((k>0) and (pc[k-1]='-')) or
+             // 3 - end of phrase (including end of line and color tag)
+             (pc[i] in ['.',',','!','?','\','|']) then
+          begin
+            rome[lcntDR]:=lr;
+            inc(lcntDR);
+          end;
+        end
+        else
+        begin
+          rome[lcntDR]:=lr;
+          inc(lcntDR);
+        end;
       end;
     end
     //--- Words
