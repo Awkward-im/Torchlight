@@ -63,6 +63,7 @@ function  GetPAKInfo (var   ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
 procedure FreePAKInfo(var   ainfo:TPAKInfo);
 procedure DumpPAKInfo(const ainfo:TPAKInfo);
 procedure MANtoFile  (const fname:string; const ainfo:TPAKInfo);
+function CalcPAKHash (const fname:string):dword;
 
 type
   TPAKProgress = function(const ainfo:TPAKInfo; adir,afile:integer):integer;
@@ -662,8 +663,8 @@ end;
 
 procedure FileToMAN(const fname:string; out ainfo:TPAKInfo);
 var
-  lman,lp,lc:pointer;
-  i,j:integer;
+  lman,lp,lg,lc:pointer;
+  i,j,k,l:integer;
 begin
   lman:=ParseDatFile(PChar(fname));
   if lman<>nil then
@@ -673,7 +674,7 @@ begin
 
       for i:=0 to GetChildCount(lman)-1 do
       begin
-        lc:=GetChild(lman,i)
+        lc:=GetChild(lman,i);
         case GetNodeType(lc) of
           rgString: begin
             if CompareWide(GetNodeName(lc),'FILE') then
@@ -812,7 +813,9 @@ begin
       if      lhdr.Version=1 then ainfo.ver:=verRG
       else if lhdr.Version=5 then ainfo.ver:=verHob;
 
-      ainfo.man:=lhdr.ManOffset;
+      ainfo.man    :=lhdr.ManOffset;
+//      ainfo.paksize:=ainfo.man;
+//      ainfo.mansize:=ainfo.fsize-ainfo.man;
     end
     else
     begin
@@ -820,13 +823,16 @@ begin
       if ((lmi.version=4) and (lmi.gamever[0]=1)) or
          (ls='.MOD') then
       begin
-        ainfo.ver :=verTL2Mod;
-        ainfo.data:=lmi.offData;
-        ainfo.man :=lmi.offMan;
+        ainfo.ver    :=verTL2Mod;
+        ainfo.data   :=lmi.offData;
+        ainfo.man    :=lmi.offMan;
+//        ainfo.paksize:=lmi.offMan-lmi.offData;
+//        ainfo.mansize:=ainfo.fsize-ainfo.man;
       end
       else
       begin
-        ainfo.ver :=verTL2;
+        ainfo.ver    :=verTL2;
+//        ainfo.paksize:=ainfo.fsize;
       end;
     end;
 
@@ -843,6 +849,7 @@ begin
       Reset(f);
       if IOResult<>0 then
         Exit(false);
+//      ainfo.mansize:=FileSize(f);
     end;
   end;
 
@@ -1303,6 +1310,93 @@ begin
   result:=true;
 end;
 {$POP}
+
+//--- TL2 version only
+
+function CalcPAKHash(const fname:string):dword;
+var
+  lpi:TPAKInfo;
+  f:file of byte;
+  hash:Int64;
+  seed:QWord;
+  lst:TBufferedFileStream;
+  buf:PByte;
+  lofs,lsize:qword;
+  step:integer;
+  lbyte:byte;
+begin
+  FillChar(lpi,SizeOf(lpi),0);
+  lpi.fname:=fname;
+
+  if (not GetPAKInfo(lpi)) or
+     (ABS(lpi.ver)<>verTL2) then
+    exit(dword(-1));
+
+  if lpi.fsize<=MaxSizeForMem then
+  begin
+    lst:=nil;
+
+    Assign(f,lpi.fname);
+    Reset(f);
+    if IOResult<>0 then exit(dword(-1));
+
+    GetMem   (  buf ,lpi.fsize);
+    BlockRead(f,buf^,lpi.fsize);
+
+    Close(f);
+  end
+  else
+  begin
+    try
+      lst:=TBufferedFileStream.Create(lpi.fname,fmOpenRead);
+    except
+      exit(dword(-1));
+    end;
+    buf:=nil;
+  end;
+    
+  lofs:=lpi.data+8;
+  if lpi.ver=verTL2 then
+    lsize:=lpi.fsize
+  else
+    lsize:=lpi.man-lpi.data;
+{$PUSH}
+{$O-,R-}
+  seed:=(lsize shr 32)+(lsize and $FFFFFFFF)*$29777B41;
+  seed:=25+((seed and $FFFFFFFF) mod 51);
+  if seed>75 then seed:=75;
+
+  step:=lsize div seed;
+  if step<2 then step:=2;
+  hash:=lsize;
+
+  if lst<>nil then
+  begin
+    while lofs<(lpi.data+lsize) do
+    begin
+      lst.Position:=lofs;
+      lbyte:=lst.ReadByte();
+      hash:=((hash*33)+shortint(lbyte)) and $FFFFFFFF;
+      lofs:=lofs+step;
+    end;
+    lst.Position:=lpi.data+lsize-1;
+    lbyte:=lst.ReadByte();
+  end
+  else
+  begin
+    while lofs<(lpi.data+lsize) do
+    begin
+      lbyte:=buf[lofs];
+      hash:=((hash*33)+shortint(lbyte)) and $FFFFFFFF;
+      lofs:=lofs+step;
+    end;
+    lbyte:=buf[lpi.data+lsize-1];
+  end;
+  result:=dword(((hash*33)+shortint(lbyte)) and $FFFFFFFF);
+{$POP}
+  if buf<>nil then FreeMem(buf);
+  if lst<>nil then lst.Free;
+end;
 
 //----- Pack -----
 
