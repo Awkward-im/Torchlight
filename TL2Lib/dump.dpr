@@ -6,8 +6,7 @@ var
 begin
   lpi.fname:=ParamStr(1);
   GetPAKInfo(lpi,piFullParse);
-  writeln('Entries: ',Length(lpi.Entries));
-  writeln('Total: ',lpi.total);
   DumpPAKInfo(lpi);
+  ManToFile(ParamStr(1)+'.LOG',lpi);
   FreePAKInfo(lpi);
 end.

@@ -59,10 +59,11 @@ type
     FUseState:integer;
 
     function GetPropFlag:boolean;
-    function GetDBMods():string; override;
     function GetFlags(idx:integer):boolean;
     function GetUsability:boolean;
 //    function GetDBModList(aid:TRGID):string; override;
+  protected
+    function GetDBMods():string; override;
   public
     property Prefix:string read FPrefix;
 
@@ -229,8 +230,7 @@ if FUnkn5[1]<>$FFFFFFFF then ldebug:=ldebug+'Unkn5[1]='+HexStr(FUnkn5[1],8)+' at
 if FUnkn5[2]<>$FFFFFFFF then ldebug:=ldebug+'Unkn5[2]='+HexStr(FUnkn5[2],8)+' at '+HexStr(AStream.Position,8)+#13#10;
 {
   37 gold = 3*454; 48 = 0; 109, 51 = 211 - same values for same location?
-  AStream.ReadDWord; // *FF
-  AStream.ReadDWord; // *FF
+  AStream.ReadQWord; // *FF
   AStream.ReadDWord; // *FF
 }
   //??

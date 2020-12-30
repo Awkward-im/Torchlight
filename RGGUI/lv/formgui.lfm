@@ -1,0 +1,282 @@
+object RGGUIForm: TRGGUIForm
+  Left = 433
+  Height = 455
+  Top = 205
+  Width = 803
+  Caption = 'RGGUI'
+  ClientHeight = 435
+  ClientWidth = 803
+  Menu = MainMenu
+  OnClose = FormClose
+  OnCreate = FormCreate
+  LCLVersion = '2.1.0.0'
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 412
+    Width = 803
+    Panels = <>
+  end
+  object ToolBar: TToolBar
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 803
+    Caption = 'ToolBar'
+    TabOrder = 1
+  end
+  object pnlFilter: TPanel
+    Left = 0
+    Height = 38
+    Top = 26
+    Width = 803
+    Align = alTop
+    ClientHeight = 38
+    ClientWidth = 803
+    TabOrder = 2
+    object ccbCategory: TCheckComboBox
+      Left = 64
+      Height = 22
+      Top = 6
+      Width = 100
+      ArrowKeysTraverseList = False
+      DropDownCount = 12
+      ItemHeight = 16
+      OnCloseUp = ccbCategoryCloseUp
+      OnItemChange = ccbCategoryItemChange
+      TabOrder = 0
+    end
+    object lblCategory: TLabel
+      Left = 8
+      Height = 15
+      Top = 9
+      Width = 48
+      Caption = 'Category'
+      ParentColor = False
+    end
+    object lblExtension: TLabel
+      Left = 190
+      Height = 15
+      Top = 9
+      Width = 50
+      Caption = 'Extension'
+      ParentColor = False
+    end
+    object ccbExtension: TCheckComboBox
+      Left = 248
+      Height = 22
+      Top = 5
+      Width = 100
+      ItemHeight = 16
+      TabOrder = 1
+    end
+  end
+  object lvMain: TListView
+    Left = 0
+    Height = 348
+    Top = 64
+    Width = 803
+    Align = alClient
+    AutoSortIndicator = True
+    Columns = <    
+      item
+        Caption = '№'
+        Width = 48
+      end    
+      item
+        Caption = 'Directory'
+        Width = 260
+      end    
+      item
+        AutoSize = True
+        Caption = 'Name'
+        Width = 47
+      end    
+      item
+        Caption = 'Type'
+        Width = 80
+      end    
+      item
+        Caption = 'Time'
+        Width = 108
+      end    
+      item
+        Alignment = taRightJustify
+        Caption = 'Packed'
+        Width = 80
+      end    
+      item
+        Alignment = taRightJustify
+        Caption = 'Unpacked'
+        Width = 80
+      end    
+      item
+        Alignment = taRightJustify
+        Caption = 'Source'
+        Width = 80
+      end>
+    MultiSelect = True
+    ReadOnly = True
+    RowSelect = True
+    ScrollBars = ssAutoBoth
+    TabOrder = 3
+    ViewStyle = vsReport
+  end
+  object MainMenu: TMainMenu
+    Images = ImageList
+    Left = 720
+    Top = 16
+    object miFile: TMenuItem
+      Caption = '&File'
+      object miFileOpen: TMenuItem
+        Action = actFileOpen
+      end
+      object miFileSave: TMenuItem
+        Action = actFileSave
+      end
+      object miFileSaveAs: TMenuItem
+        Action = actFileSaveAs
+      end
+      object miFileClose: TMenuItem
+        Action = actFileClose
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object miFileExit: TMenuItem
+        Action = actFileExit
+      end
+    end
+    object miEdit: TMenuItem
+      Caption = '&Edit'
+      object miEditExtract: TMenuItem
+        Action = actEditExtract
+      end
+      object miEditReplace: TMenuItem
+        Action = actEditReplace
+      end
+      object miEditDelete: TMenuItem
+        Action = actEditDelete
+      end
+      object miEditSearch: TMenuItem
+        Action = actEditSearch
+      end
+    end
+    object miHelp: TMenuItem
+      Caption = '&Help'
+      object miHelpAbout: TMenuItem
+        Action = actHelpAbout
+      end
+    end
+  end
+  object ActionList: TActionList
+    Images = ImageList
+    Left = 728
+    Top = 104
+    object actFileOpen: TAction
+      Category = 'File'
+      Caption = '&Open'
+      ImageIndex = 0
+      OnExecute = actFileOpenExecute
+      ShortCut = 16463
+    end
+    object actFileSave: TAction
+      Category = 'File'
+      Caption = '&Save'
+      ImageIndex = 1
+      ShortCut = 16467
+    end
+    object actFileSaveAs: TAction
+      Category = 'File'
+      Caption = 'Save &As'
+      ImageIndex = 2
+    end
+    object actFileClose: TAction
+      Category = 'File'
+      Caption = '&Close'
+      ImageIndex = 3
+      OnExecute = actFileCloseExecute
+      ShortCut = 16499
+    end
+    object actHelpAbout: TAction
+      Caption = '&About'
+    end
+    object actEditExtract: TAction
+      Category = 'Edit'
+      Caption = '&Extract'
+      ShortCut = 32837
+    end
+    object actEditDelete: TAction
+      Category = 'Edit'
+      Caption = '&Delete'
+      ImageIndex = 5
+    end
+    object actEditReplace: TAction
+      Category = 'Edit'
+      Caption = '&Replace'
+    end
+    object actEditSearch: TAction
+      Category = 'Edit'
+      Caption = '&Search'
+      ImageIndex = 6
+    end
+    object actInfoInfo: TAction
+      Caption = '&Info'
+      ShortCut = 32841
+    end
+    object actFileExit: TAction
+      Category = 'File'
+      Caption = 'E&xit'
+      ImageIndex = 4
+      OnExecute = actFileExitExecute
+      ShortCut = 32883
+    end
+  end
+  object ImageList: TImageList
+    Left = 655
+    Top = 89
+    Bitmap = {
+      4C7A070000001000000010000000040500000000000078DAED96E94F546714C6
+      DF344D93B649FF0B8DCA268A041A892CE15BD3A431B4A16DA835E997A6DFDA0F
+      4DB4B208B26F1ABB88464A3740945A36D9C1E052101A07AB2CCEC030330C1466
+      038659CBD3F7DC3B03CC706718609A52C3499E5CEE39E777CF72EF3B8131692B
+      2E2F437179A9A0A2B25214961623BFA408794505C82DCC474E7E1EB2F372C17C
+      F117CB60B7DB05D96C3658AD562C2F2F6371711146A3113A9D0EE7732FF8E51D
+      0E8720F733885F5A5A5AE5B32EE4F8E6CBA579AA6F3299A0D7EB919993ED872F
+      F559DFCD676467E1AD8B8A4F4F7E33693D55A9C6A94A9520BAA79DB9E72779CF
+      4F7CFAF94C21B743E9C48359E0FE0CD0A7055A279D282C2B116ABA7767B15884
+      DA0B0B0BABF39FCBCA00D57DC8D97EAEDFFF82F81CAE8292628171CB6C36AFCE
+      6E301804FEAB4C91EF9A72E263A177B58454F888747D0A69D794F8F0EA04DEFD
+      56812F6AA67036335D885FEA33A1F4AE51E89F748FE670CDD23B0D74A99C6853
+      2CA3E1A91E75832A94B58EA3A44585B319E9C2B33FABD1A2496EC75D577E8F4B
+      DD1AA053BD82B649079AC696706B780ED5FD4A7C5EFD1C5D322DE7CF218DF775
+      FA7B153A955674286D426E2BD71DAE96093B9A1556348C9951FFC480EAC16954
+      DD9723EDAA1C1AED2CCE703EF5CA04CEDCD6A079C480C611237E7B66C2AF5CF5
+      4F45DDFCD3801BB279FCF288B30F2670B9630CA9C57D426DD23B9715F8BA4B89
+      9B436ADC18D2A0665023E4927E1ED0E0A77E357E78A844E53D39AEF58EE2CBDA
+      51E19B717F67FCEF59DAE707156B7ADF5B5714BC4F3952BF93E3ED4B0A3367DE
+      6041B21F3F89426AEAE296455CB0F8797E16B6AA3D3E78FC76156CBEB9B3CDA7
+      02E57D3DE705E65376BABFFFFAFC6FC7BCF983070D1ED7ADF25B6177231F8CF9
+      B7BBFFBDF3FFFF3DFF2F929D38614A4E4CD4E0F0614382B73F21418188086D92
+      3F9ED8B8B859C4C468E91CC5932F36D698141FAFE1BE711C3B26F3BB33AA4BEC
+      912373387A741E2121868CE3C7B5888EA6DA4FB06FDFB3E4CD66A0BAC44644E8
+      F81CF3888CD4202C6C14FBF7CB9302DD03D58D8C9C4768E81CEF619ACFA2CB08
+      94A579A967AA4BECA143335CAAD57D6CB67FDA15CD4B3D535D62434234080F97
+      E3C08199047F3CBD23DA33EDCA3D2FD52536347484FB1FFBDD3FBD5F7A47DE7B
+      A6BAC406B2FF3D735B8B9AB1A149F1BA1D231610AF5BB1BA28C6325EDAC8D785
+      F8E788E9B8CE58FB2C6355AF6FE45BF91C1D15629E9451CC64636C784A9A1F1C
+      63CCE860ACB36223DBF82663137A315FA662ACE135699EEE153CAF21D693EF69
+      606C85C79C5CDD6DD2FBEB6913E394D773DB931F7824E6AACDE2FEA4DE5F7D34
+      8F2F897994BFDE069F8BFE612563B5AF4AEF87FCB41BA1A771AFFA32D14F3BF0
+      F59E6AC378DCE0AA2FF38CF53689FEF5F37B5B77BB18A7BCDE46CF5803FFAD98
+      74ED5FBF2CE6DE0AE5355F11EBD2BDDEB2D663A3C4EF507B15630BCEB53EA857
+      19DFC7A461AD2EC5294FB2BF97C598BB0F6F919FE294E7CF9A13C5F9061EF3F7
+      2217AF744FFEE01BFF576E97C9C9656105A7933D443E31B619EFE05A10983FEA
+      0A0589FC0297DD95B3E2A32EB1662E9D043FE78AD97CF46171D5A0BC69097EDA
+      1533B9723D799E83AD488A9F19BC1390FE2D7E27FD0356D7FE747EF6A773E558
+      76F0FE1C9B7C47FEBE1FC78EBFDFBF77D979F3B6E8A870B8E5CFE7CB28E7E47B
+      291B786F5F3079EE4FA7585C5CCCAAD6F7EC96973FDD7B3EAAE1D6FA7BA998D4
+      7EF6F814C9BDAF57A0BCAFEF728F4F09F82C0662FF00B1446C2C
+    }
+  end
+end

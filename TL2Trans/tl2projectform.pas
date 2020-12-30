@@ -207,7 +207,7 @@ end;
 procedure TTL2Project.actStopScanExecute(Sender: TObject);
 begin
   if actStopScan.Enabled then
-    doStopScan:=MessageDlg(sStopScan,mtWarning,[mbNo,mbYes],0,mbNo)=mrYes;
+    doStopScan:=MessageDlg(sStopScan,mtWarning,mbYesNo,0,mbNo)=mrYes;
 end;
 
 function TTL2Project.GetStatusText:AnsiString;
@@ -357,7 +357,7 @@ begin
   if idx>=0 then
   begin
     MoveToIndex(idx);
-    if MessageDlg(sDoAutocorrect,mtConfirmation,[mbOk,mbCancel],0)=mrOk then
+    if MessageDlg(sDoAutocorrect,mtConfirmation,mbOkCancel,0)=mrOk then
     begin
       lcnt:=0;
       idx:=data.FirstNoticed(true);
@@ -468,7 +468,7 @@ begin
     end
     else
     begin
-      if MessageDlg(sDoDelete,mtConfirmation,[mbOk,mbCancel],0)=mrOk then
+      if MessageDlg(sDoDelete,mtConfirmation,mbOkCancel,0)=mrOk then
       begin
         for i:=TL2ProjectGrid.RowCount-1 downto 1 do
         begin

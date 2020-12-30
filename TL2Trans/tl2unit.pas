@@ -355,7 +355,7 @@ begin
   if lprj<>nil then
   begin
     while lprj.Modified do
-      case MessageDlg(sNotSaved,mtWarning,[mbCancel,mbNo,mbOk],0,mbCancel) of
+      case MessageDlg(sNotSaved,mtWarning,mbYesNoCancel,0,mbCancel) of
         mrOk: begin
           if lprj.FileName='' then
             FileSaveAsExecute(self)
@@ -422,7 +422,7 @@ procedure TMainTL2TransForm.TL2ShellTreeViewDblClick(Sender: TObject);
 var
   ls,lname:AnsiString;
 begin
-  if MessageDlg(sDoTheScan,sDoProcessScan,mtConfirmation,[mbOk,mbCancel],0)=mrOk then
+  if MessageDlg(sDoTheScan,sDoProcessScan,mtConfirmation,mbOkCancel,0)=mrOk then
   begin
     TL2TreePanel.Visible:=false;
 

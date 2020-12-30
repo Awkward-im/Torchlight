@@ -1,0 +1,98 @@
+object fmReorder: TfmReorder
+  Left = 640
+  Height = 323
+  Top = 303
+  Width = 437
+  Caption = 'PAK files reorder'
+  ClientHeight = 323
+  ClientWidth = 437
+  LCLVersion = '2.1.0.0'
+  object lbPAKList: TListBox
+    Left = 8
+    Height = 246
+    Top = 32
+    Width = 393
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ItemHeight = 0
+    OnClick = lbPAKListClick
+    TabOrder = 0
+  end
+  object lblTitle: TLabel
+    Left = 8
+    Height = 15
+    Top = 8
+    Width = 385
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoSize = False
+    Caption = 'File list to reorder (without DATA.PAK)'
+    ParentColor = False
+  end
+  object sbUp: TSpeedButton
+    Left = 406
+    Height = 22
+    Top = 32
+    Width = 23
+    Anchors = [akTop, akRight]
+    Images = ImageList
+    ImageIndex = 1
+    OnClick = sbUpClick
+  end
+  object sbDown: TSpeedButton
+    Left = 406
+    Height = 22
+    Top = 256
+    Width = 23
+    Anchors = [akRight, akBottom]
+    Images = ImageList
+    ImageIndex = 0
+    OnClick = sbDownClick
+  end
+  object dePAKDir: TDirectoryEdit
+    Left = 8
+    Height = 23
+    Top = 288
+    Width = 421
+    OnAcceptDirectory = dePAKDirAcceptDirectory
+    ShowHidden = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    Anchors = [akLeft, akRight, akBottom]
+    MaxLength = 0
+    TabOrder = 1
+    OnButtonClick = dePAKDirButtonClick
+  end
+  object sbApply: TSpeedButton
+    Left = 406
+    Height = 22
+    Top = 152
+    Width = 23
+    Anchors = [akTop, akRight]
+    Images = ImageList
+    ImageIndex = 2
+    OnClick = sbApplyClick
+  end
+  object ImageList: TImageList
+    Left = 352
+    Top = 72
+    Bitmap = {
+      4C7A030000001000000010000000D10100000000000078DAED94C94EC26010C7
+      8B899726CA415CD8294BEB41890413DEC5449F41CF5EBC110F24449652BA2031
+      F1218C9EF119C49B2FA15EC6996E7C34D1F62B170F4C327C3DF09B2D337F41F8
+      7FA62816288A09B26CE0ABE33B065E5E962DA8D50C7C757C352E5E9627C89850
+      AD1A50A98CA15CE6E52D644D647564C72049232EDECBEDB01A148B2A17EFB086
+      CB8EA0501842F8CC6856A63D33AA5B92C63E9BCB0DD0FBE83DC8E77BF07B0C1D
+      EB767A2E958855F1FF03C866FBE83DDBC36BA7798F9057DDDC0E9BC9DC459E41
+      A5A2223F447EE0F3BC3B284903E49D9EE3EE71A9D407616D2BE88001AB6888A7
+      1FFCECC4D70FDA671EFD58B0AC7E8CF09E5488AE5B16B0374CB740FB4C3B19CE
+      9ABEF6B0374CB740FB1C65273D96BD619EF9B1BA452CDD201FAFB9B91DEDE1BD
+      DF857EC4BBFF65FDE8C5E2CBE5A13D6BD2CB5534646D01BB16F2F89B88836EB6
+      C5C68E7638DFEE661E796388ED6473DF3A99B7665770FC7CFE297676759EBC7B
+      66FDAD35BB04E20FEE1B738A178C2F76527AB02E362F397D07592F7EFDE5E2DB
+      EEED46D8889AD7CE81BD504FAD57A7B7AD6EFA41BC4D9E86E5652C410C1B233D
+      6D7E4464D918D3A3A7B32F8A61FB1F3587C6E067977A4969CA7B0CD68FE1EEE9
+      BFB71F0DB967CB
+    }
+  end
+end

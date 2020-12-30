@@ -57,8 +57,8 @@ Block "common"
     <Gender> is character gender. "F" for "female", "M" for "male"
   4 bytes - (Integer). Game difficulty (Casual, Normal, Veteran, Expert)
   1 byte  - (Boolean). Hardcore mode flag
-  1 byte  - (Byte). NG cycle number
-  4 bytes - (usually 0). NG cycle and this value can be different size but 5 bytes in summ
+  4 bytes - (Byte). NG cycle number
+  1 byte  - (usually 0).
   4 bytes - (Float). Game time in form "hh.mm"
 
 Block "movies"
@@ -105,10 +105,10 @@ Block "KeyMapping"
         0x03F4 - MP potion
         0x03F5 - PetHP potion
         0x03F6 - PetMP potion
-   Next is fixed size for Functional keys:
-     12 elements
-       8 bytes - (Integer64) - skill ID for F## key
-       8 bytes - (Integer64) - usually -1 value, don't know what is for
+   2 bytes - functional key list size (12 elements on PC)
+   x elements (16 bytes each)
+     8 bytes - (Integer64) - skill ID for F## key
+     8 bytes - (Integer64) - usually -1 value, don't know what is for
 
 Block "Statistic"
   Almost the same statistic which you can see in game
@@ -162,7 +162,7 @@ Block "Pet and allies"
 
 Block "Unknown"
   Again.
-  34 bytes - usually, all of them are zero, so its size can be larger really
+  34 bytes - (fixed size) usually, all of them are zero
 
 Block "Maps" (Hard to skip, variable size)
   4 bytes - count of elements

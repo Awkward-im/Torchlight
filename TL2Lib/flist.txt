@@ -13,7 +13,7 @@ rgpak.pas      - PAK (MOD) file reader/unpacker
   sysutils
   rgglobal
   rgmemory
-//  rgstream
+  rgstream
   tl2mod
   paszlib
 

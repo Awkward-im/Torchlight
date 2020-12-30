@@ -608,6 +608,8 @@ begin
       rgWord      : Str(anode^.asWord     ,ls);
       rgByte      : Str(anode^.asByte     ,ls);
       rgBinary    : Str(anode^.len        ,ls);
+    else
+      ls:='';
     end;
 
     // prop name or value is not empty
@@ -637,6 +639,7 @@ begin
   result:=false;
   if anode=nil then exit;
 
+  lbuf:=nil;
   SetLength(lbuf,2);
   lbuf[0]:=$FF;
   lbuf[1]:=$FE;

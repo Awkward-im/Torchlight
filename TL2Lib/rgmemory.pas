@@ -13,7 +13,7 @@ function  memReadWord     (var buf:PByte):Word; export;
 function  memReadDWord    (var buf:PByte):DWord; export;
 function  memReadShort    (var buf:PByte):Int16; export;
 
-procedure memReadData     (var buf:PByte; var dst; alen:integer); export;
+procedure memReadData     (var buf:PByte; out dst; alen:integer); export;
 function  memReadCoord    (var buf:PByte):TVector3; export;
 
 function  memReadBool     (var buf:PByte):ByteBool; export;
@@ -39,8 +39,8 @@ procedure memWriteWord     (var buf:PByte; aval:Word); export;
 procedure memWriteDWord    (var buf:PByte; aval:DWord); export;
 procedure memWriteShort    (var buf:PByte; aval:Int16); export;
 
-procedure memWriteData     (var buf:PByte; var aval; alen:integer); export;
-procedure memWriteCoord    (var buf:PByte; var aval:TVector3); export;
+procedure memWriteData     (var buf:PByte; const aval; alen:integer); export;
+procedure memWriteCoord    (var buf:PByte; const aval:TVector3); export;
 
 procedure memWriteBool     (var buf:PByte; aval:ByteBool); export;
 procedure memWriteInteger  (var buf:PByte; aval:Int32); export;
@@ -52,8 +52,8 @@ procedure memWriteDouble   (var buf:PByte; aval:Double); export;
 procedure memWriteByteString (var buf:PByte; aval:PWideChar); export;
 procedure memWriteShortString(var buf:PByte; aval:PWideChar); export;
 
-procedure memWriteIdList   (var buf:PByte; alist:TL2IdList); export;
-procedure memWriteIdValList(var buf:PByte; alist:TL2IdValList); export;
+procedure memWriteIdList   (var buf:PByte; const alist:TL2IdList); export;
+procedure memWriteIdValList(var buf:PByte; const alist:TL2IdValList); export;
 
 //procedure WriteShortStringList(var buf:PByte; alist:TL2StringList); export;
 //procedure WriteByteString (var buf:PByte; const astr:string);
@@ -114,7 +114,7 @@ begin
   result:=pDouble(buf)^; inc(buf,SizeOf(Double));
 end;
 
-procedure memReadData(var buf:PByte; var dst; alen:integer);
+procedure memReadData(var buf:PByte; out dst; alen:integer);
 begin
   move(buf^,pByte(@dst)^,alen); inc(buf,alen);
 end;
@@ -254,7 +254,7 @@ begin
   pDouble(buf)^:=aval; inc(buf,SizeOf(Double));
 end;
 
-procedure memWriteData(var buf:PByte; var aval; alen:integer);
+procedure memWriteData(var buf:PByte; const aval; alen:integer);
 begin
   move(pByte(@aval)^,buf^,alen); inc(buf,alen);
 end;
@@ -330,7 +330,7 @@ end;
 
 //----- Complex write -----
 
-procedure memWriteCoord(var buf:PByte; var aval:TVector3);
+procedure memWriteCoord(var buf:PByte; const aval:TVector3);
 begin
   memWriteData(buf,aval,SizeOf(TVector3));
 end;
@@ -345,7 +345,7 @@ begin
     memWriteShortString(buf,alist[i]);
 end;
 }
-procedure memWriteIdList(var buf:PByte; alist:TL2IdList);
+procedure memWriteIdList(var buf:PByte; const alist:TL2IdList);
 var
   lcnt:cardinal;
 begin
@@ -355,7 +355,7 @@ begin
     memWriteData(buf,alist[0],lcnt*SizeOf(TRGID));
 end;
 
-procedure memWriteIdValList(var buf:PByte; alist:TL2IdValList);
+procedure memWriteIdValList(var buf:PByte; const alist:TL2IdValList);
 var
   lcnt:cardinal;
 begin

@@ -19,7 +19,7 @@ type
     reqHash :Int64;
     reqs    :array of record
       name:PWideChar;
-      id  :Int64;
+      id  :Int64;       // just this field presents in MOD.DAT
       ver :Word;
     end;
     dels    :array of PWideChar;
@@ -27,6 +27,8 @@ type
   end;
 
 type
+  // v.4 mod binary header start
+  PTL2ModTech = ^TTL2ModTech;
   TTL2ModTech = packed record
     version:Word; // 4
     modver :Word;
@@ -35,12 +37,35 @@ type
     offMan :DWord;
   end;
 
-function  ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean; export;
+function ReadModInfo    (fname:PChar   ; out amod:TTL2ModInfo):boolean; export;
+function ReadModInfoBuf (abuf:PByte    ; out amod:TTL2ModInfo):boolean;
+function WriteModInfo   (fname:PChar   ; const amod:TTL2ModInfo):integer; export;
+function WriteModInfo   (out abuf:PByte; const amod:TTL2ModInfo):integer;
+function WriteModInfoBuf(out buf       ; const amod:TTL2ModInfo):integer;
 procedure ClearModInfo(var amod:TTL2ModInfo); export;
 
 function LoadModConfiguration(strFilePath:PChar; var amod:TTL2ModInfo):boolean;
 function SaveModConfiguration(const amod:TTL2ModInfo; strFilePath:PChar):boolean;
 
+
+const
+  MinTL2ModInfoSize =
+    2+ // mod format version
+    2+ // mod version
+    8+ // game version (v.4+)
+    4+ // data offset
+    4+ // man offset
+    2+ // title
+    2+ // author
+    2+ // descr
+    2+ // website
+    2+ // download
+    8+ // modid
+    4+ // flags
+    8+ // req. hash
+    2+ // req. count
+    2  // delete count (v.3+)
+    ;
 
 implementation
 
@@ -51,71 +76,205 @@ uses
 
 //----- MOD Header -----
 
-function ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean;
+type
+  tVerRec = record
+    arr:array [0..3] of word;
+  end;
+
+function WriteModInfoBuf(out buf; const amod:TTL2ModInfo):integer;
+var
+  p:PByte;
+  i:integer;
+begin
+  p:=PByte(@buf);
+
+  memWriteWord(p,4);
+
+  memWriteWord(p,amod.modver);
+
+  // yes, first number is higher word
+  memWriteWord(p,tVerRec(amod.gamever).arr[3]);
+  memWriteWord(p,tVerRec(amod.gamever).arr[2]);
+  memWriteWord(p,tVerRec(amod.gamever).arr[1]);
+  memWriteWord(p,tVerRec(amod.gamever).arr[0]);
+
+  // not real values coz no data/manifest written yet
+  memWriteDWord(p,amod.offData);
+  memWriteDWord(p,amod.offMan);
+
+  memWriteShortString(p,amod.title);
+  memWriteShortString(p,amod.author);
+  memWriteShortString(p,amod.descr);
+  memWriteShortString(p,amod.website);
+  memWriteShortString(p,amod.download);
+  memWriteInteger64  (p,amod.modid);
+  //-
+  memWriteDWord(p,amod.flags);
+
+  memWriteInteger64(p,amod.reqHash);
+  memWriteWord(p,Length(amod.reqs));
+  for i:=0 to High(amod.reqs) do
+  begin
+    memWriteShortString(p,amod.reqs[i].name);
+    memWriteInteger64  (p,amod.reqs[i].id);
+    memWriteWord       (p,amod.reqs[i].ver);
+  end;
+
+  memWriteWord(p,Length(amod.dels));
+  for i:=0 to High(amod.dels) do
+    memWriteShortString(p,amod.dels[i]);
+
+  result:=p-PByte(@buf);
+end;
+
+function WriteModInfo(out abuf:PByte; const amod:TTL2ModInfo):integer;
+var
+  buf:array [0..16383] of byte;
+begin
+  result:=WriteModInfoBuf(buf,amod);
+  if result>0 then
+  begin
+    GetMem(abuf,result);
+    Move(buf[0],abuf^,result);
+  end
+  else
+    abuf:=nil;
+end;
+
+function WriteModInfo(fname:PChar; const amod:TTL2ModInfo):integer;
 var
   buf:array [0..16383] of byte;
   f:file of byte;
-  p:pbyte;
+begin
+  result:=WriteModInfoBuf(buf,amod);
+  if result>0 then
+  begin
+{$PUSH}
+{$I-}
+    Assign(f,fname);
+    Rewrite(f);
+    if IOResult=0 then
+    begin
+      BlockWrite(f,buf[0],result);
+      Close(f);
+    end
+    else
+      result:=0;
+{$POP}
+  end;
+end;
+
+function ReadModInfoBuf(abuf:PByte; out amod:TTL2ModInfo):boolean;
+var
+  mt:PTL2ModTech;
   i,lcnt:integer;
 begin
   result:=false;
 
-  AssignFile(f,fname);
-  try
-    Reset(f);
-    i:=FileSize(f);
-    if i>SizeOf(buf) then i:=SizeOf(buf);
-    BlockRead(f,buf[0],i);
-  except
-    i:=0;
-  end;
-  CloseFile(f);
-
-  if i<(2+2+8+4+4+2*5+8) then exit; // minimal size of used header data
-
-  p:=@buf[0];
+  mt:=pointer(abuf);
 
   // wrong signature
-  if pword(p)^<>4 then
+
+  if (mt^.version=0) or (mt^.version>4) then
   begin
     amod.modid:=-1;
     amod.title:=nil;
     exit;
   end;
-  inc(p,2);
+
+  inc(abuf,2);
 
   result:=true;
 
-//  amod.filename:=UTF8Decode(fname);
+//!!  amod.filename:=UTF8Decode(fname);
 
-  amod.modver  :=memReadWord(p);
-  amod.gamever :=             (QWord(memReadWord(p)) shl 48);
-  amod.gamever :=amod.gamever+(QWord(memReadWord(p)) shl 32);
-  amod.gamever :=amod.gamever+(DWord(memReadWord(p)) shl 16);
-  amod.gamever :=amod.gamever+memReadWord(p);
-  amod.offData :=memReadDWord(p);
-  amod.offMan  :=memReadDWord(p);
-  amod.title   :=memReadShortString(p);
-  amod.author  :=memReadShortString(p);
-  amod.descr   :=memReadShortString(p);
-  amod.website :=memReadShortString(p);
-  amod.download:=memReadShortString(p);
-  amod.modid   :=memReadInteger64(p);
+  amod.modver:=memReadWord(abuf);
+
+  if mt^.version>=4 then
+  begin
+    // yes, first number is higher word
+    tVerRec(amod.gamever).arr[3]:=memReadWord(abuf);
+    tVerRec(amod.gamever).arr[2]:=memReadWord(abuf);
+    tVerRec(amod.gamever).arr[1]:=memReadWord(abuf);
+    tVerRec(amod.gamever).arr[0]:=memReadWord(abuf);
+{
+    amod.gamever:=             (QWord(memReadWord(abuf)) shl 48);
+    amod.gamever:=amod.gamever+(QWord(memReadWord(abuf)) shl 32);
+    amod.gamever:=amod.gamever+(DWord(memReadWord(abuf)) shl 16);
+    amod.gamever:=amod.gamever+memReadWord(abuf);
+}
+  end;
+
+  if mt^.version=1 then
+  begin
+    for i:=0 to amod.modver do
+    begin
+      memReadInteger64(abuf); // GUID per version
+      memReadByte(abuf);      // Major version
+    end;
+  end;
+
+  amod.offData :=memReadDWord(abuf);
+  amod.offMan  :=memReadDWord(abuf);
+  amod.title   :=memReadShortString(abuf);
+  amod.author  :=memReadShortString(abuf);
+  amod.descr   :=memReadShortString(abuf);
+  amod.website :=memReadShortString(abuf);
+  amod.download:=memReadShortString(abuf);
+  amod.modid   :=memReadInteger64(abuf);
   //-
-  amod.flags   :=memReadDWord(p);
-  amod.reqHash :=memReadInteger64(p);
-  lcnt:=memReadWord(p);
+  amod.flags   :=memReadDWord(abuf);
+
+  amod.reqHash :=memReadInteger64(abuf);
+  lcnt:=memReadWord(abuf);
   SetLength(amod.reqs,lcnt);
   for i:=0 to lcnt-1 do
   begin
-    amod.reqs[i].name:=memReadShortString(p);
-    amod.reqs[i].id  :=memReadInteger64(p);
-    amod.reqs[i].ver :=memReadWord(p);
+    amod.reqs[i].name:=memReadShortString(abuf);
+    amod.reqs[i].id  :=memReadInteger64(abuf);
+    if mt^.version<>1 then
+      amod.reqs[i].ver:=memReadWord(abuf);
   end;
-  lcnt:=memReadWord(p);
-  SetLength(amod.dels,lcnt);
-  for i:=0 to lcnt-1 do
-    amod.dels[i]:=memReadShortString(p);
+
+  if mt^.version>=3 then
+  begin
+    lcnt:=memReadWord(abuf);
+    SetLength(amod.dels,lcnt);
+    for i:=0 to lcnt-1 do
+      amod.dels[i]:=memReadShortString(abuf);
+  end;
+end;
+
+function ReadModInfo(fname:PChar; out amod:TTL2ModInfo):boolean;
+var
+  buf:array [0..16383] of byte;
+  f:file of byte;
+  i:integer;
+begin
+{$PUSH}
+{$I-}
+  Assign(f,fname);
+  Reset(f);
+  if IOResult=0 then
+  begin
+    i:=FileSize(f);
+    if i>0 then
+    begin
+      if i>SizeOf(buf) then i:=SizeOf(buf);
+      buf[0]:=0;
+      BlockRead(f,buf[0],i);
+    end;
+    Close(f);
+  end
+  else
+    i:=0;
+{$POP}
+
+  if i>MinTL2ModInfoSize then // minimal size of used header data
+    result:=ReadModInfoBuf(@buf,amod)
+  else
+    result:=false;
+
 end;
 
 procedure ClearModInfo(var amod:TTL2ModInfo);

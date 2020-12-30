@@ -13,10 +13,10 @@ begin
   FClassString :=FStream.ReadShortString();
   FDifficulty  :=TL2Difficulty(FStream.ReadDWord);
   FHardcore    :=FStream.ReadByte<>0;
-  FNewGameCycle:=FStream.ReadByte;
+  FNewGameCycle:=FStream.ReadDWord;
 
   //??
-  Unk1:=FStream.ReadDWord; // 0
+  Unk1:=FStream.ReadByte; // 0
 Check(Unk1,'save_label_1 '+HexStr(FStream.Position,8),0);
 
   FGameTime:=FStream.ReadFloat; // game time (hh.mm)

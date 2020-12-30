@@ -125,9 +125,28 @@ type
 
 //----- Global savegame file structures -----
 
-type
+const
+  tl2saveFirst    = $11; // ??
+  tl2saveMinimal  = $38; // minimal acceptable version
+  tl2saveEncoded  = $3B; // "scramble" byte introduced
+  tl2saveScramble = $3D; // new scramble method
+  tl2saveChecksum = $41; // checksum field added
+//  $43
+  tl2saveCurrent  = $44; // last (current) version
+{
+  0x11 - movies
+  0x27 - Coords (-999, -999, -999)
+  0x38 - min for read/write
+  0x3B - scramble
+  0x3D - new scramble method
+  0x41 - checksum
+  0x43 - ?mod lists?
+  0x44 - mod version in mod list
+}
+
+type            	
   TL2SaveHeader = packed record
-    Sign    :DWord;      // 0x00000044 - format version
+    Version :DWord;
     Encoded :ByteBool;
     Checksum:Dword;
   end;
@@ -263,6 +282,107 @@ begin
   m[0,1]:=xy-wz;        m[1,1]:=1.0-(xx+zz);  m[2,1]:=yz+wx;        m[3,1]:=0;
   m[0,2]:=xz+wy;        m[1,2]:=yz-wx;        m[2,2]:=1.0-(xx+yy);  m[3,2]:=0;
   m[0,3]:=0;            m[1,3]:=0;            m[2,3]:=0;            m[3,3]:=1;
+end;
+
+//===== Hash =====
+
+//--- Save file
+
+function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
+var
+  i:integer;
+begin
+  result:=$14D3;
+
+  for i:=0 to asize-1 do
+  begin
+    {$PUSH}
+    {$Q-}
+    result:=result+(result shl 5)+aptr[i];
+    {$POP}
+  end;
+end;
+
+//--- DAT/Layout
+
+{$PUSH}
+{$O-}
+function RGHash(instr:PWideChar; alen:integer):dword;
+var
+  i:integer;
+begin
+  result:=alen;
+  for i:=0 to alen-1 do
+    result:=(result SHR 27) xor (result SHL 5) xor (ORD(instr[i]) and $FF);
+end;
+
+function RGHash(instr:PChar; alen:integer):dword;
+var
+  i:integer;
+begin
+  result:=alen;
+  for i:=0 to alen-1 do
+    result:=(result SHR 27) xor (result SHL 5) xor ORD(instr[i]);
+end;
+{$POP}
+
+//--- PAK/MOD
+
+function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
+const
+  m = $5BD1E995;
+  r = 24;
+var
+  h1, h2, k1, k2: UInt32;
+  data: PUInt32;
+begin
+  h1 := Seed Xor Cardinal(Len);
+  h2 := 0;
+  data := PUInt32(@s);
+  while Len >= 8 do
+  begin
+    k1 := data^;
+    Inc(data);
+    k1 := k1 * m;
+    k1 := (k1 Xor (k1 Shr r)) * m;
+    h1 := (h1 * m) Xor k1;
+
+    k2 := data^;
+    Inc(data);
+    k2 := k2 * m;
+    k2 := (k2 Xor (k2 Shr r)) * m;
+    h2 := (h2 * m) Xor k2;
+    Dec(Len,8);
+  end;
+
+  if Len >= 4 then
+  begin
+    k1 := data^;
+    Inc(data);
+    k1 := k1 * m;
+    k1 := (k1 Xor (k1 Shr r)) * m;
+    h1 := (h1 * m) Xor k1;
+    Dec(Len,4);
+  end;
+
+  if Len > 0 then
+  begin
+    if Len > 1 then
+    begin
+      if Len > 2 then
+        h2 := h2 Xor (UInt32(PByte(data)[2]) Shl 16);
+      h2 := h2 Xor (UInt32(PByte(data)[1]) Shl 8);
+    end;
+    h2 := h2 Xor UInt32(PByte(data)^);
+    h2 := h2 * m;
+  end;
+
+  h1 := (h1 Xor (h2 Shr 18)) * m;
+  h2 := (h2 Xor (h1 Shr 22)) * m;
+  h1 := (h1 Xor (h2 Shr 17)) * m;
+  h2 := (h2 Xor (h1 Shr 19)) * m;
+
+  Result := (UInt64(h1) Shl 32) Or h2;
 end;
 
 end.

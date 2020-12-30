@@ -139,11 +139,12 @@ type
     FARMB2:TRGID;
     FALMB :TRGID;
 
-    function  GetDBMods():string; override;
     function  GetStat(const iname:string):TRGInteger;
     procedure SetStat(const iname:string; aval:TRGInteger);
     function  GetSpell(idx:integer):TTL2Spell;
     procedure SetSpell(idx:integer; const aspell:TTL2Spell);
+  protected
+    function  GetDBMods():string; override;
   public
     function CheckForMods(alist:TTL2ModList):boolean;
 
@@ -372,7 +373,7 @@ if FUnkn4_1<>0 then DbgLn('  idk really at '+HexStr(AStream.Position,8));
 }
   FUnkn4_2:=AStream.ReadByte;    // ??BOSS??
 if FUnkn4_2<>0 then DbgLn('  like a boss at '+HexStr(AStream.Position,8));
-  if FIsChar then
+  if FIsChar then               // if ver<0x30 or FWardrobe
     FCheater:=AStream.ReadByte; //!!!! cheat (67($43) or 78($4E)[=elfly] no cheat, 214($D6) IS cheat
   //  :24 for pet, :55 for char
   FAIType   :=TTL2AIType(AStream.ReadByte);
@@ -400,7 +401,7 @@ if FUnkn17<>$FFFFFFFF then DbgLn('pre-name is '+HexStr(FUnkn17,8));
   FName  :=AStream.ReadShortString();    // :55(pet) Char name
 DbgLn('  name:'+string(widestring(fname)));
   FSuffix:=AStream.ReadShortString();    // like mob title "(Teleporting)"
-  if FIsChar then
+  if FIsChar then                        // if ver >=0x26 or FWardrobe
     FPlayer:=AStream.ReadShortString();  // "PLAYER" (prefix) !!!!! not exists for pets!!!!!!
   //??
   FUnkn9_1:=AStream.ReadDWord; // 0

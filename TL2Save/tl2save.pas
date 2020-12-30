@@ -77,7 +77,8 @@ type
     FWaypoint:string;
     FArea    :string;
 
-    Unk1,Unk2,Unk3:DWord;
+    Unk1     :byte;
+    Unk2,Unk3:DWord;
     UnkCoord:TVector3;
 
     //----- User portal -----
@@ -171,31 +172,101 @@ resourcestring
   sLoadFailed   = 'Savegame loading failed';
   sSavingFailed = 'Savegame saving failed';
   sWrongSize    = 'Wrong file size';
-  sWrongVersion = 'Wrong save file signature';
+  sWrongVersion = 'Wrong save file version';
   sWrongFooter  = 'Wrong save file size';
 
 //----- support functions -----
 
-procedure Decode(inbuf:pByte; asize:cardinal);
+procedure Decode(inbuf:pByte; asize:cardinal; amodern:boolean=true);
 var
   loIndex,hiIndex:cardinal;
+  i:integer;
   loByte,hiByte:byte;
+  flag:boolean;
 begin
   loIndex:=0;
   hiIndex:=asize-1;
-  while loIndex<=hiIndex do
+  if amodern then
+    while loIndex<=hiIndex do
+    begin
+      loByte:=byte((cardinal(inbuf[loIndex]) shr 4) or ((cardinal(inbuf[hiIndex]) shl 4)));
+      hiByte:=byte((cardinal(inbuf[loIndex]) shl 4) or ((cardinal(inbuf[hiIndex]) shr 4)));
+
+      if (loByte<>0) and (loByte<>$FF) then loByte:=loByte xor $FF;
+      if (hiByte<>0) and (hiByte<>$FF) then hiByte:=hiByte xor $FF;
+
+      inbuf[loIndex]:=loByte;
+      inbuf[hiIndex]:=hiByte;
+
+      inc(loIndex);
+      dec(hiIndex);
+    end
+  else
   begin
-    loByte:=byte((cardinal(inbuf[loIndex]) shr 4) or ((cardinal(inbuf[hiIndex]) shl 4)));
-    hiByte:=byte((cardinal(inbuf[loIndex]) shl 4) or ((cardinal(inbuf[hiIndex]) shr 4)));
+    flag:=true;
+    for i:=0 to asize-1 do
+    begin
+      if flag then
+      begin
+        loByte:=inbuf[loIndex];
+        inc(loIndex);
+      end
+      else
+      begin
+        loByte:=inbuf[hiIndex];
+        dec(hiIndex);
+      end;
+      if (loByte<>0) and (loByte<>$FF) then loByte:=loByte xor $FF;
+      inbuf[i]:=loByte;
 
-    if (loByte<>0) and (loByte<>$FF) then loByte:=loByte xor $FF;
-    if (hiByte<>0) and (hiByte<>$FF) then hiByte:=hiByte xor $FF;
-
-    inbuf[loIndex]:=loByte;
-    inbuf[hiIndex]:=hiByte;
-
-    inc(loIndex);
-    dec(hiIndex);
+      flag:=not flag;
+    end;
+(*
+    t = 0;
+    l_flag = 1;
+    if ( l_datasize )
+    {
+      l_enddata = &l_indata[l_datasize - 1];
+      l_start = l_indata;
+      do
+      {
+        if ( l_flag )
+          l_byte = *l_start++;
+        else
+          l_byte = *l_enddata--;
+        buf[t] = l_byte;
+        if ( l_byte && l_byte != -1 )
+          buf[t] = ~l_byte;
+        l_flag = !l_flag;
+        ++t;
+      }
+      while ( t < l_datasize );
+    }
+*)
+(*
+    t = 0;
+    l_flag = true;
+    if (_Size != NULL) {
+      l_end = _DstBuf + _Size + -0x1;
+      l_start = _DstBuf;
+      do {
+        if (l_flag) {
+          l_byte = *l_start;
+          l_start = l_start + 0x1;
+        }
+        else {
+          l_byte = *l_end;
+          l_end = l_end + -0x1;
+        }
+        buf[_Dst] = l_byte;
+        if ((l_byte != 0x0) && (l_byte != 0xff)) {
+          buf[_Dst] = ~l_byte;
+        }
+        l_flag = l_flag == false;
+        t = t + 0x1;
+      } while (t < _Size);
+    }
+*)
   end;
 end;
 
@@ -492,7 +563,7 @@ begin
     end;
 
     FStream.Read(lSaveHeader,SizeOf(lSaveHeader));
-    if lSaveHeader.Sign<>$44 then
+    if (lSaveHeader.Version<tl2saveMinimal) or (lSaveHeader.Version>tl2saveCurrent) then
     begin
       Error(sWrongVersion);
       Exit;
@@ -523,7 +594,7 @@ var
   lSaveHeader:TL2SaveHeader;
   lSaveFooter:TL2SaveFooter;
 begin
-  lSaveHeader.Sign    :=$44;
+  lSaveHeader.Version :=tl2saveCurrent;
   lSaveHeader.Encoded :=aencoded;
   lSaveHeader.Checksum:=CalcCheckSum(
     TMemoryStream(FStream).Memory+ SizeOf(lSaveHeader),

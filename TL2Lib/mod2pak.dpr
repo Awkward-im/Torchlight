@@ -1,6 +1,5 @@
 {$I-}
 uses
-  classes,
   rgglobal,
   rgpak;
 

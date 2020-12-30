@@ -12,9 +12,9 @@ begin
   FStream.WriteShortString(FClassString);
   FStream.WriteDword(DWord(FDifficulty));
   FStream.WriteByte(Ord(FHardcore));
-  FStream.WriteByte(FNewGameCycle);
+  FStream.WriteDWord(FNewGameCycle);
   //!!
-  FStream.WriteDWord(Unk1);
+  FStream.WriteByte(Unk1);
 
   FStream.WriteFloat(FGameTime);
 
