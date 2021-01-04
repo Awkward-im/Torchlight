@@ -24,7 +24,6 @@ type
 
 function SearchFile(aptr:pointer; const fname:string):PMANFileInfo;
 function UnpackAll (apak:pointer; const adir:string):boolean;
-//function GetTextName(afile:PMANFileInfo):PWideChar;
 
 //===== Container =====
 
@@ -62,8 +61,9 @@ const
 function  GetPAKInfo (var   ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
 procedure FreePAKInfo(var   ainfo:TPAKInfo);
 procedure DumpPAKInfo(const ainfo:TPAKInfo);
-procedure MANtoFile  (const fname:string; const ainfo:TPAKInfo);
-function CalcPAKHash (const fname:string):dword;
+procedure MANtoFile  (const fname:string; const ainfo:TPAKInfo; afull:boolean=false);
+// next function useful in TL2 PAK part only
+function  CalcPAKHash(const fname:string):dword;
 
 type
   TPAKProgress = function(const ainfo:TPAKInfo; adir,afile:integer):integer;
@@ -134,6 +134,7 @@ const
 function PAKTypeToCategoryText(aver,atype:integer):string;
 //function GetCategory(const aext:WideString):integer;
 
+/////////////////////////////////////////////////////////
 
 implementation
 
@@ -625,7 +626,7 @@ begin
   result:=0;
 end;
 
-procedure MANtoFile(const fname:string; const ainfo:TPAKInfo);
+procedure MANtoFile(const fname:string; const ainfo:TPAKInfo; afull:boolean=false);
 var
   lman,lp,lc:pointer;
   i,j:integer;
@@ -634,25 +635,34 @@ begin
 
   lman:=AddGroup(nil,'MANIFEST');
   AddString (lman,'FILE' ,PWideChar(WideString(ainfo.fname)));
-  AddInteger(lman,'TOTAL',ainfo.total);
-  AddInteger(lman,'COUNT',Length(ainfo.Entries));
+  if afull then
+  begin
+    AddInteger(lman,'TOTAL',ainfo.total);
+    AddInteger(lman,'COUNT',Length(ainfo.Entries));
+  end;
+
   for i:=0 to High(ainfo.Entries) do
   begin
     lp:=AddGroup(lman,'PARENT');
     AddString (lp,'NAME' ,ainfo.Entries[i].name);
-    AddInteger(lp,'COUNT',Length(ainfo.Entries[i].Files));
+    if afull then
+      AddInteger(lp,'COUNT',Length(ainfo.Entries[i].Files));
     lp:=AddGroup(lp,'CHILDREN');
     for j:=0 to High(ainfo.Entries[i].Files) do
     begin
       lc:=AddGroup(lp,'CHILD');
       with ainfo.Entries[i].Files[j] do
       begin
-        AddUnsigned (lc,'CRC'   ,checksum);
-        AddInteger  (lc,'TYPE'  ,ftype);
-        AddString   (lc,'NAME'  ,name);
-        AddInteger  (lc,'OFFSET',offset);
-        AddInteger  (lc,'SIZE'  ,size_s);
-        AddInteger64(lc,'TIME'  ,ftime);
+        AddString (lc,'NAME',name);
+        AddInteger(lc,'TYPE',ftype);  // required for TL2 type 18 (dir to delete)
+        AddInteger(lc,'SIZE',size_s); // required for zero-size files (file to delete)
+        if afull then
+        begin
+          AddUnsigned(lc,'CRC'   ,checksum);
+          AddInteger (lc,'OFFSET',offset);
+          if ABS(ainfo.ver)=verTL2 then
+            AddInteger64(lc,'TIME',ftime);
+        end;
       end;
     end;
   end;
@@ -990,6 +1000,8 @@ var
   ldat,llay:integer;
   lmaxp,lmaxu,lcnt:integer;
 begin
+  if not IsConsole then exit;
+
   writeln('Root: ',String(WideString(ainfo.Root)));
   lfiles:=0;
   lprocess:=0;
@@ -1100,49 +1112,62 @@ end;
 
 //----- Unpack -----
 
-{
-  ZLIB uncompress file
-  returns unpacked data (must be fried by FreeMem)
-}
-function Unpack(aptr:PByte; aunpacked:pointer):integer;
+function Unpack(apak:pointer; const afile:string):boolean;
 var
-  strm:TZStream;
-  usize,csize:dword;
+  f:file of byte;
+  lfhdr:TPAKFileHeader;
+  ldir:string;
+  fi:PMANFileInfo;
+  lin,lout:PByte;
 begin
-  result:=0;
-
-  usize:=memReadDWord(aptr);
-  csize:=memReadDWord(aptr);
-
-  if csize>0 then
+  result:=false;
+  fi:=SearchFile(apak,afile);
+  if fi<>nil then
   begin
-  	strm.avail_in:=0;
-  	strm.next_in :=Z_NULL;
-  	if inflateInit(strm)<>Z_OK then exit(0);
+    if fi^.size_s=0 then exit;
+
+    Assign(f,PPAKInfo(apak)^.fname);
+    Reset(f);
+    if IOResult<>0 then exit;
+
+    Seek(f,PPAKInfo(apak)^.data+fi^.offset);
+    BlockRead(f,lfhdr,SizeOf(lfhdr));
+    fi^.size_u:=lfhdr.size_u;
+    fi^.size_c:=lfhdr.size_c;
+    GetMem(lout,lfhdr.size_u);
+    if lfhdr.size_c>0 then
+    begin
+      GetMem(lin,lfhdr.size_c);
+      BlockRead(f,lin^,lfhdr.size_c);
+    end
+    else
+    begin
+      lin:=nil;
+      BlockRead(f,lout^,lfhdr.size_u);
+    end;
+    Close(f);
+
+    if lfhdr.size_c>0 then
+    begin
+      uncompress(
+          PChar(lout),lfhdr.size_u,
+          PChar(lin ),lfhdr.size_c);
+    end;
+
+    ldir:=ExtractFilePath(afile);
+    ForceDirectories(ldir);
+
+    Assign(f,ldir+'\'+fi^.name);
+    Rewrite(f);
+    if IOResult=0 then
+    begin
+      BlockWrite(f,lout^,lfhdr.size_u);
+      Close(f);
+    end;
+    FreeMem(lout);
+    if lin<>nil then FreeMem(lin);
+  
   end;
-
-  GetMem(aunpacked,usize);
-
-  if csize>0 then
-  begin
-  	strm.avail_in :=csize;
-  	strm.next_in  :=aptr;
-  	strm.avail_out:=usize;
-  	strm.next_out :=aunpacked;
-
-  	if inflate(strm, Z_FINISH)<>Z_OK then
-  	begin
-  	  FreeMem(aunpacked);
-  	  aunpacked:=nil;
-  	end;
-
-  	inflateEnd(strm);
-  end
-  else
-    memReadData(aptr,aunpacked^,usize);
-
-  if aunpacked<>nil then
-    result:=usize;
 end;
 
 {$PUSH}

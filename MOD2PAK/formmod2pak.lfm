@@ -1,76 +1,222 @@
 object fmMod2Pak: TfmMod2Pak
-  Left = 840
-  Height = 321
-  Top = 283
-  Width = 470
+  Left = 463
+  Height = 554
+  Top = 201
+  Width = 753
   AllowDropFiles = True
-  Caption = 'MOD 2 PAK'
-  ClientHeight = 321
-  ClientWidth = 470
+  ClientHeight = 554
+  ClientWidth = 753
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles
   LCLVersion = '2.1.0.0'
-  object memHelp: TMemo
+  object lbReserve: TListBox
     Left = 8
-    Height = 233
-    Top = 8
-    Width = 376
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Lines.Strings = (
-      'How to use:'
-      ''
-      '1 - Call from command line:'
-      '  mod2pak.exe <modname> [<modname>]'
-      '  works as DnD on Shortcut (like on window)'
-      ''
-      '2 - Drag and drop MOD file to program window'
-      '  output files will be placed at source MOD file folder'
-      ''
-      '3 - Use "File" button and choose MOD file and output path'
-    )
-    ScrollBars = ssAutoBoth
+    Height = 280
+    Top = 104
+    Width = 296
+    ExtendedSelect = False
+    ItemHeight = 0
+    OnClick = lbReserveClick
     TabOrder = 0
   end
-  object bbFile: TBitBtn
-    Left = 388
-    Height = 30
-    Top = 8
-    Width = 75
-    Anchors = [akTop, akRight]
-    Caption = '&File'
-    Default = True
-    Kind = bkOK
-    OnClick = bbFileClick
+  object lbActive: TListBox
+    Left = 397
+    Height = 280
+    Top = 104
+    Width = 296
+    ExtendedSelect = False
+    ItemHeight = 0
+    OnClick = lbActiveClick
     TabOrder = 1
   end
-  object bbClose: TBitBtn
-    Left = 388
+  object bbAdd: TBitBtn
+    Left = 313
     Height = 30
-    Top = 202
+    Top = 104
     Width = 75
-    Anchors = [akTop, akRight]
+    Caption = '&Add'
+    Enabled = False
+    Kind = bkOK
+    OnClick = bbAddClick
+    TabOrder = 2
+  end
+  object bbClose: TBitBtn
+    Left = 669
+    Height = 30
+    Top = 515
+    Width = 75
+    Anchors = [akRight, akBottom]
     Caption = '&Close'
     Kind = bkClose
     ModalResult = 11
-    TabOrder = 2
-  end
-  object memLog: TMemo
-    Left = 8
-    Height = 69
-    Top = 246
-    Width = 455
-    Anchors = [akLeft, akRight, akBottom]
-    ScrollBars = ssVertical
     TabOrder = 3
   end
-  object bbOrder: TBitBtn
-    Left = 388
+  object sbActivate: TSpeedButton
+    Left = 319
     Height = 30
-    Top = 100
-    Width = 75
-    Caption = '&Order'
-    Kind = bkRetry
-    OnClick = bbOrderClick
+    Top = 205
+    Width = 62
+    Enabled = False
+    Images = ImageList
+    ImageIndex = 4
+    OnClick = sbActivateClick
+  end
+  object sbDeactivate: TSpeedButton
+    Left = 319
+    Height = 30
+    Top = 248
+    Width = 62
+    Enabled = False
+    Images = ImageList
+    ImageIndex = 3
+    OnClick = sbDeactivateClick
+  end
+  object sbUp: TSpeedButton
+    Left = 704
+    Height = 40
+    Top = 104
+    Width = 40
+    Enabled = False
+    Images = ImageList
+    ImageIndex = 1
+    OnClick = sbUpClick
+  end
+  object sbDown: TSpeedButton
+    Left = 704
+    Height = 40
+    Top = 344
+    Width = 40
+    Enabled = False
+    Images = ImageList
+    ImageIndex = 0
+    OnClick = sbDownClick
+  end
+  object deGameDir: TDirectoryEdit
+    Left = 8
+    Height = 23
+    Top = 33
+    Width = 416
+    OnAcceptDirectory = deGameDirAcceptDirectory
+    ShowHidden = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    MaxLength = 0
     TabOrder = 4
+  end
+  object lblDirHint: TLabel
+    Left = 8
+    Height = 20
+    Top = 8
+    Width = 157
+    Caption = 'Choose Game Directory'
+    Font.Height = -15
+    ParentColor = False
+    ParentFont = False
+  end
+  object stReserve: TStaticText
+    Left = 8
+    Height = 32
+    Top = 72
+    Width = 296
+    Alignment = taCenter
+    Caption = 'Available PAKs'
+    Font.Height = -16
+    ParentFont = False
+    TabOrder = 5
+  end
+  object stActive: TStaticText
+    Left = 397
+    Height = 32
+    Top = 72
+    Width = 296
+    Alignment = taCenter
+    Caption = 'PAKs to load'
+    Font.Height = -16
+    ParentFont = False
+    TabOrder = 6
+  end
+  object stAdd: TStaticText
+    Left = 320
+    Height = 59
+    Top = 397
+    Width = 424
+    Alignment = taCenter
+    Caption = 'Drag ''n''Drop MOD files on window or'#13#10'press "Add" button to choose manually'
+    Font.Height = -17
+    ParentFont = False
+    TabOrder = 7
+  end
+  object bbDelete: TBitBtn
+    Left = 313
+    Height = 30
+    Top = 144
+    Width = 75
+    Cancel = True
+    Caption = 'Delete'
+    Enabled = False
+    Kind = bkCancel
+    OnClick = bbDeleteClick
+    TabOrder = 8
+  end
+  object memDescription: TMemo
+    Left = 8
+    Height = 129
+    Top = 416
+    Width = 296
+    ScrollBars = ssAutoVertical
+    TabOrder = 9
+  end
+  object lblDescr: TLabel
+    Left = 8
+    Height = 15
+    Top = 397
+    Width = 296
+    AutoSize = False
+    Caption = 'Description'
+    ParentColor = False
+  end
+  object bbApply: TBitBtn
+    Left = 397
+    Height = 30
+    Top = 515
+    Width = 75
+    Caption = '&Apply'
+    Default = True
+    Enabled = False
+    Kind = bkOK
+    OnClick = bbApplyClick
+    TabOrder = 10
+  end
+  object ImageList: TImageList
+    Left = 712
+    Top = 8
+    Bitmap = {
+      4C7A050000001000000010000000050300000000000078DAED94DB4E1A511486
+      B1496F90330888270E32831450B489EFD2A47D86F612101C05637A61628AC871
+      B0A6491FA269AFED33D4DEF525DADEACAEB58719B6C869CFF4A26958C97273E1
+      B70E7BF6FFDB6CFF5EC8721F64590549EAE1D9C5B303A2BC24F52199ECE1D9C5
+      B32DC44BD20D322A6C6FF72091E8403C2ECAF7915591ED22DB8158AC25C4EBBD
+      35B60D5B5B4D215E637B03B6059B9BD730FBCEE8AE54766734772CD631D8F5F5
+      06E615661D3636EA30B94617E7D6768E46896DE2FF37606DED0AB3CE72F6EC74
+      DF2DE49B83DE1A1B89BC9BFB0E128926F2D7C8370C5EF40DC6620DE4B59DCDBE
+      E368F40A6C8BB0E0033DB0E221BA7F88B337867FD07B16F18F21CBFB470BF5D4
+      84F97DAB0FBC86490BF49EE94DCE6655C37B780D9316E83DCFF3267596D7B0C8
+      FDF1BE452C69508C6F0F7A6BDE23AADFA17F98D3FF43FFA89BE2E3F16B76D7E4
+      97563C64112351B26DE0DF2533E8D3737BDEDF4EDDBB2E231F456BD8CFDD07A1
+      FEDEFDE1DD1BC87E7EF9D37EB1D215E91B5473DF0EEF5E03F1E1F7F97BAA375A
+      DF7E11E88ECEC5F7A5A4DFA3AC5E3FF7E5D56FB69B627B326F5FD60377A19D0E
+      BF6ABB392F573FD8DFBA9FCFEACBC512317C8DD5DB831F73B27C8DDBCCA717BF
+      A806CB2933CFAC21CE3ED825D096BF9B608D1A8377BA080B11AEED9BF6CDD0D9
+      3E846A7930CB06CFF2B052DB032B6CA0BA0BFED31CF84EB2E053308F312B59F0
+      638E6571DF604D63FDC812E75532E0397E069E0A66594B6F39F3880F5591AD22
+      5BC5BEA743D68DACABBC03AE23CA14B84A3BE0C61CD73F788AFC09CE8CB37A8F
+      91ADA419EB44CE5192C151D4D2594C4DBC9780B2CBF6A479A9A7B39482E5A2C4
+      D25E48C272410247419E7AAFBE4A86EDE99A30E73CE139B2C653B82DF28BF80B
+      1E50DDB7F40D42A8097AD76679D2136922A0E4A6D60893DF70DAE7F5EFE7B43F
+      714E4EFBBC6F3CD23FBEEB897B0EB4AFB31E65A861A6FF92AEFF348CD73EF227
+      39E655D453671DA47F43FBE3B51B549045EDFB714F2FEAD75D4EB39EE41B4CFF
+      052D45EF9F7A1247DE61E6FBE9BCD9EF3FCDEBFE87F803F1D14C7D
+    }
   end
 end

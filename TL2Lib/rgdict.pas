@@ -8,9 +8,6 @@ interface
 
 //--- Functions
 
-function RGHash(instr:PWideChar; alen:integer):dword;
-function RGHash(instr:PChar    ; alen:integer):dword;
-
 function GetTagStr(adict:pointer; ahash:dword):PWideChar;
 // return result coz we can use custom tags too
 procedure LoadTags(out adict:pointer; const fname:string='');
@@ -46,27 +43,6 @@ type
     name:string;
     hash:dword;
   end;
-
-{$PUSH}
-{$O-}
-function RGHash(instr:PWideChar; alen:integer):dword;
-var
-  i:integer;
-begin
-  result:=alen;
-  for i:=0 to alen-1 do
-    result:=(result SHR 27) xor (result SHL 5) xor (ORD(instr[i]) and $FF);
-end;
-
-function RGHash(instr:PChar; alen:integer):dword;
-var
-  i:integer;
-begin
-  result:=alen;
-  for i:=0 to alen-1 do
-    result:=(result SHR 27) xor (result SHL 5) xor ORD(instr[i]);
-end;
-{$POP}
 
 //===== DAT tags =====
 

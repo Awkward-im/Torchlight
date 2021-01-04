@@ -6,6 +6,7 @@ function  ParseDatFile(fname:PChar):pointer;
 function  WriteDatTree(anode:pointer; fname:PChar):ByteBool;
 procedure DeleteNode  (anode:pointer);
 
+function GetGroupCount(aparent:pointer; aname:PWideChar):integer;
 function GetChildCount(anode:pointer):integer;
 function GetChild     (anode:pointer; idx:integer):pointer;
 function GetNodeType  (anode:pointer):integer;
@@ -162,6 +163,22 @@ begin
     result:=PTL2Node(anode)^.count
   else
     result:=0;
+end;
+
+function GetGroupCount(aparent:pointer; aname:PWideChar):integer;
+var
+  i:integer;
+begin
+  result:=0;
+  if (aparent<>nil) and (PTL2Node(aparent)^.nodetype=rgGroup) then
+  begin
+    for i:=0 to PTL2Node(aparent)^.count-1 do
+    begin
+      if (PTL2Node(aparent)^.child^[i]^.nodetype=rgGroup) and
+         CompareWide(PTL2Node(aparent)^.child^[i]^.name,aname) then
+        inc(result);
+    end;
+  end;
 end;
 
 function GetChild(anode:pointer; idx:integer):pointer;

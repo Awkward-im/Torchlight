@@ -44,8 +44,8 @@ function WriteModInfo   (out abuf:PByte; const amod:TTL2ModInfo):integer;
 function WriteModInfoBuf(out buf       ; const amod:TTL2ModInfo):integer;
 procedure ClearModInfo(var amod:TTL2ModInfo); export;
 
-function LoadModConfiguration(strFilePath:PChar; var amod:TTL2ModInfo):boolean;
-function SaveModConfiguration(const amod:TTL2ModInfo; strFilePath:PChar):boolean;
+function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
+function SaveModConfiguration(const amod:TTL2ModInfo; strFile:PChar):boolean;
 
 
 const
@@ -73,6 +73,27 @@ uses
   rgglobal,
   rgmemory,
   rgnode;
+
+//----- Support -----
+
+// from LazFileUtils
+function ExtractFileNameOnly(const AFilename: string): string;
+var
+  StartPos: Integer;
+  ExtPos: Integer;
+begin
+  StartPos:=length(AFilename)+1;
+  while (StartPos>1)
+  and not (AFilename[StartPos-1] in AllowDirectorySeparators)
+  {$IF defined(Windows) or defined(HASAMIGA)}and (AFilename[StartPos-1]<>':'){$ENDIF}
+  do
+    dec(StartPos);
+  ExtPos:=length(AFilename);
+  while (ExtPos>=StartPos) and (AFilename[ExtPos]<>'.') do
+    dec(ExtPos);
+  if (ExtPos<StartPos) then ExtPos:=length(AFilename)+1;
+  Result:=copy(AFilename,StartPos,ExtPos-StartPos);
+end;
 
 //----- MOD Header -----
 
@@ -170,6 +191,8 @@ var
   i,lcnt:integer;
 begin
   result:=false;
+
+  FillChar(amod,SizeOf(amod),0);
 
   mt:=pointer(abuf);
 
@@ -271,7 +294,10 @@ begin
 {$POP}
 
   if i>MinTL2ModInfoSize then // minimal size of used header data
-    result:=ReadModInfoBuf(@buf,amod)
+  begin
+    result:=ReadModInfoBuf(@buf,amod);
+    CopyWide(amod.filename,PWideChar(WideString(ExtractFilenameOnly(fname))));
+  end
   else
     result:=false;
 
@@ -302,24 +328,24 @@ end;
 
 //----- MOD.DAT -----
 
-function LoadModConfiguration(strFilePath:PChar; var amod:TTL2ModInfo):boolean;
+function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
 var
   lnode,lroot,lgroup:pointer;
   pcw:PWideChar;
-  ls:string;
   i,j,lcnt:integer;
 begin
   result:=false;
 
-  if strFilePath<>nil then
-    ls:=string(strFilePath)+'\MOD.DAT'
+  if (strFile<>nil) and not (strFile[Length(strFile)-1] in ['\','/']) then
+    lroot:=ParseDatFile(strFile)
   else
-    ls:='MOD.DAT';
+    lroot:=ParseDatFile(PChar(string(strFile)+'MOD.DAT'));
 
-  lroot:=ParseDatFile(PChar(ls));
   if lroot=nil then exit;
 
   if not CompareWide(GetNodeName(lroot),'MOD') then exit;
+
+  result:=true;
 
   for i:=0 to GetChildCount(lroot)-1 do
   begin
@@ -374,17 +400,11 @@ begin
   DeleteNode(lroot);
 end;
 
-function SaveModConfiguration(const amod:TTL2ModInfo; strFilePath:PChar):boolean;
+function SaveModConfiguration(const amod:TTL2ModInfo; strFile:PChar):boolean;
 var
   lroot,lgroup:pointer;
-  ls:string;
   i:integer;
 begin
-  if strFilePath<>nil then
-    ls:=string(strFilePath)+'\MOD.DAT'
-  else
-    ls:='MOD.DAT';
-
   lroot:=AddGroup(nil,'MOD');
   AddString   (lroot,'NAME'         , amod.title   );
   AddInteger64(lroot,'MOD_ID'       , amod.modid   );
@@ -409,7 +429,10 @@ begin
       AddInteger64(lgroup,'ID',amod.reqs[i].id);
   end;
 
-  result:=WriteDatTree(lroot, pointer(ls));
+  if (strFile<>nil) and not (strFile[Length(strFile)-1] in ['\','/']) then
+    result:=WriteDatTree(lroot, strFile)
+  else
+    result:=WriteDatTree(lroot, PChar(string(strFile)+'MOD.DAT'));
 
   DeleteNode(lroot);
 end;

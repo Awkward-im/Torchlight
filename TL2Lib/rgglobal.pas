@@ -159,6 +159,13 @@ type
 
 procedure QuaternionToMatrix(const q:TVector4; out m:TMatrix4x4);
 
+//===== Hash =====
+
+function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
+function RGHash(instr:PWideChar; alen:integer):dword;
+function RGHash(instr:PChar; alen:integer):dword;
+function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
+
 //==========================
 //===== Implementation =====
 //==========================
