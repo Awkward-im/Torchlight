@@ -14,7 +14,7 @@ procedure LoadTags(out adict:pointer; const fname:string='');
 procedure FreeTags(adict:pointer);
 
 procedure FreeObjectInfo(aobj:pointer);
-function LoadObjectInfo(const fname:string=''):pointer;
+function  LoadObjectInfo(const fname:string=''):pointer;
 // no scene name = search in all
 function SelectObject(adict:pointer; aid:dword; ascene:PWideChar=nil):pointer;
 function GetObjectName    (aobj:pointer):PWideChar;

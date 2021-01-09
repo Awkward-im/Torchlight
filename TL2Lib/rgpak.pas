@@ -39,14 +39,13 @@ type
     Entries:array of TMANDirEntry;
     Deleted:array of TMANDirEntry;
     modinfo:TTL2ModInfo;
-    fname  :string;
+    fname  :string;    //?? filename only or fullname
     fsize  :dword;
     data   :dword;
 //    dsize:dword;
     man    :dword;
 //    msize:dword;
     ver    :integer;
-    pakver :integer;   // actual for TL2 Man (0 or 2 = with checksum)
     // not necessary fields
     root   :PWideChar; // same as first directory, MEDIA (usually)
     total  :integer;   // total "file" elements. Can be calculated when needs
@@ -58,12 +57,19 @@ const
   piParse     = 1;
   piFullParse = 2;
 
-function  GetPAKInfo (var   ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
+function  GetPAKInfo (const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
 procedure FreePAKInfo(var   ainfo:TPAKInfo);
 procedure DumpPAKInfo(const ainfo:TPAKInfo);
-procedure MANtoFile  (const fname:string; const ainfo:TPAKInfo; afull:boolean=false);
 // next function useful in TL2 PAK part only
 function  CalcPAKHash(const fname:string):dword;
+
+//----- Manifest -----
+
+procedure ParseManifest(var ainfo:TPakInfo; aptr:PByte);
+function  ManSaveToStream(ast:TStream; const ainfo:TPAKInfo):integer;
+function  WriteManifest(const ainfo:TPAKInfo):integer;
+procedure MANtoFile(const fname:string; const ainfo:TPAKInfo; afull:boolean=false);
+
 
 type
   TPAKProgress = function(const ainfo:TPAKInfo; adir,afile:integer):integer;
@@ -509,8 +515,8 @@ begin
   case ainfo.ver of
     verTL2Mod,
     verTL2:begin
-      ainfo.pakver:=memReadWord(aptr);         // 0002 version/signature
-      if ainfo.pakver>=2 then                  // 0000 - no "checksum" field??
+      i:=memReadWord(aptr);                    // 0002 version/signature
+      if i>=2 then                             // 0000 - no "checksum" field??
         memReadDWord(aptr);                    // checksum?
       ainfo.root:=memReadShortString(aptr);    // root directory !!
     end;
@@ -554,67 +560,75 @@ begin
 //  ainfo.total:=ltotal; //!!!! keep real children count
 end;
 
-{
-  Build Manifest [and save it to file named ainfo.fname] [within stream]
-}
 {$PUSH}
 {$I-}
-function WriteManifest(var ainfo:TPAKInfo; const aname:string; aver:integer):integer;
+function ManSaveToStream(ast:TStream; const ainfo:TPAKInfo):integer;
 var
-  lst:TMemoryStream;
   i,j:integer;
 begin
-  result:=0;
-
-  lst:=TMemoryStream.Create;
-
   try
-    case aver of
+    case ainfo.ver of
       verTL2Mod,
       verTL2: begin
-        lst.WriteWord(2);  // writing always "new" version
-        lst.WriteDWord(0); //!! CRC
-        lst.WriteShortString(ainfo.root);
+        ast.WriteWord(2);  // writing always "new" version
+        ast.WriteDWord(0); //!! Hash
+        ast.WriteShortString(ainfo.root);
       end;
 
       verHob,
       verRG: begin
       end;
     else
-      lst.Free;
       exit;
     end;
 
-    lst.WriteDWord(ainfo.total);
-    lst.WriteDWord(Length(ainfo.Entries));
+    ast.WriteDWord(ainfo.total);
+    ast.WriteDWord(Length(ainfo.Entries));
 
     for i:=0 to High(ainfo.Entries) do
     begin
-      lst.WriteShortString(ainfo.fname);
-      lst.WriteDWord(Length(ainfo.Entries[i].Files));
+      ast.WriteShortString(ainfo.fname);
+      ast.WriteDWord(Length(ainfo.Entries[i].Files));
 
       for j:=0 to High(ainfo.Entries[i].Files) do
       begin
         with ainfo.Entries[i].Files[j] do
         begin
-          lst.WriteDWord(checksum);
-          lst.WriteByte(IntToType(ainfo.ver,ftype));
-          lst.WriteShortString(name);
-          lst.WriteDWord(offset);
-          lst.WriteDWord(size_s);
-          if (aver=verTL2) or (aver=verTL2Mod) then
-            lst.WriteQWord(ftime);
+          ast.WriteDWord(checksum);
+          ast.WriteByte(IntToType(ainfo.ver,ftype));
+          ast.WriteShortString(name);
+          ast.WriteDWord(offset);
+          ast.WriteDWord(size_s);
+          if (ainfo.ver=verTL2) or
+             (ainfo.ver=verTL2Mod) then
+            ast.WriteQWord(ftime);
         end;
       end;
     end;
 
     result:=ainfo.total;
 
+  except
+    result:=0;
+  end;
+end;
+{$POP}
+
+function WriteManifest(const ainfo:TPAKInfo):integer;
+var
+  lst:TMemoryStream;
+begin
+  result:=0;
+
+  lst:=TMemoryStream.Create;
+  try
+    result:=ManSaveToStream(lst,ainfo);
+    if result>0 then
+      lst.SaveToFile(ainfo.fname+'.PAK.MAN');
   finally
     lst.Free;
   end;
 end;
-{$POP}
 
 {
   Build files tree [from MEDIA folder] [from dir]
@@ -766,7 +780,7 @@ end;
 }
 {$PUSH}
 {$I-}
-function GetPAKInfo(var ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
+function GetPAKInfo(const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
 var
   f:file of byte;
 
@@ -783,13 +797,13 @@ var
 begin
   result:=false;
 
-  ls:=ainfo.fname;
-  FreePAKInfo(ainfo);
-  ainfo.fname:=ls;
+  FillChar(ainfo,SizeOf(ainfo),0);
+//  FreePAKInfo(ainfo);
+  ainfo.fname:=ExtractFilenameOnly(fname);
 
   //--- Check by ext
 
-  ls:=UpCase(ExtractFileExt(ainfo.fname));
+  ls:=UpCase(ExtractFileExt(fname));
 
   if ls='.MAN' then
   begin
@@ -800,7 +814,7 @@ begin
 
   //--- Get data
 
-  Assign(f,ainfo.fname);
+  Assign(f,fname);
   Reset(f);
 
   if IOResult<>0 then exit;
@@ -855,7 +869,7 @@ begin
     if ainfo.ver=verTL2 then
     begin
       Close(f);
-      Assign(f,ainfo.fname+'.MAN');
+      Assign(f,fname+'.MAN');
       Reset(f);
       if IOResult<>0 then
         Exit(false);
@@ -900,7 +914,7 @@ begin
     if ainfo.ver=verTL2 then
     begin
       Close(f);
-      Assign(f,ainfo.fname);
+      Assign(f,fname);
       Reset(f);
     end;
 
@@ -1350,10 +1364,7 @@ var
   step:integer;
   lbyte:byte;
 begin
-  FillChar(lpi,SizeOf(lpi),0);
-  lpi.fname:=fname;
-
-  if (not GetPAKInfo(lpi)) or
+  if (not GetPAKInfo(fname,lpi)) or
      (ABS(lpi.ver)<>verTL2) then
     exit(dword(-1));
 
@@ -1430,18 +1441,66 @@ end;
 procedure PackAll(var aPak:TPAKInfo; const aname:string; aver:integer);
 var
   f,fpak,fman:file of byte;
+  sman:TMemoryStream;
+  TL2PAKHeader:TTL2PAKHeader;
+  PAKHeader:TPAKHeader;
+  fi:PMANFileInfo;
+  buf:PByte;
   i,j:integer;
 begin
+  //--- Write PAK
+
+  Assign(fpak,aname+'.PAK');
+  Rewrite(fpak);
+
+  // Just reserve place
+  if ABS(aver)=verTL2 then
+    BlockWrite(fpak,TL2PAKHeader,SizeOf(TTL2PAKHeader))
+  else
+    BlockWrite(fpak,PAKHeader,SizeOf(TPAKHeader));
+
   for i:=0 to High(aPak.Entries) do
   begin
     for j:=0 to High(aPak.Entries[i].Files) do
     begin
+      fi:=@(aPak.Entries[i].Files[j]);
+      if (fi^.ftype in [typeDirectory,typeDelete]) or
+         (fi^.size_s = 0) then continue;
+
+      fi^.offset:=FilePos(fpak);
+      BlockWrite(fpak,fi^.size_u,4);
+      // write uncompressed
+      if not GetExtInfo(fi^.name,aPak.ver)^._pack then
+      begin
+        BlockWrite(fpak,0,4);
+        BlockWrite(fpak,buf^,fi^.size_u);
+      end
+      else
+      begin
+        BlockWrite(fpak,fi^.size_c,4);
+        BlockWrite(fpak,buf^,fi^.size_c);
+      end;
     end;
   end;
 
+  Close(fpak);
+
+  // Combine PAK and MAN to one file
+{
+  // write mod header
+  // write PAK part
+  Seek(fpak,0);
+
+  Close(fpak);
+  // write MAN part
+  Assign(fman,aname+'.PAK.MAN');
+  Reset(fman);
+  Close(fman);
+}
 end;
 {$POP}
 
+//----- something -----
 
 function ConsoleProgress(const ainfo:TPAKInfo; adir,afile:integer):integer;
 begin

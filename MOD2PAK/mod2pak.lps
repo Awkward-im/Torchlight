@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMod2Pak"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="62"/>
-        <CursorPos X="32" Y="422"/>
-        <FoldState Value=" T46021 T3iU0{M2 pj9lW031 piej4088]9gjP0D]a1l705w"/>
+        <TopLine Value="251"/>
+        <CursorPos X="5" Y="275"/>
+        <FoldState Value=" T46021/"/>
         <UsageCount Value="59"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -75,7 +75,7 @@
         <UsageCount Value="9"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="20">
+    <JumpHistory HistoryIndex="23">
       <Position>
         <Filename Value="formmod2pak.pas"/>
         <Caret Line="68" Column="9" TopLine="52"/>
@@ -159,6 +159,18 @@
       <Position>
         <Filename Value="formmod2pak.pas"/>
         <Caret Line="74" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="81" Column="40" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="89" Column="58" TopLine="63"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="280" TopLine="274"/>
       </Position>
     </JumpHistory>
     <RunParams>

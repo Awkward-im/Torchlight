@@ -12,7 +12,7 @@ object fmMod2Pak: TfmMod2Pak
   object lbReserve: TListBox
     Left = 8
     Height = 280
-    Top = 104
+    Top = 112
     Width = 296
     ExtendedSelect = False
     ItemHeight = 0
@@ -22,7 +22,7 @@ object fmMod2Pak: TfmMod2Pak
   object lbActive: TListBox
     Left = 397
     Height = 280
-    Top = 104
+    Top = 112
     Width = 296
     ExtendedSelect = False
     ItemHeight = 0
@@ -32,7 +32,7 @@ object fmMod2Pak: TfmMod2Pak
   object bbAdd: TBitBtn
     Left = 313
     Height = 30
-    Top = 104
+    Top = 112
     Width = 75
     Caption = '&Add'
     Enabled = False
@@ -54,7 +54,7 @@ object fmMod2Pak: TfmMod2Pak
   object sbActivate: TSpeedButton
     Left = 319
     Height = 30
-    Top = 205
+    Top = 213
     Width = 62
     Enabled = False
     Images = ImageList
@@ -64,7 +64,7 @@ object fmMod2Pak: TfmMod2Pak
   object sbDeactivate: TSpeedButton
     Left = 319
     Height = 30
-    Top = 248
+    Top = 256
     Width = 62
     Enabled = False
     Images = ImageList
@@ -74,7 +74,7 @@ object fmMod2Pak: TfmMod2Pak
   object sbUp: TSpeedButton
     Left = 704
     Height = 40
-    Top = 104
+    Top = 112
     Width = 40
     Enabled = False
     Images = ImageList
@@ -84,7 +84,7 @@ object fmMod2Pak: TfmMod2Pak
   object sbDown: TSpeedButton
     Left = 704
     Height = 40
-    Top = 344
+    Top = 352
     Width = 40
     Enabled = False
     Images = ImageList
@@ -94,7 +94,7 @@ object fmMod2Pak: TfmMod2Pak
   object deGameDir: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 33
+    Top = 24
     Width = 416
     OnAcceptDirectory = deGameDirAcceptDirectory
     ShowHidden = False
@@ -107,7 +107,7 @@ object fmMod2Pak: TfmMod2Pak
   object lblDirHint: TLabel
     Left = 8
     Height = 20
-    Top = 8
+    Top = 4
     Width = 157
     Caption = 'Choose Game Directory'
     Font.Height = -15
@@ -117,7 +117,7 @@ object fmMod2Pak: TfmMod2Pak
   object stReserve: TStaticText
     Left = 8
     Height = 32
-    Top = 72
+    Top = 80
     Width = 296
     Alignment = taCenter
     Caption = 'Available PAKs'
@@ -128,7 +128,7 @@ object fmMod2Pak: TfmMod2Pak
   object stActive: TStaticText
     Left = 397
     Height = 32
-    Top = 72
+    Top = 80
     Width = 296
     Alignment = taCenter
     Caption = 'PAKs to load'
@@ -139,7 +139,7 @@ object fmMod2Pak: TfmMod2Pak
   object stAdd: TStaticText
     Left = 320
     Height = 59
-    Top = 397
+    Top = 396
     Width = 424
     Alignment = taCenter
     Caption = 'Drag ''n''Drop MOD files on window or'#13#10'press "Add" button to choose manually'
@@ -150,7 +150,7 @@ object fmMod2Pak: TfmMod2Pak
   object bbDelete: TBitBtn
     Left = 313
     Height = 30
-    Top = 144
+    Top = 152
     Width = 75
     Cancel = True
     Caption = 'Delete'
@@ -170,11 +170,13 @@ object fmMod2Pak: TfmMod2Pak
   object lblDescr: TLabel
     Left = 8
     Height = 15
-    Top = 397
+    Top = 396
     Width = 296
     AutoSize = False
     Caption = 'Description'
+    Font.Height = -13
     ParentColor = False
+    ParentFont = False
   end
   object bbApply: TBitBtn
     Left = 397
@@ -187,6 +189,16 @@ object fmMod2Pak: TfmMod2Pak
     Kind = bkOK
     OnClick = bbApplyClick
     TabOrder = 10
+  end
+  object lblDirNote: TLabel
+    Left = 9
+    Height = 17
+    Top = 53
+    Width = 202
+    Caption = '* Files will be saved in PAKS subdir'
+    Font.Height = -13
+    ParentColor = False
+    ParentFont = False
   end
   object ImageList: TImageList
     Left = 712

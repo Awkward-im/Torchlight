@@ -19,6 +19,7 @@ type
     bbApply: TBitBtn;
     deGameDir: TDirectoryEdit;
     ImageList: TImageList;
+    lblDirNote: TLabel;
     lblDescr: TLabel;
     lblDirHint: TLabel;
     lbReserve: TListBox;
@@ -61,7 +62,6 @@ implementation
 {$R *.lfm}
 
 uses
-  lazfileutils,
   rgglobal,
   TL2Mod;
 
@@ -272,11 +272,16 @@ begin
   lbActiveClick(Self);
 
   bbAdd  .Enabled:=adir<>'';
-  bbApply.Enabled:=adir<>'';
+//  bbApply.Enabled:=adir<>'';
 end;
 
 procedure TfmMod2Pak.deGameDirAcceptDirectory(Sender: TObject; var Value: String);
 begin
+{$PUSH}
+{$I-}
+  if not DirectoryExists(Value+'\PAKS') then
+    MkDir(Value+'\PAKS');
+{$POP}
   FillList(Value);
 end;
 
@@ -350,7 +355,8 @@ begin
       if idx<0 then
       begin
         lbReserve.AddItem(lfin,nil);
-        bbDelete.Enabled:=true;
+        bbDelete  .Enabled:=true;
+        sbActivate.Enabled:=true;
         if lbReserve.Count=1 then
         begin
           lbReserve.ItemIndex:=0;
