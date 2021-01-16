@@ -27,6 +27,11 @@ type
   end;
 
 type
+  tTL2VerRec = record
+    arr:array [0..3] of word;
+  end;
+
+type
   // v.4 mod binary header start
   PTL2ModTech = ^TTL2ModTech;
   TTL2ModTech = packed record
@@ -76,11 +81,6 @@ uses
 
 //----- MOD Header -----
 
-type
-  tVerRec = record
-    arr:array [0..3] of word;
-  end;
-
 function WriteModInfoBuf(out buf; const amod:TTL2ModInfo):integer;
 var
   p:PByte;
@@ -93,10 +93,10 @@ begin
   memWriteWord(p,amod.modver);
 
   // yes, first number is higher word
-  memWriteWord(p,tVerRec(amod.gamever).arr[3]);
-  memWriteWord(p,tVerRec(amod.gamever).arr[2]);
-  memWriteWord(p,tVerRec(amod.gamever).arr[1]);
-  memWriteWord(p,tVerRec(amod.gamever).arr[0]);
+  memWriteWord(p,tTL2VerRec(amod.gamever).arr[3]);
+  memWriteWord(p,tTL2VerRec(amod.gamever).arr[2]);
+  memWriteWord(p,tTL2VerRec(amod.gamever).arr[1]);
+  memWriteWord(p,tTL2VerRec(amod.gamever).arr[0]);
 
   // not real values coz no data/manifest written yet
   memWriteDWord(p,amod.offData);
@@ -195,10 +195,10 @@ begin
   if mt^.version>=4 then
   begin
     // yes, first number is higher word
-    tVerRec(amod.gamever).arr[3]:=memReadWord(abuf);
-    tVerRec(amod.gamever).arr[2]:=memReadWord(abuf);
-    tVerRec(amod.gamever).arr[1]:=memReadWord(abuf);
-    tVerRec(amod.gamever).arr[0]:=memReadWord(abuf);
+    tTL2VerRec(amod.gamever).arr[3]:=memReadWord(abuf);
+    tTL2VerRec(amod.gamever).arr[2]:=memReadWord(abuf);
+    tTL2VerRec(amod.gamever).arr[1]:=memReadWord(abuf);
+    tTL2VerRec(amod.gamever).arr[0]:=memReadWord(abuf);
 {
     amod.gamever:=             (QWord(memReadWord(abuf)) shl 48);
     amod.gamever:=amod.gamever+(QWord(memReadWord(abuf)) shl 32);

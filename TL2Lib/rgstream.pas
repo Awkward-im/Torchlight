@@ -23,6 +23,8 @@ type
     // write
     procedure WriteByteString (const astr:string);
     procedure WriteShortString(const astr:string);
+    procedure WriteByteString (const astr:WideString);
+    procedure WriteShortString(const astr:WideString);
     procedure WriteFloat(aval:single);
     procedure WriteCoord(aval:TVector3);
     procedure WriteShortStringList(alist:TL2StringList);
@@ -149,6 +151,17 @@ begin
     WriteByte(0);
 end;
 
+procedure TTL2Stream.WriteByteString(const astr:WideString);
+begin
+  if astr<>'' then
+  begin
+    WriteByte(Length(astr));
+    Write(astr[1],Length(astr)*SizeOf(WideChar));
+  end
+  else
+    WriteByte(0);
+end;
+
 procedure TTL2Stream.WriteShortString(const astr:string);
 var
   ws:WideString;
@@ -158,6 +171,17 @@ begin
     ws:=UTF8Decode(astr);
     WriteWord(Length(ws));
     Write(ws[1],Length(ws)*SizeOf(WideChar));
+  end
+  else
+    WriteWord(0);
+end;
+
+procedure TTL2Stream.WriteShortString(const astr:WideString);
+begin
+  if astr<>'' then
+  begin
+    WriteWord(Length(astr));
+    Write(astr[1],Length(astr)*SizeOf(WideChar));
   end
   else
     WriteWord(0);

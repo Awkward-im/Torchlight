@@ -16,9 +16,12 @@ const
 
 //--- Functions
 
+function  ReverseWords(aval:QWord):QWord;
 procedure CopyWide(var adst:PWideChar; asrc:PWideChar);
-function CopyWide(asrc:PWideChar):PWideChar;
-function CompareWide(s1,s2:PWideChar):boolean;
+function  CopyWide(asrc:PWideChar):PWideChar;
+function  CompareWide(s1,s2:PWideChar):boolean;
+function  ConcatWide (s1,s2:PWideChar):PWideChar;
+
 function ExtractFileNameOnly(const AFilename: string): string;
 
 //===== Data type codes =====
@@ -175,11 +178,74 @@ implementation
 
 //----- Support -----
 
+type
+  tTL2VerRec = record
+    arr:array [0..3] of word;
+  end;
+
+function ReverseWords(aval:QWord):QWord;
+begin
+  result:=
+    qword(tTL2VerRec(aval).arr[3])+
+    qword(tTL2VerRec(aval).arr[2]) shl 16+
+    qword(tTL2VerRec(aval).arr[1]) shl 32+
+    qword(tTL2VerRec(aval).arr[0]) shl 48;
+end;
+
+function StrToWide(const src:string):PWideChar;
+var
+  ws:WideString;
+begin
+  if src='' then exit(nil);
+
+  ws:=UTF8Decode(src);
+  GetMem(result,Length(ws)+1);
+  move(ws[1],result^,Length(ws)*SizeOf(WideChar));
+  result[Length(ws)]:=#0;
+end;
+
+function WideToStr(src:PWideChar):string;
+var
+  ws:WideString;
+  lsize:integer;
+begin
+  lsize:=Length(src);
+  if lsize=0 then exit('');
+
+  SetLength(ws,lsize);
+  move(src^,ws[1],lsize*SizeOf(WideChar));
+  result:=UTF8Encode(ws);
+end;
+
+function ConcatWide(s1,s2:PWideChar):PWideChar;
+var
+  llen2,llen1:integer;
+begin
+  if s1=nil then
+  begin
+    result:=CopyWide(s2);
+    exit;
+  end;
+  if s2=nil then
+  begin
+    result:=CopyWide(s1);
+    exit;
+  end;
+  llen1:=Length(s1);
+  llen2:=Length(s2);
+
+  GetMem(result,(llen1+llen2+1)*SizeOf(WideChar));
+  result[llen1+llen2]:=#0;
+  move(s1^,result^      ,llen1*SizeOf(WideChar));
+  move(s2^,result[llen1],llen2*SizeOf(WideChar));
+end;
+
 function CopyWide(asrc:PWideChar):PWideChar;
 var
   llen:integer;
 begin
   if (asrc=nil) or (asrc^=#0) then exit(nil);
+
   llen:=Length(asrc)+1;
   GetMem(    result ,llen*SizeOf(WideChar));
   move(asrc^,result^,llen*SizeOf(WideChar));
