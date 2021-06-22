@@ -1,3 +1,7 @@
+{%TODO place text to table and store indexes (by option like 'no_changes')}
+{%TODO make Vector2, Vector3 and Vector 4 values too}
+{%TODO use hash (standard, if exists) for tags}
+{%TODO As* for get value - add default values}
 unit RGNode;
 
 interface
@@ -6,6 +10,7 @@ function  ParseDatFile(fname:PChar):pointer;
 function  WriteDatTree(anode:pointer; fname:PChar):ByteBool;
 procedure DeleteNode  (anode:pointer);
 
+function GetChildGroupCount(aparent:pointer):integer;
 function GetGroupCount(aparent:pointer; aname:PWideChar):integer;
 function GetChildCount(anode:pointer):integer;
 function GetChild     (anode:pointer; idx:integer):pointer;
@@ -90,6 +95,17 @@ type
       rgInteger64: (asInteger64:Int64);
       rgFloat    : (asFloat    :Single);
       rgDouble   : (asDouble   :Double);
+      // custom
+{
+      rgVector2,
+      rgVector3,
+      rgVector4  : (
+        X:Single;
+        Y:Single;
+        Z:Single;
+        W:Single;
+      );
+}
       // user
       rgWord     : (asWord     :Word);
       rgByte     : (asByte     :Byte);
@@ -165,6 +181,21 @@ begin
     result:=0;
 end;
 
+function GetChildGroupCount(aparent:pointer):integer;
+var
+  i:integer;
+begin
+  result:=0;
+  if (aparent<>nil) and (PTL2Node(aparent)^.nodetype=rgGroup) then
+  begin
+    for i:=0 to PTL2Node(aparent)^.count-1 do
+    begin
+      if PTL2Node(aparent)^.child^[i]^.nodetype=rgGroup then
+        inc(result);
+    end;
+  end;
+end;
+
 function GetGroupCount(aparent:pointer; aname:PWideChar):integer;
 var
   i:integer;
@@ -175,7 +206,7 @@ begin
     for i:=0 to PTL2Node(aparent)^.count-1 do
     begin
       if (PTL2Node(aparent)^.child^[i]^.nodetype=rgGroup) and
-         CompareWide(PTL2Node(aparent)^.child^[i]^.name,aname) then
+         (CompareWide(PTL2Node(aparent)^.child^[i]^.name,aname)=0) then
         inc(result);
     end;
   end;
@@ -376,6 +407,9 @@ begin
   lline:=0;
 
   try
+    // exit, if not ASCII in UTF16LE encoding
+    if (ORD(peoln^)>$FF) then exit;
+
     repeat
       // Set pc to line start and peoln to line end
       while (peoln^ in [#10,#13]) do inc(peoln); // lline going wrong if several crlf one-by-one
@@ -432,7 +466,7 @@ begin
 
         if lclose then
         begin
-          if not CompareWide(lgroup^.name,lname) then
+          if CompareWide(lgroup^.name,lname)<>0 then
           begin
             if (not Assigned(OnError)) or (OnError(errTagCloseWrong,fname,lline)<>0) then
             begin
@@ -621,6 +655,12 @@ begin
       rgInteger   : Str(anode^.asInteger  ,ls);
       rgInteger64 : Str(anode^.asInteger64,ls);
       rgUnsigned  : Str(anode^.asUnsigned ,ls);
+      // custom
+{ 
+      rgVector2   : ;
+      rgVector3   : ;
+      rgVector4   : ;
+}
       // user
       rgWord      : Str(anode^.asWord     ,ls);
       rgByte      : Str(anode^.asByte     ,ls);
@@ -940,11 +980,14 @@ var
   lcnode:PTL2Node;
   i:integer;
 begin
-  for i:=0 to PTL2Node(anode)^.count-1 do
+  if (anode<>nil) and (PTL2Node(anode)^.nodetype=rgGroup) then
   begin
-    lcnode:=PTL2Node(anode)^.child^[i];
-    if CompareWide(lcnode^.name,aname) then
-      exit(lcnode);
+    for i:=0 to PTL2Node(anode)^.count-1 do
+    begin
+      lcnode:=PTL2Node(anode)^.child^[i];
+      if CompareWide(lcnode^.name,aname)=0 then
+        exit(lcnode);
+    end;
   end;
 
   result:=nil;
@@ -960,6 +1003,7 @@ begin
   result:=nil;
   if (anode=nil) then exit;
   if (apath=nil) or (apath^=#0) then exit(anode);
+  if PTL2Node(anode)^.nodetype<>rgGroup then exit;
 
   lnode:=anode;
   p2:=apath;
@@ -979,12 +1023,13 @@ begin
 
     // 2 - search this part
     result:=nil;
+    if lnode^.nodetype<>rgGroup then exit;
     for i:=0 to lnode^.count-1 do
     begin
       lcnode:=lnode^.child^[i];
       if (p2^=#0) xor (lcnode^.nodetype=rgGroup) then
       begin
-        if CompareWide(lcnode^.name,lname) then
+        if CompareWide(lcnode^.name,lname)=0 then
         begin
           result:=lcnode;
           break;

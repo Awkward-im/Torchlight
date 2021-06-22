@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="rgdecode.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="144"/>
+        <CursorPos Y="158"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rglayunpack.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="117"/>
+        <CursorPos Y="132"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="lay_tl2.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2"/>
+        <CursorPos X="41" Y="18"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="lay_tl1.inc"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="61"/>
+        <CursorPos Y="91"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgdict.pas"/>
+        <UnitName Value="RGDict"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="1026"/>
+        <CursorPos Y="1041"/>
+        <FoldState Value=" TL507 T7KCm1 T8L255 TCNE3X"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgnode.pas"/>
+        <UnitName Value="RGNode"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="895"/>
+        <CursorPos Y="912"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rglog.pas"/>
+        <UnitName Value="RGLog"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgglobal.pas"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="389"/>
+        <CursorPos Y="406"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="lay_hob.inc"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="16" Y="82"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1029" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1030" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1026" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1028" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1029" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1030" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1026" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1028" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1029" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1030" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1026" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1028" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1029" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1030" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1026" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1028" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1029" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1030" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1026" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1028" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1029" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1030" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1026" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1032" TopLine="1009"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1033" TopLine="1021"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1035" TopLine="1024"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1036" TopLine="1024"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1037" TopLine="1024"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1038" TopLine="1024"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdict.pas"/>
+        <Caret Line="1015" TopLine="1006"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default">
+        <Mode Name="default">
+          <local>
+            <CommandLineParams Value="D:\Dropbox\src\bin\TEST.LAYOUT"/>
+            <WorkingDirectory Value="D:\Dropbox\src\bin"/>
+          </local>
+        </Mode>
+      </Modes>
+    </RunParams>
+    <HistoryLists>
+      <List Name="WorkingDirectory" Type="File" Count="1">
+        <Item1 Value="D:\Dropbox\src\bin"/>
+      </List>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+      <List Name="CommandLineParameters" Count="5">
+        <Item1 Value="D:\Dropbox\src\bin\TEST.LAYOUT"/>
+        <Item2 Value="D:\Dropbox\src\bin\KORIAN.LAYOUT"/>
+        <Item3 Value="D:\Dropbox\src\bin\PLAYER_SPECIFIC_WEAPON_CHEST.LAYOUT.cmp"/>
+        <Item4 Value="&quot;PLAYER_SPECIFIC_WEAPON_CHEST.LAYOUT.cmp&quot;"/>
+        <Item5 Value="PLAYER_SPECIFIC_WEAPON_CHEST.LAYOUT.cmp"/>
+      </List>
+    </HistoryLists>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="rgdict.pas"/>
+        <Line Value="840"/>
+      </Item>
+    </BreakPoints>
+    <Watches>
+      <Item>
+        <Expression Value="PObjInfo(FLastObject)^"/>
+      </Item>
+      <Item>
+        <Expression Value="pobj^"/>
+      </Item>
+      <Item>
+        <Expression Value="ltype"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

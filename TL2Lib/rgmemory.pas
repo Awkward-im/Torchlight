@@ -39,7 +39,7 @@ procedure memWriteWord     (var buf:PByte; aval:Word); export;
 procedure memWriteDWord    (var buf:PByte; aval:DWord); export;
 procedure memWriteShort    (var buf:PByte; aval:Int16); export;
 
-procedure memWriteData     (var buf:PByte; const aval; alen:integer); export;
+procedure memWriteData     (var buf:PByte; aval:pointer; alen:integer); export;
 procedure memWriteCoord    (var buf:PByte; const aval:TVector3); export;
 
 procedure memWriteBool     (var buf:PByte; aval:ByteBool); export;
@@ -254,9 +254,9 @@ begin
   pDouble(buf)^:=aval; inc(buf,SizeOf(Double));
 end;
 
-procedure memWriteData(var buf:PByte; const aval; alen:integer);
+procedure memWriteData(var buf:PByte; aval:pointer; alen:integer);
 begin
-  move(pByte(@aval)^,buf^,alen); inc(buf,alen);
+  move(pByte(aval)^,buf^,alen); inc(buf,alen);
 end;
 
 procedure memWriteByteString(var buf:PByte; aval:PWideChar);
@@ -266,7 +266,7 @@ begin
   lsize:=Length(aval);
   memWriteByte(buf,lsize);
   if lsize>0 then
-    memWriteData(buf,aval^,lsize*SizeOf(WideChar));
+    memWriteData(buf,aval,lsize*SizeOf(WideChar));
 end;
 
 procedure memWriteShortString(var buf:PByte; aval:PWideChar);
@@ -276,7 +276,7 @@ begin
   lsize:=Length(aval);
   memWriteWord(buf,lsize);
   if lsize>0 then
-    memWriteData(buf,aval^,lsize*SizeOf(WideChar));
+    memWriteData(buf,aval,lsize*SizeOf(WideChar));
 end;
 
 //----- Complex read -----
@@ -332,7 +332,7 @@ end;
 
 procedure memWriteCoord(var buf:PByte; const aval:TVector3);
 begin
-  memWriteData(buf,aval,SizeOf(TVector3));
+  memWriteData(buf,@aval,SizeOf(TVector3));
 end;
 {
 procedure memWriteShortStringList(var buf:PByte; alist:TL2StringList);
@@ -352,7 +352,7 @@ begin
   lcnt:=Length(alist);
   memWriteWord(buf,lcnt);
   if lcnt>0 then
-    memWriteData(buf,alist[0],lcnt*SizeOf(TRGID));
+    memWriteData(buf,@alist[0],lcnt*SizeOf(TRGID));
 end;
 
 procedure memWriteIdValList(var buf:PByte; const alist:TL2IdValList);
@@ -362,7 +362,7 @@ begin
   lcnt:=Length(alist);
   memWriteWord(buf,lcnt);
   if lcnt>0 then
-    memWriteData(buf,alist[0],lcnt*SizeOf(TL2IdVal));
+    memWriteData(buf,@alist[0],lcnt*SizeOf(TL2IdVal));
 end;
 
 //===== Exports =====

@@ -17,9 +17,11 @@ const
 //--- Functions
 
 function  ReverseWords(aval:QWord):QWord;
+function  StrToWide(const src:string):PWideChar;
+function  WideToStr(src:PWideChar):string;
 procedure CopyWide(var adst:PWideChar; asrc:PWideChar);
 function  CopyWide(asrc:PWideChar):PWideChar;
-function  CompareWide(s1,s2:PWideChar):boolean;
+function  CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
 function  ConcatWide (s1,s2:PWideChar):PWideChar;
 
 function ExtractFileNameOnly(const AFilename: string): string;
@@ -58,7 +60,7 @@ function TextToType(atype:PWideChar):integer;
 //=====  =====
 
 type
-  TRGID = Int64;
+  TRGID      = Int64;
   TRGInteger = Int32;
   TRGFloat   = single;
   TRGUInt    = UInt32;
@@ -158,6 +160,70 @@ type
     filesize:DWord;
   end;
 
+//===== Container =====
+
+type
+  // fields are rearranged
+  TTL2ModInfo = record
+    modid   :Int64;
+    gamever :QWord;
+    title   :PUnicodeChar;
+    author  :PUnicodeChar;
+    descr   :PUnicodeChar;
+    website :PUnicodeChar;
+    download:PUnicodeChar;
+    filename:PUnicodeChar;
+    dels    :array of PUnicodeChar;
+    offData :DWord;
+    offMan  :DWord;
+    flags   :DWord;
+    reqHash :Int64;
+    reqs    :array of record
+      name:PUnicodeChar;
+      id  :Int64;       // just this field presents in MOD.DAT
+      ver :Word;
+    end;
+    modver  :Word;
+  end;
+
+type
+  PMANFileInfo = ^TMANFileInfo;
+  TMANFileInfo = record // not real field order
+    ftime   :UInt64;    // TL2 only
+    name    :PWideChar; // name in MAN
+    nametxt :PWideChar; // source (text format) name
+    checksum:dword;     // CRC32
+    size_s  :dword;     // looks like source,not compiled, size (unusable)
+    size_c  :dword;     // from TPAKFileHeader
+    size_u  :dword;     // from TPAKFileHeader
+    offset  :dword;
+    ftype   :byte;
+  end;
+
+type
+  PMANDirEntry = ^TMANDirEntry;
+  TMANDirEntry = record
+    name:PWideChar;
+    Files:array of TMANFileInfo;
+  end;
+
+type
+  PPAKInfo = ^TPAKInfo;
+  TPAKInfo = record
+    Entries:array of TMANDirEntry;
+    Deleted:array of TMANDirEntry;
+    modinfo:TTL2ModInfo;
+    srcdir :UnicodeString;
+    fname  :UnicodeString;  //?? filename only or fullname
+    fsize  :dword;
+    data   :dword;
+    man    :dword;
+    ver    :integer;
+    // not necessary fields
+    root   :PUnicodeChar;   // same as first directory, MEDIA (usually)
+    total  :integer;        // total "file" elements. Can be calculated when needs
+    maxsize:integer;        // max [unpacked] file size
+  end;
 
 //===== Other =====
 
@@ -199,8 +265,8 @@ begin
   if src='' then exit(nil);
 
   ws:=UTF8Decode(src);
-  GetMem(result,Length(ws)+1);
-  move(ws[1],result^,Length(ws)*SizeOf(WideChar));
+  GetMem(result,(Length(ws)+1)*SizeOf(WideChar));
+  move(Pointer(ws)^,result^,Length(ws)*SizeOf(WideChar));
   result[Length(ws)]:=#0;
 end;
 
@@ -256,15 +322,18 @@ begin
   adst:=CopyWide(asrc);
 end;
 
-function CompareWide(s1,s2:PWideChar):boolean;
+function CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
 begin
-  if s1=s2 then exit(true);
-  if ((s1=nil) and (s2^=#0)) or
-     ((s2=nil) and (s1^=#0)) then exit(true);
+  if s1=s2  then exit(0);
+  if s1=nil then if s2^=#0 then exit(0) else exit(-1);
+  if s2=nil then if s1^=#0 then exit(0) else exit( 1);
 
   repeat
-    if s1^<>s2^ then exit(false);
-    if s1^= #0  then exit(true);
+    if s1^>s2^ then exit( 1);
+    if s1^<s2^ then exit(-1);
+    if s1^=#0  then exit( 0);
+    dec(alen);
+    if alen=0  then exit( 0);
     inc(s1);
     inc(s2);
   until false;
@@ -310,9 +379,9 @@ const
     (code: rgNotValid ; name: 'NOT VALID'),
     // layout types (custom, text is readonly)
     (code: rgUnsigned ; name: 'UNSIGNED INTEGER'),
-    (code: rgVector2  ; name: 'VECTOR2'),
-    (code: rgVector3  ; name: 'VECTOR3'),
-    (code: rgVector4  ; name: 'VECTOR4'),
+    (code: rgVector2  ; name: 'VECTOR2'), // base type = FLOAT
+    (code: rgVector3  ; name: 'VECTOR3'), // base type = FLOAT
+    (code: rgVector4  ; name: 'VECTOR4'), // base type = FLOAT
     (code: rgInteger64; name: 'INT64'),
     // user
     (code: rgWord     ; name: 'WORD'),
@@ -339,7 +408,7 @@ begin
   if atype=nil then exit(rgNotSet);
 
   for i:=0 to High(RGType) do
-    if CompareWide(atype,RGType[i].name) then
+    if CompareWide(atype,RGType[i].name)=0 then
       exit(RGType[i].code);
 
   result:=rgNotValid;
@@ -399,7 +468,7 @@ end;
 //--- DAT/Layout
 
 {$PUSH}
-{$O-}
+{$Q-}
 function RGHash(instr:PWideChar; alen:integer):dword;
 var
   i:integer;
@@ -420,7 +489,8 @@ end;
 {$POP}
 
 //--- PAK/MOD
-
+{$PUSH}
+{$Q-}
 function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
 const
   m = $5BD1E995;
@@ -477,5 +547,6 @@ begin
 
   Result := (UInt64(h1) Shl 32) Or h2;
 end;
+{$POP}
 
 end.

@@ -1,0 +1,145 @@
+﻿CFileBinaryReader
+{
+  void *VFTable;
+  int field_04;
+
+  +5
+  +c
+
+  bool field_13;
+  +0x50
+};
+
+10 mods:
+0x0219C7A8
+->>007DDF54 to 007DDF66
+
+
+0x007DDD00
+  0x007DB950
+
+
+.MOD - 0x0213DEE4
+  0x01080880
+  0x010947F0
+
+.PAK - 0x02134A48:    0x0213BCA8
+  0x01075510
+  0x01096D10
+.MAN - 0x02134A60
+  0x01075550
+  0x01096D50
+
+PAK - 0x02134A94:
+  0x00640800
+  0x0064A590
+
+
+CSettings::getSingleton
+  27 array of wstring
+  2A size
+
+_BYTE *__thiscall CSplash::Constructor(_DWORD *this)
+{
+  _BYTE *v1; // esi
+
+  v1 = this;
+  *this = &CSplash::`vftable';
+  this[2] = 0;
+  this[3] = 0;
+  this[5] = 800;
+  this[6] = 256;
+  wstring_new_1(this + 7);
+  v1[0x3C] = 0;
+  v1[0x3D] = 0;
+  wstring_new_1(v1 + 0x40);
+  wstring_new_1(v1 + 0x5C);
+  v1[0x78] = 0;
+  v1[0x79] = 0;
+  v1[0x7A] = 0;
+  v1[0x7B] = 0;
+  wstring_new_1(v1 + 0x7C);
+  return v1;
+}
+
+?? field 0x74 of CPackageFile
+4  wstring
+20 wstring
+3C wstring
+58 int filesize
+
+===================
+
+0x00401E10
+0x004027E0
+0x0041CCA0 ??MakeFullName(dir+name)
+
+0x0063EA30
+0x00657B60 <- [35d8d58]+8 (virtual)      x2
+
+CMOD:
+0x0065AF80 ??
+0x0065AFC0 ??
+0x0065B150 ?? <- [035e0888]
+0x0065B160 (open file, write count?)
+0x0065B310 ?? (decompress binary DAT file, save text)
+0x0065B570 Convert binary (dat+laoyout) to text
+0x0065BB00 ??
+
+0x00676450
+0x00676A50
+0x00676B30
+0x00677120
+0x006773F0
+
+0x0067C220
+0x0067C2C0 (in cycle)
+0x0067F7E0
+
+0x0068B320
+
+0x0068D210 (Create unknows (fields74) class)
+0x0068D760
+0x0068D8F0 CPackageFile::FillData
+0x0068DA30 ??CPackageFile::Init  -> FillData
+
+0x0068DEB0 CPackageManager::getSingleton() [cPackageFile].addFileLocal
+
+0x0068F210 ChangeSrcToBin (*.BINDAT and *.BINLAYOUT, PAK type as result)
+0x0068F3B0 (in man check) check hash?
+0x0068F520 (in man check) ??TFileStream.Free
+0x0068F630
+0x0068FBD0 [CPackageManifest] pManifestToUse->getFile( m_DeletedFiles[t] )
+0x0068FD80
+0x0068FDB0 CPackageFile::Create?? addLocalFile(name)
+0x0068FE70 ??validateManifestData??
+
+0x00690DD0 ??addfile to manifest
+
+0x00693390
+0x00697E00 compare? min str?
+         ||
+0x006D7E00 StrSearch (in list)
+
+0x00743290 CMod:: ??? (empty, virtual)
+
+0x007D68B0 ??Expand array??
+0x007D6970 ??
+0x007D69D0 ?? unwind
+0x007D6A20 ?? clear?
+0x007D6BF0 ??
+0x007D6D50 ?? free?
+0x007D6D70 () <- [3c87d70]
+0x007D6D80  something for steam
+0x007D6E20  steam
+0x007D6ED0 ?? free?
+0x007D6EF0 ??proc(str:wstring:)str (str+12)
+0x007D7130 CMod::getModHash = Murmur(reqHash,8,Murmur(version,2,guid))
+0x007D7B20 CMod::Init
+0x007D7C90 CMod::Clear??
+
+0x007DD8B0
+0x007DB8E0
+0x007DB920 (cmod.freeName?)
+
+0x007DC4F0 CModManager::Clear??

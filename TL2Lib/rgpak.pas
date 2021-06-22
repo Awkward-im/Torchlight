@@ -4,49 +4,11 @@ interface
 
 uses
   classes,
+  rgglobal,
+  rgman,
   tl2mod;
 
-//===== Files =====
-
-type
-  PMANFileInfo = ^TMANFileInfo;
-  TMANFileInfo = record // not real field order
-    ftime   :UInt64;    // TL2 only
-    name    :PWideChar; // name in MAN
-    nametxt :PWideChar; // source (text format) name
-    checksum:dword;     // CRC32
-    size_s  :dword;     // looks like source,not compiled, size (unusable)
-    size_c  :dword;     // from TPAKFileHeader
-    size_u  :dword;     // from TPAKFileHeader
-    offset  :dword;
-    ftype   :byte;
-  end;
-
 //===== Container =====
-
-type
-  PMANDirEntry = ^TMANDirEntry;
-  TMANDirEntry = record
-    name:PWideChar;
-    Files:array of TMANFileInfo;
-  end;
-type
-  PPAKInfo = ^TPAKInfo;
-  TPAKInfo = record
-    Entries:array of TMANDirEntry;
-    Deleted:array of TMANDirEntry;
-    modinfo:TTL2ModInfo;
-    srcdir :WideString;
-    fname  :WideString;    //?? filename only or fullname
-    fsize  :dword;
-    data   :dword;
-    man    :dword;
-    ver    :integer;
-    // not necessary fields
-    root   :PWideChar; // same as first directory, MEDIA (usually)
-    total  :integer;   // total "file" elements. Can be calculated when needs
-    maxsize:integer;   // max [unpacked] file size
-  end;
 
 const
   piNoParse   = 0;
@@ -61,16 +23,7 @@ procedure DumpPAKInfo(const ainfo:TPAKInfo);
 function  CalcPAKHash(ast:TStream; apos,asize:int64):dword;
 function  CalcPAKHash(const fname:string):dword;
 
-//----- Manifest -----
-
-procedure ParseManifest  (var ainfo:TPAKInfo; aptr:PByte);
-function  ManSaveToStream(ast:TStream; const ainfo:TPAKInfo):integer;
-function  WriteManifest  (const ainfo:TPAKInfo):integer;
-procedure MANtoFile      (const fname:string; const ainfo:TPAKInfo; afull:boolean=false);
-
-function SearchFile      (const ainfo:TPAKInfo; const fname:string):PMANFileInfo;
-
-//==== Packing ====
+//===== Packing =====
 
 function  UnpackAll(var ainfo:TPAKInfo; const adir:string):boolean;
 procedure PackAll  (var ainfo:TPAKInfo);
@@ -81,69 +34,10 @@ type
 var
   OnPAKProgress:TPAKProgress=nil;
 
-//===== Types =====
+//===== Manipulation =====
 
-const
-  typeUnknown    = 00;
-  typeMesh       = 01;
-  typeSkeleton   = 02;
-  typeMaterial   = 03;
-  typeDDS        = 04;
-  typeImage      = 05;
-  typeSound      = 06;
-  typeDirectory  = 07;
-  typeRAW        = 08;
-  typeImageSet   = 09;
-  typeTTF        = 10;
-  typeFont       = 11;
-  typeAnimation  = 12;
-  typeDAT        = 13;
-  typeLayout     = 14;
-  typeHIE        = 15;
-  typeDelete     = 16;
-  typeScheme     = 17;
-  typeLookNFeel  = 18;
-  typeMPP        = 19;
-  typeBIK        = 20;
-  typeJPG        = 21;
-  typeProgram    = 22;
-  typeCompositor = 23;
-  typeShader     = 24;
-  typePU         = 25;
-  typeAnno       = 26;
-  typeSBIN       = 27;
-  typeWDAT       = 28;
-
-//----- Category -----
-
-const
-  catUnknown = $00;
-  catModel   = $01; // .MDL .MESH .SKELETON .MATERIAL
-  catImage   = $02; // .DDS .BMP .PNG .TGA .IMAGESET .JPG .BIK
-  catSound   = $03; // .OGG .WAV
-  catFolder  = $04;
-  catFont    = $05; // .TTF .FONT .FONTDEF
-  catData    = $06; // .DAT .TEMPLATE .ANIMATION .HIE .WDAT .RAW
-  catLayout  = $07; // .LAYOUT
-  catShaders = $08; // .PROGRAM .COMPOSITOR .FRAG .FX .HLSL .VERT
-  catOther   = $09; // .LOOKNFEEL .SCHEME .MPP .MPD .PU .ANNO .SBIN
-
-const
-  CategoryList:array of string = (
-    'Unknown',
-    'Model',
-    'Image',
-    'Sound',
-    'Directory',
-    'Font',
-    'Data',
-    'Layout',
-    'Shaders',
-    'Other'
-  );
-
-function PAKTypeToCategoryText(aver,atype:integer):string;
-//function GetCategory(const aext:WideString):integer;
+function PAKSplit  (const asrc:string; const adir:string=''; const afname:string=''):integer;
+function PAKCombine(const asdir,aname:string; const adir:string=''):integer;
 
 /////////////////////////////////////////////////////////
 
@@ -152,343 +46,8 @@ implementation
 uses
   sysutils,
   bufstream,
-  rgglobal,
-  rgstream,
-  rgnode,
-  rgmemory,
+  rgfiletype,
   paszlib;
-
-//===== types =====
-
-
-//--- TL2 File Types
-const
-  tl2Dat       = $00; // .DAT .TEMPLATE
-  tl2Layout    = $01; // .LAYOUT
-  tl2Mesh      = $02; // .MESH
-  tl2Skeleton  = $03; // .SKELETON
-  tl2DDS       = $04; // .DDS
-  tl2PNG       = $05; // .PNG
-  tl2Sound     = $06; // .WAV .OGG
-  tl2Directory = $07;
-  tl2Material  = $08; // .MATERIAL
-  tl2RAW       = $09; // .RAW
-  tl2UILayout  = $0A; // .UILAYOUT
-  tl2ImageSet  = $0B; // .IMAGESET
-  tl2TTF       = $0C; // .TTF .TTC
-  tl2Font      = $0D; // .FONT
-//  tl2Reserved2 = $0E;  //?? .DAT
-//  tl2Reserved3 = $0F;  //?? .LAYOUT
-  tl2Animation = $10; // .ANIMATION
-  tl2HIE       = $11; // .HIE
-  tl2Other     = $12; // ('Removed' Directory)
-  tl2Scheme    = $13; // .SCHEME
-  tl2LookNFeel = $14; // .LOOKNFEEL ??
-  tl2MPP       = $15; // .MPP [.MPD]
-//  tl2Reserved4 = $16;  //?? .TEMPLATE
-  tl2BIK       = $17; // .BIK
-  tl2JPG       = $18; // .JPG
-  tl2Unknown   = $FF;
-
-//--- Hob File Types
-const
-  hobUnknown    = $00;
-  hobModel      = $01; // .MDL .MESH
-  hobSkeleton   = $02; // .SKELETON
-  hobDDS        = $03; // .DDS
-  hobImage      = $04; // .BMP .PNG .TGA
-//  hobReserved1  = $05;
-  hobSound      = $06; // .OGG .WAV
-//  hobReserved2  = $07;
-  hobDirectory  = $08;
-  hobMaterial   = $09; // .MATERIAL
-  hobRAW        = $0A; // .RAW
-//  hobReserved3  = $0B;
-  hobImageset   = $0C; // .IMAGESET
-  hobTTF        = $0D; // .TTF
-//  hobReserved4  = $0E;
-  hobDAT        = $0F; // .DAT
-  hobLayout     = $10; // .LAYOUT
-  hobAnimation  = $11; // .ANIMATION
-//  hobReserved5  = $12;
-//  hobReserved6  = $13;
-//  hobReserved7  = $14;
-//  hobReserved8  = $15;
-//  hobReserved9  = $16;
-//  hobReserved10 = $17;
-  hobProgram    = $18; // .PROGRAM
-  hobFontDef    = $19; // .FONTDEF
-  hobCompositor = $1A; // .COMPOSITOR
-  hobShader     = $1B; // .FRAG .FX .HLSL .VERT
-//  hobReserved11 = $1C;
-  hobPU         = $1D; // .PU
-  hobAnno       = $1E; // .ANNO
-  hobSBIN       = $1F; // .SBIN
-  //(not my comment) .sbin (31) is actually compiled from .pu (29) and .compositor (26)
-  hobWDAT       = $20; // .WDAT
-
-type
-  PPAKExtInfo = ^TPAKExtInfo;
-  TPAKExtInfo = record
-    _int     :byte;
-    _pack    :bytebool;
-    _compile :bytebool;
-  end;
-
-type
-  PTableExt = ^TTableExt;
-  TTableExt = array of TPAKExtInfo;
-const
-  TableTL2Info:TTableExt = (
-    (_int:typeDat      ; _pack:true ; _compile:true ),
-    (_int:typeLayout   ; _pack:true ; _compile:true ),
-    (_int:typeMesh     ; _pack:true ; _compile:false),
-    (_int:typeSkeleton ; _pack:true ; _compile:false),
-    (_int:typeDDS      ; _pack:true ; _compile:false),
-    (_int:typeImage    ; _pack:false; _compile:false),
-    (_int:typeSound    ; _pack:true ; _compile:false),
-    (_int:typeDirectory; _pack:false; _compile:false),
-    (_int:typeMaterial ; _pack:true ; _compile:false),
-    (_int:typeRAW      ; _pack:true ; _compile:true ),
-    (_int:typeUnknown  ; _pack:true ; _compile:false),
-    (_int:typeImageset ; _pack:true ; _compile:false),
-    (_int:typeTTF      ; _pack:true ; _compile:false),
-    (_int:typeFont     ; _pack:true ; _compile:false),
-    (_int:typeUnknown  ; _pack:true ; _compile:false),
-    (_int:typeUnknown  ; _pack:true ; _compile:false),
-    (_int:typeAnimation; _pack:true ; _compile:true ),
-    (_int:typeHIE      ; _pack:true ; _compile:true ),
-    (_int:typeDelete   ; _pack:false; _compile:false),
-    (_int:typeScheme   ; _pack:true ; _compile:false),
-    (_int:typeLookNFeel; _pack:true ; _compile:false),
-    (_int:typeMPP      ; _pack:true ; _compile:false),
-    (_int:typeUnknown  ; _pack:true ; _compile:false),
-    (_int:typeBIK      ; _pack:false; _compile:false),
-    (_int:typeJPG      ; _pack:false; _compile:false)
-  );
-  
-  TableHobInfo:TTableExt = (
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeMesh      ; _pack:true ; _compile:false),
-    (_int:typeSkeleton  ; _pack:true ; _compile:false),
-    (_int:typeDDS       ; _pack:true ; _compile:false),
-    (_int:typeImage     ; _pack:true ; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeSound     ; _pack:false; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeDirectory ; _pack:false; _compile:false),
-    (_int:typeMaterial  ; _pack:true ; _compile:false),
-    (_int:typeRAW       ; _pack:true ; _compile:true ),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeImageset  ; _pack:true ; _compile:true ),
-    (_int:typeTTF       ; _pack:true ; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeDAT       ; _pack:true ; _compile:true ),
-    (_int:typeLayout    ; _pack:true ; _compile:true ),
-    (_int:typeAnimation ; _pack:true ; _compile:true ),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typeProgram   ; _pack:true ; _compile:false),
-    (_int:typeFont      ; _pack:true ; _compile:false),
-    (_int:typeCompositor; _pack:true ; _compile:false),
-    (_int:typeShader    ; _pack:true ; _compile:false),
-    (_int:typeUnknown   ; _pack:true ; _compile:false),
-    (_int:typePU        ; _pack:true ; _compile:false),
-    (_int:typeAnno      ; _pack:true ; _compile:false),
-    (_int:typeSBIN      ; _pack:true ; _compile:false),
-    (_int:typeWDAT      ; _pack:true ; _compile:true )
-  );
-
-const
-  TableIntInfo: array of record
-    _category: byte;
-    _tl2     : byte;
-    _hob     : byte;
-  end = (
-    (_category:catUnknown; _tl2:tl2Unknown  ; _hob:hobUnknown),
-    (_category:catModel  ; _tl2:tl2Mesh     ; _hob:hobModel),
-    (_category:catModel  ; _tl2:tl2Skeleton ; _hob:hobSkeleton),
-    (_category:catModel  ; _tl2:tl2Material ; _hob:hobMaterial),
-    (_category:catImage  ; _tl2:tl2DDS      ; _hob:hobDDS),
-    (_category:catImage  ; _tl2:tl2PNG      ; _hob:hobImage),
-    (_category:catSound  ; _tl2:tl2Sound    ; _hob:hobSound),
-    (_category:catFolder ; _tl2:tl2Directory; _hob:hobDirectory),
-    (_category:catData   ; _tl2:tl2RAW      ; _hob:hobRAW),
-    (_category:catImage  ; _tl2:tl2ImageSet ; _hob:hobImageSet),
-    (_category:catFont   ; _tl2:tl2TTF      ; _hob:hobTTF),
-    (_category:catFont   ; _tl2:tl2Font     ; _hob:hobFontDef),
-    (_category:catData   ; _tl2:tl2Animation; _hob:hobAnimation),
-    (_category:catData   ; _tl2:tl2DAT      ; _hob:hobDAT),
-    (_category:catLayout ; _tl2:tl2Layout   ; _hob:hobLayout),
-    (_category:catData   ; _tl2:tl2HIE      ; _hob:hobUnknown),
-    (_category:catFolder ; _tl2:tl2Other    ; _hob:hobUnknown),
-    (_category:catOther  ; _tl2:tl2Scheme   ; _hob:hobUnknown),
-    (_category:catOther  ; _tl2:tl2LookNFeel; _hob:hobUnknown),
-    (_category:catOther  ; _tl2:tl2MPP      ; _hob:hobUnknown),
-    (_category:catImage  ; _tl2:tl2BIK      ; _hob:hobUnknown),
-    (_category:catImage  ; _tl2:tl2JPG      ; _hob:hobUnknown),
-    (_category:catShaders; _tl2:tl2Unknown  ; _hob:hobProgram),
-    (_category:catShaders; _tl2:tl2Unknown  ; _hob:hobCompositor),
-    (_category:catShaders; _tl2:tl2Unknown  ; _hob:hobShader),
-    (_category:catOther  ; _tl2:tl2Unknown  ; _hob:hobPU),
-    (_category:catOther  ; _tl2:tl2Unknown  ; _hob:hobAnno),
-    (_category:catOther  ; _tl2:tl2Unknown  ; _hob:hobSBIN),
-    (_category:catData   ; _tl2:tl2Unknown  ; _hob:hobWDAT)
-  );
-
-const
-  TableExt: array of record
-     _type: byte;
-     _ext : string;
-  end = (
-    (_type:typeDAT       ; _ext:'.DAT'),
-    (_type:typeDAT       ; _ext:'.TEMPLATE'),
-    (_type:typeLayout    ; _ext:'.LAYOUT'),
-    (_type:typeUnknown   ; _ext:'.UILAYOUT'), //!!
-    (_type:typeMesh      ; _ext:'.MESH'),
-    (_type:typeSkeleton  ; _ext:'.SKELETON'),
-    (_type:typeDDS       ; _ext:'.DDS'),
-    (_type:typeImage     ; _ext:'.PNG'),
-    (_type:typeSound     ; _ext:'.WAV'),
-    (_type:typeSound     ; _ext:'.OGG'),
-    (_type:typeMaterial  ; _ext:'.MATERIAL'),
-    (_type:typeRAW       ; _ext:'.RAW'),
-    (_type:typeImageSet  ; _ext:'.IMAGESET'),
-    (_type:typeTTF       ; _ext:'.TTF'),
-    (_type:typeTTF       ; _ext:'.TTC'),
-    (_type:typeFont      ; _ext:'.FONT'),
-    (_type:typeAnimation ; _ext:'.ANIMATION'),
-    (_type:typeHIE       ; _ext:'.HIE'),
-    (_type:typeScheme    ; _ext:'.SCHEME'),
-    (_type:typeLookNFeel ; _ext:'.LOOKNFEEL'),
-    (_type:typeMPP       ; _ext:'.MPP'),
-    (_type:typeMPP       ; _ext:'.MPD'),
-    (_type:typeBIK       ; _ext:'.BIK'),
-    (_type:typeJPG       ; _ext:'.JPG'),
-    (_type:typeImage     ; _ext:'.MDL'),
-    (_type:typeImage     ; _ext:'.BMP'),
-    (_type:typeImage     ; _ext:'.TGA'),
-    (_type:typeProgram   ; _ext:'.PROGRAM'),
-    (_type:typeFont      ; _ext:'.FONTDEF'),
-    (_type:typeCompositor; _ext:'.COMPOSITOR'),
-    (_type:typeShader    ; _ext:'.FRAG'),
-    (_type:typeShader    ; _ext:'.FX'),
-    (_type:typeShader    ; _ext:'.HLSL'),
-    (_type:typeShader    ; _ext:'.VERT'),
-    (_type:typePU        ; _ext:'.PU'),
-    (_type:typeAnno      ; _ext:'.ANNO'),
-    (_type:typeSBIN      ; _ext:'.SBIN'),
-    (_type:typeWDAT      ; _ext:'.WDAT')
-//    (_type:typeDelete    ; _ext:'<OTHER>'),
-//    (_type:typeDirectory ; _ext:'<DIR>')
-  );
-
-
-function GetExtInfo(const fname:string; ver:integer):PPAKExtInfo;
-var
-  lext:string;
-  lptr:PTableExt;
-  i,j:integer;
-begin
-  lext:=UpCase(ExtractFileExt(fname));
-  if ver=verTL2 then
-    lptr:=@TableTL2Info
-  else
-    lptr:=@TableHobInfo;
-
-  for i:=0 to High(TableExt) do
-    if lext=TableExt[i]._ext then
-    begin
-      for j:=0 to High(lptr^) do
-        if TableExt[i]._type=lptr^[j]._int then
-          exit(@lptr^[j]);
-    end;
-exit(nil);
-{
-  for i:=0 to High(lptr^) do
-  begin
-//??
-    if lext=lptr^[i]._ext then
-      exit(@lptr^[i]);
-  end;
-}
-//!! Check for text form
-  if lext='.TXT' then
-  begin
-    // RAW.TXT
-    // IMAGESET.TXT
-    // DAT.TXT
-    // LAYOUT.TXT
-    // ANIMATION.TXT
-    // HIE.TXT
-    // WDAT.TXT
-  end;
-  //!! Check for directory
-
-  result:=nil;
-end;
-
-
-function PAKTypeToCategoryText(aver,atype:integer):string;
-var
-  lt:TTableExt;
-  i:integer;
-begin
-  if (atype>=Low(TableIntInfo)) and (atype<Length(TableIntInfo)) then
-    result:=CategoryList[TableIntInfo[atype]._category]
-  else
-    result:=CategoryList[catUnknown];
-{
-  if ABS(aver)=verTL2 then lt:=TableExtTL2 else lt:=TableExtHob;
-  for i:=0 to High(lt) do
-  begin
-    if lt[i]._type=atype then
-    begin
-      exit(CategoryList[lt[i]._category]);
-    end;
-  end;
-  result:=CategoryList[catUnknown];
-}
-end;
-
-function TypeToInt(aver,atype:integer):integer;
-var
-  lt:TTableExt;
-begin
-  case aver of
-    verTL2Mod,
-    verTL2: lt:=TableTL2Info;
-    verHob,
-    verRG : lt:=TableHobInfo;
-  else
-    exit(atype);
-  end;
-  if (atype>=Low(lt)) and (atype<Length(lt)) then
-    result:=lt[atype]._int
-  else
-    result:=atype;
-end;
-
-function IntToType(aver,atype:integer):integer;
-begin
-  if (atype>=Low(TableIntInfo)) and (atype<Length(TableIntInfo)) then
-  begin
-    case aver of
-      verTL2Mod,
-      verTL2: result:=TableIntInfo[atype]._tl2;
-      verHob,
-      verRG : result:=TableIntInfo[atype]._hob;
-    else
-      result:=atype;
-    end;
-  end
-  else
-    result:=atype;
-end;
 
 //===== Container =====
 
@@ -528,276 +87,6 @@ begin
   end;
 end;
 
-//----- Manifest -----
-
-{
-  Parse Manifest from memory block addressed by aptr
-}
-procedure ParseManifest(var ainfo:TPAKInfo; aptr:PByte);
-var
-  i,j:integer;
-  ltotal,lcnt:integer;
-begin
-  case ainfo.ver of
-    verTL2Mod,
-    verTL2:begin
-      i:=memReadWord(aptr);                    // 0002 version/signature
-      if i>=2 then                             // 0000 - no "checksum" field??
-        memReadDWord(aptr);                    // checksum?
-      ainfo.root:=memReadShortString(aptr);    // root directory !!
-    end;
-
-    verHob,
-    verRG :begin
-    end;
-
-  else
-    exit;
-  end;
-
-  ainfo.total:=memReadDWord(aptr);             // total directory records
-  SetLength(ainfo.Entries,memReadDWord(aptr)); // entries
-  ltotal:=0;
-
-  for i:=0 to High(ainfo.Entries) do
-  begin
-    ainfo.Entries[i].name:=memReadShortString(aptr);
-    lcnt:=memReadDWord(aptr);
-    SetLength(ainfo.Entries[i].Files,lcnt);
-    inc(ltotal,lcnt);
-
-    for j:=0 to High(ainfo.Entries[i].Files) do
-    begin
-      with ainfo.Entries[i].Files[j] do
-      begin
-        checksum:=memReadDWord(aptr);
-        ftype   :=TypeToInt(ainfo.ver,memReadByte(aptr));
-        name    :=memReadShortString(aptr);
-        offset  :=memReadDWord(aptr);
-        size_s  :=memReadDWord(aptr);
-        if (ainfo.ver=verTL2) or (ainfo.ver=verTL2Mod) then
-        begin
-          ftime:=QWord(memReadInteger64(aptr));
-        end;
-      end;
-    end;
-  end;
-
-//  ainfo.total:=ltotal; //!!!! keep real children count
-end;
-
-{$PUSH}
-{$I-}
-function ManSaveToStream(ast:TStream; const ainfo:TPAKInfo):integer;
-var
-  i,j:integer;
-begin
-  try
-    case ainfo.ver of
-      verTL2Mod,
-      verTL2: begin
-        ast.WriteWord(2);  // writing always "new" version
-        ast.WriteDWord(0); //!! Hash
-        ast.WriteShortString(ainfo.root);
-      end;
-
-      verHob,
-      verRG: begin
-      end;
-    else
-      exit;
-    end;
-
-    ast.WriteDWord(ainfo.total);
-    ast.WriteDWord(Length(ainfo.Entries));
-
-    for i:=0 to High(ainfo.Entries) do
-    begin
-      ast.WriteShortString(ainfo.Entries[i].name);
-      ast.WriteDWord(Length(ainfo.Entries[i].Files));
-
-      for j:=0 to High(ainfo.Entries[i].Files) do
-      begin
-        with ainfo.Entries[i].Files[j] do
-        begin
-          ast.WriteDWord(checksum);
-          ast.WriteByte(IntToType(ainfo.ver,ftype));
-          ast.WriteShortString(name);
-          ast.WriteDWord(offset);
-          ast.WriteDWord(size_s);
-          if (ainfo.ver=verTL2) or
-             (ainfo.ver=verTL2Mod) then
-            ast.WriteQWord(ftime);
-        end;
-      end;
-    end;
-
-    result:=ainfo.total;
-
-  except
-    result:=0;
-  end;
-end;
-{$POP}
-
-function WriteManifest(const ainfo:TPAKInfo):integer;
-var
-  lst:TMemoryStream;
-begin
-  result:=0;
-
-  lst:=TMemoryStream.Create;
-  try
-    result:=ManSaveToStream(lst,ainfo);
-    if result>0 then
-      lst.SaveToFile(PWideChar(ainfo.fname+'.PAK.MAN'));
-  finally
-    lst.Free;
-  end;
-end;
-
-{
-  Build files tree [from MEDIA folder] [from dir]
-  excluding PNG if DDS presents
-  [excluding data sources]
-}
-function BuildManifest(const adir:string; out ainfo:TPAKInfo):integer;
-begin
-  result:=0;
-end;
-
-procedure MANtoFile(const fname:string; const ainfo:TPAKInfo; afull:boolean=false);
-var
-  lman,lp,lc:pointer;
-  i,j:integer;
-begin
-  lman:=nil;
-
-  lman:=AddGroup(nil,'MANIFEST');
-  AddString (lman,'FILE' ,PWideChar(WideString(ainfo.fname)));
-  if afull then
-  begin
-    AddInteger(lman,'TOTAL',ainfo.total);
-    AddInteger(lman,'COUNT',Length(ainfo.Entries));
-  end;
-
-  for i:=0 to High(ainfo.Entries) do
-  begin
-    lp:=AddGroup(lman,'FOLDER');
-    AddString (lp,'NAME' ,ainfo.Entries[i].name);
-    if afull then
-      AddInteger(lp,'COUNT',Length(ainfo.Entries[i].Files));
-    lp:=AddGroup(lp,'CHILDREN');
-    for j:=0 to High(ainfo.Entries[i].Files) do
-    begin
-      lc:=AddGroup(lp,'CHILD');
-      with ainfo.Entries[i].Files[j] do
-      begin
-        AddString (lc,'NAME',name);
-        AddInteger(lc,'TYPE',ftype);  // required for TL2 type 18 (dir to delete)
-        AddInteger(lc,'SIZE',size_s); // required for zero-size files (file to delete)
-        if afull then
-        begin
-          AddUnsigned(lc,'CRC'   ,checksum);
-          AddInteger (lc,'OFFSET',offset);
-          if ABS(ainfo.ver)=verTL2 then
-            AddInteger64(lc,'TIME',ftime);
-        end;
-      end;
-    end;
-  end;
-
-  WriteDatTree(lman,PChar(fname));
-  DeleteNode(lman);
-end;
-
-procedure FileToMAN(const fname:string; out ainfo:TPAKInfo);
-var
-  lman,lp,lg,lc:pointer;
-  i,j,k,l:integer;
-begin
-  lman:=ParseDatFile(PChar(fname));
-  if lman<>nil then
-  begin
-    if CompareWide(GetNodeName(lman),'MANIFEST') then
-    begin
-
-      for i:=0 to GetChildCount(lman)-1 do
-      begin
-        lc:=GetChild(lman,i);
-        case GetNodeType(lc) of
-          rgString: begin
-            if CompareWide(GetNodeName(lc),'FILE') then
-            ;
-          end;
-
-          rgInteger: begin
-            if CompareWide(GetNodeName(lc),'TOTAL') then
-            ;
-            if CompareWide(GetNodeName(lc),'COUNT') then
-            ;
-          end;
-
-          rgGroup: begin
-            if CompareWide(GetNodeName(lc),'FOLDER') then
-            begin
-              for j:=0 to GetChildCount(lc)-1 do
-              begin
-                lp:=GetChild(lc,j);
-                case GetNodeType(lp) of
-                  rgString: begin
-                    if CompareWide(GetNodeName(lc),'NAME') then
-                    ;
-                  end;
-
-                  rgInteger: begin
-                    if CompareWide(GetNodeName(lc),'COUNT') then
-                    ;
-                  end;
-
-                  rgGroup: begin
-                    if CompareWide(GetNodeName(lc),'CHILDREN') then
-                    begin
-                      for k:=0 to GetChildCount(lp)-1 do
-                      begin
-                        lg:=GetChild(lp,k);
-                        if (GetNodeType(lg)=rgGroup) and
-                           CompareWide(GetNodeName(lg),'CHILD') then
-                        begin
-
-                          // name for file
-                          // type for dir
-                          // size for "deleted"
-{
-                          case GetNodeType(lg) of
-                            rgString: begin
-                            end;
-
-                            rgInteger: begin
-                            end;
-                            rgUnsigned: ;
-                            rgInteger64:;
-                          end;
-}                        
-                        end;
-                      end;
-                    end;
-                  end;
-
-                end;
-
-              end;
-            end;
-          end;
-
-        end;
-
-      end;
-    end;
-
-    DeleteNode(lman);
-  end;
-end;
 
 //----- PAK/MOD -----
 
@@ -1069,7 +358,7 @@ begin
         if ftype=typelayout then inc(llay);
 
         if size_s<>size_u then write('!!');
-        writeln(ls,string(widestring(name)),'; type:',PAKTypeToCategoryText(2,ftype),'; source size:',size_s,
+        writeln(ls,string(widestring(name)),'; type:',PAKCategoryName(ftype),'; source size:',size_s,
         '; compr:',size_c,'; unpacked:',size_u);
       end;
     end;
@@ -1087,41 +376,6 @@ end;
 
 //===== Files =====
 
-//----- Search -----
-
-function SearchFile(const ainfo:TPAKInfo; const fname:string):PMANFileInfo;
-var
-  lentry:PMANDirEntry;
-  lpath,lname:string;
-  lwpath,lwname:PWideChar;
-  i,j:integer;
-begin
-  lname:=UpCase(fname);
-  lpath:=ExtractFilePath(lname);
-  lname:=ExtractFileName(lname);
-  lwpath:=pointer(lpath);
-  lwname:=pointer(lname);
-
-  for i:=0 to High(ainfo.Entries) do
-  begin
-    lentry:=@(ainfo.Entries[i]);
-    //!! char case
-    if CompareWide(lentry^.name,lwpath) then
-    begin
-      for j:=0 to High(lentry^.Files) do
-      begin
-        if CompareWide(lentry^.Files[j].name,lwname) then
-        begin
-          exit(@(lentry^.Files[j]));
-        end;
-      end;
-
-      break;
-    end;
-  end;
-
-  result:=nil;
-end;
 
 procedure GetMaxSizes(const api:TPAKInfo; out acmax,aumax:integer);
 begin
@@ -1214,6 +468,10 @@ begin
   //--- Prepare source file
 
   lname:=MakeFileName(ainfo);
+
+  if Length(ainfo.Entries)=0 then
+    GetCommonPAKInfo(lname,ainfo);
+
   if ainfo.fsize<=MaxSizeForMem then
   begin
     lst:=nil;
@@ -1382,7 +640,7 @@ end;
 //--- TL2 version only
 
 {$PUSH}
-{$O-,R-}
+{$Q-,R-}
 function CalcPAKHash(ast:TStream; apos,asize:int64):dword;
 var
   lpos,hash:Int64;
@@ -1469,8 +727,8 @@ procedure PackAll(var ainfo:TPAKInfo);
 var
   f:file of byte;
   spak:TFileStream;
-  TL2PAKHeader:TTL2PAKHeader;
-  PAKHeader:TPAKHeader;
+  TL2PAKHeader:TTL2PAKHeader; //??
+  PAKHeader:TPAKHeader;       //??
   lmodinfo:TTL2ModTech;
   fi:PMANFileInfo;
   lout,lin:PByte;
@@ -1655,6 +913,146 @@ begin
   end;
 end;
 
+
+//===== Manipulation =====
+
+function PAKSplit(const asrc:string; const adir:string=''; const afname:string=''):integer;
+var
+  ffin,ffout: file of byte;
+  mi:TTL2ModInfo;
+  lfname:string;
+  ltmp:pbyte;
+  lsize,fsize:integer;
+begin
+  result:=-1;
+
+  // .MOD files only
+  if (Length(asrc)>4) and
+     (Pos('.MOD',UpCase(asrc))=(Length(asrc)-3)) then
+  begin
+    if ReadModInfo(PChar(asrc),mi) then
+    begin
+      if adir='' then
+        lfname:=ExtractFilePath(asrc)
+      else
+      begin
+        lfname:=adir;
+        if not (lfname[Length(lfname)] in ['\','/']) then lfname:=lfname+'\';
+      end;
+      if lfname<>'' then ForceDirectories(lfname);
+      if afname='' then
+        lfname:=lfname+ExtractFileNameOnly(asrc)
+      else
+        lfname:=lfname+afname;
+
+{
+      fin:=TFileStream.Create(asrc,fmOpenRead);
+}
+      AssignFile(ffin,asrc);
+      Reset(ffin);
+      fsize:=FileSize(ffin);
+
+      // PAK file
+{
+      fout:=TFileStream.Create(lfname+'.PAK',fmCreate);
+      fin.Position:=mi.offData;
+      fout.CopyFrom(fin,mi.offMan-mi.offData);
+      fout.Free;
+}
+      AssignFile(ffout,lfname+'.PAK');
+      Rewrite(ffout);
+      Seek(ffin,mi.offData);
+      lsize:=mi.offMan-mi.offData;
+      GetMem    (      ltmp ,lsize);
+      BlockRead (ffin ,ltmp^,lsize);
+      BlockWrite(ffout,ltmp^,lsize);
+      CloseFile(ffout);
+
+      // MAN file
+{
+      fout:=TFileStream.Create(lfname+'.PAK.MAN',fmCreate);
+      fin.Position:=mi.offMan;
+      fout.CopyFrom(fin,fin.Size-mi.offMan);
+      fout.Free;
+}
+      AssignFile(ffout,lfname+'.PAK.MAN');
+      Rewrite(ffout);
+      Seek(ffin,mi.offMan);
+      fsize:=fsize-mi.offMan;
+      if fsize>lsize then
+        ReallocMem(ltmp,fsize);
+      BlockRead (ffin ,ltmp^,fsize);
+      BlockWrite(ffout,ltmp^,fsize);
+      FreeMem(ltmp);
+      CloseFile(ffout);
+
+{
+      fin.Free;
+}
+      CloseFile(ffin);
+
+      // DAT file
+      SaveModConfiguration(mi,PChar(lfname+'.DAT'));
+
+      result:=0;
+    end;
+    ClearModInfo(mi);
+  end;
+end;
+
+function PAKCombine(const asdir,aname:string; const adir:string=''):integer;
+var
+  mi:TTL2ModInfo;
+  buf:PByte;
+  fin,fout:TFileStream;
+  lname,ldir:string;
+  lsize:integer;
+begin
+  result:=-1;
+
+  ldir:=asdir;
+  if ldir<>'' then
+    if not (ldir[Length(ldir)] in ['\','/']) then ldir:=ldir+'\';
+  lname:=ldir+aname;
+
+  if FileExists(lname+'.PAK') and
+     FileExists(lname+'.PAK.MAN') then
+  begin
+    if      FileExists(lname+'.DAT'  ) then LoadModConfiguration(PChar(lname+'.DAT'),mi)
+    else if FileExists(ldir+'MOD.DAT') then LoadModConfiguration(PChar(ldir+'MOD.DAT'),mi)
+    else
+    begin
+      MakeModInfo(mi);
+      mi.title:=StrToWide(aname);
+    end;
+    GetMem(buf,32767);
+    lsize:=WriteModInfoBuf(buf,mi);
+    ClearModInfo(mi);
+    if adir <>'' then
+    begin
+      ldir:=adir;
+      if not (ldir[Length(ldir)] in ['\','/']) then ldir:=ldir+'\';
+    end;
+    if ldir<>'' then ForceDirectories(ldir);
+    fout:=TFileStream.Create(ldir+aname+'.MOD',fmCreate);
+
+    fin:=TFileStream.Create(lname+'.PAK',fmOpenRead);
+
+    PTL2ModTech(buf)^.offData:=lsize;
+    PTL2ModTech(buf)^.offMan :=lsize+fin.Size;
+    fout.WriteData(buf,lsize);
+    FreeMem(buf);
+
+    fout.CopyFrom(fin,fin.Size);
+    fin.Free;
+
+    fin:=TFileStream.Create(lname+'.PAK.MAN',fmOpenRead);
+    fout.CopyFrom(fin,fin.Size);
+    fin.Free;
+
+    fout.Free;
+  end;
+end;
 
 initialization
   OnPAKProgress:=@ConsoleProgress;

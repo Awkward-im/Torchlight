@@ -1,0 +1,51 @@
+﻿CPairFile +8 = load dat file?
+
+
+67af10 = compile dat? (CBinaryStyle *this, wstring *a2, CDataGroup *a3)
+67ac90 (CBinaryStyle *this, CFileBinaryReader *l_fbr, CDataGroup *a3) maybe
+
+??
+0c = self.list
+   ??
+   10 = hash
+   14 = ? value=type but must be CDataValue
+
+==========================
+
+0x00677E80 ??getTag(??,name)
+0x00677FA0 ??CDataGroup::GetFloatValue(name, default)
+
+0x00678000 CDataGroup::     (virtual)     x5
+0x00678090 CDataGroup::     (virtual)     x4
+0x00678110 CDataGroup::??   (virtual)     x3
+0x00678190 ??
+0x006783B0 CDataGroup::Create
+
+0x00678440 CDataGroup:: SaveToFile+Delete? (virtual)   x0
+0x00678460 like CDataGroup::Create CDataValue.Create maybe?
+0x006784C0 ??
+
+0x00678C80 CDataGroup::AddDataValue(??)
+0x00678D10 CDataGroup:: search tag (can be added)
+0x00678DC0 CDataGroup::             (virtual)  x6
+0x00678E40  GetValueNode? (child to parent?)
+0x00678FE0
+0x00679090  ??AddOrSetStr
+0x006790F0  ??AddOrSet
+0x00679130  ??AddOrSetInt64
+0x00679170  ??AddOrSet
+0x006791B0  ??AddOrSet
+0x006791F0  ??AddOrSetStr
+0x00679260
+0x006792E0
+0x00679360
+0x006793C0
+0x00679430
+0x00679460
+0x00679480
+0x00679510
+0x006795D0
+0x00679640
+0x006796E0 ->CDataGroupThreadSafe +SaveToFile
+0x00679770 ??free?
+0x00679790 ??

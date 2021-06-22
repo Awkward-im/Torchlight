@@ -8,14 +8,49 @@ rgdict.pas     - list, tags.dat, dictionary.text and objects.dat reader, dict ma
   rgglobal
   rgnode
 
-rgpak.pas      - PAK (MOD) file reader/unpacker
+rgdatpack.pas  - In: text file/RGNode ; out: bin data, size
+  sysutils
+  rgglobal
+  rgnode
+  rgdict
+
+rgdatunpack.pas - In: bin file/buffer; out: RGNode
+  sysutils
+  rgglobal
+  rgnode
+  rgdict
+  rgmemory
+
+rglayunpack.pas - In: bin file/buffer; out: RGNode
+  inifiles
+  sysutils
+  rgglobal
+  rgnode
+  rgdict
+  rgmemory
+
+rgfiletype.pas - PAK content filetype
+  sysutils
+  rgglobal
+
+rgman.pas      - MAN part
   classes
   sysutils
   rgglobal
-  rgmemory
   rgstream
-  tl2mod
+  rgmemory
+  rgnode
+  rgfiletype
+
+rgpak.pas      - PAK (MOD) file reader/unpacker
+  classes
+  sysutils
+  bufstream
   paszlib
+  rgglobal
+  rgman
+  tl2mod
+  rgfiletype
 
 RGMemory.pas   - RW memory
   rgglobal
@@ -24,7 +59,8 @@ RGStream.pas   - RW stream
   classes
   rgglobal
 
-TL2Mod.pas - MOD header and MOD.DAT processor
+TL2Mod.pas     - MOD header and MOD.DAT processor
+  sysutils
   rgglobal
   rgmemory
   rgnode

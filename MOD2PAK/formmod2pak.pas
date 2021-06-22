@@ -102,7 +102,7 @@ begin
       // already active
       for j:=0 to lbActive.Count-1 do
       begin
-        if lbActive.Items[j]=ls then
+        if UpCase(lbActive.Items[j])=ls then
         begin
           idx:=j;
           break;
@@ -112,7 +112,7 @@ begin
       if idx<0 then
         for j:=0 to lbReserve.Count-1 do
         begin
-          if lbReserve.Items[j]=ls then
+          if UpCase(lbReserve.Items[j])=ls then
           begin
             RenameFile(ldir+ls+'.PAK'    ,ldir+ls+'.PA_');
             RenameFile(ldir+ls+'.PAK.MAN',ldir+ls+'.PAK.MA_');
@@ -134,7 +134,7 @@ begin
       // already reserved
       for j:=0 to lbReserve.Count-1 do
       begin
-        if lbReserve.Items[j]=ls then
+        if UpCase(lbReserve.Items[j])=ls then
         begin
           idx:=j;
           break;
@@ -144,7 +144,7 @@ begin
       if idx<0 then
         for j:=0 to lbActive.Count-1 do
         begin
-          if lbActive.Items[j]=ls then
+          if UpCase(lbActive.Items[j])=ls then
           begin
             RenameFile(ldir+ls+'.PA_'    ,ldir+ls+'.PAK');
             RenameFile(ldir+ls+'.PAK.MA_',ldir+ls+'.PAK.MAN');
@@ -245,8 +245,8 @@ begin
           if FileExists(adir+'\PAKS\'+sr.Name+'.MAN') then
           begin
             adtimes[fdtimes]:=sr.Time;
-            inc(fdtimes);
             sl.AddObject(UpCase(ExtractFilenameOnly(sr.Name)),TObject(UIntPtr(fdtimes)));
+            inc(fdtimes);
           end
           else
             ; //!! MAN file not found
@@ -375,10 +375,15 @@ procedure TfmMod2Pak.FormDropFiles(Sender: TObject; const FileNames: array of st
 var
   i:integer;
 begin
-  for i:=0 to High(FileNames) do
+  if bbAdd.Enabled then
   begin
-    Split(FileNames[i]);
-  end;
+    for i:=0 to High(FileNames) do
+    begin
+      Split(FileNames[i]);
+    end
+  end
+  else
+    ShowMessage('Can''t add files. Looks like you didn''t set game directory');
 end;
 
 procedure TfmMod2Pak.bbAddClick(Sender: TObject);

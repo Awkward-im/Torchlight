@@ -1,0 +1,28 @@
+﻿Variables:
+0213F960 = VMT?? offset to 405B50 (virtual Free)
+
+028C7230 dword (internal <pause> counter?)
+028C7238 dword
+028C72A4 bool?
+028C72A8 bool?
+028C72AC bool
+
+028CF908 dword (file counter) = total??
+028CFC8C dword
+
+035E0894 bool
+035E6D14 wstring
+035E6D30 wstring
+035E6D4C wstring
+
+0361A870 byte  (random, logging)
+0361A8A0 dword (random, logging)
+0361A8A4 dword (random, logging)
+
+036222C0 dword
+036222C4 bool
+
+03C882B8 wstring
+
+03C925BC byte (get game version result)
+03C925CE byte (game version is ok?)

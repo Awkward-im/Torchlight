@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="18" Y="13"/>
-        <UsageCount Value="59"/>
+        <UsageCount Value="63"/>
       </Unit>
       <Unit>
         <Filename Value="formmod2pak.pas"/>
@@ -20,10 +20,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMod2Pak"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="251"/>
-        <CursorPos X="5" Y="275"/>
-        <FoldState Value=" T46021/"/>
-        <UsageCount Value="59"/>
+        <TopLine Value="59"/>
+        <CursorPos X="39" Y="389"/>
+        <FoldState Value=" T46021 T7EFe T8i325]E3iU0{M2 pj9lW081 pifjA0D8]9gjU0D T6iV05215 T1ib0{F2412]D0if25[v4AJ66B]laj92-7]9Zi289113]BYjI86325u"/>
+        <UsageCount Value="63"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -34,7 +34,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="165"/>
         <CursorPos Y="181"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="61"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\TL2Mod.pas"/>
@@ -43,7 +43,7 @@
         <TopLine Value="71"/>
         <CursorPos Y="188"/>
         <FoldState Value=" T3ia0G3 piYjM0{0]Ajcm00ZX"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="61"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgmemory.pas"/>
@@ -70,107 +70,131 @@
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="3528"/>
-        <CursorPos Y="3544"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="2897"/>
+        <CursorPos X="25" Y="2912"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="23">
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="68" Column="9" TopLine="52"/>
+        <Caret Line="144" TopLine="107"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="317" TopLine="171"/>
+        <Caret Line="145" TopLine="107"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="320" Column="16" TopLine="300"/>
+        <Caret Line="147" TopLine="107"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="207" TopLine="190"/>
+        <Caret Line="145" TopLine="107"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="178" Column="28" TopLine="151"/>
+        <Caret Line="147" TopLine="107"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="84" Column="14" TopLine="68"/>
+        <Caret Line="145" TopLine="107"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="178" Column="10" TopLine="162"/>
+        <Caret Line="155" TopLine="107"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="216" TopLine="181"/>
+        <Caret Line="135" TopLine="122"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="218" TopLine="181"/>
+        <Caret Line="82" TopLine="74"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="362" TopLine="278"/>
+        <Caret Line="135" TopLine="129"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="363" TopLine="278"/>
+        <Caret Line="144" TopLine="129"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="341" TopLine="278"/>
+        <Caret Line="145" TopLine="129"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="340" TopLine="278"/>
+        <Caret Line="147" TopLine="129"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="341" Column="38" TopLine="278"/>
+        <Caret Line="145" TopLine="129"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="362" TopLine="339"/>
+        <Caret Line="147" TopLine="129"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="341" TopLine="324"/>
+        <Caret Line="145" TopLine="129"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="250" TopLine="245"/>
+        <Caret Line="149" Column="16" TopLine="132"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="252" Column="14" TopLine="243"/>
+        <Caret Line="136" TopLine="130"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="200" Column="20" TopLine="169"/>
+        <Caret Line="138" TopLine="130"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="111" TopLine="82"/>
+        <Caret Line="136" TopLine="130"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="74" TopLine="62"/>
+        <Caret Line="145" TopLine="130"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="81" Column="40" TopLine="62"/>
+        <Caret Line="146" TopLine="130"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="89" Column="58" TopLine="63"/>
+        <Caret Line="148" TopLine="130"/>
       </Position>
       <Position>
         <Filename Value="formmod2pak.pas"/>
-        <Caret Line="280" TopLine="274"/>
+        <Caret Line="149" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="150" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="146" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="149" Column="24" TopLine="132"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="136" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="145" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="146" TopLine="130"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -179,12 +203,21 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="formmod2pak.pas"/>
+        <Line Value="382"/>
+      </Item>
+    </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="amod"/>
+        <Expression Value="adtimes"/>
       </Item>
       <Item>
-        <Expression Value="mi"/>
+        <Expression Value="sl"/>
       </Item>
     </Watches>
   </Debugging>

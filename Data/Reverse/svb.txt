@@ -1,0 +1,43 @@
+﻿buf = 0x130 = Effects and Maps?
+0x44 - portals?
+
+sub_72FE70(TArrayList *this) - preload savegames?
+
+10a4050
+186ea50 <- 
+
+CBaseUnit
+CCharacter
+CPlayer
+
+CInventoryLoader
+CFormationNodeSaveAndLoad
+CDescriptorSaveConfiguration
+CLayoutBinarySave
+CLayoutBinaryLoad
+CLayoutBinaryToTextSave
+CLayoutSave
+CLayoutTextLoad
+CUIListWindowSaveGames
+iDataFileSaveAndLoad
+
+EditorReload*
+
+descramble <--
+  sub_4358E0,
+  sub_440860    load save game
+
+========
+sub_42F920 - something for mod 
+
+sub_4277D0 - get colored difficulty string
+sub_682A70 - all files in dir except ".*"
+sub_731AC0 - something like binary search
+
+0x0041CC50 - set string from 0x148
+
+sub_4CD670 - <- [0x0314AE80]
+
+[unk_361C384] - read bindat, read dict, return text if emptyline
+[unk_361BDE0] - string buffer? 259 wchars
+
