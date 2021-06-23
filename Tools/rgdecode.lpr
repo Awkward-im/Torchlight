@@ -161,7 +161,7 @@ begin
   else ftype:=0;
 
   ProcessINI;
-
+try
   if (ParamCount=0) or (ftype<>0) then
   begin
     sl:=TStringList.Create;
@@ -176,6 +176,8 @@ begin
 
   //--- Finalization
 
+finally
   RGLog.Save();
+end;
 
 end.

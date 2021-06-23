@@ -999,9 +999,11 @@ begin
         inc(pc);
         // name
         lname:=pc;
-        while not (pc^ in [#10,#13]) do inc(pc);
+        while not (pc^ in [#10,#13,':']) do inc(pc);
         pc^:=#0;
         inc(pc);
+        // skip the rest: original ID or property name if presents
+        while not (pc^ in [#0,#10,#13]) do inc(pc);
 
         pobj:=@(layptr^.objects[lobj]);
         inc(pscene^.count);
@@ -1038,7 +1040,7 @@ begin
         while not (pc^ in [#10,#13,':']) do inc(pc);
         pc^:=#0;
         inc(pc);
-        // skip original ID if presents
+        // skip the rest: original ID or property name if presents
         while not (pc^ in [#0,#10,#13]) do inc(pc);
 
         pprop:=@(layptr^.props[lprop]);

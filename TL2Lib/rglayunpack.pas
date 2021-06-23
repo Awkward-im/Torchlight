@@ -122,37 +122,43 @@ function ReadPropertyValue(aid:UInt32;asize:integer; anode:pointer; var aptr:PBy
 var
   lmatrix:TMatrix4x4;
   lq:TVector4;
+  valq:Int64;
   lname,pcw:PWideChar;
   lptr:PByte;
-  ltype:integer;
+  ltype,vali:integer;
+  valu:UInt32;
 begin
   lptr:=aptr;
 
-	ltype:=ainfo.GetPropInfoById(aid,lname);
-	result:=ltype<>rgUnknown;
-	if ltype=rgUnknown then
-	begin
-	  ltype:=GuessDataType(asize,aptr,ainfo.Version);
-	end;
+  ltype:=ainfo.GetPropInfoById(aid,lname);
+  result:=ltype<>rgUnknown;
+  if ltype=rgUnknown then
+  begin
+    ltype:=GuessDataType(asize,aptr,ainfo.Version);
+  end;
 
-	if (lname=nil) and (ainfo.Version in [verHob, verRG]) then
+  if (lname=nil) and (ainfo.Version in [verHob, verRG]) then
     lname:=GetStr(aid);
-	
-	if not result then
-	begin
-	  if ltype=rgInteger then
+  
+  if not result then
+  begin
+    if ltype=rgInteger then
       RGLog.Add('    '+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname+'='+IntToStr(PDword(aptr)^))
-	  else
+    else
       RGLog.Add('    '+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname);
-	end;
+  end;
 
+  RGLog.Add('>>'+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname);
 
-	case ltype of
-    rgBool     : AddBool     (anode,lname,memReadInteger  (aptr)<>0);
-    rgInteger  : AddInteger  (anode,lname,memReadInteger  (aptr));
-    rgUnsigned : AddUnsigned (anode,lname,memReadDWord    (aptr));
-    rgFloat    : AddFloat    (anode,lname,memReadFloat    (aptr));
-    rgInteger64: AddInteger64(anode,lname,memReadInteger64(aptr));
+  case ltype of
+    rgBool     : AddBool(anode,lname,memReadInteger(aptr)<>0);
+    rgInteger  : begin vali:=memReadInteger  (aptr); if vali<>0 then AddInteger  (anode,lname,vali); end;
+    rgUnsigned : begin valu:=memReadDWord    (aptr); if valu<>0 then AddUnsigned (anode,lname,valu); end;
+    rgFloat    : begin lq.X:=memReadFloat    (aptr); if lq.X<>0 then AddFloat    (anode,lname,lq.X); end;
+    rgInteger64: begin valq:=memReadInteger64(aptr); if valq<>0 then AddInteger64(anode,lname,valq); end;
+    rgDouble   : AddDouble(anode,lname,memReadDouble(aptr));
+    rgNote,
+    rgTranslate,
     rgString: begin
       case ainfo.Version of
         verTL1: if asize>0 then
@@ -165,24 +171,27 @@ begin
         verRG,
         verHob: pcw:=memReadShortStringUTF8(aptr);
       end;
-	    AddString(anode,lname,pcw);
-	    FreeMem(pcw);
+      if (pcw<>nil) and (pcw^<>#0) then
+      begin
+        AddString(anode,lname,pcw);
+        FreeMem(pcw);
+      end;
     end;
     rgVector2: begin
-      AddFloat(anode,PWideChar(WideString(lname)+'X'),memReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'Y'),memReadFloat(aptr));
+      lq.X:=memReadFloat(aptr); if lq.X<>0 then AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(aptr); if lq.Y<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
     end;
     rgVector3: begin
-      AddFloat(anode,PWideChar(WideString(lname)+'X'),memReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'Y'),memReadFloat(aptr));
-      AddFloat(anode,PWideChar(WideString(lname)+'Z'),memReadFloat(aptr));
+      lq.X:=memReadFloat(aptr); if lq.X<>0 then AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(aptr); if lq.Y<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
+      lq.Z:=memReadFloat(aptr); if lq.Z<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
     end;
     // Quaternion
     rgVector4: begin
-      lq.X:=memReadFloat(aptr); AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(aptr); AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
-      lq.Z:=memReadFloat(aptr); AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
-      lq.W:=memReadFloat(aptr); AddFloat(anode,PWideChar(WideString(lname)+'W'),lq.W);
+      lq.X:=memReadFloat(aptr); if lq.X<>0 then AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(aptr); if lq.Y<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
+      lq.Z:=memReadFloat(aptr); if lq.Z<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
+      lq.W:=memReadFloat(aptr); if lq.W<>0 then AddFloat(anode,PWideChar(WideString(lname)+'W'),lq.W);
 
       // Additional, not sure what it good really
       if CompareWide(lname,'ORIENTATION')=0 then
