@@ -346,7 +346,7 @@ begin
         for j:=0 to High(amod.dels) do
         begin
           lgroup:=GetChild(lnode,j);
-          if CompareWide(GetNodeName(lgroup),'FILE') then
+          if CompareWide(GetNodeName(lgroup),'FILE')=0 then
           begin
             CopyWide(amod.dels[lcnt],AsString(lgroup));
             inc(lcnt);

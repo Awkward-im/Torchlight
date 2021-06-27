@@ -119,6 +119,7 @@ begin
     verTL1: st.WriteDWord(1);
     verTL2: st.WriteDWord(2);
     verHob,
+    verRGO,
     verRG : st.WriteByte(6);
   else
     st.Free;
@@ -152,6 +153,7 @@ begin
         st.Write(p^,j*SizeOf(WideChar));
       end;
       verHob,
+      verRGO,
       verRG : begin
         if Length(a)<(j*3) then SetLength(a,j*3);
         j:=UnicodeToUtf8(PChar(a),Length(a)+1,p,j);

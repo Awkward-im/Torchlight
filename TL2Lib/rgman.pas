@@ -71,6 +71,7 @@ begin
     end;
 
     verHob,
+    verRGO,
     verRG :begin
     end;
 
@@ -128,6 +129,7 @@ begin
       end;
 
       verHob,
+      verRGO,
       verRG: begin
       end;
     else

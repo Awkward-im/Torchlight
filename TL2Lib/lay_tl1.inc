@@ -43,7 +43,6 @@ begin
   AddInteger64(lnode,'PARENTID',lparent);
 
   //--- Properties
-//exit;
 
   for i:=0 to ainfo.GetPropsCount()-1 do
   begin

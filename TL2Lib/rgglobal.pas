@@ -12,6 +12,7 @@ const
   verTL2    = 2;
   verHob    = 3;
   verRG     = 4;
+  verRGO    = 5;
   verTL2Mod = -verTL2;
 
 //--- Functions

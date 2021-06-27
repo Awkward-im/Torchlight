@@ -69,6 +69,14 @@ type
     MaxUSize :dword;    // largest UNpacked file size
   end;
 type
+  TRGOPAKHeader = packed record
+    Version  :word;
+    Reserved :dword;
+    ManOffset:dword;
+    ManSize  :dword;
+    MaxUSize :dword;    // largest UNpacked file size
+  end;
+type
   PPAKFileHeader = ^TPAKFileHeader;
   TPAKFileHeader = packed record
     size_u:UInt32;
@@ -83,6 +91,7 @@ begin
     verTL2Mod: result:=result+'.MOD';
     verTL2   : result:=result+'.PAK';
     verHob   : result:=result+'.PAK';
+    verRGO   : result:=result+'.PAK';
     verRG    : result:=result+'.PAK';
   end;
 end;
@@ -94,9 +103,10 @@ end;
 {$I-}
 function GetBasePAKInfo(const fname:string; out ainfo:TPAKInfo):integer;
 var
-  buf:array [0..SizeOf(TTL2ModTech)-1] of byte;
+  buf:array [0..31] of byte;
   lhdr :TPAKHeader    absolute buf;
   lhdr2:TTL2PAKHeader absolute buf;
+  lhdro:TRGOPAKHeader absolute buf;
   lmi  :TTL2ModTech   absolute buf;
   f:file of byte;
   ls:string;
@@ -135,7 +145,13 @@ begin
   if lhdr.Reserved=0 then
   begin
     if      lhdr.Version=1 then ainfo.ver:=verRG
-    else if lhdr.Version=5 then ainfo.ver:=verHob;
+    else if lhdr.Version=5 then
+    begin
+      if lhdro.ManSize=(ainfo.fsize-lhdro.ManOffset) then
+        ainfo.ver:=verRGO
+      else
+        ainfo.ver:=verHob;
+    end;
 
     ainfo.man:=lhdr.ManOffset;
   end
@@ -221,7 +237,7 @@ begin
   end
   else
   begin
-    lst:=TBufferedFileStream.Create(PWideChar(ainfo.fname),fmOpenRead);
+    lst:=TBufferedFileStream.Create(fname,fmOpenRead);
     ltmp:=nil;
   end;
 
@@ -317,7 +333,7 @@ var
   i,j:integer;
   lpack,lfiles,lprocess,ldir:integer;
   ldat,llay:integer;
-  lmaxp,lmaxu,lcnt:integer;
+  lmaxc,lmax,lmaxp,lmaxu,lcnt:integer;
 begin
   if not IsConsole then exit;
 
@@ -331,6 +347,7 @@ begin
   lcnt:=ainfo.total;
   lmaxp:=0;
   lmaxu:=0;
+  lmax :=0;
   for i:=0 to High(ainfo.Entries) do
   begin
     writeln(IntToStr(i+1),'  Directory: ',string(WideString(ainfo.Entries[i].name)));
@@ -353,6 +370,11 @@ begin
         if size_c>0 then inc(lpack);
         if lmaxp<size_c then lmaxp:=size_c;
         if lmaxu<size_u then lmaxu:=size_u;
+        if (lmax <size_u) and (size_c<>0) then
+        begin
+          lmax :=size_u;
+          lmaxc:=size_c;
+        end;
         if ftype in [typeWDat,typeDat,typeLayout,typeHie,typeAnimation] then inc(lprocess);
         if ftype=typedat then inc(ldat);
         if ftype=typelayout then inc(llay);
@@ -369,6 +391,8 @@ begin
           '; process: ',lprocess);
   writeln('Max packed size: '  ,lmaxp,' (0x'+HexStr(lmaxp,8),')'#13#10,
           'Max unpacked size: ',lmaxu,' (0x'+HexStr(lmaxu,8),')'#13#10,
+          'Max uncompressed size: ',lmax ,' (0x'+HexStr(lmax ,8),')'#13#10,
+          'It''s compressed size: ',lmaxc,' (0x'+HexStr(lmaxc,8),')'#13#10,
           'Packed '            ,lpack);
   writeln('Files ',lfiles,#13#10'Dirs ',ldir,#13#10'Total ',lfiles+ldir+lprocess);
   writeln('DAT: ',ldat,'; LAYOUT: ',llay);

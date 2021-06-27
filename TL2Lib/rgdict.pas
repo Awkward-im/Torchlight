@@ -713,6 +713,7 @@ begin
     verTL1: FDict:=@DictObjTL1;
     verTL2: FDict:=@DictObjTL2;
     verRG : FDict:=@DictObjRG ;
+    verRGO: FDict:=@DictObjRG ;
     verHob: FDict:=@DictObjHob;
   else
     exit;
@@ -921,6 +922,7 @@ begin
     verTL1: layptr:=@DictObjTL1;
     verTL2: layptr:=@DictObjTL2;
     verRG : layptr:=@DictObjRG;
+    verRGO: layptr:=@DictObjRG;
     verHob: layptr:=@DictObjHob;
   else
     RGLog.Add('Wrong layout dictionary version '+HexStr(aver,8));

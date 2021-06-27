@@ -128,6 +128,7 @@ begin
       verTL1: pc:=memReadDwordString(lptr);
       verTL2: pc:=memReadShortString(lptr);
       verHob,
+      verRGO,
       verRG : pc:=memReadShortStringUTF8(lptr);
     end;
     locals.Add(lid,pc);

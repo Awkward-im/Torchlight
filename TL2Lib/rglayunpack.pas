@@ -38,6 +38,7 @@ begin
     verTL1: result:=memReadDWordString(aptr);
     verTL2: result:=memReadShortString(aptr);
     verHob,
+    verRGO,
     verRG : result:=memReadShortStringUTF8(aptr);
   else
     result:=nil;
@@ -104,6 +105,7 @@ begin
       end;
 
       verHob,
+      verRGO,
       verRG : begin
         ltmp:=memReadWord(aptr);
         if ltmp=asize-2 then     // UTF8 text
@@ -137,7 +139,7 @@ begin
     ltype:=GuessDataType(asize,aptr,ainfo.Version);
   end;
 
-  if (lname=nil) and (ainfo.Version in [verHob, verRG]) then
+  if (lname=nil) and (ainfo.Version in [verHob, verRG, verRGO]) then
     lname:=GetStr(aid);
   
   if not result then
@@ -169,6 +171,7 @@ begin
         end;
         verTL2: pcw:=memReadShortString(aptr);
         verRG,
+        verRGO,
         verHob: pcw:=memReadShortStringUTF8(aptr);
       end;
       if (pcw<>nil) and (pcw^<>#0) then
@@ -249,6 +252,7 @@ begin
           pcw :=memReadShortString(aptr); AddString(lglnk,'INPUTNAME' ,pcw); FreeMem(pcw);
         end;
         verHob,
+        verRGO,
         verRG : begin
           AddString(lglnk,'OUTPUTNAME',GetStr(memReadDWord(aptr)));
           AddString(lglnk,'INPUTNAME' ,GetStr(memReadDWord(aptr)));
@@ -340,7 +344,7 @@ begin
           end;
         end;
 
-        if (fver=verHob) or (fver=verRG) then
+        if fver in [verHob, verRG, verRGO] then
         begin
           pcw:=memReadShortStringUTF8(aptr);
           if pcw<>nil then
@@ -384,6 +388,7 @@ begin
   case buf^ of
     5  : begin fver:=verRG ; result:=DoParseLayoutRG (buf); end;
     8  : begin fver:=verHob; result:=DoParseLayoutHob(buf); end;
+    9  : begin fver:=verRGO; result:=DoParseLayoutRG (buf); end; //!!!!!!!!
     11 : begin fver:=verTL2; result:=DoParseLayoutTL2(buf,fname); end;
     $5A: begin fver:=verTL1; result:=DoParseLayoutTL1(buf); end;
   else
@@ -448,6 +453,7 @@ initialization
   LoadLayoutDict('compact-tl1.txt', verTL1);
   LoadLayoutDict('compact-tl2.txt', verTL2);
   LoadLayoutDict('compact-rg.txt' , verRG);
+  LoadLayoutDict('compact-rg.txt' , verRGO);
   LoadLayoutDict('compact-hob.txt', verHob);
 
 finalization

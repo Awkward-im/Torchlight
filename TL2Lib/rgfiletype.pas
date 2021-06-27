@@ -374,6 +374,7 @@ begin
     verTL2Mod,
     verTL2: lt:=TableTL2Info;
     verHob,
+    verRGO,
     verRG : lt:=TableHobInfo;
   else
     exit(atype);
@@ -392,6 +393,7 @@ begin
       verTL2Mod,
       verTL2: result:=TableIntInfo[atype]._tl2;
       verHob,
+      verRGO,
       verRG : result:=TableIntInfo[atype]._hob;
     else
       result:=atype;
