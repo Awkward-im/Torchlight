@@ -752,6 +752,7 @@ var
   f:file of byte;
   spak:TFileStream;
   TL2PAKHeader:TTL2PAKHeader; //??
+  RGOPAKHeader:TRGOPAKHeader; //??
   PAKHeader:TPAKHeader;       //??
   lmodinfo:TTL2ModTech;
   fi:PMANFileInfo;
@@ -759,7 +760,7 @@ var
   ldir:PWideChar;
   lname:PWideChar;
   lsname:string;
-  lPakPos,lisize,losize:longword;
+  lManPos,lPakPos,lisize,losize:longword;
   largest_u,largest_c:integer;
   i,j,lres:integer;
 begin
@@ -797,10 +798,11 @@ begin
   end;
 
   // Just reserve place
-  if ABS(ainfo.ver)=verTL2 then
-    spak.Write(TL2PAKHeader,SizeOf(TTL2PAKHeader))
-  else
-    spak.Write(PAKHeader,SizeOf(TPAKHeader));
+  case ABS(ainfo.ver) of
+    verTL2: spak.Write(TL2PAKHeader,SizeOf(TTL2PAKHeader));
+    verRGO: spak.Write(RGOPAKHeader,SizeOf(TRGOPAKHeader));
+  else      spak.Write(PAKHeader   ,SizeOf(TPAKHeader));
+  end;
 
   for i:=0 to High(ainfo.Entries) do
   begin
@@ -879,27 +881,9 @@ begin
     FreeMem(ldir);
   end;
 
-  //--- Change PAK Header
-  
-  spak.Position:=lPakPos;
-
-  if ABS(ainfo.ver)=verTL2 then
-  begin
-    TL2PAKHeader.MaxCSize:=largest_c;
-    TL2PAKHeader.Hash:=CalcPAKHash(spak,lPakPos,spak.Size-lPakPos);
-    spak.Write(TL2PAKHeader,SizeOf(TTL2PAKHeader))
-  end  
-  else
-  begin
-    if      ABS(ainfo.ver)=verHob then PAKHeader.Version:=5
-    else if ABS(ainfo.ver)=verRG  then PAKHeader.Version:=1;
-    PAKHeader.Reserved :=0;
-    PAKHeader.ManOffset:=spak.Size;
-    PAKHeader.MaxUSize :=largest_u;
-    spak.Write(PAKHeader,SizeOf(TPAKHeader));
-  end;
-
   //--- Write MAN
+
+  lManPos:=spak.Size;
 
   if ainfo.ver=verTL2 then
     WriteManifest(ainfo)
@@ -908,16 +892,44 @@ begin
     if ainfo.ver=verTL2Mod then
     begin
       move(ainfo.modinfo,lmodinfo,SizeOf(TTL2ModTech));
+      QWord(lmodinfo.gamever):=ReverseWords(ainfo.modinfo.gamever);
       lmodinfo.version:=4;
       lmodinfo.modver :=ainfo.modinfo.modver;
-      QWord(lmodinfo.gamever):=ReverseWords(ainfo.modinfo.gamever);
       lmodinfo.offData:=lPakPos;
       lmodinfo.offMan :=spak.Size;
+
       spak.Position:=0;
       spak.Write(lmodinfo,SizeOf(lmodinfo));
     end;
     spak.Position:=spak.Size;
     ManSaveToStream(spak,ainfo);
+  end;
+
+  //--- Change PAK Header
+  
+  spak.Position:=lPakPos;
+
+  case ABS(ainfo.ver) of
+    verTL2: begin
+      TL2PAKHeader.MaxCSize:=largest_c;
+      TL2PAKHeader.Hash    :=CalcPAKHash(spak,lPakPos,lManPos-lPakPos);
+      spak.Write(TL2PAKHeader,SizeOf(TTL2PAKHeader))
+    end;
+    verRGO: begin
+      RGOPAKHeader.Version  :=5;
+      RGOPAKHeader.Reserved :=0;
+      RGOPAKHeader.ManOffset:=lManPos;
+      RGOPAKHeader.ManSize  :=spak.Size-lManPos;
+      RGOPAKHeader.MaxUSize :=largest_u;
+      spak.Write(RGOPAKHeader,SizeOf(TRGOPAKHeader));
+    end;
+  else
+    if      ABS(ainfo.ver)=verHob then PAKHeader.Version:=5
+    else if ABS(ainfo.ver)=verRG  then PAKHeader.Version:=1;
+    PAKHeader.Reserved :=0;
+    PAKHeader.ManOffset:=lManPos;
+    PAKHeader.MaxUSize :=largest_u;
+    spak.Write(PAKHeader,SizeOf(TPAKHeader));
   end;
 
   spak.Free;

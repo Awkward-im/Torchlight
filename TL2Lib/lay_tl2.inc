@@ -24,7 +24,7 @@ function DoParseBlockTL2(var anode:pointer; var aptr:pByte; const aparent:Int64;
     var ainfo:TRGObject):integer;
 var
   bnode,lnode:pointer;
-  lptr:pbyte;
+  llptr,lptr:pbyte;
   lname,pcw:PWideChar;
 
   lChunkSize:integer;
@@ -74,6 +74,7 @@ begin
   //--- Additional data
 
   lsize:=memReadInteger(aptr);
+  llptr:=aptr;
   if lsize>0 then
   begin
 
@@ -100,6 +101,7 @@ begin
       AddInteger(lnode,'??ADDITIONALSIZE',lsize);
     end;
 
+    aptr:=llptr+lsize;
   end;
 
   //--- Children

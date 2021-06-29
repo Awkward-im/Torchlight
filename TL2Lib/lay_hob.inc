@@ -105,7 +105,10 @@ begin
 
     else if lChunkType=IdTimelineHob then
     begin
+try
       ParseTimeline(lnode,lChunkId,aptr);
+except
+end;
     end
 
     //----- Unknown additional data -----

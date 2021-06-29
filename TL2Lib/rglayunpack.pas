@@ -150,7 +150,7 @@ begin
       RGLog.Add('    '+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname);
   end;
 
-  RGLog.Add('>>'+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname);
+//  RGLog.Add('>>'+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname);
 
   case ltype of
     rgBool     : AddBool(anode,lname,memReadInteger(aptr)<>0);
@@ -264,10 +264,12 @@ end;
 
 procedure ParseTimeline(var anode:pointer; aid:Int64; var aptr:pByte);
 var
+  ltmpq:Int64;
   tlpoint,tlnode,tldata,tlobject:pointer;
   pcw:PWideChar;
   laptr:pByte;
   lint,ltlpoints,ltltype,ltlprops,ltlobjs,i,j,k:integer;
+  ltmp:integer;
 begin
   tldata:=AddGroup(anode,'TIMELINEDATA');
   AddInteger64(tldata,'ID',aid);
@@ -283,7 +285,15 @@ begin
     begin
       ltltype:=0;
       laptr:=aptr;
-
+{
+      if fver=verRGO then
+      begin
+        ltmpq:=memReadInteger64(aptr);
+        RGLog.Add('RGO Timeline Int64='+IntToStr(ltmpq));
+        ltmp:=memReadByte(aptr);
+        RGLog.Add('RGO Timeline byte='+IntToStr(ltmp));
+      end;
+}
       // Property
       pcw:=ReadStr(aptr);
       if pcw<>nil then
@@ -354,7 +364,7 @@ begin
             FreeMem(pcw);
           end;
 
-          if (ltltype=0) or (ltltype=1) then
+//          if (ltltype=0) or (ltltype=1) then
           begin
             pcw:=memReadShortStringUTF8(aptr);
             if pcw<>nil then
@@ -423,7 +433,7 @@ end;
 
 function IsProperLayout(buf:pByte):boolean;
 begin
-  result:=buf^ in [5, 8, 11, $5A];
+  result:=buf^ in [5, 8, 9, 11, $5A];
 end;
 
 procedure ReadLayINI(aini:TINIFile);
@@ -453,7 +463,7 @@ initialization
   LoadLayoutDict('compact-tl1.txt', verTL1);
   LoadLayoutDict('compact-tl2.txt', verTL2);
   LoadLayoutDict('compact-rg.txt' , verRG);
-  LoadLayoutDict('compact-rg.txt' , verRGO);
+  LoadLayoutDict('compact-rgo.txt', verRGO);
   LoadLayoutDict('compact-hob.txt', verHob);
 
 finalization

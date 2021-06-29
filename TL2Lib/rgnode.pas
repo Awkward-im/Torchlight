@@ -111,7 +111,7 @@ type
       rgByte     : (asByte     :Byte);
       rgBinary   : (len        :UInt32);
   end;
-  TATL2Node = array [0..16383] of PTL2Node;
+  TATL2Node = array [0..MAXINT div SizeOf(pointer)-1] of PTL2Node;
 
 const
   SIGN_UNICODE = $FEFF;
@@ -159,7 +159,7 @@ begin
 
   NewIdx:=idx+lcnt;
   GC:=Length(buf);
-  If NewIdx>GC then
+  If NewIdx>=GC then
   begin
     GC:=GC+(GC div 4);
     GC:=(GC+(TMSGrow-1)) and not (TMSGrow-1);

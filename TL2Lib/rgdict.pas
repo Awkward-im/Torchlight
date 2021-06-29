@@ -572,7 +572,7 @@ begin
 {$POP}
 
   // 2 - trying to recognize dic format: like "TAGS.DAT" or "dictionary.txt"
-  if (pword(@buf)^=SIGN_UNICODE) and (buf[3]=ORD('[')) then
+  if (pword(@buf)^=SIGN_UNICODE) and (buf[2]=ORD('[')) then
   begin
     LoadTagsFile(ls)
   end
@@ -583,7 +583,9 @@ begin
     LoadDictionary(ls);
   end
   else
+  begin
     LoadList(ls);
+  end;
 
   Sort;
 
@@ -1060,7 +1062,7 @@ begin
 
   until false;
 
-  if lscene<=Length(layptr^.scenes) then layptr^.scenes[lscene].id:=dword(-1);
+  if lscene<Length(layptr^.scenes) then layptr^.scenes[lscene].id:=dword(-1);
 end;
 
 procedure InitLayoutDict(var alay:TLayoutInfo);
