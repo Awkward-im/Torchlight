@@ -4,7 +4,7 @@ object MainTL2TransForm: TMainTL2TransForm
   Top = 152
   Width = 1007
   Caption = 'Torchlight 2 Translation'
-  ClientHeight = 635
+  ClientHeight = 655
   ClientWidth = 1007
   KeyPreview = True
   Menu = TL2MainMenu
@@ -12,21 +12,20 @@ object MainTL2TransForm: TMainTL2TransForm
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   ShowHint = True
-  LCLVersion = '2.1.0.0'
   object TL2StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 612
+    Top = 632
     Width = 1007
     Panels = <>
   end
   object TL2TreePanel: TPanel
     Left = 0
-    Height = 586
+    Height = 606
     Top = 26
     Width = 250
     Align = alLeft
-    ClientHeight = 586
+    ClientHeight = 606
     ClientWidth = 250
     TabOrder = 1
     Visible = False
@@ -78,12 +77,11 @@ object MainTL2TransForm: TMainTL2TransForm
       AutoSize = False
       Caption = 'Doubleclick to scan'
       Layout = tlCenter
-      ParentColor = False
       WordWrap = True
     end
     object TL2ShellTreeView: TShellTreeView
       Left = 1
-      Height = 465
+      Height = 485
       Top = 120
       Width = 248
       Align = alCustom
@@ -111,22 +109,23 @@ object MainTL2TransForm: TMainTL2TransForm
   end
   object TL2Splitter: TSplitter
     Left = 250
-    Height = 586
+    Height = 606
     Top = 26
     Width = 5
   end
   object TL2PageControl: TPageControl
     Left = 255
-    Height = 586
+    Height = 606
     Top = 26
     Width = 752
     Align = alClient
     Images = TL2DataModule.TL2ImageList
+    MultiLine = True
     TabOrder = 3
     OnChange = TL2PageControlChange
     OnCloseTabClicked = TL2PageControlCloseTabClicked
     OnMouseUp = TL2PageControlMouseUp
-    Options = [nboShowCloseButtons, nboDoChangeOnSetIndex]
+    Options = [nboShowCloseButtons, nboMultiLine, nboDoChangeOnSetIndex]
   end
   object TL2Toolbar: TToolBar
     Left = 0

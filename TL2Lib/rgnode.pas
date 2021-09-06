@@ -1,12 +1,16 @@
 {%TODO place text to table and store indexes (by option like 'no_changes')}
+{%TODO keep hashes in nodes and global dict. But where to keep reference to dict?}
 {%TODO make Vector2, Vector3 and Vector 4 values too}
 {%TODO use hash (standard, if exists) for tags}
 {%TODO As* for get value - add default values}
+{%TODO Add blob field for use as Hash for names or ID for layout nodes. but not both?}
+{%TODO Add Insert method at least for top (for IDs)}
 unit RGNode;
 
 interface
 
 function  ParseDatFile(fname:PChar):pointer;
+function  ParseDat    (buf:PWideChar; aid:PChar=nil):pointer;
 function  WriteDatTree(anode:pointer; fname:PChar):ByteBool;
 procedure DeleteNode  (anode:pointer);
 
@@ -369,12 +373,8 @@ end;
 function ParseDatFile(fname:PChar):pointer;
 var
   f:file of byte;
-  lutype,buf:PWideChar;
-  lnode,lgroup:PTL2Node;
-  pc,peoln:PWideChar;
-  lline,ltype,ldst,i,idx:integer;
-  lname:array [0..127] of WideChar;
-  leof,lclose:boolean;
+  buf:PWideChar;
+  i:integer;
 begin
   result:=nil;
 
@@ -399,6 +399,25 @@ begin
   CloseFile(f);
   buf[i div SizeOf(WideChar)]:=#0;
 {$POP}
+
+  try
+    result:=ParseDat(buf);
+  finally
+    FreeMem(buf);
+  end;
+end;
+  
+function ParseDat(buf:PWideChar; aid:PChar=nil):pointer;
+var
+  lutype:PWideChar;
+  lnode,lgroup:PTL2Node;
+  pc,peoln:PWideChar;
+  lline,ltype,ldst,idx:integer;
+  lname:array [0..127] of WideChar;
+  leof,lclose:boolean;
+begin
+  result:=nil;
+
   peoln:=buf;
   if ORD(peoln^)=SIGN_UNICODE then inc(peoln);
 
@@ -437,7 +456,7 @@ begin
         begin
           if lgroup=nil then
           begin
-            if Assigned(OnError) then OnError(errCloseNoRoot,fname,lline);
+            if Assigned(OnError) then OnError(errCloseNoRoot,aid,lline);
             exit;
           end;
 
@@ -457,7 +476,7 @@ begin
         lname[ldst]:=#0;
         if pc[idx]=#0 then
         begin
-          if (not Assigned(OnError)) or (OnError(errTagNoClose,fname,lline)<>0) then
+          if (not Assigned(OnError)) or (OnError(errTagNoClose,aid,lline)<>0) then
           begin
             DeleteNode(result);
             exit;
@@ -468,7 +487,7 @@ begin
         begin
           if CompareWide(lgroup^.name,lname)<>0 then
           begin
-            if (not Assigned(OnError)) or (OnError(errTagCloseWrong,fname,lline)<>0) then
+            if (not Assigned(OnError)) or (OnError(errTagCloseWrong,aid,lline)<>0) then
             begin
               DeleteNode(result);
               exit;
@@ -490,7 +509,7 @@ begin
       begin
         if lgroup=nil then
         begin
-          if Assigned(OnError) then OnError(errNoRoot,fname,lline);
+          if Assigned(OnError) then OnError(errNoRoot,aid,lline);
           exit;
         end;
 
@@ -506,7 +525,7 @@ begin
         lname[ldst]:=#0;
         if pc[idx]=#0 then
         begin
-          if (not Assigned(OnError)) or (OnError(errPropNoClose,fname,lline)<>0) then
+          if (not Assigned(OnError)) or (OnError(errPropNoClose,aid,lline)<>0) then
           begin
             DeleteNode(result);
             exit;
@@ -532,13 +551,13 @@ begin
         if ltype=rgUnknown then
         begin
           lnode^.CustomType:=lutype;
-          if Assigned(OnError) then OnError(errUnknownTag,fname,lline);
+          if Assigned(OnError) then OnError(errUnknownTag,aid,lline);
         end;
       end;
     until leof;
     if lgroup<>nil then
     begin
-      if (not Assigned(OnError)) or (OnError(errRootNoClose,fname,lline)<>0) then
+      if (not Assigned(OnError)) or (OnError(errRootNoClose,aid,lline)<>0) then
       begin
         DeleteNode(result);
         exit;

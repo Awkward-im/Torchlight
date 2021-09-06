@@ -139,7 +139,7 @@ begin
     ltype:=GuessDataType(asize,aptr,ainfo.Version);
   end;
 
-  if (lname=nil) and (ainfo.Version in [verHob, verRG, verRGO]) then
+  if (lname=nil){ and (ainfo.Version in [verHob, verRG, verRGO])} then
     lname:=GetStr(aid);
   
   if not result then
@@ -460,27 +460,25 @@ initialization
   aliases.init;
   aliases.import('layaliases.txt');
 
-  LoadLayoutDict('compact-tl1.txt', verTL1);
-  LoadLayoutDict('compact-tl2.txt', verTL2);
-  LoadLayoutDict('compact-rg.txt' , verRG);
-  LoadLayoutDict('compact-rgo.txt', verRGO);
-  LoadLayoutDict('compact-hob.txt', verHob);
-
 finalization
   
+{$IFDEF DEBUG}  
   if known.count>0 then
   begin
     known.Sort;
-    known.export('known-lay.dict',false);
+    known.export('known-lay.dict'    ,false);
     known.export('known-lay-txt.dict',false,false);
   end;
+{$ENDIF}
   known.clear;
 
+{$IFDEF DEBUG}  
   if unkn.count>0 then
   begin
     unkn.Sort;
     unkn.export('unknown-lay.dict',false);
   end;
+{$ENDIF}
   unkn.clear;
   
   aliases.Clear;

@@ -41,6 +41,7 @@ const
   rgInteger64 = 7;
   rgTranslate = 8;
   rgNote      = 9;
+//  rgWString
   // special
   rgNotValid  = -1;
   rgUnknown   = rgNotValid;
@@ -168,11 +169,11 @@ type
   TTL2ModInfo = record
     modid   :Int64;
     gamever :QWord;
-    title   :PUnicodeChar;
-    author  :PUnicodeChar;
-    descr   :PUnicodeChar;
-    website :PUnicodeChar;
-    download:PUnicodeChar;
+    title   :PUnicodeChar; // 255 max
+    author  :PUnicodeChar; // 255 max
+    descr   :PUnicodeChar; // 512 max
+    website :PUnicodeChar; // 512 max
+    download:PUnicodeChar; // 512 max
     filename:PUnicodeChar;
     dels    :array of PUnicodeChar;
     offData :DWord;
@@ -451,20 +452,23 @@ end;
 
 //--- Save file
 
+{$PUSH}
+{$Q-}
 function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
 var
   i:integer;
 begin
-  result:=$14D3;
-
-  for i:=0 to asize-1 do
+  if asize>0 then
   begin
-    {$PUSH}
-    {$Q-}
-    result:=result+(result shl 5)+aptr[i];
-    {$POP}
+    result:=$14D3;
+
+    for i:=0 to asize-1 do
+    begin
+      result:=result+(result shl 5)+aptr[i];
+    end;
   end;
 end;
+{$POP}
 
 //--- DAT/Layout
 

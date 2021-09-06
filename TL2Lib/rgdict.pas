@@ -1,16 +1,7 @@
 ﻿{%TODO remove Classes (TStringList) dependences}
 {%TODO remove RGNode dependences}
+{%TODO implement dict loading from resource}
 {%TODO keep text in TextCache object (but local can have long lines)}
-{%TODO RG/Hob: no scene, no object, just params atm}
-{%TODO Process short and full version of objects.dat}
-{
-  Layout Objects:
-    1 - version
-    2 - layout type (UI, Layout, Particle Creator
-    3 - Object: search by name, by ID
-    4 - Property: search by name, by ID (with Object reference)
-    5 - Data: Name, ID, type (size)
-}
 unit RGDict;
 
 interface
@@ -18,6 +9,9 @@ interface
 //--- Tags
 
 type
+
+  { TRGDict }
+
   TRGDict = object
   private
     type
@@ -44,18 +38,20 @@ type
     function  GetHashByText(akey:PWideChar):dword;
     function  GetTextByIdx (idx :cardinal ):PWideChar;
     function  GetHashByIdx (idx :cardinal ):dword;
-    procedure LoadTagsFile  (const fname:AnsiString);
-    procedure LoadDictionary(const fname:AnsiString);
-    procedure LoadList      (const fname:AnsiString);
+    function  LoadTagsFile  (aptr:PByte):integer;
+    function  LoadDictionary(aptr:PByte):integer;
+    function  LoadList      (aptr:PByte):integer;
     procedure InitCapacity(aval:cardinal);
   public
     procedure Init;
     procedure Clear;
     procedure SortText;
     procedure Sort;
-    function  Add(akey:dword; aval:PWideChar):dword;
+    function  Add(akey:dword; aval:PWideChar; auseThis:boolean=false):dword;
     function  Add(akey:dword; const aval:AnsiString):dword;
+    function  Import(aptr: PByte): integer;
     function  Import(const fname:AnsiString=''):integer;
+    function  Import(const resname:string; restype:PChar):integer;
     procedure Export(const fname:AnsiString; asdat:boolean=true; sortbyhash:boolean=true);
 
     property Tag    [akey:dword    ]:PWideChar read GetTextByHash;
@@ -107,6 +103,8 @@ type
     property Version:integer read FVersion write SetVersion;
   end;
 
+function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean=false):boolean;
+function LoadLayoutDict(const resname:string; restype:PChar; aver:integer):boolean;
 function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
 
 
@@ -362,7 +360,7 @@ begin
 end;
 
 
-function TRGDict.Add(akey:dword; aval:PWideChar):dword;
+function TRGDict.Add(akey:dword; aval:PWideChar; auseThis:boolean=false):dword;
 var
   i:integer;
 begin
@@ -409,7 +407,10 @@ begin
     SetLength(FDict,FCapacity);
   end;
   FDict[FCount].hash:=akey;
-  CopyWide(FDict[FCount].name,aval); //!!
+  if auseThis then
+    FDict[FCount].name:=aval
+  else
+    CopyWide(FDict[FCount].name,aval); //!!
   inc(FCount);
   result:=akey;
 end;
@@ -423,13 +424,15 @@ end;
 
 //--- Tags.dat
 
-procedure TRGDict.LoadTagsFile(const fname:AnsiString);
+function TRGDict.LoadTagsFile(aptr:PByte):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
   lc,i:integer;
 begin
-  lnode:=ParseDatFile(pointer(fname));
+  result:=0;
+
+  lnode:=ParseDat(PWideChar(aptr));
   if lnode<>nil then
   begin
     i:=0;
@@ -439,7 +442,10 @@ begin
     begin
       pcw:=asString(GetChild(lnode,i));
       if pcw<>nil then
+      begin
         Add(AsUnsigned(GetChild(lnode,i+1)),pcw);
+        inc(result);
+      end;
       inc(i,2);
     end;
     DeleteNode(lnode);
@@ -448,88 +454,185 @@ end;
 
 //--- dictionary.txt
 
-procedure TRGDict.LoadDictionary(const fname:AnsiString);
+function TRGDict.LoadDictionary(aptr:PByte):integer;
 var
-  sl:TStringList;
-//  ls:UTF8String;
   ls:AnsiString;
   lns:String[31];
-  lstart,tmpi,i,p:integer;
+  lptr,lend:PByte;
+  lcnt,lstart,tmpi,i,p:integer;
   lhash:dword;
 begin
-  sl:=TStringList.Create;
+  result:=0;
 
+  lcnt:=0;
+  lptr:=aptr;
+  while lptr^<>0 do
+  begin
+    if lptr^=13 then inc(lcnt);
+    inc(lptr);
+  end;
+  InitCapacity(lcnt);
+  
+  lend:=aptr;
   try
-    try
-      sl.LoadFromFile(fname);
-      InitCapacity(sl.Count);
-      for i:=0 to sl.Count-1 do
-      begin
-        ls:=sl[i];
-        if ls<>'' then
-        begin
-          if ls[1]='-' then
-            lstart:=2
-          else
-            lstart:=1;
+    for i:=0 to lcnt-1 do
+    begin
+      lptr:=lend;
+      while not (lend^ in [0,13]) do inc(lend);
+      SetString(ls, PAnsiChar(lptr), lend-lptr);
+      while lend^ in [1..32] do inc(lend);
 
-          for p:=lstart to Length(ls) do
+      if ls<>'' then
+      begin
+        if ls[1]='-' then
+          lstart:=2
+        else
+          lstart:=1;
+
+        for p:=lstart to Length(ls) do
+        begin
+          if (ls[p] in ['0'..'9']) then
+            lns[p]:=ls[p]
+          else
           begin
-            if (ls[p] in ['0'..'9']) then
-              lns[p]:=ls[p]
-            else
+            SetLength(lns,p-1);
+            if lstart=2 then
             begin
-              SetLength(lns,p-1);
-              if lstart=2 then
-              begin
-                val(lns,tmpi);
-                lhash:=dword(-tmpi);
-              end
-              else
-                val(lns,lhash);
-              Add(lhash,Copy(ls,p+1)); //!!
-              break;
-            end;
+              val(lns,tmpi);
+              lhash:=dword(-tmpi);
+            end
+            else
+              val(lns,lhash);
+            Add(lhash,Copy(ls,p+1)); //!!
+            inc(result);
+            break;
           end;
         end;
       end;
 
-    except
-      RGLog.Add('Can''t load '+fname);
-      if ls<>'' then RGLog.Add('Possible problem with '+ls);
-      Clear;
+      if lend^=0 then break;
     end;
-  finally
-    sl.Free;
+
+  except
+    if ls<>'' then RGLog.Add('Possible problem with '+ls);
+    Clear;
   end;
 end;
 
 //--- raw text
 
-procedure TRGDict.LoadList(const fname:AnsiString);
+function TRGDict.LoadList(aptr:PByte):integer;
 var
-  sl:TStringList;
   ls:AnsiString;
-  i:integer;
+  lptr,lend:PByte;
+  lcnt,i:integer;
 begin
-  sl:=TStringList.Create;
-  sl.LoadFromFile(fname{,TEncoding.UTF8});
-  InitCapacity(sl.Count);
-  for i:=0 to sl.Count-1 do
+  result:=0;
+
+  lcnt:=0;
+  lptr:=aptr;
+  while lptr^<>0 do
   begin
-    ls:=sl[i];
-    if ls<>'' then
-      Add(RGHash(pointer(ls),Length(ls)),ls);
+    if lptr^=13 then inc(lcnt);
+    inc(lptr);
   end;
-  sl.Free;
+  InitCapacity(lcnt);
+  
+  lend:=aptr;
+  for i:=0 to lcnt-1 do
+  begin
+    lptr:=lend;
+    while not lend^ in [0,13] do inc(lend);
+    SetString(ls, PansiChar(lptr), lend-lptr);
+    while lend^ in [1..32] do inc(lend);
+
+    if ls<>'' then
+    begin
+      Add(RGHash(pointer(ls),Length(ls)),ls);
+      inc(result);
+    end;
+
+    if lend^=0 then break;
+  end;
+end;
+
+function TRGDict.Import(aptr:PByte):integer;
+begin
+  if (pword(aptr)^=SIGN_UNICODE) and (aptr[2]=ORD('[')) then
+  begin
+    result:=LoadTagsFile(aptr)
+  end
+
+  else if (CHAR(aptr[0]) in ['-','0'..'9']) or
+      (((pdword(aptr)^ and $FFFFFF)=SIGN_UTF8) and
+       ((CHAR(aptr[3]) in ['-','0'..'9']))) then
+  begin
+    result:=LoadDictionary(aptr);
+  end
+
+  else
+  begin
+    result:=LoadList(aptr);
+  end;
+
+  if result>0 then
+    Sort;
+end;
+
+function TRGDict.Import(const resname:string; restype:PChar):integer;
+var
+  res:TFPResourceHandle;
+  Handle:THANDLE;
+//  lstrm: TResourceStream;
+  lptr,buf:PByte;
+  lsize,loldcount:integer;
+begin
+  result:=0;
+  loldcount:=FCount;
+
+  res:=FindResource(hInstance, PChar(resname), restype);
+  if res<>0 then
+  begin
+    Handle:=LoadResource(hInstance,Res);
+    if Handle<>0 then
+    begin
+      lptr :=LockResource(Handle);
+      lsize:=SizeOfResource(hInstance,res);
+
+      GetMem(buf,lsize+2);
+      move(lptr^,buf^,lsize);
+
+      UnlockResource(Handle);
+      FreeResource(Handle);
+
+      buf[lsize  ]:=0;
+      buf[lsize+1]:=0;
+
+      result:=Import(buf);
+
+      FreeMem(buf);
+    end;
+  end;
+{
+  lstrm:=TResourceStream.Create(HINSTANCE,resname, restype);
+  try
+    result:=Import(lstrm.Memory);
+  finally
+    lstrm.Free;
+  end;
+}
+  if result=0 then
+    RGLog.Add('Can''t load '+resname);
+
+  result:=FCount-loldcount;
 end;
 
 function TRGDict.Import(const fname:AnsiString=''):integer;
 var
   f:file of byte;
-  buf:array [0..7] of byte;
+  buf:PByte;
   ls:AnsiString;
-  loldcount:integer;
+  i,loldcount:integer;
 begin
   loldcount:=FCount;
   result:=0;
@@ -567,27 +670,21 @@ begin
       exit;
     end;
   end;
-  BlockRead(f,buf,7);
+  i:=FileSize(f);
+  GetMem(buf,i+2);
+  BlockRead(f,buf^,i);
   Close(f);
 {$POP}
 
-  // 2 - trying to recognize dic format: like "TAGS.DAT" or "dictionary.txt"
-  if (pword(@buf)^=SIGN_UNICODE) and (buf[2]=ORD('[')) then
-  begin
-    LoadTagsFile(ls)
-  end
-  else if (CHAR(buf[0]) in ['-','0'..'9']) or
-      (((pdword(@buf)^ and $FFFFFF)=SIGN_UTF8) and
-       ((CHAR(buf[3]) in ['-','0'..'9']))) then
-  begin
-    LoadDictionary(ls);
-  end
-  else
-  begin
-    LoadList(ls);
-  end;
+  buf[i  ]:=0;
+  buf[i+1]:=0;
 
-  Sort;
+  result:=Import(buf);
+
+  FreeMem(buf);
+
+  if result=0 then
+    RGLog.Add('Can''t load '+fname);
 
   result:=FCount-loldcount;
 end;
@@ -690,6 +787,7 @@ var
   DictObjTL2:TLayoutInfo;
   DictObjHob:TLayoutInfo;
   DictObjRG :TLayoutInfo;
+  DictObjRGO:TLayoutInfo;
 
 //----- Objects -----
 
@@ -715,7 +813,7 @@ begin
     verTL1: FDict:=@DictObjTL1;
     verTL2: FDict:=@DictObjTL2;
     verRG : FDict:=@DictObjRG ;
-    verRGO: FDict:=@DictObjRG ;
+    verRGO: FDict:=@DictObjRGO;
     verHob: FDict:=@DictObjHob;
   else
     exit;
@@ -783,6 +881,10 @@ begin
       end;
     end;
 
+  if RGTags.Tag[aid]<>nil then
+    RGLog.Add('!!!!! Got it '+HexStr(aid,8));
+  
+  
   FLastObject:=nil;
   FLastObjId :=dword(-1);
   result     :=nil;
@@ -840,7 +942,7 @@ end;
 function TRGObject.GetPropInfoById(aid:dword; var aname:PWideChar):integer;
 var
   lprop:PPropInfo;
-  ls:string;
+//  ls:string;
 begin
   lprop:=GetProperty(aid);
   if lprop<>nil then
@@ -906,9 +1008,8 @@ end;
 
 //----- Processed -----
 {$I-}
-function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
+function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean=false):boolean;
 var
-  f:file of byte;
   ltype:array [0..31] of WideChar;
   pc,lname:PWideChar;
   layptr:PLayoutInfo;
@@ -924,7 +1025,7 @@ begin
     verTL1: layptr:=@DictObjTL1;
     verTL2: layptr:=@DictObjTL2;
     verRG : layptr:=@DictObjRG;
-    verRGO: layptr:=@DictObjRG;
+    verRGO: layptr:=@DictObjRGO;
     verHob: layptr:=@DictObjHob;
   else
     RGLog.Add('Wrong layout dictionary version '+HexStr(aver,8));
@@ -937,17 +1038,16 @@ begin
     exit;
   end;
 
-  Assign(f,fname);
-  Reset(f);
-  if IOResult<>0 then exit;
+  //-----------------------------
 
   result:=true;
-  
-  i:=FileSize(f);
-  GetMem(layptr^.buf,i+SizeOf(WideChar));
-  BlockRead(f,layptr^.buf^,i);
-  Close(f);
-  layptr^.buf[i div SizeOf(WideChar)]:=#0;
+
+  if aUseThis then
+    layptr^.buf:=abuf
+  else
+    layptr^.buf:=CopyWide(abuf);
+
+  //-----------------------------
 
   SetLength(layptr^.objects,1024);
   SetLength(layptr^.props  ,8192);
@@ -1065,6 +1165,65 @@ begin
   if lscene<Length(layptr^.scenes) then layptr^.scenes[lscene].id:=dword(-1);
 end;
 
+function LoadLayoutDict(const resname:string; restype:PChar; aver:integer):boolean;
+var
+  res:TFPResourceHandle;
+  Handle:THANDLE;
+  buf:PWideChar;
+  lptr:PByte;
+  lsize:integer;
+begin
+  result:=false;
+
+  res:=FindResource(hInstance, PChar(resname), restype);
+  if res<>0 then
+  begin
+    Handle:=LoadResource(hInstance,Res);
+    if Handle<>0 then
+    begin
+      lptr :=LockResource(Handle);
+      lsize:=SizeOfResource(hInstance,res);
+
+      GetMem(buf,lsize+SizeOf(WideChar));
+
+      move(lptr^,buf^,lsize);
+
+      UnlockResource(Handle);
+      FreeResource(Handle);
+
+      buf[lsize div SizeOf(WideChar)]:=#0;
+
+      result:=LoadLayoutDict(buf,aver,true);
+
+      if not result then FreeMem(buf);
+    end;
+  end;
+
+end;
+
+function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
+var
+  f:file of byte;
+  buf:PWideChar;
+  i:integer;
+begin
+  result:=false;
+  
+  Assign(f,fname);
+  Reset(f);
+  if IOResult<>0 then exit;
+
+  i:=FileSize(f);
+  GetMem(buf,i+SizeOf(WideChar));
+  BlockRead(f,buf^,i);
+  Close(f);
+  buf[i div SizeOf(WideChar)]:=#0;
+
+  result:=LoadLayoutDict(buf,aver,true);
+
+  if not result then FreeMem(buf);
+end;
+
 procedure InitLayoutDict(var alay:TLayoutInfo);
 begin
   alay.scenes[0].id:=dword(-1);
@@ -1088,6 +1247,7 @@ initialization
   InitLayoutDict(DictObjTL1);
   InitLayoutDict(DictObjTL2);
   InitLayoutDict(DictObjRG );
+  InitLayoutDict(DictObjRGO);
   InitLayoutDict(DictObjHob);
 
 finalization
@@ -1097,6 +1257,7 @@ finalization
   ClearLayoutDict(DictObjTL1);
   ClearLayoutDict(DictObjTL2);
   ClearLayoutDict(DictObjRG );
+  ClearLayoutDict(DictObjRGO);
   ClearLayoutDict(DictObjHob);
 
 end.

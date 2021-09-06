@@ -3,6 +3,10 @@
 interface
 
 function IsProperDat(buf:pByte):boolean;
+{
+  resulting pointer is PTL2Node from RGNode.pas
+  So, it requires to free by DeleteNode later
+}
 function DoParseDat (buf:pByte):pointer;
 function DoParseDatFile(const afname:string):pointer;
 
@@ -131,7 +135,12 @@ begin
       verRGO,
       verRG : pc:=memReadShortStringUTF8(lptr);
     end;
+    locals.Add(lid,pc,true);
+
+{
     locals.Add(lid,pc);
+    FreeMem(pc);
+}
   end;
 
   // data
@@ -180,21 +189,25 @@ initialization
   unkn.options:=[check_hash];
 
 finalization
-  
+
+{$IFDEF DEBUG}  
   if known.count>0 then
   begin
     known.Sort;
-    known.export('known-dat.dict',false);
+    known.export('known-dat.dict'    ,false);
     known.export('known-dat-txt.dict',false,false);
   end;
+{$ENDIF}
   known.clear;
 
+{$IFDEF DEBUG}  
   if unkn.count>0 then
   begin
     unkn.Sort;
     unkn.export('unknown-dat.dict',false);
   end;
   unkn.clear;
+{$ENDIF}
   
   aliases.Clear;
 

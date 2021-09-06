@@ -23,6 +23,8 @@ end;
 function DoParseBlockTL2(var anode:pointer; var aptr:pByte; const aparent:Int64;
     var ainfo:TRGObject):integer;
 var
+  lbuf:WideString;
+  //  lbuf:array [0..31] of WideChar;
   bnode,lnode:pointer;
   llptr,lptr:pbyte;
   lname,pcw:PWideChar;
@@ -50,6 +52,11 @@ begin
   //--- Chunk Info
 
   lname:=ainfo.GetObjectName(lChunkType);
+  if lname=nil then
+  begin
+    Str(lChunkType,lbuf);
+    lname:=PWideChar(lbuf);
+  end;
 
   AddString(lnode,'DESCRIPTOR',lname);
   pcw:=memReadShortString(aptr);
@@ -137,8 +144,8 @@ begin
   if fname<>'' then
   begin
     ls:=UpCase(fname);
-    if      pos('MEDIA\UI'       ,ls)>0 then pcw:='UI'
-    else if pos('MEDIA\Particles',ls)>0 then pcw:='Particle Creator'
+    if      (pos('MEDIA\UI'       ,ls)>0) or (pos('MEDIA/UI'       ,ls)>0) then pcw:='UI'
+    else if (pos('MEDIA\Particles',ls)>0) or (pos('MEDIA/Particles',ls)>0) then pcw:='Particle Creator'
   end;
   result:=AddGroup(nil,pcw);
   linfo.SelectScene(pcw);

@@ -83,6 +83,11 @@ begin
   SetLength(ainfo.Entries,memReadDWord(aptr)); // entries
   ltotal:=0;
 
+{!!!!!!!!
+  1 record - empty name, children - 'MEDIA/'
+  next  - entries for files   like 'MEDIA/SKILLS.RAW'
+  after - entried for folders like 'MEDIA/UNITS/'
+!!!!!!!!}
   for i:=0 to High(ainfo.Entries) do
   begin
     ainfo.Entries[i].name:=memReadShortString(aptr);
@@ -456,7 +461,7 @@ end;
 function SearchFile(const ainfo:TPAKInfo; const fname:string):PMANFileInfo;
 var
   lentry:PMANDirEntry;
-  lpath,lname:string;
+  lpath,lname:WideString;
   lwpath,lwname:PWideChar;
   i,j:integer;
 begin

@@ -67,6 +67,11 @@ type
 
     FOnFileScan:TOnFileScan;
 
+    FModTitle  : AnsiString;
+    FModAuthor : AnsiString;
+    FModDescr  : AnsiString;
+    FModVersion: word;
+    
     function GetFileLine(idx: integer): integer;
 
     procedure SetFilter(afilter:tSearchFilter);
@@ -144,6 +149,12 @@ type
     property Mode  :tTextMode     read FFMode  write FFMode;
     property Filter:tSearchFilter read FFilter write SetFilter;
 
+    // mod info
+    property ModTitle  :AnsiString read FModTitle;
+    property ModAuthor :AnsiString read FModAuthor;
+    property ModDescr  :AnsiString read FModDescr;
+    property ModVersion:word       read FModVersion;
+
     // reference
     property Ref:TTL2Reference read fRef;
 
@@ -174,7 +185,9 @@ implementation
 
 uses
   SysUtils,
-  TL2Text;
+  TL2Text,
+  rgglobal,
+  TL2Mod;
 
 // Open file error codes
 
@@ -865,7 +878,10 @@ var
 begin
   lstrm:=tMemoryStream.Create;
   try
+    // references
     fRef.SaveToStream(lstrm);
+
+    // flags
     lstrm.Position:=lstrm.Size;
     lpos:=lstrm.Size;
     lstrm.WriteDWord(0);
@@ -888,6 +904,7 @@ begin
     lstrm.WriteDWord(lcnt);
     lstrm.Position:=lpos1;
 
+    // templates
     lstrm.WriteByte(1);
     for i:=cntStart to cntText-1 do
     begin
@@ -897,6 +914,12 @@ begin
         lstrm.WriteAnsiString(arText[i].tmpl);
       end;
     end;
+
+    // mod info
+    lstrm.WriteWord(FModVersion);
+    lstrm.WriteAnsiString(FModTitle);
+    lstrm.WriteAnsiString(FModAuthor);
+    lstrm.WriteAnsiString(FModDescr);
 
     lstrm.SaveToFile(ChangeFileExt(aname,'.ref'));
   finally
@@ -916,8 +939,11 @@ begin
     lstrm:=tMemoryStream.Create;
     try
       lstrm.LoadFromFile(ls);
+
+      // references
       fRef.LoadFromStream(lstrm);
 
+      // flags
       lsize:=lstrm.ReadDWord();
       SetLength(TmpInfo,lsize);
 
@@ -927,6 +953,7 @@ begin
         TmpInfo[i]._part:=lstrm.ReadByte ()<>0;
       end;
 
+      // temlates
       if lstrm.Position<lstrm.Size then
       begin
         ltype:=lstrm.ReadByte();
@@ -938,6 +965,16 @@ begin
           end;
         end;
       end;
+
+      // mod info
+      if lstrm.Position<lstrm.Size then
+      begin
+        FModVersion:=lstrm.ReadWord();
+        FModTitle  :=lstrm.ReadAnsiString();
+        FModAuthor :=lstrm.ReadAnsiString();
+        FModDescr  :=lstrm.ReadAnsiString();
+      end;
+
     except
     end;
     lstrm.Free;
@@ -959,6 +996,11 @@ begin
   cntStart:=0;
 
   noteIndex:=-1;
+
+  FModVersion:=0;
+  FModTitle  :='';
+  FModAuthor :='';
+  FModDescr  :='';
 
   fRef.Init;
 end;
@@ -1076,7 +1118,7 @@ var
   lsign:word;
 begin
   result:=-1;
-  if UpCase(ExtractFileName(fname))='MOD.DAT' then exit;
+//  if UpCase(ExtractFileName(fname))='MOD.DAT' then exit;
 
   lext:=UpCase(ExtractFileExt(fname));
 
@@ -1137,6 +1179,7 @@ end;
 
 function TTL2Translation.Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
 var
+  lmodinfo:TTL2ModInfo;
   sl:TStringList;
   lRootScanDir:AnsiString;
   i,llen:integer;
@@ -1169,7 +1212,18 @@ begin
           end;
         end;
 
-      ReadSrcFile(sl[i],IntPtr(sl.Objects[i]),llen);
+      if UpCase(ExtractFileName(sl[i]))='MOD.DAT' then
+      begin
+        MakeModInfo(lmodinfo);
+        LoadModConfiguration(PChar(sl[i]),lmodinfo);
+        FModTitle  :=String(WideString(lmodinfo.title));
+        FModAuthor :=String(WideString(lmodinfo.author));
+        FModDescr  :=String(WideString(lmodinfo.descr));
+        FModVersion:=lmodinfo.modver;
+        ClearModInfo(lmodinfo);
+      end
+      else
+        ReadSrcFile(sl[i],IntPtr(sl.Objects[i]),llen);
     end;
   end;
 

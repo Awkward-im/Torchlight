@@ -27,7 +27,7 @@ function WriteModInfo   (fname:PChar   ; const amod:TTL2ModInfo):integer; export
 function WriteModInfo   (out abuf:PByte; const amod:TTL2ModInfo):integer;
 function WriteModInfoBuf(    abuf:PByte; const amod:TTL2ModInfo):integer;
 procedure ClearModInfo(var amod:TTL2ModInfo); export;
-procedure MakeModInfo (var amod:TTL2ModInfo); export;
+procedure MakeModInfo (out amod:TTL2ModInfo); export;
 
 function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
 function SaveModConfiguration(const amod:TTL2ModInfo; strFile:PChar):boolean;
@@ -292,7 +292,7 @@ begin
   amod.gamever:=$0001001900050002;
 end;
 
-procedure MakeModInfo(var amod:TTL2ModInfo);
+procedure MakeModInfo(out amod:TTL2ModInfo);
 var
   lguid:TGUID;
 begin

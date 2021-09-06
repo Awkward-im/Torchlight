@@ -25,8 +25,10 @@ function  CalcPAKHash(const fname:string):dword;
 
 //===== Packing =====
 
-function  UnpackAll(var ainfo:TPAKInfo; const adir:string):boolean;
-procedure PackAll  (var ainfo:TPAKInfo);
+function  UnpackFile(var ainfo:TPAKInfo; const afile:string; out aout:PByte):integer;
+function  UnpackFile(var ainfo:TPAKInfo; const afile:string; const adir:string):boolean;
+function  UnpackAll (var ainfo:TPAKInfo; const adir:string):boolean;
+procedure PackAll   (var ainfo:TPAKInfo);
 
 
 type
@@ -191,7 +193,7 @@ begin
 
   //--- Parse: read manifest
 
-  if ainfo.ver=verTL2 then
+  if (ainfo.ver=verTL2) and (Pos('.MAN',fname)<6) then
     Assign(f,fname+'.MAN')
   else
     Assign(f,fname);
@@ -321,7 +323,8 @@ begin
 
   ClearModInfo(ainfo.modinfo);
 
-  ainfo.fname:='';
+  ainfo.fname :='';
+  ainfo.srcdir:='';
   FillChar(ainfo,SizeOf(ainfo),0);
   ainfo.ver:=verUnk;
 end;
@@ -417,62 +420,79 @@ end;
 
 //----- Unpack -----
 
-function Unpack(var ainfo:TPAKInfo; const afile:string):boolean;
+function UnpackFile(var ainfo:TPAKInfo; const afile:string; out aout:PByte):integer;
 var
   f:file of byte;
   lfhdr:TPAKFileHeader;
-  ldir:string;
   fi:PMANFileInfo;
-  lin,lout:PByte;
+  lin:PByte;
 begin
-  result:=false;
+  result:=0;
+
   fi:=SearchFile(ainfo,afile);
   if fi<>nil then
   begin
     if fi^.size_s=0 then exit;
 
-    Assign(f,ainfo.fname);
+    Assign(f,MakeFileName(ainfo));
     Reset(f);
     if IOResult<>0 then exit;
 
     Seek(f,ainfo.data+fi^.offset);
     BlockRead(f,lfhdr,SizeOf(lfhdr));
+
     fi^.size_u:=lfhdr.size_u;
     fi^.size_c:=lfhdr.size_c;
-    GetMem(lout,lfhdr.size_u);
+
+    GetMem(aout,lfhdr.size_u);
     if lfhdr.size_c>0 then
     begin
       GetMem(lin,lfhdr.size_c);
       BlockRead(f,lin^,lfhdr.size_c);
+
+      uncompress(
+          PChar(aout),lfhdr.size_u,
+          PChar(lin ),lfhdr.size_c);
+
+      FreeMem(lin);
     end
     else
     begin
-      lin:=nil;
-      BlockRead(f,lout^,lfhdr.size_u);
+      BlockRead(f,aout^,lfhdr.size_u);
     end;
+
     Close(f);
+    result:=lfhdr.size_u;
+  end;
+end;
 
-    if lfhdr.size_c>0 then
-    begin
-      uncompress(
-          PChar(lout),lfhdr.size_u,
-          PChar(lin ),lfhdr.size_c);
-    end;
-
-    ldir:=ExtractFilePath(afile);
+function UnpackFile(var ainfo:TPAKInfo; const afile:string; const adir:string):boolean;
+var
+  f:file of byte;
+  ldir:string;
+  lout:PByte;
+  lsize:integer;
+begin
+  lsize:=UnpackFile(ainfo, afile, lout);
+  if lsize>0 then
+  begin
+    if adir='' then
+      ldir:=ExtractFilePath(afile)
+    else
+      ldir:=adir;
     ForceDirectories(ldir);
 
-    Assign(f,ldir+'\'+fi^.name);
+    Assign(f,ldir+'\'+ExtractFileName(afile));
     Rewrite(f);
     if IOResult=0 then
     begin
-      BlockWrite(f,lout^,lfhdr.size_u);
+      BlockWrite(f,lout^,lsize);
       Close(f);
     end;
     FreeMem(lout);
-    if lin<>nil then FreeMem(lin);
-  
   end;
+
+  result:=lsize>0;
 end;
 
 {$PUSH}

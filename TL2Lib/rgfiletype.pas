@@ -57,6 +57,7 @@ function PAKTypeRealToCommon(atype,aver:integer):integer;
 function PAKTypeCommonToReal(atype,aver:integer):integer;
 function PAKTypeToCategory  (atype:integer):integer;
 function PAKCategoryName(acategory:integer):string;
+function GetExtCategory(const aext:string):integer;
 
 type
   PPAKExtInfo = ^TPAKExtInfo;
@@ -67,6 +68,53 @@ type
   end;
 
 function GetExtInfo(const fname:string; aver:integer):PPAKExtInfo;
+
+const
+  TableExt: array of record
+     _type: byte;
+     _ext : string;
+  end = (
+    (_type:typeDAT       ; _ext:'.DAT'),
+    (_type:typeDAT       ; _ext:'.TEMPLATE'),
+    (_type:typeLayout    ; _ext:'.LAYOUT'),
+    (_type:typeUnknown   ; _ext:'.UILAYOUT'), //!!
+    (_type:typeMesh      ; _ext:'.MESH'),
+    (_type:typeSkeleton  ; _ext:'.SKELETON'),
+    (_type:typeDDS       ; _ext:'.DDS'),
+    (_type:typeImage     ; _ext:'.PNG'),
+    (_type:typeSound     ; _ext:'.WAV'),
+    (_type:typeSound     ; _ext:'.OGG'),
+    (_type:typeMaterial  ; _ext:'.MATERIAL'),
+    (_type:typeRAW       ; _ext:'.RAW'),
+    (_type:typeImageSet  ; _ext:'.IMAGESET'),
+    (_type:typeTTF       ; _ext:'.TTF'),
+    (_type:typeTTF       ; _ext:'.TTC'),
+    (_type:typeFont      ; _ext:'.FONT'),
+    (_type:typeAnimation ; _ext:'.ANIMATION'),
+    (_type:typeHIE       ; _ext:'.HIE'),
+    (_type:typeScheme    ; _ext:'.SCHEME'),
+    (_type:typeLookNFeel ; _ext:'.LOOKNFEEL'),
+    (_type:typeMPP       ; _ext:'.MPP'),
+    (_type:typeMPP       ; _ext:'.MPD'),
+    (_type:typeBIK       ; _ext:'.BIK'),
+    (_type:typeJPG       ; _ext:'.JPG'),
+    (_type:typeImage     ; _ext:'.MDL'),
+    (_type:typeImage     ; _ext:'.BMP'),
+    (_type:typeImage     ; _ext:'.TGA'),
+    (_type:typeProgram   ; _ext:'.PROGRAM'),
+    (_type:typeFont      ; _ext:'.FONTDEF'),
+    (_type:typeCompositor; _ext:'.COMPOSITOR'),
+    (_type:typeShader    ; _ext:'.FRAG'),
+    (_type:typeShader    ; _ext:'.FX'),
+    (_type:typeShader    ; _ext:'.HLSL'),
+    (_type:typeShader    ; _ext:'.VERT'),
+    (_type:typePU        ; _ext:'.PU'),
+    (_type:typeAnno      ; _ext:'.ANNO'),
+    (_type:typeSBIN      ; _ext:'.SBIN'),
+    (_type:typeWDAT      ; _ext:'.WDAT')
+//    (_type:typeDelete    ; _ext:'<OTHER>'),
+//    (_type:typeDirectory ; _ext:'<DIR>')
+  );
 
 //========================================================
 
@@ -261,61 +309,13 @@ const
     (_category:catData   ; _tl2:tl2Unknown  ; _hob:hobWDAT)
   );
 
-const
-  TableExt: array of record
-     _type: byte;
-     _ext : string;
-  end = (
-    (_type:typeDAT       ; _ext:'.DAT'),
-    (_type:typeDAT       ; _ext:'.TEMPLATE'),
-    (_type:typeLayout    ; _ext:'.LAYOUT'),
-    (_type:typeUnknown   ; _ext:'.UILAYOUT'), //!!
-    (_type:typeMesh      ; _ext:'.MESH'),
-    (_type:typeSkeleton  ; _ext:'.SKELETON'),
-    (_type:typeDDS       ; _ext:'.DDS'),
-    (_type:typeImage     ; _ext:'.PNG'),
-    (_type:typeSound     ; _ext:'.WAV'),
-    (_type:typeSound     ; _ext:'.OGG'),
-    (_type:typeMaterial  ; _ext:'.MATERIAL'),
-    (_type:typeRAW       ; _ext:'.RAW'),
-    (_type:typeImageSet  ; _ext:'.IMAGESET'),
-    (_type:typeTTF       ; _ext:'.TTF'),
-    (_type:typeTTF       ; _ext:'.TTC'),
-    (_type:typeFont      ; _ext:'.FONT'),
-    (_type:typeAnimation ; _ext:'.ANIMATION'),
-    (_type:typeHIE       ; _ext:'.HIE'),
-    (_type:typeScheme    ; _ext:'.SCHEME'),
-    (_type:typeLookNFeel ; _ext:'.LOOKNFEEL'),
-    (_type:typeMPP       ; _ext:'.MPP'),
-    (_type:typeMPP       ; _ext:'.MPD'),
-    (_type:typeBIK       ; _ext:'.BIK'),
-    (_type:typeJPG       ; _ext:'.JPG'),
-    (_type:typeImage     ; _ext:'.MDL'),
-    (_type:typeImage     ; _ext:'.BMP'),
-    (_type:typeImage     ; _ext:'.TGA'),
-    (_type:typeProgram   ; _ext:'.PROGRAM'),
-    (_type:typeFont      ; _ext:'.FONTDEF'),
-    (_type:typeCompositor; _ext:'.COMPOSITOR'),
-    (_type:typeShader    ; _ext:'.FRAG'),
-    (_type:typeShader    ; _ext:'.FX'),
-    (_type:typeShader    ; _ext:'.HLSL'),
-    (_type:typeShader    ; _ext:'.VERT'),
-    (_type:typePU        ; _ext:'.PU'),
-    (_type:typeAnno      ; _ext:'.ANNO'),
-    (_type:typeSBIN      ; _ext:'.SBIN'),
-    (_type:typeWDAT      ; _ext:'.WDAT')
-//    (_type:typeDelete    ; _ext:'<OTHER>'),
-//    (_type:typeDirectory ; _ext:'<DIR>')
-  );
-
-
 function GetExtInfo(const fname:string; aver:integer):PPAKExtInfo;
 var
   lext:string;
   lptr:PTableExt;
   i,j:integer;
 begin
-  if fname[Length(fname)]='/' then exit(nil);
+  if (fname='') or (fname[Length(fname)]='/') then exit(nil);
 
   lext:=UpCase(ExtractFileExt(fname));
 
@@ -401,6 +401,24 @@ begin
   end
   else
     result:=atype;
+end;
+
+function GetExtCategory(const aext:string):integer;
+var
+  lext:string;
+  i,ltype:integer;
+begin
+  ltype:=typeUnknown;
+  lext:=UpCase(aext);
+  for i:=0 to High(TableExt) do
+  begin
+    if TableExt[i]._ext=lext then
+    begin
+      ltype:=TableExt[i]._type;
+      break;
+    end;
+  end;
+  result:=PAKTypeToCategory(ltype);
 end;
 
 end.

@@ -27,6 +27,7 @@ type
     cbReopenProjects: TCheckBox;
     cbHidePartial: TCheckBox;
     cbShowDebug: TCheckBox;
+    cbTabSync: TCheckBox;
     edFilterWords: TEdit;
     edImportDir: TDirectoryEdit;
     edDefaultFile: TFileNameEdit;
@@ -206,6 +207,7 @@ const
   sRemoveTags   = 'removetags';
   sHidePartial  = 'hidepartial';
   sShowDebug    = 'showdebug';
+  sTabSync      = 'tabsync';
 
   sGroupHeight  = 'groupheight';
 
@@ -304,6 +306,7 @@ begin
   config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAutoAsPartial .Checked);
   config.WriteBool(sNSBase+':'+sSectSettings,sReopenFiles,cbReopenProjects.Checked);
   config.WriteBool(sNSBase+':'+sSectSettings,sHidePartial,cbHidePartial   .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sTabSync    ,cbTabSync       .Checked);
 
   //--- Addons
   config.EraseSection(sNSBase+':'+sSectAddon);
@@ -370,6 +373,7 @@ begin
   cbAutoAsPartial .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
   cbReopenProjects.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sReopenFiles,false);
   cbHidePartial   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sHidePartial,false);
+  cbTabSync       .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sTabSync    ,false);
 
   //--- Addons
   lcnt:=config.ReadInteger(sNSBase+':'+sSectAddon,sAddFiles,0);

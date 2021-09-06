@@ -1,133 +1,321 @@
 object RGGUIForm: TRGGUIForm
   Left = 433
-  Height = 455
+  Height = 545
   Top = 205
-  Width = 803
+  Width = 944
   Caption = 'RGGUI'
-  ClientHeight = 435
-  ClientWidth = 803
+  ClientHeight = 545
+  ClientWidth = 944
   Menu = MainMenu
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '2.1.0.0'
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 412
-    Width = 803
+    Top = 522
+    Width = 944
     Panels = <>
-  end
-  object sgMain: TStringGrid
-    Left = 0
-    Height = 348
-    Top = 64
-    Width = 803
-    Align = alClient
-    AutoEdit = False
-    ColCount = 8
-    ColumnClickSorts = True
-    Columns = <    
-      item
-        ReadOnly = True
-        Title.Caption = 'Dir'
-        Width = 256
-      end    
-      item
-        ReadOnly = True
-        Title.Caption = 'Name'
-        Width = 144
-      end    
-      item
-        ReadOnly = True
-        Title.Caption = 'Type'
-        Width = 80
-      end    
-      item
-        ReadOnly = True
-        Title.Caption = 'Time'
-        Width = 110
-      end    
-      item
-        Alignment = taRightJustify
-        ReadOnly = True
-        Title.Caption = 'Packed'
-        Width = 80
-      end    
-      item
-        Alignment = taRightJustify
-        ReadOnly = True
-        Title.Caption = 'Unpacked'
-        Width = 80
-      end    
-      item
-        Alignment = taRightJustify
-        ReadOnly = True
-        Title.Caption = 'Source'
-        Width = 80
-      end>
-    DefaultColWidth = 48
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowSelect, goThumbTracking, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goFixedColSizing, goRowHighlight]
-    RowCount = 1
-    TabOrder = 1
-    OnCompareCells = sgMainCompareCells
   end
   object ToolBar: TToolBar
     Left = 0
     Height = 26
     Top = 0
-    Width = 803
-    Caption = 'ToolBar'
-    TabOrder = 2
+    Width = 944
+    Images = ImageList
+    TabOrder = 1
+    object tbOpen: TToolButton
+      Left = 1
+      Top = 2
+      Action = actFileOpen
+    end
+    object tbSep1: TToolButton
+      Left = 47
+      Height = 22
+      Top = 2
+      Style = tbsDivider
+    end
+    object tbAbout: TToolButton
+      Left = 52
+      Top = 2
+      Action = actHelpAbout
+    end
+    object tbSaveAs: TToolButton
+      Left = 24
+      Top = 2
+      Action = actFileSaveAs
+    end
   end
-  object pnlFilter: TPanel
+  object pnlTree: TPanel
     Left = 0
-    Height = 38
+    Height = 496
     Top = 26
-    Width = 803
-    Align = alTop
-    ClientHeight = 38
-    ClientWidth = 803
-    TabOrder = 3
-    object ccbCategory: TCheckComboBox
-      Left = 64
-      Height = 22
-      Top = 6
-      Width = 100
-      DropDownCount = 12
-      ItemHeight = 16
-      OnCloseUp = ccbCategoryCloseUp
-      OnItemChange = ccbCategoryItemChange
+    Width = 267
+    Align = alLeft
+    ClientHeight = 496
+    ClientWidth = 267
+    TabOrder = 2
+    object edTreeFilter: TTreeFilterEdit
+      Left = 1
+      Height = 23
+      Top = 1
+      Width = 265
+      ButtonWidth = 23
+      Align = alTop
+      NumGlyphs = 1
+      MaxLength = 0
       TabOrder = 0
+      TextHint = '(filter)'
+      FilteredTreeview = tvTree
+      ExpandAllInitially = True
     end
-    object lblCategory: TLabel
-      Left = 8
-      Height = 15
-      Top = 9
-      Width = 48
-      Caption = 'Category'
-      ParentColor = False
-    end
-    object lblExtension: TLabel
-      Left = 190
-      Height = 15
-      Top = 9
-      Width = 50
-      Caption = 'Extension'
-      ParentColor = False
-    end
-    object ccbExtension: TCheckComboBox
-      Left = 248
-      Height = 22
-      Top = 5
-      Width = 100
-      ItemHeight = 16
+    object tvTree: TTreeView
+      Left = 1
+      Height = 471
+      Top = 24
+      Width = 265
+      Align = alClient
+      AutoExpand = True
+      PopupMenu = mnuTree
+      ReadOnly = True
+      RowSelect = True
+      ScrollBars = ssAutoBoth
       TabOrder = 1
+      OnSelectionChanged = tvTreeSelectionChanged
+      Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 267
+    Height = 496
+    Top = 26
+    Width = 5
+  end
+  object PageControl: TPageControl
+    Left = 272
+    Height = 496
+    Top = 26
+    Width = 672
+    ActivePage = Setings
+    Align = alClient
+    TabIndex = 0
+    TabOrder = 4
+    object Setings: TTabSheet
+      Caption = 'Setings'
+      ClientHeight = 468
+      ClientWidth = 664
+      object lblOutDir: TLabel
+        Left = 9
+        Height = 15
+        Top = 16
+        Width = 88
+        Caption = 'Dir for extraction'
+      end
+      object deOutDir: TDirectoryEdit
+        Left = 8
+        Height = 23
+        Top = 40
+        Width = 416
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 0
+      end
+      object cbUnpackTree: TCheckBox
+        Left = 9
+        Height = 19
+        Top = 72
+        Width = 73
+        Caption = 'Keep path'
+        TabOrder = 1
+      end
+      object gbDecoding: TGroupBox
+        Left = 9
+        Height = 121
+        Top = 112
+        Width = 186
+        Caption = 'Text unpack'
+        ClientHeight = 101
+        ClientWidth = 182
+        TabOrder = 2
+        object rbBinOnly: TRadioButton
+          Left = 9
+          Height = 19
+          Top = 3
+          Width = 79
+          Caption = 'Binary only'
+          TabOrder = 0
+        end
+        object rbTextOnly: TRadioButton
+          Left = 9
+          Height = 19
+          Top = 27
+          Width = 68
+          Caption = 'Text only'
+          TabOrder = 1
+        end
+        object rbTextRename: TRadioButton
+          Left = 9
+          Height = 19
+          Top = 51
+          Width = 85
+          Caption = 'Rename text'
+          TabOrder = 2
+        end
+        object rbGUTSStyle: TRadioButton
+          Left = 9
+          Height = 19
+          Top = 75
+          Width = 76
+          Caption = 'GUTS style'
+          TabOrder = 3
+        end
+      end
+    end
+    object Grid: TTabSheet
+      Caption = 'Grid'
+      ClientHeight = 468
+      ClientWidth = 664
+      object sgMain: TStringGrid
+        Left = 0
+        Height = 415
+        Top = 38
+        Width = 664
+        Align = alClient
+        AutoEdit = False
+        ColCount = 8
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            ReadOnly = True
+            Title.Caption = 'Dir'
+            Width = 256
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Name'
+            Width = 144
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Type'
+            Width = 80
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Time'
+            Width = 110
+          end        
+          item
+            Alignment = taRightJustify
+            ReadOnly = True
+            Title.Caption = 'Packed'
+            Width = 80
+          end        
+          item
+            Alignment = taRightJustify
+            ReadOnly = True
+            Title.Caption = 'Unpacked'
+            Width = 80
+          end        
+          item
+            Alignment = taRightJustify
+            ReadOnly = True
+            Title.Caption = 'Source'
+            Width = 80
+          end>
+        DefaultColWidth = 48
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowSelect, goThumbTracking, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goFixedColSizing, goRowHighlight]
+        RowCount = 1
+        TabOrder = 0
+        OnCompareCells = sgMainCompareCells
+        OnDblClick = sgMainDblClick
+      end
+      object lblNote: TLabel
+        Left = 0
+        Height = 15
+        Top = 453
+        Width = 664
+        Align = alBottom
+        Caption = ' * Double-click to unpack'
+      end
+      object pnlFilter: TPanel
+        Left = 0
+        Height = 38
+        Top = 0
+        Width = 664
+        Align = alTop
+        ClientHeight = 38
+        ClientWidth = 664
+        TabOrder = 1
+        OnClick = bbCatInverseClick
+        object ccbCategory: TCheckComboBox
+          Left = 64
+          Height = 22
+          Top = 7
+          Width = 128
+          DropDownCount = 12
+          ItemHeight = 16
+          OnCloseUp = ccbFilterCloseUp
+          OnItemChange = ccbFilterItemChange
+          TabOrder = 0
+        end
+        object lblCategory: TLabel
+          Left = 8
+          Height = 15
+          Top = 11
+          Width = 48
+          Caption = 'Category'
+        end
+        object lblExtension: TLabel
+          Left = 367
+          Height = 15
+          Top = 11
+          Width = 50
+          Caption = 'Extension'
+        end
+        object ccbExtension: TCheckComboBox
+          Left = 425
+          Height = 22
+          Top = 7
+          Width = 128
+          ItemHeight = 16
+          OnCloseUp = ccbFilterCloseUp
+          OnItemChange = ccbFilterItemChange
+          TabOrder = 1
+        end
+        object bbExtSelect: TBitBtn
+          Left = 561
+          Height = 30
+          Hint = 'Select All/None'
+          Top = 3
+          Width = 30
+          Kind = bkRetry
+          Margin = 4
+          OnClick = bbExtSelectClick
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 2
+        end
+        object bbCatInverse: TBitBtn
+          Left = 201
+          Height = 30
+          Hint = 'Inverse Category'
+          Top = 3
+          Width = 30
+          Kind = bkRetry
+          Margin = 4
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 3
+        end
+      end
     end
   end
   object MainMenu: TMainMenu
     Images = ImageList
-    Left = 720
-    Top = 16
+    Left = 72
+    Top = 232
     object miFile: TMenuItem
       Caption = '&File'
       object miFileOpen: TMenuItem
@@ -173,8 +361,8 @@ object RGGUIForm: TRGGUIForm
   end
   object ActionList: TActionList
     Images = ImageList
-    Left = 728
-    Top = 104
+    Left = 72
+    Top = 288
     object actFileOpen: TAction
       Category = 'File'
       Caption = '&Open'
@@ -235,8 +423,8 @@ object RGGUIForm: TRGGUIForm
     end
   end
   object ImageList: TImageList
-    Left = 655
-    Top = 89
+    Left = 72
+    Top = 344
     Bitmap = {
       4C7A070000001000000010000000040500000000000078DAED96E94F546714C6
       DF344D93B649FF0B8DCA268A041A892CE15BD3A431B4A16DA835E997A6DFDA0F
@@ -280,5 +468,24 @@ object RGGUIForm: TRGGUIForm
       291B786F5F3079EE4FA7585C5CCCAAD6F7EC96973FDD7B3EAAE1D6FA7BA998D4
       7EF6F814C9BDAF57A0BCAFEF728F4F09F82C0662FF00B1446C2C
     }
+  end
+  object mnuTree: TPopupMenu
+    Left = 72
+    Top = 176
+    object miExtractTree: TMenuItem
+      Caption = 'Extract w. subdirs'
+      ShortCut = 49
+      OnClick = DoExtractTree
+    end
+    object miExtractDir: TMenuItem
+      Caption = 'Extract this dir'
+      ShortCut = 50
+      OnClick = DoExtractDir
+    end
+    object miExtractVisible: TMenuItem
+      Caption = 'Extract visible'
+      ShortCut = 51
+      OnClick = DoExtractGrid
+    end
   end
 end
