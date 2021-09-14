@@ -11,7 +11,10 @@ uses
 
 type
   TSBUpdateEvent = Procedure(Sender:TObject; const SBText:AnsiString='') of Object;
-
+{
+const
+  WM_CHANGETEXT = WM_USER + 1;
+}
 type
 
   { TTL2Project }
@@ -100,6 +103,8 @@ type
     FSBUpdate:TSBUpdateEvent;
     FFolderFilter: String;
 
+//    procedure ChangeText(var Msg); message WM_CHANGETEXT;
+    
     procedure FillFoldersCombo(asetidx: boolean);
     procedure CreateFileTab(idx: integer);
     function  FillColorPopup: boolean;
@@ -195,6 +200,11 @@ const
 
 //----- Other -----
 
+{
+procedure TTL2Project.ChangeText(var Msg);
+begin
+end;
+}
 function TTL2Project.ProjectFileScan(const fname:AnsiString; idx, atotal:integer):integer;
 begin
   if doStopScan then
@@ -428,6 +438,7 @@ begin
   begin
     if TL2ProjectGrid.Col=colTrans then
     begin
+      // remove color tags
       if Shift=[ssAlt] then
       begin
         i:=TL2ProjectGrid.Row;
@@ -447,6 +458,7 @@ begin
         end;
       end
       else
+      // clear selected translations
       begin
         for i:=1 to TL2ProjectGrid.RowCount-1 do
         begin
@@ -468,6 +480,7 @@ begin
     end
     else
     begin
+      // mark lines as deleted
       if MessageDlg(sDoDelete,mtConfirmation,mbOkCancel,0)=mrOk then
       begin
         for i:=TL2ProjectGrid.RowCount-1 downto 1 do

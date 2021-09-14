@@ -47,6 +47,7 @@ type
     procedure Clear;
     procedure SortText;
     procedure Sort;
+    // calculates Hash for key = -1
     function  Add(akey:dword; aval:PWideChar; auseThis:boolean=false):dword;
     function  Add(akey:dword; const aval:AnsiString):dword;
     function  Import(aptr: PByte): integer;
@@ -364,7 +365,7 @@ function TRGDict.Add(akey:dword; aval:PWideChar; auseThis:boolean=false):dword;
 var
   i:integer;
 begin
-  if (akey=0) or (akey=dword(-1)) then akey:=RGHash(aval,Length(aval));
+  if {(akey=0) or} (akey=dword(-1)) then akey:=RGHash(aval,Length(aval));
 
   if (check_hash in FOptions) then
   begin

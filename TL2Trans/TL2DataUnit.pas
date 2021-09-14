@@ -1,3 +1,12 @@
+{%TODO "Changed" flag (when to clear)}
+{%TODO implement import from/export to file and text (as clipboard)}
+{%TODO implement CheckTheSame from tl2projectform.pas}
+{%TODO save templates by option}
+{%TODO Search/Replace text}
+{%TODO implement SOUNDEX or METAPHONE for wrong letters}
+{%TODO add event for text adding/changing}
+{%TODO statistic on changing: total, translated, partially}
+{%TODO make "fixed" lines = (cntBaseLines+cntModLines) - CheckLine function}
 unit TL2DataUnit;
 
 interface
@@ -28,8 +37,8 @@ type
     origin: AnsiString;
     tmpl  : AnsiString;
     transl: AnsiString;
-    aref  : integer; // reference to original placement
-    sample: integer;
+    aref  : integer;      // reference to original placement (file, line)
+    sample: integer;      // reference to original text (for similar cases), runtime
     atype : tTextStatus;
   end;
 
@@ -40,6 +49,8 @@ type
   2 - abort
 }
   TOnFileScan = function (const fname:AnsiString; idx, atotal:integer):integer of object;
+
+  TOnLineChanged = procedure (aline:integer) of object;
 
 type
   PTL2Translation = ^TTL2Translation;
@@ -53,7 +64,7 @@ type
     FErrCode: integer;
     FErrLine: integer;
 
-    fRef:TTL2Reference;
+    fRef: TTL2Reference;
     
     arText  : array of tDATString;
     cntText : integer; // lines totally
@@ -65,11 +76,16 @@ type
     FFMode    : tTextMode;
     FFilter   : tSearchFilter;
 
-    FOnFileScan:TOnFileScan;
+    // events
+    FOnFileScan   : TOnFileScan;
+    FOnLineAdd    : TOnLineChanged;
+    FOnLineChanged: TOnLineChanged;
 
     FModTitle  : AnsiString;
     FModAuthor : AnsiString;
     FModDescr  : AnsiString;
+    FModURL    : AnsiString;
+    FModID     : Int64;
     FModVersion: word;
     
     function GetFileLine(idx: integer): integer;
@@ -113,6 +129,9 @@ type
     procedure ReadSrcFile(const fname: AnsiString; atype: integer; arootlen:integer);
     procedure CycleDir     (sl:TStringList; const adir:AnsiString; allText:boolean; withChild:boolean);
 
+    function  CheckLine(const asrc,atrans:AnsiString;
+         const atmpl:AnsiString=''; astate:tTextStatus=stReady):integer;
+
   public
     procedure Init;
     procedure Free;
@@ -126,15 +145,25 @@ type
     }
     function  LoadFromFile(const fname:AnsiString):integer;
     procedure SaveToFile  (const fname:AnsiString; astat:tTextStatus; askip:boolean=false);
-    procedure SaveInfo(const aname:AnsiString);
-    procedure LoadInfo(const aname:AnsiString);
+    procedure SaveInfo    (const fname:AnsiString);
+    procedure LoadInfo    (const fname:AnsiString);
+    function  ImportFromFile(const fname:AnsiString):integer;
+    function  ImporFromText (atext:AnsiString):integer;
+    function  ExportToFile  (const fname:AnsiString):boolean;
+    function  ExportToText  ():AnsiString;
 
-    function Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
+    function  Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
 
-    function FirstNoticed(acheckonly:boolean=true):integer;
-    function NextNoticed (acheckonly:boolean=true):integer;
+    function  FirstNoticed(acheckonly:boolean=true):integer;
+    function  NextNoticed (acheckonly:boolean=true):integer;
 
-    property OnFileScan:TOnFileScan read FOnFileScan write FOnFileScan;
+    procedure CheckTheSame(idx:integer; markAsPart:boolean);
+
+    // events
+    property OnFileScan   :TOnFileScan    read FOnFileScan    write FOnFileScan;
+    property OnLineAdd    :TOnLineChanged read FOnLineAdd     write FOnLineAdd;
+    property OnLineChanged:TOnLineChanged read FOnLineChanged write FOnLineChanged;
+
     // statistic
     property Lines   :integer read cntText;
     property Doubles :integer read FDoubles;
@@ -153,6 +182,8 @@ type
     property ModTitle  :AnsiString read FModTitle;
     property ModAuthor :AnsiString read FModAuthor;
     property ModDescr  :AnsiString read FModDescr;
+    property ModURL    :AnsiString read FModURL;
+    property ModID     :Int64      read FModID;
     property ModVersion:word       read FModVersion;
 
     // reference
@@ -614,6 +645,10 @@ begin
   arText[cntText].tmpl:=ltmpl;
 
   inc(cntText);
+
+  if FOnLineAdd<>nil then
+    FOnLineAdd(cntText-1);
+
   result:=cntText;
 end;
 
@@ -870,7 +905,7 @@ end;
 
 //===== Info =====
 
-procedure TTL2Translation.SaveInfo(const aname:AnsiString);
+procedure TTL2Translation.SaveInfo(const fname:AnsiString);
 var
   lstrm:tMemoryStream;
   i,lcnt,lpos,lpos1:integer;
@@ -916,24 +951,27 @@ begin
     end;
 
     // mod info
-    lstrm.WriteWord(FModVersion);
+    lstrm.WriteByte(2);
+    lstrm.WriteWord      (FModVersion);
+    lstrm.WriteQWord     (QWord(FModID));
     lstrm.WriteAnsiString(FModTitle);
     lstrm.WriteAnsiString(FModAuthor);
     lstrm.WriteAnsiString(FModDescr);
+    lstrm.WriteAnsiString(FModURL);
 
-    lstrm.SaveToFile(ChangeFileExt(aname,'.ref'));
+    lstrm.SaveToFile(ChangeFileExt(fname,'.ref'));
   finally
     lstrm.Free;
   end;
 end;
 
-procedure TTL2Translation.LoadInfo(const aname:AnsiString);
+procedure TTL2Translation.LoadInfo(const fname:AnsiString);
 var
   lstrm:tMemoryStream;
   ls:string;
   i,lsize,ltype:integer;
 begin
-  ls:=ChangeFileExt(aname,'.ref');
+  ls:=ChangeFileExt(fname,'.ref');
   if FileExists(ls) then
   begin
     lstrm:=tMemoryStream.Create;
@@ -953,32 +991,227 @@ begin
         TmpInfo[i]._part:=lstrm.ReadByte ()<>0;
       end;
 
-      // temlates
-      if lstrm.Position<lstrm.Size then
+      while lstrm.Position<lstrm.Size do
       begin
         ltype:=lstrm.ReadByte();
-        if ltype=1 then
-        begin
-          for i:=0 to lsize-1 do
-          begin
-            TmpInfo[i].tmpl:=lstrm.ReadAnsiString();
-          end;
-        end;
-      end;
 
-      // mod info
-      if lstrm.Position<lstrm.Size then
-      begin
-        FModVersion:=lstrm.ReadWord();
-        FModTitle  :=lstrm.ReadAnsiString();
-        FModAuthor :=lstrm.ReadAnsiString();
-        FModDescr  :=lstrm.ReadAnsiString();
+        case ltype of
+          // Templates
+          1: begin
+            for i:=0 to lsize-1 do
+            begin
+              TmpInfo[i].tmpl:=lstrm.ReadAnsiString();
+            end;
+          end;
+
+          // Mod info
+          2: begin
+            FModVersion:=lstrm.ReadWord();
+            FModID     :=Int64(lstrm.ReadQWord());
+            FModTitle  :=lstrm.ReadAnsiString();
+            FModAuthor :=lstrm.ReadAnsiString();
+            FModDescr  :=lstrm.ReadAnsiString();
+            FModURL    :=lstrm.ReadAnsiString();
+          end;
+        else
+          break;
+        end;
       end;
 
     except
     end;
     lstrm.Free;
   end;
+end;
+
+//===== Check =====
+
+procedure TTL2Translation.CheckTheSame(idx:integer; markAsPart:boolean);
+var
+  s:AnsiString;
+  j:integer;
+begin
+
+  if arText[idx].transl<>'' then
+  begin
+    s:=arText[idx].tmpl;
+    for j:=cntStart to cntText-1 do
+    begin
+      if (arText[j].transl='') and // data.State[j]=stOriginal
+         (arText[j].tmpl  =s ) then
+      begin
+        arText[j].transl:=ReplaceTranslation(arText[idx].transl,arText[j].origin);
+        if markAsPart then
+        begin
+          arText[j].atype:=stPartial;
+        end;
+
+        if FOnLineChanged<>nil then
+          FOnLineChanged(j);
+      end;
+    end;
+  end;
+end;
+
+function TTL2Translation.CheckLine(const asrc,atrans:AnsiString;
+         const atmpl:AnsiString=''; astate:tTextStatus=stReady):integer;
+var
+  ls:AnsiString;
+  i:integer;
+  lstate:tTextStatus;
+begin
+  result:=0;
+  if atrans='' then exit; // astate=stOriginal
+
+  if atmpl='' then
+    ls:=FilteredString(asrc)
+  else
+    ls:=atmpl;
+
+  // for all project (not preload) lines
+  for i:=cntStart to cntText-1 do
+  begin
+    lstate:=arText[i].atype;
+    if lstate<>stReady then
+    begin
+      // similar or same
+      if ls=arText[i].tmpl then
+      begin
+        // 100% same
+        if asrc=arText[i].origin then
+        begin
+          if lstate=stPurePart then
+          begin
+            if astate=stReady then
+            begin
+              inc(result);
+              arText[i].transl:=atrans;
+              arText[i].atype :=stReady;
+            end;
+          end
+          else // if (lstate=stOriginal) or (lstate=Partial) then
+          begin
+            inc(result);
+            arText[i].transl:=atrans;
+            if astate=stReady   then arText[i].atype:=stReady;
+            if astate=stPartial then arText[i].atype:=stPurePart;
+          end;
+        end
+        // just similar
+        else
+        begin
+          if lstate=stOriginal then
+          begin
+            arText[i].transl:=ReplaceTranslation(atrans,arText[i].origin);
+            arText[i].atype:=stPartial;
+            inc(result);
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+//===== Import =====
+
+function TTL2Translation.ImportFromFile(const fname:AnsiString):integer;
+var
+  ldata:TTL2Translation;
+  lcnt,i:integer;
+begin
+  ldata.Init;
+  ldata.Filter:=flNoSearch;
+  ldata.Mode  :=tmOriginal;
+
+  lcnt:=0;
+  ldata.LoadInfo(fname);
+  if ldata.LoadFromFile(fname)>0 then
+  begin
+//!! total counter
+if (FOnLineChanged<>nil) and (ldata.Lines>100) then
+FOnLineChanged(-ldata.Lines);
+
+    for i:=0 to ldata.Lines-1 do
+    begin
+//!! runtime counter
+if (FOnLineChanged<>nil) and (i>0) and ((i mod 100)=0) then
+FOnLineChanged(i);
+      
+      inc(lcnt, CheckLine(
+          ldata.arText[i].origin,
+          ldata.arText[i].transl,
+          ldata.arText[i].tmpl,
+          ldata.arText[i].atype)
+         );
+{
+      inc(lcnt, CheckLine(ldata.Line[i],ldata.Trans[i],
+          ldata.template[i],ldata.State[i]));
+}
+    end;
+  end;
+  for i:=cntStart to cntText-1 do
+    if arText[i].atype=stPurePart then arText[i].atype:=stPartial;
+
+  ldata.Free;
+
+  result:=lcnt;
+end;
+
+function TTL2Translation.ImporFromText(atext:AnsiString):integer;
+var
+  s,lsrc,ltrans:AnsiString;
+  sl:TStringList;
+  p,lline:integer;
+  lcnt,i:integer;
+begin
+  result:=0;
+
+  if atext<>'' then
+  begin
+    sl:=TStringList.Create;
+    try
+      sl.Text:=atext;
+
+      //!! how much on input
+      if FOnLineChanged<>nil then
+        FOnLineChanged(-sl.Count);
+
+      lcnt:=0;
+
+      for lline:=0 to sl.Count-1 do
+      begin
+        s:=sl[lline];
+        // Split to parts
+        p:=Pos(#9,s);
+        if p>0 then
+        begin
+          lsrc:=Copy(s,1,p-1);
+          ltrans:=Copy(s,p+1);
+          inc(lcnt, CheckLine(lsrc,ltrans));
+        end
+      end;
+      for i:=cntStart to cntText-1 do
+         if arText[i].atype=stPurePart then arText[i].atype:=stPartial;
+
+      //!! how much affected
+      result:=lcnt;
+
+    finally
+      sl.Free;
+    end;
+  end;
+end;
+
+//===== Export =====
+    
+function TTL2Translation.ExportToFile(const fname:AnsiString):boolean;
+begin
+  result:=false;
+end;
+
+function TTL2Translation.ExportToText():AnsiString;
+begin
+  result:='';
 end;
 
 //===== Basic =====
@@ -998,9 +1231,11 @@ begin
   noteIndex:=-1;
 
   FModVersion:=0;
+  FModID     :=-1;
   FModTitle  :='';
   FModAuthor :='';
   FModDescr  :='';
+  FModURL    :='';
 
   fRef.Init;
 end;
@@ -1219,7 +1454,9 @@ begin
         FModTitle  :=String(WideString(lmodinfo.title));
         FModAuthor :=String(WideString(lmodinfo.author));
         FModDescr  :=String(WideString(lmodinfo.descr));
+        FModURL    :=String(WideString(lmodinfo.download));
         FModVersion:=lmodinfo.modver;
+        FModID     :=lmodinfo.modid;
         ClearModInfo(lmodinfo);
       end
       else

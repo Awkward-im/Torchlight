@@ -54,8 +54,7 @@ type
     procedure bbOKClick(Sender: TObject);
     procedure btnCloseSampleClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure memTransKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
-      );
+    procedure memTransKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     prj:TTL2Project;
     fIdx:integer;

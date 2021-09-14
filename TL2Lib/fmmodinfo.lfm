@@ -1,0 +1,132 @@
+object MODInfoForm: TMODInfoForm
+  Left = 350
+  Height = 311
+  Top = 31
+  Width = 751
+  Caption = 'MOD Info'
+  ClientHeight = 311
+  ClientWidth = 751
+  object seVersion: TSpinEditEx
+    Left = 7
+    Height = 23
+    Top = 136
+    Width = 88
+    MaxLength = 0
+    NumbersOnly = True
+    TabOrder = 2
+    MaxValue = 65535
+    NullValue = 0
+    Value = 0
+  end
+  object lblVersion: TLabel
+    Left = 7
+    Height = 15
+    Top = 112
+    Width = 66
+    Caption = 'Mod version'
+  end
+  object leTitle: TLabeledEdit
+    Left = 7
+    Height = 23
+    Top = 24
+    Width = 376
+    EditLabel.Height = 15
+    EditLabel.Width = 376
+    EditLabel.Caption = 'Mod Title'
+    TabOrder = 0
+  end
+  object leAuthor: TLabeledEdit
+    Left = 7
+    Height = 23
+    Top = 72
+    Width = 376
+    EditLabel.Height = 15
+    EditLabel.Width = 376
+    EditLabel.Caption = 'Mod Author'
+    TabOrder = 1
+  end
+  object leWebsite: TLabeledEdit
+    Left = 7
+    Height = 23
+    Top = 192
+    Width = 376
+    EditLabel.Height = 15
+    EditLabel.Width = 376
+    EditLabel.Caption = 'Mod Website URL'
+    TabOrder = 6
+  end
+  object leDownload: TLabeledEdit
+    Left = 7
+    Height = 23
+    Top = 240
+    Width = 376
+    EditLabel.Height = 15
+    EditLabel.Width = 376
+    EditLabel.Caption = 'Mod Download URL'
+    TabOrder = 7
+  end
+  object memDescr: TMemo
+    Left = 391
+    Height = 239
+    Top = 24
+    Width = 352
+    TabOrder = 5
+  end
+  object lblDescr: TLabel
+    Left = 391
+    Height = 15
+    Top = 5
+    Width = 88
+    Caption = 'Mod Description'
+  end
+  object lblGUID: TLabel
+    Left = 113
+    Height = 15
+    Top = 112
+    Width = 270
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'Mod GUID (click button for new)'
+  end
+  object bbOK: TBitBtn
+    Left = 651
+    Height = 30
+    Top = 274
+    Width = 92
+    Default = True
+    DefaultCaption = True
+    Kind = bkOK
+    ModalResult = 1
+    OnClick = bbOKClick
+    TabOrder = 9
+  end
+  object bbCancel: TBitBtn
+    Left = 551
+    Height = 30
+    Top = 274
+    Width = 92
+    Cancel = True
+    Caption = 'Cancel'
+    Kind = bkCancel
+    ModalResult = 2
+    TabOrder = 8
+  end
+  object edGUID: TEdit
+    Left = 113
+    Height = 23
+    Top = 136
+    Width = 232
+    NumbersOnly = True
+    TabOrder = 3
+  end
+  object bbNewGUID: TBitBtn
+    Left = 351
+    Height = 26
+    Top = 135
+    Width = 32
+    Kind = bkRetry
+    Margin = 4
+    OnClick = bbNewGUIDClick
+    TabOrder = 4
+  end
+end

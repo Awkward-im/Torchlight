@@ -11,6 +11,7 @@ interface
 
 function  ParseDatFile(fname:PChar):pointer;
 function  ParseDat    (buf:PWideChar; aid:PChar=nil):pointer;
+function  MakeDatTree (anode:pointer; out aptr:PWideChar):ByteBool;
 function  WriteDatTree(anode:pointer; fname:PChar):ByteBool;
 procedure DeleteNode  (anode:pointer);
 
@@ -146,10 +147,7 @@ end;
 
 //===== Support =====
 
-type
-  TBytes = array of byte;
-
-procedure WriteWide(var buf:TBytes; var idx:integer; atext:PWideChar);
+procedure WriteWide(var buf:PByte; var idx:integer; atext:PWideChar);
 const
   TMSGrow = 4096;
 Var
@@ -162,13 +160,13 @@ begin
     exit;
 
   NewIdx:=idx+lcnt;
-  GC:=Length(buf);
+  GC:=MemSize(buf);
   If NewIdx>=GC then
   begin
     GC:=GC+(GC div 4);
     GC:=(GC+(TMSGrow-1)) and not (TMSGrow-1);
 
-    SetLength(buf,GC);
+    ReallocMem(buf,GC);
   end;
   System.Move(atext^,buf[idx],lcnt);
   idx:=NewIdx;
@@ -571,7 +569,7 @@ end;
 
 //----- Dump -----
 
-function DumpNode(var buf:TBytes; var idx:integer; anode:PTL2Node; atab:integer):boolean;
+function DumpNode(var buf:PByte; var idx:integer; anode:PTL2Node; atab:integer):boolean;
 var
   larr:array [0..127] of WideChar;
   ls:WideString;
@@ -706,30 +704,52 @@ begin
   end;
 end;
 
-function WriteDatTree(anode:pointer; fname:PChar):ByteBool;
+function MakeDatTree(anode:pointer; out aptr:PWideChar):ByteBool;
 var
-  f:file of byte;
-  lbuf:TBytes;
   lidx:integer;
 begin
   result:=false;
+  aptr:=nil;
   if anode=nil then exit;
 
-  lbuf:=nil;
-  SetLength(lbuf,2);
-  lbuf[0]:=$FF;
-  lbuf[1]:=$FE;
+  GetMem(aptr,4096);
+  aptr[0]:=WideChar($FEFF);
   lidx:=2;
 
-  DumpNode(lbuf,lidx,anode,0);
+  result:=DumpNode(PByte(aptr),lidx,anode,0);
+  
+  if not result then
+  begin
+    FreeMem(aptr);
+    aptr:=nil;
+  end
+  else
+  begin
+    if (lidx+SizeOf(WideChar))>=MemSize(aptr) then
+      ReallocMem(aptr,lidx+SizeOf(WideChar));
+    aptr[lidx div SizeOf(WideChar)]:=#0;
+  end;
 
+end;
+
+function WriteDatTree(anode:pointer; fname:PChar):ByteBool;
+var
+  f:file of byte;
+  lpc:PWideChar;
+begin
+  result:=MakeDatTree(anode,lpc);
+
+  if result then
+  begin
 {$PUSH}
 {$I-}
-  AssignFile(f, fname);
-  Rewrite(f);
-  BlockWrite(f,lbuf[0],lidx);
-  CloseFile(f);
+    AssignFile(f, fname);
+    Rewrite(f);
+    BlockWrite(f,lpc^,Length(lpc)*SizeOf(WideChar));
+    CloseFile(f);
 {$POP}
+    FreeMem(lpc);
+  end;
 
 end;
 

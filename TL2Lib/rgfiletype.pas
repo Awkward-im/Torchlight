@@ -98,7 +98,7 @@ const
     (_type:typeMPP       ; _ext:'.MPD'),
     (_type:typeBIK       ; _ext:'.BIK'),
     (_type:typeJPG       ; _ext:'.JPG'),
-    (_type:typeImage     ; _ext:'.MDL'),
+    (_type:typeMesh      ; _ext:'.MDL'),
     (_type:typeImage     ; _ext:'.BMP'),
     (_type:typeImage     ; _ext:'.TGA'),
     (_type:typeProgram   ; _ext:'.PROGRAM'),
