@@ -55,7 +55,7 @@ const
 implementation
 
 uses
-  SysUtils,
+  SysUtils, // CreateGUID call for MakeModInfo function
   rgmemory,
   rgnode;
 
@@ -240,7 +240,7 @@ begin
   if IOResult=0 then
   begin
     i:=FileSize(f);
-    if i>0 then
+    if i>MinTL2ModInfoSize then
     begin
       if i>SizeOf(buf) then i:=SizeOf(buf);
       buf[0]:=0;
@@ -252,7 +252,7 @@ begin
     i:=0;
 {$POP}
 
-  if i>MinTL2ModInfoSize then // minimal size of used header data
+  if i>MinTL2ModInfoSize then
   begin
     result:=ReadModInfoBuf(@buf,amod);
     CopyWide(amod.filename,PWideChar(WideString(ExtractFilenameOnly(fname))));
@@ -306,7 +306,7 @@ end;
 
 function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
 var
-  lnode,lroot,lgroup:pointer;
+  lnode,lroot,lgroup,lline:pointer;
   pcw:PWideChar;
   i,j,lcnt:integer;
 begin
@@ -319,63 +319,64 @@ begin
 
   if lroot=nil then exit;
 
-  if CompareWide(GetNodeName(lroot),'MOD')<>0 then exit;
-
-  result:=true;
-
-  InitModInfo(amod);
-
-  for i:=0 to GetChildCount(lroot)-1 do
+  if CompareWide(GetNodeName(lroot),'MOD')=0 then
   begin
-    lnode:=GetChild(lroot,i);
-    pcw:=GetNodeName(lnode);
-    if      CompareWide(pcw,'NAME'         )=0 then CopyWide(amod.title   ,AsString(lnode))
-    else if CompareWide(pcw,'AUTHOR'       )=0 then CopyWide(amod.author  ,AsString(lnode))
-    else if CompareWide(pcw,'DESCRIPTION'  )=0 then CopyWide(amod.descr   ,AsString(lnode))
-    else if CompareWide(pcw,'WEBSITE'      )=0 then CopyWide(amod.website ,AsString(lnode))
-    else if CompareWide(pcw,'DOWNLOAD_URL' )=0 then CopyWide(amod.download,AsString(lnode))
-    else if CompareWide(pcw,'MOD_FILE_NAME')=0 then CopyWide(amod.filename,AsString(lnode))
-    else if CompareWide(pcw,'VERSION'      )=0 then amod.modver:=AsInteger  (lnode)
-    else if CompareWide(pcw,'MOD_ID'       )=0 then amod.modid :=AsInteger64(lnode)
-    else if CompareWide(pcw,'REMOVE_FILES' )=0 then
+    result:=true;
+
+    InitModInfo(amod);
+
+    for i:=0 to GetChildCount(lroot)-1 do
     begin
-      if GetNodeType(lnode)=rgGroup then
+      lnode:=GetChild(lroot,i);
+      pcw:=GetNodeName(lnode);
+      if      CompareWide(pcw,'NAME'         )=0 then CopyWide(amod.title   ,AsString(lnode))
+      else if CompareWide(pcw,'AUTHOR'       )=0 then CopyWide(amod.author  ,AsString(lnode))
+      else if CompareWide(pcw,'DESCRIPTION'  )=0 then CopyWide(amod.descr   ,AsString(lnode))
+      else if CompareWide(pcw,'WEBSITE'      )=0 then CopyWide(amod.website ,AsString(lnode))
+      else if CompareWide(pcw,'DOWNLOAD_URL' )=0 then CopyWide(amod.download,AsString(lnode))
+      else if CompareWide(pcw,'MOD_FILE_NAME')=0 then CopyWide(amod.filename,AsString(lnode))
+      else if CompareWide(pcw,'VERSION'      )=0 then amod.modver:=AsInteger  (lnode)
+      else if CompareWide(pcw,'MOD_ID'       )=0 then amod.modid :=AsInteger64(lnode)
+      else if CompareWide(pcw,'REMOVE_FILES' )=0 then
       begin
-        SetLength(amod.dels,GetChildCount(lnode));
-        lcnt:=0;
-        for j:=0 to High(amod.dels) do
+        if GetNodeType(lnode)=rgGroup then
         begin
-          lgroup:=GetChild(lnode,j);
-          if CompareWide(GetNodeName(lgroup),'FILE')=0 then
+          SetLength(amod.dels,GetChildCount(lnode));
+          lcnt:=0;
+          for j:=0 to High(amod.dels) do
           begin
-            CopyWide(amod.dels[lcnt],AsString(lgroup));
-            inc(lcnt);
+            lline:=GetChild(lnode,j);
+            if CompareWide(GetNodeName(lline),'FILE')=0 then
+            begin
+              CopyWide(amod.dels[lcnt],AsString(lline));
+              inc(lcnt);
+            end;
           end;
+          SetLength(amod.dels,lcnt);
         end;
-        SetLength(amod.dels,lcnt);
-      end;
-    end
-    else if CompareWide(pcw,'REQUIRED_MODS')=0 then
-    begin
-      if GetNodeType(lnode)=rgGroup then
+      end
+      else if CompareWide(pcw,'REQUIRED_MODS')=0 then
       begin
-        SetLength(amod.dels,GetChildCount(lnode));
-        lcnt:=0;
-        for j:=0 to High(amod.dels) do
+        if GetNodeType(lnode)=rgGroup then
         begin
-          lgroup:=GetChild(lnode,j);
-          if CompareWide(GetNodeName(lgroup),'ID')=0 then
+          SetLength(amod.reqs,GetChildCount(lnode));
+          lcnt:=0;
+          for j:=0 to High(amod.reqs) do
           begin
-            amod.reqs[lcnt].id:=AsInteger(lgroup);
-            inc(lcnt);
+            lline:=GetChild(lnode,j);
+            if CompareWide(GetNodeName(lline),'ID')=0 then
+            begin
+              amod.reqs[lcnt].id:=AsInteger(lline);
+              inc(lcnt);
+            end;
           end;
+          SetLength(amod.reqs,lcnt);
         end;
-        SetLength(amod.dels,lcnt);
       end;
     end;
-  end;
 
-  DeleteNode(lroot);
+    DeleteNode(lroot);
+  end;
 end;
 
 function SaveModConfiguration(const amod:TTL2ModInfo; strFile:PChar):boolean;
