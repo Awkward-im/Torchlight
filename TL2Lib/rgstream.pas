@@ -36,21 +36,23 @@ type
 type
   TTL2MemStream = class helper for TMemoryStream
   public
+  { Dirty trick
+    FCapacity = 0 and not changed
+    so, assigned bufer must be free manually
+    OR Capacity must be changed before
+  }
     procedure SetBuffer(buf:pointer);
   end;
 
+
 implementation
+
 
 procedure TTL2MemStream.SetBuffer(buf:pointer);
 var
   lsize:PtrInt;
 begin
   Clear;
-  { Dirty trick
-    FCapacity = 0 and not changed
-    so, assigned bufer must be free manually
-    OR Capacity must be changed before
-  }
   SetPointer(buf,MemSize(buf));
 end;
 

@@ -2,6 +2,7 @@
 
 interface
 
+// Add line which will be deleted if next line is reserved too
 procedure Reserve(const astr:string);
 procedure Reserve(astr:PWideChar);
 procedure Add(const afile:string; aline:integer; const astr:string);
@@ -9,6 +10,9 @@ procedure Add(const astr:string);
 procedure Add(astr:PWideChar);
 procedure Save(const afile:string='rglog.txt');
 procedure Clear;
+
+function  Text:string;
+
 
 implementation
 
@@ -57,6 +61,12 @@ procedure Clear;
 begin
   log.Clear;
 end;
+
+function Text:string;
+begin
+  result:=log.Text;
+end;
+
 
 initialization
 
