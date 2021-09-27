@@ -306,7 +306,7 @@ end;
 
 function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
 var
-  lnode,lroot,lgroup,lline:pointer;
+  lnode,lroot,lline:pointer;
   pcw:PWideChar;
   i,j,lcnt:integer;
 begin

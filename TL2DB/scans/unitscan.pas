@@ -27,9 +27,10 @@ uses
   sqlite3
   ,awkSQLite3
   ,sysutils
-  ,TL2ModInfo
+  ,TL2Mod
   ,RGGlobal
-  ,RGDatNode
+  ,RGLogging
+  ,RGNode
   ;
 
 const
@@ -163,16 +164,16 @@ begin
     for j:=0 to GetChildCount(p)-1 do
     begin
       pp:=GetChild(p,j);
-      if CompareWide(GetNodeName(pp),'FEATURE') then
+      if CompareWide(GetNodeName(pp),'FEATURE')<>0 then
       begin
         for i:=0 to GetChildCount(pp)-1 do
         begin
           lnode:=GetChild(pp,i);
           pcw:=GetNodeName(lnode);
-          if      CompareWide(pcw,'NAME' ) then ldata.name :=AsString(lnode)
-          else if CompareWide(pcw,'TYPE' ) then ldata.atype:=AsString(lnode)
-          else if CompareWide(pcw,'GUID' ) then Str(AsInteger64(lnode),ldata.id)
-          else if CompareWide(pcw,'CLASS') then
+          if      CompareWide(pcw,'NAME' )<>0 then ldata.name :=AsString(lnode)
+          else if CompareWide(pcw,'TYPE' )<>0 then ldata.atype:=AsString(lnode)
+          else if CompareWide(pcw,'GUID' )<>0 then Str(AsInteger64(lnode),ldata.id)
+          else if CompareWide(pcw,'CLASS')<>0 then
           begin
             ls:=asString(lnode);
             ldata.gender:=UpCase(ls[length(ls)]);
@@ -180,7 +181,7 @@ begin
         end;
 
         if not AddWardrobeToBase(ldata) then
-          writeln('can''t update ',ldata.name)
+          RGLog.Add('can''t update '+ldata.name)
         else
           inc(result);
       end;
@@ -248,40 +249,40 @@ begin
   begin
     lnode:=GetChild(p,i);
     pcw:=GetNodeName(lnode);
-    if      CompareWide(pcw,'NAME'                 ) then lpet.name    :=AsString(lnode)
-    else if CompareWide(pcw,'DISPLAYNAME'          ) then lpet.title   :=AsString(lnode)
-    else if CompareWide(pcw,'UNIT_GUID'            ) then lpet.id      :=AsString(lnode)
-    else if CompareWide(pcw,'SCALE'                ) then lpet.scale   :=AsFloat (lnode)
-    else if CompareWide(pcw,'ICON'                 ) then lpet.icon    :=ExtractFileNameOnly(AsString(lnode))
-    else if CompareWide(pcw,'TEXTURE_OVERRIDE_LIST') then lpet.textures:=GetChildCount(lnode)
-    else if CompareWide(pcw,'ARMOR_GRAPH') then
+    if      CompareWide(pcw,'NAME'                 )<>0 then lpet.name    :=AsString(lnode)
+    else if CompareWide(pcw,'DISPLAYNAME'          )<>0 then lpet.title   :=AsString(lnode)
+    else if CompareWide(pcw,'UNIT_GUID'            )<>0 then lpet.id      :=AsString(lnode)
+    else if CompareWide(pcw,'SCALE'                )<>0 then lpet.scale   :=AsFloat (lnode)
+    else if CompareWide(pcw,'ICON'                 )<>0 then lpet.icon    :=ExtractFileNameOnly(AsString(lnode))
+    else if CompareWide(pcw,'TEXTURE_OVERRIDE_LIST')<>0 then lpet.textures:=GetChildCount(lnode)
+    else if CompareWide(pcw,'ARMOR_GRAPH')<>0 then
     begin
       lpet.gr_armor:=AsString(lnode);
       if UpCase(lpet.gr_armor)<>'ARMOR_MINION_BYLEVEL' then
-        writeln('Add ',lpet.gr_armor,' for pet Armor please');
+        RGLog.Add('Add '+lpet.gr_armor+' for pet Armor please');
     end
-    else if CompareWide(pcw,'DAMAGE_GRAPH') then
+    else if CompareWide(pcw,'DAMAGE_GRAPH')<>0 then
     begin
       lpet.gr_dmg:=AsString(lnode);
       if UpCase(lpet.gr_dmg)<>'DAMAGE_MINION_BYLEVEL' then
-        writeln('Add ',lpet.gr_dmg,' for pet Damage please');
+        RGLog.Add('Add '+lpet.gr_dmg+' for pet Damage please');
     end
-    else if CompareWide(pcw,'HEALTH_GRAPH') then
+    else if CompareWide(pcw,'HEALTH_GRAPH')<>0 then
     begin
       lpet.gr_hp:=AsString(lnode);
       if UpCase(lpet.gr_hp)<>'HEALTH_MINION_BYLEVEL' then
-        writeln('Add ',lpet.gr_hp,' for pet HP please');
+        RGLog.Add('Add '+lpet.gr_hp+' for pet HP please');
     end
-    else if CompareWide(pcw,'UNITTYPE') then
+    else if CompareWide(pcw,'UNITTYPE')<>0 then
     begin
-      if CompareWide(AsString(lnode),'STARTING PET') then
+      if CompareWide(AsString(lnode),'STARTING PET')<>0 then
         lpet.atype:=0
       else
         lpet.atype:=1;
     end;
   end;
   if not AddPetToBase(lpet) then
-    writeln('can''t update ',fname);
+    RGLog.Add('can''t update '+fname);
   DeleteNode(p);
 end;
 
@@ -328,18 +329,18 @@ begin
     if GetNodeType(lnode)<>rgGroup then
     begin
       pcw:=GetNodeName(lnode);
-      if      CompareWide(pcw,'NAME'       ) then name :=AsString   (lnode)
-      else if CompareWide(pcw,'QUEST_GUID' ) then lid  :=AsInteger64(lnode)
-      else if CompareWide(pcw,'DISPLAYNAME') then title:=AsString   (lnode);
+      if      CompareWide(pcw,'NAME'       )<>0 then name :=AsString   (lnode)
+      else if CompareWide(pcw,'QUEST_GUID' )<>0 then lid  :=AsInteger64(lnode)
+      else if CompareWide(pcw,'DISPLAYNAME')<>0 then title:=AsString   (lnode);
     end;
   end;
   if lid<>-1 then
   begin
     if not AddQuestToBase(name,lid,title) then
-      writeln('can''t update ',fname);
+      RGLog.Add('can''t update '+fname);
   end
   else
-    writeln(' don''t added',fname);
+    RGLog.Add(' don''t added'+fname);
   DeleteNode(p);
 end;
 
@@ -386,13 +387,13 @@ begin
   begin
     lnode:=GetChild(p,i);
     pcw:=GetNodeName(lnode);
-    if      CompareWide(pcw,'NAME'       ) then name :=AsString   (lnode)
-    else if CompareWide(pcw,'UNIQUE_GUID') then lid  :=AsInteger64(lnode)
-    else if CompareWide(pcw,'SAVES'      ) then saves:=AsBool     (lnode)
-    else if CompareWide(pcw,'DISPLAYNAME') then title:=AsString   (lnode);
+    if      CompareWide(pcw,'NAME'       )<>0 then name :=AsString   (lnode)
+    else if CompareWide(pcw,'UNIQUE_GUID')<>0 then lid  :=AsInteger64(lnode)
+    else if CompareWide(pcw,'SAVES'      )<>0 then saves:=AsBool     (lnode)
+    else if CompareWide(pcw,'DISPLAYNAME')<>0 then title:=AsString   (lnode);
   end;
   if not AddStatToBase(name,lid,title,saves) then
-    writeln('can''t update ',fname);
+    RGLog.Add('can''t update '+fname);
   DeleteNode(p);
 end;
 
@@ -440,17 +441,17 @@ begin
     if GetNodeType(lnode)<>rgGroup then
     begin
       pcw:=GetNodeName(lnode);
-      if CompareWide(pcw,'NAME') then
+      if CompareWide(pcw,'NAME')<>0 then
       begin
         mask:=mask or 1;
         name:=AsString(lnode);
       end
-      else if CompareWide(pcw,'GUID') then
+      else if CompareWide(pcw,'GUID')<>0 then
       begin
         mask:=mask or 2;
         lid:=AsInteger64(lnode);
       end
-      else if CompareWide(pcw,'RESULT') then
+      else if CompareWide(pcw,'RESULT')<>0 then
       begin
         mask:=mask or 4;
         title:=AsString(lnode);
@@ -461,10 +462,10 @@ begin
   if lid<>-1 then
   begin
     if not AddRecipeToBase(name,lid,title) then
-      writeln('can''t update ',fname);
+      RGLog.Add('can''t update '+fname);
   end
   else
-    writeln(' don''t added ',fname);
+    RGLog.Add(' don''t added '+fname);
   DeleteNode(p);
 end;
 
@@ -509,17 +510,17 @@ begin
   begin
     lnode:=GetChild(p,i);
     pcw:=GetNodeName(lnode);
-    if CompareWide(pcw,'NAME') then
+    if CompareWide(pcw,'NAME')<>0 then
     begin
       mask:=mask or 1;
       lname:=AsString(lnode);
     end
-    else if CompareWide(pcw,'DISPLAYNAME') then
+    else if CompareWide(pcw,'DISPLAYNAME')<>0 then
     begin
       mask:=mask or 2;
       ltitle:=AsString(lnode);
     end
-    else if CompareWide(pcw,'UNIT_GUID') then
+    else if CompareWide(pcw,'UNIT_GUID')<>0 then
     begin
       mask:=mask or 4;
       lid:=AsString(lnode);
@@ -527,7 +528,7 @@ begin
     if mask=7 then break;
   end;
   if not AddMobToBase(lid,lname,ltitle) then
-    writeln('can''t update ',fname);
+    RGLog.Add('can''t update '+fname);
   DeleteNode(p);
 end;
 
@@ -594,7 +595,7 @@ begin
     p:=ParseDatFile(PChar(RootDir+fname));
     if p=nil then
     begin
-      writeln('can''t load: ',fname);
+      RGLog.Add('can''t load: '+fname);
       exit;
     end;
   end;
@@ -603,12 +604,12 @@ begin
   begin
     lnode:=GetChild(p,i);
     pcw:=GetNodeName(lnode);
-    if CompareWide(pcw,'UNITTYPE') then
+    if CompareWide(pcw,'UNITTYPE')<>0 then
     begin
       result:=AsString(lnode);
       break;
     end;
-    if CompareWide(pcw,'BASEFILE') then
+    if CompareWide(pcw,'BASEFILE')<>0 then
     begin
       lbase:=AsString(lnode);
     end;
@@ -635,7 +636,7 @@ begin
     p:=ParseDatFile(PChar(RootDir+fname));
     if p=nil then
     begin
-      writeln('can''t load: ',fname);
+      RGLog.Add('can''t load: '+fname);
       exit;
     end;
   end;
@@ -644,16 +645,16 @@ begin
   begin
     lnode:=GetChild(p,i);
     pcw:=GetNodeName(lnode);
-    if CompareWide(pcw,'ICON') then
+    if CompareWide(pcw,'ICON')<>0 then
     begin
       result:=AsString(lnode);
       break;
     end;
-    if (result='') and (CompareWide(pcw,'GAMBLER_ICON')) then
+    if (result='') and (CompareWide(pcw,'GAMBLER_ICON')<>0) then
     begin
       result:=AsString(lnode);
     end;
-    if CompareWide(pcw,'BASEFILE') then
+    if CompareWide(pcw,'BASEFILE')<>0 then
     begin
       lbase:=AsString(lnode);
     end;
@@ -684,17 +685,17 @@ begin
   begin
     lnode:=GetChild(p,i);
     pcw:=GetNodeName(lnode);
-    if      CompareWide(pcw,'NAME'        ) then litem.name   :=AsString(lnode)
-    else if CompareWide(pcw,'DISPLAYNAME' ) then litem.title  :=AsString(lnode)
-    else if CompareWide(pcw,'DESCRIPTION' ) then litem.descr  :=AsString(lnode)
-    else if CompareWide(pcw,'BASEFILE'    ) then litem.base   :=AsString(lnode)
-    else if CompareWide(pcw,'UNIT_GUID'   ) then litem.id     :=AsString(lnode)
-    else if CompareWide(pcw,'USES'        ) then litem.ausable:=AsString(lnode)
-    else if CompareWide(pcw,'MAXSTACKSIZE') then Str(AsInteger(lnode),litem.stack)
-    else if CompareWide(pcw,'ICON'        ) then litem.icon:=ExtractFileNameOnly(AsString(lnode))
-    else if (litem.icon='') and CompareWide(pcw,'GAMBLER_ICON') then
+    if      CompareWide(pcw,'NAME'        )<>0 then litem.name   :=AsString(lnode)
+    else if CompareWide(pcw,'DISPLAYNAME' )<>0 then litem.title  :=AsString(lnode)
+    else if CompareWide(pcw,'DESCRIPTION' )<>0 then litem.descr  :=AsString(lnode)
+    else if CompareWide(pcw,'BASEFILE'    )<>0 then litem.base   :=AsString(lnode)
+    else if CompareWide(pcw,'UNIT_GUID'   )<>0 then litem.id     :=AsString(lnode)
+    else if CompareWide(pcw,'USES'        )<>0 then litem.ausable:=AsString(lnode)
+    else if CompareWide(pcw,'MAXSTACKSIZE')<>0 then Str(AsInteger(lnode),litem.stack)
+    else if CompareWide(pcw,'ICON'        )<>0 then litem.icon:=ExtractFileNameOnly(AsString(lnode))
+    else if (litem.icon='') and (CompareWide(pcw,'GAMBLER_ICON')<>0) then
       litem.icon:=ExtractFileNameOnly(AsString(lnode))
-    else if CompareWide(pcw,'UNITTYPE') then
+    else if CompareWide(pcw,'UNITTYPE')<>0 then
     begin
       litem.unittype:=AsString(lnode);
       if (litem.quest='0') and (
@@ -709,10 +710,10 @@ begin
     if (litem.unittype='') then litem.unittype:=GetBaseUnitType(litem.base);
     if (litem.icon    ='') then litem.icon    :=ExtractFileNameOnly(GetBaseIcon(litem.base));
   end;
-  if litem.icon='' then writeln('No icon for ',fname);
+  if litem.icon='' then RGLog.Add('No icon for '+fname);
 
   if not AddItemToBase(litem) then
-    writeln('can''t update ',fname);
+    RGLog.Add('can''t update '+fname);
   DeleteNode(p);
 end;
 
@@ -755,17 +756,17 @@ begin
   begin
     lnode:=GetChild(p,i);
     pcw:=GetNodeName(lnode);
-    if      CompareWide(pcw,'NAME'       ) then lname :=AsString(lnode)
-    else if CompareWide(pcw,'DISPLAYNAME') then ltitle:=AsString(lnode)
-    else if CompareWide(pcw,'UNIT_GUID'  ) then lid   :=AsString(lnode);
+    if      CompareWide(pcw,'NAME'       )<>0 then lname :=AsString(lnode)
+    else if CompareWide(pcw,'DISPLAYNAME')<>0 then ltitle:=AsString(lnode)
+    else if CompareWide(pcw,'UNIT_GUID'  )<>0 then lid   :=AsString(lnode);
 {
-    else if (lquest='0') and CompareWide(p^.children^[i].name,'UNITTYPE') then
+    else if (lquest='0') and (CompareWide(p^.children^[i].name,'UNITTYPE')<>0) then
     begin
     end
 }
   end;
   if not AddPropToBase(lid,lname,ltitle,lquest) then
-    writeln('can''t update ',fname);
+    RGLog.Add('can''t update '+fname);
   DeleteNode(p);
 end;
 
@@ -842,17 +843,17 @@ begin
     pp:=GetChild(p,i);
     pcw:=GetNodeName(pp);
 
-    if      CompareWide(pcw,'NAME'             ) then lskill.name :=AsString(pp)
-    else if CompareWide(pcw,'DISPLAYNAME'      ) then lskill.title:=AsString(pp)
-    else if CompareWide(pcw,'DESCRIPTION'      ) then lskill.descr:=AsString(pp)
-    else if CompareWide(pcw,'BASE_DESCRIPTION' ) then lskill.descr:=AsString(pp)
-    else if CompareWide(pcw,'REQUIREMENT_GRAPH') then lskill.graph:=AsString(pp)
-    else if CompareWide(pcw,'SKILL_ICON'       ) then lskill.icon :=AsString(pp)
-    else if CompareWide(pcw,'LEVEL_REQUIRED'   ) then Str(AsInteger  (pp),lskill.minlvl)
-    else if CompareWide(pcw,'UNIQUE_GUID'      ) then Str(AsInteger64(pp),lskill.id)
-    else if CompareWide(pcw,'ACTIVATION_TYPE'  ) then
+    if      CompareWide(pcw,'NAME'             )<>0 then lskill.name :=AsString(pp)
+    else if CompareWide(pcw,'DISPLAYNAME'      )<>0 then lskill.title:=AsString(pp)
+    else if CompareWide(pcw,'DESCRIPTION'      )<>0 then lskill.descr:=AsString(pp)
+    else if CompareWide(pcw,'BASE_DESCRIPTION' )<>0 then lskill.descr:=AsString(pp)
+    else if CompareWide(pcw,'REQUIREMENT_GRAPH')<>0 then lskill.graph:=AsString(pp)
+    else if CompareWide(pcw,'SKILL_ICON'       )<>0 then lskill.icon :=AsString(pp)
+    else if CompareWide(pcw,'LEVEL_REQUIRED'   )<>0 then Str(AsInteger  (pp),lskill.minlvl)
+    else if CompareWide(pcw,'UNIQUE_GUID'      )<>0 then Str(AsInteger64(pp),lskill.id)
+    else if CompareWide(pcw,'ACTIVATION_TYPE'  )<>0 then
     begin
-      if CompareWide(AsString(pp),'PASSIVE') then
+      if CompareWide(AsString(pp),'PASSIVE')<>0 then
         lskill.passive:='1';
     end;
 
@@ -861,7 +862,7 @@ begin
       for j:=0 to GetChildCount(pp)-1 do
       begin
         ppp:=GetChild(pp,j);
-        if CompareWide(GetNodeName(ppp),'LEVEL_REQUIRED') then
+        if CompareWide(GetNodeName(ppp),'LEVEL_REQUIRED')<>0 then
         begin
           levels[lcnt]:=asInteger(ppp);
           if minlevel>levels[lcnt] then minlevel:=levels[lcnt];
@@ -900,7 +901,7 @@ begin
   end;
 
   if not AddSkillToBase(lskill) then
-    writeln('can''t update ',fname);
+    RGLog.Add('can''t update '+fname);
 
   DeleteNode(p);
 end;
@@ -988,49 +989,49 @@ begin
   begin
     lnode:=GetChild(p,i);
     pcw:=GetNodeName(lnode);
-    if      CompareWide(pcw,'BASEFILE'   ) then lclass.base :=AsString(lnode)
-    else if CompareWide(pcw,'NAME'       ) then lclass.name :=AsString(lnode)
-    else if CompareWide(pcw,'DISPLAYNAME') then lclass.title:=AsString(lnode)
-    else if CompareWide(pcw,'DESCRIPTION') then lclass.descr:=AsString(lnode)
-    else if CompareWide(pcw,'UNITTYPE'   ) then lunittype   :=AsString(lnode)
-    else if CompareWide(pcw,'UNIT_GUID'  ) then lclass.id   :=AsString(lnode)
-    else if CompareWide(pcw,'STRENGTH'   ) then Str(AsInteger(lnode),lclass.strength)
-    else if CompareWide(pcw,'DEXTERITY'  ) then Str(AsInteger(lnode),lclass.dexterity)
-    else if CompareWide(pcw,'MAGIC'      ) then Str(AsInteger(lnode),lclass.magic)
-    else if CompareWide(pcw,'DEFENSE'    ) then Str(AsInteger(lnode),lclass.defense)
-    else if CompareWide(pcw,'ICON'       ) then lclass.icon:=ExtractFileNameOnly(AsString(lnode))
-    else if CompareWide(pcw,'MANA_GRAPH') then
+    if      CompareWide(pcw,'BASEFILE'   )<>0 then lclass.base :=AsString(lnode)
+    else if CompareWide(pcw,'NAME'       )<>0 then lclass.name :=AsString(lnode)
+    else if CompareWide(pcw,'DISPLAYNAME')<>0 then lclass.title:=AsString(lnode)
+    else if CompareWide(pcw,'DESCRIPTION')<>0 then lclass.descr:=AsString(lnode)
+    else if CompareWide(pcw,'UNITTYPE'   )<>0 then lunittype   :=AsString(lnode)
+    else if CompareWide(pcw,'UNIT_GUID'  )<>0 then lclass.id   :=AsString(lnode)
+    else if CompareWide(pcw,'STRENGTH'   )<>0 then Str(AsInteger(lnode),lclass.strength)
+    else if CompareWide(pcw,'DEXTERITY'  )<>0 then Str(AsInteger(lnode),lclass.dexterity)
+    else if CompareWide(pcw,'MAGIC'      )<>0 then Str(AsInteger(lnode),lclass.magic)
+    else if CompareWide(pcw,'DEFENSE'    )<>0 then Str(AsInteger(lnode),lclass.defense)
+    else if CompareWide(pcw,'ICON'       )<>0 then lclass.icon:=ExtractFileNameOnly(AsString(lnode))
+    else if CompareWide(pcw,'MANA_GRAPH')<>0 then
     begin
       lclass.gr_mp:=AsString(lnode);
       if UpCase(lclass.gr_mp)<>'MANA_PLAYER_GENERIC' then
-        writeln('Add ',lclass.gr_mp,' for class MP please');
+        RGLog.Add('Add '+lclass.gr_mp+' for class MP please');
     end
-    else if CompareWide(pcw,'HEALTH_GRAPH') then
+    else if CompareWide(pcw,'HEALTH_GRAPH')<>0 then
     begin
       lclass.gr_hp:=AsString(lnode);
       if UpCase(lclass.gr_hp)<>'HEALTH_PLAYER_GENERIC' then
-        writeln('Add ',lclass.gr_hp,' for class HP please');
+        RGLog.Add('Add '+lclass.gr_hp+' for class HP please');
     end
-    else if CompareWide(pcw,'STAT_POINTS_PER_LEVEL') then
+    else if CompareWide(pcw,'STAT_POINTS_PER_LEVEL')<>0 then
     begin
       lclass.gr_st:=AsString(lnode);
       if UpCase(lclass.gr_st)<>'STAT_POINTS_PER_LEVEL' then
-        writeln('Add ',lclass.gr_st,' for class STAT please');
+        RGLog.Add('Add '+lclass.gr_st+' for class STAT please');
     end
-    else if CompareWide(pcw,'SKILL_POINTS_PER_LEVEL') then
+    else if CompareWide(pcw,'SKILL_POINTS_PER_LEVEL')<>0 then
     begin
       lclass.gr_sk:=AsString(lnode);
       if UpCase(lclass.gr_sk)<>'SKILL_POINTS_PER_LEVEL' then
-        writeln('Add ',lclass.gr_sk,' for class SKILL please');
+        RGLog.Add('Add '+lclass.gr_sk+' for class SKILL please');
     end
-    else if CompareWide(pcw,'SKILL_POINTS_PER_FAME_LEVEL') then
+    else if CompareWide(pcw,'SKILL_POINTS_PER_FAME_LEVEL')<>0 then
     begin
       lclass.gr_fm:=AsString(lnode);
       if UpCase(lclass.gr_fm)<>'SKILL_POINTS_PER_FAME_LEVEL' then
-        writeln('Add ',lclass.gr_fm,' for class FAME please');
+        RGLog.Add('Add '+lclass.gr_fm+' for class FAME please');
     end;
 
-    if CompareWide(pcw,'SKILL') then
+    if CompareWide(pcw,'SKILL')<>0 then
     begin
       lsname :='';
       lslevel:='';
@@ -1038,8 +1039,8 @@ begin
       begin
         pp:=GetChild(lnode,j);
         pcw:=GetNodeName(pp);
-        if      CompareWide(pcw,'NAME' ) then lsname:=AsString(pp)
-        else if CompareWide(pcw,'LEVEL') then Str(AsInteger(pp),lslevel);
+        if      CompareWide(pcw,'NAME' )<>0 then lsname:=AsString(pp)
+        else if CompareWide(pcw,'LEVEL')<>0 then Str(AsInteger(pp),lslevel);
       end;
 
       if lsname<>'' then
@@ -1061,12 +1062,12 @@ begin
       for i:=0 to GetChildCount(p)-1 do
       begin
         pcw:=AsString(GetChild(p,i));
-        if CompareWide(pcw,'PLAYER_FEMALE') then
+        if CompareWide(pcw,'PLAYER_FEMALE')<>0 then
         begin
           lclass.gender:='F';
           break;
         end
-        else if CompareWide(pcw,'PLAYER_MALE') then
+        else if CompareWide(pcw,'PLAYER_MALE')<>0 then
         begin
           lclass.gender:='M';
           break;
@@ -1088,7 +1089,7 @@ begin
   if lclass.skill=',' then lclass.skill:='';
   lclass.afile:=fname;
   if not AddClassToBase(lclass) then
-    writeln('can''t update ',fname);
+    RGLog.Add('can''t update '+fname);
 end;
 
 //----- main cycle -----

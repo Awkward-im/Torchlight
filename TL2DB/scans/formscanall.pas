@@ -49,6 +49,7 @@ implementation
 { TfmScan }
 
 uses
+  rglogging,
   unitscan;
 
 resourcestring
@@ -62,16 +63,19 @@ begin
   memLog.Append('Preparing...');
   if not PrepareScan(tvMain.Path) then exit;
   memLog.Append('Ok, prepared!');
+  RGLog.Clear;
 
   // Wardrobe
   memLog.Append('Go wardrobe!');
   ScanWardrobe();
+  memLog.Append(RGLog.Text); RGLog.Clear;
 
   // Pets
   if cbPets.Checked then
   begin
     memLog.Append('Go pets!');
     ScanPets();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   // Quests
@@ -79,6 +83,7 @@ begin
   begin
     memLog.Append('Go quests!');
     ScanQuests();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   // Stats
@@ -86,6 +91,7 @@ begin
   begin
     memLog.Append('Go stats!');
     ScanStats();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   // Recipes
@@ -93,6 +99,7 @@ begin
   begin
     memLog.Append('Go recipes!');
     ScanRecipes();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   // Mobs
@@ -100,6 +107,7 @@ begin
   begin
     memLog.Append('Go mobs!');
     ScanMobs();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   // Items
@@ -107,6 +115,7 @@ begin
   begin
     memLog.Append('Go items!');
     ScanItems();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   // Props
@@ -114,6 +123,7 @@ begin
   begin
     memLog.Append('Go props!');
     ScanProps();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   // Skills
@@ -121,6 +131,7 @@ begin
   begin
     memLog.Append('Go skills!');
     ScanSkills();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   // Classes
@@ -128,10 +139,12 @@ begin
   begin
     memLog.Append('Go classes!');
     ScanClasses();
+    memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   memLog.Append('Saving...');
   FinishScan;
+  RGLog.Clear;
   memLog.Append('Done!');
 end;
 

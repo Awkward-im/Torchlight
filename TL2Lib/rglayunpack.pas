@@ -17,7 +17,7 @@ implementation
 uses
   sysutils,
   rgglobal,
-  rglog,
+  rglogging,
   rgnode,
   rgdict,
   rgmemory;

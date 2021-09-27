@@ -185,9 +185,6 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="SynUni"/>
-      </Item>
-      <Item>
         <PackageName Value="SynEdit"/>
       </Item>
       <Item>
@@ -218,6 +215,14 @@
         <Filename Value="..\TL2Lib\rgpak.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGPAK"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MODInfoForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmModInfo"/>
       </Unit>
     </Units>
   </ProjectOptions>

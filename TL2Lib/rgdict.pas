@@ -1,6 +1,5 @@
 ﻿{%TODO remove Classes (TStringList) dependences}
 {%TODO remove RGNode dependences}
-{%TODO implement dict loading from resource}
 {%TODO keep text in TextCache object (but local can have long lines)}
 unit RGDict;
 
@@ -116,7 +115,7 @@ implementation
 uses
   Classes,
   rgglobal,
-  rglog,
+  rglogging,
   rgnode;
 
 const

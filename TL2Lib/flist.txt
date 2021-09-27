@@ -33,6 +33,10 @@ rgfiletype.pas - PAK content filetype
   sysutils
   rgglobal
 
+rglog.pas      - Logging service
+  classes
+  sysutils
+
 rgman.pas      - MAN part
   classes
   sysutils

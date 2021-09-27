@@ -70,6 +70,7 @@ object MODInfoForm: TMODInfoForm
     Height = 239
     Top = 24
     Width = 352
+    Anchors = [akTop, akLeft, akRight, akBottom]
     TabOrder = 5
   end
   object lblDescr: TLabel
@@ -93,6 +94,7 @@ object MODInfoForm: TMODInfoForm
     Height = 30
     Top = 274
     Width = 92
+    Anchors = [akRight, akBottom]
     Default = True
     DefaultCaption = True
     Kind = bkOK
@@ -105,6 +107,7 @@ object MODInfoForm: TMODInfoForm
     Height = 30
     Top = 274
     Width = 92
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = 'Cancel'
     Kind = bkCancel

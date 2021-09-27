@@ -16,7 +16,7 @@ implementation
 uses
   sysutils,
   rgglobal,
-  rglog,
+  rglogging,
   rgnode,
   rgdict,
   rgmemory;
@@ -136,11 +136,6 @@ begin
       verRG : pc:=memReadShortStringUTF8(lptr);
     end;
     locals.Add(lid,pc,true);
-
-{
-    locals.Add(lid,pc);
-    FreeMem(pc);
-}
   end;
 
   // data
@@ -206,8 +201,8 @@ finalization
     unkn.Sort;
     unkn.export('unknown-dat.dict',false);
   end;
-  unkn.clear;
 {$ENDIF}
+  unkn.clear;
   
   aliases.Clear;
 

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, SpinEx;
+  Buttons, SpinEx, rgglobal, TL2Mod;
 
 type
 
@@ -28,13 +28,13 @@ type
     procedure bbOKClick(Sender: TObject);
 
   private
-    fname:String;
-
+    ffile:string;
   public
-    Constructor Create(AOwner:TComponent; aFile:String; aRO:boolean=false); overload;
-    function    Save:boolean;
-    function    Reload:boolean;
-
+    Constructor Create(AOwner:TComponent; aRO:boolean=false); overload;
+    procedure LoadFromFile(const aFile:string);
+    procedure SaveToFile(const aFile:string);
+    procedure LoadFromInfo(const ami: TTL2ModInfo);
+    procedure SaveToInfo(var ami: TTL2ModInfo);
   end;
 
 var
@@ -43,10 +43,6 @@ var
 implementation
 
 {$R *.lfm}
-
-uses
-  rgglobal,
-  TL2Mod;
 
 procedure TMODInfoForm.bbNewGUIDClick(Sender: TObject);
 var
@@ -58,16 +54,14 @@ end;
 
 procedure TMODInfoForm.bbOKClick(Sender: TObject);
 begin
-  Save;
+  SaveToFile(ffile);
 end;
 
-Constructor TMODInfoForm.Create(AOwner:TComponent; aFile:String; aRO:boolean=false);
+Constructor TMODInfoForm.Create(AOwner:TComponent; aRO:boolean=false);
 begin
   inherited Create(AOwner);
 
-  fname:=aFile;
-  Reload;
-
+  ffile:='';
   seVersion .ReadOnly:=aRO;
   leTitle   .ReadOnly:=aRO;
   leAuthor  .ReadOnly:=aRO;
@@ -78,42 +72,55 @@ begin
   bbNewGUID .Enabled :=not aRO;
 end;
 
-function TMODInfoForm.Save:boolean;
+procedure TMODInfoForm.SaveToInfo(var ami:TTL2ModInfo);
+begin
+  ClearModInfo(ami);
+
+  ami.title   :=PUnicodeChar(UTF8Decode(leTitle   .Text));
+  ami.author  :=PUnicodeChar(UTF8Decode(leAuthor  .Text));
+  ami.descr   :=PUnicodeChar(UTF8Decode(memDescr  .Text));
+  ami.website :=PUnicodeChar(UTF8Decode(leWebsite .Text));
+  ami.download:=PUnicodeChar(UTF8Decode(leDownload.Text));
+  Val(edGUID.Text,ami.modid);
+  ami.modver  :=seVersion.Value;
+end;
+
+procedure TMODInfoForm.SaveToFile(const aFile:string);
 var
   lmod:TTL2ModInfo;
 begin
   MakeModInfo(lmod);
 
-  lmod.title   :=PUnicodeChar(UTF8Decode(leTitle   .Text));
-  lmod.author  :=PUnicodeChar(UTF8Decode(leAuthor  .Text));
-  lmod.descr   :=PUnicodeChar(UTF8Decode(memDescr  .Text));
-  lmod.website :=PUnicodeChar(UTF8Decode(leWebsite .Text));
-  lmod.download:=PUnicodeChar(UTF8Decode(leDownload.Text));
-  Val(edGUID.Text,lmod.modid);
-  lmod.modver  :=seVersion.Value;
-  
-  result:=SaveModConfiguration(lmod, PChar(fname));
+  SaveToInfo(lmod);
+  SaveModConfiguration(lmod, PChar(aFile));
 
   ClearModInfo(lmod);
 end;
 
-function TMODInfoForm.Reload:boolean;
+procedure TMODInfoForm.LoadFromInfo(const ami:TTL2ModInfo);
+begin
+  leTitle   .Text:=UTF8Encode(WideString(ami.title));//String(WideString(lmod.title));
+  leAuthor  .Text:=String(WideString(ami.author));
+  memDescr  .Text:=String(WideString(ami.descr));
+  leWebsite .Text:=String(WideString(ami.website));
+  leDownload.Text:=String(WideString(ami.download));
+  edGUID.Text:=IntToStr(ami.modid);
+  seVersion.Value:=ami.modver;
+end;
+
+procedure TMODInfoForm.LoadFromFile(const aFile:string);
 var
   lmod:TTL2ModInfo;
 begin
   MakeModInfo(lmod);
 
-  result:=LoadModConfiguration(PChar(fname), lmod);
-  if result then
+  if LoadModConfiguration(PChar(aFile),lmod) then
   begin
-    leTitle   .Text:=UTF8Encode(WideString(lmod.title));//String(WideString(lmod.title));
-    leAuthor  .Text:=String(WideString(lmod.author));
-    memDescr  .Text:=String(WideString(lmod.descr));
-    leWebsite .Text:=String(WideString(lmod.website));
-    leDownload.Text:=String(WideString(lmod.download));
-    edGUID.Text:=IntToStr(lmod.modid);
-    seVersion.Value:=lmod.modver;
-  end;
+    LoadFromInfo(lmod);
+    ffile:=aFile;
+  end
+  else
+    ffile:='';
 
   ClearModInfo(lmod);
 end;

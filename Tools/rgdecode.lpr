@@ -6,7 +6,7 @@ uses
   inifiles,
 
   rgglobal,
-  rglog,
+  rglogging,
   rgnode,
   rgdict,
 
@@ -72,19 +72,19 @@ begin
       slout:=nil;
 //      curfname:=fname;
       if      (ltype=1)           and (ftype< 2) then begin
-        RGLog.Add('Processing file '+fname);
+        RGLog.Reserve{Add}('Processing file '+fname);
         slout:=DoParseDat   (buf)
       end
       else if (ltype=2)           and (ftype<>1) then begin
-        RGLog.Add('Processing file '+fname);
+        RGLog.Reserve{Add}('Processing file '+fname);
         slout:=DoParseLayout(buf)
       end
       else if IsProperDat   (buf) and (ftype< 2) then begin
-        RGLog.Add('Processing file '+fname);
+        RGLog.Reserve{Add}('Processing file '+fname);
         slout:=DoParseDat   (buf)
       end
       else if IsProperLayout(buf) and (ftype<>1) then begin
-        RGLog.Add('Processing file '+fname);
+        RGLog.Reserve{Add}('Processing file '+fname);
         slout:=DoParseLayout(buf);
       end;
 
@@ -134,6 +134,11 @@ begin
     writeln('dictionary.txt ',RGTags.Import('dictionary.txt'));
     writeln('hashed.txt '    ,RGTags.Import('hashed.txt'));
     writeln('tagdict.txt '   ,RGTags.Import('tagdict.txt'));
+    writeln('dict-tl1.txt '  ,RGTags.Import('dict-tl1.txt'));
+    writeln('dict-tl2.txt '  ,RGTags.Import('dict-tl2.txt'));
+    writeln('dict-rg.txt '   ,RGTags.Import('dict-rg.txt'));
+    writeln('dict-hob.txt '  ,RGTags.Import('dict-hob.txt'));
+    writeln('dict-rgo.txt '  ,RGTags.Import('dict-rgo.txt'));
   end
   else
   begin
@@ -144,6 +149,13 @@ begin
   end;
 
   ReadLayINI(lini);
+
+  LoadLayoutDict('compact-tl1.txt', verTL1);
+  LoadLayoutDict('compact-tl2.txt', verTL2);
+  LoadLayoutDict('compact-rg.txt' , verRG);
+  LoadLayoutDict('compact-rgo.txt', verRGO);
+  LoadLayoutDict('compact-hob.txt', verHob);
+
   lini.Free;
 end;
 
@@ -161,23 +173,24 @@ begin
   else ftype:=0;
 
   ProcessINI;
-try
-  if (ParamCount=0) or (ftype<>0) then
-  begin
-    sl:=TStringList.Create;
-    // Make file list at start to skip freshly created decoded files
-    CycleDir('.');
-    for i:=0 to sl.Count-1 do
-      DoProcessFile(sl[i]);
-    sl.Free;
-  end
-  else
-    DoProcessFile(ParamStr(1));
 
-  //--- Finalization
+  try
+    if (ParamCount=0) or (ftype<>0) then
+    begin
+      sl:=TStringList.Create;
+      // Make file list at start to skip freshly created decoded files
+      CycleDir('.');
+      for i:=0 to sl.Count-1 do
+        DoProcessFile(sl[i]);
+      sl.Free;
+    end
+    else
+      DoProcessFile(ParamStr(1));
 
-finally
-  RGLog.Save();
-end;
+    //--- Finalization
+
+  finally
+    RGLog.Save();
+  end;
 
 end.

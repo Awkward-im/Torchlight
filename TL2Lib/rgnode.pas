@@ -1,3 +1,4 @@
+{%TODO move BOM from MakeDatTree to WriteDatTree}
 {%TODO place text to table and store indexes (by option like 'no_changes')}
 {%TODO keep hashes in nodes and global dict. But where to keep reference to dict?}
 {%TODO make Vector2, Vector3 and Vector 4 values too}
@@ -5,6 +6,7 @@
 {%TODO As* for get value - add default values}
 {%TODO Add blob field for use as Hash for names or ID for layout nodes. but not both?}
 {%TODO Add Insert method at least for top (for IDs)}
+{%TODO Change Find function for hash, not text name}
 unit RGNode;
 
 interface
@@ -15,8 +17,7 @@ function  MakeDatTree (anode:pointer; out aptr:PWideChar):ByteBool;
 function  WriteDatTree(anode:pointer; fname:PChar):ByteBool;
 procedure DeleteNode  (anode:pointer);
 
-function GetChildGroupCount(aparent:pointer):integer;
-function GetGroupCount(aparent:pointer; aname:PWideChar):integer;
+function GetGroupCount(anode:pointer; aname:PWideChar=nil):integer;
 function GetChildCount(anode:pointer):integer;
 function GetChild     (anode:pointer; idx:integer):pointer;
 function GetNodeType  (anode:pointer):integer;
@@ -24,8 +25,7 @@ function GetNodeName  (anode:pointer):PWideChar;
 function GetCustomType(anode:pointer):PWideChar;
 
 function FindNode     (anode:pointer; apath:PWideChar):pointer;
-function FindChild    (anode:pointer; aname:PWideChar):pointer;
-function ChangeNode   (anode:pointer; aval :PWideChar):ByteBool;
+function SetNodeValue (anode:pointer; aval :PWideChar; alen:integer=0):ByteBool;
 
 //--- Write data ---
 
@@ -53,6 +53,8 @@ function AsNote     (anode:pointer):PWideChar;
 
 //--- Add data ---
 
+function AddNode     (aparent:pointer; aname:PWideChar;
+                      atype  :integer; atext:PWideChar; alen:integer=0):pointer;
 function AddGroup    (aparent:pointer; aname:PWideChar):pointer;
 function AddBool     (aparent:pointer; aname:PWideChar; aval:ByteBool ):pointer;
 function AddInteger  (aparent:pointer; aname:PWideChar; aval:Int32    ):pointer;
@@ -76,16 +78,16 @@ uses
   rgglobal;
 
 type
-  PATL2Node = ^TATL2Node;
-  PTL2Node = ^TTL2Node;
-  TTL2Node = record
+  PARGNode = ^TARGNode;
+  PRGNode = ^TRGNode;
+  TRGNode = record
     name  : PWideChar;
-    parent: PTL2Node; // really needs just for deleting
+    parent: PRGNode; // really needs just for deleting
     case nodetype:integer of
       rgGroup    : (
         count   :word;
         capacity:word;
-        child   :PATL2Node;
+        child   :PARGNode;
       );
       rgString,
       rgTranslate,
@@ -116,7 +118,7 @@ type
       rgByte     : (asByte     :Byte);
       rgBinary   : (len        :UInt32);
   end;
-  TATL2Node = array [0..MAXINT div SizeOf(pointer)-1] of PTL2Node;
+  TARGNode = array [0..MAXINT div SizeOf(pointer)-1] of PRGNode;
 
 const
   SIGN_UNICODE = $FEFF;
@@ -177,38 +179,25 @@ end;
 
 function GetChildCount(anode:pointer):integer;
 begin
-  if (anode<>nil) and (PTL2Node(anode)^.nodetype=rgGroup) then
-    result:=PTL2Node(anode)^.count
+  if (anode<>nil) and (PRGNode(anode)^.nodetype=rgGroup) then
+    result:=PRGNode(anode)^.count
   else
     result:=0;
 end;
 
-function GetChildGroupCount(aparent:pointer):integer;
+function GetGroupCount(anode:pointer; aname:PWideChar=nil):integer;
 var
+  lp:PRGNode;
   i:integer;
 begin
   result:=0;
-  if (aparent<>nil) and (PTL2Node(aparent)^.nodetype=rgGroup) then
+  if (anode<>nil) and (PRGNode(anode)^.nodetype=rgGroup) then
   begin
-    for i:=0 to PTL2Node(aparent)^.count-1 do
+    for i:=0 to PRGNode(anode)^.count-1 do
     begin
-      if PTL2Node(aparent)^.child^[i]^.nodetype=rgGroup then
-        inc(result);
-    end;
-  end;
-end;
-
-function GetGroupCount(aparent:pointer; aname:PWideChar):integer;
-var
-  i:integer;
-begin
-  result:=0;
-  if (aparent<>nil) and (PTL2Node(aparent)^.nodetype=rgGroup) then
-  begin
-    for i:=0 to PTL2Node(aparent)^.count-1 do
-    begin
-      if (PTL2Node(aparent)^.child^[i]^.nodetype=rgGroup) and
-         (CompareWide(PTL2Node(aparent)^.child^[i]^.name,aname)=0) then
+      lp:=PRGNode(anode)^.child^[i];
+      if (lp^.nodetype=rgGroup) and
+         ((aname=nil) or (CompareWide(lp^.name,aname)=0)) then
         inc(result);
     end;
   end;
@@ -216,9 +205,9 @@ end;
 
 function GetChild(anode:pointer; idx:integer):pointer;
 begin
-  if (anode<>nil) and (PTL2Node(anode)^.nodetype=rgGroup) and
-     (idx>=0) and (idx<PTL2Node(anode)^.count) then
-    result:=PTL2Node(anode)^.child^[idx]
+  if (anode<>nil) and (PRGNode(anode)^.nodetype=rgGroup) and
+     (idx>=0) and (idx<PRGNode(anode)^.count) then
+    result:=PRGNode(anode)^.child^[idx]
   else
     result:=nil
 end;
@@ -228,7 +217,7 @@ begin
   if anode=nil then
     result:=rgNotValid
   else
-    result:=PTL2Node(anode)^.nodetype;
+    result:=PRGNode(anode)^.nodetype;
 end;
 
 function GetNodeName(anode:pointer):PWideChar;
@@ -236,77 +225,102 @@ begin
   if anode=nil then
     result:=nil
   else
-    result:=PTL2Node(anode)^.name;
+    result:=PRGNode(anode)^.name;
 end;
 
 function GetCustomType(anode:pointer):PWideChar;
 begin
-  if (anode=nil) or
-     (PTL2Node(anode)^.nodetype<>rgUnknown) then
+  if (anode=nil) or (PRGNode(anode)^.nodetype<>rgUnknown) then
     result:=nil
   else
-    result:=PTL2Node(anode)^.CustomType;
+    result:=PRGNode(anode)^.CustomType;
 end;
 
-function ChangeNode(anode:pointer; aval:PWideChar):ByteBool;
+function SetNodeValue(anode:pointer; aval:PWideChar; alen:integer=0):ByteBool;
+var
+  lp:PWideChar;
+  lval:array [0..47] of WideChar;
+  i:integer;
 begin
   result:=true;
 
   if anode<>nil then
-    case PTL2Node(anode)^.nodetype of
-      rgInteger  : Val(aval,PTL2Node(anode)^.asInteger);
-      rgFloat    : Val(aval,PTL2Node(anode)^.asFloat);
-      rgDouble   : Val(aval,PTL2Node(anode)^.asDouble);
-      rgInteger64: Val(aval,PTL2Node(anode)^.asInteger64);
-      rgUnsigned : Val(aval,PTL2Node(anode)^.asUnsigned);
+  begin
+    case PRGNode(anode)^.nodetype of
       rgString,
       rgTranslate,
       rgUnknown,
       rgNote     : begin
-        if PTL2Node(anode)^.asString<>nil then FreeMem(PTL2Node(anode)^.asString);
-        PTL2Node(anode)^.asString:=CopyWide(aval);
+        if PRGNode(anode)^.asString<>nil then FreeMem(PRGNode(anode)^.asString);
+        PRGNode(anode)^.asString:=CopyWide(aval,alen);
       end;
-      rgBool     : begin
-       if (aval<>nil) and (
-          ((aval[0]='1') and (aval[1]=#0)) or
-          (UpCase(aval[0])='T') and
-          (UpCase(aval[1])='R') and
-          (UpCase(aval[2])='U') and
-          (UpCase(aval[3])='E') and
-          (aval[4]=#0)
-          ) then PTL2Node(anode)^.asBoolean:=true
-          else   PTL2Node(anode)^.asBoolean:=false;
-      end;
-      // user
-      rgByte     : Val(aval,PTL2Node(anode)^.asByte);
-      rgWord     : Val(aval,PTL2Node(anode)^.asWord);
-      rgBinary   : Val(aval,PTL2Node(anode)^.len);
     else
-      result:=false;
+      if alen>0 then
+      begin
+        i:=0;
+        while i<alen do
+        begin
+          lval[i]:=aval[i];
+          inc(i);
+          if i=47 then break;
+        end;
+        lval[i]:=#0;
+        lp:=@lval;
+      end
+      else
+        lp:=aval;
+
+      case PRGNode(anode)^.nodetype of
+        rgInteger  : Val(lp,PRGNode(anode)^.asInteger);
+        rgFloat    : Val(lp,PRGNode(anode)^.asFloat);
+        rgDouble   : Val(lp,PRGNode(anode)^.asDouble);
+        rgInteger64: Val(lp,PRGNode(anode)^.asInteger64);
+        rgUnsigned : Val(lp,PRGNode(anode)^.asUnsigned);
+        rgBool     : begin
+         if ( lp<>nil) and (
+            ((lp[0]='1') and (lp[1]=#0)) or
+             (lp[0] in ['T','t']) and
+             (lp[1] in ['R','r']) and
+             (lp[2] in ['U','u']) and
+             (lp[3] in ['E','e']) and
+             (lp[4]=#0)
+            ) then PRGNode(anode)^.asBoolean:=true
+            else   PRGNode(anode)^.asBoolean:=false;
+        end;
+        // user
+        rgByte     : Val(lp,PRGNode(anode)^.asByte);
+        rgWord     : Val(lp,PRGNode(anode)^.asWord);
+        rgBinary   : Val(lp,PRGNode(anode)^.len);
+      else
+        result:=false;
+      end;
     end;
+  end;
 end;
 
-function MakeNewNode(aparent:pointer; aname:PWideChar; atype:integer; atext:PWideChar):pointer;
+function AddNode(aparent:pointer; aname:PWideChar;
+                 atype  :integer; atext:PWideChar; alen:integer=0):pointer;
 begin
   result:=nil;
-  if (aparent<>nil) and (PTL2Node(aparent)^.nodetype<>rgGroup) then exit;
+  if (aparent<>nil) and (PRGNode(aparent)^.nodetype<>rgGroup) then exit;
 
-  GetMem(result,SizeOf(TTL2Node));
+  GetMem(result,SizeOf(TRGNode));
 
-  FillChar(PTL2Node(result)^,SizeOf(TTL2Node),#0);
-  PTL2Node(result)^.name    :=CopyWide(aname);
-  PTL2Node(result)^.nodetype:=atype;
-  ChangeNode(result,atext);
+  FillChar(PRGNode(result)^,SizeOf(TRGNode),#0);
+  PRGNode(result)^.name    :=CopyWide(aname);
+  PRGNode(result)^.nodetype:=atype;
+  if (atext<>nil) and (atext^<>#0) then
+    SetNodeValue(result,atext,alen);
 
   if aparent<>nil then
   begin
-    PTL2Node(result)^.parent:=aparent;
-    with PTL2Node(aparent)^ do
+    PRGNode(result)^.parent:=aparent;
+    with PRGNode(aparent)^ do
     begin
       if count=capacity then
       begin
         inc(capacity,4);
-        ReallocMem(child,capacity*SizeOf(PTL2Node));
+        ReallocMem(child,capacity*SizeOf(PRGNode));
       end;
       child^[count]:=result;
       inc(count);
@@ -319,21 +333,21 @@ procedure DeleteNodeInt(anode:pointer);
 var
   i:integer;
 begin
-  if PTL2Node(anode)^.name<>nil then FreeMem(PTL2Node(anode)^.name);
-  case PTL2Node(anode)^.nodetype of
+  if PRGNode(anode)^.name<>nil then FreeMem(PRGNode(anode)^.name);
+  case PRGNode(anode)^.nodetype of
     rgGroup: begin
-      for i:=0 to PTL2Node(anode)^.count-1 do
-        DeleteNodeInt(PTL2Node(anode)^.child^[i]);
-      FreeMem(PTL2Node(anode)^.child);
+      for i:=0 to PRGNode(anode)^.count-1 do
+        DeleteNodeInt(PRGNode(anode)^.child^[i]);
+      FreeMem(PRGNode(anode)^.child);
     end;
 
     rgString,
     rgTranslate,
     rgUnknown,
     rgNote     : begin
-      if PTL2Node(anode)^.asString<>nil then FreeMem(PTL2Node(anode)^.asString);
-      if PTL2Node(anode)^.nodetype=rgUnknown then
-        if PTL2Node(anode)^.CustomType<>nil then FreeMem(PTL2Node(anode)^.customType);
+      if PRGNode(anode)^.asString<>nil then FreeMem(PRGNode(anode)^.asString);
+      if PRGNode(anode)^.nodetype=rgUnknown then
+        if PRGNode(anode)^.CustomType<>nil then FreeMem(PRGNode(anode)^.customType);
     end;
   end;
 
@@ -342,13 +356,13 @@ end;
 
 procedure DeleteNode(anode:pointer);
 var
-  lnode:PTL2Node;
-  lchilds:PATL2Node;
+  lnode:PRGNode;
+  lchilds:PARGNode;
   i:integer;
 begin
   if anode<>nil then
   begin
-    lnode:=PTL2Node(anode)^.parent;
+    lnode:=PRGNode(anode)^.parent;
     if lnode<>nil then
     begin
       lchilds:=lnode^.child;
@@ -357,7 +371,7 @@ begin
         begin
           dec(lnode^.count);
           if i<lnode^.count then
-            move(lchilds^[i+1],lchilds^[i],(lnode^.count-i)*SizeOf(PTL2Node));
+            move(lchilds^[i+1],lchilds^[i],(lnode^.count-i)*SizeOf(PRGNode));
           break;
         end;
     end;
@@ -399,7 +413,7 @@ begin
 {$POP}
 
   try
-    result:=ParseDat(buf);
+    result:=ParseDat(buf,fname);
   finally
     FreeMem(buf);
   end;
@@ -408,7 +422,7 @@ end;
 function ParseDat(buf:PWideChar; aid:PChar=nil):pointer;
 var
   lutype:PWideChar;
-  lnode,lgroup:PTL2Node;
+  lnode,lgroup:PRGNode;
   pc,peoln:PWideChar;
   lline,ltype,ldst,idx:integer;
   lname:array [0..127] of WideChar;
@@ -423,153 +437,149 @@ begin
 
   lline:=0;
 
-  try
-    // exit, if not ASCII in UTF16LE encoding
-    if (ORD(peoln^)>$FF) then exit;
+  // exit, if not ASCII in UTF16LE encoding
+  if (ORD(peoln^)>$FF) then exit;
 
-    repeat
-      // Set pc to line start and peoln to line end
-      while (peoln^ in [#10,#13]) do inc(peoln); // lline going wrong if several crlf one-by-one
-      if peoln^=#0 then break;
+  repeat
+    // Set pc to line start and peoln to line end
+    while (peoln^ in [#10,#13]) do inc(peoln); // lline going wrong if several crlf one-by-one
+    if peoln^=#0 then break;
 
-      inc(lline);
+    inc(lline);
 
-      pc:=peoln;
-      while not (peoln^ in [#0{,#10},#13]) do inc(peoln);
-      leof:=peoln^=#0;
-      if not leof then
-      begin
-        peoln^:=#0;
-        inc(peoln);
-      end;
+    pc:=peoln;
+    while not (peoln^ in [#0{,#10},#13]) do inc(peoln);
+    leof:=peoln^=#0;
+    if not leof then
+    begin
+      peoln^:=#0;
+      inc(peoln);
+    end;
 
-      idx:=0;
-      while (pc[idx] in [' ',#9]) do inc(idx);
+    idx:=0;
+    while (pc[idx] in [' ',#9]) do inc(idx);
 
-      //--- group
-      if pc[idx]='[' then
-      begin
-        inc(idx);
-        if pc[idx]='/' then
-        begin
-          if lgroup=nil then
-          begin
-            if Assigned(OnError) then OnError(errCloseNoRoot,aid,lline);
-            exit;
-          end;
-
-          inc(idx);
-          lclose:=true;
-        end
-        else
-          lclose:=false;
-
-        ldst:=0;
-        while not (pc[idx] in [#0,']']) do
-        begin
-          lname[ldst]:=pc[idx];
-          inc(ldst);
-          inc(idx);
-        end;
-        lname[ldst]:=#0;
-        if pc[idx]=#0 then
-        begin
-          if (not Assigned(OnError)) or (OnError(errTagNoClose,aid,lline)<>0) then
-          begin
-            DeleteNode(result);
-            exit;
-          end;
-        end;
-
-        if lclose then
-        begin
-          if CompareWide(lgroup^.name,lname)<>0 then
-          begin
-            if (not Assigned(OnError)) or (OnError(errTagCloseWrong,aid,lline)<>0) then
-            begin
-              DeleteNode(result);
-              exit;
-            end;
-          end;
-
-          lgroup:=lgroup^.parent;
-          leof:=lgroup=nil;
-        end
-        else
-        begin
-          lgroup:=MakeNewNode(lgroup,lname,rgGroup,nil);
-          if result=nil then
-            result:=lgroup;
-        end;
-      end
-      //--- property
-      else if pc[idx]='<' then
+    //--- group
+    if pc[idx]='[' then
+    begin
+      inc(idx);
+      if pc[idx]='/' then
       begin
         if lgroup=nil then
         begin
-          if Assigned(OnError) then OnError(errNoRoot,aid,lline);
+          if Assigned(OnError) then OnError(errCloseNoRoot,aid,lline);
           exit;
         end;
 
         inc(idx);
-        // type
-        ldst:=0;
-        while not (pc[idx] in [#0,'>']) do
+        lclose:=true;
+      end
+      else
+        lclose:=false;
+
+      ldst:=0;
+      while not (pc[idx] in [#0,']']) do
+      begin
+        lname[ldst]:=pc[idx];
+        inc(ldst);
+        inc(idx);
+      end;
+      lname[ldst]:=#0;
+      if pc[idx]=#0 then
+      begin
+        if (not Assigned(OnError)) or (OnError(errTagNoClose,aid,lline)<>0) then
         begin
-          lname[ldst]:=pc[idx];
-          inc(ldst);
-          inc(idx);
+          DeleteNode(result);
+          exit;
         end;
-        lname[ldst]:=#0;
-        if pc[idx]=#0 then
+      end;
+
+      if lclose then
+      begin
+        if CompareWide(lgroup^.name,lname)<>0 then
         begin
-          if (not Assigned(OnError)) or (OnError(errPropNoClose,aid,lline)<>0) then
+          if (not Assigned(OnError)) or (OnError(errTagCloseWrong,aid,lline)<>0) then
           begin
             DeleteNode(result);
             exit;
           end;
         end;
-        inc(idx);
-        ltype:=TextToType(lname);
-        if ltype=rgUnknown then lutype:=CopyWide(lname);
-        
-        // name
-        ldst:=0;
-        while not (pc[idx] in [#0,':']) do
-        begin
-          lname[ldst]:=pc[idx];
-          inc(ldst);
-          inc(idx);
-        end;
-        lname[ldst]:=#0;
-        if pc[idx]=':' then
-          inc(idx);
 
-        lnode:=MakeNewNode(lgroup,lname,ltype,@pc[idx]);
-        if ltype=rgUnknown then
-        begin
-          lnode^.CustomType:=lutype;
-          if Assigned(OnError) then OnError(errUnknownTag,aid,lline);
-        end;
-      end;
-    until leof;
-    if lgroup<>nil then
-    begin
-      if (not Assigned(OnError)) or (OnError(errRootNoClose,aid,lline)<>0) then
+        lgroup:=lgroup^.parent;
+        leof:=lgroup=nil;
+      end
+      else
       begin
-        DeleteNode(result);
+        lgroup:=AddNode(lgroup,lname,rgGroup,nil);
+        if result=nil then
+          result:=lgroup;
+      end;
+    end
+    //--- property
+    else if pc[idx]='<' then
+    begin
+      if lgroup=nil then
+      begin
+        if Assigned(OnError) then OnError(errNoRoot,aid,lline);
         exit;
       end;
-    end;
 
-  finally
-    FreeMem(buf);
+      inc(idx);
+      // type
+      ldst:=0;
+      while not (pc[idx] in [#0,'>']) do
+      begin
+        lname[ldst]:=pc[idx];
+        inc(ldst);
+        inc(idx);
+      end;
+      lname[ldst]:=#0;
+      if pc[idx]=#0 then
+      begin
+        if (not Assigned(OnError)) or (OnError(errPropNoClose,aid,lline)<>0) then
+        begin
+          DeleteNode(result);
+          exit;
+        end;
+      end;
+      inc(idx);
+      ltype:=TextToType(lname);
+      if ltype=rgUnknown then lutype:=CopyWide(lname);
+
+      // name
+      ldst:=0;
+      while not (pc[idx] in [#0,':']) do
+      begin
+        lname[ldst]:=pc[idx];
+        inc(ldst);
+        inc(idx);
+      end;
+      lname[ldst]:=#0;
+      if pc[idx]=':' then
+        inc(idx);
+
+      lnode:=AddNode(lgroup,lname,ltype,@pc[idx]);
+      if ltype=rgUnknown then
+      begin
+        lnode^.CustomType:=lutype;
+        if Assigned(OnError) then OnError(errUnknownTag,aid,lline);
+      end;
+    end;
+  until leof;
+  if lgroup<>nil then
+  begin
+    if (not Assigned(OnError)) or (OnError(errRootNoClose,aid,lline)<>0) then
+    begin
+      DeleteNode(result);
+      exit;
+    end;
   end;
+
 end;
 
 //----- Dump -----
 
-function DumpNode(var buf:PByte; var idx:integer; anode:PTL2Node; atab:integer):boolean;
+function DumpNode(var buf:PByte; var idx:integer; anode:PRGNode; atab:integer):boolean;
 var
   larr:array [0..127] of WideChar;
   ls:WideString;
@@ -757,84 +767,84 @@ end;
 
 function AddGroup(aparent:pointer; aname:PWideChar):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgGroup, nil);
+  result:=AddNode(aparent, aname, rgGroup, nil);
 end;
 
 function AddString(aparent:pointer; aname:PWideChar; aval:PWideChar):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgString, aval);
+  result:=AddNode(aparent, aname, rgString, aval);
 end;
 
 function AddTranslate(aparent:pointer; aname:PWideChar; aval:PWideChar):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgTranslate, aval);
+  result:=AddNode(aparent, aname, rgTranslate, aval);
 end;
 
 function AddNote(aparent:pointer; aname:PWideChar; aval:PWideChar):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgNote, aval);
+  result:=AddNode(aparent, aname, rgNote, aval);
 end;
 
 function AddBool(aparent:pointer; aname:PWideChar; aval:ByteBool):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgBool, nil);
-  if result<>nil then PTL2Node(result)^.asBoolean:=aval;
+  result:=AddNode(aparent, aname, rgBool, nil);
+  if result<>nil then PRGNode(result)^.asBoolean:=aval;
 end;
 
 function AddInteger(aparent:pointer; aname:PWideChar; aval:Int32):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgInteger, nil);
-  if result<>nil then PTL2Node(result)^.asInteger:=aval;
+  result:=AddNode(aparent, aname, rgInteger, nil);
+  if result<>nil then PRGNode(result)^.asInteger:=aval;
 end;
 
 function AddFloat(aparent:pointer; aname:PWideChar; aval:single):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgFloat, nil);
-  if result<>nil then PTL2Node(result)^.asFloat:=aval;
+  result:=AddNode(aparent, aname, rgFloat, nil);
+  if result<>nil then PRGNode(result)^.asFloat:=aval;
 end;
 
 function AddDouble(aparent:pointer; aname:PWideChar; aval:double):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgDouble, nil);
-  if result<>nil then PTL2Node(result)^.asDouble:=aval;
+  result:=AddNode(aparent, aname, rgDouble, nil);
+  if result<>nil then PRGNode(result)^.asDouble:=aval;
 end;
 
 function AddInteger64(aparent:pointer; aname:PWideChar; aval:Int64):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgInteger64, nil);
-  if result<>nil then PTL2Node(result)^.asInteger64:=aval;
+  result:=AddNode(aparent, aname, rgInteger64, nil);
+  if result<>nil then PRGNode(result)^.asInteger64:=aval;
 end;
 
 function AddUnsigned(aparent:pointer; aname:PWideChar; aval:UInt32):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgUnsigned, nil);
-  if result<>nil then PTL2Node(result)^.asUnsigned:=aval;
+  result:=AddNode(aparent, aname, rgUnsigned, nil);
+  if result<>nil then PRGNode(result)^.asUnsigned:=aval;
 end;
 
 // User types
 
 function AddByte(aparent:pointer; aname:PWideChar; aval:byte):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgByte, nil);
-  if result<>nil then PTL2Node(result)^.asByte:=aval;
+  result:=AddNode(aparent, aname, rgByte, nil);
+  if result<>nil then PRGNode(result)^.asByte:=aval;
 end;
 
 function AddWord(aparent:pointer; aname:PWideChar; aval:word):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgWord, nil);
-  if result<>nil then PTL2Node(result)^.asWord:=aval;
+  result:=AddNode(aparent, aname, rgWord, nil);
+  if result<>nil then PRGNode(result)^.asWord:=aval;
 end;
 
 function AddBinary(aparent:pointer; aname:PWideChar; aval:UInt32):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgBinary, nil);
-  if result<>nil then PTL2Node(result)^.len:=aval;
+  result:=AddNode(aparent, aname, rgBinary, nil);
+  if result<>nil then PRGNode(result)^.len:=aval;
 end;
 
 function AddCustom(aparent:pointer; aname:PWideChar; aval:PWideChar; atype:PWideChar):pointer;
 begin
-  result:=MakeNewNode(aparent, aname, rgUnknown, aval);
-  if result<>nil then PTL2Node(result)^.CustomType:=CopyWide(atype);
+  result:=AddNode(aparent, aname, rgUnknown, aval);
+  if result<>nil then PRGNode(result)^.CustomType:=CopyWide(atype);
 end;
 
 //----- Write data -----
@@ -842,8 +852,8 @@ end;
 function AsBool(anode:pointer; aval:ByteBool):ByteBool;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype=rgBool) then
-    PTL2Node(anode)^.asBoolean:=aval;
+     (PRGNode(anode)^.nodetype=rgBool) then
+    PRGNode(anode)^.asBoolean:=aval;
 
   result:=aval;
 end;
@@ -851,8 +861,8 @@ end;
 function AsInteger(anode:pointer; aval:Int32):Int32;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgInteger,rgUnsigned]) then
-    PTL2Node(anode)^.asInteger:=aval;
+     (PRGNode(anode)^.nodetype in [rgInteger,rgUnsigned]) then
+    PRGNode(anode)^.asInteger:=aval;
 
   result:=aval;
 end;
@@ -860,8 +870,8 @@ end;
 function AsUnsigned(anode:pointer; aval:UInt32):UInt32;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgInteger,rgUnsigned]) then
-    PTL2Node(anode)^.asUnsigned:=aval;
+     (PRGNode(anode)^.nodetype in [rgInteger,rgUnsigned]) then
+    PRGNode(anode)^.asUnsigned:=aval;
 
   result:=aval;
 end;
@@ -869,8 +879,8 @@ end;
 function AsFloat(anode:pointer; aval:single):single;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype=rgFloat) then
-    PTL2Node(anode)^.asFloat:=aval;
+     (PRGNode(anode)^.nodetype=rgFloat) then
+    PRGNode(anode)^.asFloat:=aval;
 
   result:=aval;
 end;
@@ -878,8 +888,8 @@ end;
 function AsDouble(anode:pointer; aval:double):double;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype=rgDouble) then
-    PTL2Node(anode)^.asDouble:=aval;
+     (PRGNode(anode)^.nodetype=rgDouble) then
+    PRGNode(anode)^.asDouble:=aval;
 
   result:=aval;
 end;
@@ -887,8 +897,8 @@ end;
 function AsInteger64(anode:pointer; aval:Int64):Int64;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype=rgInteger64) then
-    PTL2Node(anode)^.asInteger64:=aval;
+     (PRGNode(anode)^.nodetype=rgInteger64) then
+    PRGNode(anode)^.asInteger64:=aval;
 
   result:=aval;
 end;
@@ -896,10 +906,10 @@ end;
 function AsString(anode:pointer; aval:PWideChar):PWideChar;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
+     (PRGNode(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
   begin
-    FreeMem(PTL2Node(anode)^.asString);
-    PTL2Node(anode)^.asString:=CopyWide(aval);
+    FreeMem(PRGNode(anode)^.asString);
+    PRGNode(anode)^.asString:=CopyWide(aval);
   end;
 
   result:=aval;
@@ -908,10 +918,10 @@ end;
 function AsTranslate(anode:pointer; aval:PWideChar):PWideChar;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
+     (PRGNode(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
   begin
-    FreeMem(PTL2Node(anode)^.asString);
-    PTL2Node(anode)^.asString:=CopyWide(aval);
+    FreeMem(PRGNode(anode)^.asString);
+    PRGNode(anode)^.asString:=CopyWide(aval);
   end;
 
   result:=aval;
@@ -920,10 +930,10 @@ end;
 function AsNote(anode:pointer; aval:PWideChar):PWideChar;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
+     (PRGNode(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
   begin
-    FreeMem(PTL2Node(anode)^.asString);
-    PTL2Node(anode)^.asString:=CopyWide(aval);
+    FreeMem(PRGNode(anode)^.asString);
+    PRGNode(anode)^.asString:=CopyWide(aval);
   end;
 
   result:=aval;
@@ -934,8 +944,8 @@ end;
 function AsBool(anode:pointer):ByteBool;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype=rgBool) then
-    result:=PTL2Node(anode)^.asBoolean
+     (PRGNode(anode)^.nodetype=rgBool) then
+    result:=PRGNode(anode)^.asBoolean
   else
     result:=false;
 end;
@@ -943,8 +953,8 @@ end;
 function AsInteger(anode:pointer):Int32;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgInteger,rgUnsigned]) then
-    result:=PTL2Node(anode)^.asInteger
+     (PRGNode(anode)^.nodetype in [rgInteger,rgUnsigned]) then
+    result:=PRGNode(anode)^.asInteger
   else
     result:=0;
 end;
@@ -952,8 +962,8 @@ end;
 function AsUnsigned(anode:pointer):UInt32;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgInteger,rgUnsigned]) then
-    result:=PTL2Node(anode)^.asUnsigned
+     (PRGNode(anode)^.nodetype in [rgInteger,rgUnsigned]) then
+    result:=PRGNode(anode)^.asUnsigned
   else
     result:=0;
 end;
@@ -961,8 +971,8 @@ end;
 function AsFloat(anode:pointer):single;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype=rgFloat) then
-    result:=PTL2Node(anode)^.asFloat
+     (PRGNode(anode)^.nodetype=rgFloat) then
+    result:=PRGNode(anode)^.asFloat
   else
     result:=0;
 end;
@@ -970,8 +980,8 @@ end;
 function AsDouble(anode:pointer):double;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype=rgDouble) then
-    result:=PTL2Node(anode)^.asDouble
+     (PRGNode(anode)^.nodetype=rgDouble) then
+    result:=PRGNode(anode)^.asDouble
   else
     result:=0;
 end;
@@ -979,8 +989,8 @@ end;
 function AsInteger64(anode:pointer):Int64;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype=rgInteger64) then
-    result:=PTL2Node(anode)^.asInteger64
+     (PRGNode(anode)^.nodetype=rgInteger64) then
+    result:=PRGNode(anode)^.asInteger64
   else
     result:=0;
 end;
@@ -988,8 +998,8 @@ end;
 function AsString(anode:pointer):PWideChar;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
-    result:=PTL2Node(anode)^.asString
+     (PRGNode(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
+    result:=PRGNode(anode)^.asString
   else
     result:=nil;
 end;
@@ -997,8 +1007,8 @@ end;
 function AsTranslate(anode:pointer):PWideChar;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
-    result:=PTL2Node(anode)^.asString
+     (PRGNode(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
+    result:=PRGNode(anode)^.asString
   else
     result:=nil;
 end;
@@ -1006,82 +1016,76 @@ end;
 function AsNote(anode:pointer):PWideChar;
 begin
   if (anode<>nil) and
-     (PTL2Node(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
-    result:=PTL2Node(anode)^.asString
+     (PRGNode(anode)^.nodetype in [rgString,rgTranslate,rgNote]) then
+    result:=PRGNode(anode)^.asString
   else
     result:=nil;
 end;
 
 //----- Search -----
 
-function FindChild(anode:pointer; aname:PWideChar):pointer;
-var
-  lcnode:PTL2Node;
-  i:integer;
-begin
-  if (anode<>nil) and (PTL2Node(anode)^.nodetype=rgGroup) then
-  begin
-    for i:=0 to PTL2Node(anode)^.count-1 do
-    begin
-      lcnode:=PTL2Node(anode)^.child^[i];
-      if CompareWide(lcnode^.name,aname)=0 then
-        exit(lcnode);
-    end;
-  end;
-
-  result:=nil;
-end;
-
 function FindNode(anode:pointer; apath:PWideChar):pointer;
 var
   lname:array [0..127] of WideChar;
-  lnode,lcnode:PTL2Node;
+  lnode,lcnode:PRGNode;
   p1,p2:PWideChar;
   i:integer;
 begin
   result:=nil;
   if (anode=nil) then exit;
   if (apath=nil) or (apath^=#0) then exit(anode);
-  if PTL2Node(anode)^.nodetype<>rgGroup then exit;
+  if PRGNode(anode)^.nodetype<>rgGroup then exit;
 
-  lnode:=anode;
-  p2:=apath;
-
-  while p2^<>#0 do
+  if (CharPosWide('\',apath)=nil) and (CharPosWide('/',apath)=nil) then
   begin
-    // 1 - get path part
-    p1:=@lname[0];
-    while not (p2^ in ['\','/',#0]) do
+    for i:=0 to PRGNode(anode)^.count-1 do
     begin
-      p1^:=p2^;
-      inc(p1);
-      inc(p2);
+      lcnode:=PRGNode(anode)^.child^[i];
+      if CompareWide(lcnode^.name,apath)=0 then
+        exit(lcnode);
     end;
-    p1^:=#0;
-    if lname[0]=#0 then exit;
+  end
+  else
+  begin
+    lnode:=anode;
+    p2:=apath;
 
-    // 2 - search this part
-    result:=nil;
-    if lnode^.nodetype<>rgGroup then exit;
-    for i:=0 to lnode^.count-1 do
+    while p2^<>#0 do
     begin
-      lcnode:=lnode^.child^[i];
-      if (p2^=#0) xor (lcnode^.nodetype=rgGroup) then
+      // 1 - get path part
+      p1:=@lname[0];
+      while not (p2^ in ['\','/',#0]) do
       begin
-        if CompareWide(lcnode^.name,lname)=0 then
-        begin
-          result:=lcnode;
-          break;
-        end;
-      end
-    end;
-    if result=nil then exit;
+        p1^:=p2^;
+        inc(p1);
+        inc(p2);
+      end;
+      p1^:=#0;
+      if lname[0]=#0 then exit;
 
-    // 3 - if not "name" then next cycle
-    if p2^<>#0 then
-    begin
-      inc(p2);
-      lnode:=result;
+      // 2 - search this part
+      result:=nil;
+      if lnode^.nodetype<>rgGroup then exit;
+      for i:=0 to lnode^.count-1 do
+      begin
+        lcnode:=lnode^.child^[i];
+        if (p2^=#0) xor (lcnode^.nodetype=rgGroup) then
+        begin
+          if CompareWide(lcnode^.name,lname)=0 then
+          begin
+            result:=lcnode;
+            break;
+          end;
+        end
+      end;
+      if result=nil then exit;
+
+      // 3 - if not "name" then next cycle
+      if p2^<>#0 then
+      begin
+        inc(p2);
+        lnode:=result;
+      end;
     end;
   end;
 end;

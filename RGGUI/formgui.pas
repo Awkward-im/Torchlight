@@ -1,4 +1,7 @@
-{%TODO Show preview just when info visible (re-call on settings changed)}
+{%TODO make button for non-scale image preview}
+{%TODO edit DAT-type files on the place. "Save"button on info panel}
+{%TODO Add "reset column width" button}
+{%TODO replace bitbutton by speed button (scale problem)}
 unit formGUI;
 
 {$mode objfpc}{$H+}
@@ -121,6 +124,7 @@ type
     procedure actFileCloseExecute(Sender: TObject);
     procedure actFileExitExecute(Sender: TObject);
     procedure actFileOpenExecute(Sender: TObject);
+    procedure actInfoInfoExecute(Sender: TObject);
     procedure bbCollapseClick(Sender: TObject);
     procedure bbExtSelectClick(Sender: TObject);
     procedure bbCatInverseClick(Sender: TObject);
@@ -146,23 +150,24 @@ type
     LastFIndex:integer;
     FLastIndex:integer;
     FUData:pointer;
+    fmi:TForm;
 
+    procedure ResetView();
     procedure AddBranch(aroot: TTreeNode; const aname: string; acode: integer);
     procedure ClearInfo();
     procedure FillCatList();
     procedure FillExtList();
     procedure FillGrid(idx:integer=-1);
-    function FillGridLine(arow: integer; const adir: string;
-      const afile: TMANFileInfo): boolean;
+    function  FillGridLine(arow: integer; const adir: string; const afile: TMANFileInfo): boolean;
     procedure FillTree();
-    function GetPathFromNode(aNode: TTreeNode): string;
+    function  GetPathFromNode(aNode: TTreeNode): string;
     procedure LoadSettings;
     procedure OpenFile(const aname: string);
     procedure PreviewImage(const aname: string);
     procedure PreviewSource(atype: byte; const adir, aname: string);
     procedure PreviewText();
     procedure SaveSettings;
-    function UnpackSingleFile(const adir, aname: string): boolean;
+    function  UnpackSingleFile(const adir, aname: string): boolean;
 
   public
 
@@ -179,6 +184,12 @@ implementation
 uses
   IntfGraphics,
   inifiles,
+  fpimage,
+  fpwritebmp,
+  berodds,
+
+  fmmodinfo,
+
   rgfiletype,
   rgdatunpack,
   rglayunpack,
@@ -186,9 +197,6 @@ uses
   rgdict,
   rgnode,
   rgstream,
-  fpimage,
-  fpwritebmp,
-  berodds,
   rgman,
   rgpak;
 
@@ -333,8 +341,25 @@ begin
   end;
 end;
 
+procedure TRGGUIForm.actInfoInfoExecute(Sender: TObject);
+begin
+  if fmi=nil then
+  begin
+    fmi:=TMODInfoForm.Create(Self,true);
+    TMODInfoForm(fmi).LoadFromInfo(rgpi.modinfo);
+  end
+  else
+  begin
+    fmi.Show;
+  end;
+end;
+
 {%REGION Settings}
 //----- Settings -----
+
+procedure TRGGUIForm.ResetView();
+begin
+end;
 
 procedure TRGGUIForm.SetupView(Sender: TObject);
 begin

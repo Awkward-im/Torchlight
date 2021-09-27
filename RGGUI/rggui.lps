@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="280"/>
-        <CursorPos Y="594"/>
-        <FoldState Value=" T7HF{* T8kb21 T3nS044 pj1jK0f127 piamF07292]BXpW0s T0;P2311]m6wH012 TJoY1{I1]ZflF1=2],TlI1}Y]Jk9og1{Xm"/>
+        <TopLine Value="283"/>
+        <CursorPos Y="352"/>
+        <FoldState Value=" T8kd21 T3nX04213 pj5kb0u9 T0:02311]T6wZ012 TJp91{I1 piflF1=2]jTlI1}Y]Jk9og1{X&apos;"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -51,21 +51,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="734"/>
         <CursorPos X="34" Y="730"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\interfaces\win32\win32callback.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2728"/>
         <CursorPos Y="2743"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\treeview.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="39"/>
         <CursorPos Y="55"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgman.pas"/>
@@ -73,7 +73,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="457"/>
         <CursorPos Y="474"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="16"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgdatunpack.pas"/>
@@ -81,7 +81,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="111"/>
         <CursorPos X="15" Y="139"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgdict.pas"/>
@@ -89,7 +89,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1231"/>
         <CursorPos X="28" Y="1251"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\stdctrls.pp"/>
@@ -97,14 +97,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="829"/>
         <CursorPos X="15" Y="843"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="BeRoDDS.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1270"/>
         <CursorPos Y="1297"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="13"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgstream.pas"/>
@@ -112,28 +112,28 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="34"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\picture.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="708"/>
         <CursorPos Y="724"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\custombitmap.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="45"/>
         <CursorPos Y="62"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\rasterimage.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="105"/>
         <CursorPos Y="121"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\intfgraphics.pas"/>
@@ -141,38 +141,25 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="3461"/>
         <CursorPos Y="3481"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MODInfoForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmModInfo"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="32"/>
+        <CursorPos Y="88"/>
+        <FoldState Value=" T3i3066?"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="792" TopLine="786"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="887" TopLine="264"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="359" TopLine="265"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="360" TopLine="267"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="361" TopLine="269"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="362" TopLine="271"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="363" TopLine="273"/>
-      </Position>
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="364" TopLine="274"/>
@@ -264,6 +251,34 @@
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="223" Column="49" TopLine="195"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="600" TopLine="282"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="341" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="108" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="9" Column="30"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="64" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="119" Column="18" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="95" Column="3" TopLine="81"/>
       </Position>
     </JumpHistory>
     <RunParams>

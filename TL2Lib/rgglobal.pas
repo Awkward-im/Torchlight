@@ -20,10 +20,13 @@ const
 function  ReverseWords(aval:QWord):QWord;
 function  StrToWide(const src:string):PWideChar;
 function  WideToStr(src:PWideChar):string;
-procedure CopyWide(var adst:PWideChar; asrc:PWideChar);
-function  CopyWide(asrc:PWideChar):PWideChar;
+procedure CopyWide(var adst:PWideChar; asrc:PWideChar; alen:integer=0);
+function  CopyWide(asrc:PWideChar; alen:integer=0):PWideChar;
 function  CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
 function  ConcatWide (s1,s2:PWideChar):PWideChar;
+function  CharPosWide(c:WideChar; asrc:PWideChar):PWideChar;
+function  BufLen(abuf:PAnsiChar; asize:cardinal):integer;
+function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 
 function ExtractFileNameOnly(const AFilename: string): string;
 
@@ -260,6 +263,21 @@ begin
     qword(tTL2VerRec(aval).arr[0]) shl 48;
 end;
 
+function BufLen(abuf:PAnsiChar; asize:cardinal):integer;
+begin
+  if asize=0 then asize:=MemSize(abuf);
+  result:=0;
+  while (result<asize) and (abuf[result]<>#0) do inc(result);
+end;
+
+function BufLen(abuf:PWideChar; asize:cardinal):integer;
+begin
+  if asize=0 then asize:=MemSize(abuf);
+  asize:=asize div SizeOf(WideChar);
+  result:=0;
+  while (result<asize) and (abuf[result]<>#0) do inc(result);
+end;
+
 function StrToWide(const src:string):PWideChar;
 var
   ws:WideString;
@@ -308,20 +326,20 @@ begin
   move(s2^,result[llen1],llen2*SizeOf(WideChar));
 end;
 
-function CopyWide(asrc:PWideChar):PWideChar;
-var
-  llen:integer;
+function CopyWide(asrc:PWideChar; alen:integer=0):PWideChar;
 begin
   if (asrc=nil) or (asrc^=#0) then exit(nil);
 
-  llen:=Length(asrc)+1;
-  GetMem(    result ,llen*SizeOf(WideChar));
-  move(asrc^,result^,llen*SizeOf(WideChar));
+  if alen=0 then
+    alen:=Length(asrc);
+  GetMem(    result ,(alen+1)*SizeOf(WideChar));
+  move(asrc^,result^, alen   *SizeOf(WideChar));
+  result[alen]:=#0;
 end;
 
-procedure CopyWide(var adst:PWideChar; asrc:PWideChar);
+procedure CopyWide(var adst:PWideChar; asrc:PWideChar; alen:integer=0);
 begin
-  adst:=CopyWide(asrc);
+  adst:=CopyWide(asrc,alen);
 end;
 
 function CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
@@ -339,6 +357,19 @@ begin
     inc(s1);
     inc(s2);
   until false;
+end;
+
+function CharPosWide(c:WideChar; asrc:PWideChar):PWideChar;
+begin
+  result:=nil;
+  if asrc<>nil then
+    while asrc^<>#0 do
+    begin
+      if asrc^=c then
+        exit(asrc);
+
+      inc(asrc);
+    end;
 end;
 
 // from LazFileUtils
@@ -478,15 +509,17 @@ function RGHash(instr:PWideChar; alen:integer):dword;
 var
   i:integer;
 begin
+  if alen=0 then alen:=Length(instr);
   result:=alen;
   for i:=0 to alen-1 do
     result:=(result SHR 27) xor (result SHL 5) xor (ORD(instr[i]) and $FF);
 end;
 
-function RGHash(instr:PChar; alen:integer):dword;
+function RGHash(instr:PAnsiChar; alen:integer):dword;
 var
   i:integer;
 begin
+  if alen=0 then alen:=Length(instr);
   result:=alen;
   for i:=0 to alen-1 do
     result:=(result SHR 27) xor (result SHL 5) xor ORD(instr[i]);
