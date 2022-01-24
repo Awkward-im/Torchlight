@@ -65,6 +65,7 @@ type
     TL2StatusBar: TStatusBar;
     tbHelpNotes: TToolButton;
     tbBuild: TToolButton;
+    tbScanMod: TToolButton;
     procedure FileScanExecute(Sender: TObject);
     procedure HelpNotesExecute(Sender: TObject);
     procedure bbCloseTreeClick(Sender: TObject);
@@ -421,25 +422,6 @@ begin
   TL2Notes.Show;
 end;
 
-procedure TMainTL2TransForm.FileScanExecute(Sender: TObject);
-var
-  OpenDialog: TOpenDialog;
-  ls:AnsiString;
-begin
-  OpenDialog:=TOpenDialog.Create(nil);
-  try
-    if OpenDialog.Execute then
-    begin
-      NewTab(OpenDialog.FileName);
-      SetTABCaption(sScanning);
-      if not ActiveProject.New1(OpenDialog.FileName) then
-      CanClosePage(TL2PageControl.ActivePageIndex,ls);
-    end;
-  finally
-    OpenDialog.Free;
-  end;
-end;
-
 procedure TMainTL2TransForm.TL2ShellTreeViewDblClick(Sender: TObject);
 var
   ls,lname:AnsiString;
@@ -482,6 +464,27 @@ end;
 procedure TMainTL2TransForm.FileBuildExecute(Sender: TObject);
 begin
   Build(@UpdateStatusBar);
+end;
+
+procedure TMainTL2TransForm.FileScanExecute(Sender: TObject);
+var
+  OpenDialog: TOpenDialog;
+  ls:AnsiString;
+begin
+  OpenDialog:=TOpenDialog.Create(nil);
+  try
+    OpenDialog.DefaultExt:='.MOD';
+    OpenDialog.Filter    :='MOD files|*.MOD|PAK files|*.PAK|All supported|*.MOD;*.PAK|All files|*.*';
+    if OpenDialog.Execute then
+    begin
+      NewTab(OpenDialog.FileName);
+      SetTABCaption(sScanning);
+      if not ActiveProject.New1(OpenDialog.FileName) then
+      CanClosePage(TL2PageControl.ActivePageIndex,ls);
+    end;
+  finally
+    OpenDialog.Free;
+  end;
 end;
 
 procedure TMainTL2TransForm.FileNewExecute(Sender: TObject);

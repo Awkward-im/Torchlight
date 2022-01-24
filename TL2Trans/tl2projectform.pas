@@ -1765,6 +1765,7 @@ begin
     OpenDialog.Options   :=[ofAllowMultiSelect];
     if OpenDialog.Execute then
     begin
+      FillChar(ldata,SizeOf(TTL2Translation),0);
       ldata.Init;
       ldata.Filter:=flNoSearch;
       ldata.Mode  :=tmOriginal;

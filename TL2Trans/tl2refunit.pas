@@ -93,14 +93,15 @@ function TTL2Reference.AddFile(const fname:AnsiString):integer;
 var
   i:integer;
 begin
-  for i:=cntFiles-1 downto 0 do
-  begin
-    if fname = arFiles[i] then
+  if cntFiles>0 then
+    for i:=cntFiles-1 downto 0 do
     begin
-      result:=i;
-      exit;
+      if fname = arFiles[i] then
+      begin
+        result:=i;
+        exit;
+      end;
     end;
-  end;
 
   if cntFiles>=Length(arFiles) then
   begin

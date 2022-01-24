@@ -642,7 +642,6 @@ begin
   end;
 
   //--- Fill
-
   if cntText>=Length(arText) then
   begin
     SetLength(arText,cntText+increment*100);
@@ -1552,7 +1551,7 @@ begin
 
   if UpCase(ExtractFileExt(aname))='.LAYOUT' then
   begin
-    lnode:=ParseLayoutMem(abuf);
+    lnode:=ParseLayoutMem(abuf,adir); // for checking, Particles, UI or Layout
     ltype:=1;
   end
   else
