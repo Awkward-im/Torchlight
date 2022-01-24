@@ -61,6 +61,11 @@ type
   end;
   tStatLevelUpArray = array of tStatLevelUp;
 
+  tUnkn9 = packed record
+    index:byte;
+    data :array [0..3] of word;
+  end;
+
 type
   TTL2StringVal = record
     name :string;
@@ -91,10 +96,10 @@ type
     FStatArea2  :TTL2StringValList;
     FStatKillers:TL2IdValList;
 
-    FUnkn1    :Word;
-    FUnkn2    :Word;
+    FUnkn1   :Word;
+    FUnkn2   :Word;
     FUnkn17  :array [0..16] of byte;
-    FUnkn9   :array [0.. 8] of byte;
+    FUnkn9   :tUnkn9;
     FUnknLast:DWord;
 
     FStatName :string;
@@ -257,7 +262,7 @@ begin
 
   //----- ?? Unknown -----
 
-  AStream.Read(FUnkn9[0],9);
+  AStream.Read(FUnkn9,SizeOf(FUnkn9));
 {
   ## | < 0 > | < 1 > | < 2 > | < 3 > |
   00 | 01 00 | 00 00 | 00 00 | 00 00 | zero
@@ -343,7 +348,7 @@ begin
 
   //----- ?? Unknown -----
 
-  AStream.Write(FUnkn9[0],9);
+  AStream.Write(FUnkn9,SizeOf(FUnkn9));
 
   //----- Player killers -----
 

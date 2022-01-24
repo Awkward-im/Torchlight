@@ -44,7 +44,7 @@ object MainTL2TransForm: TMainTL2TransForm
         Height = 19
         Hint = '*.DAT,  *.LAYOUT and *.TEMPLATE files'
         Top = 24
-        Width = 130
+        Width = 128
         Caption = 'Scan just known files'
         Checked = True
         TabOrder = 1
@@ -54,7 +54,7 @@ object MainTL2TransForm: TMainTL2TransForm
         Left = 4
         Height = 19
         Top = 1
-        Width = 106
+        Width = 104
         Caption = 'Scan all text files'
         TabOrder = 0
       end
@@ -62,7 +62,7 @@ object MainTL2TransForm: TMainTL2TransForm
         Left = 4
         Height = 19
         Top = 48
-        Width = 134
+        Width = 132
         Caption = 'Scan selected dir only'
         TabOrder = 2
       end
@@ -283,6 +283,12 @@ object MainTL2TransForm: TMainTL2TransForm
       OnExecute = FileExitExecute
       ShortCut = 32883
     end
+    object FileScan: TAction
+      Category = 'File'
+      Caption = 'Scan mod'
+      ImageIndex = 26
+      OnExecute = FileScanExecute
+    end
   end
   object TL2MainMenu: TMainMenu
     Images = TL2DataModule.TL2ImageList
@@ -305,8 +311,11 @@ object MainTL2TransForm: TMainTL2TransForm
       object miFileExport: TMenuItem
         Action = FileExport
       end
-      object MenuItem2: TMenuItem
+      object miFileBuild: TMenuItem
         Action = FileBuild
+      end
+      object miFileScanMod: TMenuItem
+        Action = FileScan
       end
       object miFileSep1: TMenuItem
         Caption = '-'

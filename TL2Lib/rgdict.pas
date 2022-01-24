@@ -1,11 +1,16 @@
-﻿{%TODO remove Classes (TStringList) dependences}
-{%TODO remove RGNode dependences}
-{%TODO keep text in TextCache object (but local can have long lines)}
+﻿{TODO: remove RGIO.Text, RGNode dependences}
+{TODO: export as UTF8 binary (UCS16LE right now)}
 unit RGDict;
 
 interface
 
+uses
+  TextCache;
+
 //--- Tags
+
+type
+  TExportDictType = (asTags, asText, asBin, asZBin);
 
 type
 
@@ -15,19 +20,23 @@ type
   private
     type
       TDict = record
-        name:PWideChar;
         hash:dword;
+        case boolean of
+          false: (name:PWideChar);
+          true : (idx :cardinal);
       end;
   public
     type
-      TRGOptions = set of (check_hash, check_text, update_text);
+      TRGOptions = set of (check_hash, check_text);
   private
+    FCache   :TTextCache;
     FDict    :array of TDict;
     NameIdxs :array of integer;
     FCapacity:cardinal;
     FCount   :cardinal;
     FOptions :TRGOptions;
     FSorted  :boolean;
+    FUseCache  :boolean;
     FTextSorted:boolean;
 
     function  GetHashIndex(akey:dword):integer;
@@ -37,22 +46,24 @@ type
     function  GetHashByText(akey:PWideChar):dword;
     function  GetTextByIdx (idx :cardinal ):PWideChar;
     function  GetHashByIdx (idx :cardinal ):dword;
+    function  LoadBinary    (aptr:PByte):integer;
     function  LoadTagsFile  (aptr:PByte):integer;
     function  LoadDictionary(aptr:PByte):integer;
     function  LoadList      (aptr:PByte):integer;
     procedure InitCapacity(aval:cardinal);
   public
-    procedure Init;
+    procedure Init(usecache:boolean=true);
     procedure Clear;
     procedure SortText;
     procedure Sort;
+    function  Exists(ahash:dword):boolean;
     // calculates Hash for key = -1
-    function  Add(akey:dword; aval:PWideChar; auseThis:boolean=false):dword;
+    function  Add(akey:dword; aval:PWideChar):dword;
     function  Add(akey:dword; const aval:AnsiString):dword;
     function  Import(aptr: PByte): integer;
     function  Import(const fname:AnsiString=''):integer;
     function  Import(const resname:string; restype:PChar):integer;
-    procedure Export(const fname:AnsiString; asdat:boolean=true; sortbyhash:boolean=true);
+    procedure Export(const fname:AnsiString; afmt:TExportDictType=asTags; sortbyhash:boolean=true);
 
     property Tag    [akey:dword    ]:PWideChar read GetTextByHash;
     property Hash   [akey:PWideChar]:dword     read GetHashByText;
@@ -113,9 +124,10 @@ function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
 implementation
 
 uses
-  Classes,
   rgglobal,
   rglogging,
+  rgmemory,
+  RGIO.Text,
   rgnode;
 
 const
@@ -131,22 +143,26 @@ const
 
 //===== DAT tags =====
 
-procedure TRGDict.Init;
+procedure TRGDict.Init(usecache:boolean=true);
 begin
   FCapacity:=0;
   FCount   :=0;
   FOptions :=[];
+  FUseCache:=usecache;
+  if usecache then FCache.Init(false);
 end;
 
 procedure TRGDict.Clear;
 var
   i:integer;
 begin
+  if FUseCache then FCache.Clear;
+
   if FCapacity>0 then
   begin
-    //!!
-    for i:=0 to FCount-1 do
-      FreeMem(FDict[i].name);
+    if not FUseCache then
+      for i:=0 to FCount-1 do
+        FreeMem(FDict[i].name);
     FCount:=0;
 
     SetLength(FDict,0);
@@ -163,11 +179,18 @@ begin
   end
   else
   begin
-    FOptions:=[check_hash, update_text];
+    FOptions:=[check_hash];
     if aval>FCapacity then
       aval:=aval div 2;
     FCapacity:=FCount+aval;
   end;
+
+  if FUseCache then
+  begin
+    FCache.Count   :=FCapacity;
+    FCache.Capacity:=FCapacity*16;
+  end;
+
   SetLength(FDict,FCapacity);
 //  SetLength(NameIdxs,FCapacity);
 end;
@@ -194,11 +217,11 @@ begin
     for i:=gap to FCount-1 do
     begin
       j:=i-gap;
-      while (j>=0) and (CompareWide(FDict[NameIdxs[j]].name,FDict[NameIdxs[j+gap]].name)>0) do
+      while (j>=0) and (CompareWide(IdxTag[NameIdxs[j]],IdxTag[NameIdxs[j+gap]])>0) do
       begin
-        ltmp:=NameIdxs[j+gap];
+        ltmp           :=NameIdxs[j+gap];
         NameIdxs[j+gap]:=NameIdxs[j];
-        NameIdxs[j]:=ltmp;
+        NameIdxs[j]    :=ltmp;
         dec(j,gap);
       end;
     end;
@@ -222,9 +245,9 @@ begin
       j:=i-gap;
       while (j>=0) and (FDict[j].hash>FDict[j+gap].hash) do
       begin
-        ltmp:=FDict[j+gap];
+        ltmp        :=FDict[j+gap];
         FDict[j+gap]:=FDict[j];
-        FDict[j]:=ltmp;
+        FDict[j]    :=ltmp;
         dec(j,gap);
       end;
     end;
@@ -278,17 +301,6 @@ begin
   end;
 end;
 
-function TRGDict.GetTextByHash(akey:dword):PWideChar;
-var
-  i:integer;
-begin
-  i:=GetHashIndex(akey);
-  if i<0 then
-    result:=nil
-  else
-    result:=FDict[i].name;
-end;
-
 function TRGDict.GetTextIndex(akey:PWideChar):integer;
 var
   L,R,i,ltmp:integer;
@@ -304,7 +316,7 @@ begin
     while (L<=R) do
     begin
       i:=L+(R-L) div 2;
-      ltmp:=CompareWide(akey,FDict[NameIdxs[i]].name);
+      ltmp:=CompareWide(akey,IdxTag[NameIdxs[i]]);
       if ltmp>0 then
         L:=i+1
       else
@@ -323,13 +335,24 @@ begin
   begin
     for i:=0 to FCount-1 do
     begin
-      if CompareWide(FDict[i].name,akey)=0 then
+      if CompareWide(IdxTag[i],akey)=0 then
       begin
         result:=i;
         break;
       end;
     end;
   end;
+end;
+
+function TRGDict.GetTextByHash(akey:dword):PWideChar;
+var
+  i:integer;
+begin
+  i:=GetHashIndex(akey);
+  if i<0 then
+    result:=nil
+  else
+    result:=IdxTag[i];
 end;
 
 function TRGDict.GetHashByText(akey:PWideChar):dword;
@@ -350,7 +373,11 @@ end;
 function TRGDict.GetTextByIdx(idx:cardinal):PWideChar;
 begin
   if idx>=FCount then result:=nil
-  else result:=FDict[idx].name;
+  else
+   if FUseCache then
+     result:=FCache[FDict[idx].idx]
+   else
+     result:=FDict[idx].name;
 end;
 
 function TRGDict.GetHashByIdx(idx:cardinal):dword;
@@ -360,7 +387,12 @@ begin
 end;
 
 
-function TRGDict.Add(akey:dword; aval:PWideChar; auseThis:boolean=false):dword;
+function TRGDict.Exists(ahash:dword):boolean; inline;
+begin
+  result:=GetHashIndex(ahash)>=0;
+end;
+
+function TRGDict.Add(akey:dword; aval:PWideChar):dword;
 var
   i:integer;
 begin
@@ -371,15 +403,6 @@ begin
     i:=GetHashIndex(akey);
     if i>=0 then
     begin
-      if (update_text in FOptions) then
-      begin
-        if CompareWide(FDict[i].name,aval)<>0 then
-        begin
-          FreeMem (FDict[i].name);      //!!
-          CopyWide(FDict[i].name,aval); //!!
-        end;
-      end;
-
       result:=akey;
       exit;
     end;
@@ -389,7 +412,7 @@ begin
   begin
     for i:=0 to FCount-1 do
     begin
-      if CompareWide(FDict[i].name,aval)=0 then
+      if CompareWide(IdxTag[i],aval)=0 then
       begin
         result:=FDict[i].hash;
         exit;
@@ -398,7 +421,6 @@ begin
   end;
 
   // Add new element
-  //!!
   FSorted:=false;
   FTextSorted:=false;
   if FCount=FCapacity then
@@ -407,10 +429,12 @@ begin
     SetLength(FDict,FCapacity);
   end;
   FDict[FCount].hash:=akey;
-  if auseThis then
-    FDict[FCount].name:=aval
+
+  if FUseCache then
+    FDict[FCount].idx:=FCache.Append(aval)
   else
-    CopyWide(FDict[FCount].name,aval); //!!
+    CopyWide(FDict[FCount].name,aval);
+
   inc(FCount);
   result:=akey;
 end;
@@ -422,6 +446,41 @@ end;
 
 //----- Load -----
 
+//--- binary
+
+function TRGDict.LoadBinary(aptr:PByte):integer;
+var
+  pcw:PWideChar;
+  i,llen:integer;
+  lhash:dword;
+begin
+  result:=memReadInteger(aptr);
+  InitCapacity(result);
+  for i:=0 to result-1 do
+  begin
+    lhash:=memReadInteger(aptr);
+
+    llen:=PWord(aptr)^;
+    if llen=0 then
+    begin
+      inc(aptr,2);
+      Add(lhash,nil);
+    end
+    else if PWideChar(aptr)[llen]=#0 then
+    begin
+      pcw:=PWideChar(aptr+2);
+      Add(lhash,pcw);
+      inc(aptr,2+llen*2);
+    end
+    else
+    begin
+      pcw:=memReadShortString(aptr);
+      Add(lhash,pcw);
+      FreeMem(pcw);
+    end;
+  end;
+end;
+
 //--- Tags.dat
 
 function TRGDict.LoadTagsFile(aptr:PByte):integer;
@@ -432,7 +491,7 @@ var
 begin
   result:=0;
 
-  lnode:=ParseDat(PWideChar(aptr));
+  WideToNode(aptr,0,lnode);
   if lnode<>nil then
   begin
     i:=0;
@@ -441,7 +500,7 @@ begin
     while i<lc do
     begin
       pcw:=asString(GetChild(lnode,i));
-      if pcw<>nil then
+//      if pcw<>nil then
       begin
         Add(AsUnsigned(GetChild(lnode,i+1)),pcw);
         inc(result);
@@ -456,65 +515,61 @@ end;
 
 function TRGDict.LoadDictionary(aptr:PByte):integer;
 var
-  ls:AnsiString;
-  lns:String[31];
-  lptr,lend:PByte;
-  lcnt,lstart,tmpi,i,p:integer;
+  lptr,lend:PAnsiChar;
+  lcnt,lstart,i,p:integer;
+  ltmp:cardinal;
   lhash:dword;
 begin
   result:=0;
 
   lcnt:=0;
-  lptr:=aptr;
-  while lptr^<>0 do
+  lptr:=PAnsiChar(aptr);
+  while lptr^<>#0 do
   begin
-    if lptr^=13 then inc(lcnt);
+    if lptr^=#13 then inc(lcnt);
     inc(lptr);
   end;
   InitCapacity(lcnt);
   
-  lend:=aptr;
+  lend:=PAnsiChar(aptr);
   try
     for i:=0 to lcnt-1 do
     begin
       lptr:=lend;
-      while not (lend^ in [0,13]) do inc(lend);
-      SetString(ls, PAnsiChar(lptr), lend-lptr);
-      while lend^ in [1..32] do inc(lend);
+      while not (lend^ in [#0,#13]) do inc(lend);
+      lcnt:=lend-lptr;
+      while lend^ in [#1..#32] do inc(lend);
 
-      if ls<>'' then
+      if lcnt>0 then
       begin
-        if ls[1]='-' then
-          lstart:=2
+        if lptr^='-' then
+          lstart:=1
         else
-          lstart:=1;
+          lstart:=0;
 
-        for p:=lstart to Length(ls) do
+        ltmp:=0;
+        for p:=lstart to lcnt-1 do
         begin
-          if (ls[p] in ['0'..'9']) then
-            lns[p]:=ls[p]
+          if (lptr[p] in ['0'..'9']) then
+            ltmp:=(ltmp)*10+ORD(lptr[p])-ORD('0')
           else
           begin
-            SetLength(lns,p-1);
-            if lstart=2 then
-            begin
-              val(lns,tmpi);
-              lhash:=dword(-tmpi);
-            end
+            if lstart>0 then
+              lhash:=dword(-integer(ltmp))
             else
-              val(lns,lhash);
-            Add(lhash,Copy(ls,p+1)); //!!
+              lhash:=ltmp;
+            Add(lhash,Copy(lptr,p+1+1,lcnt-p-1)); //!!
             inc(result);
             break;
           end;
         end;
       end;
 
-      if lend^=0 then break;
+      if lend^=#0 then break;
     end;
 
   except
-    if ls<>'' then RGLog.Add('Possible problem with '+ls);
+    if lcnt>0 then RGLog.Add('Possible problem with '+copy(lptr,1,lcnt));
     Clear;
   end;
 end;
@@ -561,6 +616,11 @@ begin
   if (pword(aptr)^=SIGN_UNICODE) and (aptr[2]=ORD('[')) then
   begin
     result:=LoadTagsFile(aptr)
+  end
+
+  else if aptr[3]=0 then
+  begin
+    result:=LoadBinary(aptr)
   end
 
   else if (CHAR(aptr[0]) in ['-','0'..'9']) or
@@ -689,62 +749,100 @@ begin
   result:=FCount-loldcount;
 end;
 
-procedure TRGDict.Export(const fname:AnsiString; asdat:boolean=true; sortbyhash:boolean=true);
+procedure TRGDict.Export(const fname:AnsiString; afmt:TExportDictType=asTags; sortbyhash:boolean=true);
 var
-  sl:TStringList;
+  sl:TRGLog;
   lnode:pointer;
   lstr:UnicodeString;
-  i:integer;
+  i,j,ldelta:integer;
 begin
-  if asdat then
-  begin
-    lnode:=AddGroup(nil,'TAGS');
+  case afmt of
+    asTags: begin
+      lnode:=AddGroup(nil,'TAGS');
 
-    if sortbyhash then
-    begin
-      for i:=0 to FCount-1 do
+      if sortbyhash then
       begin
-        AddString (lnode,nil,        FDict[i].name ); //!!
-        AddInteger(lnode,nil,Integer(FDict[i].hash)); //!!
+        for i:=0 to FCount-1 do
+        begin
+          AddString (lnode,nil,IdxTag[i]);
+          AddInteger(lnode,nil,Integer(FDict[i].hash));
+        end
       end
-    end
-    else
-    begin
-      if not FTextSorted then SortText;
-      for i:=0 to FCount-1 do
+      else
       begin
-        AddString (lnode,nil,        FDict[NameIdxs[i]].name ); //!!
-        AddInteger(lnode,nil,Integer(FDict[NameIdxs[i]].hash)); //!!
+        if not FTextSorted then SortText;
+        for i:=0 to FCount-1 do
+        begin
+          j:=NameIdxs[i];
+          AddString (lnode,nil,IdxTag[j]);
+          AddInteger(lnode,nil,Integer(FDict[j].hash));
+        end;
       end;
-    end;
-    
-    WriteDatTree(lnode,PChar(fname));
-    DeleteNode(lnode);
-  end
-  else
-  begin
-    sl:=TStringList.Create;
-
-    if sortbyhash then
-    begin
-      for i:=0 to FCount-1 do
-      begin
-        Str(FDict[i].hash,lstr);                      //!!
-        sl.Add(UTF8Encode(lstr+':'+(FDict[i].name))); //!!
-      end;
-    end
-    else
-    begin
-      if not FTextSorted then SortText;
-      for i:=0 to FCount-1 do
-      begin
-        Str(FDict[NameIdxs[i]].hash,lstr);                      //!!
-        sl.Add(UTF8Encode(lstr+':'+(FDict[NameIdxs[i]].name))); //!!
-      end;
+      
+      BuildTextFile(lnode,PChar(fname));
+      DeleteNode(lnode);
     end;
 
-    sl.SaveToFile(fname);
-    sl.Free;
+    asText: begin
+      sl.Init;
+
+      if sortbyhash then
+      begin
+        for i:=0 to FCount-1 do
+        begin
+          Str(FDict[i].hash,lstr);
+          sl.Add(UTF8Encode(lstr+':'+(IdxTag[i])));
+        end;
+      end
+      else
+      begin
+        if not FTextSorted then SortText;
+        for i:=0 to FCount-1 do
+        begin
+          j:=NameIdxs[i];
+          Str(FDict[j].hash,lstr);
+          sl.Add(UTF8Encode(lstr+':'+(IdxTag[j])));
+        end;
+      end;
+
+      sl.SaveToFile(fname);
+      sl.Free;
+    end;
+
+    asBin, asZBin: begin
+      sl.Init;
+
+      if afmt=asZBin then ldelta:=1 else ldelta:=0;
+
+      sl.Add(FCount,4);
+      if sortbyhash then
+      begin
+        for i:=0 to FCount-1 do
+        begin
+          sl.Add(FDict[i].hash,4);
+          if IdxTag[i]=nil then
+            sl.Add(0,2)
+          else
+            sl.Add(IdxTag[i],(Length(IdxTag[i])+ldelta)*SizeOf(WideChar));
+        end;
+      end
+      else
+      begin
+        if not FTextSorted then SortText;
+        for i:=0 to FCount-1 do
+        begin
+          j:=NameIdxs[i];
+          sl.Add(FDict[j].hash,4);
+          if IdxTag[i]=nil then
+            sl.Add(0,2)
+          else
+            sl.Add(IdxTag[j],(Length(IdxTag[j])+ldelta)*SizeOf(WideChar));
+        end;
+      end;
+
+      sl.SaveToFile(fname);
+      sl.Free;
+    end;
   end;
 end;
 

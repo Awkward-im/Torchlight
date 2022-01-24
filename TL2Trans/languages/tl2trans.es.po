@@ -326,6 +326,10 @@ msgstr "Guardar &como..."
 msgid "Save project as..."
 msgstr "Guardar el proyecto como..."
 
+#: tmaintl2transform.filescan.caption
+msgid "Scan mod"
+msgstr ""
+
 #: tmaintl2transform.fontedit.caption
 msgctxt "tmaintl2transform.fontedit.caption"
 msgid "&Font"
@@ -381,6 +385,44 @@ msgstr "Archivos *.DAT,  *.LAYOUT and *.TEMPLATE"
 msgid "Scan all text files"
 msgstr "Escenar todos los archivos de texto"
 
+#: tmodinfoform.bbcancel.caption
+#, fuzzy
+msgctxt "tmodinfoform.bbcancel.caption"
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: tmodinfoform.caption
+msgid "MOD Info"
+msgstr ""
+
+#: tmodinfoform.lbldescr.caption
+msgid "Mod Description"
+msgstr ""
+
+#: tmodinfoform.lblguid.caption
+msgid "Mod GUID (click button for new)"
+msgstr ""
+
+#: tmodinfoform.lblversion.caption
+msgid "Mod version"
+msgstr ""
+
+#: tmodinfoform.leauthor.editlabel.caption
+msgid "Mod Author"
+msgstr ""
+
+#: tmodinfoform.ledownload.editlabel.caption
+msgid "Mod Download URL"
+msgstr ""
+
+#: tmodinfoform.letitle.editlabel.caption
+msgid "Mod Title"
+msgstr ""
+
+#: tmodinfoform.lewebsite.editlabel.caption
+msgid "Mod Website URL"
+msgstr ""
+
 #: trclass.scanttranslate
 msgctxt "trclass.scanttranslate"
 msgid "Text can't be translated"
@@ -417,6 +459,7 @@ msgid "Choosen language is unsupported"
 msgstr "Lenguage seleccionado no esta soportado"
 
 #: ttl2notes.bbcancel.caption
+msgctxt "ttl2notes.bbcancel.caption"
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -581,6 +624,10 @@ msgstr "Reapertura de proyectos al inicio"
 #: ttl2settings.cbshowdebug.caption
 msgid "Show Debug Options"
 msgstr "Mostrar opciones de depuración"
+
+#: ttl2settings.cbtabsync.caption
+msgid "Tab Sync"
+msgstr ""
 
 #: ttl2settings.gbother.caption
 msgid "Other"

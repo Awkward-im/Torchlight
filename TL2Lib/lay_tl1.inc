@@ -1,7 +1,6 @@
 {}
 
-function DoParseBlockTL1(var anode:pointer; var aptr:pByte; const aparent:Int64;
-        var ainfo:TRGObject):integer;
+function TRGLayoutFile.DoParseBlockTL1(var anode:pointer; const aparent:Int64):integer;
 var
   lChunkId:Int64;
   lparent:Int64;
@@ -16,21 +15,22 @@ begin
 
   bnode:=AddGroup(anode,'BASEOBJECT');
   lnode:=AddGroup(bnode,'PROPERTIES');
-  lptr:=aptr;
+  lptr:=FPos;
   
   //--- Chunk Header
 
-  lChunkType:=memReadInteger(aptr);
-  lChunkId:=memReadInteger64(aptr);
-  lparent :=memReadInteger64(aptr);
+  lChunkType:=memReadInteger(FPos);
+  lChunkId:=memReadInteger64(FPos);
+  lparent :=memReadInteger64(FPos);
 
   //--- Chunk Info
 
-  pname:=ainfo.GetObjectName(lChunkType);
+  pname:=info.GetObjectName(lChunkType);
   AddString(lnode,'DESCRIPTOR',pname);
-  RGLog.Add('Object type '+IntToStr(lChunkType)+' ('+HexStr(lChunkType,2)+') '+pname);
 
-  pcw:=memReadDWordString(aptr);
+  RGLog.Add('Object type '+IntToStr(lChunkType)+' ('+HexStr(lChunkType,2)+') '+string(pname));
+
+  pcw:=memReadDWordString(FPos);
   if pcw<>nil then
   begin
     AddString(lnode,'NAME',pcw);
@@ -44,10 +44,10 @@ begin
 
   //--- Properties
 
-  for i:=0 to ainfo.GetPropsCount()-1 do
+  for i:=0 to info.GetPropsCount()-1 do
   begin
-    lsize:=memReadDWord(aptr);
-    ReadPropertyValue(i,lsize*SizeOf(DWord), lnode,aptr, ainfo);
+    lsize:=memReadDWord(FPos);
+    ReadPropertyValue(i,lsize*SizeOf(DWord), lnode);
     RGLog.Add('Property ('+IntToStr(i)+') with size '+IntToStr(lsize));
   end;
 
@@ -55,7 +55,7 @@ begin
 
   //--- Children
 
-  lcnt:=memReadDWord(aptr);
+  lcnt:=memReadDWord(FPos);
   RGLog.Add('Children count='+IntToStr(lcnt));
   if lcnt>0 then
   begin
@@ -67,52 +67,47 @@ begin
     lnode:=AddGroup(bnode,'CHILDREN');
     for i:=0 to lcnt-1 do
     begin
-RGLog.Add('From '+HexStr(memReadDWord(aptr),4)+' to '+HexStr(memReadDWord(aptr),4));
-//      inc(result,DoParseBlockTL1(lnode,aptr,lChunkId,ainfo));
+RGLog.Add('From '+HexStr(memReadDWord(FPos),4)+' to '+HexStr(memReadDWord(FPos),4));
+//      inc(result,DoParseBlockTL1(lnode,lChunkId));
     end;
   end;
 
 end;
 
-function DoParseLayoutTL1(aptr:pointer):pointer;
+function TRGLayoutFile.DoParseLayoutTL1(atype:cardinal):pointer;
 var
   qw:Int64;
-  linfo:TRGObject;
-  lc,lptr,lobj:pointer;
+  lc,lobj:pointer;
   lobjcnt,i,lcnt:integer;
 begin
-  linfo.Init;
-  linfo.Version:=verTL1;
+  info.Version:=verTL1;
 
-  lptr:=aptr;
-  qw:=memReadInteger64(lptr);
+  qw:=memReadInteger64(FPos);
   if qw<>$B81A3A0F4348455A then
     RGLog.Add('TL1 Layout signature is not B81A3A0F4348455A but'+HexStr(qw,16));
   
-  result:=AddGroup(nil,'Layout');
-  linfo.SelectScene('Layout');
+  result:=AddGroup(nil,ltName[ltLayout]);
+  info.SelectScene(ltName[ltLayout]);
 
   AddInteger(result,'VERSION',3);
   lc:=AddUnsigned(result,'COUNT',0);
 
-  lcnt:=memReadDWord(lptr);
+  lcnt:=memReadDWord(FPos);
   if lcnt=0 then
   begin
-    lcnt:=memReadDWord(lptr);
-    memReadDWord(lptr);                     // offset
+    lcnt:=memReadDWord(FPos);
+    memReadDWord(FPos);                     // offset
   end;
 //  AddUnsigned(result,'COUNT',lcnt);         //!!!! like TL2 - must be TOTAL objects
 
   lobjcnt:=0;
   lobj:=AddGroup(result,'OBJECTS');
   for i:=0 to lcnt-1 do                   // lcnt is root object count
-    inc(lobjcnt,DoParseBlockTL1(lobj,lptr,-1,linfo));
+    inc(lobjcnt,DoParseBlockTL1(lobj,-1));
 
 {
-  memReadDword(lptr); // this is filesize-SizeOf(dword)
+  memReadDword(FPos); // this is filesize-SizeOf(dword)
 }
 
   asUnsigned(lc,lobjcnt);
-
-  linfo.Clear;
 end;

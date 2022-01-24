@@ -330,6 +330,10 @@ msgstr "Сохранить как..."
 msgid "Save project as..."
 msgstr "Сохранить проект как..."
 
+#: tmaintl2transform.filescan.caption
+msgid "Scan mod"
+msgstr ""
+
 #: tmaintl2transform.fontedit.caption
 msgctxt "tmaintl2transform.fontedit.caption"
 msgid "&Font"
@@ -385,6 +389,44 @@ msgstr "*.DAT,  *.LAYOUT и *.TEMPLATE файлы"
 msgid "Scan all text files"
 msgstr "Проверять все файлы"
 
+#: tmodinfoform.bbcancel.caption
+#, fuzzy
+msgctxt "tmodinfoform.bbcancel.caption"
+msgid "Cancel"
+msgstr "Отмена"
+
+#: tmodinfoform.caption
+msgid "MOD Info"
+msgstr ""
+
+#: tmodinfoform.lbldescr.caption
+msgid "Mod Description"
+msgstr ""
+
+#: tmodinfoform.lblguid.caption
+msgid "Mod GUID (click button for new)"
+msgstr ""
+
+#: tmodinfoform.lblversion.caption
+msgid "Mod version"
+msgstr ""
+
+#: tmodinfoform.leauthor.editlabel.caption
+msgid "Mod Author"
+msgstr ""
+
+#: tmodinfoform.ledownload.editlabel.caption
+msgid "Mod Download URL"
+msgstr ""
+
+#: tmodinfoform.letitle.editlabel.caption
+msgid "Mod Title"
+msgstr ""
+
+#: tmodinfoform.lewebsite.editlabel.caption
+msgid "Mod Website URL"
+msgstr ""
+
 #: trclass.scanttranslate
 msgctxt "trclass.scanttranslate"
 msgid "Text can't be translated"
@@ -421,6 +463,7 @@ msgid "Choosen language is unsupported"
 msgstr "Заданное направление перевода не поддерживается"
 
 #: ttl2notes.bbcancel.caption
+msgctxt "ttl2notes.bbcancel.caption"
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -599,6 +642,10 @@ msgstr "Переоткрыть проекты при запуске"
 #: ttl2settings.cbshowdebug.caption
 msgid "Show Debug Options"
 msgstr "Показать отладочные настройки"
+
+#: ttl2settings.cbtabsync.caption
+msgid "Tab Sync"
+msgstr ""
 
 #: ttl2settings.gbother.caption
 msgid "Other"

@@ -1,4 +1,5 @@
 {$CALLING cdecl}
+{TODO: memReadShortStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar}
 unit RGMemory;
 
 interface
@@ -27,6 +28,10 @@ function  memReadByteString     (var buf:PByte):PWideChar; export;
 function  memReadShortString    (var buf:PByte):PWideChar; export;
 function  memReadDwordString    (var buf:PByte):PWideChar; export;
 function  memReadShortStringUTF8(var buf:PByte):PWideChar; export;
+
+function  memReadByteStringBuf (var buf:PByte; astr:PByte; asize:integer):PWideChar; export;
+function  memReadShortStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar; export;
+function  memReadDwordStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar; export;
 
 //function  ReadShortStringList(var buf:PByte):TL2StringList; export;
 function  memReadIdList   (var buf:PByte):TL2IdList; export;
@@ -134,6 +139,21 @@ begin
     result:=nil;
 end;
 
+function memReadByteStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar;
+var
+  lsize:cardinal;
+begin
+  lsize:=memReadByte(buf);
+  if (lsize>0) and (lsize<asize) then
+  begin
+    result:=PWideChar(astr);
+    memReadData(buf,result^, lsize*SizeOf(WideChar));
+    result[lsize]:=#0;
+  end
+  else
+    result:=nil;
+end;
+
 function memReadShortString(var buf:PByte):PWideChar;
 var
   lsize:Integer;
@@ -149,6 +169,21 @@ begin
     result:=nil;
 end;
 
+function memReadShortStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar;
+var
+  lsize:cardinal;
+begin
+  lsize:=memReadShort(buf);
+  if (lsize>0) and (lsize<asize) then
+  begin
+    result:=PWideChar(astr);
+    memReadData(buf,result^, lsize*SizeOf(WideChar));
+    result[lsize]:=#0;
+  end
+  else
+    result:=nil;
+end;
+
 function memReadDwordString(var buf:PByte):PWideChar;
 var
   lsize:integer;
@@ -158,6 +193,21 @@ begin
   begin
     GetMem     (    result ,(lsize+1)*SizeOf(WideChar));
     memReadData(buf,result^, lsize   *SizeOf(WideChar));
+    result[lsize]:=#0;
+  end
+  else
+    result:=nil;
+end;
+
+function memReadDwordStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar;
+var
+  lsize:cardinal;
+begin
+  lsize:=memReadInteger(buf);
+  if (lsize>0) and (lsize<asize) then
+  begin
+    result:=PWideChar(astr);
+    memReadData(buf,result^, lsize*SizeOf(WideChar));
     result[lsize]:=#0;
   end
   else

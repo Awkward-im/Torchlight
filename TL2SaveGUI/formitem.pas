@@ -115,7 +115,7 @@ procedure TfmItem.edStackChange(Sender: TObject);
 begin
   if not edStack.ReadOnly then
   begin
-    if FMaxStack<0 then FMaxStack:=GtItemStack(FItem.ID);
+    if FMaxStack<0 then FMaxStack:=GetItemStack(FItem.ID);
     if StrToIntDef(edStack.Text,1)>FMaxStack then
       edStack.Text:=IntToStr(FMaxStack);
     bbUpdate.Visible:=true;

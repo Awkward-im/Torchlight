@@ -6,32 +6,29 @@ const
 
 procedure LogProperty(aname:PWideChar; aid:dword; atype:integer);
 begin
-  RGLog.Add('<STRING>NAME:'+aname);
+  RGLog.Add('<STRING>NAME:'+UTF8Encode(WideString(aname)));
   RGLog.Add('<UNSIGNED INT>ID:'+IntToStr(aid));
-  RGLog.Add('<STRING>TYPEOFDATA:'+TypeToText(atype));
+  RGLog.Add('<STRING>TYPEOFDATA:'+string(TypeToText(atype)));
 end;
 
-function ReadPropertyHob(var anode:pointer; var aptr:pByte; ainfo:TRGObject):boolean;
+procedure TRGLayoutFile.ReadPropertyHob(var anode:pointer);
 var
   lptr:pByte;
   lhash:dword;
   lsize:integer;
 begin
-  result:=false;
-
-  lsize:=memReadWord(aptr);
+  lsize:=memReadWord(FPos);
   if lsize=0 then exit;
 
-  lptr:=aptr;
-  lhash:=memReadDWord(aptr);
+  lptr:=FPos;
+  lhash:=memReadDWord(FPos);
 
-  result:=ReadPropertyValue(lhash,lsize-4, anode,aptr, ainfo);
+  ReadPropertyValue(lhash,lsize-4, anode);
 
-  aptr:=lptr+lsize;
+  FPos:=lptr+lsize;
 end;
 
-procedure DoParseBlockHob(var anode:pointer; var aptr:pByte; const aparent:Int64;
-        ainfo:TRGObject);
+function TRGLayoutFile.DoParseBlockHob(var anode:pointer; const aparent:Int64):integer;
 var
   lChunkId  :Int64;
   bnode,lnode:pointer;
@@ -44,30 +41,31 @@ var
 
   i,lsize,lcnt:integer;
 begin
-  
+  result:=1;
+
   bnode:=AddGroup(anode,'BASEOBJECT');
   lnode:=AddGroup(bnode,'PROPERTIES');
 
-  lptr:=aptr;
+  lptr:=FPos;
 
   //--- Chunk Header
 
-  lChunkSize:=memReadDWord(aptr);
+  lChunkSize:=memReadDWord(FPos);
   if lChunkSize=0 then exit;
 
-  lChunkType:=memReadDWord(aptr);
-  lChunkId  :=memReadInteger64(aptr);
+  lChunkType:=memReadDWord(FPos);
+  lChunkId  :=memReadInteger64(FPos);
 
   //--- Chunk Info
 
-  lname:=ainfo.GetObjectName(lChunkType);
+  lname:=info.GetObjectName(lChunkType);
   if lname=nil then
     lname:=GetStr(lChunkType);
 
   AddString(lnode,'DESCRIPTOR',lname);
   AddInteger64(lnode,'ID',lChunkId);
 
-  pcw:=memReadShortStringUTF8(aptr);
+  pcw:=memReadShortStringUTF8(FPos);
   if pcw<>nil then
   begin
     AddString(lnode,'NAME',pcw);
@@ -80,17 +78,18 @@ begin
 
   //--- Properties
 
-  RGLog.Reserve('Object '+lname);
-  lcnt:=memReadByte(aptr);
+  RGLog.Reserve('Object '+UTF8Encode(WideString(lname)));
+
+  lcnt:=memReadByte(FPos);
   for i:=0 to lcnt-1 do
   begin
-    ReadPropertyHob(lnode,aptr,ainfo);
+    ReadPropertyHob(lnode);
   end;
 
   //--- Additional data
 
-  lsize:=memReadInteger(aptr);
-  llptr:=aptr;
+  lsize:=memReadInteger(FPos);
+  llptr:=FPos;
   if lsize>0 then
   begin
 
@@ -98,7 +97,7 @@ begin
 
     if lChunkType=IdLogicGroupHob then
     begin
-      ParseLogicGroup(lnode,aptr);
+      ParseLogicGroup(lnode);
     end
 
     //----- Timeline -----
@@ -106,7 +105,7 @@ begin
     else if lChunkType=IdTimelineHob then
     begin
 try
-      ParseTimeline(lnode,lChunkId,aptr);
+      ParseTimeline(lnode,lChunkId);
 except
 end;
     end
@@ -115,79 +114,77 @@ end;
 
     else
     begin
-      RGLog.Add('Unknown chunk with size '+IntToStr(lsize)+' at '+HexStr(aptr-_filestart,8));
+      RGLog.Add('Unknown chunk with size '+IntToStr(lsize)+' at '+HexStr(FPos-FStart,8));
     //!!
-      AddString(lnode,'??ADDITIONALDATA',
-          PWideChar(WideString(HexStr(aptr-_filestart,8))));
+      AddString (lnode,'??ADDITIONALDATA', PWideChar(WideString(HexStr(FPos-FStart,8))));
       AddInteger(lnode,'??ADDITIONALSIZE',lsize);
     end;
 
-    aptr:=llptr+lsize;
+    FPos:=llptr+lsize;
   end;
 
   //--- Children
 
-  lcnt:=memReadWord(aptr);
+  lcnt:=memReadWord(FPos);
   if lcnt>0 then
   begin
     lnode:=AddGroup(bnode,'CHILDREN');
     for i:=0 to lcnt-1 do
     begin
-      DoParseBlockHob(lnode,aptr,lChunkId,ainfo);
+      inc(result,DoParseBlockHob(lnode,lChunkId));
     end;
   end;
 
-  aptr:=lptr+lChunkSize;
+  FPos:=lptr+lChunkSize;
 
   RGLog.Reserve('');
 end;
 
-function DoParseLayoutHob(aptr:pointer):pointer;
+function TRGLayoutFile.DoParseLayoutHob(atype:cardinal):pointer;
 var
-  linfo:TRGObject;
-  lptr,lobj:pointer;
+  lobj:pointer;
   pcw:PWideChar;
   ldata,i,lcnt:integer;
   ltmp:dword;
   b1,b2,b3:boolean;
 begin
-  linfo.Init;
-  linfo.Version:=verHob;
+  info.Version:=verHob;
   
-  lptr:=aptr+1;
-  ltmp:=memReadByte(lptr);
+  inc(FPos);
+
+  ltmp:=memReadByte(FPos);
   if ltmp<>0 then
     RGLog.Add('Second byte is not 0 but '+HexStr(ltmp,2));
 
-  result:=AddGroup(nil,'Layout');
-  linfo.SelectScene('Layout');
+  result:=AddGroup(nil,ltName[ltLayout]);
+  info.SelectScene(ltName[ltLayout]);
 
-  lcnt:=memReadDWord(lptr);
+  lcnt:=memReadDWord(FPos);
   AddUnsigned(result,'COUNT',lcnt);
 
-  ltmp:=memReadDword(lptr);                // offset
+  ltmp:=memReadDword(FPos);                // offset
   if ltmp<>0 then
     RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
 
-  ltmp:=memReadByte(lptr);                 // 1
+  ltmp:=memReadByte(FPos);                 // 1
   if ltmp<>1 then
     RGLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
 
-  pcw:=memReadShortStringUTF8(lptr);       // LEVEL
+  pcw:=memReadShortStringUTF8(FPos);       // LEVEL
   AddString(result,'TYPE',pcw);
   if CompareWide(pcw,'LEVEL')<>0 then
-    RGLog.Add('Type is not LEVEL but '+pcw);
+    RGLog.Add('Type is not LEVEL but '+string(pcw));
   FreeMem(pcw);
 
-  ltmp:=memReadByte(lptr);                 // 0
+  ltmp:=memReadByte(FPos);                 // 0
   if ltmp<>0 then
     RGLog.Add('Byte after type is not 0 but '+IntToStr(ltmp));
-  ltmp:=memReadByte(lptr);                 // 4
+  ltmp:=memReadByte(FPos);                 // 4
   if ltmp<>4 then
     RGLog.Add('Byte before main data offset is not 4 but '+IntToStr(ltmp));
 
-  ldata:=memReadDWord(lptr);               // absolute offset to data
-  pcw:=memReadShortString(lptr);
+  ldata:=memReadDWord(FPos);               // absolute offset to data
+  pcw:=memReadShortString(FPos);
   if pcw<>nil then
   begin
     AddString(result,'BASE',pcw);
@@ -195,70 +192,64 @@ begin
   end;
 
   // 2 vector3 or 3 vector2
-  AddFloat(result,'X1',memReadFloat(lptr));
-  AddFloat(result,'Y1',memReadFloat(lptr));
-  AddFloat(result,'Z1',memReadFloat(lptr));
-  AddFloat(result,'X2',memReadFloat(lptr));
-  AddFloat(result,'Y2',memReadFloat(lptr));
-  AddFloat(result,'Z2',memReadFloat(lptr));
+  AddFloat(result,'X1',memReadFloat(FPos));
+  AddFloat(result,'Y1',memReadFloat(FPos));
+  AddFloat(result,'Z1',memReadFloat(FPos));
+  AddFloat(result,'X2',memReadFloat(FPos));
+  AddFloat(result,'Y2',memReadFloat(FPos));
+  AddFloat(result,'Z2',memReadFloat(FPos));
   
-  ltmp:=memReadByte(lptr);                 // 1 usually
+  ltmp:=memReadByte(FPos);                 // 1 usually
   b1:=ltmp<>0;
   if ltmp<>1 then
     RGLog.Add('Byte (1 of 3) is not 1 but '+IntToStr(ltmp));
-  ltmp:=memReadByte(lptr);                 // 0 usually but can be a 1
+  ltmp:=memReadByte(FPos);                 // 0 usually but can be a 1
   b2:=ltmp<>0;
   if (ltmp<>0) and (ltmp<>1) then          // is it posible?!
     RGLog.Add('Byte (2 of 3) is not 0 or 1 but '+IntToStr(ltmp));
-  ltmp:=memReadByte(lptr);                 // 0 usually
+  ltmp:=memReadByte(FPos);                 // 0 usually
   b3:=ltmp<>0;
   if ltmp<>0 then
     RGLog.Add('Byte (3 of 3) is not 0 but '+IntToStr(ltmp));
 
   if b2 then
   begin
-    pcw:=memReadShortStringUTF8(lptr);
+    pcw:=memReadShortStringUTF8(FPos);
     AddString(result,'LAYOUT_TITLE',pcw);
     FreeMem(pcw);
-    AddInteger64(result,'LAYOUT_ID',memReadInteger64(lptr));
+    AddInteger64(result,'LAYOUT_ID',memReadInteger64(FPos));
   end;
 
-  lptr:=_filestart+ldata;
+  FPos:=FStart+ldata;
 
-  lcnt:=memReadWord(lptr);
+  lcnt:=memReadWord(FPos);
 
   lobj:=AddGroup(result,'OBJECTS');
   for i:=0 to lcnt-1 do
-    DoParseBlockHob(lobj,lptr,-1,linfo);
-
-  linfo.Clear;
+    DoParseBlockHob(lobj,-1);
 end;
 
-function DoParseLayoutRG(aptr:pointer):pointer;
+function TRGLayoutFile.DoParseLayoutRG(atype:cardinal):pointer;
 var
-  linfo:TRGObject;
-  lptr,lobj:pointer;
+  lobj:pointer;
   i,lcnt:integer;
 begin
-  linfo.Init;
-  linfo.Version:=verRG;
+  info.Version:=verRG;
 
-  lptr:=aptr+1;
-  i:=memReadByte(lptr);
+  inc(FPos);
+  i:=memReadByte(FPos);
   if i<>0 then
     RGLog.Add('Second byte is not 0 but '+HexStr(i,2));
 
-  memReadDWord(lptr);
-  inc(lptr);
+  memReadDWord(FPos);
+  inc(FPos); //??
   result:=AddGroup(nil,'Layout');
-  linfo.SelectScene('Layout');
+  info.SelectScene('Layout');
 
-  lcnt:=memReadWord(lptr);
+  lcnt:=memReadWord(FPos);
   AddUnsigned(result,'COUNT',lcnt);
 
   lobj:=AddGroup(result,'OBJECTS');
   for i:=0 to lcnt-1 do
-    DoParseBlockHob(lobj,lptr,-1,linfo);
-
-  linfo.Clear;
+    DoParseBlockHob(lobj,-1);
 end;

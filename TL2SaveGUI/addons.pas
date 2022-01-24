@@ -11,7 +11,8 @@ function DeleteSelectedRows(agrid:TStringGrid):boolean;
 implementation
 
 uses
-  SysUtils;
+  SysUtils,
+  rgglobal;
 
 const
   dirstart = 1024;
@@ -22,25 +23,6 @@ var
     name:string;
   end;
   dircnt:integer;
-
-// from LazFileUtils
-function ExtractFileNameOnly(const AFilename: string): string;
-var
-  StartPos: Integer;
-  ExtPos: Integer;
-begin
-  StartPos:=length(AFilename)+1;
-  while (StartPos>1)
-  and not (AFilename[StartPos-1] in AllowDirectorySeparators)
-  {$IF defined(Windows) or defined(HASAMIGA)}and (AFilename[StartPos-1]<>':'){$ENDIF}
-  do
-    dec(StartPos);
-  ExtPos:=length(AFilename);
-  while (ExtPos>=StartPos) and (AFilename[ExtPos]<>'.') do
-    dec(ExtPos);
-  if (ExtPos<StartPos) then ExtPos:=length(AFilename)+1;
-  Result:=copy(AFilename,StartPos,ExtPos-StartPos);
-end;
 
 procedure GetDirList(const adir:string);
 var

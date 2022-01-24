@@ -140,32 +140,32 @@ const
 
 //--- TL2 File Types
 const
-  tl2Dat       = $00; // .DAT .TEMPLATE
-  tl2Layout    = $01; // .LAYOUT
-  tl2Mesh      = $02; // .MESH
-  tl2Skeleton  = $03; // .SKELETON
-  tl2DDS       = $04; // .DDS
-  tl2PNG       = $05; // .PNG
-  tl2Sound     = $06; // .WAV .OGG
-  tl2Directory = $07;
-  tl2Material  = $08; // .MATERIAL
-  tl2RAW       = $09; // .RAW
-  tl2UILayout  = $0A; // .UILAYOUT
-  tl2ImageSet  = $0B; // .IMAGESET
-  tl2TTF       = $0C; // .TTF .TTC
-  tl2Font      = $0D; // .FONT
-//  tl2Reserved2 = $0E;  //source .DAT
-//  tl2Reserved3 = $0F;  //source .LAYOUT
-  tl2Animation = $10; // .ANIMATION
-  tl2HIE       = $11; // .HIE
-  tl2Other     = $12; // ('Removed' Directory)
-  tl2Scheme    = $13; // .SCHEME
-  tl2LookNFeel = $14; // .LOOKNFEEL ??
-  tl2MPP       = $15; // .MPP [.MPD]
-//  tl2Reserved4 = $16;  //source .TEMPLATE
-  tl2BIK       = $17; // .BIK
-  tl2JPG       = $18; // .JPG
-  tl2Unknown   = $FF;
+  tl2Dat         = $00; // .DAT .TEMPLATE
+  tl2Layout      = $01; // .LAYOUT
+  tl2Mesh        = $02; // .MESH
+  tl2Skeleton    = $03; // .SKELETON
+  tl2DDS         = $04; // .DDS
+  tl2PNG         = $05; // .PNG
+  tl2Sound       = $06; // .WAV .OGG
+  tl2Directory   = $07;
+  tl2Material    = $08; // .MATERIAL
+  tl2RAW         = $09; // .RAW
+  tl2UILayout    = $0A; // .UILAYOUT
+  tl2ImageSet    = $0B; // .IMAGESET
+  tl2TTF         = $0C; // .TTF .TTC
+  tl2Font        = $0D; // .FONT
+  tl2SrcDat      = $0E; // source .DAT
+  tl2SrcLayout   = $0F; // source .LAYOUT
+  tl2Animation   = $10; // .ANIMATION
+  tl2HIE         = $11; // .HIE
+  tl2Other       = $12; // ('Removed' Directory)
+  tl2Scheme      = $13; // .SCHEME
+  tl2LookNFeel   = $14; // .LOOKNFEEL ??
+  tl2MPP         = $15; // .MPP [.MPD]
+  tl2SrcTemplate = $16; // source .TEMPLATE
+  tl2BIK         = $17; // .BIK
+  tl2JPG         = $18; // .JPG
+  tl2Unknown     = $FF;
 
 //--- Hob File Types
 const

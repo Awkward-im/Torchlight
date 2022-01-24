@@ -1,10 +1,10 @@
 {$IFDEF Interface}
 
-function GetTL2Item (const aid:TRGID; out amods:string):string; overload;
-function GetTL2Item (const aid:TRGID                  ):string; overload;
-function GetItemMods(const aid:TRGID):string;
-function GetItemIcon(const aid:TRGID):string;
-function GtItemStack(const aid:TRGID):integer;
+function GetTL2Item  (const aid:TRGID; out amods:string):string; overload;
+function GetTL2Item  (const aid:TRGID                  ):string; overload;
+function GetItemMods (const aid:TRGID):string;
+function GetItemIcon (const aid:TRGID):string;
+function GetItemStack(const aid:TRGID):integer;
 function GetItemPosition(apos:integer; out cont :string):string;
 function GetItemUsability(const aid:TRGID):integer;
 function GetAlt(const aid:TRGID; alist:TTL2ModList; out newid:TRGID):TRGID;
@@ -50,7 +50,7 @@ begin
   result:=GetIntValue(aid,dbItemTable,'usable');
 end;
 
-function GtItemStack(const aid:TRGID):integer;
+function GetItemStack(const aid:TRGID):integer;
 begin
   result:=GetIntValue(aid,dbItemTable,'stack');
 end;

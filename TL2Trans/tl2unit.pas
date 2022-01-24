@@ -14,6 +14,7 @@ type
   { TMainTL2TransForm }
 
   TMainTL2TransForm = class(TForm)
+    FileScan: TAction;
     FileBuild: TAction;
     HelpNotes: TAction;
     ClosePage: TAction;
@@ -29,7 +30,8 @@ type
     gbScanObjects: TGroupBox;
     HelpAbout: TAction;
     MenuItem1: TMenuItem;
-    MenuItem2: TMenuItem;
+    miFileBuild: TMenuItem;
+    miFileScanMod: TMenuItem;
     rbScanKnown: TRadioButton;
     rbScanText: TRadioButton;
     TL2ActionList: TActionList;
@@ -63,6 +65,7 @@ type
     TL2StatusBar: TStatusBar;
     tbHelpNotes: TToolButton;
     tbBuild: TToolButton;
+    procedure FileScanExecute(Sender: TObject);
     procedure HelpNotesExecute(Sender: TObject);
     procedure bbCloseTreeClick(Sender: TObject);
     procedure ClosePageExecute(Sender: TObject);
@@ -416,6 +419,25 @@ begin
   if TL2Notes=nil then
     TL2Notes:=TTL2Notes.Create(Self);
   TL2Notes.Show;
+end;
+
+procedure TMainTL2TransForm.FileScanExecute(Sender: TObject);
+var
+  OpenDialog: TOpenDialog;
+  ls:AnsiString;
+begin
+  OpenDialog:=TOpenDialog.Create(nil);
+  try
+    if OpenDialog.Execute then
+    begin
+      NewTab(OpenDialog.FileName);
+      SetTABCaption(sScanning);
+      if not ActiveProject.New1(OpenDialog.FileName) then
+      CanClosePage(TL2PageControl.ActivePageIndex,ls);
+    end;
+  finally
+    OpenDialog.Free;
+  end;
 end;
 
 procedure TMainTL2TransForm.TL2ShellTreeViewDblClick(Sender: TObject);

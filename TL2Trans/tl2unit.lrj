@@ -27,6 +27,7 @@
 {"hash":1763550,"name":"tmaintl2transform.filebuild.hint","sourcebytes":[66,117,105,108,100,32,116,114,97,110,115,108,97,116,105,111,110],"value":"Build translation"},
 {"hash":4710148,"name":"tmaintl2transform.fileexit.caption","sourcebytes":[69,38,120,105,116],"value":"E&xit"},
 {"hash":56290829,"name":"tmaintl2transform.fileexit.hint","sourcebytes":[69,120,105,116,32,112,114,111,103,114,97,109],"value":"Exit program"},
+{"hash":159414212,"name":"tmaintl2transform.filescan.caption","sourcebytes":[83,99,97,110,32,109,111,100],"value":"Scan mod"},
 {"hash":2805797,"name":"tmaintl2transform.mifile.caption","sourcebytes":[38,70,105,108,101],"value":"&File"},
 {"hash":2812976,"name":"tmaintl2transform.mihelp.caption","sourcebytes":[38,72,101,108,112],"value":"&Help"}
 ]}

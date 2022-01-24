@@ -1,3 +1,15 @@
+{
+  + Unpack all files (decode as separate task)
+  + Unpack separate file[s]
+  + Pack all files
+  Pack separate file[s]
+    Append to PAK (if new or larger)
+    Add on place  (if exist and not larger)
+  Reassemble PAK (no repack) = compact
+  * Split   PAK to   PAK and MAN (now MOD as in  only)
+  * Combine PAK from PAK and MAN (now MOD as out only)
+  ??Convert combined PAK to MOD
+}
 unit RGPAK;
 
 interface
@@ -15,7 +27,7 @@ const
   piParse     = 1;
   piFullParse = 2;
 
-function  GeTPAKInfo (const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
+function  GetPAKInfo (const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
 procedure FreePAKInfo(var   ainfo:TPAKInfo);
 procedure DumpPAKInfo(const ainfo:TPAKInfo);
 
@@ -27,9 +39,10 @@ function  CalcPAKHash(const fname:string):dword;
 
 function  UnpackFile(var ainfo:TPAKInfo; const afile:string; out aout:PByte):integer;
 function  UnpackFile(var ainfo:TPAKInfo; const afile:string; const adir:string):boolean;
+function  UnpackFile(var ainfo:TPAKInfo; apath,aname:PWideChar; out aout:PByte):integer;
+function  UnpackFile(var ainfo:TPAKInfo; apath,aname:PWideChar; const adir:string):boolean;
 function  UnpackAll (var ainfo:TPAKInfo; const adir:string):boolean;
 procedure PackAll   (var ainfo:TPAKInfo);
-
 
 type
   TPAKProgress = function(const ainfo:TPAKInfo; adir,afile:integer):integer;
@@ -115,8 +128,8 @@ var
 begin
   FillChar(ainfo,SizeOf(ainfo),0);
 //  FreePAKInfo(ainfo);
-  ainfo.srcdir:=ExtractFilePath(fname);
-  ainfo.fname :=ExtractFilenameOnly(fname);
+  ainfo.srcdir:=UnicodeString(ExtractFilePath(fname));
+  ainfo.fname :=UnicodeString(ExtractFilenameOnly(fname));
 
   //--- Check by ext
 
@@ -183,7 +196,7 @@ var
   ltmp:PByte;
   lsize:integer;
 begin
-  if ainfo.fname<>fname then
+  if ainfo.fname<>UnicodeString(fname) then
     GetBasePAKInfo(fname,ainfo);
 
   //--- Parse: TL2ModInfo
@@ -420,16 +433,13 @@ end;
 
 //----- Unpack -----
 
-function UnpackFile(var ainfo:TPAKInfo; const afile:string; out aout:PByte):integer;
+function UnpackSingle(var ainfo:TPAKInfo; fi:PMANFileInfo; out aout:PByte):integer;
 var
   f:file of byte;
   lfhdr:TPAKFileHeader;
-  fi:PMANFileInfo;
   lin:PByte;
 begin
   result:=0;
-
-  fi:=SearchFile(ainfo,afile);
   if fi<>nil then
   begin
     if fi^.size_s=0 then exit;
@@ -466,6 +476,16 @@ begin
   end;
 end;
 
+function UnpackFile(var ainfo:TPAKInfo; const afile:string; out aout:PByte):integer;
+begin
+  result:=UnpackSingle(ainfo,SearchFile(ainfo,afile),aout);
+end;
+
+function UnpackFile(var ainfo:TPAKInfo; apath,aname:PWideChar; out aout:PByte):integer;
+begin
+  result:=UnpackSingle(ainfo,SearchFile(ainfo,apath,aname),aout);
+end;
+
 function UnpackFile(var ainfo:TPAKInfo; const afile:string; const adir:string):boolean;
 var
   f:file of byte;
@@ -483,6 +503,35 @@ begin
     ForceDirectories(ldir);
 
     Assign(f,ldir+'\'+ExtractFileName(afile));
+    Rewrite(f);
+    if IOResult=0 then
+    begin
+      BlockWrite(f,lout^,lsize);
+      Close(f);
+    end;
+    FreeMem(lout);
+  end;
+
+  result:=lsize>0;
+end;
+
+function UnpackFile(var ainfo:TPAKInfo; apath,aname:PWideChar; const adir:string):boolean;
+var
+  f:file of byte;
+  ldir:UnicodeString;
+  lout:PByte;
+  lsize:integer;
+begin
+  lsize:=UnpackFile(ainfo, apath, aname, lout);
+  if lsize>0 then
+  begin
+    if adir='' then
+      ldir:=apath
+    else
+      ldir:=UnicodeString(adir);
+    ForceDirectories(ldir);
+
+    Assign(f,ldir+'\'+aname);
     Rewrite(f);
     if IOResult=0 then
     begin
@@ -549,7 +598,7 @@ begin
 
   if adir<>'' then
   begin
-    ainfo.srcdir:=adir+'/'; //??
+    ainfo.srcdir:=UnicodeString(adir+'/'); //??
     ldir:=ainfo.srcdir;{WideString(adir)+'\'}
   end
   else

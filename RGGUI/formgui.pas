@@ -1,3 +1,6 @@
+{%TODO Save: full repack or fast}
+{%TODO save changed file at update list: packed data, size, path (replace on updates)}
+{%TODO Tree changes: check update list first, man next}
 {%TODO make button for non-scale image preview}
 {%TODO edit DAT-type files on the place. "Save"button on info panel}
 {%TODO Add "reset column width" button}
@@ -11,7 +14,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
   ActnList, ExtCtrls, ComboEx, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
-  SynEdit, SynHighlighterAny, SynHighlighterXML,
+  SynEdit, SynHighlighterXML, SynHighlighterT,
   rgglobal;
 
 type
@@ -75,7 +78,7 @@ type
     StatusBar: TStatusBar;
     Setings: TTabSheet;
     Grid: TTabSheet;
-    SynAnySyn: TSynAnySyn;
+    SynTSyn: TSynTSyn;
     SynEdit: TSynEdit;
     SynXMLSyn: TSynXMLSyn;
 
@@ -141,6 +144,8 @@ type
     procedure sgMainCompareCells(Sender: TObject; ACol, ARow, BCol,
       BRow: Integer; var Result: integer);
     function SaveFile(const adir, aname: string; adata: PByte): boolean;
+    procedure sgMainHeaderSized(Sender: TObject; IsColumn: Boolean;
+      Index: Integer);
     procedure sgMainSelection(Sender: TObject; aCol, aRow: Integer);
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
@@ -191,8 +196,9 @@ uses
   fmmodinfo,
 
   rgfiletype,
-  rgdatunpack,
-  rglayunpack,
+  rgio.text,
+  rgio.dat,
+  rgio.layout,
   TL2Mod,
   rgdict,
   rgnode,
@@ -483,15 +489,15 @@ begin
   if (not rbBinOnly.Checked) and (ltype in setData) then
   begin
     if ltype=typeLayout then
-      lnode:=DoParseLayout(adata,adir+aname)
+      lnode:=ParseLayoutMem(adata,adir+aname)
     else
-      lnode:=DoParseDat(adata);
+      lnode:=ParseDatMem(adata);
 
     if rbTextRename.Checked then
       lext:='.TXT'
     else
       lext:='';
-    WriteDatTree(lnode,PChar(loutdir+'\'+aname+lext));
+    BuildTextFile(lnode,PChar(loutdir+'\'+aname+lext));
     DeleteNode(lnode);
   end;
 
@@ -518,6 +524,17 @@ begin
   end;
 
   result:=true;
+end;
+
+procedure TRGGUIForm.sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
+var
+  i,j:integer;
+begin
+  j:=0;
+
+  for i:=0 to sgMain.ColCount-2 do
+    inc(j,sgMain.ColWidths[i]);
+  if sgMain.Width>(j+8) then sgMain.Width:=j+8;
 end;
 
 procedure TRGGUIForm.bbSaveClick(Sender: TObject);
@@ -623,6 +640,8 @@ procedure TRGGUIForm.FormCreate(Sender: TObject);
 begin
   FLastIndex:=-1;
   FUData    :=nil;
+
+  SynTSyn:=TSynTSyn.Create(Self);
 
   LoadSettings();
   SetupView(Self);
@@ -754,13 +773,14 @@ end;
 procedure TRGGUIForm.PreviewImage(const aname:string);
 var
 //  limg: TLazIntfImage;
-  png: TCustomBitmap;
+//  png: TCustomBitmap;
   limg:TFPMemoryImage;
   lstr:TMemoryStream;
   lwriter: TFPWriterBMP;
   lfpc:TFPColor;
   ldata:PByte;
-  lidx,y,x,lsize,lheight,lwidth:integer;
+//  lsize:integer;
+  lidx,y,x,lheight,lwidth:integer;
 begin
   if ExtractFileExt(aname)='.DDS' then
   begin
@@ -855,13 +875,13 @@ var
   pc:PWideChar;
 begin
   if atype=typeLayout then
-    lnode:=DoParseLayout(FUData,adir+aname)
+    lnode:=ParseLayoutMem(FUData,adir+aname)
   else
-    lnode:=DoParseDat(FUData);
-  if MakeDatTree(lnode,pc) then
+    lnode:=ParseDatMem(FUData);
+  if NodeToWide(lnode,pc) then
   begin
-    SynEdit.Highlighter:=SynAnySyn;
-    SynEdit.Text:=WideCharToString(pc);
+    SynEdit.Highlighter:=SynTSyn;
+    SynEdit.Text:=WideCharToString(pc+1); // skip sign
     SynEdit.Visible:=true;
     FreeMem(pc);
   end;
@@ -1023,7 +1043,7 @@ end;
 
 procedure TRGGUIForm.FillGrid(idx:integer=-1);
 var
-  s,ls:string;
+  s:string;
   i,j:integer;
   lcnt:integer;
 begin

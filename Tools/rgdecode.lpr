@@ -10,8 +10,10 @@ uses
   rgnode,
   rgdict,
 
-  rgdatunpack,
-  rglayunpack;
+  rgio.layout,
+  rgio.text,
+  rgio.dat
+  ;
 
 const
   GoodExtArray : array of string = (
@@ -72,25 +74,27 @@ begin
       slout:=nil;
 //      curfname:=fname;
       if      (ltype=1)           and (ftype< 2) then begin
-        RGLog.Reserve{Add}('Processing file '+fname);
-        slout:=DoParseDat   (buf)
+        RGLog.Reserve('Processing file '+fname);
+
+        slout:=ParseDatMem(buf);
       end
       else if (ltype=2)           and (ftype<>1) then begin
-        RGLog.Reserve{Add}('Processing file '+fname);
-        slout:=DoParseLayout(buf)
+        RGLog.Reserve('Processing file '+fname);
+        slout:=ParseLayoutMem(buf)
+{
       end
       else if IsProperDat   (buf) and (ftype< 2) then begin
-        RGLog.Reserve{Add}('Processing file '+fname);
-        slout:=DoParseDat   (buf)
+        RGLog.Reserve('Processing file '+fname);
+        slout:=ParseDatMem(buf)
       end
       else if IsProperLayout(buf) and (ftype<>1) then begin
-        RGLog.Reserve{Add}('Processing file '+fname);
-        slout:=DoParseLayout(buf);
-      end;
+        RGLog.Reserve('Processing file '+fname);
+        slout:=ParseLayoutMem(buf);
+}      end;
 
       FreeMem(buf);
 
-      WriteDatTree(slout,PChar(fname+'.TXT'));
+      BuildTextFile(slout,PChar(fname+'.1.TXT'));
       DeleteNode(slout);
     end;
   end;
@@ -148,8 +152,6 @@ begin
     end;
   end;
 
-  ReadLayINI(lini);
-
   LoadLayoutDict('compact-tl1.txt', verTL1);
   LoadLayoutDict('compact-tl2.txt', verTL2);
   LoadLayoutDict('compact-rg.txt' , verRG);
@@ -190,7 +192,7 @@ begin
     //--- Finalization
 
   finally
-    RGLog.Save();
+    RGLog.SaveToFile();
   end;
 
 end.

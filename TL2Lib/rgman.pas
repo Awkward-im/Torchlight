@@ -5,7 +5,12 @@
   Parse Binary
   Build Binary
   Search file
+  Add file(s)/dir(s)
+  ??Delete files(s)/dir(s)
+  mark as deleted
 }
+{%TODO finish FileToMan}
+{%TODO finish CycleDir (BuildManifest)}
 
 unit RGMan;
 
@@ -14,6 +19,8 @@ interface
 uses
   Classes,
   rgglobal;
+
+function BuildManifest(const adir:string; out ainfo:TPAKInfo):integer;
 
 {
   Parse Manifest from memory block addressed by aptr
@@ -42,6 +49,7 @@ procedure FileToMAN(const fname:string; out ainfo:TPAKInfo);
   Search single file record
 }
 function SearchFile(const ainfo:TPAKInfo; const fname:string):PMANFileInfo;
+function SearchFile(const ainfo:TPAKInfo; apath,aname:PWideChar):PMANFileInfo;
 
 
 implementation
@@ -50,7 +58,9 @@ uses
   sysutils,
   rgstream,
   rgmemory,
+  rglogging,
   rgnode,
+  rgio.text,
   rgfiletype;
 
 {
@@ -197,12 +207,14 @@ end;
   Build files tree [from MEDIA folder] [from dir]
   excluding PNG if DDS presents
   [excluding data sources]
+  as is, bin+src (data cmp to choose), bin, src
 }
 procedure CycleDir(const adir:string; asl:TStringList);
 var
   sr:TSearchRec;
   lname:AnsiString;
-  i,l,lstart,lend,ldir,lpng,ldds:integer;
+  i,
+  lstart,lend,l,ldir,lpng,ldds:integer;
 begin
   if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
   begin
@@ -241,19 +253,25 @@ begin
   запоминание времени и размера
 }
         l:=Length(sr.Name);
-        if (sr.Name[l-4]='.') then
-        begin
-          if (sr.Name[l-3] in ['P','p']) and
-             (sr.Name[l-2] in ['N','n']) and
-             (sr.Name[l-1] in ['G','g']) then inc(lpng);
+        if l>4 then
+          if (sr.Name[l-4]='.') then
+          begin
+            if (sr.Name[l-3] in ['P','p']) and
+               (sr.Name[l-2] in ['N','n']) and
+               (sr.Name[l-1] in ['G','g']) then inc(lpng);
+            {
+            begin
+              if FileExists(ReplaceExt(sr.Name,'.DDS') then continue;
+            end;
+            }
 
-          if (sr.Name[l-3] in ['D','d']) and
-             (sr.Name[l-2] in ['D','d']) and
-             (sr.Name[l-1] in ['S','s']) then inc(ldds);
-        end;
+            if (sr.Name[l-3] in ['D','d']) and
+               (sr.Name[l-2] in ['D','d']) and
+               (sr.Name[l-1] in ['S','s']) then inc(ldds);
+          end;
 
          //!!!! remove asset dir
-        asl.AddObject(sr.Name+'='+IntToStr(sr.Time),TObject(UIntPtr(sr.Size)));
+        asl.AddObject(adir+sr.Name+'='+IntToStr(sr.Time),TObject(UIntPtr(sr.Size)));
       end;
     until FindNext(sr)<>0;
     FindClose(sr);
@@ -264,9 +282,9 @@ begin
     begin
       for i:=lstart to lend-1 do
       begin
-        if  then
+        if Pos('.PNG=') then
         begin
-          if  then
+          if Pos('.DDS=') then
           begin
 
             dec(ldds);
@@ -279,20 +297,20 @@ begin
       end;
     end;
 }
-{
+
     if ldir>0 then
     begin
       for i:=lstart to lend-1 do
       begin
-        if  then
+        if asl[i][Length(asl[i])]='/' then
         begin
-          CycleDir();
+          CycleDir(adir+asl[i],asl);
           dec(ldir);
           if ldir=0 then break;
         end;
       end;  
     end;
-}
+
   end;
 end;
 
@@ -305,12 +323,11 @@ begin
   result:=0;
 
   sl:=TStringList.Create;
-  sl.Sorted:=true;
   CycleDir(adir,sl);
   for i:=0 to sl.Count-1 do
   begin
     ls:=sl[i];
-    for j:=0 to High(ls) do
+    for j:=1 to Length(ls) do
     begin
       if      ls[j]='\' then ls[j]:='/'
       else if ls[j]='=' then break
@@ -318,7 +335,14 @@ begin
     end;
     sl[i]:=ls;
   end;
+  sl.Sorted:=true;
   sl.Sort;
+
+for i:=0 to sl.Count-1 do
+begin
+  RGLog.Add(sl[i]);
+end;
+RGLog.SaveToFile('log.txt');
 
   sl.Free;
 end;
@@ -364,19 +388,20 @@ begin
     end;
   end;
 
-  WriteDatTree(lman,PChar(fname));
+  BuildTextFile(lman,PChar(fname));
   DeleteNode(lman);
 end;
 
 procedure FileToMAN(const fname:string; out ainfo:TPAKInfo);
 var
   lman,lp,lg,lc:pointer;
-  i,j,k,l:integer;
+  i,j,k:integer;
+//  l:integer;
 begin
-  lman:=ParseDatFile(PChar(fname));
+  lman:=ParseTextFile(PChar(fname));
   if lman<>nil then
   begin
-    if CompareWide(GetNodeName(lman),'MANIFEST')=0 then
+    if IsNodeName(lman,'MANIFEST') then
     begin
 
       for i:=0 to GetChildCount(lman)-1 do
@@ -384,42 +409,42 @@ begin
         lc:=GetChild(lman,i);
         case GetNodeType(lc) of
           rgString: begin
-            if CompareWide(GetNodeName(lc),'FILE')=0 then
+            if IsNodeName(lc,'FILE') then
             ;
           end;
 
           rgInteger: begin
-            if CompareWide(GetNodeName(lc),'TOTAL')=0 then
+            if IsNodeName(lc,'TOTAL') then
             ;
-            if CompareWide(GetNodeName(lc),'COUNT')=0 then
+            if IsNodeName(lc,'COUNT') then
             ;
           end;
 
           rgGroup: begin
-            if CompareWide(GetNodeName(lc),'FOLDER')=0 then
+            if IsNodeName(lc,'FOLDER') then
             begin
               for j:=0 to GetChildCount(lc)-1 do
               begin
                 lp:=GetChild(lc,j);
                 case GetNodeType(lp) of
                   rgString: begin
-                    if CompareWide(GetNodeName(lc),'NAME')=0 then
+                    if IsNodeName(lc,'NAME') then
                     ;
                   end;
 
                   rgInteger: begin
-                    if CompareWide(GetNodeName(lc),'COUNT')=0 then
+                    if IsNodeName(lc,'COUNT') then
                     ;
                   end;
 
                   rgGroup: begin
-                    if CompareWide(GetNodeName(lc),'CHILDREN')=0 then
+                    if IsNodeName(lc,'CHILDREN') then
                     begin
                       for k:=0 to GetChildCount(lp)-1 do
                       begin
                         lg:=GetChild(lp,k);
                         if (GetNodeType(lg)=rgGroup) and
-                           (CompareWide(GetNodeName(lg),'CHILD')=0) then
+                           (IsNodeName(lg,'CHILD')) then
                         begin
 
                           // name for file
@@ -458,28 +483,20 @@ end;
 
 //----- Search -----
 
-function SearchFile(const ainfo:TPAKInfo; const fname:string):PMANFileInfo;
+function SearchFile(const ainfo:TPAKInfo; apath,aname:PWideChar):PMANFileInfo;
 var
   lentry:PMANDirEntry;
-  lpath,lname:WideString;
-  lwpath,lwname:PWideChar;
   i,j:integer;
 begin
-  lname:=UpCase(fname);
-  lpath:=ExtractFilePath(lname);
-  lname:=ExtractFileName(lname);
-  lwpath:=pointer(lpath);
-  lwname:=pointer(lname);
-
   for i:=0 to High(ainfo.Entries) do
   begin
     lentry:=@(ainfo.Entries[i]);
-    //!! char case
-    if CompareWide(lentry^.name,lwpath)=0 then
+
+    if CompareWide(lentry^.name,apath)=0 then
     begin
       for j:=0 to High(lentry^.Files) do
       begin
-        if CompareWide(lentry^.Files[j].name,lwname)=0 then
+        if CompareWide(lentry^.Files[j].name,aname)=0 then
         begin
           exit(@(lentry^.Files[j]));
         end;
@@ -490,6 +507,17 @@ begin
   end;
 
   result:=nil;
+end;
+
+function SearchFile(const ainfo:TPAKInfo; const fname:string):PMANFileInfo;
+var
+  lpath,lname:WideString;
+begin
+  lname:=UpCase(WideString(fname));
+  lpath:=ExtractFilePath(lname);
+  lname:=ExtractFileName(lname);
+
+  result:=SearchFile(ainfo,pointer(lpath),pointer(lname));
 end;
 
 end.

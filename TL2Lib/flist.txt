@@ -1,41 +1,41 @@
-rgglobal.pas   - support
-
-rgnode.pas     - DAT-like Tree parser/builder
-  rgglobal
-
 rgdict.pas     - list, tags.dat, dictionary.text and objects.dat reader, dict maker
-  classes
+  TextCache
   rgglobal
+  rglogging
+  rgio.text
   rgnode
-
-rgdatpack.pas  - In: text file/RGNode ; out: bin data, size
-  sysutils
-  rgglobal
-  rgnode
-  rgdict
-
-rgdatunpack.pas - In: bin file/buffer; out: RGNode
-  sysutils
-  rgglobal
-  rgnode
-  rgdict
-  rgmemory
-
-rglayunpack.pas - In: bin file/buffer; out: RGNode
-  inifiles
-  sysutils
-  rgglobal
-  rgnode
-  rgdict
-  rgmemory
 
 rgfiletype.pas - PAK content filetype
   sysutils
   rgglobal
 
-rglog.pas      - Logging service
-  classes
+rgio.dat.pas   - In: bin file/buffer; out: RGNode OR In: RGNode ; out: bin data, size
+  Classes
+  SysUtils
+
+  rgglobal
+  rgdict
+  rgmemory
+  rgnode
+  rglogging
+
+rgio.layout.pas - In: bin file/buffer; out: RGNode
+  Classes
   sysutils
+
+  rgglobal
+  rglogging
+  rgnode
+  rgdict
+  rgmemory
+
+rgio.text.pas
+  rgglobal
+  rgnode
+
+rgglobal.pas   - support
+
+rglogging.pas  - Logging service
 
 rgman.pas      - MAN part
   classes
@@ -45,6 +45,13 @@ rgman.pas      - MAN part
   rgmemory
   rgnode
   rgfiletype
+
+rgmemory.pas   - RW memory
+  rgglobal
+
+rgnode.pas     - DAT-like Tree parser/builder
+  rgdict
+  rgglobal
 
 rgpak.pas      - PAK (MOD) file reader/unpacker
   classes
@@ -56,14 +63,11 @@ rgpak.pas      - PAK (MOD) file reader/unpacker
   tl2mod
   rgfiletype
 
-RGMemory.pas   - RW memory
-  rgglobal
-
-RGStream.pas   - RW stream
+rgstream.pas   - RW stream
   classes
   rgglobal
 
-TL2Mod.pas     - MOD header and MOD.DAT processor
+tl2mod.pas     - MOD header and MOD.DAT processor
   sysutils
   rgglobal
   rgmemory

@@ -81,6 +81,7 @@ type
 
 implementation
 
+{TODO: Add rfIsLayout and rfIsTranslation (directory)}
 const
   rfIsSkill     = 1;
   rfIsTranslate = 2;
@@ -92,7 +93,7 @@ function TTL2Reference.AddFile(const fname:AnsiString):integer;
 var
   i:integer;
 begin
-  for i:=0 to cntFiles-1 do
+  for i:=cntFiles-1 downto 0 do
   begin
     if fname = arFiles[i] then
     begin

@@ -237,8 +237,8 @@ procedure QuaternionToMatrix(const q:TVector4; out m:TMatrix4x4);
 //===== Hash =====
 
 function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
-function RGHash(instr:PWideChar; alen:integer):dword;
-function RGHash(instr:PChar; alen:integer):dword;
+function RGHash(instr:PWideChar; alen:integer=0):dword;
+function RGHash(instr:PChar    ; alen:integer=0):dword;
 function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
 
 //==========================
@@ -280,14 +280,24 @@ end;
 
 function StrToWide(const src:string):PWideChar;
 var
-  ws:WideString;
+  i:integer;
+//  ws:WideString;
 begin
   if src='' then exit(nil);
 
+  i:=Utf8ToUnicode(nil,0,pchar(src),length(src));
+  if i>0 then
+  begin
+    GetMem(result,(i+1)*SizeOf(WideChar));
+    i:=Utf8ToUnicode(result,(i+1)*SizeOf(WideChar),pchar(src),length(src));
+    result[i]:=#0;
+  end;
+{
   ws:=UTF8Decode(src);
   GetMem(result,(Length(ws)+1)*SizeOf(WideChar));
   move(Pointer(ws)^,result^,Length(ws)*SizeOf(WideChar));
   result[Length(ws)]:=#0;
+}
 end;
 
 function WideToStr(src:PWideChar):string;
@@ -505,7 +515,7 @@ end;
 
 {$PUSH}
 {$Q-}
-function RGHash(instr:PWideChar; alen:integer):dword;
+function RGHash(instr:PWideChar; alen:integer=0):dword;
 var
   i:integer;
 begin
@@ -515,7 +525,7 @@ begin
     result:=(result SHR 27) xor (result SHL 5) xor (ORD(instr[i]) and $FF);
 end;
 
-function RGHash(instr:PAnsiChar; alen:integer):dword;
+function RGHash(instr:PAnsiChar; alen:integer=0):dword;
 var
   i:integer;
 begin

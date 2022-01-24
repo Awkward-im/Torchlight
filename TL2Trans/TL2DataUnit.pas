@@ -1,12 +1,13 @@
-{%TODO "Changed" flag (when to clear)}
-{%TODO implement import from/export to file and text (as clipboard)}
-{%TODO implement CheckTheSame from tl2projectform.pas}
-{%TODO save templates by option}
-{%TODO Search/Replace text}
-{%TODO implement SOUNDEX or METAPHONE for wrong letters}
-{%TODO add event for text adding/changing}
-{%TODO statistic on changing: total, translated, partially}
-{%TODO make "fixed" lines = (cntBaseLines+cntModLines) - CheckLine function}
+{TODO: ReadSrc, not StringList use but manual CRLF scan and "Copy" to string?}
+{TODO: "Changed" flag (when to clear)}
+{TODO: implement import from/export to file and text (as clipboard)}
+{TODO: implement CheckTheSame from tl2projectform.pas}
+{TODO: save templates by option}
+{TODO: Search/Replace text}
+{TODO: implement SOUNDEX or METAPHONE for wrong letters}
+{TODO: add event for text adding/changing}
+{TODO: statistic on changing: total, translated, partially}
+{TODO: make "fixed" lines = (cntBaseLines+cntModLines) - CheckLine function}
 unit TL2DataUnit;
 
 interface
@@ -128,6 +129,7 @@ type
 
     procedure ReadSrcFile(const fname: AnsiString; atype: integer; arootlen:integer);
     procedure CycleDir     (sl:TStringList; const adir:AnsiString; allText:boolean; withChild:boolean);
+    function  ProcessNode(anode:pointer; const afile:string; atype:integer):integer;
 
     function  CheckLine(const asrc,atrans:AnsiString;
          const atmpl:AnsiString=''; astate:tTextStatus=stReady):integer;
@@ -153,6 +155,7 @@ type
     function  ExportToText  ():AnsiString;
 
     function  Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
+    function  Scan(const afile:AnsiString):boolean;
 
     function  FirstNoticed(acheckonly:boolean=true):integer;
     function  NextNoticed (acheckonly:boolean=true):integer;
@@ -218,7 +221,14 @@ uses
   SysUtils,
   TL2Text,
   rgglobal,
+  rgnode,
+  rgdict,
+  rgio.dat,
+  rgio.layout,
+  rgscan,
   TL2Mod;
+
+{$R dict.rc}
 
 // Open file error codes
 
@@ -233,7 +243,8 @@ const
   KnownGoodExt: array of string = (
     '.DAT',
     '.LAYOUT',
-    '.TEMPLATE'
+    '.TEMPLATE',
+    '.WDAT'
   );
 
   KnownBadExt: array of string = (
@@ -1467,6 +1478,136 @@ begin
   sl.Free;
 end;
 
+{%REGION Read Binary}
+
+function TTL2Translation.ProcessNode(anode:pointer; const afile:string; atype:integer):integer;
+var
+  ltag,ls:string;
+  i,lline,lref:integer;
+begin
+  result:=0;
+
+  case GetNodeType(anode) of
+    rgGroup: begin
+      for i:=0 to GetChildCount(anode)-1 do
+      begin
+        inc(result,ProcessNode(GetChild(anode,i),afile,atype));
+      end;
+
+      exit;
+    end;
+
+    rgTranslate: begin
+      ltag:=AnsiString(WideString(GetNodeName(anode)));
+      ls  :=AnsiString(WideString(AsTranslate(anode)));
+      lline:=-1;
+    end;
+
+    rgString: begin
+      ltag:=AnsiString(WideString(GetNodeName(anode)));
+
+      if ltag=sDescription then
+        ls:=AnsiString(WideString(AsString(anode)))
+      else if (atype=1) and (
+         (pos(sText_  ,ltag)=1) or
+         (pos(sDialog_,ltag)=1) or
+         (ltag=sText    ) or
+         (ltag=sToolTip ) or
+         (ltag=sTitle   ) or
+         (ltag=sGreet   ) or
+         (ltag=sFailed  ) or
+         (ltag=sReturn  ) or
+         (ltag=sComplete) or
+         (ltag=sComplRet)) then
+        ls:=AnsiString(WideString(AsString(anode)));
+
+      lline:=1;
+    end;
+  else
+    exit;
+  end;
+
+  if (ls<>'') and (ls<>' ') then
+  begin
+    result:=1;
+    lref:=fRef.AddRef(afile,ltag,lline);
+
+    i:=AddString(ls,'','');
+    if i>0 then
+      arText[i-1].aref:=lref
+    else
+      AddDouble(-i-1,lref);
+  end;
+end;
+
+function myactproc(
+          abuf:PByte; asize:integer;
+          const adir,aname:string;
+          aparam:pointer):integer;
+var
+  lnode:pointer;
+  ltype:integer;
+begin
+  result:=0;
+
+  if UpCase(ExtractFileExt(aname))='.LAYOUT' then
+  begin
+    lnode:=ParseLayoutMem(abuf);
+    ltype:=1;
+  end
+  else
+  begin
+    lnode:=ParseDatMem(abuf);
+    ltype:=0;
+  end;
+  if lnode=nil then exit;
+
+  with PTL2Translation(aparam)^ do
+  begin
+    if ProcessNode(lnode,adir+aname,ltype)>0 then result:=1;
+
+  end;
+
+  DeleteNode(lnode);
+end;
+
+function TTL2Translation.Scan(const afile:AnsiString):boolean;
+var
+  lmod:TTL2ModInfo;
+begin
+  RGTags.Import('RGDICT','TEXT');
+
+  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
+  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
+  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
+  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
+  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+
+  Filter:=flFiltered;
+
+  FErrCode:=0;
+  FErrLine:=0;
+  FErrText:='';
+  FErrFile:='';
+
+  {TODO: Skip TRANSLATIONS directory}
+  result:=ScanMod(afile,'',@myactproc,@self,@fnCheckText)>0;
+  if result then
+  begin
+    if ReadModInfo(PChar(afile), lmod) then
+    begin
+      FModTitle  :=String(WideString(lmod.title));
+      FModAuthor :=String(WideString(lmod.author));
+      FModDescr  :=String(WideString(lmod.descr));
+      FModURL    :=String(WideString(lmod.download));
+      FModVersion:=lmod.modver;
+      FModID     :=lmod.modid;
+      ClearModInfo(lmod);
+    end;
+  end;
+end;
+
+{%ENDREGION}
 
 finalization
   SetLength(TmpInfo,0);

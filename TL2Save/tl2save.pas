@@ -290,21 +290,6 @@ begin
   end;
 end;
 
-function CalcCheckSum(aptr:pByte; asize:cardinal):longword;
-var
-  i:cardinal;
-begin
-  result:=$14D3;
-
-  for i:=0 to asize-1 do
-  begin
-    {$PUSH}
-    {$Q-}
-    result:=result+(result shl 5)+aptr[i];
-    {$POP}
-  end;
-end;
-
 //----- Get/Set methods -----
 
 function TTL2SaveFile.GetPetCount:integer;

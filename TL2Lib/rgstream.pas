@@ -49,8 +49,6 @@ implementation
 
 
 procedure TTL2MemStream.SetBuffer(buf:pointer);
-var
-  lsize:PtrInt;
 begin
   Clear;
   SetPointer(buf,MemSize(buf));

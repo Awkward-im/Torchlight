@@ -11,7 +11,6 @@ object TL2Project: TTL2Project
   OnCreate = FormCreate
   ParentFont = True
   ShowHint = True
-  LCLVersion = '2.3.0.0'
   object TL2ProjectGrid: TStringGrid
     Left = 0
     Height = 480
@@ -57,7 +56,7 @@ object TL2Project: TTL2Project
       end    
       item
         Title.Caption = 'Translation'
-        Width = 369
+        Width = 365
       end>
     DefaultColWidth = 48
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
@@ -78,7 +77,7 @@ object TL2Project: TTL2Project
       0
       269
       28
-      369
+      365
     )
   end
   object memEdit: TMemo

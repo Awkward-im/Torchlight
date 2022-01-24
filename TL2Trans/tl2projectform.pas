@@ -134,6 +134,7 @@ type
     Modified: Boolean;
     data:TTL2Translation;
 
+    function New1(const adir: AnsiString): boolean;
     function New(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
     function Load(const fname:AnsiString; silent:boolean=false):boolean;
     procedure Save();
@@ -1069,6 +1070,24 @@ begin
   end;
 end;
 
+function TTL2Project.New1(const adir:AnsiString):boolean;
+begin
+  data.Filter:=flFiltered;
+  actStopScan.Enabled:=true;
+  doStopScan:=false;
+  result:=data.Scan(adir);
+  actStopScan.Enabled:=false;
+  if result then
+  begin
+    Modified:=true;
+    OnSBUpdate(Self);
+    pnlFolders.Visible:=true;
+    FillFoldersCombo(true);
+    FillProjectGrid('');
+  //!!  actShowDoubles.Visible:=data.Doubles<>0;
+  end;
+end;
+
 procedure TTL2Project.FillSkillsCombo();
 var
   ls:string;
@@ -1427,6 +1446,7 @@ end;
 procedure TTL2Project.TL2ProjectGridDblClick(Sender: TObject);
 //var  lrow:integer;
 begin
+  {TODO: Check for mod, not file}
   if TL2ProjectGrid.Col in [colFile,colTag] then
   begin
     CreateFileTab(IntPtr(TL2ProjectGrid.Objects[0,TL2ProjectGrid.Row]));

@@ -57,6 +57,7 @@ implementation
 uses
   SysUtils, // CreateGUID call for MakeModInfo function
   rgmemory,
+  rgio.text,
   rgnode;
 
 //----- MOD Header -----
@@ -307,19 +308,18 @@ end;
 function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
 var
   lnode,lroot,lline:pointer;
-  pcw:PWideChar;
   i,j,lcnt:integer;
 begin
   result:=false;
 
   if (strFile<>nil) and not (strFile[Length(strFile)-1] in ['\','/']) then
-    lroot:=ParseDatFile(strFile)
+    lroot:=ParseTextFile(strFile)
   else
-    lroot:=ParseDatFile(PChar(string(strFile)+'MOD.DAT'));
+    lroot:=ParseTextFile(PChar(string(strFile)+'MOD.DAT'));
 
   if lroot=nil then exit;
 
-  if CompareWide(GetNodeName(lroot),'MOD')=0 then
+  if IsNodeName(lroot,'MOD') then
   begin
     result:=true;
 
@@ -328,16 +328,15 @@ begin
     for i:=0 to GetChildCount(lroot)-1 do
     begin
       lnode:=GetChild(lroot,i);
-      pcw:=GetNodeName(lnode);
-      if      CompareWide(pcw,'NAME'         )=0 then CopyWide(amod.title   ,AsString(lnode))
-      else if CompareWide(pcw,'AUTHOR'       )=0 then CopyWide(amod.author  ,AsString(lnode))
-      else if CompareWide(pcw,'DESCRIPTION'  )=0 then CopyWide(amod.descr   ,AsString(lnode))
-      else if CompareWide(pcw,'WEBSITE'      )=0 then CopyWide(amod.website ,AsString(lnode))
-      else if CompareWide(pcw,'DOWNLOAD_URL' )=0 then CopyWide(amod.download,AsString(lnode))
-      else if CompareWide(pcw,'MOD_FILE_NAME')=0 then CopyWide(amod.filename,AsString(lnode))
-      else if CompareWide(pcw,'VERSION'      )=0 then amod.modver:=AsInteger  (lnode)
-      else if CompareWide(pcw,'MOD_ID'       )=0 then amod.modid :=AsInteger64(lnode)
-      else if CompareWide(pcw,'REMOVE_FILES' )=0 then
+      if      IsNodeName(lnode,'NAME'         ) then CopyWide(amod.title   ,AsString(lnode))
+      else if IsNodeName(lnode,'AUTHOR'       ) then CopyWide(amod.author  ,AsString(lnode))
+      else if IsNodeName(lnode,'DESCRIPTION'  ) then CopyWide(amod.descr   ,AsString(lnode))
+      else if IsNodeName(lnode,'WEBSITE'      ) then CopyWide(amod.website ,AsString(lnode))
+      else if IsNodeName(lnode,'DOWNLOAD_URL' ) then CopyWide(amod.download,AsString(lnode))
+      else if IsNodeName(lnode,'MOD_FILE_NAME') then CopyWide(amod.filename,AsString(lnode))
+      else if IsNodeName(lnode,'VERSION'      ) then amod.modver:=AsInteger  (lnode)
+      else if IsNodeName(lnode,'MOD_ID'       ) then amod.modid :=AsInteger64(lnode)
+      else if IsNodeName(lnode,'REMOVE_FILES' ) then
       begin
         if GetNodeType(lnode)=rgGroup then
         begin
@@ -346,7 +345,7 @@ begin
           for j:=0 to High(amod.dels) do
           begin
             lline:=GetChild(lnode,j);
-            if CompareWide(GetNodeName(lline),'FILE')=0 then
+            if IsNodeName(lline,'FILE') then
             begin
               CopyWide(amod.dels[lcnt],AsString(lline));
               inc(lcnt);
@@ -355,7 +354,7 @@ begin
           SetLength(amod.dels,lcnt);
         end;
       end
-      else if CompareWide(pcw,'REQUIRED_MODS')=0 then
+      else if IsNodeName(lnode,'REQUIRED_MODS') then
       begin
         if GetNodeType(lnode)=rgGroup then
         begin
@@ -364,7 +363,7 @@ begin
           for j:=0 to High(amod.reqs) do
           begin
             lline:=GetChild(lnode,j);
-            if CompareWide(GetNodeName(lline),'ID')=0 then
+            if IsNodeName(lline,'ID') then
             begin
               amod.reqs[lcnt].id:=AsInteger(lline);
               inc(lcnt);
@@ -409,9 +408,9 @@ begin
   end;
 
   if (strFile<>nil) and not (strFile[Length(strFile)-1] in ['\','/']) then
-    result:=WriteDatTree(lroot, strFile)
+    result:=BuildTextFile(lroot, strFile)
   else
-    result:=WriteDatTree(lroot, PChar(string(strFile)+'MOD.DAT'));
+    result:=BuildTextFile(lroot, PChar(string(strFile)+'MOD.DAT'));
 
   DeleteNode(lroot);
 end;
