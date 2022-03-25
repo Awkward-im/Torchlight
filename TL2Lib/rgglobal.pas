@@ -4,6 +4,9 @@ interface
 
 //===== Common things =====
 
+const
+  RGDBName = 'tl2db2.db';
+
 //--- Constants
 
 const

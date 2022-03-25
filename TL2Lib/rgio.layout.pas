@@ -32,8 +32,10 @@ uses
   rgdict,
   rgmemory;
 
+{$IFDEF DEBUG}  
 var
   known,unkn:TRGDict;
+{$ENDIF}
 var
   aliases:TRGDict;
 
@@ -117,10 +119,14 @@ begin
     Str(aid,FBuffer);
     result:=pointer(FBuffer);
 
+{$IFDEF DEBUG}  
     unkn.add(aid,nil);
+{$ENDIF}
   end
+{$IFDEF DEBUG}  
   else
     known.add(aid,result);
+{$ENDIF}
 end;
 
 function TRGLayoutFile.GuessDataType(asize:integer):integer;
@@ -552,11 +558,13 @@ end;
 
 initialization
 
+{$IFDEF DEBUG}  
   known.init;
   known.options:=[check_hash];
 
   unkn.init;
   unkn.options:=[check_hash];
+{$ENDIF}
 
   aliases.init;
   aliases.import('layaliases.txt');
@@ -570,18 +578,15 @@ finalization
     known.export('known-lay.dict'    ,asText);
     known.export('known-lay-txt.dict',asText,false);
   end;
-{$ENDIF}
   known.clear;
 
-{$IFDEF DEBUG}  
   if unkn.count>0 then
   begin
     unkn.Sort;
     unkn.export('unknown-lay.dict',asText);
   end;
-{$ENDIF}
   unkn.clear;
-  
+{$ENDIF}  
   aliases.Clear;
 
 end.

@@ -1,5 +1,4 @@
 {$CALLING cdecl}
-{TODO: memReadShortStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar}
 unit RGMemory;
 
 interface

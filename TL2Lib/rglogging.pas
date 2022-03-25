@@ -1,4 +1,4 @@
-﻿{TODO: Add binary data}
+﻿{TODO: implement OnAdd event}
 unit RGLogging;
 
 interface
@@ -6,7 +6,7 @@ interface
 type
   TRGLog = object
   private
-    FLog:PByte;
+    FLog:pointer;
     Fidx :cardinal;
     FSize:cardinal;
     FReserved:boolean;
@@ -28,7 +28,9 @@ type
 
     procedure SaveToFile(const afile:string='rglog.txt');
 
-    property Text:string read GetText;
+    property Text:string   read GetText;
+    property Log :pointer  read FLog;
+    property size:cardinal read FSize;
   end;
 
 var
@@ -176,7 +178,7 @@ begin
     Rewrite(f);
     if IOResult=0 then
     begin
-      BlockWrite(f,FLog^,FSize{Length(PChar(FLog))});
+      BlockWrite(f,PByte(FLog)^,FSize{Length(PChar(FLog))});
       Close(f);
     end;
   end;

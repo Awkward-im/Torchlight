@@ -61,6 +61,7 @@ rgpak.pas      - PAK (MOD) file reader/unpacker
   rgglobal
   rgman
   tl2mod
+  rglogging    (debug)
   rgfiletype
 
 rgstream.pas   - RW stream

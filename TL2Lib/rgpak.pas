@@ -16,26 +16,26 @@ interface
 
 uses
   classes,
-  rgglobal,
-  rgman,
-  tl2mod;
+  rgglobal;
 
 //===== Container =====
 
 const
-  piNoParse   = 0;
-  piParse     = 1;
-  piFullParse = 2;
+  piNoParse   = 0; // just PAK version and MAN offset
+  piParse     = 1; // TL2 MOD info, MAN content
+  piFullParse = 2; // with packed/unpacked file size
 
 function  GetPAKInfo (const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
 procedure FreePAKInfo(var   ainfo:TPAKInfo);
-procedure DumpPAKInfo(const ainfo:TPAKInfo);
+{$IFDEF DEBUG}
+function  DumpPAKInfo(const ainfo:TPAKInfo):string;
+{$ENDIF}
 
 // next function are for TL2 PAK part only
 function  CalcPAKHash(ast:TStream; apos,asize:int64):dword;
 function  CalcPAKHash(const fname:string):dword;
 
-//===== Packing =====
+//===== [Un]Packing =====
 
 function  UnpackFile(var ainfo:TPAKInfo; const afile:string; out aout:PByte):integer;
 function  UnpackFile(var ainfo:TPAKInfo; const afile:string; const adir:string):boolean;
@@ -60,9 +60,14 @@ implementation
 
 uses
   sysutils,
+  paszlib,
   bufstream,
   rgfiletype,
-  paszlib;
+{$IFDEF DEBUG}
+  rglogging,
+{$ENDIF}
+  rgman,
+  tl2mod;
 
 //===== Container =====
 
@@ -342,18 +347,19 @@ begin
   ainfo.ver:=verUnk;
 end;
 
-
-procedure DumpPAKInfo(const ainfo:TPAKInfo);
+{$IFDEF DEBUG}
+function DumpPAKInfo(const ainfo:TPAKInfo):string;
 var
-  ls:string;
+  llog:TRGLog;
+  ls,llsize:string;
   i,j:integer;
   lpack,lfiles,lprocess,ldir:integer;
   ldat,llay:integer;
   lmaxc,lmax,lmaxp,lmaxu,lcnt:integer;
 begin
-  if not IsConsole then exit;
+  llog.Init;
 
-  writeln('Root: ',String(WideString(ainfo.Root)));
+  llog.Add('Root: '+String(WideString(ainfo.Root)));
   lfiles:=0;
   lprocess:=0;
   ldir:=0;
@@ -366,12 +372,13 @@ begin
   lmax :=0;
   for i:=0 to High(ainfo.Entries) do
   begin
-    writeln(IntToStr(i+1),'  Directory: ',string(WideString(ainfo.Entries[i].name)));
+    llog.Add(IntToStr(i+1)+'  Directory: '+string(WideString(ainfo.Entries[i].name)));
     for j:=0 to High(ainfo.Entries[i].Files) do
     begin
       dec(lcnt);
       with ainfo.Entries[i].Files[j] do
       begin
+        llsize:='';
         if (ftype=typeDirectory) or (ftype=typeDelete) then
         begin
           inc(ldir);
@@ -381,7 +388,7 @@ begin
         begin
           inc(lfiles);
           ls:='    File: ';
-          if size_s=0 then write('##');
+          if size_s=0 then llsize:='##';
         end;
         if size_c>0 then inc(lpack);
         if lmaxp<size_c then lmaxp:=size_c;
@@ -395,24 +402,34 @@ begin
         if ftype=typedat then inc(ldat);
         if ftype=typelayout then inc(llay);
 
-        if size_s<>size_u then write('!!');
-        writeln(ls,string(widestring(name)),'; type:',PAKCategoryName(ftype),'; source size:',size_s,
-        '; compr:',size_c,'; unpacked:',size_u);
+        if size_s<>size_u then llsize:='!!';
+        llog.Add(llsize+
+            ls+string(widestring(name))+
+            '; type:'       +PAKCategoryName(ftype)+
+            '; source size:'+IntToStr(size_s)+
+            '; compr:'      +IntToStr(size_c)+
+            '; unpacked:'   +IntToStr(size_u));
       end;
     end;
   end;
-  writeln('Total: '    ,ainfo.total,
-          '; childs: ' ,Length(ainfo.Entries),
-          '; rest: '   ,lcnt,
-          '; process: ',lprocess);
-  writeln('Max packed size: '  ,lmaxp,' (0x'+HexStr(lmaxp,8),')'#13#10,
-          'Max unpacked size: ',lmaxu,' (0x'+HexStr(lmaxu,8),')'#13#10,
-          'Max uncompressed size: ',lmax ,' (0x'+HexStr(lmax ,8),')'#13#10,
-          'It''s compressed size: ',lmaxc,' (0x'+HexStr(lmaxc,8),')'#13#10,
-          'Packed '            ,lpack);
-  writeln('Files ',lfiles,#13#10'Dirs ',ldir,#13#10'Total ',lfiles+ldir+lprocess);
-  writeln('DAT: ',ldat,'; LAYOUT: ',llay);
+  llog.Add('Total: '    +IntToStr(ainfo.total)+
+           '; childs: ' +IntToStr(Length(ainfo.Entries))+
+           '; rest: '   +IntToStr(lcnt)+
+           '; process: '+IntToStr(lprocess));
+  llog.Add('Max packed size: '      +IntToStr(lmaxp)+' (0x'+HexStr(lmaxp,8)+')');
+  llog.Add('Max unpacked size: '    +IntToStr(lmaxu)+' (0x'+HexStr(lmaxu,8)+')');
+  llog.Add('Max uncompressed size: '+IntToStr(lmax )+' (0x'+HexStr(lmax ,8)+')');
+  llog.Add('It''s compressed size: '+IntToStr(lmaxc)+' (0x'+HexStr(lmaxc,8)+')');
+  llog.Add('Packed '                +IntToStr(lpack));
+  llog.Add('Files '+IntToStr(lfiles));
+  llog.Add('Dirs ' +IntToStr(ldir));
+  llog.Add('Total '+IntToStr(lfiles+ldir+lprocess));
+  llog.Add('DAT: ' +IntToStr(ldat)+'; LAYOUT: '+IntToStr(llay));
+
+  result:=llog.Text;
+  llog.Free;
 end;
+{$ENDIF}
 
 //===== Files =====
 
@@ -563,7 +580,7 @@ begin
   lname:=MakeFileName(ainfo);
 
   if Length(ainfo.Entries)=0 then
-    GetCommonPAKInfo(lname,ainfo);
+    GetCommonPAKInfo(string(lname),ainfo);
 
   if ainfo.fsize<=MaxSizeForMem then
   begin

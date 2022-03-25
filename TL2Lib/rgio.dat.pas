@@ -29,8 +29,10 @@ uses
   rgnode,
   rglogging;
 
+{$IFDEF DEBUG}  
 var
   known,unkn:TRGDict;
+{$ENDIF}
 var
   aliases:TRGDict;
 
@@ -78,10 +80,14 @@ begin
     Str(aid,FBuffer);
     result:=pointer(FBuffer);
 
+{$IFDEF DEBUG}  
     unkn.add(aid,nil);
+{$ENDIF}
   end
+{$IFDEF DEBUG}  
   else
     known.add(aid,result);
+{$ENDIF}
 end;
 
 procedure TRGDATFile.ParseBlock(var aptr:PByte; var anode:pointer);
@@ -130,6 +136,8 @@ var
   lid:dword;
   lcnt,i:integer;
 begin
+  anode:=nil;
+
   lptr:=abuf;
 
   case lptr^ of
@@ -432,11 +440,13 @@ initialization
   aliases.Init;
   aliases.Import('dataliases.txt');
 
+{$IFDEF DEBUG}  
   known.init;
   known.options:=[check_hash];
 
   unkn.init;
   unkn.options:=[check_hash];
+{$ENDIF}
 
 finalization
 
@@ -447,17 +457,15 @@ finalization
     known.export('known-dat.dict'    ,asText);
     known.export('known-dat-txt.dict',asText,false);
   end;
-{$ENDIF}
   known.clear;
 
-{$IFDEF DEBUG}  
   if unkn.count>0 then
   begin
     unkn.Sort;
     unkn.export('unknown-dat.dict',asText);
   end;
-{$ENDIF}
   unkn.clear;
+{$ENDIF}
   
   aliases.Clear;
 

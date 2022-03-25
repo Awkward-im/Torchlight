@@ -369,9 +369,12 @@ end;
 
 procedure TTL2Reference.Init;
 begin
+  FillChar(self,SizeOf(TTL2Reference),#0);
+{
   cntRef  :=0; SetLength(arRef  ,0);
   cntFiles:=0; SetLength(arFiles,0);
   cntTags :=0; SetLength(arTags ,0);
+}
 end;
 
 procedure TTL2Reference.Free;

@@ -53,10 +53,10 @@ function AddNode     (aparent:pointer; aname:PWideChar;
 function AddGroup    (aparent:pointer; aname:PWideChar):pointer;
 function AddBool     (aparent:pointer; aname:PWideChar; aval:ByteBool ):pointer;
 function AddInteger  (aparent:pointer; aname:PWideChar; aval:Int32    ):pointer;
+function AddUnsigned (aparent:pointer; aname:PWideChar; aval:UInt32   ):pointer;
 function AddFloat    (aparent:pointer; aname:PWideChar; aval:single   ):pointer;
 function AddDouble   (aparent:pointer; aname:PWideChar; aval:double   ):pointer;
 function AddInteger64(aparent:pointer; aname:PWideChar; aval:Int64    ):pointer;
-function AddUnsigned (aparent:pointer; aname:PWideChar; aval:UInt32   ):pointer;
 function AddString   (aparent:pointer; aname:PWideChar; aval:PWideChar):pointer;
 function AddTranslate(aparent:pointer; aname:PWideChar; aval:PWideChar):pointer;
 function AddNote     (aparent:pointer; aname:PWideChar; aval:PWideChar):pointer;
@@ -119,61 +119,6 @@ type
       rgBinary   : (len        :UInt32);
   end;
   TARGNode = array [0..MAXINT div SizeOf(pointer)-1] of PRGNode;
-
-const
-  SIGN_UNICODE = $FEFF;
-
-//===== Error handler =====
-
-const
-  errCantOpen      = 1; // (Error) Can't open file for parsing
-  errTagNoClose    = 2; // (Error) Group tag have no closing parenties
-  errTagCloseWrong = 3; // (Error) Closing tag have wrong name
-  errNoRoot        = 4; // (Error) Unconditional. Properties without open Group (root) tag
-  errPropNoClose   = 5; // (Error) Property have no closing parenties
-  errRootNoClose   = 6; // (Error) End of file, Root group have no closing tag
-  errCloseNoRoot   = 7; // (Error) Unconditional. Closing tag without any opened (no root)
-  errUnknownTag    = 8; // (Warning) Unknown property type
-
-type
-  TErrorHandler = function(acode:integer; aFile:PChar; aLine:integer):integer; cdecl;
-
-var
-  OnError:TErrorHandler = nil;
-
-function SetDatErrorHandler(aproc:TErrorHandler):TErrorHandler;
-begin
-  result :=OnError;
-  OnError:=aproc;
-end;
-
-//===== Support =====
-
-procedure WriteWide(var buf:PByte; var idx:integer; atext:PWideChar);
-const
-  TMSGrow = 4096;
-Var
-  GC,NewIdx:PtrInt;
-  lcnt:integer;
-begin
-  lcnt:=Length(atext)*SizeOf(WideChar);
-
-  If (lcnt=0) or (idx<0) then
-    exit;
-
-  NewIdx:=idx+lcnt;
-  GC:=MemSize(buf);
-  If NewIdx>=GC then
-  begin
-    GC:=GC+(GC div 4);
-    GC:=(GC+(TMSGrow-1)) and not (TMSGrow-1);
-
-    ReallocMem(buf,GC);
-  end;
-  System.Move(atext^,buf[idx],lcnt);
-  idx:=NewIdx;
-end;
-
 
 //===== Nodes =====
 

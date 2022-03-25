@@ -587,20 +587,18 @@ begin
 
   //--- Search for doubles
 
-  case filter of
-    flNoSearch: i:=0;
-    flNoFilter: begin
-      for i:=0 to cntText-1 do
+  i:=0;
+  if filter=flNoFilter then
+  begin
+    for i:=0 to cntText-1 do
+    begin
+      if lorig=arText[i].origin then
       begin
-        if lorig=arText[i].origin then
-        begin
-          result:=-(i+1);
-          exit;
-        end;
+        result:=-(i+1);
+        exit;
       end;
-      i:=0;
     end;
-  else
+    i:=0;
   end;
 
   if atmpl='' then
@@ -625,13 +623,14 @@ begin
 
   if (atrans='') or (lorig=atrans) then
   begin
-    ltrans:='';
     if i=0 then // "same" text without translation
-      ltype:=stOriginal
+    begin
+      ltype :=stOriginal;
+      ltrans:='';
+    end
     else
     begin
-      ltype:=stPartial;
-
+      ltype :=stPartial;
       ltrans:=ReplaceTranslation(arText[-i-1].transl,lorig);
     end;
   end
@@ -650,13 +649,12 @@ begin
   arText[cntText].sample:=-i-1;
   arText[cntText].transl:=ltrans;
   arText[cntText].atype :=ltype;
-
   arText[cntText].origin:=lorig;
-  arText[cntText].tmpl:=ltmpl;
+  arText[cntText].tmpl  :=ltmpl;
 
   inc(cntText);
 
-  if FOnLineAdd<>nil then
+  if Assigned(FOnLineAdd) then
     FOnLineAdd(cntText-1);
 
   result:=cntText;
@@ -1056,7 +1054,7 @@ begin
           arText[j].atype:=stPartial;
         end;
 
-        if FOnLineChanged<>nil then
+        if Assigned(FOnLineChanged) then
           FOnLineChanged(j);
       end;
     end;
@@ -1137,15 +1135,15 @@ begin
   ldata.LoadInfo(fname);
   if ldata.LoadFromFile(fname)>0 then
   begin
-//!! total counter
-if (FOnLineChanged<>nil) and (ldata.Lines>100) then
-FOnLineChanged(-ldata.Lines);
+    //!! total counter
+    if Assigned(FOnLineChanged) and (ldata.Lines>100) then
+      FOnLineChanged(-ldata.Lines);
 
     for i:=0 to ldata.Lines-1 do
     begin
-//!! runtime counter
-if (FOnLineChanged<>nil) and (i>0) and ((i mod 100)=0) then
-FOnLineChanged(i);
+      //!! runtime counter
+      if Assigned(FOnLineChanged) and (i>0) and ((i mod 100)=0) then
+        FOnLineChanged(i);
       
       inc(lcnt, CheckLine(
           ldata.arText[i].origin,
@@ -1183,7 +1181,7 @@ begin
       sl.Text:=atext;
 
       //!! how much on input
-      if FOnLineChanged<>nil then
+      if Assigned(FOnLineChanged) then
         FOnLineChanged(-sl.Count);
 
       lcnt:=0;
@@ -1235,17 +1233,19 @@ end;
 
 procedure TTL2Translation.Init;
 begin
-  cntText :=0; SetLength(arText,16000);
-  cntStart:=0;
+  FillChar(self,SizeOf(TTL2Translation),#0);
+//  cntText :=0;
+//  cntStart:=0;
+  SetLength(arText,16000);
 
   noteIndex:=-1;
 
-  FModVersion:=0;
+//  FModVersion:=0;
   FModID     :=-1;
-  FModTitle  :='';
-  FModAuthor :='';
-  FModDescr  :='';
-  FModURL    :='';
+//  FModTitle  :='';
+//  FModAuthor :='';
+//  FModDescr  :='';
+//  FModURL    :='';
 
   fRef.Init;
 end;
@@ -1590,7 +1590,7 @@ begin
   FErrFile:='';
 
   {TODO: Skip TRANSLATIONS directory}
-  result:=ScanMod(afile,'',@myactproc,@self,@fnCheckText)>0;
+  result:=RGScanData(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@self,nil)>0;
   if result then
   begin
     if ReadModInfo(PChar(afile), lmod) then

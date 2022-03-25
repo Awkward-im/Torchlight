@@ -26,7 +26,9 @@ function ScanSkills  (ams:pointer):integer;
 function ScanClasses (ams:pointer):integer;
 
 
-function Prepare(const apath:string; out aptr:pointer;
+function PrepareDir(const apath:string; out aptr:pointer;
+         aupdateall:boolean=false):boolean;
+function PreparePAK(const afile:string; out aptr:pointer;
          aupdateall:boolean=false):boolean;
 procedure Finish(aptr:pointer);
 
@@ -142,8 +144,33 @@ begin
   result:=CreateStatsTable   (ams);
   result:=CreateWardrobeTable(ams);
 end;
-
+{
 function Prepare(
+    ams:pointer;
+    const lmod:TTL2ModInfo;
+    aupdateall:boolean=false):boolean;
+var
+  i:integer;
+begin
+  with PModScanner(ams)^ do
+  begin
+    FDoUpdate:=aupdateall;
+
+    result:=sqlite3_open(':memory:',@db)=SQLITE_OK;
+    if result then
+    begin
+      i:=CopyFromFile(db,'tl2db2.db');
+      if i<>SQLITE_OK then
+      begin
+        result:=CreateTables(ams);
+      end;
+      if result then AddTheMod(ams,lmod);
+    end;
+  end;
+end;
+}
+
+function PrepareDir(
     const apath:string;
     out ams:pointer;
     aupdateall:boolean=false):boolean;
@@ -154,12 +181,8 @@ begin
   result:=false;
   ams:=nil;
 
-  if (apath[Length(apath)] in ['/','\']) or IsDirectoryExists(apath) then
-    result:=LoadModConfiguration(PChar(apath+'\MOD.DAT'),lmod)
-  else if IsFileExists(apath) then
-    result:=ReadModInfo(PChar(apath),lmod);
-
-  if result then
+  if (apath[Length(apath)] in ['/','\']) or IsDirectoryExists(apath)
+  if LoadModConfiguration(PChar(apath+'\MOD.DAT'),lmod) then
   begin
     GetMem  (ams ,SizeOf(TModScanner));
     FillChar(ams^,SizeOf(TModScanner),0);
@@ -191,6 +214,41 @@ begin
       ams:=nil;
     end;
   end;
+end;
+
+
+function PreparePAK(
+    const afile:string;
+    out aptr:pointer;
+    aupdateall:boolean=false):boolean; //??
+var
+  lmod:TTL2ModInfo;
+  lptr:pointer;
+begin
+  result:=false;
+  aptr:=nil;
+
+  if ReadModInfo(PChar(afile),lmod) then
+  begin
+    GetMem  (aptr ,SizeOf(TModScanner));
+    FillChar(aptr^,SizeOf(TModScanner),0);
+
+    PrepareRGScan(lptr, afile, ['.DAT'], aptr);
+    if lptr<>nil then
+    begin
+      PModScanner(aptr)^.scan:=lptr;
+      result:=Prepare(aptr,lmod,aupdateall);
+    end;
+
+    ClearModInfo(lmod);
+    if not result then
+    begin
+      EndRGScan(PModScanner(aptr)^.scan);
+      FreeMem(aptr);
+      aptr:=nil;
+    end;
+  end;
+
 end;
 
 procedure Finish(aptr:pointer);

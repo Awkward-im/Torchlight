@@ -91,6 +91,7 @@ begin
     SetLength(atier,14); // default for TL2
     lcnt:=0;
     lSQL:='SELECT name, value FROM tiers WHERE modid='' 0 ''';
+//    lSQL:='SELECT name, value FROM graph WHERE (modid='' 0 '') AND (name GLOB ''SKILLTIER*'')';
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do

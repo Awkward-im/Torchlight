@@ -1,5 +1,5 @@
 ﻿{TODO: remove RGIO.Text, RGNode dependences}
-{TODO: export as UTF8 binary (UCS16LE right now)}
+{TODO: export as UTF8 binary (UCS16LE right now) - add sign for type: UCS16, UTF8, w/zero}
 unit RGDict;
 
 interface
@@ -10,7 +10,7 @@ uses
 //--- Tags
 
 type
-  TExportDictType = (asTags, asText, asBin, asZBin);
+  TExportDictType = (asTags, asText, asBin, asZBin{, asBin8, asZBin8});
 
 type
 
@@ -754,7 +754,7 @@ var
   sl:TRGLog;
   lnode:pointer;
   lstr:UnicodeString;
-  i,j,ldelta:integer;
+  i,j,ldelta,llen:integer;
 begin
   case afmt of
     asTags: begin
@@ -823,7 +823,11 @@ begin
           if IdxTag[i]=nil then
             sl.Add(0,2)
           else
-            sl.Add(IdxTag[i],(Length(IdxTag[i])+ldelta)*SizeOf(WideChar));
+          begin
+            llen:=Length(IdxTag[i])+ldelta;
+            sl.Add(llen,2);
+            sl.Add(IdxTag[i],llen*SizeOf(WideChar));
+          end;
         end;
       end
       else
@@ -836,7 +840,11 @@ begin
           if IdxTag[i]=nil then
             sl.Add(0,2)
           else
-            sl.Add(IdxTag[j],(Length(IdxTag[j])+ldelta)*SizeOf(WideChar));
+          begin
+            llen:=Length(IdxTag[j])+ldelta;
+            sl.Add(llen,2);
+            sl.Add(IdxTag[j],llen*SizeOf(WideChar));
+          end;
         end;
       end;
 

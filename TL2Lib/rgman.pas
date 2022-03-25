@@ -338,11 +338,13 @@ begin
   sl.Sorted:=true;
   sl.Sort;
 
-for i:=0 to sl.Count-1 do
-begin
-  RGLog.Add(sl[i]);
-end;
-RGLog.SaveToFile('log.txt');
+{$IFDEF DEBUG}
+  for i:=0 to sl.Count-1 do
+  begin
+    RGLog.Add(sl[i]);
+  end;
+  RGLog.SaveToFile('log.txt');
+{$ENDIF}
 
   sl.Free;
 end;
