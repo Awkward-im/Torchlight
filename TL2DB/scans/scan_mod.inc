@@ -71,7 +71,7 @@ begin
     lver:=0;
     if sqlite3_prepare_v2(PModScanner(ams)^.db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
     begin
-      if sqlite3_step(vm)=SQLITE_OK then
+      if sqlite3_step(vm)=SQLITE_ROW then
         lver:=sqlite3_column_int(vm,0);
       sqlite3_finalize(vm);
     end;
@@ -114,6 +114,8 @@ begin
             ' VALUES (0, ''Torchlight 2'', 0, 281582351482885, ''Runic Games'''+
             ', ''Torchlight 2 game (without mods)'', NULL, NULL);');
 
+    PModScanner(ams)^.FModId  :='0';
+    PModScanner(ams)^.FModMask:=' 0 ';
   end;
 end;
 

@@ -103,7 +103,6 @@ var
   i,j:integer;
 begin
   result:=0;
-
   lclass.afile:=fname;
   lclass.title:='';
   lclass.skill:=',';
@@ -117,7 +116,6 @@ begin
   begin
     lnode:=GetChild(anode,i);
     pcw:=GetNodeName(lnode);
-
     if GetNodeType(lnode)=rgGroup then
     begin
       if CompareWide(pcw,'SKILL')=0 then
@@ -186,9 +184,7 @@ begin
 
   {TODO: search for base unittype if not found}
   // Search class gender
-
   GetGender(ams, lclass.name, lunittype, lclass.gender);
-
   if lclass.skill=',' then lclass.skill:='';
   if AddClassToBase(ams,lclass) then
     result:=1;

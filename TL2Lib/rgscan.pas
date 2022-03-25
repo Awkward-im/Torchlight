@@ -20,28 +20,22 @@ type
           const adir,aname:string;
           aparam:pointer):integer;
 
-//--- CheckName templates
-function FnCheckDAT   (const adir,aname:string; aparam:pointer):integer;
-function FnCheckLAYOUT(const adir,aname:string; aparam:pointer):integer;
-function FnCheckText  (const adir,aname:string; aparam:pointer):integer;
-
-function ScanExt(
+function MakeRGScan(
     const aroot,adir:string;
-    actproc:TProcessProc=nil;
-    aparam:pointer=nil;
-    aext:array of string):integer;
-
-function ScanDir(
-    const aroot,adir:string;
-    actproc:TProcessProc=nil;
-    aparam:pointer=nil;
+    aext:array of string;
+    actproc:TProcessProc=nil; aparam:pointer=nil;
     checkproc:TCheckNameProc=nil):integer;
 
-function ScanMod(
-    const afname,adir:string;
-    actproc:TProcessProc=nil;
-    aparam:pointer=nil;
-    checkproc:TCheckNameProc=nil):integer;
+procedure PrepareRGScan(out aptr:pointer;
+    const apath:string;
+    aext:array of string;
+    aparam:pointer);
+
+procedure EndRGScan(aptr:pointer);
+
+function GetRGScan(aptr:pointer; const afile:string; out abuf:pointer):integer;
+function DoRGScan (aptr:pointer; const apath:string;
+    actproc:TProcessProc=nil; checkproc:TCheckNameProc=nil):integer;
 
 
 implementation
@@ -53,6 +47,7 @@ uses
   rgfiletype;
 
 type
+  PScanObj = ^TScanObj;
   TScanObj = object
   private
     FExts     :array of string;
@@ -62,7 +57,6 @@ type
     FMod      :TPAKInfo;
     FCheckProc:TCheckNameProc;
     FActProc  :TProcessProc;
-    FCurEntry :integer;
 
     FCount    :integer;
 
@@ -70,38 +64,16 @@ type
     function  CheckName(apath,afile:PWideChar):boolean;
   public
     procedure Free;
-    procedure ScanMod(const afname:string);
+    procedure ScanMod();
     procedure CycleDir(const adir:string);
   end;
 
 
-function FnCheckText(const adir,aname:string; aparam:pointer):integer;
-var
-  ls:string;
-begin
-  ls:=UpCase(ExtractFileExt(aname));
-  if (ls='.DAT') or (ls='.TEMPLATE') or (ls='.LAYOUT') or (ls='.WDAT') then result:=1
-  else result:=0;
-end;
-function FnCheckDAT(const adir,aname:string; aparam:pointer):integer;
-var
-  ls:string;
-begin
-  ls:=UpCase(ExtractFileExt(aname));
-  if (ls='.DAT') or (ls='.TEMPLATE') or (ls='.WDAT') then result:=1
-  else result:=0;
-end;
-function FnCheckLAYOUT(const adir,aname:string; aparam:pointer):integer;
-var
-  ls:string;
-begin
-  ls:=UpCase(ExtractFileExt(aname));
-  if ls='.LAYOUT' then result:=1
-  else result:=0;
-end;
-
 procedure TScanObj.Free;
 begin
+  if FMod.ver<>verUnk then
+    FreePAKInfo(FMod);
+
   FreeMem(FDir);
 end;
 
@@ -125,53 +97,54 @@ end;
 
 function TScanObj.CheckName(apath,afile:PWideChar):boolean;
 begin
+{
   if (FDir<>nil) and (CompareWide(FDir,apath,Length(FDir))<>0) then
     result:=false
   else
+}
     result:=CheckExt(afile) and
       ((FCheckProc=nil) or (FCheckProc(apath,afile,FParam)>0));
 end;
 
-procedure TScanObj.ScanMod(const afname:string);
+procedure TScanObj.ScanMod();
 var
   lbuf:PByte;
   i,j,lsize:integer;
 begin
-  GetPAKInfo(afname,FMod,piParse);
-  {TODO: Add MOD.DAT emulation?}
-
   for j:=0 to High(FMod.Entries) do
   begin
-    FCurEntry:=j;
-    for i:=0 to High(FMod.Entries[j].Files) do
+    if (FDir=nil) or (CompareWide(FDir,FMod.Entries[j].Name,Length(FDir))=0) then
     begin
-      if (not (FMod.Entries[j].Files[i].ftype in [typeDirectory,typeDelete])) and
-         CheckName(FMod.Entries[j].Name,
-                   FMod.Entries[j].Files[i].name) then
+      for i:=0 to High(FMod.Entries[j].Files) do
       begin
-        if (FActProc=nil) then inc(FCount)
-        else
+        if (not (FMod.Entries[j].Files[i].ftype in [typeDirectory,typeDelete])) and
+           CheckName(FMod.Entries[j].Name,
+                     FMod.Entries[j].Files[i].name) then
         begin
-          lsize:=UnpackFile(
-              FMod,
+          if (FActProc=nil) then inc(FCount)
+          else
+          begin
+            lsize:=UnpackFile(
+                FMod,
+                FMod.Entries[j].Name,
+                FMod.Entries[j].Files[i].name,
+                lbuf);
+
+            if (FActProc(lbuf,lsize,
               FMod.Entries[j].Name,
               FMod.Entries[j].Files[i].name,
-              lbuf);
+              FParam)>0) then inc(FCount);
 
-          if (FActProc(lbuf,lsize,
-            FMod.Entries[j].Name,
-            FMod.Entries[j].Files[i].name,
-            FParam)>0) then inc(FCount);
-
-          FreeMem(lbuf);
+            FreeMem(lbuf);
+          end;
         end;
       end;
     end;
   end;
-
-  FreePAKInfo(FMod);
 end;
 
+{$PUSH}
+{$I-}
 procedure TScanObj.CycleDir(const adir:string);
 var
   sr:TSearchRec;
@@ -185,7 +158,7 @@ begin
       if (sr.Attr and faDirectory)=faDirectory then
       begin
         if (sr.Name<>'.') and (sr.Name<>'..') then
-          CycleDir(adir+'\'+sr.Name);
+          CycleDir(adir+DirectorySeparator+sr.Name);
       end
       else
       begin
@@ -194,11 +167,15 @@ begin
            ((FCheckProc=nil) or (FCheckProc(adir,sr.Name,FParam)>0)) then
         begin
           if Pos('.MOD',UpCase(sr.Name))=(Length(sr.Name)-3) then
-            ScanMod(adir+'\'+sr.Name)
+          begin
+            inc(FCount,MakeRGScan(adir+DirectorySeparator+sr.Name,'',FExts,
+                FActProc,FParam,FCheckProc));
+//            ScanMod(adir+DirectorySeparator+sr.Name)
+          end
           else if (FActProc=nil) then inc(FCount)
           else
           begin
-            Assign(f,adir+'/'+sr.Name);
+            Assign(f,adir+DirectorySeparator+sr.Name);
             Reset(f);
             if IOResult=0 then
             begin
@@ -216,72 +193,104 @@ begin
     FindClose(sr);
   end;
 end;
+{$POP}
 
-
-function ScanExt(const aroot,adir:string;
-    actproc:TProcessProc=nil; aparam:pointer=nil;
-    aext:array of string):integer;
+procedure PrepareRGScan(out aptr:pointer;
+    const apath:string;
+    aext:array of string;
+    aparam:pointer);
 var
-  lscan:TScanObj;
+  ldir:string;
 begin
-  lscan.FRoot     :=aroot;
-  lscan.FDir      :=StrToWide(adir);
-  lscan.FExts     :=Copy(aext);
-  lscan.FCheckProc:=nil;
-  lscan.FActProc  :=actproc;
-  lscan.FParam    :=aparam;
-  lscan.FMod.ver  :=verUnk;
-  lscan.FCount    :=0;
+  aptr:=nil;
 
-  if not (lscan.FRoot[Length(lscan.FRoot)] in ['/','\']) then
-    lscan.FRoot:=lscan.FRoot+'/';
+  if apath[Length(apath)] in ['/','\'] then
+    ldir:=Copy(apath,1,Length(apath)-1)
+  else if DirectoryExists(apath) then
+    ldir:=apath
+  else if FileExists(apath) then
+  begin
+    ldir:='';
+  end
+  else
+    Exit;
 
-  lscan.CycleDir(lscan.FRoot+adir);
-  result:=lscan.FCount;
-  lscan.Free;
+  New(PScanObj(aptr));
+
+  if ldir='' then
+    GetPAKInfo(apath,PScanObj(aptr)^.FMod,piParse)
+  else
+    PScanObj(aptr)^.FMod.ver:=verUnk;
+
+  PScanObj(aptr)^.FRoot :=ldir;
+  PScanObj(aptr)^.FExts :=Copy(aext);
+  PScanObj(aptr)^.FParam:=aparam;
+//  PScanObj(aptr)^.FCount:=0;
 end;
 
-function ScanDir(const aroot,adir:string;
+procedure EndRGScan(aptr:pointer);
+begin
+  PScanObj(aptr)^.Free;
+  Dispose(PScanObj(aptr));
+end;
+
+{$PUSH}
+{$I-}
+function GetRGScan(aptr:pointer; const afile:string; out abuf:pointer):integer;
+var
+  f:file of byte;
+begin
+  if aptr=nil then Exit(0);
+
+  if PScanObj(aptr)^.FMod.ver=verUnk then
+  begin
+    Assign(f,PScanObj(aptr)^.FRoot+DirectorySeparator+afile);
+    Reset(f);
+    if IOResult=0 then
+    begin
+      result:=FileSize(f);
+      GetMem(abuf,result);
+      BlockRead(f,abuf^,result);
+      Close(f);
+    end;
+  end
+  else
+  begin
+    result:=UnpackFile(PScanObj(aptr)^.FMod, afile, abuf);
+  end;
+end;
+{$POP}
+
+function DoRGScan(aptr:pointer; const apath:string;
+    actproc:TProcessProc=nil; checkproc:TCheckNameProc=nil):integer;
+begin
+  if aptr=nil then Exit(0);
+
+  PScanObj(aptr)^.FCount:=0; //!!
+
+  PScanObj(aptr)^.FCheckProc:=checkproc;
+  PScanObj(aptr)^.FActProc  :=actproc;
+  PScanObj(aptr)^.FDir      :=StrToWide(apath);
+
+  if PScanObj(aptr)^.FMod.ver=verUnk then
+    PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot+DirectorySeparator+apath)
+  else
+    PScanObj(aptr)^.ScanMod();
+  
+  result:=PScanObj(aptr)^.FCount;
+end;
+
+function MakeRGScan(
+    const aroot,adir:string;
+    aext:array of string;
     actproc:TProcessProc=nil; aparam:pointer=nil;
     checkproc:TCheckNameProc=nil):integer;
 var
-  lscan:TScanObj;
+  lptr:pointer;
 begin
-  lscan.FRoot     :=aroot;
-  lscan.FDir      :=StrToWide(adir);
-  lscan.FExts     :=nil;
-  lscan.FCheckProc:=checkproc;
-  lscan.FActProc  :=actproc;
-  lscan.FParam    :=aparam;
-  lscan.FMod.ver  :=verUnk;
-  lscan.FCount    :=0;
-
-  if not (lscan.FRoot[Length(lscan.FRoot)] in ['/','\']) then
-    lscan.FRoot:=lscan.FRoot+'/';
-
-  lscan.CycleDir(lscan.FRoot+adir);
-  result:=lscan.FCount;
-  lscan.Free;
-end;
-
-function ScanMod(const afname,adir:string;
-    actproc:TProcessProc=nil; aparam:pointer=nil;
-    checkproc:TCheckNameProc=nil):integer;
-var
-  lscan:TScanObj;
-begin
-  lscan.FRoot     :=ExtractFilePath(afname);
-  lscan.FDir      :=StrToWide(adir);
-  lscan.FExts     :=nil;
-  lscan.FCheckProc:=checkproc;
-  lscan.FActProc  :=actproc;
-  lscan.FParam    :=aparam;
-  lscan.FMod.ver  :=verUnk;
-  lscan.FCount    :=0;
-
-  lscan.ScanMod(afname);
-  result:=lscan.FCount;
-  lscan.Free;
+  PrepareRGScan(lptr,aroot,aext,aparam);
+  result:=DoRGScan(lptr,adir,actproc,checkproc);
+  EndRGScan(lptr);
 end;
 
 end.

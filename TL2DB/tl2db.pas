@@ -62,9 +62,6 @@ var
   db:PSQLite3=nil;
   ModFilter:string='';
 
-const
-  TL2DataBase = 'tl2db2.db';
-
 //----- Support functions -----
 
 {$Include tl2db_split.inc}

@@ -26,9 +26,9 @@ function ScanSkills  (ams:pointer):integer;
 function ScanClasses (ams:pointer):integer;
 
 
-function Prepare(const apath:string; out aptr:pointer;
+function Prepare(const apath:string; out ams:pointer;
          aupdateall:boolean=false):boolean;
-procedure Finish(aptr:pointer);
+procedure Finish(ams:pointer);
 
 
 implementation
@@ -41,8 +41,11 @@ uses
   ,rgPAK
   ,rgio.DAT
   ,rgio.Text
+  ,RGDict
   ,RGNode
   ;
+
+{$R dict.rc}
 
 type
   PModScanner = ^TModScanner;
@@ -154,17 +157,20 @@ begin
   result:=false;
   ams:=nil;
 
-  if (apath[Length(apath)] in ['/','\']) or IsDirectoryExists(apath) then
+  if (apath[Length(apath)] in ['/','\']) or DirectoryExists(apath) then
     result:=LoadModConfiguration(PChar(apath+'\MOD.DAT'),lmod)
-  else if IsFileExists(apath) then
+  else if FileExists(apath) then
+  begin
     result:=ReadModInfo(PChar(apath),lmod);
+    RGTags.Import('RGDICT','TEXT');
+  end;
 
   if result then
   begin
     GetMem  (ams ,SizeOf(TModScanner));
     FillChar(ams^,SizeOf(TModScanner),0);
 
-    PrepareRGScan(lscan, apath, ['.DAT'], aptr);
+    PrepareRGScan(lscan, apath, ['.DAT'], ams);
     if lscan<>nil then
     begin
 
@@ -176,7 +182,7 @@ begin
         result:=sqlite3_open(':memory:',@db)=SQLITE_OK;
         if result then
         begin
-          if CopyFromFile(db,RGDBName)<>SQLITE_OK then
+          if CopyFromFile(db,TL2DataBase)<>SQLITE_OK then
             result:=CreateTables(ams);
           if result then AddTheMod(ams,lmod);
         end;
@@ -193,19 +199,19 @@ begin
   end;
 end;
 
-procedure Finish(aptr:pointer);
+procedure Finish(ams:pointer);
 begin
-  if aptr<>nil then
+  if ams<>nil then
   begin
-    with PModScanner(aptr)^ do
+    with PModScanner(ams)^ do
     begin
       EndRGScan(scan);
 
-      CopyToFile(db,'tl2db2.db');
+      CopyToFile(db,TL2DataBase);
       sqlite3_close(db);
     end;
 
-    FreeMem(aptr);
+    FreeMem(ams);
   end;
 end;
 

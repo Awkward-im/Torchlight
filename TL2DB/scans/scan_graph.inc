@@ -12,7 +12,7 @@ begin
   lSQL:='SELECT id, modid FROM graph WHERE (name='''+aname+''') AND (value='''+agraph+''')';
   if sqlite3_prepare_v2(PModScanner(ams)^.db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
   begin
-    if sqlite3_step(vm)=SQLITE_OK then
+    if sqlite3_step(vm)=SQLITE_ROW then
     begin
       lid   :=sqlite3_column_int (vm,0);
       lmodid:=sqlite3_column_text(vm,1);

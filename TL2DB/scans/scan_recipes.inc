@@ -17,7 +17,7 @@ begin
   end;
 end;
 
-function AddRecipeNode(ams:pointer; anode:pointer):integer;
+function AddRecipeNode(ams:pointer; anode:pointer):int64;
 var
   lnode:pointer;
   pcw:PWideChar;

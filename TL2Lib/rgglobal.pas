@@ -5,7 +5,7 @@ interface
 //===== Common things =====
 
 const
-  RGDBName = 'tl2db2.db';
+  TL2DataBase = 'tl2db2.db';
 
 //--- Constants
 
@@ -293,7 +293,7 @@ begin
   begin
     GetMem(result,(i+1)*SizeOf(WideChar));
     i:=Utf8ToUnicode(result,(i+1)*SizeOf(WideChar),pchar(src),length(src));
-    result[i]:=#0;
+    result[i-1]:=#0;
   end;
 {
   ws:=UTF8Decode(src);
