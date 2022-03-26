@@ -1,5 +1,4 @@
 {%REGION Graph}
-{TODO: Add id as key to get from search }
 function AddGraphToBase(ams:pointer; const aname,agraph:string):boolean;
 var
   vm:pointer;

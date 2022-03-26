@@ -148,36 +148,41 @@ begin
     else if CompareWide(pcw,'MAGIC'      )=0 then Str(AsInteger(lnode),lclass.magic)
     else if CompareWide(pcw,'DEFENSE'    )=0 then Str(AsInteger(lnode),lclass.defense)
     else if CompareWide(pcw,'ICON'       )=0 then lclass.icon:=ExtractFileNameOnly(AsString(lnode))
-    {TODO: Add files by name (from MEDIA/GRAPHS/STATS)}
+
     else if CompareWide(pcw,'MANA_GRAPH')=0 then
     begin
       lclass.gr_mp:=AsString(lnode);
       if UpCase(lclass.gr_mp)<>'MANA_PLAYER_GENERIC' then
-        RGLog.Add('Add '+lclass.gr_mp+' for class MP please');
+        ScanGraph(ams,lclass.gr_mp,10);
+//        RGLog.Add('Add '+lclass.gr_mp+' for class MP please');
     end
     else if CompareWide(pcw,'HEALTH_GRAPH')=0 then
     begin
       lclass.gr_hp:=AsString(lnode);
       if UpCase(lclass.gr_hp)<>'HEALTH_PLAYER_GENERIC' then
-        RGLog.Add('Add '+lclass.gr_hp+' for class HP please');
+        ScanGraph(ams,lclass.gr_hp,10);
+//        RGLog.Add('Add '+lclass.gr_hp+' for class HP please');
     end
     else if CompareWide(pcw,'STAT_POINTS_PER_LEVEL')=0 then
     begin
       lclass.gr_st:=AsString(lnode);
       if UpCase(lclass.gr_st)<>'STAT_POINTS_PER_LEVEL' then
-        RGLog.Add('Add '+lclass.gr_st+' for class STAT please');
+        ScanGraph(ams,lclass.gr_st,1);
+//        RGLog.Add('Add '+lclass.gr_st+' for class STAT please');
     end
     else if CompareWide(pcw,'SKILL_POINTS_PER_LEVEL')=0 then
     begin
       lclass.gr_sk:=AsString(lnode);
       if UpCase(lclass.gr_sk)<>'SKILL_POINTS_PER_LEVEL' then
-        RGLog.Add('Add '+lclass.gr_sk+' for class SKILL please');
+        ScanGraph(ams,lclass.gr_sk,1);
+//        RGLog.Add('Add '+lclass.gr_sk+' for class SKILL please');
     end
     else if CompareWide(pcw,'SKILL_POINTS_PER_FAME_LEVEL')=0 then
     begin
       lclass.gr_fm:=AsString(lnode);
       if UpCase(lclass.gr_fm)<>'SKILL_POINTS_PER_FAME_LEVEL' then
-        RGLog.Add('Add '+lclass.gr_fm+' for class FAME please');
+        ScanGraph(ams,lclass.gr_fm,1);
+//        RGLog.Add('Add '+lclass.gr_fm+' for class FAME please');
     end;
 
   end;
@@ -196,6 +201,7 @@ function ProcessClasses(
           aparam:pointer):integer;
 var
   p:pointer;
+  ldir:string;
 begin
   result:=0;
 
@@ -205,8 +211,11 @@ begin
   
   if p<>nil then
   begin
-    {TODO: remove root dir from 'adir'}
-    if AddClassNode(aparam,p,adir+'/'+aname)<>0 then
+    if PModScanner(aparam)^.FRootLen>0 then
+      ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
+    else
+      ldir:=adir;
+    if AddClassNode(aparam,p,ldir+'/'+aname)<>0 then
       result:=1
     else
       RGLog.Add('can''t update '+aname);

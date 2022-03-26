@@ -1590,7 +1590,7 @@ begin
   FErrFile:='';
 
   {TODO: Skip TRANSLATIONS directory}
-  result:=RGScanData(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@self,nil)>0;
+  result:=MakeRGScan(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@self,nil)>0;
   if result then
   begin
     if ReadModInfo(PChar(afile), lmod) then

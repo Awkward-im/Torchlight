@@ -9,21 +9,22 @@ uses
   ,RGGlobal
   ;
 
-function ScanMovies  (ams:pointer):integer;
 function ScanGraph   (ams:pointer; const aname:string; amul:integer):integer;
 procedure LoadDefaultGraphs(ams:pointer);
 
 
-function ScanWardrobe(ams:pointer):integer;
-function ScanPets    (ams:pointer):integer;
-function ScanQuests  (ams:pointer):integer;
-function ScanMobs    (ams:pointer):integer;
-function ScanItems   (ams:pointer):integer;
-function ScanProps   (ams:pointer):integer;
-function ScanRecipes (ams:pointer):integer;
-function ScanStats   (ams:pointer):integer;
-function ScanSkills  (ams:pointer):integer;
-function ScanClasses (ams:pointer):integer;
+function ScanClasses  (ams:pointer):integer;
+function ScanInventory(ams:pointer):integer;
+function ScanItems    (ams:pointer):integer;
+function ScanMobs     (ams:pointer):integer;
+function ScanMovies   (ams:pointer):integer;
+function ScanPets     (ams:pointer):integer;
+function ScanProps    (ams:pointer):integer;
+function ScanQuests   (ams:pointer):integer;
+function ScanRecipes  (ams:pointer):integer;
+function ScanSkills   (ams:pointer):integer;
+function ScanStats    (ams:pointer):integer;
+function ScanWardrobe (ams:pointer):integer;
 
 
 function Prepare(const apath:string; out ams:pointer;
@@ -55,6 +56,7 @@ type
     FModMask :string;   // mod id mask (optimization)         | ' '+FModId+' '
     scan     :pointer;  // PScanObj from RGScan
     db       :PSQLite3;
+    FRootLen :integer;  // Root dir name length
   end;
 
 const
@@ -99,6 +101,7 @@ end;
 
 {$i scan_adds.inc}
 {$i scan_classes.inc}
+{$i scan_inventory.inc}
 {$i scan_items.inc}
 {$i scan_mobs.inc}
 {$i scan_movies.inc}
@@ -114,36 +117,38 @@ end;
 
 procedure ScanAll(ams:pointer);
 begin
-  ScanClasses (ams);
-  ScanSkills  (ams);
-  ScanItems   (ams);
-  ScanMobs    (ams);
-  ScanPets    (ams);
-  ScanQuests  (ams);
-  ScanStats   (ams);
-  ScanRecipes (ams);
-  ScanProps   (ams);
-  ScanWardrobe(ams);
-  ScanMovies  (ams);
-  ScanAdds    (ams);
+//  ScanAdds    (ams);
+  ScanClasses  (ams);
+  ScanInventory(ams);
+  ScanItems    (ams);
+  ScanMobs     (ams);
+  ScanMovies   (ams);
+  ScanPets     (ams);
+  ScanProps    (ams);
+  ScanQuests   (ams);
+  ScanRecipes  (ams);
+  ScanSkills   (ams);
+  ScanStats    (ams);
+  ScanWardrobe (ams);
 end;
 
 function CreateTables(ams:pointer):boolean;
 begin
-  result:=CreateModTable     (ams);
+  result:=CreateModTable      (ams);
 
-  result:=CreateAddsTable    (ams);
-  result:=CreateClassesTable (ams);
-  result:=CreateItemsTable   (ams);
-  result:=CreateMobsTable    (ams);
-  result:=CreateMoviesTable  (ams);
-  result:=CreatePetsTable    (ams);
-  result:=CreatePropsTable   (ams);
-  result:=CreateQuestsTable  (ams);
-  result:=CreateRecipesTable (ams);
-  result:=CreateSkillsTable  (ams);
-  result:=CreateStatsTable   (ams);
-  result:=CreateWardrobeTable(ams);
+  result:=CreateAddsTable     (ams);
+  result:=CreateClassesTable  (ams);
+  result:=CreateInventoryTable(ams);
+  result:=CreateItemsTable    (ams);
+  result:=CreateMobsTable     (ams);
+  result:=CreateMoviesTable   (ams);
+  result:=CreatePetsTable     (ams);
+  result:=CreatePropsTable    (ams);
+  result:=CreateQuestsTable   (ams);
+  result:=CreateRecipesTable  (ams);
+  result:=CreateSkillsTable   (ams);
+  result:=CreateStatsTable    (ams);
+  result:=CreateWardrobeTable (ams);
 end;
 
 function Prepare(
@@ -170,7 +175,7 @@ begin
     GetMem  (ams ,SizeOf(TModScanner));
     FillChar(ams^,SizeOf(TModScanner),0);
 
-    PrepareRGScan(lscan, apath, ['.DAT'], ams);
+    PModScanner(ams)^.FRootLen:=PrepareRGScan(lscan, apath, ['.DAT'], ams);
     if lscan<>nil then
     begin
 

@@ -56,24 +56,27 @@ begin
     else if CompareWide(pcw,'SCALE'                )=0 then lpet.scale   :=AsFloat (lnode)
     else if CompareWide(pcw,'ICON'                 )=0 then lpet.icon    :=ExtractFileNameOnly(AsString(lnode))
     else if CompareWide(pcw,'TEXTURE_OVERRIDE_LIST')=0 then lpet.textures:=GetChildCount(lnode)
-    {TODO: Add files by name (from MEDIA/GRAPHS/STATS)}
+
     else if CompareWide(pcw,'ARMOR_GRAPH')=0 then
     begin
       lpet.gr_armor:=AsString(lnode);
       if UpCase(lpet.gr_armor)<>'ARMOR_MINION_BYLEVEL' then
-        RGLog.Add('Add '+lpet.gr_armor+' for pet Armor please');
+        ScanGraph(ams,lpet.gr_armor,1);
+//        RGLog.Add('Add '+lpet.gr_armor+' for pet Armor please');
     end
     else if CompareWide(pcw,'DAMAGE_GRAPH')=0 then
     begin
       lpet.gr_dmg:=AsString(lnode);
       if UpCase(lpet.gr_dmg)<>'DAMAGE_MINION_BYLEVEL' then
-        RGLog.Add('Add '+lpet.gr_dmg+' for pet Damage please');
+        ScanGraph(ams,lpet.gr_dmg,1);
+//        RGLog.Add('Add '+lpet.gr_dmg+' for pet Damage please');
     end
     else if CompareWide(pcw,'HEALTH_GRAPH')=0 then
     begin
       lpet.gr_hp:=AsString(lnode);
       if UpCase(lpet.gr_hp)<>'HEALTH_MINION_BYLEVEL' then
-        RGLog.Add('Add '+lpet.gr_hp+' for pet HP please');
+        ScanGraph(ams,lpet.gr_hp,1);
+//        RGLog.Add('Add '+lpet.gr_hp+' for pet HP please');
     end
     else if CompareWide(pcw,'UNITTYPE')=0 then
     begin

@@ -21,9 +21,9 @@ var
   lnode:pointer;
   pcw:PWideChar;
   lid,lname,ltitle:string;
-  i,mask:integer;
+  i,lmask:integer;
 begin
-  mask:=0;
+  lmask:=0;
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
@@ -31,20 +31,20 @@ begin
     pcw:=GetNodeName(lnode);
     if CompareWide(pcw,'NAME')=0 then
     begin
-      mask:=mask or 1;
+      lmask:=lmask or 1;
       lname:=AsString(lnode);
     end
     else if CompareWide(pcw,'DISPLAYNAME')=0 then
     begin
-      mask:=mask or 2;
+      lmask:=lmask or 2;
       ltitle:=AsString(lnode);
     end
     else if CompareWide(pcw,'UNIT_GUID')=0 then
     begin
-      mask:=mask or 4;
+      lmask:=lmask or 4;
       lid:=AsString(lnode);
     end;
-    if mask=7 then break;
+    if lmask=7 then break;
   end;
 
   result:=AddMobToBase(ams,lid,lname,ltitle);

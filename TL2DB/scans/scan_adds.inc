@@ -4,7 +4,7 @@
 
 function ScanAdds(ams:pointer):integer;
 begin
-  result:=ScanGraph(ams,'',1);
+  result:=0;
 end;
 
 function CreateAddsTable(ams:pointer):boolean;
@@ -20,13 +20,6 @@ begin
       '  gooddesot TEXT,'+
       '  baddes    TEXT,'+
       '  baddesot  TEXT);');
-
-  if not IsTableExists(PModScanner(ams)^.db,'inventory') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
-      'CREATE TABLE inventory ('+
-      '  id          INTEGER,'+
-      '  name        TEXT,'+
-      '  iscontainer INTEGER (1));');
 
 {
   Good to add:

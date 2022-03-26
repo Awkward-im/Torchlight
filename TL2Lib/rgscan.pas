@@ -26,10 +26,11 @@ function MakeRGScan(
     actproc:TProcessProc=nil; aparam:pointer=nil;
     checkproc:TCheckNameProc=nil):integer;
 
-procedure PrepareRGScan(out aptr:pointer;
+// return length of Root dir name
+function PrepareRGScan(out aptr:pointer;
     const apath:string;
     aext:array of string;
-    aparam:pointer);
+    aparam:pointer):integer;
 
 procedure EndRGScan(aptr:pointer);
 
@@ -158,7 +159,7 @@ begin
       if (sr.Attr and faDirectory)=faDirectory then
       begin
         if (sr.Name<>'.') and (sr.Name<>'..') then
-          CycleDir(adir+DirectorySeparator+sr.Name);
+          CycleDir(adir+'/'+sr.Name);
       end
       else
       begin
@@ -175,7 +176,7 @@ begin
           else if (FActProc=nil) then inc(FCount)
           else
           begin
-            Assign(f,adir+DirectorySeparator+sr.Name);
+            Assign(f,adir+'/'+sr.Name);
             Reset(f);
             if IOResult=0 then
             begin
@@ -195,10 +196,10 @@ begin
 end;
 {$POP}
 
-procedure PrepareRGScan(out aptr:pointer;
+function PrepareRGScan(out aptr:pointer;
     const apath:string;
     aext:array of string;
-    aparam:pointer);
+    aparam:pointer):integer;
 var
   ldir:string;
 begin
@@ -214,6 +215,8 @@ begin
   end
   else
     Exit;
+
+  result:=Length(ldir);
 
   New(PScanObj(aptr));
 
@@ -240,7 +243,9 @@ function GetRGScan(aptr:pointer; const afile:string; out abuf:pointer):integer;
 var
   f:file of byte;
 begin
-  if aptr=nil then Exit(0);
+  result:=0;
+
+  if aptr=nil then Exit;
 
   if PScanObj(aptr)^.FMod.ver=verUnk then
   begin

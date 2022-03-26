@@ -181,6 +181,7 @@ function ProcessItems(
           aparam:pointer):integer;
 var
   p:pointer;
+  ldir:string;
   i:integer;
 begin
   result:=0;
@@ -190,9 +191,12 @@ begin
     p:=ParseDatMem(abuf);
   if p<>nil then
   begin
-    {TODO: remove root dir from 'adir'}
+    if PModScanner(aparam)^.FRootLen>0 then
+      ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
+    else
+      ldir:=adir;
     i:=AddItemNode(aparam,p,
-        adir+'/'+aname,
+        ldir+'/'+aname,
         Pos('MEDIA/UNITS/ITEMS/QUEST_ITEMS',adir)>0);
     if (i and 1)<>0 then RGLog.Add('No icon for '  +aname);
     if (i and 2)<>0 then RGLog.Add('can''t update '+aname);
