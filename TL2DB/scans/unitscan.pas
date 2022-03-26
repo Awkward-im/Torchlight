@@ -215,7 +215,12 @@ begin
 
       CopyToFile(db,TL2DataBase);
       sqlite3_close(db);
+{
+      FModId  :='';
+      FModMask:='';
+}
     end;
+    Finalize(PModScanner(ams)^);
 
     FreeMem(ams);
   end;
