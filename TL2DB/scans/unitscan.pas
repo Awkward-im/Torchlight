@@ -138,6 +138,7 @@ begin
 
   result:=CreateAddsTable     (ams);
   result:=CreateClassesTable  (ams);
+  result:=CreateGraphTable    (ams);
   result:=CreateInventoryTable(ams);
   result:=CreateItemsTable    (ams);
   result:=CreateMobsTable     (ams);

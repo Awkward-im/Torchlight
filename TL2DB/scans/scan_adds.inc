@@ -9,8 +9,6 @@ end;
 
 function CreateAddsTable(ams:pointer):boolean;
 begin
-  result:=CreateGraphTable (ams);
-
   if not IsTableExists(PModScanner(ams)^.db,'effects') then
     result:=ExecuteDirect(PModScanner(ams)^.db,
       'CREATE TABLE effects ('+
