@@ -99,18 +99,21 @@ var
 begin
   result:=0;
 
-  p:=ParseTextMem(abuf);
-  if p=nil then
-    p:=ParseDatMem(abuf);
-  
-  if p<>nil then
+  if asize>0 then
   begin
-    if AddPetNode(aparam,p) then
-      result:=1
-    else
-      RGLog.Add('can''t update '+aname);
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    
+    if p<>nil then
+    begin
+      if AddPetNode(aparam,p) then
+        result:=1
+      else
+        RGLog.Add('can''t update '+aname);
 
-    DeleteNode(p);
+      DeleteNode(p);
+    end;
   end;
 end;
 
@@ -121,10 +124,10 @@ begin
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS', @ProcessPets);
 end;
 
-function CreatePetsTable(ams:pointer):boolean;
+function CreatePetsTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'pets') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'pets') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE pets ('+
       '    id          INTEGER PRIMARY KEY,'+
       '    name        TEXT,'+

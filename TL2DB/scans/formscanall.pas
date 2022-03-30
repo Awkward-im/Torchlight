@@ -50,31 +50,71 @@ implementation
 
 uses
   rglogging,
+  rgscan,
   unitscan;
 
 resourcestring
   sDoTheScan      = 'Do tree scan?';
   sDoProcessScan  = 'Do you want to scan this directory?';
 
-procedure TfmScan.bbScanClick(Sender: TObject);
+{
+function DoCheck(const adir,aname:string; aparam:pointer):integer;
+var
+  lms:pointer;
 begin
+  result:=1;
+
+  if (UpCase(ExtractFileExt(aname))='.MOD') or
+     (UpCase(ExtractFileExt(aname))='.PAK')
+  then
+  begin
+    Prepare(aparam,adir+'/'+aname,lms);
+  end
+  else if (UpCase(aname)='MOD.DAT') then
+  begin
+    Prepare(aparam,adir,lms);
+  end
+  else
+    exit(0);
+
+  if lms<>nil then
+  begin
+    ScanAll(lms);
+    Finish(lms);
+  end
+  else
+    exit(0);
+
+end;
+}
+procedure TfmScan.bbScanClick(Sender: TObject);
+var
+  db,lms:pointer;
+begin
+{
+  RGOpenBase(db);
+  MakeRGScan(tvMain.Path,'',['.PAK','.MOD','.DAT'],nil,db,@DoCheck);
+  RGCloseBase(db);
+
+exit;
+}
   if MessageDlg(sDoTheScan,sDoProcessScan,mtConfirmation,[mbOk,mbCancel],0)<>mrOk then
     exit;
   memLog.Append('Preparing...');
-  if not PrepareScan(tvMain.Path) then exit;
+  if not Prepare(db,tvMain.Path,lms) then exit;
   memLog.Append('Ok, prepared!');
   RGLog.Clear;
 
   // Wardrobe
   memLog.Append('Go wardrobe!');
-  ScanWardrobe();
+  ScanWardrobe(lms);
   memLog.Append(RGLog.Text); RGLog.Clear;
 
   // Pets
   if cbPets.Checked then
   begin
     memLog.Append('Go pets!');
-    ScanPets();
+    ScanPets(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
@@ -82,7 +122,7 @@ begin
   if cbQuests.Checked then
   begin
     memLog.Append('Go quests!');
-    ScanQuests();
+    ScanQuests(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
@@ -90,7 +130,7 @@ begin
   if cbStats.Checked then
   begin
     memLog.Append('Go stats!');
-    ScanStats();
+    ScanStats(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
@@ -98,7 +138,7 @@ begin
   if cbRecipes.Checked then
   begin
     memLog.Append('Go recipes!');
-    ScanRecipes();
+    ScanRecipes(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
@@ -106,7 +146,7 @@ begin
   if cbMobs.Checked then
   begin
     memLog.Append('Go mobs!');
-    ScanMobs();
+    ScanMobs(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
@@ -114,7 +154,7 @@ begin
   if cbItems.Checked then
   begin
     memLog.Append('Go items!');
-    ScanItems();
+    ScanItems(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
@@ -122,7 +162,7 @@ begin
   if cbProps.Checked then
   begin
     memLog.Append('Go props!');
-    ScanProps();
+    ScanProps(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
@@ -130,7 +170,7 @@ begin
   if cbSkills.Checked then
   begin
     memLog.Append('Go skills!');
-    ScanSkills();
+    ScanSkills(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
@@ -138,14 +178,15 @@ begin
   if cbClasses.Checked then
   begin
     memLog.Append('Go classes!');
-    ScanClasses();
+    ScanClasses(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
   end;
 
   memLog.Append('Saving...');
-  FinishScan;
+  Finish(lms);
   RGLog.Clear;
   memLog.Append('Done!');
+
 end;
 
 procedure TfmScan.tvMainDblClick(Sender: TObject);

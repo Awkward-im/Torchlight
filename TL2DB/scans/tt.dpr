@@ -1,39 +1,44 @@
 ﻿uses unitscan,rgscan,sysutils;
 
 var
-  ms:pointer;
-{
-function DoProcess(
-          abuf:PByte; asize:integer;
-          const adir,aname:string;
-          aparam:pointer):integer;
-begin
-end;
-}
+  db:pointer;
+
 function DoCheck(const adir,aname:string; aparam:pointer):integer;
 var
   lms:pointer;
 begin
   result:=1;
+
   if (UpCase(ExtractFileExt(aname))='.MOD') then
   begin
-    Prepare(adir+'/'+aname,lms);
+    Prepare(db,adir+'/'+aname,lms);
   end
   else if (UpCase(aname)='MOD.DAT') then
   begin
-    Prepare(adir,lms);
+    Prepare(db,adir,lms);
   end
   else
     exit(0);
 
-  ScanClasses(lms);
-  Finish(lms);
+  if lms<>nil then
+  begin
+    ScanAll(lms);
+    Finish(lms);
+  end
+  else
+    exit(0);
+
 end;
 
-
 begin
-  MakeRGScan(ParamStr(1),'',['.MOD'],nil{@DoProcess},nil{param},@DoCheck);
-  
+{$if declared(UseHeapTrace)}
+  SetHeapTraceOutput('Trace.log');
+  HaltOnError := true;
+{$endif}
+
+  RGOpenBase(db);
+  MakeRGScan(ParamStr(1),'',['.PAK','.MOD','.DAT'],nil,nil,@DoCheck);
+  RGCloseBase(db);
 {  
   Prepare(ParamStr(1),ms);
 //  ScanMovies(ms);

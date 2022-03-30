@@ -12,6 +12,7 @@ uses
 function ScanGraph   (ams:pointer; const aname:string; amul:integer):integer;
 procedure LoadDefaultGraphs(ams:pointer);
 
+procedure ScanAll(ams:pointer);
 
 function ScanClasses  (ams:pointer):integer;
 function ScanInventory(ams:pointer):integer;
@@ -27,9 +28,16 @@ function ScanStats    (ams:pointer):integer;
 function ScanWardrobe (ams:pointer):integer;
 
 
-function Prepare(const apath:string; out ams:pointer;
+function Prepare(
+         adb:PSQLite3;
+         const apath:string;
+         out ams:pointer;
          aupdateall:boolean=false):boolean;
+
 procedure Finish(ams:pointer);
+
+function  RGOpenBase (out adb:PSQLite3):boolean;
+procedure RGCloseBase(    adb:PSQLite3);
 
 
 implementation
@@ -117,6 +125,7 @@ end;
 
 procedure ScanAll(ams:pointer);
 begin
+  LoadDefaultGraphs(ams);
 //  ScanAdds    (ams);
   ScanClasses  (ams);
   ScanInventory(ams);
@@ -132,47 +141,47 @@ begin
   ScanWardrobe (ams);
 end;
 
-function CreateTables(ams:pointer):boolean;
-begin
-  result:=CreateModTable      (ams);
-
-  result:=CreateAddsTable     (ams);
-  result:=CreateClassesTable  (ams);
-  result:=CreateGraphTable    (ams);
-  result:=CreateInventoryTable(ams);
-  result:=CreateItemsTable    (ams);
-  result:=CreateMobsTable     (ams);
-  result:=CreateMoviesTable   (ams);
-  result:=CreatePetsTable     (ams);
-  result:=CreatePropsTable    (ams);
-  result:=CreateQuestsTable   (ams);
-  result:=CreateRecipesTable  (ams);
-  result:=CreateSkillsTable   (ams);
-  result:=CreateStatsTable    (ams);
-  result:=CreateWardrobeTable (ams);
-end;
 
 function Prepare(
+    adb:PSQLite3;
     const apath:string;
     out ams:pointer;
     aupdateall:boolean=false):boolean;
 var
   lmod:TTL2ModInfo;
   lscan:pointer;
+  lmodid:Int64;
+  lver:integer;
 begin
   result:=false;
   ams:=nil;
+  lver:=verUnk;
 
   if (apath[Length(apath)] in ['/','\']) or DirectoryExists(apath) then
-    result:=LoadModConfiguration(PChar(apath+'\MOD.DAT'),lmod)
+  begin
+    result:=LoadModConfiguration(PChar(apath+'\MOD.DAT'),lmod);
+    if result then lver:=verTL2Mod;
+  end
   else if FileExists(apath) then
   begin
-    result:=ReadModInfo(PChar(apath),lmod);
-    RGTags.Import('RGDICT','TEXT');
+    lver:=GetPAKVersion(apath);
+    if      lver=verTL2Mod then result:=ReadModInfo(PChar(apath),lmod)
+    else if lver=verTL2    then result:=true;
+
+    if result then RGTags.Import('RGDICT','TEXT'); //!!!!!
   end;
 
   if result then
   begin
+    if lver=verTL2Mod then
+    begin
+      AddTheMod(adb,lmod);
+      lmodid:=lmod.modid;
+      ClearModInfo(lmod);
+    end
+    else
+      lmodid:=0;
+
     GetMem  (ams ,SizeOf(TModScanner));
     FillChar(ams^,SizeOf(TModScanner),0);
 
@@ -182,23 +191,17 @@ begin
 
       with PModScanner(ams)^ do
       begin
+        db       :=adb;
         scan     :=lscan;
         FDoUpdate:=aupdateall;
-
-        result:=sqlite3_open(':memory:',@db)=SQLITE_OK;
-        if result then
-        begin
-          if CopyFromFile(db,TL2DataBase)<>SQLITE_OK then
-            result:=CreateTables(ams);
-          if result then AddTheMod(ams,lmod);
-        end;
+        Str(lmodid,FModId);
+        FModMask :=' '+FModId+' ';
       end;
 
-    end;
-    ClearModInfo(lmod);
-    if not result then
+    end
+    else
     begin
-      EndRGScan(lscan);
+//      EndRGScan(lscan);
       FreeMem(ams);
       ams:=nil;
     end;
@@ -212,9 +215,6 @@ begin
     with PModScanner(ams)^ do
     begin
       EndRGScan(scan);
-
-      CopyToFile(db,TL2DataBase);
-      sqlite3_close(db);
 {
       FModId  :='';
       FModMask:='';
@@ -223,7 +223,43 @@ begin
     Finalize(PModScanner(ams)^);
 
     FreeMem(ams);
+    ams:=nil;
   end;
+end;
+
+
+function CreateTables(adb:PSQLite3):boolean;
+begin
+  result:=CreateModTable      (adb);
+
+  result:=CreateAddsTable     (adb);
+  result:=CreateClassesTable  (adb);
+  result:=CreateGraphTable    (adb);
+  result:=CreateInventoryTable(adb);
+  result:=CreateItemsTable    (adb);
+  result:=CreateMobsTable     (adb);
+  result:=CreateMoviesTable   (adb);
+  result:=CreatePetsTable     (adb);
+  result:=CreatePropsTable    (adb);
+  result:=CreateQuestsTable   (adb);
+  result:=CreateRecipesTable  (adb);
+  result:=CreateSkillsTable   (adb);
+  result:=CreateStatsTable    (adb);
+  result:=CreateWardrobeTable (adb);
+end;
+
+function RGOpenBase(out adb:PSQLite3):boolean;
+begin
+  result:=sqlite3_open(':memory:',@adb)=SQLITE_OK;
+  if result then
+    if CopyFromFile(adb,TL2DataBase)<>SQLITE_OK then
+      result:=CreateTables(adb);
+end;
+
+procedure RGCloseBase(adb:PSQLite3);
+begin
+  CopyToFile(adb,TL2DataBase);
+  sqlite3_close(adb);
 end;
 
 {%ENDREGION}

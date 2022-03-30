@@ -6,6 +6,8 @@ interface
 
 const
   TL2DataBase = 'tl2db2.db';
+  TL2EditMod  = 'EDITORMOD.MOD';
+  TL2ModData  = 'MOD.DAT';
 
 //--- Constants
 

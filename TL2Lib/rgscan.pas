@@ -72,10 +72,12 @@ type
 
 procedure TScanObj.Free;
 begin
+
   if FMod.ver<>verUnk then
     FreePAKInfo(FMod);
 
-  FreeMem(FDir);
+  SetLength(FExts,0);
+  FRoot:='';
 end;
 
 function TScanObj.CheckExt(const afile:string):boolean;
@@ -125,18 +127,21 @@ begin
           if (FActProc=nil) then inc(FCount)
           else
           begin
-            lsize:=UnpackFile(
-                FMod,
+            if (FMod.Entries[j].Files[i].size_s>0) and
+               (FMod.Entries[j].Files[i].offset>0) then
+            begin
+              lsize:=UnpackFile(
+                  FMod,
+                  FMod.Entries[j].Name,
+                  FMod.Entries[j].Files[i].name,
+                  lbuf);
+              if (FActProc(lbuf,lsize,
                 FMod.Entries[j].Name,
                 FMod.Entries[j].Files[i].name,
-                lbuf);
+                FParam)>0) then inc(FCount);
 
-            if (FActProc(lbuf,lsize,
-              FMod.Entries[j].Name,
-              FMod.Entries[j].Files[i].name,
-              FParam)>0) then inc(FCount);
-
-            FreeMem(lbuf);
+              FreeMem(lbuf);
+            end;
           end;
         end;
       end;
@@ -163,15 +168,14 @@ begin
       end
       else
       begin
-        {TODO: option to NOT process mod files}
         if CheckExt(sr.Name) and
            ((FCheckProc=nil) or (FCheckProc(adir,sr.Name,FParam)>0)) then
         begin
           if Pos('.MOD',UpCase(sr.Name))=(Length(sr.Name)-3) then
           begin
-            inc(FCount,MakeRGScan(adir+DirectorySeparator+sr.Name,'',FExts,
-                FActProc,FParam,FCheckProc));
-//            ScanMod(adir+DirectorySeparator+sr.Name)
+            if UpCase(sr.Name)<>TL2EditMod then //!!!!!!!!!!
+              inc(FCount,MakeRGScan(adir+'/'+sr.Name,'',FExts,
+                  FActProc,FParam,FCheckProc));
           end
           else if (FActProc=nil) then inc(FCount)
           else
@@ -205,7 +209,8 @@ var
 begin
   aptr:=nil;
 
-  if apath[Length(apath)] in ['/','\'] then
+  if apath='' then Exit
+  else if apath[Length(apath)] in ['/','\'] then
     ldir:=Copy(apath,1,Length(apath)-1)
   else if DirectoryExists(apath) then
     ldir:=apath
@@ -218,7 +223,9 @@ begin
 
   result:=Length(ldir);
 
-  New(PScanObj(aptr));
+//  New(PScanObj(aptr));
+  GetMem  (aptr ,SizeOf(TScanObj));
+  FillChar(aptr^,SizeOf(TScanObj),0);
 
   if ldir='' then
     GetPAKInfo(apath,PScanObj(aptr)^.FMod,piParse)
@@ -233,8 +240,12 @@ end;
 
 procedure EndRGScan(aptr:pointer);
 begin
-  PScanObj(aptr)^.Free;
-  Dispose(PScanObj(aptr));
+  if aptr<>nil then
+  begin
+    PScanObj(aptr)^.Free;
+    FreeMem(aptr);
+//    Dispose(PScanObj(aptr));
+  end;
 end;
 
 {$PUSH}
@@ -278,10 +289,17 @@ begin
   PScanObj(aptr)^.FDir      :=StrToWide(apath);
 
   if PScanObj(aptr)^.FMod.ver=verUnk then
-    PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot+DirectorySeparator+apath)
+  begin
+    if apath='' then
+      PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot)
+    else
+      PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot+DirectorySeparator+apath);
+  end
   else
     PScanObj(aptr)^.ScanMod();
   
+  FreeMem(PScanObj(aptr)^.FDir);
+
   result:=PScanObj(aptr)^.FCount;
 end;
 
@@ -294,8 +312,13 @@ var
   lptr:pointer;
 begin
   PrepareRGScan(lptr,aroot,aext,aparam);
-  result:=DoRGScan(lptr,adir,actproc,checkproc);
-  EndRGScan(lptr);
+  if lptr<>nil then
+  begin
+    result:=DoRGScan(lptr,adir,actproc,checkproc);
+    EndRGScan(lptr);
+  end
+  else
+    result:=0;
 end;
 
 end.

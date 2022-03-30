@@ -6,7 +6,7 @@ object fmScan: TfmScan
   Caption = 'Scan all'
   ClientHeight = 381
   ClientWidth = 695
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object pnlTree: TPanel
     Left = 0
     Height = 381
@@ -47,7 +47,7 @@ object fmScan: TfmScan
       Left = 24
       Height = 19
       Top = 48
-      Width = 42
+      Width = 40
       Caption = 'Pets'
       TabOrder = 0
     end
@@ -55,7 +55,7 @@ object fmScan: TfmScan
       Left = 24
       Height = 19
       Top = 176
-      Width = 56
+      Width = 54
       Caption = 'Quests'
       TabOrder = 1
     end
@@ -63,7 +63,7 @@ object fmScan: TfmScan
       Left = 104
       Height = 19
       Top = 112
-      Width = 45
+      Width = 43
       Caption = 'Stats'
       TabOrder = 2
     end
@@ -71,7 +71,7 @@ object fmScan: TfmScan
       Left = 104
       Height = 19
       Top = 136
-      Width = 60
+      Width = 58
       Caption = 'Recipes'
       TabOrder = 3
     end
@@ -79,7 +79,7 @@ object fmScan: TfmScan
       Left = 24
       Height = 19
       Top = 72
-      Width = 50
+      Width = 48
       Caption = 'Mobs'
       TabOrder = 4
     end
@@ -87,7 +87,7 @@ object fmScan: TfmScan
       Left = 104
       Height = 19
       Top = 48
-      Width = 49
+      Width = 47
       Caption = 'Items'
       TabOrder = 5
     end
@@ -95,7 +95,7 @@ object fmScan: TfmScan
       Left = 104
       Height = 19
       Top = 72
-      Width = 50
+      Width = 48
       Caption = 'Props'
       TabOrder = 6
     end
@@ -103,7 +103,7 @@ object fmScan: TfmScan
       Left = 24
       Height = 19
       Top = 112
-      Width = 46
+      Width = 44
       Caption = 'Skills'
       TabOrder = 7
     end
@@ -111,14 +111,14 @@ object fmScan: TfmScan
       Left = 24
       Height = 19
       Top = 136
-      Width = 58
+      Width = 56
       Caption = 'Classes'
       TabOrder = 8
     end
     object bbScan: TBitBtn
       Left = 24
       Height = 30
-      Top = 264
+      Top = 328
       Width = 75
       Caption = 'Scan'
       Kind = bkRetry
@@ -128,8 +128,8 @@ object fmScan: TfmScan
     object cbUpdateAll: TCheckBox
       Left = 24
       Height = 19
-      Top = 224
-      Width = 99
+      Top = 296
+      Width = 97
       Caption = 'Update All Info'
       TabOrder = 10
     end

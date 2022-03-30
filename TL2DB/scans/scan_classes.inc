@@ -204,23 +204,25 @@ var
   ldir:string;
 begin
   result:=0;
-
-  p:=ParseTextMem(abuf);
-  if p=nil then
-    p:=ParseDatMem(abuf);
-  
-  if p<>nil then
+  if asize>0 then
   begin
-    if PModScanner(aparam)^.FRootLen>0 then
-      ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
-    else
-      ldir:=adir;
-    if AddClassNode(aparam,p,ldir+'/'+aname)<>0 then
-      result:=1
-    else
-      RGLog.Add('can''t update '+aname);
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    
+    if p<>nil then
+    begin
+      if PModScanner(aparam)^.FRootLen>0 then
+        ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
+      else
+        ldir:=adir;
+      if AddClassNode(aparam,p,ldir+'/'+aname)<>0 then
+        result:=1
+      else
+        RGLog.Add('can''t update '+aname);
 
-    DeleteNode(p);
+      DeleteNode(p);
+    end;
   end;
 end;
 
@@ -229,10 +231,10 @@ begin
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/PLAYERS', @ProcessClasses);
 end;
 
-function CreateClassesTable(ams:pointer):boolean;
+function CreateClassesTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'classes') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'classes') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE classes ('+
       '    id          INTEGER PRIMARY KEY,'+
       '    name        TEXT,'+

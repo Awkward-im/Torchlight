@@ -21,8 +21,8 @@ type
     offMan :DWord;
   end;
 
-function ReadModInfo    (fname:PChar   ; out   amod:TTL2ModInfo):boolean; export;
-function ReadModInfoBuf (abuf:PByte    ; out   amod:TTL2ModInfo):boolean;
+function ReadModInfo    (fname:PChar   ; var   amod:TTL2ModInfo):boolean; export;
+function ReadModInfoBuf (abuf:PByte    ; var   amod:TTL2ModInfo):boolean;
 function WriteModInfo   (fname:PChar   ; const amod:TTL2ModInfo):integer; export;
 function WriteModInfo   (out abuf:PByte; const amod:TTL2ModInfo):integer;
 function WriteModInfoBuf(    abuf:PByte; const amod:TTL2ModInfo):integer;
@@ -145,7 +145,7 @@ begin
   end;
 end;
 
-function ReadModInfoBuf(abuf:PByte; out amod:TTL2ModInfo):boolean;
+function ReadModInfoBuf(abuf:PByte; var amod:TTL2ModInfo):boolean;
 var
   mt:PTL2ModTech;
   i,lcnt:integer;
@@ -228,7 +228,7 @@ begin
   end;
 end;
 
-function ReadModInfo(fname:PChar; out amod:TTL2ModInfo):boolean;
+function ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean;
 var
   buf:array [0..16383] of byte;
   f:file of byte;

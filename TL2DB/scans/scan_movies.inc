@@ -10,8 +10,9 @@ begin
   lmodid:=CheckForMod(ams,'movies', sid, PModScanner(ams)^.FModId);
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO movies (id, name, title, path, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(apath)+', '+lmodid+')';
+    lSQL:='REPLACE INTO movies (id, name, title, path, views, modid) VALUES ('+
+        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(apath)+
+        ', '+IntToStr(aviews)+', '+lmodid+')';
 
     result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
   end;
@@ -31,7 +32,8 @@ begin
   begin
     lnode:=GetChild(anode,i); // 'MOVIE'
     ltitle:='';
-    lid:=-1;
+    lid   :=-1;
+    lviews:=1;
 
     for j:=0 to GetChildCount(lnode)-1 do
     begin
@@ -71,10 +73,10 @@ begin
   end;
 end;
 
-function CreateMoviesTable(ams:pointer):boolean;
+function CreateMoviesTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'movies') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'movies') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE movies ('+
       '  id    INTEGER     PRIMARY KEY,'+
       '  name  TEXT,'+

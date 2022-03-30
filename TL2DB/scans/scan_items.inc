@@ -186,22 +186,25 @@ var
 begin
   result:=0;
 
-  p:=ParseTextMem(abuf);
-  if p=nil then
-    p:=ParseDatMem(abuf);
-  if p<>nil then
+  if asize>0 then
   begin
-    if PModScanner(aparam)^.FRootLen>0 then
-      ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
-    else
-      ldir:=adir;
-    i:=AddItemNode(aparam,p,
-        ldir+'/'+aname,
-        Pos('MEDIA/UNITS/ITEMS/QUEST_ITEMS',adir)>0);
-    if (i and 1)<>0 then RGLog.Add('No icon for '  +aname);
-    if (i and 2)<>0 then RGLog.Add('can''t update '+aname);
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    if p<>nil then
+    begin
+      if PModScanner(aparam)^.FRootLen>0 then
+        ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
+      else
+        ldir:=adir;
+      i:=AddItemNode(aparam,p,
+          ldir+'/'+aname,
+          Pos('MEDIA/UNITS/ITEMS/QUEST_ITEMS',adir)>0);
+      if (i and 1)<>0 then RGLog.Add('No icon for '  +aname);
+      if (i and 2)<>0 then RGLog.Add('can''t update '+aname);
 
-    DeleteNode(p);
+      DeleteNode(p);
+    end;
   end;
 end;
 
@@ -210,10 +213,10 @@ begin
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/ITEMS', @ProcessItems);
 end;
 
-function CreateItemsTable(ams:pointer):boolean;
+function CreateItemsTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'items') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'items') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE items ('+
       '    id       INTEGER     PRIMARY KEY,'+
       '    name     TEXT,'+

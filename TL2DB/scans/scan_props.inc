@@ -51,18 +51,21 @@ var
 begin
   result:=0;
 
-  p:=ParseTextMem(abuf);
-  if p=nil then
-    p:=ParseDatMem(abuf);
-  
-  if p<>nil then
+  if asize>0 then
   begin
-    if AddPropNode(aparam,p,Pos('MEDIA/UNITS/PROPS/QUESTPROPS',adir)>0) then
-      result:=1
-    else
-      RGLog.Add('can''t update '+aname);
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    
+    if p<>nil then
+    begin
+      if AddPropNode(aparam,p,Pos('MEDIA/UNITS/PROPS/QUESTPROPS',adir)>0) then
+        result:=1
+      else
+        RGLog.Add('can''t update '+aname);
 
-    DeleteNode(p);
+      DeleteNode(p);
+    end;
   end;
 end;
 
@@ -71,10 +74,10 @@ begin
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/PROPS', @ProcessProps);
 end;
 
-function CreatePropsTable(ams:pointer):boolean;
+function CreatePropsTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'props') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'props') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE props ('+
       '    id    INTEGER     PRIMARY KEY,'+
       '    name  TEXT,'+

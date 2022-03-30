@@ -54,50 +54,43 @@ begin
 end;
 
 
-function AddTheMod(ams:pointer; const amodinfo:TTL2ModInfo):boolean;
+function AddTheMod(adb:PSQLite3; const amodinfo:TTL2ModInfo):boolean;
 var
-  lSQL:string;
+  lmodid,lSQL:string;
   vm:pointer;
   lver:integer;
 begin
-  result:=false;
-
-  with PModScanner(ams)^ do
+  Str(amodinfo.modid,lmodid);
+  lSQL:='SELECT version FROM Mods WHERE id='+lmodid;
+  lver:=0;
+  if sqlite3_prepare_v2(adb,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
   begin
-    Str(amodinfo.modid,FModId);
-    FModMask:=' '+FModId+' ';
-    
-    lSQL:='SELECT version FROM Mods WHERE id='+FModId;
-    lver:=0;
-    if sqlite3_prepare_v2(PModScanner(ams)^.db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
-    begin
-      if sqlite3_step(vm)=SQLITE_ROW then
-        lver:=sqlite3_column_int(vm,0);
-      sqlite3_finalize(vm);
-    end;
-
-    if lver<>0 then
-    begin
-      if amodinfo.modver<=lver then exit(true);
-      lSQL:='UPDATE Mods SET version='+IntToStr(amodinfo.modver)+' WHERE id='+FModId;
-    end
-    else
-    begin
-      lSQL:='INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
-            ' VALUES ('+FModId              +', '+FixedText(amodinfo.title  )+
-            ', '+IntToStr (amodinfo.modver )+', '+IntToStr (amodinfo.gamever)+
-            ', '+FixedText(amodinfo.author )+', '+FixedText(amodinfo.descr)+
-            ', '+FixedText(amodinfo.website)+', '+FixedText(amodinfo.download)+')';
-    end;
-    result:=ExecuteDirect(db,lSQL);
+    if sqlite3_step(vm)=SQLITE_ROW then
+      lver:=sqlite3_column_int(vm,0);
+    sqlite3_finalize(vm);
   end;
+
+  if lver<>0 then
+  begin
+    if amodinfo.modver<=lver then exit(true);
+    lSQL:='UPDATE Mods SET version='+IntToStr(amodinfo.modver)+' WHERE id='+lmodid;
+  end
+  else
+  begin
+    lSQL:='INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
+          ' VALUES ('+lmodid              +', '+FixedText(amodinfo.title  )+
+          ', '+IntToStr (amodinfo.modver )+', '+IntToStr (amodinfo.gamever)+
+          ', '+FixedText(amodinfo.author )+', '+FixedText(amodinfo.descr)+
+          ', '+FixedText(amodinfo.website)+', '+FixedText(amodinfo.download)+')';
+  end;
+  result:=ExecuteDirect(adb,lSQL);
 end;
 
-function CreateModTable(ams:pointer):boolean;
+function CreateModTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'mods') then
+  if not IsTableExists(adb,'mods') then
   begin
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+    result:=ExecuteDirect(adb,
       'CREATE TABLE mods ('+
       '    id       INTEGER     PRIMARY KEY,'+
       '    title    TEXT,'+
@@ -109,13 +102,14 @@ begin
       '    download TEXT,'+
       '    tags     TEXT );');
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+    result:=ExecuteDirect(adb,
       'INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
             ' VALUES (0, ''Torchlight 2'', 0, 281582351482885, ''Runic Games'''+
             ', ''Torchlight 2 game (without mods)'', NULL, NULL);');
-
+{!!!!!!!!!!!!!!
     PModScanner(ams)^.FModId  :='0';
     PModScanner(ams)^.FModMask:=' 0 ';
+}
   end;
 end;
 

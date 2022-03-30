@@ -71,18 +71,21 @@ var
 begin
   result:=0;
 
-  p:=ParseTextMem(abuf);
-  if p=nil then
-    p:=ParseDatMem(abuf);
-  
-  if p<>nil then
+  if asize>0 then
   begin
-    i:=AddRecipeNode(aparam,p);
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    
+    if p<>nil then
+    begin
+      i:=AddRecipeNode(aparam,p);
 
-    if      i=0 then RGLog.Add('can''t update '+aname)
-    else if i<0 then RGLog.Add(' don''t added '+aname);
+      if      i=0 then RGLog.Add('can''t update '+aname)
+      else if i<0 then RGLog.Add(' don''t added '+aname);
 
-    DeleteNode(p);
+      DeleteNode(p);
+    end;
   end;
 end;
 
@@ -91,10 +94,10 @@ begin
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/RECIPES', @ProcessRecipes);
 end;
 
-function CreateRecipesTable(ams:pointer):boolean;
+function CreateRecipesTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'recipes') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'recipes') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE recipes ('+
       '    id    INTEGER PRIMARY KEY,'+
       '    name  TEXT,'+

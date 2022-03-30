@@ -77,10 +77,10 @@ begin
   end;
 end;
 
-function CreateWardrobeTable(ams:pointer):boolean;
+function CreateWardrobeTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'wardrobe') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'wardrobe') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE wardrobe ('+
       '    id     INTEGER PRIMARY KEY,'+
       '    name   TEXT,'+

@@ -7,10 +7,10 @@ begin
   result:=0;
 end;
 
-function CreateAddsTable(ams:pointer):boolean;
+function CreateAddsTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'effects') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'effects') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE effects ('+
       '  id        INTEGER,'+
       '  name      TEXT,'+

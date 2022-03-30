@@ -131,18 +131,21 @@ var
 begin
   result:=0;
 
-  p:=ParseTextMem(abuf);
-  if p=nil then
-    p:=ParseDatMem(abuf);
-  
-  if p<>nil then
+  if asize>0 then
   begin
-    if AddSkillNode(aparam,p,Pos('MEDIA/SKILLS/SHARED',adir)>0) then
-      result:=1
-    else
-      RGLog.Add('can''t update '+aname);
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    
+    if p<>nil then
+    begin
+      if AddSkillNode(aparam,p,Pos('MEDIA/SKILLS/SHARED',adir)>0) then
+        result:=1
+      else
+        RGLog.Add('can''t update '+aname);
 
-    DeleteNode(p);
+      DeleteNode(p);
+    end;
   end;
 end;
 
@@ -151,10 +154,10 @@ begin
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/SKILLS', @ProcessSkills);
 end;
 
-function CreateSkillsTable(ams:pointer):boolean;
+function CreateSkillsTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'skills') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'skills') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE skills ('+
       '    id       INTEGER     PRIMARY KEY,'+
       '    name     TEXT,'+

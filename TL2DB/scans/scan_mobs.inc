@@ -59,18 +59,21 @@ var
 begin
   result:=0;
 
-  p:=ParseTextMem(abuf);
-  if p=nil then
-    p:=ParseDatMem(abuf);
-  
-  if p<>nil then
+  if asize>0 then
   begin
-    if AddMobNode(aparam,p) then
-      result:=1
-    else
-      RGLog.Add('can''t update '+aname);
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    
+    if p<>nil then
+    begin
+      if AddMobNode(aparam,p) then
+        result:=1
+      else
+        RGLog.Add('can''t update '+aname);
 
-    DeleteNode(p);
+      DeleteNode(p);
+    end;
   end;
 end;
 
@@ -90,10 +93,10 @@ begin
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS', @ProcessMobs, @CheckNameMobs);
 end;
 
-function CreateMobsTable(ams:pointer):boolean;
+function CreateMobsTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'mobs') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'mobs') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE mobs ('+
       '    id    INTEGER PRIMARY KEY,'+
       '    name  TEXT,'+

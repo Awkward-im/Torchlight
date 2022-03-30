@@ -53,16 +53,19 @@ var
 begin
   result:=0;
 
-  p:=ParseTextMem(abuf);
-  if p=nil then
-    p:=ParseDatMem(abuf);
-  
-  if p<>nil then
+  if asize>0 then
   begin
-    if not AddStatNode(aparam,p) then
-      RGLog.Add('can''t update '+aname);
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    
+    if p<>nil then
+    begin
+      if not AddStatNode(aparam,p) then
+        RGLog.Add('can''t update '+aname);
 
-    DeleteNode(p);
+      DeleteNode(p);
+    end;
   end;
 end;
 
@@ -71,10 +74,10 @@ begin
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/STATS', @ProcessStats);
 end;
 
-function CreateStatsTable(ams:pointer):boolean;
+function CreateStatsTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'stats') then
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+  if not IsTableExists(adb,'stats') then
+    result:=ExecuteDirect(adb,
       'CREATE TABLE stats ('+
       '    id    INTEGER     PRIMARY KEY,'+
       '    name  TEXT,'+

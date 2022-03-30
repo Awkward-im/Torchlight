@@ -119,18 +119,18 @@ begin
   ScanGraph(ams,'SKILLTIER7_PASSIVE',1);
 end;
 
-function CreateGraphTable(ams:pointer):boolean;
+function CreateGraphTable(adb:PSQLite3):boolean;
 begin
-  if not IsTableExists(PModScanner(ams)^.db,'graph') then
+  if not IsTableExists(adb,'graph') then
   begin
-    result:=ExecuteDirect(PModScanner(ams)^.db,
+    result:=ExecuteDirect(adb,
       'CREATE TABLE graph ('+
       '  id    INTEGER PRIMARY KEY AUTOINCREMENT,'+
       '  name  TEXT,'+
       '  value TEXT,'+
       '  modid TEXT);');
 
-    LoadDefaultGraphs(ams);
+//!!!!!!!!!!!!!    LoadDefaultGraphs(ams);
   end;
 end;
 {

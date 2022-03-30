@@ -25,10 +25,11 @@ const
   piParse     = 1; // TL2 MOD info, MAN content
   piFullParse = 2; // with packed/unpacked file size
 
-function  GetPAKInfo (const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
-procedure FreePAKInfo(var   ainfo:TPAKInfo);
+function  GetPAKVersion(const fname:string):integer;
+function  GetPAKInfo   (const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
+procedure FreePAKInfo  (var   ainfo:TPAKInfo);
 {$IFDEF DEBUG}
-function  DumpPAKInfo(const ainfo:TPAKInfo):string;
+function  DumpPAKInfo  (const ainfo:TPAKInfo):string;
 {$ENDIF}
 
 // next function are for TL2 PAK part only
@@ -195,6 +196,14 @@ begin
 end;
 {$POP}
 
+function GetPAKVersion(const fname:string):integer;
+var
+  linfo:TPAKInfo;
+begin
+  result:=GetBasePAKInfo(fname,linfo);
+  FreePAKInfo(linfo);
+end;
+
 function GetCommonPAKInfo(const fname:string; var ainfo:TPAKInfo):boolean;
 var
   f:file of byte;
@@ -298,13 +307,13 @@ end;
 }
 function GetPAKInfo(const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
 begin
-  GetBasePAKInfo(fname,ainfo);
+  result:=GetBasePAKInfo(fname,ainfo)<>verUnk;
 
-  if aparse=piNoParse then exit(true);
+  if aparse=piNoParse then exit;
 
-  GetCommonPAKInfo(fname,ainfo);
+  result:=GetCommonPAKInfo(fname,ainfo);
   
-  if (aparse=piParse) then exit(true);
+  if (aparse=piParse) then exit;
   if (ainfo.fsize=0 ) then exit(false);
 
   result:=GetPAKSizes(fname,ainfo);
@@ -317,27 +326,35 @@ var
 begin
   FreeMem(ainfo.root);
 
-  for i:=0 to High(ainfo.Entries) do
+  if Length(ainfo.Entries)>0 then
   begin
-    FreeMem(ainfo.Entries[i].name);
-    for j:=0 to High(ainfo.Entries[i].Files) do
+    for i:=0 to High(ainfo.Entries) do
     begin
-      FreeMem(ainfo.Entries[i].Files[j].name);
+      FreeMem(ainfo.Entries[i].name);
+      for j:=0 to High(ainfo.Entries[i].Files) do
+      begin
+        FreeMem(ainfo.Entries[i].Files[j].name);
+        FreeMem(ainfo.Entries[i].Files[j].nametxt);
+      end;
+      SetLength(ainfo.Entries[i].Files,0);
     end;
-    SetLength(ainfo.Entries[i].Files,0);
+    SetLength(ainfo.Entries,0);
   end;
-  SetLength(ainfo.Entries,0);
 
-  for i:=0 to High(ainfo.Deleted) do
+  if Length(ainfo.Deleted)>0 then
   begin
-    FreeMem(ainfo.Deleted[i].name);
-    for j:=0 to High(ainfo.Deleted[i].Files) do
+    for i:=0 to High(ainfo.Deleted) do
     begin
-      FreeMem(ainfo.Deleted[i].Files[j].name);
+      FreeMem(ainfo.Deleted[i].name);
+      for j:=0 to High(ainfo.Deleted[i].Files) do
+      begin
+        FreeMem(ainfo.Deleted[i].Files[j].name);
+        FreeMem(ainfo.Entries[i].Files[j].nametxt);
+      end;
+      SetLength(ainfo.Deleted[i].Files,0);
     end;
-    SetLength(ainfo.Deleted[i].Files,0);
+    SetLength(ainfo.Deleted,0);
   end;
-  SetLength(ainfo.Deleted,0);
 
   ClearModInfo(ainfo.modinfo);
 
