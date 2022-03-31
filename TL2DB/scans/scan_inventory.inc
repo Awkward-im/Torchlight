@@ -3,13 +3,31 @@
 
 function AddInventoryToBase(ams:pointer; aId:UInt32; const aname:string; isContainer:boolean):boolean;
 var
-  lcont,lSQL:string;
+  vm:pointer;
+  lid,lcont,lSQL:string;
+  lupdate:boolean;
 begin
   if isContainer then lcont:='1' else lcont:='0';
-  lSQL:='REPLACE INTO inventory (id, name, isContainer) VALUES ('+
-        IntToStr(aid)+', '+FixedText(aname)+', '+lcont+')';
 
-  result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
+  Str(aId,lid);
+  lupdate:=true;
+  lSQL:='SELECT COUNT(*) FROM inventory '+
+        'WHERE (id='+lid+') AND (name='''+aname+''') AND (isContaner='+lcont+')';
+  if sqlite3_prepare_v2(PModScanner(ams)^.db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+      lupdate:=sqlite3_column_int(vm,0)>0;
+    sqlite3_finalize(vm);
+  end;
+
+  if lupdate then
+  begin
+    lSQL:='REPLACE INTO inventory (id, name, isContainer) VALUES ('+
+          lid+', '+FixedText(aname)+', '+lcont+')';
+    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
+  end
+  else
+    result:=false;
 end;
 
 function AddInventoryNode(ams:pointer; anode:pointer; isContainer:boolean):boolean;

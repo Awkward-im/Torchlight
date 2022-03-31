@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ShellCtrls, ExtCtrls;
+  ShellCtrls, ExtCtrls, EditBtn;
 
 type
 
@@ -26,13 +26,19 @@ type
     cbClasses: TCheckBox;
 
     cbUpdateAll: TCheckBox;
+    edDirName: TDirectoryEdit;
+    edFileName: TFileNameEdit;
+    gbWhatToScan: TGroupBox;
     memLog: TMemo;
     pnlMain: TPanel;
-    pnlTree: TPanel;
-    tvMain: TShellTreeView;
+    rbDirToScan: TRadioButton;
+    rbFileToScan: TRadioButton;
     Splitter: TSplitter;
     procedure bbScanClick(Sender: TObject);
-    procedure tvMainDblClick(Sender: TObject);
+    procedure cbUpdateAllChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure rbDirToScanChange(Sender: TObject);
+    procedure rbFileToScanChange(Sender: TObject);
   private
 
   public
@@ -49,6 +55,7 @@ implementation
 { TfmScan }
 
 uses
+  rgglobal,
   rglogging,
   rgscan,
   unitscan;
@@ -98,88 +105,109 @@ begin
 
 exit;
 }
-  if MessageDlg(sDoTheScan,sDoProcessScan,mtConfirmation,[mbOk,mbCancel],0)<>mrOk then
-    exit;
-  memLog.Append('Preparing...');
-  if not Prepare(db,tvMain.Path,lms) then exit;
-  memLog.Append('Ok, prepared!');
+//  if MessageDlg(sDoTheScan,sDoProcessScan,mtConfirmation,[mbOk,mbCancel],0)<>mrOk then exit;
+
   RGLog.Clear;
+  memLog.Append('Preparing...');
 
-  // Wardrobe
-  memLog.Append('Go wardrobe!');
-  ScanWardrobe(lms);
-  memLog.Append(RGLog.Text); RGLog.Clear;
-
-  // Pets
-  if cbPets.Checked then
+  if rbDirToScan.Checked then
   begin
-    memLog.Append('Go pets!');
-    ScanPets(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
+    if not Prepare(db,edDirName.Text,lms) then exit;
+    memLog.Append('Scanning '+edDirName.Text);
+  end
+  else // if rbFileToScan then
+  begin
+    if not Prepare(db,edFileName.Text,lms) then exit;
+    memLog.Append('Scanning '+edFileName.Text);
   end;
 
-  // Quests
-  if cbQuests.Checked then
-  begin
-    memLog.Append('Go quests!');
-    ScanQuests(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
-  end;
+  memLog.Append('Ok, prepared!');
 
-  // Stats
-  if cbStats.Checked then
+  if cbUpdateAll.Checked then
   begin
-    memLog.Append('Go stats!');
-    ScanStats(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
-  end;
+    memLog.Append('Scanning all');
+    ScanAll(lms);
 
-  // Recipes
-  if cbRecipes.Checked then
+  end
+  else
   begin
-    memLog.Append('Go recipes!');
-    ScanRecipes(lms);
+{
+    // Wardrobe
+    memLog.Append('Go wardrobe!');
+    ScanWardrobe(lms);
     memLog.Append(RGLog.Text); RGLog.Clear;
-  end;
+}
+    // Pets
+    if cbPets.Checked then
+    begin
+      memLog.Append('Go pets!');
+      ScanPets(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
 
-  // Mobs
-  if cbMobs.Checked then
-  begin
-    memLog.Append('Go mobs!');
-    ScanMobs(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
-  end;
+    // Quests
+    if cbQuests.Checked then
+    begin
+      memLog.Append('Go quests!');
+      ScanQuests(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
 
-  // Items
-  if cbItems.Checked then
-  begin
-    memLog.Append('Go items!');
-    ScanItems(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
-  end;
+    // Stats
+    if cbStats.Checked then
+    begin
+      memLog.Append('Go stats!');
+      ScanStats(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
 
-  // Props
-  if cbProps.Checked then
-  begin
-    memLog.Append('Go props!');
-    ScanProps(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
-  end;
+    // Recipes
+    if cbRecipes.Checked then
+    begin
+      memLog.Append('Go recipes!');
+      ScanRecipes(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
 
-  // Skills
-  if cbSkills.Checked then
-  begin
-    memLog.Append('Go skills!');
-    ScanSkills(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
-  end;
+    // Mobs
+    if cbMobs.Checked then
+    begin
+      memLog.Append('Go mobs!');
+      ScanMobs(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
 
-  // Classes
-  if cbClasses.Checked then
-  begin
-    memLog.Append('Go classes!');
-    ScanClasses(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
+    // Items
+    if cbItems.Checked then
+    begin
+      memLog.Append('Go items!');
+      ScanItems(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
+
+    // Props
+    if cbProps.Checked then
+    begin
+      memLog.Append('Go props!');
+      ScanProps(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
+
+    // Skills
+    if cbSkills.Checked then
+    begin
+      memLog.Append('Go skills!');
+      ScanSkills(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
+
+    // Classes
+    if cbClasses.Checked then
+    begin
+      memLog.Append('Go classes!');
+      ScanClasses(lms);
+      memLog.Append(RGLog.Text); RGLog.Clear;
+    end;
   end;
 
   memLog.Append('Saving...');
@@ -189,9 +217,36 @@ exit;
 
 end;
 
-procedure TfmScan.tvMainDblClick(Sender: TObject);
+procedure TfmScan.cbUpdateAllChange(Sender: TObject);
 begin
-  bbScanClick(Sender);
+  cbPets   .Enabled:=not cbUpdateAll.Checked;
+  cbQuests .Enabled:=not cbUpdateAll.Checked;
+  cbStats  .Enabled:=not cbUpdateAll.Checked;
+  cbRecipes.Enabled:=not cbUpdateAll.Checked;
+  cbMobs   .Enabled:=not cbUpdateAll.Checked;
+  cbItems  .Enabled:=not cbUpdateAll.Checked;
+  cbProps  .Enabled:=not cbUpdateAll.Checked;
+  cbSkills .Enabled:=not cbUpdateAll.Checked;
+  cbClasses.Enabled:=not cbUpdateAll.Checked;
+end;
+
+procedure TfmScan.FormCreate(Sender: TObject);
+begin
+  if not FileExists(TL2DataBase) then
+    ShowMessage('Database file not found.'#13#10+
+    'Better to use base game file scan first.');
+end;
+
+procedure TfmScan.rbDirToScanChange(Sender: TObject);
+begin
+  edFileName.Enabled:=false;
+  edDirName .Enabled:=true;
+end;
+
+procedure TfmScan.rbFileToScanChange(Sender: TObject);
+begin
+  edDirName .Enabled:=false;
+  edFileName.Enabled:=true;
 end;
 
 end.

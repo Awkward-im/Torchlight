@@ -10,8 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, formscanall, RGDict, RGGlobal, RGIO.DAT, RGIO.Text, RGNode, RGPAK,
-  RGScan, TL2Mod, textcache
+  Forms, formscanall
   { you can add units after this };
 
 {$R *.res}

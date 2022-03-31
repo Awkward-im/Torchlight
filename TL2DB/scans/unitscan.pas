@@ -155,6 +155,8 @@ var
 begin
   result:=false;
   ams:=nil;
+  if adb=nil then exit;
+
   lver:=verUnk;
 
   if (apath[Length(apath)] in ['/','\']) or DirectoryExists(apath) then

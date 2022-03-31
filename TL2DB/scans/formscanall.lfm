@@ -6,140 +6,179 @@ object fmScan: TfmScan
   Caption = 'Scan all'
   ClientHeight = 381
   ClientWidth = 695
-  LCLVersion = '2.3.0.0'
-  object pnlTree: TPanel
-    Left = 0
-    Height = 381
-    Top = 0
-    Width = 170
-    Align = alLeft
-    ClientHeight = 381
-    ClientWidth = 170
-    TabOrder = 0
-    object tvMain: TShellTreeView
-      Left = 1
-      Height = 379
-      Top = 1
-      Width = 168
-      Align = alClient
-      FileSortType = fstNone
-      TabOrder = 0
-      OnDblClick = tvMainDblClick
-      ObjectTypes = [otFolders]
-    end
-  end
+  OnCreate = FormCreate
   object Splitter: TSplitter
-    Left = 170
+    Left = 0
     Height = 381
     Top = 0
     Width = 5
   end
   object pnlMain: TPanel
-    Left = 175
+    Left = 5
     Height = 381
     Top = 0
-    Width = 520
+    Width = 690
     Align = alClient
     ClientHeight = 381
-    ClientWidth = 520
-    TabOrder = 2
-    object cbPets: TCheckBox
-      Left = 24
-      Height = 19
-      Top = 48
-      Width = 40
-      Caption = 'Pets'
-      TabOrder = 0
-    end
-    object cbQuests: TCheckBox
-      Left = 24
-      Height = 19
-      Top = 176
-      Width = 54
-      Caption = 'Quests'
-      TabOrder = 1
-    end
-    object cbStats: TCheckBox
-      Left = 104
-      Height = 19
-      Top = 112
-      Width = 43
-      Caption = 'Stats'
-      TabOrder = 2
-    end
-    object cbRecipes: TCheckBox
-      Left = 104
-      Height = 19
-      Top = 136
-      Width = 58
-      Caption = 'Recipes'
-      TabOrder = 3
-    end
-    object cbMobs: TCheckBox
-      Left = 24
-      Height = 19
-      Top = 72
-      Width = 48
-      Caption = 'Mobs'
-      TabOrder = 4
-    end
-    object cbItems: TCheckBox
-      Left = 104
-      Height = 19
-      Top = 48
-      Width = 47
-      Caption = 'Items'
-      TabOrder = 5
-    end
-    object cbProps: TCheckBox
-      Left = 104
-      Height = 19
-      Top = 72
-      Width = 48
-      Caption = 'Props'
-      TabOrder = 6
-    end
-    object cbSkills: TCheckBox
-      Left = 24
-      Height = 19
-      Top = 112
-      Width = 44
-      Caption = 'Skills'
-      TabOrder = 7
-    end
-    object cbClasses: TCheckBox
-      Left = 24
-      Height = 19
-      Top = 136
-      Width = 56
-      Caption = 'Classes'
-      TabOrder = 8
-    end
+    ClientWidth = 690
+    TabOrder = 1
     object bbScan: TBitBtn
-      Left = 24
+      Left = 0
       Height = 30
-      Top = 328
+      Top = 342
       Width = 75
       Caption = 'Scan'
       Kind = bkRetry
       OnClick = bbScanClick
-      TabOrder = 9
-    end
-    object cbUpdateAll: TCheckBox
-      Left = 24
-      Height = 19
-      Top = 296
-      Width = 97
-      Caption = 'Update All Info'
-      TabOrder = 10
+      TabOrder = 5
     end
     object memLog: TMemo
-      Left = 248
-      Height = 360
+      Left = 328
+      Height = 364
       Top = 8
-      Width = 262
+      Width = 352
       Anchors = [akTop, akLeft, akRight, akBottom]
-      TabOrder = 11
+      TabOrder = 6
+    end
+    object edDirName: TDirectoryEdit
+      Left = 0
+      Height = 23
+      Top = 29
+      Width = 320
+      ShowHidden = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      MaxLength = 0
+      TabOrder = 1
+    end
+    object edFileName: TFileNameEdit
+      Left = 0
+      Height = 23
+      Top = 84
+      Width = 320
+      DialogOptions = [ofFileMustExist, ofEnableSizing, ofViewDetail]
+      Filter = 'Mod files|*.MOD;*.PAK|All files|*.*'
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      Enabled = False
+      MaxLength = 0
+      TabOrder = 2
+    end
+    object rbDirToScan: TRadioButton
+      Left = 0
+      Height = 19
+      Top = 8
+      Width = 74
+      Caption = 'Dir to scan'
+      Checked = True
+      OnChange = rbDirToScanChange
+      TabOrder = 0
+      TabStop = True
+    end
+    object rbFileToScan: TRadioButton
+      Left = 0
+      Height = 19
+      Top = 63
+      Width = 77
+      Caption = 'File to scan'
+      OnChange = rbFileToScanChange
+      TabOrder = 3
+    end
+    object gbWhatToScan: TGroupBox
+      Left = 0
+      Height = 213
+      Top = 120
+      Width = 320
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      Caption = 'What to scan'
+      ClientHeight = 193
+      ClientWidth = 316
+      TabOrder = 4
+      object cbPets: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 7
+        Width = 40
+        Caption = 'Pets'
+        TabOrder = 0
+      end
+      object cbQuests: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 135
+        Width = 54
+        Caption = 'Quests'
+        TabOrder = 8
+      end
+      object cbStats: TCheckBox
+        Left = 100
+        Height = 19
+        Top = 71
+        Width = 43
+        Caption = 'Stats'
+        TabOrder = 5
+      end
+      object cbRecipes: TCheckBox
+        Left = 100
+        Height = 19
+        Top = 95
+        Width = 58
+        Caption = 'Recipes'
+        TabOrder = 7
+      end
+      object cbMobs: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 31
+        Width = 48
+        Caption = 'Mobs'
+        TabOrder = 2
+      end
+      object cbItems: TCheckBox
+        Left = 100
+        Height = 19
+        Top = 7
+        Width = 47
+        Caption = 'Items'
+        TabOrder = 1
+      end
+      object cbProps: TCheckBox
+        Left = 100
+        Height = 19
+        Top = 31
+        Width = 48
+        Caption = 'Props'
+        TabOrder = 3
+      end
+      object cbSkills: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 71
+        Width = 44
+        Caption = 'Skills'
+        TabOrder = 4
+      end
+      object cbClasses: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 95
+        Width = 56
+        Caption = 'Classes'
+        TabOrder = 6
+      end
+      object cbUpdateAll: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 173
+        Width = 97
+        Caption = 'Update All Info'
+        Checked = True
+        OnChange = cbUpdateAllChange
+        State = cbChecked
+        TabOrder = 9
+      end
     end
   end
 end
