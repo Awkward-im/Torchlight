@@ -36,8 +36,8 @@ function Prepare(
 
 procedure Finish(ams:pointer);
 
-function  RGOpenBase (out adb:PSQLite3):boolean;
-procedure RGCloseBase(    adb:PSQLite3);
+function RGOpenBase (out adb:PSQLite3):boolean;
+function RGCloseBase(    adb:PSQLite3):boolean;
 
 
 implementation
@@ -66,7 +66,7 @@ type
     db       :PSQLite3;
     FRootLen :integer;  // Root dir name length
   end;
-
+{
 const
   h_NAME        = 6688229;
   h_DISPLAYNAME = 2200927350;
@@ -75,14 +75,7 @@ const
   h_UNIT_GUID   = 3990071814;
   h_UNITTYPE    = 392914174;
   h_ICON        = 6653358;
-
-
-const
-  GameRoot = 'G:\Games\Torchlight 2\';
-
-type
-  tScanProc = procedure (aptr:pointer; fname:PChar);
-
+}
 
 function FixedText(const astr:string):string;
 begin
@@ -258,10 +251,10 @@ begin
       result:=CreateTables(adb);
 end;
 
-procedure RGCloseBase(adb:PSQLite3);
+function RGCloseBase(adb:PSQLite3):boolean;
 begin
-  CopyToFile(adb,TL2DataBase);
-  sqlite3_close(adb);
+  result:=CopyToFile(adb,TL2DataBase)=SQLITE_OK;
+  result:=result and (sqlite3_close(adb)=SQLITE_OK);
 end;
 
 {%ENDREGION}

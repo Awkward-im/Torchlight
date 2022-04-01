@@ -3,10 +3,11 @@ object fmScan: TfmScan
   Height = 381
   Top = 266
   Width = 695
-  Caption = 'Scan all'
+  Caption = 'Scan TL2 mods'
   ClientHeight = 381
   ClientWidth = 695
   OnCreate = FormCreate
+  LCLVersion = '2.3.0.0'
   object Splitter: TSplitter
     Left = 0
     Height = 381

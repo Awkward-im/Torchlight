@@ -57,58 +57,20 @@ implementation
 uses
   rgglobal,
   rglogging,
-  rgscan,
   unitscan;
 
-resourcestring
-  sDoTheScan      = 'Do tree scan?';
-  sDoProcessScan  = 'Do you want to scan this directory?';
-
-{
-function DoCheck(const adir,aname:string; aparam:pointer):integer;
-var
-  lms:pointer;
-begin
-  result:=1;
-
-  if (UpCase(ExtractFileExt(aname))='.MOD') or
-     (UpCase(ExtractFileExt(aname))='.PAK')
-  then
-  begin
-    Prepare(aparam,adir+'/'+aname,lms);
-  end
-  else if (UpCase(aname)='MOD.DAT') then
-  begin
-    Prepare(aparam,adir,lms);
-  end
-  else
-    exit(0);
-
-  if lms<>nil then
-  begin
-    ScanAll(lms);
-    Finish(lms);
-  end
-  else
-    exit(0);
-
-end;
-}
 procedure TfmScan.bbScanClick(Sender: TObject);
 var
   db,lms:pointer;
 begin
-{
-  RGOpenBase(db);
-  MakeRGScan(tvMain.Path,'',['.PAK','.MOD','.DAT'],nil,db,@DoCheck);
-  RGCloseBase(db);
-
-exit;
-}
-//  if MessageDlg(sDoTheScan,sDoProcessScan,mtConfirmation,[mbOk,mbCancel],0)<>mrOk then exit;
-
   RGLog.Clear;
   memLog.Append('Preparing...');
+
+  if not RGOpenBase(db) then
+  begin
+    memLog.Append('Can''t prepare database');
+    exit;
+  end;
 
   if rbDirToScan.Checked then
   begin
@@ -213,8 +175,10 @@ exit;
   memLog.Append('Saving...');
   Finish(lms);
   RGLog.Clear;
-  memLog.Append('Done!');
 
+  if not RGCloseBase(db) then
+    memLog.Append('Error while save database');
+  memLog.Append('Done!');
 end;
 
 procedure TfmScan.cbUpdateAllChange(Sender: TObject);

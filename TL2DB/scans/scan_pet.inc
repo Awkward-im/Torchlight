@@ -61,22 +61,28 @@ begin
     begin
       lpet.gr_armor:=AsString(lnode);
       if UpCase(lpet.gr_armor)<>'ARMOR_MINION_BYLEVEL' then
+      begin
         ScanGraph(ams,lpet.gr_armor,1);
-//        RGLog.Add('Add '+lpet.gr_armor+' for pet Armor please');
+        RGLog.Add('Pet armor graph is '+lpet.gr_armor);
+      end
     end
     else if CompareWide(pcw,'DAMAGE_GRAPH')=0 then
     begin
       lpet.gr_dmg:=AsString(lnode);
       if UpCase(lpet.gr_dmg)<>'DAMAGE_MINION_BYLEVEL' then
+      begin
         ScanGraph(ams,lpet.gr_dmg,1);
-//        RGLog.Add('Add '+lpet.gr_dmg+' for pet Damage please');
+        RGLog.Add('Pet damage graph is '+lpet.gr_dmg);
+      end
     end
     else if CompareWide(pcw,'HEALTH_GRAPH')=0 then
     begin
       lpet.gr_hp:=AsString(lnode);
       if UpCase(lpet.gr_hp)<>'HEALTH_MINION_BYLEVEL' then
+      begin
         ScanGraph(ams,lpet.gr_hp,1);
-//        RGLog.Add('Add '+lpet.gr_hp+' for pet HP please');
+        RGLog.Add('Pet health graph is '+lpet.gr_hp);
+      end
     end
     else if CompareWide(pcw,'UNITTYPE')=0 then
     begin

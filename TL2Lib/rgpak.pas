@@ -474,6 +474,8 @@ var
   lin:PByte;
 begin
   result:=0;
+  aout:=nil;
+
   if fi<>nil then
   begin
     if fi^.size_s=0 then exit;

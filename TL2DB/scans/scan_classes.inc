@@ -153,36 +153,46 @@ begin
     begin
       lclass.gr_mp:=AsString(lnode);
       if UpCase(lclass.gr_mp)<>'MANA_PLAYER_GENERIC' then
+      begin
         ScanGraph(ams,lclass.gr_mp,10);
-//        RGLog.Add('Add '+lclass.gr_mp+' for class MP please');
+        RGLog.Add('Mana graph is '+lclass.gr_mp);
+      end
     end
     else if CompareWide(pcw,'HEALTH_GRAPH')=0 then
     begin
       lclass.gr_hp:=AsString(lnode);
       if UpCase(lclass.gr_hp)<>'HEALTH_PLAYER_GENERIC' then
+      begin
         ScanGraph(ams,lclass.gr_hp,10);
-//        RGLog.Add('Add '+lclass.gr_hp+' for class HP please');
+        RGLog.Add('Health graph is '+lclass.gr_hp);
+      end
     end
     else if CompareWide(pcw,'STAT_POINTS_PER_LEVEL')=0 then
     begin
       lclass.gr_st:=AsString(lnode);
       if UpCase(lclass.gr_st)<>'STAT_POINTS_PER_LEVEL' then
+      begin
         ScanGraph(ams,lclass.gr_st,1);
-//        RGLog.Add('Add '+lclass.gr_st+' for class STAT please');
+        RGLog.Add('Stat point per level graph is '+lclass.gr_st);
+      end
     end
     else if CompareWide(pcw,'SKILL_POINTS_PER_LEVEL')=0 then
     begin
       lclass.gr_sk:=AsString(lnode);
       if UpCase(lclass.gr_sk)<>'SKILL_POINTS_PER_LEVEL' then
+      begin
         ScanGraph(ams,lclass.gr_sk,1);
-//        RGLog.Add('Add '+lclass.gr_sk+' for class SKILL please');
+        RGLog.Add('Skill points per level graph is '+lclass.gr_sk);
+      end
     end
     else if CompareWide(pcw,'SKILL_POINTS_PER_FAME_LEVEL')=0 then
     begin
       lclass.gr_fm:=AsString(lnode);
       if UpCase(lclass.gr_fm)<>'SKILL_POINTS_PER_FAME_LEVEL' then
+      begin
         ScanGraph(ams,lclass.gr_fm,1);
-//        RGLog.Add('Add '+lclass.gr_fm+' for class FAME please');
+        RGLog.Add('Skill points [er fame level graph is '+lclass.gr_fm);
+      end
     end;
 
   end;

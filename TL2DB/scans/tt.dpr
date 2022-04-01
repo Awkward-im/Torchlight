@@ -9,7 +9,8 @@ var
 begin
   result:=1;
 
-  if (UpCase(ExtractFileExt(aname))='.MOD') then
+  if (UpCase(ExtractFileExt(aname))='.MOD') or
+     (UpCase(ExtractFileExt(aname))='.PAK')
   begin
     Prepare(db,adir+'/'+aname,lms);
   end
