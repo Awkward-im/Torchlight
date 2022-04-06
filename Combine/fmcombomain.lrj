@@ -1,0 +1,9 @@
+{"version":1,"strings":[
+{"hash":174509141,"name":"tformmain.bbaddfile.caption","sourcebytes":[65,100,100,32,102,105,108,101],"value":"Add file"},
+{"hash":105023305,"name":"tformmain.lbldirhint.caption","sourcebytes":[67,104,111,111,115,101,32,79,117,116,112,117,116,32,68,105,114,101,99,116,111,114,121],"value":"Choose Output Directory"},
+{"hash":156067838,"name":"tformmain.lbldescr.caption","sourcebytes":[68,101,115,99,114,105,112,116,105,111,110],"value":"Description"},
+{"hash":44595001,"name":"tformmain.bbapply.caption","sourcebytes":[38,65,112,112,108,121],"value":"&Apply"},
+{"hash":253550041,"name":"tformmain.bbadddir.caption","sourcebytes":[65,100,100,32,100,105,114,101,99,116,111,114,121],"value":"Add directory"},
+{"hash":188928763,"name":"tformmain.lblmodlist.caption","sourcebytes":[77,111,100,115,32,105,110,32,112,97,99,107],"value":"Mods in pack"},
+{"hash":90505615,"name":"tformmain.bbmodinfo.caption","sourcebytes":[77,111,100,32,73,110,102,111],"value":"Mod Info"}
+]}

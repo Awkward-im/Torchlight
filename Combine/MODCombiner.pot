@@ -1,0 +1,68 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: tformmain.bbadddir.caption
+msgid "Add directory"
+msgstr ""
+
+#: tformmain.bbaddfile.caption
+msgid "Add file"
+msgstr ""
+
+#: tformmain.bbapply.caption
+msgid "&Apply"
+msgstr ""
+
+#: tformmain.bbmodinfo.caption
+msgid "Mod Info"
+msgstr ""
+
+#: tformmain.lbldescr.caption
+msgid "Description"
+msgstr ""
+
+#: tformmain.lbldirhint.caption
+msgid "Choose Output Directory"
+msgstr ""
+
+#: tformmain.lblmodlist.caption
+msgctxt "tformmain.lblmodlist.caption"
+msgid "Mods in pack"
+msgstr ""
+
+#: tmodinfoform.bbcancel.caption
+msgid "Cancel"
+msgstr ""
+
+#: tmodinfoform.caption
+msgid "MOD Info"
+msgstr ""
+
+#: tmodinfoform.lbldescr.caption
+msgid "Mod Description"
+msgstr ""
+
+#: tmodinfoform.lblguid.caption
+msgid "Mod GUID (click button for new)"
+msgstr ""
+
+#: tmodinfoform.lblversion.caption
+msgid "Mod version"
+msgstr ""
+
+#: tmodinfoform.leauthor.editlabel.caption
+msgid "Mod Author"
+msgstr ""
+
+#: tmodinfoform.ledownload.editlabel.caption
+msgid "Mod Download URL"
+msgstr ""
+
+#: tmodinfoform.letitle.editlabel.caption
+msgid "Mod Title"
+msgstr ""
+
+#: tmodinfoform.lewebsite.editlabel.caption
+msgid "Mod Website URL"
+msgstr ""
+

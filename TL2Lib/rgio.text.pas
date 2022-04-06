@@ -328,7 +328,6 @@ begin
     while (idx<lsize) and (pc[idx] in [' ',#9]) do inc(idx);
     if idx=lsize then continue;
 
-    {TODO: Add '//' and '#' as line comment (ignore line) - no needs, ignoring wrong text anyway}
     //--- group
     if pc[idx]='[' then
     begin

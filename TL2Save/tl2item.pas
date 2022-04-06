@@ -285,20 +285,20 @@ begin
   //??
   AStream.Write(FUnkn1,24);
 {
-  AStream.ReadQWord;
-  AStream.ReadQWord;     // changing
-  AStream.ReadQWord;
+  AStream.WriteQWord;
+  AStream.WriteQWord;     // changing
+  AStream.WriteQWord;
 }
   AStream.WriteIdList(FModIds);
 
   //??
   AStream.Write(FUnkn2,29);
 {
-  AStream.ReadByte;      // 0
-  AStream.ReadQWord;     // *FF
-  AStream.ReadQWord;     // *FF
-  AStream.ReadQWord;     // *FF
-  AStream.ReadDWord;     // 0
+  AStream.WriteByte;      // 0
+  AStream.WriteQWord;     // *FF
+  AStream.WriteQWord;     // *FF
+  AStream.WriteQWord;     // *FF
+  AStream.WriteDWord;     // 0
 }
   AStream.WriteDWord(DWord(FEnchantmentCount)); // enchantment count
   AStream.WriteDWord(DWord(FStashPosition   )); // stash position
@@ -324,9 +324,9 @@ begin
   //??
   AStream.Write(FUnkn5,12);
 {
-  AStream.ReadDWord; // *FF
-  AStream.ReadDWord; // *FF
-  AStream.ReadDWord; // *FF
+  AStream.WriteDWord; // *FF
+  AStream.WriteDWord; // *FF
+  AStream.WriteDWord; // *FF
 }
   //??
   AStream.WriteWord(Length(FUnkn6));

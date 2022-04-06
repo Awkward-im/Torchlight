@@ -54,7 +54,7 @@ end;
 
 procedure TMODInfoForm.bbOKClick(Sender: TObject);
 begin
-  SaveToFile(ffile);
+//  SaveToFile(ffile);
 end;
 
 Constructor TMODInfoForm.Create(AOwner:TComponent; aRO:boolean=false);
@@ -76,11 +76,11 @@ procedure TMODInfoForm.SaveToInfo(var ami:TTL2ModInfo);
 begin
   ClearModInfo(ami);
 
-  ami.title   :=PUnicodeChar(UTF8Decode(leTitle   .Text));
-  ami.author  :=PUnicodeChar(UTF8Decode(leAuthor  .Text));
-  ami.descr   :=PUnicodeChar(UTF8Decode(memDescr  .Text));
-  ami.website :=PUnicodeChar(UTF8Decode(leWebsite .Text));
-  ami.download:=PUnicodeChar(UTF8Decode(leDownload.Text));
+  ami.title   :=StrToWide(leTitle   .Text);
+  ami.author  :=StrToWide(leAuthor  .Text);
+  ami.descr   :=StrToWide(memDescr  .Text);
+  ami.website :=StrToWide(leWebsite .Text);
+  ami.download:=StrToWide(leDownload.Text);
   Val(edGUID.Text,ami.modid);
   ami.modver  :=seVersion.Value;
 end;

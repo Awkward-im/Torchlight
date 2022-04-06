@@ -1,0 +1,191 @@
+object FormMain: TFormMain
+  Left = 463
+  Height = 471
+  Top = 201
+  Width = 753
+  AllowDropFiles = True
+  ClientHeight = 471
+  ClientWidth = 753
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object lbModList: TListBox
+    Left = 8
+    Height = 302
+    Top = 156
+    Width = 296
+    ItemHeight = 0
+    MultiSelect = True
+    OnClick = lbModListClick
+    TabOrder = 3
+  end
+  object bbAddFile: TBitBtn
+    Left = 8
+    Height = 30
+    Top = 57
+    Width = 152
+    Caption = 'Add file'
+    Kind = bkOK
+    OnClick = bbAddFileClick
+    TabOrder = 1
+  end
+  object sbUp: TSpeedButton
+    Left = 313
+    Height = 40
+    Top = 156
+    Width = 40
+    Enabled = False
+    Images = ImageList
+    ImageIndex = 1
+    OnClick = sbUpClick
+  end
+  object sbDown: TSpeedButton
+    Left = 313
+    Height = 40
+    Top = 418
+    Width = 40
+    Enabled = False
+    Images = ImageList
+    ImageIndex = 0
+    OnClick = sbDownClick
+  end
+  object deOutputDir: TDirectoryEdit
+    Left = 8
+    Height = 23
+    Top = 24
+    Width = 345
+    ShowHidden = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 0
+  end
+  object lblDirHint: TLabel
+    Left = 8
+    Height = 20
+    Top = 4
+    Width = 164
+    Caption = 'Choose Output Directory'
+    Font.Height = -15
+    ParentColor = False
+    ParentFont = False
+  end
+  object memDescription: TMemo
+    Left = 368
+    Height = 124
+    Top = 24
+    Width = 376
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 5
+  end
+  object lblDescr: TLabel
+    Left = 368
+    Height = 15
+    Top = 4
+    Width = 376
+    AutoSize = False
+    Caption = 'Description'
+    Font.Height = -13
+    ParentColor = False
+    ParentFont = False
+  end
+  object bbApply: TBitBtn
+    Left = 238
+    Height = 30
+    Top = 93
+    Width = 91
+    Caption = '&Apply'
+    Default = True
+    Enabled = False
+    Kind = bkOK
+    OnClick = bbApplyClick
+    TabOrder = 4
+  end
+  object memLog: TMemo
+    Left = 366
+    Height = 302
+    Top = 156
+    Width = 378
+    ReadOnly = True
+    TabOrder = 6
+  end
+  object bbAddDir: TBitBtn
+    Left = 177
+    Height = 30
+    Top = 56
+    Width = 152
+    Caption = 'Add directory'
+    Kind = bkOK
+    OnClick = bbAddDirClick
+    TabOrder = 2
+  end
+  object bbDelete: TSpeedButton
+    Left = 313
+    Height = 40
+    Top = 332
+    Width = 40
+    Enabled = False
+    Images = ImageList
+    ImageIndex = 5
+    OnClick = bbDeleteClick
+  end
+  object lblModList: TLabel
+    Left = 8
+    Height = 21
+    Top = 131
+    Width = 296
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Mods in pack'
+    Font.Height = -16
+    ParentColor = False
+    ParentFont = False
+  end
+  object bbModInfo: TBitBtn
+    Left = 72
+    Height = 30
+    Top = 93
+    Width = 88
+    Caption = 'Mod Info'
+    Kind = bkRetry
+    ModalResult = 4
+    OnClick = bbModInfoClick
+    TabOrder = 7
+  end
+  object ImageList: TImageList
+    Left = 8
+    Top = 88
+    Bitmap = {
+      4C7A060000001000000010000000850300000000000078DAED944D4F136110C7
+      170897D2575A5ADE690B6C0B9642C184EF62A2378D064DF4584A4BA125C40309
+      B194BE178989DF403446CF7803AFE2CDC4287E01F532CE3CDB6D9776FBF2EC62
+      F4D049866D78F637F3CCECFC4710FE3FF3F9CAE0F39540148BF82CE0330FBCBC
+      28966176B688CF023E735CBC281E2153829999224C4FE7C1EBE5E5CBC896902D
+      209B078F27CBC5CBB92536075353192E5E628B15360B939387D0BE67D4AB12EB
+      19DDDBE3C957D9F1F134FA017A0A262652D03C4601EF2DD5EC76139BC1F7D330
+      3676809E62DEFEEED4EF2CF2994A6E891D1D7DD6710FA6A733C81F229FAEF2BC
+      33E8F1A491976AD63AC76EF701085DD3B1078AA06787C8FB839F3DAAEE0F9A67
+      9EFD516395FB238B7ACA40E77BAB0C4A0D9316689E6926DBB3A5EAEE516A98B4
+      40F3DCC94CCAAC52C33CFD53EE2D6249837C7CAE925BDA3DBCFAADED0F6DFABF
+      BA3F529A78AFF790F59AF6A59E1DD2B53A8B0813F8B7470BDABF6B08D973FE0B
+      F3FEE84BDE18865DCB8AABBC74B17AFA0416DEDDFE69D81B2AF0E47596829F56
+      4F1F03F1C3CF431714AF3EBE61CF51A8BF97322F39FDAE67E5F8C1F7777EB3DA
+      E2426FA779590EAC856A5AFD20D566DA1F7961786AB9D92EAFC27A8851C61839
+      5EF9D221AB8C711C787BEB17C560DEE2CE6D63F0B3576A71E47C9F35B0D51895
+      39ED9A0E1B4E2E6BDE9BAE9D65702543A09575EE846028B9047A58476211ECDB
+      4118DC5A80C138FA267A6C01ECE8AA2CD6EB4C4AAC1D59E26CF10058376F8035
+      861E95DC160D34F0AE04B20964139877BBC65A903547E7C0BC41EE0773640E2C
+      E86AF99DDBC86FE19DF1AEB64D6463F38C3521678CF8C0B82EB969DDDFB42F8E
+      F822AB93EE4B394D113F0CAC8BCC0DE15918088B600CFB5AF675301660759A9B
+      DCB313B36EE8E3C92C3AF9AE5DC30E482CEBFA062ED404CDB5569EF4449A70C4
+      832D630CD3BE51685FA97FBB42FB4DEFA9D0BE726F34E81FE7BA699D15EDCBAC
+      355ED330D37F44D6FF3CA86B1FF9AD20DB559453668DA4FFAAF6D5B5EB8C238B
+      DAB7639D36D4AF253ACF72D2DE60FA0F4BCEDB7FCA491CED0E2DDF4FE6B57EFF
+      56BBAE6BD76BFDC2C943F216E70FC8D5CE7A8557F78DC2D9779370FE03DF79A4
+      72BE563B7FB3D68C77085FA13E86CCD6CE1A79B23EE1E46EEDBD8F2C469FF0FA
+      5EFDFFDAF500DFBFA4F78DC2F925B9F4FBECB2556F1A6B3DFF469C5A3D7F93D7
+      737FB55EA9F5B4D5F7D7FAFDF4CE4FBBF9ECE4FC5FD81F0DEAD99B
+    }
+  end
+end

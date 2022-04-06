@@ -9,8 +9,8 @@
   ??Delete files(s)/dir(s)
   mark as deleted
 }
-{%TODO finish FileToMan}
-{%TODO finish CycleDir (BuildManifest)}
+{TODO: finish FileToMan}
+{TODO: finish CycleDir (BuildManifest)}
 
 unit RGMan;
 

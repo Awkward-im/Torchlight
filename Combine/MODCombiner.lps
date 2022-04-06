@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="MODCombiner.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="34" Y="13"/>
+        <UsageCount Value="35"/>
+      </Unit>
+      <Unit>
+        <Filename Value="fmcombomain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormMain"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmComboMain"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="116"/>
+        <CursorPos X="26" Y="172"/>
+        <FoldState Value=" T8i421 T3iJ0221124c"/>
+        <UsageCount Value="35"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="34"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="138"/>
+        <CursorPos X="16" Y="154"/>
+        <UsageCount Value="34"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MODInfoForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmModInfo"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="69"/>
+        <CursorPos X="22" Y="125"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\textcache.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="fmmodinfo.pas"/>
+        <ComponentName Value="MODInfoForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmModInfo"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="52"/>
+        <CursorPos X="22" Y="77"/>
+        <UsageCount Value="24"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgdict.pas"/>
+        <UnitName Value="RGDict"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="42" Y="13"/>
+        <UsageCount Value="9"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="135" Column="3" TopLine="106"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="104" TopLine="91"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="57" Column="16" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="157" Column="33" TopLine="146"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="116" Column="54" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="161" Column="69" TopLine="146"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="71" TopLine="50"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="150" Column="42" TopLine="138"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="152" Column="26" TopLine="137"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="77" TopLine="48"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="79" TopLine="50"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="118" Column="14" TopLine="58"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="124" Column="31" TopLine="67"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="34" Column="11" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="9" Column="9"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="102" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="85" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="124" TopLine="61"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="102" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="85" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="102" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="57" Column="3" TopLine="54"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="102" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="85" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="124" TopLine="61"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="102" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="92" TopLine="69"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="102" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Caret Line="85" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombomain.pas"/>
+        <Caret Line="118" TopLine="61"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

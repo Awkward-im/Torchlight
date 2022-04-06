@@ -6,6 +6,7 @@ object MODInfoForm: TMODInfoForm
   Caption = 'MOD Info'
   ClientHeight = 311
   ClientWidth = 751
+  LCLVersion = '2.3.0.0'
   object seVersion: TSpinEditEx
     Left = 7
     Height = 23
@@ -24,6 +25,7 @@ object MODInfoForm: TMODInfoForm
     Top = 112
     Width = 66
     Caption = 'Mod version'
+    ParentColor = False
   end
   object leTitle: TLabeledEdit
     Left = 7
@@ -33,6 +35,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Title'
+    EditLabel.ParentColor = False
     TabOrder = 0
   end
   object leAuthor: TLabeledEdit
@@ -43,6 +46,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Author'
+    EditLabel.ParentColor = False
     TabOrder = 1
   end
   object leWebsite: TLabeledEdit
@@ -53,6 +57,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Website URL'
+    EditLabel.ParentColor = False
     TabOrder = 6
   end
   object leDownload: TLabeledEdit
@@ -63,6 +68,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Download URL'
+    EditLabel.ParentColor = False
     TabOrder = 7
   end
   object memDescr: TMemo
@@ -79,6 +85,7 @@ object MODInfoForm: TMODInfoForm
     Top = 5
     Width = 88
     Caption = 'Mod Description'
+    ParentColor = False
   end
   object lblGUID: TLabel
     Left = 113
@@ -88,6 +95,7 @@ object MODInfoForm: TMODInfoForm
     Alignment = taRightJustify
     AutoSize = False
     Caption = 'Mod GUID (click button for new)'
+    ParentColor = False
   end
   object bbOK: TBitBtn
     Left = 651
