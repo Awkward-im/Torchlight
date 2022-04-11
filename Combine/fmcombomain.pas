@@ -5,8 +5,8 @@ unit fmComboMain;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons, EditBtn,
-  rgglobal;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
+  EditBtn, ExtCtrls, rgglobal;
 
 type
 
@@ -16,23 +16,24 @@ type
     bbAddDir: TBitBtn;
     bbDelete: TSpeedButton;
     bbModInfo: TBitBtn;
-    memLog: TMemo;
+    cbPause: TCheckBox;
+    lblDescr: TLabel;
     lbModList    : TListBox;
+    memDescription: TMemo;
+    memLog: TMemo;
     sbUp    : TSpeedButton;
     sbDown  : TSpeedButton;
     bbAddFile   : TBitBtn;
     bbApply : TBitBtn;
     deOutputDir : TDirectoryEdit;
     lblDirHint: TLabel;
-    memDescription: TMemo;
-    lblDescr      : TLabel;
     ImageList: TImageList;
     lblModList: TLabel;
 
     procedure bbAddDirClick(Sender: TObject);
+    procedure bbAddFileClick(Sender: TObject);
     procedure bbApplyClick(Sender: TObject);
     procedure bbDeleteClick(Sender: TObject);
-    procedure bbAddFileClick(Sender: TObject);
     procedure bbModInfoClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -42,7 +43,11 @@ type
   private
     slModList:TStringList;
     newModInfo:TTL2ModInfo;
+    LastFileDir:string;
 
+    function AddToLog(var adata: string): integer;
+    procedure LoadPackSettings(const asect: string);
+    procedure SavePackSettings;
     procedure ShowDescr(const fname: string);
 
   public
@@ -57,11 +62,138 @@ implementation
 {$R *.lfm}
 
 uses
+  INIFiles,
   fmModInfo,
+  rglogging,
+  unitCombine,
   TL2Mod;
 
-procedure TFormMain.bbApplyClick(Sender: TObject);
+procedure TFormMain.LoadPackSettings(const asect:string);
+var
+  ini:TIniFile;
+  ls:string;
+  mi:TTL2ModInfo;
+  i,lcnt,lidx:integer;
 begin
+  ini:=TIniFile.Create('combine.ini',[ifoEscapeLineFeeds,ifoStripQuotes]);
+
+  deOutputDir.Text:=ini.ReadString(asect,'outdir','');
+
+  ClearModInfo(newModInfo);
+  newModInfo.author  :=StrToWide(ini.ReadString (asect,'mi.author'  ,''));
+  newModInfo.title   :=StrToWide(ini.ReadString (asect,'mi.title'   ,''));
+  newModInfo.descr   :=StrToWide(ini.ReadString (asect,'mi.descr'   ,''));
+  newModInfo.website :=StrToWide(ini.ReadString (asect,'mi.website' ,''));
+  newModInfo.download:=StrToWide(ini.ReadString (asect,'mi.download',''));
+  newModInfo.modid   :=ini.ReadInteger(asect,'mi.guid'    ,-1);
+  newModInfo.modver  :=ini.ReadInteger(asect,'mi.version' ,1);
+
+  lbModList.Clear;
+  lcnt:=ini.ReadInteger(asect,'count',0);
+  for i:=0 to lcnt-1 do
+  begin
+    ls:=ini.ReadString(asect,'file'+IntToStr(i),'');
+    if ls<>'' then
+    begin
+      if ls[Length(ls)] in ['\','/'] then
+      begin
+        lidx:=slModList.Add(ls);
+        if LoadModConfiguration(PChar(ls+'MOD.DAT'),mi) then
+        begin
+          lbModList.AddItem(String(WideString(mi.title)),TObject(IntPtr(lidx)));
+          ClearModInfo(mi);
+        end
+        else
+          lbModList.AddItem(ExtractFileName(ls),TObject(IntPtr(lidx)));
+      end
+      else
+      begin
+        lidx:=slModList.Add(ls);
+        if ReadModInfo(PChar(ls),mi) then
+        begin
+          lbModList.AddItem(String(WideString(mi.title)),TObject(IntPtr(lidx)));
+          ClearModInfo(mi);
+        end
+        else
+          lbModList.AddItem(ExtractFileName(ls),TObject(IntPtr(lidx)));
+      end;
+    end;
+  end;
+
+  ini.Free;
+end;
+
+procedure TFormMain.SavePackSettings;
+var
+  ini:TIniFile;
+  lsect:string;
+  i:integer;
+begin
+  ini:=TIniFile.Create('combine.ini',[ifoEscapeLineFeeds,ifoStripQuotes]);
+  lsect:=ExtractFileName(deOutputDir.Text);
+
+  ini.WriteString(lsect,'outdir',deOutputDir.Text);
+
+  ini.WriteString (lsect,'mi.author'  ,WideToStr(newModInfo.author));
+  ini.WriteString (lsect,'mi.title'   ,WideToStr(newModInfo.title));
+  ini.WriteString (lsect,'mi.descr'   ,WideToStr(newModInfo.descr));
+  ini.WriteString (lsect,'mi.website' ,WideToStr(newModInfo.website));
+  ini.WriteString (lsect,'mi.download',WideToStr(newModInfo.download));
+  ini.WriteInteger(lsect,'mi.guid'    ,newModInfo.modid);
+  ini.WriteInteger(lsect,'mi.version' ,newModInfo.modver);
+
+  ini.WriteInteger(lsect,'count',lbModList.Count);
+  for i:=0 to lbModList.Count-1 do
+    ini.WriteString(lsect,'file'+IntToStr(i),
+        slModList[IntPtr(lbModList.Items.Objects[i])]);
+
+  ini.UpdateFile;
+  ini.Free;
+end;
+
+function TFormMain.AddToLog(var adata:string):integer;
+begin
+  memLog.Append(adata);
+  adata:='';
+  result:=0;
+end;
+
+procedure TFormMain.bbApplyClick(Sender: TObject);
+var
+  f:Text;
+  lptr:TRGLogOnAdd;
+  i:integer;
+begin
+  SavePackSettings;
+
+  memLog.Clear;
+
+  SaveModConfiguration(newModInfo,PChar(deOutputDir.Text+'\MOD.DAT'));
+
+  lptr:=RGLog.OnAdd;
+  RGLog.OnAdd:=@AddToLog;
+  for i:=0 to lbModList.Count-1 do
+  begin
+    if AddMod(deOutputDir.Text,
+      slModList[IntPtr(lbModList.Items.Objects[i])])=0 then
+    begin
+      memLog.Append('Something wrong. Break.');
+      break;
+    end;
+    if cbPause.Checked and (i<(lbModList.Count-1)) then
+    begin
+      if MessageDlg('Next source...','Do you want to continue combine process?',
+        mtConfirmation,[mbOk,mbCancel],0,mbOk)<>mrOk then break;
+    end;
+  end;
+  RGLog.OnAdd:=lptr;
+
+  memLog.Append('Done!');
+//  memLog.Lines.SaveToFile(deOutputDir.Text+'\combine.log');
+  AssignFile(f,deOutputDir.Text+'\combine.log');
+  Rewrite(f);
+  Writeln(f,memLog.Text);
+  CloseFile(f);
 end;
 
 procedure TFormMain.bbDeleteClick(Sender: TObject);
@@ -72,10 +204,21 @@ begin
   i:=lbModList.ItemIndex;
   lbModList.DeleteSelected;
   if i>=lbModList.Count then i:=lbModList.Count-1;
-  if i>=0 then lbModList.ItemIndex:=i;
+  lbModList.ItemIndex:=i;
+  lbModListClick(Self);
 
   bbDelete.Enabled:=lbModList.Count>0;
   bbApply .Enabled:=lbModList.Count>0;
+end;
+
+procedure TFormMain.bbModInfoClick(Sender: TObject);
+begin
+  with TMODInfoForm.Create(Self,false) do
+  begin
+    LoadFromInfo(newModInfo);
+    if ShowModal=mrOk then
+      SaveToInfo(newModInfo);
+  end;
 end;
 
 procedure TFormMain.bbAddFileClick(Sender: TObject);
@@ -86,12 +229,14 @@ var
 begin
   ld:=TOpenDialog.Create(nil);
   try
+    ld.InitialDir:=LastFileDir;
     ld.DefaultExt:='.MOD';
     ld.Filter    :='MOD files|*.MOD';
     ld.Title     :='Choose MOD files to add';
     ld.Options   :=[ofAllowMultiSelect];
     if (ld.Execute) and (ld.Files.Count>0) then
     begin
+      LastFileDir:=ExtractFileDir(ld.Files[0]);
       for i:=0 to ld.Files.Count-1 do
       begin
 //        if slModList.IndexOf(ld.Files[i])<0 then
@@ -106,21 +251,14 @@ begin
             lbModList.AddItem(ExtractFileName(ld.Files[i]),TObject(IntPtr(lidx)));
         end;
       end;
-      bbDelete.Enabled:=true;
+      bbDelete.Enabled:=lbModList.Count>0;
+      bbApply .Enabled:=lbModList.Count>0;
     end;
   finally
     ld.Free;
   end;
-end;
-
-procedure TFormMain.bbModInfoClick(Sender: TObject);
-begin
-  with TMODInfoForm.Create(Self,false) do
-  begin
-    LoadFromInfo(newModInfo);
-    if ShowModal=mrOk then
-      SaveToInfo(newModInfo);
-  end;
+  lbModList.ItemIndex:=lbModList.Count-1;
+  lbModListClick(Self);
 end;
 
 procedure TFormMain.bbAddDirClick(Sender: TObject);
@@ -153,18 +291,21 @@ begin
             lbModList.AddItem(ExtractFileName(ld.Files[i]),TObject(IntPtr(lidx)));
         end;
       end;
-      bbDelete.Enabled:=true;
+      bbDelete.Enabled:=lbModList.Count>0;
+      bbApply .Enabled:=lbModList.Count>0;
     end;
   finally
     ld.Free;
   end;
+  lbModList.ItemIndex:=lbModList.Count-1;
+  lbModListClick(Self);
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   slModList:=TStringList.Create;
   slModList.Capacity:=128;
-  FillChar(newModInfo,SizeOf(newModInfo),0);
+  MakeModInfo(newModInfo);
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
@@ -179,6 +320,8 @@ var
   l:boolean;
 begin
   memDescription.Clear;
+  memDescription.Append('Source: '+fname);
+
   if fname[Length(fname)]='\' then
     l:=LoadModConfiguration(PChar(fname+'MOD.DAT'),mi)
   else
@@ -202,7 +345,9 @@ begin
   if lbModList.ItemIndex>=0 then
   begin
     ShowDescr(slModList[IntPtr(lbModList.Items.Objects[lbModList.ItemIndex])]);
-  end;
+  end
+  else
+    memDescription.Clear;
 end;
 
 procedure TFormMain.sbDownClick(Sender: TObject);

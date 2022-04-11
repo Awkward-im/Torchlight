@@ -1,0 +1,94 @@
+object AskForm: TAskForm
+  Left = 350
+  Height = 203
+  Top = 31
+  Width = 579
+  Caption = 'AskForm'
+  ClientHeight = 203
+  ClientWidth = 579
+  object cbForAll: TCheckBox
+    Left = 10
+    Height = 25
+    Top = 168
+    Width = 174
+    Caption = 'Use for all files of mod'
+    Font.Height = -16
+    OnChange = cbForAllChange
+    ParentFont = False
+    TabOrder = 0
+  end
+  object bbContinue: TBitBtn
+    Left = 448
+    Height = 30
+    Top = 163
+    Width = 123
+    Caption = '&Continue'
+    Default = True
+    Kind = bkOK
+    ModalResult = 1
+    OnClick = bbContinueClick
+    TabOrder = 1
+  end
+  object lblFileName: TLabel
+    Left = 10
+    Height = 21
+    Top = 42
+    Width = 83
+    Caption = 'lblFileName'
+    Font.Height = -16
+    ParentColor = False
+    ParentFont = False
+  end
+  object rbSkip: TRadioButton
+    Left = 10
+    Height = 25
+    Top = 112
+    Width = 48
+    Caption = 'Skip'
+    Checked = True
+    Font.Height = -16
+    ParentFont = False
+    TabOrder = 2
+    TabStop = True
+  end
+  object rbOverwrite: TRadioButton
+    Left = 10
+    Height = 25
+    Top = 136
+    Width = 87
+    Caption = 'Overwrite'
+    Font.Height = -16
+    ParentFont = False
+    TabOrder = 3
+  end
+  object lblExist: TLabel
+    Left = 8
+    Height = 30
+    Top = 8
+    Width = 105
+    Caption = 'Existing file'
+    Font.Height = -21
+    ParentColor = False
+    ParentFont = False
+  end
+  object lblWhatToDo: TLabel
+    Left = 8
+    Height = 25
+    Top = 71
+    Width = 103
+    Caption = 'What to do?'
+    Font.Height = -19
+    ParentColor = False
+    ParentFont = False
+  end
+  object cbCurrentDir: TCheckBox
+    Left = 216
+    Height = 21
+    Top = 138
+    Width = 89
+    Caption = 'This dir only'
+    Font.Height = -13
+    ParentFont = False
+    TabOrder = 4
+  end
+end

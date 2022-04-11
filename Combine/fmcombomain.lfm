@@ -1,10 +1,11 @@
 object FormMain: TFormMain
   Left = 463
-  Height = 471
+  Height = 468
   Top = 201
   Width = 753
   AllowDropFiles = True
-  ClientHeight = 471
+  Caption = 'Combine mods to pack'
+  ClientHeight = 468
   ClientWidth = 753
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -13,6 +14,7 @@ object FormMain: TFormMain
     Height = 302
     Top = 156
     Width = 296
+    Anchors = [akTop, akLeft, akBottom]
     ItemHeight = 0
     MultiSelect = True
     OnClick = lbModListClick
@@ -29,8 +31,9 @@ object FormMain: TFormMain
     TabOrder = 1
   end
   object sbUp: TSpeedButton
-    Left = 313
+    Left = 311
     Height = 40
+    Hint = 'Move selected up'
     Top = 156
     Width = 40
     Enabled = False
@@ -39,8 +42,9 @@ object FormMain: TFormMain
     OnClick = sbUpClick
   end
   object sbDown: TSpeedButton
-    Left = 313
+    Left = 311
     Height = 40
+    Hint = 'Move selected down'
     Top = 418
     Width = 40
     Enabled = False
@@ -70,45 +74,16 @@ object FormMain: TFormMain
     ParentColor = False
     ParentFont = False
   end
-  object memDescription: TMemo
-    Left = 368
-    Height = 124
-    Top = 24
-    Width = 376
-    ReadOnly = True
-    ScrollBars = ssAutoVertical
-    TabOrder = 5
-  end
-  object lblDescr: TLabel
-    Left = 368
-    Height = 15
-    Top = 4
-    Width = 376
-    AutoSize = False
-    Caption = 'Description'
-    Font.Height = -13
-    ParentColor = False
-    ParentFont = False
-  end
   object bbApply: TBitBtn
     Left = 238
     Height = 30
     Top = 93
     Width = 91
     Caption = '&Apply'
-    Default = True
     Enabled = False
     Kind = bkOK
     OnClick = bbApplyClick
     TabOrder = 4
-  end
-  object memLog: TMemo
-    Left = 366
-    Height = 302
-    Top = 156
-    Width = 378
-    ReadOnly = True
-    TabOrder = 6
   end
   object bbAddDir: TBitBtn
     Left = 177
@@ -121,8 +96,9 @@ object FormMain: TFormMain
     TabOrder = 2
   end
   object bbDelete: TSpeedButton
-    Left = 313
+    Left = 311
     Height = 40
+    Hint = 'Delete selected'
     Top = 332
     Width = 40
     Enabled = False
@@ -151,7 +127,46 @@ object FormMain: TFormMain
     Kind = bkRetry
     ModalResult = 4
     OnClick = bbModInfoClick
+    TabOrder = 5
+  end
+  object lblDescr: TLabel
+    Left = 370
+    Height = 15
+    Top = 4
+    Width = 376
+    AutoSize = False
+    Caption = 'Description'
+    Font.Height = -13
+    ParentColor = False
+    ParentFont = False
+  end
+  object memDescription: TMemo
+    Left = 370
+    Height = 104
+    Top = 24
+    Width = 376
+    Anchors = [akTop, akLeft, akRight]
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 6
+  end
+  object cbPause: TCheckBox
+    Left = 370
+    Height = 19
+    Top = 133
+    Width = 145
+    Caption = 'Pause after every source'
     TabOrder = 7
+  end
+  object memLog: TMemo
+    Left = 370
+    Height = 302
+    Top = 156
+    Width = 378
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ReadOnly = True
+    ScrollBars = ssAutoBoth
+    TabOrder = 8
   end
   object ImageList: TImageList
     Left = 8

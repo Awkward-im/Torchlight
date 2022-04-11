@@ -156,6 +156,7 @@ var
   sr:TSearchRec;
   f:file of byte;
   lbuf:PByte;
+  ldir:string;
   lsize:integer;
 begin
   if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
@@ -168,8 +169,9 @@ begin
       end
       else
       begin
+        ldir:=Copy(adir,Length(FRoot)+1)+'/';
         if CheckExt(sr.Name) and
-           ((FCheckProc=nil) or (FCheckProc(adir,sr.Name,FParam)>0)) then
+           ((FCheckProc=nil) or (FCheckProc(ldir,sr.Name,FParam)>0)) then
         begin
           if Pos('.MOD',UpCase(sr.Name))=(Length(sr.Name)-3) then
           begin
@@ -188,7 +190,7 @@ begin
               GetMem(lbuf,lsize);
               BlockRead(f,lbuf^,lsize);
               Close(f);
-              if (FActProc(lbuf,lsize,adir,sr.Name,FParam)>0) then inc(FCount);
+              if (FActProc(lbuf,lsize,ldir,sr.Name,FParam)>0) then inc(FCount);
               FreeMem(lbuf);
             end;
           end;

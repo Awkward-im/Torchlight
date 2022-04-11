@@ -90,6 +90,49 @@
           </Linking>
         </CompilerOptions>
       </Item>
+      <Item Name="Debug32">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="MODCombiner"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -139,6 +182,33 @@
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
         <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitCombine.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="fmask.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AskForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmAsk"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitcombocommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="unitComboCommon"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rglogging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGLogging"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGIO.Layout"/>
       </Unit>
     </Units>
   </ProjectOptions>

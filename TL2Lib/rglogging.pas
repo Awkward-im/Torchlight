@@ -1,12 +1,17 @@
-﻿{TODO: implement OnAdd event}
+﻿{TODO: implement OnAdd event for binaries}
+{TODO: use separate 'string' for Reserve}
 unit RGLogging;
 
 interface
 
 type
+  TRGLogOnAdd = function (var adata:string):integer of object;
+
+type
   TRGLog = object
   private
     FLog:pointer;
+    FOnAdd:TRGLogOnAdd;
     Fidx :cardinal;
     FSize:cardinal;
     FReserved:boolean;
@@ -31,6 +36,8 @@ type
     property Text:string   read GetText;
     property Log :pointer  read FLog;
     property size:cardinal read FSize;
+
+    property OnAdd:TRGLogOnAdd read FOnAdd write FOnAdd;
   end;
 
 var
@@ -131,8 +138,28 @@ begin
 end;
 
 procedure TRGLog.Add(const astr:string);
+var
+  ls:string;
+  i:integer;
 begin
-  AddText(FLog,FSize,astr);
+  ls:=astr;
+  if Assigned(FOnAdd) then
+  begin
+    if FReserved then
+    begin
+      FReserved:=false;
+      i:=FSize-Fidx-2;
+      SetLength(ls,i);
+      System.move((PAnsiChar(FLog)+Fidx)^,ls[1],i);
+      if FOnAdd(ls)<=0 then ;//exit;
+    end;
+    ls:=astr;
+    if FOnAdd(ls)<=0 then
+      exit;
+  end;
+
+  AddText(FLog,FSize,ls);
+
   FReserved:=false;
 end;
 
@@ -151,19 +178,21 @@ end;
 
 
 procedure TRGLog.Reserve(const astr:string);
+var
+  ls:string;
 begin
-  if FReserved then FSize:=Fidx
-  else Fidx:=FSize;
-  Add(astr);
+  ls:=astr;
+//  if Assigned(FOnAdd) and (FOnAdd(ls)<=0) then exit;
+
+  if FReserved then FSize:=Fidx else Fidx:=FSize;
+
+  AddText(FLog,FSize,ls);
   FReserved:=true;
 end;
 
 procedure TRGLog.Reserve(astr:PWideChar);
 begin
-  if FReserved then FSize:=Fidx
-  else Fidx:=FSize;
-  Add(astr);
-  FReserved:=true;
+  Reserve(UTF8Encode(WideString(astr)));
 end;
 
 

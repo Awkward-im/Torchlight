@@ -99,12 +99,12 @@ end;
 
 procedure TMODInfoForm.LoadFromInfo(const ami:TTL2ModInfo);
 begin
-  leTitle   .Text:=UTF8Encode(WideString(ami.title));//String(WideString(lmod.title));
-  leAuthor  .Text:=String(WideString(ami.author));
-  memDescr  .Text:=String(WideString(ami.descr));
-  leWebsite .Text:=String(WideString(ami.website));
-  leDownload.Text:=String(WideString(ami.download));
-  edGUID.Text:=IntToStr(ami.modid);
+  leTitle   .Text:=WideToStr(ami.title   );
+  leAuthor  .Text:=WideToStr(ami.author  );
+  memDescr  .Text:=WideToStr(ami.descr   );
+  leWebsite .Text:=WideToStr(ami.website );
+  leDownload.Text:=WideToStr(ami.download);
+  edGUID    .Text:=IntToStr (ami.modid   );
   seVersion.Value:=ami.modver;
 end;
 

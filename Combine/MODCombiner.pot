@@ -1,6 +1,42 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: taskform.bbcontinue.caption
+msgid "&Continue"
+msgstr ""
+
+#: taskform.caption
+msgid "AskForm"
+msgstr ""
+
+#: taskform.cbcurrentdir.caption
+msgid "This dir only"
+msgstr ""
+
+#: taskform.cbforall.caption
+msgid "Use for all files of mod"
+msgstr ""
+
+#: taskform.lblexist.caption
+msgid "Existing file"
+msgstr ""
+
+#: taskform.lblfilename.caption
+msgid "lblFileName"
+msgstr ""
+
+#: taskform.lblwhattodo.caption
+msgid "What to do?"
+msgstr ""
+
+#: taskform.rboverwrite.caption
+msgid "Overwrite"
+msgstr ""
+
+#: taskform.rbskip.caption
+msgid "Skip"
+msgstr ""
+
 #: tformmain.bbadddir.caption
 msgid "Add directory"
 msgstr ""
@@ -13,8 +49,20 @@ msgstr ""
 msgid "&Apply"
 msgstr ""
 
+#: tformmain.bbdelete.hint
+msgid "Delete selected"
+msgstr ""
+
 #: tformmain.bbmodinfo.caption
 msgid "Mod Info"
+msgstr ""
+
+#: tformmain.caption
+msgid "Combine mods to pack"
+msgstr ""
+
+#: tformmain.cbpause.caption
+msgid "Pause after every source"
 msgstr ""
 
 #: tformmain.lbldescr.caption
@@ -28,6 +76,14 @@ msgstr ""
 #: tformmain.lblmodlist.caption
 msgctxt "tformmain.lblmodlist.caption"
 msgid "Mods in pack"
+msgstr ""
+
+#: tformmain.sbdown.hint
+msgid "Move selected down"
+msgstr ""
+
+#: tformmain.sbup.hint
+msgid "Move selected up"
 msgstr ""
 
 #: tmodinfoform.bbcancel.caption

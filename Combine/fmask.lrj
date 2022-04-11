@@ -1,0 +1,11 @@
+{"version":1,"strings":[
+{"hash":144692941,"name":"taskform.caption","sourcebytes":[65,115,107,70,111,114,109],"value":"AskForm"},
+{"hash":68774964,"name":"taskform.cbforall.caption","sourcebytes":[85,115,101,32,102,111,114,32,97,108,108,32,102,105,108,101,115,32,111,102,32,109,111,100],"value":"Use for all files of mod"},
+{"hash":106622741,"name":"taskform.bbcontinue.caption","sourcebytes":[38,67,111,110,116,105,110,117,101],"value":"&Continue"},
+{"hash":6084837,"name":"taskform.lblfilename.caption","sourcebytes":[108,98,108,70,105,108,101,78,97,109,101],"value":"lblFileName"},
+{"hash":369152,"name":"taskform.rbskip.caption","sourcebytes":[83,107,105,112],"value":"Skip"},
+{"hash":211740261,"name":"taskform.rboverwrite.caption","sourcebytes":[79,118,101,114,119,114,105,116,101],"value":"Overwrite"},
+{"hash":140928741,"name":"taskform.lblexist.caption","sourcebytes":[69,120,105,115,116,105,110,103,32,102,105,108,101],"value":"Existing file"},
+{"hash":135037775,"name":"taskform.lblwhattodo.caption","sourcebytes":[87,104,97,116,32,116,111,32,100,111,63],"value":"What to do?"},
+{"hash":179770425,"name":"taskform.cbcurrentdir.caption","sourcebytes":[84,104,105,115,32,100,105,114,32,111,110,108,121],"value":"This dir only"}
+]}

@@ -499,7 +499,7 @@ end;
 
 function ParseLayoutMem(abuf:pByte; const afname:string):pointer;
 begin
-  if afname<>'' then RGLog.Add('Processing '+afname);
+  if afname<>'' then RGLog.Reserve('Processing '+afname);
 
   result:=ParseLayoutMem(abuf,GetLayoutType(afname));
 end;
