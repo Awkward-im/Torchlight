@@ -467,7 +467,7 @@ begin
   begin
     ls:=UpCase(afname);
     if      (pos('MEDIA\UI'       ,ls)>0) or (pos('MEDIA/UI'       ,ls)>0) then exit(ltUI)
-    else if (pos('MEDIA\Particles',ls)>0) or (pos('MEDIA/Particles',ls)>0) then exit(ltParticle);
+    else if (pos('MEDIA\PARTICLES',ls)>0) or (pos('MEDIA/PARTICLES',ls)>0) then exit(ltParticle);
   end;
   result:=ltLayout;
 end;

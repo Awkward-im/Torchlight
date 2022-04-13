@@ -1,18 +1,18 @@
 object FormMain: TFormMain
   Left = 463
-  Height = 468
+  Height = 531
   Top = 201
   Width = 753
   AllowDropFiles = True
   Caption = 'Combine mods to pack'
-  ClientHeight = 468
+  ClientHeight = 531
   ClientWidth = 753
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object lbModList: TListBox
     Left = 8
-    Height = 302
-    Top = 156
+    Height = 264
+    Top = 128
     Width = 296
     Anchors = [akTop, akLeft, akBottom]
     ItemHeight = 0
@@ -23,8 +23,8 @@ object FormMain: TFormMain
   object bbAddFile: TBitBtn
     Left = 8
     Height = 30
-    Top = 57
-    Width = 152
+    Top = 65
+    Width = 128
     Caption = 'Add file'
     Kind = bkOK
     OnClick = bbAddFileClick
@@ -34,7 +34,7 @@ object FormMain: TFormMain
     Left = 311
     Height = 40
     Hint = 'Move selected up'
-    Top = 156
+    Top = 128
     Width = 40
     Enabled = False
     Images = ImageList
@@ -45,29 +45,31 @@ object FormMain: TFormMain
     Left = 311
     Height = 40
     Hint = 'Move selected down'
-    Top = 418
+    Top = 352
     Width = 40
+    Anchors = [akLeft, akBottom]
     Enabled = False
     Images = ImageList
     ImageIndex = 0
     OnClick = sbDownClick
   end
   object deOutputDir: TDirectoryEdit
-    Left = 8
+    Left = 370
     Height = 23
-    Top = 24
-    Width = 345
+    Top = 25
+    Width = 378
     ShowHidden = False
     ButtonWidth = 23
     DirectInput = False
     NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
     MaxLength = 0
     TabOrder = 0
   end
   object lblDirHint: TLabel
-    Left = 8
+    Left = 370
     Height = 20
-    Top = 4
+    Top = 5
     Width = 164
     Caption = 'Choose Output Directory'
     Font.Height = -15
@@ -75,9 +77,9 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object bbApply: TBitBtn
-    Left = 238
+    Left = 648
     Height = 30
-    Top = 93
+    Top = 88
     Width = 91
     Caption = '&Apply'
     Enabled = False
@@ -86,10 +88,10 @@ object FormMain: TFormMain
     TabOrder = 4
   end
   object bbAddDir: TBitBtn
-    Left = 177
+    Left = 168
     Height = 30
-    Top = 56
-    Width = 152
+    Top = 65
+    Width = 136
     Caption = 'Add directory'
     Kind = bkOK
     OnClick = bbAddDirClick
@@ -99,7 +101,7 @@ object FormMain: TFormMain
     Left = 311
     Height = 40
     Hint = 'Delete selected'
-    Top = 332
+    Top = 184
     Width = 40
     Enabled = False
     Images = ImageList
@@ -109,7 +111,7 @@ object FormMain: TFormMain
   object lblModList: TLabel
     Left = 8
     Height = 21
-    Top = 131
+    Top = 103
     Width = 296
     Alignment = taCenter
     AutoSize = False
@@ -119,58 +121,85 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object bbModInfo: TBitBtn
-    Left = 72
+    Left = 370
     Height = 30
-    Top = 93
+    Top = 56
     Width = 88
-    Caption = 'Mod Info'
-    Kind = bkRetry
-    ModalResult = 4
+    Caption = 'Pack info'
+    Kind = bkHelp
     OnClick = bbModInfoClick
     TabOrder = 5
   end
   object lblDescr: TLabel
-    Left = 370
-    Height = 15
-    Top = 4
-    Width = 376
-    AutoSize = False
+    Left = 8
+    Height = 17
+    Top = 397
+    Width = 66
+    Anchors = [akLeft, akBottom]
     Caption = 'Description'
     Font.Height = -13
     ParentColor = False
     ParentFont = False
   end
   object memDescription: TMemo
-    Left = 370
+    Left = 8
     Height = 104
-    Top = 24
-    Width = 376
-    Anchors = [akTop, akLeft, akRight]
+    Top = 416
+    Width = 345
+    Anchors = [akLeft, akBottom]
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 6
   end
   object cbPause: TCheckBox
-    Left = 370
+    Left = 472
     Height = 19
-    Top = 133
+    Top = 64
     Width = 145
     Caption = 'Pause after every source'
     TabOrder = 7
   end
   object memLog: TMemo
     Left = 370
-    Height = 302
-    Top = 156
+    Height = 392
+    Top = 128
     Width = 378
     Anchors = [akTop, akLeft, akRight, akBottom]
     ReadOnly = True
     ScrollBars = ssAutoBoth
     TabOrder = 8
   end
-  object ImageList: TImageList
+  object cbPreset: TComboBox
     Left = 8
-    Top = 88
+    Height = 23
+    Top = 23
+    Width = 232
+    ItemHeight = 15
+    OnChange = cbPresetChange
+    ReadOnly = True
+    TabOrder = 9
+  end
+  object bbSave: TBitBtn
+    Left = 249
+    Height = 30
+    Top = 20
+    Width = 104
+    Caption = 'Save'
+    Kind = bkOK
+    OnClick = bbSaveClick
+    TabOrder = 10
+  end
+  object lblPreset: TLabel
+    Left = 8
+    Height = 15
+    Top = 5
+    Width = 37
+    Caption = 'Presets'
+    ParentColor = False
+  end
+  object ImageList: TImageList
+    Left = 320
+    Top = 280
     Bitmap = {
       4C7A060000001000000010000000850300000000000078DAED944D4F136110C7
       170897D2575A5ADE690B6C0B9642C184EF62A2378D064DF4584A4BA125C40309

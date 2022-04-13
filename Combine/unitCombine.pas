@@ -15,6 +15,7 @@ implementation
 
 uses
   fmAsk,
+  Diff,
 
   sysutils,
   rgglobal,
@@ -44,10 +45,13 @@ function actproc(
 var
   f:file of byte;
   ldst:string;
-  lnode:pointer;
-  istext:boolean;
+  lbuf,lnode:pointer;
+  lsize:integer;
+  isold,istext:boolean;
 begin
   result:=0;
+
+  //--- Check for text files/ Convert from binary if needs
 
   case UpCase(ExtractFileExt(aname)) of
     '.DAT',
@@ -80,27 +84,58 @@ begin
   end;
 
   ldst:=pourdata(aparam)^.outdir+adir+aname;
-  // check 1 - existing file
+
+  //--- check 1 - existing file
+
   if FileExists(ldst) then
   begin
+    // Check for same file
+    Assign(f,ldst);
+    Reset(f);
+    lsize:=FileSize(f);
+    if lsize=asize then
+    begin
+      GetMem(lbuf,asize);
+      BlockRead(f,lbuf^,asize);
+      isold:=CompareMem(abuf,PByte(lbuf),asize);
+      FreeMem(lbuf);
+    end;
+    Close(f);
+
+    if isold then exit(1);
+
     RGLog.Add(adir+aname+' file exists already');
-    // check 2 - file size (maybe not needed)
-    // check 3 - file content (what about different spaces only? use textdiff?)
 
     if pourdata(aparam)^.act=ask then
-      with tAskForm.Create(adir+aname) do
+    begin
+      with tAskForm.Create(adir+aname, lsize, asize
+           {, integer(pourdata(aparam)^.act)}) do
       begin
         pourdata(aparam)^.act:=tact(ShowModal());
         // 'skip' and 'overwrite' will be changed to 'ask' later?
         Free;
       end;
+    end;
 
+    case pourdata(aparam)^.act of
+      ask: ; // Compare
+      stop: exit(0);
+      skip,
+      skipall: exit(1);
+      overwrite,
+      overwritedir,
+      overwriteall: ; // do nothing, just rewrite file
+    else
+    end;
+
+    //  text file - use 'compare' result
     if istext then
     begin
     end;
   end
   else
   begin
+    // Create directory (trying once per scanning dir)
     if pourdata(aparam)^.lastdir<>adir then
     begin
       if not (pourdata(aparam)^.act in [skipall,overwriteall]) then
@@ -109,21 +144,15 @@ begin
       ForceDirectories(pourdata(aparam)^.outdir+adir);
       pourdata(aparam)^.lastdir:=adir;
     end;
-    // Save file aname to pourdata(aparam)^.outdir+adir
-    if istext then
-    begin
-    end;
+  end;
 
-    Assign(f,ldst);
-    Rewrite(f);
-    if IOResult=0 then
-    begin
-      BlockWrite(f,abuf^,asize);
-      Close(f);
-      result:=1;
-      // what about set source file date time?
-    end;
-
+  Assign(f,ldst);
+  Rewrite(f);
+  if IOResult=0 then
+  begin
+    BlockWrite(f,abuf^,asize);
+    Close(f);
+    result:=1;
   end;
 end;
 
@@ -131,18 +160,20 @@ function checkproc(const adir,aname:string; aparam:pointer):integer;
 var
   ldst:string;
 begin
-  ldst:=UpCase(aname);
-  if ldst='MOD.DAT' then
-    result:=0
-  else
+  result:=0;
+
+  ldst:=UpCase(adir);
+  if Pos('MEDIA',adir)=1 then
   begin
-    ldst:=ExtractFileExt(ldst);
-    if (ldst='.BINDAT') or
-       (ldst='.BINLAYOUT') or
-       (ldst='.RAW') then
-      result:=0
-    else
-      result:=1;
+    ldst:=UpCase(aname);
+    if ldst<>'MOD.DAT' then // must be always coz outside MEDIA folder
+    begin
+      ldst:=ExtractFileExt(ldst);
+      if (ldst<>'.BINDAT'   ) and
+         (ldst<>'.BINLAYOUT') and
+         (ldst<>'.RAW'      ) then
+        result:=1;
+    end;
   end;
 end;
 
@@ -161,12 +192,12 @@ end;
 
 initialization
 
-RGTags.Import('RGDICT','TEXT');
+  RGTags.Import('RGDICT','TEXT');
 
-LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
+  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
+  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
+  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
+  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
 
 end.

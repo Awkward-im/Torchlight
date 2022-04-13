@@ -1,3 +1,4 @@
+{TODO: implement 'compare' and 'stop' variants}
 unit fmAsk;
 
 {$mode ObjFPC}{$H+}
@@ -13,19 +14,26 @@ type
 
   TAskForm = class(TForm)
     bbContinue: TBitBtn;
+    bbStop: TBitBtn;
+    bbCompare: TBitBtn;
     cbForAll: TCheckBox;
     cbCurrentDir: TCheckBox;
+    lblOldSizeNum: TLabel;
+    lblNewSizeNum: TLabel;
+    lblOldSize: TLabel;
+    lblNewSize: TLabel;
     lblWhatToDo: TLabel;
-    lblExist: TLabel;
     lblFileName: TLabel;
     rbSkip: TRadioButton;
     rbOverwrite: TRadioButton;
+    procedure bbCompareClick(Sender: TObject);
     procedure bbContinueClick(Sender: TObject);
+    procedure bbStopClick(Sender: TObject);
     procedure cbForAllChange(Sender: TObject);
   private
 
   public
-     constructor Create(const fname:string); overload;
+     constructor Create(const fname:string; aoldsize,anewsize:integer{; amode:integer}); overload;
   end;
 
 var
@@ -40,17 +48,29 @@ uses
 
 { TAskForm }
 
+constructor TAskForm.Create(const fname: string; aoldsize, anewsize:integer{; amode:integer});
+var
+  lext:string;
+begin
+  Create(nil);
+{ no reason to implement coz 'amode' is 'ask' always right now
+//  tact(amode) = stop;
+  rbOverwrite .Checked:=tact(amode) in [overwrite,overwritedir,overwriteall];
+  rbSkip      .Checked:=tact(amode) in [ask,skip,skipall];
+  cbForAll    .Checked:=tact(amode) in [skipall, overwriteall];
+  cbCurrentDir.Checked:=tact(amode) = overwritedir;
+}
+  lext:=UpCase(ExtractFileExt(fname));
+  bbCompare.Visible:=(lext='.DAT') or (lext='.TEMPLATE') or (lext='.LAYOUT');
+  lblFileName.Caption:=fname;
+  lblOldSizeNum.Caption:=IntToStr(aoldsize);
+  lblNewSizeNum.Caption:=IntToStr(anewsize);
+end;
+
 procedure TAskForm.cbForAllChange(Sender: TObject);
 begin
   cbCurrentDir.Enabled:=not cbForAll.Checked;
   if cbForAll.Checked then cbCurrentDir.Checked:=false;
-end;
-
-constructor TAskForm.Create(const fname: string);
-begin
-  Create(nil);
-
-  lblFileName.Caption:=fname;
 end;
 
 procedure TAskForm.bbContinueClick(Sender: TObject);
@@ -71,6 +91,16 @@ begin
     else
       ModalResult:=ord(tact.overwrite)
   end;
+end;
+
+procedure TAskForm.bbStopClick(Sender: TObject);
+begin
+  ModalResult:=ord(tact.stop);
+end;
+
+procedure TAskForm.bbCompareClick(Sender: TObject);
+begin
+  ModalResult:=ord(tact.ask);
 end;
 
 end.

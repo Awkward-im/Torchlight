@@ -16,7 +16,10 @@ type
     bbAddDir: TBitBtn;
     bbDelete: TSpeedButton;
     bbModInfo: TBitBtn;
+    bbSave: TBitBtn;
     cbPause: TCheckBox;
+    cbPreset: TComboBox;
+    lblPreset: TLabel;
     lblDescr: TLabel;
     lbModList    : TListBox;
     memDescription: TMemo;
@@ -35,6 +38,8 @@ type
     procedure bbApplyClick(Sender: TObject);
     procedure bbDeleteClick(Sender: TObject);
     procedure bbModInfoClick(Sender: TObject);
+    procedure bbSaveClick(Sender: TObject);
+    procedure cbPresetChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure lbModListClick(Sender: TObject);
@@ -46,6 +51,7 @@ type
     LastFileDir:string;
 
     function AddToLog(var adata: string): integer;
+    procedure CheckTheButtons;
     procedure LoadPackSettings(const asect: string);
     procedure SavePackSettings;
     procedure ShowDescr(const fname: string);
@@ -121,6 +127,10 @@ begin
   end;
 
   ini.Free;
+
+  CheckTheButtons;
+  lbModList.ItemIndex:=lbModList.Count-1;
+  lbModListClick(Self);
 end;
 
 procedure TFormMain.SavePackSettings;
@@ -149,6 +159,13 @@ begin
 
   ini.UpdateFile;
   ini.Free;
+
+  if cbPreset.Items.IndexOf(lsect)<=0 then
+  begin
+    cbPreset.Items.Add(lsect);
+    cbPreset.ItemIndex:=cbPreset.Items.Count-1;
+  end;
+
 end;
 
 function TFormMain.AddToLog(var adata:string):integer;
@@ -196,21 +213,6 @@ begin
   CloseFile(f);
 end;
 
-procedure TFormMain.bbDeleteClick(Sender: TObject);
-var
-  i:integer;
-begin
-  { TODO : Delete data or not from string list }
-  i:=lbModList.ItemIndex;
-  lbModList.DeleteSelected;
-  if i>=lbModList.Count then i:=lbModList.Count-1;
-  lbModList.ItemIndex:=i;
-  lbModListClick(Self);
-
-  bbDelete.Enabled:=lbModList.Count>0;
-  bbApply .Enabled:=lbModList.Count>0;
-end;
-
 procedure TFormMain.bbModInfoClick(Sender: TObject);
 begin
   with TMODInfoForm.Create(Self,false) do
@@ -219,6 +221,22 @@ begin
     if ShowModal=mrOk then
       SaveToInfo(newModInfo);
   end;
+end;
+
+procedure TFormMain.bbSaveClick(Sender: TObject);
+begin
+  SavePackSettings;
+end;
+
+procedure TFormMain.cbPresetChange(Sender: TObject);
+begin
+  LoadPackSettings(cbPreset.Text);
+end;
+
+procedure TFormMain.CheckTheButtons;
+begin
+  bbDelete.Enabled:=lbModList.Count>0;
+  bbApply .Enabled:=lbModList.Count>0;
 end;
 
 procedure TFormMain.bbAddFileClick(Sender: TObject);
@@ -251,8 +269,7 @@ begin
             lbModList.AddItem(ExtractFileName(ld.Files[i]),TObject(IntPtr(lidx)));
         end;
       end;
-      bbDelete.Enabled:=lbModList.Count>0;
-      bbApply .Enabled:=lbModList.Count>0;
+      CheckTheButtons;
     end;
   finally
     ld.Free;
@@ -291,27 +308,13 @@ begin
             lbModList.AddItem(ExtractFileName(ld.Files[i]),TObject(IntPtr(lidx)));
         end;
       end;
-      bbDelete.Enabled:=lbModList.Count>0;
-      bbApply .Enabled:=lbModList.Count>0;
+      CheckTheButtons;
     end;
   finally
     ld.Free;
   end;
   lbModList.ItemIndex:=lbModList.Count-1;
   lbModListClick(Self);
-end;
-
-procedure TFormMain.FormCreate(Sender: TObject);
-begin
-  slModList:=TStringList.Create;
-  slModList.Capacity:=128;
-  MakeModInfo(newModInfo);
-end;
-
-procedure TFormMain.FormDestroy(Sender: TObject);
-begin
-  ClearModInfo(newModInfo);
-  slModList.Free;
 end;
 
 procedure TFormMain.ShowDescr(const fname:string);
@@ -338,16 +341,33 @@ end;
 
 procedure TFormMain.lbModListClick(Sender: TObject);
 begin
+
   sbUp  .Enabled:=lbModList.ItemIndex>0;
   sbDown.Enabled:=(lbModList.ItemIndex>=0) and
                   (lbModList.ItemIndex<(lbModList.Count-1));
 
   if lbModList.ItemIndex>=0 then
   begin
+    lbModList.Selected[lbModList.ItemIndex]:=true;
     ShowDescr(slModList[IntPtr(lbModList.Items.Objects[lbModList.ItemIndex])]);
   end
   else
     memDescription.Clear;
+end;
+
+procedure TFormMain.bbDeleteClick(Sender: TObject);
+var
+  i:integer;
+begin
+  { TODO : Delete data or not from string list }
+  i:=lbModList.ItemIndex;
+  lbModList.DeleteSelected;
+  if i>=lbModList.Count then i:=lbModList.Count-1;
+  lbModList.ItemIndex:=i;
+  lbModListClick(Self);
+
+  bbDelete.Enabled:=lbModList.Count>0;
+  bbApply .Enabled:=lbModList.Count>0;
 end;
 
 procedure TFormMain.sbDownClick(Sender: TObject);
@@ -394,6 +414,35 @@ begin
     bbApply.Enabled:=true;
   end;
 
+end;
+
+procedure TFormMain.FormCreate(Sender: TObject);
+var
+  ini:TIniFile;
+  sl:TStringList;
+begin
+  slModList:=TStringList.Create;
+  slModList.Capacity:=128;
+  MakeModInfo(newModInfo);
+
+  ini:=TIniFile.Create('combine.ini',[ifoEscapeLineFeeds,ifoStripQuotes]);
+  sl:=TStringList.Create;
+  ini.ReadSections(sl);
+  cbPreset.Items.Assign(sl);
+  cbPreset.Enabled:=cbPreset.Items.Count>0;
+  if cbPreset.Enabled then
+  begin
+    cbPreset.ItemIndex:=0;
+    cbPresetChange(self);
+  end;
+  sl.Free;
+  ini.Free;
+end;
+
+procedure TFormMain.FormDestroy(Sender: TObject);
+begin
+  ClearModInfo(newModInfo);
+  slModList.Free;
 end;
 
 end.

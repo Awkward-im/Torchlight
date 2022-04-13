@@ -1,12 +1,20 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: taskform.bbcompare.caption
+msgid "Compare"
+msgstr ""
+
 #: taskform.bbcontinue.caption
 msgid "&Continue"
 msgstr ""
 
+#: taskform.bbstop.caption
+msgid "Stop"
+msgstr ""
+
 #: taskform.caption
-msgid "AskForm"
+msgid "File is exists already"
 msgstr ""
 
 #: taskform.cbcurrentdir.caption
@@ -17,16 +25,28 @@ msgstr ""
 msgid "Use for all files of mod"
 msgstr ""
 
-#: taskform.lblexist.caption
-msgid "Existing file"
-msgstr ""
-
 #: taskform.lblfilename.caption
 msgid "lblFileName"
 msgstr ""
 
+#: taskform.lblnewsize.caption
+msgid "New file size"
+msgstr ""
+
+#: taskform.lblnewsizenum.caption
+msgid "lblNewSizeNum"
+msgstr ""
+
+#: taskform.lbloldsize.caption
+msgid "Old file size"
+msgstr ""
+
+#: taskform.lbloldsizenum.caption
+msgid "lblOldSizeNum"
+msgstr ""
+
 #: taskform.lblwhattodo.caption
-msgid "What to do?"
+msgid "Exists already. what to do?"
 msgstr ""
 
 #: taskform.rboverwrite.caption
@@ -54,7 +74,11 @@ msgid "Delete selected"
 msgstr ""
 
 #: tformmain.bbmodinfo.caption
-msgid "Mod Info"
+msgid "Pack info"
+msgstr ""
+
+#: tformmain.bbsave.caption
+msgid "Save"
 msgstr ""
 
 #: tformmain.caption
@@ -76,6 +100,10 @@ msgstr ""
 #: tformmain.lblmodlist.caption
 msgctxt "tformmain.lblmodlist.caption"
 msgid "Mods in pack"
+msgstr ""
+
+#: tformmain.lblpreset.caption
+msgid "Presets"
 msgstr ""
 
 #: tformmain.sbdown.hint

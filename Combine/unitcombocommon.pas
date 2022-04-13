@@ -11,8 +11,10 @@ uses
 type
   tact = (
     ask,
+    stop,
     skip,
     skipall,
+    compare,
     overwrite,
     overwritedir,
     overwriteall); // for binaries only?

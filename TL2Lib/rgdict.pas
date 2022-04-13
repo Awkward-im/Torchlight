@@ -934,6 +934,14 @@ begin
   if CompareWide(FLastSceneName,aname)=0 then
     exit(FLastScene);
 
+  // Get Default (if one scene only)
+  if PLayoutInfo(FDict)^.scenes[1].id=dword(-1) then
+  begin
+    FLastScene:=@(PLayoutInfo(FDict)^.scenes[0]);
+    FLastSceneName:=PSceneInfo(FLastScene)^.name;
+    exit(FLastScene);
+  end;
+
   FLastObject:=nil;
   FLastObjId :=dword(-1);
 

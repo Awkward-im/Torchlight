@@ -3,13 +3,13 @@ object AskForm: TAskForm
   Height = 203
   Top = 31
   Width = 579
-  Caption = 'AskForm'
+  Caption = 'File is exists already'
   ClientHeight = 203
   ClientWidth = 579
   object cbForAll: TCheckBox
     Left = 10
     Height = 25
-    Top = 168
+    Top = 136
     Width = 174
     Caption = 'Use for all files of mod'
     Font.Height = -16
@@ -20,8 +20,9 @@ object AskForm: TAskForm
   object bbContinue: TBitBtn
     Left = 448
     Height = 30
-    Top = 163
+    Top = 165
     Width = 123
+    Anchors = [akRight, akBottom]
     Caption = '&Continue'
     Default = True
     Kind = bkOK
@@ -30,10 +31,11 @@ object AskForm: TAskForm
     TabOrder = 1
   end
   object lblFileName: TLabel
-    Left = 10
+    Left = 8
     Height = 21
-    Top = 42
+    Top = 8
     Width = 83
+    Anchors = [akTop, akLeft, akRight]
     Caption = 'lblFileName'
     Font.Height = -16
     ParentColor = False
@@ -42,7 +44,7 @@ object AskForm: TAskForm
   object rbSkip: TRadioButton
     Left = 10
     Height = 25
-    Top = 112
+    Top = 62
     Width = 48
     Caption = 'Skip'
     Checked = True
@@ -54,41 +56,90 @@ object AskForm: TAskForm
   object rbOverwrite: TRadioButton
     Left = 10
     Height = 25
-    Top = 136
+    Top = 88
     Width = 87
     Caption = 'Overwrite'
     Font.Height = -16
     ParentFont = False
     TabOrder = 3
   end
-  object lblExist: TLabel
-    Left = 8
-    Height = 30
-    Top = 8
-    Width = 105
-    Caption = 'Existing file'
-    Font.Height = -21
-    ParentColor = False
-    ParentFont = False
-  end
   object lblWhatToDo: TLabel
     Left = 8
-    Height = 25
-    Top = 71
-    Width = 103
-    Caption = 'What to do?'
-    Font.Height = -19
+    Height = 21
+    Top = 33
+    Width = 181
+    Caption = 'Exists already. what to do?'
+    Font.Height = -16
     ParentColor = False
     ParentFont = False
   end
   object cbCurrentDir: TCheckBox
-    Left = 216
+    Left = 32
     Height = 21
-    Top = 138
+    Top = 112
     Width = 89
     Caption = 'This dir only'
     Font.Height = -13
     ParentFont = False
     TabOrder = 4
+  end
+  object bbStop: TBitBtn
+    Left = 360
+    Height = 30
+    Top = 165
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Cancel = True
+    Caption = 'Stop'
+    Kind = bkCancel
+    OnClick = bbStopClick
+    TabOrder = 5
+  end
+  object bbCompare: TBitBtn
+    Left = 192
+    Height = 30
+    Top = 165
+    Width = 120
+    Anchors = [akRight, akBottom]
+    Caption = 'Compare'
+    Kind = bkRetry
+    OnClick = bbCompareClick
+    TabOrder = 6
+  end
+  object lblOldSize: TLabel
+    Left = 304
+    Height = 15
+    Top = 39
+    Width = 60
+    Anchors = [akTop, akRight]
+    Caption = 'Old file size'
+    ParentColor = False
+  end
+  object lblNewSize: TLabel
+    Left = 304
+    Height = 15
+    Top = 62
+    Width = 65
+    Anchors = [akTop, akRight]
+    Caption = 'New file size'
+    ParentColor = False
+  end
+  object lblOldSizeNum: TLabel
+    Left = 392
+    Height = 15
+    Top = 39
+    Width = 79
+    Anchors = [akTop, akRight]
+    Caption = 'lblOldSizeNum'
+    ParentColor = False
+  end
+  object lblNewSizeNum: TLabel
+    Left = 392
+    Height = 15
+    Top = 62
+    Width = 84
+    Anchors = [akTop, akRight]
+    Caption = 'lblNewSizeNum'
+    ParentColor = False
   end
 end

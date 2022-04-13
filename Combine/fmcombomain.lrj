@@ -8,7 +8,9 @@
 {"hash":253550041,"name":"tformmain.bbadddir.caption","sourcebytes":[65,100,100,32,100,105,114,101,99,116,111,114,121],"value":"Add directory"},
 {"hash":182556644,"name":"tformmain.bbdelete.hint","sourcebytes":[68,101,108,101,116,101,32,115,101,108,101,99,116,101,100],"value":"Delete selected"},
 {"hash":188928763,"name":"tformmain.lblmodlist.caption","sourcebytes":[77,111,100,115,32,105,110,32,112,97,99,107],"value":"Mods in pack"},
-{"hash":90505615,"name":"tformmain.bbmodinfo.caption","sourcebytes":[77,111,100,32,73,110,102,111],"value":"Mod Info"},
+{"hash":165065407,"name":"tformmain.bbmodinfo.caption","sourcebytes":[80,97,99,107,32,105,110,102,111],"value":"Pack info"},
 {"hash":156067838,"name":"tformmain.lbldescr.caption","sourcebytes":[68,101,115,99,114,105,112,116,105,111,110],"value":"Description"},
-{"hash":39805973,"name":"tformmain.cbpause.caption","sourcebytes":[80,97,117,115,101,32,97,102,116,101,114,32,101,118,101,114,121,32,115,111,117,114,99,101],"value":"Pause after every source"}
+{"hash":39805973,"name":"tformmain.cbpause.caption","sourcebytes":[80,97,117,115,101,32,97,102,116,101,114,32,101,118,101,114,121,32,115,111,117,114,99,101],"value":"Pause after every source"},
+{"hash":366789,"name":"tformmain.bbsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
+{"hash":126655715,"name":"tformmain.lblpreset.caption","sourcebytes":[80,114,101,115,101,116,115],"value":"Presets"}
 ]}
