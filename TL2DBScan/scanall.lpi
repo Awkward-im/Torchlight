@@ -24,7 +24,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\..\TL2Lib;..\..\..\utils\SQL;..\..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils\SQL;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -65,7 +65,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\..\TL2Lib;..\..\..\utils\SQL;..\..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils\SQL;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -96,7 +96,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\..\TL2Lib;..\..\..\utils\SQL;..\..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils\SQL;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -129,7 +129,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\..\TL2Lib;..\..\..\utils\SQL;..\..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils\SQL;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -194,7 +194,7 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\utils\SQL\awkSQLite3.pas"/>
+        <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
@@ -258,46 +258,46 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgdict.pas"/>
+        <Filename Value="..\TL2Lib\rgdict.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGDict"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgglobal.pas"/>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgio.dat.pas"/>
+        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGIO.DAT"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgio.text.pas"/>
+        <Filename Value="..\TL2Lib\rgio.text.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGIO.Text"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgnode.pas"/>
+        <Filename Value="..\TL2Lib\rgnode.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGNode"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgpak.pas"/>
+        <Filename Value="..\TL2Lib\rgpak.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGPAK"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgscan.pas"/>
+        <Filename Value="..\TL2Lib\rgscan.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGScan"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\TL2Mod.pas"/>
+        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\utils\textcache.pas"/>
+        <Filename Value="..\..\utils\textcache.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
@@ -310,7 +310,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\TL2Lib;..\..\..\utils\SQL;..\..\..\utils"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\..\utils\SQL;..\..\utils"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

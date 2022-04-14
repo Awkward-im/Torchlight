@@ -1,6 +1,0 @@
-gender by letter
-added resursive item icon searching
-added item file and base data
-more icon sesarch for item
-check game media dir for icons too
-fix file and base name for items too

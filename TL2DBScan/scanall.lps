@@ -36,7 +36,7 @@
         <Loaded Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\utils\SQL\awkSQLite3.pas"/>
+        <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
@@ -176,7 +176,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgdict.pas"/>
+        <Filename Value="..\TL2Lib\rgdict.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGDict"/>
         <EditorIndex Value="-1"/>
@@ -184,7 +184,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgglobal.pas"/>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
         <EditorIndex Value="-1"/>
@@ -194,7 +194,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgio.dat.pas"/>
+        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGIO.DAT"/>
         <EditorIndex Value="-1"/>
@@ -204,7 +204,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgio.text.pas"/>
+        <Filename Value="..\TL2Lib\rgio.text.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGIO.Text"/>
         <EditorIndex Value="-1"/>
@@ -213,7 +213,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgnode.pas"/>
+        <Filename Value="..\TL2Lib\rgnode.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGNode"/>
         <EditorIndex Value="-1"/>
@@ -223,7 +223,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgpak.pas"/>
+        <Filename Value="..\TL2Lib\rgpak.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGPAK"/>
         <EditorIndex Value="-1"/>
@@ -233,7 +233,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\rgscan.pas"/>
+        <Filename Value="..\TL2Lib\rgscan.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGScan"/>
         <EditorIndex Value="-1"/>
@@ -242,7 +242,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\TL2Mod.pas"/>
+        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
@@ -251,7 +251,7 @@
         <UsageCount Value="29"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\utils\textcache.pas"/>
+        <Filename Value="..\..\utils\textcache.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
@@ -260,7 +260,7 @@
         <UsageCount Value="28"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\TL2DatNode.pas"/>
+        <Filename Value="..\TL2Lib\TL2DatNode.pas"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
@@ -268,7 +268,7 @@
         <UsageCount Value="22"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\TL2Lib\TL2ModInfo.pas"/>
+        <Filename Value="..\TL2Lib\TL2ModInfo.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="117"/>
         <CursorPos Y="81"/>
