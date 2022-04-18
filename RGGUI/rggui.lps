@@ -20,7 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
         <IsVisibleTab Value="True"/>
-        <CursorPos X="12" Y="17"/>
+        <TopLine Value="1175"/>
+        <CursorPos X="26" Y="1189"/>
+        <FoldState Value=" T7NF{?J"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -106,10 +108,9 @@
       <Unit>
         <Filename Value="..\TL2Lib\rgdict.pas"/>
         <UnitName Value="RGDict"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="7"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\stdctrls.pp"/>
@@ -189,38 +190,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="812" Column="15" TopLine="797"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="530" Column="39" TopLine="527"/>
-      </Position>
-      <Position>
-        <Filename Value="..\TL2Lib\rgdict.pas"/>
-        <Caret Line="7" Column="3"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="200" Column="14" TopLine="184"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="491" Column="28" TopLine="477"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="499" Column="18" TopLine="485"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="199" Column="13" TopLine="184"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="874" Column="12" TopLine="857"/>
-      </Position>
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="875" Column="16" TopLine="860"/>
@@ -308,6 +277,38 @@
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="528" Column="19" TopLine="520"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1214" TopLine="1188"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="187" Column="15" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="315" Column="41" TopLine="296"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="884" Column="33" TopLine="869"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="311" Column="26" TopLine="296"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="315" Column="52" TopLine="300"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="884" Column="59" TopLine="869"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1022" Column="74" TopLine="1011"/>
       </Position>
     </JumpHistory>
     <RunParams>

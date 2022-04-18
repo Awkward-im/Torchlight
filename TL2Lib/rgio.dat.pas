@@ -61,6 +61,10 @@ type
 {%REGION DAT decode}
 
 function TRGDATFile.GetStr(aid:dword):PWideChar;
+var
+  pc:PWideChar;
+  lhash:dword;
+  i:integer;
 begin
   if FVer=verTL1 then
   begin
@@ -72,6 +76,22 @@ begin
 
   if result=nil then
     result:=RGTags.Tag[aid];
+
+  // like UNITTYPES directory
+  if result=nil then
+  begin
+    for i:=0 to FLocals.Count-1 do
+    begin
+      pc:=FLocals.IdxTag[i];
+      lhash:=RGHash(pc);
+      if aid=lhash then
+      begin
+        aliases.Add(lhash,pc);
+        result:=pc;
+        break;
+      end;
+    end;
+  end;
 
   if result=nil then
   begin

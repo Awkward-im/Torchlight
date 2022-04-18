@@ -11,28 +11,43 @@ function MSecToTime(msec:cardinal):string;
 
 implementation
 
+uses
+  rglogging;
+
 procedure DbgLn(const atxt:string);
 begin
-  if IsConsole then
-    writeln(atxt);
+  RGLog.Add(atxt);
+//  if IsConsole then writeln(atxt);
 end;
 
 function Check(aval:qword; const albl:string; aright:qword):qword;
+var
+  lleft,lright:string;
 begin
   result:=aval;
 
   if aval<>aright then
-    if IsConsole then
-      writeln('  Unknown value ',aval,' at label ',albl,' must be [',aright,']');
+  begin
+    Str(aval  ,lleft);
+    Str(aright,lright);
+    RGLog.Add('  Unknown value '+lleft+' at label '+albl+' must be ['+lright+']');
+//    if IsConsole then  writeln('  Unknown value ',aval,' at label ',albl,' must be [',aright,']');
+  end;
 end;
 
 function Check(aval:single; const albl:string; aright:single):single;
+var
+  lleft,lright:string;
 begin
   result:=aval;
 
   if aval<>aright then
-    if IsConsole then
-      writeln(' Unknown value ',aval:0:4,' at label ',albl,' must be [',aright:0:4,']');
+  begin
+    Str(aval:0:4  ,lleft);
+    Str(aright:0:4,lright);
+    RGLog.Add('  Unknown value '+lleft+' at label '+albl+' must be ['+lright+']');
+//    if IsConsole then writeln(' Unknown value ',aval:0:4,' at label ',albl,' must be [',aright:0:4,']');
+  end;
 end;
 
 function SecToTime(sec:cardinal):string;
@@ -61,5 +76,10 @@ function MSecToTime(msec:cardinal):string;
 begin
   result:=SecToTime(msec div 1000);
 end;
+
+
+finalization
+
+  if RGLog.Size>0 then RGLog.SaveToFile;
 
 end.

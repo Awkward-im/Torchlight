@@ -11,10 +11,12 @@ function AddMod(const aroot, asrc:string):integer;
 
 implementation
 
-{$R dict.rc}
+{$R ..\TL2Lib\dict.rc}
 
 uses
   fmAsk,
+  fmComboDiff,
+  System.UITypes,
   Diff,
 
   sysutils,
@@ -57,6 +59,7 @@ begin
     '.DAT',
     '.TEMPLATE',
     '.ANIMATION',
+    '.HIE',
     '.WDAT': begin
       // check if file is real text or binary
       // MAYBE translate binary to text here
@@ -111,14 +114,14 @@ begin
       with tAskForm.Create(adir+aname, lsize, asize
            {, integer(pourdata(aparam)^.act)}) do
       begin
-        pourdata(aparam)^.act:=tact(ShowModal());
+        ShowModal();
+        pourdata(aparam)^.act:=tact(MyResult);
         // 'skip' and 'overwrite' will be changed to 'ask' later?
         Free;
       end;
     end;
 
     case pourdata(aparam)^.act of
-      ask: ; // Compare
       stop: exit(0);
       skip,
       skipall: exit(1);
@@ -126,12 +129,20 @@ begin
       overwritedir,
       overwriteall: ; // do nothing, just rewrite file
     else
+//      ask: ; // Compare
+      //  text file - use 'compare' result
+      if istext then
+      begin
+        with TCompareForm.Create(ldst,abuf) do
+        begin
+          if ShowModal()=mrOk then
+          else exit(1);
+
+          Free;
+        end;
+      end;
     end;
 
-    //  text file - use 'compare' result
-    if istext then
-    begin
-    end;
   end
   else
   begin
@@ -179,7 +190,7 @@ end;
 
 function AddMod(const aroot, asrc:string):integer;
 begin
-  RGLog.Add('Trying to append '+asrc);
+  RGLog.Add('---------------'#13#10'Trying to append '+asrc);
 
   scandata.outdir :=aroot;
   scandata.lastdir:='';

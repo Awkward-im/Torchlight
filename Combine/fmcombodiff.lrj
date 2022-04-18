@@ -1,0 +1,17 @@
+{"version":1,"strings":[
+{"hash":218671619,"name":"tcompareform.caption","sourcebytes":[67,111,109,112,97,114,101,32,102,105,108,101,115],"value":"Compare files"},
+{"hash":160486418,"name":"tcompareform.toolbutton2.caption","sourcebytes":[84,111,111,108,66,117,116,116,111,110,50],"value":"ToolButton2"},
+{"hash":160486417,"name":"tcompareform.toolbutton1.caption","sourcebytes":[84,111,111,108,66,117,116,116,111,110,49],"value":"ToolButton1"},
+{"hash":209750691,"name":"tcompareform.actsave.caption","sourcebytes":[83,97,118,101,32,99,104,97,110,103,101,115],"value":"Save changes"},
+{"hash":209750691,"name":"tcompareform.actsave.hint","sourcebytes":[83,97,118,101,32,99,104,97,110,103,101,115],"value":"Save changes"},
+{"hash":174338101,"name":"tcompareform.actrefresh.caption","sourcebytes":[82,101,99,111,109,112,97,114,101],"value":"Recompare"},
+{"hash":174338101,"name":"tcompareform.actrefresh.hint","sourcebytes":[82,101,99,111,109,112,97,114,101],"value":"Recompare"},
+{"hash":77089212,"name":"tcompareform.actcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
+{"hash":77089212,"name":"tcompareform.actcancel.hint","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
+{"hash":61759381,"name":"tcompareform.actnext.caption","sourcebytes":[78,101,120,116,32,100,105,102,102,101,114,101,110,99,101],"value":"Next difference"},
+{"hash":61759381,"name":"tcompareform.actnext.hint","sourcebytes":[78,101,120,116,32,100,105,102,102,101,114,101,110,99,101],"value":"Next difference"},
+{"hash":97219477,"name":"tcompareform.actprev.caption","sourcebytes":[80,114,101,118,46,32,100,105,102,102,101,114,101,110,99,101],"value":"Prev. difference"},
+{"hash":97219477,"name":"tcompareform.actprev.hint","sourcebytes":[80,114,101,118,46,32,100,105,102,102,101,114,101,110,99,101],"value":"Prev. difference"},
+{"hash":129459749,"name":"tcompareform.actcopy.caption","sourcebytes":[67,111,112,121,32,108,105,110,101],"value":"Copy line"},
+{"hash":129459749,"name":"tcompareform.actcopy.hint","sourcebytes":[67,111,112,121,32,108,105,110,101],"value":"Copy line"}
+]}

@@ -6,6 +6,7 @@ object AskForm: TAskForm
   Caption = 'File is exists already'
   ClientHeight = 203
   ClientWidth = 579
+  LCLVersion = '2.3.0.0'
   object cbForAll: TCheckBox
     Left = 10
     Height = 25
@@ -34,8 +35,9 @@ object AskForm: TAskForm
     Left = 8
     Height = 21
     Top = 8
-    Width = 83
+    Width = 563
     Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
     Caption = 'lblFileName'
     Font.Height = -16
     ParentColor = False
@@ -92,6 +94,7 @@ object AskForm: TAskForm
     Cancel = True
     Caption = 'Stop'
     Kind = bkCancel
+    ModalResult = 1
     OnClick = bbStopClick
     TabOrder = 5
   end
@@ -103,6 +106,7 @@ object AskForm: TAskForm
     Anchors = [akRight, akBottom]
     Caption = 'Compare'
     Kind = bkRetry
+    ModalResult = 1
     OnClick = bbCompareClick
     TabOrder = 6
   end

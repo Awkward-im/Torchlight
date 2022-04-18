@@ -23,7 +23,7 @@
             <Filename Value="rggui"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
+            <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
             <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>

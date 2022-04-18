@@ -57,6 +57,78 @@ msgstr ""
 msgid "Skip"
 msgstr ""
 
+#: tcompareform.actcancel.caption
+msgctxt "tcompareform.actcancel.caption"
+msgid "Cancel"
+msgstr ""
+
+#: tcompareform.actcancel.hint
+msgctxt "tcompareform.actcancel.hint"
+msgid "Cancel"
+msgstr ""
+
+#: tcompareform.actcopy.caption
+msgctxt "tcompareform.actcopy.caption"
+msgid "Copy line"
+msgstr ""
+
+#: tcompareform.actcopy.hint
+msgctxt "tcompareform.actcopy.hint"
+msgid "Copy line"
+msgstr ""
+
+#: tcompareform.actnext.caption
+msgctxt "tcompareform.actnext.caption"
+msgid "Next difference"
+msgstr ""
+
+#: tcompareform.actnext.hint
+msgctxt "tcompareform.actnext.hint"
+msgid "Next difference"
+msgstr ""
+
+#: tcompareform.actprev.caption
+msgctxt "tcompareform.actprev.caption"
+msgid "Prev. difference"
+msgstr ""
+
+#: tcompareform.actprev.hint
+msgctxt "tcompareform.actprev.hint"
+msgid "Prev. difference"
+msgstr ""
+
+#: tcompareform.actrefresh.caption
+msgctxt "tcompareform.actrefresh.caption"
+msgid "Recompare"
+msgstr ""
+
+#: tcompareform.actrefresh.hint
+msgctxt "tcompareform.actrefresh.hint"
+msgid "Recompare"
+msgstr ""
+
+#: tcompareform.actsave.caption
+msgctxt "tcompareform.actsave.caption"
+msgid "Save changes"
+msgstr ""
+
+#: tcompareform.actsave.hint
+msgctxt "tcompareform.actsave.hint"
+msgid "Save changes"
+msgstr ""
+
+#: tcompareform.caption
+msgid "Compare files"
+msgstr ""
+
+#: tcompareform.toolbutton1.caption
+msgid "ToolButton1"
+msgstr ""
+
+#: tcompareform.toolbutton2.caption
+msgid "ToolButton2"
+msgstr ""
+
 #: tformmain.bbadddir.caption
 msgid "Add directory"
 msgstr ""
@@ -115,6 +187,7 @@ msgid "Move selected up"
 msgstr ""
 
 #: tmodinfoform.bbcancel.caption
+msgctxt "tmodinfoform.bbcancel.caption"
 msgid "Cancel"
 msgstr ""
 

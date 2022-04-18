@@ -33,7 +33,9 @@ type
   private
 
   public
-     constructor Create(const fname:string; aoldsize,anewsize:integer{; amode:integer}); overload;
+    MyResult:integer;
+
+    constructor Create(const fname:string; aoldsize,anewsize:integer{; amode:integer}); overload;
   end;
 
 var
@@ -61,10 +63,17 @@ begin
   cbCurrentDir.Checked:=tact(amode) = overwritedir;
 }
   lext:=UpCase(ExtractFileExt(fname));
-  bbCompare.Visible:=(lext='.DAT') or (lext='.TEMPLATE') or (lext='.LAYOUT');
+  bbCompare.Visible:=
+      (lext='.DAT') or
+      (lext='.TEMPLATE') or
+      (lext='.HIE') or
+      (lext='.LAYOUT') or
+      (lext='.ANIMATION');
   lblFileName.Caption:=fname;
   lblOldSizeNum.Caption:=IntToStr(aoldsize);
   lblNewSizeNum.Caption:=IntToStr(anewsize);
+
+  MyResult:=ord(tact.ask);
 end;
 
 procedure TAskForm.cbForAllChange(Sender: TObject);
@@ -77,30 +86,25 @@ procedure TAskForm.bbContinueClick(Sender: TObject);
 begin
   if rbSkip.Checked then
   begin
-    if cbForAll.Checked then
-      ModalResult:=ord(tact.skipall)
-    else
-      ModalResult:=ord(tact.skip)
+    if cbForAll.Checked then MyResult:=ord(tact.skipall)
+    else                     MyResult:=ord(tact.skip)
   end
   else //if rbOverwrite.Checked then
   begin
-    if cbForAll.Checked then
-      ModalResult:=ord(tact.overwriteall)
-    else if cbCurrentDir.Checked then
-      ModalResult:=ord(tact.overwritedir)
-    else
-      ModalResult:=ord(tact.overwrite)
+    if      cbForAll    .Checked then MyResult:=ord(tact.overwriteall)
+    else if cbCurrentDir.Checked then MyResult:=ord(tact.overwritedir)
+    else                              MyResult:=ord(tact.overwrite)
   end;
 end;
 
 procedure TAskForm.bbStopClick(Sender: TObject);
 begin
-  ModalResult:=ord(tact.stop);
+  MyResult:=ord(tact.stop);
 end;
 
 procedure TAskForm.bbCompareClick(Sender: TObject);
 begin
-  ModalResult:=ord(tact.ask);
+  MyResult:=ord(tact.ask);
 end;
 
 end.

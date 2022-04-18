@@ -54,7 +54,7 @@ uses
   ,RGNode
   ;
 
-{$R dict.rc}
+{$R ..\TL2Lib\dicttag.rc}
 
 type
   PModScanner = ^TModScanner;
@@ -162,8 +162,6 @@ begin
     lver:=GetPAKVersion(apath);
     if      lver=verTL2Mod then result:=ReadModInfo(PChar(apath),lmod)
     else if lver=verTL2    then result:=true;
-
-    if result then RGTags.Import('RGDICT','TEXT'); //!!!!!
   end;
 
   if result then
@@ -258,5 +256,8 @@ begin
 end;
 
 {%ENDREGION}
+
+initialization
+  RGTags.Import('RGDICT','TEXT');
 
 end.

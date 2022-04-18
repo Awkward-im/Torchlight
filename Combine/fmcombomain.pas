@@ -42,6 +42,7 @@ type
     procedure cbPresetChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure lblModListClick(Sender: TObject);
     procedure lbModListClick(Sender: TObject);
     procedure sbDownClick(Sender: TObject);
     procedure sbUpClick(Sender: TObject);
@@ -68,6 +69,8 @@ implementation
 {$R *.lfm}
 
 uses
+  fmComboDiff,
+
   INIFiles,
   fmModInfo,
   rglogging,
@@ -443,6 +446,17 @@ procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   ClearModInfo(newModInfo);
   slModList.Free;
+end;
+
+procedure TFormMain.lblModListClick(Sender: TObject);
+begin
+          with TCompareForm.Create(nil) do
+        begin
+          if ShowModal()=mrOk then ;
+
+          Free;
+        end;
+
 end;
 
 end.

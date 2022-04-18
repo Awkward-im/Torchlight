@@ -143,6 +143,12 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="SynEditDsgn"/>
+      </Item>
+      <Item>
+        <PackageName Value="SynEdit"/>
+      </Item>
+      <Item>
         <PackageName Value="LazControls"/>
       </Item>
       <Item>
@@ -209,6 +215,14 @@
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGIO.Layout"/>
+      </Unit>
+      <Unit>
+        <Filename Value="fmcombodiff.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CompareForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmComboDiff"/>
       </Unit>
     </Units>
   </ProjectOptions>

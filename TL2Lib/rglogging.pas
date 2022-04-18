@@ -111,6 +111,7 @@ begin
   FIdx :=0;
   FSize:=0;
   FReserved:=false;
+  FOnAdd:=nil;
 end;
 
 procedure TRGLog.Clear;

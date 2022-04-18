@@ -184,7 +184,7 @@ var
 implementation
 
 {$R *.lfm}
-{$R dict.rc}
+{$R ..\TL2Lib\dict.rc}
 
 uses
   IntfGraphics,
@@ -308,11 +308,11 @@ end;
 
 procedure TRGGUIForm.OpenFile(const aname:string);
 begin
-  rgpi.fname:=aname;
+  rgpi.fname:=WideString(aname);
   if GetPAKInfo(aname,rgpi,piFullParse) then
   begin
     btnMODDAT.Visible:=rgpi.ver=verTL2Mod;
-    Self.Caption:='RGGUI - '+rgpi.fname;
+    Self.Caption:='RGGUI - '+AnsiString(rgpi.fname);
     StatusBar.Panels[0].Text:='Total: '+IntToStr(rgpi.total)+'; dirs: '+IntToStr(Length(rgpi.Entries));
 //      sgMain.Columns[colTime-1].Visible:=(cbTime.Checked) and (ABS(rgpi.ver)=verTL2);
     SetupView(Self);
@@ -881,7 +881,7 @@ begin
   if NodeToWide(lnode,pc) then
   begin
     SynEdit.Highlighter:=SynTSyn;
-    SynEdit.Text:=WideCharToString(pc+1); // skip sign
+    SynEdit.Text:=WideToStr(pc+1);//WideCharToString(pc+1); // skip sign
     SynEdit.Visible:=true;
     FreeMem(pc);
   end;
@@ -1019,7 +1019,7 @@ begin
 
   sgMain.Cells[colDir   ,arow]:=adir;
   sgMain.Cells[colName  ,arow]:=afile.name;
-  sgMain.Cells[colExt   ,arow]:=Copy(ExtractFileExt(afile.name),2);
+  sgMain.Cells[colExt   ,arow]:=Copy(ExtractFileExt(WideToStr(afile.name)),2);
   sgMain.Cells[colPack  ,arow]:=IntToStr(afile.size_c);
   sgMain.Cells[colUnpack,arow]:=IntToStr(afile.size_u);
   sgMain.Cells[colType  ,arow]:=PAKCategoryName(PAKTypeToCategory(afile.ftype));
@@ -1186,7 +1186,7 @@ begin
   sl.Sorted:=true;
   for i:=0 to High(rgpi.Entries) do
   begin
-    ls:=UpCase(WideString(rgpi.Entries[i].name));
+    ls:=UpCase(WideToStr(rgpi.Entries[i].name));
     if sl.IndexOf(ls)<0 then
       sl.AddObject(ls,TObject(IntPtr(i)));
   end;

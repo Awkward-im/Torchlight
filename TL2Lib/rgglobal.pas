@@ -243,7 +243,7 @@ procedure QuaternionToMatrix(const q:TVector4; out m:TMatrix4x4);
 
 function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
 function RGHash(instr:PWideChar; alen:integer=0):dword;
-function RGHash(instr:PChar    ; alen:integer=0):dword;
+function RGHash(instr:PAnsiChar; alen:integer=0):dword;
 function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
 
 //==========================
