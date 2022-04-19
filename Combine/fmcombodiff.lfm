@@ -20,7 +20,6 @@ object CompareForm: TCompareForm
       Action = actPrev
       Images = FormMain.ImageList
       ImageIndex = 1
-      OnClick = PrevClick
       ShowCaption = False
       ShowHint = True
       ParentShowHint = False
@@ -33,7 +32,6 @@ object CompareForm: TCompareForm
       Action = actNext
       Images = FormMain.ImageList
       ImageIndex = 0
-      OnClick = NextClick
       ShowCaption = False
       ShowHint = True
       ParentShowHint = False
@@ -1136,36 +1134,43 @@ object CompareForm: TCompareForm
       Enabled = False
       Hint = 'Save changes'
       ImageIndex = 2
+      OnExecute = actSaveExecute
       ShortCut = 16467
     end
     object actRefresh: TAction
       Caption = 'Recompare'
       Hint = 'Recompare'
       ImageIndex = 6
+      OnExecute = actRefreshExecute
       ShortCut = 16466
     end
     object actCancel: TAction
       Caption = 'Cancel'
       Hint = 'Cancel'
       ImageIndex = 5
+      OnExecute = actCancelExecute
       ShortCut = 32856
     end
     object actNext: TAction
       Caption = 'Next difference'
       Hint = 'Next difference'
       ImageIndex = 0
+      OnExecute = actNextClick
       ShortCut = 32808
     end
     object actPrev: TAction
       Caption = 'Prev. difference'
       Hint = 'Prev. difference'
       ImageIndex = 1
+      OnExecute = actPrevClick
       ShortCut = 32806
     end
     object actCopy: TAction
       Caption = 'Copy line'
       Hint = 'Copy line'
       ImageIndex = 3
+      OnExecute = actCopyClick
+      ShortCut = 32805
     end
   end
 end

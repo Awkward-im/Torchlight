@@ -215,6 +215,10 @@ msgstr ""
 msgid "Mod Download URL"
 msgstr ""
 
+#: tmodinfoform.lefilename.editlabel.caption
+msgid "Mod File Name"
+msgstr ""
+
 #: tmodinfoform.letitle.editlabel.caption
 msgid "Mod Title"
 msgstr ""

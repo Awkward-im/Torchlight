@@ -6,11 +6,10 @@ object MODInfoForm: TMODInfoForm
   Caption = 'MOD Info'
   ClientHeight = 311
   ClientWidth = 751
-  LCLVersion = '2.3.0.0'
   object seVersion: TSpinEditEx
     Left = 7
     Height = 23
-    Top = 136
+    Top = 128
     Width = 88
     MaxLength = 0
     NumbersOnly = True
@@ -22,7 +21,7 @@ object MODInfoForm: TMODInfoForm
   object lblVersion: TLabel
     Left = 7
     Height = 15
-    Top = 112
+    Top = 104
     Width = 66
     Caption = 'Mod version'
     ParentColor = False
@@ -52,7 +51,7 @@ object MODInfoForm: TMODInfoForm
   object leWebsite: TLabeledEdit
     Left = 7
     Height = 23
-    Top = 192
+    Top = 184
     Width = 376
     EditLabel.Height = 15
     EditLabel.Width = 376
@@ -63,7 +62,7 @@ object MODInfoForm: TMODInfoForm
   object leDownload: TLabeledEdit
     Left = 7
     Height = 23
-    Top = 240
+    Top = 232
     Width = 376
     EditLabel.Height = 15
     EditLabel.Width = 376
@@ -73,7 +72,7 @@ object MODInfoForm: TMODInfoForm
   end
   object memDescr: TMemo
     Left = 391
-    Height = 239
+    Height = 231
     Top = 24
     Width = 352
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -90,7 +89,7 @@ object MODInfoForm: TMODInfoForm
   object lblGUID: TLabel
     Left = 113
     Height = 15
-    Top = 112
+    Top = 104
     Width = 270
     Alignment = taRightJustify
     AutoSize = False
@@ -125,7 +124,7 @@ object MODInfoForm: TMODInfoForm
   object edGUID: TEdit
     Left = 113
     Height = 23
-    Top = 136
+    Top = 128
     Width = 232
     NumbersOnly = True
     TabOrder = 3
@@ -139,5 +138,16 @@ object MODInfoForm: TMODInfoForm
     Margin = 4
     OnClick = bbNewGUIDClick
     TabOrder = 4
+  end
+  object leFilename: TLabeledEdit
+    Left = 8
+    Height = 23
+    Top = 281
+    Width = 376
+    EditLabel.Height = 15
+    EditLabel.Width = 376
+    EditLabel.Caption = 'Mod File Name'
+    EditLabel.ParentColor = False
+    TabOrder = 10
   end
 end

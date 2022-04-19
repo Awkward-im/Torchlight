@@ -273,6 +273,12 @@ begin
   if amod.website <>nil then FreeMem(amod.website);
   if amod.download<>nil then FreeMem(amod.download);
   if amod.filename<>nil then FreeMem(amod.filename);
+
+  if amod.steam_preview<>nil then FreeMem(amod.steam_preview);
+  if amod.steam_tags   <>nil then FreeMem(amod.steam_tags);
+  if amod.steam_descr  <>nil then FreeMem(amod.steam_descr);
+  if amod.long_descr   <>nil then FreeMem(amod.long_descr);
+  
   if Length(amod.reqs)>0 then
   begin
     for i:=0 to High(amod.reqs) do
@@ -336,6 +342,12 @@ begin
       else if IsNodeName(lnode,'MOD_FILE_NAME') then CopyWide(amod.filename,AsString(lnode))
       else if IsNodeName(lnode,'VERSION'      ) then amod.modver:=AsInteger  (lnode)
       else if IsNodeName(lnode,'MOD_ID'       ) then amod.modid :=AsInteger64(lnode)
+
+      else if IsNodeName(lnode,'STEAM_PREVIEW_FILE'      ) then CopyWide(amod.steam_preview,AsString(lnode))
+      else if IsNodeName(lnode,'STEAM_TAGS'              ) then CopyWide(amod.steam_tags   ,AsString(lnode))
+      else if IsNodeName(lnode,'STEAM_CHANGE_DESCRIPTION') then CopyWide(amod.steam_descr  ,AsString(lnode))
+      else if IsNodeName(lnode,'LONG_DESCRIPTION'        ) then CopyWide(amod.long_descr   ,AsString(lnode))
+      
       else if IsNodeName(lnode,'REMOVE_FILES' ) then
       begin
         if GetNodeType(lnode)=rgGroup then
@@ -392,6 +404,11 @@ begin
   AddString   (lroot,'DOWNLOAD_URL' , amod.download);
   AddString   (lroot,'MOD_FILE_NAME', amod.filename);
   AddInteger  (lroot,'VERSION'      , amod.modver  );
+
+  if amod.steam_preview<>nil then AddString(lroot,'STEAM_PREVIEW_FILE'      , amod.steam_preview);
+  if amod.steam_tags   <>nil then AddString(lroot,'STEAM_TAGS'              , amod.steam_tags   );
+  if amod.steam_descr  <>nil then AddString(lroot,'STEAM_CHANGE_DESCRIPTION', amod.steam_descr  );
+  if amod.long_descr   <>nil then AddString(lroot,'LONG_DESCRIPTION'        , amod.long_descr   );
 
   if Length(amod.dels)>0 then
   begin

@@ -42,7 +42,6 @@ type
     procedure cbPresetChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure lblModListClick(Sender: TObject);
     procedure lbModListClick(Sender: TObject);
     procedure sbDownClick(Sender: TObject);
     procedure sbUpClick(Sender: TObject);
@@ -69,7 +68,7 @@ implementation
 {$R *.lfm}
 
 uses
-  fmComboDiff,
+  fileutil,
 
   INIFiles,
   fmModInfo,
@@ -145,6 +144,8 @@ begin
   ini:=TIniFile.Create('combine.ini',[ifoEscapeLineFeeds,ifoStripQuotes]);
   lsect:=ExtractFileName(deOutputDir.Text);
 
+  ini.WriteString('base','last',lsect);
+
   ini.WriteString(lsect,'outdir',deOutputDir.Text);
 
   ini.WriteString (lsect,'mi.author'  ,WideToStr(newModInfo.author));
@@ -184,9 +185,12 @@ var
   lptr:TRGLogOnAdd;
   i:integer;
 begin
+  {TODO: maybe remove autosave}
   SavePackSettings;
 
   memLog.Clear;
+
+  DeleteDirectory(deOutputDir.Text,true);
 
   SaveModConfiguration(newModInfo,PChar(deOutputDir.Text+'\MOD.DAT'));
 
@@ -194,6 +198,7 @@ begin
   RGLog.OnAdd:=@AddToLog;
   for i:=0 to lbModList.Count-1 do
   begin
+    Application.ProcessMessages;
     if AddMod(deOutputDir.Text,
       slModList[IntPtr(lbModList.Items.Objects[i])])=0 then
     begin
@@ -423,6 +428,7 @@ procedure TFormMain.FormCreate(Sender: TObject);
 var
   ini:TIniFile;
   sl:TStringList;
+  lsect:string;
 begin
   slModList:=TStringList.Create;
   slModList.Capacity:=128;
@@ -433,12 +439,19 @@ begin
   ini.ReadSections(sl);
   cbPreset.Items.Assign(sl);
   cbPreset.Enabled:=cbPreset.Items.Count>0;
+
   if cbPreset.Enabled then
   begin
-    cbPreset.ItemIndex:=0;
+    lsect:=ini.ReadString('base','last','');
+    if lsect<>'' then
+      cbPreset.ItemIndex:=cbPreset.Items.IndexOf(lsect)
+    else
+      cbPreset.ItemIndex:=0;
     cbPresetChange(self);
   end;
+
   sl.Free;
+
   ini.Free;
 end;
 
@@ -446,17 +459,6 @@ procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   ClearModInfo(newModInfo);
   slModList.Free;
-end;
-
-procedure TFormMain.lblModListClick(Sender: TObject);
-begin
-          with TCompareForm.Create(nil) do
-        begin
-          if ShowModal()=mrOk then ;
-
-          Free;
-        end;
-
 end;
 
 end.

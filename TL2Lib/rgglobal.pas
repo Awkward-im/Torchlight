@@ -183,6 +183,12 @@ type
     website :PUnicodeChar; // 512 max
     download:PUnicodeChar; // 512 max
     filename:PUnicodeChar;
+    // start of additional info
+    steam_preview:PUnicodeChar;
+    steam_tags   :PUnicodeChar;
+    steam_descr  :PUnicodeChar;
+    long_descr   :PUnicodeChar;
+    // end of additional info
     dels    :array of PUnicodeChar;
     offData :DWord;
     offMan  :DWord;

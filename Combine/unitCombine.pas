@@ -17,7 +17,6 @@ uses
   fmAsk,
   fmComboDiff,
   System.UITypes,
-  Diff,
 
   sysutils,
   rgglobal,
@@ -136,7 +135,12 @@ begin
         with TCompareForm.Create(ldst,abuf) do
         begin
           if ShowModal()=mrOk then
-          else exit(1);
+            RGLog.Add('Old file was replaced')
+          else
+          begin
+            RGLog.Add('Old file kept');
+            exit(1);
+          end;
 
           Free;
         end;

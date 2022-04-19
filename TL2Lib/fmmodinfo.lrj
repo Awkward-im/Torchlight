@@ -7,5 +7,6 @@
 {"hash":29751356,"name":"tmodinfoform.ledownload.editlabel.caption","sourcebytes":[77,111,100,32,68,111,119,110,108,111,97,100,32,85,82,76],"value":"Mod Download URL"},
 {"hash":256717742,"name":"tmodinfoform.lbldescr.caption","sourcebytes":[77,111,100,32,68,101,115,99,114,105,112,116,105,111,110],"value":"Mod Description"},
 {"hash":190612841,"name":"tmodinfoform.lblguid.caption","sourcebytes":[77,111,100,32,71,85,73,68,32,40,99,108,105,99,107,32,98,117,116,116,111,110,32,102,111,114,32,110,101,119,41],"value":"Mod GUID (click button for new)"},
-{"hash":77089212,"name":"tmodinfoform.bbcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"}
+{"hash":77089212,"name":"tmodinfoform.bbcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
+{"hash":102960261,"name":"tmodinfoform.lefilename.editlabel.caption","sourcebytes":[77,111,100,32,70,105,108,101,32,78,97,109,101],"value":"Mod File Name"}
 ]}

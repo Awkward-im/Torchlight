@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   Buttons, ActnList, SynEdit, SynHighlighterT, SynEditMiscClasses,
-  SynEditMarkupSpecialLine, Diff, SynEditTypes;
+  {SynEditMarkupSpecialLine, }Diff, SynEditTypes;
 
 type
 
@@ -34,8 +34,12 @@ type
     ToolBar: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
-    procedure NextClick(Sender: TObject);
-    procedure PrevClick(Sender: TObject);
+    procedure actCancelExecute(Sender: TObject);
+    procedure actCopyClick(Sender: TObject);
+    procedure actNextClick(Sender: TObject);
+    procedure actPrevClick(Sender: TObject);
+    procedure actRefreshExecute(Sender: TObject);
+    procedure actSaveExecute(Sender: TObject);
     procedure seOldChange(Sender: TObject);
     procedure seStatusChange(Sender: TObject; Changes: TSynStatusChanges);
     procedure SESpecialLineMarkup(Sender: TObject; Line: integer;
@@ -43,7 +47,10 @@ type
   private
     SynTSyn: TSynTSyn;
     Diff: TDiff;
+    srcfile:string;
+
     procedure DoCompare(slold, slnew: TStrings);
+    procedure GetPureText(se:TSynEdit; out sl:TStrings);
 
   public
     constructor Create(const fname:string; anew:PByte); overload;
@@ -70,27 +77,31 @@ begin
     if Kind=ckAdd then
     begin
       Special := True ; //marca como línea especial
-      Markup.Background := clAqua;
+      Markup.Background := $FFAAAA;
 //      seOld.Lines[i]:=slold[oldindex1];
     end;
     if Kind=ckDelete then
     begin
       Special := True ; //marca como línea especial
-      Markup.Background := clOlive;
+      Markup.Background := $AAAAFF;
 //      seNew.Lines[i]:=slnew[oldindex2];
     end;
     if Kind=ckModify then
     begin
       Special := True ; //marca como línea especial
-      Markup.Background := clGray;
+      Markup.Background := $AAFFAA;
+      Markup.Foreground := $000000;
     end;
   end;
 end;
 
 procedure TCompareForm.seStatusChange(Sender: TObject; Changes: TSynStatusChanges);
 begin
-  if      Sender=seold then senew.TopLine:=(Sender as TSynEdit).TopLine
-  else if Sender=senew then seold.TopLine:=(Sender as TSynEdit).TopLine;
+  if TSynStatusChange.scTopLine in Changes then
+  begin
+    if      Sender=seold then senew.TopLine:=(Sender as TSynEdit).TopLine
+    else if Sender=senew then seold.TopLine:=(Sender as TSynEdit).TopLine;
+  end;
 end;
 
 procedure TCompareForm.DoCompare(slold,slnew:TStrings);
@@ -103,13 +114,13 @@ begin
   hlold:=TIntegerList.Create;
   hlnew:=TIntegerList.Create;
 
-  hlold.Clear;
+  hlold.Count:=slold.Count;
   for i:=0 to slold.Count-1 do
-    hlold.Add(RGHash(PChar(slold[i])));
+    hlold.Items[i]:=RGHash(PChar(slold[i]));
 
-  hlnew.Clear;
+  hlnew.Count:=slnew.Count;
   for i:=0 to slnew.Count-1 do
-    hlnew.Add(RGHash(PChar(slnew[i])));
+    hlnew.Items[i]:=RGHash(PChar(slnew[i]));
 
   Diff.Execute(hlold, hlnew);
 
@@ -121,8 +132,8 @@ begin
     StatusBar.Panels[3].Text := ' Deletes: ' + inttostr(deletes);
   end;
 
-  seOld.Lines.Clear;
-  seNew.Lines.Clear;
+  seOld.Lines.Clear; //seOld.ClearAll;
+  seNew.Lines.Clear; //seNew.ClearAll;
   seOld.Lines.Capacity:=Diff.Count;
   seNew.Lines.Capacity:=Diff.Count;
 
@@ -152,6 +163,7 @@ begin
   // pos to first difference
   if ltop>=0 then
   begin
+    inc(ltop);
     seOld.TopLine:=ltop;
     seNew.TopLine:=ltop;
     seold.CaretY :=ltop;
@@ -174,9 +186,20 @@ begin
   actSave.Enabled:=seold.Modified;
 end;
 
+procedure TCompareForm.GetPureText(se:TSynEdit; out sl:TStrings);
+var
+  i:integer;
+begin
+  sl:=TStringList.Create;
+  sl.Capacity:=se.Lines.Count;
+
+  for i:=0 to se.Lines.Count-1 do
+    if se.Lines[i]<>'' then sl.Add(se.Lines[i]);
+end;
+
 constructor TCompareForm.Create(const fname:string; anew:PByte);
 var
-  slold,slnew:TStringList;
+  slold,slnew:TStrings;
   pc:PWideChar;
 begin
   Create(nil);
@@ -187,6 +210,8 @@ begin
   seOld.Highlighter:=SynTSyn;
   seNew.Highlighter:=SynTSyn;
 
+  srcfile:=fname;
+
   slold:=TStringList.Create;
   slnew:=TStringList.Create;
 
@@ -196,16 +221,19 @@ begin
   slnew.Text:=WideToStr(pc);
 
   DoCompare(slold, slnew);
+
+  slold.Free;
+  slnew.Free;
 end;
 
-procedure TCompareForm.PrevClick(Sender: TObject);
+procedure TCompareForm.actPrevClick(Sender: TObject);
 var
   row: integer;
   Kind: TChangeKind;
 begin
   {TODO: Recompare before if was changed}
 //  row:=seold.TopLine;
-  row:=seold.CaretY;
+  row:=seold.CaretY-1;
   if row=0 then exit;
 
   Kind:=Diff.Compares[row].Kind;
@@ -218,6 +246,7 @@ begin
   end;
 
 //  If row<seold.TopLine then
+  inc(row);
   If row<seold.CaretY then
   begin
     seold.CaretY:=row;
@@ -228,14 +257,38 @@ begin
   {TODO: actPrev.Enabled:=false if first occur}
 end;
 
-procedure TCompareForm.NextClick(Sender: TObject);
+procedure TCompareForm.actRefreshExecute(Sender: TObject);
+var
+  slold,slnew:TStrings;
+begin
+  GetPureText(seold,slold);
+  GetPureText(senew,slnew);
+
+  DoCompare(slold,slnew);
+
+  slold.Free;
+  slnew.Free;
+end;
+
+procedure TCompareForm.actSaveExecute(Sender: TObject);
+var
+  slold:TStrings;
+begin
+  GetPureText(seold,slold);
+
+  slold.WriteBOM:=true;
+  slold.SaveToFile(srcfile,TEncoding.Unicode);
+  slold.Free;
+end;
+
+procedure TCompareForm.actNextClick(Sender: TObject);
 var
   row: integer;
   Kind: TChangeKind;
 begin
 {TODO: Recompare before if was changed}
 //  row:=seold.TopLine;
-  row:=seold.CaretY;
+  row:=seold.CaretY-1;
   if row=(seold.Lines.Count-1) then exit;
 
   Kind:=Diff.Compares[row].Kind;
@@ -250,6 +303,7 @@ begin
   end;
 
 //  if row>seold.TopLine then
+  inc(row);
   if row>seold.CaretY then
   begin
     seold.CaretY:=row;
@@ -258,6 +312,17 @@ begin
 //    senew.TopLine:=row;
   end;
   {TODO: actNext.Enabled:=false if last occur}
+end;
+
+procedure TCompareForm.actCopyClick(Sender: TObject);
+begin
+//  seold.InsertTextAtCaret(senew.Lines[senew.CaretY-1]);
+  seold.Lines[seold.CaretY-1]:=senew.Lines[senew.CaretY-1];
+end;
+
+procedure TCompareForm.actCancelExecute(Sender: TObject);
+begin
+  ModalResult:=mrCancel;
 end;
 
 end.

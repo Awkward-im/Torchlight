@@ -9,6 +9,7 @@ object FormMain: TFormMain
   ClientWidth = 753
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  LCLVersion = '2.3.0.0'
   object lbModList: TListBox
     Left = 8
     Height = 264
@@ -119,7 +120,6 @@ object FormMain: TFormMain
     Font.Height = -16
     ParentColor = False
     ParentFont = False
-    OnClick = lblModListClick
   end
   object bbModInfo: TBitBtn
     Left = 370

@@ -17,6 +17,7 @@ type
     bbCancel  : TBitBtn;
     leTitle   : TLabeledEdit;
     leAuthor  : TLabeledEdit;
+    leFilename: TLabeledEdit;
     leWebsite : TLabeledEdit;
     leDownload: TLabeledEdit;
     memDescr  : TMemo;         lblDescr  : TLabel;
@@ -67,6 +68,7 @@ begin
   leAuthor  .ReadOnly:=aRO;
   leWebsite .ReadOnly:=aRO;
   leDownload.ReadOnly:=aRO;
+  leFilename.ReadOnly:=aRO;
   memDescr  .ReadOnly:=aRO;
   edGUID    .ReadOnly:=aRO;
   bbNewGUID .Enabled :=not aRO;
@@ -83,6 +85,7 @@ begin
   ami.download:=StrToWide(leDownload.Text);
   Val(edGUID.Text,ami.modid);
   ami.modver  :=seVersion.Value;
+  ami.filename:=StrToWide(leFilename.Text);
 end;
 
 procedure TMODInfoForm.SaveToFile(const aFile:string);
@@ -106,6 +109,7 @@ begin
   leDownload.Text:=WideToStr(ami.download);
   edGUID    .Text:=IntToStr (ami.modid   );
   seVersion.Value:=ami.modver;
+  leFilename.Text:=WideToStr(ami.filename);
 end;
 
 procedure TMODInfoForm.LoadFromFile(const aFile:string);
