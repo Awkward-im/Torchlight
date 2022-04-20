@@ -78,6 +78,7 @@ begin
     result:=RGTags.Tag[aid];
 
   // like UNITTYPES directory
+  // looks like TL read 'NAME' tag value for it
   if result=nil then
   begin
     for i:=0 to FLocals.Count-1 do

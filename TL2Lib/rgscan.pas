@@ -43,7 +43,6 @@ implementation
 
 uses
   sysutils,
-  rgman,
   rgpak,
   rgfiletype;
 

@@ -1,5 +1,7 @@
 ﻿{$I-}
 
+{$R ..\TL2Lib\dict.rc}
+
 uses
   classes,
   sysutils,
@@ -10,10 +12,9 @@ uses
   rgnode,
   rgdict,
 
+  rgio.dat,
   rgio.layout,
-  rgio.text,
-  rgio.dat
-  ;
+  rgio.text;
 
 const
   GoodExtArray : array of string = (
@@ -135,7 +136,9 @@ begin
   lcnt:=lini.ReadInteger('dicts','count',0);
   if lcnt=0 then
   begin
-    writeln('dictionary.txt ',RGTags.Import('dictionary.txt'));
+    if RGTags.Import('RGDICT','TEXT')=0 then
+      writeln('dictionary.txt ',RGTags.Import('dictionary.txt'));
+
     writeln('hashed.txt '    ,RGTags.Import('hashed.txt'));
     writeln('tagdict.txt '   ,RGTags.Import('tagdict.txt'));
     writeln('dict-tl1.txt '  ,RGTags.Import('dict-tl1.txt'));
@@ -152,12 +155,18 @@ begin
     end;
   end;
 
+  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
+  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
+  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
+  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
+  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+{
   LoadLayoutDict('compact-tl1.txt', verTL1);
   LoadLayoutDict('compact-tl2.txt', verTL2);
   LoadLayoutDict('compact-rg.txt' , verRG);
   LoadLayoutDict('compact-rgo.txt', verRGO);
   LoadLayoutDict('compact-hob.txt', verHob);
-
+}
   lini.Free;
 end;
 
@@ -165,6 +174,10 @@ var
   i:integer;
 
 begin
+{$if declared(UseHeapTrace)}
+  SetHeapTraceOutput('Trace.log');
+  HaltOnError := true;
+{$endif}
   //--- Initialization
 
   //--- Process

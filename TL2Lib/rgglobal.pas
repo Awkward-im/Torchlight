@@ -57,6 +57,8 @@ const
   rgVector2   = 100;
   rgVector3   = 101;
   rgVector4   = 102;
+  rgUIntList  = 110;
+  rgFloatList = 111;
   // user
   rgGroup     = rgNotSet;
   rgWord      = 200;
@@ -419,28 +421,30 @@ const
     code:integer;
     name:PWideChar;
   end = (
-    (code: rgNotSet   ; name: 'NOT SET'),
-    (code: rgInteger  ; name: 'INTEGER'),
-    (code: rgFloat    ; name: 'FLOAT'),
-    (code: rgDouble   ; name: 'DOUBLE'),
-    (code: rgUnsigned ; name: 'UNSIGNED INT'),
-    (code: rgString   ; name: 'STRING'),
-    (code: rgBool     ; name: 'BOOL'),
-    (code: rgInteger64; name: 'INTEGER64'),
-    (code: rgTranslate; name: 'TRANSLATE'),
-    (code: rgNote     ; name: 'NOTE'),
+    (code: rgNotSet   ; name: 'NOT SET'         ),
+    (code: rgInteger  ; name: 'INTEGER'         ),
+    (code: rgFloat    ; name: 'FLOAT'           ),
+    (code: rgDouble   ; name: 'DOUBLE'          ),
+    (code: rgUnsigned ; name: 'UNSIGNED INT'    ),
+    (code: rgString   ; name: 'STRING'          ),
+    (code: rgBool     ; name: 'BOOL'            ),
+    (code: rgInteger64; name: 'INTEGER64'       ),
+    (code: rgTranslate; name: 'TRANSLATE'       ),
+    (code: rgNote     ; name: 'NOTE'            ),
     // special
-    (code: rgNotValid ; name: 'NOT VALID'),
+    (code: rgNotValid ; name: 'NOT VALID'       ),
     // layout types (custom, text is readonly)
     (code: rgUnsigned ; name: 'UNSIGNED INTEGER'),
-    (code: rgVector2  ; name: 'VECTOR2'), // base type = FLOAT
-    (code: rgVector3  ; name: 'VECTOR3'), // base type = FLOAT
-    (code: rgVector4  ; name: 'VECTOR4'), // base type = FLOAT
-    (code: rgInteger64; name: 'INT64'),
+    (code: rgVector2  ; name: 'VECTOR2'         ), // base type = FLOAT
+    (code: rgVector3  ; name: 'VECTOR3'         ), // base type = FLOAT
+    (code: rgVector4  ; name: 'VECTOR4'         ), // base type = FLOAT
+    (code: rgInteger64; name: 'INT64'           ),
+    (code: rgUIntList ; name: 'UINTLIST'        ), // base type = UNSIGNED INT
+    (code: rgFloatList; name: 'FLOATLIST'       ), // base type = FLOAT
     // user
-    (code: rgWord     ; name: 'WORD'),
-    (code: rgByte     ; name: 'BYTE'),
-    (code: rgBinary   ; name: 'BINARY')
+    (code: rgWord     ; name: 'WORD'            ),
+    (code: rgByte     ; name: 'BYTE'            ),
+    (code: rgBinary   ; name: 'BINARY'          )
   );
 
 

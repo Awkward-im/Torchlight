@@ -186,7 +186,7 @@ end;
 
 function TRGLayoutFile.ReadPropertyValue(aid:UInt32;asize:integer; anode:pointer):boolean;
 var
-  ls:string;
+  lls,ls:string;
   lmatrix:TMatrix4x4;
   lq:TVector4;
   valq:Int64;
@@ -194,6 +194,7 @@ var
   lptr:PByte;
   ltype,vali:integer;
   valu:UInt32;
+  llen:word;
 begin
   lptr:=FPos;
 
@@ -275,6 +276,34 @@ begin
          {if lmatrix[0,2]<>0 then} AddFloat(anode,m02,lmatrix[0,2]);
       end;
     end;
+    rgUIntList: begin
+      ls:='';
+      llen:=memReadWord(FPos);
+      for vali:=0 to integer(llen)-1 do
+      begin
+        valu:=memReadDWord(FPos);
+        ls:=ls+IntToStr(valu)+',';
+      end;
+      if ls<>'' then SetLength(ls,Length(ls)-1);
+      pcw:=StrToWide(ls);
+      AddString(anode,lname,pcw);
+      FreeMem(pcw);
+    end;
+    rgFloatList: begin
+      ls:='';
+      llen:=memReadWord(FPos);
+      for vali:=0 to integer(llen)-1 do
+      begin
+        lq.x:=memReadFloat(FPos);
+        Str(lq.x:0:4,lls);
+        ls:=ls+lls+',';
+      end;
+      if ls<>'' then SetLength(ls,Length(ls)-1);
+      pcw:=StrToWide(ls);
+      AddString(anode,lname,pcw);
+      FreeMem(pcw);
+    end;
+
   else
     AddInteger(anode,'??UNKNOWN',asize);
     AddString (anode,PWideChar('??'+WideString(lname)), PWideChar(WideString(HexStr(FPos-FStart,8))));
