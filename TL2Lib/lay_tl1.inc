@@ -111,3 +111,9 @@ begin
 
   asUnsigned(lc,lobjcnt);
 end;
+
+function TRGLayoutFile.DoBuildLayoutTL1(anode:pointer; astream:TStream):integer;
+begin
+  result:=0;
+end;
+

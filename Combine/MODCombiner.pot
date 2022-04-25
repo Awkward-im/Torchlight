@@ -9,6 +9,14 @@ msgstr ""
 msgid "&Continue"
 msgstr ""
 
+#: taskform.bbrename.caption
+msgid "Rename old"
+msgstr ""
+
+#: taskform.bbsaveas.caption
+msgid "Rename new"
+msgstr ""
+
 #: taskform.bbstop.caption
 msgid "Stop"
 msgstr ""

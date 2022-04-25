@@ -108,7 +108,9 @@ type
     function GetPropsCount:integer;
 
     function GetProperty(aid:dword):pointer;
+    function GetPropInfoByIdx (idx:integer; var aid:dword; var aname:PWideChar):integer;
     function GetPropInfoById  (aid:dword; var aname:PWideChar):integer;
+    function GetPropInfoByName(aname:PWideChar; var aid:dword):integer;
     function GetPropInfoByName(aname:PWideChar; atype:integer; var aid:dword):integer;
 
     property Version:integer read FVersion write SetVersion;
@@ -901,9 +903,10 @@ procedure TRGObject.Init;
 begin
   FVersion   :=verUnk;
   FDict      :=nil;
-  FLastScene :=nil;
   FLastObject:=nil;
   FLastObjId :=dword(-1);
+
+  FLastScene :=nil;
   FLastSceneName:=nil;
 end;
 
@@ -931,16 +934,17 @@ function TRGObject.SelectScene(aname:PWideChar):pointer;
 var
   i:integer;
 begin
-  if CompareWide(FLastSceneName,aname)=0 then
-    exit(FLastScene);
-
   // Get Default (if one scene only)
-  if PLayoutInfo(FDict)^.scenes[1].id=dword(-1) then
+  if (aname=nil) or (aname^=#0) or
+     (PLayoutInfo(FDict)^.scenes[1].id=dword(-1)) then
   begin
     FLastScene:=@(PLayoutInfo(FDict)^.scenes[0]);
     FLastSceneName:=PSceneInfo(FLastScene)^.name;
     exit(FLastScene);
   end;
+
+  if CompareWide(FLastSceneName,aname)=0 then
+    exit(FLastScene);
 
   FLastObject:=nil;
   FLastObjId :=dword(-1);
@@ -1053,6 +1057,26 @@ begin
   result:=nil;
 end;
 
+function TRGObject.GetPropInfoByIdx(idx:integer; var aid:dword; var aname:PWideChar):integer;
+begin
+  if FLastObject<>nil then
+  begin
+    if (idx>=0) and (idx<PObjInfo(FLastObject)^.count) then
+    begin
+      with PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+idx] do
+      begin
+        aid  :=id;
+        aname:=name;
+        exit(ptype);
+      end;
+    end;
+  end;
+
+  aid   :=dword(-1);
+  aname :=nil;
+  result:=rgUnknown;
+end;
+
 function TRGObject.GetPropInfoById(aid:dword; var aname:PWideChar):integer;
 var
   lprop:PPropInfo;
@@ -1078,6 +1102,48 @@ begin
 }
 end;
 
+function TRGObject.GetPropInfoByName(aname:PWideChar; var aid:dword):integer;
+var
+  lprop:PPropInfo;
+  i,l:integer;
+begin
+  if FLastObject<>nil then
+  begin
+    l:=Length(aname)-1;
+    if l>=0 then
+      for i:=0 to PObjInfo(FLastObject)^.count-1 do
+      begin
+        lprop:=@(PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+i]);
+
+        if lprop^.ptype in [rgVector2, rgVector3, rgVector4] then
+        begin
+          if ((lprop^.ptype=rgVector2) and (aname[l] in ['X','x','Y','y'])) or
+             ((lprop^.ptype=rgVector3) and (aname[l] in ['X','x','Y','y','Z','z'])) or
+             ((lprop^.ptype=rgVector4) and (aname[l] in ['X','x','Y','y','Z','z','W','w'])) then
+    
+            if (CompareWide(aname,lprop^.name,l)=0) then
+            begin
+              aid:=lprop^.id;
+              result:=lprop^.ptype;//rgFloat;
+              exit;
+            end;
+        end
+        else
+        begin
+          if CompareWide(aname,lprop^.name)=0 then
+          begin
+            aid:=lprop^.id;
+            result:=lprop^.ptype;
+            exit;
+          end;
+        end;
+
+      end;
+  end;
+
+  result:=rgUnknown;
+end;
+
 function TRGObject.GetPropInfoByName(aname:PWideChar; atype:integer; var aid:dword):integer;
 var
   lprop:PPropInfo;
@@ -1100,7 +1166,7 @@ begin
             if (CompareWide(aname,lprop^.name,l)=0) then
             begin
               aid:=lprop^.id;
-              result:=atype;
+              result:=lprop^.ptype;//atype;
               exit;
             end;
         end
@@ -1109,7 +1175,7 @@ begin
           if (lprop^.ptype=atype) and (CompareWide(aname,lprop^.name)=0) then
           begin
             aid:=lprop^.id;
-            result:=atype;
+            result:=lprop^.ptype;//atype;
             exit;
           end;
         end;

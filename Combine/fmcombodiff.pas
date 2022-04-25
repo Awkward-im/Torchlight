@@ -40,6 +40,7 @@ type
     procedure actPrevClick(Sender: TObject);
     procedure actRefreshExecute(Sender: TObject);
     procedure actSaveExecute(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure seOldChange(Sender: TObject);
     procedure seStatusChange(Sender: TObject; Changes: TSynStatusChanges);
     procedure SESpecialLineMarkup(Sender: TObject; Line: integer;
@@ -224,6 +225,13 @@ begin
 
   slold.Free;
   slnew.Free;
+end;
+
+procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  if seOld.Modified then
+    if MessageDlg('Content was modified. Save at exit?',mtConfirmation,mbOkCancel,0)=mrOk then
+      actSaveExecute(Sender);
 end;
 
 procedure TCompareForm.actPrevClick(Sender: TObject);

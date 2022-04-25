@@ -6,6 +6,7 @@ object CompareForm: TCompareForm
   Caption = 'Compare files'
   ClientHeight = 509
   ClientWidth = 760
+  OnClose = FormClose
   object ToolBar: TToolBar
     Left = 0
     Height = 26

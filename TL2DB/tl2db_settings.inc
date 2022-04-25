@@ -33,6 +33,10 @@ const
 type
   TIntegerDynArray = array of Integer;
 {$ENDIF}
+{$IF NOT DEFINED(TInt64DynArray)}
+type
+  TInt64DynArray = array of Int64;
+{$ENDIF}
 
 function GetGraph     (const aname:string):string;
 function GetGraphArray(const aname:string):TIntegerDynArray;

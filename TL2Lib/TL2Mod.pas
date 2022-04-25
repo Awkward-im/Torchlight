@@ -398,12 +398,12 @@ begin
   lroot:=AddGroup(nil,'MOD');
   AddString   (lroot,'NAME'         , amod.title   );
   AddInteger64(lroot,'MOD_ID'       , amod.modid   );
+  AddInteger  (lroot,'VERSION'      , amod.modver  );
   AddString   (lroot,'AUTHOR'       , amod.author  );
   AddString   (lroot,'DESCRIPTION'  , amod.descr   );
   AddString   (lroot,'WEBSITE'      , amod.website );
   AddString   (lroot,'DOWNLOAD_URL' , amod.download);
   AddString   (lroot,'MOD_FILE_NAME', amod.filename);
-  AddInteger  (lroot,'VERSION'      , amod.modver  );
 
   if amod.steam_preview<>nil then AddString(lroot,'STEAM_PREVIEW_FILE'      , amod.steam_preview);
   if amod.steam_tags   <>nil then AddString(lroot,'STEAM_TAGS'              , amod.steam_tags   );

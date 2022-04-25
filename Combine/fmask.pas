@@ -16,6 +16,8 @@ type
     bbContinue: TBitBtn;
     bbStop: TBitBtn;
     bbCompare: TBitBtn;
+    bbRename: TBitBtn;
+    bbSaveAs: TBitBtn;
     cbForAll: TCheckBox;
     cbCurrentDir: TCheckBox;
     lblOldSizeNum: TLabel;
@@ -28,6 +30,8 @@ type
     rbOverwrite: TRadioButton;
     procedure bbCompareClick(Sender: TObject);
     procedure bbContinueClick(Sender: TObject);
+    procedure bbRenameClick(Sender: TObject);
+    procedure bbSaveAsClick(Sender: TObject);
     procedure bbStopClick(Sender: TObject);
     procedure cbForAllChange(Sender: TObject);
   private
@@ -95,6 +99,16 @@ begin
     else if cbCurrentDir.Checked then MyResult:=ord(tact.overwritedir)
     else                              MyResult:=ord(tact.overwrite)
   end;
+end;
+
+procedure TAskForm.bbRenameClick(Sender: TObject);
+begin
+  MyResult:=ord(tact.renameold);
+end;
+
+procedure TAskForm.bbSaveAsClick(Sender: TObject);
+begin
+  MyResult:=ord(tact.saveas);
 end;
 
 procedure TAskForm.bbStopClick(Sender: TObject);

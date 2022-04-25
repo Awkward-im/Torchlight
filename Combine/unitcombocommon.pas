@@ -17,7 +17,10 @@ type
     compare,
     overwrite,
     overwritedir,
-    overwriteall); // for binaries only?
+    overwriteall, // for binaries only?
+    renameold,
+    saveas
+  );
 
 
 implementation

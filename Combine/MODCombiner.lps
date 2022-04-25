@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="23"/>
-        <UsageCount Value="91"/>
+        <UsageCount Value="97"/>
       </Unit>
       <Unit>
         <Filename Value="fmcombomain.pas"/>
@@ -19,11 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmComboMain"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="182"/>
+        <TopLine Value="181"/>
         <CursorPos Y="427"/>
-        <FoldState Value=" T3k80Z7 pjEkM0b5]93k90T1l"/>
-        <UsageCount Value="91"/>
+        <UsageCount Value="97"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -32,17 +30,17 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="541"/>
-        <CursorPos Y="562"/>
-        <UsageCount Value="90"/>
+        <TopLine Value="309"/>
+        <CursorPos Y="324"/>
+        <UsageCount Value="96"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\TL2Mod.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="138"/>
-        <CursorPos X="16" Y="154"/>
-        <UsageCount Value="90"/>
+        <TopLine Value="283"/>
+        <CursorPos X="16" Y="298"/>
+        <UsageCount Value="96"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
@@ -52,9 +50,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmModInfo"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="97"/>
+        <TopLine Value="96"/>
         <CursorPos X="28" Y="71"/>
-        <UsageCount Value="86"/>
+        <UsageCount Value="92"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -65,14 +63,15 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="86"/>
+        <UsageCount Value="92"/>
       </Unit>
       <Unit>
         <Filename Value="unitCombine.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
-        <CursorPos X="47" Y="138"/>
-        <UsageCount Value="76"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="11" Y="17"/>
+        <UsageCount Value="82"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -83,9 +82,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmAsk"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="57"/>
-        <CursorPos X="18" Y="69"/>
-        <UsageCount Value="75"/>
+        <TopLine Value="91"/>
+        <CursorPos Y="111"/>
+        <UsageCount Value="81"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -95,7 +94,7 @@
         <UnitName Value="unitComboCommon"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="21"/>
-        <UsageCount Value="74"/>
+        <UsageCount Value="80"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rglogging.pas"/>
@@ -104,7 +103,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="137"/>
         <CursorPos Y="157"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="54"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
@@ -113,7 +112,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="487"/>
         <CursorPos X="25" Y="502"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="54"/>
       </Unit>
       <Unit>
         <Filename Value="fmcombodiff.pas"/>
@@ -123,10 +122,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmComboDiff"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="67"/>
-        <CursorPos Y="98"/>
-        <FoldState Value=" T3iS0O2 pidjQ034]9Xj3093)"/>
-        <UsageCount Value="32"/>
+        <TopLine Value="70"/>
+        <CursorPos Y="230"/>
+        <UsageCount Value="38"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -164,11 +162,10 @@
       </Unit>
       <Unit>
         <Filename Value="Diff.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="117"/>
         <CursorPos X="63" Y="185"/>
-        <UsageCount Value="16"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="18"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.dat.pas"/>
@@ -181,50 +178,29 @@
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\components\synedit\synedittextbuffer.pp"/>
         <UnitName Value="SynEditTextBuffer"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="636"/>
         <CursorPos Y="651"/>
-        <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="14"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgscan.pas"/>
+        <UnitName Value="RGScan"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="31"/>
+        <CursorPos Y="46"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgpak.pas"/>
+        <UnitName Value="RGPAK"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="844"/>
+        <CursorPos X="3" Y="859"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="186" Column="3" TopLine="157"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="187" Column="3" TopLine="158"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="153" Column="18" TopLine="127"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="154" Column="18" TopLine="128"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="155" Column="18" TopLine="129"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="195" TopLine="186"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="168" Column="48" TopLine="145"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="56" Column="44" TopLine="27"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="261" Column="40" TopLine="234"/>
-      </Position>
       <Position>
         <Filename Value="fmcombodiff.pas"/>
         <Caret Line="258" Column="17" TopLine="235"/>
@@ -307,7 +283,43 @@
       </Position>
       <Position>
         <Filename Value="fmcombomain.pas"/>
-        <Caret Line="427" TopLine="182"/>
+        <Caret Line="427" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="fmask.pas"/>
+        <Caret Line="69" Column="18" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombodiff.pas"/>
+        <Caret Line="99" TopLine="67"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombodiff.pas"/>
+        <Caret Line="235" TopLine="108"/>
+      </Position>
+      <Position>
+        <Filename Value="fmask.pas"/>
+        <Caret Line="69" Column="18" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="fmask.pas"/>
+        <Caret Line="70" Column="18" TopLine="58"/>
+      </Position>
+      <Position>
+        <Filename Value="fmask.pas"/>
+        <Caret Line="72" Column="18" TopLine="60"/>
+      </Position>
+      <Position>
+        <Filename Value="fmask.pas"/>
+        <Caret Line="106" Column="3" TopLine="91"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="133" Column="18" TopLine="116"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="48" Column="15" TopLine="33"/>
       </Position>
     </JumpHistory>
     <RunParams>

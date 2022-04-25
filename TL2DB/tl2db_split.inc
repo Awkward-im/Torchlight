@@ -1,10 +1,6 @@
 {Split string functions}
 
-type
- TIntArray   = array of integer;
- TInt64Array = array of int64;
-
-function splitInt(const astr:string; asep:char):TIntArray;
+function splitInt(const astr:string; asep:char):TIntegerDynArray;
 var
   p:PChar;
   i,lcnt:integer;
@@ -53,7 +49,7 @@ begin
   end;
 end;
 
-function splitInt64(const astr:string; asep:char):TInt64Array;
+function splitInt64(const astr:string; asep:char):TInt64DynArray;
 var
   p:PChar;
   i,lcnt:integer;

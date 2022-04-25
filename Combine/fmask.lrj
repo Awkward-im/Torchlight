@@ -12,5 +12,7 @@
 {"hash":72486325,"name":"taskform.lbloldsize.caption","sourcebytes":[79,108,100,32,102,105,108,101,32,115,105,122,101],"value":"Old file size"},
 {"hash":113184181,"name":"taskform.lblnewsize.caption","sourcebytes":[78,101,119,32,102,105,108,101,32,115,105,122,101],"value":"New file size"},
 {"hash":211945309,"name":"taskform.lbloldsizenum.caption","sourcebytes":[108,98,108,79,108,100,83,105,122,101,78,117,109],"value":"lblOldSizeNum"},
-{"hash":211937549,"name":"taskform.lblnewsizenum.caption","sourcebytes":[108,98,108,78,101,119,83,105,122,101,78,117,109],"value":"lblNewSizeNum"}
+{"hash":211937549,"name":"taskform.lblnewsizenum.caption","sourcebytes":[108,98,108,78,101,119,83,105,122,101,78,117,109],"value":"lblNewSizeNum"},
+{"hash":137558628,"name":"taskform.bbrename.caption","sourcebytes":[82,101,110,97,109,101,32,111,108,100],"value":"Rename old"},
+{"hash":137558151,"name":"taskform.bbsaveas.caption","sourcebytes":[82,101,110,97,109,101,32,110,101,119],"value":"Rename new"}
 ]}

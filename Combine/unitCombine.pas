@@ -14,6 +14,7 @@ implementation
 {$R ..\TL2Lib\dict.rc}
 
 uses
+  Dialogs,
   fmAsk,
   fmComboDiff,
   System.UITypes,
@@ -45,7 +46,8 @@ function actproc(
           aparam:pointer):integer;
 var
   f:file of byte;
-  ldst:string;
+  SaveDialog: TSaveDialog;
+  ldst,ls:string;
   lbuf,lnode:pointer;
   lsize:integer;
   isold,istext:boolean;
@@ -121,12 +123,36 @@ begin
     end;
 
     case pourdata(aparam)^.act of
-      stop: exit(0);
+      stop: exit(-1);
+
       skip,
       skipall: exit(1);
+
       overwrite,
       overwritedir,
       overwriteall: ; // do nothing, just rewrite file
+
+      renameold: begin
+        ls:=InputBox('Rename existing file', 'Enter new name', ExtractFileName(ldst));
+        RenameFile(ldst,ExtractFileDir(ldst)+ls);
+        exit(1);
+      end;
+
+      saveas: begin
+        SaveDialog:=TSaveDialog.Create(nil);
+        try
+          SaveDialog.InitialDir:=ExtractFileDir (ldst);
+          SaveDialog.FileName  :=ExtractFileName(ldst);
+          SaveDialog.DefaultExt:='';
+          SaveDialog.Filter    :='';
+          SaveDialog.Title     :='';
+          SaveDialog.Options   :=SaveDialog.Options+[ofOverwritePrompt,ofNoChangeDir];
+          if SaveDialog.Execute then
+            ldst:=SaveDialog.FileName;
+        finally
+          SaveDialog.Free;
+        end;
+      end;
     else
 //      ask: ; // Compare
       //  text file - use 'compare' result

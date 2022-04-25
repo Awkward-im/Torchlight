@@ -111,7 +111,7 @@ end;
 procedure TScanObj.ScanMod();
 var
   lbuf:PByte;
-  i,j,lsize:integer;
+  res,i,j,lsize:integer;
 begin
   for j:=0 to High(FMod.Entries) do
   begin
@@ -134,12 +134,20 @@ begin
                   FMod.Entries[j].Name,
                   FMod.Entries[j].Files[i].name,
                   lbuf);
-              if (FActProc(lbuf,lsize,
+
+              res:=FActProc(lbuf,lsize,
                 FMod.Entries[j].Name,
                 FMod.Entries[j].Files[i].name,
-                FParam)>0) then inc(FCount);
-
+                FParam);
               FreeMem(lbuf);
+
+              if res>0 then inc(FCount)
+              else if res<0 then
+              begin
+                FCount:=-ABS(FCount);
+                exit;
+              end;
+
             end;
           end;
         end;
@@ -156,7 +164,7 @@ var
   f:file of byte;
   lbuf:PByte;
   ldir:string;
-  lsize:integer;
+  res,lsize:integer;
 begin
   if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
   begin
@@ -164,7 +172,10 @@ begin
       if (sr.Attr and faDirectory)=faDirectory then
       begin
         if (sr.Name<>'.') and (sr.Name<>'..') then
+        begin
           CycleDir(adir+'/'+sr.Name);
+          if FCount<0 then break;
+        end;
       end
       else
       begin
@@ -175,8 +186,12 @@ begin
           if Pos('.MOD',UpCase(sr.Name))=(Length(sr.Name)-3) then
           begin
             if UpCase(sr.Name)<>TL2EditMod then //!!!!!!!!!!
-              inc(FCount,MakeRGScan(adir+'/'+sr.Name,'',FExts,
-                  FActProc,FParam,FCheckProc));
+            begin
+              res:=MakeRGScan(adir+'/'+sr.Name,'',FExts,
+                  FActProc,FParam,FCheckProc);
+              if      res>0 then inc(FCount,res)
+              else if res<0 then break;
+            end;
           end
           else if (FActProc=nil) then inc(FCount)
           else
@@ -189,8 +204,14 @@ begin
               GetMem(lbuf,lsize);
               BlockRead(f,lbuf^,lsize);
               Close(f);
-              if (FActProc(lbuf,lsize,ldir,sr.Name,FParam)>0) then inc(FCount);
+              res:=FActProc(lbuf,lsize,ldir,sr.Name,FParam);
               FreeMem(lbuf);
+              if res>0 then inc(FCount)
+              else if res<0 then
+              begin
+                FCount:=-ABS(FCount);
+                break;
+              end;
             end;
           end;
         end;

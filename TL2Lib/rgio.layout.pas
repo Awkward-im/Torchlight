@@ -3,7 +3,7 @@ unit RGIO.Layout;
 interface
 
 uses
-//  Classes,
+  Classes,
   rgglobal;
 
 const
@@ -16,11 +16,11 @@ function ParseLayoutMem   (abuf        :pByte  ; const afname:string):pointer;
 //function ParseLayoutStream(astream     :TStream; atype:cardinal=ltLayout):pointer;
 //function ParseLayoutStream(astream     :TStream; const afname:string):pointer;
 function ParseLayoutFile  (const afname:string):pointer;
-{
-function BuildDatMem   (data:pointer; out   bin    :pByte     ; aver:byte=verTL2; dictidx:integer=-1):integer;
-function BuildDatStream(data:pointer;       astream:TStream   ; aver:byte=verTL2; dictidx:integer=-1):integer;
-function BuildDatFile  (data:pointer; const fname  :AnsiString; aver:byte=verTL2; dictidx:integer=-1):integer;
-}
+
+function BuildLayoutMem   (data:pointer; out   bin    :pByte     ; aver:byte=verTL2):integer;
+function BuildLayoutStream(data:pointer;       astream:TStream   ; aver:byte=verTL2):integer;
+//function BuildLayoutFile  (data:pointer; const fname  :AnsiString; aver:byte=verTL2):integer;
+
 
 implementation
 
@@ -30,6 +30,7 @@ uses
   rglogging,
   rgnode,
   rgdict,
+  rgstream,
   rgmemory;
 
 {$IFDEF DEBUG}  
@@ -44,6 +45,17 @@ const
     'Layout',
     'Particle Creator',
     'UI'
+  );
+
+const
+  strInterpolation : array [0..6] of PWideChar = (
+    'Linear',
+    'Linear Round',
+    'Linear Round Down',
+    'Linear Round Up',
+    'No interpolation',
+    'Quaternion',
+    'Spline'
   );
 
 const
@@ -67,12 +79,15 @@ type
     FVer :integer;
      
   private
+    procedure WriteStr(astr:PWideChar; astream:TStream);
     function  ReadStr():PWideChar;
     function  GetStr(aid:dword):PWideChar;
     function  ReadPropertyValue(aid:UInt32;asize:integer; anode:pointer):boolean;
     function  GuessDataType(asize:integer):integer;
     procedure ParseLogicGroup(var anode:pointer);
     procedure ParseTimeline  (var anode:pointer; aid:Int64);
+    procedure BuildTimeline  (anode:pointer; astream:TStream);
+    procedure BuildLogicGroup(anode:pointer; astream:TStream);
 
     function  DoParseBlockTL1(var anode:pointer; const aparent:Int64):integer;
     procedure ReadPropertyHob(var anode:pointer);
@@ -85,10 +100,27 @@ type
     function DoParseLayoutHob(atype:cardinal):pointer;
     function DoParseLayoutRG (atype:cardinal):pointer;
 
+    function WritePropertyTL2(anode:pointer; astream:TStream):integer;
+    function DoWriteBlockTL2 (anode:pointer; astream:TStream):integer;
+
+    function DoBuildLayoutTL1(anode:pointer; astream:TStream):integer;
+    function DoBuildLayoutTL2(anode:pointer; astream:TStream):integer;
+    function DoBuildLayoutHob(anode:pointer; astream:TStream):integer;
+    function DoBuildLayoutRG (anode:pointer; astream:TStream):integer;
   public
     procedure Init;
     procedure Free;
   end;
+
+procedure TRGLayoutFile.Init;
+begin
+  info.Init;
+end;
+
+procedure TRGLayoutFile.Free;
+begin
+  info.Clear;
+end;
 
 function TRGLayoutFile.ReadStr():PWideChar;
 begin
@@ -100,6 +132,17 @@ begin
     verRG : result:=memReadShortStringUTF8(FPos);
   else
     result:=nil;
+  end;
+end;
+
+procedure TRGLayoutFile.WriteStr(astr:PWideChar; astream:TStream);
+begin
+  case FVer of
+    verTL1: ; //astream.WriteDWordString(astr);
+    verTL2: astream.WriteShortString(astr);
+    verHob,
+    verRG,
+    verRGO: ; //astream.WriteShortStringUTF8(astr);
   end;
 end;
 
@@ -423,20 +466,14 @@ begin
         AddFloat(tlpoint,'TIMEPERCENT',memReadFloat(FPos));
 
         lint:=memReadByte(FPos);
-        case lint of
-          0: pcw:='Linear';
-          1: pcw:='Linear Round';
-          2: pcw:='Linear Round Down';
-          3: pcw:='Linear Round Up';
-          4: pcw:='No interpolation';
-          5: pcw:='Quaternion';
-          6: pcw:='Spline';
+        if lint<=6 then
+          pcw:=strInterpolation[lint]
         else
           pcw:=Pointer(WideString(IntToStr(lint)));
-        end;
+
         AddString(tlpoint,'INTERPOLATION',pcw);
 
-        if fver=verTL2 then
+        if FVer=verTL2 then
         begin
           if ltltype=1 then
           begin
@@ -446,7 +483,7 @@ begin
           end;
         end;
 
-        if fver in [verHob, verRG, verRGO] then
+        if FVer in [verHob, verRG, verRGO] then
         begin
           pcw:=memReadShortStringUTF8(FPos);
           if pcw<>nil then
@@ -477,6 +514,130 @@ begin
   end;
 end;
 
+procedure TRGLayoutFile.BuildTimeline(anode:pointer; astream:TStream);
+var
+  tlobject,tlprop,tlpoint:pointer;
+  pcw:PWideChar;
+  i,j,k,ltlpoints,ltlobjs,ltlprops:integer;
+  lval,ltype:integer;
+begin
+  ltlobjs:=GetGroupCount(anode{,'TIMELINEOBJECT'});
+  astream.WriteByte(ltlobjs);
+  for i:=0 to GetChildCount(anode)-1 do
+  begin
+    tlobject:=GetChild(anode,i);
+    if GetNodeType(tlobject)<>rgGroup then continue;
+
+    astream.WriteQWord(qword(AsInteger64(FindNode(tlobject,'OBJECTID'))));
+
+    ltlprops:=GetGroupCount(tlobject); // Properties and Events
+    astream.WriteByte(ltlprops);
+    for j:=0 to GetChildCount(tlobject)-1 do
+    begin
+      tlprop:=GetChild(tlobject,j);
+      if GetNodeType(tlprop)<>rgGroup then continue;
+
+      pcw:=GetNodeName(tlprop);
+      if CompareWide(pcw,'TIMELINEOBJECTPROPERTY')=0 then
+      begin
+        ltype:=1;
+        pcw:=AsString(FindNode(tlprop,'OBJECTPROPERTYNAME'));
+        WriteStr(pcw,astream);
+        WriteStr(nil,astream);
+      end
+      else// if CompareWide(pcw,'TIMELINEOBJECTEVENT')=0 then
+      begin
+        ltype:=2;
+        pcw:=AsString(FindNode(tlprop,'OBJECTEVENTNAME'));
+        WriteStr(nil,astream);
+        WriteStr(pcw,astream);
+      end;
+
+      ltlpoints:=GetGroupCount(tlprop);
+      astream.WriteByte(ltlpoints);
+      for k:=0 to GetChildCount(tlprop)-1 do
+      begin
+        tlpoint:=GetChild(tlprop,k);
+        if GetNodeType(tlpoint)<>rgGroup then continue;
+
+        astream.WriteFloat(asFloat(FindNode(tlpoint,'TIMEPERCENT')));
+        pcw:=AsString(FindNode(tlpoint,'INTERPOLATION'));
+
+        lval:=0;
+        while lval<=6 do
+        begin
+          if CompareWide(pcw,strInterpolation[lval])=0 then break;
+          inc(lval);
+        end;
+        astream.WriteByte(lval);
+
+        if (FVer=verTL2) and (ltype=1) then
+          astream.WriteShortString(AsString(FindNode(tlpoint,'VALUE')));
+
+        if FVer in [verHob, verRG, verRGO] then
+        begin
+//          astream.WriteShortStringUTF8(AsString(FindNode(tlpoint,'VALUE_1')));
+//          astream.WriteShortStringUTF8(AsString(FindNode(tlpoint,'VALUE')));
+        end;
+
+      end;
+    end;
+  end;
+end;
+
+procedure TRGLayoutFile.BuildLogicGroup(anode:pointer; astream:TStream);
+var
+  lgobj,lglnk:pointer;
+  i,j,lgroups,lglinks,lpos,lnewpos:integer;
+begin
+  lgroups:=GetChildCount(anode);
+  astream.WriteByte(lgroups);
+
+  for i:=0 to lgroups-1 do
+  begin
+    lgobj:=GetChild(anode,i);
+
+    astream.WriteByte (AsUnsigned(FindNode(lgobj,'ID')));
+    astream.WriteQWord(qword(AsInteger64(FindNode(lgobj,'OBJECTID'))));
+    astream.WriteFloat(AsFloat(FindNode(lgobj,'X')));
+    astream.WriteFloat(AsFloat(FindNode(lgobj,'Y')));
+
+    lpos:=astream.Position;
+    astream.WriteDword(0);
+
+    lglinks:=GetGroupCount(lgobj{,'LOGICLINK'});
+    astream.WriteByte(lglinks);
+
+    for j:=0 to GetChildCount(lgobj)-1 do
+    begin
+      lglnk:=GetChild(lgobj,j);
+
+      if GetNodeType(lglnk)=rgGroup then
+      begin
+        astream.WriteByte(Byte(AsInteger(FindNode(lglnk,'LINKINGTO'))));
+        case FVer of
+          verTL2: begin
+            astream.WriteShortString(AsString(FindNode(lglnk,'OUTPUTNAME')));
+            astream.WriteShortString(AsString(FindNode(lglnk,'INPUTNAME' )));
+          end;
+          verHob,
+          verRGO,
+          verRG : begin
+            astream.WriteDWord(RGTags.Hash[AsString(FindNode(lglnk,'OUTPUTNAME'))]);
+            astream.WriteDWord(RGTags.Hash[AsString(FindNode(lglnk,'INPUTNAME' ))]);
+          end;
+        end;
+      end;
+    end;
+
+    {TODO: Fix for case when initial stream pos is not 0}
+    lnewpos:=astream.Position;
+    astream.Position:=lpos;
+    astream.WriteDWord(lnewpos);
+    astream.Position:=lnewpos;
+  end;
+end;
+
 {$Include lay_tl1.inc}
 
 {$Include lay_tl2.inc}
@@ -503,27 +664,27 @@ end;
 
 function ParseLayoutMem(abuf:pByte; atype:cardinal=ltLayout):pointer;
 var
-  rgl:TRGLayoutFile;
+  lrgl:TRGLayoutFile;
 
 begin
-  rgl.Init;
+  lrgl.Init;
 
-  rgl.FStart:=abuf;
-  rgl.FPos  :=abuf;
+  lrgl.FStart:=abuf;
+  lrgl.FPos  :=abuf;
 
   if atype>2 then atype:=0;
 
   case abuf^ of
-    5  : begin rgl.FVer:=verRG ; result:=rgl.DoParseLayoutRG (atype); end;
-    8  : begin rgl.FVer:=verHob; result:=rgl.DoParseLayoutHob(atype); end;
-    9  : begin rgl.FVer:=verRGO; result:=rgl.DoParseLayoutRG (atype); end; //!!!!!!!!
-    11 : begin rgl.FVer:=verTL2; result:=rgl.DoParseLayoutTL2(atype); end;
-    $5A: begin rgl.FVer:=verTL1; result:=rgl.DoParseLayoutTL1(atype); end;
+    5  : begin lrgl.FVer:=verRG ; result:=lrgl.DoParseLayoutRG (atype); end;
+    8  : begin lrgl.FVer:=verHob; result:=lrgl.DoParseLayoutHob(atype); end;
+    9  : begin lrgl.FVer:=verRGO; result:=lrgl.DoParseLayoutRG (atype); end; //!!!!!!!!
+    11 : begin lrgl.FVer:=verTL2; result:=lrgl.DoParseLayoutTL2(atype); end;
+    $5A: begin lrgl.FVer:=verTL1; result:=lrgl.DoParseLayoutTL1(atype); end;
   else
     result:=nil;
   end;
 
-  rgl.Free;
+  lrgl.Free;
 end;
 
 function ParseLayoutMem(abuf:pByte; const afname:string):pointer;
@@ -574,16 +735,38 @@ begin
   end;
 end;
 
-procedure TRGLayoutFile.Init;
+
+function BuildLayoutStream(data:pointer; astream:TStream; aver:byte=verTL2):integer;
+var
+  lrgl:TRGLayoutFile;
 begin
-  info.Init;
+  result:=0;
+  lrgl.Init;
+  lrgl.FVer:=aver;
+  case aver of
+    verRG : result:=lrgl.DoBuildLayoutRG (data, astream);
+    verHob: result:=lrgl.DoBuildLayoutHob(data, astream);
+    verRGO: result:=lrgl.DoBuildLayoutRG (data, astream);
+    verTL2: result:=lrgl.DoBuildLayoutTL2(data, astream);
+    verTL1: result:=lrgl.DoBuildLayoutTL1(data, astream);
+  end;
+  lrgl.Free;
 end;
 
-procedure TRGLayoutFile.Free;
+function BuildLayoutMem(data:pointer; out bin:pByte; aver:byte=verTL2):integer;
+var
+  ls:TMemoryStream;
 begin
-  info.Clear;
+  result:=0;
+  ls:=TMemoryStream.Create;
+  try
+    result:=BuildLayoutStream(data,ls,aver);
+    GetMem(bin,result);
+    move(ls.Memory^,bin^,result);
+  finally
+    ls.Free;
+  end;
 end;
-
 
 initialization
 

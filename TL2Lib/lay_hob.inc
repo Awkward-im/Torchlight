@@ -253,3 +253,13 @@ begin
   for i:=0 to lcnt-1 do
     DoParseBlockHob(lobj,-1);
 end;
+
+function TRGLayoutFile.DoBuildLayoutHob(anode:pointer; astream:TStream):integer;
+begin
+  result:=0;
+end;
+
+function TRGLayoutFile.DoBuildLayoutRG(anode:pointer; astream:TStream):integer;
+begin
+  result:=0;
+end;
