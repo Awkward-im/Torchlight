@@ -55,6 +55,7 @@ procedure memWriteDouble   (var buf:PByte; aval:Double); export;
 
 procedure memWriteByteString (var buf:PByte; aval:PWideChar); export;
 procedure memWriteShortString(var buf:PByte; aval:PWideChar); export;
+procedure memWriteDWordString(var buf:PByte; aval:PWideChar); export;
 
 procedure memWriteIdList   (var buf:PByte; const alist:TL2IdList); export;
 procedure memWriteIdValList(var buf:PByte; const alist:TL2IdValList); export;
@@ -328,6 +329,32 @@ begin
     memWriteData(buf,aval,lsize*SizeOf(WideChar));
 end;
 
+procedure memWriteDWordString(var buf:PByte; aval:PWideChar);
+var
+  lsize:cardinal;
+begin
+  lsize:=Length(aval);
+  memWriteDWord(buf,lsize);
+  if lsize>0 then
+    memWriteData(buf,aval,lsize*SizeOf(WideChar));
+end;
+
+procedure memWriteShortStringUTF8(var buf:PByte; aval:PWideChar);
+var
+  pc:PChar;
+  lsize:cardinal;
+begin
+  lsize:=Length(aval);
+  GetMem(pc,(lsize+1)*SizeOf(WideChar));
+  lsize:=UnicodeToUTF8(pc,lsize+1,aval,lsize)-1;
+
+  memWriteWord(buf,lsize);
+  if lsize>0 then
+    memWriteData(buf,pc,lsize);
+  
+  FreeMem(pc);
+end;
+
 //----- Complex read -----
 
 function memReadIdList(var buf:PByte):TL2IdList;
@@ -447,6 +474,7 @@ exports
   memWriteData,
   memWriteByteString,
   memWriteShortString,
+  memWriteDWordString,
 
 //  WriteShortStringList,
   memWriteIdList,

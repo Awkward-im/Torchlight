@@ -2,7 +2,12 @@ unit RGGlobal;
 
 interface
 
+{$DEFINE Interface}
 //===== Common things =====
+
+{$IF NOT DEFINED(TIntegerDynArray)} type TIntegerDynArray = array of Integer; {$ENDIF}
+{$IF NOT DEFINED(TInt64DynArray)}   type TInt64DynArray   = array of Int64;   {$ENDIF}
+{$IF NOT DEFINED(TSingleDynArray)}  type TSingleDynArray  = array of Single;  {$ENDIF}
 
 const
   TL2DataBase = 'tl2db2.db';
@@ -21,6 +26,8 @@ const
   verTL2Mod = -verTL2;
 
 //--- Functions
+
+{$i rg_split.inc}
 
 function  ReverseWords(aval:QWord):QWord;
 function  StrToWide(const src:string):PWideChar;
@@ -261,6 +268,10 @@ function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
 implementation
 
 //----- Support -----
+
+{$UNDEF Interface}
+
+{$i rg_split.inc}
 
 type
   tTL2VerRec = record

@@ -1,4 +1,5 @@
-﻿unit RGIO.RAW;
+﻿{TODO: scan mod for info}
+unit RGIO.RAW;
 
 interface
 
@@ -112,23 +113,21 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'AFFIXES');
-//    AddInteger(result,'COUNT',lcnt);
     for i:=0 to lcnt-1 do
     begin
       lnode:=AddGroup(result,'AFFIX');
 
-      AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddString(lnode,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddInteger(lnode,'MinSpawnRange',memReadInteger(abuf));
-      AddInteger(lnode,'MaxSpawnRange',memReadInteger(abuf));
-      AddInteger(lnode,'Weight',memReadInteger(abuf));
+      AddString (lnode,'File'               ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString (lnode,'Name'               ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddInteger(lnode,'MinSpawnRange'      ,memReadInteger(abuf));
+      AddInteger(lnode,'MaxSpawnRange'      ,memReadInteger(abuf));
+      AddInteger(lnode,'Weight'             ,memReadInteger(abuf));
       AddInteger(lnode,'DifficultiesAllowed',memReadInteger(abuf));
 
       lcnt1:=memReadByte(abuf);
       if lcnt1>0 then
       begin
         lnode1:=AddGroup(lnode,'UNITTYPES');
-//        AddInteger(lnode1,'COUNT',lcnt1);
         for j:=0 to lcnt1-1 do
         begin
           AddString(lnode1,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
@@ -139,7 +138,6 @@ begin
       if lcnt1>0 then
       begin
         lnode1:=AddGroup(lnode,'NOTUNITTYPES');
-//        AddInteger(lnode1,'COUNT',lcnt1);
         for j:=0 to lcnt1-1 do
         begin
           AddString(lnode1,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
@@ -161,7 +159,6 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'MISSILES');
-//    AddInteger(result,'COUNT',lcnt);
     for i:=0 to lcnt-1 do
     begin
       lnode:=AddGroup(result,'MISSILE');
@@ -172,7 +169,6 @@ begin
       if lcnt1>0 then
       begin
         lnode1:=AddGroup(lnode,'NAMES');
-//        AddInteger(lnode1,'COUNT',lcnt1);
         for j:=0 to lcnt1-1 do
         begin
           AddString(lnode1,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
@@ -194,25 +190,19 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'ROOMPIECES');
-//    AddInteger(result,'COUNT',lcnt);
     for i:=0 to lcnt-1 do
     begin
       lnode:=AddGroup(result,'LEVELSET');
 
       AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-{
-      pcw:=memReadShortString(abuf);
-      AddString(lnode,'File',pcw);
-      FreeMem(pcw);
-}
     end;
+
     for i:=1 to lcnt do
     begin
       lcnt1:=memReadInteger(abuf);
       if lcnt1>0 then
       begin
         lnode:=AddGroup(GetChild(result,i),'GUIDS');
-//        AddInteger(lnode,'COUNT',lcnt1);
         for j:=0 to lcnt1-1 do
         begin
           AddInteger64(lnode,'GUID',memReadInteger64(abuf));
@@ -224,40 +214,65 @@ begin
     result:=nil;
 end;
 
+const
+  strGameStates:array of PWideChar = (
+    '',
+    '1',
+    'All',
+    '3',
+    '4', // Server Only
+    'Loading',
+    'Main Menu Mod',
+    '7',
+    '8',
+    '9'
+  );
+
+  strTypes:array of PWideChar = (
+    '',
+    'TEST MENU',
+    'HUD MENU',
+    'CHAT MENU',
+    'PLAYER STATS MENU',
+    'MERCHANT MENU',
+    'SKILL MENU',
+    'QUEST DIALOG MENU',
+    'QUEST MENU',
+    'MESSAGE BOX MENU',
+    'MAIN MENU',
+    'SERVER MENU',
+    'CONSOLE MENU',
+    'RESURRECTION MENU',
+    'TOWNPORTAL MENU',
+    'HOTBAR CONTEXT MENU',
+    'STANDALONE SERVER MENU',
+    'LOGIN MENU',
+    'UPSELL MENU',
+    'CLIENT OPTIONS'
+  );
+
 function DecodeUI(abuf:PByte):pointer;
 var
   pcw:array [0..MAXLEN] of WideChar;
-  lpc:PWideChar;
   lnode:pointer;
   i,lcnt:integer;
 begin
   lcnt:=memReadInteger(abuf);
   if lcnt>0 then
   begin
-    result:=AddGroup(nil,'USERINTERFACES');
-//    AddInteger(result,'COUNT',lcnt);
+    result:=AddGroup(nil,'MENUS');
     for i:=0 to lcnt-1 do
     begin
-      lnode:=AddGroup(result,'USERINTERFACE');
+      lnode:=AddGroup(result,'MENU');
 
-      AddString(lnode,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-
-      AddInteger(lnode,'Unknown1',memReadInteger(abuf));
-      AddInteger(lnode,'Unknown2',memReadInteger(abuf));
-      AddInteger(lnode,'Unknown3',memReadWord   (abuf));
-      AddBool   (lnode,'Unknown4',memReadByte   (abuf)<>0);
-      lpc:=memReadShortString(abuf);
-      AddString(lnode,'Unknown5',lpc);
-      FreeMem(lpc);
-{
-      pcw:=memReadShortString(abuf);
-      AddString(lnode,'Name',pcw);
-      FreeMem(pcw);
-      pcw:=memReadShortString(abuf);
-      AddString(lnode,'File',pcw);
-      FreeMem(pcw);
-}
+      AddString(lnode,'Name'             ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'File'             ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'TYPE'             ,strTypes     [memReadInteger(abuf)]);
+      AddString(lnode,'GAME STATE'       ,strGameStates[memReadInteger(abuf)]);
+      AddBool  (lnode,'CREATE ON LOAD'   ,memReadByte(abuf)<>0); //!!!! not 100%, like ALWAYS VISIBLE
+      AddBool  (lnode,'MULTIPLAYER ONLY' ,memReadByte(abuf)<>0);
+      AddBool  (lnode,'SINGLEPLAYER ONLY',memReadByte(abuf)<>0);
+      AddString(lnode,'KEY BINDING'      ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
     end;
   end
   else
@@ -274,21 +289,12 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'TRIGGERABLES');
-//    AddInteger(result,'COUNT',lcnt);
     for i:=0 to lcnt-1 do
     begin
       lnode:=AddGroup(result,'TRIGGERABLE');
 
       AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
       AddString(lnode,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-{
-      pcw:=memReadShortString(abuf);
-      AddString(lnode,'Name',pcw);
-      FreeMem(pcw);
-      pcw:=memReadShortString(abuf);
-      AddString(lnode,'File',pcw);
-      FreeMem(pcw);
-}
     end;
   end
   else
@@ -305,7 +311,6 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'SKILLS');
-//    AddInteger(result,'COUNT',lcnt);
     for i:=0 to lcnt-1 do
     begin
       lnode:=AddGroup(result,'SKILL');
@@ -313,15 +318,6 @@ begin
       AddString   (lnode,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
       AddString   (lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
       AddInteger64(lnode,'GUID',memReadInteger64(abuf));
-{
-      pcw:=memReadShortString(abuf);
-      AddString(lnode,'Name',pcw);
-      FreeMem(pcw);
-      pcw:=memReadShortString(abuf);
-      AddString(lnode,'File',pcw);
-      FreeMem(pcw);
-      AddInteger64(lnode,'GUID',memReadInteger64(abuf));
-}
     end;
   end
   else

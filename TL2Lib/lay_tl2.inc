@@ -160,40 +160,17 @@ begin
   asUnsigned(lc,lobjcnt);
 end;
 
-function TRGLayoutFile.WritePropertyTL2(anode:pointer; astream:TStream):integer;
-begin
-  result:=0;
-end;
-
-function SearchVector(aprops:pointer; aname:PWideChar; aletter:WideChar):pointer;
-var
-  buf:array [0..127] of WideChar;
-  llen:integer;
-begin
-  llen:=Length(aname);
-  move(aname^,buf[0],llen*SizeOf(WideChar));
-  buf[llen]:=aletter;
-  buf[llen+1]:=#0;
-  result:=FindNode(aprops,buf);
-end;
-
 function TRGLayoutFile.DoWriteBlockTL2(anode:pointer; astream:TStream):integer;
 var
-  lprop,lobj,lprops:pointer;
-  ldescr,lname,lparent,lid:pointer;
+  lobj,lprops:pointer;
+  {lparent,}ldescr,lname,lid:pointer;
   lpdescr,lpname:PWideChar;
-  vct:tVector4;
-  l_id:dword;
-  ltype,lcnt,i:integer;
+  lcnt,i:integer;
   lpos,lPropPos,lAddPos:integer;
   lChunkType:byte;
 begin
   result:=0;
-{
-writeln('BASEOBJECT child count ',GetChildCount(anode));
-writeln('1st type ',GetNodeType(GetChild(anode,0)),' name "',WideString(GetNodeName(GetChild(anode,0))),'"');
-writeln('2nd type ',GetNodeType(GetChild(anode,1)),' name "',WideString(GetNodeName(GetChild(anode,1))),'"');
-}
+
   lprops:=GetChild(anode,0); // PROPERTIES
 
   //--- Chunk Header
@@ -202,7 +179,6 @@ writeln('2nd type ',GetNodeType(GetChild(anode,1)),' name "',WideString(GetNodeN
   astream.WriteDWord(0); // ChunkSize
 
   ldescr:=FindNode(lprops,'DESCRIPTOR');
-  {TODO: what to do if descr=nil}
   lpdescr:=AsString(ldescr);
   i:=info.GetObjectId(lpdescr);
 
@@ -212,7 +188,7 @@ writeln('2nd type ',GetNodeType(GetChild(anode,1)),' name "',WideString(GetNodeN
   astream.WriteByte(lChunkType);
   // select object
 
-  lparent:=FindNode(lprops,'PARENTID');
+//  lparent:=FindNode(lprops,'PARENTID');
 
   lid:=FindNode(lprops,'ID');
 //  lChunkId  :=AsInteger64(FPos);
@@ -231,119 +207,8 @@ writeln('2nd type ',GetNodeType(GetChild(anode,1)),' name "',WideString(GetNodeN
 
   lPropPos:=astream.Position;
   astream.WriteByte(0);
-  lcnt:=0;
 
-  for i:=0 to info.GetPropsCount()-1 do
-  begin
-    vct.x:=0;
-    vct.y:=0;
-    vct.z:=0;
-    vct.w:=0;
-    ltype:=info.GetPropInfoByIdx(i,l_id,lpname);
-    case ltype of
-      rgVector2: begin
-        vct.X:=AsFloat(SearchVector(lprops,lpname,'X'));
-        vct.Y:=AsFloat(SearchVector(lprops,lpname,'Y'));
-        if (vct.X<>0) or (vct.Y<>0) then
-        begin
-          inc(lcnt);
-          astream.WriteWord(1+SizeOf(tVector2){2*SizeOf(Single)});
-          astream.WriteByte(l_id);
-          astream.WriteFloat(vct.X);
-          astream.WriteFloat(vct.Y);
-        end;
-      end;
-      rgVector3: begin
-        vct.X:=AsFloat(SearchVector(lprops,lpname,'X'));
-        vct.Y:=AsFloat(SearchVector(lprops,lpname,'Y'));
-        vct.Z:=AsFloat(SearchVector(lprops,lpname,'Z'));
-        if (vct.X<>0) or (vct.Y<>0) or (vct.Z<>0) then
-        begin
-          inc(lcnt);
-          astream.WriteWord(1+SizeOf(tVector3){3*SizeOf(Single)});
-          astream.WriteByte(l_id);
-          astream.WriteFloat(vct.X);
-          astream.WriteFloat(vct.Y);
-          astream.WriteFloat(vct.Z);
-        end;
-      end;
-      rgVector4: begin
-        vct.X:=AsFloat(SearchVector(lprops,lpname,'X'));
-        vct.Y:=AsFloat(SearchVector(lprops,lpname,'Y'));
-        vct.Z:=AsFloat(SearchVector(lprops,lpname,'Z'));
-        vct.W:=AsFloat(SearchVector(lprops,lpname,'W'));
-        if (vct.X<>0) or (vct.Y<>0) or (vct.Z<>0) or (vct.W<>0) then
-        begin
-          inc(lcnt);
-          astream.WriteWord(1+SizeOf(tVector4){4*SizeOf(Single)});
-          astream.WriteByte(l_id);
-          astream.WriteFloat(vct.X);
-          astream.WriteFloat(vct.Y);
-          astream.WriteFloat(vct.Z);
-          astream.WriteFloat(vct.W);
-        end;
-      end;
-    else
-      lprop:=FindNode(lprops,lpname);
-//if lprop<>nil then writeln('prop found ',widestring(lpname));
-      if lprop<>nil then
-        case ltype of
-          rgInteger: begin
-            inc(lcnt);
-            astream.WriteWord(1+SizeOf(dword));
-            astream.WriteByte(l_id);
-            astream.WriteDWord(dword(asInteger(lprop)));
-          end;
-          rgFloat: begin
-            inc(lcnt);
-            astream.WriteWord(1+SizeOf(Single));
-            astream.WriteByte(l_id);
-            astream.WriteFloat(asFloat(lprop));
-          end;
-          rgDouble: begin
-            inc(lcnt);
-            astream.WriteWord(1+SizeOf(qword));
-            astream.WriteByte(l_id);
-            astream.WriteQWord(qword(asDouble(lprop)));
-          end;
-          rgUnsigned: begin
-            inc(lcnt);
-            astream.WriteWord(1+SizeOf(dword));
-            astream.WriteByte(l_id);
-            astream.WriteDWord(asUnsigned(lprop));
-          end;
-          rgBool: begin
-            inc(lcnt);
-            astream.WriteWord(1+SizeOf(dword));
-            astream.WriteByte(l_id);
-           if AsBool(lprop) then astream.WriteDWord(1) else astream.WriteDWord(0);
-          end;
-          rgInteger64: begin
-            inc(lcnt);
-            astream.WriteWord(1+SizeOf(qword));
-            astream.WriteByte(l_id);
-            astream.WriteQWord(qword(asInteger64(lprop)));
-          end;
-          rgString,
-          rgTranslate,
-          rgNote: begin
-            inc(lcnt);
-            lpname:=AsString(lprop);
-            astream.WriteWord(1+2+Length(lpname)*SizeOf(WideChar));
-            astream.WriteByte(l_id);
-            astream.WriteShortString(lpname);
-          end;
-          rgUIntList: begin
-            inc(lcnt);
-            lpname:=AsString(lprop);
-          end;
-          rgFloatList: begin
-            inc(lcnt);
-            lpname:=AsString(lprop);
-          end;
-        end;
-    end;
-  end;
+  lcnt:=WritePropertyValue(lprops,astream);
 
   lAddPos:=astream.Position;
   astream.Position:=lPropPos;
@@ -381,8 +246,6 @@ writeln('2nd type ',GetNodeType(GetChild(anode,1)),' name "',WideString(GetNodeN
   else lcnt:=GetGroupCount(lobj);
   astream.WriteWord(lcnt);
 
-//  writeln('go child ',lcnt);
-
   for i:=0 to lcnt-1 do
     DoWriteBlockTL2(GetChild(lobj,i),astream); // BASEOBJECT
 
@@ -411,7 +274,6 @@ begin
   lobj:=FindNode(anode,'OBJECTS');
   if lobj=nil then lcnt:=0
   else lcnt:=GetGroupCount(lobj);
-//writeln('OBJECTS group count ',lcnt);
   astream.WriteWord(lcnt); // root baseobject count <UNSIGNED INT>COUNT:322
 
   for i:=0 to lcnt-1 do

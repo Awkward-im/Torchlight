@@ -62,9 +62,6 @@ var
   db:PSQLite3=nil;
   ModFilter:string='';
 
-//----- Support functions -----
-
-{$Include tl2db_split.inc}
 
 //----- Core functions -----
 

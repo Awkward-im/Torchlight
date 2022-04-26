@@ -14,6 +14,8 @@ type
     function  ReadBytes(asize:cardinal):pointer;
     function  ReadByteString ():string;
     function  ReadShortString():string;
+    function  ReadDWordString():string;
+    function  ReadShortStringUTF8():string;
     function  ReadFloat:single;
     function  ReadCoord:TVector3;
     function  ReadShortStringList:TL2StringList;
@@ -23,8 +25,12 @@ type
     // write
     procedure WriteByteString (const astr:string);
     procedure WriteShortString(const astr:string);
+    procedure WriteDWordString(const astr:string);
+    procedure WriteShortStringUTF8(const astr:string);
     procedure WriteByteString (const astr:WideString);
     procedure WriteShortString(const astr:WideString);
+    procedure WriteDWordString(const astr:WideString);
+    procedure WriteShortStringUTF8(const astr:WideString);
     procedure WriteFloat(aval:single);
     procedure WriteCoord(aval:TVector3);
     procedure WriteShortStringList(alist:TL2StringList);
@@ -67,7 +73,7 @@ var
   ws:WideString;
   lsize:cardinal;
 begin
-  lsize:=ReadByte;
+  lsize:=ReadByte();
   if lsize>0 then
   begin
 {
@@ -92,12 +98,42 @@ var
   ws:WideString;
   lsize:cardinal;
 begin
-  lsize:=ReadWord;
+  lsize:=ReadWord();
   if lsize>0 then
   begin
     SetLength(ws,lsize);
     Read(ws[1],lsize*SizeOf(WideChar));
     result:=UTF8Encode(ws);
+  end
+  else
+    result:='';
+end;
+
+function TTL2Stream.ReadDWordString():string;
+var
+  ws:WideString;
+  lsize:cardinal;
+begin
+  lsize:=ReadDWord();
+  if lsize>0 then
+  begin
+    SetLength(ws,lsize);
+    Read(ws[1],lsize*SizeOf(WideChar));
+    result:=UTF8Encode(ws);
+  end
+  else
+    result:='';
+end;
+
+function TTL2Stream.ReadShortStringUTF8():string;
+var
+  lsize:cardinal;
+begin
+  lsize:=ReadWord();
+  if lsize>0 then
+  begin
+    SetLength(result   ,lsize);
+    Read     (result[1],lsize);
   end
   else
     result:='';
@@ -195,6 +231,31 @@ begin
     WriteWord(0);
 end;
 
+procedure TTL2Stream.WriteDWordString(const astr:string);
+var
+  ws:WideString;
+begin
+  if astr<>'' then
+  begin
+    ws:=UTF8Decode(astr);
+    WriteDWord(Length(ws));
+    Write(ws[1],Length(ws)*SizeOf(WideChar));
+  end
+  else
+    WriteDWord(0);
+end;
+
+procedure TTL2Stream.WriteShortStringUTF8(const astr:string);
+begin
+  if astr<>'' then
+  begin
+    WriteWord(Length(astr));
+    Write(astr[1],Length(astr));
+  end
+  else
+    WriteWord(0);
+end;
+
 procedure TTL2Stream.WriteShortString(const astr:WideString);
 begin
   if astr<>'' then
@@ -205,6 +266,32 @@ begin
   else
     WriteWord(0);
 end;
+
+procedure TTL2Stream.WriteDWordString(const astr:WideString);
+begin
+  if astr<>'' then
+  begin
+    WriteDWord(Length(astr));
+    Write(astr[1],Length(astr)*SizeOf(WideChar));
+  end
+  else
+    WriteDWord(0);
+end;
+
+procedure TTL2Stream.WriteShortStringUTF8(const astr:WideString);
+var
+  ls:String;
+begin
+  if astr<>'' then
+  begin
+    ls:=UTF8Encode(astr);
+    WriteWord(Length(ls));
+    Write(ls[1],Length(ls));
+  end
+  else
+    WriteWord(0);
+end;
+
 
 procedure TTL2Stream.WriteFloat(aval:single);
 begin
