@@ -13,13 +13,13 @@ const
 
 function ParseLayoutMem   (abuf        :pByte  ; atype:cardinal=ltLayout):pointer;
 function ParseLayoutMem   (abuf        :pByte  ; const afname:string):pointer;
-//function ParseLayoutStream(astream     :TStream; atype:cardinal=ltLayout):pointer;
-//function ParseLayoutStream(astream     :TStream; const afname:string):pointer;
+function ParseLayoutStream(astream     :TStream; atype:cardinal=ltLayout):pointer;
+function ParseLayoutStream(astream     :TStream; const afname:string):pointer;
 function ParseLayoutFile  (const afname:string):pointer;
 
 function BuildLayoutMem   (data:pointer; out   bin    :pByte     ; aver:byte=verTL2):integer;
 function BuildLayoutStream(data:pointer;       astream:TStream   ; aver:byte=verTL2):integer;
-//function BuildLayoutFile  (data:pointer; const fname  :AnsiString; aver:byte=verTL2):integer;
+function BuildLayoutFile  (data:pointer; const fname  :AnsiString; aver:byte=verTL2):integer;
 
 
 implementation
@@ -841,15 +841,21 @@ begin
   result:=ParseLayoutMem(abuf,GetLayoutType(afname));
 end;
 
-{
 function ParseLayoutStream(astream:TStream; atype:cardinal=ltLayout):pointer;
 var
   lbuf:PByte;
 begin
-  GetMem(lbuf,astream.Size);
-  aStream.Read(lbuf^,astream.Size);
-  result:=ParseLayoutMem(lbuf,atype);
-  FreeMem(lbuf);
+  if (astream is TMemoryStream) then
+  begin
+    result:=ParseLayoutMem((astream as TMemoryStream).Memory,atype);
+  end
+  else
+  begin
+    GetMem(lbuf,astream.Size);
+    aStream.Read(lbuf^,astream.Size);
+    result:=ParseLayoutMem(lbuf,atype);
+    FreeMem(lbuf);
+  end;
 end;
 
 function ParseLayoutStream(astream:TStream; const afname:string):pointer;
@@ -858,7 +864,7 @@ begin
 
   result:=ParseLayoutStream(astream,GetLayoutType(afname));
 end;
-}
+
 function ParseLayoutFile(const afname:string):pointer;
 var
   f:file of byte;
@@ -914,6 +920,20 @@ begin
     ls.Free;
   end;
 end;
+
+function BuildLayoutFile(data:pointer; const fname:AnsiString; aver:byte=verTL2):integer;
+var
+  ls:TMemoryStream;
+begin
+  ls:=TMemoryStream.Create;
+  try
+    result:=BuildLayoutStream(data,ls,aver);
+    ls.SaveToFile(fname);
+  finally
+    ls.Free;
+  end;
+end;
+
 
 initialization
 

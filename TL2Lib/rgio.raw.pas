@@ -216,16 +216,13 @@ end;
 
 const
   strGameStates:array of PWideChar = (
-    '',
-    '1',
+    '', // NONE
+    'Testing',
     'All',
-    '3',
-    '4', // Server Only
+    'In Game',
+    'Server Only'
     'Loading',
-    'Main Menu Mod',
-    '7',
-    '8',
-    '9'
+    'Main Menu Mod'
   );
 
   strTypes:array of PWideChar = (
