@@ -1041,17 +1041,43 @@ begin
 end;
 {$POP}
 
+{TODO: pack separate file}
+procedure PackFile(var ainfo:TPAKInfo;
+    apath,aname:PWideChar;
+    abuf:PByte; asize:integer);
+var
+  mi:PMANFileInfo;
+begin
+  // just add to MAN or remove from pack or modify MAN
+  if (asize=0) or (abuf=nil) then ;
+
+  mi:=SearchFile(ainfo,apath,afile);
+  if mi<>nil then
+    // Pack file
+    // replace in PAK if not greater than existing
+    // or add to the end
+  else
+    // Add to MAN, add to the end of PAK
+  ;
+end;
+
 //----- something -----
 
-function ConsoleProgress(const ainfo:TPAKInfo; adir,afile:integer):integer;
+function DoProgress(const ainfo:TPAKInfo; adir,afile:integer):integer;
 begin
   result:=0;
-  if IsConsole then
-  begin
-    if afile>=0 then
-    begin
-    end;
-  end;
+
+  if afile>=0 then
+    RGLog.Add('Processing file '+
+      WideToStr(ainfo.Entries[adir].name)+
+      WideToStr(ainfo.Entries[adir].Files[afile].name))
+  else if adir>=0 then
+    RGLog.Add('Processing dir '+WideToStr(ainfo.Entries[adir].name))
+  else
+    RGLog.Add('Skipping dummy '+
+      WideToStr(ainfo.Entries[-adir].name)+
+      WideToStr(ainfo.Entries[-adir].Files[-afile].name));
+
 end;
 
 
@@ -1196,5 +1222,9 @@ begin
 end;
 
 initialization
-  OnPAKProgress:=@ConsoleProgress;
+{$IFDEF DEBUG}
+  OnPAKProgress:=@DoProgress;
+{$ELSE}
+  OnPAKProgress:=nil;
+{$ENDIF}
 end.

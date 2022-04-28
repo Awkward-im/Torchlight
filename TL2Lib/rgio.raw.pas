@@ -3,16 +3,40 @@ unit RGIO.RAW;
 
 interface
 
-function ParseRawMem (abuf:PByte; const afname:string):pointer;
-function ParseRawFile(const afname:string):pointer;
+uses
+  Classes;
+
+function ParseRawMem   (abuf   :PByte  ; const afname:string):pointer;
+function ParseRawStream(astream:TStream; const afname:string):pointer;
+function ParseRawFile  (                 const afname:string):pointer;
+
+function DecodeUnitData  (abuf:PByte):pointer;
+function DecodeSkills    (abuf:PByte):pointer;
+function DecodeAffixes   (abuf:PByte):pointer;
+function DecodeMissiles  (abuf:PByte):pointer;
+function DecodeRoomPieces(abuf:PByte):pointer;
+function DecodeTriggers  (abuf:PByte):pointer;
+function DecodeUI        (abuf:PByte):pointer;
+
+function EncodeUnitData  (astream:TStream; anode:pointer):integer;
+function EncodeSkills    (astream:TStream; anode:pointer):integer;
+function EncodeAffixes   (astream:TStream; anode:pointer):integer;
+function EncodeMissiles  (astream:TStream; anode:pointer):integer;
+function EncodeRoomPieces(astream:TStream; anode:pointer):integer;
+function EncodeTriggers  (astream:TStream; anode:pointer):integer;
+function EncodeUI        (astream:TStream; anode:pointer):integer;
+
+function BuildRawMem   (data:pointer; out bin    :pByte  ; const fname:string):integer;
+function BuildRawStream(data:pointer;     astream:TStream; const fname:string):integer;
+function BuildRawFile  (data:pointer;                      const fname:string):integer;
 
 
 implementation
 
 uses
   rgglobal,
+  rgstream,
   rgmemory,
-  rgio.text,
   rgnode;
 
 const
@@ -43,16 +67,16 @@ var
   lnode:pointer;
 begin
   lnode:=AddGroup(anode,'UNIT');
-  AddInteger64(lnode,'GUID'    ,memReadInteger64(abuf));
-  AddString   (lnode,'Name'    ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
-  AddString   (lnode,'File'    ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
-  AddBool     (lnode,'UNKNOWN' ,memReadByte(abuf)<>0);
-  AddInteger  (lnode,'Level'   ,memReadInteger(abuf));
-  AddInteger  (lnode,'MinLevel',memReadInteger(abuf));
-  AddInteger  (lnode,'MaxLevel',memReadInteger(abuf));
-  AddInteger  (lnode,'Rarity'  ,memReadInteger(abuf));
-  AddInteger  (lnode,'RarityHC',memReadInteger(abuf));
-  AddString   (lnode,'Type'    ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+  AddInteger64(lnode,'GUID'     ,memReadInteger64(abuf));
+  AddString   (lnode,'Name'     ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+  AddString   (lnode,'File'     ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+  AddInteger  (lnode,'EQUIPMENT',memReadByte(abuf)); // 1 = CREATEAS:EQUIPMENT, 2 = Part of a set)
+  AddInteger  (lnode,'LEVEL'    ,memReadInteger(abuf));
+  AddInteger  (lnode,'MINLEVEL' ,memReadInteger(abuf));
+  AddInteger  (lnode,'MAXLEVEL' ,memReadInteger(abuf));
+  AddInteger  (lnode,'RARITY'   ,memReadInteger(abuf));
+  AddInteger  (lnode,'RARITYHC' ,memReadInteger(abuf));
+  AddString   (lnode,'UNITTYPE' ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
 end;
 
 function DecodeUnitData(abuf:PByte):pointer;
@@ -197,7 +221,7 @@ begin
       AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
     end;
 
-    for i:=1 to lcnt do
+    for i:=0 to lcnt-1 do
     begin
       lcnt1:=memReadInteger(abuf);
       if lcnt1>0 then
@@ -216,17 +240,17 @@ end;
 
 const
   strGameStates:array of PWideChar = (
-    '', // NONE
+    nil, // NONE
     'Testing',
     'All',
     'In Game',
-    'Server Only'
+    'Server Only',
     'Loading',
     'Main Menu Mod'
   );
 
   strTypes:array of PWideChar = (
-    '',
+    nil,
     'TEST MENU',
     'HUD MENU',
     'CHAT MENU',
@@ -251,8 +275,10 @@ const
 function DecodeUI(abuf:PByte):pointer;
 var
   pcw:array [0..MAXLEN] of WideChar;
+  pc:PWideChar;
   lnode:pointer;
   i,lcnt:integer;
+  b:boolean;
 begin
   lcnt:=memReadInteger(abuf);
   if lcnt>0 then
@@ -262,14 +288,15 @@ begin
     begin
       lnode:=AddGroup(result,'MENU');
 
-      AddString(lnode,'Name'             ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddString(lnode,'File'             ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddString(lnode,'TYPE'             ,strTypes     [memReadInteger(abuf)]);
-      AddString(lnode,'GAME STATE'       ,strGameStates[memReadInteger(abuf)]);
-      AddBool  (lnode,'CREATE ON LOAD'   ,memReadByte(abuf)<>0); //!!!! not 100%, like ALWAYS VISIBLE
-      AddBool  (lnode,'MULTIPLAYER ONLY' ,memReadByte(abuf)<>0);
-      AddBool  (lnode,'SINGLEPLAYER ONLY',memReadByte(abuf)<>0);
-      AddString(lnode,'KEY BINDING'      ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+
+      pc:=strTypes     [memReadInteger(abuf)]; if pc<>nil then AddString(lnode,'TYPE'      ,pc);
+      pc:=strGameStates[memReadInteger(abuf)]; if pc<>nil then AddString(lnode,'GAME STATE',pc);
+      b:=memReadByte(abuf)<>0; if b then AddBool(lnode,'CREATE ON LOAD'   ,b); //!!!! or ALWAYS VISIBLE etc
+      b:=memReadByte(abuf)<>0; if b then AddBool(lnode,'MULTIPLAYER ONLY' ,b);
+      b:=memReadByte(abuf)<>0; if b then AddBool(lnode,'SINGLEPLAYER ONLY',b);
+      pc:=memReadShortStringBuf(abuf,@pcw,MAXLEN); if pc<>nil then AddString(lnode,'KEY BINDING',pc);
     end;
   end
   else
@@ -339,6 +366,16 @@ begin
   else if lfname=RawNames[nmUI          ] then result:=DecodeUI        (abuf);
 end;
 
+function ParseRawStream(astream:TStream; const afname:string):pointer;
+var
+  lbuf:PByte;
+begin
+  GetMem(lbuf,astream.Size);
+  aStream.Read(lbuf^,astream.Size);
+  result:=ParseRawMem(lbuf,afname);
+  FreeMem(lbuf);
+end;
+
 function ParseRawFile(const afname:string):pointer;
 var
   lfile:file of byte;
@@ -357,6 +394,264 @@ begin
   end
   else
     result:=nil;
+end;
+
+procedure WriteUnit(astream:TStream; anode:pointer);
+begin
+  astream.WriteQWord(qword(AsInteger64(FindNode(anode,'GUID'     ))));
+  astream.WriteShortString(AsString   (FindNode(anode,'Name'     )));
+  astream.WriteShortString(AsString   (FindNode(anode,'File'     )));
+  astream.WriteByte (      AsInteger  (FindNode(anode,'EQUIPMENT')));
+  astream.WriteDWord(dword(AsInteger  (FindNode(anode,'LEVEL'    ))));
+  astream.WriteDWord(dword(AsInteger  (FindNode(anode,'MINLEVEL' ))));
+  astream.WriteDWord(dword(AsInteger  (FindNode(anode,'MAXLEVEL' ))));
+  astream.WriteDWord(dword(AsInteger  (FindNode(anode,'RARITY'   ))));
+  astream.WriteDWord(dword(AsInteger  (FindNode(anode,'RARITYHC' ))));
+  astream.WriteShortString(AsString   (FindNode(anode,'UNITTYPE' )));
+end;
+
+function EncodeUnitData(astream:TStream; anode:pointer):integer;
+var
+  lnode:pointer;
+  i,lcnt:integer;
+begin
+  lnode:=FindNode(anode,'ITEMS');
+  lcnt:=GetGroupCount(lnode);
+  result:=lcnt;
+  astream.WriteDWord(lcnt);
+
+  for i:=0 to lcnt-1 do WriteUnit(astream,GetChild(lnode,i));
+
+  lnode:=FindNode(anode,'MONSTERS');
+  lcnt:=GetGroupCount(lnode);
+  inc(result,lcnt);
+  astream.WriteDWord(lcnt);
+
+  for i:=0 to lcnt-1 do WriteUnit(astream,GetChild(lnode,i));
+
+  lnode:=FindNode(anode,'PLAYERS');
+  lcnt:=GetGroupCount(lnode);
+  inc(result,lcnt);
+  astream.WriteDWord(lcnt);
+
+  for i:=0 to lcnt-1 do WriteUnit(astream,GetChild(lnode,i));
+
+  lnode:=FindNode(anode,'PROPS');
+  lcnt:=GetGroupCount(lnode);
+  inc(result,lcnt);
+  astream.WriteDWord(lcnt);
+
+  for i:=0 to lcnt-1 do WriteUnit(astream,GetChild(lnode,i));
+end;
+
+function EncodeSkills(astream:TStream; anode:pointer):integer;
+var
+  lnode:pointer;
+  i:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteDWord(result);
+
+  for i:=0 to result-1 do
+  begin
+    lnode:=GetChild(anode,i);
+
+    astream.WriteShortString(AsString   (FindNode(lnode,'Name')));
+    astream.WriteShortString(AsString   (FindNode(lnode,'File')));
+    astream.WriteQWord(qword(AsInteger64(FindNode(lnode,'GUID'))));
+  end;
+end;
+
+function EncodeAffixes(astream:TStream; anode:pointer):integer;
+var
+  lnode,lunode:pointer;
+  i,j,lcnt:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteWord(result);
+  for i:=0 to result-1 do
+  begin
+    lnode:=GetChild(anode,i);
+
+    astream.WriteShortString(AsString (FindNode(lnode,'File')));
+    astream.WriteShortString(AsString (FindNode(lnode,'Name')));
+    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'MinSpawnRange'))));
+    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'MaxSpawnRange'))));
+    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'Weight'))));
+    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'DifficultiesAllowed'))));
+
+    lunode:=FindNode(lnode,'UNITTYPES');
+    lcnt:=GetChildCount(lunode);
+    astream.WriteByte(lcnt);
+
+    for j:=0 to lcnt-1 do
+    begin
+      astream.WriteShortString(AsString(GetChild(lunode,j)));
+    end;
+
+    lunode:=FindNode(lnode,'NOTUNITTYPES');
+    lcnt:=GetChildCount(lunode);
+    astream.WriteByte(lcnt);
+
+    for j:=0 to lcnt-1 do
+    begin
+      astream.WriteShortString(AsString(GetChild(lunode,j)));
+    end;
+  end;
+end;
+
+function EncodeMissiles(astream:TStream; anode:pointer):integer;
+var
+  lnode:pointer;
+  i,j,lcnt:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteWord(result);
+  for i:=0 to result-1 do
+  begin
+    lnode:=GetChild(anode,i);
+
+    astream.WriteShortString(AsString(FindNode(lnode,'File')));
+
+    lnode:=FindNode(lnode,'NAMES');
+    lcnt:=GetChildCount(lnode);
+    astream.WriteByte(lcnt);
+
+    for j:=0 to lcnt-1 do
+    begin
+      astream.WriteShortString(AsString(GetChild(lnode,j)));
+    end;
+  end;
+end;
+
+function EncodeRoomPieces(astream:TStream; anode:pointer):integer;
+var
+  lnode:pointer;
+  i,j,lcnt:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteDWord(result);
+  for i:=0 to result-1 do
+    astream.WriteShortString(AsString(FindNode(GetChild(anode,i),'File')));
+
+  for i:=0 to result-1 do
+  begin
+    lnode:=FindNode(GetChild(anode,i),'GUIDS');
+    lcnt:=GetChildCount(lnode);
+    astream.WriteDWord(lcnt);
+    
+    for j:=0 to lcnt-1 do
+      astream.WriteQWord(qword(AsInteger64(GetChild(lnode,j))));
+  end;
+end;
+
+function EncodeTriggers(astream:TStream; anode:pointer):integer;
+var
+  lnode:pointer;
+  i:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteWord(result);
+
+  for i:=0 to result-1 do
+  begin
+    lnode:=GetChild(anode,i);
+
+    astream.WriteShortString(AsString(FindNode(lnode,'File')));
+    astream.WriteShortString(AsString(FindNode(lnode,'Name')));
+  end;
+end;
+
+function EncodeUI(astream:TStream; anode:pointer):integer;
+var
+  lnode:pointer;
+  pc:PWideChar;
+  i,j,b:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteDWord(result);
+
+  for i:=0 to result-1 do
+  begin
+    lnode:=GetChild(anode,i);
+
+    astream.WriteShortString(AsString(FindNode(lnode,'Name')));
+    astream.WriteShortString(AsString(FindNode(lnode,'File')));
+
+    pc:=AsString(FindNode(lnode,'TYPE'));
+    for j:=0 to High(strTypes) do
+      if CompareWide(pc,strTypes[j])=0 then
+      begin
+        astream.WriteDWord(j);
+        break;
+      end;
+      
+    pc:=AsString(FindNode(lnode,'GAME STATE'));
+    for j:=0 to High(strGameStates) do
+      if CompareWide(pc,strGameStates[j])=0 then
+      begin
+        astream.WriteDWord(j);
+        break;
+      end;
+
+    if AsBool(FindNode(lnode,'CREATE ON LOAD'   )) then b:=1 else b:=0; astream.WriteByte(b);
+    if AsBool(FindNode(lnode,'MULTIPLAYER ONLY' )) then b:=1 else b:=0; astream.WriteByte(b);
+    if AsBool(FindNode(lnode,'SINGLEPLAYER ONLY')) then b:=1 else b:=0; astream.WriteByte(b);
+    astream.WriteShortString(AsString(FindNode(lnode,'KEY BINDING')));
+  end;
+end;
+
+function BuildRawMem(data:pointer; out bin:pByte; const fname:string):integer;
+var
+  ls:TMemoryStream;
+begin
+  result:=0;
+  ls:=TMemoryStream.Create;
+  try
+    result:=BuildRawStream(data,ls,fname);
+    GetMem(bin,result);
+    move(ls.Memory^,bin^,result);
+  finally
+    ls.Free;
+  end;
+end;
+
+function BuildRawStream(data:pointer; astream:TStream; const fname:string):integer;
+begin
+  if      fname=RawNames[nmUNITDATA    ] then result:=EncodeUnitData  (astream,data)
+  else if fname=RawNames[nmSKILLS      ] then result:=EncodeSkills    (astream,data)
+  else if fname=RawNames[nmAFFIXES     ] then result:=EncodeAffixes   (astream,data)
+  else if fname=RawNames[nmMISSILES    ] then result:=EncodeMissiles  (astream,data)
+  else if fname=RawNames[nmROOMPIECES  ] then result:=EncodeRoomPieces(astream,data)
+  else if fname=RawNames[nmTRIGGERABLES] then result:=EncodeTriggers  (astream,data)
+  else if fname=RawNames[nmUI          ] then result:=EncodeUI        (astream,data);
+end;
+
+function BuildRawFile(data:pointer; const fname:string):integer;
+var
+  ls:TMemoryStream;
+  lfname:string;
+begin
+  lfname:=UpCase(ExtractFileNameOnly(fname));
+  ls:=TMemoryStream.Create;
+  try
+    result:=BuildRawStream(data,ls,lfname);
+    ls.SaveToFile(fname);
+  finally
+    ls.Free;
+  end;
 end;
 
 end.
