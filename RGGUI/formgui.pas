@@ -198,6 +198,7 @@ uses
   rgfiletype,
   rgio.text,
   rgio.dat,
+  rgio.raw,
   rgio.layout,
   TL2Mod,
   rgdict,
@@ -250,8 +251,7 @@ const
     typeTTF,
     typeMPP,
     typeBIK,
-    typeSBIN,
-    typeRAW
+    typeSBIN
   ];
 
   setImage = [
@@ -282,7 +282,8 @@ const
     typeDAT,
     typeWDAT,
     typeHIE,
-    typeLayout
+    typeLayout,
+    typeRAW
   ];
 
 const
@@ -490,6 +491,8 @@ begin
   begin
     if ltype=typeLayout then
       lnode:=ParseLayoutMem(adata,adir+aname)
+    else if ltype=typeRAW then
+      lnode:=ParseRawMem(adata,adir+aname)
     else
       lnode:=ParseDatMem(adata);
 
@@ -507,6 +510,8 @@ begin
   begin
     if ltype=typeLayout then
       lext:='.BINLAYOUT'
+    else if ltype=typeRAW then
+      lext:='.TXT'
     else
       lext:='.BINDAT';
   end;
@@ -524,17 +529,6 @@ begin
   end;
 
   result:=true;
-end;
-
-procedure TRGGUIForm.sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
-var
-  i,j:integer;
-begin
-  j:=0;
-
-  for i:=0 to sgMain.ColCount-2 do
-    inc(j,sgMain.ColWidths[i]);
-  if sgMain.Width>(j+8) then sgMain.Width:=j+8;
 end;
 
 procedure TRGGUIForm.bbSaveClick(Sender: TObject);
@@ -635,6 +629,17 @@ end;
 
 {%REGION Form}
 //----- Form -----
+
+procedure TRGGUIForm.sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
+var
+  i,j:integer;
+begin
+  j:=0;
+
+  for i:=0 to sgMain.ColCount-2 do
+    inc(j,sgMain.ColWidths[i]);
+  if sgMain.Width>(j+8) then sgMain.Width:=j+8;
+end;
 
 procedure TRGGUIForm.FormCreate(Sender: TObject);
 begin
@@ -876,6 +881,8 @@ var
 begin
   if atype=typeLayout then
     lnode:=ParseLayoutMem(FUData,adir+aname)
+  else if atype=typeRAW then
+    lnode:=ParseRawMem(FUData,adir+aname)
   else
     lnode:=ParseDatMem(FUData);
   if NodeToWide(lnode,pc) then

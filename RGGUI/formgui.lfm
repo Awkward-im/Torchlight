@@ -4,13 +4,12 @@ object RGGUIForm: TRGGUIForm
   Top = 205
   Width = 944
   Caption = 'RGGUI'
-  ClientHeight = 494
+  ClientHeight = 514
   ClientWidth = 944
   Menu = MainMenu
   OnClose = FormClose
   OnCreate = FormCreate
   ShowHint = True
-  LCLVersion = '2.3.0.0'
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
@@ -39,7 +38,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 47
-      Height = 5
+      Height = 22
       Top = 2
       Style = tbsDivider
     end

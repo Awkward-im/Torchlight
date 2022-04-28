@@ -1051,7 +1051,7 @@ begin
   // just add to MAN or remove from pack or modify MAN
   if (asize=0) or (abuf=nil) then ;
 
-  mi:=SearchFile(ainfo,apath,afile);
+  mi:=SearchFile(ainfo,apath,aname);
   if mi<>nil then
     // Pack file
     // replace in PAK if not greater than existing
@@ -1062,7 +1062,7 @@ begin
 end;
 
 //----- something -----
-
+{$IFDEF DEBUG}
 function DoProgress(const ainfo:TPAKInfo; adir,afile:integer):integer;
 begin
   result:=0;
@@ -1079,7 +1079,7 @@ begin
       WideToStr(ainfo.Entries[-adir].Files[-afile].name));
 
 end;
-
+{$ENDIF}
 
 //===== Manipulation =====
 

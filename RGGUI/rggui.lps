@@ -20,8 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1175"/>
-        <CursorPos X="26" Y="1189"/>
+        <TopLine Value="186"/>
+        <CursorPos X="12" Y="201"/>
         <FoldState Value=" T7NF{?J"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
@@ -40,10 +40,11 @@
         <Filename Value="..\TL2Lib\rgpak.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGPAK"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="945"/>
-        <CursorPos X="32" Y="961"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1056"/>
+        <CursorPos X="8" Y="1082"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
@@ -192,30 +193,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="875" Column="16" TopLine="860"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="536" Column="16" TopLine="517"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="534" TopLine="521"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="535" TopLine="521"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="534" TopLine="521"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="535" TopLine="521"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
         <Caret Line="534" TopLine="521"/>
       </Position>
       <Position>
@@ -309,6 +286,30 @@
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="1022" Column="74" TopLine="1011"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1182" Column="25" TopLine="1174"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgpak.pas"/>
+        <Caret Line="1054" Column="35" TopLine="1039"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgpak.pas"/>
+        <Caret Line="1068" Column="5" TopLine="1056"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgpak.pas"/>
+        <Caret Line="70" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgpak.pas"/>
+        <Caret Line="1082" Column="8" TopLine="1056"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="494" Column="14" TopLine="480"/>
       </Position>
     </JumpHistory>
     <RunParams>
