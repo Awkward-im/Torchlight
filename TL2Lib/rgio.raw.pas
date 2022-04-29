@@ -6,6 +6,25 @@ interface
 uses
   Classes;
 
+const
+  nmUNITDATA     = 0;
+  nmSKILLS       = 1;
+  nmAFFIXES      = 2;
+  nmMISSILES     = 3;
+  nmROOMPIECES   = 4;
+  nmTRIGGERABLES = 5;
+  nmUI           = 6;
+const
+  RawNames: array [0..6] of string = (
+    'UNITDATA',
+    'SKILLS',
+    'AFFIXES',
+    'MISSILES',
+    'ROOMPIECES',
+    'TRIGGERABLES',
+    'UI'
+  );
+
 function ParseRawMem   (abuf   :PByte  ; const afname:string):pointer;
 function ParseRawStream(astream:TStream; const afname:string):pointer;
 function ParseRawFile  (                 const afname:string):pointer;
@@ -40,22 +59,37 @@ uses
   rgnode;
 
 const
-  nmUNITDATA     = 0;
-  nmSKILLS       = 1;
-  nmAFFIXES      = 2;
-  nmMISSILES     = 3;
-  nmROOMPIECES   = 4;
-  nmTRIGGERABLES = 5;
-  nmUI           = 6;
-const
-  RawNames: array [0..6] of string = (
-    'UNITDATA',
-    'SKILLS',
-    'AFFIXES',
-    'MISSILES',
-    'ROOMPIECES',
-    'TRIGGERABLES',
-    'UI'
+  strUIGameStates:array of PWideChar = (
+    nil, // NONE
+    'Testing',
+    'All',
+    'In Game',
+    'Server Only',
+    'Loading',
+    'Main Menu Mod'
+  );
+
+  strUITypes:array of PWideChar = (
+    nil,
+    'TEST MENU',
+    'HUD MENU',
+    'CHAT MENU',
+    'PLAYER STATS MENU',
+    'MERCHANT MENU',
+    'SKILL MENU',
+    'QUEST DIALOG MENU',
+    'QUEST MENU',
+    'MESSAGE BOX MENU',
+    'MAIN MENU',
+    'SERVER MENU',
+    'CONSOLE MENU',
+    'RESURRECTION MENU',
+    'TOWNPORTAL MENU',
+    'HOTBAR CONTEXT MENU',
+    'STANDALONE SERVER MENU',
+    'LOGIN MENU',
+    'UPSELL MENU',
+    'CLIENT OPTIONS'
   );
 
 const
@@ -68,8 +102,8 @@ var
 begin
   lnode:=AddGroup(anode,'UNIT');
   AddInteger64(lnode,'GUID'     ,memReadInteger64(abuf));
-  AddString   (lnode,'Name'     ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
-  AddString   (lnode,'File'     ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+  AddString   (lnode,'NAME'     ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+  AddString   (lnode,'FILE'     ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
   AddInteger  (lnode,'EQUIPMENT',memReadByte(abuf)); // 1 = CREATEAS:EQUIPMENT, 2 = Part of a set)
   AddInteger  (lnode,'LEVEL'    ,memReadInteger(abuf));
   AddInteger  (lnode,'MINLEVEL' ,memReadInteger(abuf));
@@ -141,12 +175,12 @@ begin
     begin
       lnode:=AddGroup(result,'AFFIX');
 
-      AddString (lnode,'File'               ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddString (lnode,'Name'               ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddInteger(lnode,'MinSpawnRange'      ,memReadInteger(abuf));
-      AddInteger(lnode,'MaxSpawnRange'      ,memReadInteger(abuf));
-      AddInteger(lnode,'Weight'             ,memReadInteger(abuf));
-      AddInteger(lnode,'DifficultiesAllowed',memReadInteger(abuf));
+      AddString (lnode,'FILE'                ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString (lnode,'NAME'                ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddInteger(lnode,'MIN_SPAWN_RANGE'     ,memReadInteger(abuf));
+      AddInteger(lnode,'MAX_SPAWN_RANGE'     ,memReadInteger(abuf));
+      AddInteger(lnode,'WEIGHT'              ,memReadInteger(abuf));
+      AddInteger(lnode,'DIFFICULTIES_ALLOWED',memReadInteger(abuf));
 
       lcnt1:=memReadByte(abuf);
       if lcnt1>0 then
@@ -154,17 +188,17 @@ begin
         lnode1:=AddGroup(lnode,'UNITTYPES');
         for j:=0 to lcnt1-1 do
         begin
-          AddString(lnode1,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+          AddString(lnode1,'UNITTYPE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
         end;
       end;
 
       lcnt1:=memReadByte(abuf);
       if lcnt1>0 then
       begin
-        lnode1:=AddGroup(lnode,'NOTUNITTYPES');
+        lnode1:=AddGroup(lnode,'NOT_UNITTYPES');
         for j:=0 to lcnt1-1 do
         begin
-          AddString(lnode1,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+          AddString(lnode1,'UNITTYPE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
         end;
       end;
     end;
@@ -187,7 +221,7 @@ begin
     begin
       lnode:=AddGroup(result,'MISSILE');
 
-      AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
 
       lcnt1:=memReadByte(abuf);
       if lcnt1>0 then
@@ -195,7 +229,7 @@ begin
         lnode1:=AddGroup(lnode,'NAMES');
         for j:=0 to lcnt1-1 do
         begin
-          AddString(lnode1,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+          AddString(lnode1,'NAME',memReadShortStringBuf(abuf,@pcw,MAXLEN));
         end;
       end;
     end;
@@ -218,7 +252,7 @@ begin
     begin
       lnode:=AddGroup(result,'LEVELSET');
 
-      AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
     end;
 
     for i:=0 to lcnt-1 do
@@ -238,40 +272,6 @@ begin
     result:=nil;
 end;
 
-const
-  strGameStates:array of PWideChar = (
-    nil, // NONE
-    'Testing',
-    'All',
-    'In Game',
-    'Server Only',
-    'Loading',
-    'Main Menu Mod'
-  );
-
-  strTypes:array of PWideChar = (
-    nil,
-    'TEST MENU',
-    'HUD MENU',
-    'CHAT MENU',
-    'PLAYER STATS MENU',
-    'MERCHANT MENU',
-    'SKILL MENU',
-    'QUEST DIALOG MENU',
-    'QUEST MENU',
-    'MESSAGE BOX MENU',
-    'MAIN MENU',
-    'SERVER MENU',
-    'CONSOLE MENU',
-    'RESURRECTION MENU',
-    'TOWNPORTAL MENU',
-    'HOTBAR CONTEXT MENU',
-    'STANDALONE SERVER MENU',
-    'LOGIN MENU',
-    'UPSELL MENU',
-    'CLIENT OPTIONS'
-  );
-
 function DecodeUI(abuf:PByte):pointer;
 var
   pcw:array [0..MAXLEN] of WideChar;
@@ -288,11 +288,11 @@ begin
     begin
       lnode:=AddGroup(result,'MENU');
 
-      AddString(lnode,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'NAME',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
 
-      pc:=strTypes     [memReadInteger(abuf)]; if pc<>nil then AddString(lnode,'TYPE'      ,pc);
-      pc:=strGameStates[memReadInteger(abuf)]; if pc<>nil then AddString(lnode,'GAME STATE',pc);
+      pc:=strUITypes     [memReadInteger(abuf)]; if pc<>nil then AddString(lnode,'TYPE'      ,pc);
+      pc:=strUIGameStates[memReadInteger(abuf)]; if pc<>nil then AddString(lnode,'GAME STATE',pc);
       b:=memReadByte(abuf)<>0; if b then AddBool(lnode,'CREATE ON LOAD'   ,b); //!!!! or ALWAYS VISIBLE etc
       b:=memReadByte(abuf)<>0; if b then AddBool(lnode,'MULTIPLAYER ONLY' ,b);
       b:=memReadByte(abuf)<>0; if b then AddBool(lnode,'SINGLEPLAYER ONLY',b);
@@ -317,8 +317,8 @@ begin
     begin
       lnode:=AddGroup(result,'TRIGGERABLE');
 
-      AddString(lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddString(lnode,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString(lnode,'NAME',memReadShortStringBuf(abuf,@pcw,MAXLEN));
     end;
   end
   else
@@ -339,8 +339,8 @@ begin
     begin
       lnode:=AddGroup(result,'SKILL');
 
-      AddString   (lnode,'Name',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddString   (lnode,'File',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString   (lnode,'NAME',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddString   (lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
       AddInteger64(lnode,'GUID',memReadInteger64(abuf));
     end;
   end
@@ -396,11 +396,12 @@ begin
     result:=nil;
 end;
 
+
 procedure WriteUnit(astream:TStream; anode:pointer);
 begin
   astream.WriteQWord(qword(AsInteger64(FindNode(anode,'GUID'     ))));
-  astream.WriteShortString(AsString   (FindNode(anode,'Name'     )));
-  astream.WriteShortString(AsString   (FindNode(anode,'File'     )));
+  astream.WriteShortString(AsString   (FindNode(anode,'NAME'     )));
+  astream.WriteShortString(AsString   (FindNode(anode,'FILE'     )));
   astream.WriteByte (      AsInteger  (FindNode(anode,'EQUIPMENT')));
   astream.WriteDWord(dword(AsInteger  (FindNode(anode,'LEVEL'    ))));
   astream.WriteDWord(dword(AsInteger  (FindNode(anode,'MINLEVEL' ))));
@@ -458,8 +459,8 @@ begin
   begin
     lnode:=GetChild(anode,i);
 
-    astream.WriteShortString(AsString   (FindNode(lnode,'Name')));
-    astream.WriteShortString(AsString   (FindNode(lnode,'File')));
+    astream.WriteShortString(AsString   (FindNode(lnode,'NAME')));
+    astream.WriteShortString(AsString   (FindNode(lnode,'FILE')));
     astream.WriteQWord(qword(AsInteger64(FindNode(lnode,'GUID'))));
   end;
 end;
@@ -477,12 +478,12 @@ begin
   begin
     lnode:=GetChild(anode,i);
 
-    astream.WriteShortString(AsString (FindNode(lnode,'File')));
-    astream.WriteShortString(AsString (FindNode(lnode,'Name')));
-    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'MinSpawnRange'))));
-    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'MaxSpawnRange'))));
-    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'Weight'))));
-    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'DifficultiesAllowed'))));
+    astream.WriteShortString(AsString (FindNode(lnode,'FILE')));
+    astream.WriteShortString(AsString (FindNode(lnode,'NAME')));
+    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'MIN_SPAWN_RANGE'))));
+    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'MAX_SPAWN_RANGE'))));
+    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'WEIGHT'))));
+    astream.WriteDWord(dword(AsInteger(FindNode(lnode,'DIFFICULTIES_ALLOWED'))));
 
     lunode:=FindNode(lnode,'UNITTYPES');
     lcnt:=GetChildCount(lunode);
@@ -517,7 +518,7 @@ begin
   begin
     lnode:=GetChild(anode,i);
 
-    astream.WriteShortString(AsString(FindNode(lnode,'File')));
+    astream.WriteShortString(AsString(FindNode(lnode,'FILE')));
 
     lnode:=FindNode(lnode,'NAMES');
     lcnt:=GetChildCount(lnode);
@@ -540,7 +541,7 @@ begin
 
   astream.WriteDWord(result);
   for i:=0 to result-1 do
-    astream.WriteShortString(AsString(FindNode(GetChild(anode,i),'File')));
+    astream.WriteShortString(AsString(FindNode(GetChild(anode,i),'FILE')));
 
   for i:=0 to result-1 do
   begin
@@ -567,8 +568,8 @@ begin
   begin
     lnode:=GetChild(anode,i);
 
-    astream.WriteShortString(AsString(FindNode(lnode,'File')));
-    astream.WriteShortString(AsString(FindNode(lnode,'Name')));
+    astream.WriteShortString(AsString(FindNode(lnode,'FILE')));
+    astream.WriteShortString(AsString(FindNode(lnode,'NAME')));
   end;
 end;
 
@@ -587,20 +588,20 @@ begin
   begin
     lnode:=GetChild(anode,i);
 
-    astream.WriteShortString(AsString(FindNode(lnode,'Name')));
-    astream.WriteShortString(AsString(FindNode(lnode,'File')));
+    astream.WriteShortString(AsString(FindNode(lnode,'NAME')));
+    astream.WriteShortString(AsString(FindNode(lnode,'FILE')));
 
     pc:=AsString(FindNode(lnode,'TYPE'));
-    for j:=0 to High(strTypes) do
-      if CompareWide(pc,strTypes[j])=0 then
+    for j:=0 to High(strUITypes) do
+      if CompareWide(pc,strUITypes[j])=0 then
       begin
         astream.WriteDWord(j);
         break;
       end;
       
     pc:=AsString(FindNode(lnode,'GAME STATE'));
-    for j:=0 to High(strGameStates) do
-      if CompareWide(pc,strGameStates[j])=0 then
+    for j:=0 to High(strUIGameStates) do
+      if CompareWide(pc,strUIGameStates[j])=0 then
       begin
         astream.WriteDWord(j);
         break;
@@ -653,5 +654,6 @@ begin
     ls.Free;
   end;
 end;
+
 
 end.

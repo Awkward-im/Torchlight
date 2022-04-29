@@ -179,7 +179,7 @@ begin
       end
       else
       begin
-        ldir:=Copy(adir,Length(FRoot)+1)+'/';
+        ldir:=Copy(adir,Length(FRoot)+2)+'/'; // skip DirectorySeparator
         if CheckExt(sr.Name) and
            ((FCheckProc=nil) or (FCheckProc(ldir,sr.Name,FParam)>0)) then
         begin
@@ -301,6 +301,8 @@ end;
 
 function DoRGScan(aptr:pointer; const apath:string;
     actproc:TProcessProc=nil; checkproc:TCheckNameProc=nil):integer;
+var
+  ls:string;
 begin
   if aptr=nil then Exit(0);
 
@@ -315,7 +317,14 @@ begin
     if apath='' then
       PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot)
     else
-      PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot+DirectorySeparator+apath);
+    begin
+      ls:=apath;
+      if ls[Length(ls)] in ['/','\'] then SetLength(ls,High(ls));
+      if ls<>'' then
+        PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot+DirectorySeparator+ls)
+      else
+        PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot);
+    end;
   end
   else
     PScanObj(aptr)^.ScanMod();

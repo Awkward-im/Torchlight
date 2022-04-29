@@ -1,12 +1,13 @@
-{%TODO search ID node with right value (really? here?!)}
-{%TODO make Vector2, Vector3 and Vector 4 values too}
-{%TODO As* for get value - add default values}
-{%TODO Add blob field for use as Hash for names or ID for layout nodes. but not both?}
-{%TODO Add Insert method at least for top (for IDs)}
+{TODO: search ID node with right value (really? here?!)}
+{TODO: make Vector2, Vector3 and Vector 4 values too}
+{TODO: As* for get value - add default values}
+{TODO: Add blob field for use as Hash for names or ID for layout nodes. but not both?}
+{TODO: Add Insert method at least for top (for IDs)}
 unit RGNode;
 
 interface
 
+function  CloneNode   (anode:pointer):pointer;
 procedure DeleteNode  (anode:pointer);
 
 function GetGroupCount(anode:pointer; aname:PWideChar=nil):integer;
@@ -21,6 +22,7 @@ function IsNodeName   (anode:pointer; ahash:dword    ):boolean;
 function IsNodeName   (anode:pointer; aname:PWideChar):boolean;
 function FindNode     (anode:pointer; apath:PWideChar):pointer;
 function SetNodeValue (anode:pointer; aval :PWideChar; alen:integer=0):ByteBool;
+function SetNodeName  (anode:pointer; aname:PWideChar):boolean;
 
 //--- Write data ---
 
@@ -120,6 +122,19 @@ type
   end;
   TARGNode = array [0..MAXINT div SizeOf(pointer)-1] of PRGNode;
 
+
+function IsNumber(astr:PWideChar):boolean;
+begin
+  result:=false;
+  if (astr=nil) or (astr^=#0) then exit;
+  if astr^='-' then inc(astr);
+  repeat
+    if not (astr^ in ['0'..'9']) then exit;
+    inc(astr);
+  until astr^=#0;
+  result:=true;
+end;
+
 //===== Nodes =====
 
 function GetChildCount(anode:pointer):integer;
@@ -185,6 +200,31 @@ begin
     result:=PRGNode(anode)^.name
   else
     result:=RGTags.Tag[PRGNode(anode)^.hash];
+end;
+
+function SetNodeName(anode:pointer; aname:PWideChar):boolean;
+begin
+  if anode=nil then
+    result:=false
+  else
+  begin
+    if PRGNode(anode)^.name<>nil then FreeMem(PRGNode(anode)^.name);
+    PRGNode(anode)^.name:=nil;
+    PRGNode(anode)^.hash:=0;
+
+    if (aname<>nil) and (aname^<>#0) then
+    begin
+      if IsNumber(aname) then
+        Val(aname,PRGNode(anode)^.hash)
+      else
+        PRGNode(anode)^.hash:=RGHash(aname);
+
+      if not RGTags.Exists(PRGNode(anode)^.hash) then
+        CopyWide(PRGNode(anode)^.name,aname)
+      else
+    end;
+    result:=true;
+  end;
 end;
 
 function GetCustomType(anode:pointer):PWideChar;
@@ -319,17 +359,6 @@ end;
 
 //----- Adding -----
 
-function IsNumber(astr:PWideChar):boolean;
-begin
-  result:=false;
-  if (astr=nil) or (astr^=#0) then exit;
-  repeat
-    if not (astr^ in ['0'..'9']) then exit;
-    inc(astr);
-  until astr^=#0;
-  result:=true;
-end;
-
 function AddNode(aparent:pointer; aname:PWideChar;
                  atype  :integer; atext:PWideChar; alen:integer=0):pointer;
 begin
@@ -341,16 +370,7 @@ begin
   FillChar(PRGNode(result)^,SizeOf(TRGNode),#0);
   PRGNode(result)^.nodetype:=atype;
   if (atext<>nil) and (atext^<>#0) then SetNodeValue(result,atext,alen);
-  if (aname<>nil) and (aname^<>#0) then
-  begin
-    if IsNumber(aname) then
-      Val(aname,PRGNode(result)^.hash)
-    else
-      PRGNode(result)^.hash:=RGHash(aname);
-
-    if not RGTags.Exists(PRGNode(result)^.hash) then
-      CopyWide(PRGNode(result)^.name,aname);
-  end;
+  if (aname<>nil) and (aname^<>#0) then SetNodeName (result,aname);
 
   if aparent<>nil then
   begin
@@ -690,6 +710,45 @@ begin
         inc(apath);
         lnode:=result;
       end;
+    end;
+  end;
+end;
+
+//----- Clone -----
+
+function CloneNode(anode:pointer):pointer;
+var
+  i:integer;
+begin
+  if PRGNode(anode)^.nodetype=rgUnknown then
+  else
+  begin
+    GetMem(result,SizeOf(TRGNode));
+    move(PByte(anode)^,PByte(result)^,SizeOf(TRGNode));
+
+    PRGNode(result)^.Name  :=CopyWide(PRGNode(anode)^.Name);
+    PRGNode(result)^.parent:=nil;
+
+    case PRGNode(anode)^.nodetype of
+      rgUnknown,
+      rgString,
+      rgTranslate,
+      rgNote     : begin
+        PRGNode(result)^.asString:=CopyWide(PRGNode(anode)^.asString);
+        if PRGNode(anode)^.nodetype=rgUnknown then
+          PRGNode(result)^.CustomType:=CopyWide(PRGNode(anode)^.CustomType);
+      end;
+
+      rgGroup: begin
+        PRGNode(result)^.capacity:=PRGNode(result)^.count;
+        GetMem(PRGNode(result)^.child,SizeOf(TRGNode)*PRGNode(result)^.count);
+        for i:=0 to PRGNode(anode)^.count-1 do
+        begin
+          PRGNode(result)^.child^[i]:=CloneNode(PRGNode(anode)^.child^[i]);
+          PRGNode(result)^.child^[i]^.parent:=result;
+        end;
+      end;
+    else
     end;
   end;
 end;
