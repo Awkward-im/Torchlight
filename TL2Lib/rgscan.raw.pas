@@ -350,7 +350,7 @@ begin
         AddString(lnode,'FILE',pc);
         FreeMem(pc);
 
-        //!! search for base
+        {TODO: search for base 'CREATEAS'}
         //Base file: <STRING>CREATEAS:EQUIPMENT
         i:=0;
         ltmp:=FindNode(p,'CREATEAS');
@@ -369,15 +369,23 @@ begin
         AddInteger(lnode,'MINLEVEL',AsInteger(FindNode(p,'MINLEVEL')));
         AddInteger(lnode,'MAXLEVEL',AsInteger(FindNode(p,'MAXLEVEL')));
 
-        //!! search for base
+        {TODO: search for base 'RARITY'}
         ltmp:=FindNode(p,'RARITY');
   			if ltmp=nil then i:=1 else i:=AsInteger(ltmp);
         AddInteger(lnode,'RARITY'  ,i);
         AddInteger(lnode,'RARITYHC',i); //!!!!
 
-        //!! search for base
+        {TODO: search for base 'UNITTYPE'}
         ltmp:=FindNode(p,'UNITTYPE');
-        if ltmp<>nil then AddString(lnode,'UNITTYPE',AsString(ltmp));
+        if ltmp<>nil then AddString(lnode,'UNITTYPE',AsString(ltmp))
+        else
+        begin
+          if      Pos('MEDIA/UNITS/ITEMS'   ,adir)=1 then pc:='ITEM'
+          else if Pos('MEDIA/UNITS/MONSTERS',adir)=1 then pc:='MONSTER'
+          else if Pos('MEDIA/UNITS/PLAYERS' ,adir)=1 then pc:='PLAYER'
+          else if Pos('MEDIA/UNITS/PROPS'   ,adir)=1 then pc:='ITEM';
+          AddString(lnode,'UNITTYPE',pc);
+        end;
 
         result:=1;
       end;
@@ -387,16 +395,26 @@ begin
 end;
 
 function ScanRaw(const apath,aname:string):pointer;
+var
+  p:pointer;
 begin
   result:=AddGroup(nil,'');
 
   if aname=RawNames[nmUNITDATA] then
   begin
     SetNodeName(result,'UNITDATA');
-    MakeRGScan(apath,'MEDIA/UNITS/ITEMS'   ,['.DAT'],@ScanUnits,AddGroup(result,'ITEMS'   ),nil);
-    MakeRGScan(apath,'MEDIA/UNITS/MONSTERS',['.DAT'],@ScanUnits,AddGroup(result,'MONSTERS'),nil);
-    MakeRGScan(apath,'MEDIA/UNITS/PLAYERS' ,['.DAT'],@ScanUnits,AddGroup(result,'PLAYERS' ),nil);
-    MakeRGScan(apath,'MEDIA/UNITS/PROPS'   ,['.DAT'],@ScanUnits,AddGroup(result,'PROPS'   ),nil);
+
+    p:=AddGroup(result,'ITEMS');
+    if MakeRGScan(apath,'MEDIA/UNITS/ITEMS'   ,['.DAT'],@ScanUnits,p,nil)=0 then DeleteNode(p);
+
+    p:=AddGroup(result,'MONSTERS');
+    if MakeRGScan(apath,'MEDIA/UNITS/MONSTERS',['.DAT'],@ScanUnits,p,nil)=0 then DeleteNode(p);
+
+    p:=AddGroup(result,'PLAYERS');
+    if MakeRGScan(apath,'MEDIA/UNITS/PLAYERS' ,['.DAT'],@ScanUnits,p,nil)=0 then DeleteNode(p);
+
+    p:=AddGroup(result,'PROPS');
+    if MakeRGScan(apath,'MEDIA/UNITS/PROPS'   ,['.DAT'],@ScanUnits,p,nil)=0 then DeleteNode(p);
 {
     PrepareRGScan(lptr,apath,['.DAT'],result);
     DoRGScan(lptr,'MEDIA/UNITS/ITEMS'   ,@ScanUnits,nil);

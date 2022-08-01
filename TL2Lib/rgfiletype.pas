@@ -121,7 +121,6 @@ const
 implementation
 
 uses
-  sysutils,
   rgglobal;
 
 const
@@ -156,8 +155,8 @@ const
   tl2Font        = $0D; // .FONT
   tl2SrcDat      = $0E; // source .DAT
   tl2SrcLayout   = $0F; // source .LAYOUT
-  tl2Animation   = $10; // .ANIMATION
-  tl2HIE         = $11; // .HIE
+  tl2Animation   = $10; // .ANIMATION (what about source?)
+  tl2HIE         = $11; // .HIE       (what about source?)
   tl2Other       = $12; // ('Removed' Directory)
   tl2Scheme      = $13; // .SCHEME
   tl2LookNFeel   = $14; // .LOOKNFEEL ??

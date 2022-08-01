@@ -1,5 +1,4 @@
-﻿{TODO: remove RGIO.Text, RGNode dependences}
-{TODO: export as UTF8 binary (UCS16LE right now) - add sign for type: UCS16, UTF8, w/zero}
+﻿{TODO: export as UTF8 binary (UCS16LE right now) - add sign for type: UCS16, UTF8, w/zero}
 unit RGDict;
 
 interface

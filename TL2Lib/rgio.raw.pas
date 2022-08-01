@@ -1,5 +1,4 @@
-﻿{TODO: scan mod for info}
-unit RGIO.RAW;
+﻿unit RGIO.RAW;
 
 interface
 

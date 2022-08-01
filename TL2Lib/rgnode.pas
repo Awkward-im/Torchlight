@@ -72,8 +72,8 @@ function AddCustom   (aparent:pointer; aname:PWideChar; aval:PWideChar; atype:PW
 implementation
 
 uses
-  rgdict,
-  rgglobal;
+  rgglobal,
+  rgdict;
 
 const
   CapacityStep = 10;

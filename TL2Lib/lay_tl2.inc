@@ -257,7 +257,6 @@ begin
   astream.Position:=lpos+lcnt;
 end;
 
-{TODO: check for Layout, UI or Particle Creator}
 function TRGLayoutFile.DoBuildLayoutTL2(anode:pointer; astream:TStream):integer;
 var
   lobj:pointer;

@@ -40,7 +40,8 @@ function  CharPosWide(c:WideChar; asrc:PWideChar):PWideChar;
 function  BufLen(abuf:PAnsiChar; asize:cardinal):integer;
 function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 
-function ExtractFileNameOnly(const AFilename: string): string;
+function ExtractFileNameOnly(const aFilename: string):string;
+function ExtractFileExt     (const aFileName: string):string;
 
 //===== Data type codes =====
 
@@ -407,22 +408,39 @@ begin
 end;
 
 // from LazFileUtils
-function ExtractFileNameOnly(const AFilename: string): string;
+function ExtractFileNameOnly(const aFilename: string):string;
 var
   StartPos: Integer;
   ExtPos: Integer;
 begin
-  StartPos:=length(AFilename)+1;
+  StartPos:=length(aFilename)+1;
   while (StartPos>1)
-  and not (AFilename[StartPos-1] in AllowDirectorySeparators)
-  {$IF defined(Windows) or defined(HASAMIGA)}and (AFilename[StartPos-1]<>':'){$ENDIF}
+  and not (aFilename[StartPos-1] in AllowDirectorySeparators)
+  {$IF defined(Windows) or defined(HASAMIGA)}and (aFilename[StartPos-1]<>':'){$ENDIF}
   do
     dec(StartPos);
-  ExtPos:=length(AFilename);
-  while (ExtPos>=StartPos) and (AFilename[ExtPos]<>'.') do
+  ExtPos:=length(aFilename);
+  while (ExtPos>=StartPos) and (aFilename[ExtPos]<>'.') do
     dec(ExtPos);
-  if (ExtPos<StartPos) then ExtPos:=length(AFilename)+1;
-  Result:=copy(AFilename,StartPos,ExtPos-StartPos);
+  if (ExtPos<StartPos) then ExtPos:=length(aFilename)+1;
+  Result:=copy(aFilename,StartPos,ExtPos-StartPos);
+end;
+
+// modification of SysUtils
+function ExtractFileExt(const aFileName: string):string;
+var
+  i:integer;
+begin
+  Result:='';
+  i:=Length(aFileName);
+
+  while (i>0) and not (aFileName[i] in ['/','\','.']) do Dec(i);
+
+  if (i>0) and (aFileName[i]='.') then
+  begin
+    if (i>1) and not (aFileName[i-1] in ['/','\']) then
+      Result:=Copy(aFileName,i);
+  end;
 end;
 
 //----- Data types -----
@@ -548,7 +566,7 @@ begin
   if alen=0 then alen:=Length(instr);
   result:=alen;
   for i:=0 to alen-1 do
-    result:=(result SHR 27) xor (result SHL 5) xor (ORD(instr[i]) and $FF);
+    result:=(result SHR 27) xor (result SHL 5) xor ORD(instr[i]);
 end;
 
 function RGHash(instr:PAnsiChar; alen:integer=0):dword;

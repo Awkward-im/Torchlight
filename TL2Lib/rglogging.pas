@@ -1,17 +1,18 @@
-﻿{TODO: implement OnAdd event for binaries}
-{TODO: use separate 'string' for Reserve}
+﻿{TODO: use separate 'string' for Reserve}
 unit RGLogging;
 
 interface
 
 type
   TRGLogOnAdd = function (var adata:string):integer of object;
+  TRGLogOnAddBinary = function (var abuf:PByte; var asize:integer):integer of object;
 
 type
   TRGLog = object
   private
     FLog:pointer;
     FOnAdd:TRGLogOnAdd;
+    FOnAddBin:TRGLogOnAddBinary;
     Fidx :cardinal;
     FSize:cardinal;
     FReserved:boolean;
@@ -27,9 +28,9 @@ type
     procedure Reserve(astr:PWideChar);
     procedure Add(const afile:string; aline:integer; const astr:string);
     procedure Add(const astr:string);
-    procedure Add(const adata:pointer; asize:integer);
-    procedure Add(adata:int64; asize:integer);
     procedure Add(astr:PWideChar);
+    procedure Add(adata:pointer; asize:integer);
+    procedure Add(adata:int64  ; asize:integer);
 
     procedure SaveToFile(const afile:string='rglog.txt');
 
@@ -38,6 +39,8 @@ type
     property size:cardinal read FSize;
 
     property OnAdd:TRGLogOnAdd read FOnAdd write FOnAdd;
+
+    property OnAddBinary:TRGLogOnAddBinary read FOnAddBin write FOnAddBin;
   end;
 
 var
@@ -127,13 +130,24 @@ end;
 
 
 procedure TRGLog.Add(adata:int64; asize:integer);
+var
+  p:pointer;
 begin
-  AddBin(FLog,FSize,@adata,asize);
+  p:=@adata;
+  if Assigned(FOnAddBin) then
+    if FOnAddBin(p,asize)<=0 then
+      exit;
+
+  AddBin(FLog,FSize,p,asize);
   FReserved:=false;
 end;
 
-procedure TRGLog.Add(const adata:pointer; asize:integer);
+procedure TRGLog.Add(adata:pointer; asize:integer);
 begin
+  if Assigned(FOnAddBin) then
+    if FOnAddBin(adata,asize)<=0 then
+      exit;
+
   AddBin(FLog,FSize,adata,asize);
   FReserved:=false;
 end;

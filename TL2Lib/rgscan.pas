@@ -71,7 +71,6 @@ type
 
 procedure TScanObj.Free;
 begin
-
   if FMod.ver<>verUnk then
     FreePAKInfo(FMod);
 

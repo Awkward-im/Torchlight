@@ -28,9 +28,6 @@ const
 function  GetPAKVersion(const fname:string):integer;
 function  GetPAKInfo   (const fname:string; out ainfo:TPAKInfo; aparse:integer=piNoParse):boolean;
 procedure FreePAKInfo  (var   ainfo:TPAKInfo);
-{$IFDEF DEBUG}
-function  DumpPAKInfo  (const ainfo:TPAKInfo):string;
-{$ENDIF}
 
 // next function are for TL2 PAK part only
 function  CalcPAKHash(ast:TStream; apos,asize:int64):dword;
@@ -64,10 +61,10 @@ uses
   paszlib,
   bufstream,
   rgfiletype,
-{$IFDEF DEBUG}
-  rglogging,
-{$ENDIF}
   rgman,
+  {$IFDEF DEBUG}
+  rglogging,
+  {$ENDIF}
   tl2mod;
 
 //===== Container =====
@@ -363,90 +360,6 @@ begin
   FillChar(ainfo,SizeOf(ainfo),0);
   ainfo.ver:=verUnk;
 end;
-
-{$IFDEF DEBUG}
-function DumpPAKInfo(const ainfo:TPAKInfo):string;
-var
-  llog:TRGLog;
-  ls,llsize:string;
-  i,j:integer;
-  lpack,lfiles,lprocess,ldir:integer;
-  ldat,llay:integer;
-  lmaxc,lmax,lmaxp,lmaxu,lcnt:integer;
-begin
-  llog.Init;
-
-  llog.Add('Root: '+String(WideString(ainfo.Root)));
-  lfiles:=0;
-  lprocess:=0;
-  ldir:=0;
-  lpack:=0;
-  llay:=0;
-  ldat:=0;
-  lcnt:=ainfo.total;
-  lmaxp:=0;
-  lmaxu:=0;
-  lmax :=0;
-  for i:=0 to High(ainfo.Entries) do
-  begin
-    llog.Add(IntToStr(i+1)+'  Directory: '+string(WideString(ainfo.Entries[i].name)));
-    for j:=0 to High(ainfo.Entries[i].Files) do
-    begin
-      dec(lcnt);
-      with ainfo.Entries[i].Files[j] do
-      begin
-        llsize:='';
-        if (ftype=typeDirectory) or (ftype=typeDelete) then
-        begin
-          inc(ldir);
-          ls:='    Dir: ';
-        end
-        else
-        begin
-          inc(lfiles);
-          ls:='    File: ';
-          if size_s=0 then llsize:='##';
-        end;
-        if size_c>0 then inc(lpack);
-        if lmaxp<size_c then lmaxp:=size_c;
-        if lmaxu<size_u then lmaxu:=size_u;
-        if (lmax <size_u) and (size_c<>0) then
-        begin
-          lmax :=size_u;
-          lmaxc:=size_c;
-        end;
-        if ftype in [typeWDat,typeDat,typeLayout,typeHie,typeAnimation] then inc(lprocess);
-        if ftype=typedat then inc(ldat);
-        if ftype=typelayout then inc(llay);
-
-        if size_s<>size_u then llsize:='!!';
-        llog.Add(llsize+
-            ls+string(widestring(name))+
-            '; type:'       +PAKCategoryName(ftype)+
-            '; source size:'+IntToStr(size_s)+
-            '; compr:'      +IntToStr(size_c)+
-            '; unpacked:'   +IntToStr(size_u));
-      end;
-    end;
-  end;
-  llog.Add('Total: '    +IntToStr(ainfo.total)+
-           '; childs: ' +IntToStr(Length(ainfo.Entries))+
-           '; rest: '   +IntToStr(lcnt)+
-           '; process: '+IntToStr(lprocess));
-  llog.Add('Max packed size: '      +IntToStr(lmaxp)+' (0x'+HexStr(lmaxp,8)+')');
-  llog.Add('Max unpacked size: '    +IntToStr(lmaxu)+' (0x'+HexStr(lmaxu,8)+')');
-  llog.Add('Max uncompressed size: '+IntToStr(lmax )+' (0x'+HexStr(lmax ,8)+')');
-  llog.Add('It''s compressed size: '+IntToStr(lmaxc)+' (0x'+HexStr(lmaxc,8)+')');
-  llog.Add('Packed '                +IntToStr(lpack));
-  llog.Add('Files '+IntToStr(lfiles));
-  llog.Add('Dirs ' +IntToStr(ldir));
-  llog.Add('Total '+IntToStr(lfiles+ldir+lprocess));
-  llog.Add('DAT: ' +IntToStr(ldat)+'; LAYOUT: '+IntToStr(llay));
-
-  result:=llog.Text;
-  llog.Free;
-end;
-{$ENDIF}
 
 //===== Files =====
 
@@ -1053,12 +966,74 @@ begin
 
   mi:=SearchFile(ainfo,apath,aname);
   if mi<>nil then
+  begin
+    // Compile if needs
     // Pack file
+{
+  TMANFileInfo = record // not real field order
+    ftime   :UInt64;    // TL2 only
+    name    :PWideChar; // name in MAN
+    nametxt :PWideChar; // source (text format) name
+    checksum:dword;     // CRC32
+    size_s  :dword;     // looks like source,not compiled, size (unusable)
+    size_c  :dword;     // from TPAKFileHeader
+    size_u  :dword;     // from TPAKFileHeader
+    offset  :dword;
+    ftype   :byte;
+  end;
+
+1 - source file
+2 - packed data
+3 - packed size
+4 - unpacked size
+5 - PAK position
+6 - MAN position
+      
+    function CompressFile(fname:PWideChar; out abuf:PByte; out psize:integer; aver:integer=verTL2):integer;
+    var
+      f:file of byte;
+      lbuf:PByte;
+    begin
+      result:=0;
+      Assign(f,fname);
+      Reset(f);
+      if IOResult=0 then
+      begin
+        result:=FileSize(f);
+        GetMem(lbuf,result);
+        BlockRead(f,lbuf^,result);
+      
+        if not GetExtInfo(fname,aver)^._pack then
+        begin
+          abuf:=lbuf;
+          psize:=result;
+        end
+        else
+        begin
+          psize:=Round(Align(result,BufferPageSize)*1.2)+12;
+          GetMem(abuf,psize);
+          
+          if compress(abuf,psize,lbuf,result)<>Z_OK then
+          begin
+            if OnPAKProgress<>nil then
+            begin
+              lres:=OnPAKProgress(ainfo,-i,-j);
+              if lres<>0 then break;
+            end;
+          end;
+        end;
+        Close(f);
+      end;
+    end;
+}
     // replace in PAK if not greater than existing
     // or add to the end
+  end
   else
+  begin
     // Add to MAN, add to the end of PAK
-  ;
+    mi:=rgman.AddFile(ainfo,apath,aname);
+  end;
 end;
 
 //----- something -----

@@ -231,6 +231,17 @@ begin
     WriteWord(0);
 end;
 
+procedure TTL2Stream.WriteShortString(const astr:WideString);
+begin
+  if astr<>'' then
+  begin
+    WriteWord(Length(astr));
+    Write(astr[1],Length(astr)*SizeOf(WideChar));
+  end
+  else
+    WriteWord(0);
+end;
+
 procedure TTL2Stream.WriteDWordString(const astr:string);
 var
   ws:WideString;
@@ -245,28 +256,6 @@ begin
     WriteDWord(0);
 end;
 
-procedure TTL2Stream.WriteShortStringUTF8(const astr:string);
-begin
-  if astr<>'' then
-  begin
-    WriteWord(Length(astr));
-    Write(astr[1],Length(astr));
-  end
-  else
-    WriteWord(0);
-end;
-
-procedure TTL2Stream.WriteShortString(const astr:WideString);
-begin
-  if astr<>'' then
-  begin
-    WriteWord(Length(astr));
-    Write(astr[1],Length(astr)*SizeOf(WideChar));
-  end
-  else
-    WriteWord(0);
-end;
-
 procedure TTL2Stream.WriteDWordString(const astr:WideString);
 begin
   if astr<>'' then
@@ -276,6 +265,17 @@ begin
   end
   else
     WriteDWord(0);
+end;
+
+procedure TTL2Stream.WriteShortStringUTF8(const astr:string);
+begin
+  if astr<>'' then
+  begin
+    WriteWord(Length(astr));
+    Write(astr[1],Length(astr));
+  end
+  else
+    WriteWord(0);
 end;
 
 procedure TTL2Stream.WriteShortStringUTF8(const astr:WideString);

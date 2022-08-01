@@ -27,11 +27,11 @@ implementation
 uses
   sysutils,
 
-  rglogging,
-  rgnode,
   rgdict,
   rgstream,
-  rgmemory;
+  rgmemory,
+  rgnode,
+  rglogging;
 
 {$IFDEF DEBUG}  
 var
@@ -777,7 +777,6 @@ begin
       end;
     end;
 
-    {TODO: Fix for case when initial stream pos is not 0}
     lnewpos:=astream.Position;
     astream.Position:=lpos;
     astream.WriteDWord(lnewpos);
