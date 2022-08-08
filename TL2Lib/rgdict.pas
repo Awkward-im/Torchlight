@@ -136,7 +136,6 @@ const
 const
   defdictname = 'dictionary.txt';
   deftagsname = 'tags.dat';
-  defobjname  = 'objects.dat';
 
 const
   SIGN_UNICODE = $FEFF;
@@ -401,24 +400,13 @@ begin
 
   if (check_hash in FOptions) then
   begin
-    i:=GetHashIndex(akey);
-    if i>=0 then
-    begin
-      result:=akey;
-      exit;
-    end;
+    if GetHashIndex(akey)>=0 then Exit(akey);
   end;
 
   if (check_text in FOptions) then
   begin
-    for i:=0 to FCount-1 do
-    begin
-      if CompareWide(IdxTag[i],aval)=0 then
-      begin
-        result:=FDict[i].hash;
-        exit;
-      end;
-    end;
+    i:=GetTextIndex(aval);
+    if i>=0 then Exit(FDict[i].hash);
   end;
 
   // Add new element
@@ -604,7 +592,7 @@ begin
 
     if ls<>'' then
     begin
-      Add(RGHash(pointer(ls),Length(ls)),ls);
+      Add(RGHashB(pointer(ls),Length(ls)),ls);
       inc(result);
     end;
 
@@ -1421,7 +1409,7 @@ end;
 
 initialization
 
-  RGTags.Init;
+  RGTags.Init();
 
   InitLayoutDict(DictObjTL1);
   InitLayoutDict(DictObjTL2);

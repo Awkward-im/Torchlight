@@ -54,8 +54,8 @@ type
     lblOffset: TLabel;
     lblSource: TLabel;
     lblOutDir: TLabel;
-    miExtractTree: TMenuItem;
-    miExtractDir: TMenuItem;
+    miExtractTree   : TMenuItem;
+    miExtractDir    : TMenuItem;
     miExtractVisible: TMenuItem;
     PageControl: TPageControl;
     pnlTreeFilter: TPanel;
@@ -83,9 +83,17 @@ type
     SynXMLSyn: TSynXMLSyn;
 
     ToolBar: TToolBar;
-    tbOpen  : TToolButton;
-    tbSep1  : TToolButton;
-    tbSaveAs: TToolButton;
+    tbOpen    : TToolButton;
+    tbSaveAs  : TToolButton;
+    tbSep1    : TToolButton;
+    tbExt     : TToolButton;
+    tbCategory: TToolButton;
+    tbTime    : TToolButton;
+    tbPacked  : TToolButton;
+    tbUnpacked: TToolButton;
+    tbSource  : TToolButton;
+    tbSep2    : TToolButton;
+    tbInfo    : TToolButton;
 
     MainMenu: TMainMenu;
     miFile: TMenuItem;
@@ -115,12 +123,6 @@ type
     actEditReplace: TAction;
     actHelpAbout  : TAction;
     actInfoInfo   : TAction;
-    tbExt: TToolButton;
-    tbCategory: TToolButton;
-    tbTime: TToolButton;
-    tbPacked: TToolButton;
-    tbUnpacked: TToolButton;
-    tbSource: TToolButton;
 
     tvTree: TTreeView;
 
@@ -147,6 +149,7 @@ type
     procedure sgMainHeaderSized(Sender: TObject; IsColumn: Boolean;
       Index: Integer);
     procedure sgMainSelection(Sender: TObject; aCol, aRow: Integer);
+    procedure tbColumnClick(Sender: TObject);
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
     fFilterWasChanged: Boolean;
@@ -317,52 +320,16 @@ begin
     StatusBar.Panels[0].Text:='Total: '+IntToStr(rgpi.total)+'; dirs: '+IntToStr(Length(rgpi.Entries));
 //      sgMain.Columns[colTime-1].Visible:=(cbTime.Checked) and (ABS(rgpi.ver)=verTL2);
     SetupView(Self);
+
+    FreeAndNil(fmi);
+    actInfoInfo.Enabled:=true;
+    actFileClose.Enabled:=true;
   end;
 //  FillExtList();
   FillTree();
 end;
 
-procedure TRGGUIForm.actFileOpenExecute(Sender: TObject);
-var
-  OpenDialog: TOpenDialog;
-begin
-  OpenDialog:=TOpenDialog.Create(nil);
-  try
-//    OpenDialog.Title  :=rsFileOpen;
-    OpenDialog.Options    :=[ofFileMustExist];
-    OpenDialog.DefaultExt :=LastExt;
-    OpenDialog.Filter     :=DefaultFilter;
-    OpenDialog.FilterIndex:=LastFIndex;
-
-    if OpenDialog.Execute then
-    begin
-      LastExt   :=OpenDialog.DefaultExt;
-      LastFIndex:=OpenDialog.FilterIndex;
-
-      actFileCloseExecute(Sender);
-
-      OpenFile(OpenDialog.FileName);
-    end;
-  finally
-    OpenDialog.Free;
-  end;
-end;
-
-procedure TRGGUIForm.actInfoInfoExecute(Sender: TObject);
-begin
-  if fmi=nil then
-  begin
-    fmi:=TMODInfoForm.Create(Self,true);
-    TMODInfoForm(fmi).LoadFromInfo(rgpi.modinfo);
-  end
-  else
-  begin
-    fmi.Show;
-  end;
-end;
-
 {%REGION Settings}
-//----- Settings -----
 
 procedure TRGGUIForm.ResetView();
 begin
@@ -377,7 +344,24 @@ begin
   sgMain.Columns[colUnpack-1].Visible:=(cbUnpacked.Checked);
   sgMain.Columns[colSource-1].Visible:=(cbSource  .Checked);
 
+  tbExt     .Down:=(cbExt     .Checked);
+  tbCategory.Down:=(cbCategory.Checked);
+  tbTime    .Down:=(cbTime    .Checked) and (ABS(rgpi.ver)=verTL2);
+  tbPacked  .Down:=(cbPacked  .Checked);
+  tbUnpacked.Down:=(cbUnpacked.Checked);
+  tbSource  .Down:=(cbSource  .Checked);
 //  sgMainSelection(sgMain, sgMain.Col, sgMain.Row);
+end;
+
+procedure TRGGUIForm.tbColumnClick(Sender: TObject);
+begin
+  if      Sender=tbExt      then cbExt     .Checked:=not cbExt     .Checked
+  else if Sender=tbCategory then cbCategory.Checked:=not cbCategory.Checked
+  else if Sender=tbTime     then cbTime    .Checked:=not cbTime    .Checked
+  else if Sender=tbPacked   then cbPacked  .Checked:=not cbPacked  .Checked
+  else if Sender=tbUnpacked then cbUnpacked.Checked:=not cbUnpacked.Checked
+  else if Sender=tbSource   then cbSource  .Checked:=not cbSource  .Checked;
+  SetupView(Sender);
 end;
 
 procedure TRGGUIForm.SaveSettings;
@@ -464,10 +448,10 @@ begin
 
   config.Free;
 end;
+
 {%ENDREGION}
 
 {%REGION Save}
-//----- Save -----
 
 function TRGGUIForm.SaveFile(const adir,aname:string; adata:PByte):boolean;
 var
@@ -534,30 +518,44 @@ end;
 procedure TRGGUIForm.bbSaveClick(Sender: TObject);
 var
   ldir, lname:string;
-  i:integer;
+  lptr:pointer;
+  i,lcnt:integer;
 begin
-  i:=sgMain.Row;
-  if i>0 then
+  lcnt:=0;
+  for i:=1 to sgMain.RowCount-1 do
   begin
-    ldir :=sgMain.Cells[colDir ,i];
-    lname:=sgMain.Cells[colName,i];
-    if FUData=nil then
+    if sgMain.IsCellSelected[colDir,i] then
     begin
-      if UnpackFile(rgpi,ldir+lname,FUData)=0 then exit;
+      ldir :=sgMain.Cells[colDir ,i];
+      lname:=sgMain.Cells[colName,i];
+{
+      if FUData=nil then
+      begin
+        if UnpackFile(rgpi,ldir+lname,FUData)=0 then exit;
+      end;
+}
+      if UnpackFile(rgpi,ldir+lname,lptr)>0 then
+      begin
+        if SaveFile(ldir, lname, lptr) then
+          inc(lcnt);
+        FreeMem(lptr);
+      end;
     end;
-    if SaveFile(ldir, lname, FUData) then
-      ShowMessage('File '+ldir+lname+#13#10'unpacked succesfully.');
   end;
+  if lcnt=1 then
+    ShowMessage('File '+ldir+lname+#13#10'unpacked succesfully.')
+  else if lcnt>1 then
+    ShowMessage(IntToStr(lcnt)+' files unpacked succesfully.');
 end;
 
 procedure TRGGUIForm.btnMODDATClick(Sender: TObject);
 begin
   SaveModConfiguration(rgpi.modinfo,PChar(deOutDir.Text+'\'+'MOD.DAT'));
 end;
+
 {%ENDREGION}
 
 {%REGION Filter}
-//----- Filter panel -----
 
 procedure TRGGUIForm.bbExtSelectClick(Sender: TObject);
 var
@@ -625,10 +623,10 @@ begin
   ccbCategory.AddItem(PAKCategoryName(catOther  ),cbUnChecked);
   ccbCategory.ItemIndex:=-1;
 end;
+
 {%ENDREGION}
 
 {%REGION Form}
-//----- Form -----
 
 procedure TRGGUIForm.sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
 var
@@ -667,6 +665,8 @@ begin
 
   if ParamCount>0 then
     OpenFile(ParamStr(1));
+
+  PageControl.ActivePageIndex:=1;
 end;
 
 procedure TRGGUIForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -676,12 +676,43 @@ begin
   SaveSettings();
 
   FreePAKInfo(rgpi);
+
+  actFileClose.Enabled:=false;
+end;
+
+procedure TRGGUIForm.actFileOpenExecute(Sender: TObject);
+var
+  OpenDialog: TOpenDialog;
+begin
+  OpenDialog:=TOpenDialog.Create(nil);
+  try
+//    OpenDialog.Title  :=rsFileOpen;
+    OpenDialog.Options    :=[ofFileMustExist];
+    OpenDialog.DefaultExt :=LastExt;
+    OpenDialog.Filter     :=DefaultFilter;
+    OpenDialog.FilterIndex:=LastFIndex;
+
+    if OpenDialog.Execute then
+    begin
+      LastExt   :=OpenDialog.DefaultExt;
+      LastFIndex:=OpenDialog.FilterIndex;
+
+      actFileCloseExecute(Sender);
+
+      OpenFile(OpenDialog.FileName);
+    end;
+  finally
+    OpenDialog.Free;
+  end;
 end;
 
 procedure TRGGUIForm.actFileCloseExecute(Sender: TObject);
 begin
   FreePAKInfo(rgpi);
   sgMain.Clear;
+  {TODO: Clear working area}
+  actInfoInfo.Enabled:=false;
+  FreeAndNil(fmi);
 end;
 
 procedure TRGGUIForm.actFileExitExecute(Sender: TObject);
@@ -689,10 +720,20 @@ begin
   actFileCloseExecute(Sender);
   Close;
 end;
+
+procedure TRGGUIForm.actInfoInfoExecute(Sender: TObject);
+begin
+  if fmi=nil then
+  begin
+    fmi:=TMODInfoForm.Create(Self,true);
+    TMODInfoForm(fmi).LoadFromInfo(rgpi.modinfo);
+  end;
+  fmi.ShowOnTop;
+end;
+
 {%ENDREGION}
 
 {%REGION Unpack}
-//----- Unpack -----
 
 function TRGGUIForm.UnpackSingleFile(const adir,aname:string):boolean;
 var
@@ -757,9 +798,11 @@ begin
     SaveModConfiguration(rgpi.modinfo,PChar(deOutDir.Text+'\'+'MOD.DAT'));
   end;
 end;
+
 {%ENDREGION}
 
 {%REGION Preview}
+
 procedure TRGGUIForm.ClearInfo();
 begin
   lblPackVal  .Caption:='';
@@ -963,10 +1006,10 @@ begin
   end;
 
 end;
+
 {%ENDREGION}
 
 {%REGION Grid}
-//----- Grid -----
 
 procedure TRGGUIForm.sgMainCompareCells(Sender: TObject; ACol, ARow, BCol,
   BRow: Integer; var Result: integer);
@@ -1029,6 +1072,7 @@ begin
   sgMain.Cells[colExt   ,arow]:=Copy(ExtractFileExt(WideToStr(afile.name)),2);
   sgMain.Cells[colPack  ,arow]:=IntToStr(afile.size_c);
   sgMain.Cells[colUnpack,arow]:=IntToStr(afile.size_u);
+  sgMain.Cells[colSource,arow]:=IntToStr(afile.size_s);
   sgMain.Cells[colType  ,arow]:=PAKCategoryName(PAKTypeToCategory(afile.ftype));
   if {sgMain.Columns[colTime-1].Visible and} (afile.ftime<>0) then
   begin
@@ -1103,10 +1147,10 @@ begin
 
   sgMain.EndUpdate;
 end;
+
 {%ENDREGION}
 
 {%REGION Tree}
-//----- Tree -----
 
 procedure TRGGUIForm.bbCollapseClick(Sender: TObject);
 var
@@ -1219,6 +1263,7 @@ begin
   if bbCollapse.Enabled then
     tvTree.Items[1].Selected:=true;
 end;
+
 {%ENDREGION}
 
 end.

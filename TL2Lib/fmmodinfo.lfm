@@ -24,6 +24,7 @@ object MODInfoForm: TMODInfoForm
     Top = 104
     Width = 66
     Caption = 'Mod version'
+    Color = clDefault
     ParentColor = False
   end
   object leTitle: TLabeledEdit
@@ -34,6 +35,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Title'
+    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 0
   end
@@ -45,6 +47,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Author'
+    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 1
   end
@@ -56,6 +59,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Website URL'
+    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 6
   end
@@ -67,6 +71,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Download URL'
+    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 7
   end
@@ -84,6 +89,7 @@ object MODInfoForm: TMODInfoForm
     Top = 5
     Width = 88
     Caption = 'Mod Description'
+    Color = clDefault
     ParentColor = False
   end
   object lblGUID: TLabel
@@ -94,6 +100,7 @@ object MODInfoForm: TMODInfoForm
     Alignment = taRightJustify
     AutoSize = False
     Caption = 'Mod GUID (click button for new)'
+    Color = clDefault
     ParentColor = False
   end
   object bbOK: TBitBtn
@@ -119,6 +126,7 @@ object MODInfoForm: TMODInfoForm
     Caption = 'Cancel'
     Kind = bkCancel
     ModalResult = 2
+    OnClick = bbCancelClick
     TabOrder = 8
   end
   object edGUID: TEdit
@@ -147,6 +155,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod File Name'
+    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 10
   end

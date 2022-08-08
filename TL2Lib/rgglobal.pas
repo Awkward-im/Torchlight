@@ -37,6 +37,7 @@ function  CopyWide(asrc:PWideChar; alen:integer=0):PWideChar;
 function  CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
 function  ConcatWide (s1,s2:PWideChar):PWideChar;
 function  CharPosWide(c:WideChar; asrc:PWideChar):PWideChar;
+function  PosWide(asubstr,asrc:PWideChar):PWideChar;
 function  BufLen(abuf:PAnsiChar; asize:cardinal):integer;
 function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 
@@ -258,8 +259,8 @@ procedure QuaternionToMatrix(const q:TVector4; out m:TMatrix4x4);
 //===== Hash =====
 
 function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
-function RGHash(instr:PWideChar; alen:integer=0):dword;
-function RGHash(instr:PAnsiChar; alen:integer=0):dword;
+function RGHash (instr:PWideChar; alen:integer=0):dword;
+function RGHashB(instr:PAnsiChar; alen:integer=0):dword;
 function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
 
 //==========================
@@ -405,6 +406,30 @@ begin
 
       inc(asrc);
     end;
+end;
+
+function PosWide(asubstr,asrc:PWideChar):PWideChar;
+var
+  lstr2:SizeInt;
+begin
+  result:=nil;
+
+  if (asubstr=nil) or (asrc=nil) then
+    exit;
+
+  while asrc^<>#0 do
+  begin
+    if asrc^=asubstr^ then
+      break;
+    inc(asrc);
+  end;
+  if asrc^=#0 then exit;
+  lstr2:=Length(asubstr);
+  while asrc^<>#0 do
+  begin
+    if (asrc^=asubstr^) and (CompareWide(asrc,asubstr,lstr2)=0) then Exit(asrc);
+    inc(asrc);
+  end;
 end;
 
 // from LazFileUtils
@@ -569,7 +594,7 @@ begin
     result:=(result SHR 27) xor (result SHL 5) xor ORD(instr[i]);
 end;
 
-function RGHash(instr:PAnsiChar; alen:integer=0):dword;
+function RGHashB(instr:PAnsiChar; alen:integer=0):dword;
 var
   i:integer;
 begin

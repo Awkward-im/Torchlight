@@ -1,5 +1,6 @@
 // RGBA32
 unit BeRoDDS;
+
 (*************************************
 ** 2-clause simplified BSD license ***
 **************************************
@@ -231,47 +232,49 @@ const
 
 type
   TDDSPixelFormat = packed record
-    dwSize: LongWord;
-    dwFlags: LongWord;
-    dwFourCC: LongWord;
-    dwRGBBitCount: LongWord;
-    dwRBitMask: LongWord;
-    dwGBitMask: LongWord;
-    dwBBitMask: LongWord;
-    dwABitMask: LongWord;
+    dwSize: longword;
+    dwFlags: longword;
+    dwFourCC: longword;
+    dwRGBBitCount: longword;
+    dwRBitMask: longword;
+    dwGBitMask: longword;
+    dwBBitMask: longword;
+    dwABitMask: longword;
   end;
 
   TDDSCaps = packed record
-    dwCaps1: LongWord;
-    dwCaps2: LongWord;
-    dwDDSX: LongWord;
-    dwReserved: LongWord;
+    dwCaps1: longword;
+    dwCaps2: longword;
+    dwDDSX: longword;
+    dwReserved: longword;
   end;
 
   TDDSHeader = packed record
-    dwMagic: LongWord;
-    dwSize: LongWord;
-    dwFlags: LongWord;
-    dwHeight: LongWord;
-    dwWidth: LongWord;
-    dwPitchOrLinearSize: LongWord;
-    dwDepth: LongWord;
-    dwMipMapCount: LongWord;
-    dwReserved: array[0..10] of LongWord;
+    dwMagic: longword;
+    dwSize: longword;
+    dwFlags: longword;
+    dwHeight: longword;
+    dwWidth: longword;
+    dwPitchOrLinearSize: longword;
+    dwDepth: longword;
+    dwMipMapCount: longword;
+    dwReserved: array[0..10] of longword;
     PixelFormat: TDDSPixelFormat;
     Caps: TDDSCaps;
-    dwReserved2: LongWord;
+    dwReserved2: longword;
   end;
 
   TDDSHeaderDX10 = packed record
-    dxgiFormat: LongWord;
-    ResourceDimension: LongWord;
-    MiscFlag: LongWord;
-    ArraySize: LongWord;
-    Reservedn: LongWord;
+    dxgiFormat: longword;
+    ResourceDimension: longword;
+    MiscFlag: longword;
+    ArraySize: longword;
+    Reservedn: longword;
   end;
 
-function LoadDDSImage(DataPointer: Pointer; DataSize: LongWord; var ImageData: Pointer; var ImageWidth, ImageHeight: LongInt; MipMapLevel: LongInt = 0): Boolean;
+function LoadDDSImage(DataPointer: Pointer; DataSize: longword;
+  var ImageData: Pointer; var ImageWidth, ImageHeight: longint;
+  MipMapLevel: longint = 0): boolean;
 
 implementation
 
@@ -301,22 +304,24 @@ type
 {$else}
   ptruint = longword;
   ptrint = longint;
+
 {$endif}
 {$endif}
 
-function LoadDDSImage(DataPointer: Pointer; DataSize: LongWord; var ImageData: Pointer;
-  var ImageWidth, ImageHeight: LongInt; MipMapLevel: LongInt = 0): Boolean;
+function LoadDDSImage(DataPointer: Pointer; DataSize: longword;
+  var ImageData: Pointer; var ImageWidth, ImageHeight: longint;
+  MipMapLevel: longint = 0): boolean;
 type
   pbyte = ^byte;
 var
-  Header:TDDSHeader;
-  HeaderDX10:TDDSHeaderDX10;
-  BlockSize:longword;
-  DataPosition:longword;
+  Header: TDDSHeader;
+  HeaderDX10: TDDSHeaderDX10;
+  BlockSize: longword;
+  DataPosition: longword;
 
-  function Read(var Buffer; LengthCounter: LongWord): LongWord;
+  function Read(var Buffer; LengthCounter: longword): longword;
   var
-    RealSize: LongWord;
+    RealSize: longword;
   begin
     RealSize := LengthCounter;
     if (DataPosition + RealSize) > DataSize then
@@ -326,37 +331,38 @@ var
 
     if RealSize <> LengthCounter then
     begin
-      FillChar(Buffer,LengthCounter,#0);
+      FillChar(Buffer, LengthCounter, #0);
     end;
 
     if RealSize > 0 then
     begin
-      Move(PAnsiChar(DataPointer)[DataPosition],Buffer,RealSize);
+      Move(pansichar(DataPointer)[DataPosition], Buffer, RealSize);
     end;
 
     Inc(DataPosition, RealSize);
-    result := RealSize;
+    Result := RealSize;
   end;
 
-  procedure DecodeDXT(Version: LongInt; PremultiplyAlpha: Boolean);
+  procedure DecodeDXT(Version: longint; PremultiplyAlpha: boolean);
   var
-    i, x, y, bx, by, RowSize: LongInt;
-    pData: PByte;
-    c0, c1, Bits, rb0, rb1, rb2, rb3, g0, g1, g2, g3, r, g, b, a, v: LongWord;
-    p: PAnsiChar;
-    Colors: array[0..3] of LongWord;
-    Alpha: Int64;
-    AlphaValues: array[0..7] of Byte;
+    i, x, y, bx, by, RowSize: longint;
+    pData: pbyte;
+    c0, c1, Bits, rb0, rb1, rb2, rb3, g0, g1, g2, g3, r, g, b, a, v: longword;
+    p: pansichar;
+    Colors: array[0..3] of longword;
+    Alpha: int64;
+    AlphaValues: array[0..7] of byte;
   begin
     pData := nil;
     try
-      GetMem(ImageData,((((ImageWidth + 3) shr 2) shl 2) * (((ImageHeight + 3) shr 2) shl 2)) * 4);
-      FillChar(ImageData^, ImageWidth * ImageHeight * 4, AnsiChar(#$FF));
-      RowSize := ((ImageWidth + 3) shr 2) * LongInt(BlockSize);
+      GetMem(ImageData, ((((ImageWidth + 3) shr 2) shl 2) *
+        (((ImageHeight + 3) shr 2) shl 2)) * 4);
+      FillChar(ImageData^, ImageWidth * ImageHeight * 4, ansichar(#$FF));
+      RowSize := ((ImageWidth + 3) shr 2) * longint(BlockSize);
       i := ((ImageHeight + 3) shr 2) * RowSize;
       GetMem(pData, i * 2);
 
-      if Read(pData^, i) = LongWord(i) then
+      if Read(pData^, i) = longword(i) then
       begin
         y := 0;
         while y < ImageHeight do
@@ -364,938 +370,1105 @@ var
           x := 0;
           while x < ImageWidth do
           begin
-            i:=((y shr 2) * RowSize) + ((x shr 2) * LongInt(BlockSize));
+            i := ((y shr 2) * RowSize) + ((x shr 2) * longint(BlockSize));
 
             case Version of
-            2, 3: begin
-                    Alpha := (int64(byte(pansichar(pointer(pData))[i+0])) shl 0) or
-                             (int64(byte(pansichar(pointer(pData))[i+1])) shl 8) or
-                             (int64(byte(pansichar(pointer(pData))[i+2])) shl 16) or
-                             (int64(byte(pansichar(pointer(pData))[i+3])) shl 24) or
-                             (int64(byte(pansichar(pointer(pData))[i+4])) shl 32) or
-                             (int64(byte(pansichar(pointer(pData))[i+5])) shl 40) or
-                             (int64(byte(pansichar(pointer(pData))[i+6])) shl 48) or
-                             (int64(byte(pansichar(pointer(pData))[i+7])) shl 56);
-                    a := $00000000;
-        inc(i,8);
-       end;
-       4,5:begin
-        AlphaValues[0]:=byte(pansichar(pointer(pData))[i+0]);
-        AlphaValues[1]:=byte(pansichar(pointer(pData))[i+1]);
-        if AlphaValues[0]>AlphaValues[1] then begin
-         AlphaValues[2]:=((6*AlphaValues[0])+(1*AlphaValues[1])) div 7;
-         AlphaValues[3]:=((5*AlphaValues[0])+(2*AlphaValues[1])) div 7;
-         AlphaValues[4]:=((4*AlphaValues[0])+(3*AlphaValues[1])) div 7;
-         AlphaValues[5]:=((3*AlphaValues[0])+(4*AlphaValues[1])) div 7;
-         AlphaValues[6]:=((2*AlphaValues[0])+(5*AlphaValues[1])) div 7;
-         AlphaValues[7]:=((1*AlphaValues[0])+(6*AlphaValues[1])) div 7;
-        end else begin
-         AlphaValues[2]:=((4*AlphaValues[0])+(1*AlphaValues[1])) div 5;
-         AlphaValues[3]:=((3*AlphaValues[0])+(2*AlphaValues[1])) div 5;
-         AlphaValues[4]:=((2*AlphaValues[0])+(3*AlphaValues[1])) div 5;
-         AlphaValues[5]:=((1*AlphaValues[0])+(4*AlphaValues[1])) div 5;
-         AlphaValues[6]:=0;
-         AlphaValues[7]:=255;
+              2, 3: begin
+                Alpha := (int64(byte(pansichar(pointer(pData))[i + 0])) shl 0) or
+                  (int64(byte(pansichar(pointer(pData))[i + 1])) shl 8) or
+                  (int64(byte(pansichar(pointer(pData))[i + 2])) shl 16) or
+                  (int64(byte(pansichar(pointer(pData))[i + 3])) shl 24) or
+                  (int64(byte(pansichar(pointer(pData))[i + 4])) shl 32) or
+                  (int64(byte(pansichar(pointer(pData))[i + 5])) shl 40) or
+                  (int64(byte(pansichar(pointer(pData))[i + 6])) shl 48) or
+                  (int64(byte(pansichar(pointer(pData))[i + 7])) shl 56);
+                a := $00000000;
+                Inc(i, 8);
+              end;
+              4, 5: begin
+                AlphaValues[0] := byte(pansichar(pointer(pData))[i + 0]);
+                AlphaValues[1] := byte(pansichar(pointer(pData))[i + 1]);
+                if AlphaValues[0] > AlphaValues[1] then
+                begin
+                  AlphaValues[2] := ((6 * AlphaValues[0]) + (1 * AlphaValues[1])) div 7;
+                  AlphaValues[3] := ((5 * AlphaValues[0]) + (2 * AlphaValues[1])) div 7;
+                  AlphaValues[4] := ((4 * AlphaValues[0]) + (3 * AlphaValues[1])) div 7;
+                  AlphaValues[5] := ((3 * AlphaValues[0]) + (4 * AlphaValues[1])) div 7;
+                  AlphaValues[6] := ((2 * AlphaValues[0]) + (5 * AlphaValues[1])) div 7;
+                  AlphaValues[7] := ((1 * AlphaValues[0]) + (6 * AlphaValues[1])) div 7;
+                end
+                else
+                begin
+                  AlphaValues[2] := ((4 * AlphaValues[0]) + (1 * AlphaValues[1])) div 5;
+                  AlphaValues[3] := ((3 * AlphaValues[0]) + (2 * AlphaValues[1])) div 5;
+                  AlphaValues[4] := ((2 * AlphaValues[0]) + (3 * AlphaValues[1])) div 5;
+                  AlphaValues[5] := ((1 * AlphaValues[0]) + (4 * AlphaValues[1])) div 5;
+                  AlphaValues[6] := 0;
+                  AlphaValues[7] := 255;
+                end;
+                Alpha := (int64(byte(pansichar(pointer(pData))[i + 2])) shl 0) or
+                  (int64(byte(pansichar(pointer(pData))[i + 3])) shl 8) or
+                  (int64(byte(pansichar(pointer(pData))[i + 4])) shl 16) or
+                  (int64(byte(pansichar(pointer(pData))[i + 5])) shl 24) or
+                  (int64(byte(pansichar(pointer(pData))[i + 6])) shl 32) or
+                  (int64(byte(pansichar(pointer(pData))[i + 7])) shl 40);
+                a := $00000000;
+                Inc(i, 8);
+              end;
+              else
+              begin
+                Alpha := 0;
+                a := $ff000000;
+              end;
+            end;
+            c0 := byte(pansichar(pointer(pData))[i + 0]) or
+              (byte(pansichar(pointer(pData))[i + 1]) shl 8);
+            c1 := byte(pansichar(pointer(pData))[i + 2]) or
+              (byte(pansichar(pointer(pData))[i + 3]) shl 8);
+            rb0 := ((c0 shl 3) or (c0 shl 8)) and $f800f8;
+            rb1 := ((c1 shl 3) or (c1 shl 8)) and $f800f8;
+            Inc(rb0, (rb0 shr 5) and $070007);
+            Inc(rb1, (rb1 shr 5) and $070007);
+            g0 := (c0 shl 5) and $00fc00;
+            g1 := (c1 shl 5) and $00fc00;
+            Inc(g0, (g0 shr 6) and $000300);
+            Inc(g1, (g1 shr 6) and $000300);
+            Colors[0] := (rb0 or g0) or a;
+            Colors[1] := (rb1 or g1) or a;
+            if (c0 > c1) or (Version in [2, 3, 4, 5]) then
+            begin
+              rb2 := ((((2 * rb0) + rb1) * 21) shr 6) and $ff00ff;
+              g2 := ((((2 * g0) + g1) * 21) shr 6) and $00ff00;
+              rb3 := (((rb0 + (2 * rb1)) * 21) shr 6) and $ff00ff;
+              g3 := (((g0 + (2 * g1)) * 21) shr 6) and $00ff00;
+              Colors[3] := (rb3 or g3) or a;
+            end
+            else
+            begin
+              rb2 := ((rb0 + rb1) shr 1) and $ff00ff;
+              g2 := ((g0 + g1) shr 1) and $00ff00;
+              Colors[3] := $00000000;
+            end;
+            Colors[2] := (rb2 or g2) or a;
+            Bits := byte(pansichar(pointer(pData))[i + 4]) or
+              (byte(pansichar(pointer(pData))[i + 5]) shl 8) or
+              (byte(pansichar(pointer(pData))[i + 6]) shl 16) or
+              (byte(pansichar(pointer(pData))[i + 7]) shl 24);
+            for by := 0 to 3 do
+            begin
+              for bx := 0 to 3 do
+              begin
+                case Version of
+                  2, 3: begin
+                    a := Alpha and $f;
+                    a := a or (a shl 4);
+                    Alpha := Alpha shr 4;
+                  end;
+                  4, 5: begin
+                    a := AlphaValues[Alpha and 7];
+                    Alpha := Alpha shr 3;
+                  end;
+                  else
+                  begin
+                    a := $00;
+                  end;
+                end;
+                p := @pansichar(ImageData)[(((y + by) * ImageWidth) + (x + bx)) * 4];
+                v := Colors[Bits and 3] or (a shl 24);
+                r := (v shr 16) and $ff;
+                g := (v shr 8) and $ff;
+                b := (v shr 0) and $ff;
+                a := (v shr 24) and $ff;
+                if PremultiplyAlpha and (a <> 0) then
+                begin
+                  // Unpremultiply
+                  r := (r * 255) div a;
+                  g := (g * 255) div a;
+                  b := (b * 255) div a;
+                  if r > 255 then
+                  begin
+                    r := 255;
+                  end;
+                  if g > 255 then
+                  begin
+                    g := 255;
+                  end;
+                  if b > 255 then
+                  begin
+                    b := 255;
+                  end;
+                end;
+                byte(p[0]) := r;
+                byte(p[1]) := g;
+                byte(p[2]) := b;
+                byte(p[3]) := a;
+                Bits := Bits shr 2;
+              end;
+            end;
+            Inc(x, 4);
+          end;
+          Inc(y, 4);
         end;
-        Alpha:=(int64(byte(pansichar(pointer(pData))[i+2])) shl 0) or
-               (int64(byte(pansichar(pointer(pData))[i+3])) shl 8) or
-               (int64(byte(pansichar(pointer(pData))[i+4])) shl 16) or
-               (int64(byte(pansichar(pointer(pData))[i+5])) shl 24) or
-               (int64(byte(pansichar(pointer(pData))[i+6])) shl 32) or
-               (int64(byte(pansichar(pointer(pData))[i+7])) shl 40);
-        a:=$00000000;
-        inc(i,8);
-       end;
-       else begin
-        Alpha:=0;
-        a:=$ff000000;
-       end;
       end;
-      c0:=byte(pansichar(pointer(pData))[i+0]) or (byte(pansichar(pointer(pData))[i+1]) shl 8);
-      c1:=byte(pansichar(pointer(pData))[i+2]) or (byte(pansichar(pointer(pData))[i+3]) shl 8);
-      rb0:=((c0 shl 3) or (c0 shl 8)) and $f800f8;
-      rb1:=((c1 shl 3) or (c1 shl 8)) and $f800f8;
-      inc(rb0,(rb0 shr 5) and $070007);
-      inc(rb1,(rb1 shr 5) and $070007);
-      g0:=(c0 shl 5) and $00fc00;
-      g1:=(c1 shl 5) and $00fc00;
-      inc(g0,(g0 shr 6) and $000300);
-      inc(g1,(g1 shr 6) and $000300);
-      Colors[0]:=(rb0 or g0) or a;
-      Colors[1]:=(rb1 or g1) or a;
-      if (c0>c1) or (Version in [2,3,4,5]) then begin
-       rb2:=((((2*rb0)+rb1)*21) shr 6) and $ff00ff;
-       g2:=((((2*g0)+g1)*21) shr 6) and $00ff00;
-       rb3:=(((rb0+(2*rb1))*21) shr 6) and $ff00ff;
-       g3:=(((g0+(2*g1))*21) shr 6) and $00ff00;
-       Colors[3]:=(rb3 or g3) or a;
-      end else begin
-       rb2:=((rb0+rb1) shr 1) and $ff00ff;
-       g2:=((g0+g1) shr 1) and $00ff00;
-       Colors[3]:=$00000000;
+    finally
+      if assigned(pData) then
+      begin
+        FreeMem(pData);
       end;
-      Colors[2]:=(rb2 or g2) or a;
-      Bits:=byte(pansichar(pointer(pData))[i+4]) or (byte(pansichar(pointer(pData))[i+5]) shl 8) or (byte(pansichar(pointer(pData))[i+6]) shl 16) or (byte(pansichar(pointer(pData))[i+7]) shl 24);
-      for by:=0 to 3 do begin
-       for bx:=0 to 3 do begin
-        case Version of
-         2,3:begin
-          a:=Alpha and $f;
-          a:=a or (a shl 4);
-          Alpha:=Alpha shr 4;
-         end;
-         4,5:begin
-          a:=AlphaValues[Alpha and 7];
-          Alpha:=Alpha shr 3;
-         end;
-         else begin
-          a:=$00;
-         end;
-        end;
-        p:=@pansichar(ImageData)[(((y+by)*ImageWidth)+(x+bx))*4];
-        v:=Colors[Bits and 3] or (a shl 24);
-        r:=(v shr 16) and $ff;
-        g:=(v shr 8) and $ff;
-        b:=(v shr 0) and $ff;
-        a:=(v shr 24) and $ff;
-        if PremultiplyAlpha and (a<>0) then begin
-         // Unpremultiply
-         r:=(r*255) div a;
-         g:=(g*255) div a;
-         b:=(b*255) div a;
-         if r>255 then begin
-          r:=255;
-         end;
-         if g>255 then begin
-          g:=255;
-         end;
-         if b>255 then begin
-          b:=255;
-         end;
-        end;
-        byte(p[0]):=r;
-        byte(p[1]):=g;
-        byte(p[2]):=b;
-        byte(p[3]):=a;
-        Bits:=Bits shr 2;
-       end;
-      end;
-      inc(x,4);
-     end;
-     inc(y,4);
     end;
-   end;
-  finally
-   if assigned(pData) then begin
-    FreeMem(pData);
-   end;
-  end;
- end;
- function DecodeBGRA:boolean;
- var i,j,k:longint;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  if Read(ImageData^,ImageWidth*ImageHeight*4)=longword(ImageWidth*ImageHeight*4) then begin
-   i:=0;
-   j:=ImageWidth*ImageHeight*4;
-   while i<j do begin
-    k:=byte(pansichar(pointer(ImageData))[i]);
-    byte(pansichar(pointer(ImageData))[i]):=byte(pansichar(pointer(ImageData))[i+2]);
-    byte(pansichar(pointer(ImageData))[i+2]):=k;
-    inc(i,4);
-   end;
-   result:=true;
-  end;
- end;
- function DecodeBGRX:boolean;
- var i,j:longint;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  if Read(ImageData^,ImageWidth*ImageHeight*4)=longword(ImageWidth*ImageHeight*4) then begin
-   i:=0;
-   j:=ImageWidth*ImageHeight*4;
-   while i<j do begin
-    byte(pansichar(pointer(ImageData))[i+3]):=0;
-    inc(i,4);
-   end;
-   result:=true;
-  end;
- end;
- function DecodeRGBA:boolean;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  if Read(ImageData^,ImageWidth*ImageHeight*4)=longword(ImageWidth*ImageHeight*4) then begin
-   result:=true;
-  end else begin
-   FillChar(ImageData^,ImageWidth*ImageHeight*4,AnsiChar(#$ff));
-  end;
- end;
- function DecodeBGR:boolean;
- var i,j:longint;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*3);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*3)=longword(ImageWidth*ImageHeight*3) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*3;
-    while i<j do begin
-     r:=byte(pansichar(pointer(Temp))[i+2]);
-     g:=byte(pansichar(pointer(Temp))[i+1]);
-     b:=byte(pansichar(pointer(Temp))[i+0]);
-     a:=$ff;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,3);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeRGB:boolean;
- var i,j:longint;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*3);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*3)=longword(ImageWidth*ImageHeight*3) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*3;
-    while i<j do begin
-     r:=byte(pansichar(pointer(Temp))[i+0]);
-     g:=byte(pansichar(pointer(Temp))[i+1]);
-     b:=byte(pansichar(pointer(Temp))[i+2]);
-     a:=$ff;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,3);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeB5G6R5:boolean;
- var i,j:longint;
-     w:word;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*2);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*2)=longword(ImageWidth*ImageHeight*2) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*2;
-    while i<j do begin
-     w:=byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i+1]) shl 8);
-     r:=((w and $f800) shr 11) shl 3;
-     g:=((w and $07e0) shr 5) shl 2;
-     b:=((w and $001f) shr 0) shl 3;
-     a:=$ff;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,2);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeB5G5R5A1:boolean;
- var i,j:longint;
-     w:word;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*2);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*2)=longword(ImageWidth*ImageHeight*2) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*2;
-    while i<j do begin
-     w:=byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i+1]) shl 8);
-     r:=((w and $7c00) shr 10) shl 3;
-     g:=((w and $03e0) shr 5) shl 3;
-     b:=((w and $001f) shr 0) shl 3;
-     if (w and $8000)<>0 then begin
-      a:=$ff;
-     end else begin
-      a:=$00;
-     end;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,2);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeR10G10B10A2:boolean;
- var i,j:longint;
-     lw:longword;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*4);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*4)=longword(ImageWidth*ImageHeight*4) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*4;
-    while i<j do begin
-     lw:=byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i+1]) shl 8) or (byte(pansichar(pointer(Temp))[i+2]) shl 16) or (byte(pansichar(pointer(Temp))[i+3]) shl 24);
-     r:=(lw and $000003ff) shr 2;
-     g:=(lw and $000ffc00) shr 12;
-     b:=(lw and $3ff00000) shr 22;
-     a:=(lw and $c0000000) shr 30;
-     a:=a or (a shl 2);
-     a:=a or (a shl 4);
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,4);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeA8:boolean;
- var i,j:longint;
-     Temp,p:PAnsiChar;
-     v,r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*1);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*1)=longword(ImageWidth*ImageHeight*1) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*1;
-    while i<j do begin
-     v:=byte(pansichar(pointer(Temp))[i]);
-     r:=$ff;
-     g:=$ff;
-     b:=$ff;
-     a:=v;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,1);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeR8:boolean;
- var i,j:longint;
-     Temp,p:PAnsiChar;
-     v,r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*1);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*1)=longword(ImageWidth*ImageHeight*1) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*1;
-    while i<j do begin
-     v:=byte(pansichar(pointer(Temp))[i]);
-     r:=v;
-     g:=$00;
-     b:=$00;
-     a:=$ff;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,1);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeB4G4R4A4:boolean;
- var i,j:longint;
-     w:word;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*2);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*2)=longword(ImageWidth*ImageHeight*2) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*2;
-    while i<j do begin
-     w:=byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i+1]) shl 8);
-     r:=(w and $0f00) shr 8;
-     g:=(w and $00f0) shr 4;
-     b:=(w and $000f) shr 0;
-     a:=(w and $f000) shr 12;
-     byte(p[0]):=r or (r shl 4);
-     byte(p[1]):=g or (g shl 4);
-     byte(p[2]):=b or (b shl 4);
-     byte(p[3]):=a or (a shl 4);
-     p:=@p[4];
-     inc(i,2);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeL8A8:boolean;
- var i,j:longint;
-     w:word;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*2);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*2)=longword(ImageWidth*ImageHeight*2) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*2;
-    while i<j do begin
-     w:=byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i+1]) shl 8);
-     r:=(w and $00ff) shr 0;
-     g:=$00;
-     b:=$00;
-     a:=(w and $ff00) shr 8;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,2);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeL16:boolean;
- var i,j:longint;
-     w:word;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*2);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*2)=longword(ImageWidth*ImageHeight*2) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*2;
-    while i<j do begin
-     w:=byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i+1]) shl 8);
-     r:=(w and $ff00) shr 0;
-     g:=$00;
-     b:=$00;
-     a:=$ff;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,2);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeL8:boolean;
- var i,j:longint;
-     Temp,p:PAnsiChar;
-     v,r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*1);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*1)=longword(ImageWidth*ImageHeight*1) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*1;
-    while i<j do begin
-     v:=byte(pansichar(pointer(Temp))[i]);
-     r:=v;
-     g:=$00;
-     b:=$00;
-     a:=$ff;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,1);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeR3G3B2:boolean;
- var i,j:longint;
-     v:byte;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*1);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*1)=longword(ImageWidth*ImageHeight*1) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*1;
-    while i<j do begin
-     v:=byte(pansichar(pointer(Temp))[i]);
-     r:=((v and $e0) shr 5) shl 5;
-     g:=((v and $1c) shr 2) shl 6;
-     b:=((v and $03) shr 0) shl 5;
-     a:=$ff;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,1);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
- function DecodeP8:boolean;
- var i,j:longint;
-     v:byte;
-     Temp,p:PAnsiChar;
-     r,g,b,a:byte;
- begin
-  result:=false;
-  GetMem(ImageData,ImageWidth*ImageHeight*4);
-  GetMem(Temp,ImageWidth*ImageHeight*1);
-  try
-   if Read(Temp^,ImageWidth*ImageHeight*1)=longword(ImageWidth*ImageHeight*1) then begin
-    p:=pointer(ImageData);
-    i:=0;
-    j:=ImageWidth*ImageHeight*1;
-    while i<j do begin
-     v:=byte(pansichar(pointer(Temp))[i]);
-     r:=v;
-     g:=v;
-     b:=v;
-     a:=v;
-     byte(p[0]):=r;
-     byte(p[1]):=g;
-     byte(p[2]):=b;
-     byte(p[3]):=a;
-     p:=@p[4];
-     inc(i,1);
-    end;
-    result:=true;
-   end;
-  finally
-   FreeMem(Temp);
-  end;
- end;
-var i:longint;
-    p:PAnsiChar;
-    ImageBytes:longword;
-begin
- result:=false;
- if assigned(DataPointer) and (DataSize>0) then begin
-  DataPosition:=0;
-  if Read(Header,SizeOf(TDDSHeader))<>SizeOf(TDDSHeader) then begin
-   exit;
-  end;
-  if ((Header.dwMagic<>DDS_MAGIC) or (Header.dwSize<>124) or ((Header.dwFlags and DDSD_PIXELFORMAT)=0) or ((Header.dwFlags and DDSD_CAPS)=0)) then begin
-   exit;
-  end;
-  if MipMapLevel>longint(Header.dwMipMapCount) then begin
-   exit;
-  end;
-  if (MipMapLevel>=1) and (((Header.dwWidth and 1)<>0) or ((Header.dwHeight and 1)<>0)) then begin
-   exit;
-  end;
-  ImageWidth:=Header.dwWidth;
-  ImageHeight:=Header.dwHeight;
-  if ((Header.PixelFormat.dwFlags and DDPF_FOURCC)<>0) and (Header.PixelFormat.dwFourCC=D3DFMT_DX10) then begin
-   if Read(HeaderDX10,SizeOf(TDDSHeaderDX10))<>SizeOf(TDDSHeaderDX10) then begin
-    exit;
-   end;
   end;
 
-  if MipMapLevel>0 then
+  function DecodeBGRA: boolean;
+  var
+    i, j, k: longint;
   begin
-   for i:=1 to MipMapLevel do begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    if Read(ImageData^, ImageWidth * ImageHeight * 4) = longword(ImageWidth * ImageHeight * 4) then
+    begin
+      i := 0;
+      j := ImageWidth * ImageHeight * 4;
+      while i < j do
+      begin
+        k := byte(pansichar(pointer(ImageData))[i]);
+        byte(pansichar(pointer(ImageData))[i]) := byte(pansichar(pointer(ImageData))[i + 2]);
+        byte(pansichar(pointer(ImageData))[i + 2]) := k;
+        Inc(i, 4);
+      end;
+      Result := True;
+    end;
+  end;
+
+  function DecodeBGRX: boolean;
+  var
+    i, j: longint;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    if Read(ImageData^, ImageWidth * ImageHeight * 4) = longword(ImageWidth * ImageHeight * 4) then
+    begin
+      i := 0;
+      j := ImageWidth * ImageHeight * 4;
+      while i < j do
+      begin
+        byte(pansichar(pointer(ImageData))[i + 3]) := 0;
+        Inc(i, 4);
+      end;
+      Result := True;
+    end;
+  end;
+
+  function DecodeRGBA: boolean;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    if Read(ImageData^, ImageWidth * ImageHeight * 4) = longword(ImageWidth * ImageHeight * 4) then
+    begin
+      Result := True;
+    end
+    else
+    begin
+      FillChar(ImageData^, ImageWidth * ImageHeight * 4, ansichar(#$ff));
+    end;
+  end;
+
+  function DecodeBGR: boolean;
+  var
+    i, j: longint;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 3);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 3) = longword(ImageWidth * ImageHeight * 3) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 3;
+        while i < j do
+        begin
+          r := byte(pansichar(pointer(Temp))[i + 2]);
+          g := byte(pansichar(pointer(Temp))[i + 1]);
+          b := byte(pansichar(pointer(Temp))[i + 0]);
+          a := $ff;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 3);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeRGB: boolean;
+  var
+    i, j: longint;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 3);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 3) = longword(ImageWidth * ImageHeight * 3) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 3;
+        while i < j do
+        begin
+          r := byte(pansichar(pointer(Temp))[i + 0]);
+          g := byte(pansichar(pointer(Temp))[i + 1]);
+          b := byte(pansichar(pointer(Temp))[i + 2]);
+          a := $ff;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 3);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeB5G6R5: boolean;
+  var
+    i, j: longint;
+    w: word;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 2);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 2) = longword(ImageWidth * ImageHeight * 2) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 2;
+        while i < j do
+        begin
+          w := byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i + 1]) shl 8);
+          r := ((w and $f800) shr 11) shl 3;
+          g := ((w and $07e0) shr 5) shl 2;
+          b := ((w and $001f) shr 0) shl 3;
+          a := $ff;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 2);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeB5G5R5A1: boolean;
+  var
+    i, j: longint;
+    w: word;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 2);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 2) = longword(ImageWidth * ImageHeight * 2) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 2;
+        while i < j do
+        begin
+          w := byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i + 1]) shl 8);
+          r := ((w and $7c00) shr 10) shl 3;
+          g := ((w and $03e0) shr 5) shl 3;
+          b := ((w and $001f) shr 0) shl 3;
+          if (w and $8000) <> 0 then
+          begin
+            a := $ff;
+          end
+          else
+          begin
+            a := $00;
+          end;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 2);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeR10G10B10A2: boolean;
+  var
+    i, j: longint;
+    lw: longword;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 4);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 4) = longword(ImageWidth * ImageHeight * 4) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 4;
+        while i < j do
+        begin
+          lw := byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))
+            [i + 1]) shl 8) or (byte(pansichar(pointer(Temp))[i + 2]) shl 16) or
+            (byte(pansichar(pointer(Temp))[i + 3]) shl 24);
+          r := (lw and $000003ff) shr 2;
+          g := (lw and $000ffc00) shr 12;
+          b := (lw and $3ff00000) shr 22;
+          a := (lw and $c0000000) shr 30;
+          a := a or (a shl 2);
+          a := a or (a shl 4);
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 4);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeA8: boolean;
+  var
+    i, j: longint;
+    Temp, p: pansichar;
+    v, r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 1);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 1) = longword(ImageWidth * ImageHeight * 1) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 1;
+        while i < j do
+        begin
+          v := byte(pansichar(pointer(Temp))[i]);
+          r := $ff;
+          g := $ff;
+          b := $ff;
+          a := v;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 1);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeR8: boolean;
+  var
+    i, j: longint;
+    Temp, p: pansichar;
+    v, r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 1);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 1) = longword(ImageWidth * ImageHeight * 1) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 1;
+        while i < j do
+        begin
+          v := byte(pansichar(pointer(Temp))[i]);
+          r := v;
+          g := $00;
+          b := $00;
+          a := $ff;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 1);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeB4G4R4A4: boolean;
+  var
+    i, j: longint;
+    w: word;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 2);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 2) = longword(ImageWidth * ImageHeight * 2) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 2;
+        while i < j do
+        begin
+          w := byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i + 1]) shl 8);
+          r := (w and $0f00) shr 8;
+          g := (w and $00f0) shr 4;
+          b := (w and $000f) shr 0;
+          a := (w and $f000) shr 12;
+          byte(p[0]) := r or (r shl 4);
+          byte(p[1]) := g or (g shl 4);
+          byte(p[2]) := b or (b shl 4);
+          byte(p[3]) := a or (a shl 4);
+          p := @p[4];
+          Inc(i, 2);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeL8A8: boolean;
+  var
+    i, j: longint;
+    w: word;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 2);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 2) = longword(ImageWidth * ImageHeight * 2) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 2;
+        while i < j do
+        begin
+          w := byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i + 1]) shl 8);
+          r := (w and $00ff) shr 0;
+          g := $00;
+          b := $00;
+          a := (w and $ff00) shr 8;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 2);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeL16: boolean;
+  var
+    i, j: longint;
+    w: word;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 2);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 2) = longword(ImageWidth * ImageHeight * 2) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 2;
+        while i < j do
+        begin
+          w := byte(pansichar(pointer(Temp))[i]) or (byte(pansichar(pointer(Temp))[i + 1]) shl 8);
+          r := (w and $ff00) shr 0;
+          g := $00;
+          b := $00;
+          a := $ff;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 2);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeL8: boolean;
+  var
+    i, j: longint;
+    Temp, p: pansichar;
+    v, r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 1);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 1) = longword(ImageWidth * ImageHeight * 1) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 1;
+        while i < j do
+        begin
+          v := byte(pansichar(pointer(Temp))[i]);
+          r := v;
+          g := $00;
+          b := $00;
+          a := $ff;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 1);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeR3G3B2: boolean;
+  var
+    i, j: longint;
+    v: byte;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 1);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 1) = longword(ImageWidth * ImageHeight * 1) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 1;
+        while i < j do
+        begin
+          v := byte(pansichar(pointer(Temp))[i]);
+          r := ((v and $e0) shr 5) shl 5;
+          g := ((v and $1c) shr 2) shl 6;
+          b := ((v and $03) shr 0) shl 5;
+          a := $ff;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 1);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+  function DecodeP8: boolean;
+  var
+    i, j: longint;
+    v: byte;
+    Temp, p: pansichar;
+    r, g, b, a: byte;
+  begin
+    Result := False;
+    GetMem(ImageData, ImageWidth * ImageHeight * 4);
+    GetMem(Temp, ImageWidth * ImageHeight * 1);
+    try
+      if Read(Temp^, ImageWidth * ImageHeight * 1) = longword(ImageWidth * ImageHeight * 1) then
+      begin
+        p := pointer(ImageData);
+        i := 0;
+        j := ImageWidth * ImageHeight * 1;
+        while i < j do
+        begin
+          v := byte(pansichar(pointer(Temp))[i]);
+          r := v;
+          g := v;
+          b := v;
+          a := v;
+          byte(p[0]) := r;
+          byte(p[1]) := g;
+          byte(p[2]) := b;
+          byte(p[3]) := a;
+          p := @p[4];
+          Inc(i, 1);
+        end;
+        Result := True;
+      end;
+    finally
+      FreeMem(Temp);
+    end;
+  end;
+
+var
+  i: longint;
+  p: pansichar;
+  ImageBytes: longword;
+begin
+  Result := False;
+  if assigned(DataPointer) and (DataSize > 0) then
+  begin
+    DataPosition := 0;
+    if Read(Header, SizeOf(TDDSHeader)) <> SizeOf(TDDSHeader) then
+    begin
+      exit;
+    end;
+    if ((Header.dwMagic <> DDS_MAGIC) or (Header.dwSize <> 124) or
+      ((Header.dwFlags and DDSD_PIXELFORMAT) = 0) or ((Header.dwFlags and DDSD_CAPS) = 0)) then
+    begin
+      exit;
+    end;
+    if MipMapLevel > longint(Header.dwMipMapCount) then
+    begin
+      exit;
+    end;
+    if (MipMapLevel >= 1) and (((Header.dwWidth and 1) <> 0) or
+      ((Header.dwHeight and 1) <> 0)) then
+    begin
+      exit;
+    end;
+    ImageWidth := Header.dwWidth;
+    ImageHeight := Header.dwHeight;
+    if ((Header.PixelFormat.dwFlags and DDPF_FOURCC) <> 0) and
+      (Header.PixelFormat.dwFourCC = D3DFMT_DX10) then
+    begin
+      if Read(HeaderDX10, SizeOf(TDDSHeaderDX10)) <> SizeOf(TDDSHeaderDX10) then
+      begin
+        exit;
+      end;
+    end;
+
+    if MipMapLevel > 0 then
+    begin
+      for i := 1 to MipMapLevel do
+      begin
  {  if (Header.dwFlags and DDSD_PITCH<>0) and (Header.dwPitchOrLinearSize<>0) then begin
 
     end else}begin
-     ImageBytes:=0;
-     if (Header.PixelFormat.dwFlags and DDPF_FOURCC)<>0 then begin
-      case Header.PixelFormat.dwFourCC of
-       D3DFMT_DXT1:begin
-        ImageBytes:=((((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*8;
-       end;
-       D3DFMT_DXT2,D3DFMT_DXT3:begin
-        ImageBytes:=((((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*16;
-       end;
-       D3DFMT_DXT4,D3DFMT_DXT5:begin
-        ImageBytes:=((((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*16;
-       end;
-       D3DFMT_ATI1:begin
-       end;
-       D3DFMT_ATI2:begin
-       end;
-       D3DFMT_BC4U:begin
-       end;
-       D3DFMT_BC4S:begin
-       end;
-       D3DFMT_BC5U:begin
-       end;
-       D3DFMT_BC5S:begin
-       end;
-       D3DFMT_RXGB:begin
-       end;
-       D3DFMT_DX10:begin
-        case HeaderDX10.dxgiFormat of
-         DXGI_FORMAT_BC1_TYPELESS,DXGI_FORMAT_BC1_UNORM,DXGI_FORMAT_BC1_UNORM_SRGB:begin
-          ImageBytes:=((((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*8;
-         end;
-         DXGI_FORMAT_BC2_TYPELESS,DXGI_FORMAT_BC2_UNORM,DXGI_FORMAT_BC2_UNORM_SRGB:begin
-          ImageBytes:=((((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*16;
-         end;
-         DXGI_FORMAT_BC3_TYPELESS,DXGI_FORMAT_BC3_UNORM,DXGI_FORMAT_BC3_UNORM_SRGB:begin
-          ImageBytes:=((((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*16;
-         end;
-         DXGI_FORMAT_BC4_TYPELESS,DXGI_FORMAT_BC4_UNORM:begin
-          // ATI1
-         end;
-         DXGI_FORMAT_BC4_SNORM:begin
-          // BC4S
-         end;
-         DXGI_FORMAT_BC5_TYPELESS,DXGI_FORMAT_BC5_UNORM:begin
-          // ATI2
-         end;
-         DXGI_FORMAT_BC5_SNORM:begin
-          // BC5S
-         end;
-         DXGI_FORMAT_B8G8R8A8_TYPELESS,DXGI_FORMAT_B8G8R8A8_UNORM,DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*4;
-         end;
-         DXGI_FORMAT_B8G8R8X8_TYPELESS,DXGI_FORMAT_B8G8R8X8_UNORM,DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*4;
-         end;
-         DXGI_FORMAT_R8G8B8A8_TYPELESS,DXGI_FORMAT_R8G8B8A8_UNORM,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
-         DXGI_FORMAT_R8G8B8A8_UINT,DXGI_FORMAT_R8G8B8A8_SNORM,DXGI_FORMAT_R8G8B8A8_SINT:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*4;
-         end;
-         DXGI_FORMAT_B5G6R5_UNORM:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*2;
-         end;
-         DXGI_FORMAT_B5G5R5A1_UNORM:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*2;
-         end;
-         DXGI_FORMAT_R10G10B10A2_TYPELESS,DXGI_FORMAT_R10G10B10A2_UNORM,DXGI_FORMAT_R10G10B10A2_UINT:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*4;
-         end;
-         DXGI_FORMAT_A8_UNORM:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*1;
-         end;
-         DXGI_FORMAT_R8_TYPELESS,DXGI_FORMAT_R8_UNORM,DXGI_FORMAT_R8_UINT,DXGI_FORMAT_R8_SNORM,
-         DXGI_FORMAT_R8_SINT:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*1;
-         end;
-         DXGI_FORMAT_B4G4R4A4_UNORM:begin
-          ImageBytes:=(ImageWidth*ImageHeight)*2;
-         end;
+          ImageBytes := 0;
+          if (Header.PixelFormat.dwFlags and DDPF_FOURCC) <> 0 then
+          begin
+            case Header.PixelFormat.dwFourCC of
+              D3DFMT_DXT1: begin
+                ImageBytes := ((((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * 8;
+              end;
+              D3DFMT_DXT2, D3DFMT_DXT3: begin
+                ImageBytes := ((((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * 16;
+              end;
+              D3DFMT_DXT4, D3DFMT_DXT5: begin
+                ImageBytes := ((((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * 16;
+              end;
+              D3DFMT_ATI1: begin
+              end;
+              D3DFMT_ATI2: begin
+              end;
+              D3DFMT_BC4U: begin
+              end;
+              D3DFMT_BC4S: begin
+              end;
+              D3DFMT_BC5U: begin
+              end;
+              D3DFMT_BC5S: begin
+              end;
+              D3DFMT_RXGB: begin
+              end;
+              D3DFMT_DX10: begin
+                case HeaderDX10.dxgiFormat of
+                  DXGI_FORMAT_BC1_TYPELESS, DXGI_FORMAT_BC1_UNORM, DXGI_FORMAT_BC1_UNORM_SRGB: begin
+                    ImageBytes := ((((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * 8;
+                  end;
+                  DXGI_FORMAT_BC2_TYPELESS, DXGI_FORMAT_BC2_UNORM, DXGI_FORMAT_BC2_UNORM_SRGB: begin
+                    ImageBytes := ((((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * 16;
+                  end;
+                  DXGI_FORMAT_BC3_TYPELESS, DXGI_FORMAT_BC3_UNORM, DXGI_FORMAT_BC3_UNORM_SRGB: begin
+                    ImageBytes := ((((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * 16;
+                  end;
+                  DXGI_FORMAT_BC4_TYPELESS, DXGI_FORMAT_BC4_UNORM: begin
+                    // ATI1
+                  end;
+                  DXGI_FORMAT_BC4_SNORM: begin
+                    // BC4S
+                  end;
+                  DXGI_FORMAT_BC5_TYPELESS, DXGI_FORMAT_BC5_UNORM: begin
+                    // ATI2
+                  end;
+                  DXGI_FORMAT_BC5_SNORM: begin
+                    // BC5S
+                  end;
+                  DXGI_FORMAT_B8G8R8A8_TYPELESS, DXGI_FORMAT_B8G8R8A8_UNORM,
+                  DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 4;
+                  end;
+                  DXGI_FORMAT_B8G8R8X8_TYPELESS, DXGI_FORMAT_B8G8R8X8_UNORM,
+                  DXGI_FORMAT_B8G8R8X8_UNORM_SRGB: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 4;
+                  end;
+                  DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM,
+                  DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
+                  DXGI_FORMAT_R8G8B8A8_UINT, DXGI_FORMAT_R8G8B8A8_SNORM,
+                  DXGI_FORMAT_R8G8B8A8_SINT: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 4;
+                  end;
+                  DXGI_FORMAT_B5G6R5_UNORM: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 2;
+                  end;
+                  DXGI_FORMAT_B5G5R5A1_UNORM: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 2;
+                  end;
+                  DXGI_FORMAT_R10G10B10A2_TYPELESS, DXGI_FORMAT_R10G10B10A2_UNORM,
+                  DXGI_FORMAT_R10G10B10A2_UINT: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 4;
+                  end;
+                  DXGI_FORMAT_A8_UNORM: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 1;
+                  end;
+                  DXGI_FORMAT_R8_TYPELESS, DXGI_FORMAT_R8_UNORM, DXGI_FORMAT_R8_UINT,
+                  DXGI_FORMAT_R8_SNORM,
+                  DXGI_FORMAT_R8_SINT: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 1;
+                  end;
+                  DXGI_FORMAT_B4G4R4A4_UNORM: begin
+                    ImageBytes := (ImageWidth * ImageHeight) * 2;
+                  end;
+                end;
+              end;
+            end;
+          end
+          else if (Header.PixelFormat.dwFlags and DDPF_RGB) = DDPF_RGB then
+          begin
+            ImageBytes := ((longword(ImageWidth * ImageHeight) *
+              Header.PixelFormat.dwRGBBitCount) + 7) shr 3;
+          end;
         end;
-       end;
+        if (ImageBytes = 0) or (DataPosition >= DataSize) or
+          ((DataPosition + ImageBytes) > DataSize) then
+        begin
+          exit;
+        end;
+        Inc(DataPosition, ImageBytes);
+        ImageWidth := ImageWidth shr 1;
+        ImageHeight := ImageHeight shr 1;
+        if (ImageWidth = 0) and (ImageHeight = 0) then
+        begin
+          exit;
+        end;
+        if ImageWidth = 0 then
+        begin
+          ImageWidth := 1;
+        end;
+        if ImageHeight = 0 then
+        begin
+          ImageHeight := 1;
+        end;
       end;
-     end else if (Header.PixelFormat.dwFlags and DDPF_RGB)=DDPF_RGB then begin
-      ImageBytes:=((longword(ImageWidth*ImageHeight)*Header.PixelFormat.dwRGBBitCount)+7) shr 3;
-     end;
-    end;
-    if (ImageBytes=0) or (DataPosition>=DataSize) or ((DataPosition+ImageBytes)>DataSize) then begin
-     exit;
-    end;
-    inc(DataPosition,ImageBytes);
-    ImageWidth:=ImageWidth shr 1;
-    ImageHeight:=ImageHeight shr 1;
-    if (ImageWidth=0) and (ImageHeight=0) then begin
-     exit;
-    end;
-    if ImageWidth=0 then begin
-     ImageWidth:=1;
-    end;
-    if ImageHeight=0 then begin
-     ImageHeight:=1;
-    end;
-   end;
-   if (ImageWidth=0) or (ImageHeight=0) then begin
-    exit;
-   end;
-  end;
-  BlockSize:=16;
-  if (Header.PixelFormat.dwFlags and DDPF_FOURCC)<>0 then begin
-   case Header.PixelFormat.dwFourCC of
-    D3DFMT_DXT1:begin
-     BlockSize:=8;
-     if (((longword(((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*BlockSize)+DataPosition)>DataSize then begin
-      exit;
-     end;
-     DecodeDXT(1,false);
-     result:=true;
-    end;
-    D3DFMT_DXT2,D3DFMT_DXT3:begin
-     BlockSize:=16;
-     if (((longword(((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*BlockSize)+DataPosition)>DataSize then begin
-      exit;
-     end;
-     DecodeDXT(3,Header.PixelFormat.dwFourCC=D3DFMT_DXT2);
-     result:=true;
-    end;
-    D3DFMT_DXT4,D3DFMT_DXT5:begin
-     BlockSize:=16;
-     if (((longword(((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*BlockSize)+DataPosition)>DataSize then begin
-      exit;
-     end;
-     DecodeDXT(5,Header.PixelFormat.dwFourCC=D3DFMT_DXT4);
-     result:=true;
-    end;
-    D3DFMT_ATI1:begin
-    end;
-    D3DFMT_ATI2:begin
-    end;
-    D3DFMT_BC4U:begin
-    end;
-    D3DFMT_BC4S:begin
-    end;
-    D3DFMT_BC5U:begin
-    end;
-    D3DFMT_BC5S:begin
-    end;
-    D3DFMT_RXGB:begin
-    end;
-    D3DFMT_DX10:begin
-     case HeaderDX10.dxgiFormat of
-      DXGI_FORMAT_BC1_TYPELESS,DXGI_FORMAT_BC1_UNORM,DXGI_FORMAT_BC1_UNORM_SRGB:begin
-       BlockSize:=8;
-       if (((longword(((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*BlockSize)+DataPosition)>DataSize then begin
+      if (ImageWidth = 0) or (ImageHeight = 0) then
+      begin
         exit;
-       end;
-       DecodeDXT(1,false);
-       result:=true;
       end;
-      DXGI_FORMAT_BC2_TYPELESS,DXGI_FORMAT_BC2_UNORM,DXGI_FORMAT_BC2_UNORM_SRGB:begin
-       BlockSize:=16;
-       if (((longword(((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*BlockSize)+DataPosition)>DataSize then begin
-        exit;
-       end;
-       DecodeDXT(3,false);
-       result:=true;
-      end;
-      DXGI_FORMAT_BC3_TYPELESS,DXGI_FORMAT_BC3_UNORM,DXGI_FORMAT_BC3_UNORM_SRGB:begin
-       BlockSize:=16;
-       if (((longword(((ImageWidth+3) shr 2)*((ImageHeight+3) shr 2)))*BlockSize)+DataPosition)>DataSize then begin
-        exit;
-       end;
-       DecodeDXT(5,false);
-       result:=true;
-      end;
-      DXGI_FORMAT_BC4_TYPELESS,DXGI_FORMAT_BC4_UNORM:begin
-       // ATI1
-      end;
-      DXGI_FORMAT_BC4_SNORM:begin
-       // BC4S
-      end;
-      DXGI_FORMAT_BC5_TYPELESS,DXGI_FORMAT_BC5_UNORM:begin
-       // ATI2
-      end;
-      DXGI_FORMAT_BC5_SNORM:begin
-       // BC5S
-      end;
-      DXGI_FORMAT_B8G8R8A8_TYPELESS,DXGI_FORMAT_B8G8R8A8_UNORM,DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:begin
-       result:=DecodeBGRA;
-      end;
-      DXGI_FORMAT_B8G8R8X8_TYPELESS,DXGI_FORMAT_B8G8R8X8_UNORM,DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:begin
-       result:=DecodeBGRX;
-      end;
-      DXGI_FORMAT_R8G8B8A8_TYPELESS,DXGI_FORMAT_R8G8B8A8_UNORM,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
-      DXGI_FORMAT_R8G8B8A8_UINT,DXGI_FORMAT_R8G8B8A8_SNORM,DXGI_FORMAT_R8G8B8A8_SINT:begin
-       result:=DecodeRGBA;
-      end;
-      DXGI_FORMAT_B5G6R5_UNORM:begin
-       result:=DecodeB5G6R5;
-      end;
-      DXGI_FORMAT_B5G5R5A1_UNORM:begin
-       result:=DecodeB5G5R5A1;
-      end;
-      DXGI_FORMAT_R10G10B10A2_TYPELESS,DXGI_FORMAT_R10G10B10A2_UNORM,DXGI_FORMAT_R10G10B10A2_UINT:begin
-       result:=DecodeR10G10B10A2;
-      end;
-      DXGI_FORMAT_A8_UNORM:begin
-       result:=DecodeA8;
-      end;
-      DXGI_FORMAT_R8_TYPELESS,DXGI_FORMAT_R8_UNORM,DXGI_FORMAT_R8_UINT,DXGI_FORMAT_R8_SNORM,
-      DXGI_FORMAT_R8_SINT:begin
-       result:=DecodeR8;
-      end;
-      DXGI_FORMAT_B4G4R4A4_UNORM:begin
-       result:=DecodeB4G4R4A4;
-      end;
-     end;
     end;
-   end;
-  end else if (Header.PixelFormat.dwFlags and DDPF_RGB)=DDPF_RGB then begin
-   case Header.PixelFormat.dwRGBBitCount of
-    8:begin
-     if (Header.PixelFormat.dwFlags and DDPF_INDEXED)<>0 then begin
-      result:=DecodeP8;
-     end else begin
-      if (Header.PixelFormat.dwRBitMask=$000000e0) and
-         (Header.PixelFormat.dwGBitMask=$0000001c) and
-         (Header.PixelFormat.dwBBitMask=$00000003) and
-         (Header.PixelFormat.dwABitMask=$00000000) then begin
-       result:=DecodeR3G3B2;
-      end else if (Header.PixelFormat.dwFlags and DDPF_ALPHAPIXELS)<>0 then begin
-       result:=DecodeA8;
-      end else begin
-       result:=DecodeL8;
+    BlockSize := 16;
+    if (Header.PixelFormat.dwFlags and DDPF_FOURCC) <> 0 then
+    begin
+      case Header.PixelFormat.dwFourCC of
+        D3DFMT_DXT1: begin
+          BlockSize := 8;
+          if (((longword(((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * BlockSize) +
+            DataPosition) > DataSize then
+          begin
+            exit;
+          end;
+          DecodeDXT(1, False);
+          Result := True;
+        end;
+        D3DFMT_DXT2, D3DFMT_DXT3: begin
+          BlockSize := 16;
+          if (((longword(((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * BlockSize) +
+            DataPosition) > DataSize then
+          begin
+            exit;
+          end;
+          DecodeDXT(3, Header.PixelFormat.dwFourCC = D3DFMT_DXT2);
+          Result := True;
+        end;
+        D3DFMT_DXT4, D3DFMT_DXT5: begin
+          BlockSize := 16;
+          if (((longword(((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * BlockSize) +
+            DataPosition) > DataSize then
+          begin
+            exit;
+          end;
+          DecodeDXT(5, Header.PixelFormat.dwFourCC = D3DFMT_DXT4);
+          Result := True;
+        end;
+        D3DFMT_ATI1: begin
+        end;
+        D3DFMT_ATI2: begin
+        end;
+        D3DFMT_BC4U: begin
+        end;
+        D3DFMT_BC4S: begin
+        end;
+        D3DFMT_BC5U: begin
+        end;
+        D3DFMT_BC5S: begin
+        end;
+        D3DFMT_RXGB: begin
+        end;
+        D3DFMT_DX10: begin
+          case HeaderDX10.dxgiFormat of
+            DXGI_FORMAT_BC1_TYPELESS, DXGI_FORMAT_BC1_UNORM, DXGI_FORMAT_BC1_UNORM_SRGB: begin
+              BlockSize := 8;
+              if (((longword(((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * BlockSize) +
+                DataPosition) > DataSize then
+              begin
+                exit;
+              end;
+              DecodeDXT(1, False);
+              Result := True;
+            end;
+            DXGI_FORMAT_BC2_TYPELESS, DXGI_FORMAT_BC2_UNORM, DXGI_FORMAT_BC2_UNORM_SRGB: begin
+              BlockSize := 16;
+              if (((longword(((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * BlockSize) +
+                DataPosition) > DataSize then
+              begin
+                exit;
+              end;
+              DecodeDXT(3, False);
+              Result := True;
+            end;
+            DXGI_FORMAT_BC3_TYPELESS, DXGI_FORMAT_BC3_UNORM, DXGI_FORMAT_BC3_UNORM_SRGB: begin
+              BlockSize := 16;
+              if (((longword(((ImageWidth + 3) shr 2) * ((ImageHeight + 3) shr 2))) * BlockSize) +
+                DataPosition) > DataSize then
+              begin
+                exit;
+              end;
+              DecodeDXT(5, False);
+              Result := True;
+            end;
+            DXGI_FORMAT_BC4_TYPELESS, DXGI_FORMAT_BC4_UNORM: begin
+              // ATI1
+            end;
+            DXGI_FORMAT_BC4_SNORM: begin
+              // BC4S
+            end;
+            DXGI_FORMAT_BC5_TYPELESS, DXGI_FORMAT_BC5_UNORM: begin
+              // ATI2
+            end;
+            DXGI_FORMAT_BC5_SNORM: begin
+              // BC5S
+            end;
+            DXGI_FORMAT_B8G8R8A8_TYPELESS, DXGI_FORMAT_B8G8R8A8_UNORM,
+            DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: begin
+              Result := DecodeBGRA;
+            end;
+            DXGI_FORMAT_B8G8R8X8_TYPELESS, DXGI_FORMAT_B8G8R8X8_UNORM,
+            DXGI_FORMAT_B8G8R8X8_UNORM_SRGB: begin
+              Result := DecodeBGRX;
+            end;
+            DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM,
+            DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
+            DXGI_FORMAT_R8G8B8A8_UINT, DXGI_FORMAT_R8G8B8A8_SNORM,
+            DXGI_FORMAT_R8G8B8A8_SINT: begin
+              Result := DecodeRGBA;
+            end;
+            DXGI_FORMAT_B5G6R5_UNORM: begin
+              Result := DecodeB5G6R5;
+            end;
+            DXGI_FORMAT_B5G5R5A1_UNORM: begin
+              Result := DecodeB5G5R5A1;
+            end;
+            DXGI_FORMAT_R10G10B10A2_TYPELESS, DXGI_FORMAT_R10G10B10A2_UNORM,
+            DXGI_FORMAT_R10G10B10A2_UINT: begin
+              Result := DecodeR10G10B10A2;
+            end;
+            DXGI_FORMAT_A8_UNORM: begin
+              Result := DecodeA8;
+            end;
+            DXGI_FORMAT_R8_TYPELESS, DXGI_FORMAT_R8_UNORM, DXGI_FORMAT_R8_UINT,
+            DXGI_FORMAT_R8_SNORM,
+            DXGI_FORMAT_R8_SINT: begin
+              Result := DecodeR8;
+            end;
+            DXGI_FORMAT_B4G4R4A4_UNORM: begin
+              Result := DecodeB4G4R4A4;
+            end;
+          end;
+        end;
       end;
-     end;
+    end
+    else if (Header.PixelFormat.dwFlags and DDPF_RGB) = DDPF_RGB then
+    begin
+      case Header.PixelFormat.dwRGBBitCount of
+        8: begin
+          if (Header.PixelFormat.dwFlags and DDPF_INDEXED) <> 0 then
+          begin
+            Result := DecodeP8;
+          end
+          else
+          begin
+            if (Header.PixelFormat.dwRBitMask = $000000e0) and
+              (Header.PixelFormat.dwGBitMask = $0000001c) and
+              (Header.PixelFormat.dwBBitMask = $00000003) and
+              (Header.PixelFormat.dwABitMask = $00000000) then
+            begin
+              Result := DecodeR3G3B2;
+            end
+            else if (Header.PixelFormat.dwFlags and DDPF_ALPHAPIXELS) <> 0 then
+            begin
+              Result := DecodeA8;
+            end
+            else
+            begin
+              Result := DecodeL8;
+            end;
+          end;
+        end;
+        16: begin
+          if (Header.PixelFormat.dwRBitMask = $0000f800) and
+            (Header.PixelFormat.dwGBitMask = $000007e0) and
+            (Header.PixelFormat.dwBBitMask = $0000001f) and
+            (Header.PixelFormat.dwABitMask = $00000000) then
+          begin
+            Result := DecodeB5G6R5;
+          end
+          else if (Header.PixelFormat.dwRBitMask = $00007c00) and
+            (Header.PixelFormat.dwGBitMask = $000003e0) and
+            (Header.PixelFormat.dwBBitMask = $0000001f) and
+            (Header.PixelFormat.dwABitMask = $00008000) then
+          begin
+            Result := DecodeB5G5R5A1;
+          end
+          else if (Header.PixelFormat.dwRBitMask = $00000f00) and
+            (Header.PixelFormat.dwGBitMask = $000000f0) and
+            (Header.PixelFormat.dwBBitMask = $0000000f) and
+            (Header.PixelFormat.dwABitMask = $0000f000) then
+          begin
+            Result := DecodeB4G4R4A4;
+          end
+          else if (Header.PixelFormat.dwRBitMask = $000000ff) and
+            (Header.PixelFormat.dwGBitMask = $00000000) and
+            (Header.PixelFormat.dwBBitMask = $00000000) and
+            (Header.PixelFormat.dwABitMask = $0000ff00) then
+          begin
+            Result := DecodeL8A8;
+          end
+          else if (Header.PixelFormat.dwRBitMask = $0000ffff) or
+            (Header.PixelFormat.dwGBitMask = $0000ffff) or
+            (Header.PixelFormat.dwBBitMask = $0000ffff) or
+            (Header.PixelFormat.dwABitMask = $0000ffff) then
+          begin
+            Result := DecodeL16;
+          end;
+        end;
+        24: begin
+          if (Header.PixelFormat.dwRBitMask = $00ff0000) and
+            (Header.PixelFormat.dwGBitMask = $0000ff00) and
+            (Header.PixelFormat.dwBBitMask = $000000ff) then
+          begin
+            Result := DecodeBGR;
+          end
+          else if (Header.PixelFormat.dwRBitMask = $000000ff) and
+            (Header.PixelFormat.dwGBitMask = $0000ff00) and
+            (Header.PixelFormat.dwBBitMask = $00ff0000) then
+          begin
+            Result := DecodeRGB;
+          end;
+        end;
+        32: begin
+          if (Header.PixelFormat.dwRBitMask = $00ff0000) and
+            (Header.PixelFormat.dwGBitMask = $0000ff00) and
+            (Header.PixelFormat.dwBBitMask = $000000ff) and
+            (Header.PixelFormat.dwABitMask = $ff000000) then
+          begin
+            Result := DecodeBGRA;
+          end
+          else if (Header.PixelFormat.dwRBitMask = $000000ff) and
+            (Header.PixelFormat.dwGBitMask = $0000ff00) and
+            (Header.PixelFormat.dwBBitMask = $00ff0000) and
+            (Header.PixelFormat.dwABitMask = $ff000000) then
+          begin
+            Result := DecodeRGBA;
+          end
+          else if (Header.PixelFormat.dwRBitMask = $000003ff) and
+            (Header.PixelFormat.dwGBitMask = $000ffc00) and
+            (Header.PixelFormat.dwBBitMask = $3ff00000) and
+            (Header.PixelFormat.dwABitMask = $c0000000) then
+          begin
+            Result := DecodeR10G10B10A2;
+          end;
+        end;
+      end;
     end;
-    16:begin
-     if (Header.PixelFormat.dwRBitMask=$0000f800) and
-        (Header.PixelFormat.dwGBitMask=$000007e0) and
-        (Header.PixelFormat.dwBBitMask=$0000001f) and
-        (Header.PixelFormat.dwABitMask=$00000000) then begin
-      result:=DecodeB5G6R5;
-     end else if (Header.PixelFormat.dwRBitMask=$00007c00) and
-                 (Header.PixelFormat.dwGBitMask=$000003e0) and
-                 (Header.PixelFormat.dwBBitMask=$0000001f) and
-                 (Header.PixelFormat.dwABitMask=$00008000) then begin
-      result:=DecodeB5G5R5A1;
-     end else if (Header.PixelFormat.dwRBitMask=$00000f00) and
-                 (Header.PixelFormat.dwGBitMask=$000000f0) and
-                 (Header.PixelFormat.dwBBitMask=$0000000f) and
-                 (Header.PixelFormat.dwABitMask=$0000f000) then begin
-      result:=DecodeB4G4R4A4;
-     end else if (Header.PixelFormat.dwRBitMask=$000000ff) and
-                 (Header.PixelFormat.dwGBitMask=$00000000) and
-                 (Header.PixelFormat.dwBBitMask=$00000000) and
-                 (Header.PixelFormat.dwABitMask=$0000ff00) then begin
-      result:=DecodeL8A8;
-     end else if (Header.PixelFormat.dwRBitMask=$0000ffff) or
-                 (Header.PixelFormat.dwGBitMask=$0000ffff) or
-                 (Header.PixelFormat.dwBBitMask=$0000ffff) or
-                 (Header.PixelFormat.dwABitMask=$0000ffff) then begin
-      result:=DecodeL16;
-     end;
-    end;
-    24:begin
-     if (Header.PixelFormat.dwRBitMask=$00ff0000) and
-        (Header.PixelFormat.dwGBitMask=$0000ff00) and
-        (Header.PixelFormat.dwBBitMask=$000000ff) then begin
-      result:=DecodeBGR;
-     end else if (Header.PixelFormat.dwRBitMask=$000000ff) and
-                 (Header.PixelFormat.dwGBitMask=$0000ff00) and
-                 (Header.PixelFormat.dwBBitMask=$00ff0000) then begin
-      result:=DecodeRGB;
-     end;
-    end;
-    32:begin
-     if (Header.PixelFormat.dwRBitMask=$00ff0000) and
-        (Header.PixelFormat.dwGBitMask=$0000ff00) and
-        (Header.PixelFormat.dwBBitMask=$000000ff) and
-        (Header.PixelFormat.dwABitMask=$ff000000) then begin
-      result:=DecodeBGRA;
-     end else if (Header.PixelFormat.dwRBitMask=$000000ff) and
-                 (Header.PixelFormat.dwGBitMask=$0000ff00) and
-                 (Header.PixelFormat.dwBBitMask=$00ff0000) and
-                 (Header.PixelFormat.dwABitMask=$ff000000) then begin
-      result:=DecodeRGBA;
-     end else if (Header.PixelFormat.dwRBitMask=$000003ff) and
-                 (Header.PixelFormat.dwGBitMask=$000ffc00) and
-                 (Header.PixelFormat.dwBBitMask=$3ff00000) and
-                 (Header.PixelFormat.dwABitMask=$c0000000) then begin
-      result:=DecodeR10G10B10A2;
-     end;
-    end;
-   end;
   end;
- end;
- if result and ((Header.PixelFormat.dwFlags and DDPF_ALPHAPIXELS)=0) then begin
-  p:=pointer(ImageData);
-  for i:=0 to (ImageWidth*ImageHeight)-1 do begin
-   p[(i*4)+3]:=AnsiChar(#$ff);
+  if Result and ((Header.PixelFormat.dwFlags and DDPF_ALPHAPIXELS) = 0) then
+  begin
+    p := pointer(ImageData);
+    for i := 0 to (ImageWidth * ImageHeight) - 1 do
+    begin
+      p[(i * 4) + 3] := ansichar(#$ff);
+    end;
   end;
- end;
 end;
 
 initialization
+
 finalization
 end.

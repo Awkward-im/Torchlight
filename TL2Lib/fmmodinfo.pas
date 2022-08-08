@@ -25,6 +25,7 @@ type
     bbNewGUID : TBitBtn;
     edGUID    : TEdit;         lblGUID   : TLabel;
 
+    procedure bbCancelClick(Sender: TObject);
     procedure bbNewGUIDClick(Sender: TObject);
     procedure bbOKClick(Sender: TObject);
 
@@ -53,9 +54,15 @@ begin
   edGUID.Text:=IntToStr(Int64(MurmurHash64B(lguid,16,0)));
 end;
 
+procedure TMODInfoForm.bbCancelClick(Sender: TObject);
+begin
+  Close;
+end;
+
 procedure TMODInfoForm.bbOKClick(Sender: TObject);
 begin
-//  SaveToFile(ffile);
+//  if not seVersion.ReadOnly then SaveToFile(ffile);
+  Close;
 end;
 
 Constructor TMODInfoForm.Create(AOwner:TComponent; aRO:boolean=false);
