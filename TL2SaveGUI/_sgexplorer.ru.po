@@ -1,0 +1,1638 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.1.1\n"
+
+#: formbuttons.rsexportdata
+msgctxt "formbuttons.rsexportdata"
+msgid "Export data"
+msgstr "Экспорт данных"
+
+#: formbuttons.rsimportdata
+msgctxt "formbuttons.rsimportdata"
+msgid "Import data"
+msgstr "Импорт данных"
+
+#: formchar.rscasual
+msgid "Casual"
+msgstr "Новичок"
+
+#: formchar.rsdexterity
+msgctxt "formchar.rsdexterity"
+msgid "Dexterity"
+msgstr "Ловкость"
+
+#: formchar.rsexpert
+msgid "Expert"
+msgstr "Мастер"
+
+#: formchar.rsfemale
+msgid "female"
+msgstr "женский"
+
+#: formchar.rsfocus
+msgctxt "formchar.rsfocus"
+msgid "Focus"
+msgstr "Концентрация"
+
+#: formchar.rsmale
+msgid "male"
+msgstr "мужской"
+
+#: formchar.rsnormal
+msgctxt "formchar.rsnormal"
+msgid "Normal"
+msgstr "Нормальный"
+
+#: formchar.rsstrength
+msgctxt "formchar.rsstrength"
+msgid "Strength"
+msgstr "Сила"
+
+#: formchar.rsveteran
+msgid "Veteran"
+msgstr "Ветеран"
+
+#: formchar.rsvitality
+msgctxt "formchar.rsvitality"
+msgid "Vitality"
+msgstr "Стойкость"
+
+#: formeffects.ef00
+msgid "Unknown1"
+msgstr ""
+
+#: formeffects.ef01
+msgid "Unknown2"
+msgstr ""
+
+#: formeffects.ef02
+msgid "Exclusive"
+msgstr "Эксклюзивный"
+
+#: formeffects.ef03
+msgid "Not Magical"
+msgstr "Не магический"
+
+#: formeffects.ef04
+msgid "Saves"
+msgstr "Сохраняется"
+
+#: formeffects.ef05
+msgid "Display Positive"
+msgstr "Отображать положительное"
+
+#: formeffects.ef06
+msgid "Unknown3"
+msgstr ""
+
+#: formeffects.ef07
+msgid "Use Owner Level"
+msgstr "Использовать уровень владельца"
+
+#: formeffects.ef08
+msgid "Has Graph"
+msgstr "Имеет график"
+
+#: formeffects.ef09
+msgid "Is Bonus"
+msgstr "Это Бонус"
+
+#: formeffects.ef10
+msgid "Is Enchantment"
+msgstr "Это Зачарование"
+
+#: formeffects.ef11
+msgid "Has Link Name"
+msgstr "Есть имя ссылки"
+
+#: formeffects.ef12
+msgid "Has Particles"
+msgstr "Есть частицы"
+
+#: formeffects.ef13
+msgid "Has Unit Theme"
+msgstr "Есть тема юнита"
+
+#: formeffects.ef14
+msgid "Unknown4"
+msgstr ""
+
+#: formeffects.ef15
+msgid "Unknown5"
+msgstr ""
+
+#: formeffects.ef16
+msgid "Remove On Death"
+msgstr "Убрать при смерти"
+
+#: formeffects.ef17
+msgid "Has Icon"
+msgstr "Есть иконка"
+
+#: formeffects.ef18
+msgid "Display Max Modifier"
+msgstr "Показ максимума мдификатора"
+
+#: formeffects.ef19
+msgid "Is For Weapon"
+msgstr "Для оружия"
+
+#: formeffects.ef20
+msgid "Is For Armor"
+msgstr "Для доспехов"
+
+#: formeffects.ef21
+msgid "Is Disabled"
+msgstr "Запрещён"
+
+#: formkeybinding.rsitem
+msgid "item"
+msgstr "предмет"
+
+#: formkeybinding.rsskill
+msgid "skill"
+msgstr "умение"
+
+#: formmap.rssavetrigger
+msgid "Save Trigger data"
+msgstr "Сохранить триггеры"
+
+#: formmodlist.rsdoclear
+msgid "Are you sure to clear mod list?"
+msgstr "Вы уверены, что хотите очистить список модов?"
+
+#: formmodlist.rsreminder
+msgid ""
+"Don't forget to check modded objects.\n"
+"Or use \"Fix Modded objects\" item from Main menu"
+msgstr ""
+"Не забудьте проверить объекты модов\n"
+"Или используйте \"Исправить объекты модов\" пункт в Главном меню"
+
+#: formsavegame.rscharacter
+msgid "Character"
+msgstr "Персонаж"
+
+#: formsavegame.rsclassnotfound
+msgid ""
+" was not found for current mod list.\n"
+"Change it manually."
+msgstr ""
+" не найдено для текущего списка модов.\n"
+"Измените это вручную."
+
+#: formsavegame.rsitems
+msgctxt "formsavegame.rsitems"
+msgid "Items"
+msgstr "Предметы"
+
+#: formsavegame.rskeymapping
+msgid "KeyMapping"
+msgstr "Клавиши"
+
+#: formsavegame.rsmaps
+msgid "Maps"
+msgstr "Локации"
+
+#: formsavegame.rsmodlist
+msgctxt "formsavegame.rsmodlist"
+msgid "Mod list"
+msgstr "Список Модов"
+
+#: formsavegame.rsmovies
+msgid "Movies"
+msgstr "Киношки"
+
+#: formsavegame.rsnosavegame
+msgid "Can't load savegame file"
+msgstr "Не могу загрузить файл сохранёнки"
+
+#: formsavegame.rspetnotfound
+msgid "Your pet type was not found in current mod list and was replaced by default one."
+msgstr "Ваш тип питомца не найден для текущего списка модов и был замещён стандартным."
+
+#: formsavegame.rspets
+msgid "Pets and allies"
+msgstr "Питомцы и союзники"
+
+#: formsavegame.rsplayerstat
+msgid "Player statistic"
+msgstr "Статистика игрока"
+
+#: formsavegame.rsprops
+msgid "Props"
+msgstr "Всякое"
+
+#: formsavegame.rsqitem
+msgctxt "formsavegame.rsqitem"
+msgid "Quest items"
+msgstr "Предметы заданий"
+
+#: formsavegame.rsquests
+msgid "Quests"
+msgstr "Квесты"
+
+#: formsavegame.rsrecipes
+msgctxt "formsavegame.rsrecipes"
+msgid "Recipes"
+msgstr "Рецепты"
+
+#: formsavegame.rssavegame
+msgid "Savegame"
+msgstr "Сохранёнка"
+
+#: formsavegame.rssavegameopen
+msgid "Open Savegame"
+msgstr "Загрузить сохранённую игру"
+
+#: formsavegame.rssavegamesave
+msgid "Save Savegame"
+msgstr "Сохранить файл"
+
+#: formsavegame.rssettings
+msgid "Settings"
+msgstr "Настройки"
+
+#: formsavegame.rsskills
+msgctxt "formsavegame.rsskills"
+msgid "Skills"
+msgstr "Умения"
+
+#: formsavegame.rssorry
+msgid "Sorry, your character class "
+msgstr "Извините, ваш класс персонажа "
+
+#: formsavegame.rsstatistic
+msgid "Global statistic"
+msgstr "Глобальная статистика"
+
+#: formsavegame.rsunits
+msgid "Units"
+msgstr "Юниты"
+
+#: tfmbuttons.btndelete.caption
+msgid "Delete"
+msgstr "Удалить"
+
+#: tfmbuttons.btnexport.caption
+msgid "Export"
+msgstr "Экспорт"
+
+#: tfmbuttons.btnimport.caption
+msgid "Import"
+msgstr "Импорт"
+
+#: tfmchar.bbupdate.caption
+msgctxt "tfmchar.bbupdate.caption"
+msgid "&Update"
+msgstr "Обновить"
+
+#: tfmchar.cbcheater.caption
+msgid "Cheater"
+msgstr "Читер"
+
+#: tfmchar.cbcheckpoints.caption
+msgid "Check points"
+msgstr "Проверка очков"
+
+#: tfmchar.cbenabled.caption
+msgctxt "tfmchar.cbenabled.caption"
+msgid "Enabled"
+msgstr "Разрешено"
+
+#: tfmchar.cbhardcore.caption
+msgid "Hardcore"
+msgstr "Хардкор"
+
+#: tfmchar.cbkeepbase.caption
+msgid "Keep base stats"
+msgstr "Оставить базовые характеристики"
+
+#: tfmchar.gbaction.caption
+msgid "Action"
+msgstr "Действие"
+
+#: tfmchar.gbbasestats.caption
+msgid "Base stats"
+msgstr "Базовые характеристики"
+
+#: tfmchar.gbcoords.caption
+msgctxt "tfmchar.gbcoords.caption"
+msgid "Coordinates"
+msgstr "Координаты"
+
+#: tfmchar.gbdata.caption
+msgid "Levels"
+msgstr "Уровни"
+
+#: tfmchar.gbgender.caption
+msgid "Gender"
+msgstr "Пол"
+
+#: tfmchar.gbglobal.caption
+msgid "Global"
+msgstr "Глобально"
+
+#: tfmchar.gbspells.caption
+msgid "Spells"
+msgstr "Заклинания"
+
+#: tfmchar.gbwardrobe.caption
+msgctxt "tfmchar.gbwardrobe.caption"
+msgid "Wardrobe"
+msgstr "Гардероб"
+
+#: tfmchar.lblarea.caption
+msgid "Area"
+msgstr "Область"
+
+#: tfmchar.lblcurrent.caption
+msgid "Morphed view"
+msgstr "Вид в морфе"
+
+#: tfmchar.lbldatanote.caption
+msgid ""
+"*Actual HP and MP Bonus values can be another\n"
+"and will re-calc in game"
+msgstr ""
+"* Реальные бонусы HP и MP могут быть другими\n"
+"и будут пересчитаны в игре"
+
+#: tfmchar.lbldexterity.caption
+msgctxt "tfmchar.lbldexterity.caption"
+msgid "Dexterity"
+msgstr "Ловкость"
+
+#: tfmchar.lbldifficulty.caption
+msgid "Difficulty"
+msgstr "Сложность"
+
+#: tfmchar.lblexperience.caption
+msgid "Experience"
+msgstr "Опыт"
+
+#: tfmchar.lblfame.caption
+msgid "Fame"
+msgstr "Слава"
+
+#: tfmchar.lblfameexp.caption
+msgid "Fame Exp"
+msgstr "Опыт славы"
+
+#: tfmchar.lblfocus.caption
+msgctxt "tfmchar.lblfocus.caption"
+msgid "Focus"
+msgstr "Концентрация"
+
+#: tfmchar.lblfreepoints.caption
+msgctxt "tfmchar.lblfreepoints.caption"
+msgid "Free points"
+msgstr "Свободных очков"
+
+#: tfmchar.lblgold.caption
+msgctxt "tfmchar.lblgold.caption"
+msgid "Gold"
+msgstr "Золото"
+
+#: tfmchar.lblhealth.caption
+msgid "Health (now)"
+msgstr "Здоровье (сейчас)"
+
+#: tfmchar.lblheathbonus.caption
+msgid "Heath Bonus"
+msgstr "Бонус здоровья"
+
+#: tfmchar.lbllevel.caption
+msgctxt "tfmchar.lbllevel.caption"
+msgid "Level"
+msgstr "Уровень"
+
+#: tfmchar.lblmana.caption
+msgid "Mana (now)"
+msgstr "Мана (сейчас)"
+
+#: tfmchar.lblmanabonus.caption
+msgid "Mana Bonus"
+msgstr "Бонус маны"
+
+#: tfmchar.lblmodlist.caption
+msgctxt "tfmchar.lblmodlist.caption"
+msgid "Mod list"
+msgstr "Список Модов"
+
+#: tfmchar.lblmorphnote.caption
+msgid "* Permanent time is 5555"
+msgstr "* 5555 для \"Постоянно\""
+
+#: tfmchar.lblmorphtime.caption
+msgid "Morph Time"
+msgstr "Время морфа"
+
+#: tfmchar.lblname.caption
+msgctxt "tfmchar.lblname.caption"
+msgid "Character name"
+msgstr "Имя персонажа"
+
+#: tfmchar.lblnew.caption
+msgid "New class"
+msgstr "Новый класс"
+
+#: tfmchar.lblngstate.caption
+msgid "NG State"
+msgstr "Статус NG"
+
+#: tfmchar.lblscale.caption
+msgid "Scale"
+msgstr "Масштаб"
+
+#: tfmchar.lblskin.caption
+msgid "Skin"
+msgstr "Окрас"
+
+#: tfmchar.lblstrength.caption
+msgctxt "tfmchar.lblstrength.caption"
+msgid "Strength"
+msgstr "Сила"
+
+#: tfmchar.lbltowntime.caption
+msgid "Town Time"
+msgstr "Время в городе"
+
+#: tfmchar.lblvitality.caption
+msgctxt "tfmchar.lblvitality.caption"
+msgid "Vitality"
+msgstr "Стойкость"
+
+#: tfmchar.lblwaypoint.caption
+msgid "Waypoint"
+msgstr "Телепорт"
+
+#: tfmchar.lblx.caption
+msgctxt "tfmchar.lblx.caption"
+msgid "X:"
+msgstr ""
+
+#: tfmchar.lbly.caption
+msgctxt "tfmchar.lbly.caption"
+msgid "Y:"
+msgstr ""
+
+#: tfmchar.lblz.caption
+msgctxt "tfmchar.lblz.caption"
+msgid "Z:"
+msgstr ""
+
+#: tfmchar.rbactionattack.caption
+msgid "Attack"
+msgstr "Атака"
+
+#: tfmchar.rbactiondefence.caption
+msgid "Defence"
+msgstr "Защита"
+
+#: tfmchar.rbactionidle.caption
+msgid "Idle"
+msgstr "Покой"
+
+#: tfmchar.rbfemale.caption
+msgid "F"
+msgstr ""
+
+#: tfmchar.rbmale.caption
+msgid "M"
+msgstr ""
+
+#: tfmchar.rbunisex.caption
+msgid "?"
+msgstr ""
+
+#: tfmchar.sgstats.columns[0].title.caption
+msgctxt "tfmchar.sgstats.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmchar.sgstats.columns[1].title.caption
+msgctxt "tfmchar.sgstats.columns[1].title.caption"
+msgid "Value"
+msgstr "Значение"
+
+#: tfmchar.sgstats.columns[2].title.caption
+msgctxt "tfmchar.sgstats.columns[2].title.caption"
+msgid "Mod"
+msgstr "Мод"
+
+#: tfmchar.tsaction.caption
+msgid "Actions"
+msgstr "Действия"
+
+#: tfmchar.tsitems.caption
+msgctxt "tfmchar.tsitems.caption"
+msgid "Items"
+msgstr "Предметы"
+
+#: tfmchar.tsotherinfo.caption
+msgctxt "tfmchar.tsotherinfo.caption"
+msgid "Other"
+msgstr "Другое"
+
+#: tfmchar.tsstat.caption
+msgid "Stats"
+msgstr "Хаарактеристики"
+
+#: tfmchar.tsstatistic.caption
+msgctxt "tfmchar.tsstatistic.caption"
+msgid "Statistic"
+msgstr "Статистика"
+
+#: tfmchar.tsview.caption
+msgid "View"
+msgstr "Вид"
+
+#: tfmchar.tswardrobe.caption
+msgctxt "tfmchar.tswardrobe.caption"
+msgid "Wardrobe"
+msgstr "Гардероб"
+
+#: tfmeffects.caption
+msgctxt "tfmeffects.caption"
+msgid "Effects"
+msgstr "Эффекты"
+
+#: tfmeffects.lblactivation.caption
+msgid "Activation"
+msgstr "Активация"
+
+#: tfmeffects.lblbaseclass.caption
+msgid "Base Class"
+msgstr "Исходный класс"
+
+#: tfmeffects.lbldamagetype.caption
+msgid "Damage type"
+msgstr "Тип урона"
+
+#: tfmeffects.lbldisplay.caption
+msgid "Display"
+msgstr "Отображение"
+
+#: tfmeffects.lblduration.caption
+msgid "Duration"
+msgstr "Длительность"
+
+#: tfmeffects.lbleffectname.caption
+msgid "Effect Name"
+msgstr "Имя эффекта"
+
+#: tfmeffects.lbleffects.caption
+msgctxt "tfmeffects.lbleffects.caption"
+msgid "Effects"
+msgstr "Эффекты"
+
+#: tfmeffects.lblgraph.caption
+msgid "Graph"
+msgstr "График"
+
+#: tfmeffects.lblicon.caption
+msgctxt "tfmeffects.lblicon.caption"
+msgid "Icon"
+msgstr "Иконка"
+
+#: tfmeffects.lbllevel.caption
+msgctxt "tfmeffects.lbllevel.caption"
+msgid "Level"
+msgstr "Уровень"
+
+#: tfmeffects.lbllinkname.caption
+msgid "Link Name"
+msgstr "Имя ссылки"
+
+#: tfmeffects.lblparticles.caption
+msgid "Particles"
+msgstr "Частицы"
+
+#: tfmeffects.lblproperties.caption
+msgid "Properties"
+msgstr "Свойства"
+
+#: tfmeffects.lblsource.caption
+msgid "Source"
+msgstr "Исходник"
+
+#: tfmeffects.lblunittheme.caption
+msgid "Unit Theme"
+msgstr "Тема юнита"
+
+#: tfmeffects.lblunknown.caption
+msgctxt "tfmeffects.lblunknown.caption"
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: tfmeffects.sgeffects.columns[0].title.caption
+msgid "List"
+msgstr "Список"
+
+#: tfmeffects.sgeffects.columns[1].title.caption
+msgid "Effect"
+msgstr "Эффект"
+
+#: tfmeffects.sgeffects.columns[2].title.caption
+msgctxt "tfmeffects.sgeffects.columns[2].title.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmeffects.sgstats.columns[0].title.caption
+msgctxt "tfmeffects.sgstats.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmeffects.sgstats.columns[1].title.caption
+msgctxt "tfmeffects.sgstats.columns[1].title.caption"
+msgid "Value"
+msgstr "Значение"
+
+#: tfmitem.bbclearmod.hint
+msgid "Clear mod list"
+msgstr "Очистить список модов"
+
+#: tfmitem.bbupdate.caption
+msgctxt "tfmitem.bbupdate.caption"
+msgid "&Update"
+msgstr "Обновить"
+
+#: tfmitem.cbactivated.caption
+msgid "Activated"
+msgstr "Активировано"
+
+#: tfmitem.cbenabled.caption
+msgctxt "tfmitem.cbenabled.caption"
+msgid "Enabled"
+msgstr "Разрешено"
+
+#: tfmitem.cbequipped.caption
+msgctxt "tfmitem.cbequipped.caption"
+msgid "Equipped"
+msgstr "Надето"
+
+#: tfmitem.cbflag1.hint
+msgctxt "tfmitem.cbflag1.hint"
+msgid "Equipped"
+msgstr "Надето"
+
+#: tfmitem.cbflag7.hint
+msgctxt "tfmitem.cbflag7.hint"
+msgid "Recognized"
+msgstr "Распознано"
+
+#: tfmitem.cbrecognized.caption
+msgctxt "tfmitem.cbrecognized.caption"
+msgid "Recognized"
+msgstr "Распознано"
+
+#: tfmitem.cbvisible.caption
+msgid "?Visible"
+msgstr "?Видимо"
+
+#: tfmitem.gbcoords.caption
+msgctxt "tfmitem.gbcoords.caption"
+msgid "Coordinates"
+msgstr "Координаты"
+
+#: tfmitem.gbcoords1.caption
+msgid "Altered"
+msgstr "Изменено"
+
+#: tfmitem.gbflags.caption
+msgid "Flags"
+msgstr "Флажки"
+
+#: tfmitem.lblarmor.caption
+msgid "Armor"
+msgstr "Доспех"
+
+#: tfmitem.lblarmorbytype.caption
+msgid "Armor by Type"
+msgstr "Доспех по типу"
+
+#: tfmitem.lblarmortype.caption
+msgid "Armor type"
+msgstr "Тип доспеха"
+
+#: tfmitem.lblconttype.caption
+msgctxt "tfmitem.lblconttype.caption"
+msgid "-"
+msgstr ""
+
+#: tfmitem.lblenchant.caption
+msgid "Enchant count"
+msgstr "Кол-во зачарований"
+
+#: tfmitem.lbllevel.caption
+msgctxt "tfmitem.lbllevel.caption"
+msgid "Level"
+msgstr "Уровень"
+
+#: tfmitem.lblname.caption
+msgctxt "tfmitem.lblname.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmitem.lblposition.caption
+msgid "Position"
+msgstr "Положение"
+
+#: tfmitem.lblpostype.caption
+msgctxt "tfmitem.lblpostype.caption"
+msgid "-"
+msgstr ""
+
+#: tfmitem.lblprefix.caption
+msgid "Prefix"
+msgstr "Префикс"
+
+#: tfmitem.lblsockets.caption
+msgid "Sockets"
+msgstr "Слотов"
+
+#: tfmitem.lblstack.caption
+msgid "Stack"
+msgstr "Ёмкость"
+
+#: tfmitem.lblsuffix.caption
+msgid "Suffix"
+msgstr "Суффикс"
+
+#: tfmitem.lblweapondmg.caption
+msgid "Weapon Damage"
+msgstr "Урон оружием"
+
+#: tfmitem.lblx.caption
+msgctxt "tfmitem.lblx.caption"
+msgid "X:"
+msgstr ""
+
+#: tfmitem.lblx1.caption
+msgctxt "tfmitem.lblx1.caption"
+msgid "X:"
+msgstr ""
+
+#: tfmitem.lbly.caption
+msgctxt "tfmitem.lbly.caption"
+msgid "Y:"
+msgstr ""
+
+#: tfmitem.lbly1.caption
+msgctxt "tfmitem.lbly1.caption"
+msgid "Y:"
+msgstr ""
+
+#: tfmitem.lblz.caption
+msgctxt "tfmitem.lblz.caption"
+msgid "Z:"
+msgstr ""
+
+#: tfmitem.lblz1.caption
+msgctxt "tfmitem.lblz1.caption"
+msgid "Z:"
+msgstr ""
+
+#: tfmitem.tscommoninfo.caption
+msgctxt "tfmitem.tscommoninfo.caption"
+msgid "Common"
+msgstr "Общее"
+
+#: tfmitem.tsiteminfo.caption
+msgid "Item"
+msgstr "Предмет"
+
+#: tfmitem.tsotherinfo.caption
+msgctxt "tfmitem.tsotherinfo.caption"
+msgid "Other"
+msgstr "Другое"
+
+#: tfmitem.tspropinfo.caption
+msgid "Prop"
+msgstr "Окруж."
+
+#: tfmkeybinding.sgkeybinding.columns[0].title.caption
+msgid "Key"
+msgstr "Клавиша"
+
+#: tfmkeybinding.sgkeybinding.columns[1].title.caption
+msgid "Type"
+msgstr "Тип"
+
+#: tfmkeybinding.sgkeybinding.columns[2].title.caption
+msgid "Binding"
+msgstr "Привязка"
+
+#: tfmkeybinding.sgkeybinding.columns[3].title.caption
+msgctxt "tfmkeybinding.sgkeybinding.columns[3].title.caption"
+msgid "Mod"
+msgstr "Мод"
+
+#: tfmmap.btntriggerexport.caption
+msgid "E"
+msgstr ""
+
+#: tfmmap.lblcurrenttime.caption
+msgid "Current Time?"
+msgstr "Текущее время?"
+
+#: tfmmap.lbllayouts.caption
+msgid "Used Layouts"
+msgstr "Использованые планировки"
+
+#: tfmmap.lblmatrix.caption
+msgid "Matrix"
+msgstr "Матрица"
+
+#: tfmmap.lblname.caption
+msgctxt "tfmmap.lblname.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmmap.lbltotaltime.caption
+msgid "Total Time?"
+msgstr "Общее время?"
+
+#: tfmmap.lbltriggers.caption
+msgid "Triggers"
+msgstr "Триггеры"
+
+#: tfmmap.sglaydata.columns[0].title.caption
+msgid "Layout's part"
+msgstr "Часть планировки"
+
+#: tfmmap.sglaydata.columns[1].title.caption
+msgctxt "tfmmap.sglaydata.columns[1].title.caption"
+msgid "Value"
+msgstr "Значение"
+
+#: tfmmap.sglaydata.columns[2].title.caption
+msgctxt "tfmmap.sglaydata.columns[2].title.caption"
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: tfmmap.sglayouts.columns[0].title.caption
+msgctxt "tfmmap.sglayouts.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmmodlist.bbclear.caption
+msgctxt "tfmmodlist.bbclear.caption"
+msgid "Clear"
+msgstr "Очистить"
+
+#: tfmmodlist.bbupdate.caption
+msgctxt "tfmmodlist.bbupdate.caption"
+msgid "&Update"
+msgstr "Обновить"
+
+#: tfmmodlist.caption
+msgctxt "tfmmodlist.caption"
+msgid "Mod list"
+msgstr "Список Модов"
+
+#: tfmmodlist.lblbound.caption
+msgid "Bound"
+msgstr "Прикреплено"
+
+#: tfmmodlist.lblfull.caption
+msgid "Full history"
+msgstr "Полная история"
+
+#: tfmmodlist.lblrecent.caption
+msgid "Recent"
+msgstr "Частое"
+
+#: tfmmodlist.sbclipboard.hint
+msgid "Copy list to clipboard"
+msgstr "Скопировать список в буфер"
+
+#: tfmmodlist.sgbound.columns[0].title.caption
+msgctxt "tfmmodlist.sgbound.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmmodlist.sgbound.columns[1].title.caption
+msgctxt "tfmmodlist.sgbound.columns[1].title.caption"
+msgid "Ver"
+msgstr "Версия"
+
+#: tfmmodlist.sgbound.columns[2].title.caption
+msgctxt "tfmmodlist.sgbound.columns[2].title.caption"
+msgid "Id"
+msgstr ""
+
+#: tfmmodlist.sgfull.columns[0].title.caption
+msgctxt "tfmmodlist.sgfull.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmmodlist.sgfull.columns[1].title.caption
+msgctxt "tfmmodlist.sgfull.columns[1].title.caption"
+msgid "Ver"
+msgstr "Версия"
+
+#: tfmmodlist.sgfull.columns[2].title.caption
+msgctxt "tfmmodlist.sgfull.columns[2].title.caption"
+msgid "Id"
+msgstr ""
+
+#: tfmmodlist.sgrecent.columns[0].title.caption
+msgctxt "tfmmodlist.sgrecent.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmmodlist.sgrecent.columns[1].title.caption
+msgctxt "tfmmodlist.sgrecent.columns[1].title.caption"
+msgid "Ver"
+msgstr "Версия"
+
+#: tfmmodlist.sgrecent.columns[2].title.caption
+msgctxt "tfmmodlist.sgrecent.columns[2].title.caption"
+msgid "Id"
+msgstr ""
+
+#: tfmmovies.bbupdate.caption
+msgctxt "tfmmovies.bbupdate.caption"
+msgid "&Update"
+msgstr "Обновить"
+
+#: tfmmovies.lblnote.caption
+msgid "Just \"Views\" column is editable"
+msgstr "Меняется только значение \"Просмотров\""
+
+#: tfmmovies.sgmovies.columns[0].title.caption
+msgctxt "tfmmovies.sgmovies.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmmovies.sgmovies.columns[1].title.caption
+msgid "Views"
+msgstr "Просмотров"
+
+#: tfmmovies.sgmovies.columns[2].title.caption
+msgid "Path"
+msgstr "Путь"
+
+#: tfmmovies.sgmovies.columns[3].title.caption
+msgid "ID"
+msgstr ""
+
+#: tfmmovies.sgmovies.columns[4].title.caption
+msgctxt "tfmmovies.sgmovies.columns[4].title.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmmovies.sgmovies.columns[5].title.caption
+msgctxt "tfmmovies.sgmovies.columns[5].title.caption"
+msgid "Mod"
+msgstr "Мод"
+
+#: tfmquests.btnsavequest.caption
+msgid "Save Quest"
+msgstr "Сохранить задание"
+
+#: tfmquests.sgquests.columns[0].title.caption
+msgctxt "tfmquests.sgquests.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmquests.sgquests.columns[1].title.caption
+msgid "Done"
+msgstr "Готово"
+
+#: tfmquests.sgquests.columns[2].title.caption
+msgctxt "tfmquests.sgquests.columns[2].title.caption"
+msgid "Name"
+msgstr "Имя"
+
+#: tfmquests.sgquests.columns[3].title.caption
+msgid "Mods"
+msgstr "Моды"
+
+#: tfmquests.sgquests.columns[4].title.caption
+msgctxt "tfmquests.sgquests.columns[4].title.caption"
+msgid "Id"
+msgstr ""
+
+#: tfmrecipes.bbclear.caption
+msgid "&Clear"
+msgstr "Очистить"
+
+#: tfmrecipes.bbupdate.caption
+msgctxt "tfmrecipes.bbupdate.caption"
+msgid "&Update"
+msgstr "Обновить"
+
+#: tfmrecipes.btndeletewrong.caption
+msgid "Delete Wrong"
+msgstr "Удалить ошибочное"
+
+#: tfmrecipes.btnlearnall.caption
+msgid "Learn All"
+msgstr "Учить всё"
+
+#: tfmrecipes.cbhavetitle.caption
+msgid "Learn titled"
+msgstr "Учить с названиями"
+
+#: tfmrecipes.cbjustactual.caption
+msgid "Learn just actual"
+msgstr "Учить актуальное"
+
+#: tfmrecipes.sgrecipes.columns[0].title.caption
+msgctxt "tfmrecipes.sgrecipes.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmrecipes.sgrecipes.columns[1].title.caption
+msgctxt "tfmrecipes.sgrecipes.columns[1].title.caption"
+msgid "Mod"
+msgstr "Мод"
+
+#: tfmrecipes.sgrecipes.columns[2].title.caption
+msgctxt "tfmrecipes.sgrecipes.columns[2].title.caption"
+msgid "Id"
+msgstr ""
+
+#: tfmsavefile.actfilecheat.caption
+msgid "Clear cheat"
+msgstr "Сброс читов"
+
+#: tfmsavefile.actfileexit.caption
+msgid "E&xit"
+msgstr "Выход"
+
+#: tfmsavefile.actfilefixmodded.caption
+msgid "Fix Modded objects"
+msgstr "Исправить объекты модов"
+
+#: tfmsavefile.actfileopen.caption
+msgid "&Open"
+msgstr "Открыть"
+
+#: tfmsavefile.actfilereload.caption
+msgid "&Reload"
+msgstr "Перезагрузить"
+
+#: tfmsavefile.actfilesave.caption
+msgid "&Save"
+msgstr "Сохранить"
+
+#: tfmsavefile.mnufile.caption
+msgid "&File"
+msgstr "Файл"
+
+#: tfmsettings.cbbackup.caption
+msgid "Make backups"
+msgstr "Делать резервную копию"
+
+#: tfmsettings.cbidashex.caption
+msgid "Show IDs in Hex form"
+msgstr "Показать ID шестнадцатеричными"
+
+#: tfmsettings.cbreloaddb.caption
+msgid "Reload database with savegame load"
+msgstr "Перезагрузить базу с загрузкой сохранёнки"
+
+#: tfmsettings.cbshowall.caption
+msgid "Show all"
+msgstr "Показать всё"
+
+#: tfmsettings.cbshowtech.caption
+msgid "Show Tech info"
+msgstr "Показать техническое"
+
+#: tfmsettings.gbshow.caption
+msgid "What to show"
+msgstr "Что показывать"
+
+#: tfmsettings.lbldbfile.caption
+msgid "Database file"
+msgstr "Файл базы"
+
+#: tfmsettings.lblicondir.caption
+msgid "Icons directory"
+msgstr "Папка иконок"
+
+#: tfmskills.bbupdate.caption
+msgid "Update"
+msgstr "Обновить"
+
+#: tfmskills.btnreset.caption
+msgid "Reset"
+msgstr "Сброс"
+
+#: tfmskills.cbchecklevel.caption
+msgid "Check Level"
+msgstr "Проверить уровень"
+
+#: tfmskills.cbcheckpoints.caption
+msgid "Check Points"
+msgstr "Проверить очки"
+
+#: tfmskills.cbsavefull.caption
+msgid "Save Full list"
+msgstr "Сохр. полный список"
+
+#: tfmskills.lblfreepoints.caption
+msgctxt "tfmskills.lblfreepoints.caption"
+msgid "Free points"
+msgstr "Свободных очков"
+
+#: tfmskills.lblname.caption
+msgid "Skill name"
+msgstr "Имя умения"
+
+#: tfmskills.sgskills.columns[0].title.caption
+msgctxt "tfmskills.sgskills.columns[0].title.caption"
+msgid "Icon"
+msgstr "Иконка"
+
+#: tfmskills.sgskills.columns[1].title.caption
+msgid "Skill"
+msgstr "Умение"
+
+#: tfmskills.sgskills.columns[2].title.caption
+msgid "Passive"
+msgstr "Пассивный"
+
+#: tfmskills.sgskills.columns[4].title.caption
+msgctxt "tfmskills.sgskills.columns[4].title.caption"
+msgid "Level"
+msgstr "Уровень"
+
+#: tfmstat.bbclearlearnhistory.caption
+msgctxt "tfmstat.bbclearlearnhistory.caption"
+msgid "Clear"
+msgstr "Очистить"
+
+#: tfmstat.gbinitial.caption
+msgid "Initial data"
+msgstr "Начальное место"
+
+#: tfmstat.lblclass.caption
+msgid "Character class"
+msgstr "Класс героя"
+
+#: tfmstat.lblname.caption
+msgctxt "tfmstat.lblname.caption"
+msgid "Character name"
+msgstr "Имя персонажа"
+
+#: tfmstat.lblpet.caption
+msgid "Pet type"
+msgstr "Тип питомца"
+
+#: tfmstat.lblskillhistorytitle.caption
+msgid "Skill learn order history"
+msgstr "История изучения умений"
+
+#: tfmstat.sgarea1.columns[0].title.caption
+msgctxt "tfmstat.sgarea1.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmstat.sgarea1.columns[1].title.caption
+msgctxt "tfmstat.sgarea1.columns[1].title.caption"
+msgid "Time"
+msgstr "Время"
+
+#: tfmstat.sgarea2.columns[0].title.caption
+msgctxt "tfmstat.sgarea2.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmstat.sgarea2.columns[1].title.caption
+msgctxt "tfmstat.sgarea2.columns[1].title.caption"
+msgid "Level"
+msgstr "Уровень"
+
+#: tfmstat.sgitems.columns[0].title.caption
+msgctxt "tfmstat.sgitems.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmstat.sgitems.columns[1].title.caption
+msgctxt "tfmstat.sgitems.columns[1].title.caption"
+msgid "Normal"
+msgstr "Нормальный"
+
+#: tfmstat.sgitems.columns[2].title.caption
+msgid "Blue"
+msgstr "Синий"
+
+#: tfmstat.sgitems.columns[3].title.caption
+msgid "Green"
+msgstr "Зеленый"
+
+#: tfmstat.sgitems.columns[4].title.caption
+msgid "?Gold(4b)"
+msgstr "?Золото(4б)"
+
+#: tfmstat.sgitems.columns[5].title.caption
+msgid "?IsSet"
+msgstr "?Набор"
+
+#: tfmstat.sgitems.columns[6].title.caption
+msgid "Max.Bonuses"
+msgstr "Макс.бонус"
+
+#: tfmstat.sgitems.columns[7].title.caption
+msgid "Bought"
+msgstr "Куплено"
+
+#: tfmstat.sgkillers.columns[0].title.caption
+msgid "Enemy"
+msgstr "Противник"
+
+#: tfmstat.sgkillers.columns[1].title.caption
+msgid "Amount"
+msgstr "Количество"
+
+#: tfmstat.sglevelup.columns[0].title.caption
+msgctxt "tfmstat.sglevelup.columns[0].title.caption"
+msgid "Level"
+msgstr "Уровень"
+
+#: tfmstat.sglevelup.columns[10].title.caption
+msgid "MinRightPhys"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[11].title.caption
+msgid "MaxRightPhys"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[12].title.caption
+msgid "Field12 (b)"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[1].title.caption
+msgctxt "tfmstat.sglevelup.columns[1].title.caption"
+msgid "Time"
+msgstr "Время"
+
+#: tfmstat.sglevelup.columns[2].title.caption
+msgid "MinPhys"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[3].title.caption
+msgid "MaxPhys"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[4].title.caption
+msgctxt "tfmstat.sglevelup.columns[4].title.caption"
+msgid "Field4"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[5].title.caption
+msgid "Field5 (b)"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[6].title.caption
+msgctxt "tfmstat.sglevelup.columns[6].title.caption"
+msgid "Gold"
+msgstr "Золото"
+
+#: tfmstat.sglevelup.columns[7].title.caption
+msgid "Field7 (b)"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[8].title.caption
+msgid "Field8 (b)"
+msgstr ""
+
+#: tfmstat.sglevelup.columns[9].title.caption
+msgid "Field9 (b)"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[0].title.caption
+msgctxt "tfmstat.sgmobs.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmstat.sgmobs.columns[1].title.caption
+msgid "Amount 1"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[2].title.caption
+msgid "Amount 2"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[3].title.caption
+msgid "Exp"
+msgstr "Опыт"
+
+#: tfmstat.sgmobs.columns[4].title.caption
+msgctxt "tfmstat.sgmobs.columns[4].title.caption"
+msgid "Field4"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[5].title.caption
+msgid "Field5"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[6].title.caption
+msgid "Field6"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[7].title.caption
+msgid "Field7"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[8].title.caption
+msgid "Field8"
+msgstr ""
+
+#: tfmstat.sgmobs.columns[9].title.caption
+msgid "Field9"
+msgstr ""
+
+#: tfmstat.sgskills.columns[0].title.caption
+msgctxt "tfmstat.sgskills.columns[0].title.caption"
+msgid "Title"
+msgstr "Название"
+
+#: tfmstat.sgskills.columns[1].title.caption
+msgid "Times"
+msgstr "Кол-во раз"
+
+#: tfmstat.sgskills.columns[2].title.caption
+msgid "By Pet?"
+msgstr "Питомцем?"
+
+#: tfmstat.sgskills.columns[3].title.caption
+msgctxt "tfmstat.sgskills.columns[3].title.caption"
+msgid "Level"
+msgstr "Уровень"
+
+#: tfmstat.tsarea1.caption
+msgid "Area Time"
+msgstr "Время на месте"
+
+#: tfmstat.tsarea2.caption
+msgid "Area Level"
+msgstr "Место уровня"
+
+#: tfmstat.tscommon.caption
+msgctxt "tfmstat.tscommon.caption"
+msgid "Common"
+msgstr "Общее"
+
+#: tfmstat.tsitems.caption
+msgid "Picked Items"
+msgstr "Подобрано"
+
+#: tfmstat.tskillers.caption
+msgid "Died From"
+msgstr "Умер от"
+
+#: tfmstat.tslearn.caption
+msgid "Skill learn"
+msgstr "Выучено"
+
+#: tfmstat.tslevelup.caption
+msgid "LevelUp"
+msgstr "Получение уровня"
+
+#: tfmstat.tsmobs.caption
+msgid "Mobs"
+msgstr "Монстры"
+
+#: tfmstat.tsskills.caption
+msgctxt "tfmstat.tsskills.caption"
+msgid "Skills"
+msgstr "Умения"
+
+#: tfmstatistic.bbupdate.caption
+msgctxt "tfmstatistic.bbupdate.caption"
+msgid "&Update"
+msgstr "Обновить"
+
+#: tfmstatistic.gbstatistic.caption
+msgctxt "tfmstatistic.gbstatistic.caption"
+msgid "Statistic"
+msgstr "Статистика"
+
+#: tl2db.rshp
+msgid "Best Health Potion"
+msgstr "Лучшее зелье здоровья"
+
+#: tl2db.rslmb
+msgid "Left mouse button"
+msgstr "Левая кнпка мыши"
+
+#: tl2db.rsmp
+msgid "Best Mana Potion"
+msgstr "Лучшее зелье маны"
+
+#: tl2db.rspethp
+msgid "Best Pet Health Potion"
+msgstr "Лучшее зелье здоровья питомцу"
+
+#: tl2db.rspetmp
+msgid "Best Pet Mana Potion"
+msgstr "Лучшее зелье маны питомцу"
+
+#: tl2db.rspetspell1
+msgid "Pet spell 1"
+msgstr "Заклинание питомца 1"
+
+#: tl2db.rspetspell2
+msgid "Pet spell 2"
+msgstr "Заклинание питомца 2"
+
+#: tl2db.rspetspell3
+msgid "Pet spell 3"
+msgstr "Заклинание питомца 3"
+
+#: tl2db.rspetspell4
+msgid "Pet spell 4"
+msgstr "Заклинание питомца 4"
+
+#: tl2db.rsqk0
+msgid "Quckslot 0"
+msgstr "Быстрый доступ 0"
+
+#: tl2db.rsqk1
+msgid "Quckslot 1"
+msgstr "Быстрый доступ 1"
+
+#: tl2db.rsqk2
+msgid "Quckslot 2"
+msgstr "Быстрый доступ 2"
+
+#: tl2db.rsqk3
+msgid "Quckslot 3"
+msgstr "Быстрый доступ 3"
+
+#: tl2db.rsqk4
+msgid "Quckslot 4"
+msgstr "Быстрый доступ 4"
+
+#: tl2db.rsqk5
+msgid "Quckslot 5"
+msgstr "Быстрый доступ 5"
+
+#: tl2db.rsqk6
+msgid "Quckslot 6"
+msgstr "Быстрый доступ 6"
+
+#: tl2db.rsqk7
+msgid "Quckslot 7"
+msgstr "Быстрый доступ 7"
+
+#: tl2db.rsqk8
+msgid "Quckslot 8"
+msgstr "Быстрый доступ 8"
+
+#: tl2db.rsqk9
+msgid "Quckslot 9"
+msgstr "Быстрый доступ 9"
+
+#: tl2db.rsrmb
+msgid "Right mouse button"
+msgstr "Праавя кнопка мыши"
+
+#: tl2db.rsrmbalt
+msgid "Right mouse button (alternative)"
+msgstr "Правкая кнопка мыши (альтернативная)"
+
+#: tl2db.rsset
+msgid "Set"
+msgstr "Установить"
+
+#: tl2db.rsspell1
+msgid "Spell 1"
+msgstr "Заклинание 1"
+
+#: tl2db.rsspell2
+msgid "Spell 2"
+msgstr "Заклинание 2"
+
+#: tl2db.rsspell3
+msgid "Spell 3"
+msgstr "Заклинание 3"
+
+#: tl2db.rsspell4
+msgid "Spell 4"
+msgstr "Заклинание 4"
+
+#: tl2save.sloadfailed
+msgid "Savegame loading failed"
+msgstr "Загрузка файла провалена"
+
+#: tl2save.ssavingfailed
+msgid "Savegame saving failed"
+msgstr "Сохранение файла не удалось"
+
+#: tl2save.swrongfooter
+msgid "Wrong save file size"
+msgstr "Неверный размер файла сохранёнки"
+
+#: tl2save.swrongsize
+msgid "Wrong file size"
+msgstr "Неверный размер файла"
+
+#: tl2save.swrongversion
+msgid "Wrong save file version"
+msgstr "Неправильная версия файла"
+
+#: tl2statistic.rsbroken
+msgid "Breakables Broken"
+msgstr "Разбито разбиваемого"
+
+#: tl2statistic.rschampions
+msgid "Champions Killed"
+msgstr "Убито чемпионов"
+
+#: tl2statistic.rsdeaths
+msgid "Deaths"
+msgstr "Смертей"
+
+#: tl2statistic.rsdmgdealt
+msgid "Highest Damage Dealt"
+msgstr "Наивысший урон нанесён"
+
+#: tl2statistic.rsdmgtaken
+msgid "Highest Damage Taken"
+msgstr "Наивысший урон получен"
+
+#: tl2statistic.rsenchanted
+msgid "Items Enchanted"
+msgstr "Зачаровано предметов"
+
+#: tl2statistic.rsexploded
+msgid "Monsters Exploded"
+msgstr "Взорвано чудовищ"
+
+#: tl2statistic.rsfish
+msgid "Fish Caught"
+msgstr "Поймано рыбы"
+
+#: tl2statistic.rsgambled
+msgid "Times Gambled"
+msgstr "Азартных игр"
+
+#: tl2statistic.rsgold
+msgid "Gold Gathered"
+msgstr "Собрано золота"
+
+#: tl2statistic.rsleveltime
+msgid "Level Time Played"
+msgstr "Времени игралось на уровне"
+
+#: tl2statistic.rsmonsters
+msgid "Monsters Killed"
+msgstr "Убито чудовищ"
+
+#: tl2statistic.rsportal
+msgid "Portals Used"
+msgstr "Использовано порталов"
+
+#: tl2statistic.rspotions
+msgid "Potions Used"
+msgstr "Выпито зелий"
+
+#: tl2statistic.rsquestsdone
+msgid "Quests completed"
+msgstr "Выполнено заданий"
+
+#: tl2statistic.rsskills
+msgid "Skills Used"
+msgstr "Использовано навыков"
+
+#: tl2statistic.rssteps
+msgid "Steps Taken"
+msgstr "Сделано шагов"
+
+#: tl2statistic.rstotaltime
+msgid "Time Played"
+msgstr "Времени игралось"
+
+#: tl2statistic.rstransmuted
+msgid "Items Transmuted"
+msgstr "Превращено предметов"
+
+#: tl2statistic.rstraps
+msgid "Traps Sprung"
+msgstr "Активировано капканов"
+
+#: tl2statistic.rstreasures
+msgid "Lootables Looted"
+msgstr "Осмотрено тайников"
+
+#: tl2statistic.rsunknownstat
+msgid "Unknown Stat"
+msgstr "Неизвестная статистика"

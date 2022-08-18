@@ -2,16 +2,6 @@
 
 interface
 
-function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean=false):boolean;
-function LoadLayoutDict(const resname:string; restype:PChar; aver:integer):boolean;
-function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
-
-
-implementation
-
-uses
-  rgglobal;
-
 type
   TRGObject = object
   private
@@ -47,6 +37,21 @@ type
 
     property Version:integer read FVersion write SetVersion;
   end;
+
+
+function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean=false):boolean;
+function LoadLayoutDict(const resname:string; restype:PChar; aver:integer):boolean;
+function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
+
+
+implementation
+
+uses
+  rgglobal;
+
+const
+  SIGN_UNICODE = $FEFF;
+  SIGN_UTF8    = $BFBBEF;
 
 type
   PPropInfo = ^TPropInfo;
@@ -188,10 +193,10 @@ begin
         exit(FLastObject);
       end;
     end;
-
+{
   if RGTags.Tag[aid]<>nil then
     RGLog.Add('!!!!! Got it '+HexStr(aid,8));
-  
+}  
   
   FLastObject:=nil;
   FLastObjId :=dword(-1);

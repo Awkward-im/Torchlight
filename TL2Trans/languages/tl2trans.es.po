@@ -330,6 +330,10 @@ msgstr "Guardar el proyecto como..."
 msgid "Scan mod"
 msgstr ""
 
+#: tmaintl2transform.filescan.hint
+msgid "Scan compiled mod"
+msgstr ""
+
 #: tmaintl2transform.fontedit.caption
 msgctxt "tmaintl2transform.fontedit.caption"
 msgid "&Font"
@@ -413,6 +417,10 @@ msgstr ""
 
 #: tmodinfoform.ledownload.editlabel.caption
 msgid "Mod Download URL"
+msgstr ""
+
+#: tmodinfoform.lefilename.editlabel.caption
+msgid "Mod File Name"
 msgstr ""
 
 #: tmodinfoform.letitle.editlabel.caption

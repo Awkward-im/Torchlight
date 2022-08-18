@@ -89,6 +89,8 @@ type
     FModID     : Int64;
     FModVersion: word;
     
+    FScanIdx:integer; // MOD scan counter
+
     function GetFileLine(idx: integer): integer;
 
     procedure SetFilter(afilter:tSearchFilter);
@@ -219,16 +221,19 @@ implementation
 
 uses
   SysUtils,
+
+  rgdict,
+  rgdictlayout,
+
   TL2Text,
   rgglobal,
   rgnode,
-  rgdict,
   rgio.dat,
   rgio.layout,
   rgscan,
   TL2Mod;
 
-{$R dict.rc}
+{$R ..\TL2Lib\dict.rc}
 
 // Open file error codes
 
@@ -1433,7 +1438,7 @@ begin
 
   Filter:=flFiltered;
 
-  if adir[Length(adir)]='\' then
+  if adir[Length(adir)] in ['\','/'] then
     lRootScanDir:=Copy(adir,1,Length(adir)-1)
   else
     lRootScanDir:=adir;
@@ -1549,6 +1554,19 @@ var
 begin
   result:=0;
 
+  with PTL2Translation(aparam)^ do
+  begin
+    inc(FScanIdx);
+    if Assigned(FOnFileScan) then
+      case FOnFileScan(adir+'/'+aname,FScanIdx,0) of
+        0: ;
+        1: exit;
+        2: exit(-1);
+      end;
+  end;
+
+  if Pos('TRANSLATIONS',UpCase(adir))>0 then exit;
+
   if UpCase(ExtractFileExt(aname))='.LAYOUT' then
   begin
     lnode:=ParseLayoutMem(abuf,adir); // for checking, Particles, UI or Layout
@@ -1563,6 +1581,7 @@ begin
 
   with PTL2Translation(aparam)^ do
   begin
+
     if ProcessNode(lnode,adir+aname,ltype)>0 then result:=1;
 
   end;
@@ -1574,6 +1593,7 @@ function TTL2Translation.Scan(const afile:AnsiString):boolean;
 var
   lmod:TTL2ModInfo;
 begin
+
   RGTags.Import('RGDICT','TEXT');
 
   LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
@@ -1588,6 +1608,8 @@ begin
   FErrLine:=0;
   FErrText:='';
   FErrFile:='';
+
+  FScanIdx:=0;
 
   {TODO: Skip TRANSLATIONS directory}
   result:=MakeRGScan(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@self,nil)>0;
@@ -1606,7 +1628,7 @@ begin
   end;
 end;
 
-{%ENDREGION}
+{%ENDREGION Read Binary}
 
 finalization
   SetLength(TmpInfo,0);

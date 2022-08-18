@@ -3,11 +3,10 @@ object fmButtons: TfmButtons
   Height = 46
   Top = 309
   Width = 483
-  Align = alTop
   BorderStyle = bsNone
   ClientHeight = 46
   ClientWidth = 483
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object btnExport: TButton
     Left = 10
     Height = 25
@@ -35,6 +34,7 @@ object fmButtons: TfmButtons
     Width = 80
     Anchors = [akTop, akRight]
     AutoSize = False
+    Color = clDefault
     ParentColor = False
   end
   object btnDelete: TButton

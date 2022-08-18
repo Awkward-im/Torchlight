@@ -1183,7 +1183,7 @@ begin
         ((data.Trans[i]<>'') and (TL2Settings.cbHidePartial.Checked)) then continue;
     end;
 
-    ls:=data._File[i];
+    ls:=UpCase(data._File[i]);
     for j:=Length(ls) downto 1 do
     begin
       if ls[j] in ['\','/'] then
@@ -1192,12 +1192,12 @@ begin
         break;
       end;
     end;
-    if (not lroot) and (ls='MEDIA\') then
+    if (not lroot) and ((ls='MEDIA\') or (ls='MEDIA/')) then
     begin
       lroot:=true;
       cbFolder.Items.Add(sRoot);
     end
-    else if data.IsSkill[i] then
+    else if (Pos('SKILLS',ls)=7){data.IsSkill[i]} then
     begin
       if not lskill then
       begin
@@ -1205,7 +1205,7 @@ begin
         cbFolder.Items.Add('SKILLS');
       end
     end
-    else if (Pos('MEDIA\UNITS',ls)=1) then
+    else if (Pos('UNITS',ls)=7) then
     begin
       // second letter of folder
       case ls[14] of
@@ -1954,6 +1954,7 @@ function TTL2Project.FillProjectSGRow(aRow, idx:integer;
 var
   ls,lpath,lsrc,ltrans:AnsiString;
   lstatus:tTextStatus;
+  i:integer;
 begin
   result:=false;
 
@@ -1976,7 +1977,9 @@ begin
 
     if data.Referals>0 then
     begin
-      ls:=data._File[idx];
+      ls:=UpCase(data._File[idx]);
+
+      for i:=1 to Length(ls) do if ls[i]='/' then ls[i]:='\';
 
       if FFolderFilter<>'' then
       begin
@@ -1987,7 +1990,7 @@ begin
           if (FFolderFilter='SKILLS\') and (lpath<>'SKILLS\') then exit;
 
           if (Pos(FFolderFilter,lpath)<>1) and
-             (Pos('UNITS'+DirectorySeparator+FFolderFilter,lpath)<>1) then exit;
+             (Pos('UNITS\'+FFolderFilter,lpath)<>1) then exit;
         end;
       end;
 

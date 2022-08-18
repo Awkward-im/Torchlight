@@ -30,6 +30,10 @@ uses
   rgglobal,
   tl2db;
 
+resourcestring
+  rsItem  = 'item';
+  rsSkill = 'skill';
+
 procedure TfmKeyBinding.FillInfo(aSGame:TTL2SaveFile);
 var
   i,j:integer;
@@ -50,13 +54,13 @@ begin
         sgKeybinding.Cells[0,j]:=GetTL2KeyType(key);
         case datatype of
           0: begin
-            sgKeyBinding.Cells[1,j]:='item';
+            sgKeyBinding.Cells[1,j]:=rsItem;
             sgKeyBinding.Cells[2,j]:=GetTL2Item(id,lmod);
             sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
           end;
 
           2: begin
-            sgKeyBinding.Cells[1,j]:='skill';
+            sgKeyBinding.Cells[1,j]:=rsSkill;
             sgKeyBinding.Cells[2,j]:=GetTL2Skill(id,lmod);
             sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
           end;
@@ -65,7 +69,7 @@ begin
           sgKeyBinding.Cells[2,j]:=GetTL2Skill(id,lmod);
           sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
           if lmod<>'' then
-            sgKeyBinding.Cells[1,j]:='skill'
+            sgKeyBinding.Cells[1,j]:=rsSkill
           else
             sgKeyBinding.Cells[1,j]:='['+inttostr(datatype)+']';
         end;
@@ -83,7 +87,7 @@ begin
           j:=sgKeyBinding.RowCount;
           sgKeyBinding.RowCount:=sgKeyBinding.RowCount+1;
           sgKeyBinding.Cells[0,j]:='F'+IntToStr(i+1);
-          sgKeyBinding.Cells[1,j]:='skill';
+          sgKeyBinding.Cells[1,j]:=rsSkill;
           sgKeyBinding.Cells[2,j]:=GetTL2Skill(id,lmod);
           sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
         end;

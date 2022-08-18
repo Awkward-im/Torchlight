@@ -60,11 +60,11 @@ uses
   sysutils,
   paszlib,
   bufstream,
+  {$IFDEF DEBUG}
+  logging,
+  {$ENDIF}
   rgfiletype,
   rgman,
-  {$IFDEF DEBUG}
-  rglogging,
-  {$ENDIF}
   tl2mod;
 
 //===== Container =====

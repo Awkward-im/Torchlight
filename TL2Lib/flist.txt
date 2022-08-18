@@ -1,7 +1,8 @@
 rgdebug.pas        - make PAK data content list
+  logging
+
   rgglobal
   rgfiletype
-  rglogging
 
 rgdict.pas         - list, tags.dat, dictionary.text and objects.dat reader, dict maker
   TextCache
@@ -50,25 +51,22 @@ rgio.text.pas      - RGNode <-> Text
 
 rgglobal.pas       - support
 
-rglogging.pas      - Logging service
-
 rgman.pas          - MAN part
   classes
   sysutils
 
+  logging
+  rwmemory
+
   rgglobal
   rgstream
-  rgmemory
   rgfiletype
   rgnode
   rgio.text
-  rglogging
-
-rgmemory.pas       - RW memory
-  rgglobal
 
 rgnode.pas         - Tree parser/builder
-  rgdict
+  dict
+
   rgglobal
 
 rgpak.pas          - PAK (MOD) file reader/unpacker
@@ -77,11 +75,12 @@ rgpak.pas          - PAK (MOD) file reader/unpacker
   bufstream
   paszlib
 
+  logging    (debug)
+
   rgglobal
   rgfiletype
   rgman
   tl2mod
-  rglogging    (debug)
 
 rgscan.pas         - Scan cycle helper (directory/mod)
   sysutils
@@ -109,8 +108,8 @@ synhighlightert.pas - SynEdit node highlighter
 
 tl2mod.pas         - MOD header and MOD.DAT processor
   sysutils
+  rwmemory
 
   rgglobal
-  rgmemory
   rgnode
   rgio.text

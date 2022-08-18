@@ -34,6 +34,7 @@ type
     sgStats   : TStringGrid;
 
 //    procedure sgEffectsAfterSelection(Sender: TObject; aCol, aRow: Integer);
+    procedure FormCreate(Sender: TObject);
     procedure sgEffectsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 
   private
@@ -57,6 +58,30 @@ uses
   tl2base,
   tl2char,
   tl2db;
+
+resourcestring
+  ef00 = 'Unknown1';
+  ef01 = 'Unknown2';
+  ef02 = 'Exclusive';
+  ef03 = 'Not Magical';
+  ef04 = 'Saves';
+  ef05 = 'Display Positive';
+  ef06 = 'Unknown3';
+  ef07 = 'Use Owner Level';
+  ef08 = 'Has Graph';
+  ef09 = 'Is Bonus';
+  ef10 = 'Is Enchantment';
+  ef11 = 'Has Link Name';
+  ef12 = 'Has Particles';
+  ef13 = 'Has Unit Theme';
+  ef14 = 'Unknown4';
+  ef15 = 'Unknown5';
+  ef16 = 'Remove On Death';
+  ef17 = 'Has Icon';
+  ef18 = 'Display Max Modifier';
+  ef19 = 'Is For Weapon';
+  ef20 = 'Is For Armor';
+  ef21 = 'Is Disabled';
 
 procedure TfmEffects.ClearData;
 var
@@ -148,6 +173,33 @@ begin
     else                                           ls:=GetTL2Mob  (leffect.ClassId);
     edBaseClass.Text:=ls;
   end;
+end;
+
+procedure TfmEffects.FormCreate(Sender: TObject);
+begin
+  clbFlags.Clear;
+  clbFlags.AddItem(ef00,nil);
+  clbFlags.AddItem(ef01,nil);
+  clbFlags.AddItem(ef02,nil);
+  clbFlags.AddItem(ef03,nil);
+  clbFlags.AddItem(ef04,nil);
+  clbFlags.AddItem(ef05,nil);
+  clbFlags.AddItem(ef06,nil);
+  clbFlags.AddItem(ef07,nil);
+  clbFlags.AddItem(ef08,nil);
+  clbFlags.AddItem(ef09,nil);
+  clbFlags.AddItem(ef10,nil);
+  clbFlags.AddItem(ef11,nil);
+  clbFlags.AddItem(ef12,nil);
+  clbFlags.AddItem(ef13,nil);
+  clbFlags.AddItem(ef14,nil);
+  clbFlags.AddItem(ef15,nil);
+  clbFlags.AddItem(ef16,nil);
+  clbFlags.AddItem(ef17,nil);
+  clbFlags.AddItem(ef18,nil);
+  clbFlags.AddItem(ef19,nil);
+  clbFlags.AddItem(ef20,nil);
+  clbFlags.AddItem(ef21,nil);
 end;
 
 procedure TfmEffects.FillInfo(aobj:TL2ActiveClass);

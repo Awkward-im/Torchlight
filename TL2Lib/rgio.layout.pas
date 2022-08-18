@@ -27,11 +27,14 @@ implementation
 uses
   sysutils,
 
+  dict,
+  rwmemory,
+  logging,
+
   rgdict,
+  rgdictlayout,
   rgstream,
-  rgmemory,
-  rgnode,
-  rglogging;
+  rgnode;
 
 {$IFDEF DEBUG}  
 var
@@ -164,12 +167,12 @@ begin
     result:=pointer(FBuffer);
 
 {$IFDEF DEBUG}  
-    unkn.add(aid,nil);
+    unkn.add(nil,aid);
 {$ENDIF}
   end
 {$IFDEF DEBUG}  
   else
-    known.add(aid,result);
+    known.add(result,aid);
 {$ENDIF}
 end;
 

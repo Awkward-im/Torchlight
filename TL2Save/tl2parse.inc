@@ -6,7 +6,7 @@ var
 begin
   result:=true;
 
-  FStream.Position:=SizeOf(TL2SaveHeader);
+  FStream.Position:=FDataStart;
 
   //===== Starting data =====
 

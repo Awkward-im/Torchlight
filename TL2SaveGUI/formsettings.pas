@@ -46,7 +46,8 @@ implementation
 {$R *.lfm}
 
 uses
-  IniFiles;
+  IniFiles,
+  RGGlobal;
 
 { TfmSettings }
 
@@ -97,7 +98,7 @@ var
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  edDBFile    .Text   :=config.ReadString(sSettings,sDBFile  ,'');
+  edDBFile    .Text   :=config.ReadString(sSettings,sDBFile  ,TL2DataBase);
   edIconDir   .Text   :=config.ReadString(sSettings,sIconDir ,'icons');
   cbBackup    .Checked:=config.ReadBool  (sSettings,sBackup  ,true);
   cbReloadDB  .Checked:=config.ReadBool  (sSettings,sReloadDB,false);

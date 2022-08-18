@@ -69,6 +69,7 @@ procedure TfmUnits.FormCreate(Sender: TObject);
 begin
   FChar:=TfmChar.Create(Self,ciUnit);
   FChar.Parent:=pnlCharInfo;
+  FChar.Align :=alClient;
 end;
 
 procedure TfmUnits.FillInfo(aSGame:TTL2SaveFile; idx:integer);

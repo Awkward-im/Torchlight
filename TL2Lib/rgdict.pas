@@ -1,138 +1,46 @@
 ﻿{TODO: export as UTF8 binary (UCS16LE right now) - add sign for type: UCS16, UTF8, w/zero}
+{TODO: Tags export manually (wide strings writing)}
 unit RGDict;
 
 interface
 
 uses
-  TextCache;
-
-//--- Tags
+  Dict;
 
 type
-  TExportDictType = (asTags, asText, asBin, asZBin{, asBin8, asZBin8});
-
-type
-
-  { TRGDict }
-
-  TRGDict = object
-  private
-    type
-      TDict = record
-        hash:dword;
-        case boolean of
-          false: (name:PWideChar);
-          true : (idx :cardinal);
-      end;
+  TRGDict = object(THashDict)
   public
     type
-      TRGOptions = set of (check_hash, check_text);
-  private
-    FCache   :TTextCache;
-    FDict    :array of TDict;
-    NameIdxs :array of integer;
-    FCapacity:cardinal;
-    FCount   :cardinal;
-    FOptions :TRGOptions;
-    FSorted  :boolean;
-    FUseCache  :boolean;
-    FTextSorted:boolean;
-
-    function  GetHashIndex(akey:dword):integer;
-    function  GetTextIndex(akey:PWideChar):integer;
-
-    function  GetTextByHash(akey:dword    ):PWideChar;
-    function  GetHashByText(akey:PWideChar):dword;
-    function  GetTextByIdx (idx :cardinal ):PWideChar;
-    function  GetHashByIdx (idx :cardinal ):dword;
-    function  LoadBinary    (aptr:PByte):integer;
-    function  LoadTagsFile  (aptr:PByte):integer;
-    function  LoadDictionary(aptr:PByte):integer;
-    function  LoadList      (aptr:PByte):integer;
-    procedure InitCapacity(aval:cardinal);
-  public
-    procedure Init(usecache:boolean=true);
-    procedure Clear;
-    procedure SortText;
-    procedure Sort;
-    function  Exists(ahash:dword):boolean;
-    // calculates Hash for key = -1
-    function  Add(akey:dword; aval:PWideChar):dword;
-    function  Add(akey:dword; const aval:AnsiString):dword;
+      TExportDictType = (asTags, asText, asBin, asZBin{, asBin8, asZBin8});
     function  Import(aptr: PByte): integer;
     function  Import(const fname:AnsiString=''):integer;
     function  Import(const resname:string; restype:PChar):integer;
-    procedure Export(const fname:AnsiString; afmt:TExportDictType=asTags; sortbyhash:boolean=true);
+    procedure Export(const fname:AnsiString;
+          afmt:TExportDictType=asTags; sortbyhash:boolean=true);
 
-    property Tag    [akey:dword    ]:PWideChar read GetTextByHash;
-    property Hash   [akey:PWideChar]:dword     read GetHashByText;
-    property IdxHash[idx :cardinal ]:dword     read GetHashByIdx;
-    property IdxTag [idx :cardinal ]:PWideChar read GetTextByIdx;
-
-    property Capacity:cardinal   read FCapacity write InitCapacity;
-    property Count   :cardinal   read FCount;
-    property Options :TRGOptions read FOptions  write FOptions;
+    procedure Init(usecache:boolean=true);
   end;
+
+function DictLoadTranslation(var aDict:TTransDict; aptr:PByte):integer;
+function DictLoadTranslation(var aDict:TTransDict; const fname:AnsiString):integer;
 
 var
   RGTags:TRGDict;
 
-//--- Objects
-
-type
-  TRGObject = object
-  private
-    FLastObject:pointer;
-    FLastScene :pointer;
-    FDict      :pointer;
-
-    FLastSceneName:PWideChar;
-    FLastObjId:dword;
-    FVersion:integer;
-
-    procedure SetVersion(aver:integer);
-  public
-    procedure Init;
-    procedure Clear;
-
-    function SelectScene(aname:PWideChar):pointer;
-    function GetObjectById  (aid:dword):pointer;
-    function GetObjectByName(aname:PWideChar):pointer;
-
-    function GetObjectName():PWideChar;
-    function GetObjectName(aid:dword):PWideChar;
-
-    function GetObjectId(aname:PWideChar):dword;
-
-    function GetPropsCount:integer;
-
-    function GetProperty(aid:dword):pointer;
-    function GetPropInfoByIdx (idx:integer; var aid:dword; var aname:PWideChar):integer;
-    function GetPropInfoById  (aid:dword; var aname:PWideChar):integer;
-    function GetPropInfoByName(aname:PWideChar; var aid:dword):integer;
-    function GetPropInfoByName(aname:PWideChar; atype:integer; var aid:dword):integer;
-
-    property Version:integer read FVersion write SetVersion;
-  end;
-
-function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean=false):boolean;
-function LoadLayoutDict(const resname:string; restype:PChar; aver:integer):boolean;
-function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
-
-
-//===== Implementation =====
 
 implementation
 
-uses
-  rgglobal,
-  rglogging,
-  rgmemory,
-  RGIO.Text,
-  rgnode;
+{.$R dicttag.rc}    // Less size and easier to edit
+{.$R dicttagbin.rc} // Faster load
 
-const
-  FCapStep = 256;
+uses
+  logging,
+  rgglobal;
+
+resourcestring
+  resCantOpen = 'Can''t open ';
+  resCantLoad = 'Can''t load ';
+
 const
   defdictname = 'dictionary.txt';
   deftagsname = 'tags.dat';
@@ -141,371 +49,181 @@ const
   SIGN_UNICODE = $FEFF;
   SIGN_UTF8    = $BFBBEF;
 
-//===== DAT tags =====
 
 procedure TRGDict.Init(usecache:boolean=true);
 begin
-  FCapacity:=0;
-  FCount   :=0;
-  FOptions :=[];
-  FUseCache:=usecache;
-  if usecache then FCache.Init(false);
+  inherited Init(@RGHash,usecache);
 end;
 
-procedure TRGDict.Clear;
-var
-  i:integer;
-begin
-  if FUseCache then FCache.Clear;
-
-  if FCapacity>0 then
-  begin
-    if not FUseCache then
-      for i:=0 to FCount-1 do
-        FreeMem(FDict[i].name);
-    FCount:=0;
-
-    SetLength(FDict,0);
-    SetLength(NameIdxs,0);
-    FCapacity:=0;
-  end;
-end;
-
-procedure TRGDict.InitCapacity(aval:cardinal);
-begin
-  if FCapacity=0 then
-  begin
-    FCapacity:=aval;
-  end
-  else
-  begin
-    FOptions:=[check_hash];
-    if aval>FCapacity then
-      aval:=aval div 2;
-    FCapacity:=FCount+aval;
-  end;
-
-  if FUseCache then
-  begin
-    FCache.Count   :=FCapacity;
-    FCache.Capacity:=FCapacity*16;
-  end;
-
-  SetLength(FDict,FCapacity);
-//  SetLength(NameIdxs,FCapacity);
-end;
-
-//----- Sort -----
-// Shell sort
-
-procedure TRGDict.SortText;
-var
-  ltmp:integer;
-  i,j,gap:longint;
-begin
-  if FTextSorted then exit;
-
-  if FCapacity>Length(NameIdxs) then
-    SetLength(NameIdxs,FCapacity);
-
-  for i:=0 to FCount-1 do
-    NameIdxs[i]:=i;
-
-  gap:=FCount shr 1;
-  while gap>0 do
-  begin
-    for i:=gap to FCount-1 do
-    begin
-      j:=i-gap;
-      while (j>=0) and (CompareWide(IdxTag[NameIdxs[j]],IdxTag[NameIdxs[j+gap]])>0) do
-      begin
-        ltmp           :=NameIdxs[j+gap];
-        NameIdxs[j+gap]:=NameIdxs[j];
-        NameIdxs[j]    :=ltmp;
-        dec(j,gap);
-      end;
-    end;
-    gap:=gap shr 1;
-  end;
-  FTextSorted:=true;
-end;
-
-procedure TRGDict.Sort;
-var
-  ltmp:TDict;
-  i,j,gap:longint;
-begin
-  if FSorted then exit;
-
-  gap:=FCount shr 1;
-  while gap>0 do
-  begin
-    for i:=gap to FCount-1 do
-    begin
-      j:=i-gap;
-      while (j>=0) and (FDict[j].hash>FDict[j+gap].hash) do
-      begin
-        ltmp        :=FDict[j+gap];
-        FDict[j+gap]:=FDict[j];
-        FDict[j]    :=ltmp;
-        dec(j,gap);
-      end;
-    end;
-    gap:=gap shr 1;
-  end;
-  FSorted:=true;
-  FTextSorted:=false;
-end;
-
-//--- Getters ---
-
-function TRGDict.GetHashIndex(akey:dword):integer;
-var
-  L,R,i:integer;
-begin
-  result:=-1;
-
-  // Binary Search
-
-  if FSorted then
-  begin
-    L:=0;
-    R:=FCount-1;
-    while (L<=R) do
-    begin
-      i:=L+(R-L) div 2;
-      if akey>FDict[i].hash then
-        L:=i+1
-      else
-      begin
-        if akey=FDict[i].hash then
-        begin
-          result:=i;
-          break;
-        end
-        else
-          R:=i-1;
-      end;
-    end;
-  end
-  else
-  begin
-    for i:=0 to FCount-1 do
-    begin
-      if FDict[i].hash=akey then
-      begin
-        result:=i;
-        break;
-      end;
-    end;
-  end;
-end;
-
-function TRGDict.GetTextIndex(akey:PWideChar):integer;
-var
-  L,R,i,ltmp:integer;
-begin
-  result:=-1;
-
-  // Binary Search
-
-  if FTextSorted then
-  begin
-    L:=0;
-    R:=FCount-1;
-    while (L<=R) do
-    begin
-      i:=L+(R-L) div 2;
-      ltmp:=CompareWide(akey,IdxTag[NameIdxs[i]]);
-      if ltmp>0 then
-        L:=i+1
-      else
-      begin
-        if ltmp=0 then
-        begin
-          result:=i;
-          break;
-        end
-        else
-          R:=i-1;
-      end;
-    end;
-  end
-  else
-  begin
-    for i:=0 to FCount-1 do
-    begin
-      if CompareWide(IdxTag[i],akey)=0 then
-      begin
-        result:=i;
-        break;
-      end;
-    end;
-  end;
-end;
-
-function TRGDict.GetTextByHash(akey:dword):PWideChar;
-var
-  i:integer;
-begin
-  i:=GetHashIndex(akey);
-  if i<0 then
-    result:=nil
-  else
-    result:=IdxTag[i];
-end;
-
-function TRGDict.GetHashByText(akey:PWideChar):dword;
-var
-  i:integer;
-begin
-  i:=GetTextIndex(akey);
-  if i>=0 then
-    result:=FDict[i].hash
-  else
-  begin
-    Val(akey,result,i);
-    if i>0 then
-      result:=dword(-1);
-  end;
-end;
-
-function TRGDict.GetTextByIdx(idx:cardinal):PWideChar;
-begin
-  if idx>=FCount then result:=nil
-  else
-   if FUseCache then
-     result:=FCache[FDict[idx].idx]
-   else
-     result:=FDict[idx].name;
-end;
-
-function TRGDict.GetHashByIdx(idx:cardinal):dword;
-begin
-  if idx>=FCount then result:=dword(-1)
-  else result:=FDict[idx].hash;
-end;
-
-
-function TRGDict.Exists(ahash:dword):boolean; inline;
-begin
-  result:=GetHashIndex(ahash)>=0;
-end;
-
-function TRGDict.Add(akey:dword; aval:PWideChar):dword;
-var
-  i:integer;
-begin
-  if {(akey=0) or} (akey=dword(-1)) then akey:=RGHash(aval,Length(aval));
-
-  if (check_hash in FOptions) then
-  begin
-    if GetHashIndex(akey)>=0 then Exit(akey);
-  end;
-
-  if (check_text in FOptions) then
-  begin
-    i:=GetTextIndex(aval);
-    if i>=0 then Exit(FDict[i].hash);
-  end;
-
-  // Add new element
-  FSorted:=false;
-  FTextSorted:=false;
-  if FCount=FCapacity then
-  begin
-    FCapacity:=Align(FCapacity+FCapStep,FCapStep);
-    SetLength(FDict,FCapacity);
-  end;
-  FDict[FCount].hash:=akey;
-
-  if FUseCache then
-    FDict[FCount].idx:=FCache.Append(aval)
-  else
-    CopyWide(FDict[FCount].name,aval);
-
-  inc(FCount);
-  result:=akey;
-end;
-
-function TRGDict.Add(akey:dword; const aval:AnsiString):dword;
-begin
-  result:=Add(akey,pointer(UTF8Decode(aval)));
-end;
 
 //----- Load -----
 
-//--- binary
+//--- binary (like DAT files)
 
-function TRGDict.LoadBinary(aptr:PByte):integer;
+{ in: raw data
+  4 bytes  = count of next blocks
+  4 bytes  = hash
+  2 bytes  = length (chars, with or without #0)
+  length*2 = text
+}
+function DictLoadBinary(var aDict:THashDict; aptr:PByte):integer;
 var
   pcw:PWideChar;
-  i,llen:integer;
+  i,llen,lsize:integer;
   lhash:dword;
 begin
-  result:=memReadInteger(aptr);
-  InitCapacity(result);
+  result:=pInt32(aptr)^; inc(aptr,SizeOf(Int32));
+  aDict.Capacity:=result;
+
+  lsize:=0;
+  pcw  :=nil;
+
   for i:=0 to result-1 do
   begin
-    lhash:=memReadInteger(aptr);
+    lhash:=pUInt32(aptr)^; inc(aptr,SizeOf(UInt32));
+    llen:=PWord(aptr)^; inc(aptr,2);
 
-    llen:=PWord(aptr)^;
+{
+  1 - len of text, no zero
+  2 - len of text, zero
+  3 - len of text with zero
+}
     if llen=0 then
     begin
-      inc(aptr,2);
-      Add(lhash,nil);
+      aDict.Add(nil,lhash);
     end
-    else if PWideChar(aptr)[llen]=#0 then
+    // how to recognize case 2 if next field have hash=0?
+    // else if PWideChar(aptr)[llen]=#0 then
+    //
+    // for case 3
+    else if PWideChar(aptr)[llen-1]=#0 then
     begin
-      pcw:=PWideChar(aptr+2);
-      Add(lhash,pcw);
-      inc(aptr,2+llen*2);
+      pcw:=PWideChar(aptr);
+      aDict.Add(pcw,lhash);
+      inc(aptr,llen*2);
+      pcw:=nil;
     end
-    else
+    else // needs for case 1 only
     begin
-      pcw:=memReadShortString(aptr);
-      Add(lhash,pcw);
-      FreeMem(pcw);
+      if (llen+1)>lsize then
+      begin
+        if lsize=0 then
+        begin
+          lsize:=4096;
+          GetMem(pcw,lsize*SizeOf(WideChar));
+        end
+        else
+        begin
+          lsize:=Align(llen+1,16);
+          ReallocMem(pcw,lsize*SizeOf(WideChar));
+        end;
+      end;
+      move(aptr^,pByte(pcw)^,llen*SizeOf(WideChar)); inc(aptr,llen*SizeOf(WideChar));
+      pcw[llen]:=#0;
+      aDict.Add(pcw,lhash);
     end;
   end;
+  FreeMem(pcw);
 end;
 
 //--- Tags.dat
 
-function TRGDict.LoadTagsFile(aptr:PByte):integer;
+{ in: UTF16-LE text in next format
+  [Tags]
+    <STRING>:text
+    <INTEGER>:hash
+  	...
+  [/Tags]
+}
+
+const
+  sString  = '<STRING>:';
+  sInteger = '<INTEGER>:';
+
+function DictLoadTags(var aDict:THashDict; aptr:PByte):integer;
 var
-  lnode:pointer;
-  pcw:PWideChar;
-  lc,i:integer;
+  pcw,lsrc,lstart,lend:PWideChar;
+  ltmp:integer;
+  lhash:dword;
+  lsign:boolean;
 begin
   result:=0;
 
-  WideToNode(aptr,0,lnode);
-  if lnode<>nil then
-  begin
-    i:=0;
-    lc:=GetChildCount(lnode);
-    InitCapacity(lc div 2);
-    while i<lc do
+  lend:=pointer(aptr);
+  if (pword(lend)^=SIGN_UNICODE) then inc(lend);
+
+  repeat
+    if (lend^=#0) then break;
+
+    lstart:=lend;
+    while not (lend^ in [#0, #10, #13]) do inc(lend);
+
+    if lend^<>#0 then
     begin
-      pcw:=asString(GetChild(lnode,i));
-//      if pcw<>nil then
-      begin
-        Add(AsUnsigned(GetChild(lnode,i+1)),pcw);
-        inc(result);
-      end;
-      inc(i,2);
+      lend^:=#0;
+      inc(lend);
     end;
-    DeleteNode(lnode);
-  end;
+    
+    while (lend^ in [#10, #13]) do inc(lend);
+
+    if lstart^='[' then
+    begin
+      if lstart[1]='/' then
+        break
+      else
+        continue;
+    end;
+
+    if lstart^<>#0 then
+    begin
+
+      pcw:=PosWide(sString,lstart);
+      if pcw<>nil then
+      begin
+        lsrc:=pcw+Length(sString);
+      end
+      else
+      begin
+        pcw:=PosWide(sInteger,lstart);
+        if pcw<>nil then
+        begin
+          pcw:=pcw+Length(sInteger);
+          if pcw^='-' then
+          begin
+            inc(pcw);
+            lsign:=true;
+          end
+          else
+            lsign:=false;
+
+          ltmp:=0;
+          while pcw^ in ['0'..'9'] do
+          begin
+            ltmp:=ltmp*10+ORD(pcw^)-ORD('0');
+            inc(pcw);
+          end;
+          if lsign then
+            lhash:=dword(-integer(ltmp))
+          else
+            lhash:=ltmp;
+          aDict.Add(lsrc, lhash);
+        end;
+      end;
+
+    end;
+  until false;
+
 end;
 
 //--- dictionary.txt
 
-function TRGDict.LoadDictionary(aptr:PByte):integer;
+{ in: UTF8 text in next format
+  hash<1-char separator>text
+}
+function DictLoadDictionary(var aDict:THashDict; aptr:PByte):integer;
 var
   lptr,lend:PAnsiChar;
-  lcnt,lstart,i,p:integer;
+  llen,lcnt,lstart,i,p:integer;
   ltmp:cardinal;
   lhash:dword;
 begin
@@ -518,7 +236,7 @@ begin
     if lptr^=#13 then inc(lcnt);
     inc(lptr);
   end;
-  InitCapacity(lcnt);
+  aDict.Capacity:=lcnt;
   
   lend:=PAnsiChar(aptr);
   try
@@ -526,10 +244,10 @@ begin
     begin
       lptr:=lend;
       while not (lend^ in [#0,#13]) do inc(lend);
-      lcnt:=lend-lptr;
+      llen:=lend-lptr;
       while lend^ in [#1..#32] do inc(lend);
 
-      if lcnt>0 then
+      if llen>0 then
       begin
         if lptr^='-' then
           lstart:=1
@@ -537,7 +255,7 @@ begin
           lstart:=0;
 
         ltmp:=0;
-        for p:=lstart to lcnt-1 do
+        for p:=lstart to llen-1 do
         begin
           if (lptr[p] in ['0'..'9']) then
             ltmp:=(ltmp)*10+ORD(lptr[p])-ORD('0')
@@ -547,7 +265,7 @@ begin
               lhash:=dword(-integer(ltmp))
             else
               lhash:=ltmp;
-            Add(lhash,Copy(lptr,p+1+1,lcnt-p-1)); //!!
+            aDict.Add(Copy(lptr,p+1+1,llen-p-1), lhash); //!!
             inc(result);
             break;
           end;
@@ -559,13 +277,15 @@ begin
 
   except
     if lcnt>0 then RGLog.Add('Possible problem with '+copy(lptr,1,lcnt));
-    Clear;
+    aDict.Clear;
   end;
 end;
 
 //--- raw text
-
-function TRGDict.LoadList(aptr:PByte):integer;
+{ in: UTF8 text
+  just text, line by line
+}
+function DictLoadList(var aDict:THashDict; aptr:PByte):integer;
 var
   ls:AnsiString;
   lptr,lend:PByte;
@@ -580,7 +300,7 @@ begin
     if lptr^=13 then inc(lcnt);
     inc(lptr);
   end;
-  InitCapacity(lcnt);
+  aDict.Capacity:=lcnt;
   
   lend:=aptr;
   for i:=0 to lcnt-1 do
@@ -592,7 +312,7 @@ begin
 
     if ls<>'' then
     begin
-      Add(RGHashB(pointer(ls),Length(ls)),ls);
+      aDict.Add(ls, RGHash(pointer(ls),Length(ls))); //!! RGHash not necessary if used in adict.init
       inc(result);
     end;
 
@@ -600,32 +320,32 @@ begin
   end;
 end;
 
+
 function TRGDict.Import(aptr:PByte):integer;
 begin
   if (pword(aptr)^=SIGN_UNICODE) and (aptr[2]=ORD('[')) then
   begin
-    result:=LoadTagsFile(aptr)
+    result:=DictLoadTags(self,aptr)
   end
 
   else if aptr[3]=0 then
   begin
-    result:=LoadBinary(aptr)
+    result:=DictLoadBinary(self,aptr)
   end
 
   else if (CHAR(aptr[0]) in ['-','0'..'9']) or
       (((pdword(aptr)^ and $FFFFFF)=SIGN_UTF8) and
        ((CHAR(aptr[3]) in ['-','0'..'9']))) then
   begin
-    result:=LoadDictionary(aptr);
+    result:=DictLoadDictionary(self,aptr);
   end
 
   else
   begin
-    result:=LoadList(aptr);
+    result:=DictLoadList(self,aptr);
   end;
 
-  if result>0 then
-    Sort;
+  if result>0 then SortBy(0); //!!
 end;
 
 function TRGDict.Import(const resname:string; restype:PChar):integer;
@@ -637,7 +357,7 @@ var
   lsize,loldcount:integer;
 begin
   result:=0;
-  loldcount:=FCount;
+  loldcount:=Count;
 
   res:=FindResource(hInstance, PChar(resname), restype);
   if res<>0 then
@@ -671,9 +391,9 @@ begin
   end;
 }
   if result=0 then
-    RGLog.Add('Can''t load '+resname);
+    RGLog.Add(resCantLoad+resname);
 
-  result:=FCount-loldcount;
+  result:=Count-loldcount;
 end;
 
 function TRGDict.Import(const fname:AnsiString=''):integer;
@@ -683,15 +403,14 @@ var
   ls:AnsiString;
   i,loldcount:integer;
 begin
-  loldcount:=FCount;
   result:=0;
+  loldcount:=Count;
   
   // 1 - trying to open dict file (empty name = load defaults)
   if fname<>'' then
     ls:=fname
   else
     ls:=defdictname;
-
 {$PUSH}
 {$I-}
   Assign(f,ls);
@@ -709,13 +428,13 @@ begin
           ls:='default tags file'
         else
           ls:='tag info file "'+fname+'"';
-        RGLog.Add('Can''t open '+ls);
+        RGLog.Add(resCantOpen+ls);
         exit;
       end;
     end
     else
     begin
-      RGLog.Add('Can''t open '+ls);
+      RGLog.Add(resCantOpen+ls);
       exit;
     end;
   end;
@@ -733,65 +452,52 @@ begin
   FreeMem(buf);
 
   if result=0 then
-    RGLog.Add('Can''t load '+fname);
+    RGLog.Add(resCantLoad+fname);
 
-  result:=FCount-loldcount;
+  result:=Count-loldcount;
 end;
 
-procedure TRGDict.Export(const fname:AnsiString; afmt:TExportDictType=asTags; sortbyhash:boolean=true);
+
+procedure TRGDict.Export(const fname:AnsiString;
+    afmt:TExportDictType=asTags; sortbyhash:boolean=true);
 var
-  sl:TRGLog;
-  lnode:pointer;
+  i:integer;
+  slb:TBaseLog;
+  sl:TLog;
+  slw:TLogWide;
+//  lnode:pointer;
   lstr:UnicodeString;
-  i,j,ldelta,llen:integer;
+  llen:cardinal;
+  ldelta:integer;
 begin
   case afmt of
     asTags: begin
-      lnode:=AddGroup(nil,'TAGS');
+      slw.Init;
 
-      if sortbyhash then
+//      if sortbyhash then aDict.SortBy(0) else aDict.SortBy(1); //!!
+
+      slw.Add('[TAGS]');
+      for i:=0 to Count-1 do
       begin
-        for i:=0 to FCount-1 do
-        begin
-          AddString (lnode,nil,IdxTag[i]);
-          AddInteger(lnode,nil,Integer(FDict[i].hash));
-        end
-      end
-      else
-      begin
-        if not FTextSorted then SortText;
-        for i:=0 to FCount-1 do
-        begin
-          j:=NameIdxs[i];
-          AddString (lnode,nil,IdxTag[j]);
-          AddInteger(lnode,nil,Integer(FDict[j].hash));
-        end;
+        slw.Add('  <STRING>:'+Tags[i]);
+        Str(Integer(Hashes[i]),lstr);
+        slw.Add('  <INTEGER>:'+lstr);
       end;
-      
-      BuildTextFile(lnode,PChar(fname));
-      DeleteNode(lnode);
+      slw.Add('[/TAGS]');
+
+      slw.SaveToFile(fname);
+      slw.Free;
     end;
 
     asText: begin
       sl.Init;
 
-      if sortbyhash then
+      if sortbyhash then SortBy(0) else SortBy(1); //!!
+
+      for i:=0 to Count-1 do
       begin
-        for i:=0 to FCount-1 do
-        begin
-          Str(FDict[i].hash,lstr);
-          sl.Add(UTF8Encode(lstr+':'+(IdxTag[i])));
-        end;
-      end
-      else
-      begin
-        if not FTextSorted then SortText;
-        for i:=0 to FCount-1 do
-        begin
-          j:=NameIdxs[i];
-          Str(FDict[j].hash,lstr);
-          sl.Add(UTF8Encode(lstr+':'+(IdxTag[j])));
-        end;
+        Str(Hashes[i],lstr);
+        sl.Add(UTF8Encode(lstr+':'+(Tags[i])));
       end;
 
       sl.SaveToFile(fname);
@@ -799,632 +505,210 @@ begin
     end;
 
     asBin, asZBin: begin
-      sl.Init;
+      slb.Init;
 
       if afmt=asZBin then ldelta:=1 else ldelta:=0;
 
-      sl.Add(FCount,4);
-      if sortbyhash then
+      slb.AddValue(Count,4);
+
+      if sortbyhash then SortBy(0) else SortBy(1); //!!
+
+      for i:=0 to Count-1 do
       begin
-        for i:=0 to FCount-1 do
-        begin
-          sl.Add(FDict[i].hash,4);
-          if IdxTag[i]=nil then
-            sl.Add(0,2)
-          else
-          begin
-            llen:=Length(IdxTag[i])+ldelta;
-            sl.Add(llen,2);
-            sl.Add(IdxTag[i],llen*SizeOf(WideChar));
-          end;
-        end;
-      end
-      else
-      begin
-        if not FTextSorted then SortText;
-        for i:=0 to FCount-1 do
-        begin
-          j:=NameIdxs[i];
-          sl.Add(FDict[j].hash,4);
-          if IdxTag[i]=nil then
-            sl.Add(0,2)
-          else
-          begin
-            llen:=Length(IdxTag[j])+ldelta;
-            sl.Add(llen,2);
-            sl.Add(IdxTag[j],llen*SizeOf(WideChar));
-          end;
-        end;
-      end;
-
-      sl.SaveToFile(fname);
-      sl.Free;
-    end;
-  end;
-end;
-
-//===== Layout =====
-
-type
-  PPropInfo = ^TPropInfo;
-  TPropInfo = record
-    name   :PWideChar;
-    id     :dword;
-    ptype  :integer;
-  end;
-type
-  PObjInfo = ^TObjInfo;
-  TObjInfo = record
-    name   :PWideChar;
-    start  :integer;
-    count  :integer;
-    id     :dword;
-  end;
-type
-  PSceneInfo = ^TSceneInfo;
-  TSceneInfo = record
-    name   :PWideChar;
-    start  :integer;
-    count  :integer;
-    id     :dword;
-  end;
-type
-  PLayoutInfo = ^TLayoutInfo;
-  TLayoutInfo = record
-    scenes :array [0..3] of TSceneInfo;
-    objects:array of TObjInfo;
-    props  :array of TPropInfo;
-    buf    :PWideChar;
-  end;
-
-var
-  DictObjTL1:TLayoutInfo;
-  DictObjTL2:TLayoutInfo;
-  DictObjHob:TLayoutInfo;
-  DictObjRG :TLayoutInfo;
-  DictObjRGO:TLayoutInfo;
-
-//----- Objects -----
-
-procedure TRGObject.Init;
-begin
-  FVersion   :=verUnk;
-  FDict      :=nil;
-  FLastObject:=nil;
-  FLastObjId :=dword(-1);
-
-  FLastScene :=nil;
-  FLastSceneName:=nil;
-end;
-
-procedure TRGObject.Clear;
-begin
-  Init;
-end;
-
-procedure TRGObject.SetVersion(aver:integer);
-begin
-  Init;
-  case ABS(aver) of
-    verTL1: FDict:=@DictObjTL1;
-    verTL2: FDict:=@DictObjTL2;
-    verRG : FDict:=@DictObjRG ;
-    verRGO: FDict:=@DictObjRGO;
-    verHob: FDict:=@DictObjHob;
-  else
-    exit;
-  end;
-  FVersion:=aver;
-end;
-
-function TRGObject.SelectScene(aname:PWideChar):pointer;
-var
-  i:integer;
-begin
-  // Get Default (if one scene only)
-  if (aname=nil) or (aname^=#0) or
-     (PLayoutInfo(FDict)^.scenes[1].id=dword(-1)) then
-  begin
-    FLastScene:=@(PLayoutInfo(FDict)^.scenes[0]);
-    FLastSceneName:=PSceneInfo(FLastScene)^.name;
-    exit(FLastScene);
-  end;
-
-  if CompareWide(FLastSceneName,aname)=0 then
-    exit(FLastScene);
-
-  FLastObject:=nil;
-  FLastObjId :=dword(-1);
-
-  i:=0;
-  repeat
-    FLastScene:=@(PLayoutInfo(FDict)^.scenes[i]);
-    FLastSceneName:=PSceneInfo(FLastScene)^.name;
-    if  CompareWide(PSceneInfo(FLastScene)^.name,aname)=0 then
-      exit(FLastScene);
-    inc(i);
-  until (i=Length(PLayoutInfo(FDict)^.scenes)) or
-                 (PLayoutInfo(FDict)^.scenes[i].id=dword(-1));
-
-  FLastScene    :=nil;
-  FLastSceneName:=nil;
-  result        :=nil;
-end;
-
-function TRGObject.GetObjectByName(aname:PWideChar):pointer;
-var
-  i:integer;
-begin
-  if FLastScene<>nil then
-    for i:=0 to PSceneInfo(FLastScene)^.count-1 do
-    begin
-      FLastObject:=@(PLayoutInfo(FDict)^.Objects[PSceneInfo(FLastScene)^.start+i]);
-      if CompareWide(PObjInfo(FLastObject)^.name,aname)=0 then
-        exit(FLastObject);
-    end;
-
-  FLastObject:=nil;
-  FLastObjId :=dword(-1);
-  result     :=nil;
-end;
-
-function TRGObject.GetObjectById(aid:dword):pointer;
-var
-  i:integer;
-begin
-  if FLastObjId=aid then
-    exit(FLastObject);
-
-  if FLastScene<>nil then
-    for i:=0 to PSceneInfo(FLastScene)^.count-1 do
-    begin
-      FLastObject:=@(PLayoutInfo(FDict)^.Objects[PSceneInfo(FLastScene)^.start+i]);
-      if PObjInfo(FLastObject)^.id=aid then
-      begin
-        FLastObjId:=aid;
-        exit(FLastObject);
-      end;
-    end;
-
-  if RGTags.Tag[aid]<>nil then
-    RGLog.Add('!!!!! Got it '+HexStr(aid,8));
-  
-  
-  FLastObject:=nil;
-  FLastObjId :=dword(-1);
-  result     :=nil;
-  RGLog.Add('Object with id=0x'+HexStr(aid,8)+' was not found');
-end;
-
-function TRGObject.GetObjectId(aname:PWideChar):dword;
-begin
-  if GetObjectByName(aname)<>nil then
-    result:=PObjInfo(FLastObject)^.id
-  else
-    result:=dword(-1);
-end;
-
-function TRGObject.GetObjectName():PWideChar;
-begin
-  if FLastObject<>nil then
-    result:=PObjInfo(FLastObject)^.name
-  else
-    result:=nil;
-end;
-
-function TRGObject.GetObjectName(aid:dword):PWideChar;
-begin
-  if GetObjectById(aid)<>nil then
-    result:=GetObjectName()
-  else
-    result:=nil;
-end;
-
-function TRGObject.GetPropsCount:integer;
-begin
-  if FLastObject<>nil then
-    result:=PObjInfo(FLastObject)^.count
-  else
-    result:=0;
-end;
-
-function TRGObject.GetProperty(aid:dword):pointer;
-var
-  lprop:PPropInfo;
-  i:integer;
-begin
-  if FLastObject<>nil then
-    for i:=0 to PObjInfo(FLastObject)^.count-1 do
-    begin
-      lprop:=@(PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+i]);
-      if lprop^.id=aid then
-        exit(lprop);
-    end;
-
-  result:=nil;
-end;
-
-function TRGObject.GetPropInfoByIdx(idx:integer; var aid:dword; var aname:PWideChar):integer;
-begin
-  if FLastObject<>nil then
-  begin
-    if (idx>=0) and (idx<PObjInfo(FLastObject)^.count) then
-    begin
-      with PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+idx] do
-      begin
-        aid  :=id;
-        aname:=name;
-        exit(ptype);
-      end;
-    end;
-  end;
-
-  aid   :=dword(-1);
-  aname :=nil;
-  result:=rgUnknown;
-end;
-
-function TRGObject.GetPropInfoById(aid:dword; var aname:PWideChar):integer;
-var
-  lprop:PPropInfo;
-//  ls:string;
-begin
-  lprop:=GetProperty(aid);
-  if lprop<>nil then
-  begin
-    aname :=lprop^.name;
-    result:=lprop^.ptype;
-  end
-  else
-  begin
-    aname :=nil;
-    result:=rgUnknown;
-  end;
-{
-  if result<=0 then
-  begin
-    Str(aid,ls);
-    RGLog.Add('Unknown PROPERTY type '+HexStr(aid,8)+' '+ls);
-  end;
-}
-end;
-
-function TRGObject.GetPropInfoByName(aname:PWideChar; var aid:dword):integer;
-var
-  lprop:PPropInfo;
-  i,l:integer;
-begin
-  if FLastObject<>nil then
-  begin
-    l:=Length(aname)-1;
-    if l>=0 then
-      for i:=0 to PObjInfo(FLastObject)^.count-1 do
-      begin
-        lprop:=@(PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+i]);
-
-        if lprop^.ptype in [rgVector2, rgVector3, rgVector4] then
-        begin
-          if ((lprop^.ptype=rgVector2) and (aname[l] in ['X','x','Y','y'])) or
-             ((lprop^.ptype=rgVector3) and (aname[l] in ['X','x','Y','y','Z','z'])) or
-             ((lprop^.ptype=rgVector4) and (aname[l] in ['X','x','Y','y','Z','z','W','w'])) then
-    
-            if (CompareWide(aname,lprop^.name,l)=0) then
-            begin
-              aid:=lprop^.id;
-              result:=lprop^.ptype;//rgFloat;
-              exit;
-            end;
-        end
+        slb.AddValue(Hashes[i],4);
+        if Tags[i]=nil then
+          slb.AddValue(0,2)
         else
         begin
-          if CompareWide(aname,lprop^.name)=0 then
-          begin
-            aid:=lprop^.id;
-            result:=lprop^.ptype;
-            exit;
-          end;
+          llen:=Length(Tags[i])+ldelta;
+          slb.AddValue(llen,2);
+          slb.AddData (Tags[i],llen*SizeOf(WideChar));
         end;
-
-      end;
-  end;
-
-  result:=rgUnknown;
-end;
-
-function TRGObject.GetPropInfoByName(aname:PWideChar; atype:integer; var aid:dword):integer;
-var
-  lprop:PPropInfo;
-  i,l:integer;
-begin
-  if FLastObject<>nil then
-  begin
-    l:=Length(aname)-1;
-    if l>=0 then
-      for i:=0 to PObjInfo(FLastObject)^.count-1 do
-      begin
-        lprop:=@(PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+i]);
-
-        if (atype=rgFloat) and (lprop^.ptype in [rgVector2, rgVector3, rgVector4]) then
-        begin
-          if ((lprop^.ptype=rgVector2) and (aname[l] in ['X','x','Y','y'])) or
-             ((lprop^.ptype=rgVector3) and (aname[l] in ['X','x','Y','y','Z','z'])) or
-             ((lprop^.ptype=rgVector4) and (aname[l] in ['X','x','Y','y','Z','z','W','w'])) then
-    
-            if (CompareWide(aname,lprop^.name,l)=0) then
-            begin
-              aid:=lprop^.id;
-              result:=lprop^.ptype;//atype;
-              exit;
-            end;
-        end
-        else
-        begin
-          if (lprop^.ptype=atype) and (CompareWide(aname,lprop^.name)=0) then
-          begin
-            aid:=lprop^.id;
-            result:=lprop^.ptype;//atype;
-            exit;
-          end;
-        end;
-
-      end;
-  end;
-
-  result:=rgUnknown;
-end;
-
-//----- Processed -----
-{$I-}
-function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean=false):boolean;
-var
-  ltype:array [0..31] of WideChar;
-  pc,lname:PWideChar;
-  layptr:PLayoutInfo;
-  pscene:PSceneInfo;
-  pobj  :PObjInfo;
-  pprop :PPropInfo;
-  lid:dword;
-  lobj,lprop,lscene,i:integer;
-begin
-  result:=false;
-
-  case ABS(aver) of
-    verTL1: layptr:=@DictObjTL1;
-    verTL2: layptr:=@DictObjTL2;
-    verRG : layptr:=@DictObjRG;
-    verRGO: layptr:=@DictObjRGO;
-    verHob: layptr:=@DictObjHob;
-  else
-    RGLog.Add('Wrong layout dictionary version '+HexStr(aver,8));
-    exit;
-  end;
-
-  if layptr^.buf<>nil then
-  begin
-    RGLog.Add('Trying to reload layout dictionary for v.'+HexStr(aver,8));
-    exit;
-  end;
-
-  //-----------------------------
-
-  result:=true;
-
-  if aUseThis then
-    layptr^.buf:=abuf
-  else
-    layptr^.buf:=CopyWide(abuf);
-
-  //-----------------------------
-
-  SetLength(layptr^.objects,1024);
-  SetLength(layptr^.props  ,8192);
-
-  lscene:=0;
-  lobj  :=0;
-  lprop :=0;
-
-  pc:=layptr^.buf;
-  if ORD(pc^)=SIGN_UNICODE then inc(pc);
-  repeat
-    while pc^ in [#9,' ',#13,#10] do inc(pc);
-
-    case pc^ of
-      // scene
-      '>': begin
-        inc(pc);
-
-        lid:=0;
-        // ID
-        while pc^ in ['0'..'9'] do
-        begin
-          lid:=lid*10+ORD(pc^)-ORD('0');
-          inc(pc);
-        end;
-        // separator
-        inc(pc);
-        // name
-        lname:=pc;
-        while not (pc^ in [#10,#13]) do inc(pc);
-        pc^:=#0;
-        inc(pc);
-
-        pscene:=@(layptr^.scenes[lscene]);
-        inc(lscene);
-        pscene^.id     :=lid;
-        pscene^.name   :=lname;
-        pscene^.start  :=lobj;
-        pscene^.count  :=0;
       end;
 
-      // object
-      '*': begin
-        inc(pc);
-        lid:=0;
-        // ID
-        while pc^ in ['0'..'9'] do
-        begin
-          lid:=lid*10+ORD(pc^)-ORD('0');
-          inc(pc);
-        end;
-        // separator
-        inc(pc);
-        // name
-        lname:=pc;
-        while not (pc^ in [#10,#13,':']) do inc(pc);
-        pc^:=#0;
-        inc(pc);
-        // skip the rest: original ID or property name if presents
-        while not (pc^ in [#0,#10,#13]) do inc(pc);
-
-        pobj:=@(layptr^.objects[lobj]);
-        inc(pscene^.count);
-        inc(lobj);
-        pobj^.id     :=lid;
-        pobj^.name   :=lname;
-        pobj^.start  :=lprop;
-        pobj^.count  :=0;
-      end;
-
-      // property
-      '0'..'9': begin
-        lid:=0;
-        // ID
-        while pc^ in ['0'..'9'] do
-        begin
-          lid:=lid*10+ORD(pc^)-ORD('0');
-          inc(pc);
-        end;
-        // separator
-        inc(pc);
-        // type
-        i:=0;
-        while not (pc^ in [#10,#13,':']) do
-        begin
-          ltype[i]:=pc^;
-          inc(i);
-          inc(pc);
-        end;
-        ltype[i]:=#0;
-        inc(pc);
-        // name
-        lname:=pc;
-        while not (pc^ in [#10,#13,':']) do inc(pc);
-        pc^:=#0;
-        inc(pc);
-        // skip the rest: original ID or property name if presents
-        while not (pc^ in [#0,#10,#13]) do inc(pc);
-
-        pprop:=@(layptr^.props[lprop]);
-        inc(pobj^.count);
-        inc(lprop);
-        pprop^.id   :=lid;
-        pprop^.name :=lname;
-        pprop^.ptype:=TextToType(ltype);
-      end;
-
-      #0: break;
-    else
-      while not (pc^ in [#0,#10,#13]) do inc(pc);
+      slb.SaveToFile(fname);
+      slb.Free;
     end;
+  end;
+end;
 
+resourcestring
+  sNoFileStart     = 'No file starting tag';
+  sNoBlockStart    = 'No block start';
+  sNoOrignText     = 'No original text';
+  sNoTransText     = 'No translated text';
+  sNoEndBlock      = 'No end of block';
+  sMoreOriginal    = 'More than one original';
+  sMoreTranslation = 'More than one translation';
+
+const
+  // TRANSLATION.DAT
+  sBeginFile   = '[TRANSLATIONS]';
+  sEndFile     = '[/TRANSLATIONS]';
+  sBeginBlock  = '[TRANSLATION]';
+  sEndBlock    = '[/TRANSLATION]';
+  sOriginal    = '<STRING>ORIGINAL:';
+  sTranslation = '<STRING>TRANSLATION:';
+
+
+function DictLoadTranslation(var aDict:TTransDict ; aptr:PByte):integer;
+var
+  lstart,lend:PWideChar;
+  s,lsrc,ldst:PWideChar;
+  lline:integer;
+  stage:integer;
+begin
+  lsrc:='';
+  ldst:='';
+
+  lline:=0;
+  stage:=1;
+  lend:=pointer(aptr);
+
+  if (pword(lend)^=SIGN_UNICODE) then inc(lend);
+
+  repeat
+    if lend^=#0 then break;
+
+    lstart:=lend;
+    while not (lend^ in [#0, #10, #13]) do inc(lend);
+
+    if lend^<>#0 then
+    begin
+      lend^:=#0;
+      inc(lend);
+    end;
+    
+    while lend^ in [#10, #13] do inc(lend);
+
+    if lstart^<>#0 then
+    begin
+      case stage of
+        // <STRING>ORIGINAL:
+        // <STRING>TRANSLATION:
+        // [/TRANSLATION]
+        3: begin
+          if lsrc=nil then
+          begin
+            s:=PosWide(sOriginal,lstart);
+            if s<>nil then
+            begin
+              lsrc:=s+Length(sOriginal);
+              continue;
+            end;
+          end
+          else
+            RGLog.Add('',lline,sMoreOriginal);
+
+          if ldst=nil then
+          begin
+            s:=PosWide(sTranslation,lstart);
+            if s<>nil then
+            begin
+              ldst:=s+Length(sTranslation);
+              continue;
+            end;
+          end
+          else
+            RGLog.Add('',lline,sMoreTranslation);
+
+          if PosWide(sEndBlock,lstart)<>nil then
+          begin
+            stage:=2;
+
+            if lsrc<>nil then
+            begin
+              result:=0;
+
+              aDict.Add(lsrc,ldst);
+            end
+            else// if lsrc='' then
+            begin
+              RGLog.Add('',lline,sNoOrignText);
+              result:=-3;
+            end;
+
+          end
+          // really, can be custom tag
+          else
+          begin
+            RGLog.Add('',lline,sNoEndBlock);
+            result:=-5;
+          end;
+
+        end;
+
+        // [TRANSLATION] and [/TRANSLATIONS]
+        2: begin
+          if PosWide(sBeginBlock,lstart)<>nil then
+          begin
+            stage:=3;
+            lsrc:=nil;
+            ldst:=nil;
+          end
+          else if PosWide(sEndFile,lstart)<>nil then break // end of file
+          else
+          begin
+            RGLog.Add('',lline,sNoBlockStart);
+            result:=-2;
+          end;
+        end;
+
+        // [TRANSLATIONS]
+        1: begin
+          if PosWide(sBeginFile,lstart)<>nil then
+            stage:=2
+          else
+          begin
+            RGLog.Add('',lline,sNoFileStart);
+            result:=-1;
+            break;
+          end;
+        end;
+      end;
+    end;
   until false;
 
-  if lscene<Length(layptr^.scenes) then layptr^.scenes[lscene].id:=dword(-1);
 end;
 
-function LoadLayoutDict(const resname:string; restype:PChar; aver:integer):boolean;
-var
-  res:TFPResourceHandle;
-  Handle:THANDLE;
-  buf:PWideChar;
-  lptr:PByte;
-  lsize:integer;
-begin
-  result:=false;
-
-  res:=FindResource(hInstance, PChar(resname), restype);
-  if res<>0 then
-  begin
-    Handle:=LoadResource(hInstance,Res);
-    if Handle<>0 then
-    begin
-      lptr :=LockResource(Handle);
-      lsize:=SizeOfResource(hInstance,res);
-
-      GetMem(buf,lsize+SizeOf(WideChar));
-
-      move(lptr^,buf^,lsize);
-
-      UnlockResource(Handle);
-      FreeResource(Handle);
-
-      buf[lsize div SizeOf(WideChar)]:=#0;
-
-      result:=LoadLayoutDict(buf,aver,true);
-
-      if not result then FreeMem(buf);
-    end;
-  end;
-
-end;
-
-function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
+function DictLoadTranslation(var aDict:TTransDict; const fname:AnsiString):integer;
 var
   f:file of byte;
-  buf:PWideChar;
+  buf:PByte;
   i:integer;
 begin
-  result:=false;
-  
+  result:=0;
+
+  if fname='' then exit;
+
   Assign(f,fname);
   Reset(f);
-  if IOResult<>0 then exit;
+  if IOResult<>0 then
+  begin
+    RGLog.Add(resCantOpen+fname);
+    exit;
+  end;
 
   i:=FileSize(f);
   GetMem(buf,i+SizeOf(WideChar));
   BlockRead(f,buf^,i);
   Close(f);
-  buf[i div SizeOf(WideChar)]:=#0;
+  PByte(buf)[i  ]:=0;
+  PByte(buf)[i+1]:=0;
 
-  result:=LoadLayoutDict(buf,aver,true);
+  result:=DictLoadTranslation(aDict,buf);
 
-  if not result then FreeMem(buf);
+  FreeMem(buf);
 end;
-
-procedure InitLayoutDict(var alay:TLayoutInfo);
-begin
-  alay.scenes[0].id:=dword(-1);
-  alay.objects:=nil;
-  alay.props  :=nil;
-  alay.buf    :=nil;
-end;
-
-procedure ClearLayoutDict(var alay:TLayoutInfo);
-begin
-  SetLength(alay.objects,0);
-  SetLength(alay.props  ,0);
-  FreeMem  (alay.buf);
-end;
-
 
 initialization
 
   RGTags.Init();
+//  RGTags.Import('RGDICT','TEXT');
 
-  InitLayoutDict(DictObjTL1);
-  InitLayoutDict(DictObjTL2);
-  InitLayoutDict(DictObjRG );
-  InitLayoutDict(DictObjRGO);
-  InitLayoutDict(DictObjHob);
 
 finalization
 
   RGTags.Clear;
-
-  ClearLayoutDict(DictObjTL1);
-  ClearLayoutDict(DictObjTL2);
-  ClearLayoutDict(DictObjRG );
-  ClearLayoutDict(DictObjRGO);
-  ClearLayoutDict(DictObjHob);
 
 end.

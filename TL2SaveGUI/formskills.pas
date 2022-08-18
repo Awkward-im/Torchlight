@@ -461,6 +461,7 @@ function TfmSkills.GetBuild():TL2IdValList;
 var
   lcnt,i:integer;
 begin
+  Initialize(result);
   SetLength(result,sgSkills.RowCount-1);
   lcnt:=0;
   for i:=1 to sgSkills.RowCount-1 do

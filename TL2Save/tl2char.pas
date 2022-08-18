@@ -333,9 +333,9 @@ Check(FUnkn2,'pre-wardrobe_'+HexStr(AStream.Position,8),0);
   if FWardrobe then
   begin
 if not FIsChar then DbgLn('!!non-player wardrobe_'+HexStr(AStream.Position,8));
-    FFace     :=AStream.ReadDWord;    // face
-    FHairStyle:=AStream.ReadDWord;    // hairstyle
-    FHairColor:=AStream.ReadDWord;    // haircolor (+bandana for outlander)
+    FFace     :=Integer(AStream.ReadDWord);    // face
+    FHairStyle:=Integer(AStream.ReadDWord);    // hairstyle
+    FHairColor:=Integer(AStream.ReadDWord);    // haircolor (+bandana for outlander)
     // !!*$FF = 36
     AStream.Read(FWardUnkn,36);
 if
@@ -586,9 +586,9 @@ begin
   AStream.WriteByte(byte(FWardrobe) and 1);
   if FWardrobe then // WARDROBE
   begin
-    AStream.WriteDWord(FFace);       // face
-    AStream.WriteDWord(FHairStyle);  // hairstyle
-    AStream.WriteDWord(FHairColor);  // haircolor (+bandana for outlander)
+    AStream.WriteDWord(Cardinal(FFace));       // face
+    AStream.WriteDWord(Cardinal(FHairStyle));  // hairstyle
+    AStream.WriteDWord(Cardinal(FHairColor));  // haircolor (+bandana for outlander)
 
     AStream.Write(FWardUnkn,36);
   end;

@@ -3,22 +3,20 @@ object fmSaveFile: TfmSaveFile
   Height = 700
   Top = 164
   Width = 1000
-  Caption = 'fmSaveFile'
-  ClientHeight = 680
+  ClientHeight = 700
   ClientWidth = 1000
   Menu = MainMenu
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '2.1.0.0'
   object Splitter: TSplitter
     Left = 200
-    Height = 680
+    Height = 700
     Top = 0
     Width = 8
   end
   object MainPanel: TPanel
     Left = 208
-    Height = 680
+    Height = 700
     Top = 0
     Width = 792
     Align = alClient
@@ -26,16 +24,16 @@ object fmSaveFile: TfmSaveFile
   end
   object LeftPanel: TPanel
     Left = 0
-    Height = 680
+    Height = 700
     Top = 0
     Width = 200
     Align = alLeft
-    ClientHeight = 680
+    ClientHeight = 700
     ClientWidth = 200
     TabOrder = 2
     object tvSaveGame: TTreeView
       Left = 1
-      Height = 678
+      Height = 698
       Top = 1
       Width = 198
       Align = alClient

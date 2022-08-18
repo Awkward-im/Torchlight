@@ -12,17 +12,18 @@ implementation
 
 uses
 //  SysUtils,
-  rgfiletype,
-  rglogging;
+  logging,
+  rgfiletype
+  ;
 
 function IntToStr(Value: Longint): string;
 begin
- System.Str(Value, result);
+  System.Str(Value, result);
 end ;
 
 function DumpPAKInfo(const ainfo:TPAKInfo):string;
 var
-  llog:TRGLog;
+  llog:TLog;
   ls,llsize:string;
   i,j:integer;
   lpack,lfiles,lprocess,ldir:integer;

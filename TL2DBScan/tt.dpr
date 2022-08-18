@@ -10,7 +10,7 @@ begin
   result:=1;
 
   if (UpCase(ExtractFileExt(aname))='.MOD') or
-     (UpCase(ExtractFileExt(aname))='.PAK')
+     (UpCase(ExtractFileExt(aname))='.PAK') then
   begin
     Prepare(db,adir+'/'+aname,lms);
   end

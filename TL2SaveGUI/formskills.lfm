@@ -3,13 +3,12 @@ object fmSkills: TfmSkills
   Height = 500
   Top = 214
   Width = 714
-  Align = alClient
   BorderStyle = bsNone
   ClientHeight = 500
   ClientWidth = 714
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object sgSkills: TStringGrid
     Left = 8
     Height = 449
@@ -78,7 +77,7 @@ object fmSkills: TfmSkills
     Left = 361
     Height = 19
     Top = 40
-    Width = 83
+    Width = 81
     Caption = 'Check Level'
     TabOrder = 1
   end
@@ -86,15 +85,15 @@ object fmSkills: TfmSkills
     Left = 361
     Height = 19
     Top = 64
-    Width = 89
+    Width = 87
     Caption = 'Check Points'
     TabOrder = 2
   end
   object bbUpdate: TBitBtn
-    Left = 629
+    Left = 617
     Height = 30
-    Top = 464
-    Width = 78
+    Top = 459
+    Width = 90
     Anchors = [akRight, akBottom]
     Caption = 'Update'
     Default = True
@@ -104,11 +103,12 @@ object fmSkills: TfmSkills
     TabOrder = 6
   end
   object lblFreePoints: TLabel
-    Left = 72
+    Left = 79
     Height = 15
     Top = 15
     Width = 58
     Caption = 'Free points'
+    Color = clDefault
     ParentColor = False
   end
   object lblName: TLabel
@@ -117,20 +117,21 @@ object fmSkills: TfmSkills
     Top = 120
     Width = 54
     Caption = 'Skill name'
+    Color = clDefault
     ParentColor = False
   end
   object memDesc: TMemo
-    Left = 360
+    Left = 361
     Height = 104
     Top = 144
-    Width = 347
+    Width = 346
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 4
   end
   object btnReset: TButton
     Left = 361
-    Height = 25
-    Top = 464
+    Height = 30
+    Top = 459
     Width = 75
     Anchors = [akLeft, akBottom]
     Caption = 'Reset'
@@ -141,7 +142,7 @@ object fmSkills: TfmSkills
     Left = 361
     Height = 19
     Top = 88
-    Width = 84
+    Width = 82
     Caption = 'Save Full list'
     OnClick = cbSaveFullClick
     TabOrder = 3
@@ -150,12 +151,14 @@ object fmSkills: TfmSkills
     Left = 8
     Height = 23
     Top = 11
-    Width = 59
+    Width = 64
     MaxLength = 0
     NumbersOnly = True
     TabOrder = 7
     OnChange = seFreePointsChange
     MaxValue = 200
     MinValue = -100
+    NullValue = 0
+    Value = 0
   end
 end

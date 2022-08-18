@@ -107,7 +107,8 @@ uses
 procedure TfmItem.FormCreate(Sender: TObject);
 begin
   FEffects:=TfmEffects.Create(Self);
-  FEffects.Parent:=tsOtherInfo;
+  FEffects.Parent :=tsOtherInfo;
+  FEffects.Align  :=alClient;
   FEffects.Visible:=true;
 end;
 

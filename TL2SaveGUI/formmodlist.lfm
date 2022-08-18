@@ -1,15 +1,13 @@
 object fmModList: TfmModList
   Left = 330
   Height = 470
-  Hint = 'Копировать'
   Top = 165
   Width = 701
-  Align = alClient
   BorderStyle = bsNone
-  Caption = 'Копиров&ать'
+  Caption = 'Mod list'
   ClientHeight = 470
   ClientWidth = 701
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   Visible = True
   object sbUp: TSpeedButton
     Left = 352
@@ -51,17 +49,17 @@ object fmModList: TfmModList
     Left = 392
     Height = 30
     Top = 177
-    Width = 75
+    Width = 90
     Caption = 'Clear'
     Kind = bkAbort
     OnClick = bbClearClick
     TabOrder = 0
   end
   object bbUpdate: TBitBtn
-    Left = 617
+    Left = 602
     Height = 30
     Top = 177
-    Width = 75
+    Width = 90
     Caption = '&Update'
     Default = True
     Kind = bkOK
@@ -74,6 +72,7 @@ object fmModList: TfmModList
     Top = 4
     Width = 35
     Caption = 'Bound'
+    Color = clDefault
     ParentColor = False
   end
   object lblRecent: TLabel
@@ -82,6 +81,7 @@ object fmModList: TfmModList
     Top = 232
     Width = 36
     Caption = 'Recent'
+    Color = clDefault
     ParentColor = False
   end
   object lblFull: TLabel
@@ -90,6 +90,7 @@ object fmModList: TfmModList
     Top = 232
     Width = 58
     Caption = 'Full history'
+    Color = clDefault
     ParentColor = False
   end
   object sgBound: TStringGrid

@@ -81,7 +81,6 @@ type
 
 implementation
 
-{TODO: Add rfIsLayout and rfIsTranslation (directory)}
 const
   rfIsSkill     = 1;
   rfIsTranslate = 2;
@@ -147,7 +146,7 @@ begin
     _dup :=-1;
     _flag:=0;
 //!!
-    if Pos('SKILLS'+DirectorySeparator,afile)=7 then
+    if Pos('SKILLS',afile)=7 then
       _flag:=_flag or rfIsSkill;
 
     if aline<0 then
@@ -346,7 +345,7 @@ begin
         for i:=0 to cntRef-1 do
         begin
           lflag:=0;
-          if Pos('SKILLS'+DirectorySeparator,arFiles[arRef[i]._file])=7 then
+          if Pos('SKILLS',arFiles[arRef[i]._file])=7 then
             lflag:=lflag or rfIsSkill;
           arRef[i]._flag:=lflag;
         end;

@@ -1,5 +1,4 @@
 {"version":1,"strings":[
-{"hash":147791541,"name":"tfmsavefile.caption","sourcebytes":[102,109,83,97,118,101,70,105,108,101],"value":"fmSaveFile"},
 {"hash":2805797,"name":"tfmsavefile.mnufile.caption","sourcebytes":[38,70,105,108,101],"value":"&File"},
 {"hash":2844350,"name":"tfmsavefile.actfileopen.caption","sourcebytes":[38,79,112,101,110],"value":"&Open"},
 {"hash":193738068,"name":"tfmsavefile.actfilereload.caption","sourcebytes":[38,82,101,108,111,97,100],"value":"&Reload"},

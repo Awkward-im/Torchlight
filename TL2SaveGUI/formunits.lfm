@@ -3,12 +3,11 @@ object fmUnits: TfmUnits
   Height = 540
   Top = 171
   Width = 858
-  Align = alClient
   BorderStyle = bsNone
   ClientHeight = 540
   ClientWidth = 858
   OnCreate = FormCreate
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object pnlCharInfo: TPanel
     Left = 175
     Height = 540

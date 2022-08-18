@@ -3,12 +3,10 @@ object fmItems: TfmItems
   Height = 519
   Top = 198
   Width = 764
-  Align = alClient
   BorderStyle = bsNone
   ClientHeight = 519
   ClientWidth = 764
   OnCreate = FormCreate
-  LCLVersion = '2.1.0.0'
   object Splitter: TSplitter
     Left = 170
     Height = 519
@@ -33,7 +31,7 @@ object fmItems: TfmItems
       AutoWidthLastColumn = True
       Columns = <      
         item
-          Width = 164
+          Width = 168
         end>
       HideSelection = False
       ParentFont = False

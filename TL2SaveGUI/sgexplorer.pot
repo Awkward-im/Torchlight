@@ -11,9 +11,17 @@ msgctxt "formbuttons.rsimportdata"
 msgid "Import data"
 msgstr ""
 
+#: formchar.rscasual
+msgid "Casual"
+msgstr ""
+
 #: formchar.rsdexterity
 msgctxt "formchar.rsdexterity"
 msgid "Dexterity"
+msgstr ""
+
+#: formchar.rsexpert
+msgid "Expert"
 msgstr ""
 
 #: formchar.rsfemale
@@ -29,14 +37,119 @@ msgstr ""
 msgid "male"
 msgstr ""
 
+#: formchar.rsnormal
+msgctxt "formchar.rsnormal"
+msgid "Normal"
+msgstr ""
+
 #: formchar.rsstrength
 msgctxt "formchar.rsstrength"
 msgid "Strength"
 msgstr ""
 
+#: formchar.rsveteran
+msgid "Veteran"
+msgstr ""
+
 #: formchar.rsvitality
 msgctxt "formchar.rsvitality"
 msgid "Vitality"
+msgstr ""
+
+#: formeffects.ef00
+msgid "Unknown1"
+msgstr ""
+
+#: formeffects.ef01
+msgid "Unknown2"
+msgstr ""
+
+#: formeffects.ef02
+msgid "Exclusive"
+msgstr ""
+
+#: formeffects.ef03
+msgid "Not Magical"
+msgstr ""
+
+#: formeffects.ef04
+msgid "Saves"
+msgstr ""
+
+#: formeffects.ef05
+msgid "Display Positive"
+msgstr ""
+
+#: formeffects.ef06
+msgid "Unknown3"
+msgstr ""
+
+#: formeffects.ef07
+msgid "Use Owner Level"
+msgstr ""
+
+#: formeffects.ef08
+msgid "Has Graph"
+msgstr ""
+
+#: formeffects.ef09
+msgid "Is Bonus"
+msgstr ""
+
+#: formeffects.ef10
+msgid "Is Enchantment"
+msgstr ""
+
+#: formeffects.ef11
+msgid "Has Link Name"
+msgstr ""
+
+#: formeffects.ef12
+msgid "Has Particles"
+msgstr ""
+
+#: formeffects.ef13
+msgid "Has Unit Theme"
+msgstr ""
+
+#: formeffects.ef14
+msgid "Unknown4"
+msgstr ""
+
+#: formeffects.ef15
+msgid "Unknown5"
+msgstr ""
+
+#: formeffects.ef16
+msgid "Remove On Death"
+msgstr ""
+
+#: formeffects.ef17
+msgid "Has Icon"
+msgstr ""
+
+#: formeffects.ef18
+msgid "Display Max Modifier"
+msgstr ""
+
+#: formeffects.ef19
+msgid "Is For Weapon"
+msgstr ""
+
+#: formeffects.ef20
+msgid "Is For Armor"
+msgstr ""
+
+#: formeffects.ef21
+msgid "Is Disabled"
+msgstr ""
+
+#: formkeybinding.rsitem
+msgid "item"
+msgstr ""
+
+#: formkeybinding.rsskill
+msgid "skill"
 msgstr ""
 
 #: formmap.rssavetrigger
@@ -157,12 +270,10 @@ msgid "Delete"
 msgstr ""
 
 #: tfmbuttons.btnexport.caption
-msgctxt "tfmbuttons.btnexport.caption"
 msgid "Export"
 msgstr ""
 
 #: tfmbuttons.btnimport.caption
-msgctxt "tfmbuttons.btnimport.caption"
 msgid "Import"
 msgstr ""
 
@@ -193,7 +304,6 @@ msgid "Keep base stats"
 msgstr ""
 
 #: tfmchar.gbaction.caption
-msgctxt "tfmchar.gbaction.caption"
 msgid "Action"
 msgstr ""
 
@@ -219,7 +329,6 @@ msgid "Global"
 msgstr ""
 
 #: tfmchar.gbspells.caption
-msgctxt "tfmchar.gbspells.caption"
 msgid "Spells"
 msgstr ""
 
@@ -234,6 +343,10 @@ msgstr ""
 
 #: tfmchar.lblcurrent.caption
 msgid "Morphed view"
+msgstr ""
+
+#: tfmchar.lblcustomclass.caption
+msgid "Type here your custon class name"
 msgstr ""
 
 #: tfmchar.lbldatanote.caption
@@ -252,17 +365,14 @@ msgid "Difficulty"
 msgstr ""
 
 #: tfmchar.lblexperience.caption
-msgctxt "tfmchar.lblexperience.caption"
 msgid "Experience"
 msgstr ""
 
 #: tfmchar.lblfame.caption
-msgctxt "tfmchar.lblfame.caption"
 msgid "Fame"
 msgstr ""
 
 #: tfmchar.lblfameexp.caption
-msgctxt "tfmchar.lblfameexp.caption"
 msgid "Fame Exp"
 msgstr ""
 
@@ -282,12 +392,10 @@ msgid "Gold"
 msgstr ""
 
 #: tfmchar.lblhealth.caption
-msgctxt "tfmchar.lblhealth.caption"
 msgid "Health (now)"
 msgstr ""
 
 #: tfmchar.lblheathbonus.caption
-msgctxt "tfmchar.lblheathbonus.caption"
 msgid "Heath Bonus"
 msgstr ""
 
@@ -297,12 +405,10 @@ msgid "Level"
 msgstr ""
 
 #: tfmchar.lblmana.caption
-msgctxt "tfmchar.lblmana.caption"
 msgid "Mana (now)"
 msgstr ""
 
 #: tfmchar.lblmanabonus.caption
-msgctxt "tfmchar.lblmanabonus.caption"
 msgid "Mana Bonus"
 msgstr ""
 
@@ -316,7 +422,6 @@ msgid "* Permanent time is 5555"
 msgstr ""
 
 #: tfmchar.lblmorphtime.caption
-msgctxt "tfmchar.lblmorphtime.caption"
 msgid "Morph Time"
 msgstr ""
 
@@ -326,7 +431,6 @@ msgid "Character name"
 msgstr ""
 
 #: tfmchar.lblnew.caption
-msgctxt "tfmchar.lblnew.caption"
 msgid "New class"
 msgstr ""
 
@@ -335,12 +439,10 @@ msgid "NG State"
 msgstr ""
 
 #: tfmchar.lblscale.caption
-msgctxt "tfmchar.lblscale.caption"
 msgid "Scale"
 msgstr ""
 
 #: tfmchar.lblskin.caption
-msgctxt "tfmchar.lblskin.caption"
 msgid "Skin"
 msgstr ""
 
@@ -350,7 +452,6 @@ msgid "Strength"
 msgstr ""
 
 #: tfmchar.lbltowntime.caption
-msgctxt "tfmchar.lbltowntime.caption"
 msgid "Town Time"
 msgstr ""
 
@@ -379,17 +480,14 @@ msgid "Z:"
 msgstr ""
 
 #: tfmchar.rbactionattack.caption
-msgctxt "tfmchar.rbactionattack.caption"
 msgid "Attack"
 msgstr ""
 
 #: tfmchar.rbactiondefence.caption
-msgctxt "tfmchar.rbactiondefence.caption"
 msgid "Defence"
 msgstr ""
 
 #: tfmchar.rbactionidle.caption
-msgctxt "tfmchar.rbactionidle.caption"
 msgid "Idle"
 msgstr ""
 
@@ -435,7 +533,6 @@ msgid "Other"
 msgstr ""
 
 #: tfmchar.tsstat.caption
-msgctxt "tfmchar.tsstat.caption"
 msgid "Stats"
 msgstr ""
 
@@ -527,12 +624,10 @@ msgid "Unknown"
 msgstr ""
 
 #: tfmeffects.sgeffects.columns[0].title.caption
-msgctxt "tfmeffects.sgeffects.columns[0].title.caption"
 msgid "List"
 msgstr ""
 
 #: tfmeffects.sgeffects.columns[1].title.caption
-msgctxt "tfmeffects.sgeffects.columns[1].title.caption"
 msgid "Effect"
 msgstr ""
 
@@ -561,7 +656,7 @@ msgid "&Update"
 msgstr ""
 
 #: tfmitem.cbactivated.caption
-msgid "cbActivated"
+msgid "Activated"
 msgstr ""
 
 #: tfmitem.cbenabled.caption
@@ -599,7 +694,6 @@ msgid "Coordinates"
 msgstr ""
 
 #: tfmitem.gbcoords1.caption
-msgctxt "tfmitem.gbcoords1.caption"
 msgid "Altered"
 msgstr ""
 
@@ -608,17 +702,14 @@ msgid "Flags"
 msgstr ""
 
 #: tfmitem.lblarmor.caption
-msgctxt "tfmitem.lblarmor.caption"
 msgid "Armor"
 msgstr ""
 
 #: tfmitem.lblarmorbytype.caption
-msgctxt "tfmitem.lblarmorbytype.caption"
-msgid "lblArmorByType"
+msgid "Armor by Type"
 msgstr ""
 
 #: tfmitem.lblarmortype.caption
-msgctxt "tfmitem.lblarmortype.caption"
 msgid "Armor type"
 msgstr ""
 
@@ -628,7 +719,6 @@ msgid "-"
 msgstr ""
 
 #: tfmitem.lblenchant.caption
-msgctxt "tfmitem.lblenchant.caption"
 msgid "Enchant count"
 msgstr ""
 
@@ -643,7 +733,6 @@ msgid "Name"
 msgstr ""
 
 #: tfmitem.lblposition.caption
-msgctxt "tfmitem.lblposition.caption"
 msgid "Position"
 msgstr ""
 
@@ -653,27 +742,22 @@ msgid "-"
 msgstr ""
 
 #: tfmitem.lblprefix.caption
-msgctxt "tfmitem.lblprefix.caption"
 msgid "Prefix"
 msgstr ""
 
 #: tfmitem.lblsockets.caption
-msgctxt "tfmitem.lblsockets.caption"
 msgid "Sockets"
 msgstr ""
 
 #: tfmitem.lblstack.caption
-msgctxt "tfmitem.lblstack.caption"
 msgid "Stack"
 msgstr ""
 
 #: tfmitem.lblsuffix.caption
-msgctxt "tfmitem.lblsuffix.caption"
 msgid "Suffix"
 msgstr ""
 
 #: tfmitem.lblweapondmg.caption
-msgctxt "tfmitem.lblweapondmg.caption"
 msgid "Weapon Damage"
 msgstr ""
 
@@ -725,91 +809,6 @@ msgstr ""
 msgid "Prop"
 msgstr ""
 
-#: tfmitems.lblarmor.caption
-msgctxt "tfmitems.lblarmor.caption"
-msgid "Armor"
-msgstr ""
-
-#: tfmitems.lblarmorbytype.caption
-msgctxt "tfmitems.lblarmorbytype.caption"
-msgid "lblArmorByType"
-msgstr ""
-
-#: tfmitems.lblarmortype.caption
-msgctxt "tfmitems.lblarmortype.caption"
-msgid "Armor type"
-msgstr ""
-
-#: tfmitems.lblaugments.caption
-msgctxt "tfmitems.lblaugments.caption"
-msgid "Augments"
-msgstr ""
-
-#: tfmitems.lblenchant.caption
-msgctxt "tfmitems.lblenchant.caption"
-msgid "Enchant count"
-msgstr ""
-
-#: tfmitems.lbllevel.caption
-msgctxt "tfmitems.lbllevel.caption"
-msgid "Level"
-msgstr ""
-
-#: tfmitems.lblname.caption
-msgctxt "tfmitems.lblname.caption"
-msgid "Name"
-msgstr ""
-
-#: tfmitems.lblposition.caption
-msgctxt "tfmitems.lblposition.caption"
-msgid "Position"
-msgstr ""
-
-#: tfmitems.lblpostype.caption
-msgctxt "tfmitems.lblpostype.caption"
-msgid "lblPosType"
-msgstr ""
-
-#: tfmitems.lblprefix.caption
-msgctxt "tfmitems.lblprefix.caption"
-msgid "Prefix"
-msgstr ""
-
-#: tfmitems.lblsockets.caption
-msgctxt "tfmitems.lblsockets.caption"
-msgid "Sockets"
-msgstr ""
-
-#: tfmitems.lblstack.caption
-msgctxt "tfmitems.lblstack.caption"
-msgid "Stack"
-msgstr ""
-
-#: tfmitems.lblsuffix.caption
-msgctxt "tfmitems.lblsuffix.caption"
-msgid "Suffix"
-msgstr ""
-
-#: tfmitems.lblweapondmg.caption
-msgctxt "tfmitems.lblweapondmg.caption"
-msgid "Weapon Damage"
-msgstr ""
-
-#: tfmitems.sgeffects.columns[0].title.caption
-msgctxt "tfmitems.sgeffects.columns[0].title.caption"
-msgid "List"
-msgstr ""
-
-#: tfmitems.sgeffects.columns[1].title.caption
-msgctxt "tfmitems.sgeffects.columns[1].title.caption"
-msgid "Effect"
-msgstr ""
-
-#: tfmitems.sgeffects.columns[2].title.caption
-msgctxt "tfmitems.sgeffects.columns[2].title.caption"
-msgid "Name"
-msgstr ""
-
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
 msgid "Key"
 msgstr ""
@@ -828,7 +827,6 @@ msgid "Mod"
 msgstr ""
 
 #: tfmmap.btntriggerexport.caption
-msgctxt "tfmmap.btntriggerexport.caption"
 msgid "E"
 msgstr ""
 
@@ -888,12 +886,7 @@ msgstr ""
 
 #: tfmmodlist.caption
 msgctxt "tfmmodlist.caption"
-msgid "Копиров&ать"
-msgstr ""
-
-#: tfmmodlist.hint
-msgctxt "tfmmodlist.hint"
-msgid "Копировать"
+msgid "Mod list"
 msgstr ""
 
 #: tfmmodlist.lblbound.caption
@@ -963,7 +956,7 @@ msgid "&Update"
 msgstr ""
 
 #: tfmmovies.lblnote.caption
-msgid "Just\"Views\" column is editable"
+msgid "Just \"Views\" column is editable"
 msgstr ""
 
 #: tfmmovies.sgmovies.columns[0].title.caption
@@ -1069,7 +1062,6 @@ msgid "E&xit"
 msgstr ""
 
 #: tfmsavefile.actfilefixmodded.caption
-msgctxt "tfmsavefile.actfilefixmodded.caption"
 msgid "Fix Modded objects"
 msgstr ""
 
@@ -1083,10 +1075,6 @@ msgstr ""
 
 #: tfmsavefile.actfilesave.caption
 msgid "&Save"
-msgstr ""
-
-#: tfmsavefile.caption
-msgid "fmSaveFile"
 msgstr ""
 
 #: tfmsavefile.mnufile.caption
@@ -1160,7 +1148,6 @@ msgid "Icon"
 msgstr ""
 
 #: tfmskills.sgskills.columns[1].title.caption
-msgctxt "tfmskills.sgskills.columns[1].title.caption"
 msgid "Skill"
 msgstr ""
 
@@ -1230,17 +1217,14 @@ msgid "Normal"
 msgstr ""
 
 #: tfmstat.sgitems.columns[2].title.caption
-msgctxt "tfmstat.sgitems.columns[2].title.caption"
 msgid "Blue"
 msgstr ""
 
 #: tfmstat.sgitems.columns[3].title.caption
-msgctxt "tfmstat.sgitems.columns[3].title.caption"
 msgid "Green"
 msgstr ""
 
 #: tfmstat.sgitems.columns[4].title.caption
-msgctxt "tfmstat.sgitems.columns[4].title.caption"
 msgid "?Gold(4b)"
 msgstr ""
 
@@ -1253,7 +1237,6 @@ msgid "Max.Bonuses"
 msgstr ""
 
 #: tfmstat.sgitems.columns[7].title.caption
-msgctxt "tfmstat.sgitems.columns[7].title.caption"
 msgid "Bought"
 msgstr ""
 
@@ -1271,17 +1254,14 @@ msgid "Level"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[10].title.caption
-msgctxt "tfmstat.sglevelup.columns[10].title.caption"
 msgid "MinRightPhys"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[11].title.caption
-msgctxt "tfmstat.sglevelup.columns[11].title.caption"
 msgid "MaxRightPhys"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[12].title.caption
-msgctxt "tfmstat.sglevelup.columns[12].title.caption"
 msgid "Field12 (b)"
 msgstr ""
 
@@ -1291,12 +1271,10 @@ msgid "Time"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[2].title.caption
-msgctxt "tfmstat.sglevelup.columns[2].title.caption"
 msgid "MinPhys"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[3].title.caption
-msgctxt "tfmstat.sglevelup.columns[3].title.caption"
 msgid "MaxPhys"
 msgstr ""
 
@@ -1306,7 +1284,6 @@ msgid "Field4"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[5].title.caption
-msgctxt "tfmstat.sglevelup.columns[5].title.caption"
 msgid "Field5 (b)"
 msgstr ""
 
@@ -1316,17 +1293,14 @@ msgid "Gold"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[7].title.caption
-msgctxt "tfmstat.sglevelup.columns[7].title.caption"
 msgid "Field7 (b)"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[8].title.caption
-msgctxt "tfmstat.sglevelup.columns[8].title.caption"
 msgid "Field8 (b)"
 msgstr ""
 
 #: tfmstat.sglevelup.columns[9].title.caption
-msgctxt "tfmstat.sglevelup.columns[9].title.caption"
 msgid "Field9 (b)"
 msgstr ""
 
@@ -1336,17 +1310,14 @@ msgid "Title"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[1].title.caption
-msgctxt "tfmstat.sgmobs.columns[1].title.caption"
 msgid "Amount 1"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[2].title.caption
-msgctxt "tfmstat.sgmobs.columns[2].title.caption"
 msgid "Amount 2"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[3].title.caption
-msgctxt "tfmstat.sgmobs.columns[3].title.caption"
 msgid "Exp"
 msgstr ""
 
@@ -1356,27 +1327,22 @@ msgid "Field4"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[5].title.caption
-msgctxt "tfmstat.sgmobs.columns[5].title.caption"
 msgid "Field5"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[6].title.caption
-msgctxt "tfmstat.sgmobs.columns[6].title.caption"
 msgid "Field6"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[7].title.caption
-msgctxt "tfmstat.sgmobs.columns[7].title.caption"
 msgid "Field7"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[8].title.caption
-msgctxt "tfmstat.sgmobs.columns[8].title.caption"
 msgid "Field8"
 msgstr ""
 
 #: tfmstat.sgmobs.columns[9].title.caption
-msgctxt "tfmstat.sgmobs.columns[9].title.caption"
 msgid "Field9"
 msgstr ""
 
@@ -1386,12 +1352,10 @@ msgid "Title"
 msgstr ""
 
 #: tfmstat.sgskills.columns[1].title.caption
-msgctxt "tfmstat.sgskills.columns[1].title.caption"
 msgid "Times"
 msgstr ""
 
 #: tfmstat.sgskills.columns[2].title.caption
-msgctxt "tfmstat.sgskills.columns[2].title.caption"
 msgid "By Pet?"
 msgstr ""
 
@@ -1414,7 +1378,6 @@ msgid "Common"
 msgstr ""
 
 #: tfmstat.tsitems.caption
-msgctxt "tfmstat.tsitems.caption"
 msgid "Picked Items"
 msgstr ""
 
@@ -1447,11 +1410,6 @@ msgstr ""
 #: tfmstatistic.gbstatistic.caption
 msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
-msgstr ""
-
-#: tfmunits.btnexport.caption
-msgctxt "tfmunits.btnexport.caption"
-msgid "Export"
 msgstr ""
 
 #: tl2db.rshp
@@ -1575,7 +1533,7 @@ msgid "Wrong file size"
 msgstr ""
 
 #: tl2save.swrongversion
-msgid "Wrong save file signature"
+msgid "Wrong save file version"
 msgstr ""
 
 #: tl2statistic.rsbroken

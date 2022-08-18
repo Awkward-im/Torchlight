@@ -69,6 +69,7 @@ procedure TfmItems.FormCreate(Sender: TObject);
 begin
   FItem:=TfmItem.Create(Self);
   FItem.Parent:=pnlItem;
+  FItem.Align :=alClient;
 end;
 
 procedure TfmItems.FillInfo(aItems:TTL2ItemList; aChar:TTL2Character=nil);

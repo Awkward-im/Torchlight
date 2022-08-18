@@ -3,11 +3,9 @@ object fmKeyBinding: TfmKeyBinding
   Height = 449
   Top = 165
   Width = 598
-  Align = alClient
   BorderStyle = bsNone
   ClientHeight = 449
   ClientWidth = 598
-  LCLVersion = '2.1.0.0'
   object sgKeyBinding: TStringGrid
     Left = 0
     Height = 449
@@ -18,19 +16,19 @@ object fmKeyBinding: TfmKeyBinding
     Columns = <    
       item
         Title.Caption = 'Key'
-        Width = 128
+        Width = 160
       end    
       item
         Title.Caption = 'Type'
-        Width = 48
+        Width = 60
       end    
       item
         Title.Caption = 'Binding'
-        Width = 128
+        Width = 160
       end    
       item
         Title.Caption = 'Mod'
-        Width = 128
+        Width = 160
       end>
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll]

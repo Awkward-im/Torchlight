@@ -3,12 +3,11 @@ object fmEffects: TfmEffects
   Height = 513
   Top = 179
   Width = 620
-  Align = alClient
   BorderStyle = bsNone
   Caption = 'Effects'
   ClientHeight = 513
   ClientWidth = 620
-  LCLVersion = '2.1.0.0'
+  OnCreate = FormCreate
   object sgEffects: TStringGrid
     Left = 4
     Height = 208
@@ -47,6 +46,7 @@ object fmEffects: TfmEffects
     Alignment = taCenter
     AutoSize = False
     Caption = 'Effects'
+    Color = clDefault
     ParentColor = False
   end
   object edLinkName: TEdit
@@ -83,6 +83,7 @@ object fmEffects: TfmEffects
     Top = 283
     Width = 57
     Caption = 'Link Name'
+    Color = clDefault
     ParentColor = False
   end
   object lblGraph: TLabel
@@ -91,6 +92,7 @@ object fmEffects: TfmEffects
     Top = 328
     Width = 32
     Caption = 'Graph'
+    Color = clDefault
     ParentColor = False
   end
   object lblParticles: TLabel
@@ -99,6 +101,7 @@ object fmEffects: TfmEffects
     Top = 373
     Width = 44
     Caption = 'Particles'
+    Color = clDefault
     ParentColor = False
   end
   object lblIcon: TLabel
@@ -107,6 +110,7 @@ object fmEffects: TfmEffects
     Top = 418
     Width = 23
     Caption = 'Icon'
+    Color = clDefault
     ParentColor = False
   end
   object lblUnitTheme: TLabel
@@ -115,6 +119,7 @@ object fmEffects: TfmEffects
     Top = 463
     Width = 62
     Caption = 'Unit Theme'
+    Color = clDefault
     ParentColor = False
   end
   object lblBaseClass: TLabel
@@ -123,6 +128,7 @@ object fmEffects: TfmEffects
     Top = 347
     Width = 54
     Caption = 'Base Class'
+    Color = clDefault
     ParentColor = False
   end
   object lblDuration: TLabel
@@ -131,6 +137,7 @@ object fmEffects: TfmEffects
     Top = 41
     Width = 46
     Caption = 'Duration'
+    Color = clDefault
     ParentColor = False
   end
   object lblDamageType: TLabel
@@ -139,6 +146,7 @@ object fmEffects: TfmEffects
     Top = 208
     Width = 70
     Caption = 'Damage type'
+    Color = clDefault
     ParentColor = False
   end
   object lblActivation: TLabel
@@ -147,6 +155,7 @@ object fmEffects: TfmEffects
     Top = 256
     Width = 54
     Caption = 'Activation'
+    Color = clDefault
     ParentColor = False
   end
   object lblLevel: TLabel
@@ -155,6 +164,7 @@ object fmEffects: TfmEffects
     Top = 12
     Width = 27
     Caption = 'Level'
+    Color = clDefault
     ParentColor = False
   end
   object lblUnknown: TLabel
@@ -163,6 +173,7 @@ object fmEffects: TfmEffects
     Top = 70
     Width = 51
     Caption = 'Unknown'
+    Color = clDefault
     ParentColor = False
   end
   object lblDisplay: TLabel
@@ -171,6 +182,7 @@ object fmEffects: TfmEffects
     Top = 99
     Width = 38
     Caption = 'Display'
+    Color = clDefault
     ParentColor = False
   end
   object lblSource: TLabel
@@ -179,6 +191,7 @@ object fmEffects: TfmEffects
     Top = 301
     Width = 36
     Caption = 'Source'
+    Color = clDefault
     ParentColor = False
   end
   object lblProperties: TLabel
@@ -187,6 +200,7 @@ object fmEffects: TfmEffects
     Top = 256
     Width = 53
     Caption = 'Properties'
+    Color = clDefault
     ParentColor = False
   end
   object clbFlags: TCheckListBox
@@ -195,35 +209,8 @@ object fmEffects: TfmEffects
     Top = 4
     Width = 184
     ExtendedSelect = False
-    Items.Strings = (
-      'Unknown1'
-      'Unknown2'
-      'Exclusive'
-      'Not Magical'
-      'Saves'
-      'Display Positive'
-      'Unknown3'
-      'Use Owner Level'
-      'Has Graph'
-      'Is Bonus'
-      'Is Enchantment'
-      'Has Link Name'
-      'Has Particles '
-      'Has Unit Theme'
-      'Unknown4'
-      'Unknown5'
-      'Remove On Death'
-      'Has Icon'
-      'Display Max Modifier'
-      'Is For Weapon'
-      'Is For Armor'
-      'Is Disabled'
-    )
-    ItemHeight = 17
+    ItemHeight = 0
     TabOrder = 5
-    Data = {
-      1600000000000000000000000000000000000000000000000000
-    }
   end
   object lbProps: TListBox
     Left = 304
@@ -263,6 +250,7 @@ object fmEffects: TfmEffects
     Top = 239
     Width = 65
     Caption = 'Effect Name'
+    Color = clDefault
     ParentColor = False
   end
   object edEffectName: TEdit

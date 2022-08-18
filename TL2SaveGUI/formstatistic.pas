@@ -42,7 +42,7 @@ uses
 const
   CoordLeft  = 1;
   CoordTop   = 1;
-  WidthLabel = 200;
+  WidthLabel = 220;
   WidthEdit  = 80;
   Gap        = 6;
   HeightEdit = 21;

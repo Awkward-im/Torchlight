@@ -16,6 +16,7 @@ type
 
   TfmChar = class(TForm)
     bbUpdate: TBitBtn;
+    lblCustomClass: TLabel;
     pnlTop: TPanel;
     pcCharInfo: TPageControl;
 
@@ -214,6 +215,11 @@ resourcestring
   rsDexterity  = 'Dexterity';
   rsFocus      = 'Focus';
   rsVitality   = 'Vitality';
+
+  rsCasual  = 'Casual';
+  rsNormal  = 'Normal';
+  rsVeteran = 'Veteran';
+  rsExpert  = 'Expert';
 
   rsMale   = 'male';
   rsFemale = 'female';
@@ -784,7 +790,8 @@ begin
   FItems:=nil;
 
   FEffects:=TfmEffects.Create(Self);
-  FEffects.Parent:=tsOtherInfo;
+  FEffects.Parent :=tsOtherInfo;
+  FEffects.Align  :=alClient;
   FEffects.Visible:=true;
 
   SetupVisualPart;
@@ -797,6 +804,12 @@ begin
       OldCheckPointsState:=cbCheckPoints.Checked;
       config.Free;
 
+      cbDifficulty.Clear;
+      cbDifficulty.AddItem(rsCasual ,nil);
+      cbDifficulty.AddItem(rsNormal ,nil);
+      cbDifficulty.AddItem(rsVeteran,nil);
+      cbDifficulty.AddItem(rsExpert ,nil);
+
       pcCharInfo.ActivePage:=tsView;
     end;
 
@@ -806,7 +819,8 @@ begin
 
     ciUnit: begin
       FItems:=TfmItems.Create(self);
-      FItems.Parent:=tsItems;
+      FItems.Parent :=tsItems;
+      FItems.Align  :=alClient;
       FItems.Visible:=true;
 
       pcCharInfo.ActivePage:=tsView;

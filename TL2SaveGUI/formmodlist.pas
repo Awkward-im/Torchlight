@@ -75,14 +75,14 @@ begin
   sbClipboard.Enabled:=sgBound.RowCount>1;
 end;
 
-procedure TfmModList.sbUpClick(Sender: TObject);
+procedure TfmModList.sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
 begin
-  sgBound.MoveColRow(false,sgBound.Row,sgBound.Row-1);
   CheckButtons;
 end;
 
-procedure TfmModList.sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
+procedure TfmModList.sbUpClick(Sender: TObject);
 begin
+  sgBound.MoveColRow(false,sgBound.Row,sgBound.Row-1);
   CheckButtons;
 end;
 
@@ -222,6 +222,7 @@ begin
   ls:=Application.MainForm.Caption;
   ls[1]:='*';
   Application.MainForm.Caption:=ls;
+
   if sgBound.RowCount=0 then
     FSGame.BoundMods:=nil
   else

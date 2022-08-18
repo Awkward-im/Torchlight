@@ -431,7 +431,7 @@ begin
     TL2TreePanel.Visible:=false;
 
     lname:=TL2ShellTreeView.Path;
-    if lname[Length(lname)]='\' then
+    if lname[Length(lname)] in ['\','/'] then
       SetLength(lname,Length(lname)-1);
     lname:=ExtractFileName(lname);
 

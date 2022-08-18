@@ -18,7 +18,7 @@
     </i18n>
     <BuildModes>
       <Item Name="Default" Default="True"/>
-      <Item Name="Release">
+      <Item Name="Release32">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -62,7 +62,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <Libraries Value="D:\SVN\UpLazTrunk\cross\lib\x86_64-linux\"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -90,7 +90,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -285,10 +285,6 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\tl2types.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\TL2Save\tl2stats.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Stats"/>
@@ -344,11 +340,6 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Save\tl2stream.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Stream"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\TL2Save\tl2active.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Active"/>
@@ -363,7 +354,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-      <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib"/>
+      <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -387,6 +378,9 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
+      </Item>
+      <Item>
+        <Name Value="EFOpenError,"/>
       </Item>
     </Exceptions>
   </Debugging>

@@ -45,7 +45,7 @@ implementation
 uses
   awkSQLite3
   ,sysutils
-  ,RGLogging
+  ,Logging
   ,RGScan
   ,rgPAK
   ,rgio.DAT

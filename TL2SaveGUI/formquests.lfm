@@ -3,11 +3,9 @@ object fmQuests: TfmQuests
   Height = 391
   Top = 198
   Width = 665
-  Align = alClient
   BorderStyle = bsNone
   ClientHeight = 391
   ClientWidth = 665
-  LCLVersion = '2.1.0.0'
   object sgQuests: TStringGrid
     Left = 8
     Height = 339
@@ -52,7 +50,8 @@ object fmQuests: TfmQuests
     Left = 8
     Height = 25
     Top = 8
-    Width = 75
+    Width = 84
+    AutoSize = True
     Caption = 'Save Quest'
     OnClick = btnSaveQuestClick
     TabOrder = 1

@@ -242,18 +242,20 @@ var
   i:integer;
 }
 begin
+  fmButtons:=TfmButtons.Create(Self);
+  fmButtons.Parent:=MainPanel;
+  fmButtons.Align :=alTop;
+
   FSettings:=TfmSettings.Create(Self);
   FSettings.Parent:=MainPanel;
+  FSettings.Align :=alClient;
   {i:=}LoadBases(FSettings.edDBFile.Text);
 //  if i<>0 then ShowMessage(rsNoBase+' '+IntToStr(i));
 
-  fmButtons:=TfmButtons.Create(Self);
-  fmButtons.Parent:=MainPanel;
-
-  FItems :=TfmItems .Create(Self); FItems .Parent:=MainPanel;
-  FSkills:=TfmSkills.Create(Self); FSkills.Parent:=MainPanel;
-  FChar  :=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel; FChar.SkillForm:=FSkills;
-  FPet   :=TfmChar.Create(Self,ciPet   ); FPet .Parent:=MainPanel;
+  FItems :=TfmItems .Create(Self); FItems .Parent:=MainPanel; FItems .Align:=alClient;
+  FSkills:=TfmSkills.Create(Self); FSkills.Parent:=MainPanel; FSkills.Align:=alClient;
+  FChar  :=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel; FChar.Align:=alClient; FChar.SkillForm:=FSkills;
+  FPet   :=TfmChar.Create(Self,ciPet   ); FPet .Parent:=MainPanel; FPet .Align:=alClient;
 
   fmButtons.Visible:=true;
 
@@ -472,6 +474,7 @@ begin
       begin
         FMovies:=TfmMovies.Create(Self);
         FMovies.Parent:=MainPanel;
+        FMovies.Align :=alClient;
         FMovies.FillInfo(SGame);
       end;
       SGEPage:=FMovies;
@@ -483,6 +486,7 @@ begin
       begin
         FModList:=TfmModList.Create(Self);
         FModList.Parent:=MainPanel;
+        FModList.Align :=alClient;
         FModList.FillInfo(SGame);
       end;
       SGEPage:=FModList;
@@ -494,6 +498,7 @@ begin
       begin
         FKeyBinding:=TfmKeyBinding.Create(Self);
         FKeyBinding.Parent:=MainPanel;
+        FKeyBinding.Align :=alClient;
         FKeyBinding.FillInfo(SGame);
       end;
       SGEPage:=FKeyBinding;
@@ -505,6 +510,7 @@ begin
       begin
         FStatistic:=TfmStatistic.Create(Self);
         FStatistic.Parent:=MainPanel;
+        FStatistic.Align :=alClient;
         FStatistic.FillInfo(SGame);
       end;
       SGEPage:=FStatistic;
@@ -576,6 +582,7 @@ begin
           begin
             FMaps:=TfmMap.Create(Self);
             FMaps.Parent:=MainPanel;
+            FMaps.Align :=alClient;
           end;
           FMaps.FillInfo(SGame,lidx);
           fmButtons.Offset:=SGame.Maps[lidx].DataOffset;
@@ -588,6 +595,7 @@ begin
               begin
                 FUnits:=TfmUnits.Create(Self);
                 FUnits.Parent:=MainPanel;
+                FUnits.Align :=alClient;
               end;
               FUnits.FillInfo(SGame,lidx);
               SGEPage:=FUnits;
@@ -612,6 +620,7 @@ begin
         fmButtons.Offset:=SGame.Quests.DataOffset; //!!
         FQuests:=TfmQuests.Create(Self);
         FQuests.Parent:=MainPanel;
+        FQuests.Align :=alClient;
         FQuests.FillInfo(SGame);
       end;
       SGEPage:=FQuests;
@@ -623,6 +632,7 @@ begin
       begin
         FRecipes:=TfmRecipes.Create(Self);
         FRecipes.Parent:=MainPanel;
+        FRecipes.Align :=alClient;
         FRecipes.FillInfo(SGame);
       end;
       SGEPage:=FRecipes;
@@ -635,6 +645,7 @@ begin
         fmButtons.Offset:=SGame.Stats.DataOffset; //!!
         FStats:=TfmStat.Create(Self);
         FStats.Parent:=MainPanel;
+        FStats.Align :=alClient;
         FStats.FillInfo(SGame);
       end;
       SGEPage:=FStats;

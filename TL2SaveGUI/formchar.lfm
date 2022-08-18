@@ -3,20 +3,18 @@ object fmChar: TfmChar
   Height = 502
   Top = 294
   Width = 640
-  Align = alClient
   BorderStyle = bsNone
   ClientHeight = 502
   ClientWidth = 640
   OnDestroy = FormDestroy
-  LCLVersion = '2.1.0.0'
   object pcCharInfo: TPageControl
     Left = 0
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsView
+    ActivePage = tsStat
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -37,13 +35,14 @@ object fmChar: TfmChar
           Top = 4
           Width = 48
           Caption = 'Difficulty'
+          Color = clDefault
           ParentColor = False
         end
         object cbHardcore: TCheckBox
           Left = 8
           Height = 19
           Top = 64
-          Width = 69
+          Width = 67
           Caption = 'Hardcore'
           OnClick = ToSetUpdate
           TabOrder = 2
@@ -54,6 +53,7 @@ object fmChar: TfmChar
           Top = 37
           Width = 46
           Caption = 'NG State'
+          Color = clDefault
           ParentColor = False
         end
         object cbDifficulty: TComboBox
@@ -63,12 +63,6 @@ object fmChar: TfmChar
           Width = 131
           AutoSize = False
           ItemHeight = 15
-          Items.Strings = (
-            'Casual'
-            'Normal'
-            'Veteran'
-            'Expert'
-          )
           OnChange = ToSetUpdate
           Style = csDropDownList
           TabOrder = 0
@@ -107,6 +101,7 @@ object fmChar: TfmChar
           Top = 8
           Width = 45
           Caption = 'Strength'
+          Color = clDefault
           ParentColor = False
         end
         object lblDexterity: TLabel
@@ -115,6 +110,7 @@ object fmChar: TfmChar
           Top = 40
           Width = 46
           Caption = 'Dexterity'
+          Color = clDefault
           ParentColor = False
         end
         object lblFocus: TLabel
@@ -123,6 +119,7 @@ object fmChar: TfmChar
           Top = 73
           Width = 31
           Caption = 'Focus'
+          Color = clDefault
           ParentColor = False
         end
         object lblVitality: TLabel
@@ -131,6 +128,7 @@ object fmChar: TfmChar
           Top = 104
           Width = 36
           Caption = 'Vitality'
+          Color = clDefault
           ParentColor = False
         end
         object lblGold: TLabel
@@ -139,6 +137,7 @@ object fmChar: TfmChar
           Top = 144
           Width = 25
           Caption = 'Gold'
+          Color = clDefault
           ParentColor = False
         end
         object edGold: TEdit
@@ -235,6 +234,7 @@ object fmChar: TfmChar
           Top = 8
           Width = 27
           Caption = 'Level'
+          Color = clDefault
           ParentColor = False
         end
         object edExperience: TEdit
@@ -253,6 +253,7 @@ object fmChar: TfmChar
           Top = 38
           Width = 56
           Caption = 'Experience'
+          Color = clDefault
           ParentColor = False
         end
         object lblFame: TLabel
@@ -261,6 +262,7 @@ object fmChar: TfmChar
           Top = 68
           Width = 29
           Caption = 'Fame'
+          Color = clDefault
           ParentColor = False
         end
         object edFameExp: TEdit
@@ -279,6 +281,7 @@ object fmChar: TfmChar
           Top = 98
           Width = 50
           Caption = 'Fame Exp'
+          Color = clDefault
           ParentColor = False
         end
         object edHealth: TEdit
@@ -297,6 +300,7 @@ object fmChar: TfmChar
           Top = 128
           Width = 69
           Caption = 'Health (now)'
+          Color = clDefault
           ParentColor = False
         end
         object edHealthBonus: TEdit
@@ -315,6 +319,7 @@ object fmChar: TfmChar
           Top = 158
           Width = 68
           Caption = 'Heath Bonus'
+          Color = clDefault
           ParentColor = False
         end
         object edMana: TEdit
@@ -333,6 +338,7 @@ object fmChar: TfmChar
           Top = 188
           Width = 64
           Caption = 'Mana (now)'
+          Color = clDefault
           ParentColor = False
         end
         object edManaBonus: TEdit
@@ -351,6 +357,7 @@ object fmChar: TfmChar
           Top = 218
           Width = 66
           Caption = 'Mana Bonus'
+          Color = clDefault
           ParentColor = False
           WordWrap = True
         end
@@ -365,7 +372,6 @@ object fmChar: TfmChar
           NumbersOnly = True
           TabOrder = 2
           OnChange = seFameChange
-          MinValue = 0
           NullValue = 0
           Spacing = 2
           Value = 0
@@ -393,6 +399,7 @@ object fmChar: TfmChar
         Top = 204
         Width = 58
         Caption = 'Free points'
+        Color = clDefault
         ParentColor = False
       end
       object lblDataNote: TLabel
@@ -401,13 +408,14 @@ object fmChar: TfmChar
         Top = 276
         Width = 256
         Caption = '*Actual HP and MP Bonus values can be another'#13#10'and will re-calc in game'
+        Color = clDefault
         ParentColor = False
       end
       object cbCheckPoints: TCheckBox
         Left = 296
         Height = 19
         Top = 232
-        Width = 89
+        Width = 87
         Caption = 'Check points'
         OnClick = cbCheckPointsClick
         TabOrder = 4
@@ -416,7 +424,7 @@ object fmChar: TfmChar
         Left = 296
         Height = 19
         Top = 256
-        Width = 100
+        Width = 98
         Caption = 'Keep base stats'
         OnClick = cbKeepBaseClick
         TabOrder = 5
@@ -445,6 +453,7 @@ object fmChar: TfmChar
         Top = 239
         Width = 66
         Caption = 'Morph Time'
+        Color = clDefault
         ParentColor = False
       end
       object edName: TEdit
@@ -461,6 +470,7 @@ object fmChar: TfmChar
         Top = 51
         Width = 312
         AutoSize = False
+        Color = clDefault
         ParentColor = False
       end
       object lblNew: TLabel
@@ -472,6 +482,7 @@ object fmChar: TfmChar
         Anchors = [akTop, akLeft, akRight]
         AutoSize = False
         Caption = 'New class'
+        Color = clDefault
         ParentColor = False
       end
       object cbMorph: TComboBox
@@ -502,6 +513,7 @@ object fmChar: TfmChar
         Top = 152
         Width = 27
         Caption = 'Scale'
+        Color = clDefault
         ParentColor = False
       end
       object edMorphTime: TEdit
@@ -519,6 +531,7 @@ object fmChar: TfmChar
         Top = 4
         Width = 84
         Caption = 'Character name'
+        Color = clDefault
         ParentColor = False
       end
       object imgIcon: TImage
@@ -535,6 +548,7 @@ object fmChar: TfmChar
         Top = 184
         Width = 76
         Caption = 'Morphed view'
+        Color = clDefault
         ParentColor = False
       end
       object lblMorphNote: TLabel
@@ -543,6 +557,7 @@ object fmChar: TfmChar
         Top = 266
         Width = 131
         Caption = '* Permanent time is 5555'
+        Color = clDefault
         ParentColor = False
         Visible = False
       end
@@ -550,7 +565,7 @@ object fmChar: TfmChar
         Left = 4
         Height = 19
         Top = 404
-        Width = 61
+        Width = 59
         Anchors = [akLeft, akBottom]
         Caption = 'Cheater'
         OnChange = ToSetUpdate
@@ -597,7 +612,7 @@ object fmChar: TfmChar
           Left = 8
           Height = 19
           Top = 9
-          Width = 31
+          Width = 29
           Caption = 'M'
           OnClick = rbGenderClick
           TabOrder = 0
@@ -606,7 +621,7 @@ object fmChar: TfmChar
           Left = 48
           Height = 19
           Top = 9
-          Width = 26
+          Width = 24
           Caption = 'F'
           OnClick = rbGenderClick
           TabOrder = 1
@@ -615,7 +630,7 @@ object fmChar: TfmChar
           Left = 80
           Height = 19
           Top = 9
-          Width = 25
+          Width = 23
           Caption = '?'
           OnClick = rbGenderClick
           TabOrder = 2
@@ -649,6 +664,13 @@ object fmChar: TfmChar
         ReadOnly = True
         TabOrder = 10
       end
+      object lblCustomClass: TLabel
+        Left = 336
+        Height = 15
+        Top = 266
+        Width = 179
+        Caption = 'Type here your custon class name'
+      end
     end
     object tsWardrobe: TTabSheet
       Caption = 'Wardrobe'
@@ -679,6 +701,7 @@ object fmChar: TfmChar
         Top = 274
         Width = 22
         Caption = 'Skin'
+        Color = clDefault
         ParentColor = False
       end
       object edSkin: TEdit
@@ -708,7 +731,7 @@ object fmChar: TfmChar
           Left = 5
           Height = 19
           Top = 0
-          Width = 39
+          Width = 37
           Caption = 'Idle'
           OnClick = ToSetUpdate
           TabOrder = 0
@@ -717,7 +740,7 @@ object fmChar: TfmChar
           Left = 5
           Height = 19
           Top = 24
-          Width = 54
+          Width = 52
           Caption = 'Attack'
           OnClick = ToSetUpdate
           TabOrder = 1
@@ -726,7 +749,7 @@ object fmChar: TfmChar
           Left = 4
           Height = 19
           Top = 48
-          Width = 63
+          Width = 61
           Caption = 'Defence'
           OnClick = ToSetUpdate
           TabOrder = 2
@@ -860,6 +883,7 @@ object fmChar: TfmChar
         Top = 152
         Width = 60
         Caption = 'Town Time'
+        Color = clDefault
         ParentColor = False
       end
       object edTownTime: TEdit
@@ -874,7 +898,7 @@ object fmChar: TfmChar
         Left = 464
         Height = 19
         Top = 8
-        Width = 62
+        Width = 60
         Caption = 'Enabled'
         OnClick = ToSetUpdate
         TabOrder = 2
@@ -904,6 +928,7 @@ object fmChar: TfmChar
         Anchors = [akTop, akLeft, akRight]
         AutoSize = False
         Caption = 'Area'
+        Color = clDefault
         ParentColor = False
       end
       object lblWaypoint: TLabel
@@ -915,6 +940,7 @@ object fmChar: TfmChar
         Anchors = [akTop, akLeft, akRight]
         AutoSize = False
         Caption = 'Waypoint'
+        Color = clDefault
         ParentColor = False
       end
       object edWaypoint: TEdit
@@ -951,6 +977,7 @@ object fmChar: TfmChar
           Top = 8
           Width = 11
           Caption = 'X:'
+          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -961,6 +988,7 @@ object fmChar: TfmChar
           Top = 32
           Width = 10
           Caption = 'Y:'
+          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -971,6 +999,7 @@ object fmChar: TfmChar
           Top = 58
           Width = 10
           Caption = 'Z:'
+          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -1038,6 +1067,7 @@ object fmChar: TfmChar
         Top = 256
         Width = 43
         Caption = 'Mod list'
+        Color = clDefault
         ParentColor = False
       end
     end

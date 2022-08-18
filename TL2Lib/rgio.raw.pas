@@ -52,9 +52,10 @@ function BuildRawFile  (data:pointer;                      const fname:string):i
 implementation
 
 uses
+  rwmemory,
+
   rgglobal,
   rgstream,
-  rgmemory,
   rgnode;
 
 const

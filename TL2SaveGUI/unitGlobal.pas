@@ -13,6 +13,7 @@ unit unitGlobal;
 interface
 
 uses
+  rgglobal,
   tl2db;
 
 procedure LoadGameGlobals;

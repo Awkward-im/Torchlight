@@ -56,7 +56,7 @@ implementation
 
 uses
   SysUtils, // CreateGUID call for MakeModInfo function
-  rgmemory,
+  rwmemory,
   rgio.text,
   rgnode;
 

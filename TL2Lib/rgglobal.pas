@@ -3,11 +3,18 @@ unit RGGlobal;
 interface
 
 {$DEFINE Interface}
+
+uses
+  logging;
+
 //===== Common things =====
 
 {$IF NOT DEFINED(TIntegerDynArray)} type TIntegerDynArray = array of Integer; {$ENDIF}
 {$IF NOT DEFINED(TInt64DynArray)}   type TInt64DynArray   = array of Int64;   {$ENDIF}
 {$IF NOT DEFINED(TSingleDynArray)}  type TSingleDynArray  = array of Single;  {$ENDIF}
+
+var
+  RGLog :logging.TLog;
 
 const
   TL2DataBase = 'tl2db2.db';
@@ -38,6 +45,8 @@ function  CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
 function  ConcatWide (s1,s2:PWideChar):PWideChar;
 function  CharPosWide(c:WideChar; asrc:PWideChar):PWideChar;
 function  PosWide(asubstr,asrc:PWideChar):PWideChar;
+function  GetLineWide(var aptr:PByte; var buf:pointer; var asize:integer):PWideChar;
+//procedure WriteWide(var buf:PByte; var idx:cardinal; atext:PWideChar);
 function  BufLen(abuf:PAnsiChar; asize:cardinal):integer;
 function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 
@@ -162,6 +171,7 @@ const
   tl2saveCurrent  = $44; // last (current) version
 {
   0x11 - movies
+  0x17 - !!!!!! TL1 1.15 savegame
   0x27 - Coords (-999, -999, -999)
   0x38 - min for read/write
   0x3B - scramble
@@ -432,6 +442,60 @@ begin
   end;
 end;
 
+function GetLineWide(var aptr:PByte; var buf:pointer; var asize:integer):PWideChar;
+var
+  lend:PWideChar;
+  llen:integer;
+begin
+  result:=nil;
+  lend:=pointer(aptr);
+
+  while not (lend^ in [#0, #10, #13]) do inc(lend);
+
+  llen:=PByte(lend)-aptr;
+  if llen>0 then
+  begin
+    if (llen+SizeOf(WideChar))>=asize then
+    begin
+      asize:=Align(llen+SizeOf(WideChar),16);
+      ReallocMem(PByte(buf),asize);
+    end;
+    move(aptr^,PByte(buf)^,llen);
+    result:=buf;
+    PByte(buf)[llen  ]:=0;
+    PByte(buf)[llen+1]:=0;
+  end;
+  
+  while lend^ in [#10, #13] do inc(lend);
+  aptr:=pointer(lend);
+end;
+{
+procedure WriteWide(var buf:PByte; var idx:cardinal; atext:PWideChar);
+const
+  TMSGrow = 4096;
+Var
+  GC,NewIdx:PtrInt;
+  lcnt:integer;
+begin
+  lcnt:=Length(atext)*SizeOf(WideChar);
+
+  If lcnt=0 then
+    exit;
+
+  NewIdx:=idx+lcnt;
+  GC:=MemSize(buf);
+  If NewIdx>=GC then
+  begin
+    GC:=GC+(GC div 4);
+    GC:=(GC+(TMSGrow-1)) and not (TMSGrow-1);
+
+    ReallocMem(buf,GC);
+  end;
+  System.Move(atext^,buf[idx],lcnt);
+  idx:=NewIdx;
+end;
+}
+
 // from LazFileUtils
 function ExtractFileNameOnly(const aFilename: string):string;
 var
@@ -665,5 +729,14 @@ begin
   Result := (UInt64(h1) Shl 32) Or h2;
 end;
 {$POP}
+
+
+initialization
+
+  RGLog.Init;
+
+finalization
+
+  RGLog.Free;
 
 end.

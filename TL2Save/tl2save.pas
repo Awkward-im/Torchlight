@@ -40,6 +40,8 @@ type
 
   //--- TL2 save part
   private
+    FVersion   :dword;
+    FDataStart :integer;
 
     //--- Blocks
     FLastBlock :TTL2Stats;
@@ -529,8 +531,8 @@ end;
 
 function TTL2SaveFile.LoadFromFile(const aname:string):boolean;
 var
-  lSaveHeader:TL2SaveHeader;
-  lSaveFooter:TL2SaveFooter;
+  lchecksum,lsize:dword;
+  lscramble:byte;
 begin
   result:=false;
 
@@ -541,31 +543,38 @@ begin
   try
     TMemoryStream(FStream).LoadFromFile(aname);
 
-    if FStream.Size<(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)) then
+    if FStream.Size<6 then
     begin
       Error(sWrongSize);
       Exit;
     end;
 
-    FStream.Read(lSaveHeader,SizeOf(lSaveHeader));
-    if (lSaveHeader.Version<tl2saveMinimal) or (lSaveHeader.Version>tl2saveCurrent) then
+    FStream.Read(FVersion,4);
+{
+    if (FVersion<tl2saveMinimal) or (FVersion>tl2saveCurrent) then
     begin
       Error(sWrongVersion);
       Exit;
     end;
+}
+    if FVersion>=tl2saveEncoded  then FStream.Read(lscramble,1) else lscramble:=0;
+    if FVersion>=tl2saveChecksum then FStream.Read(lchecksum,4);
 
-    FStream.Seek(-SizeOf(lSaveFooter),soEnd);
-    FStream.Read(lSaveFooter,SizeOf(lSaveFooter));
+    FDataStart:=FStream.Position;
+    
+    FStream.Seek(-4,soEnd);
+    FStream.Read(lsize,4);
 
-    if lSaveFooter.filesize<>FStream.Size then
+    if lsize<>FStream.Size then
     begin
       Error(sWrongFooter);
       Exit;
     end;
     
-    if lSaveHeader.Encoded then
-      Decode(TMemoryStream(FStream).Memory+ SizeOf(lSaveHeader),
-                           FStream .Size  -(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
+    if lscramble<>0 then
+      Decode(TMemoryStream(FStream).Memory+FDataStart,
+                           FStream .Size  -FDataStart-SizeOf(lsize),
+                           FVersion>=tl2saveScramble);
 
     result:=true;
   except
@@ -576,29 +585,36 @@ end;
 procedure TTL2SaveFile.SaveToFile(const aname:string; aencoded:boolean=false);
 var
   lsout:TMemoryStream;
-  lSaveHeader:TL2SaveHeader;
-  lSaveFooter:TL2SaveFooter;
+  lpos:SizeInt;
+  lchecksum,lsize:dword;
 begin
-  lSaveHeader.Version :=tl2saveCurrent;
-  lSaveHeader.Encoded :=aencoded;
-  lSaveHeader.Checksum:=CalcCheckSum(
-    TMemoryStream(FStream).Memory+ SizeOf(lSaveHeader),
-                  FStream .Size  -(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
+  FVersion:=tl2saveCurrent;
 
   lsout:=TMemoryStream.Create;
   try
     try
-      lsout.Write(lSaveHeader,SizeOf(lSaveHeader));
-{data}
-      FStream.Position:=SizeOf(lSaveHeader); //!!
-      lsout.CopyFrom(FStream,FStream.Size-(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
-{}
-      if aencoded then
-        Encode(lsout.Memory+SizeOf(lSaveHeader),
-               lsout.Size-(SizeOf(lSaveHeader)+SizeOf(lSaveFooter)));
+      lsout.Write(FVersion,4);
+      if FVersion>=tl2saveEncoded  then lsout.Write(ORD(aencoded),1);
+      if FVersion>=tl2saveChecksum then
+      begin
+        lchecksum:=CalcCheckSum(
+          TMemoryStream(FStream).Memory+FDataStart,
+                        FStream .Size  -FDataStart-4);
+        lsout.Write(lchecksum,4);
+      end;
+      lpos:=lsout.Position;
 
-      lSaveFooter.filesize:=lsout.Size+SizeOf(lSaveFooter);
-      lsout.Write(lSaveFooter,SizeOf(lSaveFooter));
+{data}
+      FStream.Position:=FDataStart;
+      lsout.CopyFrom(FStream,FStream.Size-FDataStart-4);
+{}
+      // Modern only
+      if aencoded then
+        Encode(lsout.Memory+lpos,
+               lsout.Size  -lpos-4);
+
+      lsize:=lsout.Size+4;
+      lsout.Write(lsize,4);
 
       lsout.SaveToFile(aname);
     except

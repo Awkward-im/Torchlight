@@ -24,10 +24,12 @@ implementation
 uses
   SysUtils,
 
+  dict,
+  rwmemory,
+  logging,
+
   rgdict,
-  rgmemory,
-  rgnode,
-  rglogging;
+  rgnode;
 
 {$IFDEF DEBUG}  
 var
@@ -83,11 +85,11 @@ begin
   begin
     for i:=0 to FLocals.Count-1 do
     begin
-      pc:=FLocals.IdxTag[i];
+      pc:=FLocals.Tags[i];
       lhash:=RGHash(pc);
       if aid=lhash then
       begin
-        aliases.Add(lhash,pc);
+        aliases.Add(pc,lhash);
         result:=pc;
         break;
       end;
@@ -102,12 +104,12 @@ begin
     result:=pointer(FBuffer);
 
 {$IFDEF DEBUG}  
-    unkn.add(aid,nil);
+    unkn.add(nil,aid);
 {$ENDIF}
   end
 {$IFDEF DEBUG}  
   else
-    known.add(aid,result);
+    known.add(result,aid);
 {$ENDIF}
 end;
 
@@ -191,7 +193,7 @@ begin
     else
       pc:=nil;
     end;
-    FLocals.Add(lid,pc);
+    FLocals.Add(pc,lid);
     FreeMem(pc);
   end;
 
@@ -215,7 +217,7 @@ begin
 
   if FVer=verTL1 then
   begin
-    lidx:=FLocals.Add(FDictIndex,GetNodeName(anode));
+    lidx:=FLocals.Add(GetNodeName(anode),FDictIndex);
     if lidx=FDictIndex then inc(FDictIndex);
     aStream.WriteDWord(lidx);
   end
@@ -238,7 +240,7 @@ begin
       // name
       if FVer=verTL1 then
       begin
-        lidx:=FLocals.Add(FDictIndex,GetNodeName(lptr));
+        lidx:=FLocals.Add(GetNodeName(lptr),FDictIndex);
         if lidx=FDictIndex then inc(FDictIndex);
         aStream.WriteDWord(lidx);
       end
@@ -256,17 +258,17 @@ begin
         rgBool     : if AsBool(lptr) then aStream.WriteDWord(1) else aStream.WriteDWord(0);
 
         rgString   : begin
-          lidx:=FLocals.Add(FDictIndex,AsString(lptr));
+          lidx:=FLocals.Add(AsString(lptr),FDictIndex);
           if lidx=FDictIndex then inc(FDictIndex);
           aStream.WriteDWord(lidx);
         end;
         rgNote     : begin
-          lidx:=FLocals.Add(FDictIndex,AsNote(lptr));
+          lidx:=FLocals.Add(AsNote(lptr),FDictIndex);
           if lidx=FDictIndex then inc(FDictIndex);
           aStream.WriteDWord(lidx);
         end;
         rgTranslate: begin
-          lidx:=FLocals.Add(FDictIndex,AsTranslate(lptr));
+          lidx:=FLocals.Add(AsTranslate(lptr),FDictIndex);
           if lidx=FDictIndex then inc(FDictIndex);
           aStream.WriteDWord(lidx);
         end;
@@ -323,8 +325,8 @@ begin
   aStream.WriteDword(FLocals.Count);
   for i:=0 to FLocals.Count-1 do
   begin
-    aStream.WriteDWord(FLocals.IdxHash[i]);
-    p:=FLocals.IdxTag[i];
+    aStream.WriteDWord(FLocals.Hashes[i]);
+    p:=FLocals.Tags[i];
     j:=Length(p);
     case ABS(FVer) of
       verTL1: begin

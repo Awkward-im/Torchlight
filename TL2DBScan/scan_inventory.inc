@@ -1,5 +1,4 @@
 {%REGION Inventory}
-{TODO: Check for existing}
 
 function AddInventoryToBase(ams:pointer; aId:UInt32; const aname:string; isContainer:boolean):boolean;
 var

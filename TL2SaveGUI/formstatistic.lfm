@@ -3,17 +3,15 @@ object fmStatistic: TfmStatistic
   Height = 377
   Top = 125
   Width = 602
-  Align = alClient
   BorderStyle = bsNone
   ClientHeight = 377
   ClientWidth = 602
   OnCreate = FormCreate
-  LCLVersion = '2.1.0.0'
   object bbUpdate: TBitBtn
     Left = 24
     Height = 30
     Top = 336
-    Width = 75
+    Width = 90
     Caption = '&Update'
     Default = True
     Kind = bkOK

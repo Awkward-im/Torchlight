@@ -3,11 +3,9 @@ object fmMovies: TfmMovies
   Height = 306
   Top = 218
   Width = 540
-  Align = alClient
   BorderStyle = bsNone
   ClientHeight = 306
   ClientWidth = 540
-  LCLVersion = '2.1.0.0'
   object sgMovies: TStringGrid
     Left = 0
     Height = 200
@@ -29,9 +27,8 @@ object fmMovies: TfmMovies
       end    
       item
         ReadOnly = True
-        SizePriority = 0
         Title.Caption = 'Path'
-        Width = 128
+        Width = 132
       end    
       item
         ReadOnly = True
@@ -55,12 +52,20 @@ object fmMovies: TfmMovies
     TabOrder = 0
     OnEditingDone = sgMoviesEditingDone
     OnKeyDown = sgMoviesKeyDown
+    ColWidths = (
+      96
+      48
+      132
+      64
+      64
+      128
+    )
   end
   object bbUpdate: TBitBtn
     Left = 8
     Height = 30
     Top = 230
-    Width = 75
+    Width = 90
     Caption = '&Update'
     Default = True
     Kind = bkOK
@@ -71,8 +76,9 @@ object fmMovies: TfmMovies
     Left = 8
     Height = 15
     Top = 209
-    Width = 160
-    Caption = 'Just"Views" column is editable'
+    Width = 163
+    Caption = 'Just "Views" column is editable'
+    Color = clDefault
     ParentColor = False
   end
 end

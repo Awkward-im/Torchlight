@@ -66,12 +66,12 @@ implementation
 
 uses
   sysutils,
+  logging,
+  rwmemory,
   rgstream,
-  rgmemory,
   rgfiletype,
   rgnode,
-  rgio.text,
-  rglogging;
+  rgio.text;
 
 {
   Parse Manifest from memory block addressed by aptr
