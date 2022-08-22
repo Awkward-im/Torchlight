@@ -17,6 +17,7 @@ type
     bbClose: TBitBtn;
     bbDelete: TBitBtn;
     bbApply: TBitBtn;
+    cbSaveSettings: TCheckBox;
     deGameDir: TDirectoryEdit;
     ImageList: TImageList;
     lblDirNote: TLabel;
@@ -37,6 +38,7 @@ type
     procedure bbAddClick(Sender: TObject);
     procedure deGameDirAcceptDirectory(Sender: TObject; var Value: String);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
     procedure lbActiveClick(Sender: TObject);
     procedure lbReserveClick(Sender: TObject);
@@ -45,10 +47,13 @@ type
     procedure sbDownClick(Sender: TObject);
     procedure sbUpClick(Sender: TObject);
   private
+    FLastModPath:string;
 
+    procedure SaveSettings();
+    function  LoadSettings():string;
     procedure FillList(const adir: string);
     procedure ShowDescr(const fname: string);
-    function Split(const fin: string): boolean;
+    function  Split(const fin: string): boolean;
 
   public
 
@@ -62,8 +67,26 @@ implementation
 {$R *.lfm}
 
 uses
+  INIFiles,
   rgglobal,
   TL2Mod;
+
+resourcestring
+  sTitle  = 'Title';
+  sAuthor = 'Author';
+  sDescr  = 'Description';
+
+const
+  inifilename    = 'mod2pak.ini';
+const
+  iniSection      = 'mod2pak';
+  iniGameDir      = 'gamedir';
+  iniLastModPath  = 'lastmodpath';
+  iniSaveSettings = 'savesettings';
+  iniReserve      = 'reserve';
+  iniActive       = 'active';
+  iniCount        = 'count';
+  iniMod          = 'mod';
 
 var
   fdtimes:integer;
@@ -114,6 +137,8 @@ begin
         begin
           if UpCase(lbReserve.Items[j])=ls then
           begin
+DeleteFile(ldir+ls+'.PA_');
+DeleteFile(ldir+ls+'.PAK.MA_');
             RenameFile(ldir+ls+'.PAK'    ,ldir+ls+'.PA_');
             RenameFile(ldir+ls+'.PAK.MAN',ldir+ls+'.PAK.MA_');
             idx:=j;
@@ -146,6 +171,8 @@ begin
         begin
           if UpCase(lbActive.Items[j])=ls then
           begin
+DeleteFile(ldir+ls+'.PAK');
+DeleteFile(ldir+ls+'.PAK.MAN');
             RenameFile(ldir+ls+'.PA_'    ,ldir+ls+'.PAK');
             RenameFile(ldir+ls+'.PAK.MA_',ldir+ls+'.PAK.MAN');
             idx:=j;
@@ -295,19 +322,47 @@ var
 begin
   result:=false;
 
-  if Pos('.MOD',UpCase(fin))=(Length(fin)-3) then
+  if (Length(fin)>3) and (Pos('.MOD',UpCase(fin))=(Length(fin)-3)) then
   begin
+    lfin:=ExtractFileNameOnly(fin);
+    // List: skip if in list already
+    idx:=0;
+    for i:=0 to lbActive.Count-1 do
+    begin
+      if lbActive.Items[i]=lfin then
+      begin
+        idx:=i+1;
+        break;
+      end;
+    end;
+    if idx=0 then
+      for i:=0 to lbReserve.Count-1 do
+      begin
+        if lbReserve.Items[i]=lfin then
+        begin
+          idx:=-i-1;
+          break;
+        end;
+      end;
+    if idx<>0 then
+    begin
+      if MessageDlg('Mod '+lfin+' added already. Do you want to update?',
+          mtConfirmation, [mbYes, mbNo],0)<>mrYes then exit;
+    end;
+
     if ReadModInfo(PChar(fin),mi) then
     begin
       ldir:=deGameDir.Text+'\PAKS\';
-      lfin:=ExtractFileNameOnly(fin);
 
       AssignFile(ffin,fin);
       Reset(ffin);
       fsize:=FileSize(ffin);
 
       // PAK file
-      AssignFile(ffout,ldir+lfin+'.PA_');
+      if idx<=0 then
+        AssignFile(ffout,ldir+lfin+'.PA_')
+      else
+        AssignFile(ffout,ldir+lfin+'.PAK');
       Rewrite(ffout);
       Seek(ffin,mi.offData);
       lsize:=mi.offMan-mi.offData;
@@ -317,7 +372,10 @@ begin
       CloseFile(ffout);
 
       // MAN file
-      AssignFile(ffout,ldir+lfin+'.PAK.MA_');
+      if idx<=0 then
+        AssignFile(ffout,ldir+lfin+'.PAK.MA_')
+      else
+        AssignFile(ffout,ldir+lfin+'.PAK.MAN');
       Rewrite(ffout);
       Seek(ffin,mi.offMan);
       fsize:=fsize-mi.offMan;
@@ -333,26 +391,7 @@ begin
       // DAT file
       SaveModConfiguration(mi,PChar(ldir+lfin+'.DAT'));
 
-      // List: skip if in list already
-      idx:=-1;
-      for i:=0 to lbActive.Count-1 do
-      begin
-        if lbActive.Items[i]=lfin then
-        begin
-          idx:=i;
-          break;
-        end;
-      end;
-      if idx<0 then
-        for i:=0 to lbReserve.Count-1 do
-        begin
-          if lbReserve.Items[i]=lfin then
-          begin
-            idx:=i;
-            break;
-          end;
-        end;
-      if idx<0 then
+      if idx=0 then
       begin
         lbReserve.AddItem(lfin,nil);
         bbDelete  .Enabled:=true;
@@ -380,7 +419,9 @@ begin
     for i:=0 to High(FileNames) do
     begin
       Split(FileNames[i]);
-    end
+    end;
+    if Length(FileNames)>0 then
+      FLastModPath:=ExtractFilePath(FileNames[High(FileNames)]);
   end
   else
     ShowMessage('Can''t add files. Looks like you didn''t set game directory');
@@ -393,6 +434,7 @@ var
 begin
   dlgo:=TOpenDialog.Create(nil);
   try
+    dlgo.InitialDir:=FLastModPath;
     dlgo.DefaultExt:='.MOD';
     dlgo.Filter    :='MOD files|*.MOD';
     dlgo.Title     :='Choose MOD files to convert';
@@ -403,6 +445,8 @@ begin
       begin
         Split(dlgo.Files[i]);
       end;
+      if dlgo.Files.Count>0 then
+        FLastModPath:=ExtractFilePath(dlgo.Files[dlgo.Files.Count-1]);
     end;
   finally
     dlgo.Free;
@@ -450,9 +494,10 @@ begin
   memDescription.Clear;
   if LoadModConfiguration(PChar(deGameDir.Text+'\PAKS\'+fname+'.DAT'),mi) then
   begin
-    memDescription.Append('Name: '       +String(WideString(mi.title)));
-    memDescription.Append('Author: '     +String(WideString(mi.author)));
-    memDescription.Append('Description: '+String(WideString(mi.descr)));
+    memDescription.Append(sTitle +': '+String(WideString(mi.title))+
+                                 ' v.'+IntToStr(mi.modver));
+    memDescription.Append(sAuthor+': '+String(WideString(mi.author)));
+    memDescription.Append(sDescr +': '+String(WideString(mi.descr)));
     ClearModInfo(mi);
   end;
 end;
@@ -502,16 +547,76 @@ begin
   end;
 end;
 
+procedure TfmMod2Pak.SaveSettings();
+var
+  ini:TIniFile;
+begin
+  try
+    ini:=TIniFile.Create(inifilename);
+    ini.WriteString (iniSection,iniGameDir     ,deGameDir.Text);
+    ini.WriteString (iniSection,iniLastModPath ,FLastModPath);
+    ini.WriteBool(iniSection,iniSaveSettings,cbSaveSettings.Checked);
+{
+    ini.WriteInteger(iniReserve,iniCount,lbReserve.Count);
+    for i:=0 to lbReserve.Count-1 do
+      ini.WriteString(iniReserve,iniMod+IntToStr(i),lbReserve.Items[i]);
+    
+    ini.WriteInteger(iniActive,iniCount,lbActive.Count);
+    for i:=0 to lbActive.Count-1 do
+      ini.WriteString(iniActive,iniMod+IntToStr(i),lbActive.Items[i]);
+}    
+    ini.UpdateFile;
+  finally
+    ini.Free;
+  end;
+end;
+
+function TfmMod2Pak.LoadSettings():string;
+var
+  ini:TIniFile;
+  i,lcnt:integer;
+begin
+  result:='';
+  try
+    ini:=TIniFile.Create(inifilename);
+    result      :=ini.ReadString(iniSection,iniGameDir    ,GetCurrentDir());
+    FLastModPath:=ini.ReadString(iniSection,iniLastModPath,'');
+
+    cbSaveSettings.Checked:=ini.ReadBool(iniSection,iniSaveSettings,true);
+
+{
+    lcnt:=ini.ReadInteger(iniReserve,iniCount,0);
+    for i:=0 to lcnt-1 do
+      lbReserve.AddItem(ini.ReadString(iniReserve,iniMod+IntToStr(i),'');
+    
+    lcnt:=ini.ReadInteger(iniActive,iniCount,0);
+    for i:=0 to lcnt-1 do
+      lbActive.AddItem(ini.ReadString(iniActive,iniMod+IntToStr(i),''));
+}    
+  finally
+    ini.Free;
+  end;
+end;
+
 procedure TfmMod2Pak.FormCreate(Sender: TObject);
 var
   ldir:string;
 begin
-  ldir:=GetCurrentDir();
+  ldir:=LoadSettings();
+
   if FileExists(ldir+'\PAKS\DATA.PAK') then
   begin
     deGameDir.Text:=ldir;
     FillList(ldir);
   end;
+end;
+
+procedure TfmMod2Pak.FormDestroy(Sender: TObject);
+begin
+  if cbSaveSettings.Checked then
+    SaveSettings()
+  else
+    DeleteFile(inifilename);
 end;
 
 end.

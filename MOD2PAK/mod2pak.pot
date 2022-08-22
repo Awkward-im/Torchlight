@@ -1,0 +1,63 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: formmod2pak.sauthor
+msgid "Author"
+msgstr ""
+
+#: formmod2pak.sdescr
+msgctxt "formmod2pak.sdescr"
+msgid "Description"
+msgstr ""
+
+#: formmod2pak.stitle
+msgid "Title"
+msgstr ""
+
+#: tfmmod2pak.bbadd.caption
+msgid "&Add"
+msgstr ""
+
+#: tfmmod2pak.bbapply.caption
+msgid "&Apply"
+msgstr ""
+
+#: tfmmod2pak.bbclose.caption
+msgid "&Close"
+msgstr ""
+
+#: tfmmod2pak.bbdelete.caption
+msgid "Delete"
+msgstr ""
+
+#: tfmmod2pak.cbsavesettings.caption
+msgid "Remember last paths"
+msgstr ""
+
+#: tfmmod2pak.lbldescr.caption
+msgctxt "tfmmod2pak.lbldescr.caption"
+msgid "Description"
+msgstr ""
+
+#: tfmmod2pak.lbldirhint.caption
+msgid "Choose Game Directory"
+msgstr ""
+
+#: tfmmod2pak.lbldirnote.caption
+msgid "* Files will be saved in PAKS subdir"
+msgstr ""
+
+#: tfmmod2pak.stactive.caption
+msgid "PAKs to load"
+msgstr ""
+
+#: tfmmod2pak.stadd.caption
+msgid ""
+"Drag 'n' Drop MOD files on window or\n"
+"press \"Add\" button to choose manually"
+msgstr ""
+
+#: tfmmod2pak.streserve.caption
+msgid "Available PAKs"
+msgstr ""
+

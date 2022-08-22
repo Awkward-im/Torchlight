@@ -1,0 +1,65 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: formmod2pak.sauthor
+msgid "Author"
+msgstr "Автор"
+
+#: formmod2pak.sdescr
+msgctxt "formmod2pak.sdescr"
+msgid "Description"
+msgstr "Описание"
+
+#: formmod2pak.stitle
+msgid "Title"
+msgstr "Название"
+
+#: tfmmod2pak.bbadd.caption
+msgid "&Add"
+msgstr "Доб."
+
+#: tfmmod2pak.bbapply.caption
+msgid "&Apply"
+msgstr "Прим."
+
+#: tfmmod2pak.bbclose.caption
+msgid "&Close"
+msgstr "Закрыть"
+
+#: tfmmod2pak.bbdelete.caption
+msgid "Delete"
+msgstr "Удалить"
+
+#: tfmmod2pak.cbsavesettings.caption
+msgid "Remember last paths"
+msgstr "Запомнить последние пути"
+
+#: tfmmod2pak.lbldescr.caption
+msgctxt "tfmmod2pak.lbldescr.caption"
+msgid "Description"
+msgstr "Описание"
+
+#: tfmmod2pak.lbldirhint.caption
+msgid "Choose Game Directory"
+msgstr "Укажите папку игры"
+
+#: tfmmod2pak.lbldirnote.caption
+msgid "* Files will be saved in PAKS subdir"
+msgstr "* Файлы будут сохранены в подкаталоге PAK"
+
+#: tfmmod2pak.stactive.caption
+msgid "PAKs to load"
+msgstr "PAKи для загрузки"
+
+#: tfmmod2pak.stadd.caption
+msgid ""
+"Drag 'n' Drop MOD files on window or\n"
+"press \"Add\" button to choose manually"
+msgstr ""
+"Перетащите MOD файлы на окно программы или\n"
+"Нажмите \"Доб.\" чтобы выбрать вручную"
+
+#: tfmmod2pak.streserve.caption
+msgid "Available PAKs"
+msgstr "Доступные PAKи"
+
