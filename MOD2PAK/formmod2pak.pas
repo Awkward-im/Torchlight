@@ -582,7 +582,7 @@ begin
     result      :=ini.ReadString(iniSection,iniGameDir    ,GetCurrentDir());
     FLastModPath:=ini.ReadString(iniSection,iniLastModPath,'');
 
-    cbSaveSettings.Checked:=ini.ReadBool(iniSection,iniSaveSettings,true);
+    cbSaveSettings.Checked:=ini.ReadBool(iniSection,iniSaveSettings,false);
 
 {
     lcnt:=ini.ReadInteger(iniReserve,iniCount,0);
