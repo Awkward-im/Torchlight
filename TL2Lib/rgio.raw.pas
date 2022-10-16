@@ -370,10 +370,17 @@ function ParseRawStream(astream:TStream; const afname:string):pointer;
 var
   lbuf:PByte;
 begin
-  GetMem(lbuf,astream.Size);
-  aStream.Read(lbuf^,astream.Size);
-  result:=ParseRawMem(lbuf,afname);
-  FreeMem(lbuf);
+  if (astream is TMemoryStream) then
+  begin
+    result:=ParseRawMem(TMemoryStream(astream).Memory,afname);
+  end
+  else
+  begin
+    GetMem(lbuf,astream.Size);
+    aStream.Read(lbuf^,astream.Size);
+    result:=ParseRawMem(lbuf,afname);
+    FreeMem(lbuf);
+  end;
 end;
 
 function ParseRawFile(const afname:string):pointer;

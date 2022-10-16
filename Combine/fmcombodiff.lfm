@@ -7,6 +7,7 @@ object CompareForm: TCompareForm
   ClientHeight = 509
   ClientWidth = 760
   OnClose = FormClose
+  LCLVersion = '2.3.0.0'
   object ToolBar: TToolBar
     Left = 0
     Height = 26
@@ -39,7 +40,7 @@ object CompareForm: TCompareForm
     end
     object ToolButton2: TToolButton
       Left = 70
-      Height = 22
+      Height = 5
       Top = 2
       Caption = 'ToolButton2'
       Style = tbsDivider
@@ -82,7 +83,7 @@ object CompareForm: TCompareForm
     end
     object ToolButton1: TToolButton
       Left = 121
-      Height = 22
+      Height = 5
       Top = 2
       Caption = 'ToolButton1'
       Style = tbsDivider

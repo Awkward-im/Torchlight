@@ -8,15 +8,14 @@ var
   lms:pointer;
 begin
   result:=1;
-
   if (UpCase(ExtractFileExt(aname))='.MOD') or
      (UpCase(ExtractFileExt(aname))='.PAK') then
   begin
-    Prepare(db,adir+'/'+aname,lms);
+    Prepare(db,ParamStr(1)+'\'+adir+'/'+aname,lms);
   end
   else if (UpCase(aname)='MOD.DAT') then
   begin
-    Prepare(db,adir,lms);
+    Prepare(db,ParamStr(1)+'\'+adir,lms);
   end
   else
     exit(0);

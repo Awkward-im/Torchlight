@@ -15,6 +15,7 @@ type
   TMODInfoForm = class(TForm)
     bbOK      : TBitBtn;
     bbCancel  : TBitBtn;
+    bbSave: TBitBtn;
     leTitle   : TLabeledEdit;
     leAuthor  : TLabeledEdit;
     leFilename: TLabeledEdit;
@@ -28,6 +29,7 @@ type
     procedure bbCancelClick(Sender: TObject);
     procedure bbNewGUIDClick(Sender: TObject);
     procedure bbOKClick(Sender: TObject);
+    procedure bbSaveClick(Sender: TObject);
 
   private
     ffile:string;
@@ -63,6 +65,19 @@ procedure TMODInfoForm.bbOKClick(Sender: TObject);
 begin
 //  if not seVersion.ReadOnly then SaveToFile(ffile);
   Close;
+end;
+
+procedure TMODInfoForm.bbSaveClick(Sender: TObject);
+var
+  dlg:TSaveDialog;
+begin
+  dlg:=TSaveDialog.Create(nil);
+  dlg.FileName  :='MOD.DAT';
+  dlg.DefaultExt:='.DAT';
+  dlg.Filter    :='*.DAT|*.dat|All files|*.*';
+  if dlg.Execute then
+    SaveToFile(dlg.FileName);
+  dlg.Free;
 end;
 
 Constructor TMODInfoForm.Create(AOwner:TComponent; aRO:boolean=false);

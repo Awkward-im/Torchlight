@@ -83,11 +83,12 @@ const
   iniGameDir      = 'gamedir';
   iniLastModPath  = 'lastmodpath';
   iniSaveSettings = 'savesettings';
+{
   iniReserve      = 'reserve';
   iniActive       = 'active';
   iniCount        = 'count';
   iniMod          = 'mod';
-
+}
 var
   fdtimes:integer;
   adtimes:array [0..99] of int64;
@@ -349,6 +350,9 @@ begin
       if MessageDlg('Mod '+lfin+' added already. Do you want to update?',
           mtConfirmation, [mbYes, mbNo],0)<>mrYes then exit;
     end;
+{}
+//    PAKSplit(fin, ldir);
+// just move out of condition -  ldir:=deGameDir.Text+'\PAKS\';
 
     if ReadModInfo(PChar(fin),mi) then
     begin
@@ -390,7 +394,7 @@ begin
 
       // DAT file
       SaveModConfiguration(mi,PChar(ldir+lfin+'.DAT'));
-
+{}
       if idx=0 then
       begin
         lbReserve.AddItem(lfin,nil);
@@ -574,7 +578,7 @@ end;
 function TfmMod2Pak.LoadSettings():string;
 var
   ini:TIniFile;
-  i,lcnt:integer;
+//  i,lcnt:integer;
 begin
   result:='';
   try

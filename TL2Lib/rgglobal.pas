@@ -223,45 +223,6 @@ type
     modver  :Word;
   end;
 
-type
-  PMANFileInfo = ^TMANFileInfo;
-  TMANFileInfo = record // not real field order
-    ftime   :UInt64;    // TL2 only
-    name    :PWideChar; // name in MAN
-    nametxt :PWideChar; // source (text format) name
-    checksum:dword;     // CRC32
-    size_s  :dword;     // looks like source,not compiled, size (unusable)
-    size_c  :dword;     // from TPAKFileHeader
-    size_u  :dword;     // from TPAKFileHeader
-    offset  :dword;
-    ftype   :byte;
-  end;
-
-type
-  PMANDirEntry = ^TMANDirEntry;
-  TMANDirEntry = record
-    name:PWideChar;
-    Files:array of TMANFileInfo;
-  end;
-
-type
-  PPAKInfo = ^TPAKInfo;
-  TPAKInfo = record
-    Entries:array of TMANDirEntry;
-    Deleted:array of TMANDirEntry;
-    modinfo:TTL2ModInfo;
-    srcdir :UnicodeString;
-    fname  :UnicodeString;  //?? filename only or fullname
-    fsize  :dword;
-    data   :dword;
-    man    :dword;
-    ver    :integer;
-    // not necessary fields
-    root   :PUnicodeChar;   // same as first directory, MEDIA (usually)
-    total  :integer;        // total "file" elements. Can be calculated when needs
-    maxsize:integer;        // max [unpacked] file size
-  end;
-
 //===== Other =====
 
 procedure QuaternionToMatrix(const q:TVector4; out m:TMatrix4x4);

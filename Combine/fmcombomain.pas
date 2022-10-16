@@ -69,10 +69,11 @@ implementation
 
 uses
   fileutil,
-
   INIFiles,
+
+  logging,
+
   fmModInfo,
-  rglogging,
   unitCombine,
   TL2Mod;
 
@@ -182,11 +183,10 @@ end;
 procedure TFormMain.bbApplyClick(Sender: TObject);
 var
   f:Text;
-  lptr:TRGLogOnAdd;
+  lptr:TLogOnAdd;
   i:integer;
 begin
-  {TODO: maybe remove autosave}
-  SavePackSettings;
+//??  SavePackSettings;
 
   memLog.Clear;
 

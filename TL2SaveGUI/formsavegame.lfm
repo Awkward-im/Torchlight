@@ -3,11 +3,12 @@ object fmSaveFile: TfmSaveFile
   Height = 700
   Top = 164
   Width = 1000
-  ClientHeight = 700
+  ClientHeight = 680
   ClientWidth = 1000
   Menu = MainMenu
   OnClose = FormClose
   OnCreate = FormCreate
+  LCLVersion = '2.3.0.0'
   object Splitter: TSplitter
     Left = 200
     Height = 700

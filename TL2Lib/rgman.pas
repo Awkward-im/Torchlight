@@ -1,93 +1,449 @@
-﻿{
-  Export to text form
-  Import from text form
-  Build recursively
-  Parse Binary
-  Build Binary
-  Search file
-  Add file(s)/dir(s)
-  ??Delete files(s)/dir(s)
-  mark as deleted
-}
-{TODO: Compact/split manifest for files and dirs}
-{TODO: finish FileToMan}
-{TODO: finish CycleDir (BuildManifest)}
-
+﻿{TODO: save compiled manifest size}
+{TODO: calculate largest file size on parse and add. Or just on build?}
 unit RGMan;
 
 interface
 
 uses
   Classes,
+  TextCache,
   rgglobal;
 
-function BuildManifest(const adir:string; out ainfo:TPAKInfo):integer;
 
+type
+  PMANFileInfo = ^TMANFileInfo;
+  TMANFileInfo = record // not real field order
+    ftime   :UInt64;    // MAN: TL2 only
 {
-  Parse Manifest from memory block addressed by aptr
+    memadr  :PByte;     // file memory placement address
 }
-procedure ParseManifest(var ainfo:TPAKInfo; aptr:PByte);
-{
-  Save Manifest (binary data) to stream
-}
-function ManSaveToStream(ast:TStream; const ainfo:TPAKInfo):integer;
-{
-  Save Manifest (binary data) to .PAK.MAN file (name in PAKInfo)
-}
-function WriteManifest(const ainfo:TPAKInfo):integer;
+    name    :cardinal;  // !! MAN: TextCache index
+//    nametxt :PUnicodeChar; // source (text format) name
+    checksum:dword;     // MAN: CRC32
+    size_s  :dword;     // ?? MAN: looks like source,not compiled, size (unusable)
+    size_c  :dword;     // !! PAK: from TPAKFileHeader
+    size_u  :dword;     // !! PAK: from TPAKFileHeader
+    offset  :dword;     // !! MAN: PAK data block offset
+    next    :integer;
+    ftype   :byte;      // !! MAN: RGFileType unified type
+  end;
+  TMANFileInfos = array of TMANFileInfo;
 
-//===== Custom text format
+type
+  PMANDirEntry = ^TMANDirEntry;
+  TMANDirEntry = record
+    name:cardinal;      // TextCache index
+    count,
+    first,
+    last:integer;
+  end;
+  TMANDirEntries = array of TMANDirEntry;
 
-{
-  Manifest to text file (DAT format)
-}
-procedure MANtoFile(const fname:string; const ainfo:TPAKInfo; afull:boolean=false);
-{
-  Text file (DAT format) to manifest
-  Status: undone
-}
-procedure FileToMAN(const fname:string; out ainfo:TPAKInfo);
+type
+  PRGManifest = ^TRGManifest;
+  TRGManifest = object
+public
+//  private
+    cntEntry  :integer; // total count of Entries
+    cntFiles  :integer; // total count of file records
+    FLUnpacked:integer; // largest unpacked file size
+    FLPacked  :integer; // largest   packed file size
+  public
+    Entries:TMANDirEntries;
+    Deleted:TMANDirEntries;
+    Files  :TMANFileInfos;
+    Names  :TTextCache;
+  public
+    // not necessary fields
+    root   :PUnicodeChar;   // same as first directory, MEDIA (usually)
+    total  :integer;        // total "file" elements. Can be calculated when needs
+    reserve:integer;        // "total" records count (GUTS gives more than put)
+    largest:integer;        // largest source file size
+  private
+    function  SetName(aname:PUnicodeChar):integer;
+    function  GetFilesCapacity():integer;
+    procedure SetFilesCapacity(acnt:cardinal);
+    function  GetEntriesCapacity():integer;
+    procedure SetEntriesCapacity(acnt:cardinal);
+    function  GetSize(idx:integer):integer;
 
-//===== Support
+    function AddEntryFile(aentry:integer; aname:PUnicodeChar=nil):PManFileInfo;
+    function AddEntry (const apath:PUnicodeChar=pointer(-1)):integer;
+    function DoAddPath(const apath:UnicodeString):integer;
+  public
+    procedure Init;
+    procedure Free;
 
-{
-  Search single file record
-}
-function SearchFile(const ainfo:TPAKInfo; const fname:string):PMANFileInfo;
-function SearchFile(const ainfo:TPAKInfo; apath,aname:PWideChar):PMANFileInfo;
+    function Parse(aptr:PByte; aver:integer):integer;
+    function Build(const adir:string):integer;
 
-function AddPath(var ainfo:TPAKInfo; apath:PUnicodeChar):PMANDirEntry;
-function AddPath(var ainfo:TPAKInfo; const apath:string):PMANDirEntry;
+    function SaveToStream(ast:TStream; aver:integer):integer;
+    function SaveToFile  (const afname:string; aver:integer):integer;
 
-function AddFile(var ainfo:TPAKInfo; apath,aname:PUnicodeChar{; aver:integer=verTL2}):PMANFileInfo;
+    function SearchEntry(apath:PUnicodeChar):integer;
+    function SearchFile(aentry:integer; aname:PUnicodeChar):PMANFileInfo;
+    function SearchFile(apath,aname:PUnicodeChar):PMANFileInfo;
+    function SearchFile(const fname:string):PMANFileInfo;
+
+    function AddPath(apath:PUnicodeChar):integer;
+    function AddPath(const apath:string):integer;
+
+    function AddFile(apath,aname:PUnicodeChar):PMANFileInfo;
+
+    function GetName     (idx:integer):PUnicodeChar;
+    function GetEntryName(idx:integer):PUnicodeChar;
+
+    // result=0 means "end"
+    function GetFirstFile(out p:PMANFileInfo; aentry:integer):integer;
+    function GetNextFile (var p:PMANFileInfo):integer;
+
+  public
+    property EntriesCount:integer read cntEntry;
+    property FilesCount  :integer read cntFiles;
+    property LargestPacked  :integer index 0 read GetSize;
+    property LargestUnpacked:integer index 1 read GetSize;
+//    property Entries  [idx:integer]:PMANDirEntry read GetEntry;
+    property EntryName[idx:integer]:PUnicodeChar read GetEntryName;
+//    property FileName[p:PMANFileInfo]:PUnicodeChar read GetFileName;
+//    property Files   [aentry:integer; idx:integer]:PMANFileInfo read GetEntryFile;
+//    property FileName[aentry:integer; idx:integer]:PunicodeChar read GetFileName;
+  end;
+
+
+{$IFDEF DEBUG}
+//  Manifest to text file (DAT format)
+procedure MANtoFile(const fname:string; const aman:TRGManifest; afull:boolean=false);
+//  Text file (DAT format) to manifest
+procedure FileToMAN(const fname:string; out aman:TRGManifest);
+{$ENDIF DEBUG}
 
 
 implementation
 
 uses
   sysutils,
-  logging,
+
   rwmemory,
-  rgstream,
-  rgfiletype,
+
+{$IFDEF DEBUG}
   rgnode,
-  rgio.text;
+  rgio.text,
+{$ENDIF DEBUG}
+  rgstream,
+  rgfiletype;
+
+const
+  incEBase = 512;
+  incEntry = 256;
+  incFBase = 128;
+  incFFile = 16;
+
+
+function TRGManifest.SetName(aname:PUnicodeChar):integer; inline;
+begin
+  result:=names.Append(aname);
+end;
+
+function TRGManifest.GetName(idx:integer):PUnicodeChar; inline;
+begin
+  result:=PUnicodeChar(names[idx]);
+end;
+
+function TRGManifest.GetEntryName(idx:integer):PUnicodeChar;
+begin
+  if (idx>0) and (idx<cntEntry) then
+    result:=GetName(Entries[idx].name)
+  else
+    result:=nil;
+end;
+
+function TRGManifest.GetFilesCapacity():integer; inline;
+begin
+  result:=Length(Files);
+end;
+
+procedure TRGManifest.SetFilesCapacity(acnt:cardinal);
+begin
+  if acnt>Length(Files) then
+    SetLength(Files,acnt);
+end;
+
+function TRGManifest.GetEntriesCapacity():integer; inline;
+begin
+  result:=Length(Entries);
+end;
+
+procedure TRGManifest.SetEntriesCapacity(acnt:cardinal);
+begin
+  if acnt>Length(Entries) then
+    SetLength(Entries,acnt);
+end;
+
+function TRGManifest.GetFirstFile(out p:PMANFileInfo; aentry:integer):integer;
+begin
+  result:=Entries[aentry].first;
+  if result<>0 then p:=@Files[result];
+end;
+
+function TRGManifest.GetNextFile(var p:PMANFileInfo):integer;
+begin
+  result:=p^.next;
+  if result<>0 then p:=@Files[result];
+end;
+
+function TRGManifest.GetSize(idx:integer):integer;
+var
+  i:integer;
+begin
+       if idx=0 then result:=FLPacked
+  else if idx=1 then result:=FLUnpacked;
+
+  if result=0 then
+  begin
+    for i:=0 to cntFiles-1 do
+    begin
+      if Files[i].size_c>FLPacked   then FLPacked  :=Files[i].size_c;
+      if Files[i].size_u>FLUnpacked then FLUnpacked:=Files[i].size_u;
+    end;
+
+         if idx=0 then result:=FLPacked
+    else if idx=1 then result:=FLUnpacked;
+  end;
+end;
+
+procedure TRGManifest.Init;
+begin
+  FillChar(self,SizeOf(self),0);
+{
+  cntEntry:=0;
+  cntFiles:=0;
+
+  Initialize(Entries);
+  Initialize(Deleted);
+  Initialize(Files);
+//  FillChar(aman,SizeOf(aman),0); //!!
+}
+  names.Init(false);
+end;
+
+procedure TRGManifest.Free;
+begin
+  FreeMem(root);
+
+  names.Clear;
+  Finalize(Entries);
+  Finalize(Deleted);
+  Finalize(Files);
+end;
+
+//----- Search -----
+
+function TRGManifest.SearchEntry(apath:PUnicodeChar):integer;
+var
+  i:integer;
+begin
+  for i:=0 to cntEntry-1 do
+  begin
+    if CompareWide(GetEntryName(i),apath)=0 then
+      exit(i);
+  end;
+
+  result:=-1;
+end;
+
+function TRGManifest.SearchFile(aentry:integer; aname:PUnicodeChar):PMANFileInfo;
+begin
+  if (aentry>=0) and (aentry<cntEntry) then
+  begin
+    if GetFirstFile(result,aentry)<>0 then
+      repeat
+        if CompareWide(GetName(result^.name),aname)=0 then exit;
+      until GetNextFile(result)=0;
+  end;
+  
+  result:=nil;
+end;
+
+function TRGManifest.SearchFile(apath,aname:PUnicodeChar):PMANFileInfo;
+begin
+  result:=SearchFile(SearchEntry(apath),aname);
+end;
+
+function TRGManifest.SearchFile(const fname:string):PMANFileInfo;
+var
+  lpath,lname:UnicodeString;
+begin
+  lname:=UpCase(UnicodeString(fname));
+  lpath:=ExtractFilePath(lname);
+  lname:=ExtractFileName(lname);
+
+  result:=SearchFile(pointer(lpath),pointer(lname));
+end;
+
+//----- Add -----
+
+function TRGManifest.AddEntryFile(aentry:integer; aname:PUnicodeChar=nil):PManFileInfo;
+var
+  i:integer;
+begin
+  //!!
+  if aentry<0 then exit(nil);
+  
+  // expand if needs
+  if cntFiles=0 then
+  begin
+    SetFilesCapacity(incFBase);
+    cntFiles:=1;
+  end
+  else if cntFiles=GetFilesCapacity() then
+    SetFilesCapacity(cntFiles+incFFile);
+
+  // links
+  i:=Entries[aentry].last;
+  if i>0 then
+    Files[i].next:=cntFiles
+  else
+    Entries[aentry].first:=cntFiles;
+
+  Entries[aentry].last:=cntFiles;
+  inc(Entries[aentry].count);
+
+  // data
+  result:=@Files[cntFiles];
+  FillChar(result^,SizeOf(result^),0);
+  if aname<>nil then
+    result^.name:=SetName(aname);
+
+  inc(cntFiles);
+  inc(total);
+end;
+
+function TRGManifest.AddEntry(const apath:PUnicodeChar=pointer(-1)):integer;
+begin
+  // Check for first allocation. It have empty name ALWAYS
+  if Length(Entries)=0 then
+    SetEntriesCapacity(incEBase);
+
+  if cntEntry=0 then
+  begin
+    FillChar(Entries[0],SizeOf(Entries[0]),0); //??
+    cntEntry:=1;
+  end;
+
+  if (apath=nil) or (apath^=#0) then exit(0);
+
+  // expand if needs
+  if cntEntry=GetEntriesCapacity() then
+    SetEntriesCapacity(cntEntry+incEntry);
+
+  result:=cntEntry;
+  // FillChar is not needs coz auto
+  FillChar(Entries[result],SizeOf(TMANDirEntry),0);
+
+  if apath<>pointer(-1) then
+    Entries[result].name:=SetName(apath);
+  
+  inc(cntEntry);
+  inc(total);
+end;
+
+function TRGManifest.DoAddPath(const apath:UnicodeString):integer;
+var
+  lslash,lentry:integer;
+begin
+  // if exists already
+  result:=SearchEntry(PUnicodeChar(apath));
+  if result>=0 then exit;
+
+  // add parent dir
+  lslash:=Length(apath)-1;
+  while (lslash>1) and (apath[lslash]<>'/') do dec(lslash);
+  if lslash>1 then
+  begin
+    lentry:=DoAddPath(Copy(apath,1,lslash));
+
+    with AddEntryFile(lentry,PUnicodeChar(apath)+lslash)^ do
+      ftype:=typeDirectory;
+  end;
+
+  result:=AddEntry(PUnicodeChar(apath));
+end;
+
+function TRGManifest.AddPath(apath:PUnicodeChar):integer;
+var
+  ws:UnicodeString;
+  i,lsize:integer;
+begin
+  if cntEntry=0 then
+    AddEntry(nil);
+  
+  if (apath=nil) or (apath^=#0) then exit(0);
+  
+  // Upper case, no starting slashes but with ending
+  ws:=UpCase(UnicodeString(apath));
+  lsize:=Length(ws);
+  for i:=1 to lsize do
+    if ws[i]='\' then ws[i]:='/';
+  i:=1;
+  while ws[i]='/' do inc(i);
+  dec(i);
+  if i>0 then Delete(ws,1,i); dec(lsize,i);
+
+  if ws[lsize]<>'/' then ws:=ws+'/';
+
+  result:=DoAddPath(ws);
+end;
+
+function TRGManifest.AddPath(const apath:string):integer;
+begin
+  result:=AddPath(PUnicodeChar(UnicodeString(apath)))
+end;
+
+{
+  Add file with relative path.
+  requires root dir to get physical file info like time and size
+}
+function TRGManifest.AddFile(apath,aname:PUnicodeChar):PMANFileInfo;
+var
+  lentry:integer;
+begin
+  lentry:=AddPath(apath);
+  if lentry<0 then exit(nil);
+
+  result:=SearchFile(lentry,aname);
+  if result<>nil then exit;
+
+  // add record if file was not found
+  result:=AddEntryFile(lentry,aname);
+
+  with result^ do
+  begin
+    name :=SetName(aname);
+    ftype:=PAKExtType(aname); //!! not requires at start but good for filter
+  end;
+
+end;
 
 {
   Parse Manifest from memory block addressed by aptr
 }
-procedure ParseManifest(var ainfo:TPAKInfo; aptr:PByte);
+function TRGManifest.Parse(aptr:PByte; aver:integer):integer;
+const
+  bufsize = 1024;
 var
+  lbuf:array [0..bufsize-1] of byte;
   i,j:integer;
-  ltotal,lcnt:integer;
+  lcnt,lentries,lentry:integer;
 begin
-  case ainfo.ver of
+  result:=0;
+
+  case aver of
     verTL2Mod,
     verTL2:begin
-      i:=memReadWord(aptr);                    // 0002 version/signature
-      if i>=2 then                             // 0000 - no "checksum" field??
-        memReadDWord(aptr);                    // checksum?
-      ainfo.root:=memReadShortString(aptr);    // root directory !!
+      i:=memReadWord(aptr);                   // 0002 version/signature
+      if i>=2 then                            // 0000 - no "checksum" field??
+        memReadDWord(aptr);                   // checksum?
+      root:=memReadShortString(aptr);         // root directory !!
     end;
 
     verHob,
@@ -99,28 +455,28 @@ begin
     exit;
   end;
 
-  ainfo.total:=memReadDWord(aptr);             // total directory records
-  SetLength(ainfo.Entries,memReadDWord(aptr)); // entries
-  ltotal:=0;
+//  InitManifest(aman);
 
-  for i:=0 to High(ainfo.Entries) do
+  reserve :=memReadDWord(aptr);               // total directory records
+  lentries:=memReadDWord(aptr);               // entries
+  SetEntriesCapacity(lentries);
+  total:=0;
+
+  for i:=0 to lentries-1 do
   begin
-    ainfo.Entries[i].name:=memReadShortString(aptr);
+    lentry:=AddEntry(memReadShortStringBuf(aptr,@lbuf,bufsize));
     lcnt:=memReadDWord(aptr);
-    SetLength(ainfo.Entries[i].Files,lcnt);
-    inc(ltotal,lcnt);
-
-    for j:=0 to High(ainfo.Entries[i].Files) do
+    for j:=0 to lcnt-1 do
     begin
-      with ainfo.Entries[i].Files[j] do
+      with AddEntryFile(lentry)^ do
       begin
         checksum:=memReadDWord(aptr);
-        ftype   :=PAKTypeRealToCommon(memReadByte(aptr),ainfo.ver);
-        name    :=memReadShortString(aptr);
+        ftype   :=PAKTypeToCommon(memReadByte(aptr),aver);
+        name    :=SetName(memReadShortStringBuf(aptr,@lbuf,bufsize));
         offset  :=memReadDWord(aptr);
         size_s  :=memReadDWord(aptr);
-        if (ainfo.ver=verTL2   ) or
-           (ainfo.ver=verTL2Mod) then
+        if (aver=verTL2   ) or
+           (aver=verTL2Mod) then
         begin
           ftime:=QWord(memReadInteger64(aptr));
         end;
@@ -128,25 +484,26 @@ begin
     end;
   end;
 
-//  ainfo.total:=ltotal; //!!!! keep real children count
+  result:=total;
 end;
 
 {$PUSH}
 {$I-}
-function ManSaveToStream(ast:TStream; const ainfo:TPAKInfo):integer;
+function TRGManifest.SaveToStream(ast:TStream; aver:integer):integer;
 var
-  lpos:integer;
-  i,j:integer;
+  p:PMANFileInfo;
+  lpos,ltotalpos:integer;
+  i,ltotal:integer;
 begin
   try
     lpos:=ast.Position;
 
-    case ainfo.ver of
+    case aver of
       verTL2Mod,
       verTL2: begin
-        ast.WriteWord(2);  // writing always "new" version
-        ast.WriteDWord(0); //!! Hash
-        ast.WriteShortString(ainfo.root);
+        ast.WriteWord (2); // writing always "new" version
+        ast.WriteDWord(0); // Hash (game don't check it anyway)
+        ast.WriteShortString(root);
       end;
 
       verHob,
@@ -157,31 +514,46 @@ begin
       exit(0);
     end;
 
-    ast.WriteDWord(ainfo.total);
-    ast.WriteDWord(Length(ainfo.Entries));
+    ltotalpos:=ast.Position;
+    ast.WriteDWord(total); //!! maybe beter to calculate at runtime
+    ast.WriteDWord(cntEntry);
 
-    for i:=0 to High(ainfo.Entries) do
+    ltotal:=0;
+    for i:=0 to cntEntry-1 do
     begin
-      ast.WriteShortString (ainfo.Entries[i].name);
-      ast.WriteDWord(Length(ainfo.Entries[i].Files));
+      ast.WriteShortString(GetEntryName(i));
+      ast.WriteDWord(Entries[i].count);
 
-      for j:=0 to High(ainfo.Entries[i].Files) do
-      begin
-        with ainfo.Entries[i].Files[j] do
+      if GetFirstFile(p,i)<>0 then
+      repeat
+        inc(ltotal);
+        with p^ do
         begin
           ast.WriteDWord(checksum);
-          ast.WriteByte(PAKTypeCommonToReal(ftype,ainfo.ver));
-          ast.WriteShortString(name);
+          ast.WriteByte(PAKTypeToReal(ftype,aver));
+          ast.WriteShortString(GetName(name));
           ast.WriteDWord(offset);
           ast.WriteDWord(size_s);
-          if (ainfo.ver=verTL2   ) or
-             (ainfo.ver=verTL2Mod) then
+          if (aver=verTL2   ) or
+             (aver=verTL2Mod) then
             ast.WriteQWord(ftime);
         end;
+     until GetNextFile(p)=0;
+    end;
+
+    if ltotal>total then
+    begin
+      total:=ltotal;
+      lpos:=ast.Position;
+      try
+        ast.Position:=ltotalpos;
+        ast.WriteDWord(total);
+        ast.Position:=lpos;
+      except
       end;
     end;
 
-    result:=ainfo.total;
+    result:=total;
 
   except
     result:=0;
@@ -193,7 +565,7 @@ begin
 end;
 {$POP}
 
-function WriteManifest(const ainfo:TPAKInfo):integer;
+function TRGManifest.SaveToFile(const afname:string; aver:integer):integer;
 var
   lst:TMemoryStream;
 begin
@@ -201,12 +573,62 @@ begin
 
   lst:=TMemoryStream.Create;
   try
-    result:=ManSaveToStream(lst,ainfo);
+    result:=SaveToStream(lst,aver);
     if result>0 then
-      lst.SaveToFile(PWideChar(ainfo.fname+'.PAK.MAN'));
+      lst.SaveToFile(afname);
   finally
     lst.Free;
   end;
+end;
+
+function CheckFName(const adir,aname:UnicodeString):UnicodeString;
+var
+  lext:array [0..15] of UnicodeChar;
+  lname:UnicodeString;
+  lextpos,j,k:integer;
+begin
+  result:='';
+  
+  lextpos:=Length(aname);
+  while lextpos>1 do
+  begin
+    dec(lextpos);
+    if aname[lextpos]='.' then break;
+  end;
+  // extract ext
+  k:=0;
+  if lextpos>1 then
+    for j:=lextpos to Length(aname) do
+    begin
+      lext[k]:=UpCase(aname[j]);
+      inc(k);
+    end;
+  lext[k]:=#0;
+
+  if (CompareWide(lext,'.TXT'      )=0) or
+     (CompareWide(lext,'.BINDAT'   )=0) or
+     (CompareWide(lext,'.BINLAYOUT')=0) then
+  begin
+    lname:=Copy(aname,1,lextpos-1);
+    if FileExists(adir+lname) then exit;
+  end
+  else if CompareWide(lext,'.PNG')=0 then
+  begin
+    lname:=aname;
+    lname[lextpos+1]:='D';
+    lname[lextpos+2]:='D';
+    lname[lextpos+3]:='S';
+    if FileExists(adir+lname) then
+      exit
+    else
+      exit(aname);
+  end
+  else
+    lname:=aname;
+
+  // can't use lext coz need to delete ext to get real sometime
+  if PAKExtType(lname)<>typeUnknown then
+    result:=lname;
 end;
 
 {
@@ -215,197 +637,133 @@ end;
   [excluding data sources]
   as is, bin+src (data cmp to choose), bin, src
 }
-procedure CycleDir(const adir:string; asl:TStringList);
+procedure CycleDir(const abasedir:UnicodeString; var aman:TRGManifest; aentry:integer);
 var
-  sr:TSearchRec;
-  lname:AnsiString;
-  i,
-  lstart,lend,l,ldir,lpng,ldds:integer;
+  sr:TUnicodeSearchRec;
+  lcurdir,ldir,lname:UnicodeString;
+  j,i,lstart,lend:integer;
 begin
-  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
+  ldir:=aman.GetEntryName(aentry);
+  lcurdir:=abasedir+ldir;
+
+  if FindFirst(lcurdir+'*.*',faAnyFile and faDirectory,sr)=0 then
   begin
-    lpng:=0; // amount of PNG files  in current directory
-    ldds:=0; // amount of DDS files  in current directory
-    ldir:=0; // amount of subfolders in current directory
-    lstart:=asl.Count; // starting index (if single array used)
+
+    lstart:=aman.cntEntry;
 
     repeat
-      lname:=adir+'\'+sr.Name;
-{
-   Cut source path
-   Convert to upper case
-}
       if (sr.Attr and faDirectory)=faDirectory then
       begin
         if (sr.Name<>'.') and (sr.Name<>'..') then
         begin
-{
-   replace "\" to "/"
-   and ending "/"
-   counter
-}
-
-//!!!!          CycleDir(lname)
-
-          asl.Add(sr.Name+'/'); //!!!! remove asset dir
-          inc(ldir);
+          lname:=sr.Name+'/';
+          for j:=1 to Length(lname)-1 do lname[j]:=UpCase(lname[j]);
+          aman.AddEntry(PUnicodeChar(ldir+lname));
+          with aman.AddEntryFile(aentry,PUnicodeChar(lname))^ do
+            ftype:=typeDirectory;
         end;
       end
       else
       begin
-{
-  counter of PNG, DDS
-  type by extension?
-  remember time and size
-}
-        l:=Length(sr.Name);
-        if l>4 then
-          if (sr.Name[l-4]='.') then
+        lname:=CheckFName(abasedir+ldir,sr.Name);
+        if lname<>'' then
+        begin
+          for j:=1 to Length(lname) do lname[j]:=UpCase(lname[j]);
+          with aman.AddEntryFile(aentry,PUnicodeChar(lname))^ do
           begin
-            if (sr.Name[l-3] in ['P','p']) and
-               (sr.Name[l-2] in ['N','n']) and
-               (sr.Name[l-1] in ['G','g']) then inc(lpng);
-            {
-            begin
-              if FileExists(ReplaceExt(sr.Name,'.DDS') then continue;
-            end;
-            }
-
-            if (sr.Name[l-3] in ['D','d']) and
-               (sr.Name[l-2] in ['D','d']) and
-               (sr.Name[l-1] in ['S','s']) then inc(ldds);
+            ftype :=PAKExtType(lname);
+            ftime :=sr.Time;
+            size_s:=sr.Size;
           end;
-
-         //!!!! remove asset dir
-        asl.AddObject(adir+sr.Name+'='+IntToStr(sr.Time),TObject(UIntPtr(sr.Size)));
+        end;
       end;
     until FindNext(sr)<>0;
+
     FindClose(sr);
-    lend:=asl.Count; // after last index (if single array used)
-{
-    //!! remove PNG if DDS found
-    if (lpng>0) and (ldds>0) then
-    begin
-      for i:=lstart to lend-1 do
-      begin
-        if Pos('.PNG=') then
-        begin
-          if Pos('.DDS=') then
-          begin
+    lend:=aman.cntEntry;
 
-            dec(ldds);
-            if ldds=0 then break;
-          end;
-          
-          dec(lpng);
-          if lpng=0 then break;
-        end;
-      end;
-    end;
-}
-
-    if ldir>0 then
+    for i:=lstart to lend-1 do
     begin
-      for i:=lstart to lend-1 do
-      begin
-        if asl[i][Length(asl[i])]='/' then
-        begin
-          CycleDir(adir+asl[i],asl);
-          dec(ldir);
-          if ldir=0 then break;
-        end;
-      end;  
-    end;
+      CycleDir(abasedir,aman,i);
+    end;  
 
   end;
 end;
 
-function BuildManifest(const adir:string; out ainfo:TPAKInfo):integer;
+function TRGManifest.Build(const adir:string):integer;
 var
-  sl:TStringList;
-  ls:string;
-  i,j:integer;
+  ls:UnicodeString;
 begin
   result:=0;
 
-  sl:=TStringList.Create;
-  CycleDir(adir,sl);
-  for i:=0 to sl.Count-1 do
-  begin
-    ls:=sl[i];
-    for j:=1 to Length(ls) do
-    begin
-      if      ls[j]='\' then ls[j]:='/'
-      else if ls[j]='=' then break
-      else    ls[j]:=UpCase(ls[j]);
-    end;
-    sl[i]:=ls;
-  end;
-  sl.Sorted:=true;
-  sl.Sort;
+  ls:=UnicodeString(adir);
+  if not (ls[Length(ls)] in ['/','\']) then ls:=ls+'/';
 
-{$IFDEF DEBUG}
-  for i:=0 to sl.Count-1 do
-  begin
-    RGLog.Add(sl[i]);
-  end;
-  RGLog.SaveToFile('log.txt');
-{$ENDIF}
+  Init;
 
-  sl.Free;
+  AddEntry(nil);
+  CycleDir(ls,self,0);
+
+  root:=CopyWide('MEDIA/');
+
+  result:=total;
 end;
 
-
-procedure MANtoFile(const fname:string; const ainfo:TPAKInfo; afull:boolean=false);
+{$IFDEF DEBUG}
+procedure MANtoFile(const fname:string; const aman:TRGManifest; afull:boolean=false);
 var
+  p:PMANFileInfo;
   lman,lp,lc:pointer;
-  i,j:integer;
+  i:integer;
 begin
   lman:=nil;
 
   lman:=AddGroup(nil,'MANIFEST');
-  AddString (lman,'FILE' ,PUnicodeChar(ainfo.fname));
+//??  AddString (lman,'FILE' ,PUnicodeChar(ainfo.fname));
   if afull then
   begin
-    AddInteger(lman,'TOTAL',ainfo.total);
-    AddInteger(lman,'COUNT',Length(ainfo.Entries));
+    AddInteger(lman,'TOTAL',aman.total);
+    AddInteger(lman,'COUNT',Length(aman.Entries));
   end;
 
-  for i:=0 to High(ainfo.Entries) do
+  for i:=0 to aman.cntEntry-1 do
   begin
     lp:=AddGroup(lman,'FOLDER');
-    AddString (lp,'NAME' ,ainfo.Entries[i].name);
+    AddString (lp,'NAME' ,aman.GetEntryName(i));
     if afull then
-      AddInteger(lp,'COUNT',Length(ainfo.Entries[i].Files));
+      AddInteger(lp,'COUNT',aman.Entries[i].count);
     lp:=AddGroup(lp,'CHILDREN');
-    for j:=0 to High(ainfo.Entries[i].Files) do
-    begin
+
+
+    if aman.GetFirstFile(p,i)<>0 then
+    repeat
       lc:=AddGroup(lp,'CHILD');
-      with ainfo.Entries[i].Files[j] do
+      with p^ do
       begin
-        AddString (lc,'NAME',name);
+        AddString (lc,'NAME',aman.GetName(name));
         AddInteger(lc,'TYPE',ftype);  // required for TL2 type 18 (dir to delete)
         AddInteger(lc,'SIZE',size_s); // required for zero-size files (file to delete)
         if afull then
         begin
           AddUnsigned(lc,'CRC'   ,checksum);
           AddInteger (lc,'OFFSET',offset);
-          if ABS(ainfo.ver)=verTL2 then
+//          if ABS(ainfo.ver)=verTL2 then
+          if ftime<>0 then
             AddInteger64(lc,'TIME',ftime);
         end;
       end;
-    end;
+   until aman.GetNextFile(p)=0
   end;
 
   BuildTextFile(lman,PChar(fname));
   DeleteNode(lman);
 end;
 
-procedure FileToMAN(const fname:string; out ainfo:TPAKInfo);
+procedure FileToMAN(const fname:string; out aman:TRGManifest);
 var
   lman,lp,lg,lc:pointer;
   pw:PUnicodeChar;
-  i,j,k:integer;
+  i,j,k,lentry:integer;
 begin
   lman:=ParseTextFile(PChar(fname));
   if lman<>nil then
@@ -418,40 +776,42 @@ begin
         lc:=GetChild(lman,i);
         case GetNodeType(lc) of
           rgString: begin
-            if IsNodeName(lc,'FILE') then ainfo.fname:=AsString(lc);
+//            if IsNodeName(lc,'FILE') then ainfo.fname:=AsString(lc);
           end;
 
           rgInteger: begin
-            if IsNodeName(lc,'TOTAL') then ainfo.total:=AsInteger(lc);
-            if IsNodeName(lc,'COUNT') then SetLength(ainfo.Entries,AsInteger(lc));
+            if IsNodeName(lc,'TOTAL') then aman.total:=AsInteger(lc);
+            if IsNodeName(lc,'COUNT') then aman.SetEntriesCapacity(AsInteger(lc));
           end;
 
           rgGroup: begin
             if IsNodeName(lc,'FOLDER') then
             begin
-              if Length(ainfo.Entries)=0 then
-                SetLength(ainfo.Entries,GetGroupCount(lc));
+              if Length(aman.Entries)=0 then
+                aman.SetEntriesCapacity(GetGroupCount(lc));
 
               for j:=0 to GetChildCount(lc)-1 do
               begin
+                lentry:=aman.AddEntry();
                 lp:=GetChild(lc,j);
                 case GetNodeType(lp) of
                   rgString: begin
                     if IsNodeName(lp,'NAME') then
-                      ainfo.Entries[j].name:=CopyWide(AsString(lp));
+                      aman.Entries[lentry].name:=aman.SetName(AsString(lp));
                   end;
 
                   rgInteger: begin
                     if IsNodeName(lp,'COUNT') then
-                      SetLength(ainfo.Entries[j].Files,AsInteger(lp));
+                      aman.SetFilesCapacity(aman.cntFiles+AsInteger(lp));
                   end;
 
                   rgGroup: begin
                     if IsNodeName(lp,'CHILDREN') then
                     begin
-                      if Length(ainfo.Entries[j].Files)=0 then
-                        SetLength(ainfo.Entries[j].Files,GetGroupCount(lp));
-
+{
+                      if Length(aman.Entries[j].Files)=0 then
+                        SetLength(aman.Entries[j].Files,GetGroupCount(lp));
+}
                       for k:=0 to GetChildCount(lp)-1 do
                       begin
                         lg:=GetChild(lp,k);
@@ -459,7 +819,7 @@ begin
                            (IsNodeName(lg,'CHILD')) then
                         begin
 
-                          with ainfo.Entries[j].Files[k] do
+                          with aman.AddEntryFile(lentry)^ do
                             case GetNodeType(lg) of
                               rgInteger: begin
                                 pw:=GetNodeName(lg);
@@ -467,7 +827,7 @@ begin
                                 else if CompareWide(pw,'SIZE'  )=0 then size_s:=AsInteger(lg)
                                 else if CompareWide(pw,'OFFSET')=0 then offset:=AsInteger(lg);
                               end;
-                              rgString   : name    :=CopyWide(AsString(lg));
+                              rgString   : name    :=aman.SetName(AsString(lg));
                               rgUnsigned : checksum:=AsUnsigned(lg);
                               rgInteger64: ftime   :=AsInteger64(lg);
                             end;
@@ -491,163 +851,6 @@ begin
     DeleteNode(lman);
   end;
 end;
-
-//----- Search -----
-
-function SearchFile(const ainfo:TPAKInfo; apath,aname:PWideChar):PMANFileInfo;
-var
-  lentry:PMANDirEntry;
-  i,j:integer;
-begin
-  for i:=0 to High(ainfo.Entries) do
-  begin
-    lentry:=@(ainfo.Entries[i]);
-
-    if CompareWide(lentry^.name,apath)=0 then
-    begin
-      for j:=0 to High(lentry^.Files) do
-      begin
-        if CompareWide(lentry^.Files[j].name,aname)=0 then
-        begin
-          exit(@(lentry^.Files[j]));
-        end;
-      end;
-
-      break;
-    end;
-  end;
-
-  result:=nil;
-end;
-
-function SearchFile(const ainfo:TPAKInfo; const fname:string):PMANFileInfo;
-var
-  lpath,lname:WideString;
-begin
-  lname:=UpCase(WideString(fname));
-  lpath:=ExtractFilePath(lname);
-  lname:=ExtractFileName(lname);
-
-  result:=SearchFile(ainfo,pointer(lpath),pointer(lname));
-end;
-
-//----- Add -----
-
-function DoAddPath(var ainfo:TPAKInfo; const apath:UnicodeString):PMANDirEntry;
-var
-  i,lslash:integer;
-begin
-  // if exists already
-  for i:=0 to High(ainfo.Entries) do
-  begin
-    if CompareWide(ainfo.Entries[i].name,PUnicodeChar(apath))=0 then
-      exit(@(ainfo.Entries[i]));
-  end;
-
-  // add parent dir
-  lslash:=Length(apath)-1;
-  while (lslash>1) and (apath[lslash]<>'/') do dec(lslash);
-  result:=DoAddPath(ainfo,Copy(apath,1,lslash));
-
-  // add current name for parent (with ending slash)
-  i:=Length(result^.Files);
-  SetLength(result^.Files,i+1);
-  FillChar (result^.Files[i],SizeOf(TMANFileInfo),0);
-  with result^.Files[i] do
-  begin
-    name :=CopyWide(PUnicodeChar(apath)+lslash);
-    ftype:=typeDirectory;
-  end;
-
-  // add current dir (full path)
-  i:=Length(ainfo.Entries);
-  SetLength(ainfo.Entries,i+1);
-  with ainfo.Entries[i] do
-  begin
-    name :=CopyWide(PUnicodeChar(apath));
-    Files:=nil;
-  end;
-
-  result:=@(ainfo.Entries[i]);
-end;
-
-function AddPath(var ainfo:TPAKInfo; apath:PUnicodeChar):PMANDirEntry;
-var
-  ws:UnicodeString;
-  i,lsize:integer;
-begin
-  if (apath=nil) or (apath^=#0) then
-  begin
-    if Length(ainfo.Entries)>0 then
-      exit(@ainfo.Entries[0])
-    else
-      exit(nil);
-  end;
-
-  // Upper case, no starting slashes but with ending
-  ws:=UpCase(UnicodeString(apath));
-  lsize:=Length(ws);
-  for i:=1 to lsize do
-    if ws[i]='\' then ws[i]:='/';
-  i:=1;
-  while ws[i]='/' do inc(i);
-  dec(i);
-  if i>0 then Delete(ws,1,i); dec(lsize,i);
-
-  if ws[lsize]<>'/' then ws:=ws+'/';
-
-  result:=DoAddPath(ainfo,ws);
-end;
-
-function AddPath(var ainfo:TPAKInfo; const apath:string):PMANDirEntry;
-begin
-  result:=AddPath(ainfo,PUnicodeChar(UnicodeString(apath)))
-end;
-
-{
-  Add file with relative path.
-  requires root dir to get physical file info like time and size
-}
-function AddFile(var ainfo:TPAKInfo; apath,aname:PUnicodeChar{; aver:integer=verTL2}):PMANFileInfo;
-var
-  p:PMANDirEntry;
-  t:PPAKExtInfo;
-//  c:integer;
-  i,j:integer;
-begin
-  p:=AddPath(ainfo,apath);
-  if p=nil then exit(nil);
-
-  i:=Length(p^.Files);
-  for j:=0 to i-1 do
-    if CompareWide(p^.Files[j].name,aname)=0 then
-    begin
-      exit(@(p^.Files[j]));
-    end;
-
-  // add record if file was not found
-
-  SetLength(p^.Files,i+1);
-  FillChar(p^.Files[i],SizeOf(TMANFileInfo),0);
-  with p^.Files[i] do
-  begin
-//    c:=GetExtCategory(ExtractFileExt(aname));
-    t:=GetExtInfo(aname,ainfo.ver);
-    name    :=CopyWide(aname);
-    ftype   :=t^._type;
-{Fill while packing
-    ws:=UnicodeString(apath)+UnicodeString(aname);
-    if FileExists(ws) then
-    begin
-//    ftime   :=;
-//    nametxt :=;
-//    checksum:=;
-//    size_s  :=;
-    end;
-}
-  end;
-
-  result:=@(p^.Files[i]);
-end;
+{$ENDIF DEBUG}
 
 end.

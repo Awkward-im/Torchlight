@@ -1,4 +1,6 @@
-﻿unit RGIO.Text;
+﻿{TODO: change WriteWide to Logging?}
+{TODO: Option? Write missing coordinates?}
+unit RGIO.Text;
 
 interface
 
@@ -24,16 +26,18 @@ function UTF8ToNode(abuf:PByte; asize:cardinal; out anode:pointer):integer;
 function ParseTextMem (abuf :PByte):pointer;
 function ParseTextFile(fname:PChar):pointer;
 
+// Options
+const
+  FloatPrec :integer = 4;
+  DoublePrec:integer = 6;
+  WriteEmpty:boolean = true;
+
 
 implementation
 
 uses
   rgglobal,
   rgnode;
-
-const
-  FloatPrec  = 4;
-  DoublePrec = 6;
 
 {%REGION Node to Text}
 
@@ -188,14 +192,14 @@ begin
     end;
 
     // prop name or value is not empty
-    if (llen>0) or ((lvalue<>'') and (lvalue<>'0')) then
+    if (llen>0) or ((lvalue<>'') and (lvalue<>'0')) or WriteEmpty then
     begin
       larr[i]:=':'; inc(i);
     end;
     larr[i]:=#0;
     WriteWide(buf,idx,larr);
 
-    if lvalue<>'' then
+    if (lvalue<>'') or WriteEmpty then
       WriteWide(buf,idx,pointer(lvalue));
 
     larr[0]:=#13;

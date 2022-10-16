@@ -77,7 +77,9 @@ end;
 
 function ScanQuests(ams:pointer):integer;
 begin
+  RGLog.Add('Scanning quests');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/QUESTS', @ProcessQuests);
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateQuestsTable(adb:PSQLite3):boolean;

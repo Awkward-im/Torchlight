@@ -69,11 +69,12 @@ type
     
     SGame:TTL2SaveFile;
 
-    procedure ChangeTree;
+    procedure ChangeTree(aselect:boolean);
     procedure CloseSaveGame;
     procedure CreateTree;
     function GetTVIndex: integer;
     procedure MakeBackup(const fname: string);
+    procedure SettingsChanged;
   public
 
   end;
@@ -168,7 +169,7 @@ begin
   end;
 end;
 
-procedure TfmSaveFile.ChangeTree;
+procedure TfmSaveFile.ChangeTree(aselect:boolean);
 var
   lNode,lSubNode:TTreeNode;
   ls:string;
@@ -224,7 +225,8 @@ begin
   end;
 
   tvSaveGame.Items[idxSavegame].Visible:=true;
-  tvSaveGame.Select(tvSaveGame.Items[idxSavegame].Items[idxCharacter]);
+  if aselect then
+    tvSaveGame.Select(tvSaveGame.Items[idxSavegame].Items[idxCharacter]);
 
 end;
 
@@ -234,6 +236,11 @@ procedure TfmSaveFile.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   ClearGameGlobals;
   SGame.Free;
+end;
+
+procedure TfmSaveFile.SettingsChanged;
+begin
+  ChangeTree(false);
 end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);
@@ -249,6 +256,8 @@ begin
   FSettings:=TfmSettings.Create(Self);
   FSettings.Parent:=MainPanel;
   FSettings.Align :=alClient;
+  FSettings.OnSettingsChanged:=@SettingsChanged;
+
   {i:=}LoadBases(FSettings.edDBFile.Text);
 //  if i<>0 then ShowMessage(rsNoBase+' '+IntToStr(i));
 
@@ -335,7 +344,7 @@ begin
 
     Caption:='  '+FFileName;
 
-    ChangeTree;
+    ChangeTree(true);
 
     actFileReload   .Enabled:=true;
     actFileSave     .Enabled:=true;

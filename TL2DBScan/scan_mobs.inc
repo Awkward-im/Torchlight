@@ -90,7 +90,9 @@ end;
 
 function ScanMobs(ams:pointer):integer;
 begin
+  RGLog.Add('Scanning mobs');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS', @ProcessMobs, @CheckNameMobs);
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateMobsTable(adb:PSQLite3):boolean;

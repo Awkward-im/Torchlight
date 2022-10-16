@@ -10,6 +10,9 @@ uses
 
 
 type
+  TOnSGSettingsChanged = procedure of object;
+
+type
 
   { TfmSettings }
 
@@ -25,13 +28,19 @@ type
     gbShow: TGroupBox;
 
     procedure bbSaveClick(Sender: TObject);
+    procedure SettingsChanged(Sender: TObject);
     procedure FormCreate(Sender: TObject);
 
   private
+    FOnSettingsChanged:TOnSGSettingsChanged;
+
     procedure LoadSettings;
 
   public
 
+    property OnSettingsChanged:TOnSGSettingsChanged
+        read  FOnSettingsChanged
+        write FOnSettingsChanged;
   end;
 
 var
@@ -90,6 +99,11 @@ begin
   config.UpdateFile;
 
   config.Free;
+end;
+
+procedure TfmSettings.SettingsChanged(Sender: TObject);
+begin
+ if Assigned(FOnSettingsChanged) then FOnSettingsChanged();
 end;
 
 procedure TfmSettings.LoadSettings;

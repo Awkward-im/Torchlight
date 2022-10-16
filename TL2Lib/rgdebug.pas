@@ -3,9 +3,10 @@
 interface
 
 uses
-  rgglobal;
+  rgglobal,
+  rgpak;
 
-function DumpPAKInfo(const ainfo:TPAKInfo):string;
+function DumpPAKInfo(const ainfo:TRGPAK):string;
 
 
 implementation
@@ -13,7 +14,8 @@ implementation
 uses
 //  SysUtils,
   logging,
-  rgfiletype
+  rgfiletype,
+  rgman
   ;
 
 function IntToStr(Value: Longint): string;
@@ -21,72 +23,70 @@ begin
   System.Str(Value, result);
 end ;
 
-function DumpPAKInfo(const ainfo:TPAKInfo):string;
+function DumpPAKInfo(const ainfo:TRGPAK):string;
 var
   llog:TLog;
+  p:PMANFileInfo;
   ls,llsize:string;
-  i,j:integer;
+  i:integer;
   lpack,lfiles,lprocess,ldir:integer;
   ldat,llay:integer;
   lmaxc,lmax,lmaxp,lmaxu,lcnt:integer;
 begin
   llog.Init;
 
-  llog.Add('Root: '+String(WideString(ainfo.Root)));
+  llog.Add('Root: '+String(WideString(ainfo.man.Root)));
   lfiles:=0;
   lprocess:=0;
   ldir:=0;
   lpack:=0;
   llay:=0;
   ldat:=0;
-  lcnt:=ainfo.total;
+  lcnt:=ainfo.man.total;
   lmaxp:=0;
   lmaxu:=0;
   lmax :=0;
-  for i:=0 to High(ainfo.Entries) do
+  for i:=0 to ainfo.man.EntriesCount-1 do
   begin
-    llog.Add(IntToStr(i+1)+'  Directory: '+string(WideString(ainfo.Entries[i].name)));
-    for j:=0 to High(ainfo.Entries[i].Files) do
-    begin
+    llog.Add(IntToStr(i+1)+'  Directory: '+string(WideString(ainfo.man.EntryName[i])));
+    if ainfo.man.GetFirstFile(p,i)<>0 then
+    repeat
       dec(lcnt);
-      with ainfo.Entries[i].Files[j] do
+      llsize:='';
+      if (p^.ftype=typeDirectory) or (p^.ftype=typeDelete) then
       begin
-        llsize:='';
-        if (ftype=typeDirectory) or (ftype=typeDelete) then
-        begin
-          inc(ldir);
-          ls:='    Dir: ';
-        end
-        else
-        begin
-          inc(lfiles);
-          ls:='    File: ';
-          if size_s=0 then llsize:='##';
-        end;
-        if size_c>0 then inc(lpack);
-        if lmaxp<size_c then lmaxp:=size_c;
-        if lmaxu<size_u then lmaxu:=size_u;
-        if (lmax <size_u) and (size_c<>0) then
-        begin
-          lmax :=size_u;
-          lmaxc:=size_c;
-        end;
-        if ftype in [typeWDat,typeDat,typeLayout,typeHie,typeAnimation] then inc(lprocess);
-        if ftype=typedat then inc(ldat);
-        if ftype=typelayout then inc(llay);
-
-        if size_s<>size_u then llsize:='!!';
-        llog.Add(llsize+
-            ls+string(widestring(name))+
-            '; type:'       +PAKCategoryName(ftype)+
-            '; source size:'+IntToStr(size_s)+
-            '; compr:'      +IntToStr(size_c)+
-            '; unpacked:'   +IntToStr(size_u));
+        inc(ldir);
+        ls:='    Dir: ';
+      end
+      else
+      begin
+        inc(lfiles);
+        ls:='    File: ';
+        if p^.size_s=0 then llsize:='##';
       end;
-    end;
+      if p^.size_c>0 then inc(lpack);
+      if lmaxp<p^.size_c then lmaxp:=p^.size_c;
+      if lmaxu<p^.size_u then lmaxu:=p^.size_u;
+      if (lmax<p^.size_u) and (p^.size_c<>0) then
+      begin
+        lmax :=p^.size_u;
+        lmaxc:=p^.size_c;
+      end;
+      if p^.ftype in [typeWDat,typeDat,typeLayout,typeHie,typeAnimation] then inc(lprocess);
+      if p^.ftype=typeDAT then inc(ldat);
+      if p^.ftype=typeLayout then inc(llay);
+
+      if p^.size_s<>p^.size_u then llsize:='!!';
+      llog.Add(llsize+
+          ls+string(widestring(ainfo.man.GetName(p^.name)))+
+          '; type:'       +PAKCategoryName(p^.ftype)+
+          '; source size:'+IntToStr(p^.size_s)+
+          '; compr:'      +IntToStr(p^.size_c)+
+          '; unpacked:'   +IntToStr(p^.size_u));
+    until ainfo.man.GetNextFile(p)=0;
   end;
-  llog.Add('Total: '    +IntToStr(ainfo.total)+
-           '; childs: ' +IntToStr(Length(ainfo.Entries))+
+  llog.Add('Total: '    +IntToStr(ainfo.man.total)+
+           '; childs: ' +IntToStr(ainfo.man.EntriesCount)+
            '; rest: '   +IntToStr(lcnt)+
            '; process: '+IntToStr(lprocess));
   llog.Add('Max packed size: '      +IntToStr(lmaxp)+' (0x'+HexStr(lmaxp,8)+')');

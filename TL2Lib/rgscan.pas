@@ -44,6 +44,7 @@ implementation
 uses
   sysutils,
   rgpak,
+  rgman,
   rgfiletype;
 
 type
@@ -54,7 +55,7 @@ type
     FRoot     :string;     // not used, mod file path or scan starting dir
     FDir      :PWideChar;  // not used, starting dir inside root
     FParam    :pointer;
-    FMod      :TPAKInfo;
+    FMod      :TRGPAK;
     FCheckProc:TCheckNameProc;
     FActProc  :TProcessProc;
 
@@ -71,8 +72,7 @@ type
 
 procedure TScanObj.Free;
 begin
-  if FMod.ver<>verUnk then
-    FreePAKInfo(FMod);
+  FMod.Free;
 
   SetLength(FExts,0);
   FRoot:='';
@@ -110,49 +110,49 @@ end;
 procedure TScanObj.ScanMod();
 var
   lbuf:PByte;
-  res,i,j,lsize:integer;
+  p:PMANFileInfo;
+  lname,lfname:PWideChar;
+  res,j,lsize:integer;
 begin
-  for j:=0 to High(FMod.Entries) do
+  lbuf:=nil;
+  for j:=0 to FMod.man.EntriesCount-1 do
   begin
-    if (FDir=nil) or (CompareWide(FDir,FMod.Entries[j].Name,Length(FDir))=0) then
+    if (FDir=nil) or (CompareWide(FDir,FMod.man.GetEntryName(j),Length(FDir))=0) then
     begin
-      for i:=0 to High(FMod.Entries[j].Files) do
+      if FMod.man.GetFirstFile(p,j)<>0 then
       begin
-        if (not (FMod.Entries[j].Files[i].ftype in [typeDirectory,typeDelete])) and
-           CheckName(FMod.Entries[j].Name,
-                     FMod.Entries[j].Files[i].name) then
-        begin
-          if (FActProc=nil) then inc(FCount)
-          else
+        lname:=FMod.man.GetEntryName(j);
+        repeat
+          lfname:=FMod.man.GetName(p^.name);
+          if (not (p^.ftype in [typeDirectory,typeDelete])) and
+             CheckName(lname,lfname) then
           begin
-            if (FMod.Entries[j].Files[i].size_s>0) and
-               (FMod.Entries[j].Files[i].offset>0) then
+            if (FActProc=nil) then inc(FCount)
+            else
             begin
-              lsize:=UnpackFile(
-                  FMod,
-                  FMod.Entries[j].Name,
-                  FMod.Entries[j].Files[i].name,
-                  lbuf);
-
-              res:=FActProc(lbuf,lsize,
-                FMod.Entries[j].Name,
-                FMod.Entries[j].Files[i].name,
-                FParam);
-              FreeMem(lbuf);
-
-              if res>0 then inc(FCount)
-              else if res<0 then
+              if (p^.size_s>0) and
+                 (p^.offset>0) then
               begin
-                FCount:=-ABS(FCount);
-                exit;
-              end;
+                lsize:=FMod.UnpackFile(lname,lfname,lbuf);
 
+                res:=FActProc(lbuf,lsize,lname,lfname,FParam);
+
+                if res>0 then inc(FCount)
+                else if res<0 then
+                begin
+                  FCount:=-ABS(FCount);
+                  FreeMem(lbuf);
+                  exit;
+                end;
+
+              end;
             end;
           end;
-        end;
+        until FMod.man.GetNextFile(p)=0;
       end;
     end;
   end;
+  FreeMem(lbuf);
 end;
 
 {$PUSH}
@@ -248,10 +248,11 @@ begin
   GetMem  (aptr ,SizeOf(TScanObj));
   FillChar(aptr^,SizeOf(TScanObj),0);
 
+  PScanObj(aptr)^.FMod.Init;
   if ldir='' then
-    GetPAKInfo(apath,PScanObj(aptr)^.FMod,piParse)
+    PScanObj(aptr)^.FMod.GetInfo(apath,piParse)
   else
-    PScanObj(aptr)^.FMod.ver:=verUnk;
+    PScanObj(aptr)^.FMod.Version:=verUnk;
 
   PScanObj(aptr)^.FRoot :=ldir;
   PScanObj(aptr)^.FExts :=Copy(aext);
@@ -279,7 +280,7 @@ begin
 
   if aptr=nil then Exit;
 
-  if PScanObj(aptr)^.FMod.ver=verUnk then
+  if PScanObj(aptr)^.FMod.Version=verUnk then
   begin
     Assign(f,PScanObj(aptr)^.FRoot+DirectorySeparator+afile);
     Reset(f);
@@ -293,7 +294,8 @@ begin
   end
   else
   begin
-    result:=UnpackFile(PScanObj(aptr)^.FMod, afile, abuf);
+    abuf:=nil;
+    result:=PScanObj(aptr)^.FMod.UnpackFile(afile, abuf);
   end;
 end;
 {$POP}
@@ -311,7 +313,7 @@ begin
   PScanObj(aptr)^.FActProc  :=actproc;
   PScanObj(aptr)^.FDir      :=StrToWide(apath);
 
-  if PScanObj(aptr)^.FMod.ver=verUnk then
+  if PScanObj(aptr)^.FMod.Version=verUnk then
   begin
     if apath='' then
       PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot)

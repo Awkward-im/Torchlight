@@ -71,7 +71,9 @@ end;
 
 function ScanStats(ams:pointer):integer;
 begin
+  RGLog.Add('Scanning stats');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/STATS', @ProcessStats);
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateStatsTable(adb:PSQLite3):boolean;

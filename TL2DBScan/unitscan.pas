@@ -9,8 +9,13 @@ uses
   ,RGGlobal
   ;
 
+{not necessary to call them manually}
+// amul is scale (which value must be multiplied to get integer with required precision)
 function ScanGraph   (ams:pointer; const aname:string; amul:integer):integer;
 procedure LoadDefaultGraphs(ams:pointer);
+
+{scanning type}
+function ScanPath(adb:PSQLite3; const apath:string; aLogLvl:integer=1):integer;
 
 procedure ScanAll(ams:pointer);
 
@@ -27,15 +32,18 @@ function ScanSkills   (ams:pointer):integer;
 function ScanStats    (ams:pointer):integer;
 function ScanWardrobe (ams:pointer):integer;
 
-
+{main single mod scanning}
+// prepare SINGLE mod file/unpacked directory
 function Prepare(
          adb:PSQLite3;
          const apath:string;
          out ams:pointer;
+         aLogLvl:integer=1;
          aupdateall:boolean=false):boolean;
 
 procedure Finish(ams:pointer);
 
+{Load DB to memory/save back to disk}
 function RGOpenBase (out adb:PSQLite3):boolean;
 function RGCloseBase(    adb:PSQLite3):boolean;
 
@@ -65,6 +73,14 @@ type
     scan     :pointer;  // PScanObj from RGScan
     db       :PSQLite3;
     FRootLen :integer;  // Root dir name length
+    FLogLevel:integer;
+  end;
+type
+  PScanDir = ^TScanDir;
+  TScanDir = record
+    db  :PSQLite3;
+    path:string;
+    log :integer;
   end;
 {
 const
@@ -114,7 +130,7 @@ end;
 {$i scan_stat.inc}
 {$i scan_wardrobe.inc}
 
-{%REGION Base}
+{%REGION Scan single mod}
 
 procedure ScanAll(ams:pointer);
 begin
@@ -139,6 +155,7 @@ function Prepare(
     adb:PSQLite3;
     const apath:string;
     out ams:pointer;
+    aLogLvl:integer=1;
     aupdateall:boolean=false):boolean;
 var
   lmod:TTL2ModInfo;
@@ -159,7 +176,7 @@ begin
   end
   else if FileExists(apath) then
   begin
-    lver:=GetPAKVersion(apath);
+    lver:=RGPAKGetVersion(apath);
     if      lver=verTL2Mod then result:=ReadModInfo(PChar(apath),lmod)
     else if lver=verTL2    then result:=true;
   end;
@@ -220,6 +237,63 @@ begin
   end;
 end;
 
+{%ENDREGION Scan single mod}
+
+{%REGION Scan dirs}
+
+procedure ProcessSingleMod(adb:PSQLite3; const aname:string; aLogLvl:integer);
+var
+  lms:pointer;
+begin
+  if not Prepare(adb,aname,lms,aLogLvl) then
+  begin
+    RGLog.Add('Can''t prepare "'+aname+'" scanning');
+    exit;
+  end;
+
+  ScanAll(lms);
+
+  Finish(lms);
+end;
+
+function DoCheck(const adir,aname:string; aparam:pointer):integer;
+var
+  lext:string;
+begin
+  result:=1;
+  lext:=UpCase(ExtractFileExt(aname));
+  if (lext='.MOD') or
+     (lext='.PAK') then
+  begin
+    with PScanDir(aparam)^ do
+      ProcessSingleMod(db,path+'\'+adir+'\'+aname,log);
+  end
+  else if (UpCase(aname)='MOD.DAT') then
+  begin
+    with PScanDir(aparam)^ do
+      if (adir='\') or (adir='/') then
+        ProcessSingleMod(db,path,log)
+      else
+        ProcessSingleMod(db,path+'\'+adir,log);
+  end
+  else
+    exit(0);
+end;
+
+function ScanPath(adb:PSQLite3; const apath:string; aLogLvl:integer=1):integer;
+var
+  lsd:TScanDir;
+begin
+  result:=0;
+  lsd.db  :=adb;
+  lsd.path:=apath;
+  lsd.log :=aLogLvl;
+  result:=MakeRGScan(apath,'',['.PAK','.MOD','.DAT'],nil,@lsd,@DoCheck);
+end;
+
+{%ENDREGION Scan dirs}
+
+{%REGION Base}
 
 function CreateTables(adb:PSQLite3):boolean;
 begin
@@ -255,7 +329,7 @@ begin
   result:=result and (sqlite3_close(adb)=SQLITE_OK);
 end;
 
-{%ENDREGION}
+{%ENDREGION Base}
 
 initialization
   RGTags.Import('RGDICT','TEXT');

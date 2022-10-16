@@ -118,6 +118,12 @@ object RGGUIForm: TRGGUIForm
       Action = actInfoInfo
       ShowCaption = False
     end
+    object tbShowLog: TToolButton
+      Left = 218
+      Top = 2
+      Action = actShowLog
+      ShowCaption = False
+    end
   end
   object pnlTree: TPanel
     Left = 0
@@ -193,9 +199,9 @@ object RGGUIForm: TRGGUIForm
     Height = 465
     Top = 26
     Width = 683
-    ActivePage = Setings
+    ActivePage = Grid
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 4
     object Setings: TTabSheet
       Caption = 'Setings'
@@ -361,6 +367,24 @@ object RGGUIForm: TRGGUIForm
         Caption = 'Save tree and grid width'
         TabOrder = 6
       end
+      object bbResetColumns: TBitBtn
+        Left = 312
+        Height = 30
+        Top = 304
+        Width = 120
+        Caption = 'View Reset'
+        Kind = bkRetry
+        OnClick = ResetView
+        TabOrder = 7
+      end
+      object cbFastScan: TCheckBox
+        Left = 9
+        Height = 19
+        Top = 272
+        Width = 154
+        Caption = 'Fast scan (no packed size)'
+        TabOrder = 8
+      end
     end
     object Grid: TTabSheet
       Caption = 'Grid'
@@ -501,17 +525,15 @@ object RGGUIForm: TRGGUIForm
         object btnMODDAT: TButton
           Left = 581
           Height = 25
-          Hint = 'Make MOD.DAT file for TL2 mod'
           Top = 6
           Width = 75
-          Caption = 'MOD.DAT'
-          OnClick = btnMODDATClick
+          Action = actInfoInfo
           TabOrder = 4
-          Visible = False
         end
         object bbSave: TBitBtn
           Left = 4
           Height = 30
+          Hint = 'Save (unpack) file to disk'
           Top = 3
           Width = 75
           Caption = 'Save'
@@ -1190,6 +1212,9 @@ object RGGUIForm: TRGGUIForm
     end
     object miHelp: TMenuItem
       Caption = '&Help'
+      object miHelpShowLog: TMenuItem
+        Action = actShowLog
+      end
       object miHelpAbout: TMenuItem
         Action = actHelpAbout
       end
@@ -1235,7 +1260,9 @@ object RGGUIForm: TRGGUIForm
     object actEditExtract: TAction
       Category = 'Edit'
       Caption = '&Extract'
+      Enabled = False
       Hint = 'Extract file(s)'
+      OnExecute = bbSaveClick
       ShortCut = 32837
     end
     object actEditDelete: TAction
@@ -1270,6 +1297,13 @@ object RGGUIForm: TRGGUIForm
       ImageIndex = 4
       OnExecute = actFileExitExecute
       ShortCut = 32883
+    end
+    object actShowLog: TAction
+      Caption = 'Show Log'
+      Hint = 'Show Log window'
+      ImageIndex = 6
+      OnExecute = actShowLogExecute
+      ShortCut = 32844
     end
   end
   object ImageList: TImageList

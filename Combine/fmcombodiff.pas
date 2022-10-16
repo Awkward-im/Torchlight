@@ -117,11 +117,11 @@ begin
 
   hlold.Count:=slold.Count;
   for i:=0 to slold.Count-1 do
-    hlold.Items[i]:=RGHash(PChar(slold[i]));
+    hlold.Items[i]:=RGHashB(PChar(slold[i]));
 
   hlnew.Count:=slnew.Count;
   for i:=0 to slnew.Count-1 do
-    hlnew.Items[i]:=RGHash(PChar(slnew[i]));
+    hlnew.Items[i]:=RGHashB(PChar(slnew[i]));
 
   Diff.Execute(hlold, hlnew);
 

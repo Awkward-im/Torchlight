@@ -19,10 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMod2Pak"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="214"/>
-        <CursorPos X="33" Y="497"/>
-        <FoldState Value=" T4602 T7EFj T3jA0{Q2 pj9la081]9AjM0F416 pk7lG0B1y"/>
+        <TopLine Value="342"/>
+        <CursorPos X="33" Y="357"/>
+        <FoldState Value=" T4602 T7EFj T3jB0{Q2 pj9la08,"/>
         <UsageCount Value="66"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -38,11 +37,12 @@
       <Unit>
         <Filename Value="..\TL2Lib\TL2Mod.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="71"/>
-        <CursorPos Y="188"/>
-        <FoldState Value=" T3ia0G3 piYjM0{0]Ajcm00ZX"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="316"/>
+        <CursorPos X="6" Y="331"/>
         <UsageCount Value="64"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgmemory.pas"/>
@@ -73,40 +73,16 @@
         <CursorPos X="25" Y="2912"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgnode.pas"/>
+        <UnitName Value="RGNode"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="177"/>
+        <CursorPos X="3" Y="188"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formmod2pak.pas"/>
-        <Caret Line="149" Column="24" TopLine="132"/>
-      </Position>
-      <Position>
-        <Filename Value="formmod2pak.pas"/>
-        <Caret Line="136" TopLine="130"/>
-      </Position>
-      <Position>
-        <Filename Value="formmod2pak.pas"/>
-        <Caret Line="145" TopLine="130"/>
-      </Position>
-      <Position>
-        <Filename Value="formmod2pak.pas"/>
-        <Caret Line="146" TopLine="130"/>
-      </Position>
-      <Position>
-        <Filename Value="formmod2pak.pas"/>
-        <Caret Line="389" Column="39" TopLine="59"/>
-      </Position>
-      <Position>
-        <Filename Value="formmod2pak.pas"/>
-        <Caret Line="390" Column="39" TopLine="71"/>
-      </Position>
-      <Position>
-        <Filename Value="formmod2pak.pas"/>
-        <Caret Line="391" Column="39" TopLine="73"/>
-      </Position>
-      <Position>
-        <Filename Value="formmod2pak.pas"/>
-        <Caret Line="390" Column="39" TopLine="71"/>
-      </Position>
+    <JumpHistory HistoryIndex="28">
       <Position>
         <Filename Value="formmod2pak.pas"/>
         <Caret Line="392" Column="39" TopLine="75"/>
@@ -194,6 +170,34 @@
       <Position>
         <Filename Value="formmod2pak.pas"/>
         <Caret Line="557" Column="53" TopLine="557"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="431" Column="72" TopLine="213"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="580" Column="3" TopLine="574"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="90" Column="2" TopLine="77"/>
+      </Position>
+      <Position>
+        <Filename Value="formmod2pak.pas"/>
+        <Caret Line="357" Column="33" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
+        <Caret Line="331" Column="6" TopLine="316"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
+        <Caret Line="301" Column="16" TopLine="286"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
+        <Caret Line="331" Column="6" TopLine="316"/>
       </Position>
     </JumpHistory>
     <RunParams>

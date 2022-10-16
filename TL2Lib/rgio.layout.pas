@@ -21,6 +21,11 @@ function BuildLayoutMem   (data:pointer; out   bin    :pByte     ; aver:byte=ver
 function BuildLayoutStream(data:pointer;       astream:TStream   ; aver:byte=verTL2):integer;
 function BuildLayoutFile  (data:pointer; const fname  :AnsiString; aver:byte=verTL2):integer;
 
+function GetLayoutVersion(abuf:PByte):integer;
+
+function GetLayoutType(fname:PUnicodeChar):cardinal;
+function GetLayoutType(const afname:string):cardinal;
+
 
 implementation
 
@@ -266,47 +271,49 @@ begin
 
   case ltype of
     rgBool     : AddBool(anode,lname,memReadInteger(FPos)<>0);
-    rgInteger  : begin vali:=memReadInteger  (FPos); if vali<>0 then AddInteger  (anode,lname,vali); end;
-    rgUnsigned : begin valu:=memReadDWord    (FPos); if valu<>0 then AddUnsigned (anode,lname,valu); end;
-    rgFloat    : begin lq.X:=memReadFloat    (FPos); if lq.X<>0 then AddFloat    (anode,lname,lq.X); end;
-    rgInteger64: begin valq:=memReadInteger64(FPos); if valq<>0 then AddInteger64(anode,lname,valq); end;
+    rgInteger  : begin vali:=memReadInteger  (FPos); {if vali<>0 then} AddInteger  (anode,lname,vali); end;
+    rgUnsigned : begin valu:=memReadDWord    (FPos); {if valu<>0 then} AddUnsigned (anode,lname,valu); end;
+    rgFloat    : begin lq.X:=memReadFloat    (FPos); {if lq.X<>0 then} AddFloat    (anode,lname,lq.X); end;
+    rgInteger64: begin valq:=memReadInteger64(FPos); {if valq<>0 then} AddInteger64(anode,lname,valq); end;
     rgDouble   : AddDouble(anode,lname,memReadDouble(FPos));
     rgNote,
     rgTranslate,
     rgString: begin
       case FVer of
         verTL1: if asize>0 then
-        begin
-          GetMem  (pcw ,(asize+1)*SizeOf(DWord));
-          FillChar(pcw^,(asize+1)*SizeOf(DWord),0);
-          memReadData(FPos,pcw^,asize*SizeOf(DWord));
-        end;
+          begin
+            GetMem  (pcw ,(asize+1)*SizeOf(DWord));
+            FillChar(pcw^,(asize+1)*SizeOf(DWord),0);
+            memReadData(FPos,pcw^,asize*SizeOf(DWord));
+          end
+          else
+            pcw:=nil;
         verTL2: pcw:=memReadShortString(FPos);
         verRG,
         verRGO,
         verHob: pcw:=memReadShortStringUTF8(FPos);
       end;
-      if (pcw<>nil) and (pcw^<>#0) then
+//      if (pcw<>nil) and (pcw^<>#0) then
       begin
         AddString(anode,lname,pcw);
         FreeMem(pcw);
       end;
     end;
     rgVector2: begin
-      lq.X:=memReadFloat(FPos); if lq.X<>0 then AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); if lq.Y<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
     end;
     rgVector3: begin
-      lq.X:=memReadFloat(FPos); if lq.X<>0 then AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); if lq.Y<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
-      lq.Z:=memReadFloat(FPos); if lq.Z<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
+      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
     end;
     // Quaternion
     rgVector4: begin
-      lq.X:=memReadFloat(FPos); if lq.X<>0 then AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); if lq.Y<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
-      lq.Z:=memReadFloat(FPos); if lq.Z<>0 then AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
-      lq.W:=memReadFloat(FPos); if lq.W<>0 then AddFloat(anode,PWideChar(WideString(lname)+'W'),lq.W);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
+      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
+      lq.W:=memReadFloat(FPos); {if lq.W<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'W'),lq.W);
 
       // Additional, not sure what it good really
       if CompareWide(lname,'ORIENTATION')=0 then
@@ -798,15 +805,60 @@ begin
   result:=abuf^ in [5, 8, 9, 11, $5A];
 end;
 
+function GetLayoutVersion(abuf:PByte):integer;
+begin
+  if abuf<>nil then
+    case abuf^ of
+      5  : exit(verRG);
+      8  : exit(verHob);
+      9  : exit(verRGO);
+      11 : exit(verTL2);
+      $5A: exit(verTL1);
+    end;
+
+  result:=verUnk;
+end;
+
+function GetLayoutType(fname:PUnicodeChar):cardinal;
+var
+  ls:UnicodeString;
+  i:integer;
+begin
+  if fname<>'' then
+  begin
+    ls:=UnicodeString(fname);
+    for i:=1 to Length(ls) do
+    begin
+      if ls[i]='\' then
+        ls[i]:='/'
+      else
+        ls[i]:=UpCase(ls[i]);
+    end;
+
+    if      pos('MEDIA/UI'       ,ls)>0 then exit(ltUI)
+    else if pos('MEDIA/PARTICLES',ls)>0 then exit(ltParticle);
+  end;
+  result:=ltLayout;
+end;
+
 function GetLayoutType(const afname:string):cardinal;
 var
   ls:string;
+  i:integer;
 begin
   if afname<>'' then
   begin
-    ls:=UpCase(afname);
-    if      (pos('MEDIA\UI'       ,ls)>0) or (pos('MEDIA/UI'       ,ls)>0) then exit(ltUI)
-    else if (pos('MEDIA\PARTICLES',ls)>0) or (pos('MEDIA/PARTICLES',ls)>0) then exit(ltParticle);
+    ls:=afname;
+    for i:=1 to Length(ls) do
+    begin
+      if ls[i]='\' then
+        ls[i]:='/'
+      else
+        ls[i]:=UpCase(ls[i]);
+    end;
+
+    if      pos('MEDIA/UI'       ,ls)>0 then exit(ltUI)
+    else if pos('MEDIA/PARTICLES',ls)>0 then exit(ltParticle);
   end;
   result:=ltLayout;
 end;

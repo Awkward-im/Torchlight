@@ -9,6 +9,7 @@ object fmMod2Pak: TfmMod2Pak
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDropFiles = FormDropFiles
+  LCLVersion = '2.3.0.0'
   object lbReserve: TListBox
     Left = 8
     Height = 280

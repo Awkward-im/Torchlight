@@ -1,4 +1,3 @@
-{TODO: implement 'compare' and 'stop' variants}
 unit fmAsk;
 
 {$mode ObjFPC}{$H+}

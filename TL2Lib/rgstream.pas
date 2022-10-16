@@ -30,6 +30,9 @@ type
     procedure WriteByteString (const astr:WideString);
     procedure WriteShortString(const astr:WideString);
     procedure WriteDWordString(const astr:WideString);
+    procedure WriteByteString (const astr:PWideChar);
+    procedure WriteShortString(const astr:PWideChar);
+    procedure WriteDWordString(const astr:PWideChar);
     procedure WriteShortStringUTF8(const astr:WideString);
     procedure WriteFloat(aval:single);
     procedure WriteCoord(aval:TVector3);
@@ -48,16 +51,30 @@ type
     OR Capacity must be changed before
   }
     procedure SetBuffer(buf:pointer);
+    procedure CutBuffer(var buf:pointer);
   end;
 
 
 implementation
 
 
+procedure TTL2MemStream.CutBuffer(var buf:pointer);
+begin
+  buf:=Memory;
+  SetPointer(nil,0);
+  Clear;
+//  FSize:=0;
+//  FPosition:=0;
+//  SetCapacity (0);
+end;
+
 procedure TTL2MemStream.SetBuffer(buf:pointer);
 begin
   Clear;
   SetPointer(buf,MemSize(buf));
+//  FCapacity:=MemSize(buf);
+//  FMemory:=Ptr;
+//  FSize:=ASize;
 end;
 
 //----- Read data -----
@@ -217,6 +234,20 @@ begin
     WriteByte(0);
 end;
 
+procedure TTL2Stream.WriteByteString(const astr:PWideChar);
+var
+  llen:cardinal;
+begin
+  if astr<>nil then
+  begin
+    llen:=Length(astr);
+    WriteByte(llen);
+    Write(astr^,llen*SizeOf(WideChar));
+  end
+  else
+    WriteByte(0);
+end;
+
 procedure TTL2Stream.WriteShortString(const astr:string);
 var
   ws:WideString;
@@ -242,6 +273,20 @@ begin
     WriteWord(0);
 end;
 
+procedure TTL2Stream.WriteShortString(const astr:PWideChar);
+var
+  llen:cardinal;
+begin
+  if astr<>nil then
+  begin
+    llen:=Length(astr);
+    WriteWord(llen);
+    Write(astr^,llen*SizeOf(WideChar));
+  end
+  else
+    WriteWord(0);
+end;
+
 procedure TTL2Stream.WriteDWordString(const astr:string);
 var
   ws:WideString;
@@ -262,6 +307,20 @@ begin
   begin
     WriteDWord(Length(astr));
     Write(astr[1],Length(astr)*SizeOf(WideChar));
+  end
+  else
+    WriteDWord(0);
+end;
+
+procedure TTL2Stream.WriteDWordString(const astr:PWideChar);
+var
+  llen:cardinal;
+begin
+  if astr<>nil then
+  begin
+    llen:=Length(astr);
+    WriteDWord(llen);
+    Write(astr^,llen*SizeOf(WideChar));
   end
   else
     WriteDWord(0);

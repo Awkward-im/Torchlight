@@ -26,6 +26,7 @@ type
     cbClasses: TCheckBox;
 
     cbUpdateAll: TCheckBox;
+    cbDetailedLog: TCheckBox;
     edDirName: TDirectoryEdit;
     edFileName: TFileNameEdit;
     gbWhatToScan: TGroupBox;
@@ -40,6 +41,10 @@ type
     procedure rbDirToScanChange(Sender: TObject);
     procedure rbFileToScanChange(Sender: TObject);
   private
+    db:pointer;
+
+    function  AddToLog(var adata:string):integer;
+    procedure ProcessSingleMod(const aname: string);
 
   public
 
@@ -55,15 +60,139 @@ implementation
 { TfmScan }
 
 uses
+  logging,
   rgglobal,
-  rglogging,
+  rgscan,
   unitscan;
 
-procedure TfmScan.bbScanClick(Sender: TObject);
-var
-  db,lms:pointer;
+function TfmScan.AddToLog(var adata:string):integer;
 begin
-  RGLog.Clear;
+  memLog.Append(adata);
+  adata:='';
+  result:=0;
+end;
+
+procedure TfmScan.ProcessSingleMod(const aname:string);
+var
+  lms:pointer;
+  lloglvl:integer;
+begin
+  if cbDetailedLog.Checked then
+    lloglvl:=2;
+  else
+    lloglvl:=1;
+
+  if not Prepare(db,aname,lms,lloglvl) then
+  begin
+    memLog.Append('Can''t prepare "'+aname+'" scanning');
+    exit;
+  end;
+  memLog.Append('Scanning '+aname);
+
+  if cbUpdateAll.Checked then
+  begin
+    memLog.Append('Scanning all');
+    ScanAll(lms);
+  end
+  else
+  begin
+{
+    // Wardrobe
+    ScanWardrobe(lms);
+}
+    // Pets
+    if cbPets.Checked then
+    begin
+      ScanPets(lms);
+      Application.ProcessMessages;
+    end;
+
+    // Quests
+    if cbQuests.Checked then
+    begin
+      ScanQuests(lms);
+      Application.ProcessMessages;
+    end;
+
+    // Stats
+    if cbStats.Checked then
+    begin
+      ScanStats(lms);
+      Application.ProcessMessages;
+    end;
+
+    // Recipes
+    if cbRecipes.Checked then
+    begin
+      ScanRecipes(lms);
+      Application.ProcessMessages;
+    end;
+
+    // Mobs
+    if cbMobs.Checked then
+    begin
+      ScanMobs(lms);
+      Application.ProcessMessages;
+    end;
+
+    // Items
+    if cbItems.Checked then
+    begin
+      ScanItems(lms);
+      Application.ProcessMessages;
+    end;
+
+    // Props
+    if cbProps.Checked then
+    begin
+      ScanProps(lms);
+      Application.ProcessMessages;
+    end;
+
+    // Skills
+    if cbSkills.Checked then
+    begin
+      ScanSkills(lms);
+      Application.ProcessMessages;
+    end;
+
+    // Classes
+    if cbClasses.Checked then
+    begin
+      ScanClasses(lms);
+      Application.ProcessMessages;
+    end;
+  end;
+
+  Finish(lms);
+end;
+
+function DoCheck(const adir,aname:string; aparam:pointer):integer;
+var
+  lext:string;
+begin
+  result:=1;
+  lext:=UpCase(ExtractFileExt(aname));
+  if (lext='.MOD') or
+     (lext='.PAK') then
+  begin
+    with TfmScan(aparam) do
+      ProcessSingleMod(edDirName.Text+'\'+adir+'\'+aname);
+  end
+  else if (UpCase(aname)='MOD.DAT') then
+  begin
+    with TfmScan(aparam) do
+      if (adir='\') or (adir='/') then
+        ProcessSingleMod(edDirName.Text)
+      else
+        ProcessSingleMod(edDirName.Text+'\'+adir);
+  end
+  else
+    exit(0);
+end;
+
+procedure TfmScan.bbScanClick(Sender: TObject);
+begin
   memLog.Append('Preparing...');
 
   if not RGOpenBase(db) then
@@ -74,107 +203,12 @@ begin
 
   if rbDirToScan.Checked then
   begin
-    if not Prepare(db,edDirName.Text,lms) then exit;
-    memLog.Append('Scanning '+edDirName.Text);
+    MakeRGScan(edDirName.Text,'',['.PAK','.MOD','.DAT'],nil,Self,@DoCheck);
   end
-  else // if rbFileToScan then
-  begin
-    if not Prepare(db,edFileName.Text,lms) then exit;
-    memLog.Append('Scanning '+edFileName.Text);
-  end;
-
-  memLog.Append('Ok, prepared!');
-
-  if cbUpdateAll.Checked then
-  begin
-    memLog.Append('Scanning all');
-    ScanAll(lms);
-
-  end
-  else
-  begin
-{
-    // Wardrobe
-    memLog.Append('Go wardrobe!');
-    ScanWardrobe(lms);
-    memLog.Append(RGLog.Text); RGLog.Clear;
-}
-    // Pets
-    if cbPets.Checked then
-    begin
-      memLog.Append('Go pets!');
-      ScanPets(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-
-    // Quests
-    if cbQuests.Checked then
-    begin
-      memLog.Append('Go quests!');
-      ScanQuests(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-
-    // Stats
-    if cbStats.Checked then
-    begin
-      memLog.Append('Go stats!');
-      ScanStats(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-
-    // Recipes
-    if cbRecipes.Checked then
-    begin
-      memLog.Append('Go recipes!');
-      ScanRecipes(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-
-    // Mobs
-    if cbMobs.Checked then
-    begin
-      memLog.Append('Go mobs!');
-      ScanMobs(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-
-    // Items
-    if cbItems.Checked then
-    begin
-      memLog.Append('Go items!');
-      ScanItems(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-
-    // Props
-    if cbProps.Checked then
-    begin
-      memLog.Append('Go props!');
-      ScanProps(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-
-    // Skills
-    if cbSkills.Checked then
-    begin
-      memLog.Append('Go skills!');
-      ScanSkills(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-
-    // Classes
-    if cbClasses.Checked then
-    begin
-      memLog.Append('Go classes!');
-      ScanClasses(lms);
-      memLog.Append(RGLog.Text); RGLog.Clear;
-    end;
-  end;
+  else //if rbFileToScan then
+    ProcessSingleMod(edFileName.Text);
 
   memLog.Append('Saving...');
-  Finish(lms);
-  RGLog.Clear;
 
   if not RGCloseBase(db) then
     memLog.Append('Error while save database');
@@ -199,6 +233,10 @@ begin
   if not FileExists(TL2DataBase) then
     ShowMessage('Database file not found.'#13#10+
     'Better to use base game file scan first.');
+
+  cbUpdateAllChange(cbUpdateAll);
+
+  RGLog.OnAdd:=@AddToLog;
 end;
 
 procedure TfmScan.rbDirToScanChange(Sender: TObject);

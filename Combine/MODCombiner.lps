@@ -19,8 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmComboMain"/>
-        <TopLine Value="181"/>
-        <CursorPos Y="427"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="171"/>
+        <CursorPos X="9" Y="186"/>
         <UsageCount Value="97"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -68,9 +69,8 @@
       <Unit>
         <Filename Value="unitCombine.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <CursorPos X="11" Y="17"/>
+        <CursorPos X="16" Y="29"/>
         <UsageCount Value="82"/>
         <Loaded Value="True"/>
       </Unit>
@@ -122,8 +122,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmComboDiff"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="70"/>
-        <CursorPos Y="230"/>
+        <TopLine Value="105"/>
+        <CursorPos X="28" Y="124"/>
         <UsageCount Value="38"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -201,22 +201,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="258" Column="17" TopLine="235"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="266" Column="45" TopLine="240"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="42" Column="27" TopLine="23"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="263" Column="54" TopLine="240"/>
-      </Position>
       <Position>
         <Filename Value="fmcombodiff.pas"/>
         <Caret Line="267" Column="53" TopLine="241"/>
@@ -320,6 +304,22 @@
       <Position>
         <Filename Value="unitCombine.pas"/>
         <Caret Line="48" Column="15" TopLine="33"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="13" Column="35"/>
+      </Position>
+      <Position>
+        <Filename Value="fmcombodiff.pas"/>
+        <Caret Line="124" Column="28" TopLine="105"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="240" Column="3" TopLine="216"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="29" Column="16"/>
       </Position>
     </JumpHistory>
     <RunParams>

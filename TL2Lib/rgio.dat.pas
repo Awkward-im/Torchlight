@@ -18,6 +18,8 @@ function BuildDatMem   (data:pointer; out   bin    :pByte     ; aver:byte=verTL2
 function BuildDatStream(data:pointer;       astream:TStream   ; aver:byte=verTL2; dictidx:integer=-1):integer;
 function BuildDatFile  (data:pointer; const fname  :AnsiString; aver:byte=verTL2; dictidx:integer=-1):integer;
 
+function GetDatVersion(abuf:PByte):integer;
+
 
 implementation
 
@@ -375,6 +377,18 @@ end;
 
 {%REGION Functions}
 
+function GetDatVersion(abuf:PByte):integer;
+begin
+  if abuf<>nil then
+    case abuf^ of
+      1: exit(verTL1);
+      2: exit(verTL2);
+      6: exit(verHob);
+    end;
+
+  result:=verUnk;
+end;
+
 function ParseDatMem(abuf:pByte):pointer;
 var
   lrgd:TRGDATFile;
@@ -388,10 +402,17 @@ function ParseDatStream(astream:TStream):pointer;
 var
   lbuf:PByte;
 begin
-  GetMem(lbuf,astream.Size);
-  aStream.Read(lbuf^,astream.Size);
-  result:=ParseDatMem(lbuf);
-  FreeMem(lbuf);
+  if (astream is TMemoryStream) then
+  begin
+    result:=ParseDatMem(TMemoryStream(astream).Memory);
+  end
+  else
+  begin
+    GetMem(lbuf,astream.Size);
+    aStream.Read(lbuf^,astream.Size);
+    result:=ParseDatMem(lbuf);
+    FreeMem(lbuf);
+  end;
 end;
 
 function ParseDatFile(const afname:string):pointer;
@@ -412,6 +433,7 @@ begin
     result:=ParseDatMem(lbuf);
     FreeMem(lbuf);
   end;
+  if afname<>'' then RGLog.Reserve('Processing '+afname);
 end;
 
 function BuildDatMem(data:pointer; out bin:pByte; aver:byte=verTL2; dictidx:integer=-1):integer;

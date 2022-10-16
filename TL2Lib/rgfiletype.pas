@@ -1,6 +1,6 @@
 ﻿{
-  private type to common type
-  common type to private type
+  private type to common type (ver)
+  common type to private type (ver)
   common type to category
   category to text
 }
@@ -53,11 +53,14 @@ const
   catShaders = $08; // .PROGRAM .COMPOSITOR .FRAG .FX .HLSL .VERT
   catOther   = $09; // .LOOKNFEEL .SCHEME .MPP .MPD .PU .ANNO .SBIN
 
-function PAKTypeRealToCommon(atype,aver:integer):integer;
-function PAKTypeCommonToReal(atype,aver:integer):integer;
-function PAKTypeToCategory  (atype:integer):integer;
+function PAKTypeToCommon  (atype:integer;aver:integer):integer;
+function PAKTypeToReal    (atype:integer;aver:integer):integer;
+function PAKTypeToCategory(atype:integer):integer;
+
 function PAKCategoryName(acategory:integer):string;
-function GetExtCategory(const aext:string):integer;
+function PAKExtCategory(const aext:string):integer;
+function PAKExtType    (const aext:string):integer;
+function PAKExtType    (const aext:UnicodeString):integer;
 
 type
   PPAKExtInfo = ^TPAKExtInfo;
@@ -67,7 +70,9 @@ type
     _compile :bytebool;
   end;
 
-function GetExtInfo(const fname:string; aver:integer):PPAKExtInfo;
+function PAKTypeInfo(      atype:integer  ; aver:integer):PPAKExtInfo;
+function GetExtInfo (const fname:string   ; aver:integer):PPAKExtInfo;
+//function GetExtInfo(const fname:PWideChar; aver:integer):PPAKExtInfo;
 
 const
   TableExt: array of record
@@ -308,6 +313,23 @@ const
     (_category:catData   ; _tl2:tl2Unknown  ; _hob:hobWDAT)
   );
 
+function PAKTypeInfo(atype:integer; aver:integer):PPAKExtInfo;
+var
+  lptr:PTableExt;
+  i:integer;
+begin
+  if ABS(aver)=verTL2 then
+    lptr:=@TableTL2Info
+  else
+    lptr:=@TableHobInfo;
+
+  for i:=0 to High(lptr^) do
+    if atype=lptr^[i]._type then
+      exit(@lptr^[i]);
+
+  result:=nil;
+end;
+
 function GetExtInfo(const fname:string; aver:integer):PPAKExtInfo;
 var
   lext:string;
@@ -347,8 +369,13 @@ begin
 
   result:=nil;
 end;
-
-
+{
+function GetExtInfo(const fname:PWideChar; aver:integer):PPAKExtInfo;
+var
+begin
+  result:=GetExtInfo(,aver);
+end;
+}
 function PAKCategoryName(acategory:integer):string;
 begin
   if (acategory>=Low(CategoryList)) and (acategory<Length(CategoryList)) then
@@ -365,7 +392,7 @@ begin
     result:=catUnknown;
 end;
 
-function PAKTypeRealToCommon(atype,aver:integer):integer;
+function PAKTypeToCommon(atype:integer; aver:integer):integer;
 var
   lt:TTableExt;
 begin
@@ -384,7 +411,7 @@ begin
     result:=atype;
 end;
 
-function PAKTypeCommonToReal(atype,aver:integer):integer;
+function PAKTypeToReal(atype:integer; aver:integer):integer;
 begin
   if (atype>=Low(TableIntInfo)) and (atype<Length(TableIntInfo)) then
   begin
@@ -402,22 +429,43 @@ begin
     result:=atype;
 end;
 
-function GetExtCategory(const aext:string):integer;
+function PAKExtType(const aext:string):integer;
 var
   lext:string;
-  i,ltype:integer;
+  i:integer;
 begin
-  ltype:=typeUnknown;
   lext:=UpCase(aext);
+  if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
+    lext:=UpCase(ExtractFileExt(lext));
+
   for i:=0 to High(TableExt) do
   begin
     if TableExt[i]._ext=lext then
-    begin
-      ltype:=TableExt[i]._type;
-      break;
-    end;
+      exit(TableExt[i]._type);
   end;
-  result:=PAKTypeToCategory(ltype);
+  result:=typeUnknown;
+end;
+
+function PAKExtType(const aext:UnicodeString):integer;
+var
+  lext:string;
+  i:integer;
+begin
+  lext:=UpCase(WideToStr(pointer(aext)));
+  if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
+    lext:=ExtractFileExt(lext);
+
+  for i:=0 to High(TableExt) do
+  begin
+    if TableExt[i]._ext=lext then
+      exit(TableExt[i]._type);
+  end;
+  result:=typeUnknown;
+end;
+
+function PAKExtCategory(const aext:string):integer;
+begin
+  result:=PAKTypeToCategory(PAKExtType(aext));
 end;
 
 end.

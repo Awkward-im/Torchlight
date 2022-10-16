@@ -88,7 +88,9 @@ end;
 
 function ScanInventory(ams:pointer):integer;
 begin
+  RGLog.Add('Scanning inventory');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/INVENTORY', @ProcessInventory);
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateInventoryTable(adb:PSQLite3):boolean;

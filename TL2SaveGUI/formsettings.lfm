@@ -30,6 +30,7 @@ object fmSettings: TfmSettings
     NumGlyphs = 1
     MaxLength = 0
     TabOrder = 1
+    OnChange = SettingsChanged
   end
   object lblIconDir: TLabel
     Left = 8
@@ -77,6 +78,7 @@ object fmSettings: TfmSettings
       Top = 24
       Width = 100
       Caption = 'Show Tech info'
+      OnClick = SettingsChanged
       TabOrder = 0
     end
     object cbIdAsHex: TCheckBox
@@ -85,6 +87,7 @@ object fmSettings: TfmSettings
       Top = 48
       Width = 131
       Caption = 'Show IDs in Hex form'
+      OnClick = SettingsChanged
       TabOrder = 1
     end
     object cbShowAll: TCheckBox
@@ -93,6 +96,7 @@ object fmSettings: TfmSettings
       Top = 0
       Width = 62
       Caption = 'Show all'
+      OnClick = SettingsChanged
       TabOrder = 2
     end
   end

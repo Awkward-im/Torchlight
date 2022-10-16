@@ -228,6 +228,14 @@
         <Filename Value="..\..\utils\textcache.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="unitlogform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmLogForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="unitLogForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

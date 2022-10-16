@@ -69,12 +69,14 @@ var
 begin
   result:=0;
 
+  RGLog.Add('Scanning wardrobe');
   LoadFile(ams,'MEDIA/WARDROBE/WARDROBESETS.DAT',p);
   if p<>nil then
   begin
     result:=ScanWardrobeNode(ams,p);
     DeleteNode(p);
   end;
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateWardrobeTable(adb:PSQLite3):boolean;

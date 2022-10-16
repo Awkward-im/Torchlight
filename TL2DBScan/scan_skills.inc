@@ -60,7 +60,8 @@ begin
 
     if (GetNodeType(pp)=rgGroup) then
     begin
-      if Pos('LEVEL',WideString(pcw))=1 then
+      if CompareWide('LEVEL',pcw,5)=0 then
+//      if Pos('LEVEL',WideString(pcw))=1 then
       begin
         for j:=0 to GetChildCount(pp)-1 do
         begin
@@ -151,7 +152,9 @@ end;
 
 function ScanSkills(ams:pointer):integer;
 begin
+  RGLog.Add('Scanning skills');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/SKILLS', @ProcessSkills);
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateSkillsTable(adb:PSQLite3):boolean;

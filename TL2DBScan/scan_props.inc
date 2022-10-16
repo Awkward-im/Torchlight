@@ -71,7 +71,9 @@ end;
 
 function ScanProps(ams:pointer):integer;
 begin
+  RGLog.Add('Scanning props');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/PROPS', @ProcessProps);
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreatePropsTable(adb:PSQLite3):boolean;

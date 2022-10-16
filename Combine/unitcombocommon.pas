@@ -4,9 +4,6 @@ unit unitComboCommon;
 
 interface
 
-uses
-  Classes, SysUtils;
-
 
 type
   tact = (

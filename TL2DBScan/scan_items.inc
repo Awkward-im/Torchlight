@@ -57,7 +57,8 @@ begin
   LoadFile(ams,fname,p);
   if p=nil then
   begin
-    RGLog.Add('can''t load: '+fname);
+    if PModScanner(ams)^.FLogLevel>1 then
+      RGLog.Add('can''t load: '+fname);
     exit;
   end;
 
@@ -95,7 +96,8 @@ begin
   LoadFile(ams,fname,p);
   if p=nil then
   begin
-    RGLog.Add('can''t load: '+fname);
+    if PModScanner(ams)^.FLogLevel>1 then
+      RGLog.Add('can''t load: '+fname);
     exit;
   end;
 
@@ -210,7 +212,9 @@ end;
 
 function ScanItems(ams:pointer):integer;
 begin
+  RGLog.Add('Scanning items');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/ITEMS', @ProcessItems);
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateItemsTable(adb:PSQLite3):boolean;

@@ -109,7 +109,6 @@ object MODInfoForm: TMODInfoForm
     Top = 274
     Width = 92
     Anchors = [akRight, akBottom]
-    Default = True
     DefaultCaption = True
     Kind = bkOK
     ModalResult = 1
@@ -140,7 +139,7 @@ object MODInfoForm: TMODInfoForm
   object bbNewGUID: TBitBtn
     Left = 351
     Height = 26
-    Top = 135
+    Top = 127
     Width = 32
     Kind = bkRetry
     Margin = 4
@@ -158,5 +157,16 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 10
+  end
+  object bbSave: TBitBtn
+    Left = 391
+    Height = 30
+    Top = 274
+    Width = 92
+    Caption = 'Save'
+    Default = True
+    Kind = bkOK
+    OnClick = bbSaveClick
+    TabOrder = 11
   end
 end

@@ -73,6 +73,7 @@ object FormMain: TFormMain
     Top = 5
     Width = 164
     Caption = 'Choose Output Directory'
+    Color = clDefault
     Font.Height = -15
     ParentColor = False
     ParentFont = False
@@ -117,6 +118,7 @@ object FormMain: TFormMain
     Alignment = taCenter
     AutoSize = False
     Caption = 'Mods in pack'
+    Color = clDefault
     Font.Height = -16
     ParentColor = False
     ParentFont = False
@@ -138,6 +140,7 @@ object FormMain: TFormMain
     Width = 66
     Anchors = [akLeft, akBottom]
     Caption = 'Description'
+    Color = clDefault
     Font.Height = -13
     ParentColor = False
     ParentFont = False
@@ -196,6 +199,7 @@ object FormMain: TFormMain
     Top = 5
     Width = 37
     Caption = 'Presets'
+    Color = clDefault
     ParentColor = False
   end
   object ImageList: TImageList

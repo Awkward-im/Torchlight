@@ -1,8 +1,10 @@
+{TODO: implement read modinfo from stream}
 unit TL2Mod;
 
 interface
 
 uses
+//  classes,
   rgglobal;
 
 type
@@ -23,6 +25,7 @@ type
 
 function ReadModInfo    (fname:PChar   ; var   amod:TTL2ModInfo):boolean; export;
 function ReadModInfoBuf (abuf:PByte    ; var   amod:TTL2ModInfo):boolean;
+//function ReadModInfoStream(ast:TStream ; var   amod:TTL2ModInfo):boolean;
 function WriteModInfo   (fname:PChar   ; const amod:TTL2ModInfo):integer; export;
 function WriteModInfo   (out abuf:PByte; const amod:TTL2ModInfo):integer;
 function WriteModInfoBuf(    abuf:PByte; const amod:TTL2ModInfo):integer;

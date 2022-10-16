@@ -91,7 +91,9 @@ end;
 
 function ScanRecipes(ams:pointer):integer;
 begin
+  RGLog.Add('Scanning recipes');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/RECIPES', @ProcessRecipes);
+  RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateRecipesTable(adb:PSQLite3):boolean;

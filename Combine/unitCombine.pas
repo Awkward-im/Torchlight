@@ -20,10 +20,13 @@ uses
   System.UITypes,
 
   sysutils,
+
+  logging,
+  
   rgglobal,
-  rglogging,
   rgscan,
   rgdict,
+  rgdictlayout,
   rgio.Text,
   rgio.Layout,
   rgio.Dat,
