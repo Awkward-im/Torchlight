@@ -18,26 +18,38 @@ type
 
   TfmSettings = class(TForm)
     bbSave: TBitBtn;
+    bbRescan: TBitBtn;
     cbReloadDB: TCheckBox;
     cbShowAll : TCheckBox;
     cbShowTech: TCheckBox;
     cbIdAsHex : TCheckBox;
     cbBackup  : TCheckBox;
-    edIconDir : TDirectoryEdit;  lblIconDir: TLabel;
+    cbSaveScan: TCheckBox;
+    edModsDir: TDirectoryEdit;
+    edIconDir : TDirectoryEdit;
+    gbModsScan: TGroupBox;
+    lblModsDir: TLabel;
+  lblIconDir: TLabel;
     edDBFile  : TFileNameEdit;   lblDBFile : TLabel;
     gbShow: TGroupBox;
+    memLog: TMemo;
 
+    procedure bbRescanClick(Sender: TObject);
     procedure bbSaveClick(Sender: TObject);
+    procedure edModsDirChange(Sender: TObject);
     procedure SettingsChanged(Sender: TObject);
     procedure FormCreate(Sender: TObject);
 
   private
+    FDBState:integer;
     FOnSettingsChanged:TOnSGSettingsChanged;
 
+    function AddToLog(var adata: string): integer;
     procedure LoadSettings;
 
   public
 
+    property DBState:integer read FDBState write FDBState;
     property OnSettingsChanged:TOnSGSettingsChanged
         read  FOnSettingsChanged
         write FOnSettingsChanged;
@@ -56,6 +68,9 @@ implementation
 
 uses
   IniFiles,
+  tl2db,
+  UnitScan,
+  logging,
   RGGlobal;
 
 { TfmSettings }
@@ -67,6 +82,8 @@ const
   sSettings   = 'Settings';
   sDBFile     = 'dbfile';
   sIconDir    = 'icondir';
+  sModsDir    = 'modsdir';
+  sSaveScan   = 'savescan';
   sShowTech   = 'showtech';
   sIdAsHex    = 'idashex';
   sShowAll    = 'showall';
@@ -96,9 +113,55 @@ begin
   config.WriteBool   (sSettings,sShowTech  ,cbShowTech.Checked);
   config.WriteBool   (sSettings,sIdAsHex   ,cbIdAsHex .Checked);
 
+  config.WriteString (sSettings,sModsDir   ,edModsDir .Text);
+  config.WriteBool   (sSettings,sSaveScan  ,cbSaveScan.Checked);
+
   config.UpdateFile;
 
   config.Free;
+end;
+
+procedure TfmSettings.edModsDirChange(Sender: TObject);
+begin
+  bbRescan.Enabled:=edModsDir.Text<>'';
+end;
+
+function TfmSettings.AddToLog(var adata:string):integer;
+begin
+  memLog.Append(adata);
+  adata:='';
+  result:=0;
+end;
+
+procedure TfmSettings.bbRescanClick(Sender: TObject);
+var
+  ldb:pointer;
+  llog:TLogOnAdd;
+begin
+  bbRescan.Enabled:=false;
+  memLog.Clear;
+  llog:=RGLog.OnAdd;
+  RGLog.OnAdd:=@AddToLog;
+{
+  if FDBState=0 then
+  begin
+    FreeBases;
+    FDBState:=-1;
+  end;
+}
+  RGOpenBase(ldb,edDBFile.Text);
+  ScanPath(ldb,edModsDir.Text);
+  if cbSaveScan.Checked then
+    RGSaveBase(ldb,edDBFile.Text);
+
+  if FDBState=0 then
+    UseBase(ldb)
+  else
+    RGCloseBase(ldb,'');
+
+  RGLog.OnAdd:=llog;
+  memLog.Append('Done!');
+  bbRescan.Enabled:=true;
 end;
 
 procedure TfmSettings.SettingsChanged(Sender: TObject);
@@ -121,6 +184,9 @@ begin
   cbShowTech  .Checked:=config.ReadBool  (sSettings,sShowTech,false);
   cbIdAsHex   .Checked:=config.ReadBool  (sSettings,sIdAsHex ,false);
 
+  edModsDir   .Text   :=config.ReadString(sSettings,sModsDir ,'');
+  cbSaveScan  .Checked:=config.ReadBool  (sSettings,sSaveScan,true);
+
   config.Free;
 end;
 
@@ -131,6 +197,18 @@ begin
   INIFileName:=ChangeFileExt(ParamStr(0),'.ini');
 
   LoadSettings;
+
+  if not FileExists(edDBFile.Text) then
+  begin
+    ShowMessage(
+        'Database file not found.'#13#10+
+        'Check settings and rescan if needs');
+    Self.Show;
+    Self.Activate;
+  end;
+
+//  FDBState:=LoadBases(edDBFile.Text);
+  FDBState:=-1;
 end;
 
 end.

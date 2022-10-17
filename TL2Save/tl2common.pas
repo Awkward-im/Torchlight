@@ -11,11 +11,13 @@ function MSecToTime(msec:cardinal):string;
 
 implementation
 
-//uses rglogging;
+uses
+  logging,
+  rgglobal;
 
 procedure DbgLn(const atxt:string);
 begin
-//  RGLog.Add(atxt);
+  RGLog.Add(atxt);
 //  if IsConsole then writeln(atxt);
 end;
 
@@ -29,7 +31,7 @@ begin
   begin
     Str(aval  ,lleft);
     Str(aright,lright);
-//!!    RGLog.Add('  Unknown value '+lleft+' at label '+albl+' must be ['+lright+']');
+    RGLog.Add('  Unknown value '+lleft+' at label '+albl+' must be ['+lright+']');
 //    if IsConsole then  writeln('  Unknown value ',aval,' at label ',albl,' must be [',aright,']');
   end;
 end;
@@ -44,7 +46,7 @@ begin
   begin
     Str(aval:0:4  ,lleft);
     Str(aright:0:4,lright);
-//!!    RGLog.Add('  Unknown value '+lleft+' at label '+albl+' must be ['+lright+']');
+    RGLog.Add('  Unknown value '+lleft+' at label '+albl+' must be ['+lright+']');
 //    if IsConsole then writeln(' Unknown value ',aval:0:4,' at label ',albl,' must be [',aright:0:4,']');
   end;
 end;

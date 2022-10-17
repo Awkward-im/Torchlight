@@ -81,7 +81,7 @@ begin
       result:=1
     else
     begin
-      RGLog.Add('can''t update '+aname);
+      if PModScanner(ams)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
       result:=0;
     end;
     DeleteNode(p);

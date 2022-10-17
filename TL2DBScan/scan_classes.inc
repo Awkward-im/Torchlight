@@ -155,7 +155,7 @@ begin
       if UpCase(lclass.gr_mp)<>'MANA_PLAYER_GENERIC' then
       begin
         ScanGraph(ams,lclass.gr_mp,10);
-        if PModScanner(ams)^.FLogLevel>1 then
+        if PModScanner(ams)^.FLogLevel>2 then
           RGLog.Add('Mana graph is '+lclass.gr_mp);
       end
     end
@@ -165,7 +165,7 @@ begin
       if UpCase(lclass.gr_hp)<>'HEALTH_PLAYER_GENERIC' then
       begin
         ScanGraph(ams,lclass.gr_hp,10);
-        if PModScanner(ams)^.FLogLevel>1 then
+        if PModScanner(ams)^.FLogLevel>2 then
           RGLog.Add('Health graph is '+lclass.gr_hp);
       end
     end
@@ -175,7 +175,7 @@ begin
       if UpCase(lclass.gr_st)<>'STAT_POINTS_PER_LEVEL' then
       begin
         ScanGraph(ams,lclass.gr_st,1);
-        if PModScanner(ams)^.FLogLevel>1 then
+        if PModScanner(ams)^.FLogLevel>2 then
           RGLog.Add('Stat point per level graph is '+lclass.gr_st);
       end
     end
@@ -185,7 +185,7 @@ begin
       if UpCase(lclass.gr_sk)<>'SKILL_POINTS_PER_LEVEL' then
       begin
         ScanGraph(ams,lclass.gr_sk,1);
-        if PModScanner(ams)^.FLogLevel>1 then
+        if PModScanner(ams)^.FLogLevel>2 then
           RGLog.Add('Skill points per level graph is '+lclass.gr_sk);
       end
     end
@@ -195,7 +195,7 @@ begin
       if UpCase(lclass.gr_fm)<>'SKILL_POINTS_PER_FAME_LEVEL' then
       begin
         ScanGraph(ams,lclass.gr_fm,1);
-        if PModScanner(ams)^.FLogLevel>1 then
+        if PModScanner(ams)^.FLogLevel>2 then
           RGLog.Add('Skill points per fame level graph is '+lclass.gr_fm);
       end
     end;
@@ -231,9 +231,9 @@ begin
         ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
       else
         ldir:=adir;
-      if AddClassNode(aparam,p,ldir+'/'+aname)<>0 then
+      if AddClassNode(aparam,p,ldir+aname)<>0 then
         result:=1
-      else
+      else if PModScanner(aparam)^.FLogLevel>1 then
         RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
@@ -243,9 +243,9 @@ end;
 
 function ScanClasses(ams:pointer):integer;
 begin
-  RGLog.Add('Scanning classes');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning classes');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/PLAYERS', @ProcessClasses);
-  RGLog.Add(IntToStr(result)+' records added');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateClassesTable(adb:PSQLite3):boolean;

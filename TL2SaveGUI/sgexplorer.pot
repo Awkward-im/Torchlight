@@ -346,7 +346,7 @@ msgid "Morphed view"
 msgstr ""
 
 #: tfmchar.lblcustomclass.caption
-msgid "Type here your custon class name"
+msgid "Type here your custom class name"
 msgstr ""
 
 #: tfmchar.lbldatanote.caption
@@ -1081,6 +1081,10 @@ msgstr ""
 msgid "&File"
 msgstr ""
 
+#: tfmsettings.bbrescan.caption
+msgid "Rescan"
+msgstr ""
+
 #: tfmsettings.cbbackup.caption
 msgid "Make backups"
 msgstr ""
@@ -1093,12 +1097,20 @@ msgstr ""
 msgid "Reload database with savegame load"
 msgstr ""
 
+#: tfmsettings.cbsavescan.caption
+msgid "Save mods database after scan"
+msgstr ""
+
 #: tfmsettings.cbshowall.caption
 msgid "Show all"
 msgstr ""
 
 #: tfmsettings.cbshowtech.caption
 msgid "Show Tech info"
+msgstr ""
+
+#: tfmsettings.gbmodsscan.caption
+msgid "Mods Scan"
 msgstr ""
 
 #: tfmsettings.gbshow.caption
@@ -1111,6 +1123,10 @@ msgstr ""
 
 #: tfmsettings.lblicondir.caption
 msgid "Icons directory"
+msgstr ""
+
+#: tfmsettings.lblmodsdir.caption
+msgid "Mods directory"
 msgstr ""
 
 #: tfmskills.bbupdate.caption

@@ -66,7 +66,7 @@ begin
       result:=1
     else
     begin
-      RGLog.Add('can''t update MOVIES.DAT');
+      if PModScanner(ams)^.FLogLevel>1 then RGLog.Add('can''t update MOVIES.DAT');
       result:=0;
     end;
     DeleteNode(p);

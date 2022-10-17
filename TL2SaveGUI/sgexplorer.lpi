@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -62,7 +62,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <Libraries Value="D:\SVN\UpLazTrunk\cross\lib\x86_64-linux\"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -90,7 +90,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -344,6 +344,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Active"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2DBScan\unitscan.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -354,7 +358,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-      <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils"/>
+      <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\..\utils;..\TL2DBScan"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

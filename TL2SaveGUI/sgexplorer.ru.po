@@ -361,8 +361,8 @@ msgid "Morphed view"
 msgstr "Вид в морфе"
 
 #: tfmchar.lblcustomclass.caption
-msgid "Type here your custon class name"
-msgstr ""
+msgid "Type here your custom class name"
+msgstr "Введите своё имя класса"
 
 #: tfmchar.lbldatanote.caption
 msgid ""
@@ -1098,6 +1098,10 @@ msgstr "Сохранить"
 msgid "&File"
 msgstr "Файл"
 
+#: tfmsettings.bbrescan.caption
+msgid "Rescan"
+msgstr "Скан."
+
 #: tfmsettings.cbbackup.caption
 msgid "Make backups"
 msgstr "Делать резервную копию"
@@ -1110,6 +1114,10 @@ msgstr "Показать ID шестнадцатеричными"
 msgid "Reload database with savegame load"
 msgstr "Перезагрузить базу с загрузкой сохранёнки"
 
+#: tfmsettings.cbsavescan.caption
+msgid "Save mods database after scan"
+msgstr "Сохранить базу после сканирования"
+
 #: tfmsettings.cbshowall.caption
 msgid "Show all"
 msgstr "Показать всё"
@@ -1117,6 +1125,10 @@ msgstr "Показать всё"
 #: tfmsettings.cbshowtech.caption
 msgid "Show Tech info"
 msgstr "Показать техническое"
+
+#: tfmsettings.gbmodsscan.caption
+msgid "Mods Scan"
+msgstr "Сканирование модов"
 
 #: tfmsettings.gbshow.caption
 msgid "What to show"
@@ -1129,6 +1141,10 @@ msgstr "Файл базы"
 #: tfmsettings.lblicondir.caption
 msgid "Icons directory"
 msgstr "Папка иконок"
+
+#: tfmsettings.lblmodsdir.caption
+msgid "Mods directory"
+msgstr "Папка с модами"
 
 #: tfmskills.bbupdate.caption
 msgid "Update"
@@ -1640,4 +1656,3 @@ msgstr "Осмотрено тайников"
 #: tl2statistic.rsunknownstat
 msgid "Unknown Stat"
 msgstr "Неизвестная статистика"
-

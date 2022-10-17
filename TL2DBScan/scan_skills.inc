@@ -142,7 +142,7 @@ begin
     begin
       if AddSkillNode(aparam,p,Pos('MEDIA/SKILLS/SHARED',adir)>0) then
         result:=1
-      else
+      else if PModScanner(aparam)^.FLogLevel>1 then
         RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
@@ -152,9 +152,9 @@ end;
 
 function ScanSkills(ams:pointer):integer;
 begin
-  RGLog.Add('Scanning skills');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning skills');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/SKILLS', @ProcessSkills);
-  RGLog.Add(IntToStr(result)+' records added');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateSkillsTable(adb:PSQLite3):boolean;

@@ -78,7 +78,7 @@ var
   lloglvl:integer;
 begin
   if cbDetailedLog.Checked then
-    lloglvl:=2;
+    lloglvl:=10;
   else
     lloglvl:=1;
 

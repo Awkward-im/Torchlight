@@ -55,7 +55,10 @@ begin
       end;
 
       if not AddWardrobeToBase(ams,ldata) then
-        RGLog.Add('can''t update '+ldata.name)
+      begin
+        if PModScanner(ams)^.FLogLevel>1 then
+          RGLog.Add('can''t update '+ldata.name);
+      end
       else
         inc(result);
     end;
@@ -69,14 +72,14 @@ var
 begin
   result:=0;
 
-  RGLog.Add('Scanning wardrobe');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning wardrobe');
   LoadFile(ams,'MEDIA/WARDROBE/WARDROBESETS.DAT',p);
   if p<>nil then
   begin
     result:=ScanWardrobeNode(ams,p);
     DeleteNode(p);
   end;
-  RGLog.Add(IntToStr(result)+' records added');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateWardrobeTable(adb:PSQLite3):boolean;

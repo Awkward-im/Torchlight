@@ -188,7 +188,7 @@ begin
   lNode.Items[idxCharacter ].Items[1].Visible:=lshowall;
   lNode.Items[idxKeyMapping].Visible:=lshowall;
   lNode.Items[idxMovies    ].Visible:=lshowall;
-  lNode.Items[idxModList   ].Visible:=lshowall;
+//  lNode.Items[idxModList   ].Visible:=lshowall;
   lNode.Items[idxQuests    ].Visible:=lshowall;
   lNode.Items[idxRecipes   ].Visible:=lshowall;
   lNode.Items[idxMaps      ].Visible:=lshowall;
@@ -234,6 +234,7 @@ end;
 
 procedure TfmSaveFile.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+//  if FSettings.DBState=SQLITE_OK then FreeBases;
   ClearGameGlobals;
   SGame.Free;
 end;
@@ -258,7 +259,7 @@ begin
   FSettings.Align :=alClient;
   FSettings.OnSettingsChanged:=@SettingsChanged;
 
-  {i:=}LoadBases(FSettings.edDBFile.Text);
+//  {i:=}LoadBases(FSettings.edDBFile.Text);
 //  if i<>0 then ShowMessage(rsNoBase+' '+IntToStr(i));
 
   FItems :=TfmItems .Create(Self); FItems .Parent:=MainPanel; FItems .Align:=alClient;
@@ -324,6 +325,14 @@ var
   i:integer;
 }
 begin
+  if FSettings.cbReloadDB.Checked then
+  begin
+    if FSettings.DBState=0 then FreeBases;
+    FSettings.DBState:=LoadBases(FSettings.edDBFile.Text);
+  end
+  else if FSettings.DBState<>0 then
+    FSettings.DBState:=LoadBases(FSettings.edDBFile.Text);
+
   try
     ClearGameGlobals;
     CloseSaveGame;

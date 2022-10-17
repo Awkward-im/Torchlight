@@ -44,8 +44,9 @@ function Prepare(
 procedure Finish(ams:pointer);
 
 {Load DB to memory/save back to disk}
-function RGOpenBase (out adb:PSQLite3):boolean;
-function RGCloseBase(    adb:PSQLite3):boolean;
+function RGOpenBase (out adb:PSQLite3; const fname:string=TL2DataBase):boolean;
+function RGSaveBase (    adb:PSQLite3; const fname:string=TL2DataBase):integer;
+function RGCloseBase(var adb:PSQLite3; const fname:string=''):boolean;
 
 
 implementation
@@ -206,6 +207,7 @@ begin
         FDoUpdate:=aupdateall;
         Str(lmodid,FModId);
         FModMask :=' '+FModId+' ';
+        FLogLevel:=aLogLvl;
       end;
 
     end
@@ -315,18 +317,30 @@ begin
   result:=CreateWardrobeTable (adb);
 end;
 
-function RGOpenBase(out adb:PSQLite3):boolean;
+function RGOpenBase(out adb:PSQLite3; const fname:string=TL2DataBase):boolean;
 begin
   result:=sqlite3_open(':memory:',@adb)=SQLITE_OK;
   if result then
-    if CopyFromFile(adb,TL2DataBase)<>SQLITE_OK then
+  begin
+    if (fname='') or (CopyFromFile(adb,PChar(fname))<>SQLITE_OK) then
       result:=CreateTables(adb);
+  end;
 end;
 
-function RGCloseBase(adb:PSQLite3):boolean;
+function RGSaveBase(adb:PSQLite3; const fname:string=TL2DataBase):integer;
 begin
-  result:=CopyToFile(adb,TL2DataBase)=SQLITE_OK;
+  result:=CopyToFile(adb,PChar(fname));
+end;
+
+function RGCloseBase(var adb:PSQLite3; const fname:string=''):boolean;
+begin
+  if fname<>'' then
+    result:=RGSaveBase(adb,fname)=SQLITE_OK
+  else
+    result:=true;
+
   result:=result and (sqlite3_close(adb)=SQLITE_OK);
+  adb:=nil;
 end;
 
 {%ENDREGION Base}

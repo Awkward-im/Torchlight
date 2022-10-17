@@ -78,7 +78,7 @@ begin
     begin
       if AddInventoryNode(aparam,p,Pos('MEDIA/INVENTORY/CONTAINERS',adir)>0) then
         result:=1
-      else
+      else if PModScanner(aparam)^.FLogLevel>1 then
         RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
@@ -88,9 +88,9 @@ end;
 
 function ScanInventory(ams:pointer):integer;
 begin
-  RGLog.Add('Scanning inventory');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning inventory');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/INVENTORY', @ProcessInventory);
-  RGLog.Add(IntToStr(result)+' records added');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateInventoryTable(adb:PSQLite3):boolean;

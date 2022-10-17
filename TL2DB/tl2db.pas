@@ -45,8 +45,14 @@ function  IsInModList(const alist:string; aid:TRGID        ):boolean; overload;
 function  IsInModList(const alist:string; amods:TTL2ModList):TRGID  ; overload;
 function  IsInModList(aid:TRGID         ; amods:TTL2ModList):boolean; overload;
 
+const
+  errRGDBNoDBFile  = -1000;
+  errRGDBCantMemDB = -1001;
+  errRGDBCantMapDB = -1002;
+
 function  LoadBases(const fname:string=''):integer;
 procedure FreeBases;
+procedure UseBase(adb:pointer);
 
 //======================================
 
@@ -413,20 +419,30 @@ begin
       except
         sqlite3_close(db);
         db:=nil;
-        result:=-1002;
+        result:=errRGDBCantMapDB;
       end;
     end
     else
-      result:=-1001;
+      result:=errRGDBCantMemDB;
   end
   else
-    result:=-1000;
+    result:=errRGDBNoDBFile;
+end;
+
+procedure UseBase(adb:pointer);
+begin
+  if db<>nil then sqlite3_close(db);
+  db:=adb;
 end;
 
 procedure FreeBases;
 begin
-  if db<>nil then sqlite3_close(db);
-  ReleaseSqlite;
+  if db<>nil then
+  begin
+    sqlite3_close(db);
+    db:=nil;
+    ReleaseSqlite;
+  end;
 end;
 
 

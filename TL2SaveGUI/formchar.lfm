@@ -12,9 +12,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsStat
+    ActivePage = tsView
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -668,8 +668,8 @@ object fmChar: TfmChar
         Left = 336
         Height = 15
         Top = 266
-        Width = 179
-        Caption = 'Type here your custon class name'
+        Width = 183
+        Caption = 'Type here your custom class name'
       end
     end
     object tsWardrobe: TTabSheet

@@ -62,7 +62,8 @@ begin
     if p<>nil then
     begin
       if not AddStatNode(aparam,p) then
-        RGLog.Add('can''t update '+aname);
+        if PModScanner(aparam)^.FLogLevel>1 then
+          RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
     end;
@@ -71,9 +72,9 @@ end;
 
 function ScanStats(ams:pointer):integer;
 begin
-  RGLog.Add('Scanning stats');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning stats');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/STATS', @ProcessStats);
-  RGLog.Add(IntToStr(result)+' records added');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateStatsTable(adb:PSQLite3):boolean;

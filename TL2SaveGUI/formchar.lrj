@@ -35,7 +35,7 @@
 {"hash":77,"name":"tfmchar.rbmale.caption","sourcebytes":[77],"value":"M"},
 {"hash":70,"name":"tfmchar.rbfemale.caption","sourcebytes":[70],"value":"F"},
 {"hash":63,"name":"tfmchar.rbunisex.caption","sourcebytes":[63],"value":"?"},
-{"hash":2900933,"name":"tfmchar.lblcustomclass.caption","sourcebytes":[84,121,112,101,32,104,101,114,101,32,121,111,117,114,32,99,117,115,116,111,110,32,99,108,97,115,115,32,110,97,109,101],"value":"Type here your custon class name"},
+{"hash":64766917,"name":"tfmchar.lblcustomclass.caption","sourcebytes":[84,121,112,101,32,104,101,114,101,32,121,111,117,114,32,99,117,115,116,111,109,32,99,108,97,115,115,32,110,97,109,101],"value":"Type here your custom class name"},
 {"hash":143364181,"name":"tfmchar.tswardrobe.caption","sourcebytes":[87,97,114,100,114,111,98,101],"value":"Wardrobe"},
 {"hash":143364181,"name":"tfmchar.gbwardrobe.caption","sourcebytes":[87,97,114,100,114,111,98,101],"value":"Wardrobe"},
 {"hash":369150,"name":"tfmchar.lblskin.caption","sourcebytes":[83,107,105,110],"value":"Skin"},

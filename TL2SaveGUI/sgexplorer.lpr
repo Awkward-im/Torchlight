@@ -12,7 +12,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   DefaultTranslator,
   Forms, lazcontrols,
-  formSaveGame;
+  formSaveGame, unitscan;
 
 {$R *.res}
 

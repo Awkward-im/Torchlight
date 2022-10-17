@@ -81,8 +81,8 @@ begin
     begin
       i:=AddRecipeNode(aparam,p);
 
-      if      i=0 then RGLog.Add('can''t update '+aname)
-      else if i<0 then RGLog.Add(' don''t added '+aname);
+      if i=0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
+      if i<0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
 
       DeleteNode(p);
     end;
@@ -91,9 +91,9 @@ end;
 
 function ScanRecipes(ams:pointer):integer;
 begin
-  RGLog.Add('Scanning recipes');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning recipes');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/RECIPES', @ProcessRecipes);
-  RGLog.Add(IntToStr(result)+' records added');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateRecipesTable(adb:PSQLite3):boolean;

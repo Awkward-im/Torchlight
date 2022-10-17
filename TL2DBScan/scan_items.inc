@@ -200,10 +200,10 @@ begin
       else
         ldir:=adir;
       i:=AddItemNode(aparam,p,
-          ldir+'/'+aname,
+          ldir+aname,
           Pos('MEDIA/UNITS/ITEMS/QUEST_ITEMS',adir)>0);
-      if (i and 1)<>0 then RGLog.Add('No icon for '  +aname);
-      if (i and 2)<>0 then RGLog.Add('can''t update '+aname);
+      if (i and 1)<>0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('No icon for '  +aname);
+      if (i and 2)<>0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
     end;
@@ -212,9 +212,9 @@ end;
 
 function ScanItems(ams:pointer):integer;
 begin
-  RGLog.Add('Scanning items');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning items');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/ITEMS', @ProcessItems);
-  RGLog.Add(IntToStr(result)+' records added');
+  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateItemsTable(adb:PSQLite3):boolean;
