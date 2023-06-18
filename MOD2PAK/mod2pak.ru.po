@@ -45,7 +45,7 @@ msgstr "Укажите папку игры"
 
 #: tfmmod2pak.lbldirnote.caption
 msgid "* Files will be saved in PAKS subdir"
-msgstr "* Файлы будут сохранены в подкаталоге PAK"
+msgstr "* Файлы будут сохранены в подкаталоге PAKS"
 
 #: tfmmod2pak.stactive.caption
 msgid "PAKs to load"

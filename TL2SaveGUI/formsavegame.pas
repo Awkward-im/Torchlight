@@ -308,6 +308,7 @@ begin
   try
     OpenDialog.Title  :=rsSaveGameOpen;
     OpenDialog.Options:=[ofFileMustExist];
+    OpenDialog.InitialDir:=FSettings.edSaveDir.Text;
 
     if OpenDialog.Execute then
     begin
@@ -384,6 +385,7 @@ begin
     SaveDialog.Title     :=rsSaveGameSave;
     SaveDialog.Options   :=SaveDialog.Options+[ofOverwritePrompt];
     SaveDialog.DefaultExt:='.SVB';
+    SaveDialog.InitialDir:=FSettings.edSaveDir.Text;
     if SaveDialog.Execute then
     begin
       if (FileExists(SaveDialog.FileName)) and fmSettings.cbBackup.Checked then

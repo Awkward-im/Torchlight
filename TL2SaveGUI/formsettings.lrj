@@ -10,5 +10,6 @@
 {"hash":190172462,"name":"tfmsettings.gbmodsscan.caption","sourcebytes":[77,111,100,115,32,83,99,97,110],"value":"Mods Scan"},
 {"hash":219145945,"name":"tfmsettings.lblmodsdir.caption","sourcebytes":[77,111,100,115,32,100,105,114,101,99,116,111,114,121],"value":"Mods directory"},
 {"hash":93100414,"name":"tfmsettings.bbrescan.caption","sourcebytes":[82,101,115,99,97,110],"value":"Rescan"},
-{"hash":147301710,"name":"tfmsettings.cbsavescan.caption","sourcebytes":[83,97,118,101,32,109,111,100,115,32,100,97,116,97,98,97,115,101,32,97,102,116,101,114,32,115,99,97,110],"value":"Save mods database after scan"}
+{"hash":147301710,"name":"tfmsettings.cbsavescan.caption","sourcebytes":[83,97,118,101,32,109,111,100,115,32,100,97,116,97,98,97,115,101,32,97,102,116,101,114,32,115,99,97,110],"value":"Save mods database after scan"},
+{"hash":48091529,"name":"tfmsettings.lblsgfolder.caption","sourcebytes":[68,101,102,97,117,108,116,32,83,97,118,101,103,97,109,101,32,100,105,114,101,99,116,111,114,121],"value":"Default Savegame directory"}
 ]}

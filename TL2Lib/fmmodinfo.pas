@@ -15,7 +15,8 @@ type
   TMODInfoForm = class(TForm)
     bbOK      : TBitBtn;
     bbCancel  : TBitBtn;
-    bbSave: TBitBtn;
+    bbSave    : TBitBtn;
+    lblNote   : TLabel;
     leTitle   : TLabeledEdit;
     leAuthor  : TLabeledEdit;
     leFilename: TLabeledEdit;
@@ -64,7 +65,8 @@ end;
 procedure TMODInfoForm.bbOKClick(Sender: TObject);
 begin
 //  if not seVersion.ReadOnly then SaveToFile(ffile);
-  Close;
+//!!!!!!!!!!!!!!!!!!! Close for non-modal only
+//  Close;
 end;
 
 procedure TMODInfoForm.bbSaveClick(Sender: TObject);

@@ -13,16 +13,15 @@ object fmSettings: TfmSettings
     Top = 432
     Width = 75
     Anchors = [akLeft, akBottom]
-    Default = True
     DefaultCaption = True
     Kind = bkOK
     OnClick = bbSaveClick
-    TabOrder = 0
+    TabOrder = 8
   end
   object edIconDir: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 88
+    Top = 73
     Width = 366
     ShowHidden = False
     ButtonWidth = 23
@@ -35,7 +34,7 @@ object fmSettings: TfmSettings
   object lblIconDir: TLabel
     Left = 12
     Height = 15
-    Top = 64
+    Top = 55
     Width = 78
     Caption = 'Icons directory'
     Color = clDefault
@@ -44,7 +43,7 @@ object fmSettings: TfmSettings
   object edDBFile: TFileNameEdit
     Left = 8
     Height = 23
-    Top = 32
+    Top = 25
     Width = 366
     FilterIndex = 0
     HideDirectories = False
@@ -52,12 +51,12 @@ object fmSettings: TfmSettings
     DirectInput = False
     NumGlyphs = 1
     MaxLength = 0
-    TabOrder = 2
+    TabOrder = 0
   end
   object lblDBFile: TLabel
     Left = 12
     Height = 15
-    Top = 8
+    Top = 6
     Width = 67
     Caption = 'Database file'
     Color = clDefault
@@ -66,12 +65,12 @@ object fmSettings: TfmSettings
   object gbShow: TGroupBox
     Left = 8
     Height = 96
-    Top = 160
+    Top = 188
     Width = 366
     Caption = 'What to show'
     ClientHeight = 76
     ClientWidth = 362
-    TabOrder = 3
+    TabOrder = 4
     object cbShowTech: TCheckBox
       Left = 8
       Height = 19
@@ -79,7 +78,7 @@ object fmSettings: TfmSettings
       Width = 100
       Caption = 'Show Tech info'
       OnClick = SettingsChanged
-      TabOrder = 0
+      TabOrder = 1
     end
     object cbIdAsHex: TCheckBox
       Left = 8
@@ -88,7 +87,7 @@ object fmSettings: TfmSettings
       Width = 131
       Caption = 'Show IDs in Hex form'
       OnClick = SettingsChanged
-      TabOrder = 1
+      TabOrder = 2
     end
     object cbShowAll: TCheckBox
       Left = 8
@@ -97,35 +96,35 @@ object fmSettings: TfmSettings
       Width = 62
       Caption = 'Show all'
       OnClick = SettingsChanged
-      TabOrder = 2
+      TabOrder = 0
     end
   end
   object cbBackup: TCheckBox
     Left = 8
     Height = 19
-    Top = 128
+    Top = 158
     Width = 94
     Caption = 'Make backups'
-    TabOrder = 4
+    TabOrder = 3
   end
   object cbReloadDB: TCheckBox
     Left = 8
     Height = 19
-    Top = 397
+    Top = 405
     Width = 212
     Caption = 'Reload database with savegame load'
-    TabOrder = 5
+    TabOrder = 6
     Visible = False
   end
   object gbModsScan: TGroupBox
     Left = 8
     Height = 118
-    Top = 256
+    Top = 284
     Width = 366
     Caption = 'Mods Scan'
     ClientHeight = 98
     ClientWidth = 362
-    TabOrder = 6
+    TabOrder = 5
     object edModsDir: TDirectoryEdit
       Left = 4
       Height = 23
@@ -168,11 +167,29 @@ object fmSettings: TfmSettings
   object memLog: TMemo
     Left = 385
     Height = 112
-    Top = 262
+    Top = 290
     Width = 305
     Anchors = [akTop, akLeft, akRight]
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 7
+  end
+  object edSaveDir: TDirectoryEdit
+    Left = 8
+    Height = 23
+    Top = 124
+    Width = 366
+    ShowHidden = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 2
+  end
+  object lblSGFolder: TLabel
+    Left = 12
+    Height = 15
+    Top = 105
+    Width = 145
+    Caption = 'Default Savegame directory'
   end
 end

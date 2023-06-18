@@ -24,7 +24,6 @@ object MODInfoForm: TMODInfoForm
     Top = 104
     Width = 66
     Caption = 'Mod version'
-    Color = clDefault
     ParentColor = False
   end
   object leTitle: TLabeledEdit
@@ -35,7 +34,6 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Title'
-    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 0
   end
@@ -47,7 +45,6 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Author'
-    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 1
   end
@@ -59,7 +56,6 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Website URL'
-    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 6
   end
@@ -71,13 +67,12 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Download URL'
-    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 7
   end
   object memDescr: TMemo
     Left = 391
-    Height = 231
+    Height = 211
     Top = 24
     Width = 352
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -89,7 +84,6 @@ object MODInfoForm: TMODInfoForm
     Top = 5
     Width = 88
     Caption = 'Mod Description'
-    Color = clDefault
     ParentColor = False
   end
   object lblGUID: TLabel
@@ -100,7 +94,6 @@ object MODInfoForm: TMODInfoForm
     Alignment = taRightJustify
     AutoSize = False
     Caption = 'Mod GUID (click button for new)'
-    Color = clDefault
     ParentColor = False
   end
   object bbOK: TBitBtn
@@ -154,13 +147,13 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Height = 15
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod File Name'
-    EditLabel.Color = clDefault
     EditLabel.ParentColor = False
     TabOrder = 10
   end
   object bbSave: TBitBtn
     Left = 391
     Height = 30
+    Hint = 'Save to file'
     Top = 274
     Width = 92
     Caption = 'Save'
@@ -168,5 +161,16 @@ object MODInfoForm: TMODInfoForm
     Kind = bkOK
     OnClick = bbSaveClick
     TabOrder = 11
+  end
+  object lblNote: TLabel
+    Left = 391
+    Height = 17
+    Top = 247
+    Width = 280
+    Caption = 'Don''t keep version and GUID empty (or zero)'
+    Font.Height = 18
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
   end
 end

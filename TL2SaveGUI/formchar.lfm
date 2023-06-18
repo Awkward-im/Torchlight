@@ -12,9 +12,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsView
+    ActivePage = tsStat
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -481,7 +481,7 @@ object fmChar: TfmChar
         Alignment = taRightJustify
         Anchors = [akTop, akLeft, akRight]
         AutoSize = False
-        Caption = 'New class'
+        Caption = 'Choose new class'
         Color = clDefault
         ParentColor = False
       end
@@ -493,7 +493,7 @@ object fmChar: TfmChar
         ItemHeight = 15
         OnChange = cbMorphChange
         Style = csDropDownList
-        TabOrder = 3
+        TabOrder = 4
       end
       object seScale: TFloatSpinEdit
         Left = 4
@@ -504,7 +504,7 @@ object fmChar: TfmChar
         MaxValue = 2
         MinValue = 0.5
         OnChange = ToSetUpdate
-        TabOrder = 2
+        TabOrder = 3
         Value = 0.5
       end
       object lblScale: TLabel
@@ -523,7 +523,7 @@ object fmChar: TfmChar
         Width = 80
         NumbersOnly = True
         OnChange = ToSetUpdate
-        TabOrder = 4
+        TabOrder = 5
       end
       object lblName: TLabel
         Left = 4
@@ -569,7 +569,7 @@ object fmChar: TfmChar
         Anchors = [akLeft, akBottom]
         Caption = 'Cheater'
         OnChange = ToSetUpdate
-        TabOrder = 7
+        TabOrder = 10
       end
       object edClass: TEdit
         Left = 4
@@ -597,7 +597,7 @@ object fmChar: TfmChar
         ItemHeight = 15
         OnChange = cbNewClassChange
         ReadOnly = True
-        TabOrder = 6
+        TabOrder = 7
       end
       object gbGender: TGroupBox
         Left = 271
@@ -607,7 +607,7 @@ object fmChar: TfmChar
         Caption = 'Gender'
         ClientHeight = 40
         ClientWidth = 116
-        TabOrder = 5
+        TabOrder = 6
         object rbMale: TRadioButton
           Left = 8
           Height = 19
@@ -647,13 +647,15 @@ object fmChar: TfmChar
       object bbManual: TBitBtn
         Left = 336
         Height = 30
+        Hint = 'Apply custom class name'
         Top = 232
         Width = 27
         Anchors = [akTop, akRight]
-        Default = True
         Kind = bkYes
         Margin = 3
         OnClick = bbManualClick
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 9
       end
       object edClassId: TEdit
@@ -662,13 +664,14 @@ object fmChar: TfmChar
         Top = 109
         Width = 256
         ReadOnly = True
-        TabOrder = 10
+        TabOrder = 2
       end
       object lblCustomClass: TLabel
         Left = 336
         Height = 15
         Top = 266
         Width = 183
+        Anchors = [akTop, akRight]
         Caption = 'Type here your custom class name'
       end
     end
@@ -726,7 +729,7 @@ object fmChar: TfmChar
         Caption = 'Action'
         ClientHeight = 71
         ClientWidth = 156
-        TabOrder = 1
+        TabOrder = 2
         object rbActionIdle: TRadioButton
           Left = 5
           Height = 19
@@ -901,7 +904,7 @@ object fmChar: TfmChar
         Width = 60
         Caption = 'Enabled'
         OnClick = ToSetUpdate
-        TabOrder = 2
+        TabOrder = 1
       end
     end
     object tsOtherInfo: TTabSheet
@@ -1088,7 +1091,7 @@ object fmChar: TfmChar
       Left = 8
       Height = 31
       Top = 6
-      Width = 75
+      Width = 105
       Caption = '&Update'
       Kind = bkOK
       OnClick = bbUpdateClick

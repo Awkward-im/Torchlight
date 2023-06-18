@@ -54,28 +54,28 @@ object fmEffects: TfmEffects
     Height = 23
     Top = 302
     Width = 288
-    TabOrder = 1
+    TabOrder = 2
   end
   object edGraph: TEdit
     Left = 8
     Height = 23
     Top = 346
     Width = 288
-    TabOrder = 2
+    TabOrder = 3
   end
   object edParticles: TEdit
     Left = 8
     Height = 23
     Top = 391
     Width = 288
-    TabOrder = 3
+    TabOrder = 4
   end
   object edIcon: TEdit
     Left = 8
     Height = 23
     Top = 435
     Width = 288
-    TabOrder = 4
+    TabOrder = 5
   end
   object lblLinkName: TLabel
     Left = 8
@@ -210,7 +210,7 @@ object fmEffects: TfmEffects
     Width = 184
     ExtendedSelect = False
     ItemHeight = 0
-    TabOrder = 5
+    TabOrder = 7
   end
   object lbProps: TListBox
     Left = 304
@@ -218,7 +218,7 @@ object fmEffects: TfmEffects
     Top = 276
     Width = 112
     ItemHeight = 0
-    TabOrder = 6
+    TabOrder = 13
   end
   object sgStats: TStringGrid
     Left = 304
@@ -242,7 +242,7 @@ object fmEffects: TfmEffects
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goRowSelect, goDblClickAutoSize, goSmoothScroll]
     RowCount = 1
-    TabOrder = 7
+    TabOrder = 17
   end
   object lblEffectName: TLabel
     Left = 9
@@ -258,56 +258,56 @@ object fmEffects: TfmEffects
     Height = 23
     Top = 256
     Width = 288
-    TabOrder = 8
+    TabOrder = 1
   end
   object edLevel: TEdit
     Left = 496
     Height = 23
     Top = 8
     Width = 60
-    TabOrder = 9
+    TabOrder = 8
   end
   object edDamageType: TEdit
     Left = 496
     Height = 23
     Top = 224
     Width = 80
-    TabOrder = 10
+    TabOrder = 12
   end
   object edActivation: TEdit
     Left = 424
     Height = 23
     Top = 276
     Width = 189
-    TabOrder = 11
+    TabOrder = 14
   end
   object edSource: TEdit
     Left = 424
     Height = 23
     Top = 321
     Width = 189
-    TabOrder = 12
+    TabOrder = 15
   end
   object edDuration: TEdit
     Left = 496
     Height = 23
     Top = 37
     Width = 60
-    TabOrder = 13
+    TabOrder = 9
   end
   object edUnknown1: TEdit
     Left = 496
     Height = 23
     Top = 66
     Width = 60
-    TabOrder = 14
+    TabOrder = 10
   end
   object edDisplay: TEdit
     Left = 496
     Height = 23
     Top = 95
     Width = 60
-    TabOrder = 15
+    TabOrder = 11
   end
   object edBaseClass: TEdit
     Left = 424
@@ -321,6 +321,6 @@ object fmEffects: TfmEffects
     Height = 23
     Top = 480
     Width = 288
-    TabOrder = 17
+    TabOrder = 6
   end
 end

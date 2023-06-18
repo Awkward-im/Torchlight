@@ -1,4 +1,6 @@
 {
+  Usable for separated (not in container) files. Use RGPack unit for containers
+  
   Unpack file
   Decompile file
   Compile file
@@ -13,10 +15,23 @@ uses
   rgglobal;
 
 
-function PackedAlready(aBuf:PByte; asize:cardinal):boolean;
+const
+  tofRaw       = 0;
+  tofPacked    = 1;
+  tofRawHdr    = 2;
+  tofPackedHdr = 3;
+
+function RGTypeOfFile(aBuf:PByte; asize:cardinal):integer;
 
 //===== [Un]Packing =====
 
+{
+  Unpack:
+    in  - pbyte_in/stream; insize; [pbyte_out, outsize, bufsize]
+    out - pbyte_out; outsize
+  Note:
+    Use aout as buf if not NIL, reallocate if needs
+}
 function RGFileUnpack      (ain:PByte  ; ainsize:integer; var aout:PByte; aoutsize:integer=0):integer;
 function RGFileUnpackStream(ain:TStream; ainsize:integer; var aout:PByte; aoutsize:integer=0):integer;
 function RGFileUnpackFile  (const           fname:string; var aout:PByte; aoutsize:integer=0):integer;
@@ -24,12 +39,21 @@ function RGFileUnpackFile  (const           fname:string; var aout:PByte; aoutsi
 // rgfiletype or here?
 // check for source or binary
 
+{
+  Pack:
+    in  - pbyte_in; insize, [pbyte_out]
+    out - pbyte_out; outsize, bufsize
+  Note:
+    Use aout as buf if not NIL, reallocate if needs
+}
 // in: data, size; out: crc, data, size. time and insize if needs
 //function PackFile(var ainfo:TMANFileInfo; ain:PByte; out aout:PByte):integer;
 //function CompileFile  (ain:PByte; ainsize:integer; out aout:PByte):integer;
 //function DecompileFile(ain:PByte; ainsize:integer; out aout:PByte):integer;
 function RGFilePackSafe(ain:PByte; ainsize:integer; var aout:PByte; var abufsize:integer):integer;
 function RGFilePack    (ain:PByte; ainsize:integer; var aout:PByte; var abufsize:integer):integer;
+
+//===== [De]compilation =====
 
 function DecompileFile(ain:PByte; ainsize:integer; fname:PUnicodeChar; out aout:PWideChar):boolean;
 
@@ -46,6 +70,7 @@ uses
   rgnode,
   rgio.dat,
   rgio.layout,
+  rgio.raw,
   rgio.text,
   
   rgfiletype;
@@ -60,19 +85,24 @@ type
     size_c:UInt32;      // 0 means "no compression
   end;
 
-function PackedAlready(aBuf:PByte; asize:cardinal):boolean;
+function RGTypeOfFile(aBuf:PByte; asize:cardinal):integer;
 begin
-  result:=false;
+  result:=tofRaw;
 
-  if asize>12 then
+  if asize>8 then
   begin
     // 1 - have header, unpacked
-    if (PPAKFileHeader(aBuf)^.size_c=0) then exit;
-    // 2 - have header, packed
-    if (PPAKFileHeader(aBuf)^.size_c=asize-SizeOf(TPAKFileHeader)) and
-       (abuf[8]=$78) and (abuf[9]=$9C) then exit(true);
-    // 3 - no header, packed
-    if PWord(abuf)^=$9C78 then exit(true);
+    if (PPAKFileHeader(aBuf)^.size_u=asize-SizeOf(TPAKFileHeader)) and
+       (PPAKFileHeader(aBuf)^.size_c=0) then exit(tofRawHdr);
+
+    if asize>12 then
+    begin
+      // 2 - have header, packed
+      if (PPAKFileHeader(aBuf)^.size_c=asize-SizeOf(TPAKFileHeader)) and
+         (abuf[8]=$78) and (abuf[9]=$9C) then exit(tofPackedHdr);
+      // 3 - no header, packed
+      if PWord(abuf)^=$9C78 then exit(tofPacked);
+    end;
   end;
 end;
 
@@ -118,49 +148,81 @@ end;
 }
 function RGFileUnpack(ain:PByte; ainsize:integer; var aout:PByte; aoutsize:integer=0):integer;
 var
-  lalloc:boolean;
+  lin:PByte;
+  lsize,lbufsize:integer;
+  ltof:integer;
 begin
   result:=0;
   if (ain=nil) or (ainsize=0) then exit;
 
-  lalloc:=aout=nil;
-  if aout=nil then
-  begin
-    if aoutsize=0 then
-      exit
-    else
-      GetMem(aout,aoutsize);
-  end
-  else if MemSize(aout)<aoutsize then
-    ReallocMem(aout,Align(aoutsize,4096));
+  ltof:=RGTypeOfFile(ain,ainsize);
 
-  if uncompress(
-      PChar(aout),cardinal(aoutsize),
-      PChar(ain ),cardinal(ainsize))=Z_OK then
-    result:=aoutsize
+  // correct in buf and size
+  if (ltof=tofRawHdr) or (ltof=tofPackedHdr) then
+  begin
+    lin  :=ain    +SizeOf(TPAKFileHeader);
+    lsize:=ainsize-SizeOf(TPAKFileHeader);
+
+    if aoutsize=0 then
+      aoutsize:=PPAKFileHeader(lin)^.size_u;
+  end
   else
   begin
-    if lalloc then
-    begin
-      FreeMem(aout);
-      aout:=nil;
-    end;
+    lin  :=ain;
+    lsize:=ainsize;
+  end;
+
+  // correct out size
+  if aoutsize<lsize then aoutsize:=lsize;
+
+  // correct out buf
+  if aout=nil then
+    lbufsize:=0
+  else
+    lbufsize:=MemSize(aout);
+
+  if lbufsize<aoutsize then
+    ReallocMem(aout,Align(aoutsize,4096));
+
+  // process
+  if (ltof=tofRaw) or (ltof=tofRawHdr) then
+  begin
+    move(lin^,aout^,lsize);
+    exit(lsize);
+  end
+  else
+  begin
+    if uncompress(
+        PChar(aout),cardinal(aoutsize),
+        PChar(ain ),cardinal(lsize))=Z_OK then
+      exit(aoutsize);
+  end;
+
+  if lbufsize=0 then
+  begin
+    FreeMem(aout);
+    aout:=nil;
   end;
 end;
 
 function RGFileUnpackStream(ain:TStream; ainsize:integer; var aout:PByte; aoutsize:integer=0):integer;
 var
   lin:PByte;
+  lms:boolean;
 begin
-  if not (ain is TMemoryStream) then
-    GetMem(lin,ainsize)
-  else
-    lin:=(ain as TMemoryStream).Memory+ain.Position;
+  lms:=ain is TMemoryStream;
 
-  ain.ReadBuffer(lin^,ainsize);
+  if not lms then
+  begin
+    GetMem(lin,ainsize);
+    ain.ReadBuffer(lin^,ainsize);
+  end
+  else
+    lin:=TMemoryStream(ain).Memory+ain.Position;
+
   result:=RGFileUnpack(lin,ainsize,aout,aoutsize);
 
-  if not (ain is TMemoryStream) then
+  if not lms then
     FreeMem(lin);
 end;
 
@@ -268,19 +330,34 @@ begin
 end;
 
 
+//----- Decompilation -----
+
 function DecompileFile(ain:PByte; ainsize:integer; fname:PUnicodeChar; out aout:PWideChar):boolean;
 var
   p:pointer;
-  ltype:integer;
+  ldata:PByte;
+  ltype,ltof:integer;
 begin
   result:=false;
   ltype:=PAKExtType(fname);
   if (ltype in setData) then
   begin
-    if ltype=typeLayout then
-      p:=ParseLayoutMem(ain,GetLayoutType(fname))
-    else if ltype=typeRAW then
-    else p:=ParseDatMem(ain);
+    ltof:=RGTypeOfFile(ain,ainsize);
+    if ltof in [tofPacked, tofPackedHdr] then
+    begin
+      ldata:=nil;
+      RGFileUnpack(ain,ainsize,ldata);
+    end
+    else
+    begin
+      ldata:=ain;
+    end;
+    
+    if      ltype=typeLayout then p:=ParseLayoutMem(ldata,GetLayoutType(fname))
+    else if ltype=typeRAW    then p:=ParseRawMem   (ldata,fname) // or do nothing
+    else                          p:=ParseDatMem   (ldata);
+
+    if ldata<>ain then FreeMem(ldata);
 
     if p=nil then
       exit;

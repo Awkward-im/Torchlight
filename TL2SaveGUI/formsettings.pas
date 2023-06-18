@@ -25,9 +25,11 @@ type
     cbIdAsHex : TCheckBox;
     cbBackup  : TCheckBox;
     cbSaveScan: TCheckBox;
+    edSaveDir: TDirectoryEdit;
     edModsDir: TDirectoryEdit;
     edIconDir : TDirectoryEdit;
     gbModsScan: TGroupBox;
+    lblSGFolder: TLabel;
     lblModsDir: TLabel;
   lblIconDir: TLabel;
     edDBFile  : TFileNameEdit;   lblDBFile : TLabel;
@@ -76,12 +78,14 @@ uses
 { TfmSettings }
 
 const
-  SavePath = '"Documents\My Games\Runic Games\Torchlight 2\save\"';
+  ModsPath = '%USERPROFILE%\Documents\My Games\Runic Games\Torchlight 2\mods';
+  SavePath = '%USERPROFILE%\Documents\My Games\Runic Games\Torchlight 2\Save';
 
 const
   sSettings   = 'Settings';
   sDBFile     = 'dbfile';
   sIconDir    = 'icondir';
+  sSaveDir    = 'savedir';
   sModsDir    = 'modsdir';
   sSaveScan   = 'savescan';
   sShowTech   = 'showtech';
@@ -89,6 +93,15 @@ const
   sShowAll    = 'showall';
   sBackup     = 'backup';
   sReloadDB   = 'reloaddb';
+
+resourcestring
+  rsDBNotFound =
+    'Database file not found.'#13#10+
+    'Check settings and rescan if needs';
+  rsNeedToScan =
+    'Better to scan your mod collection'#13#10+
+    'if you didn''t it before or it was changed';
+
 
 function TextID(const aId:int64):string;
 begin
@@ -106,6 +119,7 @@ begin
 
   config.WriteString (sSettings,sDBFile    ,edDBFile  .Text);
   config.WriteString (sSettings,sIconDir   ,edIconDir .Text);
+  config.WriteString (sSettings,sSaveDir   ,edSaveDir .Text);
   config.WriteBool   (sSettings,sBackup    ,cbBackup  .Checked);
   config.WriteBool   (sSettings,sReloadDB  ,cbReloadDB.Checked);
 
@@ -177,6 +191,7 @@ begin
 
   edDBFile    .Text   :=config.ReadString(sSettings,sDBFile  ,TL2DataBase);
   edIconDir   .Text   :=config.ReadString(sSettings,sIconDir ,'icons');
+  edSaveDir   .Text   :=config.ReadString(sSettings,sSaveDir ,SavePath);
   cbBackup    .Checked:=config.ReadBool  (sSettings,sBackup  ,true);
   cbReloadDB  .Checked:=config.ReadBool  (sSettings,sReloadDB,false);
 
@@ -184,7 +199,7 @@ begin
   cbShowTech  .Checked:=config.ReadBool  (sSettings,sShowTech,false);
   cbIdAsHex   .Checked:=config.ReadBool  (sSettings,sIdAsHex ,false);
 
-  edModsDir   .Text   :=config.ReadString(sSettings,sModsDir ,'');
+  edModsDir   .Text   :=config.ReadString(sSettings,sModsDir ,ModsPath);
   cbSaveScan  .Checked:=config.ReadBool  (sSettings,sSaveScan,true);
 
   config.Free;
@@ -200,14 +215,19 @@ begin
 
   if not FileExists(edDBFile.Text) then
   begin
-    ShowMessage(
-        'Database file not found.'#13#10+
-        'Check settings and rescan if needs');
+    ShowMessage(rsDBNotFound);
     Self.Show;
     Self.Activate;
   end;
 
-//  FDBState:=LoadBases(edDBFile.Text);
+  if not FileExists(INIFileName) then
+  begin
+    ShowMessage(rsNeedToScan);
+    Self.Show;
+    Self.Activate;
+  end;
+
+  //  FDBState:=LoadBases(edDBFile.Text);
   FDBState:=-1;
 end;
 

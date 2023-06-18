@@ -27,11 +27,13 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan;..\TL2Lib;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
             <Optimizations>
               <OptimizationLevel Value="3"/>
             </Optimizations>
@@ -62,7 +64,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <Libraries Value="D:\SVN\UpLazTrunk\cross\lib\x86_64-linux\"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan;..\TL2Lib;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -90,7 +92,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan"/>
+            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan;..\TL2Lib;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -338,6 +340,7 @@
       <Unit>
         <Filename Value="..\TL2Save\tl2statistic.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Statistic"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tl2active.pas"/>
@@ -347,6 +350,16 @@
       <Unit>
         <Filename Value="..\TL2DBScan\unitscan.pas"/>
         <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGGlobal"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Logging"/>
       </Unit>
     </Units>
   </ProjectOptions>

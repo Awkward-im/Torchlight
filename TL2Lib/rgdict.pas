@@ -1,5 +1,4 @@
 ﻿{TODO: export as UTF8 binary (UCS16LE right now) - add sign for type: UCS16, UTF8, w/zero}
-{TODO: Tags export manually (wide strings writing)}
 unit RGDict;
 
 interface

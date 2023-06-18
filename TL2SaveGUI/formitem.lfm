@@ -78,7 +78,7 @@ object fmItem: TfmItem
         Width = 202
         Anchors = [akLeft, akBottom]
         ItemHeight = 0
-        TabOrder = 8
+        TabOrder = 11
       end
       object edNameById: TEdit
         Left = 3
@@ -117,7 +117,7 @@ object fmItem: TfmItem
         Caption = 'Coordinates'
         ClientHeight = 81
         ClientWidth = 100
-        TabOrder = 9
+        TabOrder = 8
         object lblX: TLabel
           Left = 8
           Height = 15
@@ -187,7 +187,7 @@ object fmItem: TfmItem
         Caption = 'Flags'
         ClientHeight = 26
         ClientWidth = 172
-        TabOrder = 11
+        TabOrder = 10
         object cbFlag1: TCheckBox
           Left = 8
           Height = 17
@@ -336,7 +336,7 @@ object fmItem: TfmItem
         Caption = 'Altered'
         ClientHeight = 81
         ClientWidth = 100
-        TabOrder = 10
+        TabOrder = 9
         object lblX1: TLabel
           Left = 8
           Height = 15
@@ -457,7 +457,7 @@ object fmItem: TfmItem
         Alignment = taRightJustify
         NumbersOnly = True
         ReadOnly = True
-        TabOrder = 1
+        TabOrder = 2
       end
       object edStack: TEdit
         Left = 262
@@ -467,7 +467,7 @@ object fmItem: TfmItem
         Alignment = taRightJustify
         NumbersOnly = True
         OnChange = edStackChange
-        TabOrder = 2
+        TabOrder = 1
       end
       object lblStack: TLabel
         Left = 318
@@ -495,7 +495,7 @@ object fmItem: TfmItem
         Alignment = taRightJustify
         NumbersOnly = True
         ReadOnly = True
-        TabOrder = 3
+        TabOrder = 6
       end
       object lblWeaponDmg: TLabel
         Left = 80
@@ -514,7 +514,7 @@ object fmItem: TfmItem
         Alignment = taRightJustify
         NumbersOnly = True
         ReadOnly = True
-        TabOrder = 4
+        TabOrder = 5
       end
       object lblArmorByType: TLabel
         Left = 24
@@ -533,7 +533,7 @@ object fmItem: TfmItem
         Alignment = taRightJustify
         NumbersOnly = True
         ReadOnly = True
-        TabOrder = 5
+        TabOrder = 4
       end
       object edSockets: TEdit
         Left = 262
@@ -543,7 +543,7 @@ object fmItem: TfmItem
         Alignment = taRightJustify
         NumbersOnly = True
         OnChange = edSocketsChange
-        TabOrder = 6
+        TabOrder = 3
       end
       object lblArmorType: TLabel
         Left = 80
@@ -570,7 +570,7 @@ object fmItem: TfmItem
         Width = 68
         Caption = 'Equipped'
         Enabled = False
-        TabOrder = 7
+        TabOrder = 8
       end
       object cbRecognized: TCheckBox
         Left = 24
@@ -578,7 +578,7 @@ object fmItem: TfmItem
         Top = 288
         Width = 79
         Caption = 'Recognized'
-        TabOrder = 8
+        TabOrder = 7
       end
     end
     object tsPropInfo: TTabSheet

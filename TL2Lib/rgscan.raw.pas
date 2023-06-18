@@ -22,9 +22,9 @@ function ScanMissiles(
           const adir,aname:string;
           aparam:pointer):integer;
 var
-  lnames,lprop,lprops,lobj,p,lnode:pointer;
+  lmissile,lnames,lprop,lprops,lobj,p,lnode:pointer;
   pc:PWideChar;
-  i:integer;
+  i,j:integer;
 begin
   result:=0;
 
@@ -48,11 +48,16 @@ begin
         lprops:=FindNode(GetChild(lobj,i),'PROPERTIES');
         lprop :=FindNode(lprops,'DESCRIPTOR');
 
-{TODO: multiply missile name}
         if CompareWide(AsString(lprop),'Missile')=0 then
         begin
           lnames:=AddGroup(lnode,'NAMES');
-          AddString(lnames,'NAME',AsString(FindNode(lprops,'MISSILE NAME')));
+          for j:=0 to GetChildCount(lprops)-1 do
+          begin
+            lmissile:=GetChild(lprops,j);
+            if CompareWide(GetNodeName(lmissile),'MISSILE NAME')=0 then
+              AddString(lnames,'NAME',AsString(lmissile));
+          end;
+
           break;
         end;
       end;
@@ -270,8 +275,9 @@ function ScanRoompieces(
 var
   lut,p,lnode,ladd:pointer;
   pc:PWideChar;
-  s:String;
-  i,lcnt:integer;
+//  s:String;
+//  lcnt:integer;
+  i:integer;
 begin
   result:=0;
 

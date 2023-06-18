@@ -1,0 +1,142 @@
+object fmPAK2MOD: TfmPAK2MOD
+  Left = 350
+  Height = 263
+  Top = 31
+  Width = 576
+  AllowDropFiles = True
+  Caption = 'PAK2MOD'
+  ClientHeight = 263
+  ClientWidth = 576
+  OnCreate = FormCreate
+  OnDropFiles = FormDropFiles
+  LCLVersion = '2.3.0.0'
+  object fePAK: TFileNameEdit
+    Left = 9
+    Height = 23
+    Top = 29
+    Width = 523
+    OnAcceptFileName = feAcceptFileName
+    DialogTitle = 'Choose PAK file name'
+    FilterIndex = 0
+    DefaultExt = '.PAK'
+    HideDirectories = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    MaxLength = 0
+    TabOrder = 0
+    OnButtonClick = feButtonClick
+  end
+  object feMAN: TFileNameEdit
+    Left = 9
+    Height = 23
+    Top = 77
+    Width = 523
+    OnAcceptFileName = feAcceptFileName
+    DialogTitle = 'Choose MAN file name'
+    FilterIndex = 0
+    DefaultExt = '.MAN'
+    HideDirectories = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    MaxLength = 0
+    TabOrder = 1
+    OnButtonClick = feButtonClick
+  end
+  object feMOD: TFileNameEdit
+    Left = 9
+    Height = 23
+    Top = 125
+    Width = 523
+    OnAcceptFileName = feAcceptFileName
+    DialogTitle = 'Choose description file name'
+    FilterIndex = 0
+    DefaultExt = '.DAT'
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    MaxLength = 0
+    TabOrder = 2
+    OnButtonClick = feButtonClick
+  end
+  object deDir: TDirectoryEdit
+    Left = 9
+    Height = 23
+    Top = 173
+    Width = 523
+    ShowHidden = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    MaxLength = 0
+    TabOrder = 3
+  end
+  object bbConvert: TBitBtn
+    Left = 441
+    Height = 30
+    Top = 213
+    Width = 91
+    Anchors = [akTop, akRight]
+    Caption = '&Convert'
+    Default = True
+    Kind = bkOK
+    ModalResult = 1
+    OnClick = bbConvertClick
+    TabOrder = 4
+  end
+  object bbModInfo: TBitBtn
+    Left = 541
+    Height = 22
+    Hint = 'Edit MOD Info'
+    Top = 125
+    Width = 24
+    Anchors = [akTop, akRight]
+    Kind = bkRetry
+    Margin = 1
+    ModalResult = 4
+    OnClick = bbModInfoClick
+    TabOrder = 5
+  end
+  object lblPAK: TLabel
+    Left = 9
+    Height = 15
+    Top = 8
+    Width = 74
+    Caption = 'PAK file name'
+  end
+  object lblMAN: TLabel
+    Left = 9
+    Height = 15
+    Top = 59
+    Width = 80
+    Caption = 'MAN file name'
+  end
+  object lblMOD: TLabel
+    Left = 9
+    Height = 15
+    Top = 105
+    Width = 239
+    Caption = 'MOD info file name (Keep empty for manual)'
+  end
+  object lblDir: TLabel
+    Left = 9
+    Height = 15
+    Top = 154
+    Width = 88
+    Caption = 'Output directory'
+  end
+  object bbClear: TBitBtn
+    Left = 9
+    Height = 30
+    Top = 213
+    Width = 75
+    Caption = 'Clear'
+    Kind = bkAbort
+    OnClick = bbClearClick
+    TabOrder = 6
+  end
+end

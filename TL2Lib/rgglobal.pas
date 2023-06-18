@@ -633,6 +633,7 @@ end;
 //--- PAK/MOD
 {$PUSH}
 {$Q-}
+{$R-}
 function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
 const
   m = $5BD1E995;

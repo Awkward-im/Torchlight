@@ -210,6 +210,7 @@
       <Unit>
         <Filename Value="..\TL2Lib\rgglobal.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="RGGlobal"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgpak.pas"/>
@@ -270,6 +271,12 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
+      </Item>
+      <Item>
+        <Name Value="RunError(201)"/>
+      </Item>
+      <Item>
+        <Name Value="ERangeError"/>
       </Item>
     </Exceptions>
   </Debugging>

@@ -280,6 +280,22 @@ msgstr "Глобальная статистика"
 msgid "Units"
 msgstr "Юниты"
 
+#: formsettings.rsdbnotfound
+msgid ""
+"Database file not found.\n"
+"Check settings and rescan if needs"
+msgstr ""
+"Баа данных не найдена\n"
+"Проверьте настройки и пересканируйте если надо"
+
+#: formsettings.rsneedtoscan
+msgid ""
+"Better to scan your mod collection\n"
+"if you didn't it before or it was changed"
+msgstr ""
+"Лучше просканировать вашу коллекцию модов\n"
+"если ещё не делали это или она менялась"
+
 #: tfmbuttons.btndelete.caption
 msgid "Delete"
 msgstr "Удалить"
@@ -291,6 +307,10 @@ msgstr "Экспорт"
 #: tfmbuttons.btnimport.caption
 msgid "Import"
 msgstr "Импорт"
+
+#: tfmchar.bbmanual.hint
+msgid "Apply custom class name"
+msgstr "Применить своё имя класса"
 
 #: tfmchar.bbupdate.caption
 msgctxt "tfmchar.bbupdate.caption"
@@ -448,8 +468,8 @@ msgid "Character name"
 msgstr "Имя персонажа"
 
 #: tfmchar.lblnew.caption
-msgid "New class"
-msgstr "Новый класс"
+msgid "Choose new class"
+msgstr "Выберите новый класс"
 
 #: tfmchar.lblngstate.caption
 msgid "NG State"
@@ -1145,6 +1165,10 @@ msgstr "Папка иконок"
 #: tfmsettings.lblmodsdir.caption
 msgid "Mods directory"
 msgstr "Папка с модами"
+
+#: tfmsettings.lblsgfolder.caption
+msgid "Default Savegame directory"
+msgstr "Папка сэйвов по-умолчанию"
 
 #: tfmskills.bbupdate.caption
 msgid "Update"

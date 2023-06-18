@@ -265,6 +265,18 @@ msgstr ""
 msgid "Units"
 msgstr ""
 
+#: formsettings.rsdbnotfound
+msgid ""
+"Database file not found.\n"
+"Check settings and rescan if needs"
+msgstr ""
+
+#: formsettings.rsneedtoscan
+msgid ""
+"Better to scan your mod collection\n"
+"if you didn't it before or it was changed"
+msgstr ""
+
 #: tfmbuttons.btndelete.caption
 msgid "Delete"
 msgstr ""
@@ -275,6 +287,10 @@ msgstr ""
 
 #: tfmbuttons.btnimport.caption
 msgid "Import"
+msgstr ""
+
+#: tfmchar.bbmanual.hint
+msgid "Apply custom class name"
 msgstr ""
 
 #: tfmchar.bbupdate.caption
@@ -431,7 +447,7 @@ msgid "Character name"
 msgstr ""
 
 #: tfmchar.lblnew.caption
-msgid "New class"
+msgid "Choose new class"
 msgstr ""
 
 #: tfmchar.lblngstate.caption
@@ -1127,6 +1143,10 @@ msgstr ""
 
 #: tfmsettings.lblmodsdir.caption
 msgid "Mods directory"
+msgstr ""
+
+#: tfmsettings.lblsgfolder.caption
+msgid "Default Savegame directory"
 msgstr ""
 
 #: tfmskills.bbupdate.caption

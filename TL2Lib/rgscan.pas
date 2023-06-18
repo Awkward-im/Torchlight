@@ -117,11 +117,13 @@ begin
   lbuf:=nil;
   for j:=0 to FMod.man.EntriesCount-1 do
   begin
-    if (FDir=nil) or (CompareWide(FDir,FMod.man.GetEntryName(j),Length(FDir))=0) then
+    if FMod.man.IsDirDeleted(j) then continue;
+
+    if (FDir=nil) or (CompareWide(FDir,FMod.man.GetDirName(j),Length(FDir))=0) then
     begin
       if FMod.man.GetFirstFile(p,j)<>0 then
       begin
-        lname:=FMod.man.GetEntryName(j);
+        lname:=FMod.man.GetDirName(j);
         repeat
           lfname:=FMod.man.GetName(p^.name);
           if (not (p^.ftype in [typeDirectory,typeDelete])) and

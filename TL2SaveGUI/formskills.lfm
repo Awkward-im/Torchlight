@@ -8,7 +8,6 @@ object fmSkills: TfmSkills
   ClientWidth = 714
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.3.0.0'
   object sgSkills: TStringGrid
     Left = 8
     Height = 449
@@ -67,7 +66,7 @@ object fmSkills: TfmSkills
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering]
     RowCount = 1
-    TabOrder = 0
+    TabOrder = 1
     OnDrawCell = sgSkillsDrawCell
     OnEditButtonClick = sgSkillsEditButtonClick
     OnKeyDown = sgSkillsKeyDown
@@ -79,7 +78,7 @@ object fmSkills: TfmSkills
     Top = 40
     Width = 81
     Caption = 'Check Level'
-    TabOrder = 1
+    TabOrder = 2
   end
   object cbCheckPoints: TCheckBox
     Left = 361
@@ -87,7 +86,7 @@ object fmSkills: TfmSkills
     Top = 64
     Width = 87
     Caption = 'Check Points'
-    TabOrder = 2
+    TabOrder = 3
   end
   object bbUpdate: TBitBtn
     Left = 617
@@ -100,7 +99,7 @@ object fmSkills: TfmSkills
     Enabled = False
     Kind = bkOK
     OnClick = bbUpdateClick
-    TabOrder = 6
+    TabOrder = 7
   end
   object lblFreePoints: TLabel
     Left = 79
@@ -126,7 +125,7 @@ object fmSkills: TfmSkills
     Top = 144
     Width = 346
     Anchors = [akTop, akLeft, akRight]
-    TabOrder = 4
+    TabOrder = 5
   end
   object btnReset: TButton
     Left = 361
@@ -136,7 +135,7 @@ object fmSkills: TfmSkills
     Anchors = [akLeft, akBottom]
     Caption = 'Reset'
     OnClick = btnResetClick
-    TabOrder = 5
+    TabOrder = 6
   end
   object cbSaveFull: TCheckBox
     Left = 361
@@ -145,7 +144,7 @@ object fmSkills: TfmSkills
     Width = 82
     Caption = 'Save Full list'
     OnClick = cbSaveFullClick
-    TabOrder = 3
+    TabOrder = 4
   end
   object seFreePoints: TSpinEditEx
     Left = 8
@@ -154,7 +153,7 @@ object fmSkills: TfmSkills
     Width = 64
     MaxLength = 0
     NumbersOnly = True
-    TabOrder = 7
+    TabOrder = 0
     OnChange = seFreePointsChange
     MaxValue = 200
     MinValue = -100

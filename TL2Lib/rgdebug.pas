@@ -48,7 +48,9 @@ begin
   lmax :=0;
   for i:=0 to ainfo.man.EntriesCount-1 do
   begin
-    llog.Add(IntToStr(i+1)+'  Directory: '+string(WideString(ainfo.man.EntryName[i])));
+    if ainfo.man.IsDirDeleted(i) then continue;
+
+    llog.Add(IntToStr(i+1)+'  Directory: '+string(WideString(ainfo.man.DirName[i])));
     if ainfo.man.GetFirstFile(p,i)<>0 then
     repeat
       dec(lcnt);

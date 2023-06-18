@@ -252,6 +252,7 @@ begin
 
   lp:=Run;
   while not (fLine[Run] in [#13, #10, #0]) do Inc(Run);
+
   ls:=Copy(fLine+lp,1,Run-lp);
   if (Length(ls)=4) and
     ((ls[1]='T') or (ls[1]='t')) and
@@ -276,6 +277,7 @@ begin
         break;
       end;
   end;
+
 end;
 
 procedure TSynTSyn.TypeProc;
@@ -356,7 +358,10 @@ end;
 procedure TSynTSyn.Next;
 begin
   fTokenPos := Run;
-  fProcTable[fLine[Run]]();
+  if (fTokenID = tkSymbol) and (fRange = rsText) then
+    TextProc()
+  else
+    fProcTable[fLine[Run]]();
 end;
 
 function TSynTSyn.NextTokenIs(T : String) : Boolean;

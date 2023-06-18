@@ -106,6 +106,13 @@ var
 //===== Manipulation =====
 
 function RGPAKSplit  (const asrc:string; const adir:string=''; const afname:string=''):integer;
+function RGPAKCombine(const apak,aman:string;
+                      amod:PByte; asize:integer;
+                      const adir:string=''):integer;
+function RGPAKCombine(const apak,aman:string;
+                      const amod:TTL2ModInfo;
+                      const adir:string=''):integer;
+function RGPAKCombine(const apak,aman,amod:string; const adir:string=''):integer;
 function RGPAKCombine(const asdir,aname:string; const adir:string=''):integer;
 
 /////////////////////////////////////////////////////////
@@ -276,6 +283,8 @@ var
   lext:string;
 begin
   FVersion:=verUnk;
+  FOffData:=0;
+  FOffMan :=0;
 
   if aname<>'' then
   begin
@@ -294,7 +303,9 @@ begin
     FName:=ExtractFilenameOnly(FName);
     FVersion:=verTL2;
     exit(verTL2);
-  end;
+  end
+  else if lext='.MOD' then
+   FVersion:=verTL2Mod;
 
   //--- Check by data
 
@@ -314,7 +325,7 @@ begin
   Close(f);
 
   // check PAK version
-  if lhdr.Reserved=0 then
+  if (FVersion=verUnk) and (lhdr.Reserved=0) then
   begin
     if lhdr.Version=1 then
     begin
@@ -432,6 +443,8 @@ begin
     begin
       for i:=0 to man.EntriesCount-1 do
       begin
+        if man.IsDirDeleted(i) then continue;
+
         if man.GetFirstFile(p,i)<>0 then
         repeat
           if p^.offset<>0 then
@@ -751,13 +764,15 @@ begin
 
   for i:=0 to man.EntriesCount-1 do
   begin
+    if man.IsDirDeleted(i) then continue;
+
     //!! dir filter here
     if OnPAKProgress<>nil then
     begin
       lres:=OnPAKProgress(self,i,nil);
       if lres<>0 then break;
     end;
-    lcurdir:=ldir+UnicodeString(man.GetEntryName(i));
+    lcurdir:=ldir+UnicodeString(man.GetDirName(i));
     if lcurdir<>'' then
       ForceDirectories(lcurdir);
 
@@ -917,7 +932,9 @@ begin
 
   for i:=0 to man.EntriesCount-1 do
   begin
-    ldir:=ConcatWide(PUnicodeChar(UnicodeString(FSrcDir)),man.GetEntryName(i)); //!!!!
+    if man.IsDirDeleted(i) then continue;
+
+    ldir:=ConcatWide(PUnicodeChar(UnicodeString(FSrcDir)),man.GetDirName(i)); //!!!!
 
     if man.GetFirstFile(p,i)<>0 then
     repeat
@@ -943,7 +960,7 @@ begin
       //--- Read file into memory
 
       //?? use "p^.filename" field if exists?
-      lname:=ConcatWide(ldir,man.names[p^.name]);
+      lname:=ConcatWide(ldir,man.GetName(p^.name));
       Assign(f,lname);
       FreeMem(lname);
       Reset(f);
@@ -964,12 +981,12 @@ begin
 
       p^.checksum:=crc32(0,PChar(lin),p^.size_u);
 
-      spak.WriteData(p^.size_u,4);
+      spak.Write(p^.size_u,4);
       if largest_u<p^.size_u then largest_u:=p^.size_u;
       // write uncompressed
       if not PAKTypeInfo(p^.ftype,FVersion)^._pack then
       begin
-        spak.WriteData(0,4);
+        spak.WriteDword(0);
         spak.Write(lin^,p^.size_u);
       end
       else
@@ -986,7 +1003,7 @@ begin
         
         if largest_c<p^.size_c then largest_c:=p^.size_c;
 
-        spak.WriteData(p^.size_c,4);
+        spak.Write(p^.size_c,4);
         spak.Write(lout^,p^.size_c);
       end;
 
@@ -1144,10 +1161,10 @@ var
   p,l:PUnicodeChar;
 begin
   result:=0;
-//  ldir:=WideToStr(ainfo.man.GetEntryName(ABS(adir)));
+//  ldir:=WideToStr(ainfo.man.GetDirName(ABS(adir)));
   if adir<0 then
   begin
-    p:=ConcatWide(ainfo.man.GetEntryName(ABS(adir)),ainfo.man.GetName(afile^.name));
+    p:=ConcatWide(ainfo.man.GetDirName(ABS(adir)),ainfo.man.GetName(afile^.name));
     l:=ConcatWide('Skipping dummy ',p);
     RGLog.Add(WideToStr(l));
 //    RGLog.Add('Skipping dummy ' +WideToStr(p));
@@ -1157,7 +1174,7 @@ begin
   end
   else if afile<>nil then
   begin
-    p:=ConcatWide(ainfo.man.GetEntryName(adir),ainfo.man.GetName(afile^.name));
+    p:=ConcatWide(ainfo.man.GetDirName(adir),ainfo.man.GetName(afile^.name));
     l:=ConcatWide('Processing file ',p);
     RGLog.Add(WideToStr(l));
 //    RGLog.Add('Processing file '+WideToStr(p));
@@ -1167,10 +1184,10 @@ begin
   end
   else
   begin
-    p:=ConcatWide('Processing dir ',ainfo.man.GetEntryName(adir));
+    p:=ConcatWide('Processing dir ',ainfo.man.GetDirName(adir));
     RGLog.Add(WideToStr(p));
     FreeMem(p);
-//    RGLog.Add('Processing dir '+WideToStr(ainfo.man.GetEntryName(adir)));
+//    RGLog.Add('Processing dir '+WideToStr(ainfo.man.GetDirName(adir)));
 //    RGLog.Add('Processing dir '+ldir);
   end;
 end;
@@ -1262,58 +1279,101 @@ begin
   end;
 end;
 
-function RGPAKCombine(const asdir,aname:string; const adir:string=''):integer;
+function RGPAKCombine(const apak,aman:string;
+                      amod:PByte; asize:integer;
+                      const adir:string=''):integer;
 var
-  mi:TTL2ModInfo;
-  buf:PByte;
   fin,fout:TFileStream;
   lname,ldir:string;
-  lsize:integer;
 begin
   result:=-1;
 
+  if FileExists(apak) and
+     FileExists(aman) then
+  begin
+    lname:=ExtractFileNameOnly(apak);
+    if adir<>'' then
+    begin
+      ldir:=adir;
+    end
+    else
+      ldir:=ExtractFileDir(apak);
+    if ldir<>'' then
+    begin
+      if not (ldir[Length(ldir)] in ['\','/']) then ldir:=ldir+'\';
+      ForceDirectories(ldir);
+    end;
+
+    fout:=TFileStream.Create(ldir+lname+'.MOD',fmCreate);
+
+    fin:=TFileStream.Create(apak,fmOpenRead);
+
+    PTL2ModTech(amod)^.offData:=asize;
+    PTL2ModTech(amod)^.offMan :=asize+fin.Size;
+    fout.Write(amod^,asize);
+
+    fout.CopyFrom(fin,fin.Size);
+    fin.Free;
+
+    fin:=TFileStream.Create(aman,fmOpenRead);
+    fout.CopyFrom(fin,fin.Size);
+    fin.Free;
+
+    fout.Free;
+
+    result:=0;
+  end;
+end;
+
+function RGPAKCombine(const apak,aman:string;
+                      const amod:TTL2ModInfo;
+                      const adir:string=''):integer;
+var
+  lbuf:PByte;
+  lsize:integer;
+begin
+  lsize:=WriteModInfo(lbuf,amod);
+  result:=RGPAKCombine(apak,aman,lbuf,lsize,adir);
+  FreeMem(lbuf);
+end;
+
+function RGPAKCombine(const apak,aman,amod:string; const adir:string=''):integer;
+var
+  lmi:TTL2ModInfo;
+begin
+  if FileExists(amod) then
+    LoadModConfiguration(PChar(amod),lmi)
+  else
+  begin
+    MakeModInfo(lmi);
+    lmi.title:=StrToWide(ExtractFileNameOnly(apak));
+  end;
+  result:=RGPAKCombine(apak,aman,lmi,adir);
+
+  ClearModInfo(lmi);
+end;
+
+function RGPAKCombine(const asdir,aname:string; const adir:string=''):integer;
+var
+  lmi:TTL2ModInfo;
+  lname,ldir:string;
+begin
   ldir:=asdir;
   if ldir<>'' then
     if not (ldir[Length(ldir)] in ['\','/']) then ldir:=ldir+'\';
   lname:=ldir+aname;
 
-  if FileExists(lname+'.PAK') and
-     FileExists(lname+'.PAK.MAN') then
+  if      FileExists(lname+'.DAT'  ) then LoadModConfiguration(PChar(lname+'.DAT'  ),lmi)
+  else if FileExists(ldir+'MOD.DAT') then LoadModConfiguration(PChar(ldir+'MOD.DAT'),lmi)
+  else
   begin
-    if      FileExists(lname+'.DAT'  ) then LoadModConfiguration(PChar(lname+'.DAT'),mi)
-    else if FileExists(ldir+'MOD.DAT') then LoadModConfiguration(PChar(ldir+'MOD.DAT'),mi)
-    else
-    begin
-      MakeModInfo(mi);
-      mi.title:=StrToWide(aname);
-    end;
-    GetMem(buf,32767);
-    lsize:=WriteModInfoBuf(buf,mi);
-    ClearModInfo(mi);
-    if adir <>'' then
-    begin
-      ldir:=adir;
-      if not (ldir[Length(ldir)] in ['\','/']) then ldir:=ldir+'\';
-    end;
-    if ldir<>'' then ForceDirectories(ldir);
-    fout:=TFileStream.Create(ldir+aname+'.MOD',fmCreate);
-
-    fin:=TFileStream.Create(lname+'.PAK',fmOpenRead);
-
-    PTL2ModTech(buf)^.offData:=lsize;
-    PTL2ModTech(buf)^.offMan :=lsize+fin.Size;
-    fout.WriteData(buf,lsize);
-    FreeMem(buf);
-
-    fout.CopyFrom(fin,fin.Size);
-    fin.Free;
-
-    fin:=TFileStream.Create(lname+'.PAK.MAN',fmOpenRead);
-    fout.CopyFrom(fin,fin.Size);
-    fin.Free;
-
-    fout.Free;
+    MakeModInfo(lmi);
+    lmi.title:=StrToWide(aname);
   end;
+  
+  result:=RGPAKCombine(lname+'.PAK', lname+'.PAK.MAN', lmi, adir);
+
+  ClearModInfo(lmi);
 end;
 
 

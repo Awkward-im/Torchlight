@@ -16,8 +16,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
-  ActnList, ExtCtrls, ComboEx, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
-  SynEdit, SynHighlighterXML, SynHighlighterT,
+  ActnList, ExtCtrls, ComboEx, StdCtrls, EditBtn, Buttons, StdActns,
+  TreeFilterEdit, SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes,
   rgglobal, rgman, rgpak;
 
 type
@@ -25,13 +25,13 @@ type
   { TRGGUIForm }
 
   TRGGUIForm = class(TForm)
-    actShowLog: TAction;
     bbExtSelect: TBitBtn;
     bbCatInverse: TBitBtn;
     bbSave: TBitBtn;
     bbCollapse: TBitBtn;
     bbResetColumns: TBitBtn;
     btnMODDAT: TButton;
+    cbShowPreview: TCheckBox;
     cbUnpackTree: TCheckBox;
     cbMODDAT: TCheckBox;
     cbSaveSettings: TCheckBox;
@@ -65,6 +65,7 @@ type
     miExtractDir    : TMenuItem;
     miExtractVisible: TMenuItem;
     PageControl: TPageControl;
+    pnlEditButtons: TPanel;
     pnlTreeFilter: TPanel;
     pnlInfo: TPanel;
     pnlAdd: TPanel;
@@ -79,7 +80,14 @@ type
     rbTextRename: TRadioButton;
     rbBinOnly: TRadioButton;
     rbTextOnly: TRadioButton;
+    ReplaceDialog: TReplaceDialog;
     sgMain: TStringGrid;
+    sbEdReset: TSpeedButton;
+    sbEdUndo: TSpeedButton;
+    sbEdSave: TSpeedButton;
+    sbEdImport: TSpeedButton;
+    sbEdExport: TSpeedButton;
+    sbEdSearch: TSpeedButton;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     StatusBar: TStatusBar;
@@ -101,6 +109,8 @@ type
     tbSource  : TToolButton;
     tbSep2    : TToolButton;
     tbInfo    : TToolButton;
+    tbSep3    : TToolButton;
+    tbShowLog : TToolButton;
 
     MainMenu: TMainMenu;
     miFile: TMenuItem;
@@ -130,10 +140,18 @@ type
     actEditReplace: TAction;
     actHelpAbout  : TAction;
     actInfoInfo   : TAction;
-    tbShowLog: TToolButton;
+    actShowLog    : TAction;
+
+    actEdReset    : TAction; // Reset content to container
+    actEdUndo     : TAction; // Reset content to last
+    actEdSave     : TAction; // Save for update
+    actEdImport   : TAction; // Load (import) content
+    actEdExport   : TAction; // Export content
+    actEdSearch   : TAction; // Seacrh/replace
 
     tvTree: TTreeView;
 
+    procedure actEdSearchExecute(Sender: TObject);
     procedure actFileCloseExecute(Sender: TObject);
     procedure actFileExitExecute(Sender: TObject);
     procedure actFileOpenExecute(Sender: TObject);
@@ -142,6 +160,8 @@ type
     procedure bbCollapseClick(Sender: TObject);
     procedure bbExtSelectClick(Sender: TObject);
     procedure bbCatInverseClick(Sender: TObject);
+    procedure cbShowPreviewChange(Sender: TObject);
+    procedure ReplaceExecute(Sender: TObject);
     procedure ResetView(Sender: TObject);
     procedure bbSaveClick(Sender: TObject);
     procedure SetupView(Sender: TObject);
@@ -159,14 +179,15 @@ type
     procedure tbColumnClick(Sender: TObject);
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
-    inProcess:boolean;
-    fFilterWasChanged:Boolean;
+    FUData:pointer;
+    fmi:TForm;
     rgpi:TRGPAK;
     LastExt:string;
     LastFilter:integer;
     FLastIndex:integer;
-    FUData:pointer;
-    fmi:TForm;
+    FUSize:integer;
+    inProcess:boolean;
+    fFilterWasChanged:Boolean;
 
     procedure AddBranch(aroot: TTreeNode; const aname: string; acode: integer);
     procedure ClearInfo();
@@ -223,6 +244,7 @@ const
   cSep = '/';
 
 const
+  colCount  = 0;
   colDir    = 1;
   colName   = 2;
   colExt    = 3;
@@ -249,6 +271,7 @@ const
   sShoPacked    = 'shopacked';
   sShowUnpacked = 'showunpacked';
   sShowSource   = 'showsource';
+  sShowPreview  = 'showpreview';
   sSaveWidth    = 'savewidth';
   sTreeWidth    = 'width_tree';
   sGridWidth    = 'width_grid';
@@ -417,6 +440,8 @@ begin
     config.WriteBool(sSectSettings,sShowUnpacked,cbUnpacked.Checked);
     config.WriteBool(sSectSettings,sShowSource  ,cbSource  .Checked);
 
+    config.WriteBool(sSectSettings,sShowPreview,cbShowPreview.Checked);
+
     config.WriteBool(sSectSettings,sSaveWidth,cbSaveWidth.Checked);
     if cbSaveWidth.Checked then
     begin
@@ -457,6 +482,8 @@ begin
   cbUnpacked.Checked:=config.ReadBool(sSectSettings,sShowUnpacked,false);
   cbSource  .Checked:=config.ReadBool(sSectSettings,sShowSource  ,false);
 
+  cbShowPreview.Checked:=config.ReadBool(sSectSettings,sShowPreview,false);
+
   cbSaveWidth.Checked:=config.ReadBool(sSectSettings,sSaveWidth,true);
   if cbSaveWidth.Checked then
   begin
@@ -480,7 +507,7 @@ begin
   config.Free;
 end;
 
-{%ENDREGION}
+{%ENDREGION Settings}
 
 {%REGION Save}
 
@@ -554,6 +581,7 @@ var
   lsize,i,lcnt:integer;
 begin
   lcnt:=0;
+  lptr:=nil;
   for i:=1 to sgMain.RowCount-1 do
   begin
     if sgMain.IsCellSelected[colDir,i] then
@@ -571,17 +599,18 @@ begin
       begin
         if SaveFile(ldir, lname, lptr, lsize) then
           inc(lcnt);
-        FreeMem(lptr);
       end;
     end;
   end;
+  FreeMem(lptr);
+
   if lcnt=1 then
     ShowMessage('File '+ldir+lname+#13#10'unpacked succesfully.')
   else if lcnt>1 then
     ShowMessage(IntToStr(lcnt)+' files unpacked succesfully.');
 end;
 
-{%ENDREGION}
+{%ENDREGION Save}
 
 {%REGION Filter}
 
@@ -652,7 +681,7 @@ begin
   ccbCategory.ItemIndex:=-1;
 end;
 
-{%ENDREGION}
+{%ENDREGION Filter}
 
 {%REGION Form}
 
@@ -745,7 +774,8 @@ procedure TRGGUIForm.actFileCloseExecute(Sender: TObject);
 begin
   rgpi.Free;
   sgMain.Clear;
-  {TODO: Clear working area}
+  ClearInfo();
+  tvTree.Items.Clear;
   actInfoInfo.Enabled:=false;
   FreeAndNil(fmi);
 end;
@@ -773,7 +803,7 @@ begin
   fmLogForm.ShowOnTop;
 end;
 
-{%ENDREGION}
+{%ENDREGION Form}
 
 {%REGION Unpack}
 
@@ -810,7 +840,7 @@ var
 begin
   if rgpi.man.GetFirstFile(p,adir)<>0 then
   begin
-    ldir:=rgpi.man.GetEntryName(adir);
+    ldir:=rgpi.man.GetDirName(adir);
     repeat
       if not (p^.ftype in [typeDelete,typeDirectory]) then
         UnpackSingleFile(ldir,rgpi.man.GetName(p^.name))
@@ -831,14 +861,15 @@ begin
   idx:=IntPtr(tvTree.Selected.Data);
   if idx>=0 then
   begin
-    ls:=rgpi.man.EntryName[idx];
+    ls:=rgpi.man.GetDirName(idx);
     llen:=Length(ls);
   end;
 
   for i:=0 to rgpi.man.EntriesCount-1 do
   begin
-    if (idx<0) or (i=idx) or (CompareWide(ls,rgpi.man.EntryName[i],llen)=0) then
-      ExtractSingleDir(i);
+    if not rgpi.man.IsDirDeleted(i) then
+      if (idx<0) or (i=idx) or (CompareWide(ls,rgpi.man.GetDirName(i),llen)=0) then
+        ExtractSingleDir(i);
   end;
 
   if (idx<0) and (cbMODDAT.Checked) and (rgpi.Version=verTL2Mod) then
@@ -862,6 +893,8 @@ begin
 //  memText.Clear;
   SynEdit.Clear;
   imgPreview.Picture.Clear;
+  SynEdit.Visible:=false;
+  imgPreview.Visible:=false;
 
   FreeMem(FUData); FUData:=nil;
 end;
@@ -881,7 +914,7 @@ begin
   if ExtractFileExt(aname)='.DDS' then
   begin
 {
-    LoadDDSImage(FUData, MemSize(FUData), ldata, lwidth, lheight);
+    LoadDDSImage(FUData, FUSize, ldata, lwidth, lheight);
     try
       png := TPortableNetworkgraphic.Create; // or TJpegImage.Create, or TBitmap.Create, or ...
       try
@@ -914,7 +947,7 @@ begin
       FreeMem(lData);
     end;
 }
-    if LoadDDSImage(FUData,MemSize(FUData),ldata,lwidth,lheight) then
+    if LoadDDSImage(FUData,FUSize,ldata,lwidth,lheight) then
     begin
       limg:=TFPMemoryImage.Create(lwidth,lheight);
       lidx:=0;
@@ -978,6 +1011,8 @@ begin
     lnode:=ParseDatMem(FUData);
   if NodeToWide(lnode,pc) then
   begin
+//!!    pnlEditButtons.Visible:=true;
+
     SynEdit.Highlighter:=SynTSyn;
     SynEdit.Text:=WideToStr(pc+1);//WideCharToString(pc+1); // skip sign
     SynEdit.Visible:=true;
@@ -990,7 +1025,7 @@ procedure TRGGUIForm.PreviewText();
 var
   ltext:string;
 begin
-  SetString(ltext,PChar(FUData),MemSize(FUData));
+  SetString(ltext,PChar(FUData),FUSize);
   SynEdit.Highlighter:=SynXMLSyn;
   SynEdit.Text:=ltext;
   SynEdit.Visible:=true;
@@ -1000,7 +1035,6 @@ procedure TRGGUIForm.sgMainSelection(Sender: TObject; aCol, aRow: Integer);
 var
   mfi:PMANFileInfo;
   ldir,lname:string;
-  lsize:integer;
 begin
   ClearInfo();
 
@@ -1028,21 +1062,22 @@ begin
 
     if mfi^.ftype in (setBinary+[typeDelete,typeDirectory]) then exit;
 
+    if not cbShowPreview.Checked then exit;
+
     //!! what to show in lsize=0 ?
-    lsize:=rgpi.UnpackFile(ldir+lname,FUData);
-    if lsize>0 then
+    FUSize:=rgpi.UnpackFile(ldir+lname,FUData);
+    if FUSize>0 then
     begin
+//!!      pnlEditButtons.Visible:=false;
       // Text
       if      mfi^.ftype in setText then PreviewText()
-      else if mfi^.ftype in setData then PreviewSource(mfi^.ftype, ldir, lname)
-      else
-        SynEdit.Visible:=false;
+      else if mfi^.ftype in setData then PreviewSource(mfi^.ftype, ldir, lname);
+//      else SynEdit.Visible:=false;
 
       // Image
       if mfi^.ftype in setImage then
-        PreviewImage(lname)
-      else
-        imgPreview.Visible:=false;
+        PreviewImage(lname);
+//      else imgPreview.Visible:=false;
 
       // Sound
       if mfi^.ftype=typeSound then
@@ -1057,7 +1092,41 @@ begin
 
 end;
 
-{%ENDREGION}
+procedure TRGGUIForm.cbShowPreviewChange(Sender: TObject);
+begin
+  sgMainSelection(sgMain, 2, sgMain.Row);
+end;
+
+procedure TRGGUIForm.ReplaceExecute(Sender: TObject);
+var
+  lopt:TSynSearchOptions;
+  lcnt:integer;
+begin
+  lcnt:=0;
+  with Sender as TReplaceDialog do
+  begin
+    lopt := [];
+    if frReplace    in Options then lopt := [ssoReplace];
+    if frReplaceAll in Options then lopt := [ssoReplaceAll];
+    lcnt := SynEdit.SearchReplace{Ex}( FindText, ReplaceText, lopt{, Position });
+{
+    if lcnt>=0 then
+    begin
+    //   if lcnt>1 then ShowMessage('Replaces = '+IntToStr(lcnt));
+      SynEdit.SetFocus()
+    end
+    else
+      Beep();
+}
+  end;
+end;
+
+procedure TRGGUIForm.actEdSearchExecute(Sender: TObject);
+begin
+  ReplaceDialog.Execute();
+end;
+
+{%ENDREGION Preview}
 
 {%REGION Grid}
 
@@ -1123,7 +1192,6 @@ begin
   sgMain.Cells[colExt   ,arow]:=Copy(lext,2);
   sgMain.Cells[colPack  ,arow]:=IntToStr(afile^.size_c);
   sgMain.Cells[colUnpack,arow]:=IntToStr(afile^.size_u);
-  sgMain.Cells[colSource,arow]:=IntToStr(afile^.size_s);
   sgMain.Cells[colType  ,arow]:=PAKCategoryName(PAKTypeToCategory(afile^.ftype){lcat});
   if {sgMain.Columns[colTime-1].Visible and} (afile^.ftime<>0) then
   begin
@@ -1169,27 +1237,29 @@ begin
     sgMain.RowCount:=rgpi.man.total+1;
     for i:=0 to rgpi.man.EntriesCount-1 do
     begin
-      if rgpi.man.GetFirstFile(p,i)<>0 then
+      if not rgpi.man.IsDirDeleted(i) then
       begin
-        lname:=rgpi.man.GetEntryName(i);
-        repeat
-          if FillGridLine(lcnt, lname, p) then
-            inc(lcnt);
-        until rgpi.man.GetNextFile(p)=0;
+        if rgpi.man.GetFirstFile(p,i)<>0 then
+        begin
+          lname:=rgpi.man.GetDirName(i);
+          repeat
+            if FillGridLine(lcnt, lname, p) then
+              inc(lcnt);
+          until rgpi.man.GetNextFile(p)=0;
+        end;
+
+        if (lcnt mod 1000)=0 then
+          Application.ProcessMessages;
       end;
-
-      if (lcnt mod 1000)=0 then
-        Application.ProcessMessages;
     end;
-
     Self.Caption:='RGGUI - '+AnsiString(rgpi.Name);
   end
   else
   begin
-    sgMain.RowCount:=rgpi.man.Entries[idx].count+1;
+    sgMain.RowCount:=rgpi.man.Dirs[idx].count+1;
     if rgpi.man.GetFirstFile(p,idx)<>0 then
     begin
-      lname:=rgpi.man.GetEntryName(idx);
+      lname:=rgpi.man.GetDirName(idx);
       repeat
         if FillGridLine(lcnt, lname, p) then
           inc(lcnt);
@@ -1213,7 +1283,7 @@ begin
   inProcess:=false;
 end;
 
-{%ENDREGION}
+{%ENDREGION Grid}
 
 {%REGION Tree}
 
@@ -1302,9 +1372,12 @@ begin
   sl.Sorted:=true;
   for i:=0 to rgpi.man.EntriesCount-1 do
   begin
-    ls:=UpCase(WideToStr(rgpi.man.GetEntryName(i)));
-    if sl.IndexOf(ls)<0 then
-      sl.AddObject(ls,TObject(IntPtr(i)));
+    if not rgpi.man.IsDirDeleted(i) then
+    begin
+      ls:=UpCase(WideToStr(rgpi.man.GetDirName(i)));
+      if sl.IndexOf(ls)<0 then
+        sl.AddObject(ls,TObject(IntPtr(i)));
+    end;
   end;
   sl.Sort;
 
@@ -1329,6 +1402,6 @@ begin
     tvTree.Items[1].Selected:=true;
 end;
 
-{%ENDREGION}
+{%ENDREGION Tree}
 
 end.

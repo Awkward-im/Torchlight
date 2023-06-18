@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Release"/>
+    <Units>
+      <Unit>
+        <Filename Value="pak2mod.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <CursorPos Y="24"/>
+        <UsageCount Value="45"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formpak2mod.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmPAK2MOD"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formPak2Mod"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="76"/>
+        <CursorPos Y="88"/>
+        <FoldState Value=" T46021 T8d[643iZ04011d"/>
+        <UsageCount Value="45"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgpak.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGPAK"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1371"/>
+        <CursorPos X="17" Y="1371"/>
+        <UsageCount Value="45"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\textcache.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="45"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgman.pas"/>
+        <UnitName Value="RGMan"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="12"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <ComponentName Value="MODInfoForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmModInfo"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="30" Y="17"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2957"/>
+        <CursorPos Y="2970"/>
+        <UsageCount Value="9"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="64" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="122" TopLine="106"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="169" Column="67" TopLine="50"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="165" Column="5" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="69" TopLine="69"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="71" TopLine="71"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="138" TopLine="96"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="94" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="96" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="97" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="94" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="96" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="97" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="98" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="94" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="96" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="97" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="124" Column="26" TopLine="101"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="99" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="100" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="67" TopLine="44"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="103" TopLine="99"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="98" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="99" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="125" TopLine="91"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="92" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="126" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="116" Column="33" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="128" Column="42" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="126" Column="41" TopLine="99"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>
