@@ -1,3 +1,4 @@
+{TODO Float/DoublePrec for Str functions}
 unit RGIO.Layout;
 
 interface
@@ -55,6 +56,19 @@ const
     'UI'
   );
 
+{$i featuretags.inc}
+
+const
+  strGameMode : array [1..2] of PWideChar = (
+    'NORMAL',
+    'NEW GAME PLUS'
+  );
+const
+  strChoice : array [1..2] of PWideChar = (
+    'Weight',
+    'Random Chance'
+  );
+
 const
   strInterpolation : array [0..6] of PWideChar = (
     'Linear',
@@ -78,11 +92,34 @@ const
   m22 = 'FORWARDZ';
 
 type
+  TLayoutBinTL2 = packed record // "Group" type only
+    GUID       :QWord;    // -1 for root
+    choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
+                          //   Presents in decription too (doubling)
+    random     :DWord;    // (def 1)RANDOMIZATION
+    number     :Byte;     // (def 1 or 0 for root) NUMBER
+    offset     :DWord;    // group offset from start of file (6 for root)
+    tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
+    notag      :Byte;     // (def 0) value transforming to 'NO TAG FOUND'
+    unique     :Byte;     // (def 0) LEVEL UNIQUE
+                          //   Presents in decription too (doubling)
+    gamemode   :Byte;     // (def 0) GAME MODE 1 - Normal ; 2 - NG+
+                          //   Presents in decription too (doubling)
+{
+    ActThemes  :DWord;    // next x8 bytes are Active themes
+    DeactThemes:DWord;    // next x8 bytes are DeActive themes
+    childs     :Word;     // child groups amount
+}
+  end;
+
+type
   TRGLayoutFile = object
   private
     info:TRGObject;
-    FStart:PByte;
-    FPos:PByte;
+    FStart   :PByte;
+    FBinStart:PByte;
+    FPos     :PByte;
+    FBinPos  :PByte;
     FBuffer:WideString;
     FVer :integer;
      
@@ -95,25 +132,36 @@ type
     procedure ParseTimeline  (var anode:pointer; aid:Int64);
 
     procedure WriteStr          (astr :PWideChar; astream:TStream);
-    function  WritePropertyValue(anode:pointer  ; astream:TStream):integer;
+    procedure WriteVectorValue  (const vct:tVector4; atype:integer; astream:TStream);
+    function  WritePropertyValue(anode:pointer     ; atype:integer; astream:TStream):integer;
+    function  WriteProperties   (anode:pointer  ; astream:TStream):integer;
     procedure BuildTimeline     (anode:pointer  ; astream:TStream);
     procedure BuildLogicGroup   (anode:pointer  ; astream:TStream);
 
-    function  DoParseBlockTL1(var anode:pointer; const aparent:Int64):integer;
-    procedure ReadPropertyHob(var anode:pointer);
-    function  DoParseBlockHob(var anode:pointer; const aparent:Int64):integer;
-    procedure ReadPropertyTL2(var anode:pointer);
-    function  DoParseBlockTL2(var anode:pointer; const aparent:Int64):integer;
+    // read TL1
+    function  DoParseLayoutTL1(atype:cardinal):pointer;
+    function  DoParseBlockTL1  (var anode:pointer; const aparent:Int64):integer;
 
-    function DoParseLayoutTL1(atype:cardinal):pointer;
-    function DoParseLayoutTL2(atype:cardinal):pointer;
-    function DoParseLayoutHob(atype:cardinal):pointer;
-    function DoParseLayoutRG (atype:cardinal):pointer;
+    // read TL2
+    function  DoParseLayoutTL2 (atype:cardinal):pointer;
+    function  DoParseBlockTL2  (var anode:pointer; const aparent:Int64):integer;
+    procedure ReadPropertyTL2  (var anode:pointer);
+    procedure ReadBinaryDataTL2(var anode:pointer);
+    function  GetTagTL2        (atag:integer):PWideChar;
+    function  GetTagTL2Num     (atag:PWideChar):integer;
 
-    function DoWriteBlockTL2 (anode:pointer; astream:TStream):integer;
+    // read Hob and RG
+    function  DoParseLayoutHob(atype:cardinal):pointer;
+    function  DoParseBlockHob (var anode:pointer; const aparent:Int64):integer;
+    procedure ReadPropertyHob (var anode:pointer);
+    function  DoParseLayoutRG (atype:cardinal):pointer;
+
+    // write TL2
+    function DoBuildLayoutTL2  (anode:pointer; astream:TStream):integer;
+    function DoWriteBlockTL2   (anode:pointer; astream:TStream; abstream:TStream):integer;
+    function WritePropertiesTL2(anode:pointer; astream:TStream; var adata:TLayoutBinTL2):integer;
 
     function DoBuildLayoutTL1(anode:pointer; astream:TStream):integer;
-    function DoBuildLayoutTL2(anode:pointer; astream:TStream):integer;
     function DoBuildLayoutHob(anode:pointer; astream:TStream):integer;
     function DoBuildLayoutRG (anode:pointer; astream:TStream):integer;
   public
@@ -238,13 +286,14 @@ end;
 
 function TRGLayoutFile.ReadPropertyValue(aid:UInt32; asize:integer; anode:pointer):boolean;
 var
-  lls,ls:string;
+  lls,ls:WideString;
   lmatrix:TMatrix4x4;
   lq:TVector4;
   valq:Int64;
+  vald:Double;
   lname,pcw:PWideChar;
   lptr:PByte;
-  ltype,vali:integer;
+  i,ltype,vali,lsize:integer;
   valu:UInt32;
   llen:word;
 begin
@@ -262,13 +311,35 @@ begin
   
   if not result then
   begin
-    ls:='    '+IntToStr(aid)+':'+string(TypeToText(ltype))+':'+string(lname);
-    if ltype=rgInteger then ls:=ls+'='+IntToStr(PDword(FPos)^);
-    RGLog.Add(ls);
+    Str(aid,lls);
+    ls:='    '+lls+':'+WideString(TypeToText(ltype))+':'+WideString(lname);
+    if ltype=rgInteger then
+    begin
+      Str(PDword(FPos)^,lls);
+      ls:=ls+'='+lls;
+    end;
+    RGLog.AddWide(PWideChar(ls));
   end;
 
 //  RGLog.Add('>>'+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname);
 
+  case ltype of
+    rgBool,
+    rgInteger,
+    rgUnsigned,
+    rgFloat:     lsize:=4;
+    rgInteger64,
+    rgDouble:    lsize:=8;
+  else
+    lsize:=0;
+  end;
+  if (lsize>0) and ((asize div lsize)>1) and ((asize mod lsize)=2) then
+  begin
+    ltype:=ltype or rgList;
+//    if      ltype=rgUnsigned then ltype:=rgUIntList
+//    else if ltype=rgFloat    then ltype:=rgFloatList;
+  end;
+  
   case ltype of
     rgBool     : AddBool(anode,lname,memReadInteger(FPos)<>0);
     rgInteger  : begin vali:=memReadInteger  (FPos); {if vali<>0 then} AddInteger  (anode,lname,vali); end;
@@ -330,38 +401,62 @@ begin
          {if lmatrix[0,2]<>0 then} AddFloat(anode,m02,lmatrix[0,2]);
       end;
     end;
-    rgUIntList: begin
+
+  else
+    if ltype and rgList<>0 then
+    begin
       ls:='';
       llen:=memReadWord(FPos);
-      for vali:=0 to integer(llen)-1 do
+      for i:=0 to integer(llen)-1 do
       begin
-        valu:=memReadDWord(FPos);
-        ls:=ls+IntToStr(valu)+',';
-      end;
-      if ls<>'' then SetLength(ls,Length(ls)-1);
-      pcw:=StrToWide(ls);
-      AddString(anode,lname,pcw);
-      FreeMem(pcw);
-    end;
-    rgFloatList: begin
-      ls:='';
-      llen:=memReadWord(FPos);
-      for vali:=0 to integer(llen)-1 do
-      begin
-        lq.x:=memReadFloat(FPos);
-        Str(lq.x:0:4,lls);
+        case ltype and not rgList of
+          rgBool: begin
+            vali:=memReadInteger(FPos);
+            if vali=0 then lls:='false' else lls:='true';
+          end;
+          rgInteger: begin
+            vali:=memReadInteger(FPos);
+            Str(vali,lls);
+          end;
+          rgUnsigned: begin
+            valu:=memReadDWord(FPos);
+            Str(valu,lls);
+          end;
+          rgFloat: begin
+            lq.x:=memReadFloat(FPos);
+            if ABS(lq.x)<1.0E-6 then
+//              Str(lq.x,lls)
+              Str(lq.x:0:DoublePrec,lls)
+            else
+              Str(lq.x:0:FloatPrec,lls);
+            FixFloatStr(lls);
+          end;
+          rgInteger64: begin
+            valq:=memReadInteger64(FPos)
+          end;
+          rgDouble: begin
+            vald:=memReadDouble(FPos);
+            Str(vald:0:DoublePrec,lls);
+            FixFloatStr(lls);
+          end;
+        end;
+
         ls:=ls+lls+',';
       end;
       if ls<>'' then SetLength(ls,Length(ls)-1);
+      AddString(anode,lname,Pointer(ls));
+{
       pcw:=StrToWide(ls);
       AddString(anode,lname,pcw);
       FreeMem(pcw);
+}
+    end
+    else
+    begin
+      AddInteger(anode,'??UNKNOWN',asize);
+      AddString (anode,PWideChar('??'+WideString(lname)), PWideChar(WideString(HexStr(FPos-FStart,8))));
+      RGLog.Add('Unknown property type '+IntToStr(ltype)+' size '+IntToStr(asize)+' at '+HexStr(FPos-FStart,8));
     end;
-
-  else
-    AddInteger(anode,'??UNKNOWN',asize);
-    AddString (anode,PWideChar('??'+WideString(lname)), PWideChar(WideString(HexStr(FPos-FStart,8))));
-    RGLog.Add('Unknown property type '+IntToStr(ltype)+' size '+IntToStr(asize)+' at '+HexStr(FPos-FStart,8));
   end;
 
   FPos:=lptr+asize;
@@ -537,15 +632,108 @@ begin
   result:=FindNode(aprops,buf);
 end;
 
-function TRGLayoutFile.WritePropertyValue(anode:pointer; astream:TStream):integer;
+procedure TRGLayoutFile.WriteVectorValue(const vct:tVector4; atype:integer; astream:TStream);
+begin
+  case atype of
+    rgVector2: begin
+      astream.WriteFloat(vct.X);
+      astream.WriteFloat(vct.Y);
+    end;
+    rgVector3: begin
+      astream.WriteFloat(vct.X);
+      astream.WriteFloat(vct.Y);
+      astream.WriteFloat(vct.Z);
+    end;
+    rgVector4: begin
+      astream.WriteFloat(vct.X);
+      astream.WriteFloat(vct.Y);
+      astream.WriteFloat(vct.Z);
+      astream.WriteFloat(vct.W);
+    end;
+  end;
+end;
+
+function TRGLayoutFile.WritePropertyValue(anode:pointer; atype:integer; astream:TStream):integer;
 var
-  lprop:pointer;
+  lval:array [0..31] of WideChar;
+  lint64:Int64;
+  ldouble:Double;
+  lp:PWideChar;
+  lfloat:Single;
+  i,lcnt,lidx:integer;
+  ltype:integer;
+  ltmp:word;
+begin
+  result:=0;
+        
+  ltype:=GetNodeType(anode);
+  // array
+  if (ltype<>atype) and not (atype in [rgString,rgTranslate,rgNote]){and (ltype=rgString)} then
+  begin
+    lp:=AsString(anode);
+    lcnt:=splitCountW(lp,',');
+    if lcnt>0 then
+    begin
+      astream.WriteWord(WORD(lcnt));
+
+      for i:=0 to lcnt-1 do
+      begin
+        lidx:=0;
+        repeat
+          while lp^=',' do inc(lp);
+          lval[lidx]:=lp^;
+          inc(lidx);
+          inc(lp);
+        until (lp^=',') or (lp^=#0);
+        lval[lidx]:=#0;
+
+        case atype of
+          rgInteger  : begin Val(lval,lint64 ,ltmp); astream.WriteDWord(dword(lint64));  end;
+          rgUnsigned : begin Val(lval,lint64 ,ltmp); astream.WriteDWord(dword(lint64));  end;
+          rgInteger64: begin Val(lval,lint64 ,ltmp); astream.WriteQWord(qword(lint64));  end;
+          rgFloat    : begin Val(lval,lfloat ,ltmp); astream.WriteFloat(lfloat);         end;
+          rgDouble   : begin Val(lval,ldouble,ltmp); astream.WriteQWord(qword(ldouble)); end;
+          rgBool     : begin
+            if (lval[0]='1') or (
+               (lval[0] in ['T','t']) and 
+               (lval[0] in ['R','r']) and 
+               (lval[0] in ['U','u']) and 
+               (lval[0] in ['E','e'])) then
+              astream.WriteDWord(1)
+            else
+              astream.WriteDWord(0);
+          end;
+        end;
+      end;
+
+    end;
+  end
+  else
+  begin
+    case ltype of
+      rgInteger  : astream.WriteDWord(dword(asInteger(anode)));
+      rgFloat    : astream.WriteFloat(asFloat(anode));
+      rgDouble   : astream.WriteQWord(qword(asDouble(anode)));
+      rgUnsigned : astream.WriteDWord(asUnsigned(anode));
+      rgBool     : if AsBool(anode) then astream.WriteDWord(1) else astream.WriteDWord(0);
+      rgInteger64: astream.WriteQWord(qword(asInteger64(anode)));
+      rgString,
+      rgTranslate,
+      rgNote     : astream.WriteShortString(AsString(anode));
+    end;
+  end;
+end;
+
+function TRGLayoutFile.WriteProperties(anode:pointer; astream:TStream):integer;
+var
   vct:tVector4;
-  liarr:TIntegerDynArray;
-  lfarr:TSingleDynArray;
   lpname:PWideChar;
+  lprop:PByte;
+  ltype:integer;
   l_id:dword;
-  i,j,ltype:integer;
+  lSizePos,lNewPos:integer;
+  i:integer;
+  lok:boolean;
 begin
   result:=0;
 
@@ -555,120 +743,79 @@ begin
     vct.y:=0;
     vct.z:=0;
     vct.w:=0;
+    lok:=false;
+
     ltype:=info.GetPropInfoByIdx(i,l_id,lpname);
     case ltype of
       rgVector2: begin
-        vct.X:=AsFloat(SearchVector(anode,lpname,'X'));
-        vct.Y:=AsFloat(SearchVector(anode,lpname,'Y'));
-        if (vct.X<>0) or (vct.Y<>0) then
-        begin
-          inc(result);
-          astream.WriteWord(1+SizeOf(tVector2){2*SizeOf(Single)});
-          astream.WriteByte(l_id);
-          astream.WriteFloat(vct.X);
-          astream.WriteFloat(vct.Y);
-        end;
+//        lprop:=SearchVector(anode,lpname,'X'); if lprop<>nil then begin lok:=true; vct.X:=AsFloat(lprop); end;
+
+        lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
       end;
       rgVector3: begin
-        vct.X:=AsFloat(SearchVector(anode,lpname,'X'));
-        vct.Y:=AsFloat(SearchVector(anode,lpname,'Y'));
-        vct.Z:=AsFloat(SearchVector(anode,lpname,'Z'));
-        if (vct.X<>0) or (vct.Y<>0) or (vct.Z<>0) then
-        begin
-          inc(result);
-          astream.WriteWord(1+SizeOf(tVector3){3*SizeOf(Single)});
-          astream.WriteByte(l_id);
-          astream.WriteFloat(vct.X);
-          astream.WriteFloat(vct.Y);
-          astream.WriteFloat(vct.Z);
-        end;
+        lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Z'); lok:=lok or (lprop<>nil); vct.Z:=AsFloat(lprop);
       end;
       rgVector4: begin
-        vct.X:=AsFloat(SearchVector(anode,lpname,'X'));
-        vct.Y:=AsFloat(SearchVector(anode,lpname,'Y'));
-        vct.Z:=AsFloat(SearchVector(anode,lpname,'Z'));
-        vct.W:=AsFloat(SearchVector(anode,lpname,'W'));
-        if (vct.X<>0) or (vct.Y<>0) or (vct.Z<>0) or (vct.W<>0) then
-        begin
-          inc(result);
-          astream.WriteWord(1+SizeOf(tVector4){4*SizeOf(Single)});
-          astream.WriteByte(l_id);
-          astream.WriteFloat(vct.X);
-          astream.WriteFloat(vct.Y);
-          astream.WriteFloat(vct.Z);
-          astream.WriteFloat(vct.W);
-        end;
+        lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Z'); lok:=lok or (lprop<>nil); vct.Z:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'W'); lok:=lok or (lprop<>nil); vct.W:=AsFloat(lprop);
       end;
+
     else
       lprop:=FindNode(anode,lpname);
       if lprop<>nil then
-        case ltype of
-          rgInteger: begin
-            inc(result);
-            astream.WriteWord(1+SizeOf(dword));
+      begin
+        lSizePos:=astream.Position;
+        astream.WriteWord(0);
+        case FVer of
+          verTL2: begin
             astream.WriteByte(l_id);
-            astream.WriteDWord(dword(asInteger(lprop)));
+            WritePropertyValue(lprop,ltype,astream);
           end;
-          rgFloat: begin
-            inc(result);
-            astream.WriteWord(1+SizeOf(Single));
-            astream.WriteByte(l_id);
-            astream.WriteFloat(asFloat(lprop));
-          end;
-          rgDouble: begin
-            inc(result);
-            astream.WriteWord(1+SizeOf(qword));
-            astream.WriteByte(l_id);
-            astream.WriteQWord(qword(asDouble(lprop)));
-          end;
-          rgUnsigned: begin
-            inc(result);
-            astream.WriteWord(1+SizeOf(dword));
-            astream.WriteByte(l_id);
-            astream.WriteDWord(asUnsigned(lprop));
-          end;
-          rgBool: begin
-            inc(result);
-            astream.WriteWord(1+SizeOf(dword));
-            astream.WriteByte(l_id);
-           if AsBool(lprop) then astream.WriteDWord(1) else astream.WriteDWord(0);
-          end;
-          rgInteger64: begin
-            inc(result);
-            astream.WriteWord(1+SizeOf(qword));
-            astream.WriteByte(l_id);
-            astream.WriteQWord(qword(asInteger64(lprop)));
-          end;
-          rgString,
-          rgTranslate,
-          rgNote: begin
-            inc(result);
-            lpname:=AsString(lprop);
-            astream.WriteWord(1+2+Length(lpname)*SizeOf(WideChar));
-            astream.WriteByte(l_id);
-            astream.WriteShortString(lpname);
-          end;
-          rgUIntList: begin
-            inc(result);
-            lpname:=AsString(lprop);
-            liarr:=SplitInt(lpname,',');
-            astream.WriteWord(Length(liarr));
-            for j:=0 to Length(liarr)-1 do
-              astream.WriteDWord(dword(liarr[j]));
-            SetLength(liarr,0);
-          end;
-          rgFloatList: begin
-            inc(result);
-            lpname:=AsString(lprop);
-            lfarr:=SplitFloat(lpname,',');
-            astream.WriteWord(Length(lfarr));
-            for j:=0 to Length(lfarr)-1 do
-              astream.WriteDWord(dword(lfarr[j]));
-            SetLength(lfarr,0);
+          verHob,
+          verRGO,
+          verRG : begin
+            astream.WriteDWord(l_id);
+            WritePropertyValue(lprop,ltype,astream);
           end;
         end;
+        lNewPos:=astream.Position;
+        astream.Position:=lSizePos;
+        astream.WriteWord(lNewPos-lSizePos-2);
+        astream.Position:=lNewPos;
+        inc(result);
+      end;
     end;
+
+    if lok then
+    begin
+      lSizePos:=astream.Position;
+      astream.WriteWord(0);
+      case FVer of
+        verTL2: begin
+          astream.WriteByte(l_id);
+          WriteVectorValue(vct,ltype,astream);
+        end;
+        verHob,
+        verRGO,
+        verRG : begin
+          astream.WriteDWord(l_id);
+          WriteVectorValue(vct,ltype,astream);
+        end;
+      end;
+      lNewPos:=astream.Position;
+      astream.Position:=lSizePos;
+      astream.WriteWord(lNewPos-lSizePos-2);
+      astream.Position:=lNewPos;
+      inc(result);
+    end;
+
   end;
+
 end;
 
 procedure TRGLayoutFile.BuildTimeline(anode:pointer; astream:TStream);

@@ -32,10 +32,15 @@ const
   verRGO    = 5;
   verTL2Mod = -verTL2;
 
+const
+  FloatPrec :integer = 6;
+  DoublePrec:integer = 8;
+
 //--- Functions
 
 {$i rg_split.inc}
 
+procedure FixFloatStr(var astr:WideString);
 function  ReverseWords(aval:QWord):QWord;
 function  StrToWide(const src:string):PWideChar;
 function  WideToStr(src:PWideChar):string;
@@ -75,13 +80,15 @@ const
   rgVector2   = 100;
   rgVector3   = 101;
   rgVector4   = 102;
-  rgUIntList  = 110;
-  rgFloatList = 111;
+//  rgUIntList  = 110;
+//  rgFloatList = 111;
   // user
   rgGroup     = rgNotSet;
   rgWord      = 200;
   rgByte      = 201;
   rgBinary    = 202;
+  // special
+  rgList      = $1000;
 
 
 function TypeToText(atype:integer):PWideChar;
@@ -258,6 +265,31 @@ begin
     qword(tTL2VerRec(aval).arr[2]) shl 16+
     qword(tTL2VerRec(aval).arr[1]) shl 32+
     qword(tTL2VerRec(aval).arr[0]) shl 48;
+end;
+
+procedure FixFloatStr(var astr:WideString);
+var
+  j,l:integer;
+begin
+  l:=Length(astr);
+  j:=l;
+
+  while j>1 do
+  begin
+    if      (astr[j]='0') then dec(j)
+    else if (astr[j]='.') then
+    begin
+      dec(j);
+      break;
+    end
+    else break;
+  end;
+  if (j=2) and (astr[1]='-') and (astr[2]='0') then
+  begin
+    astr[1]:='0';
+    j:=1;
+  end;
+  if j<l then SetLength(astr,j);
 end;
 
 function BufLen(abuf:PAnsiChar; asize:cardinal):integer;
@@ -518,8 +550,8 @@ const
     (code: rgVector3  ; name: 'VECTOR3'         ), // base type = FLOAT
     (code: rgVector4  ; name: 'VECTOR4'         ), // base type = FLOAT
     (code: rgInteger64; name: 'INT64'           ),
-    (code: rgUIntList ; name: 'UINTLIST'        ), // base type = UNSIGNED INT
-    (code: rgFloatList; name: 'FLOATLIST'       ), // base type = FLOAT
+//    (code: rgUIntList ; name: 'UINTLIST'        ), // base type = UNSIGNED INT
+//    (code: rgFloatList; name: 'FLOATLIST'       ), // base type = FLOAT
     // user
     (code: rgWord     ; name: 'WORD'            ),
     (code: rgByte     ; name: 'BYTE'            ),

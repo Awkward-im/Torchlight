@@ -2,12 +2,50 @@
 
 {$IFDEF Interface}
 
-function splitInt  (      astr:PWideChar; asep:WideChar):TIntegerDynArray;
-function splitInt  (const astr:string   ; asep:char    ):TIntegerDynArray;
-function splitInt64(const astr:string   ; asep:char    ):TInt64DynArray;
-function splitFloat(const astr:string   ; asep:char    ):TSingleDynArray;
+function splitCountW(      astr:PWideChar; asep:WideChar):integer;
+function splitCountA(      astr:PAnsiChar; asep:AnsiChar):integer;
+function splitInt   (      astr:PWideChar; asep:WideChar):TIntegerDynArray;
+function splitInt   (const astr:string   ; asep:char    ):TIntegerDynArray;
+function splitInt64 (const astr:string   ; asep:char    ):TInt64DynArray;
+function splitFloat (const astr:string   ; asep:char    ):TSingleDynArray;
 
 {$ELSE}
+
+function splitCountW(astr:PWideChar; asep:WideChar):integer;
+var
+  p:PWideChar;
+begin
+  result:=0;
+  if (astr=nil) or (astr^=#0) then
+    exit;
+
+  p:=astr;
+  if p^=asep then inc(p);
+  while p^<>#0 do
+  begin
+    if p^=asep then inc(result);
+    inc(p);
+  end;
+  if (p>astr) and ((p-1)^<>asep) then inc(result);
+end;
+
+function splitCountA(astr:PAnsiChar; asep:AnsiChar):integer;
+var
+  p:PAnsiChar;
+begin
+  result:=0;
+  if (astr=nil) or (astr^=#0) then
+    exit;
+
+  p:=astr;
+  if p^=asep then inc(p);
+  while p^<>#0 do
+  begin
+    if p^=asep then inc(result);
+    inc(p);
+  end;
+  if (p>astr) and ((p-1)^<>asep) then inc(result);
+end;
 
 function splitInt(astr:PWideChar; asep:WideChar):TIntegerDynArray;
 var
@@ -16,20 +54,11 @@ var
   isminus:boolean;
 begin
   result:=nil;
-  if (astr=nil) or (astr^=#0) then
-    exit;
 
   // get array length
 
-  p:=astr;
-  if p^=asep then inc(p);
-  lcnt:=0;
-  while p^<>#0 do
-  begin
-    if p^=asep then inc(lcnt);
-    inc(p);
-  end;
-  if (p-1)^<>asep then inc(lcnt);
+  lcnt:=splitCountW(astr,asep);
+  if lcnt=0 then exit;
   SetLength(result,lcnt);
 
   // fill array
@@ -65,20 +94,11 @@ var
   isminus:boolean;
 begin
   result:=nil;
-  if astr='' then
-    exit;
 
   // get array length
 
-  p:=pointer(astr);
-  if p^=asep then inc(p);
-  lcnt:=0;
-  while p^<>#0 do
-  begin
-    if p^=asep then inc(lcnt);
-    inc(p);
-  end;
-  if (p-1)^<>asep then inc(lcnt);
+  lcnt:=splitCountA(pointer(astr),asep);
+  if lcnt=0 then exit;
   SetLength(result,lcnt);
 
   // fill array
@@ -119,15 +139,8 @@ begin
 
   // get array length
 
-  p:=pointer(astr);
-  if p^=asep then inc(p);
-  lcnt:=0;
-  while p^<>#0 do
-  begin
-    if p^=asep then inc(lcnt);
-    inc(p);
-  end;
-  if (p-1)^<>asep then inc(lcnt);
+  lcnt:=splitCountA(pointer(astr),asep);
+  if lcnt=0 then exit;
   SetLength(result,lcnt);
 
   // fill array

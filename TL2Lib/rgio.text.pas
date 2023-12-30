@@ -1,5 +1,5 @@
 ﻿{TODO: change WriteWide to Logging?}
-{TODO: Option? Write missing coordinates?}
+{TODO: Option? Write missing coordinates? UseWriteEmpty for this?}
 unit RGIO.Text;
 
 interface
@@ -26,18 +26,16 @@ function UTF8ToNode(abuf:PByte; asize:cardinal; out anode:pointer):integer;
 function ParseTextMem (abuf :PByte):pointer;
 function ParseTextFile(fname:PChar):pointer;
 
-// Options
-const
-  FloatPrec :integer = 4;
-  DoublePrec:integer = 6;
-  WriteEmpty:boolean = true;
-
 
 implementation
 
 uses
   rgglobal,
   rgnode;
+
+// Options
+const
+  WriteEmpty:boolean = true;
 
 {%REGION Node to Text}
 
@@ -72,6 +70,7 @@ var
   larr:array [0..127] of WideChar;
   lvalue:WideString;
   lpc,lname:PWideChar;
+  lfloat:Single;
   i,j,llen:integer;
   ltype:integer;
 begin
@@ -156,22 +155,18 @@ begin
       rgNote      : lvalue:=asNote     (anode);
       rgUnknown   : lvalue:=asString   (anode);
       rgFloat     : begin
-        Str(asFloat(anode):0:FloatPrec,lvalue);
-        j:=Length(lvalue);
-
-        while j>1 do
-        begin
-          if      (lvalue[j]='0') then dec(j)
-          else if (lvalue[j]='.') then
-          begin
-            dec(j);
-            break;
-          end
-          else break;
-        end;
-        if j<>Length(lvalue) then SetLength(lvalue,j);
+        lfloat:=asFloat(anode);
+        if ABS(lfloat)<1.0E-6 then
+//          Str(lfloat,lvalue)
+          Str(lfloat:0:DoublePrec,lvalue)
+        else
+          Str(lfloat:0:FloatPrec,lvalue);
+        FixFloatStr(lvalue);
       end;
-      rgDouble    : Str(asDouble   (anode):0:DoublePrec,lvalue);
+      rgDouble    : begin
+        Str(asDouble(anode):0:DoublePrec,lvalue);
+        FixFloatStr(lvalue);
+      end;
       rgInteger   : Str(asInteger  (anode),lvalue);
       rgInteger64 : Str(asInteger64(anode),lvalue);
       rgUnsigned  : Str(asUnsigned (anode),lvalue);

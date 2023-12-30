@@ -16,9 +16,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
-  ActnList, ExtCtrls, ComboEx, StdCtrls, EditBtn, Buttons, StdActns,
+  ActnList, ExtCtrls, ComboEx, StdCtrls, EditBtn, Buttons,
   TreeFilterEdit, SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes,
-  rgglobal, rgman, rgpak;
+  SynPopupMenu, rgglobal, rgman, rgpak;
 
 type
 
@@ -93,6 +93,7 @@ type
     StatusBar: TStatusBar;
     Setings: TTabSheet;
     Grid: TTabSheet;
+    SynPopupMenu: TSynPopupMenu;
     SynTSyn: TSynTSyn;
     SynEdit: TSynEdit;
     SynXMLSyn: TSynXMLSyn;
@@ -151,6 +152,9 @@ type
 
     tvTree: TTreeView;
 
+    procedure actEdExportExecute(Sender: TObject);
+    procedure actEdImportExecute(Sender: TObject);
+    procedure actEdResetExecute(Sender: TObject);
     procedure actEdSearchExecute(Sender: TObject);
     procedure actFileCloseExecute(Sender: TObject);
     procedure actFileExitExecute(Sender: TObject);
@@ -176,6 +180,7 @@ type
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
     procedure sgMainSelection(Sender: TObject; aCol, aRow: Integer);
+    procedure SynEditStatusChange(Sender: TObject; Changes: TSynStatusChanges);
     procedure tbColumnClick(Sender: TObject);
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
@@ -890,11 +895,13 @@ begin
   lblOffsetVal.Caption:='';
   lblTimeVal  .Caption:='';
 
-//  memText.Clear;
   SynEdit.Clear;
-  imgPreview.Picture.Clear;
   SynEdit.Visible:=false;
+
+  imgPreview.Picture.Clear;
   imgPreview.Visible:=false;
+
+  actEdSearch.Enabled:=false;
 
   FreeMem(FUData); FUData:=nil;
 end;
@@ -1016,6 +1023,7 @@ begin
     SynEdit.Highlighter:=SynTSyn;
     SynEdit.Text:=WideToStr(pc+1);//WideCharToString(pc+1); // skip sign
     SynEdit.Visible:=true;
+    actEdSearch.Enabled:=true;
     FreeMem(pc);
   end;
   DeleteNode(lnode);
@@ -1029,6 +1037,7 @@ begin
   SynEdit.Highlighter:=SynXMLSyn;
   SynEdit.Text:=ltext;
   SynEdit.Visible:=true;
+  actEdSearch.Enabled:=true;
 end;
 
 procedure TRGGUIForm.sgMainSelection(Sender: TObject; aCol, aRow: Integer);
@@ -1071,16 +1080,13 @@ begin
 //!!      pnlEditButtons.Visible:=false;
       // Text
       if      mfi^.ftype in setText then PreviewText()
-      else if mfi^.ftype in setData then PreviewSource(mfi^.ftype, ldir, lname);
-//      else SynEdit.Visible:=false;
+      else if mfi^.ftype in setData then PreviewSource(mfi^.ftype, ldir, lname)
 
       // Image
-      if mfi^.ftype in setImage then
-        PreviewImage(lname);
-//      else imgPreview.Visible:=false;
+      else if mfi^.ftype in setImage then PreviewImage(lname)
 
       // Sound
-      if mfi^.ftype=typeSound then
+      else if mfi^.ftype=typeSound then
       begin
       end
       else
@@ -1092,8 +1098,14 @@ begin
 
 end;
 
+procedure TRGGUIForm.SynEditStatusChange(Sender: TObject; Changes: TSynStatusChanges);
+begin
+  if scModified in Changes then Grid.Caption:='[*] Grid';
+end;
+
 procedure TRGGUIForm.cbShowPreviewChange(Sender: TObject);
 begin
+  {TODO: Ask about changes (if any)}
   sgMainSelection(sgMain, 2, sgMain.Row);
 end;
 
@@ -1124,6 +1136,25 @@ end;
 procedure TRGGUIForm.actEdSearchExecute(Sender: TObject);
 begin
   ReplaceDialog.Execute();
+end;
+
+procedure TRGGUIForm.actEdResetExecute(Sender: TObject);
+begin
+  {TODO: Ask about changes (if any)}
+  {TODO: Delete updates}
+  sgMainSelection(sgMain, 2, sgMain.Row);
+end;
+
+procedure TRGGUIForm.actEdExportExecute(Sender: TObject);
+begin
+  {TODO Ask name}
+//!!  SynEdit.Lines.SaveToFile(,TEncoding.Unicode);
+end;
+
+procedure TRGGUIForm.actEdImportExecute(Sender: TObject);
+begin
+  {TODO Ask for overwrite, name. Mark FILE as modified}
+//!!  SynEdit.Lines.LoadFromFile(,TEncoding.Unicode);
 end;
 
 {%ENDREGION Preview}

@@ -36,7 +36,7 @@ type
     ffile:string;
   public
     Constructor Create(AOwner:TComponent; aRO:boolean=false); overload;
-    procedure LoadFromFile(const aFile:string);
+    function  LoadFromFile(const aFile:string):boolean;
     procedure SaveToFile(const aFile:string);
     procedure LoadFromInfo(const ami: TTL2ModInfo);
     procedure SaveToInfo(var ami: TTL2ModInfo);
@@ -101,14 +101,17 @@ end;
 procedure TMODInfoForm.SaveToInfo(var ami:TTL2ModInfo);
 begin
   ClearModInfo(ami);
+  MakeModInfo (ami);
 
   ami.title   :=StrToWide(leTitle   .Text);
   ami.author  :=StrToWide(leAuthor  .Text);
   ami.descr   :=StrToWide(memDescr  .Text);
   ami.website :=StrToWide(leWebsite .Text);
   ami.download:=StrToWide(leDownload.Text);
-  Val(edGUID.Text,ami.modid);
-  ami.modver  :=seVersion.Value;
+  if (edGUID.Text<>'') and (edGUID.Text<>'0') and (edGUID.Text<>'-1') then
+    Val(edGUID.Text,ami.modid);
+  if seVersion.Value>0 then
+    ami.modver:=seVersion.Value;
   ami.filename:=StrToWide(leFilename.Text);
 end;
 
@@ -116,8 +119,6 @@ procedure TMODInfoForm.SaveToFile(const aFile:string);
 var
   lmod:TTL2ModInfo;
 begin
-  MakeModInfo(lmod);
-
   SaveToInfo(lmod);
   SaveModConfiguration(lmod, PChar(aFile));
 
@@ -136,7 +137,7 @@ begin
   leFilename.Text:=WideToStr(ami.filename);
 end;
 
-procedure TMODInfoForm.LoadFromFile(const aFile:string);
+function TMODInfoForm.LoadFromFile(const aFile:string):boolean;
 var
   lmod:TTL2ModInfo;
 begin
@@ -147,10 +148,17 @@ begin
     LoadFromInfo(lmod);
     ffile:=aFile;
   end
+  else if ReadModInfo(PChar(aFile),lmod) then
+  begin
+    LoadFromInfo(lmod);
+    ffile:=aFile;
+  end
   else
     ffile:='';
 
   ClearModInfo(lmod);
+
+  result:=ffile<>'';
 end;
 
 end.

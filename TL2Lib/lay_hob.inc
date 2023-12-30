@@ -163,8 +163,12 @@ begin
   AddUnsigned(result,'COUNT',lcnt);
 
   ltmp:=memReadDword(FPos);                // offset
+  FBinStart:=FStart+ltmp;
   if ltmp<>0 then
+  begin
+//!!    FBinPos:=FBinStart+SizeOf(TLayoutBin)+4+2;
     RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
+  end;
 
   ltmp:=memReadByte(FPos);                 // 1
   if ltmp<>1 then
@@ -241,7 +245,7 @@ begin
   if i<>0 then
     RGLog.Add('Second byte is not 0 but '+HexStr(i,2));
 
-  memReadDWord(FPos);
+  memReadDWord(FPos); // Binary??
   inc(FPos); //??
   result:=AddGroup(nil,'Layout');
   info.SelectScene('Layout');

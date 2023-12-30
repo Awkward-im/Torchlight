@@ -23,6 +23,10 @@ type
     function  ReadIdValList:TL2IDValList;
 
     // write
+    procedure WriteByteAt (adata:Byte ; apos:cardinal);
+    procedure WriteWordAt (adata:Word ; apos:cardinal);
+    procedure WriteDWordAt(adata:DWord; apos:cardinal);
+    procedure WriteQWordAt(adata:QWord; apos:cardinal);
     procedure WriteByteString (const astr:string);
     procedure WriteShortString(const astr:string);
     procedure WriteDWordString(const astr:string);
@@ -208,6 +212,46 @@ begin
 end;
 
 //----- Write data -----
+
+procedure TTL2Stream.WriteByteAt(adata:Byte; apos:cardinal);
+var
+  lpos:cardinal;  
+begin
+  lpos:=Position;
+  Position:=apos;
+  WriteByte(adata);
+  Position:=lpos;
+end;
+
+procedure TTL2Stream.WriteWordAt(adata:Word; apos:cardinal);
+var
+  lpos:cardinal;  
+begin
+  lpos:=Position;
+  Position:=apos;
+  WriteWord(adata);
+  Position:=lpos;
+end;
+
+procedure TTL2Stream.WriteDWordAt(adata:DWord; apos:cardinal);
+var
+  lpos:cardinal;  
+begin
+  lpos:=Position;
+  Position:=apos;
+  WriteDWord(adata);
+  Position:=lpos;
+end;
+
+procedure TTL2Stream.WriteQWordAt(adata:QWord; apos:cardinal);
+var
+  lpos:cardinal;  
+begin
+  lpos:=Position;
+  Position:=apos;
+  WriteQWord(adata);
+  Position:=lpos;
+end;
 
 procedure TTL2Stream.WriteByteString(const astr:string);
 var

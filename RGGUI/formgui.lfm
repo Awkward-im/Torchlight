@@ -7,9 +7,10 @@ object RGGUIForm: TRGGUIForm
   ClientHeight = 514
   ClientWidth = 944
   Menu = MainMenu
+  ShowHint = True
+  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
-  ShowHint = True
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
@@ -47,7 +48,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 47
-      Height = 22
+      Height = 5
       Top = 2
       Style = tbsDivider
     end
@@ -57,8 +58,8 @@ object RGGUIForm: TRGGUIForm
       Top = 2
       AllowAllUp = True
       Caption = 'E'
-      OnClick = tbColumnClick
       Style = tbsCheck
+      OnClick = tbColumnClick
     end
     object tbCategory: TToolButton
       Left = 75
@@ -66,8 +67,8 @@ object RGGUIForm: TRGGUIForm
       Top = 2
       AllowAllUp = True
       Caption = 'C'
-      OnClick = tbColumnClick
       Style = tbsCheck
+      OnClick = tbColumnClick
     end
     object tbTime: TToolButton
       Left = 98
@@ -75,8 +76,8 @@ object RGGUIForm: TRGGUIForm
       Top = 2
       AllowAllUp = True
       Caption = 'T'
-      OnClick = tbColumnClick
       Style = tbsCheck
+      OnClick = tbColumnClick
     end
     object tbPacked: TToolButton
       Left = 121
@@ -84,8 +85,8 @@ object RGGUIForm: TRGGUIForm
       Top = 2
       AllowAllUp = True
       Caption = 'P'
-      OnClick = tbColumnClick
       Style = tbsCheck
+      OnClick = tbColumnClick
     end
     object tbUnpacked: TToolButton
       Left = 144
@@ -93,8 +94,8 @@ object RGGUIForm: TRGGUIForm
       Top = 2
       AllowAllUp = True
       Caption = 'U'
-      OnClick = tbColumnClick
       Style = tbsCheck
+      OnClick = tbColumnClick
     end
     object tbSource: TToolButton
       Left = 167
@@ -102,12 +103,12 @@ object RGGUIForm: TRGGUIForm
       Top = 2
       AllowAllUp = True
       Caption = 'S'
-      OnClick = tbColumnClick
       Style = tbsCheck
+      OnClick = tbColumnClick
     end
     object tbSep2: TToolButton
       Left = 190
-      Height = 22
+      Height = 5
       Top = 2
       Style = tbsDivider
     end
@@ -126,7 +127,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep3: TToolButton
       Left = 241
-      Height = 22
+      Height = 8
       Top = 2
       Caption = 'tbSep3'
       Style = tbsSeparator
@@ -137,8 +138,8 @@ object RGGUIForm: TRGGUIForm
       Top = 2
       Width = 91
       Caption = 'Show Preview'
-      OnChange = cbShowPreviewChange
       TabOrder = 0
+      OnChange = cbShowPreviewChange
     end
   end
   object pnlTree: TPanel
@@ -162,10 +163,9 @@ object RGGUIForm: TRGGUIForm
       ReadOnly = True
       RowSelect = True
       ScrollBars = ssAutoBoth
-      ShowSeparators = False
       TabOrder = 0
-      OnSelectionChanged = tvTreeSelectionChanged
       Options = [tvoAutoExpand, tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+      OnSelectionChanged = tvTreeSelectionChanged
     end
     object pnlTreeFilter: TPanel
       Left = 1
@@ -186,8 +186,8 @@ object RGGUIForm: TRGGUIForm
         Margin = 4
         Images = ImageList
         ImageIndex = 7
-        OnClick = bbCollapseClick
         TabOrder = 1
+        OnClick = bbCollapseClick
       end
       object edTreeFilter: TTreeFilterEdit
         Left = 37
@@ -325,8 +325,8 @@ object RGGUIForm: TRGGUIForm
           Top = 3
           Width = 33
           Caption = 'Ext'
-          OnClick = SetupView
           TabOrder = 0
+          OnClick = SetupView
         end
         object cbCategory: TCheckBox
           Left = 8
@@ -334,8 +334,8 @@ object RGGUIForm: TRGGUIForm
           Top = 30
           Width = 66
           Caption = 'Category'
-          OnClick = SetupView
           TabOrder = 1
+          OnClick = SetupView
         end
         object cbTime: TCheckBox
           Left = 8
@@ -343,8 +343,8 @@ object RGGUIForm: TRGGUIForm
           Top = 57
           Width = 45
           Caption = 'Time'
-          OnClick = SetupView
           TabOrder = 2
+          OnClick = SetupView
         end
         object cbPacked: TCheckBox
           Left = 8
@@ -352,8 +352,8 @@ object RGGUIForm: TRGGUIForm
           Top = 84
           Width = 78
           Caption = 'Packed size'
-          OnClick = SetupView
           TabOrder = 3
+          OnClick = SetupView
         end
         object cbUnpacked: TCheckBox
           Left = 8
@@ -361,8 +361,8 @@ object RGGUIForm: TRGGUIForm
           Top = 111
           Width = 93
           Caption = 'Unpacked size'
-          OnClick = SetupView
           TabOrder = 4
+          OnClick = SetupView
         end
         object cbSource: TCheckBox
           Left = 8
@@ -370,8 +370,8 @@ object RGGUIForm: TRGGUIForm
           Top = 138
           Width = 76
           Caption = 'Source size'
-          OnClick = SetupView
           TabOrder = 5
+          OnClick = SetupView
         end
       end
       object cbSaveWidth: TCheckBox
@@ -390,8 +390,8 @@ object RGGUIForm: TRGGUIForm
         Width = 120
         Caption = 'View Reset'
         Kind = bkRetry
-        OnClick = ResetView
         TabOrder = 7
+        OnClick = ResetView
       end
       object cbFastScan: TCheckBox
         Left = 9
@@ -484,9 +484,9 @@ object RGGUIForm: TRGGUIForm
           Width = 128
           DropDownCount = 12
           ItemHeight = 16
+          TabOrder = 0
           OnCloseUp = ccbFilterCloseUp
           OnItemChange = ccbFilterItemChange
-          TabOrder = 0
         end
         object lblCategory: TLabel
           Left = 96
@@ -510,9 +510,9 @@ object RGGUIForm: TRGGUIForm
           Top = 7
           Width = 128
           ItemHeight = 16
+          TabOrder = 1
           OnCloseUp = ccbFilterCloseUp
           OnItemChange = ccbFilterItemChange
-          TabOrder = 1
         end
         object bbExtSelect: TBitBtn
           Left = 536
@@ -522,8 +522,8 @@ object RGGUIForm: TRGGUIForm
           Width = 30
           Kind = bkRetry
           Margin = 4
-          OnClick = bbExtSelectClick
           TabOrder = 2
+          OnClick = bbExtSelectClick
         end
         object bbCatInverse: TBitBtn
           Left = 289
@@ -533,8 +533,8 @@ object RGGUIForm: TRGGUIForm
           Width = 30
           Kind = bkRetry
           Margin = 4
-          OnClick = bbCatInverseClick
           TabOrder = 3
+          OnClick = bbCatInverseClick
         end
         object btnMODDAT: TButton
           Left = 581
@@ -553,9 +553,9 @@ object RGGUIForm: TRGGUIForm
           Caption = 'Save'
           Kind = bkOK
           ModalResult = 1
-          OnClick = bbSaveClick
           TabOrder = 5
           Visible = False
+          OnClick = bbSaveClick
         end
       end
       object pnlAdd: TPanel
@@ -679,6 +679,7 @@ object RGGUIForm: TRGGUIForm
           Font.Quality = fqNonAntialiased
           ParentColor = False
           ParentFont = False
+          PopupMenu = SynPopupMenu
           TabOrder = 1
           Gutter.Width = 57
           Gutter.MouseActions = <>
@@ -1131,6 +1132,7 @@ object RGGUIForm: TRGGUIForm
           LineHighlightColor.Background = clNone
           LineHighlightColor.Foreground = clNone
           TabWidth = 2
+          OnStatusChange = SynEditStatusChange
           inline SynLeftGutterPartList1: TSynGutterPartList
             object SynGutterMarks1: TSynGutterMarks
               Width = 24
@@ -1289,8 +1291,8 @@ object RGGUIForm: TRGGUIForm
       Caption = '&Open'
       Hint = 'Open file'
       ImageIndex = 0
-      OnExecute = actFileOpenExecute
       ShortCut = 16463
+      OnExecute = actFileOpenExecute
     end
     object actFileSave: TAction
       Category = 'File'
@@ -1310,8 +1312,8 @@ object RGGUIForm: TRGGUIForm
       Enabled = False
       Hint = 'Close file'
       ImageIndex = 3
-      OnExecute = actFileCloseExecute
       ShortCut = 16499
+      OnExecute = actFileCloseExecute
     end
     object actHelpAbout: TAction
       Caption = '&About'
@@ -1322,8 +1324,8 @@ object RGGUIForm: TRGGUIForm
       Caption = '&Extract'
       Enabled = False
       Hint = 'Extract file(s)'
-      OnExecute = bbSaveClick
       ShortCut = 32837
+      OnExecute = bbSaveClick
     end
     object actEditDelete: TAction
       Category = 'Edit'
@@ -1348,27 +1350,28 @@ object RGGUIForm: TRGGUIForm
       Enabled = False
       Hint = 'Show TL2 MOD info'
       ImageIndex = 8
-      OnExecute = actInfoInfoExecute
       ShortCut = 32841
+      OnExecute = actInfoInfoExecute
     end
     object actFileExit: TAction
       Category = 'File'
       Caption = 'E&xit'
       Hint = 'Exit program'
       ImageIndex = 4
-      OnExecute = actFileExitExecute
       ShortCut = 32883
+      OnExecute = actFileExitExecute
     end
     object actShowLog: TAction
       Caption = 'Show Log'
       Hint = 'Show Log window'
       ImageIndex = 6
-      OnExecute = actShowLogExecute
       ShortCut = 32844
+      OnExecute = actShowLogExecute
     end
     object actEdReset: TAction
       Category = 'Editor'
       Caption = 'Reset'
+      OnExecute = actEdResetExecute
     end
     object actEdUndo: TAction
       Category = 'Editor'
@@ -1381,10 +1384,12 @@ object RGGUIForm: TRGGUIForm
     object actEdImport: TAction
       Category = 'Editor'
       Caption = 'Import'
+      OnExecute = actEdImportExecute
     end
     object actEdExport: TAction
       Category = 'Editor'
       Caption = 'Export'
+      OnExecute = actEdExportExecute
     end
     object actEdSearch: TAction
       Category = 'Editor'
@@ -1492,5 +1497,9 @@ object RGGUIForm: TRGGUIForm
     OnReplace = ReplaceExecute
     Left = 72
     Top = 128
+  end
+  object SynPopupMenu: TSynPopupMenu
+    Left = 175
+    Top = 160
   end
 end
