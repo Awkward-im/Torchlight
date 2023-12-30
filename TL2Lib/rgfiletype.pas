@@ -434,14 +434,17 @@ var
   lext:string;
   i:integer;
 begin
-  lext:=UpCase(aext);
-  if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
-    lext:=UpCase(ExtractFileExt(lext));
-
-  for i:=0 to High(TableExt) do
+  if aext<>'' then
   begin
-    if TableExt[i]._ext=lext then
-      exit(TableExt[i]._type);
+    lext:=UpCase(aext);
+    if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
+      lext:=UpCase(ExtractFileExt(lext));
+
+    for i:=0 to High(TableExt) do
+    begin
+      if TableExt[i]._ext=lext then
+        exit(TableExt[i]._type);
+    end;
   end;
   result:=typeUnknown;
 end;
