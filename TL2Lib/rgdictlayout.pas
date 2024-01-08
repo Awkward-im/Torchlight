@@ -30,10 +30,10 @@ type
     function GetPropsCount:integer;
 
     function GetProperty(aid:dword):pointer;
-    function GetPropInfoByIdx (idx:integer; var aid:dword; var aname:PWideChar):integer;
-    function GetPropInfoById  (aid:dword; var aname:PWideChar):integer;
-    function GetPropInfoByName(aname:PWideChar; var aid:dword):integer;
-    function GetPropInfoByName(aname:PWideChar; atype:integer; var aid:dword):integer;
+    function GetPropInfoByIdx (idx:integer; out aid:dword; out aname:PWideChar):integer;
+    function GetPropInfoById  (aid:dword; out aname:PWideChar):integer;
+    function GetPropInfoByName(aname:PWideChar; out aid:dword):integer;
+    function GetPropInfoByName(aname:PWideChar; atype:integer; out aid:dword):integer;
 
     property Version:integer read FVersion write SetVersion;
   end;
@@ -252,7 +252,7 @@ begin
   result:=nil;
 end;
 
-function TRGObject.GetPropInfoByIdx(idx:integer; var aid:dword; var aname:PWideChar):integer;
+function TRGObject.GetPropInfoByIdx(idx:integer; out aid:dword; out aname:PWideChar):integer;
 begin
   if FLastObject<>nil then
   begin
@@ -272,7 +272,7 @@ begin
   result:=rgUnknown;
 end;
 
-function TRGObject.GetPropInfoById(aid:dword; var aname:PWideChar):integer;
+function TRGObject.GetPropInfoById(aid:dword; out aname:PWideChar):integer;
 var
   lprop:PPropInfo;
 //  ls:string;
@@ -297,7 +297,7 @@ begin
 }
 end;
 
-function TRGObject.GetPropInfoByName(aname:PWideChar; var aid:dword):integer;
+function TRGObject.GetPropInfoByName(aname:PWideChar; out aid:dword):integer;
 var
   lprop:PPropInfo;
   i,l:integer;
@@ -339,7 +339,7 @@ begin
   result:=rgUnknown;
 end;
 
-function TRGObject.GetPropInfoByName(aname:PWideChar; atype:integer; var aid:dword):integer;
+function TRGObject.GetPropInfoByName(aname:PWideChar; atype:integer; out aid:dword):integer;
 var
   lprop:PPropInfo;
   i,l:integer;

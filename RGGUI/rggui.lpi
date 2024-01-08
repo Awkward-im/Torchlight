@@ -185,6 +185,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="ImagesForLazarus"/>
+      </Item>
+      <Item>
         <PackageName Value="SynEditDsgn"/>
       </Item>
       <Item>

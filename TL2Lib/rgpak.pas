@@ -10,7 +10,7 @@
   Reassemble PAK (no repack) = compact
   * Split   PAK to   PAK and MAN (now MOD as in  only)
   * Combine PAK from PAK and MAN (now MOD as out only)
-  ??Convert combined PAK to MOD
+  + Convert combined PAK to MOD
 }
 unit RGPAK;
 
@@ -238,9 +238,7 @@ end;
 
 function TRGPAK.OpenPAK:boolean;
 begin
-  result:=false;
-
-  if (FName='') or (FSize=0) then exit;
+  if (FName='') or (FSize=0) then exit(false);
 
   if FStream=nil then
   begin
@@ -260,7 +258,6 @@ begin
       except
       end;
     end;
-
   end;
   result:=FStream<>nil;
 end;
@@ -419,7 +416,7 @@ var
 begin
   result:=false;
 
-  if FOffData>0 then // mean, we read base info and this file is not .MAN
+  if FOffMan{FOffData}>0 then // mean, we read base info and this file is not .MAN
   begin
     // OpenPAK code analog
     if FSize<=MaxSizeForMem then

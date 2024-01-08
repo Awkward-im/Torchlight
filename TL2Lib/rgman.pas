@@ -1,4 +1,5 @@
-﻿{TODO: add tree (dir with files)}
+﻿{TODO: Add source file name to TMANFileInfo}
+{TODO: add tree (dir with files)}
 {TODO: rename dir}
 {TODO: rename file}
 {TODO: save compiled manifest size}
@@ -18,11 +19,9 @@ type
   TMANFileInfo = record // not real field order
     ftime   :UInt64;    // MAN: TL2 only
 {
-    memadr  :PByte;     // file memory placement address
+    data    :PByte;     // file memory placement address
 }
     name    :cardinal;  // !! MAN: TextCache index
-//    fname   :string;    // disk filename
-//    nametxt :PUnicodeChar; // source (text format) name
     checksum:dword;     // MAN: CRC32
     size_s  :dword;     // ?? MAN: looks like source,not compiled, size (unusable)
     size_c  :dword;     // !! PAK: from TPAKFileHeader
@@ -30,6 +29,8 @@ type
     offset  :dword;     // !! MAN: PAK data block offset
     next    :integer;
     ftype   :byte;      // !! MAN: RGFileType unified type
+    exttype :byte;      // ?? removed files, for undo
+    hide    :ByteBool;  // ?? show or hide in lists
   end;
   TMANFileInfos = array of TMANFileInfo;
 
@@ -55,6 +56,7 @@ type
     FLUnpacked:integer; // largest unpacked file size
     FLPacked  :integer; // largest   packed file size
   private
+    FPath:string; // disk path for unpacked files
     FModified :boolean;
     Names  :TTextCache;
     Files  :TMANFileInfos;
@@ -77,11 +79,18 @@ type
     function  GetSize(idx:integer):integer;
 
     function  IsFileDeleted(idx:integer):boolean; inline;
+
+  private
+    // Add file record to Man, no data
     function  AddEntryFile(aentry:integer; aname:PUnicodeChar=nil):PManFileInfo;
+    // Add dir name to main dir list
     function  AddEntryDir (const apath:PUnicodeChar=pointer(-1)):integer;
+    // Add dirs with full path (with parents if needs)
     function  DoAddPath(const apath:UnicodeString):integer;
     procedure DeleteEntry    (aentry:integer);
     procedure DeleteEntryFile(aentry:integer; aname:PUnicodeChar);
+
+  // Main
   public
     procedure Init;
     procedure Free;
@@ -93,17 +102,14 @@ type
     function SaveToStream(ast:TStream; aver:integer):integer;
     function SaveToFile  (const afname:string; aver:integer):integer;
 
+  // Get info
+  public
     function SearchPath(apath:PUnicodeChar):integer;
     function SearchFile(aentry:integer; aname:PUnicodeChar):PMANFileInfo;
     function SearchFile(apath,aname:PUnicodeChar):PMANFileInfo;
     function SearchFile(const fname:string):PMANFileInfo;
 
     function IsDirDeleted(aentry:integer):boolean;
-
-    function AddPath(apath:PUnicodeChar):integer;
-    function AddPath(const apath:string):integer;
-
-    function AddFile(apath,aname:PUnicodeChar):PMANFileInfo;
 
     function GetName   (idx:integer):PUnicodeChar;
     function GetDirName(idx:integer):PUnicodeChar;
@@ -112,13 +118,32 @@ type
     function GetFirstFile(out p:PMANFileInfo; aentry:integer):integer;
     function GetNextFile (var p:PMANFileInfo):integer;
 
+{
+  Add file:
+    1 - Add element just to MAN (AddEntryDir, AddEntryFile)
+    2 - Add element + /   filename   \ !! check root path and file path. add data if not the same?
+    3 - Add element + \ memory block /
+    4 - Add element if not exists else add fname / memory as update (keep existing element)
+
+}
+  // Change info
+  public
+    function AddPath(apath:PUnicodeChar):integer;
+    function AddPath(const apath:string):integer;
+
+    function AddFile(apath,aname:PUnicodeChar):PMANFileInfo;
+
     procedure DeletePath(apath:PUnicodeChar);
     procedure DeletePath(const apath:string);
     procedure DeleteFile(apath,aname:PUnicodeChar);
 
     function RenameDir(const apath, oldname, newname:string):integer;
     function RenameDir(const apath, newname:string):integer;
-
+{
+  // Update part
+  public
+}
+  // Properties statistic
   public
     property EntriesCount:integer read FDirCount;
 //    property FilesCount  :integer read FFileCount;
@@ -129,6 +154,8 @@ type
 //    property FileName[p:PMANFileInfo]:PUnicodeChar read GetFileName;
 //    property Files   [aentry:integer; idx:integer]:PMANFileInfo read GetEntryFile;
 //    property FileName[aentry:integer; idx:integer]:PunicodeChar read GetFileName;
+
+  // Properties runtime
   public
     property Modified:boolean read FModified;
   end;
@@ -415,6 +442,37 @@ begin
   end;
 
 end;
+(*
+{
+  Update file content, remove "deleted" mark, keep old 
+}
+function TRGManifest.AddFile(apath,aname:PUnicodeChar; const adata:PByte; asize:integer):PMANFileInfo;
+begin
+  result:=AddFile(apath,aname);
+  if result=nil then exit;
+  if result^.ftype=typeDirectory then exit(nil);
+
+  if result^.exttype=typeDelete then result^.exttype:=typeUnknown;
+  if result^.data<>nil then FreeMem(result^.data);
+  
+  if asize>0 then
+  begin
+    GetMem(result^.data,asize);
+    move(adata^,result^.data^,asize);
+  end
+  else
+    result^.data:=adata;
+  result^.datasize:=ABS(asize);
+end;
+
+function TRGManifest.AddFile(apath,aname:PUnicodeChar; const fname:string):PMANFileInfo;
+begin
+  lpath:=ExtractFilePath(fname);
+  if Pos(FPath,lpath)=1 then
+    lpath:=Delete(lpath,1,Length(FPath));
+    if lpath=apath then ;
+end;
+*)
   {%ENDREGION Add}
 
   {%REGION Delete}

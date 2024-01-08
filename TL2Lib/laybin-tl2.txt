@@ -1,0 +1,35 @@
+﻿layout binary data
+  8  - "Group" GUID -1 for root
+  flags (6):
+    1 -  (def 0) CHOICE: Weight=1; Random Chance=2.
+         Presents in decription too (doubling)
+    1 - \ RANDOMIZATION (def 1)
+    1 - |
+    1 - | ?
+    1 - /
+    1 - ? (def 1) 0 for root
+
+  4 - "Group" descr file offset
+  4 - (def -1) "TAG" from FEATURETAGS.HIE
+  flags (11)
+    1 - (def 0) No Tag Found= true -> 1D, 46, D0 Bool -> <STRING>
+    1 - (def 0) LEVEL UNIQUE (double)
+    1 - (def 0) Game mode 2-NG+
+    4 - Active themes cnt
+        x*8 = "ACTIVE THEMES" GUIDS
+    4 - DeActive themes cnt
+        x*8 = "DEACTIVE THEMES" GUIDs
+  2  - child group count
+
+						<STRING>DESCRIPTOR:Group
+						<STRING>NAME:noBandits
+						<INTEGER64>PARENTID:-5291820777435139865
+						<INTEGER64>ID:-6365624529029331100
+						<STRING>NO TAG FOUND:true
+
+1 - Group
+2 - ID
+3 - ChunkPos
+4 - children groups
+   if use BinData, can fill but need to have changing size
+   OR fill it outside prop writer

@@ -21,8 +21,8 @@ const
   errUnknownTag    =  8; // Unknown property type
   errNoPropDelim   =  9; // No ':' sign after prop name
 
-function WideToNode(abuf:PByte; asize:cardinal; out anode:pointer):integer;
-function UTF8ToNode(abuf:PByte; asize:cardinal; out anode:pointer):integer;
+function WideToNode(abuf:PWideChar; asize:cardinal; out anode:pointer):integer;
+function UTF8ToNode(abuf:PAnsiChar; asize:cardinal; out anode:pointer):integer;
 function ParseTextMem (abuf :PByte):pointer;
 function ParseTextFile(fname:PChar):pointer;
 
@@ -450,54 +450,53 @@ begin
     anode:=lparents[1];
 end;
 
-function WideToNode(abuf:PByte; asize:cardinal; out anode:pointer):integer;
-var
-  lpc:PWideChar;
+function WideToNode(abuf:PWideChar; asize:cardinal; out anode:pointer):integer;
 begin
+  result:=-1;
   anode:=nil;
+  if {(asize<2) or} (abuf=nil) or (abuf^=#0) then exit;
 
-  if (PDWord   (abuf)^=$005BFEFF) or // SIGN_UNICODE+'[' widechar
-     (PWideChar(abuf)^='[') then
+  if (PDWord(abuf)^=$005BFEFF) or // SIGN_UNICODE+'[' widechar
+     (abuf^='[') then
   begin
-    lpc:=PWideChar(abuf);
-    if ORD(lpc^)=$FEFF then inc(lpc);
     if asize=0 then asize:=MemSize(abuf);
+    if ORD(abuf^)=$FEFF then inc(abuf);
   
-    result:=ParseBlock(lpc,asize,anode);
-  end
-  else
-    result:=-1;
+    result:=ParseBlock(abuf,asize,anode);
+  end;
 end;
 
-function UTF8ToNode(abuf:PByte; asize:cardinal; out anode:pointer):integer;
+function UTF8ToNode(abuf:PAnsiChar; asize:cardinal; out anode:pointer):integer;
 var
-  lpc:PAnsiChar;
   lptr:PUnicodeChar;
   i:integer;
 begin
+  result:=-1;
   anode:=nil;
 
-  if (PDWord   (abuf)^=$5BBFBBEF) or // UTF8 sign and '['
-     (PAnsiChar(abuf)^='[') then
+  if (abuf=nil) or (abuf^=#0) then exit;
+
+  if (PDWord(abuf)^=$5BBFBBEF) or // UTF8 sign and '['
+     (abuf^='[') then
   begin
     if asize=0 then asize:=MemSize(abuf);
 
-    lpc:=PAnsiChar(abuf);
-    if lpc^<>'[' then
+    if abuf^<>'[' then
     begin
-      inc(lpc  ,3);
+      inc(abuf ,3);
       dec(asize,3);
     end;
 
-    GetMem(lptr,(asize+1)*SizeOf(WideChar));
-    i:=Utf8ToUnicode(lptr,asize+1, lpc,asize);
-//    if i>0 then ReallocMem(lptr,i*SizeOf(WideChar));
-    lptr[i-1]:=#0;
-    result:=ParseBlock(lptr,i*SizeOf(WideChar),anode);
-    FreeMem(lptr);
-  end
-  else
-    result:=-1;
+    if asize>0 then
+    begin
+      GetMem(lptr,(asize+1)*SizeOf(WideChar));
+      i:=Utf8ToUnicode(lptr,asize+1, abuf,asize);
+  //    if i>0 then ReallocMem(lptr,i*SizeOf(WideChar));
+      lptr[i-1]:=#0;
+      result:=ParseBlock(lptr,i*SizeOf(WideChar),anode);
+      FreeMem(lptr);
+    end;
+  end;
 end;
 
 function ParseTextMem(abuf:PByte):pointer;
@@ -507,9 +506,9 @@ begin
   result:=nil;
 
   try
-    lerror:=WideToNode(abuf,0,result);
+    lerror:=WideToNode(PWideChar(abuf),0,result);
     if lerror<0 then
-      lerror:=UTF8ToNode(abuf,0,result);
+      lerror:=UTF8ToNode(PAnsiChar(abuf),0,result);
   except
     lerror:=errCantOpen;
   end;
@@ -536,9 +535,9 @@ begin
   //  buf[i div SizeOf(WideChar)]:=#0;
 
     try
-      lerror:=WideToNode(buf,i,result);
+      lerror:=WideToNode(PWideChar(buf),i,result);
       if lerror<0 then
-        lerror:=UTF8ToNode(buf,i,result);
+        lerror:=UTF8ToNode(PAnsiChar(buf),i,result);
     finally
       FreeMem(buf);
     end;

@@ -13,36 +13,49 @@ const
   nmROOMPIECES   = 4;
   nmTRIGGERABLES = 5;
   nmUI           = 6;
+  nmPARTICLES    = 7;
+  nmCELLDB       = 8;
+  nmQUESTMARKERS = 9;
+
 const
-  RawNames: array [0..6] of string = (
+  RawNames: array [0..9] of string = (
     'UNITDATA',
     'SKILLS',
     'AFFIXES',
     'MISSILES',
     'ROOMPIECES',
     'TRIGGERABLES',
-    'UI'
+    'UI',
+    'PARTICLES',     // Rebel Galaxy
+    'CELLDB',        // Hob
+    'QUESTMARKERS'   // Hob
   );
 
 function ParseRawMem   (abuf   :PByte  ; const afname:string):pointer;
 function ParseRawStream(astream:TStream; const afname:string):pointer;
 function ParseRawFile  (                 const afname:string):pointer;
 
-function DecodeUnitData  (abuf:PByte):pointer;
-function DecodeSkills    (abuf:PByte):pointer;
-function DecodeAffixes   (abuf:PByte):pointer;
-function DecodeMissiles  (abuf:PByte):pointer;
-function DecodeRoomPieces(abuf:PByte):pointer;
-function DecodeTriggers  (abuf:PByte):pointer;
-function DecodeUI        (abuf:PByte):pointer;
+function DecodeUnitData    (abuf:PByte):pointer;
+function DecodeSkills      (abuf:PByte):pointer;
+function DecodeAffixes     (abuf:PByte):pointer;
+function DecodeMissiles    (abuf:PByte):pointer;
+function DecodeRoomPieces  (abuf:PByte):pointer;
+function DecodeTriggers    (abuf:PByte):pointer;
+function DecodeUI          (abuf:PByte):pointer;
+function DecodeParticles   (abuf:PByte):pointer;
+function DecodeCellDB      (abuf:PByte):pointer;
+function DecodeQuestMarkers(abuf:PByte):pointer;
 
-function EncodeUnitData  (astream:TStream; anode:pointer):integer;
-function EncodeSkills    (astream:TStream; anode:pointer):integer;
-function EncodeAffixes   (astream:TStream; anode:pointer):integer;
-function EncodeMissiles  (astream:TStream; anode:pointer):integer;
-function EncodeRoomPieces(astream:TStream; anode:pointer):integer;
-function EncodeTriggers  (astream:TStream; anode:pointer):integer;
-function EncodeUI        (astream:TStream; anode:pointer):integer;
+function EncodeUnitData    (astream:TStream; anode:pointer):integer;
+function EncodeSkills      (astream:TStream; anode:pointer):integer;
+function EncodeAffixes     (astream:TStream; anode:pointer):integer;
+function EncodeMissiles    (astream:TStream; anode:pointer):integer;
+function EncodeRoomPieces  (astream:TStream; anode:pointer):integer;
+function EncodeTriggers    (astream:TStream; anode:pointer):integer;
+function EncodeUI          (astream:TStream; anode:pointer):integer;
+function EncodeParticles   (astream:TStream; anode:pointer):integer;
+function EncodeCellDB      (astream:TStream; anode:pointer):integer;
+function EncodeQuestMarkers(astream:TStream; anode:pointer):integer;
 
 function BuildRawMem   (data:pointer; out bin    :pByte  ; const fname:string):integer;
 function BuildRawStream(data:pointer;     astream:TStream; const fname:string):integer;
@@ -348,6 +361,102 @@ begin
     result:=nil;
 end;
 
+function DecodeParticles(abuf:PByte):pointer;
+var
+  pcw:array [0..MAXLEN] of WideChar;
+  pc:PWideChar;
+  lnode:pointer;
+  i,lcnt:integer;
+begin
+  lcnt:=memReadWord(abuf);
+  if lcnt>0 then
+  begin
+    result:=AddGroup(nil,'PARTICLES');
+    for i:=0 to lcnt-1 do
+    begin
+      lnode:=AddGroup(result,'PARTICLE');
+
+      AddString(lnode,'FILE',memReadShortStringBuf (abuf,@pcw,MAXLEN));
+      pc:=memReadShortStringUTF8(abuf);
+      if pc<>nil then
+      begin
+        AddString(lnode,'NAME',pc);
+        FreeMem(pc);
+      end;
+    end;
+  end
+  else
+    result:=nil;
+end;
+
+function DecodeCellDB(abuf:PByte):pointer;
+var
+  pcw:array [0..MAXLEN] of WideChar;
+  pc:PWideChar;
+  lnode,lunode,lsubnode:pointer;
+  i,j,lcnt,lcnt1:integer;
+begin
+  lcnt:=memReadByte(abuf); // 2 idk what is that
+  lcnt:=memReadDWord(abuf);
+  if lcnt>0 then
+  begin
+    result:=AddGroup(nil,'CELLS DB');
+    for i:=0 to lcnt-1 do
+    begin
+      lnode:=AddGroup(result,'CELL');
+
+      AddString(lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      inc(abuf,24);
+
+      lcnt1:=memReadWord(abuf);
+      if lcnt1>0 then
+      begin
+         lunode:=AddGroup(lnode,'SUBCELLS');
+         for j:=0 to lcnt1-1 do
+         begin
+           lsubnode:=AddGroup(lunode,'SUBCELL');
+           pc:=memReadShortStringUTF8(abuf);
+           if pc<>nil then
+           begin
+             AddString(lsubnode,'NAME',pc);
+             FreeMem(pc);
+           end;
+           AddInteger64(lsubnode,'GUID',memReadInteger64(abuf));
+         end;
+      end;
+    end;
+  end
+  else
+    result:=nil;
+end;
+
+
+function DecodeQuestMarkers(abuf:PByte):pointer;
+var
+  pcw:array [0..MAXLEN] of WideChar;
+  lnode:pointer;
+  i,lcnt:integer;
+begin
+  lcnt:=memReadByte(abuf); // 0 idk what is that
+  lcnt:=memReadDWord(abuf);
+  if lcnt>0 then
+  begin
+    result:=AddGroup(nil,'QUESTMARKERS');
+    for i:=0 to lcnt-1 do
+    begin
+      lnode:=AddGroup(result,'QUESTMARKER');
+
+      AddString  (lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddUnsigned(lnode,'NUMBER 1',memReadUnsigned(abuf));
+      AddFloat   (lnode,'FLOAT 1' ,memReadFloat   (abuf));
+      AddFloat   (lnode,'FLOAT 2' ,memReadFloat   (abuf));
+      AddFloat   (lnode,'FLOAT 3' ,memReadFloat   (abuf));
+      AddUnsigned(lnode,'NUMBER 2',memReadUnsigned(abuf));
+    end;
+  end
+  else
+    result:=nil;
+end;
 
 function ParseRawMem(abuf:PByte; const afname:string):pointer;
 var
@@ -357,13 +466,16 @@ begin
 
   lfname:=UpCase(ExtractFileNameOnly(afname));
 
-  if      lfname=RawNames[nmUNITDATA    ] then result:=DecodeUnitData  (abuf)
-  else if lfname=RawNames[nmSKILLS      ] then result:=DecodeSkills    (abuf)
-  else if lfname=RawNames[nmAFFIXES     ] then result:=DecodeAffixes   (abuf)
-  else if lfname=RawNames[nmMISSILES    ] then result:=DecodeMissiles  (abuf)
-  else if lfname=RawNames[nmROOMPIECES  ] then result:=DecodeRoomPieces(abuf)
-  else if lfname=RawNames[nmTRIGGERABLES] then result:=DecodeTriggers  (abuf)
-  else if lfname=RawNames[nmUI          ] then result:=DecodeUI        (abuf);
+  if      lfname=RawNames[nmUNITDATA    ] then result:=DecodeUnitData    (abuf)
+  else if lfname=RawNames[nmSKILLS      ] then result:=DecodeSkills      (abuf)
+  else if lfname=RawNames[nmAFFIXES     ] then result:=DecodeAffixes     (abuf)
+  else if lfname=RawNames[nmMISSILES    ] then result:=DecodeMissiles    (abuf)
+  else if lfname=RawNames[nmROOMPIECES  ] then result:=DecodeRoomPieces  (abuf)
+  else if lfname=RawNames[nmTRIGGERABLES] then result:=DecodeTriggers    (abuf)
+  else if lfname=RawNames[nmUI          ] then result:=DecodeUI          (abuf)
+  else if lfname=RawNames[nmPARTICLES   ] then result:=DecodeParticles   (abuf)
+  else if lfname=RawNames[nmCELLDB      ] then result:=DecodeCellDB      (abuf)
+  else if lfname=RawNames[nmQUESTMARKERS] then result:=DecodeQuestMarkers(abuf);
 end;
 
 function ParseRawStream(astream:TStream; const afname:string):pointer;
@@ -580,6 +692,79 @@ begin
   end;
 end;
 
+function EncodeParticles(astream:TStream; anode:pointer):integer;
+var
+  lnode:pointer;
+  i:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteWord(result);
+
+  for i:=0 to result-1 do
+  begin
+    lnode:=GetChild(anode,i);
+
+    astream.WriteShortString    (AsString(FindNode(lnode,'FILE')));
+    astream.WriteShortStringUTF8(AsString(FindNode(lnode,'NAME')));
+  end;
+end;
+
+function EncodeCellDB(astream:TStream; anode:pointer):integer;
+var
+  lnode,lunode,lsubnode:pointer;
+  i,j,lcnt:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteByte(2);
+  astream.WriteDWord(result);
+  for i:=0 to result-1 do
+  begin
+    lnode:=GetChild(anode,i);
+
+    astream.WriteShortString(AsString(FindNode(lnode,'FILE')));
+
+    lunode:=FindNode(lnode,'SUBCELLS');
+    lcnt:=GetChildCount(lunode);
+    astream.WriteWord(lcnt);
+
+    for j:=0 to lcnt-1 do
+    begin
+      lsubnode:=GetChild(lunode,j);
+      astream.WriteShortStringUTF8(AsString   (FindNode(lsubnode,'NAME')));
+      astream.WriteQWord(QWord    (AsInteger64(FindNode(lsubnode,'GUID'))));
+    end;
+
+  end;
+end;
+
+function EncodeQuestMarkers(astream:TStream; anode:pointer):integer;
+var
+  lnode:pointer;
+  i:integer;
+begin
+  result:=GetGroupCount(anode);
+  if result=0 then exit;
+
+  astream.WriteByte(0);
+  astream.WriteDWord(result);
+
+  for i:=0 to result-1 do
+  begin
+    lnode:=GetChild(anode,i);
+
+    astream.WriteShortString(AsString  (FindNode(lnode,'FILE'    )));
+    astream.WriteDWord      (AsUnsigned(FindNode(lnode,'NUMBER 1')));
+    astream.WriteFloat      (AsFloat   (FindNode(lnode,'FLOAT 1' )));
+    astream.WriteFloat      (AsFloat   (FindNode(lnode,'FLOAT 2' )));
+    astream.WriteFloat      (AsFloat   (FindNode(lnode,'FLOAT 3' )));
+    astream.WriteDWord      (AsUnsigned(FindNode(lnode,'NUMBER 2')));
+  end;
+end;
+
 function EncodeUI(astream:TStream; anode:pointer):integer;
 var
   lnode:pointer;
@@ -629,8 +814,13 @@ begin
   ls:=TMemoryStream.Create;
   try
     result:=BuildRawStream(data,ls,fname);
-    GetMem(bin,result);
-    move(ls.Memory^,bin^,result);
+    if result>0 then
+    begin
+      result:=ls.Size;
+      GetMem(bin,result);
+      move(ls.Memory^,bin^,result);
+//      ls.CutBuffer(bin);
+    end;
   finally
     ls.Free;
   end;
@@ -638,13 +828,16 @@ end;
 
 function BuildRawStream(data:pointer; astream:TStream; const fname:string):integer;
 begin
-  if      fname=RawNames[nmUNITDATA    ] then result:=EncodeUnitData  (astream,data)
-  else if fname=RawNames[nmSKILLS      ] then result:=EncodeSkills    (astream,data)
-  else if fname=RawNames[nmAFFIXES     ] then result:=EncodeAffixes   (astream,data)
-  else if fname=RawNames[nmMISSILES    ] then result:=EncodeMissiles  (astream,data)
-  else if fname=RawNames[nmROOMPIECES  ] then result:=EncodeRoomPieces(astream,data)
-  else if fname=RawNames[nmTRIGGERABLES] then result:=EncodeTriggers  (astream,data)
-  else if fname=RawNames[nmUI          ] then result:=EncodeUI        (astream,data);
+  if      fname=RawNames[nmUNITDATA    ] then result:=EncodeUnitData    (astream,data)
+  else if fname=RawNames[nmSKILLS      ] then result:=EncodeSkills      (astream,data)
+  else if fname=RawNames[nmAFFIXES     ] then result:=EncodeAffixes     (astream,data)
+  else if fname=RawNames[nmMISSILES    ] then result:=EncodeMissiles    (astream,data)
+  else if fname=RawNames[nmROOMPIECES  ] then result:=EncodeRoomPieces  (astream,data)
+  else if fname=RawNames[nmTRIGGERABLES] then result:=EncodeTriggers    (astream,data)
+  else if fname=RawNames[nmUI          ] then result:=EncodeUI          (astream,data)
+  else if fname=RawNames[nmPARTICLES   ] then result:=EncodeParticles   (astream,data)
+  else if fname=RawNames[nmCELLDB      ] then result:=EncodeCellDB      (astream,data)
+  else if fname=RawNames[nmQUESTMARKERS] then result:=EncodeQuestMarkers(astream,data);
 end;
 
 function BuildRawFile(data:pointer; const fname:string):integer;

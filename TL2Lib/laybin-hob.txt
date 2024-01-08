@@ -1,0 +1,20 @@
+﻿layout binary data
+  8  - "Group" GUID -1 for root
+  flags (6):
+    1 -  (def 0) CHOICE: Weight=1; Random Chance=2.
+         Presents in decription too (doubling)
+    1 - \ RANDOMIZATION (def 1)
+    1 - |
+    1 - | ?
+    1 - /
+    1 - ? (def 1) 0 for root
+
+  4 - "Group" descr file offset
+  4 - ?? (def -1) >> "TAG" from FEATURETAGS.HIE
+  flags (22)
+    6 bytes   0 0 0 0 0 0
+    1/2/4 bytes (0) "6"
+
+  
+  2  - child group count
+

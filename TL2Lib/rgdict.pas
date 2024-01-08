@@ -236,8 +236,12 @@ begin
     inc(lptr);
   end;
   aDict.Capacity:=lcnt;
-  
+
   lend:=PAnsiChar(aptr);
+
+  if ((lptr-lend)>=4) and
+     ((pdword(lend)^ and $FFFFFF)=SIGN_UTF8) then inc(lend,3);
+
   try
     for i:=0 to lcnt-1 do
     begin

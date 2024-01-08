@@ -92,6 +92,68 @@ const
   m22 = 'FORWARDZ';
 
 type
+  TLayoutBinHob = packed record // "Group" type only
+    GUID       :QWord;    // -1 for root
+    choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
+                          //   Presents in decription too (doubling)
+    random     :DWord;    // (def 1)RANDOMIZATION
+    number     :Byte;     // (def 1 or 0 for root) NUMBER
+    offset     :DWord;    // group offset from start of file (6 for root)
+    tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
+    // 22 bytes before child count
+    unk1       :Word;
+    unk2       :Word;
+    unk3       :Word;
+    idk1       :Byte;     // (def 0) can be 6
+    unk        :array [0..14] of Byte;
+{
+    childs     :Word;     // child groups amount
+}
+  end;
+
+type
+  TLayoutBinRGO = packed record // "Group" type only
+    GUID       :QWord;    // -1 for root
+    choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
+                          //   Presents in decription too (doubling)
+    random     :DWord;    // (def 1)RANDOMIZATION
+    number     :Byte;     // (def 1 or 0 for root) NUMBER
+    offset     :DWord;    // group offset from start of file (6 for root)
+    tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
+    // 10+ childs
+    notag      :Byte;     // (def 0) value transforming to 'NO TAG FOUND'
+    unique     :Byte;     // (def 0) LEVEL UNIQUE
+                          //   Presents in decription too (doubling)
+    gamemode   :Byte;     // (def 0) GAME MODE 1 - Normal ; 2 - NG+
+                          //   Presents in decription too (doubling)
+    unk        :Byte;
+{
+    childs     :Word;     // child groups amount
+}
+  end;
+
+type
+  TLayoutBinRG = packed record // "Group" type only
+    GUID       :QWord;    // -1 for root
+    choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
+                          //   Presents in decription too (doubling)
+    random     :DWord;    // (def 1)RANDOMIZATION
+    number     :Byte;     // (def 1 or 0 for root) NUMBER
+    offset     :DWord;    // group offset from start of file (6 for root)
+    tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
+    // 4+childs
+    notag      :Byte;     // (def 0) value transforming to 'NO TAG FOUND'
+    unique     :Byte;     // (def 0) LEVEL UNIQUE
+                          //   Presents in decription too (doubling)
+    gamemode   :Byte;     // (def 0) GAME MODE 1 - Normal ; 2 - NG+
+                          //   Presents in decription too (doubling)
+    unk        :Byte;
+{
+    childs     :Word;     // child groups amount
+}
+  end;
+
+type
   TLayoutBinTL2 = packed record // "Group" type only
     GUID       :QWord;    // -1 for root
     choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
@@ -113,6 +175,9 @@ type
   end;
 
 type
+
+  { TRGLayoutFile }
+
   TRGLayoutFile = object
   private
     info:TRGObject;
@@ -122,7 +187,7 @@ type
     FBinPos  :PByte;
     FBuffer:WideString;
     FVer :integer;
-     
+
   private
     function  ReadStr():PWideChar;
     function  GetStr(aid:dword):PWideChar;
@@ -151,10 +216,12 @@ type
     function  GetTagTL2Num     (atag:PWideChar):integer;
 
     // read Hob and RG
-    function  DoParseLayoutHob(atype:cardinal):pointer;
-    function  DoParseBlockHob (var anode:pointer; const aparent:Int64):integer;
-    procedure ReadPropertyHob (var anode:pointer);
-    function  DoParseLayoutRG (atype:cardinal):pointer;
+    function  DoParseLayoutHob (atype:cardinal):pointer;
+    function  DoParseBlockHob  (var anode:pointer; const aparent:Int64):integer;
+    procedure ReadPropertyHob  (var anode:pointer);
+    procedure ReadBinaryDataHob(var anode: pointer);
+    function  DoParseLayoutRG  (atype:cardinal):pointer;
+    procedure ReadBinaryDataRG (var anode: pointer);
 
     // write TL2
     function DoBuildLayoutTL2  (anode:pointer; astream:TStream):integer;
@@ -599,7 +666,8 @@ begin
             FreeMem(pcw);
           end;
 
-//          if (ltltype=0) or (ltltype=1) then
+          // condition can be commented? Not for Hob!
+          if (ltltype=0) or (ltltype=1) then
           begin
             pcw:=memReadShortStringUTF8(FPos);
             if pcw<>nil then
@@ -611,7 +679,8 @@ begin
           end;
           if ltltype=2 then
           begin
-            RGLog.Add('Timeline event. Don''t know what to do. At '+HexStr(laptr-FStart,8));
+            RGLog.Add('Timeline '+IntToStr(aid)+
+                ' event. Don''t know what to do. At '+HexStr(laptr-FStart,8));
           end;
         end;
 

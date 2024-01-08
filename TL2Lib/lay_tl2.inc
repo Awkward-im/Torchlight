@@ -474,12 +474,9 @@ begin
 
   lChunkType:=i;
   astream.WriteByte(lChunkType);
-  // select object
-
-//  lparent:=FindNode(lprops,'PARENTID');
 
   lid:=FindNode(lprops,'ID');
-//  lChunkId  :=AsInteger64(FPos);
+
   astream.WriteQWord(QWord(AsInteger64(lid)));
 
   //--- Chunk Info

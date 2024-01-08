@@ -1,6 +1,7 @@
 {}
 
 const
+  IdGroupHob      = 4270653419;
   IdLogicGroupHob = 2261606130;
   IdTimelineHob   = 2623981599;
 
@@ -9,6 +10,230 @@ begin
   RGLog.Add('<STRING>NAME:'+UTF8Encode(WideString(aname)));
   RGLog.Add('<UNSIGNED INT>ID:'+IntToStr(aid));
   RGLog.Add('<STRING>TYPEOFDATA:'+string(TypeToText(atype)));
+end;
+
+procedure TRGLayoutFile.ReadBinaryDataHob(var anode:pointer);
+var
+  ldata:TLayoutBinHob;
+  lls,ls:WideString;
+  p:PWideChar;
+  i,lthemes:integer;
+begin
+  // check current group ID. or offset? if the same, process
+  // if not: 1 - check position (before/after)
+  // 2 - check from start of data
+  memReadData(FBinPos,ldata,SizeOf(ldata));
+  if ldata.choice<>0 then
+  begin
+    if FindNode(anode,'CHOICE')=nil then
+    begin
+      if ldata.choice<=Length(strChoice) then
+        AddString(anode,'CHOICE',strChoice[ldata.choice]);
+{
+      if      ldata.choice=1 then AddString(anode,'CHOICE','Weight')
+      else if ldata.choice=2 then AddString(anode,'CHOICE','Random Chance');
+}
+    end;
+  end;
+
+if ldata.unk1<>0 then
+begin
+  AddUnsigned(anode,'unk1',ldata.unk1);
+end;
+if ldata.unk3<>0 then
+begin
+  AddUnsigned(anode,'unk1',ldata.unk2);
+end;
+if ldata.unk2<>0 then
+begin
+  AddUnsigned(anode,'unk1',ldata.unk3);
+end;
+if (ldata.unk[0]<>0) or (ldata.unk[1]<>0) or (ldata.unk[2]<>0) or (ldata.unk[3]<>0) or
+   (ldata.unk[4]<>0) or (ldata.unk[5]<>0) or (ldata.unk[6]<>0) or (ldata.unk[7]<>0) or
+   (ldata.unk[8]<>0) or (ldata.unk[9]<>0) or (ldata.unk[10]<>0) or (ldata.unk[11]<>0) or
+   (ldata.unk[12]<>0) or (ldata.unk[13]<>0) or (ldata.unk[14]<>0) then
+begin
+  AddString(anode,'!!Unknown','not zero');
+end;
+(*
+  if ldata.gamemode<>0 then
+  begin
+    if FindNode(anode,'GAME MODE')=nil then
+    begin
+      if ldata.gamemode<=Length(strGameMode) then
+        AddString(anode,'GAME MODE',strGameMode[ldata.gamemode]);
+{
+      if      ldata.gamemode=1 then AddString(anode,'GAME MODE','NORMAL')
+      else if ldata.gamemode=2 then AddString(anode,'GAME MODE','GAME MODE PLUS');
+}
+    end;
+  end;
+  if ldata.unique<>0 then
+  begin
+    if FindNode(anode,'LEVEL UNIQUE')=nil then
+    begin
+      AddBool(anode,'LEVEL UNIQUE',true)
+    end;
+  end;
+  if ldata.notag <>0 then AddBool    (anode,'NO TAG FOUND' ,true);
+*)
+  if ldata.number<>1 then AddUnsigned(anode,'NUMBER'       ,ldata.number);
+  if ldata.random<>1 then AddUnsigned(anode,'RANDOMIZATION',ldata.random);
+  if ldata.idk1  <>0 then AddUnsigned(anode,'UNKNOWN'      ,ldata.idk1);
+  if ldata.tag>=0 then
+  begin
+{
+    p:=GetTagTL2(ldata.tag);
+    if p<>nil then
+      AddString(anode,'TAG',p)
+    else
+}
+    begin
+      Str(ldata.tag,lls);
+      AddString(anode,'TAG',PWideChar(lls));
+    end;
+  end;
+
+{
+  lthemes:=memReadInteger(FBinPos);
+  if lthemes>0 then
+  begin
+    ls:='';
+    for i:=0 to lthemes-1 do
+    begin
+      if i>0 then ls:=ls+',';
+      Str(memReadInteger64(FBinPos),lls);
+      ls:=ls+lls;
+    end;
+    AddString(anode,'ACTIVE THEMES',PWideChar(ls));
+  end;
+  lthemes:=memReadInteger(FBinPos);
+  if lthemes>0 then
+  begin
+    ls:='';
+    for i:=0 to lthemes-1 do
+    begin
+      if i>0 then ls:=ls+',';
+      Str(memReadInteger64(FBinPos),lls);
+      ls:=ls+lls;
+    end;
+    AddString(anode,'DEACTIVE THEMES',PWideChar(ls));
+  end;
+}
+  memReadWord(FBinPos); // child
+end;
+
+procedure TRGLayoutFile.ReadBinaryDataRG(var anode:pointer);
+var
+  ldata:TLayoutBinRG;
+  lls,ls:WideString;
+  p:PWideChar;
+  i,lthemes:integer;
+begin
+  // check current group ID. or offset? if the same, process
+  // if not: 1 - check position (before/after)
+  // 2 - check from start of data
+  memReadData(FBinPos,ldata,SizeOf(ldata));
+
+  if FVer=verRGO then
+  begin
+    lthemes:=memReadByte(FBinPos);
+    if lthemes<>0 then
+      AddUnsigned(anode,'UN_1',lthemes);
+    lthemes:=memReadByte(FBinPos);
+    if lthemes<>0 then
+      AddUnsigned(anode,'UN_2',lthemes);
+    lthemes:=memReadByte(FBinPos);
+    if lthemes<>0 then
+      AddUnsigned(anode,'UN_3',lthemes);
+    lthemes:=memReadByte(FBinPos);
+    if lthemes<>0 then
+      AddUnsigned(anode,'UN_4',lthemes);
+    lthemes:=memReadByte(FBinPos);
+    if lthemes<>0 then
+      AddUnsigned(anode,'UN_5',lthemes);
+    lthemes:=memReadByte(FBinPos);
+    if lthemes<>0 then
+      AddUnsigned(anode,'UN_6',lthemes);
+    //    inc(FBinPos,6); //!!!!
+  end;
+
+  if ldata.choice<>0 then
+  begin
+    if FindNode(anode,'CHOICE')=nil then
+    begin
+      if ldata.choice<=Length(strChoice) then
+        AddString(anode,'CHOICE',strChoice[ldata.choice]);
+{
+      if      ldata.choice=1 then AddString(anode,'CHOICE','Weight')
+      else if ldata.choice=2 then AddString(anode,'CHOICE','Random Chance');
+}
+    end;
+  end;
+  if ldata.gamemode<>0 then
+  begin
+    if FindNode(anode,'GAME MODE')=nil then
+    begin
+      if ldata.gamemode<=Length(strGameMode) then
+        AddString(anode,'GAME MODE',strGameMode[ldata.gamemode]);
+{
+      if      ldata.gamemode=1 then AddString(anode,'GAME MODE','NORMAL')
+      else if ldata.gamemode=2 then AddString(anode,'GAME MODE','GAME MODE PLUS');
+}
+    end;
+  end;
+  if ldata.unique<>0 then
+  begin
+    if FindNode(anode,'LEVEL UNIQUE')=nil then
+    begin
+      AddBool(anode,'LEVEL UNIQUE',true)
+    end;
+  end;
+  if ldata.notag <>0 then AddBool    (anode,'NO TAG FOUND' ,true);
+  if ldata.number<>1 then AddUnsigned(anode,'NUMBER'       ,ldata.number);
+  if ldata.random<>1 then AddUnsigned(anode,'RANDOMIZATION',ldata.random);
+  if ldata.unk   <>0 then AddUnsigned(anode,'UNKNOWN'      ,ldata.unk);
+  if ldata.tag>=0 then
+  begin
+{
+    p:=GetTagTL2(ldata.tag);
+    if p<>nil then
+      AddString(anode,'TAG',p)
+    else
+}
+    begin
+      Str(ldata.tag,lls);
+      AddString(anode,'TAG',PWideChar(lls));
+    end;
+  end;
+
+{
+  lthemes:=memReadInteger(FBinPos);
+  if lthemes>0 then
+  begin
+    ls:='';
+    for i:=0 to lthemes-1 do
+    begin
+      if i>0 then ls:=ls+',';
+      Str(memReadInteger64(FBinPos),lls);
+      ls:=ls+lls;
+    end;
+    AddString(anode,'ACTIVE THEMES',PWideChar(ls));
+  end;
+  lthemes:=memReadInteger(FBinPos);
+  if lthemes>0 then
+  begin
+    ls:='';
+    for i:=0 to lthemes-1 do
+    begin
+      if i>0 then ls:=ls+',';
+      Str(memReadInteger64(FBinPos),lls);
+      ls:=ls+lls;
+    end;
+    AddString(anode,'DEACTIVE THEMES',PWideChar(ls));
+  end;
+}
+  memReadWord(FBinPos); // child
 end;
 
 procedure TRGLayoutFile.ReadPropertyHob(var anode:pointer);
@@ -43,15 +268,15 @@ var
 begin
   result:=1;
 
-  bnode:=AddGroup(anode,'BASEOBJECT');
-  lnode:=AddGroup(bnode,'PROPERTIES');
-
   lptr:=FPos;
 
   //--- Chunk Header
 
   lChunkSize:=memReadDWord(FPos);
   if lChunkSize=0 then exit;
+
+  bnode:=AddGroup(anode,'BASEOBJECT');
+  lnode:=AddGroup(bnode,'PROPERTIES');
 
   lChunkType:=memReadDWord(FPos);
   lChunkId  :=memReadInteger64(FPos);
@@ -84,6 +309,16 @@ begin
   for i:=0 to lcnt-1 do
   begin
     ReadPropertyHob(lnode);
+  end;
+
+  //--- Place for binary group data translation
+
+  if lChunkType=IdGroupHob then
+  begin
+    if FVer=verHob then
+      ReadBinaryDataHob(lnode)
+    else
+      ReadBinaryDataRG(lnode);
   end;
 
   //--- Additional data
@@ -166,7 +401,7 @@ begin
   FBinStart:=FStart+ltmp;
   if ltmp<>0 then
   begin
-//!!    FBinPos:=FBinStart+SizeOf(TLayoutBin)+4+2;
+    FBinPos:=FBinStart+SizeOf(TLayoutBinHob)+2;
     RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
@@ -237,6 +472,7 @@ function TRGLayoutFile.DoParseLayoutRG(atype:cardinal):pointer;
 var
   lobj:pointer;
   i,lcnt:integer;
+  ltmp:dword;
 begin
   info.Version:=verRG;
 
@@ -245,8 +481,21 @@ begin
   if i<>0 then
     RGLog.Add('Second byte is not 0 but '+HexStr(i,2));
 
-  memReadDWord(FPos); // Binary??
-  inc(FPos); //??
+  ltmp:=memReadDword(FPos);                // offset
+  FBinStart:=FStart+ltmp;
+  if ltmp<>0 then
+  begin
+    FBinPos:=FBinStart+SizeOf(TLayoutBinRG)+2;
+    if FVer=verRGO then
+      inc(FBinPos,6);                //!!!!!
+
+    RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
+  end;
+
+  ltmp:=memReadByte(FPos);                 // 1
+  if ltmp<>1 then
+    RGLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
+
   result:=AddGroup(nil,'Layout');
   info.SelectScene('Layout');
 

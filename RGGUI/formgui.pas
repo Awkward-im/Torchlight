@@ -1,3 +1,6 @@
+{TODO: AutoSort on tree item change}
+{TODO: PreviewImage scaled or original}
+{TODO: Status bar path changes on dir with files only}
 {TODO: option: keep PAK open}
 {TODO: option: ask unpack path}
 {TODO: Save: full repack or fast}
@@ -8,6 +11,7 @@
 {TODO: make button for "show all categories", double icon set/clear}
 {TODO: edit DAT-type files on the place. "Save" button on info panel}
 {TODO: replace bitbutton by speed button (scale problem)}
+{TODO: Show hint with full path on column with file name}
 unit formGUI;
 
 {$mode objfpc}{$H+}
@@ -16,9 +20,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
-  ActnList, ExtCtrls, ComboEx, StdCtrls, EditBtn, Buttons,
-  TreeFilterEdit, SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes,
-  SynPopupMenu, rgglobal, rgman, rgpak;
+  ActnList, ExtCtrls, ComboEx, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
+  SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
+  rgglobal, rgman, rgpak, rgupdate;
 
 type
 
@@ -43,6 +47,7 @@ type
     cbSource: TCheckBox;
     cbSaveWidth: TCheckBox;
     cbFastScan: TCheckBox;
+    cbScaleImage: TCheckBox;
     deOutDir: TDirectoryEdit;
     edTreeFilter: TTreeFilterEdit;
     gbDecoding: TGroupBox;
@@ -149,12 +154,14 @@ type
     actEdImport   : TAction; // Load (import) content
     actEdExport   : TAction; // Export content
     actEdSearch   : TAction; // Seacrh/replace
+    tbSep4: TToolButton;
 
     tvTree: TTreeView;
 
     procedure actEdExportExecute(Sender: TObject);
     procedure actEdImportExecute(Sender: TObject);
     procedure actEdResetExecute(Sender: TObject);
+    procedure actEdSaveExecute(Sender: TObject);
     procedure actEdSearchExecute(Sender: TObject);
     procedure actFileCloseExecute(Sender: TObject);
     procedure actFileExitExecute(Sender: TObject);
@@ -164,6 +171,7 @@ type
     procedure bbCollapseClick(Sender: TObject);
     procedure bbExtSelectClick(Sender: TObject);
     procedure bbCatInverseClick(Sender: TObject);
+    procedure cbScaleImageChange(Sender: TObject);
     procedure cbShowPreviewChange(Sender: TObject);
     procedure ReplaceExecute(Sender: TObject);
     procedure ResetView(Sender: TObject);
@@ -187,6 +195,7 @@ type
     FUData:pointer;
     fmi:TForm;
     rgpi:TRGPAK;
+    upd:TRGUpdateList;
     LastExt:string;
     LastFilter:integer;
     FLastIndex:integer;
@@ -228,6 +237,7 @@ uses
   inifiles,
   fpimage,
   fpwritebmp,
+  lazTGA,
   berodds,
 
   unitLogForm,
@@ -249,7 +259,13 @@ const
   cSep = '/';
 
 const
-  colCount  = 0;
+  lblNew     = '+';
+  lblChanged = '*';
+  lblDelete  = 'X';
+  lblRemove  = 'R';
+
+const
+  colState  = 0;
   colDir    = 1;
   colName   = 2;
   colExt    = 3;
@@ -277,6 +293,7 @@ const
   sShowUnpacked = 'showunpacked';
   sShowSource   = 'showsource';
   sShowPreview  = 'showpreview';
+  sScaleImage   = 'scaleimage';
   sSaveWidth    = 'savewidth';
   sTreeWidth    = 'width_tree';
   sGridWidth    = 'width_grid';
@@ -365,7 +382,7 @@ begin
     btnMODDAT.Visible:=rgpi.Version=verTL2Mod;
     Self.Caption:='RGGUI - '+AnsiString(rgpi.Name);
     StatusBar.Panels[0].Text:='Total: '+IntToStr(rgpi.man.total)+'; dirs: '+IntToStr(rgpi.man.EntriesCount);
-//      sgMain.Columns[colTime-1].Visible:=(cbTime.Checked) and (ABS(rgpi.Version)=verTL2);
+
     SetupView(Self);
 
     FreeAndNil(fmi);
@@ -382,24 +399,24 @@ procedure TRGGUIForm.ResetView(Sender: TObject);
 begin
   pnlTree.Width:=defTreeWidth;
   sgMain .Width:=defGridWidth;
-  sgMain.Columns[colDir   -1].Width:=256;
-  sgMain.Columns[colName  -1].Width:=144;
-  sgMain.Columns[colExt   -1].Width:=48;
-  sgMain.Columns[colType  -1].Width:=80;
-  sgMain.Columns[colTime  -1].Width:=110;
-  sgMain.Columns[colPack  -1].Width:=80;
-  sgMain.Columns[colUnpack-1].Width:=80;
-  sgMain.Columns[colSource-1].Width:=80;
+  sgMain.Columns[colDir   ].Width:=256;
+  sgMain.Columns[colName  ].Width:=144;
+  sgMain.Columns[colExt   ].Width:=48;
+  sgMain.Columns[colType  ].Width:=80;
+  sgMain.Columns[colTime  ].Width:=110;
+  sgMain.Columns[colPack  ].Width:=80;
+  sgMain.Columns[colUnpack].Width:=80;
+  sgMain.Columns[colSource].Width:=80;
 end;
 
 procedure TRGGUIForm.SetupView(Sender: TObject);
 begin
-  sgMain.Columns[colExt   -1].Visible:=(cbExt     .Checked);
-  sgMain.Columns[colType  -1].Visible:=(cbCategory.Checked);
-  sgMain.Columns[colTime  -1].Visible:=(cbTime    .Checked) and (ABS(rgpi.Version)=verTL2);
-  sgMain.Columns[colPack  -1].Visible:=(cbPacked  .Checked);
-  sgMain.Columns[colUnpack-1].Visible:=(cbUnpacked.Checked);
-  sgMain.Columns[colSource-1].Visible:=(cbSource  .Checked);
+  sgMain.Columns[colExt   ].Visible:=(cbExt     .Checked);
+  sgMain.Columns[colType  ].Visible:=(cbCategory.Checked);
+  sgMain.Columns[colTime  ].Visible:=(cbTime    .Checked) and (ABS(rgpi.Version)=verTL2);
+  sgMain.Columns[colPack  ].Visible:=(cbPacked  .Checked);
+  sgMain.Columns[colUnpack].Visible:=(cbUnpacked.Checked);
+  sgMain.Columns[colSource].Visible:=(cbSource  .Checked);
 
   tbExt     .Down:=(cbExt     .Checked);
   tbCategory.Down:=(cbCategory.Checked);
@@ -446,6 +463,7 @@ begin
     config.WriteBool(sSectSettings,sShowSource  ,cbSource  .Checked);
 
     config.WriteBool(sSectSettings,sShowPreview,cbShowPreview.Checked);
+    config.WriteBool(sSectSettings,sScaleImage ,cbScaleImage .Checked);
 
     config.WriteBool(sSectSettings,sSaveWidth,cbSaveWidth.Checked);
     if cbSaveWidth.Checked then
@@ -488,6 +506,7 @@ begin
   cbSource  .Checked:=config.ReadBool(sSectSettings,sShowSource  ,false);
 
   cbShowPreview.Checked:=config.ReadBool(sSectSettings,sShowPreview,false);
+  cbScaleImage .Checked:=config.ReadBool(sSectSettings,sScaleImage ,false);
 
   cbSaveWidth.Checked:=config.ReadBool(sSectSettings,sSaveWidth,true);
   if cbSaveWidth.Checked then
@@ -706,6 +725,8 @@ begin
   FLastIndex:=-1;
   FUData    :=nil;
 
+  upd.Create;
+
   fmLogForm:=nil;
 
   SynTSyn:=TSynTSyn.Create(Self);
@@ -739,14 +760,45 @@ end;
 
 procedure TRGGUIForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if FUData<>nil then FreeMem(FUData);
+  if actFileExit.Enabled then actFileExitExecute(Sender);
+  if actFileExit.Enabled then
+  begin
+    CloseAction:=caNone;
+    exit;
+  end;
 
   SaveSettings();
+end;
 
-//  actFileCloseExecute(Sender);
+procedure TRGGUIForm.actFileCloseExecute(Sender: TObject);
+begin
+  if upd.Count>0 then
+  begin
+    if MessageDlg('Warning!','You have unsaved changes. Exit anyway?',mtWarning,
+       [mbOK,mbCancel],0,mbCancel)<>mrOk then
+    begin
+      exit;
+    end;
+    upd.Clear;
+  end;
+
   rgpi.Free;
+  sgMain.Clear;
+  ClearInfo();
+  tvTree.Items.Clear;
+  actInfoInfo.Enabled:=false;
+  FreeAndNil(fmi);
 
-  actFileClose.Enabled:=false; //??
+  actFileClose.Enabled:=false;
+end;
+
+procedure TRGGUIForm.actFileExitExecute(Sender: TObject);
+begin
+  if actFileClose.Enabled then actFileCloseExecute(Sender);
+  if actFileClose.Enabled then exit;
+
+  actFileExit.Enabled:=false;
+  Close;
 end;
 
 procedure TRGGUIForm.actFileOpenExecute(Sender: TObject);
@@ -766,29 +818,13 @@ begin
       LastExt   :=OpenDialog.DefaultExt;
       LastFilter:=OpenDialog.FilterIndex;
 
-      actFileCloseExecute(Sender);
+      if actFileClose.Enabled then actFileCloseExecute(Sender);
 
       OpenFile(OpenDialog.FileName);
     end;
   finally
     OpenDialog.Free;
   end;
-end;
-
-procedure TRGGUIForm.actFileCloseExecute(Sender: TObject);
-begin
-  rgpi.Free;
-  sgMain.Clear;
-  ClearInfo();
-  tvTree.Items.Clear;
-  actInfoInfo.Enabled:=false;
-  FreeAndNil(fmi);
-end;
-
-procedure TRGGUIForm.actFileExitExecute(Sender: TObject);
-begin
-  actFileCloseExecute(Sender);
-  Close;
 end;
 
 procedure TRGGUIForm.actInfoInfoExecute(Sender: TObject);
@@ -900,10 +936,16 @@ begin
 
   imgPreview.Picture.Clear;
   imgPreview.Visible:=false;
+  cbScaleImage.Visible:=false;
 
   actEdSearch.Enabled:=false;
 
   FreeMem(FUData); FUData:=nil;
+end;
+
+procedure TRGGUIForm.cbScaleImageChange(Sender: TObject);
+begin
+  PreviewImage(sgMain.Cells[colName,sgMain.Row]);
 end;
 
 procedure TRGGUIForm.PreviewImage(const aname:string);
@@ -918,7 +960,19 @@ var
 //  lsize:integer;
   lidx,y,x,lheight,lwidth:integer;
 begin
-  if ExtractFileExt(aname)='.DDS' then
+  if cbScaleImage.Checked then
+  begin
+    imgPreview.Stretch:=true;
+  end
+  else
+  begin
+    imgPreview.Stretch:=false;
+  end;
+
+  if (ExtractFileExt(aname)='.DDS') or
+    ((PByte(FUData)[0]=ORD('D')) and
+     (PByte(FUData)[1]=ORD('D')) and
+     (PByte(FUData)[2]=ORD('S'))) then
   begin
 {
     LoadDDSImage(FUData, FUSize, ldata, lwidth, lheight);
@@ -1003,6 +1057,10 @@ begin
     end;
   end;
   imgPreview.Visible:=true;
+  imgPreview.Hint:='Size: '+
+      IntToStr(imgPreview.Picture.Width)+' x '+
+      IntToStr(imgPreview.Picture.Height);
+  cbScaleImage.Visible:=true;
 end;
 
 procedure TRGGUIForm.PreviewSource(atype:byte; const adir,aname:string);
@@ -1145,6 +1203,47 @@ begin
   sgMainSelection(sgMain, 2, sgMain.Row);
 end;
 
+procedure TRGGUIForm.actEdSaveExecute(Sender: TObject);
+var
+  ldir,lname:string;
+  pc:PWideChar;
+  lnode:pointer;
+  lbuf:PByte;
+  lsize:integer;
+  ltype:integer;
+begin
+  ldir :=sgMain.Cells[colDir ,sgMain.Row];
+  lname:=sgMain.Cells[colName,sgMain.Row];
+
+  ltype:=PAKExtType(lname);
+  if ltype in setData then
+  begin
+    pc:=StrToWide(SynEdit.Text);
+    if WideToNode(pc,Length(pc)*SizeOf(WideChar),lnode)=0 then
+    begin
+      lbuf:=nil;
+      if ltype=typeLayout then
+        lsize:=BuildLayoutMem(lnode,lbuf,rgpi.version)
+      else if ltype=typeRAW then
+        lsize:=BuildRawMem(lnode,lbuf,ExtractFileNameOnly(lname))
+      else
+        lsize:=BuildDatMem(lnode,lbuf,rgpi.version);
+      if lsize>0 then
+      begin
+        FreeMem(pc);
+        pc:=StrToWide(ldir+lname);
+        upd.Add(lbuf,lsize,pc);
+        //!! search in MAN, mark as "hide" if found
+        //!! mark update as "changed" if found in MAN or "new"
+        FreeMem(lbuf);
+      end;
+      DeleteNode(lnode);
+    end;
+    FreeMem(pc);
+  end;
+
+end;
+
 procedure TRGGUIForm.actEdExportExecute(Sender: TObject);
 begin
   {TODO Ask name}
@@ -1206,6 +1305,7 @@ begin
   result:=false;
 
   if afile^.size_s=0 then exit;
+  if afile^.hide then exit;
 
   lname:=WideToStr(rgpi.man.GetName(afile^.name));
   lext:=ExtractFileExt(lname);
@@ -1224,7 +1324,7 @@ begin
   sgMain.Cells[colPack  ,arow]:=IntToStr(afile^.size_c);
   sgMain.Cells[colUnpack,arow]:=IntToStr(afile^.size_u);
   sgMain.Cells[colType  ,arow]:=PAKCategoryName(PAKTypeToCategory(afile^.ftype){lcat});
-  if {sgMain.Columns[colTime-1].Visible and} (afile^.ftime<>0) then
+  if {sgMain.Columns[colTime].Visible and} (afile^.ftime<>0) then
   begin
     try
       sgMain.Cells[colTime,arow]:=DateTimeToStr(FileTimeToDateTime(afile^.ftime));
@@ -1258,7 +1358,6 @@ begin
   FLastIndex:=idx;
   sgMain.Clear;
   sgMain.BeginUpdate;
-  sgMain.Columns[colDir-1].Visible:=idx<0;
   lcnt:=1;
 
   if idx<0 then
@@ -1435,4 +1534,9 @@ end;
 
 {%ENDREGION Tree}
 
+initialization
+  LazTGA.Register;
+
+finalization
+  LazTGA.UnRegister;
 end.

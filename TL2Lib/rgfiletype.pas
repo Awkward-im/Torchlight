@@ -438,7 +438,7 @@ begin
   begin
     lext:=UpCase(aext);
     if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
-      lext:=UpCase(ExtractFileExt(lext));
+      lext:=ExtractFileExt(lext);
 
     for i:=0 to High(TableExt) do
     begin
