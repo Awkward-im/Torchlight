@@ -14,6 +14,7 @@ object fmLogForm: TfmLogForm
     Width = 464
     Anchors = [akTop, akLeft, akRight, akBottom]
     ReadOnly = True
+    ScrollBars = ssVertical
     TabOrder = 0
   end
   object bbClear: TBitBtn
@@ -21,10 +22,10 @@ object fmLogForm: TfmLogForm
     Height = 30
     Top = 296
     Width = 75
-    Anchors = [akTop, akRight, akBottom]
+    Anchors = [akRight, akBottom]
     Caption = '&Clear'
     Kind = bkCancel
-    OnClick = bbClearClick
     TabOrder = 1
+    OnClick = bbClearClick
   end
 end

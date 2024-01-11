@@ -137,7 +137,7 @@ type
     procedure DeletePath(const apath:string);
     procedure DeleteFile(apath,aname:PUnicodeChar);
 
-    function RenameDir(const apath, oldname, newname:string):integer;
+    function RenameDir(const apath, oldname, newname:PUnicodeChar):integer;
     function RenameDir(const apath, newname:string):integer;
 {
   // Update part
@@ -162,6 +162,7 @@ type
 
 
 {$IFDEF DEBUG}
+function ParseMANMem(const aman:TRGManifest; afull:boolean=false):pointer;
 //  Manifest to text file (DAT format)
 procedure MANtoFile(const fname:string; const aman:TRGManifest; afull:boolean=false);
 //  Text file (DAT format) to manifest
@@ -190,6 +191,32 @@ const
   incFFile = 16;
 
 {%REGION Support}
+// Upper case, no starting slashes but with ending
+function TransformPath(apath:string):UnicodeString;
+var
+  i,j,lsize,lrsize:integer;
+begin
+  j:=1;
+  i:=1;
+  while (apath[i]='\') or (apath[i]='/') do inc(i);
+  lsize:=Length(apath);
+  lrsize:=lsize-i+1;
+  if (apath[lsize]<>'\') or (apath[lsize]<>'/') then inc(lrsize);
+  SetLength(result,lrsize);
+
+  while i<=lsize do
+  begin
+    if apath[i]='\' then
+      result[j]:='/'
+    else
+      result[j]:=UpCase(apath[i]);
+    inc(i);
+    inc(j);
+  end;
+
+  if result[lrsize]<>'/' then result[lrsize]:='/';
+end;
+
 // Upper case, no starting slashes but with ending
 function TransformPath(apath:PUnicodeChar):UnicodeString;
 var
@@ -437,7 +464,7 @@ begin
 
   with result^ do
   begin
-    name :=SetName(aname);
+//    name :=SetName(aname);
     ftype:=PAKExtType(aname); //!! not requires at start but good for filter
   end;
 
@@ -496,7 +523,7 @@ begin
           // cut the deleting
           if prev<>0 then
             Files[prev].next:=p^.next
-          else if p^.next<>0 then
+          else // if p^.next<>0 then
             Dirs[aentry].first:=p^.next;
 
           p^.name:=0;
@@ -579,12 +606,15 @@ begin
   lslash:=Length(apath)-1;
   while (lslash>1) and (apath[lslash]<>'/') do dec(lslash);
   if lslash>1 then
+    lentry:=DoAddPath(Copy(apath,1,lslash))
+  else
   begin
-    lentry:=DoAddPath(Copy(apath,1,lslash));
-
-    with AddEntryFile(lentry,PUnicodeChar(apath)+lslash)^ do
-      ftype:=typeDirectory;
+    if apath[1]<>'/' then lslash:=0;
+    lentry:=0;
   end;
+
+  with AddEntryFile(lentry,PUnicodeChar(apath)+lslash)^ do
+    ftype:=typeDirectory;
 
   result:=AddEntryDir(PUnicodeChar(apath));
 end;
@@ -639,17 +669,19 @@ end;
 
 procedure TRGManifest.DeletePath(apath:PUnicodeChar);
 var
+  lpath:UnicodeString;
   i,lslash:integer;
 begin
-  i:=SearchPath(apath);
+  lpath:=TransformPath(apath);
+  i:=SearchPath(PUnicodeChar(lpath));
   if i>=0 then
   begin
     // delete from parent entry
     lslash:=Length(apath)-1;
-    while (lslash>1) and (apath[lslash]<>'/') do dec(lslash);
+    while (lslash>1) and (lpath[lslash]<>'/') do dec(lslash);
     if lslash>1 then
     begin
-      DeleteFile(PUnicodeChar(Copy(apath,1,lslash)),PUnicodeChar(apath)+lslash);
+      DeleteFile(PUnicodeChar(Copy(lpath,1,lslash)),PUnicodeChar(lpath)+lslash);
     end;
 
     DeleteEntry(i);
@@ -663,7 +695,7 @@ end;
   {%ENDREGION Delete}
 
   {%REGION Rename}
-function TRGManifest.RenameDir(const apath, oldname, newname:string):integer;
+function TRGManifest.RenameDir(const apath, oldname, newname:PUnicodeChar):integer;
 var
   lpath,lpathnew,lold,lnew:UnicodeString;
   lname:PUnicodeChar;
@@ -677,15 +709,14 @@ begin
   lparent:=SearchPath(PUnicodeChar(lpath));
   if lparent>=0 then
   begin
-    //!!!! Transform names to upcase with '/' at the end
-    lold:=UnicodeString(oldname);
+    lold:=TransformPath(PUnicodeChar(UnicodeString(oldname)));
     lpathnew:=lpath;
     lpath:=lpath+lold;
     // Search old
     lentry:=SearchPath(PUnicodeChar(lpath));
     if lentry>0 then
     begin
-      lnew:=UnicodeString(newname);
+      lnew:=TransformPath(PUnicodeChar(UnicodeString(newname)));
       lpold:=nil;
       // Search file record in parent and check for existing new
       if GetFirstFile(p,lparent)<>0 then
@@ -709,7 +740,10 @@ begin
             begin
               lname:=GetDirName(i);
               if PosWide(PUnicodeChar(lpath),lname)=lname then
+              begin
+                SetDirName(i,PUnicodeChar(lpathnew+Copy(lname,Length(lpath)+1)));
                 ; //!! Replace lpath to lpathnew
+              end;
             end;
           end;
         end;
@@ -720,14 +754,21 @@ end;
 
 function TRGManifest.RenameDir(const apath, newname:string):integer;
 var
+  lpath,lname:UnicodeString;
   lslash:integer;
 begin
-  lslash:=Length(apath)-1;
-  while (lslash>1) and (apath[lslash]<>'/') do dec(lslash);
+  lpath:=TransformPath(PUnicodeChar(UnicodeString(apath)));
+  lslash:=Length(lpath)-1;
+  while (lslash>1) and (lpath[lslash]<>'/') do dec(lslash);
   if lslash>1 then
-    result:=RenameDir(Copy(apath,1,lslash),Copy(apath,lslash+1),newname)
+  begin
+    lname:=Copy(lpath,lslash+1);
+    SetLength(lpath,lslash);
+    result:=RenameDir(PUnicodeChar(lpath),PUnicodeChar(lname),
+      PUnicodeChar(UnicodeString(newname)));
+  end
   else
-    result:=RenameDir('',apath,newname)
+    result:=RenameDir('',PUnicodeChar(lpath),PUnicodeChar(UnicodeString(newname)))
 end;
   {%ENDREGION Rename}
 
@@ -1026,7 +1067,7 @@ end;
 {%ENDREGION}
 
 {$IFDEF DEBUG}
-procedure MANtoFile(const fname:string; const aman:TRGManifest; afull:boolean=false);
+function ParseMANMem(const aman:TRGManifest; afull:boolean=false):pointer;
 var
   p:PMANFileInfo;
   lman,lp,lc:pointer;
@@ -1073,8 +1114,19 @@ begin
    until aman.GetNextFile(p)=0
   end;
 
-  BuildTextFile(lman,PChar(fname));
-  DeleteNode(lman);
+  result:=lman;
+end;
+
+procedure MANtoFile(const fname:string; const aman:TRGManifest; afull:boolean=false);
+var
+  lman:pointer;
+begin
+  lman:=ParseMANMem(aman, afull);
+  if lman<>nil then
+  begin
+    BuildTextFile(lman,PChar(fname));
+    DeleteNode(lman);
+  end;
 end;
 
 procedure FileToMAN(const fname:string; out aman:TRGManifest);

@@ -100,7 +100,7 @@ begin
 
   if result=nil then
   begin
-    RGLog.Add('Unknown tag with hash '+IntToStr(aid));
+    RGLog.Add('Unknown DAT tag with hash '+IntToStr(aid));
 
     Str(aid,FBuffer);
     result:=pointer(FBuffer);
@@ -430,10 +430,10 @@ begin
     GetMem(lbuf,lsize);
     BlockRead(f,lbuf^,lsize);
     Close(f);
+    if afname<>'' then RGLog.Reserve('Processing '+afname);
     result:=ParseDatMem(lbuf);
     FreeMem(lbuf);
   end;
-  if afname<>'' then RGLog.Reserve('Processing '+afname);
 end;
 
 function BuildDatMem(data:pointer; out bin:pByte; aver:byte=verTL2; dictidx:integer=-1):integer;

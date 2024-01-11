@@ -18,6 +18,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
   private
+
      function AddToLog(var adata: string): integer;
   public
 
@@ -45,6 +46,7 @@ end;
 procedure TfmLogForm.bbClearClick(Sender: TObject);
 begin
   memLog.Clear;
+  RGLog.Clear;
 end;
 
 procedure TfmLogForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -58,4 +60,3 @@ begin
 end;
 
 end.
-

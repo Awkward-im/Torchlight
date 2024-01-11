@@ -1,4 +1,3 @@
-{TODO Float/DoublePrec for Str functions}
 unit RGIO.Layout;
 
 interface
@@ -117,17 +116,23 @@ type
     choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
                           //   Presents in decription too (doubling)
     random     :DWord;    // (def 1)RANDOMIZATION
-    number     :Byte;     // (def 1 or 0 for root) NUMBER
+    number     :Byte;     // (def 1 or 0 for root) NUMBER (lower byte only)
+                          //   CAN be present in decription too (full value)
     offset     :DWord;    // group offset from start of file (6 for root)
     tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
     // 10+ childs
-    notag      :Byte;     // (def 0) value transforming to 'NO TAG FOUND'
-    unique     :Byte;     // (def 0) LEVEL UNIQUE
+    noflag     :Byte;     // (def 0) 'CREATEWITHNOFLAG' bool?
                           //   Presents in decription too (doubling)
-    gamemode   :Byte;     // (def 0) GAME MODE 1 - Normal ; 2 - NG+
+    unique     :Byte;     // ??(def 0) LEVEL UNIQUE
                           //   Presents in decription too (doubling)
-    unk        :Byte;
+    gamemode   :Byte;     // ??(def 0) GAME MODE 1 - Normal ; 2 - NG+
+                          //   Presents in decription too (doubling)
+    noprop     :Byte;     // (def 0) DONTPROPAGATE
+                          //   Presents in decription too (doubling)
 {
+    gameflag   :ShortStringUTF8; // GAMEFLAGREQUIREMENT (double)
+    sceneflag  :ShortStringUTF8; // SCENEFLAGREQUIREMENT (double)
+    worldtag   :ShortStringUTF8; // WORLDTAGREQUIUREMENT (double)
     childs     :Word;     // child groups amount
 }
   end;
@@ -229,8 +234,15 @@ type
     function WritePropertiesTL2(anode:pointer; astream:TStream; var adata:TLayoutBinTL2):integer;
 
     function DoBuildLayoutTL1(anode:pointer; astream:TStream):integer;
-    function DoBuildLayoutHob(anode:pointer; astream:TStream):integer;
-    function DoBuildLayoutRG (anode:pointer; astream:TStream):integer;
+
+    // write Hob, RG and RGO
+    function DoBuildLayoutHob  (anode:pointer; astream:TStream):integer;
+    function DoBuildLayoutRG   (anode:pointer; astream:TStream):integer;
+    function DoBuildLayoutRGO  (anode:pointer; astream:TStream):integer;
+    function DoWriteBlockHob   (anode:pointer; astream:TStream; abstream:TStream):integer;
+//!!!!!!!!!!!!!!!! TLayoutBinTL2
+    function WritePropertiesHob(anode:pointer; astream:TStream; var adata:TLayoutBinRG):integer;
+
   public
     procedure Init;
     procedure Free;
@@ -281,7 +293,7 @@ begin
 
   if result=nil then
   begin
-    RGLog.Add('Unknown tag with hash '+IntToStr(aid));
+    RGLog.Add('Unknown layout tag with hash '+IntToStr(aid));
 
     Str(aid,FBuffer);
     result:=pointer(FBuffer);
@@ -376,7 +388,7 @@ begin
   if (lname=nil){ and (info.Version in [verHob, verRG, verRGO])} then
     lname:=GetStr(aid);
   
-  if not result then
+  if (not result) and (rgDebugLevel=dlDetailed) then
   begin
     Str(aid,lls);
     ls:='    '+lls+':'+WideString(TypeToText(ltype))+':'+WideString(lname);
@@ -602,7 +614,7 @@ begin
         RGLog.Add('RGO Timeline byte='+IntToStr(ltmp));
       end;
 }
-      // Property
+      // 1st name, Property
       pcw:=ReadStr();
       if pcw<>nil then
       begin
@@ -612,7 +624,7 @@ begin
         FreeMem(pcw);
       end;
 
-      // Event
+      // 2nd name, Event
       pcw:=ReadStr();
       if pcw<>nil then
       begin
@@ -626,26 +638,35 @@ begin
         FreeMem(pcw);
       end;
 
+      // not Property or Event
       if ltltype=0 then
       begin
         RGLog.Add('Unknown Timeline type at '+HexStr(laptr-FStart,8));
         tlnode:=AddGroup(tlobject,'??TIMELINEUNKNOWN');
       end;
 
+      // Points
       ltlpoints:=memReadByte(FPos);
       for k:=0 to ltlpoints-1 do
       begin
         tlpoint:=AddGroup(tlnode,'TIMELINEPOINT');
         AddFloat(tlpoint,'TIMEPERCENT',memReadFloat(FPos));
 
+        // Interpolation
         lint:=memReadByte(FPos);
         if lint<=6 then
           pcw:=strInterpolation[lint]
         else
+        begin
+          if RGDebugLevel=dlDetailed then
+            RGLog.Add('Timeline '+IntToStr(aid)+' unknown interpolation='+IntToStr(lint));
+
           pcw:=Pointer(WideString(IntToStr(lint)));
+        end;
 
         AddString(tlpoint,'INTERPOLATION',pcw);
 
+        // Value
         if FVer=verTL2 then
         begin
           if ltltype=1 then
@@ -656,7 +677,36 @@ begin
           end;
         end;
 
-        if FVer in [verHob, verRG, verRGO] then
+        if FVer=verRGO then
+        begin
+          if ltltype=1 then
+          begin
+            lint:=memReadByte(FPos); // 1
+            if (lint<>1) and (RGDebugLevel=dlDetailed) then
+              RGLog.Add('Timeline value byte 1 = '+IntToStr(lint));
+            lint:=memReadByte(FPos); // 1
+            if (lint<>1) and (RGDebugLevel=dlDetailed) then
+              RGLog.Add('Timeline value byte 2 = '+IntToStr(lint));
+          end;
+
+          pcw:=memReadShortStringUTF8(FPos);
+          if pcw<>nil then
+          begin
+//            ltltype:=1;
+            AddString(tlpoint,'VALUE_1',pcw);
+            FreeMem(pcw);
+          end;
+
+          pcw:=memReadShortStringUTF8(FPos);
+          if pcw<>nil then
+          begin
+//            ltltype:=1;
+            AddString(tlpoint,'VALUE',pcw);
+            FreeMem(pcw);
+          end;
+        end;
+
+        if FVer in [verHob, verRG] then
         begin
           pcw:=memReadShortStringUTF8(FPos);
           if pcw<>nil then
@@ -677,11 +727,13 @@ begin
               FreeMem(pcw);
             end;
           end;
+{
           if ltltype=2 then
           begin
             RGLog.Add('Timeline '+IntToStr(aid)+
                 ' event. Don''t know what to do. At '+HexStr(laptr-FStart,8));
           end;
+}
         end;
 
       end;
@@ -788,7 +840,11 @@ begin
       rgInteger64: astream.WriteQWord(qword(asInteger64(anode)));
       rgString,
       rgTranslate,
-      rgNote     : astream.WriteShortString(AsString(anode));
+      rgNote     :
+         if FVer=verTL2 then
+           astream.WriteShortString(AsString(anode))
+         else
+           astream.WriteShortStringUTF8(AsString(anode));
     end;
   end;
 end;
@@ -1106,8 +1162,7 @@ end;
 
 function ParseLayoutMem(abuf:pByte; const afname:string):pointer;
 begin
-  if afname<>'' then RGLog.Reserve('Processing '+afname);
-
+  if afname<>'' then RGLog.Add{Reserve}('Processing '+afname);
   result:=ParseLayoutMem(abuf,GetLayoutType(afname));
 end;
 
@@ -1130,8 +1185,7 @@ end;
 
 function ParseLayoutStream(astream:TStream; const afname:string):pointer;
 begin
-  if afname<>'' then RGLog.Add('Processing '+afname);
-
+  if afname<>'' then RGLog.Add{Reserve}('Processing '+afname);
   result:=ParseLayoutStream(astream,GetLayoutType(afname));
 end;
 

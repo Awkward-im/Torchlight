@@ -13,6 +13,15 @@ uses
 {$IF NOT DEFINED(TInt64DynArray)}   type TInt64DynArray   = array of Int64;   {$ENDIF}
 {$IF NOT DEFINED(TSingleDynArray)}  type TSingleDynArray  = array of Single;  {$ENDIF}
 
+type
+  TRGDebugLevel = (dlNone, dlNormal, dlDetailed);
+var
+{$IFDEF DEBUG}
+  rgDebugLevel:TRGDebugLevel = dlDetailed;
+{$ELSE}
+  rgDebugLevel:TRGDebugLevel = dlNone;
+{$ENDIF}
+
 var
   RGLog :logging.TLog;
 

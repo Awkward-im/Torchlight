@@ -125,7 +125,7 @@ end;
 
 procedure TRGLayoutFile.ReadBinaryDataRG(var anode:pointer);
 var
-  ldata:TLayoutBinRG;
+  ldata:TLayoutBinRGO;
   lls,ls:WideString;
   p:PWideChar;
   i,lthemes:integer;
@@ -137,25 +137,29 @@ begin
 
   if FVer=verRGO then
   begin
-    lthemes:=memReadByte(FBinPos);
-    if lthemes<>0 then
-      AddUnsigned(anode,'UN_1',lthemes);
-    lthemes:=memReadByte(FBinPos);
-    if lthemes<>0 then
-      AddUnsigned(anode,'UN_2',lthemes);
-    lthemes:=memReadByte(FBinPos);
-    if lthemes<>0 then
-      AddUnsigned(anode,'UN_3',lthemes);
-    lthemes:=memReadByte(FBinPos);
-    if lthemes<>0 then
-      AddUnsigned(anode,'UN_4',lthemes);
-    lthemes:=memReadByte(FBinPos);
-    if lthemes<>0 then
-      AddUnsigned(anode,'UN_5',lthemes);
-    lthemes:=memReadByte(FBinPos);
-    if lthemes<>0 then
-      AddUnsigned(anode,'UN_6',lthemes);
-    //    inc(FBinPos,6); //!!!!
+    p:=memReadShortStringUTF8(FBinPos);
+    if p<>nil then
+    begin
+      if FindNode(anode,'GAMEFLAGREQUIREMENT')=nil then
+        AddString(anode,'GAMEFLAGREQUIREMENT',p);
+      FreeMem(p);
+    end;
+
+    p:=memReadShortStringUTF8(FBinPos);
+    if p<>nil then
+    begin
+      if FindNode(anode,'SCENEFLAGREQUIREMENT')=nil then
+        AddString(anode,'SCENEFLAGREQUIREMENT',p);
+      FreeMem(p);
+    end;
+
+    p:=memReadShortStringUTF8(FBinPos);
+    if p<>nil then
+    begin
+      if FindNode(anode,'WORLDTAGREQUIREMENT')=nil then
+        AddString(anode,'WORLDTAGREQUIREMENT',p);
+      FreeMem(p);
+    end
   end;
 
   if ldata.choice<>0 then
@@ -186,13 +190,32 @@ begin
   begin
     if FindNode(anode,'LEVEL UNIQUE')=nil then
     begin
+      RGLog.Add('"UNIQUE" value presents');
       AddBool(anode,'LEVEL UNIQUE',true)
     end;
   end;
-  if ldata.notag <>0 then AddBool    (anode,'NO TAG FOUND' ,true);
-  if ldata.number<>1 then AddUnsigned(anode,'NUMBER'       ,ldata.number);
-  if ldata.random<>1 then AddUnsigned(anode,'RANDOMIZATION',ldata.random);
-  if ldata.unk   <>0 then AddUnsigned(anode,'UNKNOWN'      ,ldata.unk);
+  if ldata.number<>1 then
+  begin
+    if FindNode(anode,'NUMBER')=nil then
+    begin
+      AddUnsigned(anode,'NUMBER',ldata.number); // lower byte only
+    end;
+  end;
+  if ldata.random<>1 then
+  begin
+    if FindNode(anode,'RANDOMIZATION')=nil then
+      AddUnsigned(anode,'RANDOMIZATION',ldata.random);
+  end;
+  if ldata.noflag<>0 then
+  begin
+    if FindNode(anode,'CREATEWITHNOFLAG')=nil then
+      AddBool(anode,'CREATEWITHNOFLAG' ,true);
+  end;
+  if ldata.noprop<>0 then
+  begin
+    if FindNode(anode,'DONTPROPAGATE')=nil then
+      AddBool(anode,'DONTPROPAGATE' ,true);
+  end;
   if ldata.tag>=0 then
   begin
 {
@@ -202,6 +225,7 @@ begin
     else
 }
     begin
+      RGLog.Add('"TAG" value presents');
       Str(ldata.tag,lls);
       AddString(anode,'TAG',PWideChar(lls));
     end;
@@ -372,12 +396,12 @@ end;
 
   FPos:=lptr+lChunkSize;
 
-  RGLog.Reserve('');
+//  RGLog.Reserve('');
 end;
 
 function TRGLayoutFile.DoParseLayoutHob(atype:cardinal):pointer;
 var
-  lobj:pointer;
+  lobj,lsub:pointer;
   pcw:PWideChar;
   ldata,i,lcnt:integer;
   ltmp:dword;
@@ -388,7 +412,7 @@ begin
   inc(FPos);
 
   ltmp:=memReadByte(FPos);
-  if ltmp<>0 then
+  if (ltmp<>0) and (RGDebugLevel=dlDetailed) then
     RGLog.Add('Second byte is not 0 but '+HexStr(ltmp,2));
 
   result:=AddGroup(nil,ltName[ltLayout]);
@@ -402,11 +426,12 @@ begin
   if ltmp<>0 then
   begin
     FBinPos:=FBinStart+SizeOf(TLayoutBinHob)+2;
-    RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
+    if (RGDebugLevel=dlDetailed) then
+      RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
   ltmp:=memReadByte(FPos);                 // 1
-  if ltmp<>1 then
+  if (ltmp<>1) and (RGDebugLevel=dlDetailed) then
     RGLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
 
   pcw:=memReadShortStringUTF8(FPos);       // LEVEL
@@ -416,10 +441,10 @@ begin
   FreeMem(pcw);
 
   ltmp:=memReadByte(FPos);                 // 0
-  if ltmp<>0 then
+  if (ltmp<>0) and (RGDebugLevel=dlDetailed) then
     RGLog.Add('Byte after type is not 0 but '+IntToStr(ltmp));
   ltmp:=memReadByte(FPos);                 // 4
-  if ltmp<>4 then
+  if (ltmp<>4) and (RGDebugLevel=dlDetailed) then
     RGLog.Add('Byte before main data offset is not 4 but '+IntToStr(ltmp));
 
   ldata:=memReadDWord(FPos);               // absolute offset to data
@@ -440,23 +465,22 @@ begin
   
   ltmp:=memReadByte(FPos);                 // 1 usually
   b1:=ltmp<>0;
-  if ltmp<>1 then
+  if (ltmp<>1) and (RGDebugLevel=dlDetailed) then
     RGLog.Add('Byte (1 of 3) is not 1 but '+IntToStr(ltmp));
-  ltmp:=memReadByte(FPos);                 // 0 usually but can be a 1
-  b2:=ltmp<>0;
-  if (ltmp<>0) and (ltmp<>1) then          // is it posible?!
-    RGLog.Add('Byte (2 of 3) is not 0 or 1 but '+IntToStr(ltmp));
-  ltmp:=memReadByte(FPos);                 // 0 usually
-  b3:=ltmp<>0;
-  if ltmp<>0 then
-    RGLog.Add('Byte (3 of 3) is not 0 but '+IntToStr(ltmp));
 
-  if b2 then
+  // Warp points
+  lcnt:=memReadWord(FPos);
+  if lcnt>0 then
   begin
-    pcw:=memReadShortStringUTF8(FPos);
-    AddString(result,'LAYOUT_TITLE',pcw);
-    FreeMem(pcw);
-    AddInteger64(result,'LAYOUT_ID',memReadInteger64(FPos));
+    lobj:=AddGroup(result,'WARPPOINTS');
+    for i:=0 to lcnt-1 do
+    begin
+      lsub:=AddGroup(lobj,'WARP');
+      pcw:=memReadShortStringUTF8(FPos);
+      AddString(lsub,'WARP_NAME',pcw);
+      FreeMem(pcw);
+      AddInteger64(lsub,'ID',memReadInteger64(FPos));
+    end;
   end;
 
   FPos:=FStart+ldata;
@@ -474,11 +498,11 @@ var
   i,lcnt:integer;
   ltmp:dword;
 begin
-  info.Version:=verRG;
+  info.Version:=FVer;//verRG;
 
   inc(FPos);
   i:=memReadByte(FPos);
-  if i<>0 then
+  if (i<>0) and (RGDebugLevel=dlDetailed) then
     RGLog.Add('Second byte is not 0 but '+HexStr(i,2));
 
   ltmp:=memReadDword(FPos);                // offset
@@ -489,15 +513,28 @@ begin
     if FVer=verRGO then
       inc(FBinPos,6);                //!!!!!
 
-    RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
+    if (RGDebugLevel=dlDetailed) then
+      RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
   ltmp:=memReadByte(FPos);                 // 1
-  if ltmp<>1 then
-    RGLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
-
-  result:=AddGroup(nil,'Layout');
-  info.SelectScene('Layout');
+(*
+  if (RGDebugLevel=dlDetailed) then
+  begin
+    if FVer=verRGO then
+    begin
+      if ltmp<>1 then
+        RGLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
+    end
+    else
+    begin
+      if ltmp<>0 then
+        RGLog.Add('Byte after binary offset is not 0 but '+IntToStr(ltmp));
+    end;
+  end;
+*)
+  result:=AddGroup(nil,ltName[ltLayout]);
+  info.SelectScene(ltName[ltLayout]);
 
   lcnt:=memReadWord(FPos);
   AddUnsigned(result,'COUNT',lcnt);
@@ -507,12 +544,370 @@ begin
     DoParseBlockHob(lobj,-1);
 end;
 
-function TRGLayoutFile.DoBuildLayoutHob(anode:pointer; astream:TStream):integer;
+
+function TRGLayoutFile.WritePropertiesHob(anode:pointer; astream:TStream; var adata:TLayoutBinRG):integer;
+var
+  vct:tVector4;
+  lpname,lpval:PWideChar;
+  lprop:PByte;
+  ltype:integer;
+  l_id:dword;
+  lSizePos,lNewPos:integer;
+  i,j:integer;
+  lok:boolean;
 begin
   result:=0;
+
+  for i:=0 to info.GetPropsCount()-1 do
+  begin
+    vct.x:=0;
+    vct.y:=0;
+    vct.z:=0;
+    vct.w:=0;
+    lok:=false;
+    lprop:=nil;
+
+    ltype:=info.GetPropInfoByIdx(i,l_id,lpname);
+{
+    case ltype of
+      rgVector2: begin
+//        lprop:=SearchVector(anode,lpname,'X'); if lprop<>nil then begin lok:=true; vct.X:=AsFloat(lprop); end;
+
+        lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
+      end;
+      rgVector3: begin
+        lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Z'); lok:=lok or (lprop<>nil); vct.Z:=AsFloat(lprop);
+      end;
+      rgVector4: begin
+        lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Z'); lok:=lok or (lprop<>nil); vct.Z:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'W'); lok:=lok or (lprop<>nil); vct.W:=AsFloat(lprop);
+      end;
+}
+    if ltype in [rgVector2,rgVector3,rgVector4] then
+    begin
+//      lprop:=SearchVector(anode,lpname,'X'); if lprop<>nil then begin lok:=true; vct.X:=AsFloat(lprop); end;
+        lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
+        lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
+      if ltype in [rgVector3,rgVector4] then
+      begin
+        lprop:=SearchVector(anode,lpname,'Z'); lok:=lok or (lprop<>nil); vct.Z:=AsFloat(lprop);
+      end;
+      if ltype=rgVector4 then
+      begin
+        lprop:=SearchVector(anode,lpname,'W'); lok:=lok or (lprop<>nil); vct.W:=AsFloat(lprop);
+      end;
+    end
+    else
+    begin
+      lprop:=FindNode(anode,lpname);
+      // Skip these properties for Group coz they are placed into binary section
+      if (adata.GUID<>QWord(-1)) and (lprop<>nil) then
+      begin
+        // 'CHOICE', 'LEVEL UNIQUE' and 'GAME MODE' are doubling
+        if CompareWide(lpname,'CHOICE')=0 then
+        begin
+          lpval:=AsString(lprop);
+          for j:=1 to Length(strChoice) do
+            if Comparewide(lpval,strChoice[j])=0 then begin adata.choice:=j; break; end;
+        end;
+        if CompareWide(lpname,'GAME MODE')=0 then
+        begin
+          lpval:=AsString(lprop);
+          for j:=1 to Length(strGameMode) do
+            if Comparewide(lpval,strGameMode[j])=0 then begin adata.gamemode:=j; break; end;
+        end;
+        if CompareWide(lpname,'LEVEL UNIQUE')=0 then
+        begin
+          if AsBool(lprop) then adata.unique:=1;
+        end;
+        // next properties presents in binary data only
+        if CompareWide(lpname,'RANDOMIZATION')=0 then
+        begin
+          adata.random:=AsUnsigned(lprop);
+          exit;
+        end;
+        if CompareWide(lpname,'TAG')=0 then
+        begin
+          adata.tag:=GetTagTL2Num(AsString(lprop));
+          exit;
+        end;
+        if CompareWide(lpname,'NUMBER')=0 then
+        begin
+          adata.number:=AsUnsigned(lprop);
+          exit;
+        end;
+        if CompareWide(lpname,'NO TAG FOUND')=0 then
+        begin
+          if AsBool(lprop) then adata.notag:=1;
+          exit;
+        end;
+      end;
+    end;
+
+    if (lprop<>nil) or lok then
+    begin
+      lSizePos:=astream.Position;
+      astream.WriteWord(0);
+
+      astream.WriteDWord(l_id);
+      if lok then WriteVectorValue  (vct  ,ltype,astream)
+      else        WritePropertyValue(lprop,ltype,astream);
+
+      lNewPos:=astream.Position;
+      astream.Position:=lSizePos;
+      astream.WriteWord(lNewPos-lSizePos-2);
+      astream.Position:=lNewPos;
+      inc(result);
+    end;
+
+  end;
+
+end;
+
+function TRGLayoutFile.DoWriteBlockHob(anode:pointer; astream:TStream; abstream:TStream):integer;
+var
+  ldata:TLayoutBinRG; //!!!!!!!
+  lobj,lprops:pointer;
+  {lparent,}ldescr,lname,lid:pointer;
+  lpdescr,lpname:PWideChar;
+  lgrpcnt,lcnt,i:integer;
+  lcpos,lpos,lPropPos,lAddPos:integer;
+  lChunkType:dword;
+begin
+  result:=0;
+
+  lprops:=GetChild(anode,0); // PROPERTIES
+
+  //--- Chunk Header
+
+  lpos:=astream.Position;
+  astream.WriteDWord(0); // ChunkSize
+
+  ldescr:=FindNode(lprops,'DESCRIPTOR');
+  lpdescr:=AsString(ldescr);
+  lChunkType:=info.GetObjectId(lpdescr);
+
+  if lChunkType=dword(-1) then exit;
+
+  astream.WriteDword(lChunkType);
+
+  lid:=FindNode(lprops,'ID');
+
+  astream.WriteQWord(QWord(AsInteger64(lid)));
+
+  //--- Chunk Info
+
+  lname:=FindNode(lprops,'NAME');
+  lpname:=AsString(lname);
+  if CompareWide(lpdescr,lpname)=0 then
+    astream.WriteShortStringUTF8('')
+  else
+    astream.WriteShortStringUTF8(lpname);
+
+  //--- Properties
+
+  lPropPos:=astream.Position;
+  astream.WriteByte(0);
+
+  FillChar(ldata,SizeOf(ldata),0);
+  if lChunkType=idGroupHob then
+  begin
+    ldata.GUID  :=QWord(AsInteger64(lid));
+    ldata.random:=1;
+    ldata.number:=1;
+    ldata.offset:=lpos;
+    ldata.tag   :=-1;
+  end
+  else
+    ldata.GUID:=QWord(-1);
+
+  lcnt:=WritePropertiesHob(lprops,astream,ldata);
+  astream.WriteByteAt(lcnt,lPropPos);
+
+  //--- Binary data
+
+  if lChunkType=idGroupHob then
+  begin
+    result:=1;
+    abstream.Write(ldata,SizeOf(ldata));
+    case info.version of
+      verHob: begin
+// 22 in header already
+      end;
+      verRGO: begin
+        abstream.WriteWord(0);
+        abstream.WriteWord(0);
+        abstream.WriteWord(0);
+      end;
+      verRG: begin
+// 4 in header already
+      end;
+    end; 
+
+    lcpos:=abstream.Position;
+    abstream.WriteWord(0);
+  end;
+
+  //--- Additional Data
+
+  lAddPos:=astream.Position;
+  astream.WriteDWord(0);
+
+  if (lChunkType=idTimelineTL2) or
+     (lChunkType=idLogicGroupTL2) then
+  begin
+
+    if lChunkType=idTimelineTL2 then
+    begin
+      BuildTimeline(FindNode(lprops,'TIMELINEDATA'), astream);
+    end
+    else //if lChunkType=idLogicGroupTL2 then
+    begin
+      BuildLogicGroup(FindNode(lprops,'LOGICGROUP'), astream);
+    end;
+
+    astream.WriteDWordAt(astream.Position-lAddPos,lAddPos);
+  end;
+
+  //--- Children
+
+  lobj:=FindNode(anode,'CHILDREN');
+  if lobj=nil then lcnt:=0
+  else lcnt:=GetGroupCount(lobj);
+  astream.WriteWord(lcnt);
+
+  lgrpcnt:=0;
+  for i:=0 to lcnt-1 do
+    lgrpcnt:=lgrpcnt+DoWriteBlockHob(GetChild(lobj,i),astream,abstream); // BASEOBJECT
+
+  if lChunkType=idGroupHob then
+    abstream.WriteWordAt(lgrpcnt,lcpos);
+
+  //--- Chunk size
+
+  astream.WriteDWordAt(astream.Position-lpos,lpos);
+end;
+
+function TRGLayoutFile.DoBuildLayoutHob(anode:pointer; astream:TStream):integer;
+begin
+  result:=astream.Position;
+  info.Version:=verHob;
+  info.SelectScene('');
+
+  astream.WriteByte ( 8); // sign
+  astream.WriteByte ( 0);
+  astream.WriteDWord( 0); // binary offset
+end;
+
+function TRGLayoutFile.DoBuildLayoutRGO(anode:pointer; astream:TStream):integer;
+var
+  lbs:TMemoryStream;
+  ldata:TLayoutBinRGO;
+  lobj:pointer;
+  i,lcnt,lsize,lchildpos:integer;
+begin
+  result:=astream.Position;
+  info.Version:=verRGO;
+  info.SelectScene('');
+
+  astream.WriteByte ( 9); // sign
+  astream.WriteByte ( 0);
+  astream.WriteDWord( 0); // binary offset
+  astream.WriteByte ( 1);
+
+  lobj:=FindNode(anode,'OBJECTS');
+  if lobj=nil then lcnt:=0
+  else lcnt:=GetGroupCount(lobj);
+  astream.WriteWord(lcnt); // root baseobject count
+
+{
+  lsize:=0;
+  FillChar(ldata,SizeOf(ldata),0);
+  ldata.GUID  :=QWORD(-1);
+  ldata.offset:=7;
+  ldata.tag   :=-1;
+  lbs:=TMemoryStream.Create;
+  try
+    lbs.Write(ldata,SizeOf(ldata));
+    lbs.WriteWord(0);
+    lbs.WriteWord(0);
+    lbs.WriteWord(0);
+    lchildpos:=lbs.Position;
+    lbs.WriteWord(0); // reserve for childs
+
+    for i:=0 to lcnt-1 do
+      lsize:=lsize+DoWriteBlockHob(GetChild(lobj,i),astream,lbs); // BASEOBJECT
+
+    if lsize>0 then
+    begin
+      lbs.WriteWordAt(lsize,lchildpos);
+
+      astream.WriteDWordAt(astream.Position,2);
+
+      lsize:=lbs.Position;
+      lbs.Position:=0;
+      astream.CopyFrom(lbs,lsize);
+    end;  
+  finally
+    lbs.Free;
+  end;
+}
+  result:=astream.Position-result;
 end;
 
 function TRGLayoutFile.DoBuildLayoutRG(anode:pointer; astream:TStream):integer;
+var
+  lbs:TMemoryStream;
+  ldata:TLayoutBinRG;
+  lobj:pointer;
+  i,lcnt,lsize,lchildpos:integer;
 begin
-  result:=0;
+  result:=astream.Position;
+  info.Version:=verRG;
+  info.SelectScene('Layout');
+
+  astream.WriteByte ( 5); // sign
+  astream.WriteByte ( 0);
+  astream.WriteDWord( 0); // binary offset
+  astream.WriteByte ( 0);
+
+  lobj:=FindNode(anode,'OBJECTS');
+  if lobj=nil then lcnt:=0
+  else lcnt:=GetGroupCount(lobj);
+  astream.WriteWord(lcnt); // root baseobject count
+
+  lsize:=0;
+  FillChar(ldata,SizeOf(ldata),0);
+  ldata.GUID  :=QWORD(-1);
+  ldata.offset:=7;
+  ldata.tag   :=-1;
+  lbs:=TMemoryStream.Create;
+  try
+    lbs.Write(ldata,SizeOf(ldata));
+    lchildpos:=lbs.Position;
+    lbs.WriteWord(0); // reserve for childs
+
+    for i:=0 to lcnt-1 do
+      lsize:=lsize+DoWriteBlockHob(GetChild(lobj,i),astream,lbs); // BASEOBJECT
+
+    if lsize>0 then
+    begin
+      lbs.WriteWordAt(lsize,lchildpos);
+
+      astream.WriteDWordAt(astream.Position,2);
+
+      lsize:=lbs.Position;
+      lbs.Position:=0;
+      astream.CopyFrom(lbs,lsize);
+    end;  
+  finally
+    lbs.Free;
+  end;
+
+  result:=astream.Position-result;
 end;

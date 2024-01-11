@@ -8,7 +8,6 @@ object RGGUIForm: TRGGUIForm
   ClientWidth = 944
   Menu = MainMenu
   ShowHint = True
-  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   object StatusBar: TStatusBar
@@ -48,7 +47,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 47
-      Height = 5
+      Height = 22
       Top = 2
       Style = tbsDivider
     end
@@ -108,7 +107,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep2: TToolButton
       Left = 190
-      Height = 5
+      Height = 22
       Top = 2
       Style = tbsDivider
     end
@@ -127,7 +126,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep3: TToolButton
       Left = 241
-      Height = 8
+      Height = 22
       Top = 2
       Caption = 'tbSep3'
       Style = tbsSeparator
@@ -143,7 +142,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep4: TToolButton
       Left = 340
-      Height = 8
+      Height = 22
       Top = 2
       Caption = 'tbSep4'
       Style = tbsSeparator
@@ -155,6 +154,7 @@ object RGGUIForm: TRGGUIForm
       Width = 81
       Caption = 'Scale Image'
       TabOrder = 1
+      Visible = False
       OnChange = cbScaleImageChange
     end
   end
@@ -232,9 +232,9 @@ object RGGUIForm: TRGGUIForm
     Height = 465
     Top = 26
     Width = 683
-    ActivePage = Grid
+    ActivePage = Setings
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 4
     object Setings: TTabSheet
       Caption = 'Setings'
@@ -417,6 +417,14 @@ object RGGUIForm: TRGGUIForm
         Caption = 'Fast scan (no packed size)'
         TabOrder = 8
       end
+      object cbTest: TCheckBox
+        Left = 9
+        Height = 19
+        Top = 350
+        Width = 224
+        Caption = 'DO NOT SAVE extracted files (test only)'
+        TabOrder = 9
+      end
     end
     object Grid: TTabSheet
       Caption = 'Grid'
@@ -488,6 +496,7 @@ object RGGUIForm: TRGGUIForm
         TabOrder = 0
         OnCompareCells = sgMainCompareCells
         OnHeaderSized = sgMainHeaderSized
+        OnKeyDown = sgMainKeyDown
         OnSelection = sgMainSelection
       end
       object pnlFilter: TPanel
@@ -1206,6 +1215,8 @@ object RGGUIForm: TRGGUIForm
             Top = 2
             Width = 23
             Action = actEdReset
+            Images = ImageList
+            ImageIndex = 3
           end
           object sbEdUndo: TSpeedButton
             Left = 47
@@ -1220,6 +1231,8 @@ object RGGUIForm: TRGGUIForm
             Top = 2
             Width = 23
             Action = actEdSave
+            Images = ImageList
+            ImageIndex = 1
           end
           object sbEdImport: TSpeedButton
             Left = 122
@@ -1393,6 +1406,7 @@ object RGGUIForm: TRGGUIForm
     object actEdReset: TAction
       Category = 'Editor'
       Caption = 'Reset'
+      ImageIndex = 3
       OnExecute = actEdResetExecute
     end
     object actEdUndo: TAction
@@ -1402,6 +1416,7 @@ object RGGUIForm: TRGGUIForm
     object actEdSave: TAction
       Category = 'Editor'
       Caption = 'Save'
+      ImageIndex = 1
       OnExecute = actEdSaveExecute
     end
     object actEdImport: TAction

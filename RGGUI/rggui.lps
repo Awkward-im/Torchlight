@@ -3,13 +3,13 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Debug"/>
+    <BuildModes Active="Release"/>
     <Units>
       <Unit>
         <Filename Value="rggui.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="18"/>
+        <CursorPos X="61" Y="22"/>
         <UsageCount Value="207"/>
       </Unit>
       <Unit>
@@ -19,9 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
-        <TopLine Value="1065"/>
-        <CursorPos X="13" Y="1086"/>
-        <FoldState Value=" T4K04 TLvC051 pXu808041 T8m72]7JtJ1{K01]Sk8oC1!02 p0uA1{a TM:601061[f43pH045 pjJjd0j2]99kP0A7]94jY0A6 piZjK0843116])Dpa043]MdjC0=5 PjJkI0 T6pQ01E pWxW01A PRqF]M0rd43A]kYnb23217425118]\Lv46CD PiWkL4V"/>
+        <TopLine Value="912"/>
+        <CursorPos X="10" Y="930"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -31,8 +30,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="488"/>
-        <CursorPos Y="509"/>
+        <TopLine Value="8"/>
+        <CursorPos X="9" Y="23"/>
         <UsageCount Value="207"/>
       </Unit>
       <Unit>
@@ -55,7 +54,7 @@
         <TopLine Value="75"/>
         <CursorPos Y="119"/>
         <FoldState Value=" T3i80621212 PiJj20n"/>
-        <UsageCount Value="133"/>
+        <UsageCount Value="189"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
@@ -63,7 +62,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="150"/>
         <CursorPos Y="164"/>
-        <UsageCount Value="118"/>
+        <UsageCount Value="174"/>
       </Unit>
       <Unit>
         <Filename Value="unitlogform.pas"/>
@@ -72,47 +71,40 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitLogForm"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="7"/>
-        <CursorPos X="5" Y="33"/>
-        <FoldState Value=" T4601 T7DFA T8J21]D3b0536"/>
-        <UsageCount Value="91"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="34"/>
+        <CursorPos Y="62"/>
+        <UsageCount Value="147"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgnode.pas"/>
         <UnitName Value="RGNode"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="33"/>
-        <CursorPos X="10" Y="47"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="43"/>
+        <CursorPos X="10" Y="57"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\interfaces\win32\win32callback.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2728"/>
         <CursorPos Y="2743"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\treeview.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="832"/>
         <CursorPos Y="846"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgman.pas"/>
         <UnitName Value="RGMan"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="12"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\rgdatunpack.pas"/>
-        <UnitName Value="RGDATUnpack"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="123"/>
-        <CursorPos X="15" Y="139"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgdict.pas"/>
@@ -120,7 +112,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="224"/>
         <CursorPos X="59" Y="243"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\stdctrls.pp"/>
@@ -128,14 +120,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="829"/>
         <CursorPos X="15" Y="843"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="BeRoDDS.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="967"/>
         <CursorPos X="5" Y="1474"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgstream.pas"/>
@@ -143,7 +135,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="74"/>
         <CursorPos X="17" Y="88"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="synhighlightert.pas"/>
@@ -151,7 +143,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="91"/>
         <CursorPos X="39" Y="112"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\components\synedit\synedithighlighter.pp"/>
@@ -159,7 +151,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1573"/>
         <CursorPos Y="1588"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\graphics.pp"/>
@@ -167,21 +159,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="229"/>
         <CursorPos X="3" Y="244"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="3592"/>
         <CursorPos Y="3617"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\TL2Mod.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="304"/>
         <CursorPos X="16" Y="332"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgmemory.pas"/>
@@ -189,7 +181,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="160"/>
         <CursorPos Y="185"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgfiletype.pas"/>
@@ -197,7 +189,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="422"/>
         <CursorPos Y="438"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.raw.pas"/>
@@ -205,31 +197,33 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="395"/>
         <CursorPos X="36" Y="416"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.text.pas"/>
         <UnitName Value="RGIO.Text"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="83"/>
-        <CursorPos X="18" Y="164"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="145"/>
+        <CursorPos Y="159"/>
+        <UsageCount Value="12"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\grids.pas"/>
         <UnitName Value="Grids"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="6976"/>
-        <CursorPos Y="6990"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="10318"/>
+        <CursorPos Y="10333"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
         <UnitName Value="RGIO.Layout"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="547"/>
-        <CursorPos X="41" Y="666"/>
-        <UsageCount Value="11"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="615"/>
+        <CursorPos Y="1126"/>
+        <FoldState Value=" T44021 TCj7PH3 PiHiPP TMqU0]MLjL023A1 PFvK0 T7lDI+ T8lE282]j8iG2 T3mZ035 pjEjT0}9]kd+M]k0na29B]O7kAA46]91iD6YB]vXxU4 T6oA03G]FE;Y0s"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -237,7 +231,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="571"/>
         <CursorPos X="17" Y="584"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\controls.pp"/>
@@ -245,21 +239,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1780"/>
         <CursorPos X="23" Y="1794"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TRANSLATION.DAT"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="1"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\synhighlightert.pas"/>
         <UnitName Value="SynHighlightert"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="324"/>
-        <CursorPos X="20" Y="339"/>
-        <UsageCount Value="17"/>
+        <TopLine Value="326"/>
+        <CursorPos X="6" Y="340"/>
+        <UsageCount Value="12"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgdictlayout.pas"/>
@@ -267,14 +261,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="325"/>
         <CursorPos X="73" Y="353"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_tl1.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="49"/>
         <CursorPos X="3" Y="9"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgupdate.pas"/>
@@ -282,22 +276,23 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="12"/>
         <CursorPos X="7" Y="26"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\containedaction.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="83"/>
         <CursorPos Y="100"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.dat.pas"/>
         <UnitName Value="RGIO.DAT"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="117"/>
-        <CursorPos Y="101"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="387"/>
+        <CursorPos X="19" Y="394"/>
+        <FoldState Value=" TJlb1{/C"/>
+        <UsageCount Value="15"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\dict.pas"/>
@@ -305,195 +300,194 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="482"/>
         <CursorPos Y="498"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\picture.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="600"/>
         <CursorPos X="49" Y="626"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\png.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="27"/>
         <CursorPos Y="51"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\fpimagebitmap.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="14"/>
         <CursorPos Y="35"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\graphic.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="218"/>
-        <CursorPos Y="234"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="157"/>
+        <CursorPos Y="171"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\jpegimage.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="31"/>
         <CursorPos Y="53"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\gifimage.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="14"/>
         <CursorPos Y="34"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\pnm.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="31"/>
         <CursorPos Y="51"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_hob.inc"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="143"/>
-        <CursorPos X="46" Y="164"/>
-        <UsageCount Value="14"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="254"/>
+        <CursorPos X="16" Y="53"/>
+        <UsageCount Value="42"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\rwmemory.pas"/>
         <UnitName Value="RWMemory"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="231"/>
+        <TopLine Value="243"/>
         <CursorPos Y="245"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\logging.pas"/>
+        <UnitName Value="Logging"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="39"/>
+        <CursorPos X="15" Y="53"/>
+        <UsageCount Value="9"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="27">
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="616" TopLine="616"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="788" TopLine="720"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="190" Column="20" TopLine="181"/>
       </Position>
       <Position>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="617" TopLine="612"/>
+        <Caret Line="1085" Column="41" TopLine="1068"/>
       </Position>
       <Position>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="619" TopLine="612"/>
+        <Caret Line="1090" Column="57" TopLine="1068"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="623" TopLine="612"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="917" TopLine="898"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="624" TopLine="615"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="918" TopLine="898"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="625" TopLine="615"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="920" TopLine="898"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="626" TopLine="615"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="921" TopLine="917"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="629" TopLine="621"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="929" TopLine="917"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="635" TopLine="627"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="930" TopLine="917"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="636" TopLine="627"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="887" TopLine="807"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="638" TopLine="627"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="888" TopLine="807"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="639" TopLine="627"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="890" TopLine="807"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="641" TopLine="627"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="892" TopLine="807"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="642" TopLine="636"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="894" TopLine="807"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="643" TopLine="636"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="896" TopLine="833"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="647" TopLine="636"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="887" TopLine="833"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="649" TopLine="636"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="897" TopLine="842"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="659" TopLine="651"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="887" TopLine="842"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="661" TopLine="651"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="897" TopLine="842"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="662" TopLine="651"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="934" TopLine="911"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="669" TopLine="651"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="929" TopLine="911"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="679" TopLine="665"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="917" TopLine="912"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="681" TopLine="665"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="930" Column="10" TopLine="912"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="682" TopLine="665"/>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="190" Column="20" TopLine="181"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="636" TopLine="622"/>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="146" Column="9" TopLine="135"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="592" TopLine="578"/>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="128" Column="22" TopLine="109"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="586" TopLine="578"/>
-      </Position>
-      <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="588" TopLine="578"/>
-      </Position>
-      <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="589" TopLine="578"/>
-      </Position>
-      <Position>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <Caret Line="681" TopLine="665"/>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="930" Column="10" TopLine="912"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -502,78 +496,6 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="56"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="49"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="45"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="41"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="157"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="154"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="151"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="148"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="145"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\TL2Lib\lay_hob.inc"/>
-        <Line Value="142"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="FPos-FStart"/>
@@ -583,10 +505,19 @@
         <Expression Value="aid"/>
       </Item>
       <Item>
-        <Expression Value="ltltype"/>
+        <Expression Value="FVer"/>
       </Item>
       <Item>
-        <Expression Value="ltlpoints"/>
+        <Expression Value="lname"/>
+      </Item>
+      <Item>
+        <Expression Value="ltype"/>
+      </Item>
+      <Item>
+        <Expression Value="info.version"/>
+      </Item>
+      <Item>
+        <Expression Value="FVer"/>
       </Item>
     </Watches>
   </Debugging>

@@ -1,5 +1,4 @@
 {TODO: AutoSort on tree item change}
-{TODO: PreviewImage scaled or original}
 {TODO: Status bar path changes on dir with files only}
 {TODO: option: keep PAK open}
 {TODO: option: ask unpack path}
@@ -7,7 +6,6 @@
 {TODO: Redraw grid line after unpack if cbFastScan.Checked}
 {TODO: save changed file at update list: packed data, size, path (replace on updates)}
 {TODO: Tree changes: check update list first, man next}
-{TODO: make button for non-scale image preview}
 {TODO: make button for "show all categories", double icon set/clear}
 {TODO: edit DAT-type files on the place. "Save" button on info panel}
 {TODO: replace bitbutton by speed button (scale problem)}
@@ -48,6 +46,7 @@ type
     cbSaveWidth: TCheckBox;
     cbFastScan: TCheckBox;
     cbScaleImage: TCheckBox;
+    cbTest: TCheckBox;
     deOutDir: TDirectoryEdit;
     edTreeFilter: TTreeFilterEdit;
     gbDecoding: TGroupBox;
@@ -187,6 +186,7 @@ type
     procedure sgMainCompareCells(Sender: TObject; ACol, ARow, BCol, BRow: Integer; var Result: integer);
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
+    procedure sgMainKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sgMainSelection(Sender: TObject; aCol, aRow: Integer);
     procedure SynEditStatusChange(Sender: TObject; Changes: TSynStatusChanges);
     procedure tbColumnClick(Sender: TObject);
@@ -233,6 +233,7 @@ implementation
 {$R ..\TL2Lib\dict.rc}
 
 uses
+  LCLType,
   IntfGraphics,
   inifiles,
   fpimage,
@@ -490,13 +491,14 @@ var
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  deOutDir.Text         :=config.ReadString (sSectSettings,sOutDir      ,GetCurrentDir());
   LastExt               :=config.ReadString (sSectSettings,sExt         ,DefaultExt);
   LastFilter            :=config.ReadInteger(sSectSettings,sFilter      ,4);
   cbUnpackTree.Checked  :=config.ReadBool   (sSectSettings,sSavePath    ,true);
   cbMODDAT.Checked      :=config.ReadBool   (sSectSettings,sMODDAT      ,true);
   cbFastScan.Checked    :=config.ReadBool   (sSectSettings,sFastScan    ,false);
   cbSaveSettings.Checked:=config.ReadBool   (sSectSettings,sSaveSettings,false);
+  deOutDir.Text         :=config.ReadString (sSectSettings,sOutDir      ,'');
+  if deOutDir.Text='' then deOutDir.Text:=ExtractFileDir(ParamStr(0));
 
   cbExt     .Checked:=config.ReadBool(sSectSettings,sShowExt     ,true);
   cbCategory.Checked:=config.ReadBool(sSectSettings,sShowCategory,false);
@@ -544,11 +546,14 @@ var
 begin
   result:=false;
 
+  if deOutDir.Text='' then deOutDir.Text:=ExtractFileDir(ParamStr(0));
   if cbUnpackTree.Checked then
     loutdir:=deOutDir.Text+'\'+adir
   else
     loutdir:=deOutDir.Text;
-  if not ForceDirectories(loutdir) then exit;
+
+  if not cbTest.Checked then
+    if not ForceDirectories(loutdir) then exit;
 
 //  ltype:=GetExtInfo(aname,rgpi.ver)^._type;
   ltype:=PAKExtType(aname);
@@ -556,6 +561,8 @@ begin
   // save decoded file
   if (not rbBinOnly.Checked) and (ltype in setData) then
   begin
+    RGLog.Reserve('Processing '+adir+aname);
+
     if ltype=typeLayout then
       lnode:=ParseLayoutMem(adata,adir+aname)
     else if ltype=typeRAW then
@@ -563,11 +570,14 @@ begin
     else
       lnode:=ParseDatMem(adata);
 
-    if rbTextRename.Checked or (ltype=typeRAW) then
-      lext:='.TXT'
-    else
-      lext:='';
-    BuildTextFile(lnode,PChar(loutdir+'\'+aname+lext));
+    if not cbTest.Checked then
+    begin
+      if rbTextRename.Checked or (ltype=typeRAW) then
+        lext:='.TXT'
+      else
+        lext:='';
+      BuildTextFile(lnode,PChar(loutdir+'\'+aname+lext));
+    end;
     DeleteNode(lnode);
   end;
 
@@ -583,15 +593,18 @@ begin
       lext:='.BINDAT';
   end;
 
-  // save binary file
-  if not (rbTextOnly.Checked and (ltype in setData)) then
+  if not cbTest.Checked then
   begin
-    AssignFile(f,loutdir+'\'+aname+lext);
-    Rewrite(f);
-    if IOResult=0 then
+    // save binary file
+    if not (rbTextOnly.Checked and (ltype in setData)) then
     begin
-      BlockWrite(f,adata^,asize);
-      CloseFile(f);
+      AssignFile(f,loutdir+'\'+aname+lext);
+      Rewrite(f);
+      if IOResult=0 then
+      begin
+        BlockWrite(f,adata^,asize);
+        CloseFile(f);
+      end;
     end;
   end;
 
@@ -709,17 +722,6 @@ end;
 
 {%REGION Form}
 
-procedure TRGGUIForm.sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
-var
-  i,j:integer;
-begin
-  j:=0;
-
-  for i:=0 to sgMain.ColCount-2 do
-    inc(j,sgMain.ColWidths[i]);
-  if sgMain.Width>(j+8) then sgMain.Width:=j+8;
-end;
-
 procedure TRGGUIForm.FormCreate(Sender: TObject);
 begin
   FLastIndex:=-1;
@@ -782,6 +784,7 @@ begin
     upd.Clear;
   end;
 
+  cbScaleImage.Visible:=false;
   rgpi.Free;
   sgMain.Clear;
   ClearInfo();
@@ -840,7 +843,10 @@ end;
 procedure TRGGUIForm.actShowLogExecute(Sender: TObject);
 begin
   if fmLogForm=nil then
+  begin
     fmLogForm:=TfmLogForm.Create(Self);
+    fmLogForm.memLog.Text:=RGLog.Text;
+  end;
   fmLogForm.ShowOnTop;
 end;
 
@@ -887,6 +893,7 @@ begin
         UnpackSingleFile(ldir,rgpi.man.GetName(p^.name))
     until rgpi.man.GetNextFile(p)=0;
   end;
+  Application.ProcessMessages;
 end;
 
 procedure TRGGUIForm.DoExtractDir(Sender: TObject);
@@ -898,7 +905,15 @@ procedure TRGGUIForm.DoExtractTree(Sender: TObject);
 var
   ls:PWideChar;
   i,idx,llen:integer;
+  ldl:TRGDebugLevel;
 begin
+  ldl:=rgDebugLevel;
+  {$IFDEF DEBUG}
+    rgDebugLevel:=dlDetailed;
+  {$ELSE}
+    rgDebugLevel:=dlNormal;
+  {$ENDIF}
+
   idx:=IntPtr(tvTree.Selected.Data);
   if idx>=0 then
   begin
@@ -910,13 +925,19 @@ begin
   begin
     if not rgpi.man.IsDirDeleted(i) then
       if (idx<0) or (i=idx) or (CompareWide(ls,rgpi.man.GetDirName(i),llen)=0) then
+      begin
+        StatusBar.Panels[1].Text:='Extract dir: '+WideToStr(rgpi.man.GetDirName(i));
         ExtractSingleDir(i);
+      end;
   end;
 
   if (idx<0) and (cbMODDAT.Checked) and (rgpi.Version=verTL2Mod) then
   begin
     SaveModConfiguration(rgpi.modinfo,PChar(deOutDir.Text+'\'+'MOD.DAT'));
   end;
+  StatusBar.Panels[1].Text:='File path: '+sgMain.Cells[colDir ,sgMain.Row];
+
+  rgDebugLevel:=ldl;
 end;
 
 {%ENDREGION}
@@ -1164,7 +1185,8 @@ end;
 procedure TRGGUIForm.cbShowPreviewChange(Sender: TObject);
 begin
   {TODO: Ask about changes (if any)}
-  sgMainSelection(sgMain, 2, sgMain.Row);
+  if sgMain.RowCount>1 then
+    sgMainSelection(sgMain, colName, sgMain.Row);
 end;
 
 procedure TRGGUIForm.ReplaceExecute(Sender: TObject);
@@ -1259,6 +1281,30 @@ end;
 {%ENDREGION Preview}
 
 {%REGION Grid}
+
+procedure TRGGUIForm.sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
+var
+  i,j:integer;
+begin
+  j:=0;
+
+  for i:=0 to sgMain.ColCount-2 do
+    inc(j,sgMain.ColWidths[i]);
+  if sgMain.Width>(j+8) then sgMain.Width:=j+8;
+end;
+
+procedure TRGGUIForm.sgMainKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Shift=[ssCtrl]) then
+  begin
+    case Key of
+      VK_A: begin
+        sgMain.Selection:=TGridRect(Rect(colState,1,colSource,sgMain.RowCount));
+        Key:=0;
+      end;
+    end;
+  end;
+end;
 
 procedure TRGGUIForm.sgMainCompareCells(Sender: TObject; ACol, ARow, BCol,
   BRow: Integer; var Result: integer);
@@ -1400,6 +1446,7 @@ begin
   sgMain.RowCount:=lcnt;
   bbSave.Visible:=lcnt>1;
   actEditExtract.Enabled:=lcnt>1;
+
   if lcnt=1 then
     ClearInfo
   else

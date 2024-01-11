@@ -58,6 +58,7 @@
             <CompilerMessages>
               <IgnoredMessages idx5024="True" idx3104="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dDEBUG"/>
           </Other>
         </CompilerOptions>
       </Item>

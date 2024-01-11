@@ -261,7 +261,7 @@ begin
 
   lver:=memReadByte(FPos);               // Layout version
   AddInteger(result,'VERSION',lver);
-  if lver<>4 then
+  if (lver<>4)  and (RGDebugLevel=dlDetailed) then
     RGLog.Add('Layout version is not 4 but '+HexStr(lver,2));
 
   lc:=AddUnsigned(result,'COUNT',0);
@@ -270,7 +270,8 @@ begin
   if ltmp<>0 then
   begin
     FBinPos:=FBinStart+SizeOf(TLayoutBinTL2)+4+4+2;
-    RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
+    if (RGDebugLevel=dlDetailed) then
+      RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
   lcnt:=memReadWord(FPos);               // root baseobject count
@@ -468,7 +469,7 @@ begin
 
   ldescr:=FindNode(lprops,'DESCRIPTOR');
   lpdescr:=AsString(ldescr);
-  i:=info.GetObjectId(lpdescr);
+  i:=integer(info.GetObjectId(lpdescr));
 
   if i=-1 then exit;
 
@@ -591,7 +592,7 @@ begin
     lbs.WriteDWord(0);
     lbs.WriteDWord(0);
     lchildpos:=lbs.Position;
-    lbs.WriteWord(0);
+    lbs.WriteWord(0);    // reserve for childs
 
     for i:=0 to lcnt-1 do
       lsize:=lsize+DoWriteBlockTL2(GetChild(lobj,i),astream,lbs); // BASEOBJECT
