@@ -1,4 +1,6 @@
-﻿unit RGDictLayout;
+﻿{TODO: make objects and props arrays expandable in LoadLayoutDict }
+{TODO: change dicts to UTF8. just disk or memory too?}
+unit RGDictLayout;
 
 interface
 
@@ -39,7 +41,7 @@ type
   end;
 
 
-function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean=false):boolean;
+function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean):boolean;
 function LoadLayoutDict(const resname:string; restype:PChar; aver:integer):boolean;
 function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
 
@@ -57,6 +59,7 @@ type
   PPropInfo = ^TPropInfo;
   TPropInfo = record
     name   :PWideChar;
+    descr  :PWideChar;
     id     :dword;
     ptype  :integer;
   end;
@@ -64,6 +67,7 @@ type
   PObjInfo = ^TObjInfo;
   TObjInfo = record
     name   :PWideChar;
+    descr  :PWideChar;
     start  :integer;
     count  :integer;
     id     :dword;
@@ -403,16 +407,17 @@ end;
 //----- Processed -----
 
 {$I-}
-function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean=false):boolean;
+function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean):boolean;
 var
   ltype:array [0..31] of WideChar;
-  pc,lname:PWideChar;
+  pc,lname,ldescr:PWideChar;
   layptr:PLayoutInfo;
   pscene:PSceneInfo;
   pobj  :PObjInfo;
   pprop :PPropInfo;
   lid:dword;
   lobj,lprop,lscene,i:integer;
+  lval,ldesc:boolean;
 begin
   result:=false;
 
@@ -458,6 +463,7 @@ begin
 
     case pc^ of
       // scene
+      // ID:NAME
       '>': begin
         inc(pc);
 
@@ -485,6 +491,7 @@ begin
       end;
 
       // object
+      // ID:NAME[=CLASS][:DESCRIPTION]
       '*': begin
         inc(pc);
         lid:=0;
@@ -498,22 +505,41 @@ begin
         inc(pc);
         // name
         lname:=pc;
-        while not (pc^ in [#10,#13,':']) do inc(pc);
+        while not (pc^ in [#10,#13,':','=']) do inc(pc);
+        lval :=pc^='=';
+        ldesc:=pc^=':';
         pc^:=#0;
         inc(pc);
-        // skip the rest: original ID or property name if presents
-        while not (pc^ in [#0,#10,#13]) do inc(pc);
+        // class (right now just skip)
+        if lval then
+        begin
+          while not (pc^ in [#10,#13,':']) do inc(pc);
+          ldesc:=pc^=':';
+          pc^:=#0;
+          inc(pc);
+        end;
+        // description
+        ldescr:=nil;
+        if ldesc then
+        begin
+          ldescr:=pc;
+          while not (pc^ in [#10,#13]) do inc(pc);
+          pc^:=#0;
+          inc(pc);
+        end;
 
         pobj:=@(layptr^.objects[lobj]);
         inc(pscene^.count);
         inc(lobj);
         pobj^.id     :=lid;
         pobj^.name   :=lname;
+        pobj^.descr  :=ldescr;
         pobj^.start  :=lprop;
         pobj^.count  :=0;
       end;
 
       // property
+      // ID:TYPE:NAME[=VALUE][:DESCRIPTION]
       '0'..'9': begin
         lid:=0;
         // ID
@@ -536,24 +562,43 @@ begin
         inc(pc);
         // name
         lname:=pc;
-        while not (pc^ in [#10,#13,':']) do inc(pc);
+        while not (pc^ in [#10,#13,':','=']) do inc(pc);
+        lval :=pc^='=';
+        ldesc:=pc^=':';
         pc^:=#0;
         inc(pc);
-        // skip the rest: original ID or property name if presents
-        while not (pc^ in [#0,#10,#13]) do inc(pc);
+        // value (right now just skip)
+        if lval then
+        begin
+          while not (pc^ in [#10,#13,':']) do inc(pc);
+          ldesc:=pc^=':';
+          pc^:=#0;
+          inc(pc);
+        end;
+        // description
+        ldescr:=nil;
+        if ldesc then
+        begin
+          ldescr:=pc;
+          while not (pc^ in [#10,#13]) do inc(pc);
+          pc^:=#0;
+          inc(pc);
+        end;
 
         pprop:=@(layptr^.props[lprop]);
         inc(pobj^.count);
         inc(lprop);
         pprop^.id   :=lid;
         pprop^.name :=lname;
+        pprop^.descr:=ldescr;
         pprop^.ptype:=TextToType(ltype);
       end;
 
       #0: break;
     else
-      while not (pc^ in [#0,#10,#13]) do inc(pc);
     end;
+
+    while not (pc^ in [#0,#10,#13]) do inc(pc);
 
   until false;
 

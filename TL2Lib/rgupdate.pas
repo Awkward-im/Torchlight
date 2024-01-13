@@ -4,6 +4,10 @@
 {TODO: separate packed and unpacked data}
 {TODO: Keep dir and filename separately (Hash still for full name)}
 {TODO: Get: use existing data block? how to control?}
+{TODO: Add directory (clear that dir files records}
+{TODO: Add files with check of dirs (skip if inside if filename, not context?)}
+{TODO: get "Count" with directory scan}
+{TODO: decease, keep file type or not}
 {
   Add file
   Remove file
@@ -21,9 +25,10 @@ uses
 const
   act_mark   = 0; // mark for delete (MOD data)
   act_data   = 1; // binary data
-  act_file   = 2; // external filename 
+  act_file   = 2; // disk file
   act_copy   = 3; // just copy of original PAK data
   act_delete = 4; // delete from PAK
+  act_dir    = 5; // disk directory with files
 
 type
   PUpdateElement = ^TUpdateElement;

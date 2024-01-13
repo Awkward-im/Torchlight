@@ -1,5 +1,4 @@
-﻿{TODO: export as UTF8 binary (UCS16LE right now) - add sign for type: UCS16, UTF8, w/zero}
-unit RGDict;
+﻿unit RGDict;
 
 interface
 
@@ -7,13 +6,28 @@ uses
   Dict;
 
 type
+  TExportDictType = (
+      asTags,  // TAGS.DAT format
+      asText,  // UTF8 text: "hash:text"
+      asBin,   // UTF16LE
+      asZBin,  // UTF16LE + #0
+      asBin8,  // UTF8
+      asZBin8  // UTF8 + #0
+  );
+
+type
   TRGDict = object(THashDict)
   public
-    type
-      TExportDictType = (asTags, asText, asBin, asZBin{, asBin8, asZBin8});
     function  Import(aptr: PByte): integer;
     function  Import(const fname:AnsiString=''):integer;
     function  Import(const resname:string; restype:PChar):integer;
+    {
+     Binary format:
+       2 bytes - text format
+       4 bytes - count
+         2 bytes - Length (symbols, with #0 if needs)
+         text
+    }
     procedure Export(const fname:AnsiString;
           afmt:TExportDictType=asTags; sortbyhash:boolean=true);
 
@@ -68,9 +82,11 @@ end;
 function DictLoadBinary(var aDict:THashDict; aptr:PByte):integer;
 var
   pcw:PWideChar;
+  ls:AnsiString;
   i,llen,lsize:integer;
-  lhash:dword;
+  ltype,lhash:dword;
 begin
+  ltype:=PWord(aptr)^;
   result:=pInt32(aptr)^; inc(aptr,SizeOf(Int32));
   aDict.Capacity:=result;
 
@@ -91,6 +107,45 @@ begin
     begin
       aDict.Add(nil,lhash);
     end
+    else
+    begin
+      case TExportDictType(ltype) of
+        asBin: begin
+          pcw:=PWideChar(aptr);
+          aDict.Add(pcw,lhash);
+          inc(aptr,llen*SizeOf(WideChar));
+          pcw:=nil;
+        end;
+
+        asBin8,
+        asZBin8: begin
+          SetLength(ls,llen);
+          move(aptr^,ls[1],llen);
+          inc(aptr,llen);
+          aDict.Add(ls,lhash);
+        end;
+
+        asZBin: begin
+          if llen>lsize then
+          begin
+            if lsize=0 then
+            begin
+              lsize:=4096;
+              GetMem(pcw,lsize*SizeOf(WideChar));
+            end
+            else
+            begin
+              lsize:=Align(llen,16);
+              ReallocMem(pcw,lsize*SizeOf(WideChar));
+            end;
+          end;
+          move(aptr^,pByte(pcw)^,llen*SizeOf(WideChar));
+          inc(aptr,llen*SizeOf(WideChar));
+          aDict.Add(pcw,lhash);
+        end;
+      end;
+    end;
+(*
     // how to recognize case 2 if next field have hash=0?
     // else if PWideChar(aptr)[llen]=#0 then
     //
@@ -121,6 +176,7 @@ begin
       pcw[llen]:=#0;
       aDict.Add(pcw,lhash);
     end;
+*)
   end;
   FreeMem(pcw);
 end;
@@ -315,7 +371,7 @@ begin
 
     if ls<>'' then
     begin
-      aDict.Add(ls, RGHash(pointer(ls),Length(ls))); //!! RGHash not necessary if used in adict.init
+      aDict.Add(ls, RGHashB(pointer(ls),Length(ls))); //!! RGHash not necessary if used in adict.init
       inc(result);
     end;
 
@@ -407,7 +463,6 @@ var
   i,loldcount:integer;
 begin
   result:=0;
-  loldcount:=Count;
   
   // 1 - trying to open dict file (empty name = load defaults)
   if fname<>'' then
@@ -427,10 +482,6 @@ begin
       Reset(f);
       if IOResult<>0 then
       begin
-        if fname='' then
-          ls:='default tags file'
-        else
-          ls:='tag info file "'+fname+'"';
         RGLog.Add(resCantOpen+ls);
         exit;
       end;
@@ -450,12 +501,13 @@ begin
   buf[i  ]:=0;
   buf[i+1]:=0;
 
+  loldcount:=Count;
   result:=Import(buf);
 
   FreeMem(buf);
 
   if result=0 then
-    RGLog.Add(resCantLoad+fname);
+    RGLog.Add(resCantLoad+ls);
 
   result:=Count-loldcount;
 end;
@@ -470,6 +522,7 @@ var
   slw:TLogWide;
 //  lnode:pointer;
   lstr:UnicodeString;
+  ls:AnsiString;
   llen:cardinal;
   ldelta:integer;
 begin
@@ -507,10 +560,11 @@ begin
       sl.Free;
     end;
 
-    asBin, asZBin: begin
+    asBin , asZBin,
+    asBin8, asZBin8: begin
       slb.Init;
 
-      if afmt=asZBin then ldelta:=1 else ldelta:=0;
+      if afmt in [asZBin,asZBin8] then ldelta:=1 else ldelta:=0;
 
       slb.AddValue(Count,4);
 
@@ -523,9 +577,19 @@ begin
           slb.AddValue(0,2)
         else
         begin
-          llen:=Length(Tags[i])+ldelta;
-          slb.AddValue(llen,2);
-          slb.AddData (Tags[i],llen*SizeOf(WideChar));
+          if afmt in [asBin, asZBin] then
+          begin
+            llen:=Length(Tags[i])+ldelta;
+            slb.AddValue(llen,2);
+            slb.AddData(Tags[i],llen*SizeOf(WideChar));
+          end
+          else
+          begin
+            ls:=UTF8Encode(UnicodeString(Tags[i]));
+            llen:=Length(ls)+ldelta;
+            slb.AddValue(llen,2);
+            slb.AddData(PByte(ls),llen);
+          end;
         end;
       end;
 

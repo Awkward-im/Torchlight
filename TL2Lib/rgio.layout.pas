@@ -69,14 +69,15 @@ const
   );
 
 const
-  strInterpolation : array [0..6] of PWideChar = (
+  strInterpolation : array [0..7] of PWideChar = (
     'Linear',
     'Linear Round',
     'Linear Round Down',
     'Linear Round Up',
     'No interpolation',
     'Quaternion',
-    'Spline'
+    'Spline',
+    'Catmull-Rom'
   );
 
 const
@@ -119,7 +120,7 @@ type
     number     :Byte;     // (def 1 or 0 for root) NUMBER (lower byte only)
                           //   CAN be present in decription too (full value)
     offset     :DWord;    // group offset from start of file (6 for root)
-    tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
+    tag        :Integer;  // ??(def -1) "TAG" from FEATURETAGS.HIE
     // 10+ childs
     noflag     :Byte;     // (def 0) 'CREATEWITHNOFLAG' bool?
                           //   Presents in decription too (doubling)
@@ -129,6 +130,7 @@ type
                           //   Presents in decription too (doubling)
     noprop     :Byte;     // (def 0) DONTPROPAGATE
                           //   Presents in decription too (doubling)
+{Visible,dynamic}
 {
     gameflag   :ShortStringUTF8; // GAMEFLAGREQUIREMENT (double)
     sceneflag  :ShortStringUTF8; // SCENEFLAGREQUIREMENT (double)
@@ -145,14 +147,15 @@ type
     random     :DWord;    // (def 1)RANDOMIZATION
     number     :Byte;     // (def 1 or 0 for root) NUMBER
     offset     :DWord;    // group offset from start of file (6 for root)
-    tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
+    tag        :Integer;  // ??(def -1) "TAG" from FEATURETAGS.HIE
     // 4+childs
-    notag      :Byte;     // (def 0) value transforming to 'NO TAG FOUND'
+    notag      :Byte;     // ?? (def 0) value transforming to 'NO TAG FOUND'
     unique     :Byte;     // (def 0) LEVEL UNIQUE
                           //   Presents in decription too (doubling)
-    gamemode   :Byte;     // (def 0) GAME MODE 1 - Normal ; 2 - NG+
+    gamemode   :Byte;     // ??(def 0) GAME MODE 1 - Normal ; 2 - NG+
                           //   Presents in decription too (doubling)
     unk        :Byte;
+{visible, dynamic}
 {
     childs     :Word;     // child groups amount
 }
@@ -654,7 +657,7 @@ begin
 
         // Interpolation
         lint:=memReadByte(FPos);
-        if lint<=6 then
+        if lint<=High(strInterpolation) then
           pcw:=strInterpolation[lint]
         else
         begin
@@ -993,8 +996,9 @@ begin
         pcw:=AsString(FindNode(tlpoint,'INTERPOLATION'));
 
         lval:=0;
-        while lval<=6 do
+        while lval<=High(strInterpolation) do
         begin
+{TODO: make compare not case-sensitive}
           if CompareWide(pcw,strInterpolation[lval])=0 then break;
           inc(lval);
         end;

@@ -5,13 +5,6 @@ const
   IdLogicGroupHob = 2261606130;
   IdTimelineHob   = 2623981599;
 
-procedure LogProperty(aname:PWideChar; aid:dword; atype:integer);
-begin
-  RGLog.Add('<STRING>NAME:'+UTF8Encode(WideString(aname)));
-  RGLog.Add('<UNSIGNED INT>ID:'+IntToStr(aid));
-  RGLog.Add('<STRING>TYPEOFDATA:'+string(TypeToText(atype)));
-end;
-
 procedure TRGLayoutFile.ReadBinaryDataHob(var anode:pointer);
 var
   ldata:TLayoutBinHob;
