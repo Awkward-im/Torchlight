@@ -1,3 +1,4 @@
+{TODO: add layout sublog to use Reserved filename}
 unit RGIO.Layout;
 
 interface
@@ -69,18 +70,6 @@ const
   );
 
 const
-  strInterpolation : array [0..7] of PWideChar = (
-    'Linear',
-    'Linear Round',
-    'Linear Round Down',
-    'Linear Round Up',
-    'No interpolation',
-    'Quaternion',
-    'Spline',
-    'Catmull-Rom'
-  );
-
-const
   m00 = 'RIGHTX';
   m01 = 'UPX';
   m02 = 'FORWARDX';
@@ -92,95 +81,43 @@ const
   m22 = 'FORWARDZ';
 
 type
-  TLayoutBinHob = packed record // "Group" type only
+  TLayoutBin = packed record // "Group" type only
     GUID       :QWord;    // -1 for root
     choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
                           //   Presents in decription too (doubling)
-    random     :DWord;    // (def 1)RANDOMIZATION
+    random     :DWord;    // (def 1) RANDOMIZATION
     number     :Byte;     // (def 1 or 0 for root) NUMBER
+                          // requires for doubling at least in RGO for number>255
     offset     :DWord;    // group offset from start of file (6 for root)
-    tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
-    // 22 bytes before child count
-    unk1       :Word;
-    unk2       :Word;
-    unk3       :Word;
-    idk1       :Byte;     // (def 0) can be 6
-    unk        :array [0..14] of Byte;
-{
-    childs     :Word;     // child groups amount
-}
+    tag        :Integer;  // (def -1) TL2: "TAG" from FEATURETAGS.HIE
+    noflag     :Byte;     // (def 0) RG and Hob = unknown
+                          // TL2: 'NO TAG FOUND'
+                          // RGO: 'CREATEWITHNOFLAG'. Presents in decription too (doubling)
+    unique     :Byte;     // (def 0) LEVEL UNIQUE
+                          //   Presents in decription too (doubling)
   end;
-
-type
-  TLayoutBinRGO = packed record // "Group" type only
-    GUID       :QWord;    // -1 for root
-    choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
-                          //   Presents in decription too (doubling)
-    random     :DWord;    // (def 1)RANDOMIZATION
-    number     :Byte;     // (def 1 or 0 for root) NUMBER (lower byte only)
-                          //   CAN be present in decription too (full value)
-    offset     :DWord;    // group offset from start of file (6 for root)
-    tag        :Integer;  // ??(def -1) "TAG" from FEATURETAGS.HIE
-    // 10+ childs
-    noflag     :Byte;     // (def 0) 'CREATEWITHNOFLAG' bool?
-                          //   Presents in decription too (doubling)
-    unique     :Byte;     // ??(def 0) LEVEL UNIQUE
-                          //   Presents in decription too (doubling)
-    gamemode   :Byte;     // ??(def 0) GAME MODE 1 - Normal ; 2 - NG+
-                          //   Presents in decription too (doubling)
+{ have tail before "word" sized child count
+  Hob, 20 bytes
+    unk3       :Word;     //
+    unk4       :Word;     //
+    unk5       :Byte;     // (def 0) can be 6
+    unk        :array [0..14] of Byte;
+  RGO, 8 bytes (if empty)
+    unk3       :Byte;     // 
     noprop     :Byte;     // (def 0) DONTPROPAGATE
                           //   Presents in decription too (doubling)
-{Visible,dynamic}
-{
     gameflag   :ShortStringUTF8; // GAMEFLAGREQUIREMENT (double)
     sceneflag  :ShortStringUTF8; // SCENEFLAGREQUIREMENT (double)
     worldtag   :ShortStringUTF8; // WORLDTAGREQUIUREMENT (double)
-    childs     :Word;     // child groups amount
-}
-  end;
-
-type
-  TLayoutBinRG = packed record // "Group" type only
-    GUID       :QWord;    // -1 for root
-    choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
-                          //   Presents in decription too (doubling)
-    random     :DWord;    // (def 1)RANDOMIZATION
-    number     :Byte;     // (def 1 or 0 for root) NUMBER
-    offset     :DWord;    // group offset from start of file (6 for root)
-    tag        :Integer;  // ??(def -1) "TAG" from FEATURETAGS.HIE
-    // 4+childs
-    notag      :Byte;     // ?? (def 0) value transforming to 'NO TAG FOUND'
-    unique     :Byte;     // (def 0) LEVEL UNIQUE
-                          //   Presents in decription too (doubling)
-    gamemode   :Byte;     // ??(def 0) GAME MODE 1 - Normal ; 2 - NG+
-                          //   Presents in decription too (doubling)
-    unk        :Byte;
-{visible, dynamic}
-{
-    childs     :Word;     // child groups amount
-}
-  end;
-
-type
-  TLayoutBinTL2 = packed record // "Group" type only
-    GUID       :QWord;    // -1 for root
-    choice     :Byte;     // (def 0) CHOICE: Weight=1; Random Chance=2
-                          //   Presents in decription too (doubling)
-    random     :DWord;    // (def 1)RANDOMIZATION
-    number     :Byte;     // (def 1 or 0 for root) NUMBER
-    offset     :DWord;    // group offset from start of file (6 for root)
-    tag        :Integer;  // (def -1) "TAG" from FEATURETAGS.HIE
-    notag      :Byte;     // (def 0) value transforming to 'NO TAG FOUND'
-    unique     :Byte;     // (def 0) LEVEL UNIQUE
-                          //   Presents in decription too (doubling)
+  RG: 2 bytes
+    unk3       :Byte;     // 
+    unk4       :Byte;     //
+  TL2: 9 bytes (if empty)
     gamemode   :Byte;     // (def 0) GAME MODE 1 - Normal ; 2 - NG+
                           //   Presents in decription too (doubling)
-{
     ActThemes  :DWord;    // next x8 bytes are Active themes
     DeactThemes:DWord;    // next x8 bytes are DeActive themes
-    childs     :Word;     // child groups amount
 }
-  end;
 
 type
 
@@ -189,12 +126,14 @@ type
   TRGLayoutFile = object
   private
     info:TRGObject;
+    FLog:Logging.TLog;
     FStart   :PByte;
     FBinStart:PByte;
     FPos     :PByte;
     FBinPos  :PByte;
-    FBuffer:WideString;
-    FVer :integer;
+    FBuffer  :WideString;
+    FVer     :integer;
+    FCount   :integer;
 
   private
     function  ReadStr():PWideChar;
@@ -211,9 +150,14 @@ type
     procedure BuildTimeline     (anode:pointer  ; astream:TStream);
     procedure BuildLogicGroup   (anode:pointer  ; astream:TStream);
 
+    function GetInterpolationName(id:integer):PWideChar;
+    function GetInterpolationCode(name:PWideChar):integer;
+
     // read TL1
     function  DoParseLayoutTL1(atype:cardinal):pointer;
     function  DoParseBlockTL1  (var anode:pointer; const aparent:Int64):integer;
+
+    procedure ReadBinaryData   (var anode:pointer; var adata:TLayoutBin);
 
     // read TL2
     function  DoParseLayoutTL2 (atype:cardinal):pointer;
@@ -230,21 +174,20 @@ type
     procedure ReadBinaryDataHob(var anode: pointer);
     function  DoParseLayoutRG  (atype:cardinal):pointer;
     procedure ReadBinaryDataRG (var anode: pointer);
+    procedure ReadBinaryDataRGO(var anode: pointer);
 
     // write TL2
     function DoBuildLayoutTL2  (anode:pointer; astream:TStream):integer;
     function DoWriteBlockTL2   (anode:pointer; astream:TStream; abstream:TStream):integer;
-    function WritePropertiesTL2(anode:pointer; astream:TStream; var adata:TLayoutBinTL2):integer;
+    function WritePropertiesTL2(anode:pointer; astream:TStream; var adata:TLayoutBin):integer;
 
     function DoBuildLayoutTL1(anode:pointer; astream:TStream):integer;
 
     // write Hob, RG and RGO
     function DoBuildLayoutHob  (anode:pointer; astream:TStream):integer;
     function DoBuildLayoutRG   (anode:pointer; astream:TStream):integer;
-    function DoBuildLayoutRGO  (anode:pointer; astream:TStream):integer;
     function DoWriteBlockHob   (anode:pointer; astream:TStream; abstream:TStream):integer;
-//!!!!!!!!!!!!!!!! TLayoutBinTL2
-    function WritePropertiesHob(anode:pointer; astream:TStream; var adata:TLayoutBinRG):integer;
+    function WritePropertiesHob(anode:pointer; astream:TStream; var adata:TLayoutBin):integer;
 
   public
     procedure Init;
@@ -254,11 +197,79 @@ type
 procedure TRGLayoutFile.Init;
 begin
   info.Init;
+  FLog.Init;
 end;
 
 procedure TRGLayoutFile.Free;
 begin
+  FLog.Free;
   info.Clear;
+end;
+
+// all: 'Linear', 'Linear Round', 'Linear Round Down', 'Linear Round Up', 'Spline'
+// TL2: 'Quaternion', 'No interpolation', 'Use Timeline Default'
+// RG : 'Quaternion', 'No interpolation', 'Use Timeline Default'
+// Hob: 'Quaternion', 'No interpolation', 'Hex Color', 'Animation', 'Animation Calculated', 'Use Timeline Default'
+// RGO: 'Catmull-Rom', 'Quaternion', 'No interpolation', 'Use Timeline Default'
+const
+  strInterpolation : array [0..11] of PWideChar = (
+    'Linear',                 // 0
+    'Linear Round',           // 1
+    'Linear Round Down',      // 2
+    'Linear Round Up',        // 3
+    'Spline',                 // 4
+    'Quaternion',             // 5
+    'No interpolation',       // 6
+    'Use Timeline Default',   // 7
+    'Catmull-Rom',            // 8
+    'Hex Color',              // 9
+    'Animation',              // 10
+    'Animation Calculated');  // 11
+
+const
+  aIntCodes: array [0..3,0..11] of integer = (
+    (0,1,2,3,4,5,6,7, 0, 0,0,0), // TL2
+    (0,1,2,3,4,5,6,7, 0, 0,0,0), // RG
+    (0,1,2,3,4,8,5,6, 7, 0,0,0), // RGO
+    (0,1,2,3,4,5,6,9,10,11,7,0)  // Hob
+  );
+
+function TRGLayoutFile.GetInterpolationName(id:integer):PWideChar;
+var
+  i:integer;
+begin
+  result:=nil;
+  if id<Length(strInterpolation) then
+  begin
+    case FVer of
+      verTL2: i:=0;
+      verRG : i:=1;
+      verRGO: i:=2;
+      verHob: i:=3;
+    else
+      i:=0;
+    end;
+    result:=strInterpolation[aIntCodes[i,id]];
+  end;
+end;
+
+function TRGLayoutFile.GetInterpolationCode(name:PWideChar):integer;
+var
+  i,j:integer;
+begin
+  case FVer of
+    verTL2: i:=0;
+    verRG : i:=1;
+    verRGO: i:=2;
+    verHob: i:=3;
+  else
+    i:=0;
+  end;
+  for j:=0 to High(strInterpolation) do
+  begin
+    if CompareWide(name,strInterpolation[aIntCodes[i,j]])=0 then exit(j);
+  end;
+  result:=0;
 end;
 
 function TRGLayoutFile.ReadStr():PWideChar;
@@ -296,7 +307,7 @@ begin
 
   if result=nil then
   begin
-    RGLog.Add('Unknown layout tag with hash '+IntToStr(aid));
+    FLog.Add('Unknown layout tag with hash '+IntToStr(aid));
 
     Str(aid,FBuffer);
     result:=pointer(FBuffer);
@@ -309,6 +320,66 @@ begin
   else
     known.add(result,aid);
 {$ENDIF}
+end;
+
+procedure TRGLayoutFile.ReadBinaryData(var anode:pointer; var adata:TLayoutBin);
+var
+  lls,ls:WideString;
+  p:PWideChar;
+  lnode:pointer;
+  i,lthemes:integer;
+begin
+  memReadData(FBinPos,adata,SizeOf(adata));
+
+  if adata.number<>1 then
+  begin
+    lnode:=FindNode(anode,'NUMBER');
+    if lnode=nil then
+      AddUnsigned(anode,'NUMBER',adata.number) // lower byte only
+    else
+    begin
+      if rgDebugLevel=dlDetailed then
+        if AsUnsigned(lnode)<>adata.number then
+          FLog.Add('NUMBER differs from binary: '+
+              IntToStr(AsUnsigned(lnode))+' vs '+IntToStr(adata.number));
+    end;
+  end;
+  if adata.random<>1 then
+  begin
+    lnode:=FindNode(anode,'RANDOMIZATION');
+    if lnode=nil then
+      AddUnsigned(anode,'RANDOMIZATION',adata.random)
+    else
+    begin
+      if rgDebugLevel=dlDetailed then
+        if AsUnsigned(lnode)<>adata.random then
+          FLog.Add('RANDOMIZATION differs from binary: '+
+              IntToStr(AsUnsigned(lnode))+' vs '+IntToStr(adata.random));
+    end;
+  end;
+  if adata.choice<>0 then
+  begin
+    if FindNode(anode,'CHOICE')=nil then
+    begin
+      if adata.choice<=Length(strChoice) then
+        AddString(anode,'CHOICE',strChoice[adata.choice]);
+    end;
+  end;
+  if adata.unique<>0 then
+  begin
+    if FindNode(anode,'LEVEL UNIQUE')=nil then
+        AddBool(anode,'LEVEL UNIQUE',true)
+  end;
+
+  if FVer<>verTL2 then
+  begin
+    if adata.tag>=0 then
+    begin
+      FLog.Add('"TAG" is set to '+IntToStr(adata.tag));
+  //      Str(ldata.tag,lls);
+  //      AddString(anode,'TAG',PWideChar(lls));
+    end;
+  end;
 end;
 
 function TRGLayoutFile.GuessDataType(asize:integer):integer;
@@ -400,10 +471,10 @@ begin
       Str(PDword(FPos)^,lls);
       ls:=ls+'='+lls;
     end;
-    RGLog.AddWide(PWideChar(ls));
+    FLog.AddWide(PWideChar(ls));
   end;
 
-//  RGLog.Add('>>'+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname);
+//  FLog.Add('>>'+IntToStr(aid)+':'+TypeToText(ltype)+':'+lname);
 
   case ltype of
     rgBool,
@@ -537,7 +608,7 @@ begin
     begin
       AddInteger(anode,'??UNKNOWN',asize);
       AddString (anode,PWideChar('??'+WideString(lname)), PWideChar(WideString(HexStr(FPos-FStart,8))));
-      RGLog.Add('Unknown property type '+IntToStr(ltype)+' size '+IntToStr(asize)+' at '+HexStr(FPos-FStart,8));
+      FLog.Add('Unknown property type '+IntToStr(ltype)+' size '+IntToStr(asize)+' at '+HexStr(FPos-FStart,8));
     end;
   end;
 
@@ -592,6 +663,7 @@ var
   pcw:PWideChar;
   laptr:pByte;
   lint,ltlpoints,ltltype,ltlprops,ltlobjs,i,j,k:integer;
+  l2ndval:boolean;
 //  ltmp:integer;
 begin
   tldata:=AddGroup(anode,'TIMELINEDATA');
@@ -612,9 +684,9 @@ begin
       if fver=verRGO then
       begin
         ltmpq:=memReadInteger64(FPos);
-        RGLog.Add('RGO Timeline Int64='+IntToStr(ltmpq));
+        FLog.Add('RGO Timeline Int64='+IntToStr(ltmpq));
         ltmp:=memReadByte(aptr);
-        RGLog.Add('RGO Timeline byte='+IntToStr(ltmp));
+        FLog.Add('RGO Timeline byte='+IntToStr(ltmp));
       end;
 }
       // 1st name, Property
@@ -633,7 +705,7 @@ begin
       begin
         if ltltype<>0 then
         begin
-          RGLog.Add('Double Timeline type at '+HexStr(FPos-FStart,8));
+          FLog.Add('Double Timeline type at '+HexStr(FPos-FStart,8));
         end;
         ltltype:=2;
         tlnode:=AddGroup(tlobject,'TIMELINEOBJECTEVENT');
@@ -644,7 +716,7 @@ begin
       // not Property or Event
       if ltltype=0 then
       begin
-        RGLog.Add('Unknown Timeline type at '+HexStr(laptr-FStart,8));
+        FLog.Add('Unknown Timeline type at '+HexStr(laptr-FStart,8));
         tlnode:=AddGroup(tlobject,'??TIMELINEUNKNOWN');
       end;
 
@@ -657,12 +729,11 @@ begin
 
         // Interpolation
         lint:=memReadByte(FPos);
-        if lint<=High(strInterpolation) then
-          pcw:=strInterpolation[lint]
-        else
+        pcw:=GetInterpolationName(lint);
+        if pcw=nil then
         begin
           if RGDebugLevel=dlDetailed then
-            RGLog.Add('Timeline '+IntToStr(aid)+' unknown interpolation='+IntToStr(lint));
+            FLog.Add('Timeline '+IntToStr(aid)+' unknown interpolation='+IntToStr(lint));
 
           pcw:=Pointer(WideString(IntToStr(lint)));
         end;
@@ -686,46 +757,53 @@ begin
           begin
             lint:=memReadByte(FPos); // 1
             if (lint<>1) and (RGDebugLevel=dlDetailed) then
-              RGLog.Add('Timeline value byte 1 = '+IntToStr(lint));
+              FLog.Add('Timeline value byte 1 = '+IntToStr(lint));
             lint:=memReadByte(FPos); // 1
             if (lint<>1) and (RGDebugLevel=dlDetailed) then
-              RGLog.Add('Timeline value byte 2 = '+IntToStr(lint));
+              FLog.Add('Timeline value byte 2 = '+IntToStr(lint));
           end;
 
+          l2ndval:=false;
           pcw:=memReadShortStringUTF8(FPos);
           if pcw<>nil then
           begin
+            l2ndval:=true;
 //            ltltype:=1;
             AddString(tlpoint,'VALUE_1',pcw);
             FreeMem(pcw);
           end;
 
-          pcw:=memReadShortStringUTF8(FPos);
-          if pcw<>nil then
+          if l2ndval then
           begin
-//            ltltype:=1;
-            AddString(tlpoint,'VALUE',pcw);
-            FreeMem(pcw);
+            pcw:=memReadShortStringUTF8(FPos);
+            if pcw<>nil then
+            begin
+  //            ltltype:=1;
+              AddString(tlpoint,'VALUE',pcw);
+              FreeMem(pcw);
+            end;
           end;
         end;
 
         if FVer in [verHob, verRG] then
         begin
+          l2ndval:=false;
           pcw:=memReadShortStringUTF8(FPos);
           if pcw<>nil then
           begin
-            ltltype:=1;
+            l2ndval:=true;
+//            ltltype:=1;
             AddString(tlpoint,'VALUE_1',pcw);
             FreeMem(pcw);
           end;
 
           // condition can be commented? Not for Hob!
-          if (ltltype=0) or (ltltype=1) then
+          if (ltltype=0) or (ltltype=1) or l2ndval then
           begin
             pcw:=memReadShortStringUTF8(FPos);
             if pcw<>nil then
             begin
-              ltltype:=1;
+//              ltltype:=1;
               AddString(tlpoint,'VALUE',pcw);
               FreeMem(pcw);
             end;
@@ -733,7 +811,7 @@ begin
 {
           if ltltype=2 then
           begin
-            RGLog.Add('Timeline '+IntToStr(aid)+
+            FLog.Add('Timeline '+IntToStr(aid)+
                 ' event. Don''t know what to do. At '+HexStr(laptr-FStart,8));
           end;
 }
@@ -787,12 +865,18 @@ var
   i,lcnt,lidx:integer;
   ltype:integer;
   ltmp:word;
+  lsametype:boolean;
 begin
   result:=0;
         
   ltype:=GetNodeType(anode);
+  // can be slightly different in descriptions
+  lsametype:=(ltype=atype) OR
+    ((ltype in [rgInteger,rgUnsigned]) and
+     (atype in [rgInteger,rgUnsigned]));
+
   // array
-  if (ltype<>atype) and not (atype in [rgString,rgTranslate,rgNote]){and (ltype=rgString)} then
+  if (not lsametype) and not (atype in [rgString,rgTranslate,rgNote]){and (ltype=rgString)} then
   begin
     lp:=AsString(anode);
     lcnt:=splitCountW(lp,',');
@@ -995,22 +1079,32 @@ begin
         astream.WriteFloat(asFloat(FindNode(tlpoint,'TIMEPERCENT')));
         pcw:=AsString(FindNode(tlpoint,'INTERPOLATION'));
 
-        lval:=0;
-        while lval<=High(strInterpolation) do
-        begin
-{TODO: make compare not case-sensitive}
-          if CompareWide(pcw,strInterpolation[lval])=0 then break;
-          inc(lval);
-        end;
+        lval:=GetInterpolationCode(pcw);
         astream.WriteByte(lval);
 
         if (FVer=verTL2) and (ltype=1) then
           astream.WriteShortString(AsString(FindNode(tlpoint,'VALUE')));
 
-        if FVer in [verHob, verRG, verRGO] then
+        if (FVer=verRGO) then
         begin
-//          astream.WriteShortStringUTF8(AsString(FindNode(tlpoint,'VALUE_1')));
-//          astream.WriteShortStringUTF8(AsString(FindNode(tlpoint,'VALUE')));
+          if ltype=1 then
+          begin
+            astream.WriteByte(0);
+            astream.WriteByte(0);
+          end;
+
+          pcw:=AsString(FindNode(tlpoint,'VALUE_1'));
+          astream.WriteShortStringUTF8(pcw);
+//          if pcw<>nil then
+            astream.WriteShortStringUTF8(AsString(FindNode(tlpoint,'VALUE')));
+        end;
+
+        if FVer in [verHob, verRG] then
+        begin
+          pcw:=AsString(FindNode(tlpoint,'VALUE_1'));
+          astream.WriteShortStringUTF8(pcw);
+          if (ltype=1) or (pcw<>nil) then // condition for hob?
+            astream.WriteShortStringUTF8(AsString(FindNode(tlpoint,'VALUE')));
         end;
 
       end;
@@ -1142,7 +1236,7 @@ end;
 function ParseLayoutMem(abuf:pByte; atype:cardinal=ltLayout):pointer;
 var
   lrgl:TRGLayoutFile;
-
+  ls:string;
 begin
   lrgl.Init;
 
@@ -1161,12 +1255,14 @@ begin
     result:=nil;
   end;
 
+  ls:=lrgl.FLog.Text;
+  if ls<>'' then RGLog.Add(ls);
   lrgl.Free;
 end;
 
 function ParseLayoutMem(abuf:pByte; const afname:string):pointer;
 begin
-  if afname<>'' then RGLog.Add{Reserve}('Processing '+afname);
+  RGLog.Reserve('Processing '+afname);
   result:=ParseLayoutMem(abuf,GetLayoutType(afname));
 end;
 
@@ -1189,7 +1285,7 @@ end;
 
 function ParseLayoutStream(astream:TStream; const afname:string):pointer;
 begin
-  if afname<>'' then RGLog.Add{Reserve}('Processing '+afname);
+  RGLog.Reserve('Processing '+afname);
   result:=ParseLayoutStream(astream,GetLayoutType(afname));
 end;
 

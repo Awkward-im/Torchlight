@@ -156,11 +156,15 @@ begin
       rgUnknown   : lvalue:=asString   (anode);
       rgFloat     : begin
         lfloat:=asFloat(anode);
+try
         if ABS(lfloat)<1.0E-6 then
 //          Str(lfloat,lvalue)
           Str(lfloat:0:DoublePrec,lvalue)
         else
           Str(lfloat:0:FloatPrec,lvalue);
+except
+  RGLog.Add('problem with float conversion');
+end;
         FixFloatStr(lvalue);
       end;
       rgDouble    : begin

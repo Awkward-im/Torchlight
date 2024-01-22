@@ -410,6 +410,7 @@ end;
 function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean):boolean;
 var
   ltype:array [0..31] of WideChar;
+  ls:WideString;
   pc,lname,ldescr:PWideChar;
   layptr:PLayoutInfo;
   pscene:PSceneInfo;
@@ -592,6 +593,11 @@ begin
         pprop^.name :=lname;
         pprop^.descr:=ldescr;
         pprop^.ptype:=TextToType(ltype);
+        if pprop^.ptype=rgNotValid then
+        begin
+          Str(lid,ls);
+          RGLog.Add('Layout dict, not valid type '+WideString(ltype)+' with id='+ls);
+        end;
       end;
 
       #0: break;

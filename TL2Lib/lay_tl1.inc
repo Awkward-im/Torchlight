@@ -28,7 +28,7 @@ begin
   pname:=info.GetObjectName(lChunkType);
   AddString(lnode,'DESCRIPTOR',pname);
 
-  RGLog.Add('Object type '+IntToStr(lChunkType)+' ('+HexStr(lChunkType,2)+') '+string(pname));
+  FLog.Add('Object type '+IntToStr(lChunkType)+' ('+HexStr(lChunkType,2)+') '+string(pname));
 
   pcw:=memReadDWordString(FPos);
   if pcw<>nil then
@@ -48,7 +48,7 @@ begin
   begin
     lsize:=memReadDWord(FPos);
     ReadPropertyValue(i,lsize*SizeOf(DWord), lnode);
-    RGLog.Add('Property ('+IntToStr(i)+') with size '+IntToStr(lsize));
+    FLog.Add('Property ('+IntToStr(i)+') with size '+IntToStr(lsize));
   end;
 
   //--- Additional data
@@ -56,7 +56,7 @@ begin
   //--- Children
 
   lcnt:=memReadDWord(FPos);
-  RGLog.Add('Children count='+IntToStr(lcnt));
+  FLog.Add('Children count='+IntToStr(lcnt));
   if lcnt>0 then
   begin
 {
@@ -67,7 +67,7 @@ begin
     lnode:=AddGroup(bnode,'CHILDREN');
     for i:=0 to lcnt-1 do
     begin
-RGLog.Add('From '+HexStr(memReadDWord(FPos),4)+' to '+HexStr(memReadDWord(FPos),4));
+FLog.Add('From '+HexStr(memReadDWord(FPos),4)+' to '+HexStr(memReadDWord(FPos),4));
 //      inc(result,DoParseBlockTL1(lnode,lChunkId));
     end;
   end;
@@ -84,7 +84,7 @@ begin
 
   qw:=memReadInteger64(FPos);
   if qw<>$B81A3A0F4348455A then
-    RGLog.Add('TL1 Layout signature is not B81A3A0F4348455A but'+HexStr(qw,16));
+    FLog.Add('TL1 Layout signature is not B81A3A0F4348455A but'+HexStr(qw,16));
   
   result:=AddGroup(nil,ltName[ltLayout]);
   info.SelectScene(ltName[ltLayout]);

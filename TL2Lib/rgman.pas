@@ -196,14 +196,20 @@ function TransformPath(apath:string):UnicodeString;
 var
   i,j,lsize,lrsize:integer;
 begin
-  j:=1;
+  if apath='' then
+  begin
+    result:='';
+    exit;
+  end;
+
   i:=1;
-  while (apath[i]='\') or (apath[i]='/') do inc(i);
   lsize:=Length(apath);
+  while (apath[i]='\') or (apath[i]='/') do inc(i);
   lrsize:=lsize-i+1;
   if (apath[lsize]<>'\') or (apath[lsize]<>'/') then inc(lrsize);
   SetLength(result,lrsize);
 
+  j:=1;
   while i<=lsize do
   begin
     if apath[i]='\' then
@@ -220,18 +226,33 @@ end;
 // Upper case, no starting slashes but with ending
 function TransformPath(apath:PUnicodeChar):UnicodeString;
 var
-  i,lsize:integer;
+  i,j,lsize,lrsize:integer;
 begin
-  result:=UpCase(UnicodeString(apath));
-  lsize:=Length(result);
-  for i:=1 to lsize do
-    if result[i]='\' then result[i]:='/';
-  i:=1;
-  while result[i]='/' do inc(i);
-  dec(i);
-  if i>0 then Delete(result,1,i); dec(lsize,i);
+  if (apath=nil) or (apath^=#0) then
+  begin
+    result:='';
+    exit;
+  end;
 
-  if result[lsize]<>'/' then result:=result+'/';
+  i:=0;
+  lsize:=Length(apath)-1;
+  while (apath[i]='\') or (apath[i]='/') do inc(i);
+  lrsize:=(lsize+1)-i;
+  if (apath[lsize]<>'\') or (apath[lsize]<>'/') then inc(lrsize);
+  SetLength(result,lrsize);
+
+  j:=1;
+  while i<=lsize do
+  begin
+    if apath[i]='\' then
+      result[j]:='/'
+    else
+      result[j]:=UpCase(apath[i]);
+    inc(i);
+    inc(j);
+  end;
+
+  if result[lrsize]<>'/' then result[lrsize]:='/';
 end;
 
 function TRGManifest.IsDirDeleted(aentry:integer):boolean; inline;
@@ -631,7 +652,12 @@ end;
 
 function TRGManifest.AddPath(const apath:string):integer;
 begin
-  result:=AddPath(PUnicodeChar(UnicodeString(apath)))
+  if FDirCount=0 then
+    AddEntryDir(nil);
+
+  if apath='' then exit(0);
+
+  result:=DoAddPath(TransformPath(apath));
 end;
   {%ENDREGION Add}
 
@@ -704,19 +730,19 @@ var
 begin
   result:=0;
   //!!!! Transform path to upcase with '/' at the end
-  lpath:=UnicodeString(apath);
+  lpath:=TransformPath(apath);
   // Search parent
   lparent:=SearchPath(PUnicodeChar(lpath));
   if lparent>=0 then
   begin
-    lold:=TransformPath(PUnicodeChar(UnicodeString(oldname)));
+    lold:=TransformPath(oldname);
     lpathnew:=lpath;
     lpath:=lpath+lold;
     // Search old
     lentry:=SearchPath(PUnicodeChar(lpath));
     if lentry>0 then
     begin
-      lnew:=TransformPath(PUnicodeChar(UnicodeString(newname)));
+      lnew:=TransformPath(newname);
       lpold:=nil;
       // Search file record in parent and check for existing new
       if GetFirstFile(p,lparent)<>0 then
@@ -754,21 +780,21 @@ end;
 
 function TRGManifest.RenameDir(const apath, newname:string):integer;
 var
-  lpath,lname:UnicodeString;
+  lpath,lname,lnew:UnicodeString;
   lslash:integer;
 begin
-  lpath:=TransformPath(PUnicodeChar(UnicodeString(apath)));
+  lpath:=TransformPath(apath);
+  lnew:=UnicodeString(newname);
   lslash:=Length(lpath)-1;
   while (lslash>1) and (lpath[lslash]<>'/') do dec(lslash);
   if lslash>1 then
   begin
     lname:=Copy(lpath,lslash+1);
     SetLength(lpath,lslash);
-    result:=RenameDir(PUnicodeChar(lpath),PUnicodeChar(lname),
-      PUnicodeChar(UnicodeString(newname)));
+    result:=RenameDir(PUnicodeChar(lpath),PUnicodeChar(lname),PUnicodeChar(lnew));
   end
   else
-    result:=RenameDir('',PUnicodeChar(lpath),PUnicodeChar(UnicodeString(newname)))
+    result:=RenameDir('',PUnicodeChar(lpath),PUnicodeChar(lnew))
 end;
   {%ENDREGION Rename}
 

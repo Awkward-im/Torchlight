@@ -1,255 +1,131 @@
 {}
 
 const
+  // trigger decal react
   IdGroupHob      = 4270653419;
+  IdGroupBake     = 4270023114;
+  IdGroupMonster  = 3078161015;
   IdLogicGroupHob = 2261606130;
   IdTimelineHob   = 2623981599;
 
 procedure TRGLayoutFile.ReadBinaryDataHob(var anode:pointer);
 var
-  ldata:TLayoutBinHob;
+  ldata:TLayoutBin;
   lls,ls:WideString;
   p:PWideChar;
   i,lthemes:integer;
+  ltmp:array [0..14] of byte;
 begin
-  // check current group ID. or offset? if the same, process
-  // if not: 1 - check position (before/after)
-  // 2 - check from start of data
-  memReadData(FBinPos,ldata,SizeOf(ldata));
-  if ldata.choice<>0 then
+  ReadBinaryData(anode, ldata);
+
+  if ldata.noflag<>0 then FLog.Add('Unk1='+IntToStr(ldata.noflag));
+
+  i:=memReadWord(FBinPos); // Unk3
+  if word(i)<>0 then FLog.Add('Unk3='+IntToStr(word(i)));
+
+  i:=memReadWord(FBinPos); // Unk4
+  if word(i)<>0 then FLog.Add('Unk4='+IntToStr(word(i)));
+
+  i:=memReadByte(FBinPos); // Unk5
+  if byte(i)<>0 then
   begin
-    if FindNode(anode,'CHOICE')=nil then
+    if rgDebugLevel=dlDetailed then
     begin
-      if ldata.choice<=Length(strChoice) then
-        AddString(anode,'CHOICE',strChoice[ldata.choice]);
-{
-      if      ldata.choice=1 then AddString(anode,'CHOICE','Weight')
-      else if ldata.choice=2 then AddString(anode,'CHOICE','Random Chance');
-}
+      FLog.Add('Unk5 (0 or 6)='+IntToStr(i))
+    //  AddUnsigned(anode,'unk5',ldata.unk5);
+    end
+    else if rgDebugLevel<>dlNone then
+    begin
+      if (i<>0) and (i<>6) then
+      begin
+        FLog.Add('Unk5 (0 or 6)='+IntToStr(i))
+      //  AddUnsigned(anode,'unk5',ldata.unk5);
+      end
     end;
   end;
 
-if ldata.unk1<>0 then
-begin
-  AddUnsigned(anode,'unk1',ldata.unk1);
-end;
-if ldata.unk3<>0 then
-begin
-  AddUnsigned(anode,'unk1',ldata.unk2);
-end;
-if ldata.unk2<>0 then
-begin
-  AddUnsigned(anode,'unk1',ldata.unk3);
-end;
-if (ldata.unk[0]<>0) or (ldata.unk[1]<>0) or (ldata.unk[2]<>0) or (ldata.unk[3]<>0) or
-   (ldata.unk[4]<>0) or (ldata.unk[5]<>0) or (ldata.unk[6]<>0) or (ldata.unk[7]<>0) or
-   (ldata.unk[8]<>0) or (ldata.unk[9]<>0) or (ldata.unk[10]<>0) or (ldata.unk[11]<>0) or
-   (ldata.unk[12]<>0) or (ldata.unk[13]<>0) or (ldata.unk[14]<>0) then
-begin
-  AddString(anode,'!!Unknown','not zero');
-end;
-(*
-  if ldata.gamemode<>0 then
+  memReadData(FBinPos,ltmp,SizeOf(ltmp));
+  if (ltmp[ 0]<>0) or (ltmp[ 1]<>0) or (ltmp[ 2]<>0) or (ltmp[ 3]<>0) or
+     (ltmp[ 4]<>0) or (ltmp[ 5]<>0) or (ltmp[ 6]<>0) or (ltmp[ 7]<>0) or
+     (ltmp[ 8]<>0) or (ltmp[ 9]<>0) or (ltmp[10]<>0) or (ltmp[11]<>0) or
+     (ltmp[12]<>0) or (ltmp[13]<>0) or (ltmp[14]<>0) then
   begin
-    if FindNode(anode,'GAME MODE')=nil then
-    begin
-      if ldata.gamemode<=Length(strGameMode) then
-        AddString(anode,'GAME MODE',strGameMode[ldata.gamemode]);
-{
-      if      ldata.gamemode=1 then AddString(anode,'GAME MODE','NORMAL')
-      else if ldata.gamemode=2 then AddString(anode,'GAME MODE','GAME MODE PLUS');
-}
-    end;
-  end;
-  if ldata.unique<>0 then
-  begin
-    if FindNode(anode,'LEVEL UNIQUE')=nil then
-    begin
-      AddBool(anode,'LEVEL UNIQUE',true)
-    end;
-  end;
-  if ldata.notag <>0 then AddBool    (anode,'NO TAG FOUND' ,true);
-*)
-  if ldata.number<>1 then AddUnsigned(anode,'NUMBER'       ,ldata.number);
-  if ldata.random<>1 then AddUnsigned(anode,'RANDOMIZATION',ldata.random);
-  if ldata.idk1  <>0 then AddUnsigned(anode,'UNKNOWN'      ,ldata.idk1);
-  if ldata.tag>=0 then
-  begin
-{
-    p:=GetTagTL2(ldata.tag);
-    if p<>nil then
-      AddString(anode,'TAG',p)
-    else
-}
-    begin
-      Str(ldata.tag,lls);
-      AddString(anode,'TAG',PWideChar(lls));
-    end;
+    AddString(anode,'!!Unknown','not zero');
   end;
 
-{
-  lthemes:=memReadInteger(FBinPos);
-  if lthemes>0 then
+  memReadWord(FBinPos); // child
+end;
+
+procedure TRGLayoutFile.ReadBinaryDataRGO(var anode:pointer);
+var
+  ldata:TLayoutBin;
+  lls,ls:WideString;
+  p:PWideChar;
+  lnode:pointer;
+  i,lthemes:integer;
+begin
+  ReadBinaryData(anode, ldata);
+
+  if ldata.noflag<>0 then
   begin
-    ls:='';
-    for i:=0 to lthemes-1 do
-    begin
-      if i>0 then ls:=ls+',';
-      Str(memReadInteger64(FBinPos),lls);
-      ls:=ls+lls;
-    end;
-    AddString(anode,'ACTIVE THEMES',PWideChar(ls));
+    if FindNode(anode,'CREATEWITHNOFLAG')=nil then
+        AddBool(anode,'CREATEWITHNOFLAG',true);
   end;
-  lthemes:=memReadInteger(FBinPos);
-  if lthemes>0 then
+
+  i:=memReadByte(FBinPos); // Unk3
+  if byte(i)<>0 then FLog.Add('Unk3='+IntToStr(byte(i)));
+
+  i:=memReadByte(FBinPos);
+  if byte(i)<>0 then
   begin
-    ls:='';
-    for i:=0 to lthemes-1 do
-    begin
-      if i>0 then ls:=ls+',';
-      Str(memReadInteger64(FBinPos),lls);
-      ls:=ls+lls;
-    end;
-    AddString(anode,'DEACTIVE THEMES',PWideChar(ls));
+    if FindNode(anode,'DONTPROPAGATE')=nil then
+        AddBool(anode,'DONTPROPAGATE',true);
   end;
-}
+
+  p:=memReadShortStringUTF8(FBinPos);
+  if p<>nil then
+  begin
+    if FindNode(anode,'GAMEFLAGREQUIREMENT')=nil then
+      AddString(anode,'GAMEFLAGREQUIREMENT',p);
+    FreeMem(p);
+  end;
+
+  p:=memReadShortStringUTF8(FBinPos);
+  if p<>nil then
+  begin
+    if FindNode(anode,'SCENEFLAGREQUIREMENT')=nil then
+      AddString(anode,'SCENEFLAGREQUIREMENT',p);
+    FreeMem(p);
+  end;
+
+  p:=memReadShortStringUTF8(FBinPos);
+  if p<>nil then
+  begin
+    if FindNode(anode,'WORLDTAGREQUIREMENT')=nil then
+      AddString(anode,'WORLDTAGREQUIREMENT',p);
+    FreeMem(p);
+  end;
+
   memReadWord(FBinPos); // child
 end;
 
 procedure TRGLayoutFile.ReadBinaryDataRG(var anode:pointer);
 var
-  ldata:TLayoutBinRGO;
+  ldata:TLayoutBin;
   lls,ls:WideString;
   p:PWideChar;
   i,lthemes:integer;
 begin
-  // check current group ID. or offset? if the same, process
-  // if not: 1 - check position (before/after)
-  // 2 - check from start of data
-  memReadData(FBinPos,ldata,SizeOf(ldata));
+  ReadBinaryData(anode, ldata);
 
-  if FVer=verRGO then
-  begin
-    p:=memReadShortStringUTF8(FBinPos);
-    if p<>nil then
-    begin
-      if FindNode(anode,'GAMEFLAGREQUIREMENT')=nil then
-        AddString(anode,'GAMEFLAGREQUIREMENT',p);
-      FreeMem(p);
-    end;
+  if ldata.noflag<>0 then FLog.Add('Unk1='+IntToStr(ldata.noflag));
 
-    p:=memReadShortStringUTF8(FBinPos);
-    if p<>nil then
-    begin
-      if FindNode(anode,'SCENEFLAGREQUIREMENT')=nil then
-        AddString(anode,'SCENEFLAGREQUIREMENT',p);
-      FreeMem(p);
-    end;
+  i:=memReadByte(FBinPos); // Unk3
+  if byte(i)<>0 then FLog.Add('Unk3='+IntToStr(byte(i)));
 
-    p:=memReadShortStringUTF8(FBinPos);
-    if p<>nil then
-    begin
-      if FindNode(anode,'WORLDTAGREQUIREMENT')=nil then
-        AddString(anode,'WORLDTAGREQUIREMENT',p);
-      FreeMem(p);
-    end
-  end;
+  i:=memReadByte(FBinPos); // Unk4
+  if byte(i)<>0 then FLog.Add('Unk4='+IntToStr(byte(i)));
 
-  if ldata.choice<>0 then
-  begin
-    if FindNode(anode,'CHOICE')=nil then
-    begin
-      if ldata.choice<=Length(strChoice) then
-        AddString(anode,'CHOICE',strChoice[ldata.choice]);
-{
-      if      ldata.choice=1 then AddString(anode,'CHOICE','Weight')
-      else if ldata.choice=2 then AddString(anode,'CHOICE','Random Chance');
-}
-    end;
-  end;
-  if ldata.gamemode<>0 then
-  begin
-    if FindNode(anode,'GAME MODE')=nil then
-    begin
-      if ldata.gamemode<=Length(strGameMode) then
-        AddString(anode,'GAME MODE',strGameMode[ldata.gamemode]);
-{
-      if      ldata.gamemode=1 then AddString(anode,'GAME MODE','NORMAL')
-      else if ldata.gamemode=2 then AddString(anode,'GAME MODE','GAME MODE PLUS');
-}
-    end;
-  end;
-  if ldata.unique<>0 then
-  begin
-    if FindNode(anode,'LEVEL UNIQUE')=nil then
-    begin
-      RGLog.Add('"UNIQUE" value presents');
-      AddBool(anode,'LEVEL UNIQUE',true)
-    end;
-  end;
-  if ldata.number<>1 then
-  begin
-    if FindNode(anode,'NUMBER')=nil then
-    begin
-      AddUnsigned(anode,'NUMBER',ldata.number); // lower byte only
-    end;
-  end;
-  if ldata.random<>1 then
-  begin
-    if FindNode(anode,'RANDOMIZATION')=nil then
-      AddUnsigned(anode,'RANDOMIZATION',ldata.random);
-  end;
-  if ldata.noflag<>0 then
-  begin
-    if FindNode(anode,'CREATEWITHNOFLAG')=nil then
-      AddBool(anode,'CREATEWITHNOFLAG' ,true);
-  end;
-  if ldata.noprop<>0 then
-  begin
-    if FindNode(anode,'DONTPROPAGATE')=nil then
-      AddBool(anode,'DONTPROPAGATE' ,true);
-  end;
-  if ldata.tag>=0 then
-  begin
-{
-    p:=GetTagTL2(ldata.tag);
-    if p<>nil then
-      AddString(anode,'TAG',p)
-    else
-}
-    begin
-      RGLog.Add('"TAG" value presents');
-      Str(ldata.tag,lls);
-      AddString(anode,'TAG',PWideChar(lls));
-    end;
-  end;
-
-{
-  lthemes:=memReadInteger(FBinPos);
-  if lthemes>0 then
-  begin
-    ls:='';
-    for i:=0 to lthemes-1 do
-    begin
-      if i>0 then ls:=ls+',';
-      Str(memReadInteger64(FBinPos),lls);
-      ls:=ls+lls;
-    end;
-    AddString(anode,'ACTIVE THEMES',PWideChar(ls));
-  end;
-  lthemes:=memReadInteger(FBinPos);
-  if lthemes>0 then
-  begin
-    ls:='';
-    for i:=0 to lthemes-1 do
-    begin
-      if i>0 then ls:=ls+',';
-      Str(memReadInteger64(FBinPos),lls);
-      ls:=ls+lls;
-    end;
-    AddString(anode,'DEACTIVE THEMES',PWideChar(ls));
-  end;
-}
   memReadWord(FBinPos); // child
 end;
 
@@ -320,7 +196,7 @@ begin
 
   //--- Properties
 
-  RGLog.Reserve('Object '+UTF8Encode(WideString(lname)));
+  FLog.Reserve('Object '+UTF8Encode(WideString(lname)));
 
   lcnt:=memReadByte(FPos);
   for i:=0 to lcnt-1 do
@@ -330,12 +206,15 @@ begin
 
   //--- Place for binary group data translation
 
-  if lChunkType=IdGroupHob then
+  if (lChunkType=IdGroupHob    ) or
+     (lChunkType=IdGroupBake   ) or
+     (lChunkType=IdGroupMonster) then
   begin
-    if FVer=verHob then
-      ReadBinaryDataHob(lnode)
-    else
-      ReadBinaryDataRG(lnode);
+    case FVer of
+      verHob: ReadBinaryDataHob(lnode);
+      verRG : ReadBinaryDataRG (lnode);
+      verRGO: ReadBinaryDataRGO(lnode);
+    end;
   end;
 
   //--- Additional data
@@ -366,7 +245,7 @@ end;
 
     else
     begin
-      RGLog.Add('Unknown chunk with size '+IntToStr(lsize)+' at '+HexStr(FPos-FStart,8));
+      FLog.Add('Unknown chunk with size '+IntToStr(lsize)+' at '+HexStr(FPos-FStart,8));
     //!!
       AddString (lnode,'??ADDITIONALDATA', PWideChar(WideString(HexStr(FPos-FStart,8))));
       AddInteger(lnode,'??ADDITIONALSIZE',lsize);
@@ -389,7 +268,7 @@ end;
 
   FPos:=lptr+lChunkSize;
 
-//  RGLog.Reserve('');
+//  FLog.Reserve('');
 end;
 
 function TRGLayoutFile.DoParseLayoutHob(atype:cardinal):pointer;
@@ -406,39 +285,41 @@ begin
 
   ltmp:=memReadByte(FPos);
   if (ltmp<>0) and (RGDebugLevel=dlDetailed) then
-    RGLog.Add('Second byte is not 0 but '+HexStr(ltmp,2));
+    FLog.Add('Second byte is not 0 but '+HexStr(ltmp,2));
 
   result:=AddGroup(nil,ltName[ltLayout]);
   info.SelectScene(ltName[ltLayout]);
 
-  lcnt:=memReadDWord(FPos);
+  lcnt:=memReadDWord(FPos);                // TOTAL object amount
   AddUnsigned(result,'COUNT',lcnt);
 
   ltmp:=memReadDword(FPos);                // offset
   FBinStart:=FStart+ltmp;
   if ltmp<>0 then
   begin
-    FBinPos:=FBinStart+SizeOf(TLayoutBinHob)+2;
+    FBinPos:=FBinStart+SizeOf(TLayoutBin)+20+2;
     if (RGDebugLevel=dlDetailed) then
-      RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
+      FLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
+
+  //--- Header
 
   ltmp:=memReadByte(FPos);                 // 1
   if (ltmp<>1) and (RGDebugLevel=dlDetailed) then
-    RGLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
+    FLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
 
   pcw:=memReadShortStringUTF8(FPos);       // LEVEL
   AddString(result,'TYPE',pcw);
   if CompareWide(pcw,'LEVEL')<>0 then
-    RGLog.Add('Type is not LEVEL but '+string(pcw));
+    FLog.Add('Type is not LEVEL but '+string(pcw));
   FreeMem(pcw);
 
   ltmp:=memReadByte(FPos);                 // 0
   if (ltmp<>0) and (RGDebugLevel=dlDetailed) then
-    RGLog.Add('Byte after type is not 0 but '+IntToStr(ltmp));
+    FLog.Add('Byte after type is not 0 but '+IntToStr(ltmp));
   ltmp:=memReadByte(FPos);                 // 4
   if (ltmp<>4) and (RGDebugLevel=dlDetailed) then
-    RGLog.Add('Byte before main data offset is not 4 but '+IntToStr(ltmp));
+    FLog.Add('Byte before main data offset is not 4 but '+IntToStr(ltmp));
 
   ldata:=memReadDWord(FPos);               // absolute offset to data
   pcw:=memReadShortString(FPos);
@@ -459,7 +340,7 @@ begin
   ltmp:=memReadByte(FPos);                 // 1 usually
   b1:=ltmp<>0;
   if (ltmp<>1) and (RGDebugLevel=dlDetailed) then
-    RGLog.Add('Byte (1 of 3) is not 1 but '+IntToStr(ltmp));
+    FLog.Add('Byte (1 of 3) is not 1 but '+IntToStr(ltmp));
 
   // Warp points
   lcnt:=memReadWord(FPos);
@@ -476,9 +357,11 @@ begin
     end;
   end;
 
+  //--- Main layout data
+
   FPos:=FStart+ldata;
 
-  lcnt:=memReadWord(FPos);
+  lcnt:=memReadWord(FPos);   // ROOT object amoun
 
   lobj:=AddGroup(result,'OBJECTS');
   for i:=0 to lcnt-1 do
@@ -496,40 +379,47 @@ begin
   inc(FPos);
   i:=memReadByte(FPos);
   if (i<>0) and (RGDebugLevel=dlDetailed) then
-    RGLog.Add('Second byte is not 0 but '+HexStr(i,2));
+    FLog.Add('Second byte is not 0 but '+HexStr(i,2));
 
   ltmp:=memReadDword(FPos);                // offset
   FBinStart:=FStart+ltmp;
   if ltmp<>0 then
   begin
-    FBinPos:=FBinStart+SizeOf(TLayoutBinRG)+2;
-    if FVer=verRGO then
-      inc(FBinPos,6);                //!!!!!
+    if FVer=verRG then i:=2 // unk3+unk4
+    else i:=8;              // unk3+noprop+game+scene+world
+
+    FBinPos:=FBinStart+SizeOf(TLayoutBin)+i+2; // +child count
 
     if (RGDebugLevel=dlDetailed) then
-      RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
+      FLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
   ltmp:=memReadByte(FPos);                 // 1
+  if (ltmp<>0) and (RGDebugLevel=dlDetailed) then
+    FLog.Add('Byte after binary offset is not 0 but '+IntToStr(ltmp));
+//  if (RGDebugLevel=dlDetailed) then
+//    FLog.Add('Byte after binary offset is '+IntToStr(ltmp));
 (*
   if (RGDebugLevel=dlDetailed) then
   begin
     if FVer=verRGO then
     begin
       if ltmp<>1 then
-        RGLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
+        FLog.Add('Byte after binary offset is not 1 but '+IntToStr(ltmp));
     end
     else
     begin
       if ltmp<>0 then
-        RGLog.Add('Byte after binary offset is not 0 but '+IntToStr(ltmp));
+        FLog.Add('Byte after binary offset is not 0 but '+IntToStr(ltmp));
     end;
   end;
 *)
   result:=AddGroup(nil,ltName[ltLayout]);
   info.SelectScene(ltName[ltLayout]);
 
-  lcnt:=memReadWord(FPos);
+  //--- Main layout data
+
+  lcnt:=memReadWord(FPos);                // ROOT object amoun
   AddUnsigned(result,'COUNT',lcnt);
 
   lobj:=AddGroup(result,'OBJECTS');
@@ -538,7 +428,7 @@ begin
 end;
 
 
-function TRGLayoutFile.WritePropertiesHob(anode:pointer; astream:TStream; var adata:TLayoutBinRG):integer;
+function TRGLayoutFile.WritePropertiesHob(anode:pointer; astream:TStream; var adata:TLayoutBin):integer;
 var
   vct:tVector4;
   lpname,lpval:PWideChar;
@@ -601,42 +491,34 @@ begin
       // Skip these properties for Group coz they are placed into binary section
       if (adata.GUID<>QWord(-1)) and (lprop<>nil) then
       begin
-        // 'CHOICE', 'LEVEL UNIQUE' and 'GAME MODE' are doubling
+        // 'CHOICE' and 'LEVEL UNIQUE' are doubling
         if CompareWide(lpname,'CHOICE')=0 then
         begin
           lpval:=AsString(lprop);
           for j:=1 to Length(strChoice) do
             if Comparewide(lpval,strChoice[j])=0 then begin adata.choice:=j; break; end;
         end;
-        if CompareWide(lpname,'GAME MODE')=0 then
-        begin
-          lpval:=AsString(lprop);
-          for j:=1 to Length(strGameMode) do
-            if Comparewide(lpval,strGameMode[j])=0 then begin adata.gamemode:=j; break; end;
-        end;
         if CompareWide(lpname,'LEVEL UNIQUE')=0 then
         begin
           if AsBool(lprop) then adata.unique:=1;
+        end;
+        // double for case 255+
+        if CompareWide(lpname,'NUMBER')=0 then
+        begin
+          adata.number:=byte(AsUnsigned(lprop));
+//          exit;
+        end;
+        if (FVer=verRG) or (FVer=verRGO) then
+        begin
+          if CompareWide(lpname,'CREATEWITHNOFLAG')=0 then
+          begin
+            if AsBool(lprop) then adata.noflag:=1;
+          end;
         end;
         // next properties presents in binary data only
         if CompareWide(lpname,'RANDOMIZATION')=0 then
         begin
           adata.random:=AsUnsigned(lprop);
-          exit;
-        end;
-        if CompareWide(lpname,'TAG')=0 then
-        begin
-          adata.tag:=GetTagTL2Num(AsString(lprop));
-          exit;
-        end;
-        if CompareWide(lpname,'NUMBER')=0 then
-        begin
-          adata.number:=AsUnsigned(lprop);
-          exit;
-        end;
-        if CompareWide(lpname,'NO TAG FOUND')=0 then
-        begin
-          if AsBool(lprop) then adata.notag:=1;
           exit;
         end;
       end;
@@ -650,7 +532,6 @@ begin
       astream.WriteDWord(l_id);
       if lok then WriteVectorValue  (vct  ,ltype,astream)
       else        WritePropertyValue(lprop,ltype,astream);
-
       lNewPos:=astream.Position;
       astream.Position:=lSizePos;
       astream.WriteWord(lNewPos-lSizePos-2);
@@ -664,7 +545,7 @@ end;
 
 function TRGLayoutFile.DoWriteBlockHob(anode:pointer; astream:TStream; abstream:TStream):integer;
 var
-  ldata:TLayoutBinRG; //!!!!!!!
+  ldata:TLayoutBin;
   lobj,lprops:pointer;
   {lparent,}ldescr,lname,lid:pointer;
   lpdescr,lpname:PWideChar;
@@ -686,6 +567,7 @@ begin
   lChunkType:=info.GetObjectId(lpdescr);
 
   if lChunkType=dword(-1) then exit;
+  inc(FCount);
 
   astream.WriteDword(lChunkType);
 
@@ -708,7 +590,9 @@ begin
   astream.WriteByte(0);
 
   FillChar(ldata,SizeOf(ldata),0);
-  if lChunkType=idGroupHob then
+  if (lChunkType=idGroupHob    ) or
+     (lChunkType=idGroupBake   ) or
+     (lChunkType=idGroupMonster) then
   begin
     ldata.GUID  :=QWord(AsInteger64(lid));
     ldata.random:=1;
@@ -724,21 +608,51 @@ begin
 
   //--- Binary data
 
-  if lChunkType=idGroupHob then
+  if (lChunkType=idGroupHob    ) or
+     (lChunkType=idGroupBake   ) or
+     (lChunkType=idGroupMonster) then
   begin
     result:=1;
+    // CHOICE, NUMBER, RANDOMIZATION and LEVEL_UNIQUE are all inside ldata
     abstream.Write(ldata,SizeOf(ldata));
-    case info.version of
+    case FVer of
       verHob: begin
-// 22 in header already
+        abstream.WriteWord(0);  // 1
+        abstream.WriteWord(0);  // 2
+        abstream.WriteWord(0);  // 3 can be =6
+        abstream.WriteWord(0);  // 4
+        abstream.WriteWord(0);  // 5
+        abstream.WriteWord(0);  // 6
+        abstream.WriteWord(0);  // 7
+        abstream.WriteWord(0);  // 8
+        abstream.WriteWord(0);  // 9
+        abstream.WriteWord(0);  // 10
       end;
+
       verRGO: begin
-        abstream.WriteWord(0);
-        abstream.WriteWord(0);
-        abstream.WriteWord(0);
+        abstream.WriteByte(0); // unk3
+
+         // if set, must be in props too
+        lobj:=FindNode(lprops,'DONTPROPAGATE');
+        if AsBool(lobj) then i:=1 else i:=0;
+        abstream.WriteByte(i);
+
+        // lobj=nil -> lpdescr=nil -> WriteWord(0)
+        lobj:=FindNode(lprops,'GAMEFLAGREQUIREMENT');
+        lpdescr:=AsString(lobj);
+        abstream.WriteShortStringUTF8(lpdescr);
+
+        lobj:=FindNode(lprops,'SCENEFLAGREQUIREMENT');
+        lpdescr:=AsString(lobj);
+        abstream.WriteShortStringUTF8(lpdescr);
+
+        lobj:=FindNode(lprops,'WORLDTAGREQUIUREMENT');
+        lpdescr:=AsString(lobj);
+        abstream.WriteShortStringUTF8(lpdescr);
       end;
+
       verRG: begin
-// 4 in header already
+        abstream.WriteWord(0);
       end;
     end; 
 
@@ -751,15 +665,15 @@ begin
   lAddPos:=astream.Position;
   astream.WriteDWord(0);
 
-  if (lChunkType=idTimelineTL2) or
-     (lChunkType=idLogicGroupTL2) then
+  if (lChunkType=idTimelineHob) or
+     (lChunkType=idLogicGroupHob) then
   begin
 
-    if lChunkType=idTimelineTL2 then
+    if lChunkType=idTimelineHob then
     begin
       BuildTimeline(FindNode(lprops,'TIMELINEDATA'), astream);
     end
-    else //if lChunkType=idLogicGroupTL2 then
+    else //if lChunkType=idLogicGroupHob then
     begin
       BuildLogicGroup(FindNode(lprops,'LOGICGROUP'), astream);
     end;
@@ -778,7 +692,9 @@ begin
   for i:=0 to lcnt-1 do
     lgrpcnt:=lgrpcnt+DoWriteBlockHob(GetChild(lobj,i),astream,abstream); // BASEOBJECT
 
-  if lChunkType=idGroupHob then
+  if (lChunkType=idGroupHob    ) or
+     (lChunkType=idGroupBake   ) or
+     (lChunkType=idGroupMonster) then
     abstream.WriteWordAt(lgrpcnt,lcpos);
 
   //--- Chunk size
@@ -787,60 +703,102 @@ begin
 end;
 
 function TRGLayoutFile.DoBuildLayoutHob(anode:pointer; astream:TStream):integer;
+var
+  lbs:TMemoryStream;
+  ldata:TLayoutBin;
+  lobj,lsub:pointer;
+  pc:PWideChar;
+  i,lcnt,lsize,ldatapos,lchildpos:integer;
 begin
   result:=astream.Position;
   info.Version:=verHob;
-  info.SelectScene('');
+  info.SelectScene(ltName[ltLayout]);
 
-  astream.WriteByte ( 8); // sign
-  astream.WriteByte ( 0);
-  astream.WriteDWord( 0); // binary offset
-end;
+  astream.WriteByte (8); // sign
+  astream.WriteByte (0);
+  astream.WriteDWord(0); // total object Count
+  astream.WriteDWord(0); // binary offset
 
-function TRGLayoutFile.DoBuildLayoutRGO(anode:pointer; astream:TStream):integer;
-var
-  lbs:TMemoryStream;
-  ldata:TLayoutBinRGO;
-  lobj:pointer;
-  i,lcnt,lsize,lchildpos:integer;
-begin
-  result:=astream.Position;
-  info.Version:=verRGO;
-  info.SelectScene('');
+  //--- Header
 
-  astream.WriteByte ( 9); // sign
-  astream.WriteByte ( 0);
-  astream.WriteDWord( 0); // binary offset
-  astream.WriteByte ( 1);
+  astream.WriteByte(0);
+
+  pc:=AsString(FindNode(anode,'TYPE'));
+  astream.WriteShortStringUTF8(AsString(FindNode(anode,'TYPE')));
+
+  astream.WriteByte(0);
+  astream.WriteByte(4);
+
+  ldatapos:=astream.Position;
+  astream.WriteDWord(0); // real layout data offset
+
+  astream.WriteShortString(AsString(FindNode(anode,'BASE')));
+
+  astream.WriteFloat(AsFloat(FindNode(anode,'X1')));
+  astream.WriteFloat(AsFloat(FindNode(anode,'Y1')));
+  astream.WriteFloat(AsFloat(FindNode(anode,'Z1')));
+  astream.WriteFloat(AsFloat(FindNode(anode,'X2')));
+  astream.WriteFloat(AsFloat(FindNode(anode,'Y2')));
+  astream.WriteFloat(AsFloat(FindNode(anode,'Z2')));
+
+  astream.WriteByte(1);
+
+  lobj:=FindNode(anode,'WARPPOINTS');
+  lcnt:=GetGroupCount(lobj);
+  astream.WriteWord(lcnt);
+  for i:=0 to lcnt-1 do
+  begin
+    lsub:=GetChild(lobj,i);
+    astream.WriteShortStringUTF8(AsString   (FindNode(lsub,'WARP_NAME')));
+    astream.WriteQWord(QWord    (AsInteger64(FindNode(lsub,'ID'))));
+  end;
+
+  //--- Main layout data
+  
+  lsize:=0;
+  FillChar(ldata,SizeOf(ldata),0);
+  ldata.GUID  :=QWORD(-1);
+  ldata.offset:=astream.Position;
+  ldata.tag   :=-1;
+  astream.WriteDWordAt(ldata.offset,ldatapos);
 
   lobj:=FindNode(anode,'OBJECTS');
   if lobj=nil then lcnt:=0
   else lcnt:=GetGroupCount(lobj);
   astream.WriteWord(lcnt); // root baseobject count
-
-{
-  lsize:=0;
-  FillChar(ldata,SizeOf(ldata),0);
-  ldata.GUID  :=QWORD(-1);
-  ldata.offset:=7;
-  ldata.tag   :=-1;
+//!!
   lbs:=TMemoryStream.Create;
   try
     lbs.Write(ldata,SizeOf(ldata));
+
     lbs.WriteWord(0);
     lbs.WriteWord(0);
     lbs.WriteWord(0);
+    lbs.WriteWord(0);
+    lbs.WriteWord(0);
+    lbs.WriteWord(0);
+    lbs.WriteWord(0);
+    lbs.WriteWord(0);
+    lbs.WriteWord(0);
+    lbs.WriteWord(0);
+
     lchildpos:=lbs.Position;
     lbs.WriteWord(0); // reserve for childs
 
+    FCount:=0; // count of all objects
+
     for i:=0 to lcnt-1 do
+    begin
       lsize:=lsize+DoWriteBlockHob(GetChild(lobj,i),astream,lbs); // BASEOBJECT
+    end;
+
+    astream.WriteDWordAt(FCount,2); // total object count
 
     if lsize>0 then
     begin
       lbs.WriteWordAt(lsize,lchildpos);
 
-      astream.WriteDWordAt(astream.Position,2);
+      astream.WriteDWordAt(astream.Position,6); // write binary offset
 
       lsize:=lbs.Position;
       lbs.Position:=0;
@@ -849,39 +807,65 @@ begin
   finally
     lbs.Free;
   end;
-}
+
   result:=astream.Position-result;
+
 end;
 
 function TRGLayoutFile.DoBuildLayoutRG(anode:pointer; astream:TStream):integer;
 var
   lbs:TMemoryStream;
-  ldata:TLayoutBinRG;
+  ldata:TLayoutBin;
   lobj:pointer;
   i,lcnt,lsize,lchildpos:integer;
 begin
   result:=astream.Position;
-  info.Version:=verRG;
-  info.SelectScene('Layout');
+  info.Version:=FVer;
+  info.SelectScene(ltName[ltLayout]);
 
-  astream.WriteByte ( 5); // sign
-  astream.WriteByte ( 0);
-  astream.WriteDWord( 0); // binary offset
-  astream.WriteByte ( 0);
-
-  lobj:=FindNode(anode,'OBJECTS');
-  if lobj=nil then lcnt:=0
-  else lcnt:=GetGroupCount(lobj);
-  astream.WriteWord(lcnt); // root baseobject count
+  if FVer=verRG then
+  begin
+    astream.WriteByte (5); // sign
+    astream.WriteByte (0);
+    astream.WriteDWord(0); // binary offset
+    astream.WriteByte (0);
+  end
+  else
+  begin
+    astream.WriteByte (9); // sign
+    astream.WriteByte (0);
+    astream.WriteDWord(0); // binary offset
+    astream.WriteByte (1);
+  end;
 
   lsize:=0;
   FillChar(ldata,SizeOf(ldata),0);
   ldata.GUID  :=QWORD(-1);
-  ldata.offset:=7;
+  ldata.offset:=astream.Position; // 7
   ldata.tag   :=-1;
+
+  lobj:=FindNode(anode,'OBJECTS');
+  if lobj=nil then lcnt:=0
+  else lcnt:=GetGroupCount(lobj);
+
+  astream.WriteWord(lcnt); // root baseobject count
+
   lbs:=TMemoryStream.Create;
   try
     lbs.Write(ldata,SizeOf(ldata));
+    if FVer=verRG then
+    begin
+      lbs.WriteByte(0);
+      lbs.WriteByte(0);
+    end
+    else
+    begin
+      lbs.WriteByte(0);
+      lbs.WriteByte(0);
+      lbs.WriteWord(0);
+      lbs.WriteWord(0);
+      lbs.WriteWord(0);
+    end;
     lchildpos:=lbs.Position;
     lbs.WriteWord(0); // reserve for childs
 

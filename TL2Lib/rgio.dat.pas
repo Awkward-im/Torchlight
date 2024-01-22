@@ -47,6 +47,7 @@ type
     FBuffer:WideString;
     FLocals:TRGDict;
     FDictIndex:integer;
+    isTagsDat: Boolean;
 
   private
     function  GetStr(aid:dword):PWideChar;
@@ -121,25 +122,60 @@ var
   lname:PWideChar;
   i,lcnt,lsub,ltype:integer;
 begin
-  lnode:=AddGroup(anode,GetStr(memReadDWord(aptr)));
-  if anode=nil then anode:=lnode;
+  lname:=GetStr(memReadDWord(aptr));
+  lnode:=AddGroup(anode,lname);
+  if anode=nil then
+  begin
+    anode:=lnode;
+    if FVer=verTL2 then
+    begin
+      // trying to avoid TAGS.DAT unknown tag problem
+      if (lname=nil) or (CompareWide(lname,'TAGS')=0) then
+        isTagsDat:=true;
+    end;
+  end;
 
   lcnt:=memReadInteger(aptr);
   for i:=0 to lcnt-1 do
   begin
-    lname:=GetStr (memReadDWord(aptr));
+    //!! Skip tag names for TAGS.DAT
+    if isTagsDat then
+    begin
+      memReadDWord(aptr);
+      lname:=nil;
+    end
+    else
+      lname:=GetStr(memReadDWord(aptr));
+
     ltype:=integer(memReadDword(aptr));
+    if (RGDebugLevel=dlDetailed) then
+    begin
+      if (lname<>nil) and (lname[0] in ['0'..'9']) then
+      begin
+        case ltype of
+          rgInteger  : RGLog.Add('Tag type is INTEGER');
+          rgUnsigned : RGLog.Add('Tag type is UNSIGNED');
+          rgBool     : RGLog.Add('Tag type is BOOL');
+          rgFloat    : RGLog.Add('Tag type is FLOAT');
+          rgDouble   : RGLog.Add('Tag type is DOUBLE');
+          rgInteger64: RGLog.Add('Tag type is INT64');
+          rgString   : RGLog.Add('Tag type is STRING');
+          rgTranslate: RGLog.Add('Tag type is TRANSLATE');
+          rgNote     : RGLog.Add('Tag type is NOTE');
+    		end;
+      end;
+    end;
 
     case ltype of
-		  rgInteger  : AddInteger  (lnode,lname,memReadInteger  (aptr));
-		  rgUnsigned : AddUnsigned (lnode,lname,memReadDWord    (aptr));
-		  rgBool     : AddBool     (lnode,lname,memReadInteger  (aptr)<>0);
-		  rgFloat    : AddFloat    (lnode,lname,memReadFloat    (aptr));
-		  rgDouble   : AddDouble   (lnode,lname,memReadDouble   (aptr));
-		  rgInteger64: AddInteger64(lnode,lname,memReadInteger64(aptr));
-		  rgString   : AddString   (lnode,lname,FLocals.Tag[memReadDWord(aptr)]);
-		  rgTranslate: AddTranslate(lnode,lname,FLocals.Tag[memReadDWord(aptr)]);
-		  rgNote     : AddNote     (lnode,lname,FLocals.Tag[memReadDWord(aptr)]);
+      rgInteger  : AddInteger  (lnode,lname,memReadInteger  (aptr));
+      rgUnsigned : AddUnsigned (lnode,lname,memReadDWord    (aptr));
+      rgBool     : AddBool     (lnode,lname,memReadInteger  (aptr)<>0);
+      rgFloat    : AddFloat    (lnode,lname,memReadFloat    (aptr));
+      rgDouble   : AddDouble   (lnode,lname,memReadDouble   (aptr));
+      rgInteger64: AddInteger64(lnode,lname,memReadInteger64(aptr));
+      rgString   : AddString   (lnode,lname,FLocals.Tag[memReadDWord(aptr)]);
+      rgTranslate: AddTranslate(lnode,lname,FLocals.Tag[memReadDWord(aptr)]);
+      rgNote     : AddNote     (lnode,lname,FLocals.Tag[memReadDWord(aptr)]);
 		else
       lsub:=memReadInteger(aptr);
 		  AddCustom(lnode,lname,
@@ -365,7 +401,7 @@ end;
 
 procedure TRGDATFile.Init;
 begin
-
+  isTagsDat:=false;
   FDictIndex:=0;
 end;
 
@@ -430,7 +466,7 @@ begin
     GetMem(lbuf,lsize);
     BlockRead(f,lbuf^,lsize);
     Close(f);
-    if afname<>'' then RGLog.Reserve('Processing '+afname);
+    RGLog.Reserve('Processing '+afname);
     result:=ParseDatMem(lbuf);
     FreeMem(lbuf);
   end;

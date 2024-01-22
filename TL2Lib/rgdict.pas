@@ -143,6 +143,7 @@ begin
           inc(aptr,llen*SizeOf(WideChar));
           aDict.Add(pcw,lhash);
         end;
+      else
       end;
     end;
 (*

@@ -30,49 +30,30 @@ end;
 
 procedure TRGLayoutFile.ReadBinaryDataTL2(var anode:pointer);
 var
-  ldata:TLayoutBinTL2;
+  ldata:TLayoutBin;
   lls,ls:WideString;
   p:PWideChar;
   i,lthemes:integer;
 begin
-  // check current group ID. or offset? if the same, process
-  // if not: 1 - check position (before/after)
-  // 2 - check from start of data
   memReadData(FBinPos,ldata,SizeOf(ldata));
+
+  if ldata.number<>1 then AddUnsigned(anode,'NUMBER'       ,ldata.number);
+  if ldata.random<>1 then AddUnsigned(anode,'RANDOMIZATION',ldata.random);
   if ldata.choice<>0 then
   begin
     if FindNode(anode,'CHOICE')=nil then
     begin
       if ldata.choice<=Length(strChoice) then
         AddString(anode,'CHOICE',strChoice[ldata.choice]);
-{
-      if      ldata.choice=1 then AddString(anode,'CHOICE','Weight')
-      else if ldata.choice=2 then AddString(anode,'CHOICE','Random Chance');
-}
-    end;
-  end;
-  if ldata.gamemode<>0 then
-  begin
-    if FindNode(anode,'GAME MODE')=nil then
-    begin
-      if ldata.gamemode<=Length(strGameMode) then
-        AddString(anode,'GAME MODE',strGameMode[ldata.gamemode]);
-{
-      if      ldata.gamemode=1 then AddString(anode,'GAME MODE','NORMAL')
-      else if ldata.gamemode=2 then AddString(anode,'GAME MODE','GAME MODE PLUS');
-}
     end;
   end;
   if ldata.unique<>0 then
   begin
     if FindNode(anode,'LEVEL UNIQUE')=nil then
-    begin
-      AddBool(anode,'LEVEL UNIQUE',true)
-    end;
+        AddBool(anode,'LEVEL UNIQUE',true)
   end;
-  if ldata.notag <>0 then AddBool    (anode,'NO TAG FOUND' ,true);
-  if ldata.number<>1 then AddUnsigned(anode,'NUMBER'       ,ldata.number);
-  if ldata.random<>1 then AddUnsigned(anode,'RANDOMIZATION',ldata.random);
+
+  if ldata.noflag<>0 then AddBool(anode,'NO TAG FOUND' ,true);
   if ldata.tag>=0 then
   begin
     p:=GetTagTL2(ldata.tag);
@@ -85,6 +66,15 @@ begin
     end;
   end;
 
+  i:=memReadByte(FBinPos);
+  if i<>0 then
+  begin
+    if FindNode(anode,'GAME MODE')=nil then
+    begin
+      if i<=Length(strGameMode) then
+        AddString(anode,'GAME MODE',strGameMode[i]);
+    end;
+  end;
   lthemes:=memReadInteger(FBinPos);
   if lthemes>0 then
   begin
@@ -109,6 +99,7 @@ begin
     end;
     AddString(anode,'DEACTIVE THEMES',PWideChar(ls));
   end;
+
   memReadWord(FBinPos); // child
 end;
 
@@ -216,7 +207,7 @@ begin
 
       else
       begin
-        RGLog.Add('Unknown chunk with size '+IntToStr(lsize)+' at '+HexStr(FPos-FStart,8));
+        FLog.Add('Unknown chunk with size '+IntToStr(lsize)+' at '+HexStr(FPos-FStart,8));
       //!!
         AddString (lnode,'??ADDITIONALDATA',PWideChar(WideString(HexStr(FPos-FStart,8))));
         AddInteger(lnode,'??ADDITIONALSIZE',lsize);
@@ -262,16 +253,16 @@ begin
   lver:=memReadByte(FPos);               // Layout version
   AddInteger(result,'VERSION',lver);
   if (lver<>4)  and (RGDebugLevel=dlDetailed) then
-    RGLog.Add('Layout version is not 4 but '+HexStr(lver,2));
+    FLog.Add('Layout version is not 4 but '+HexStr(lver,2));
 
   lc:=AddUnsigned(result,'COUNT',0);
   ltmp:=memReadDWord(FPos);              // offset
   FBinStart:=FStart+ltmp;
   if ltmp<>0 then
   begin
-    FBinPos:=FBinStart+SizeOf(TLayoutBinTL2)+4+4+2;
+    FBinPos:=FBinStart+SizeOf(TLayoutBin)+9+2;
     if (RGDebugLevel=dlDetailed) then
-      RGLog.Add('Binary chunk at '+HexStr(ltmp,8));
+      FLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
   lcnt:=memReadWord(FPos);               // root baseobject count
@@ -284,7 +275,7 @@ begin
   asUnsigned(lc,lobjcnt);
 end;
 
-function TRGLayoutFile.WritePropertiesTL2(anode:pointer; astream:TStream; var adata:TLayoutBinTL2):integer;
+function TRGLayoutFile.WritePropertiesTL2(anode:pointer; astream:TStream; var adata:TLayoutBin):integer;
 var
   vct:tVector4;
   lpname,lpval:PWideChar;
@@ -354,15 +345,15 @@ begin
           for j:=1 to Length(strChoice) do
             if Comparewide(lpval,strChoice[j])=0 then begin adata.choice:=j; break; end;
         end;
-        if CompareWide(lpname,'GAME MODE')=0 then
-        begin
-          lpval:=AsString(lprop);
-          for j:=1 to Length(strGameMode) do
-            if Comparewide(lpval,strGameMode[j])=0 then begin adata.gamemode:=j; break; end;
-        end;
         if CompareWide(lpname,'LEVEL UNIQUE')=0 then
         begin
           if AsBool(lprop) then adata.unique:=1;
+        end;
+        // let mean what doubling for case 255+
+        if CompareWide(lpname,'NUMBER')=0 then
+        begin
+          adata.number:=AsUnsigned(lprop);
+//          exit;
         end;
         // next properties presents in binary data only
         if CompareWide(lpname,'RANDOMIZATION')=0 then
@@ -375,14 +366,9 @@ begin
           adata.tag:=GetTagTL2Num(AsString(lprop));
           exit;
         end;
-        if CompareWide(lpname,'NUMBER')=0 then
-        begin
-          adata.number:=AsUnsigned(lprop);
-          exit;
-        end;
         if CompareWide(lpname,'NO TAG FOUND')=0 then
         begin
-          if AsBool(lprop) then adata.notag:=1;
+          if AsBool(lprop) then adata.noflag:=1;
           exit;
         end;
         if CompareWide(lpname,'ACTIVE THEMES'  )=0 then exit;
@@ -450,7 +436,7 @@ end;
 
 function TRGLayoutFile.DoWriteBlockTL2(anode:pointer; astream:TStream; abstream:TStream):integer;
 var
-  ldata:TLayoutBinTL2;
+  ldata:TLayoutBin;
   lobj,lprops:pointer;
   {lparent,}ldescr,lname,lid:pointer;
   lpdescr,lpname:PWideChar;
@@ -515,6 +501,18 @@ begin
   begin
     result:=1;
     abstream.Write(ldata,SizeOf(ldata));
+
+    lpdescr:=AsString(FindNode(lprops,'GAME MODE'));
+    if lpdescr=nil then
+      i:=0
+    else
+      for lcnt:=1 to Length(strGameMode) do
+        if Comparewide(lpdescr,strGameMode[lcnt])=0 then
+        begin
+          i:=lcnt;
+          break;
+        end;
+
     WriteThemesTL2(lprops,'ACTIVE THEMES'  ,abstream);
     WriteThemesTL2(lprops,'DEACTIVE THEMES',abstream);
     lcpos:=abstream.Position;
@@ -564,7 +562,7 @@ end;
 function TRGLayoutFile.DoBuildLayoutTL2(anode:pointer; astream:TStream):integer;
 var
   lbs:TMemoryStream;
-  ldata:TLayoutBinTL2;
+  ldata:TLayoutBin;
   lobj:pointer;
   i,lcnt,lsize,lchildpos:integer;
 begin

@@ -464,6 +464,7 @@ var
 begin
   result:=nil;
 
+  RGLog.Reserve('Processing '+afname);
   lfname:=UpCase(ExtractFileNameOnly(afname));
 
   if      lfname=RawNames[nmUNITDATA    ] then result:=DecodeUnitData    (abuf)

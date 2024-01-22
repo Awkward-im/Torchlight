@@ -297,7 +297,12 @@ begin
     'INTEGER64',
     'STRING',
     'TRANSLATE',
-    'NOTE': ;
+    'NOTE',
+    'INT64',
+    'UNSIGNED INTEGER',
+    'VECTOR3',
+    'VECTOR4'
+    : ;
   else
     fTokenId:=tkWrong;
   end;
