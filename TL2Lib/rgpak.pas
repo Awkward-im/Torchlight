@@ -438,7 +438,7 @@ begin
 
     if lStream<>nil then
     begin
-      for i:=0 to man.EntriesCount-1 do
+      for i:=0 to man.DirCount-1 do
       begin
         if man.IsDirDeleted(i) then continue;
 
@@ -733,7 +733,7 @@ begin
 
   //--- Analize MAN part
 
-  if man.EntriesCount=0 then
+  if man.DirCount=0 then
   begin
     exit;
   end;
@@ -759,7 +759,7 @@ begin
   lout:=nil;
   lres:=0;
 
-  for i:=0 to man.EntriesCount-1 do
+  for i:=0 to man.DirCount-1 do
   begin
     if man.IsDirDeleted(i) then continue;
 
@@ -787,7 +787,7 @@ begin
         UnpackSingle(p,lout);
 
         // save file
-        Assign (f,lcurdir+UnicodeString(man.GetName(p^.name)));
+        Assign (f,lcurdir+UnicodeString(p^.name));
         Rewrite(f);
         if IOResult=0 then
         begin
@@ -927,7 +927,7 @@ begin
   else      spak.Write(PAKHeader   ,SizeOf(TPAKHeader));
   end;
 
-  for i:=0 to man.EntriesCount-1 do
+  for i:=0 to man.DirCount-1 do
   begin
     if man.IsDirDeleted(i) then continue;
 
@@ -957,7 +957,7 @@ begin
       //--- Read file into memory
 
       //?? use "p^.filename" field if exists?
-      lname:=ConcatWide(ldir,man.GetName(p^.name));
+      lname:=ConcatWide(ldir,p^.name);
       Assign(f,lname);
       FreeMem(lname);
       Reset(f);
@@ -1161,7 +1161,7 @@ begin
 //  ldir:=WideToStr(ainfo.man.GetDirName(ABS(adir)));
   if adir<0 then
   begin
-    p:=ConcatWide(ainfo.man.GetDirName(ABS(adir)),ainfo.man.GetName(afile^.name));
+    p:=ConcatWide(ainfo.man.GetDirName(ABS(adir)),afile^.name);
     l:=ConcatWide('Skipping dummy ',p);
     RGLog.Add(WideToStr(l));
 //    RGLog.Add('Skipping dummy ' +WideToStr(p));
@@ -1171,7 +1171,7 @@ begin
   end
   else if afile<>nil then
   begin
-    p:=ConcatWide(ainfo.man.GetDirName(adir),ainfo.man.GetName(afile^.name));
+    p:=ConcatWide(ainfo.man.GetDirName(adir),afile^.name);
     l:=ConcatWide('Processing file ',p);
     RGLog.Add(WideToStr(l));
 //    RGLog.Add('Processing file '+WideToStr(p));

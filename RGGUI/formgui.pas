@@ -1,3 +1,4 @@
+{TODO: Implement to open DIR (not PAK/MOD/MAN)}
 {TODO: AutoSort on tree item change}
 {TODO: Status bar path changes on dir with files only}
 {TODO: option: keep PAK open}
@@ -298,6 +299,7 @@ const
   sSaveWidth    = 'savewidth';
   sTreeWidth    = 'width_tree';
   sGridWidth    = 'width_grid';
+  sDebugLevel   = 'debuglevel';
 
 const
   sFillGrid = ' Build file list. Please, wait...';
@@ -382,7 +384,7 @@ begin
   begin
     btnMODDAT.Visible:=rgpi.Version=verTL2Mod;
     Self.Caption:='RGGUI - '+AnsiString(rgpi.Name);
-    StatusBar.Panels[0].Text:='Total: '+IntToStr(rgpi.man.total)+'; dirs: '+IntToStr(rgpi.man.EntriesCount);
+    StatusBar.Panels[0].Text:='Total: '+IntToStr(rgpi.man.total)+'; dirs: '+IntToStr(rgpi.man.DirCount);
 
     SetupView(Self);
 
@@ -509,6 +511,8 @@ begin
 
   cbShowPreview.Checked:=config.ReadBool(sSectSettings,sShowPreview,false);
   cbScaleImage .Checked:=config.ReadBool(sSectSettings,sScaleImage ,false);
+
+  rgDebugLevel:=TRGDebugLevel(config.ReadInteger(sSectSettings,sDebugLevel,1));
 
   cbSaveWidth.Checked:=config.ReadBool(sSectSettings,sSaveWidth,true);
   if cbSaveWidth.Checked then
@@ -638,6 +642,8 @@ begin
           inc(lcnt);
       end;
     end;
+    if (i mod 100)=0 then
+      Application.ProcessMessages;
   end;
   FreeMem(lptr);
 
@@ -876,7 +882,9 @@ var
 begin
   for i:=1 to sgMain.RowCount-1 do
   begin
-    UnpackSingleFile(sgMain.Cells[colDir,i],sgMain.Cells[colName,i])
+    UnpackSingleFile(sgMain.Cells[colDir,i],sgMain.Cells[colName,i]);
+    if (i mod 100)=0 then
+      Application.ProcessMessages;
   end;
 end;
 
@@ -890,7 +898,7 @@ begin
     ldir:=rgpi.man.GetDirName(adir);
     repeat
       if not (p^.ftype in [typeDelete,typeDirectory]) then
-        UnpackSingleFile(ldir,rgpi.man.GetName(p^.name))
+        UnpackSingleFile(ldir,p^.name)
     until rgpi.man.GetNextFile(p)=0;
   end;
   Application.ProcessMessages;
@@ -909,9 +917,9 @@ var
 begin
   ldl:=rgDebugLevel;
   {$IFDEF DEBUG}
-    rgDebugLevel:=dlDetailed;
+//    rgDebugLevel:=dlDetailed;
   {$ELSE}
-    rgDebugLevel:=dlNormal;
+//    rgDebugLevel:=dlNormal;
   {$ENDIF}
 
   idx:=IntPtr(tvTree.Selected.Data);
@@ -921,7 +929,7 @@ begin
     llen:=Length(ls);
   end;
 
-  for i:=0 to rgpi.man.EntriesCount-1 do
+  for i:=0 to rgpi.man.DirCount-1 do
   begin
     if not rgpi.man.IsDirDeleted(i) then
       if (idx<0) or (i=idx) or (CompareWide(ls,rgpi.man.GetDirName(i),llen)=0) then
@@ -1351,9 +1359,9 @@ begin
   result:=false;
 
   if afile^.size_s=0 then exit;
-  if afile^.hide then exit;
+//  if afile^.hide then exit;
 
-  lname:=WideToStr(rgpi.man.GetName(afile^.name));
+  lname:=WideToStr(afile^.name);
   lext:=ExtractFileExt(lname);
   for i:=0 to ccbExtension.Items.Count-1 do
   begin
@@ -1397,7 +1405,7 @@ var
 begin
   if inProcess then exit;
 
-  if idx>=rgpi.man.EntriesCount then exit;
+  if idx>=rgpi.man.DirCount then exit;
 
   inProcess:=true;
 
@@ -1411,7 +1419,7 @@ begin
     Self.Caption:='RGGUI - '+AnsiString(rgpi.Name)+sFillGrid;
 
     sgMain.RowCount:=rgpi.man.total+1;
-    for i:=0 to rgpi.man.EntriesCount-1 do
+    for i:=0 to rgpi.man.DirCount-1 do
     begin
       if not rgpi.man.IsDirDeleted(i) then
       begin
@@ -1547,7 +1555,7 @@ begin
 
   sl:=TStringList.Create;
   sl.Sorted:=true;
-  for i:=0 to rgpi.man.EntriesCount-1 do
+  for i:=0 to rgpi.man.DirCount-1 do
   begin
     if not rgpi.man.IsDirDeleted(i) then
     begin

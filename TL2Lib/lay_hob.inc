@@ -1,62 +1,107 @@
 {}
+const
+  arBinDataIds:array of DWord = (
+    4270653419, // Group
+    4270023114, // Group Bake
+    1006154892, // Group Step Child
+    3078161015, // Monster Group
+    684627136,  // React Group
+    2563527888, // Decal Group
+    3247079513, // Area Time Controller
+    449428563,  // Pulse Controller
+    944695435,  // Jump Start Node
+    2384551518  // Warp Filter
+  );
 
 const
-  // trigger decal react
-  IdGroupHob      = 4270653419;
-  IdGroupBake     = 4270023114;
-  IdGroupMonster  = 3078161015;
-  IdLogicGroupHob = 2261606130;
-  IdTimelineHob   = 2623981599;
+{
+// trigger decal react
+  IdGroupHob       = 4270653419;
+  IdGroupBake      = 4270023114;
+  IdGroupStepChild = 1006154892;
+  IdGroupMonster   = 3078161015;
+  IdReactGroup     = 684627136; //!!
+//  IdAreaTime = 3247079513;
+//  IdPulse = 449428563;
+//  IdAIJumpStart = 944695435;
+//  IdWarpFilter = 2384551518;
+}
+  IdLogicGroupHob  = 2261606130;
+  IdTimelineHob    = 2623981599;
+  IdHackId         = 338732389;
 
-procedure TRGLayoutFile.ReadBinaryDataHob(var anode:pointer);
+function IsBinDataHave(aid:DWord):boolean;
+var
+  i:integer;
+begin
+  for i:=0 to High(arBinDataIds) do
+    if arBinDataIds[i]=aid then exit(true);
+  exit(false);
+end;
+
+procedure TRGLayoutFile.ReadBinaryDataHob(var anode:pointer; aid:Int64);
 var
   ldata:TLayoutBin;
+  lnode:pointer;
   lls,ls:WideString;
   p:PWideChar;
   i,lthemes:integer;
+  lval:dword;
   ltmp:array [0..14] of byte;
 begin
   ReadBinaryData(anode, ldata);
+  if ldata.GUID<>QWord(aid) then
+     FLog.Add('ID of Group object and binary data are not the same: '+
+         IntToStr(aid)+' vs '+IntToStr(Int64(ldata.GUID)));
 
   if ldata.noflag<>0 then FLog.Add('Unk1='+IntToStr(ldata.noflag));
 
-  i:=memReadWord(FBinPos); // Unk3
-  if word(i)<>0 then FLog.Add('Unk3='+IntToStr(word(i)));
+  i:=memReadByte(FBinPos); // Unk3
+  if byte(i)<>0 then FLog.Add('Unk3='+IntToStr(byte(i)));
+
+  i:=memReadByte(FBinPos);
+  if byte(i)<>0 then
+  begin
+    if FindNode(anode,'STEPCHILD')=nil then
+        AddBool(anode,'STEPCHILD',true);
+  end;
 
   i:=memReadWord(FBinPos); // Unk4
   if word(i)<>0 then FLog.Add('Unk4='+IntToStr(word(i)));
 
-  i:=memReadByte(FBinPos); // Unk5
-  if byte(i)<>0 then
+  lval:=memReadDWord(FBinPos); // Operator
+  if lval<Length(strOperator) then
   begin
-    if rgDebugLevel=dlDetailed then
+    if FindNode(anode,'OPERATOR')=nil then
+      AddString(anode,'OPERATOR',strOperator[lval]);
+  end
+  else if lval>Length(strOperator) then
+    FLog.Add('Operator = '+IntToStr(lval));
+
+  i:=Integer(memReadDWord(FBinPos)); // VALUE_COMPARE
+  if i<>0 then
+  begin
+    lnode:=FindNode(anode,'VALUE_COMPARE');
+    if lnode=nil then
+      AddInteger(anode,'VALUE_COMPARE',i)
+    else if rgDebugLevel=dlDetailed then
     begin
-      FLog.Add('Unk5 (0 or 6)='+IntToStr(i))
-    //  AddUnsigned(anode,'unk5',ldata.unk5);
-    end
-    else if rgDebugLevel<>dlNone then
-    begin
-      if (i<>0) and (i<>6) then
-      begin
-        FLog.Add('Unk5 (0 or 6)='+IntToStr(i))
-      //  AddUnsigned(anode,'unk5',ldata.unk5);
-      end
+      if AsInteger(lnode)<>i then
+        FLog.Add('Value compare is not equ with binary: '+
+          IntToStr(AsInteger(lnode))+' vs '+IntToStr(i));
     end;
   end;
 
-  memReadData(FBinPos,ltmp,SizeOf(ltmp));
-  if (ltmp[ 0]<>0) or (ltmp[ 1]<>0) or (ltmp[ 2]<>0) or (ltmp[ 3]<>0) or
-     (ltmp[ 4]<>0) or (ltmp[ 5]<>0) or (ltmp[ 6]<>0) or (ltmp[ 7]<>0) or
-     (ltmp[ 8]<>0) or (ltmp[ 9]<>0) or (ltmp[10]<>0) or (ltmp[11]<>0) or
-     (ltmp[12]<>0) or (ltmp[13]<>0) or (ltmp[14]<>0) then
-  begin
-    AddString(anode,'!!Unknown','not zero');
-  end;
+  lval:=memReadDWord(FBinPos);
+  if lval<>0 then FLog.Add('Unk6='+IntToStr(lval));
+
+  lval:=memReadDWord(FBinPos);
+  if lval<>0 then FLog.Add('Unk7='+IntToStr(lval));
 
   memReadWord(FBinPos); // child
 end;
 
-procedure TRGLayoutFile.ReadBinaryDataRGO(var anode:pointer);
+procedure TRGLayoutFile.ReadBinaryDataRGO(var anode:pointer; aid:Int64);
 var
   ldata:TLayoutBin;
   lls,ls:WideString;
@@ -65,6 +110,9 @@ var
   i,lthemes:integer;
 begin
   ReadBinaryData(anode, ldata);
+  if ldata.GUID<>QWord(aid) then
+     FLog.Add('ID of Group object and binary data are not the same: '+
+         IntToStr(aid)+' vs '+IntToStr(Int64(ldata.GUID)));
 
   if ldata.noflag<>0 then
   begin
@@ -109,7 +157,7 @@ begin
   memReadWord(FBinPos); // child
 end;
 
-procedure TRGLayoutFile.ReadBinaryDataRG(var anode:pointer);
+procedure TRGLayoutFile.ReadBinaryDataRG(var anode:pointer; aid:Int64);
 var
   ldata:TLayoutBin;
   lls,ls:WideString;
@@ -117,6 +165,9 @@ var
   i,lthemes:integer;
 begin
   ReadBinaryData(anode, ldata);
+  if ldata.GUID<>QWord(aid) then
+     FLog.Add('ID of Group object and binary data are not the same: '+
+         IntToStr(aid)+' vs '+IntToStr(Int64(ldata.GUID)));
 
   if ldata.noflag<>0 then FLog.Add('Unk1='+IntToStr(ldata.noflag));
 
@@ -132,7 +183,8 @@ end;
 procedure TRGLayoutFile.ReadPropertyHob(var anode:pointer);
 var
   lptr:pByte;
-  lhash:dword;
+  ls:array [0..4] of WideChar;
+  lhash,ldata:dword;
   lsize:integer;
 begin
   lsize:=memReadWord(FPos);
@@ -141,6 +193,32 @@ begin
   lptr:=FPos;
   lhash:=memReadDWord(FPos);
 
+  //!!!!!!!!!!!!!!1
+  if lhash=IdHackId then
+  begin
+    ldata:=memReadDword(FPos);
+    if (ldata<>0) and (ldata<>dword(-1)) then
+    begin
+      ls[3]:=WideChar((ldata and $FF000000) shr 24);
+      if ord(ls[3]) in [33..127] then
+      begin
+        ls[2]:=WideChar((ldata and $00FF0000) shr 16);
+        if ord(ls[2]) in [33..127] then
+        begin
+          ls[1]:=WideChar((ldata and $0000FF00) shr 8);
+          if ord(ls[1]) in [33..127] then
+          begin
+            ls[0]:=WideChar(ldata and $000000FF);
+            if ord(ls[0]) in [33..127] then
+            begin
+              ls[4]:=#0;
+              AddString(anode,'HACKID-VALUE',ls);
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
   ReadPropertyValue(lhash,lsize-4, anode);
 
   FPos:=lptr+lsize;
@@ -196,7 +274,7 @@ begin
 
   //--- Properties
 
-  FLog.Reserve('Object '+UTF8Encode(WideString(lname)));
+  FLog.Reserve('Object '+UTF8Encode(WideString(lname))+', ID='+IntToStr(lChunkId));
 
   lcnt:=memReadByte(FPos);
   for i:=0 to lcnt-1 do
@@ -205,15 +283,19 @@ begin
   end;
 
   //--- Place for binary group data translation
-
-  if (lChunkType=IdGroupHob    ) or
-     (lChunkType=IdGroupBake   ) or
-     (lChunkType=IdGroupMonster) then
+{
+  if (lChunkType=IdGroupHob      ) or
+     (lChunkType=IdGroupBake     ) or
+     (lChunkType=IdGroupStepChild) or
+     (lChunkType=IdReactGroup    ) or
+     (lChunkType=IdGroupMonster  ) then
+}
+  if IsBinDataHave(lChunkType) then
   begin
     case FVer of
-      verHob: ReadBinaryDataHob(lnode);
-      verRG : ReadBinaryDataRG (lnode);
-      verRGO: ReadBinaryDataRGO(lnode);
+      verHob: ReadBinaryDataHob(lnode,lChunkId);
+      verRG : ReadBinaryDataRG (lnode,lChunkId);
+      verRGO: ReadBinaryDataRGO(lnode,lChunkId);
     end;
   end;
 
@@ -298,8 +380,7 @@ begin
   if ltmp<>0 then
   begin
     FBinPos:=FBinStart+SizeOf(TLayoutBin)+20+2;
-    if (RGDebugLevel=dlDetailed) then
-      FLog.Add('Binary chunk at '+HexStr(ltmp,8));
+//    if (RGDebugLevel=dlDetailed) then FLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
   //--- Header
@@ -390,8 +471,7 @@ begin
 
     FBinPos:=FBinStart+SizeOf(TLayoutBin)+i+2; // +child count
 
-    if (RGDebugLevel=dlDetailed) then
-      FLog.Add('Binary chunk at '+HexStr(ltmp,8));
+//    if (RGDebugLevel=dlDetailed) then FLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
   ltmp:=memReadByte(FPos);                 // 1
@@ -590,9 +670,14 @@ begin
   astream.WriteByte(0);
 
   FillChar(ldata,SizeOf(ldata),0);
-  if (lChunkType=idGroupHob    ) or
-     (lChunkType=idGroupBake   ) or
-     (lChunkType=idGroupMonster) then
+{
+  if (lChunkType=idGroupHob      ) or
+     (lChunkType=idGroupBake     ) or
+     (lChunkType=idGroupStepChild) or
+     (lChunkType=IdReactGroup    ) or
+     (lChunkType=idGroupMonster  ) then
+}
+  if IsBinDataHave(lChunkType) then
   begin
     ldata.GUID  :=QWord(AsInteger64(lid));
     ldata.random:=1;
@@ -607,26 +692,43 @@ begin
   astream.WriteByteAt(lcnt,lPropPos);
 
   //--- Binary data
-
-  if (lChunkType=idGroupHob    ) or
-     (lChunkType=idGroupBake   ) or
-     (lChunkType=idGroupMonster) then
+{
+  if (lChunkType=idGroupHob      ) or
+     (lChunkType=idGroupBake     ) or
+     (lChunkType=idGroupStepChild) or
+     (lChunkType=IdReactGroup    ) or
+     (lChunkType=idGroupMonster  ) then
+}
+  if IsBinDataHave(lChunkType) then
   begin
     result:=1;
     // CHOICE, NUMBER, RANDOMIZATION and LEVEL_UNIQUE are all inside ldata
     abstream.Write(ldata,SizeOf(ldata));
     case FVer of
       verHob: begin
-        abstream.WriteWord(0);  // 1
-        abstream.WriteWord(0);  // 2
-        abstream.WriteWord(0);  // 3 can be =6
-        abstream.WriteWord(0);  // 4
-        abstream.WriteWord(0);  // 5
-        abstream.WriteWord(0);  // 6
-        abstream.WriteWord(0);  // 7
-        abstream.WriteWord(0);  // 8
-        abstream.WriteWord(0);  // 9
-        abstream.WriteWord(0);  // 10
+        abstream.WriteByte(0);  // Unk3
+
+        lobj:=FindNode(lprops,'STEPCHILD');
+        if AsBool(lobj) then i:=1 else i:=0;
+        abstream.WriteByte(i);
+
+        abstream.WriteWord(0);  // Unk4
+
+        lobj:=FindNode(lprops,'OPERATOR');
+        lpdescr:=AsString(lobj);
+        i:=0;
+        repeat
+          if CompareWide(lpdescr,strOperator[i])=0 then break;
+          inc(i);
+        until i=Length(strOperator);
+        abstream.WriteDWord(i);
+
+        lobj:=FindNode(lprops,'VALUE_COMPARE');
+        i:=AsInteger(lobj);
+        abstream.WriteDWord(dword(i));
+
+        abstream.WriteDWord(0);  // Unk6
+        abstream.WriteDWord(0);  // Unk7
       end;
 
       verRGO: begin
@@ -691,10 +793,12 @@ begin
   lgrpcnt:=0;
   for i:=0 to lcnt-1 do
     lgrpcnt:=lgrpcnt+DoWriteBlockHob(GetChild(lobj,i),astream,abstream); // BASEOBJECT
-
+{
   if (lChunkType=idGroupHob    ) or
      (lChunkType=idGroupBake   ) or
      (lChunkType=idGroupMonster) then
+}
+  if IsBinDataHave(lChunkType) then
     abstream.WriteWordAt(lgrpcnt,lcpos);
 
   //--- Chunk size

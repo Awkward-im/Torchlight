@@ -68,6 +68,15 @@ const
     'Weight',
     'Random Chance'
   );
+const
+  strOperator : array [0..5] of PWideChar = (
+    'EQUAL',
+    'LESS THAN',
+    'LESS THAN OR EQUAL',
+    'GREATER THAN',
+    'GREATER THAN OR EQUAL',
+    'NOT EQUAL'
+  );
 
 const
   m00 = 'RIGHTX';
@@ -90,7 +99,7 @@ type
                           // requires for doubling at least in RGO for number>255
     offset     :DWord;    // group offset from start of file (6 for root)
     tag        :Integer;  // (def -1) TL2: "TAG" from FEATURETAGS.HIE
-    noflag     :Byte;     // (def 0) RG and Hob = unknown
+    noflag     :Byte;     // (def 0) RG and Hob = unknown (Unk1)
                           // TL2: 'NO TAG FOUND'
                           // RGO: 'CREATEWITHNOFLAG'. Presents in decription too (doubling)
     unique     :Byte;     // (def 0) LEVEL UNIQUE
@@ -98,10 +107,13 @@ type
   end;
 { have tail before "word" sized child count
   Hob, 20 bytes
-    unk3       :Word;     //
+    unk3       :byte;     //
+    stepchild  :byte      // STEPCHILD (double)
     unk4       :Word;     //
-    unk5       :Byte;     // (def 0) can be 6
-    unk        :array [0..14] of Byte;
+    operator   :dword;    // OPERATOR (6 - do not compare?)
+    value      :dword;    // VALUE_COMPARE (double)
+    unk6       :dword;    //
+    unk7       :dword;    //
   RGO, 8 bytes (if empty)
     unk3       :Byte;     // 
     noprop     :Byte;     // (def 0) DONTPROPAGATE
@@ -132,6 +144,7 @@ type
     FPos     :PByte;
     FBinPos  :PByte;
     FBuffer  :WideString;
+    FSize    :integer;
     FVer     :integer;
     FCount   :integer;
 
@@ -163,7 +176,7 @@ type
     function  DoParseLayoutTL2 (atype:cardinal):pointer;
     function  DoParseBlockTL2  (var anode:pointer; const aparent:Int64):integer;
     procedure ReadPropertyTL2  (var anode:pointer);
-    procedure ReadBinaryDataTL2(var anode:pointer);
+    procedure ReadBinaryDataTL2(var anode:pointer; aid:Int64);
     function  GetTagTL2        (atag:integer):PWideChar;
     function  GetTagTL2Num     (atag:PWideChar):integer;
 
@@ -171,10 +184,10 @@ type
     function  DoParseLayoutHob (atype:cardinal):pointer;
     function  DoParseBlockHob  (var anode:pointer; const aparent:Int64):integer;
     procedure ReadPropertyHob  (var anode:pointer);
-    procedure ReadBinaryDataHob(var anode: pointer);
+    procedure ReadBinaryDataHob(var anode: pointer; aid:Int64);
     function  DoParseLayoutRG  (atype:cardinal):pointer;
-    procedure ReadBinaryDataRG (var anode: pointer);
-    procedure ReadBinaryDataRGO(var anode: pointer);
+    procedure ReadBinaryDataRG (var anode: pointer; aid:Int64);
+    procedure ReadBinaryDataRGO(var anode: pointer; aid:Int64);
 
     // write TL2
     function DoBuildLayoutTL2  (anode:pointer; astream:TStream):integer;
@@ -1242,6 +1255,8 @@ begin
 
   lrgl.FStart:=abuf;
   lrgl.FPos  :=abuf;
+// can't use coz abuf can point not on block start (theoretically)
+//  lrgl.FSize :=MemSize(abuf);
 
   if atype>2 then atype:=0;
 

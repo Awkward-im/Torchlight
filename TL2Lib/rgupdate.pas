@@ -20,6 +20,7 @@ unit RGUpdate;
 interface
 
 uses
+  rgfs,
   rgglobal;
 
 const
@@ -29,6 +30,13 @@ const
   act_copy   = 3; // just copy of original PAK data
   act_delete = 4; // delete from PAK
   act_dir    = 5; // disk directory with files
+
+type
+  PUpdateFileInfo = ^TUpdateFileInfo;
+  TUpdateFileInfo = object (TBaseFileInfo)
+    fileu:PWideChar;
+    usize:cardinal;
+  end;
 
 type
   PUpdateElement = ^TUpdateElement;

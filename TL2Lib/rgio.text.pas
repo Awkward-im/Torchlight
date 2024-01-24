@@ -163,6 +163,7 @@ try
         else
           Str(lfloat:0:FloatPrec,lvalue);
 except
+  RGLog.AddWide(lname);
   RGLog.Add('problem with float conversion');
 end;
         FixFloatStr(lvalue);

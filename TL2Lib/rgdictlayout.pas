@@ -639,6 +639,7 @@ begin
 
       buf[lsize div SizeOf(WideChar)]:=#0;
 
+      RGLog.Reserve('Layout dict (resource) '+resname);
       result:=LoadLayoutDict(buf,aver,true);
 
       if not result then FreeMem(buf);
@@ -665,6 +666,7 @@ begin
   Close(f);
   buf[i div SizeOf(WideChar)]:=#0;
 
+  RGLog.Reserve('Layout dict (file) '+fname);
   result:=LoadLayoutDict(buf,aver,true);
 
   if not result then FreeMem(buf);

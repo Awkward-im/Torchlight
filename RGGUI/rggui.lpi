@@ -13,6 +13,9 @@
         <DpiAware Value="True"/>
       </XPManifest>
     </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+    </i18n>
     <BuildModes>
       <Item Name="Default" Default="True"/>
       <Item Name="Debug">

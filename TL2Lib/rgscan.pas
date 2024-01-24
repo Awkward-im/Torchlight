@@ -115,7 +115,7 @@ var
   res,j,lsize:integer;
 begin
   lbuf:=nil;
-  for j:=0 to FMod.man.EntriesCount-1 do
+  for j:=0 to FMod.man.DirCount-1 do
   begin
     if FMod.man.IsDirDeleted(j) then continue;
 
@@ -125,7 +125,7 @@ begin
       begin
         lname:=FMod.man.GetDirName(j);
         repeat
-          lfname:=FMod.man.GetName(p^.name);
+          lfname:=p^.name;
           if (not (p^.ftype in [typeDirectory,typeDelete])) and
              CheckName(lname,lfname) then
           begin

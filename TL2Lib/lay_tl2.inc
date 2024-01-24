@@ -28,7 +28,7 @@ begin
   result:=-1;
 end;
 
-procedure TRGLayoutFile.ReadBinaryDataTL2(var anode:pointer);
+procedure TRGLayoutFile.ReadBinaryDataTL2(var anode:pointer; aid:Int64);
 var
   ldata:TLayoutBin;
   lls,ls:WideString;
@@ -36,6 +36,9 @@ var
   i,lthemes:integer;
 begin
   memReadData(FBinPos,ldata,SizeOf(ldata));
+  if ldata.GUID<>QWord(aid) then
+     FLog.Add('ID of Group object and binary data are not the same: '+
+         IntToStr(aid)+' vs '+IntToStr(Int64(ldata.GUID)));
 
   if ldata.number<>1 then AddUnsigned(anode,'NUMBER'       ,ldata.number);
   if ldata.random<>1 then AddUnsigned(anode,'RANDOMIZATION',ldata.random);
@@ -182,7 +185,7 @@ begin
     //--- Place for binary group data translation
 
     if lChunkType=IdGroupTL2 then
-      ReadBinaryDataTL2(lnode);
+      ReadBinaryDataTL2(lnode,lChunkId);
 
     //--- Additional data
 

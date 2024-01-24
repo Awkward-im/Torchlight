@@ -46,7 +46,7 @@ begin
   lmaxp:=0;
   lmaxu:=0;
   lmax :=0;
-  for i:=0 to ainfo.man.EntriesCount-1 do
+  for i:=0 to ainfo.man.DirCount-1 do
   begin
     if ainfo.man.IsDirDeleted(i) then continue;
 
@@ -80,7 +80,7 @@ begin
 
       if p^.size_s<>p^.size_u then llsize:='!!';
       llog.Add(llsize+
-          ls+string(widestring(ainfo.man.GetName(p^.name)))+
+          ls+string(widestring(p^.name))+
           '; type:'       +PAKCategoryName(p^.ftype)+
           '; source size:'+IntToStr(p^.size_s)+
           '; compr:'      +IntToStr(p^.size_c)+
@@ -88,7 +88,7 @@ begin
     until ainfo.man.GetNextFile(p)=0;
   end;
   llog.Add('Total: '    +IntToStr(ainfo.man.total)+
-           '; childs: ' +IntToStr(ainfo.man.EntriesCount)+
+           '; childs: ' +IntToStr(ainfo.man.DirCount)+
            '; rest: '   +IntToStr(lcnt)+
            '; process: '+IntToStr(lprocess));
   llog.Add('Max packed size: '      +IntToStr(lmaxp)+' (0x'+HexStr(lmaxp,8)+')');
