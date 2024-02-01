@@ -16,7 +16,7 @@ uses
 
 type
   PMANFileInfo = ^TMANFileInfo;
-  TMANFileInfo = object (TBaseFileInfo)
+  TMANFileInfo = object (TFileInfo)
     ftime   :UInt64;    // MAN: TL2 only
     checksum:dword;     // MAN: CRC32
     size_s  :dword;     // ?? MAN: looks like source,not compiled, size (unusable)
@@ -27,6 +27,7 @@ type
 //    exttype :byte;      // ?? removed files, for undo
 //    hide    :ByteBool;  // ?? show or hide in lists
   end;
+  TAMANFileInfo = array of TMANFileInfo;
 
 type
   PRGManifest = ^TRGManifest;
@@ -97,7 +98,8 @@ var
   i:integer;
 begin
        if idx=0 then result:=FLPacked
-  else if idx=1 then result:=FLUnpacked;
+  else if idx=1 then result:=FLUnpacked
+  else result:=0;
 
   if result=0 then
   begin
@@ -132,18 +134,27 @@ end;
 
 {%REGION Wrappers}
 function TRGManifest.SearchFile(aentry:integer; aname:PUnicodeChar):PMANFileInfo;
+var
+  lidx:integer;
 begin
-  result:=PMANFileInfo(inherited SearchFile(aentry, aname))
+  lidx:=inherited SearchFile(aentry, aname);
+  result:=PMANFileInfo(Files[lidx])
 end;
 
 function TRGManifest.SearchFile(apath,aname:PUnicodeChar):PMANFileInfo;
+var
+  lidx:integer;
 begin
-  result:=PMANFileInfo(inherited SearchFile(apath, aname))
+  lidx:=inherited SearchFile(apath, aname);
+  result:=PMANFileInfo(Files[lidx])
 end;
 
 function TRGManifest.SearchFile(const fname:string):PMANFileInfo;
+var
+  lidx:integer;
 begin
-  result:=PMANFileInfo(inherited SearchFile(fname))
+  lidx:=inherited SearchFile(fname);
+  result:=PMANFileInfo(Files[lidx])
 end;
 
 {%ENDREGION}
@@ -158,7 +169,7 @@ const
 var
   lbuf:array [0..bufsize-1] of byte;
   i,j:integer;
-  lcnt,lentries,lentry:integer;
+  lcnt,lentries,lentry,lfile:integer;
 begin
   result:=0;
 
@@ -188,19 +199,14 @@ begin
   DirCapacity:=lentries;
   total:=0;
 
-  {
-    Use AddEntryDir (not AddPath) and AddEntryFile (not AddFile) to avoid doubling
-    file records when autocreating parent path records and adds file without name
-    (so, not able to check for doubles)
-  }
   for i:=0 to lentries-1 do
   begin
-    lentry:=AddEntryDir(memReadShortStringBuf(aptr,@lbuf,bufsize));
-//    lentry:=AddPath(memReadShortStringBuf(aptr,@lbuf,bufsize));
+    lentry:=AddPath(memReadShortStringBuf(aptr,@lbuf,bufsize));
     lcnt:=memReadDWord(aptr);
     for j:=0 to lcnt-1 do
     begin
-      with PManFileInfo(Files[AddEntryFile(lentry)])^ do
+      lfile:=AppendFile(lentry,nil);
+      with PManFileInfo(Files[lfile])^ do
 //      with PManFileInfo(AddFile(lentry))^ do
       begin
         checksum:=memReadDWord(aptr);
@@ -216,7 +222,14 @@ begin
       end;
     end;
   end;
-
+  {
+    TL2 Mod Manifest starts from nameless dir with MEDIA/ child
+    paks starts right from MEDIA/ folder
+  }
+  if Dirs[0].count=0 then
+  begin
+    AppendFile(0,Dirs[1].Name);
+  end;
   result:=total;
 end;
 
@@ -256,7 +269,7 @@ begin
     begin
       if not IsDirDeleted(i) then
       begin
-        ast.WriteShortString(GetDirName(i));
+        ast.WriteShortString(Dirs[i].name);
         ast.WriteDWord(Dirs[i].count);
 
         if GetFirstFile(p,i)<>0 then
@@ -379,7 +392,7 @@ var
   lcurdir,ldir,lname:UnicodeString;
   j,i,lstart,lend:integer;
 begin
-  ldir:=aman.GetDirName(aentry);
+  ldir:=aman.Dirs[aentry].name;
   lcurdir:=abasedir+ldir;
 
   if FindFirst(lcurdir+'*.*',faAnyFile and faDirectory,sr)=0 then
@@ -395,7 +408,7 @@ begin
           lname:=sr.Name+'/';
           for j:=1 to Length(lname)-1 do lname[j]:=UpCase(lname[j]);
           aman.AddPath(PUnicodeChar(ldir+lname));
-          with PMANFileInfo(aman.AddFile(aentry,PUnicodeChar(lname)))^ do
+          with PMANFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
             ftype:=typeDirectory;
         end;
       end
@@ -405,7 +418,7 @@ begin
         if lname<>'' then
         begin
           for j:=1 to Length(lname) do lname[j]:=UpCase(lname[j]);
-          with PMANFileInfo(aman.AddFile(aentry,PUnicodeChar(lname)))^ do
+          with PMANFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
           begin
             ftype :=PAKExtType(lname);
             ftime :=sr.Time;
@@ -470,7 +483,7 @@ begin
     if aman.IsDirDeleted(i) then continue;
 
     lp:=AddGroup(lman,'FOLDER');
-    AddString (lp,'NAME' ,aman.GetDirName(i));
+    AddString (lp,'NAME' ,aman.Dirs[i].name);
     if afull then
       AddInteger(lp,'COUNT',aman.Dirs[i].count);
     lp:=AddGroup(lp,'CHILDREN');
@@ -563,14 +576,14 @@ begin
                     if (GetNodeType(lg)=rgGroup) and
                        (IsNodeName(lg,'CHILD')) then
                     begin
-                      with PMANFileInfo(aman.AddFile(lentry))^ do
+                      with PMANFileInfo(aman.Files[aman.AddFile(lentry,nil)])^ do
                       begin
-                        name    :=AsString(FindNode(lg,'NAME'));
-                        ftype   :=AsInteger(FindNode(lg,'TYPE'));
-                        size_s  :=AsInteger(FindNode(lg,'SIZE'));
-                        offset  :=AsInteger(FindNode(lg,'OFFSET'));
-                        checksum:=AsUnsigned(FindNode(lg,'CRC'));
-                        ftime   :=AsInteger64(FindNode(lg,'TIME'));
+                        name    :=AsString   (FindNode(lg,'NAME'  ));
+                        ftype   :=AsInteger  (FindNode(lg,'TYPE'  ));
+                        size_s  :=AsInteger  (FindNode(lg,'SIZE'  ));
+                        offset  :=AsInteger  (FindNode(lg,'OFFSET'));
+                        checksum:=AsUnsigned (FindNode(lg,'CRC'   ));
+                        ftime   :=AsInteger64(FindNode(lg,'TIME'  ));
                       end;
 
                     end;

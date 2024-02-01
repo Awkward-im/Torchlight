@@ -30,74 +30,48 @@ const
   act_copy   = 3; // just copy of original PAK data
   act_delete = 4; // delete from PAK
   act_dir    = 5; // disk directory with files
+  act_reset  = 6; // delete from update (reset), event only
 
 type
   PUpdateFileInfo = ^TUpdateFileInfo;
-  TUpdateFileInfo = object (TBaseFileInfo)
+  TUpdateFileInfo = object(TFileInfo)
+    act  :integer;
     fileu:PWideChar;
     usize:cardinal;
   end;
 
 type
-  PUpdateElement = ^TUpdateElement;
-  TUpdateElement = record
-    time :TDateTime;
-    path :PWideChar;       // file path inside PAK (dir with name)
-    id   :dword;           // hash for faster search
-//    size :cardinal;        // data or file size?
-    case act:integer of
-      act_data: (
-        data :PByte;       // binary file data
-        usize:cardinal;    // data size
-//        psize:cardinal;
-      );
-      act_file: (
-        fileu:PWideChar    // external file name
-      );
-  end;
-
+  TOnRGUpdate = procedure (idx:integer; act:integer) of object;
 type
-  TRGUpdateList = object
+  TRGUpdateList = object (TRGDirList)
   private
-    FList  :array of TUpdateElement;
-    FCount :integer;    // amount of real elements
-    FDir   :PWideChar;  // path to save files
+    FOnUpdate:TOnRGUpdate;
 
-    procedure Sort;
-    function GetElementCount:integer;
-    function GetElement(i:integer):TUpdateElement;
-
-    function  CreateElement(apath:PWideChar):integer;
-    procedure ClearElement (idx:integer);
-    procedure DeleteElement(idx:integer);
-
-    function  AddInternal(adata:PByte; asize:cardinal; apath:PWideChar):integer;
-    // Search for updated
-    function  Search(aid  :dword    ):integer;
-    function  Search(apath:PWideChar; acase:boolean=false):integer;
+    procedure ClearElement (arec:PUpdateFileInfo);
   public
     // Main
-    procedure Create;
-    procedure Clear;
+    procedure Init;
+    procedure Free;
 
-    // Actions
     // Mark as removed (delete update)
     procedure Remove(apath:PWideChar);
     // Remove update
     procedure Reset (apath:PWideChar);
     // Add file name as future update
-    function Add(afile:PWideChar; apath:PWideChar; acontent:boolean=false):dword;
+    function Add(afile:PWideChar; apath:PWideChar; acontent:boolean=false):PUpdateFileInfo;
     // Add data as update
-    function Add    (adata:PByte; asize:cardinal; apath:PWideChar):dword;
+    function Add    (adata:PByte; asize:cardinal; apath:PWideChar):PUpdateFileInfo;
     // Add source data copy
-    function AddCopy(adata:PByte; asize:cardinal; apath:PWideChar):dword;
+    function AddCopy(adata:PByte; asize:cardinal; apath:PWideChar):PUpdateFileInfo;
     // Add data as update directly, not allocate
-    function Use(adata:PByte; asize:cardinal; apath:PWideChar):dword;
+    function Use(adata:PByte; asize:cardinal; apath:PWideChar):PUpdateFileInfo;
     // Get data from update
+    function  Get(info :PFileInfo; var aout:PByte):integer;
+    function  Get(idx  :integer  ; var aout:PByte):integer;
     function  Get(apath:PWideChar; var aout:PByte):integer;
 
-    property  Count :integer read GetElementCount;
-    property  Element[i:integer]:TUpdateElement read GetElement; default;
+  public
+    property OnUpdate:TOnRGUpdate read FOnUpdate write FOnUpdate;
   end;
 
 implementation
@@ -107,190 +81,104 @@ const
   maxMemSize = 4*1024*1024; // max block sze to keep in memory, else - on disk
 
 
-procedure TRGUpdateList.Create;
+procedure TRGUpdateList.Init;
 begin
-  FCount :=0;
-  FList  :=nil; //??
+  inherited Init(SizEOf(TUpdateFileInfo));
+
+  FOnUpdate:=nil;
 end;
 
-function TRGUpdateList.Search(aid:dword):integer;
+procedure TRGUpdateList.Free;
 var
   i:integer;
 begin
-  for i:=0 to FCount-1 do
-    if FList[i].id=aid then exit(i);
+  for i:=0 to FileCount-1 do
+    if not IsFileDeleted(i) then
+      ClearElement(PUpdateFileInfo(Files[i]));
 
-  result:=-1;
+  inherited Free;
 end;
 
-function TRGUpdateList.Search(apath:PWideChar; acase:boolean=false):integer;
-var
-  ls:array [0..511] of WideChar;
-  i:integer;
+procedure TRGUpdateList.ClearElement(arec:PUpdateFileInfo);
 begin
-  if apath<>nil then
-  begin
-    if not acase then
-    begin
-      i:=0;
-      while apath^<>#0 do
-      begin
-        if apath^='\' then
-          ls[i]:='/'
-        else
-          ls[i]:=UpCase(apath^);
-        inc(apath);
-        inc(i);
-      end;
-      ls[i]:=#0;
-      apath:=@ls
-    end;
-
-    for i:=0 to FCount-1 do
-      if CompareWide(FList[i].path,apath)=0 then exit(i);
-  end;
-  result:=-1;
-end;
-
-procedure TRGUpdateList.ClearElement(idx:integer);
-begin
-  case FList[idx].act of 
-    act_copy,
-    act_data: FreeMem(FList[idx].data);
-    act_file: FreeMem(FList[idx].fileu);
-  end;
-end;
-
-function TRGUpdateList.CreateElement(apath:PWideChar):integer;
-var
-  ls:array [0..511] of WideChar;
-  i:integer;
-begin
-  i:=0;
-  while apath^<>#0 do
-  begin
-    if apath^='\' then
-      ls[i]:='/'
-    else
-      ls[i]:=UpCase(apath^);
-    inc(apath);
-    inc(i);
-  end;
-  ls[i]:=#0;
-
-  i:=Search(@ls,true);
-  // Found element
-  if i>=0 then
-  begin
-    ClearElement(i);
-  end
-  else
-  begin
-    i:=FCount;
-    // check for unused list space at the end
-    if i=system.Length(FList) then //!!!! expand list
-    begin
-      SetLength(FList,i+16);
-    end;
-
-    FList[i].path:=CopyWide(ls);
-    FList[i].id  :=RGHash(ls);
-//    FList[i].time:=Now();
-
-    inc(FCount);
-  end;
-  result:=i;
-end;
-
-procedure TRGUpdateList.DeleteElement(idx:integer);
-begin
-  FreeMem(FList[idx].path);
-  ClearElement(idx);
-
-  if idx<(FCount-1) then
-    move(FList[idx+1],FList[idx],(FCount-1-idx)*SizeOf(TUpdateElement));
-end;
-
-procedure TRGUpdateList.Clear;
-var
-  i:integer;
-begin
-  for i:=FCount-1 downto 0 do
-    DeleteElement(i);
-
-  FCount:=0;
-  SetLength(FList,0);
+   with arec^ do
+   begin
+     case act of 
+       act_copy,
+       act_data: FreeMem(data);
+       act_file: FreeMem(fileu);
+     end;
+   end;
 end;
 
 procedure TRGUpdateList.Reset(apath:PWideChar);
 var
-  i:integer;
+  p:PUpdateFileInfo;
 begin
-  i:=Search(apath);
-  if i>=0 then
+  p:=PUpdateFileInfo(Files[SearchFile(apath)]);
+  if p<>nil then
   begin
-    DeleteElement(i);
-    dec(FCount);
+    ClearElement(p);
+//!!!!!!!!!1    DeleteFile(apath); //!! double search
+//    if Assigned(OnUpdate) then OnUpdate(,act_reset);
   end;
 end;
 
 procedure TRGUpdateList.Remove(apath:PWideChar);
-begin
-  FList[CreateElement(apath)].act:=act_delete;
-end;
-
-function TRGUpdateList.Use(adata:PByte; asize:cardinal; apath:PWideChar):dword;
 var
-  i:integer;
+  p:PUpdateFileInfo;
 begin
-  i:=CreateElement(apath);
-  FList[i].data :=adata;
-  FList[i].usize:=asize;
-  FList[i].act  :=act_data;
-  result:=FList[i].id;
+  p:=PUpdateFileInfo(Files[AddFile(apath)]);
+  ClearElement(p);
+  p^.act:=act_delete;
 end;
 
-function TRGUpdateList.AddInternal(adata:PByte; asize:cardinal; apath:PWideChar):integer;
+function TRGUpdateList.Use(adata:PByte; asize:cardinal; apath:PWideChar):PUpdateFileInfo;
+begin
+  result:=PUpdateFileInfo(Files[AddFile(apath)]);
+  ClearElement(result);
+  with result^ do
+  begin
+    data :=adata;
+    usize:=asize;
+    act  :=act_data;
+  end;
+//  if Assigned(OnUpdate) then OnUpdate(,act_data);
+end;
+
+function TRGUpdateList.Add(adata:PByte; asize:cardinal; apath:PWideChar):PUpdateFileInfo;
 var
-  i:integer;
+  lptr:PByte;
 begin
-  i:=CreateElement(apath);
-  GetMem(FList[i].data,asize);
-  move(adata^,FList[i].data^,asize);
-  FList[i].usize:=asize;
-  result:=i;
+  GetMem(lptr,asize);
+  move(adata^,lptr^,asize);
+
+  result:=Use(lptr,asize,apath);
 end;
 
-function TRGUpdateList.Add(adata:PByte; asize:cardinal; apath:PWideChar):dword;
-var
-  i:integer;
+function TRGUpdateList.AddCopy(adata:PByte; asize:cardinal; apath:PWideChar):PUpdateFileInfo;
 begin
-  i:=AddInternal(adata,asize,apath);
-  FList[i].act:=act_data;
-  result:=Flist[i].id;
+  result:=Add(adata,asize,apath);
+  with result^ do
+    act:=act_copy;
 end;
 
-function TRGUpdateList.AddCopy(adata:PByte; asize:cardinal; apath:PWideChar):dword;
-var
-  i:integer;
-begin
-  i:=AddInternal(adata,asize,apath);
-  FList[i].act:=act_copy;
-  result:=FList[i].id;
-end;
-
-function TRGUpdateList.Add(afile:PWideChar; apath:PWideChar; acontent:boolean=false):dword;
+function TRGUpdateList.Add(afile:PWideChar; apath:PWideChar; acontent:boolean=false):PUpdateFileInfo;
 var
   f:file of byte;
   lptr:PByte;
-  i,lsize:integer;
+  lsize:integer;
 begin
   if not acontent then
   begin
-    i:=CreateElement(apath);
-    FList[i].fileu:=CopyWide(afile);
-    FList[i].act  :=act_file;
-    result:=FList[i].id;
+    result:=PUpdateFileInfo(Files[AddFile(apath)]);
+    ClearElement(result);
+    with result^ do
+    begin
+      fileu:=CopyWide(afile);
+      act  :=act_file;
+//      if Assigned(OnUpdate) then OnUpdate(,act_file);
+    end;
   end
   else
   begin
@@ -309,23 +197,21 @@ begin
       result:=Use(lptr,lsize,apath);
       exit;
     end;
-    result:=0;
+    result:=nil;
   end;
 end;
 
-function TRGUpdateList.Get(apath:PWideChar; var aout:PByte):integer;
+function TRGUpdateList.Get(info:PFileInfo; var aout:PByte):integer;
 var
   f:File of byte;
-  i:integer;
 begin
   result:=0;
-  i:=Search(apath);
-  if i>=0 then
+  if info<>nil then
   begin
     // read from file
-    if FList[i].act=act_file then
+    if PUpdateFileInfo(info)^.act=act_file then
     begin
-      system.Assign(f,FList[i].fileu);
+      system.Assign(f,PUpdateFileInfo(info)^.fileu);
       system.Reset(f);
       if IOResult=0 then
       begin
@@ -333,7 +219,10 @@ begin
         if result>0 then
         begin
           if (aout=nil) or (MemSize(aout)<result) then
-            ReallocMem(aout, result);
+          begin
+            FreeMem(aout);
+            GetMem(aout, result);
+          end;
           BlockRead(f,aout^,result);
         end;
         system.Close(f);
@@ -342,30 +231,28 @@ begin
     // read from block
     else
     begin
-      result:=FList[i].usize;
+      result:=PUpdateFileInfo(info)^.usize;
       if result>0 then
       begin
         if (aout=nil) or (MemSize(aout)<result) then
-          ReallocMem(aout, result);
-        move(FList[i].data^,aout^,result);
+        begin
+          FreeMem(aout);
+          GetMem(aout, result);
+        end;
+        move(PByte(info^.data)^,aout^,result);
       end;
     end
   end;
 end;
 
-procedure TRGUpdateList.Sort;
+function TRGUpdateList.Get(idx:integer; var aout:PByte):integer; inline;
 begin
+  result:=Get(Files[idx],aout);
 end;
 
-function TRGUpdateList.GetElementCount:integer;
+function TRGUpdateList.Get(apath:PWideChar; var aout:PByte):integer; inline;
 begin
-  result:=FCount;
-end;
-
-function TRGUpdateList.GetElement(i:integer):TUpdateElement;
-begin
-  if (i>=0) and (i<FCount) then
-    result:=FList[i];
+  result:=Get(SearchFile(apath),aout)
 end;
 
 end.

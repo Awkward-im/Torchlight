@@ -86,7 +86,7 @@ var
   i,llen,lsize:integer;
   ltype,lhash:dword;
 begin
-  ltype:=PWord(aptr)^;
+  ltype :=PWord (aptr)^; inc(aptr,SizeOf(Word));
   result:=pInt32(aptr)^; inc(aptr,SizeOf(Int32));
   aDict.Capacity:=result;
 
@@ -110,7 +110,7 @@ begin
     else
     begin
       case TExportDictType(ltype) of
-        asBin: begin
+        asZBin: begin
           pcw:=PWideChar(aptr);
           aDict.Add(pcw,lhash);
           inc(aptr,llen*SizeOf(WideChar));
@@ -125,8 +125,8 @@ begin
           aDict.Add(ls,lhash);
         end;
 
-        asZBin: begin
-          if llen>lsize then
+        asBin: begin
+          if (llen+SizeOf(WideChar))>lsize then
           begin
             if lsize=0 then
             begin
@@ -136,10 +136,12 @@ begin
             else
             begin
               lsize:=Align(llen,16);
-              ReallocMem(pcw,lsize*SizeOf(WideChar));
+              FreeMem(pcw);
+              GetMem(pcw,lsize*SizeOf(WideChar));
             end;
           end;
           move(aptr^,pByte(pcw)^,llen*SizeOf(WideChar));
+          pcw[llen]:=#0;
           inc(aptr,llen*SizeOf(WideChar));
           aDict.Add(pcw,lhash);
         end;
@@ -170,7 +172,8 @@ begin
         else
         begin
           lsize:=Align(llen+1,16);
-          ReallocMem(pcw,lsize*SizeOf(WideChar));
+          FreeMem(pcw);
+          GetMem(pcw,lsize*SizeOf(WideChar));
         end;
       end;
       move(aptr^,pByte(pcw)^,llen*SizeOf(WideChar)); inc(aptr,llen*SizeOf(WideChar));
@@ -567,6 +570,7 @@ begin
 
       if afmt in [asZBin,asZBin8] then ldelta:=1 else ldelta:=0;
 
+      slb.AddValue(ORD(afmt),2);
       slb.AddValue(Count,4);
 
       if sortbyhash then SortBy(0) else SortBy(1); //!!
@@ -626,6 +630,8 @@ var
   lline:integer;
   stage:integer;
 begin
+  result:=0;
+
   lsrc:='';
   ldst:='';
 

@@ -49,7 +49,7 @@ const
 
 {$i rg_split.inc}
 
-procedure FixFloatStr(var astr:WideString);
+procedure FixFloatStr(var astr:UnicodeString);
 function  ReverseWords(aval:QWord):QWord;
 function  StrToWide(const src:string):PWideChar;
 function  WideToStr(src:PWideChar):string;
@@ -276,7 +276,7 @@ begin
     qword(tTL2VerRec(aval).arr[0]) shl 48;
 end;
 
-procedure FixFloatStr(var astr:WideString);
+procedure FixFloatStr(var astr:UnicodeString);
 var
   j,l:integer;
 begin
@@ -319,7 +319,7 @@ end;
 function StrToWide(const src:string):PWideChar;
 var
   i:integer;
-//  ws:WideString;
+//  ws:UnicodeString;
 begin
   if src='' then exit(nil);
 
@@ -329,7 +329,9 @@ begin
     GetMem(result,(i+1)*SizeOf(WideChar));
     i:=Utf8ToUnicode(result,(i+1)*SizeOf(WideChar),pchar(src),length(src));
     result[i-1]:=#0;
-  end;
+  end
+  else
+    result:=nil;
 {
   ws:=UTF8Decode(src);
   GetMem(result,(Length(ws)+1)*SizeOf(WideChar));
@@ -340,7 +342,7 @@ end;
 
 function WideToStr(src:PWideChar):string;
 var
-  ws:WideString;
+  ws:UnicodeString;
   lsize:integer;
 begin
   lsize:=Length(src);
@@ -460,7 +462,8 @@ begin
     if (llen+SizeOf(WideChar))>=asize then
     begin
       asize:=Align(llen+SizeOf(WideChar),16);
-      ReallocMem(PByte(buf),asize);
+      FreeMem(buf);
+      GetMem(PByte(buf),asize);
     end;
     move(aptr^,PByte(buf)^,llen);
     result:=buf;
@@ -634,6 +637,7 @@ function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
 var
   i:integer;
 begin
+  result:=0;
   if asize>0 then
   begin
     result:=$14D3;

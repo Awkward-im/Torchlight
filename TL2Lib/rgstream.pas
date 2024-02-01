@@ -31,13 +31,13 @@ type
     procedure WriteShortString(const astr:string);
     procedure WriteDWordString(const astr:string);
     procedure WriteShortStringUTF8(const astr:string);
-    procedure WriteByteString (const astr:WideString);
-    procedure WriteShortString(const astr:WideString);
-    procedure WriteDWordString(const astr:WideString);
+    procedure WriteByteString (const astr:UnicodeString);
+    procedure WriteShortString(const astr:UnicodeString);
+    procedure WriteDWordString(const astr:UnicodeString);
     procedure WriteByteString (const astr:PWideChar);
     procedure WriteShortString(const astr:PWideChar);
     procedure WriteDWordString(const astr:PWideChar);
-    procedure WriteShortStringUTF8(const astr:WideString);
+    procedure WriteShortStringUTF8(const astr:UnicodeString);
     procedure WriteFloat(aval:single);
     procedure WriteCoord(aval:TVector3);
     procedure WriteShortStringList(alist:TL2StringList);
@@ -91,7 +91,7 @@ end;
 
 function TTL2Stream.ReadByteString():string;
 var
-  ws:WideString;
+  ws:UnicodeString;
   lsize:cardinal;
 begin
   lsize:=ReadByte();
@@ -116,7 +116,7 @@ end;
 
 function TTL2Stream.ReadShortString():string;
 var
-  ws:WideString;
+  ws:UnicodeString;
   lsize:cardinal;
 begin
   lsize:=ReadWord();
@@ -132,7 +132,7 @@ end;
 
 function TTL2Stream.ReadDWordString():string;
 var
-  ws:WideString;
+  ws:UnicodeString;
   lsize:cardinal;
 begin
   lsize:=ReadDWord();
@@ -255,7 +255,7 @@ end;
 
 procedure TTL2Stream.WriteByteString(const astr:string);
 var
-  ws:WideString;
+  ws:UnicodeString;
 begin
   if astr<>'' then
   begin
@@ -267,7 +267,7 @@ begin
     WriteByte(0);
 end;
 
-procedure TTL2Stream.WriteByteString(const astr:WideString);
+procedure TTL2Stream.WriteByteString(const astr:UnicodeString);
 begin
   if astr<>'' then
   begin
@@ -294,7 +294,7 @@ end;
 
 procedure TTL2Stream.WriteShortString(const astr:string);
 var
-  ws:WideString;
+  ws:UnicodeString;
 begin
   if astr<>'' then
   begin
@@ -306,7 +306,7 @@ begin
     WriteWord(0);
 end;
 
-procedure TTL2Stream.WriteShortString(const astr:WideString);
+procedure TTL2Stream.WriteShortString(const astr:UnicodeString);
 begin
   if astr<>'' then
   begin
@@ -333,7 +333,7 @@ end;
 
 procedure TTL2Stream.WriteDWordString(const astr:string);
 var
-  ws:WideString;
+  ws:UnicodeString;
 begin
   if astr<>'' then
   begin
@@ -345,7 +345,7 @@ begin
     WriteDWord(0);
 end;
 
-procedure TTL2Stream.WriteDWordString(const astr:WideString);
+procedure TTL2Stream.WriteDWordString(const astr:UnicodeString);
 begin
   if astr<>'' then
   begin
@@ -381,7 +381,7 @@ begin
     WriteWord(0);
 end;
 
-procedure TTL2Stream.WriteShortStringUTF8(const astr:WideString);
+procedure TTL2Stream.WriteShortStringUTF8(const astr:UnicodeString);
 var
   ls:String;
 begin

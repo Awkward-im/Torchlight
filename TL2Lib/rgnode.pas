@@ -1,8 +1,13 @@
+{TODO: layout only. make ID and PARENTID for any rgGroup? Or get PARENTID from parent (with check)}
 {TODO: search ID node with right value (really? here?!)}
 {TODO: make Vector2, Vector3 and Vector 4 values too}
 {TODO: As* for get value - add default values}
 {TODO: Add blob field for use as Hash for names or ID for layout nodes. but not both?}
 {TODO: Add Insert method at least for top (for IDs)}
+{
+  Tree-like object
+  every node almost independent, have it's own child list
+}
 unit RGNode;
 
 interface
@@ -35,6 +40,7 @@ function AsInteger64(anode:pointer; aval:Int64    ):Int64;
 function AsString   (anode:pointer; aval:PWideChar):PWideChar;
 function AsTranslate(anode:pointer; aval:PWideChar):PWideChar;
 function AsNote     (anode:pointer; aval:PWideChar):PWideChar;
+function AsVector   (anode:pointer; var aval):integer;
 
 //--- Read data ---
 
@@ -105,7 +111,6 @@ type
       rgFloat    : (asFloat    :Single);
       rgDouble   : (asDouble   :Double);
       // custom
-{
       rgVector2,
       rgVector3,
       rgVector4  : (
@@ -114,7 +119,6 @@ type
         Z:Single;
         W:Single;
       );
-}
       // user
       rgWord     : (asWord     :Word);
       rgByte     : (asByte     :Byte);
@@ -182,12 +186,12 @@ begin
     result:=PRGNode(anode)^.nodetype;
 end;
 
-function IsNodeName(anode:pointer; aname:PWideChar):boolean; inline;
+function IsNodeName(anode:pointer; aname:PWideChar):boolean;
 begin
   result:=(anode<>nil) and (PRGNode(anode)^.hash=RGHash(aname));
 end;
 
-function IsNodeName(anode:pointer; ahash:dword):boolean; inline;
+function IsNodeName(anode:pointer; ahash:dword):boolean;
 begin
   result:=(anode<>nil) and (PRGNode(anode)^.hash=ahash);
 end;
@@ -561,6 +565,33 @@ begin
   end;
 
   result:=aval;
+end;
+
+function AsVector(anode:pointer; var aval):integer;
+begin
+  if (anode<>nil) then
+  begin
+    if PRGNode(anode)^.nodetype=rgVector2 then
+    begin
+      PRGNode(anode)^.X:=TVector2(aval).X;
+      PRGNode(anode)^.Y:=TVector2(aval).Y;
+    end
+    else if PRGNode(anode)^.nodetype=rgVector3 then
+    begin
+      PRGNode(anode)^.X:=TVector3(aval).X;
+      PRGNode(anode)^.Y:=TVector3(aval).Y;
+      PRGNode(anode)^.Z:=TVector3(aval).Z;
+    end
+    else if PRGNode(anode)^.nodetype=rgVector4 then
+    begin
+      PRGNode(anode)^.X:=TVector4(aval).X;
+      PRGNode(anode)^.Y:=TVector4(aval).Y;
+      PRGNode(anode)^.Z:=TVector4(aval).Z;
+      PRGNode(anode)^.W:=TVector4(aval).W;
+    end
+  end;
+
+  result:=PRGNode(anode)^.nodetype;
 end;
 
 //----- Read data -----

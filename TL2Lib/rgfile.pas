@@ -132,7 +132,8 @@ begin
         if (aout=nil) or (abufsize<result) then // MemSize(aout)
         begin
           abufsize:=Align(result,4096);
-          ReallocMem(aout,abufsize);
+          FreeMem(aout);
+          GetMem(aout,abufsize);
         end;
         outdata.Position:=0;
         outdata.ReadBuffer(aout^,result);
@@ -182,7 +183,10 @@ begin
     lbufsize:=MemSize(aout);
 
   if lbufsize<aoutsize then
-    ReallocMem(aout,Align(aoutsize,4096));
+  begin
+    FreeMem(aout);
+    GetMem(aout,Align(aoutsize,4096));
+  end;
 
   // process
   if (ltof=tofRaw) or (ltof=tofRawHdr) then
@@ -287,7 +291,8 @@ begin
       if (aout=nil) or (abufsize<result) then // MemSize(aout)
       begin
         abufsize:=Align(result,4096);
-        ReallocMem(aout,abufsize);
+        FreeMem(aout);
+        GetMem(aout,abufsize);
       end;
       data.Position:=0;
       data.ReadBuffer(aout^,result);
@@ -313,7 +318,8 @@ begin
   if (aout=nil) or (abufsize<loutsize) then
   begin
     abufsize:=Align(loutsize,4096);
-    ReallocMem(aout,abufsize);
+    FreeMem(aout);
+    GetMem(aout,abufsize);
   end;
 
   result:=abufsize;

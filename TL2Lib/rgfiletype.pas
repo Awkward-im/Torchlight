@@ -116,7 +116,9 @@ const
     (_type:typePU        ; _ext:'.PU'),
     (_type:typeAnno      ; _ext:'.ANNO'),
     (_type:typeSBIN      ; _ext:'.SBIN'),
-    (_type:typeWDAT      ; _ext:'.WDAT')
+    (_type:typeWDAT      ; _ext:'.WDAT'),
+    (_type:typeDAT       ; _ext:'.ADM'), // TL1 binary DAT form
+    (_type:typeLayout    ; _ext:'.CMP') // TL1 binary LAYOUT form
 //    (_type:typeDelete    ; _ext:'<OTHER>'),
 //    (_type:typeDirectory ; _ext:'<DIR>')
   );

@@ -769,7 +769,7 @@ begin
       lres:=OnPAKProgress(self,i,nil);
       if lres<>0 then break;
     end;
-    lcurdir:=ldir+UnicodeString(man.GetDirName(i));
+    lcurdir:=ldir+UnicodeString(man.Dirs[i].name);
     if lcurdir<>'' then
       ForceDirectories(lcurdir);
 
@@ -931,7 +931,7 @@ begin
   begin
     if man.IsDirDeleted(i) then continue;
 
-    ldir:=ConcatWide(PUnicodeChar(UnicodeString(FSrcDir)),man.GetDirName(i)); //!!!!
+    ldir:=ConcatWide(PUnicodeChar(UnicodeString(FSrcDir)),man.Dirs[i].name); //!!!!
 
     if man.GetFirstFile(p,i)<>0 then
     repeat
@@ -1161,7 +1161,7 @@ begin
 //  ldir:=WideToStr(ainfo.man.GetDirName(ABS(adir)));
   if adir<0 then
   begin
-    p:=ConcatWide(ainfo.man.GetDirName(ABS(adir)),afile^.name);
+    p:=ConcatWide(ainfo.man.Dirs[ABS(adir)].name,afile^.name);
     l:=ConcatWide('Skipping dummy ',p);
     RGLog.Add(WideToStr(l));
 //    RGLog.Add('Skipping dummy ' +WideToStr(p));
@@ -1171,7 +1171,7 @@ begin
   end
   else if afile<>nil then
   begin
-    p:=ConcatWide(ainfo.man.GetDirName(adir),afile^.name);
+    p:=ConcatWide(ainfo.man.Dirs[adir].name,afile^.name);
     l:=ConcatWide('Processing file ',p);
     RGLog.Add(WideToStr(l));
 //    RGLog.Add('Processing file '+WideToStr(p));
@@ -1181,7 +1181,7 @@ begin
   end
   else
   begin
-    p:=ConcatWide('Processing dir ',ainfo.man.GetDirName(adir));
+    p:=ConcatWide('Processing dir ',ainfo.man.Dirs[adir].name);
     RGLog.Add(WideToStr(p));
     FreeMem(p);
 //    RGLog.Add('Processing dir '+WideToStr(ainfo.man.GetDirName(adir)));

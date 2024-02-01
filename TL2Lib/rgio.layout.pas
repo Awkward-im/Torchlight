@@ -65,6 +65,7 @@ const
   );
 const
   strChoice : array [1..2] of PWideChar = (
+//    'ALL',
     'Weight',
     'Random Chance'
   );
@@ -143,9 +144,10 @@ type
     FBinStart:PByte;
     FPos     :PByte;
     FBinPos  :PByte;
-    FBuffer  :WideString;
+    FBuffer  :UnicodeString;
     FSize    :integer;
     FVer     :integer;
+    FLayVer  :integer;
     FCount   :integer;
 
   private
@@ -167,8 +169,10 @@ type
     function GetInterpolationCode(name:PWideChar):integer;
 
     // read TL1
-    function  DoParseLayoutTL1(atype:cardinal):pointer;
-    function  DoParseBlockTL1  (var anode:pointer; const aparent:Int64):integer;
+    function  DoParseLayoutTL1  (atype:cardinal):pointer;
+    function  DoParseBlockTL1   (var anode:pointer; const aparent:Int64):integer;
+    procedure ParseLogicGroupTL1(var anode:pointer; aid:Int64);
+    procedure ParseTimelineTL1  (var anode:pointer; aid:Int64);
 
     procedure ReadBinaryData   (var anode:pointer; var adata:TLayoutBin);
 
@@ -337,10 +341,7 @@ end;
 
 procedure TRGLayoutFile.ReadBinaryData(var anode:pointer; var adata:TLayoutBin);
 var
-  lls,ls:WideString;
-  p:PWideChar;
   lnode:pointer;
-  i,lthemes:integer;
 begin
   memReadData(FBinPos,adata,SizeOf(adata));
 
@@ -388,9 +389,8 @@ begin
   begin
     if adata.tag>=0 then
     begin
-      FLog.Add('"TAG" is set to '+IntToStr(adata.tag));
-  //      Str(ldata.tag,lls);
-  //      AddString(anode,'TAG',PWideChar(lls));
+      if rgDebugLevel=dlDetailed then
+        FLog.Add('"TAG" is set to '+IntToStr(adata.tag));
     end;
   end;
 end;
@@ -450,9 +450,45 @@ begin
   end;
 end;
 
+function VectorName(abuf, aname:PWideChar; aletter:WideChar):PWideChar;
+//var llen:integer;
+begin
+  result:=abuf;
+{
+  llen:=Length(aname);
+  if aname<>nil then
+    move(aname^,abuf^,llen*SizeOf(WideChar));
+  abuf[llen  ]:=aletter;
+  abuf[llen+1]:=#0;
+}
+{
+  llen:=0;
+  if aname<>nil then
+    while aname^<>#0 do
+    begin
+      abuf[llen]:=aname^;
+      inc(llen);
+      inc(aname);
+    end;
+  abuf[llen  ]:=aletter;
+  abuf[llen+1]:=#0;
+}
+  if aname<>nil then
+    while aname^<>#0 do
+    begin
+      abuf^:=aname^;
+      inc(abuf);
+      inc(aname);
+    end;
+  abuf^:=aletter;
+  inc(abuf);
+  abuf^:=#0;
+end;
+
 function TRGLayoutFile.ReadPropertyValue(aid:UInt32; asize:integer; anode:pointer):boolean;
 var
-  lls,ls:WideString;
+  lbuf:array [0..127] of WideChar;
+  lls,ls:UnicodeString;
   lmatrix:TMatrix4x4;
   lq:TVector4;
   valq:Int64;
@@ -478,7 +514,7 @@ begin
   if (not result) and (rgDebugLevel=dlDetailed) then
   begin
     Str(aid,lls);
-    ls:='    '+lls+':'+WideString(TypeToText(ltype))+':'+WideString(lname);
+    ls:='    '+lls+':'+UnicodeString(TypeToText(ltype))+':'+UnicodeString(lname);
     if ltype=rgInteger then
     begin
       Str(PDword(FPos)^,lls);
@@ -499,13 +535,19 @@ begin
   else
     lsize:=0;
   end;
-  if (lsize>0) and ((asize div lsize)>1) and ((asize mod lsize)=2) then
+  if lsize>0 then
   begin
-    ltype:=ltype or rgList;
-//    if      ltype=rgUnsigned then ltype:=rgUIntList
-//    else if ltype=rgFloat    then ltype:=rgFloatList;
+    llen:=asize div lsize;
+    if (llen>1)
+       and ((FVer=verTL1) xor ((asize mod lsize)=2))
+       then
+    begin
+      ltype:=ltype or rgList;
+  //    if      ltype=rgUnsigned then ltype:=rgUIntList
+  //    else if ltype=rgFloat    then ltype:=rgFloatList;
+    end;
   end;
-  
+
   case ltype of
     rgBool     : AddBool(anode,lname,memReadInteger(FPos)<>0);
     rgInteger  : begin vali:=memReadInteger  (FPos); {if vali<>0 then} AddInteger  (anode,lname,vali); end;
@@ -519,9 +561,17 @@ begin
       case FVer of
         verTL1: if asize>0 then
           begin
-            GetMem  (pcw ,(asize+1)*SizeOf(DWord));
-            FillChar(pcw^,(asize+1)*SizeOf(DWord),0);
-            memReadData(FPos,pcw^,asize*SizeOf(DWord));
+{
+lsize:=(asize div SizeOf(DWord))*SizeOf(Word);
+GetMem  (pcw ,lsize+SizeOf(Word));
+//            FillChar(pcw^,asize+SizeOf(Word,0);
+memReadData(FPos,pcw^,lsize);
+PWord(pcw+lsize)^:=#0;
+}
+            GetMem  (pcw ,asize+SizeOf(WideChar));
+//            FillChar(pcw^,asize+SizeOf(WideChar),0);
+            memReadData(FPos,pcw^,asize);
+            PWideChar(PByte(pcw)+asize)^:=#0;
           end
           else
             pcw:=nil;
@@ -537,21 +587,38 @@ begin
       end;
     end;
     rgVector2: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
     end;
     rgVector3: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
-      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
+      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
     end;
     // Quaternion
     rgVector4: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Y'),lq.Y);
-      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'Z'),lq.Z);
-      lq.W:=memReadFloat(FPos); {if lq.W<>0 then} AddFloat(anode,PWideChar(WideString(lname)+'W'),lq.W);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
+      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
+      lq.W:=memReadFloat(FPos); {if lq.W<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'W'),lq.W);
 
+(*
+    rgVector2: begin
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Y'),lq.Y);
+    end;
+    rgVector3: begin
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Y'),lq.Y);
+      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Z'),lq.Z);
+    end;
+    // Quaternion
+    rgVector4: begin
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Y'),lq.Y);
+      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Z'),lq.Z);
+      lq.W:=memReadFloat(FPos); {if lq.W<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'W'),lq.W);
+*)
       // Additional, not sure what it good really
       if CompareWide(lname,'ORIENTATION')=0 then
       begin
@@ -572,7 +639,7 @@ begin
     if ltype and rgList<>0 then
     begin
       ls:='';
-      llen:=memReadWord(FPos);
+      if FVer<>verTL1 then llen:=memReadWord(FPos);
       for i:=0 to integer(llen)-1 do
       begin
         case ltype and not rgList of
@@ -620,7 +687,7 @@ begin
     else
     begin
       AddInteger(anode,'??UNKNOWN',asize);
-      AddString (anode,PWideChar('??'+WideString(lname)), PWideChar(WideString(HexStr(FPos-FStart,8))));
+      AddString (anode,PWideChar('??'+UnicodeString(lname)), PWideChar(UnicodeString(HexStr(FPos-FStart,8))));
       FLog.Add('Unknown property type '+IntToStr(ltype)+' size '+IntToStr(asize)+' at '+HexStr(FPos-FStart,8));
     end;
   end;
@@ -630,6 +697,7 @@ end;
 
 procedure TRGLayoutFile.ParseLogicGroup(var anode:pointer);
 var
+  lbuf:array [0..127] of WideChar;
   lgobj,lgroup,lglnk:pointer;
   pcw:PWideChar;
   lsize:integer;
@@ -654,8 +722,11 @@ begin
       AddInteger(lglnk,'LINKINGTO' ,memReadByte(FPos));
       case FVer of
         verTL2: begin
-          pcw :=memReadShortString(FPos); AddString(lglnk,'OUTPUTNAME',pcw); FreeMem(pcw);
-          pcw :=memReadShortString(FPos); AddString(lglnk,'INPUTNAME' ,pcw); FreeMem(pcw);
+          AddString (lglnk,'OUTPUTNAME',memReadShortStringBuf(FPos,@lbuf,127));
+          AddString (lglnk,'INPUTNAME' ,memReadShortStringBuf(FPos,@lbuf,127));
+
+//          pcw :=memReadShortString(FPos); AddString(lglnk,'OUTPUTNAME',pcw); FreeMem(pcw);
+//          pcw :=memReadShortString(FPos); AddString(lglnk,'INPUTNAME' ,pcw); FreeMem(pcw);
         end;
         verHob,
         verRGO,
@@ -748,7 +819,7 @@ begin
           if RGDebugLevel=dlDetailed then
             FLog.Add('Timeline '+IntToStr(aid)+' unknown interpolation='+IntToStr(lint));
 
-          pcw:=Pointer(WideString(IntToStr(lint)));
+          pcw:=Pointer(UnicodeString(IntToStr(lint)));
         end;
 
         AddString(tlpoint,'INTERPOLATION',pcw);

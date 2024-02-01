@@ -1,3 +1,7 @@
+{TODO: Trace for Updater changes: add/delete/rename/mark/changes(time,size)}
+{TODO: Add HASH calcualtor}
+{TODO: Add file search}
+{TODO: Add grid filter}
 {TODO: Implement to open DIR (not PAK/MOD/MAN)}
 {TODO: AutoSort on tree item change}
 {TODO: Status bar path changes on dir with files only}
@@ -185,7 +189,6 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure sgMainCompareCells(Sender: TObject; ACol, ARow, BCol, BRow: Integer; var Result: integer);
-    function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
     procedure sgMainKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sgMainSelection(Sender: TObject; aCol, aRow: Integer);
@@ -204,22 +207,23 @@ type
     inProcess:boolean;
     fFilterWasChanged:Boolean;
 
-    procedure AddBranch(aroot: TTreeNode; const aname: string; acode: integer);
     procedure ClearInfo();
-    procedure ExtractSingleDir(adir: integer);
     procedure FillCatList();
     procedure FillExtList();
     procedure FillGrid(idx:integer=-1);
     function  FillGridLine(arow: integer; const adir: string; afile: PMANFileInfo): boolean;
     procedure FillTree();
+    procedure AddBranch(aroot: TTreeNode; const aname: string);
     function  GetPathFromNode(aNode: TTreeNode): string;
-    procedure LoadSettings;
-    procedure OpenFile(const aname: string);
+    procedure OpenPAK(const aname: string);
+    function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure PreviewImage(const aname: string);
     procedure PreviewSource(atype: byte; const adir, aname: string);
     procedure PreviewText();
+    procedure LoadSettings;
     procedure SaveSettings;
-    function  UnpackSingleFile(const adir, aname: string): boolean;
+    function  UnpackSingleFile(const adir, aname: string; var buf:PByte): boolean;
+    procedure ExtractSingleDir(adir: integer; var buf:PByte);
 
   public
 
@@ -370,7 +374,7 @@ end;
 
 { TRGGUIForm }
 
-procedure TRGGUIForm.OpenFile(const aname:string);
+procedure TRGGUIForm.OpenPAK(const aname:string);
 var
   lmode:integer;
 begin
@@ -539,6 +543,209 @@ end;
 
 {%ENDREGION Settings}
 
+{%REGION Filter}
+
+procedure TRGGUIForm.bbExtSelectClick(Sender: TObject);
+var
+  i:integer;
+  b:boolean;
+begin
+  b:=not ccbExtension.Checked[0];
+  for i:=0 to ccbExtension.Count-1 do
+    ccbExtension.Checked[i]:=b;
+
+  FillGrid(FLastIndex);
+end;
+
+procedure TRGGUIForm.bbCatInverseClick(Sender: TObject);
+var
+  i:integer;
+begin
+  for i:=0 to ccbCategory.Count-1 do
+    ccbCategory.Checked[i]:= not ccbCategory.Checked[i];
+
+  FillGrid(FLastIndex);
+end;
+
+procedure TRGGUIForm.ccbFilterCloseUp(Sender: TObject);
+begin
+  (Sender as TCheckComboBox).ItemIndex:=-1;
+//  ccbCategory.Text:=rsCategory; //!! not working
+  if fFilterWasChanged then
+  begin
+    FillGrid(FLastIndex);
+    fFilterWasChanged:=false;
+  end;
+end;
+
+procedure TRGGUIForm.ccbFilterItemChange(Sender: TObject; AIndex: Integer);
+begin
+  fFilterWasChanged:=true;
+end;
+
+procedure TRGGUIForm.FillExtList();
+var
+  i:integer;
+begin
+  ccbExtension.ReadOnly:=true;
+  ccbExtension.Clear;
+
+  // of course, better to show just PAK/MOD used exts
+  for i:=0 to High(TableExt) do
+    ccbExtension.AddItem(TableExt[i]._ext,cbChecked);
+end;
+
+procedure TRGGUIForm.FillCatList();
+begin
+  ccbCategory.ReadOnly:=true;
+  ccbCategory.Clear;
+  ccbCategory.AddItem(PAKCategoryName(catUnknown),cbUnChecked);
+  ccbCategory.AddItem(PAKCategoryName(catModel  ),cbUnChecked);
+  ccbCategory.AddItem(PAKCategoryName(catImage  ),cbChecked);
+  ccbCategory.AddItem(PAKCategoryName(catSound  ),cbChecked);
+  ccbCategory.AddItem(PAKCategoryName(catFolder ),cbUnChecked);
+  ccbCategory.AddItem(PAKCategoryName(catFont   ),cbUnChecked);
+  ccbCategory.AddItem(PAKCategoryName(catData   ),cbChecked);
+  ccbCategory.AddItem(PAKCategoryName(catLayout ),cbChecked);
+  ccbCategory.AddItem(PAKCategoryName(catShaders),cbUnChecked);
+  ccbCategory.AddItem(PAKCategoryName(catOther  ),cbUnChecked);
+  ccbCategory.ItemIndex:=-1;
+end;
+
+{%ENDREGION Filter}
+
+{%REGION Form}
+
+procedure TRGGUIForm.FormCreate(Sender: TObject);
+begin
+  FLastIndex:=-1;
+  FUData    :=nil;
+
+  upd.Init;
+
+  fmLogForm:=nil;
+
+  SynTSyn:=TSynTSyn.Create(Self);
+
+  LoadSettings();
+  SetupView(Self);
+
+  RGTags.Import('RGDICT','TEXT');
+
+  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
+  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
+  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
+  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
+  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+
+  // Category
+  FillCatList();
+
+  // Extension
+  FillExtList();
+
+  if ParamCount>0 then
+    OpenPAK(ParamStr(1))
+  else
+    rgpi.Init;
+
+  PageControl.ActivePageIndex:=1;
+
+  inProcess:=false;
+end;
+
+procedure TRGGUIForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  if actFileExit.Enabled then actFileExitExecute(Sender);
+  if actFileExit.Enabled then
+  begin
+    CloseAction:=caNone;
+    exit;
+  end;
+
+  SaveSettings();
+end;
+
+procedure TRGGUIForm.actFileCloseExecute(Sender: TObject);
+begin
+  if upd.FileCount>1 then
+  begin
+    if MessageDlg('Warning!','You have unsaved changes. Exit anyway?',mtWarning,
+       [mbOK,mbCancel],0,mbCancel)<>mrOk then
+    begin
+      exit;
+    end;
+    upd.Free;
+  end;
+
+  cbScaleImage.Visible:=false;
+  rgpi.Free;
+  sgMain.Clear;
+  ClearInfo();
+  tvTree.Items.Clear;
+  actInfoInfo.Enabled:=false;
+  FreeAndNil(fmi);
+
+  actFileClose.Enabled:=false;
+end;
+
+procedure TRGGUIForm.actFileExitExecute(Sender: TObject);
+begin
+  if actFileClose.Enabled then actFileCloseExecute(Sender);
+  if actFileClose.Enabled then exit;
+
+  actFileExit.Enabled:=false;
+  Close;
+end;
+
+procedure TRGGUIForm.actFileOpenExecute(Sender: TObject);
+var
+  OpenDialog: TOpenDialog;
+begin
+  OpenDialog:=TOpenDialog.Create(nil);
+  try
+//    OpenDialog.Title  :=rsFileOpen;
+    OpenDialog.Options    :=[ofFileMustExist];
+    OpenDialog.DefaultExt :=LastExt;
+    OpenDialog.Filter     :=DefaultFilter;
+    OpenDialog.FilterIndex:=LastFilter;
+
+    if OpenDialog.Execute then
+    begin
+      LastExt   :=OpenDialog.DefaultExt;
+      LastFilter:=OpenDialog.FilterIndex;
+
+      if actFileClose.Enabled then actFileCloseExecute(Sender);
+
+      OpenPAK(OpenDialog.FileName);
+    end;
+  finally
+    OpenDialog.Free;
+  end;
+end;
+
+procedure TRGGUIForm.actInfoInfoExecute(Sender: TObject);
+begin
+  if fmi=nil then
+  begin
+    fmi:=TMODInfoForm.Create(Self,true);
+    TMODInfoForm(fmi).LoadFromInfo(rgpi.modinfo);
+  end;
+  fmi.ShowOnTop;
+end;
+
+procedure TRGGUIForm.actShowLogExecute(Sender: TObject);
+begin
+  if fmLogForm=nil then
+  begin
+    fmLogForm:=TfmLogForm.Create(Self);
+    fmLogForm.memLog.Text:=RGLog.Text;
+  end;
+  fmLogForm.ShowOnTop;
+end;
+
+{%ENDREGION Form}
+
 {%REGION Save}
 
 function TRGGUIForm.SaveFile(const adir,aname:string; adata:PByte; asize:integer):boolean;
@@ -549,6 +756,8 @@ var
   ltype:integer;
 begin
   result:=false;
+
+  if asize=0 then exit;
 
   if deOutDir.Text='' then deOutDir.Text:=ExtractFileDir(ParamStr(0));
   if cbUnpackTree.Checked then
@@ -629,12 +838,7 @@ begin
     begin
       ldir :=sgMain.Cells[colDir ,i];
       lname:=sgMain.Cells[colName,i];
-{
-      if FUData=nil then
-      begin
-        if UnpackFile(rgpi,ldir+lname,FUData)=0 then exit;
-      end;
-}
+
       lsize:=rgpi.UnpackFile(ldir+lname,lptr);
       if lsize>0 then
       begin
@@ -642,8 +846,7 @@ begin
           inc(lcnt);
       end;
     end;
-    if (i mod 100)=0 then
-      Application.ProcessMessages;
+//    if (i mod 100)=0 then Application.ProcessMessages;
   end;
   FreeMem(lptr);
 
@@ -655,289 +858,83 @@ end;
 
 {%ENDREGION Save}
 
-{%REGION Filter}
-
-procedure TRGGUIForm.bbExtSelectClick(Sender: TObject);
-var
-  i:integer;
-  b:boolean;
-begin
-  b:=not ccbExtension.Checked[0];
-  for i:=0 to ccbExtension.Count-1 do
-    ccbExtension.Checked[i]:=b;
-
-  FillGrid(FLastIndex);
-end;
-
-procedure TRGGUIForm.bbCatInverseClick(Sender: TObject);
-var
-  i:integer;
-begin
-  for i:=0 to ccbCategory.Count-1 do
-    ccbCategory.Checked[i]:= not ccbCategory.Checked[i];
-
-  FillGrid(FLastIndex);
-end;
-
-procedure TRGGUIForm.ccbFilterCloseUp(Sender: TObject);
-begin
-  (Sender as TCheckComboBox).ItemIndex:=-1;
-//  ccbCategory.Text:=rsCategory; //!! not working
-  if fFilterWasChanged then
-  begin
-    FillGrid(FLastIndex);
-    fFilterWasChanged:=false;
-  end;
-end;
-
-procedure TRGGUIForm.ccbFilterItemChange(Sender: TObject; AIndex: Integer);
-begin
-  fFilterWasChanged:=true;
-end;
-
-procedure TRGGUIForm.FillExtList();
-var
-  i:integer;
-begin
-  ccbExtension.ReadOnly:=true;
-  ccbExtension.Clear;
-
-  // of course, better to show just PAK/MOD used exts
-  for i:=0 to High(TableExt) do
-    ccbExtension.AddItem(TableExt[i]._ext,cbChecked);
-end;
-
-procedure TRGGUIForm.FillCatList();
-begin
-  ccbCategory.ReadOnly:=true;
-  ccbCategory.Clear;
-  ccbCategory.AddItem(PAKCategoryName(catUnknown),cbUnChecked);
-  ccbCategory.AddItem(PAKCategoryName(catModel  ),cbUnChecked);
-  ccbCategory.AddItem(PAKCategoryName(catImage  ),cbChecked);
-  ccbCategory.AddItem(PAKCategoryName(catSound  ),cbChecked);
-  ccbCategory.AddItem(PAKCategoryName(catFolder ),cbUnChecked);
-  ccbCategory.AddItem(PAKCategoryName(catFont   ),cbUnChecked);
-  ccbCategory.AddItem(PAKCategoryName(catData   ),cbChecked);
-  ccbCategory.AddItem(PAKCategoryName(catLayout ),cbChecked);
-  ccbCategory.AddItem(PAKCategoryName(catShaders),cbUnChecked);
-  ccbCategory.AddItem(PAKCategoryName(catOther  ),cbUnChecked);
-  ccbCategory.ItemIndex:=-1;
-end;
-
-{%ENDREGION Filter}
-
-{%REGION Form}
-
-procedure TRGGUIForm.FormCreate(Sender: TObject);
-begin
-  FLastIndex:=-1;
-  FUData    :=nil;
-
-  upd.Create;
-
-  fmLogForm:=nil;
-
-  SynTSyn:=TSynTSyn.Create(Self);
-
-  LoadSettings();
-  SetupView(Self);
-
-  RGTags.Import('RGDICT','TEXT');
-
-  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
-
-  // Category
-  FillCatList();
-
-  // Extension
-  FillExtList();
-
-  if ParamCount>0 then
-    OpenFile(ParamStr(1))
-  else
-    rgpi.Init;
-
-  PageControl.ActivePageIndex:=1;
-
-  inProcess:=false;
-end;
-
-procedure TRGGUIForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  if actFileExit.Enabled then actFileExitExecute(Sender);
-  if actFileExit.Enabled then
-  begin
-    CloseAction:=caNone;
-    exit;
-  end;
-
-  SaveSettings();
-end;
-
-procedure TRGGUIForm.actFileCloseExecute(Sender: TObject);
-begin
-  if upd.Count>0 then
-  begin
-    if MessageDlg('Warning!','You have unsaved changes. Exit anyway?',mtWarning,
-       [mbOK,mbCancel],0,mbCancel)<>mrOk then
-    begin
-      exit;
-    end;
-    upd.Clear;
-  end;
-
-  cbScaleImage.Visible:=false;
-  rgpi.Free;
-  sgMain.Clear;
-  ClearInfo();
-  tvTree.Items.Clear;
-  actInfoInfo.Enabled:=false;
-  FreeAndNil(fmi);
-
-  actFileClose.Enabled:=false;
-end;
-
-procedure TRGGUIForm.actFileExitExecute(Sender: TObject);
-begin
-  if actFileClose.Enabled then actFileCloseExecute(Sender);
-  if actFileClose.Enabled then exit;
-
-  actFileExit.Enabled:=false;
-  Close;
-end;
-
-procedure TRGGUIForm.actFileOpenExecute(Sender: TObject);
-var
-  OpenDialog: TOpenDialog;
-begin
-  OpenDialog:=TOpenDialog.Create(nil);
-  try
-//    OpenDialog.Title  :=rsFileOpen;
-    OpenDialog.Options    :=[ofFileMustExist];
-    OpenDialog.DefaultExt :=LastExt;
-    OpenDialog.Filter     :=DefaultFilter;
-    OpenDialog.FilterIndex:=LastFilter;
-
-    if OpenDialog.Execute then
-    begin
-      LastExt   :=OpenDialog.DefaultExt;
-      LastFilter:=OpenDialog.FilterIndex;
-
-      if actFileClose.Enabled then actFileCloseExecute(Sender);
-
-      OpenFile(OpenDialog.FileName);
-    end;
-  finally
-    OpenDialog.Free;
-  end;
-end;
-
-procedure TRGGUIForm.actInfoInfoExecute(Sender: TObject);
-begin
-  if fmi=nil then
-  begin
-    fmi:=TMODInfoForm.Create(Self,true);
-    TMODInfoForm(fmi).LoadFromInfo(rgpi.modinfo);
-  end;
-  fmi.ShowOnTop;
-end;
-
-procedure TRGGUIForm.actShowLogExecute(Sender: TObject);
-begin
-  if fmLogForm=nil then
-  begin
-    fmLogForm:=TfmLogForm.Create(Self);
-    fmLogForm.memLog.Text:=RGLog.Text;
-  end;
-  fmLogForm.ShowOnTop;
-end;
-
-{%ENDREGION Form}
-
 {%REGION Unpack}
 
-function TRGGUIForm.UnpackSingleFile(const adir,aname:string):boolean;
+function TRGGUIForm.UnpackSingleFile(const adir,aname:string; var buf:PByte):boolean;
 var
-  ldata:PByte;
   lsize:integer;
 begin
-  ldata:=nil;
-  lsize:=rgpi.UnpackFile(adir+aname,ldata);
-  if lsize>0 then
-  begin
-    result:=SaveFile(adir,aname,ldata,lsize);
-    FreeMem(ldata);
-  end
-  else
-    result:=false;
+  lsize:=rgpi.UnpackFile(adir+aname,buf);
+  result:=SaveFile(adir,aname,buf,lsize);
 end;
 
 procedure TRGGUIForm.DoExtractGrid(Sender: TObject);
 var
+  ldata:PByte;
   i:integer;
 begin
+  ldata:=nil;
   for i:=1 to sgMain.RowCount-1 do
   begin
-    UnpackSingleFile(sgMain.Cells[colDir,i],sgMain.Cells[colName,i]);
-    if (i mod 100)=0 then
-      Application.ProcessMessages;
+    UnpackSingleFile(sgMain.Cells[colDir,i],sgMain.Cells[colName,i],ldata);
+//    if (i mod 100)=0 then Application.ProcessMessages;
   end;
+  FreeMem(ldata);
 end;
 
-procedure TRGGUIForm.ExtractSingleDir(adir:integer);
+procedure TRGGUIForm.ExtractSingleDir(adir:integer; var buf:PByte);
 var
   p:PMANFileInfo;
   ldir:PWideChar;
 begin
   if rgpi.man.GetFirstFile(p,adir)<>0 then
   begin
-    ldir:=rgpi.man.GetDirName(adir);
+    ldir:=rgpi.man.Dirs[adir].name;
     repeat
       if not (p^.ftype in [typeDelete,typeDirectory]) then
-        UnpackSingleFile(ldir,p^.name)
+        UnpackSingleFile(ldir,p^.name,buf);
     until rgpi.man.GetNextFile(p)=0;
   end;
-  Application.ProcessMessages;
+//  Application.ProcessMessages;
 end;
 
 procedure TRGGUIForm.DoExtractDir(Sender: TObject);
+var
+  ldata:PByte;
 begin
-  ExtractSingleDir(IntPtr(tvTree.Selected.Data));
+  ldata:=nil;
+  ExtractSingleDir(IntPtr(tvTree.Selected.Data),ldata);
+  FreeMem(ldata);
 end;
 
 procedure TRGGUIForm.DoExtractTree(Sender: TObject);
 var
   ls:PWideChar;
+  ldata:PByte;
   i,idx,llen:integer;
   ldl:TRGDebugLevel;
 begin
   ldl:=rgDebugLevel;
-  {$IFDEF DEBUG}
-//    rgDebugLevel:=dlDetailed;
-  {$ELSE}
-//    rgDebugLevel:=dlNormal;
-  {$ENDIF}
 
   idx:=IntPtr(tvTree.Selected.Data);
   if idx>=0 then
   begin
-    ls:=rgpi.man.GetDirName(idx);
+    ls:=rgpi.man.Dirs[idx].name;
     llen:=Length(ls);
   end;
 
+  ldata:=nil;
   for i:=0 to rgpi.man.DirCount-1 do
   begin
     if not rgpi.man.IsDirDeleted(i) then
-      if (idx<0) or (i=idx) or (CompareWide(ls,rgpi.man.GetDirName(i),llen)=0) then
+      if (idx<0) or (i=idx) or (CompareWide(ls,rgpi.man.Dirs[i].name,llen)=0) then
       begin
-        StatusBar.Panels[1].Text:='Extract dir: '+WideToStr(rgpi.man.GetDirName(i));
-        ExtractSingleDir(i);
+        StatusBar.Panels[1].Text:='Extract dir: '+WideToStr(rgpi.man.Dirs[i].name);
+        StatusBar.Update;
+        ExtractSingleDir(i,ldata);
       end;
   end;
+  FreeMem(ldata);
 
   if (idx<0) and (cbMODDAT.Checked) and (rgpi.Version=verTL2Mod) then
   begin
@@ -1425,15 +1422,14 @@ begin
       begin
         if rgpi.man.GetFirstFile(p,i)<>0 then
         begin
-          lname:=rgpi.man.GetDirName(i);
+          lname:=rgpi.man.Dirs[i].name;
           repeat
             if FillGridLine(lcnt, lname, p) then
               inc(lcnt);
           until rgpi.man.GetNextFile(p)=0;
         end;
 
-        if (lcnt mod 1000)=0 then
-          Application.ProcessMessages;
+//        if (lcnt mod 1000)=0 then Application.ProcessMessages;
       end;
     end;
     Self.Caption:='RGGUI - '+AnsiString(rgpi.Name);
@@ -1443,7 +1439,7 @@ begin
     sgMain.RowCount:=rgpi.man.Dirs[idx].count+1;
     if rgpi.man.GetFirstFile(p,idx)<>0 then
     begin
-      lname:=rgpi.man.GetDirName(idx);
+      lname:=rgpi.man.Dirs[idx].name;
       repeat
         if FillGridLine(lcnt, lname, p) then
           inc(lcnt);
@@ -1510,78 +1506,38 @@ begin
   end;
 end;
 
-procedure TRGGUIForm.AddBranch(aroot:TTreeNode; const aname:string; acode:integer);
+procedure TRGGUIForm.AddBranch(aroot:TTreeNode; const aname:string);
 var
+  lnode:TTreeNode;
   ls:string;
-  i,j,k:integer;
+  i,ldir:integer;
 begin
-  if aname='' then exit;
-
-  i:=Pos(cSep,aname);
-  if i<1 then i:=Length(aname)+1;
-  ls:=Copy(aname,1,i-1);
-
-  k:=-1;
-  for j:=0 to aroot.Count-1 do
-  begin
-    if aroot.Items[j].Text=ls then
-    begin
-      k:=j;
-      break;
-    end;
-  end;
-
- if k<0 then
-  begin
-    aroot:=tvTree.Items.AddChild(aroot,ls);
-    if i>=Length(aname) then
-      aroot.Data:=pointer(IntPtr(acode));
-  end
-  else
-    aroot:=aroot.Items[k];
-
-  if i<Length(aname) then
-    AddBranch(aroot,Copy(aname,i+1),acode);
+  ldir:=rgpi.man.SearchPath(aname);
+  aroot.Data:=pointer(IntPtr(ldir));
+  if rgpi.man.GetFirstFile(i,ldir) then
+    repeat
+      if rgpi.man.IsDir(i) then
+      begin
+        ls:=WideToStr(rgpi.man.Files[i]^.Name);
+        lnode:=tvTree.Items.AddChild(aroot,ls);
+        AddBranch(lnode,aname+ls);
+      end;
+    until not rgpi.man.GetNextFile(i);
 end;
 
 procedure TRGGUIForm.FillTree();
-var
-  sl:TStringList;
-  lroot:TTreeNode;
-  ls:string;
-  i:integer;
 begin
   tvTree.Items.Clear;
-
-  sl:=TStringList.Create;
-  sl.Sorted:=true;
-  for i:=0 to rgpi.man.DirCount-1 do
-  begin
-    if not rgpi.man.IsDirDeleted(i) then
-    begin
-      ls:=UpCase(WideToStr(rgpi.man.GetDirName(i)));
-      if sl.IndexOf(ls)<0 then
-        sl.AddObject(ls,TObject(IntPtr(i)));
-    end;
-  end;
-  sl.Sort;
-
   with tvTree do
   begin
     BeginUpdate;
-    lroot:=Items.AddFirst(nil,'MOD');
-    lroot.Data:=pointer(-1);
-
-    for i:=0 to sl.Count-1 do
-    begin
-      AddBranch(lroot{nil},sl[i],IntPtr(sl.Objects[i]));
-    end;
-    lroot:=tvTree.Items[0];
+    AddBranch(Items.AddChildObjectFirst(nil,'MOD',pointer(-1)),'');
     if tvTree.Items.Count>20 then
       bbCollapseClick(bbCollapse);
     EndUpdate;
   end;
-  sl.Free;
+  tvTree.AlphaSort;
+
   bbCollapse.Enabled:=tvTree.Items.Count>2;
   if bbCollapse.Enabled then
     tvTree.Items[1].Selected:=true;

@@ -43,11 +43,8 @@ procedure TRGLayoutFile.ReadBinaryDataHob(var anode:pointer; aid:Int64);
 var
   ldata:TLayoutBin;
   lnode:pointer;
-  lls,ls:WideString;
-  p:PWideChar;
-  i,lthemes:integer;
+  i:integer;
   lval:dword;
-  ltmp:array [0..14] of byte;
 begin
   ReadBinaryData(anode, ldata);
   if ldata.GUID<>QWord(aid) then
@@ -104,10 +101,8 @@ end;
 procedure TRGLayoutFile.ReadBinaryDataRGO(var anode:pointer; aid:Int64);
 var
   ldata:TLayoutBin;
-  lls,ls:WideString;
   p:PWideChar;
-  lnode:pointer;
-  i,lthemes:integer;
+  i:integer;
 begin
   ReadBinaryData(anode, ldata);
   if ldata.GUID<>QWord(aid) then
@@ -160,9 +155,7 @@ end;
 procedure TRGLayoutFile.ReadBinaryDataRG(var anode:pointer; aid:Int64);
 var
   ldata:TLayoutBin;
-  lls,ls:WideString;
-  p:PWideChar;
-  i,lthemes:integer;
+  i:integer;
 begin
   ReadBinaryData(anode, ldata);
   if ldata.GUID<>QWord(aid) then
@@ -274,7 +267,7 @@ begin
 
   //--- Properties
 
-  FLog.Reserve('Object '+UTF8Encode(WideString(lname))+', ID='+IntToStr(lChunkId));
+  FLog.Reserve('Object '+UTF8Encode(UnicodeString(lname))+', ID='+IntToStr(lChunkId));
 
   lcnt:=memReadByte(FPos);
   for i:=0 to lcnt-1 do
@@ -329,7 +322,7 @@ end;
     begin
       FLog.Add('Unknown chunk with size '+IntToStr(lsize)+' at '+HexStr(FPos-FStart,8));
     //!!
-      AddString (lnode,'??ADDITIONALDATA', PWideChar(WideString(HexStr(FPos-FStart,8))));
+      AddString (lnode,'??ADDITIONALDATA', PWideChar(UnicodeString(HexStr(FPos-FStart,8))));
       AddInteger(lnode,'??ADDITIONALSIZE',lsize);
     end;
 
@@ -359,7 +352,7 @@ var
   pcw:PWideChar;
   ldata,i,lcnt:integer;
   ltmp:dword;
-  b1,b2,b3:boolean;
+  b1:boolean;
 begin
   info.Version:=verHob;
   

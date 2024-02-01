@@ -259,7 +259,7 @@ begin
   if i>MinTL2ModInfoSize then
   begin
     result:=ReadModInfoBuf(@buf,amod);
-    CopyWide(amod.filename,PWideChar(WideString(ExtractFilenameOnly(fname))));
+    CopyWide(amod.filename,PWideChar(UnicodeString(ExtractFilenameOnly(fname))));
   end
   else
     result:=false;

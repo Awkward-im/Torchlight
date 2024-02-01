@@ -31,7 +31,7 @@ end;
 procedure TRGLayoutFile.ReadBinaryDataTL2(var anode:pointer; aid:Int64);
 var
   ldata:TLayoutBin;
-  lls,ls:WideString;
+  lls,ls:UnicodeString;
   p:PWideChar;
   i,lthemes:integer;
 begin
@@ -124,7 +124,7 @@ end;
 
 function TRGLayoutFile.DoParseBlockTL2(var anode:pointer; const aparent:Int64):integer;
 var
-  lbuf:WideString;
+  lbuf:UnicodeString;
   //  lbuf:array [0..31] of WideChar;
   bnode,lnode:pointer;
   llptr,lptr:pbyte;
@@ -212,7 +212,7 @@ begin
       begin
         FLog.Add('Unknown chunk with size '+IntToStr(lsize)+' at '+HexStr(FPos-FStart,8));
       //!!
-        AddString (lnode,'??ADDITIONALDATA',PWideChar(WideString(HexStr(FPos-FStart,8))));
+        AddString (lnode,'??ADDITIONALDATA',PWideChar(UnicodeString(HexStr(FPos-FStart,8))));
         AddInteger(lnode,'??ADDITIONALSIZE',lsize);
       end;
 
@@ -241,7 +241,7 @@ function TRGLayoutFile.DoParseLayoutTL2(atype:cardinal):pointer;
 var
   lobj,lc:pointer;
   pcw:PWideChar;
-  i,lcnt,lver,lobjcnt:integer;
+  i,lcnt,lobjcnt:integer;
   ltmp:dword;
 begin
   info.Version:=verTL2;
@@ -253,10 +253,10 @@ begin
   result:=AddGroup(nil,pcw);
   info.SelectScene(pcw);
 
-  lver:=memReadByte(FPos);               // Layout version
-  AddInteger(result,'VERSION',lver);
-  if (lver<>4)  and (RGDebugLevel=dlDetailed) then
-    FLog.Add('Layout version is not 4 but '+HexStr(lver,2));
+  FLayVer:=memReadByte(FPos);               // Layout version
+  AddInteger(result,'VERSION',FLayVer);
+  if (FLayVer<>4)  and (RGDebugLevel=dlDetailed) then
+    FLog.Add('Layout version is not 4 but '+HexStr(FLayVer,2));
 
   lc:=AddUnsigned(result,'COUNT',0);
   ltmp:=memReadDWord(FPos);              // offset

@@ -35,7 +35,7 @@ var
 begin
   llog.Init;
 
-  llog.Add('Root: '+String(WideString(ainfo.man.Root)));
+  llog.Add('Root: '+String(UnicodeString(ainfo.man.Root)));
   lfiles:=0;
   lprocess:=0;
   ldir:=0;
@@ -50,7 +50,7 @@ begin
   begin
     if ainfo.man.IsDirDeleted(i) then continue;
 
-    llog.Add(IntToStr(i+1)+'  Directory: '+string(WideString(ainfo.man.DirName[i])));
+    llog.Add(IntToStr(i+1)+'  Directory: '+string(UnicodeString(ainfo.man.Dirs[i].name)));
     if ainfo.man.GetFirstFile(p,i)<>0 then
     repeat
       dec(lcnt);
@@ -80,7 +80,7 @@ begin
 
       if p^.size_s<>p^.size_u then llsize:='!!';
       llog.Add(llsize+
-          ls+string(widestring(p^.name))+
+          ls+string(UnicodeString(p^.name))+
           '; type:'       +PAKCategoryName(p^.ftype)+
           '; source size:'+IntToStr(p^.size_s)+
           '; compr:'      +IntToStr(p^.size_c)+

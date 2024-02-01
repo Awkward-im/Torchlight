@@ -19,6 +19,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="56"/>
         <CursorPos Y="56"/>
         <UsageCount Value="207"/>
@@ -128,7 +129,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1573"/>
         <CursorPos Y="1588"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\graphics.pp"/>
@@ -136,14 +137,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="229"/>
         <CursorPos X="3" Y="244"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="3592"/>
         <CursorPos Y="3617"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgmemory.pas"/>
@@ -151,7 +152,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="160"/>
         <CursorPos Y="185"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.text.pas"/>
@@ -167,7 +168,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="10318"/>
         <CursorPos Y="10333"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
@@ -221,10 +222,9 @@
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_hob.inc"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="709"/>
-        <CursorPos X="37" Y="723"/>
+        <TopLine Value="965"/>
+        <CursorPos X="39" Y="802"/>
         <UsageCount Value="81"/>
         <Loaded Value="True"/>
       </Unit>
@@ -284,10 +284,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1130" TopLine="949"/>
-      </Position>
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="1182" TopLine="1153"/>
@@ -402,6 +398,10 @@
       <Position>
         <Filename Value="..\TL2Lib\lay_hob.inc"/>
         <Caret Line="101" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="726" Column="41" TopLine="709"/>
       </Position>
     </JumpHistory>
     <RunParams>

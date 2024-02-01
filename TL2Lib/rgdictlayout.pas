@@ -197,15 +197,11 @@ begin
         exit(FLastObject);
       end;
     end;
-{
-  if RGTags.Tag[aid]<>nil then
-    RGLog.Add('!!!!! Got it '+HexStr(aid,8));
-}  
-  
+
   FLastObject:=nil;
   FLastObjId :=dword(-1);
   result     :=nil;
-  RGLog.Add('Object with id=0x'+HexStr(aid,8)+' was not found');
+//  RGLog.Add('Object with id=0x'+HexStr(aid,8)+' was not found');
 end;
 
 function TRGObject.GetObjectId(aname:PWideChar):dword;
@@ -410,7 +406,7 @@ end;
 function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean):boolean;
 var
   ltype:array [0..31] of WideChar;
-  ls:WideString;
+  ls:UnicodeString;
   pc,lname,ldescr:PWideChar;
   layptr:PLayoutInfo;
   pscene:PSceneInfo;
@@ -596,7 +592,7 @@ begin
         if pprop^.ptype=rgNotValid then
         begin
           Str(lid,ls);
-          RGLog.Add('Layout dict, not valid type '+WideString(ltype)+' with id='+ls);
+          RGLog.Add('Layout dict, not valid type '+UnicodeString(ltype)+' with id='+ls);
         end;
       end;
 

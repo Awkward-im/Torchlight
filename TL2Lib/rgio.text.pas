@@ -68,7 +68,7 @@ end;
 function DumpNode(var buf:PByte; var idx:cardinal; anode:pointer; atab:integer):boolean;
 var
   larr:array [0..127] of WideChar;
-  lvalue:WideString;
+  lvalue:UnicodeString;
   lpc,lname:PWideChar;
   lfloat:Single;
   i,j,llen:integer;

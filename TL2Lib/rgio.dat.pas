@@ -44,7 +44,7 @@ type
   TRGDATFile = object
   private
     FVer :integer;
-    FBuffer:WideString;
+    FBuffer:UnicodeString;
     FLocals:TRGDict;
     FDictIndex:integer;
     isTagsDat: Boolean;
@@ -179,8 +179,8 @@ begin
 		else
       lsub:=memReadInteger(aptr);
 		  AddCustom(lnode,lname,
-		      PWideChar(WideString(IntToStr(lsub ))),  //!!!!!!!!
-		      PWideChar(WideString(IntToStr(ltype)))); //!!!!!!!!
+		      PWideChar(UnicodeString(IntToStr(lsub ))),  //!!!!!!!!
+		      PWideChar(UnicodeString(IntToStr(ltype)))); //!!!!!!!!
 		  RGLog.Add('Non-standard tag '+IntToStr(ltype)+' with possible value '+IntToStr(lsub));
     end;
   end;
@@ -219,6 +219,7 @@ begin
   FLocals.Init;
   FLocals.Capacity:=lcnt;
 
+  result:=lcnt;
   for i:=0 to lcnt-1 do
   begin
     lid:=memReadDWord(lptr);
