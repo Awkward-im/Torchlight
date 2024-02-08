@@ -10,8 +10,8 @@ uses
   Classes,
   rgglobal;
 
-function ParseDatMem   (abuf        :pByte  ):pointer;
-function ParseDatStream(astream     :TStream):pointer;
+function ParseDatMem   (abuf        :pByte  ; fname:PUnicodeChar=nil):pointer;
+function ParseDatStream(astream     :TStream; fname:PUnicodeChar=nil):pointer;
 function ParseDatFile  (const afname:string ):pointer;
 
 function BuildDatMem   (data:pointer; out   bin    :pByte     ; aver:byte=verTL2; dictidx:integer=-1):integer;
@@ -43,11 +43,14 @@ var
 type
   TRGDATFile = object
   private
-    FVer :integer;
-    FBuffer:UnicodeString;
-    FLocals:TRGDict;
+    FVer      :integer;
+    FBuffer   :array [0..15] of WideChar;
+    FFileName :array [0..63] of WideChar;
+    FLocals   :TRGDict;
     FDictIndex:integer;
-    isTagsDat: Boolean;
+    cntImages :integer;
+    isTagsDat :Boolean;
+    isImageset:Boolean;
 
   private
     function  GetStr(aid:dword):PWideChar;
@@ -57,7 +60,7 @@ type
     function  BuildStream(aStream:TStream; anode:pointer):integer;
 
   public
-    procedure Init;
+    procedure Init(fname:PUnicodeChar=nil);
     procedure Free;
 
     property  DictIndex:integer read FDictIndex write FDictIndex;
@@ -101,10 +104,27 @@ begin
 
   if result=nil then
   begin
+    if IsImageset then
+    begin
+      FBuffer[0]:='I';
+      FBuffer[1]:='M';
+      FBuffer[2]:='A';
+      FBuffer[3]:='G';
+      FBuffer[4]:='E';
+      for i:=0 to cntImages-1 do
+      begin
+        RGIntToStr(@FBuffer[5],i);
+        if aid=RGHash(@FBuffer) then
+          exit(@FBuffer);
+      end;
+    end;
+  end;
+
+  if result=nil then
+  begin
     RGLog.Add('Unknown DAT tag with hash '+IntToStr(aid));
 
-    Str(aid,FBuffer);
-    result:=pointer(FBuffer);
+    result:=RGIntToStr(@FBuffer,aid);
 
 {$IFDEF DEBUG}  
     unkn.add(nil,aid);
@@ -119,21 +139,28 @@ end;
 procedure TRGDATFile.ParseBlock(var aptr:PByte; var anode:pointer);
 var
   lnode:pointer;
+  lhash:dword;
   lname:PWideChar;
   i,lcnt,lsub,ltype:integer;
 begin
-  lname:=GetStr(memReadDWord(aptr));
-  lnode:=AddGroup(anode,lname);
+  lhash:=memReadDWord(aptr);
+  lname:=GetStr(lhash);
+  // Special situatuions
   if anode=nil then
   begin
-    anode:=lnode;
     if FVer=verTL2 then
     begin
       // trying to avoid TAGS.DAT unknown tag problem
       if (lname=nil) or (CompareWide(lname,'TAGS')=0) then
         isTagsDat:=true;
     end;
+    if (lname=nil) or (lname=@FBuffer) then
+    begin
+      if lhash=RGHash(FFileName) then
+        lname:=@FFileName;
+    end;
   end;
+  lnode:=AddGroup(anode,lname);
 
   lcnt:=memReadInteger(aptr);
   for i:=0 to lcnt-1 do
@@ -167,7 +194,11 @@ begin
     end;
 
     case ltype of
-      rgInteger  : AddInteger  (lnode,lname,memReadInteger  (aptr));
+      rgInteger  : begin
+        lsub:=memReadInteger(aptr);
+        if (anode=nil) and IsImageset and (CompareWide(lname,'COUNT')=0) then cntImages:=lsub;
+        AddInteger(lnode,lname,lsub);
+      end;
       rgUnsigned : AddUnsigned (lnode,lname,memReadDWord    (aptr));
       rgBool     : AddBool     (lnode,lname,memReadInteger  (aptr)<>0);
       rgFloat    : AddFloat    (lnode,lname,memReadFloat    (aptr));
@@ -188,6 +219,8 @@ begin
   lsub:=memReadInteger(aptr);
   for i:=0 to lsub-1 do
     ParseBlock(aptr,lnode);
+
+  if anode=nil then anode:=lnode;
 end;
 
 function TRGDATFile.ParseBuffer(abuf:PByte; out anode:pointer):integer;
@@ -249,8 +282,9 @@ end;
 procedure TRGDATFile.BuildBlock(aStream:TStream; anode:pointer);
 var
   lptr:pByte;
+  lname:PWideChar;
   i,cnt,sub,ltype:integer;
-  lidx:dword;
+  lidx,lhash:dword;
 begin
   // write name
 
@@ -261,7 +295,12 @@ begin
     aStream.WriteDWord(lidx);
   end
   else
-    aStream.WriteDWord(RGTags.Hash[GetNodeName(anode)]);
+  begin
+    lname:=GetNodeName(anode);
+    lhash:=RGTags.Hash[lname];
+    if lhash=dword(-1) then lhash:=RGHash(lname);
+    aStream.WriteDWord(lhash);
+  end;
 
   // write properties
 
@@ -400,10 +439,46 @@ end;
 
 {%REGION TRGDATFile publics}
 
-procedure TRGDATFile.Init;
+procedure TRGDATFile.Init(fname:PUnicodeChar=nil);
+var
+  llen,ppos,spos,epos:integer;
 begin
-  isTagsDat:=false;
+  isTagsDat :=false;
+  isImageset:=false;
   FDictIndex:=0;
+
+  llen:=0;
+  if (fname<>nil) and (fname^<>#0) then
+  begin
+    epos:=Length(fname)-1;
+    spos:=epos;
+    while (spos>1) and (fname[spos]<>'.') do dec(spos);
+    if spos>1 then
+    begin
+      ppos:=spos;
+      // check the ext
+      while spos<=epos do
+      begin
+        FFileName[llen]:=UpCase(fname[spos]);
+        inc(spos);
+        inc(llen);
+      end;
+      FFileName[llen]:=#0;
+      if CompareWide(FFileName,'.IMAGESET')=0 then IsImageset:=true;
+      // cut the name
+      spos:=ppos;
+      while (spos>0) and not (fname[spos] in ['\','/']) do dec(spos);
+      if fname[spos] in ['\','/'] then inc(spos);
+      llen:=0;
+      while spos<ppos do
+      begin
+        FFileName[llen]:=UpCase(fname[spos]);
+        inc(spos);
+        inc(llen);
+      end;
+    end;
+  end;
+  FFileName[llen]:=#0;
 end;
 
 procedure TRGDATFile.Free;
@@ -426,28 +501,28 @@ begin
   result:=verUnk;
 end;
 
-function ParseDatMem(abuf:pByte):pointer;
+function ParseDatMem(abuf:pByte; fname:PUnicodeChar=nil):pointer;
 var
   lrgd:TRGDATFile;
 begin
-  lrgd.Init();
+  lrgd.Init(fname);
   lrgd.ParseBuffer(abuf,result);
   lrgd.Free;
 end;
 
-function ParseDatStream(astream:TStream):pointer;
+function ParseDatStream(astream:TStream; fname:PUnicodeChar=nil):pointer;
 var
   lbuf:PByte;
 begin
   if (astream is TMemoryStream) then
   begin
-    result:=ParseDatMem(TMemoryStream(astream).Memory);
+    result:=ParseDatMem(TMemoryStream(astream).Memory,fname);
   end
   else
   begin
     GetMem(lbuf,astream.Size);
     aStream.Read(lbuf^,astream.Size);
-    result:=ParseDatMem(lbuf);
+    result:=ParseDatMem(lbuf,fname);
     FreeMem(lbuf);
   end;
 end;
@@ -468,7 +543,7 @@ begin
     BlockRead(f,lbuf^,lsize);
     Close(f);
     RGLog.Reserve('Processing '+afname);
-    result:=ParseDatMem(lbuf);
+    result:=ParseDatMem(lbuf,PUnicodeChar(UnicodeString(afname)));
     FreeMem(lbuf);
   end;
 end;
@@ -492,10 +567,9 @@ function BuildDatStream(data:pointer; astream:TStream; aver:byte=verTL2; dictidx
 var
   lrgd:TRGDATFile;
 begin
-  result:=0;
   lrgd.Init;
   lrgd.FVer:=aver; //!!!!
-  lrgd.BuildStream(astream,data);
+  result:=lrgd.BuildStream(astream,data);
   lrgd.Free;
 end;
 
