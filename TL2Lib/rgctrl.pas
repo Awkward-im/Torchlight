@@ -1,24 +1,45 @@
-﻿unit RGCtrl;
+﻿{TODO: Add marks for all files/subdirs if dir marked for deleting}
+{TODO: Replace ctrl.PAK.Name, ctrl.PAK.Version and ctrl.PAK.modinfo}
+{TODO: Add update memory consumption count}
+{TODO: Add "add directory" action or at least function}
+unit RGCtrl;
 
 interface
 
 uses
   RGGlobal,
   RGFS,
-  RGMAN,
-  RGPAK,
-  RGUpdate;
+  RGMan,
+  RGPAK;
 
 type
   PRGCtrlInfo = ^TRGCtrlInfo;
-  TRGCtrlInfo = object(TBaseInfo)
+  TRGCtrlInfo = object(TManFileInfo)
+    data  :PByte;   // Data of update
+    size  :integer; // size of Update data (looks like one of size_* double)
     source:integer; // MAN index
-    update:integer; // updater index
+    action:integer; // Action of update
   end;
 
+// Updater action codes
+const
+  act_none   = 0; // get info, no update action
+  act_data   = 1; // text/binary data
+  act_file   = 2; // disk file
+  act_copy   = 3; // just copy of unpacked original PAK data
+  act_delete = 4; // delete from PAK
+  act_dir    = 5; // disk directory with files (??just act_file cycle or not??)
+  act_reset  = 6; // delete from update (reset), event only
+  act_mark   = 7; // mark for delete (MOD data)
+
+const
+  stateNew     = 1;
+  stateChanged = 2;
+  stateDelete  = 3;
+  stateRemove  = 4;
 type
-  PFullFileInfo = ^TFullFileInfo;
-  TFullFileInfo = record
+  PRGFullInfo = ^TRGFullInfo;
+  TRGFullInfo = record
     name    :PWideChar;
     path    :PWideChar;
     ftime   :UInt64;    // MAN: TL2 only
@@ -30,6 +51,8 @@ type
     offset  :dword;     // !! MAN: PAK data block offset (??changed to "data" field)
 // unnecessary
     ftype   :byte;      // !! MAN: RGFileType unified type
+    action  :byte;      // act_* constant
+    state   :byte;      // state* constant
   end;
 
 type
@@ -38,71 +61,84 @@ type
 
   TRGController = object(TRGDirList)
   private
-    FMAN:TRGManifest;
-    FUpd:TRGUpdateList;
     FPAK:TRGPAK;
-  private
-//    function MakeDirList:integer;
-//    function MakeFileList():integer;
-    procedure CtrlUpdate(idx:integer; act:integer);
+    procedure ClearElement(idx:integer);
+    procedure FixSizes(idx:integer; adata:PByte; asize:cardinal);
+    procedure CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
+    function  WriteToPAK(var apak:TRGPAK; const fname:string):boolean;
 
-    function SearchUpdate(idx:integer):integer;
-    function SearchSource(idx:integer):integer;
+  public
+    property PAK:TRGPAK read FPAK write FPAK;
 
   public
     procedure Init;
+    procedure Free;
 //    procedure Clear;
-    function Rebuild():integer;
-    
+    function  Rebuild():integer;
+
+    function  SaveAs(const fname:string):boolean;
+    function Save: boolean;
+
+procedure Trace();
+
     // Build file list and file info
-    procedure GetFullInfo(idx:integer; var info:TFullFileInfo);
+    procedure GetFullInfo(idx:integer; var info:TRGFullInfo);
 
-    // Get file content (preview etc)
-    function GetFile(idx:integer          ; var buf:PByte):integer;
-    function GetFile(fname:PWideChar      ; var buf:PByte):integer;
-    function GetFile(apath,aname:PWideChar; var buf:PByte):integer;
+    // read update from file or buffer
+    function GetUpdate(idx:integer; var buf:PByte):dword;
+    // unpacked binary, data as text
+    function GetSource(idx:integer; var buf:PByte):dword;
+    // unpacked binary, data as binary
+    function GetBinary(idx:integer; var buf:PByte):dword;
+    // unpacked for unpackable, packed binary for others
+    // PS. var size_u, DO NOT "out" for
+    function GetPacked(idx:integer; var buf:PByte; var size_u:dword):dword;
 
-    // Save info
-  public
+    //--- Updater functions ---
+
     {
-      Get first dir info
-      ?? from root or from choosed ??
-      result=0 - not found
+      Amount of all updates
     }
-//    function GetDirFirst:
+    function  UpdatesCount(): integer;
     {
-      Get next dir info
-      result=0 - not found
+      Amount of changes required repack ("data" and "file")
     }
-//    function GetDirNext():
+    function  UpdateChanges():integer;
     {
-      Get first file in dir
-      ?? all or with choosed types/categories ??
-      result=0 - not found
+      state* const for update element
     }
-//    function GetFileFirst():
+    function  UpdateState (idx:integer):integer;
     {
-      get next file info
-      result=0 - not found
+      Delete update
     }
-//    function GetFileNext():
+    procedure RemoveUpdate(idx:integer);
+    procedure MarkToRemove(idx:integer);
     {
-      Get file info
-      ?? by name, "index" ??
-      return structure as argument?
-        time, CRC, size, packed/compiled/dir etc?
+      use adata as buffer, no allocate
     }
-//    function GetFileInfo():
+    function  UseData  (adata:PByte; asize:cardinal; apath:PWideChar):integer;
     {
-      Get file content
-      as is?
+      allocate buffer, copy adata content
     }
-//    function GetFileData():                                                1 
-  public
-//    function ApplyUpdate():integer;
+    function  AddUpdate(adata:PByte; asize:cardinal; apath:PWideChar):integer;
+    {
+      allocate buffer, copy unpacked source data
+    }
+    function  AddCopy  (idx:integer):integer;
+//    function  AddCopy  (adata:PByte; asize:cardinal; apath:PWideChar):integer;
+    {
+      keep filename or allocate buffer and load file content
+    }
+    function  AddFileData(afile:PWideChar; apath:PWideChar; acontent:boolean=false):integer;
   end;
 
 implementation
+
+uses
+  SysUtils,
+  crc,
+  rgfiletype,
+  RGFile;
 
 { TRGController }
 
@@ -110,154 +146,606 @@ procedure TRGController.Init;
 begin
   Inherited Init(SizeOf(TRGCtrlInfo));
 
-  FUpd.OnUpdate:=@CtrlUpdate;
+  FPAK.Init;
+end;
+
+procedure TRGController.Free;
+var
+  i:integer;
+begin
+  FPAK.Free;
+  
+  for i:=0 to FileCount-1 do
+    if not IsFileDeleted(i) then
+      ClearElement(i);
+
+  inherited Free;
+end;
+
+procedure TRGController.ClearElement(idx:integer);
+begin
+  with PRGCtrlInfo(Files[idx])^ do
+  begin
+    case action of 
+      act_copy,
+      act_data,
+      act_file: begin
+        FreeMem(data);
+        data:=nil;
+      end;
+    end;
+    action:=act_none;
+  end;
+end;
+
+procedure TRGController.Trace();
+var
+  i:integer;
+begin
+  RGLog.Add('Dirs: '+IntToStr(DirCount));
+  for i:=0 to DirCount-1 do
+  begin
+    RGLog.AddWide(Dirs[i].Name);
+  end;
+  RGLog.Add('Files: '+IntToStr(FileCount));
+  for i:=0 to FileCount-1 do
+  begin
+    RGLog.AddWide(Files[i]^.Name);
+  end;
 end;
 
 function TRGController.Rebuild(): integer;
 var
-  ldir,ldirs,lfiles:integer;
+  ldir,ldirs:integer;
   lidx,lfile:integer;
 begin
   result:=0;
 
   // No need to check for existing
-  for ldirs:=0 to FMAN.DirCount-1 do
+  for ldirs:=0 to PAK.Man.DirCount-1 do
   begin
-    if not FMAN.IsDirDeleted(ldirs) then
+    if not PAK.Man.IsDirDeleted(ldirs) then
     begin
-      ldir:=AppendDir(FMAN.Dirs[ldirs].name);
-      for lfiles:=0 to FMAN.Dirs[ldirs].count-1 do
-      begin
-        if FMAN.GetFirstFile(lidx,ldir) then
-        repeat
-          lfile:=AppendFile(ldir,FMAN.Files[lidx]^.name);
-          with PRGCtrlInfo(Files[lfile])^ do
-          begin
-            source:=lidx;
-          end;
-        until not FMAN.GetNextFile(lidx);
-      end;
-    end;
-  end;
-
-  // MUST check for existing
-  for ldirs:=0 to FUpd.DirCount-1 do
-  begin
-    if not FUpd.IsDirDeleted(ldirs) then
-    begin
-      ldir:=AddPath(FUpd.Dirs[ldirs].name);
-      for lfiles:=0 to FUpd.Dirs[ldirs].count-1 do
-      begin
-        if FUpd.GetFirstFile(lidx,ldir) then
-        repeat
-          with PRGCtrlInfo(AddFile(ldir,FUpd.Files[lidx]^.name))^ do
-          begin
-            update:=lidx;
-          end;
-        until not FUpd.GetNextFile(lidx);
-      end;
-    end;
-  end;
-end;
-
-function TRGController.SearchUpdate(idx:integer):integer;
-var
-  i:integer;
-begin
-  for i:=1 to FileCount-1 do
-  begin
-    with PRGCtrlInfo(Files[i])^ do
-    begin
-      if (update=idx) and not IsFileDeleted(idx) then
-        exit(i);
-    end;
-  end;
-  result:=0;
-end;
-
-function TRGController.SearchSource(idx:integer):integer;
-var
-  i:integer;
-begin
-  for i:=1 to FileCount-1 do
-  begin
-    with PRGCtrlInfo(Files[i])^ do
-    begin
-      if (source=idx) and not IsFileDeleted(idx) then
-        exit(i);
-    end;
-  end;
-  result:=0;
-end;
-
-procedure TRGController.CtrlUpdate(idx:integer; act:integer);
-var
-  p:PRGCtrlInfo;
-  i:integer;
-begin
-  i:=SearchUpdate(idx);
-
-  case act of
-    act_mark,
-    act_delete: begin
-    end;
-
-    act_data,
-    act_copy,
-    act_file: begin
-      if i=0 then
-      begin
-        with PRGCtrlInfo(AddFile(FUpd.PathOfFile(idx),FUpd.Files[idx]^.name))^ do
-        begin
-          update:=idx;
+      ldir:=AppendDir(PAK.Man.Dirs[ldirs].name);
+      if PAK.Man.GetFirstFile(lidx,ldir) then
+      repeat
+        lfile:=AppendFile(ldir,PAK.Man.Files[lidx]^.name);
+        with PRGCtrlInfo(Files[lfile])^ do
+         begin
+          source:=lidx;
         end;
-      end;
-    end;
-
-    // not realized yet
-    act_dir: begin
-    end;
-
-    act_reset: begin
-      if i<>0 then
-      begin
-        p:=PRGCtrlInfo(Files[i]);
-        if p^.source=0 then // no MAN element, time to delete
-          DeleteFile(i)
-        else
-          p^.update:=0;
-      end;
+      until not PAK.Man.GetNextFile(lidx);
     end;
   end;
 end;
 
-procedure TRGController.GetFullInfo(idx:integer; var info:TFullFileInfo);
+procedure TRGController.FixSizes(idx:integer; adata:PByte; asize:cardinal);
 begin
+  with PRGCtrlInfo(Files[idx])^ do
+  begin
+    size_s:=0;
+    size_u:=0;
+    size_c:=0;
+    case RGTypeOfFile(adata,asize) of
+      tofPacked   : size_c:=asize;
+      tofPackedHdr: begin
+        size_u:=PPAKFileHeader(adata)^.size_u;
+        size_c:=PPAKFileHeader(adata)^.size_c;
+      end;
+      tofRawHdr   : begin
+        size_u:=PPAKFileHeader(adata)^.size_u;
+        size_c:=PPAKFileHeader(adata)^.size_u;
+      end;
+    else
+      if (ftype in setData) and IsSource(adata) then size_s:=asize
+      else size_u:=asize;
+    end;  
+  end;
 end;
 
-function TRGController.GetFile(idx:integer; var buf:PByte):integer;
+function TRGController.UpdateState(idx:integer):integer;
+begin
+  with PRGCtrlInfo(Files[idx])^ do
+    case action of
+      act_mark  : result:=stateRemove;
+      act_delete: result:=stateDelete;
+      act_data,
+      act_file  : if source=0 then result:=stateNew else result:=stateChanged;
+    else
+      result:=0;
+    end;
+end;
+
+procedure TRGController.CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
+var
+  p:PManFileInfo;
+begin
+  if afrom^.action in [act_data, act_file] then
+    p:=afrom
+  else // if afrom.source<>0 then
+    p:=PManFileInfo(FPAK.Man.Files[afrom^.source]);
+  move(p^,ato^,SizeOf(TManFileInfo));
+end;
+
+procedure TRGController.GetFullInfo(idx:integer; var info:TRGFullInfo);
 var
   p:PRGCtrlInfo;
+begin
+  if idx<0 then
+  begin
+    FillChar(info,SizeOf(info),0);
+    exit;
+  end;
+  p:=PRGCtrlInfo(Files[idx]);
+
+  info.name    :=p^.Name;
+  info.path    :=PathOfFile(idx);
+  info.checksum:=p^.checksum;
+
+  if p^.action in [act_data, act_file] then
+  begin
+    info.size_u:=p^.size_u;
+    info.size_c:=p^.size_c;
+    info.size_s:=p^.size_s;
+    info.offset:=0;
+    info.ftype :=PAKExtType(info.name);
+    info.ftime :=p^.ftime;
+  end
+  else
+  begin
+    with PManFileInfo(PAK.Man.Files[p^.source])^ do
+    begin
+      info.size_u:=size_u;
+      info.size_c:=size_c;
+      info.size_s:=size_s;
+      info.offset:=offset;
+      info.ftype :=ftype;
+      info.ftime :=ftime;
+    end;
+  end;
+
+  info.action:=p^.action;
+  case info.action of
+    act_mark  : info.state:=stateRemove;
+    act_delete: info.state:=stateDelete;
+    act_data,
+    act_file  : if p^.source=0 then info.state:=stateNew else info.state:=stateChanged;
+  else
+    info.state:=0;
+  end
+end;
+
+{%REGION GetData}
+
+function TRGController.GetUpdate(idx:integer; var buf:PByte):dword;
+var
+  p:PRGCtrlInfo;
+  f:File of byte;
+begin
+  result:=0;
+  p:=PRGCtrlInfo(Files[idx]);
+
+  if p<>nil then
+  begin
+    // read from file
+    if p^.action=act_file then
+    begin
+      system.Assign(f,PWideChar(p^.data));
+      system.Reset(f);
+      if IOResult=0 then
+      begin
+        result:=FileSize(f);
+        if result>0 then
+        begin
+          if (buf=nil) or (MemSize(buf)<result) then
+          begin
+            FreeMem(buf);
+            GetMem(buf,result);
+          end;
+          BlockRead(f,buf^,result);
+        end;
+        system.Close(f);
+      end;
+
+    end
+    // read from block
+    else
+    begin
+      result:=p^.size;
+      if result>0 then
+      begin
+        if (buf=nil) or (MemSize(buf)<result) then
+        begin
+          FreeMem(buf);
+          GetMem(buf, result);
+        end;
+        move(PByte(p^.data)^,buf^,result);
+      end;
+    end;
+
+    FixSizes(idx,buf,result);
+{
+    if (ftype in setData) and IsSource(buf) then
+      p^.size_s:=result
+    else
+      p^.size_u:=result;
+}
+  end;
+end;
+
+{
+  packed - unpack and decompile
+  binary - decompile
+}
+function TRGController.GetSource(idx:integer; var buf:PByte):dword;
+var
+  p:PRGCtrlInfo;
+  lbuf:PWideChar;
 begin
   p:=PRGCtrlInfo(Files[idx]);
-  if p^.update=0 then   // get from MAN/PAK
+  if p^.action in [act_data, act_file] then
   begin
-    result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
+    result:=GetUpdate(idx,buf);
   end
-  else                  // get from updater
+  else
   begin
-    result:=FUpd.Get(p^.update,buf);
+    if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit(0);
+    result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
+  end;
+
+  p^.checksum:=crc32(0,buf,p^.size_u);
+  if (p^.ftype in setData) and not isSource(buf) then
+  begin
+    if DecompileFile(buf,result,p^.name,lbuf) then
+    begin
+      FreeMem(buf);
+      buf:=PByte(lbuf);
+      result:=(Length(lbuf)+1)*SizeOf(WideChar);
+      p^.size_s:=result;
+    end;
   end;
 end;
 
-function TRGController.GetFile(fname:PWideChar; var buf:PByte):integer;
+{
+  packed - unpack
+  source - compile
+}
+function TRGController.GetBinary(idx:integer; var buf:PByte):dword;
+var
+  p:PRGCtrlInfo;
+  lbuf:PByte;
 begin
-  result:=GetFile(SearchFile(fname),buf);
+  p:=PRGCtrlInfo(Files[idx]);
+  if p^.action in [act_data, act_file] then
+  begin
+    result:=GetUpdate(idx,buf);
+
+    if (p^.ftype in setData) and isSource(buf) then
+    begin
+      lbuf:=buf;
+      buf:=nil;
+      result:=CompileFile(lbuf,p^.Name,buf,FPAK.Version);
+      p^.size_u:=result;
+      FreeMem(lbuf);
+    end;
+  end
+  else
+  begin
+    if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit(0);
+    result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
+  end;
+  p^.checksum:=crc32(0,buf,p^.size_u);
 end;
 
-function TRGController.GetFile(apath,aname:PWideChar; var buf:PByte):integer;
+{
+  source - compile+pack
+  binary - pack
+}
+function TRGController.GetPacked(idx:integer; var buf:PByte; var size_u:dword):dword;
+var
+  p:PRGCtrlInfo;
+  lbuf:PByte;
 begin
-  result:=GetFile(SearchFile(apath,aname),buf);
+  result:=0;
+  p:=PRGCtrlInfo(Files[idx]);
+  if p^.action in [act_data, act_file] then
+  begin
+    GetUpdate(idx,buf);
+
+    if GetExtInfo(p^.Name,FPAK.Version)^._pack then
+    begin
+      if (p^.ftype in setData) and isSource(buf) then
+      begin
+        lbuf:=buf;
+        buf:=nil;
+        p^.size_u:=CompileFile(lbuf,p^.Name,buf,FPAK.Version);
+        FreeMem(lbuf);
+      end;
+
+      p^.checksum:=crc32(0,buf,p^.size_u);
+      lbuf:=buf;
+      buf:=nil;
+      size_u:=p^.size_u;
+      p^.size_c:=RGFilePack(lbuf,size_u,buf,result);
+      result:=p^.size_c;
+      FreeMem(lbuf);
+    end
+    else
+    begin
+      p^.size_c:=p^.size_u;
+      result:=p^.size_c;
+    end;
+  end
+  else
+  begin
+    with PManFileInfo(FPAK.Man.Files[p^.source])^ do
+    begin
+      if ftype=typeDirectory then exit;
+      if offset=0 then
+      begin
+        RGLog.Add('Next file have offset=0');
+        RGLog.AddWide(p^.Name);
+        exit;
+      end;
+    end;
+
+    result:=FPAK.ExtractFile(PathOfFile(idx),p^.name,size_u,buf);
+  end;
 end;
+
+{%ENDREGION GetData}
+
+{%REGION Updater}
+
+function TRGController.UpdatesCount():integer;
+var
+  i:integer;
+begin
+  result:=0;
+  for i:=0 to FileCount-1 do
+  begin
+    if not IsFileDeleted(i) then
+      if PRGCtrlInfo(Files[i])^.action<>act_none then inc(result);
+  end;
+end;
+
+function TRGController.UpdateChanges():integer;
+var
+  i:integer;
+begin
+  result:=0;
+  for i:=0 to FileCount-1 do
+  begin
+    if not IsFileDeleted(i) then
+      if PRGCtrlInfo(Files[i])^.action in [act_data,act_file] then inc(result);
+  end;
+end;
+
+procedure TRGController.RemoveUpdate(idx:integer);
+begin
+  if idx>=0 then
+  begin
+    ClearElement(idx);
+    if PRGCtrlInfo(Files[idx])^.source=0 then
+      DeleteFile(idx);
+  end;
+end;
+
+procedure TRGController.MarkToRemove(idx:integer);
+begin
+  if idx>=0 then
+  begin
+    ClearElement(idx);
+    PRGCtrlInfo(Files[idx])^.action:=act_delete;
+  end;
+end;
+
+function TRGController.UseData(adata:PByte; asize:cardinal; apath:PWideChar):integer;
+begin
+  result:=AddFile(apath);
+  ClearElement(result);
+  with PRGCtrlInfo(Files[result])^ do
+  begin
+    data  :=adata;
+    size  :=asize;
+    action:=act_data;
+    ftime :=DateTimeToFileTime(Now());
+    ftype :=PAKExtType(apath);
+
+    FixSizes(result,adata,asize);
+{
+    size_s:=0;
+    size_u:=0;
+    size_c:=0;
+    case RGTypeOfFile(adata,asize) of
+      tofPacked   : size_c:=asize;
+      tofPackedHdr: begin
+        size_u:=PPAKFileHeader(adata)^.size_u;
+        size_c:=PPAKFileHeader(adata)^.size_c;
+      end;
+      tofRawHdr   : begin
+        size_u:=PPAKFileHeader(adata)^.size_u;
+        size_c:=PPAKFileHeader(adata)^.size_u;
+      end;
+    else
+      if (ftype in setData) and IsSource(adata) then size_s:=asize
+      else size_u:=asize;
+    end;  
+}
+  end;
+end;
+
+function TRGController.AddUpdate(adata:PByte; asize:cardinal; apath:PWideChar):integer;
+var
+  lptr:PByte;
+begin
+  GetMem(lptr,asize);
+  move(adata^,lptr^,asize);
+
+  result:=UseData(lptr,asize,apath);
+end;
+{
+function TRGController.AddCopy(adata:PByte; asize:cardinal; apath:PWideChar):integer;
+begin
+  result:=AddUpdate(adata,asize,apath);
+  PRGCtrlInfo(Files[result])^.action:=act_copy;
+end;
+}
+function TRGController.AddCopy(idx:integer):integer;
+var
+  lman:PManFileInfo;
+  p   :PRGCtrlInfo;
+begin
+  result:=idx;
+  p:=PRGCtrlInfo(Files[idx]);
+  if p^.source=0 then exit;
+
+  //ClearElement(idx);
+  FreeMem(p^.data);
+  p^.data:=nil;
+
+  lman:=PManFileInfo(FPAK.man.Files[p^.source]);
+  FPAK.UnpackSingle(lman,p^.data);
+  // Do we really need next? it just copy!
+  p^.size_s:=lman^.size_s;
+  p^.size_u:=lman^.size_u;
+  p^.size_c:=lman^.size_c;
+  p^.ftime :=lman^.ftime;
+  p^.ftype :=PAKExtType(lman^.Name);
+end;
+
+function TRGController.AddFileData(afile:PWideChar; apath:PWideChar; acontent:boolean=false):integer;
+var
+  lptr:PByte;
+  f:file of byte;
+  sr:TUnicodeSearchRec;
+  lsize:integer;
+begin
+  if not acontent then
+  begin
+    result:=AddFile(apath);
+    ClearElement(result);
+    with PRGCtrlInfo(Files[result])^ do
+    begin
+      ftype :=PAKExtType(apath);
+      data  :=PByte(CopyWide(afile));
+      action:=act_file;
+      ftime :=0;
+      size_s:=0;
+      size_u:=0;
+      size_c:=0;
+    end;
+  end
+  else
+  begin
+    system.Assign(f,afile);
+    system.Reset(f);
+    if IOResult=0 then
+    begin
+      lsize:=FileSize(f);
+      if lsize>0 then
+      begin
+        GetMem(lptr,lsize);
+        BlockRead(f,lptr^,lsize);
+      end;
+      system.Close(f);
+
+      result:=UseData(lptr,lsize,apath);
+
+      if FindFirst(afile,faAnyFile,sr)=0 then
+      begin
+        Files[result]^.ftime:=sr.Time;
+        FindClose(sr);
+      end;
+
+    end
+    else
+      result:=SearchFile(apath);
+  end;
+end;
+
+{%ENDREGION Updater}
+
+{%REGION Save}
+
+function TRGController.WriteToPAK(var apak:TRGPAK; const fname:string):boolean;
+var
+  p:PRGCtrlInfo;
+  lman:PManFileInfo;
+  lbuf:PByte;
+  lidx,i,j,ldir:integer;
+begin
+  result:=false;
+
+  apak.CreatePAK(fname,@FPAK.modinfo,FPAK.Version);
+
+  lbuf:=nil;
+
+  for i:=0 to DirCount-1 do
+  begin
+    ldir:=apak.man.AddPath(Dirs[i].name);
+//    ldir:=lpak.AddDirectory(Dirs[i].name);
+    if GetFirstFile(j,i) then
+      repeat
+        p:=PRGCtrlInfo(Files[j]);
+
+        if p^.action=act_delete then continue;
+
+        // 1 - create MAN record
+        lidx:=apak.man.AddFile(ldir,p);
+        lman:=PManFileInfo(apak.man.Files[lidx]);
+
+        if not (lman^.ftype in [typeDirectory]) then
+        begin
+          p^.size_c:=GetPacked(j,lbuf,p^.size_u);
+
+          CopyInfo(p,lman);
+
+          if lman^.size_s=0 then lman^.size_s:=lman^.size_u;
+          lman^.offset:=apak.WritePackedFile(lbuf,p^.size_u,p^.size_c);
+        end
+        else
+          CopyInfo(p,lman);
+        
+      until not GetNextFile(j);
+  end;
+
+  FreeMem(lbuf);
+
+  apak.FinishPAK;
+  result:=true;
+end;
+
+function TRGController.SaveAs(const fname:string):boolean;
+var
+  lpak:TRGPAK;
+begin
+  result:=false;
+
+  // just copy original (if only original is not directory)
+  if UpdatesCount=0 then // and not modinfo.modified
+  begin
+    FPAK.Clone(fname);
+  end
+  else
+  begin
+    lpak.Init;
+
+    if WriteToPAK(lpak,ExtractFileDir(fname)+'\'+ExtractFileNameOnly(fname)+'_TMP') then
+    begin
+      lpak.Rename(fname);
+      result:=true;
+    end;
+
+    lpak.Free;
+  end;
+end;
+
+function TRGController.Save():boolean;
+begin
+  result:=SaveAs(FPAK.Directory+FPAK.Name);
+end;
+
+{%ENDREGION Save}
 
 end.

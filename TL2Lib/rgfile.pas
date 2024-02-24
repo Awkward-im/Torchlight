@@ -16,12 +16,20 @@ uses
 
 
 const
-  tofRaw       = 0;
-  tofPacked    = 1;
-  tofRawHdr    = 2;
-  tofPackedHdr = 3;
+  tofRaw       = 0;   // raw binary data
+  tofPacked    = 1;   // packed binary data
+  tofRawHdr    = 2;   // raw binary data with header
+  tofPackedHdr = 3;   // packed binary data with header
+  tofSrc       = 4;   // source
+  tofSrcBin    = 5;   // compiled source
+  tofEmpty     = $FF;
 
+// return tof* consts
+function RGTypeOfFile(aBuf:PByte; aname:PWideChar=nil):integer;
+// return tof* for packed state
 function RGTypeOfFile(aBuf:PByte; asize:cardinal):integer;
+// return true if text DAT/LAYOUT file type
+function IsSource(aBuf:PByte; aname:PWideChar=nil):boolean;
 
 //===== [Un]Packing =====
 
@@ -30,11 +38,11 @@ function RGTypeOfFile(aBuf:PByte; asize:cardinal):integer;
     in  - pbyte_in/stream; insize; [pbyte_out, outsize, bufsize]
     out - pbyte_out; outsize
   Note:
-    Use aout as buf if not NIL, reallocate if needs
+    ????Use aout as buf if not NIL, reallocate if needs
 }
-function RGFileUnpack      (ain:PByte  ; ainsize:integer; var aout:PByte; aoutsize:integer=0):integer;
-function RGFileUnpackStream(ain:TStream; ainsize:integer; var aout:PByte; aoutsize:integer=0):integer;
-function RGFileUnpackFile  (const           fname:string; var aout:PByte; aoutsize:integer=0):integer;
+function RGFileUnpack      (ain:PByte  ; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
+function RGFileUnpackStream(ain:TStream; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
+function RGFileUnpackFile  (const fname:string           ; var aout:PByte; aoutsize:cardinal=0):cardinal;
 
 // rgfiletype or here?
 // check for source or binary
@@ -47,15 +55,18 @@ function RGFileUnpackFile  (const           fname:string; var aout:PByte; aoutsi
     Use aout as buf if not NIL, reallocate if needs
 }
 // in: data, size; out: crc, data, size. time and insize if needs
-//function PackFile(var ainfo:TMANFileInfo; ain:PByte; out aout:PByte):integer;
-//function CompileFile  (ain:PByte; ainsize:integer; out aout:PByte):integer;
-//function DecompileFile(ain:PByte; ainsize:integer; out aout:PByte):integer;
-function RGFilePackSafe(ain:PByte; ainsize:integer; var aout:PByte; var abufsize:integer):integer;
-function RGFilePack    (ain:PByte; ainsize:integer; var aout:PByte; var abufsize:integer):integer;
+//function PackFile(var ainfo:TManFileInfo; ain:PByte; out aout:PByte):integer;
+function RGFilePackSafe(ain:PByte; ainsize:cardinal; var aout:PByte; var abufsize:cardinal):cardinal;
+function RGFilePack    (ain:PByte; ainsize:cardinal; var aout:PByte; var abufsize:cardinal):cardinal;
 
 //===== [De]compilation =====
 
-function DecompileFile(ain:PByte; ainsize:integer; fname:PUnicodeChar; out aout:PWideChar):boolean;
+function DecompileFile(ain:PByte; ainsize:cardinal; fname:PUnicodeChar;
+                       out aout; asUTF8:boolean=false):boolean;
+function DecompileFile(ain:PByte; ainsize:cardinal; const fname:string;
+                       out aout; asUTF8:boolean=false):boolean;
+function CompileFile  (ain:PByte; fname:PUnicodeChar; out aout:PByte; aver:integer):cardinal;
+function CompileFile  (ain:PByte; const fname:string; out aout:PByte; aver:integer):cardinal;
 
 /////////////////////////////////////////////////////////
 
@@ -65,7 +76,7 @@ uses
   sysutils,
   paszlib,
   zstream,
-  bufstream,
+//  bufstream,
 
   rgnode,
   rgio.dat,
@@ -75,15 +86,21 @@ uses
   
   rgfiletype;
 
-const
-  setData = [typeDAT, typeWDAT, typeAnimation, typeHIE, typeLayout, typeRAW];
 
-type
-  PPAKFileHeader = ^TPAKFileHeader;
-  TPAKFileHeader = packed record
-    size_u:UInt32;
-    size_c:UInt32;      // 0 means "no compression
+function RGTypeOfFile(aBuf:PByte; aname:PWideChar=nil):integer;
+begin
+  if aBuf=nil then exit(tofEmpty);
+
+  result:=RGTypeOfFile(aBuf,MemSize(aBuf));
+  if result=tofRaw then
+  begin
+    if PakExtType(aname) in setData then
+      if IsSource(aBuf, nil) then
+        result:=tofSrc
+      else
+        result:=tofSrcBin;
   end;
+end;
 
 function RGTypeOfFile(aBuf:PByte; asize:cardinal):integer;
 begin
@@ -104,6 +121,25 @@ begin
       if PWord(abuf)^=$9C78 then exit(tofPacked);
     end;
   end;
+end;
+
+function IsSource(aBuf:PByte; aname:PWideChar=nil):boolean;
+begin
+  if aBuf<>nil then
+  begin
+    if aname<>nil then
+      result:=PakExtType(aname) in setData
+    else
+      result:=true;
+    if result then
+    begin
+      if (PDWord(abuf)^=(SIGN_UTF8   +ORD('[') shl 24)) or
+         (PDWord(abuf)^=(SIGN_UNICODE+ORD('[') shl 16)) or
+         ((Char(abuf^)='[') and (Char(abuf[1]) in [#0,']','_','0'..'9','A'..'Z','a'..'z'])) then
+        exit(true);
+    end;
+  end;
+  result:=false;
 end;
 
 //----- Unpack -----
@@ -147,14 +183,14 @@ begin
   end;
 end;
 }
-function RGFileUnpack(ain:PByte; ainsize:integer; var aout:PByte; aoutsize:integer=0):integer;
+function RGFileUnpack(ain:PByte; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
 var
   lin:PByte;
-  lsize,lbufsize:integer;
+  lsize,lbufsize:cardinal;
   ltof:integer;
 begin
   result:=0;
-  if (ain=nil) or (ainsize=0) then exit;
+  if (ain=nil){ or (ainsize=0)} then exit;
 
   ltof:=RGTypeOfFile(ain,ainsize);
 
@@ -172,6 +208,10 @@ begin
     lin  :=ain;
     lsize:=ainsize;
   end;
+
+  // correct in size (pak with size_c=0)
+  if (lsize=0) and (aoutsize>0) then lsize:=aoutsize;
+  if  lsize=0 then exit;
 
   // correct out size
   if aoutsize<lsize then aoutsize:=lsize;
@@ -197,19 +237,20 @@ begin
   else
   begin
     if uncompress(
-        PChar(aout),cardinal(aoutsize),
-        PChar(ain ),cardinal(lsize))=Z_OK then
+        PChar(aout),aoutsize,
+        PChar(ain ),lsize)=Z_OK then
       exit(aoutsize);
   end;
-
+{?? clear out buf if unsuccesful? for what?
   if lbufsize=0 then
   begin
     FreeMem(aout);
     aout:=nil;
   end;
+}
 end;
 
-function RGFileUnpackStream(ain:TStream; ainsize:integer; var aout:PByte; aoutsize:integer=0):integer;
+function RGFileUnpackStream(ain:TStream; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
 var
   lin:PByte;
   lms:boolean;
@@ -230,7 +271,7 @@ begin
     FreeMem(lin);
 end;
 
-function RGFileUnpackFile(const fname:string; var aout:PByte; aoutsize:integer=0):integer;
+function RGFileUnpackFile(const fname:string; var aout:PByte; aoutsize:cardinal=0):cardinal;
 var
   f:file of byte;
   lin:PByte;
@@ -260,7 +301,7 @@ begin
   if st.Size>0 then
   begin
     st.Position:=0;
-    result:=GRFileUnpackStream(st,st.Size,aout,aoutsize);
+    result:=RGFileUnpackStream(st,st.Size,aout,aoutsize);
   end;
   st.Free;
 }
@@ -269,8 +310,8 @@ end;
 //----- Pack -----
 
 function RGFilePackSafe(
-        ain :PByte; ainsize :integer;
-    var aout:PByte; var abufsize:integer):integer;
+        ain :PByte; ainsize :cardinal;
+    var aout:PByte; var abufsize:cardinal):cardinal;
 var
   data: TMemoryStream;
   comprStream: TCompressionStream;
@@ -303,10 +344,10 @@ begin
 end;
 
 function RGFilePack(
-        ain :PByte; ainsize :integer;
-    var aout:PByte; var abufsize:integer):integer;
+        ain :PByte; ainsize :cardinal;
+    var aout:PByte; var abufsize:cardinal):cardinal;
 var
-  loutsize:integer;
+  loutsize:cardinal;
   lalloc:boolean;
 begin
   result:=0;
@@ -323,7 +364,7 @@ begin
   end;
 
   result:=abufsize;
-  if compress(PChar(aout),cardinal(result),PChar(ain),cardinal(ainsize))<>Z_OK then
+  if compress(PChar(aout),result,PChar(ain),ainsize)<>Z_OK then
   begin
     result:=0;
     if lalloc then
@@ -338,12 +379,70 @@ end;
 
 //----- Decompilation -----
 
-function DecompileFile(ain:PByte; ainsize:integer; fname:PUnicodeChar; out aout:PWideChar):boolean;
+function DecompileFile(ain:PByte; ainsize:cardinal; fname:PUnicodeChar;
+                       out aout; asUTF8:boolean=false):boolean;
 var
   p:pointer;
   ldata:PByte;
   ltype,ltof:integer;
 begin
+  result:=false;
+  ltype:=PAKExtType(fname);
+  if (ltype in setData) then
+  begin
+    if IsSource(ain) then
+    begin
+{
+      if (ain[0]=$FF) or (ain[1]=0) then
+        PWideChar(aout):=CopyWide(PWideChar(ain))
+      else
+}
+      begin
+        GetMem(PByte(aout),ainsize);
+        move(ain^,PByte(aout)^,ainsize);
+      end;
+      exit;
+    end;
+
+    ltof:=RGTypeOfFile(ain,ainsize);
+    if ltof in [tofPacked, tofPackedHdr] then
+    begin
+      ldata:=nil;
+      RGFileUnpack(ain,ainsize,ldata);
+    end
+    else
+    begin
+      ldata:=ain;
+    end;
+    
+    if      ltype=typeLayout then p:=ParseLayoutMem(ldata,GetLayoutType(fname))
+    else if ltype=typeRAW    then p:=ParseRawMem   (ldata,fname) // or do nothing
+    else                          p:=ParseDatMem   (ldata,fname);
+
+    if ldata<>ain then FreeMem(ldata);
+
+    if p=nil then
+      exit;
+
+    if asUTF8 then
+      result:=NodeToUTF8(p,PAnsiChar(aout))
+    else
+      result:=NodeToWide(p,PWideChar(aout));
+    DeleteNode(p);
+  end;
+end;
+
+function DecompileFile(ain:PByte; ainsize:cardinal; const fname:string;
+                       out aout; asUTF8:boolean=false):boolean;
+{
+var
+  p:pointer;
+  ldata:PByte;
+  ltype,ltof:integer;
+}
+begin
+  result:=DecompileFile(ain,ainsize,PUnicodeChar(UnicodeString(fname)),aout,asUTF8);
+{
   result:=false;
   ltype:=PAKExtType(fname);
   if (ltype in setData) then
@@ -361,7 +460,7 @@ begin
     
     if      ltype=typeLayout then p:=ParseLayoutMem(ldata,GetLayoutType(fname))
     else if ltype=typeRAW    then p:=ParseRawMem   (ldata,fname) // or do nothing
-    else                          p:=ParseDatMem   (ldata);
+    else                          p:=ParseDatMem   (ldata,fname);
 
     if ldata<>ain then FreeMem(ldata);
 
@@ -369,6 +468,49 @@ begin
       exit;
 
     result:=NodeToWide(p,aout);
+    DeleteNode(p);
+  end;
+}
+end;
+
+function CompileFile(ain:PByte; fname:PUnicodeChar; out aout:PByte; aver:integer):cardinal;
+var
+  p:pointer;
+  ltype:integer;
+begin
+  result:=0;
+  ltype:=PAKExtType(fname);
+  if (ltype in setData) then
+  begin
+    p:=ParseTextMem(ain);
+    if p=nil then
+      exit;
+
+    if      ltype=typeLayout then result:=BuildLayoutMem(p,aout,ABS(aver))
+    else if ltype=typeRAW    then result:=BuildRawMem   (p,aout,fname)
+    else                          result:=BuildDatMem   (p,aout,ABS(aver));
+
+    DeleteNode(p);
+  end;
+end;
+
+function CompileFile(ain:PByte; const fname:string; out aout:PByte; aver:integer):cardinal;
+var
+  p:pointer;
+  ltype:integer;
+begin
+  result:=0;
+  ltype:=PAKExtType(fname);
+  if (ltype in setData) then
+  begin
+    p:=ParseTextMem(ain);
+    if p=nil then
+      exit;
+
+    if      ltype=typeLayout then result:=BuildLayoutMem(p,aout,ABS(aver))
+    else if ltype=typeRAW    then result:=BuildRawMem   (p,aout,fname)
+    else                          result:=BuildDatMem   (p,aout,ABS(aver));
+
     DeleteNode(p);
   end;
 end;

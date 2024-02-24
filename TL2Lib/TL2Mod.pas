@@ -1,10 +1,11 @@
+{TODO: Add manipulation of required mods and deleted files. at least like AddRequirement and AddToDeleted}
 {TODO: implement read modinfo from stream}
 unit TL2Mod;
 
 interface
 
 uses
-//  classes,
+  classes,
   rgglobal;
 
 type
@@ -29,8 +30,11 @@ function ReadModInfoBuf (abuf:PByte    ; var   amod:TTL2ModInfo):boolean;
 function WriteModInfo   (fname:PChar   ; const amod:TTL2ModInfo):integer; export;
 function WriteModInfo   (out abuf:PByte; const amod:TTL2ModInfo):integer;
 function WriteModInfoBuf(    abuf:PByte; const amod:TTL2ModInfo):integer;
+function WriteModInfoStream(ast:TStream; const amod:TTL2ModInfo):integer;
+
 procedure ClearModInfo(var amod:TTL2ModInfo); export;
 procedure MakeModInfo (out amod:TTL2ModInfo); export;
+procedure CopyModInfo (out dst:TTL2ModInfo; const src:TTL2ModInfo);
 
 function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
 function SaveModConfiguration(const amod:TTL2ModInfo; strFile:PChar):boolean;
@@ -59,11 +63,60 @@ implementation
 
 uses
   SysUtils, // CreateGUID call for MakeModInfo function
+  rgstream,
   rwmemory,
   rgio.text,
   rgnode;
 
 //----- MOD Header -----
+
+function WriteModInfoStream(ast:TStream; const amod:TTL2ModInfo):integer;
+var
+  lpos:integer;
+  i:integer;
+begin
+  lpos:=ast.Position;
+
+  ast.WriteWord(4);
+
+  ast.WriteWord(amod.modver);
+
+  // yes, first number is higher word
+  ast.WriteQWord(ReverseWords(amod.gamever));
+{
+  ast.WriteWord(tTL2VerRec(amod.gamever).arr[3]);
+  ast.WriteWord(tTL2VerRec(amod.gamever).arr[2]);
+  ast.WriteWord(tTL2VerRec(amod.gamever).arr[1]);
+  ast.WriteWord(tTL2VerRec(amod.gamever).arr[0]);
+}
+  // not real values coz no data/manifest written yet
+  ast.WriteDWord(amod.offData);
+  ast.WriteDWord(amod.offMan);
+
+  ast.WriteShortString(amod.title);
+  ast.WriteShortString(amod.author);
+  ast.WriteShortString(amod.descr);
+  ast.WriteShortString(amod.website);
+  ast.WriteShortString(amod.download);
+  ast.WriteQWord(QWord(amod.modid));
+  //-
+  ast.WriteDWord(amod.flags);
+
+  ast.WriteQWord(QWord(amod.reqHash));
+  ast.WriteWord(Length(amod.reqs));
+  for i:=0 to High(amod.reqs) do
+  begin
+    ast.WriteShortString(amod.reqs[i].name);
+    ast.WriteQWord(QWord(amod.reqs[i].id));
+    ast.WriteWord       (amod.reqs[i].ver);
+  end;
+
+  ast.WriteWord(Length(amod.dels));
+  for i:=0 to High(amod.dels) do
+    ast.WriteShortString(amod.dels[i]);
+
+  result:=ast.Position-lpos;
+end;
 
 function WriteModInfoBuf(abuf:PByte; const amod:TTL2ModInfo):integer;
 var
@@ -148,6 +201,78 @@ begin
   end;
 end;
 
+{
+function ReadModInfoStream(ast:TStream; var amod:TTL2ModInfo):boolean;
+var
+  mt:PTL2ModTech;
+  lversion,lpos,i,lcnt:integer;
+begin
+  result:=false;
+
+  FillChar(amod,SizeOf(amod),0);
+
+  // wrong signature
+
+  lpos:=ast.Position;
+  lversion:=ast.ReadWord();
+  if (lversion=0) or (lversion>4) then
+  begin
+    amod.modid:=-1;
+    amod.title:=nil;
+    exit;
+  end;
+
+  result:=true;
+
+//!!  amod.filename:=UTF8Decode(fname);
+
+  amod.modver:=ast.ReadWord();
+
+  if lversion>=4 then
+  begin
+    amod.gamever:=ReverseWords(ast.ReadQWord());
+  end;
+
+  if lversion=1 then
+  begin
+    for i:=0 to amod.modver do
+    begin
+      ast.ReadQWord(); // GUID per version
+      ast.ReadByte (); // Major version
+    end;
+  end;
+
+  amod.offData :=ast.ReadDWord();
+  amod.offMan  :=ast.ReadDWord();
+  amod.title   :=ast.ReadShortString();
+  amod.author  :=ast.ReadShortString();
+  amod.descr   :=ast.ReadShortString();
+  amod.website :=ast.ReadShortString();
+  amod.download:=ast.ReadShortString();
+  amod.modid   :=ast.ReadQWord();
+  //-
+  amod.flags   :=ast.ReadDWord();
+
+  amod.reqHash :=ast.ReadQWord();
+  lcnt:=ast.ReadWord();
+  SetLength(amod.reqs,lcnt);
+  for i:=0 to lcnt-1 do
+  begin
+    amod.reqs[i].name:=ast.ReadShortString();
+    amod.reqs[i].id  :=ast.ReadQWord();
+    if lversion<>1 then
+      amod.reqs[i].ver:=ast.ReadWord();
+  end;
+
+  if lversion>=3 then
+  begin
+    lcnt:=ast.ReadWord();
+    SetLength(amod.dels,lcnt);
+    for i:=0 to lcnt-1 do
+      amod.dels[i]:=ast.ReadShortString();
+  end;
+end;
+}
 function ReadModInfoBuf(abuf:PByte; var amod:TTL2ModInfo):boolean;
 var
   mt:PTL2ModTech;
@@ -310,6 +435,41 @@ begin
   amod.modver:=1;
   CreateGUID(lguid);
   amod.modid:=Int64(MurmurHash64B(lguid,16,0));
+end;
+
+procedure CopyModInfo(out dst:TTL2ModInfo; const src:TTL2ModInfo);
+var
+  i:integer;
+begin
+  FillChar(dst,SizeOf(dst),0);
+  dst.modid   :=src.modid;
+  dst.gamever :=src.gamever;
+  dst.title   :=CopyWide(src.title   );
+  dst.author  :=CopyWide(src.author  );
+  dst.descr   :=CopyWide(src.descr   );
+  dst.website :=CopyWide(src.website );
+  dst.download:=CopyWide(src.download);
+  dst.filename:=CopyWide(src.filename);
+  // start of additional info
+  dst.steam_preview:=CopyWide(src.steam_preview);
+  dst.steam_tags   :=CopyWide(src.steam_tags   );
+  dst.steam_descr  :=CopyWide(src.steam_descr  );
+  dst.long_descr   :=CopyWide(src.long_descr   );
+  // end of additional info
+  SetLength(dst.dels,Length(src.dels));
+  for i:=0 to High(dst.dels) do dst.dels[i]:=CopyWide(src.dels[i]);
+  dst.offData :=0;
+  dst.offMan  :=0;
+  dst.flags   :=src.flags;
+  dst.reqHash :=src.reqHash;
+  SetLength(dst.reqs,Length(src.reqs));
+  for i:=0 to High(dst.reqs) do
+  begin
+    dst.reqs[i].name:=CopyWide(src.reqs[i].name);
+    dst.reqs[i].id  :=src.reqs[i].id;
+    dst.reqs[i].ver :=src.reqs[i].ver;
+  end;
+  dst.modver  :=src.modver;
 end;
 
 //----- MOD.DAT -----

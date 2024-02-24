@@ -352,7 +352,6 @@ var
   pcw:PWideChar;
   ldata,i,lcnt:integer;
   ltmp:dword;
-  b1:boolean;
 begin
   info.Version:=verHob;
   
@@ -412,7 +411,6 @@ begin
   AddFloat(result,'Z2',memReadFloat(FPos));
   
   ltmp:=memReadByte(FPos);                 // 1 usually
-  b1:=ltmp<>0;
   if (ltmp<>1) and (RGDebugLevel=dlDetailed) then
     FLog.Add('Byte (1 of 3) is not 1 but '+IntToStr(ltmp));
 
@@ -804,7 +802,6 @@ var
   lbs:TMemoryStream;
   ldata:TLayoutBin;
   lobj,lsub:pointer;
-  pc:PWideChar;
   i,lcnt,lsize,ldatapos,lchildpos:integer;
 begin
   result:=astream.Position;
@@ -820,7 +817,6 @@ begin
 
   astream.WriteByte(0);
 
-  pc:=AsString(FindNode(anode,'TYPE'));
   astream.WriteShortStringUTF8(AsString(FindNode(anode,'TYPE')));
 
   astream.WriteByte(0);

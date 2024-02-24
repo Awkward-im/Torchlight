@@ -30,7 +30,15 @@ const
   TL2EditMod  = 'EDITORMOD.MOD';
   TL2ModData  = 'MOD.DAT';
 
+const
+  DefaultExt    = '.MOD';
+  DefaultFilter = 'MOD files|*.MOD|PAK files|*.PAK|MAN files|*.MAN|Supported files|*.MOD;*.PAK;*.MAN|All files|*.*';
+
 //--- Constants
+
+const
+  SIGN_UNICODE = $FEFF;
+  SIGN_UTF8    = $BFBBEF;
 
 const
   verUnk    = 0;
@@ -49,16 +57,24 @@ const
 
 {$i rg_split.inc}
 
+function  FileTimeToDateTime(const FileTime: Int64): TDateTime;
+function  DateTimeToFileTime(adate: TDateTime): Int64;
+function  RGStrToInt(src:PWideChar):QWord;
+function  RGIntToStr(dst:PWideChar; value:QWord):PWideChar;
 procedure FixFloatStr(var astr:UnicodeString);
 function  ReverseWords(aval:QWord):QWord;
-function  StrToWide(const src:string):PWideChar;
-function  WideToStr(src:PWideChar):string;
-procedure CopyWide(var adst:PWideChar; asrc:PWideChar; alen:integer=0);
-function  CopyWide(asrc:PWideChar; alen:integer=0):PWideChar;
-function  CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
-function  ConcatWide (s1,s2:PWideChar):PWideChar;
-function  CharPosWide(c:WideChar; asrc:PWideChar):PWideChar;
-function  PosWide(asubstr,asrc:PWideChar):PWideChar;
+
+function  StrToWide    (const src:string):PWideChar;
+function  FastStrToWide(const src:string):PWideChar;
+function  WideToStr    (src:PWideChar):string;
+function  FastWideToStr(src:PWideChar):string;
+procedure CopyWide     (var adst:PWideChar; asrc:PWideChar; alen:integer=0);
+function  CopyWide     (asrc:PWideChar; alen:integer=0):PWideChar;
+function  CompareWide  (s1,s2:PWideChar; alen:integer=0):integer;
+function  CompareWideI (s1,s2:PWideChar; alen:integer=0):integer;
+function  ConcatWide   (s1,s2:PWideChar):PWideChar;
+function  CharPosWide  (c:WideChar; asrc:PWideChar):PWideChar;
+function  PosWide      (asubstr,asrc:PWideChar):PWideChar;
 function  GetLineWide(var aptr:PByte; var buf:pointer; var asize:integer):PWideChar;
 //procedure WriteWide(var buf:PByte; var idx:cardinal; atext:PWideChar);
 function  BufLen(abuf:PAnsiChar; asize:cardinal):integer;
@@ -66,6 +82,13 @@ function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 
 function ExtractFileNameOnly(const aFilename: string):string;
 function ExtractFileExt     (const aFileName: string):string;
+
+type
+  PPAKFileHeader = ^TPAKFileHeader;
+  TPAKFileHeader = packed record
+    size_u:UInt32;
+    size_c:UInt32;      // 0 means "no compression
+  end;
 
 //===== Data type codes =====
 
@@ -211,6 +234,7 @@ type
 
 type
   // fields are rearranged
+  PTL2ModInfo = ^TTL2ModInfo;
   TTL2ModInfo = record
     modid   :Int64;
     gamever :QWord;
@@ -276,6 +300,60 @@ begin
     qword(tTL2VerRec(aval).arr[0]) shl 48;
 end;
 
+function RGStrToInt(src:PWideChar):QWord;
+var
+  isminus:boolean;
+begin
+  result:=0;
+  if src<>nil then
+  begin
+    isminus:=src^='-';
+    if isminus then inc(src);
+    while src^<>#0 do
+    begin
+      result:=result*10+ORD(src^)-ORD('0');
+      inc(src);
+    end;
+    if isminus then result:=QWord(-Int64(result));
+  end;
+end;
+
+function RGIntToStr(dst:PWideChar; value:QWord):PWideChar;
+var
+  i:dword;
+  digits:integer;
+begin
+  i:=value;
+  digits:=0;
+  repeat
+    i:=i div 10;
+    inc(digits);
+  until i=0;
+  dst[digits]:=#0;
+  repeat
+    dec(digits);
+    dst[digits]:=WideChar(ord('0')+(value mod 10));
+    value:=value div 10;
+  until digits=0;
+  result:=dst;
+end;
+
+const
+  FileTimeBase      = -109205.0;
+  FileTimeStep: Extended = 24.0 * 60.0 * 60.0 * 1000.0 * 1000.0 * 10.0; // 100 nSec per Day
+
+function FileTimeToDateTime(const FileTime: Int64): TDateTime;
+begin
+  Result := FileTime / FileTimeStep;
+  Result := Result + FileTimeBase;
+end;
+
+function DateTimeToFileTime(adate: TDateTime): Int64;
+begin
+  adate  := adate - FileTimeBase;
+  Result := Trunc(adate * FileTimeStep);
+end;
+
 procedure FixFloatStr(var astr:UnicodeString);
 var
   j,l:integer;
@@ -316,6 +394,18 @@ begin
   while (result<asize) and (abuf[result]<>#0) do inc(result);
 end;
 
+function FastStrToWide(const src:string):PWideChar;
+var
+  i:integer;
+begin
+  if src='' then exit(nil);
+
+  GetMem(result,(length(src)+1)*SizeOf(WideChar));
+  for i:=1 to length(src) do
+    result[i-1]:=WideChar(ord(src[i]));
+  result[length(src)]:=#0;
+end;
+
 function StrToWide(const src:string):PWideChar;
 var
   i:integer;
@@ -338,6 +428,18 @@ begin
   move(Pointer(ws)^,result^,Length(ws)*SizeOf(WideChar));
   result[Length(ws)]:=#0;
 }
+end;
+
+function FastWideToStr(src:PWideChar):string;
+var
+  lsize,i:integer;
+begin
+  lsize:=Length(src);
+  if lsize=0 then exit('');
+
+  SetLength(result,lsize);
+  for i:=1 to lsize do
+    result[i]:=char(ord(src[i-1]));
 end;
 
 function WideToStr(src:PWideChar):string;
@@ -390,6 +492,27 @@ end;
 procedure CopyWide(var adst:PWideChar; asrc:PWideChar; alen:integer=0);
 begin
   adst:=CopyWide(asrc,alen);
+end;
+
+function CompareWideI(s1,s2:PWideChar; alen:integer=0):integer;
+var
+  c1,c2:UnicodeChar;
+begin
+  if s1=s2  then exit(0);
+  if s1=nil then if s2^=#0 then exit(0) else exit(-1);
+  if s2=nil then if s1^=#0 then exit(0) else exit( 1);
+
+  repeat
+    c1:=UpCase(s1^);
+    c2:=UpCase(s2^);
+    if c1>c2 then exit( 1);
+    if c1<c2 then exit(-1);
+    if s1^=#0  then exit( 0);
+    dec(alen);
+    if alen=0  then exit( 0);
+    inc(s1);
+    inc(s2);
+  until false;
 end;
 
 function CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
@@ -454,7 +577,7 @@ begin
   result:=nil;
   lend:=pointer(aptr);
 
-  while not (lend^ in [#0, #10, #13]) do inc(lend);
+  while not (ord(lend^) in [0, 10, 13]) do inc(lend);
 
   llen:=PByte(lend)-aptr;
   if llen>0 then
@@ -471,7 +594,7 @@ begin
     PByte(buf)[llen+1]:=0;
   end;
   
-  while lend^ in [#10, #13] do inc(lend);
+  while ord(lend^) in [10, 13] do inc(lend);
   aptr:=pointer(lend);
 end;
 {
@@ -540,7 +663,7 @@ end;
 //----- Data types -----
 
 const
-  RGType : array of record
+  RGType : array [0..18] of record
     code:integer;
     name:PWideChar;
   end = (

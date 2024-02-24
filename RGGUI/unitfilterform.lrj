@@ -1,0 +1,5 @@
+{"version":1,"strings":[
+{"hash":52100199,"name":"tfilterform.caption","sourcebytes":[70,105,108,101,32,116,121,112,101,32,116,111,32,115,104,111,119],"value":"File type to show"},
+{"hash":145482249,"name":"tfilterform.lblcategory.caption","sourcebytes":[67,97,116,101,103,111,114,121],"value":"Category"},
+{"hash":180737198,"name":"tfilterform.lblextension.caption","sourcebytes":[69,120,116,101,110,115,105,111,110],"value":"Extension"}
+]}

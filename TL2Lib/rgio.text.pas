@@ -1,5 +1,4 @@
 ﻿{TODO: change WriteWide to Logging?}
-{TODO: Option? Write missing coordinates? UseWriteEmpty for this?}
 unit RGIO.Text;
 
 interface
@@ -25,6 +24,7 @@ function WideToNode(abuf:PWideChar; asize:cardinal; out anode:pointer):integer;
 function UTF8ToNode(abuf:PAnsiChar; asize:cardinal; out anode:pointer):integer;
 function ParseTextMem (abuf :PByte):pointer;
 function ParseTextFile(fname:PChar):pointer;
+function GetTextErrorDescription(aerror:integer):string;
 
 
 implementation
@@ -32,6 +32,30 @@ implementation
 uses
   rgglobal,
   rgnode;
+
+resourcestring
+  strCantOpen      = 'Can''t open file for parsing';
+  strTagNoClose    = 'Group tag have no closing parenties';
+  strTagCloseWrong = 'Closing tag have wrong name';
+  strNoRoot        = 'Unconditional. Properties without open Group (root) tag';
+  strPropNoClose   = 'Property have no closing parenties for type';
+  strRootNoClose   = 'End of file, Root group have no closing tag';
+  strCloseNoRoot   = 'Unconditional. Closing tag without any opened (no root)';
+  strUnknownTag    = 'Unknown property type';
+  strNoPropDelim   = 'No ":" sign after prop name';
+
+const
+  ErrorCodes: array [1..9] of string = (
+    strCantOpen,
+    strTagNoClose,
+    strTagCloseWrong,
+    strNoRoot,
+    strPropNoClose, 
+    strRootNoClose, 
+    strCloseNoRoot,
+    strUnknownTag,
+    strNoPropDelim
+  );
 
 // Options
 const
@@ -318,18 +342,18 @@ begin
   repeat
     // get line to buffer
     pc:=aptr;
-    while (aptr<lend) and not (aptr^ in [#0,#10,#13]) do inc(aptr);
+    while (aptr<lend) and not (ord(aptr^) in [0,10,13]) do inc(aptr);
     lsize:=aptr-pc;
 
     // skip newline
-    while (aptr<lend) and (aptr^ in [#10,#13]) do inc(aptr); // inc lline here?
+    while (aptr<lend) and (ord(aptr^) in [10,13]) do inc(aptr); // inc lline here?
     inc(lline);
     leof:=(aptr>=lend) or (aptr^=#0);
     if lsize=0 then
       continue;
 
     idx:=0;
-    while (idx<lsize) and (pc[idx] in [' ',#9]) do inc(idx);
+    while (idx<lsize) and ((pc[idx]=' ') or (pc[idx]=#9)) do inc(idx);
     if idx=lsize then continue;
 
     //--- group
@@ -461,11 +485,12 @@ begin
   anode:=nil;
   if {(asize<2) or} (abuf=nil) or (abuf^=#0) then exit;
 
-  if (PDWord(abuf)^=$005BFEFF) or // SIGN_UNICODE+'[' widechar
+  if (PDWord(abuf)^=(SIGN_UNICODE+ORD('[') shl 16)) or
+//  if ((ORD(abuf[0])=SIGN_UNICODE) and (abuf[1]='[')) or
      (abuf^='[') then
   begin
-    if asize=0 then asize:=MemSize(abuf);
-    if ORD(abuf^)=$FEFF then inc(abuf);
+    if asize=0 then asize:=(Length(abuf)+1)*SizeOf(WideChar);
+    if ORD(abuf^)=SIGN_UNICODE then inc(abuf);
   
     result:=ParseBlock(abuf,asize,anode);
   end;
@@ -481,10 +506,10 @@ begin
 
   if (abuf=nil) or (abuf^=#0) then exit;
 
-  if (PDWord(abuf)^=$5BBFBBEF) or // UTF8 sign and '['
-     (abuf^='[') then
+  if (PDWord(abuf)^=(SIGN_UTF8+ORD('[') shl 24)) or
+     ((abuf^='[') and (abuf[1]<>#0)) then
   begin
-    if asize=0 then asize:=MemSize(abuf);
+    if asize=0 then asize:=Length(abuf)+1;
 
     if abuf^<>'[' then
     begin
@@ -517,6 +542,9 @@ begin
   except
     lerror:=errCantOpen;
   end;
+
+  if lerror<>0 then
+    RGLog.Add('Memory block', lerror shr 8, 'error: '+ErrorCodes[lerror and $FF]);
 end;
 
 {$PUSH}
@@ -550,9 +578,21 @@ begin
   else
     lerror:=errCantOpen;
 
-//if lerror<>0 then writeln('error code is ',byte(lerror),' at line ',lerror shr 8);
+  if lerror<>0 then
+    RGLog.Add(fname, lerror shr 8, 'error: '+ErrorCodes[lerror and $FF]);
 end;
 {$POP}
+
+function GetTextErrorDescription(aerror:integer):string;
+begin
+  Str(aerror shr 8,result);
+  if (aerror and $FF) in [1..9] then
+  begin
+    result:='Error: '+ErrorCodes[aerror and $FF]+' in line '+result;
+  end
+  else
+    result:='Unknown error in line '+result;
+end;
 
 {%ENDREGION}
 

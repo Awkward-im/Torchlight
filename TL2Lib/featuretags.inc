@@ -1,8 +1,8 @@
 {Group tags from FEATURETAGS.HIE}
-const
+var
   FeatureTags: array of record
     id  :integer;
-    name:PWideChar;
+    name:UnicodeString;//PWideChar;
   end = (
     (id:  1; name:'DUNGEON CRYPT'),
     (id:  2; name:'DUNGEONS RANDOM'),
@@ -135,6 +135,7 @@ const
     (id:150; name:'A2-NetherPortal'),
     (id:151; name:'A3-NetherPortal'),
     (id:152; name:'A1-NetherPortal'),
+    // Unearthed Arcana mod
     (id:153; name:'TL1-SHRINE'),
     (id:154; name:'A1-SHRINEGAMBLER'),
     (id:155; name:'A2-SHRINEGAMBLER'),

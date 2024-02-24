@@ -1,0 +1,48 @@
+object FilterForm: TFilterForm
+  Left = 350
+  Height = 310
+  Top = 250
+  Width = 416
+  Caption = 'File type to show'
+  ClientHeight = 310
+  ClientWidth = 416
+  LCLVersion = '3.99.0.0'
+  OnCreate = FormCreate
+  object clbCategory: TCheckListBox
+    Left = 11
+    Height = 272
+    Top = 26
+    Width = 184
+    ItemHeight = 0
+    TabOrder = 0
+    OnItemClick = clbCategoryItemClick
+    OnSelectionChange = clbCategorySelectionChange
+  end
+  object clbExtension: TCheckListBox
+    Left = 217
+    Height = 272
+    Top = 26
+    Width = 184
+    ItemHeight = 0
+    TabOrder = 1
+    OnItemClick = clbExtensionItemClick
+  end
+  object lblCategory: TLabel
+    Left = 11
+    Height = 15
+    Top = 5
+    Width = 184
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Category'
+  end
+  object lblExtension: TLabel
+    Left = 217
+    Height = 15
+    Top = 5
+    Width = 184
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Extension'
+  end
+end

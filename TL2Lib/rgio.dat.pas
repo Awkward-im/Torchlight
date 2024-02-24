@@ -14,9 +14,9 @@ function ParseDatMem   (abuf        :pByte  ; fname:PUnicodeChar=nil):pointer;
 function ParseDatStream(astream     :TStream; fname:PUnicodeChar=nil):pointer;
 function ParseDatFile  (const afname:string ):pointer;
 
-function BuildDatMem   (data:pointer; out   bin    :pByte     ; aver:byte=verTL2; dictidx:integer=-1):integer;
-function BuildDatStream(data:pointer;       astream:TStream   ; aver:byte=verTL2; dictidx:integer=-1):integer;
-function BuildDatFile  (data:pointer; const fname  :AnsiString; aver:byte=verTL2; dictidx:integer=-1):integer;
+function BuildDatMem   (data:pointer; out   bin    :pByte     ; aver:integer=verTL2; dictidx:integer=-1):integer;
+function BuildDatStream(data:pointer;       astream:TStream   ; aver:integer=verTL2; dictidx:integer=-1):integer;
+function BuildDatFile  (data:pointer; const fname  :AnsiString; aver:integer=verTL2; dictidx:integer=-1):integer;
 
 function GetDatVersion(abuf:PByte):integer;
 
@@ -49,8 +49,10 @@ type
     FLocals   :TRGDict;
     FDictIndex:integer;
     cntImages :integer;
+    cntLevels :integer;
     isTagsDat :Boolean;
     isImageset:Boolean;
+    isSkills  :Boolean;
 
   private
     function  GetStr(aid:dword):PWideChar;
@@ -118,6 +120,20 @@ begin
           exit(@FBuffer);
       end;
     end;
+    if IsSkills then
+    begin
+      FBuffer[0]:='L';
+      FBuffer[1]:='E';
+      FBuffer[2]:='V';
+      FBuffer[3]:='E';
+      FBuffer[4]:='L';
+      for i:=0 to cntLevels-1 do
+      begin
+        RGIntToStr(@FBuffer[5],i);
+        if aid=RGHash(@FBuffer) then
+          exit(@FBuffer);
+      end;
+    end;
   end;
 
   if result=nil then
@@ -141,6 +157,7 @@ var
   lnode:pointer;
   lhash:dword;
   lname:PWideChar;
+  lbuf :array [0..15] of WideChar;
   i,lcnt,lsub,ltype:integer;
 begin
   lhash:=memReadDWord(aptr);
@@ -153,6 +170,8 @@ begin
       // trying to avoid TAGS.DAT unknown tag problem
       if (lname=nil) or (CompareWide(lname,'TAGS')=0) then
         isTagsDat:=true;
+      if (CompareWide(lname,'SKILL')=0) then
+        isSkills:=true;
     end;
     if (lname=nil) or (lname=@FBuffer) then
     begin
@@ -177,7 +196,7 @@ begin
     ltype:=integer(memReadDword(aptr));
     if (RGDebugLevel=dlDetailed) then
     begin
-      if (lname<>nil) and (lname[0] in ['0'..'9']) then
+      if (lname<>nil) and (ord(lname^) in [ord('0')..ord('9')]) then
       begin
         case ltype of
           rgInteger  : RGLog.Add('Tag type is INTEGER');
@@ -196,7 +215,8 @@ begin
     case ltype of
       rgInteger  : begin
         lsub:=memReadInteger(aptr);
-        if (anode=nil) and IsImageset and (CompareWide(lname,'COUNT')=0) then cntImages:=lsub;
+        if (anode=nil) and IsImageset and (CompareWide(lname,'COUNT'   )=0) then cntImages:=lsub;
+        if (anode=nil) and IsSkills   and (CompareWide(lname,'MAXLEVEL')=0) then cntLevels:=lsub;
         AddInteger(lnode,lname,lsub);
       end;
       rgUnsigned : AddUnsigned (lnode,lname,memReadDWord    (aptr));
@@ -210,8 +230,8 @@ begin
 		else
       lsub:=memReadInteger(aptr);
 		  AddCustom(lnode,lname,
-		      PWideChar(UnicodeString(IntToStr(lsub ))),  //!!!!!!!!
-		      PWideChar(UnicodeString(IntToStr(ltype)))); //!!!!!!!!
+		      RGIntToStr(@FBuffer[0],lsub ),  //!!!!!!!!
+		      RGIntToStr(@lbuf   [0],ltype)); //!!!!!!!!
 		  RGLog.Add('Non-standard tag '+IntToStr(ltype)+' with possible value '+IntToStr(lsub));
     end;
   end;
@@ -445,6 +465,7 @@ var
 begin
   isTagsDat :=false;
   isImageset:=false;
+  isSkills  :=false;
   FDictIndex:=0;
 
   llen:=0;
@@ -467,8 +488,8 @@ begin
       if CompareWide(FFileName,'.IMAGESET')=0 then IsImageset:=true;
       // cut the name
       spos:=ppos;
-      while (spos>0) and not (fname[spos] in ['\','/']) do dec(spos);
-      if fname[spos] in ['\','/'] then inc(spos);
+      while (spos>0) and not (ord(fname[spos]) in [ord('\'),ord('/')]) do dec(spos);
+      if ord(fname[spos]) in [ord('\'),ord('/')] then inc(spos);
       llen:=0;
       while spos<ppos do
       begin
@@ -548,7 +569,7 @@ begin
   end;
 end;
 
-function BuildDatMem(data:pointer; out bin:pByte; aver:byte=verTL2; dictidx:integer=-1):integer;
+function BuildDatMem(data:pointer; out bin:pByte; aver:integer=verTL2; dictidx:integer=-1):integer;
 var
   ls:TMemoryStream;
 begin
@@ -563,17 +584,17 @@ begin
   end;
 end;
 
-function BuildDatStream(data:pointer; astream:TStream; aver:byte=verTL2; dictidx:integer=-1):integer;
+function BuildDatStream(data:pointer; astream:TStream; aver:integer=verTL2; dictidx:integer=-1):integer;
 var
   lrgd:TRGDATFile;
 begin
   lrgd.Init;
-  lrgd.FVer:=aver; //!!!!
+  lrgd.FVer:=ABS(aver);
   result:=lrgd.BuildStream(astream,data);
   lrgd.Free;
 end;
 
-function BuildDatFile(data:pointer; const fname:AnsiString; aver:byte=verTL2; dictidx:integer=-1):integer;
+function BuildDatFile(data:pointer; const fname:AnsiString; aver:integer=verTL2; dictidx:integer=-1):integer;
 var
   ls:TMemoryStream;
 begin

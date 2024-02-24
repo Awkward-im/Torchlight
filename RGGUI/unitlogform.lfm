@@ -5,6 +5,7 @@ object fmLogForm: TfmLogForm
   Width = 478
   ClientHeight = 331
   ClientWidth = 478
+  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   object memLog: TMemo

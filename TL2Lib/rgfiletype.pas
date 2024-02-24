@@ -75,7 +75,7 @@ function GetExtInfo (const fname:string   ; aver:integer):PPAKExtInfo;
 //function GetExtInfo(const fname:PWideChar; aver:integer):PPAKExtInfo;
 
 const
-  TableExt: array of record
+  TableExt: array [0..39] of record
      _type: byte;
      _ext : string;
   end = (
@@ -118,10 +118,53 @@ const
     (_type:typeSBIN      ; _ext:'.SBIN'),
     (_type:typeWDAT      ; _ext:'.WDAT'),
     (_type:typeDAT       ; _ext:'.ADM'), // TL1 binary DAT form
-    (_type:typeLayout    ; _ext:'.CMP') // TL1 binary LAYOUT form
+    (_type:typeLayout    ; _ext:'.CMP')  // TL1 binary LAYOUT form
 //    (_type:typeDelete    ; _ext:'<OTHER>'),
 //    (_type:typeDirectory ; _ext:'<DIR>')
   );
+
+  setBinary = [
+    typeUnknown,
+    typeMesh,
+    typeSkeleton,
+    typeTTF,
+    typeMPP,
+    typeBIK,
+    typeSBIN
+  ];
+
+  setImage = [
+    typeDDS,
+    typeImage,
+    typeJPG
+  ];
+
+  setSound = [
+    typeSound
+  ];
+
+  setText = [
+    typeScheme,
+    typeFont,
+    typeImageSet,   // TL2
+    typeLookNFeel,
+    typeMaterial,
+    typeProgram,
+    typeCompositor,
+    typeShader,
+    typePU,
+    typeAnno
+  ];
+
+  setData = [
+    typeAnimation,
+    typeImageSet,   // Hob, RG, RGO
+    typeDAT,
+    typeWDAT,
+    typeHIE,
+    typeLayout,
+    typeRAW
+  ];
 
 //========================================================
 
@@ -438,6 +481,9 @@ var
 begin
   if aext<>'' then
   begin
+    if aext[Length(aext)] in ['\','/'] then
+      exit(typeDirectory);
+
     lext:=UpCase(aext);
     if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
       lext:=ExtractFileExt(lext);
@@ -455,10 +501,15 @@ function PAKExtType(const aext:UnicodeString):integer;
 var
   lext:string;
   i:integer;
+  c:AnsiChar;
 begin
   if aext<>'' then
   begin
-    lext:=UpCase(WideToStr(pointer(aext)));
+    c:=char(ord(aext[Length(aext)]));
+    if c in ['\','/'] then
+      exit(typeDirectory);
+
+    lext:=UpCase(FastWideToStr(pointer(aext)));
     if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
       lext:=ExtractFileExt(lext);
 

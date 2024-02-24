@@ -110,7 +110,7 @@ end;
 procedure TScanObj.ScanMod();
 var
   lbuf:PByte;
-  p:PMANFileInfo;
+  p:PManFileInfo;
   lname,lfname:PWideChar;
   res,j,lsize:integer;
 begin
@@ -119,11 +119,11 @@ begin
   begin
     if FMod.man.IsDirDeleted(j) then continue;
 
-    if (FDir=nil) or (CompareWide(FDir,FMod.man.GetDirName(j),Length(FDir))=0) then
+    if (FDir=nil) or (CompareWide(FDir,FMod.man.Dirs[j].Name,Length(FDir))=0) then
     begin
       if FMod.man.GetFirstFile(p,j)<>0 then
       begin
-        lname:=FMod.man.GetDirName(j);
+        lname:=FMod.man.Dirs[j].Name;
         repeat
           lfname:=p^.name;
           if (not (p^.ftype in [typeDirectory,typeDelete])) and
@@ -229,6 +229,7 @@ function PrepareRGScan(out aptr:pointer;
     aparam:pointer):integer;
 var
   ldir:string;
+  i:integer;
 begin
   aptr:=nil;
 
@@ -257,7 +258,12 @@ begin
     PScanObj(aptr)^.FMod.Version:=verUnk;
 
   PScanObj(aptr)^.FRoot :=ldir;
-  PScanObj(aptr)^.FExts :=Copy(aext);
+
+//  PScanObj(aptr)^.FExts :=Copy(aext);
+  SetLength(PScanObj(aptr)^.FExts,Length(aext));
+  for i:=0 to High(aext) do
+    PScanObj(aptr)^.FExts[i]:=Copy(aext[i],1);
+
   PScanObj(aptr)^.FParam:=aparam;
 //  PScanObj(aptr)^.FCount:=0;
 end;

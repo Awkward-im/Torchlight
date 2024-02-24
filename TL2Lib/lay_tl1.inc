@@ -8,10 +8,11 @@ const
 
 procedure TRGLayoutFile.ParseTimelineTL1(var anode:pointer; aid:Int64);
 var
-  tlpoint,tlnode,tldata,tlobject:pointer;
+  {tlpoint,tlnode,}tldata,tlobject:pointer;
   lid:Int64;
   lnext:dword;
-  i,j,lcntobj,lcntpoint:integer;
+  i,lcntobj:integer;
+//  j,lcntpoint:integer;
 begin
   if FBinPos=nil then
     FLog.Add('Binary data ends already for Timeline ID='+IntToStr(aid));
@@ -98,7 +99,7 @@ begin
     FBinPos:=FStart+lnext;
 end;
 
-function TRGLayoutFile.DoParseBlockTL1(var anode:pointer; const aparent:Int64):integer;
+function TRGLayoutFile.DoParseBlockTL1(var anode:pointer; const aparent:Int64; var aptr:PByte):integer;
 var
   lChunkId:Int64;
   lparent:Int64;
@@ -117,9 +118,9 @@ begin
   
   //--- Chunk Header
 
-  lChunkType:=memReadInteger(FPos);
-  lChunkId:=memReadInteger64(FPos);
-  lparent :=memReadInteger64(FPos);
+  lChunkType:=memReadInteger(aptr);
+  lChunkId:=memReadInteger64(aptr);
+  lparent :=memReadInteger64(aptr);
 
   //--- Chunk Info
 
@@ -129,7 +130,7 @@ begin
   if rgDebugLevel=dlDetailed then
     FLog.Add('Object type '+IntToStr(lChunkType)+' ('+HexStr(lChunkType,2)+') '+string(pname));
 
-  pcw:=memReadDWordString(FPos);
+  pcw:=memReadDWordString(aptr);
   if pcw<>nil then
   begin
     AddString(lnode,'NAME',pcw);
@@ -145,24 +146,24 @@ begin
 
   for i:=0 to info.GetPropsCount()-1 do
   begin
-    lsize:=memReadDWord(FPos);
+    lsize:=memReadDWord(aptr);
     ReadPropertyValue(i,lsize*SizeOf(DWord), lnode);
     if rgDebugLevel=dlDetailed then
       FLog.Add('Property ('+IntToStr(i)+') with size '+IntToStr(lsize));
   end;
 
   //--- Additional data
-
+{
   if lChunkType=IdGroupTL1 then
   begin
-    lcnt:=memReadDWord(FPos); // children count
-    memReadDWord(FPos); // children start
-    memReadDword(FPos); // first outside group
+    lcnt:=memReadDWord(aptr); // children count
+    memReadDWord(aptr); // children start
+    memReadDword(aptr); // first outside group
   end
 
   //----- Logic group -----
 
-   else if lChunkType=IdLogicGroupTL1 then
+   else} if lChunkType=IdLogicGroupTL1 then
    begin
 // working
 //     ParseLogicGroupTL1(lnode,lChunkId);
@@ -181,15 +182,24 @@ end;
 
   //--- Children
 
-  lcnt:=memReadDWord(FPos);
+  lcnt:=memReadDWord(aptr);
   if rgDebugLevel=dlDetailed then
     FLog.Add('Children count='+IntToStr(lcnt));
+
+  if lChunkType=IdGroupTL1 then
+  begin
+    lptr:=FStart+memReadDword(aptr); // offset to children
+    memReadDword(aptr);              // offset of next?
+  end
+  else
+    lptr:=aptr;
+
   if lcnt>0 then
   begin
     lnode:=AddGroup(bnode,'CHILDREN');
     for i:=0 to lcnt-1 do
     begin
-      inc(result,DoParseBlockTL1(lnode,lChunkId));
+      inc(result,DoParseBlockTL1(lnode,lChunkId,lptr));
     end;
   end;
 
@@ -217,8 +227,12 @@ begin
   if (RGDebugLevel=dlDetailed) then
     FLog.Add('Old format, groups: '+IntToStr(lcnt));
 
+  // what about logic and timeline inside group, BEFORE binary offset?
+  // maybe keep in mid and translate after all?
+  lobjcnt:=0;
   for i:=0 to lcnt-1 do
   begin
+    inc(lobjcnt,DoParseBlockTL1(lobj,-1,FPos));
 {
    inc(lobjcnt,DoParseBlockTL1(lobj,-1));
 but after children count - offset 1st child, offset first next
@@ -237,10 +251,9 @@ but after children count - offset 1st child, offset first next
 
 //  AddUnsigned(result,'COUNT',lcnt);         //!!!! like TL2 - must be TOTAL objects
 
-  lobjcnt:=0;
   lobj:=AddGroup(result,'OBJECTS');
   for i:=0 to lcnt-1 do                   // lcnt is root object count
-    inc(lobjcnt,DoParseBlockTL1(lobj,-1));
+    inc(lobjcnt,DoParseBlockTL1(lobj,-1,FPos));
 
 {
   memReadDword(FPos); // this is filesize-SizeOf(dword)

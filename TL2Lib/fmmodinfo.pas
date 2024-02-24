@@ -1,3 +1,11 @@
+{TODO: Add "modified" flag}
+{TODO: Add interface to view/edit "requirement" and "Delete" lists}
+{
+fsModal in FormState
+Application.ModalLevel
+
+Action:=caFree
+}
 unit fmModInfo;
 
 {$mode ObjFPC}{$H+}
@@ -36,10 +44,11 @@ type
     ffile:string;
   public
     Constructor Create(AOwner:TComponent; aRO:boolean=false); overload;
+
     function  LoadFromFile(const aFile:string):boolean;
-    procedure SaveToFile(const aFile:string);
+    procedure SaveToFile  (const aFile:string);
     procedure LoadFromInfo(const ami: TTL2ModInfo);
-    procedure SaveToInfo(var ami: TTL2ModInfo);
+    procedure SaveToInfo  (var   ami: TTL2ModInfo);
   end;
 
 var

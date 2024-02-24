@@ -1,9 +1,5 @@
-﻿{TODO: Add source file name to TMANFileInfo}
-{TODO: add tree (dir with files)}
-{TODO: rename dir}
-{TODO: rename file}
-{TODO: save compiled manifest size}
-{TODO: calculate largest file size on parse and add. Or just on build?}
+﻿{TODO: better way to set ftype that calc on request}
+{TODO: Add source file name to TManFileInfo}
 unit RGMan;
 
 interface
@@ -15,19 +11,19 @@ uses
 
 
 type
-  PMANFileInfo = ^TMANFileInfo;
-  TMANFileInfo = object (TFileInfo)
-    ftime   :UInt64;    // MAN: TL2 only
-    checksum:dword;     // MAN: CRC32
-    size_s  :dword;     // ?? MAN: looks like source,not compiled, size (unusable)
-    size_c  :dword;     // !! PAK: from TPAKFileHeader
-    size_u  :dword;     // !! PAK: from TPAKFileHeader
-    offset  :dword;     // !! MAN: PAK data block offset (??changed to "data" field)
-    ftype   :byte;      // !! MAN: RGFileType unified type
-//    exttype :byte;      // ?? removed files, for undo
-//    hide    :ByteBool;  // ?? show or hide in lists
+  PManFileInfo = ^TManFileInfo;
+  TManFileInfo = object (TFileInfo)
+    size_u  :dword;
+    size_s  :dword;     // MAN: looks like source,not compiled, size (unusable)
+    size_c  :dword;     // PAK: from TPAKFileHeader
+    offset  :dword;     // MAN: PAK data block offset (??changed to "data" field)
+    _ftype  :byte;      // MAN: RGFileType unified type
+  private
+    function GetFType:byte;
+  public
+    property ftype:Byte read GetFType write _ftype;
   end;
-  TAMANFileInfo = array of TMANFileInfo;
+  TAManFileInfo = array of TManFileInfo;
 
 type
   PRGManifest = ^TRGManifest;
@@ -35,47 +31,46 @@ type
   private
     FLUnpacked:integer; // largest unpacked file size
     FLPacked  :integer; // largest   packed file size
-    FPath:string; // disk path for unpacked files
-  public
-    Deleted:TDirEntries;
-  public
-    // not necessary fields
-    root   :PUnicodeChar;   // same as first directory, MEDIA (usually)
-    reserve:integer;        // "total" records count (GUTS gives more than put)
-    largest:integer;        // largest source file size
+    FRoot     :PUnicodeChar;
+// not used yet
+//    FPath     :string;  // disk path for unpacked files
+
   private
     function  GetSize(idx:integer):integer;
+    procedure SetRoot(apath:PUnicodeChar);
 
   // Main
   public
     procedure Init;
     procedure Free;
 
+    {
+      Parse Manifest from memory block addressed by aptr
+    }
     function Parse(aptr:PByte; aver:integer):integer;
+    {
+      Build manifest for files in dir
+      PNG ignored if DDS with same name presents
+      .TXT .BINDAT and .BINLAYOUT are ignored if base files exists
+    }
     function Build(const adir:string):integer;
 
+    {
+      Saves manifest by one part, files and dirs together
+      GUTS saves files first, then dirs
+    }
     function SaveToStream(ast:TStream; aver:integer):integer;
     function SaveToFile  (const afname:string; aver:integer):integer;
 
-  // wrappers
-    function SearchFile(aentry:integer; aname:PUnicodeChar):PMANFileInfo;
-    function SearchFile(apath,aname:PUnicodeChar):PMANFileInfo;
-    function SearchFile(const fname:string):PMANFileInfo;
-
   // Properties statistic
   public
+    Deleted:TDirEntries;
+
     property LargestPacked  :integer index 0 read GetSize;
     property LargestUnpacked:integer index 1 read GetSize;
+    property Root:PUnicodeChar read FRoot write SetRoot; // really, is "MEDIA/" always
+
   end;
-
-
-{$IFDEF DEBUG}
-function ParseMANMem(const aman:TRGManifest; afull:boolean=false):pointer;
-//  Manifest to text file (DAT format)
-procedure MANtoFile(const fname:string; const aman:TRGManifest; afull:boolean=false);
-//  Text file (DAT format) to manifest
-procedure FileToMAN(const fname:string; out aman:TRGManifest);
-{$ENDIF DEBUG}
 
 
 implementation
@@ -85,14 +80,25 @@ uses
 
   rwmemory,
 
-{$IFDEF DEBUG}
-  rgnode,
-  rgio.text,
-{$ENDIF DEBUG}
   rgstream,
   rgfiletype;
 
 {%REGION Common}
+function TManFileInfo.GetFType:byte;
+begin
+  if _ftype=typeUnknown then _ftype:=PAKExtType(Name);
+  result:=_ftype;
+end;
+
+procedure TRGManifest.SetRoot(apath:PUnicodeChar);
+begin
+  if CompareWide(FRoot,apath)<>0 then
+  begin
+    FreeMem(FRoot);
+    FRoot:=CopyWide(apath);
+  end;
+end;
+
 function TRGManifest.GetSize(idx:integer):integer;
 var
   i:integer;
@@ -107,8 +113,8 @@ begin
     begin
       if not IsFileDeleted(i) then
       begin
-        if PMANFileInfo(Files[i])^.size_c>FLPacked   then FLPacked  :=PMANFileInfo(Files[i])^.size_c;
-        if PMANFileInfo(Files[i])^.size_u>FLUnpacked then FLUnpacked:=PMANFileInfo(Files[i])^.size_u;
+        if PManFileInfo(Files[i])^.size_c>FLPacked   then FLPacked  :=PManFileInfo(Files[i])^.size_c;
+        if PManFileInfo(Files[i])^.size_u>FLUnpacked then FLUnpacked:=PManFileInfo(Files[i])^.size_u;
       end;
     end;
 
@@ -119,12 +125,16 @@ end;
 
 procedure TRGManifest.Init;
 begin
-  inherited Init(SizeOf(TMANFileInfo));
+  inherited Init(SizeOf(TManFileInfo));
+
+  Root      :='MEDIA/';
+  FLUnpacked:=0;
+  FLPacked  :=0;
 end;
 
 procedure TRGManifest.Free;
 begin
-  FreeMem(root);
+  FreeMem(FRoot);
 
   Finalize(Deleted);
 
@@ -132,37 +142,7 @@ begin
 end;
 {%ENDREGION}
 
-{%REGION Wrappers}
-function TRGManifest.SearchFile(aentry:integer; aname:PUnicodeChar):PMANFileInfo;
-var
-  lidx:integer;
-begin
-  lidx:=inherited SearchFile(aentry, aname);
-  result:=PMANFileInfo(Files[lidx])
-end;
-
-function TRGManifest.SearchFile(apath,aname:PUnicodeChar):PMANFileInfo;
-var
-  lidx:integer;
-begin
-  lidx:=inherited SearchFile(apath, aname);
-  result:=PMANFileInfo(Files[lidx])
-end;
-
-function TRGManifest.SearchFile(const fname:string):PMANFileInfo;
-var
-  lidx:integer;
-begin
-  lidx:=inherited SearchFile(fname);
-  result:=PMANFileInfo(Files[lidx])
-end;
-
-{%ENDREGION}
-
 {%REGION I/O}
-{
-  Parse Manifest from memory block addressed by aptr
-}
 function TRGManifest.Parse(aptr:PByte; aver:integer):integer;
 const
   bufsize = 1024;
@@ -179,7 +159,8 @@ begin
       i:=memReadWord(aptr);                   // 0002 version/signature
       if i>=2 then                            // 0000 - no "checksum" field??
         memReadDWord(aptr);                   // checksum?
-      root:=memReadShortString(aptr);         // root directory !!
+      FreeMem(FRoot);
+      FRoot:=memReadShortString(aptr);        // root directory !!
     end;
 
     verHob,
@@ -191,10 +172,7 @@ begin
     exit;
   end;
 
-//  InitManifest(aman);
-
-  reserve :=memReadDWord(aptr);               // total directory records
-  FileCapacity:=reserve;
+  FileCapacity:=memReadDWord(aptr);           // total directory records
   lentries:=memReadDWord(aptr);               // entries
   DirCapacity:=lentries;
   total:=0;
@@ -207,7 +185,6 @@ begin
     begin
       lfile:=AppendFile(lentry,nil);
       with PManFileInfo(Files[lfile])^ do
-//      with PManFileInfo(AddFile(lentry))^ do
       begin
         checksum:=memReadDWord(aptr);
         ftype   :=PAKTypeToCommon(memReadByte(aptr),aver);
@@ -237,7 +214,7 @@ end;
 {$I-}
 function TRGManifest.SaveToStream(ast:TStream; aver:integer):integer;
 var
-  p:PMANFileInfo;
+  p:PManFileInfo;
   lpos,ltotalpos:integer;
   i,ltotal:integer;
 begin
@@ -249,7 +226,7 @@ begin
       verTL2: begin
         ast.WriteWord (2); // writing always "new" version
         ast.WriteDWord(0); // Hash (game don't check it anyway)
-        ast.WriteShortString(root);
+        ast.WriteShortString(Root);
       end;
 
       verHob,
@@ -293,13 +270,7 @@ begin
     if ltotal>total then
     begin
       total:=ltotal;
-      lpos:=ast.Position;
-      try
-        ast.Position:=ltotalpos;
-        ast.WriteDWord(total);
-        ast.Position:=lpos;
-      except
-      end;
+      ast.WriteDwordAt(total,ltotalpos);
     end;
 
     result:=total;
@@ -390,7 +361,7 @@ procedure CycleDir(const abasedir:UnicodeString; var aman:TRGManifest; aentry:in
 var
   sr:TUnicodeSearchRec;
   lcurdir,ldir,lname:UnicodeString;
-  j,i,lstart,lend:integer;
+  i,lstart,lend:integer;
 begin
   ldir:=aman.Dirs[aentry].name;
   lcurdir:=abasedir+ldir;
@@ -406,9 +377,10 @@ begin
         if (sr.Name<>'.') and (sr.Name<>'..') then
         begin
           lname:=sr.Name+'/';
-          for j:=1 to Length(lname)-1 do lname[j]:=UpCase(lname[j]);
+//          for j:=1 to Length(lname)-1 do lname[j]:=UpCase(lname[j]);
+//          aman.AppendDir(PUnicodeChar(ldir+lname));
           aman.AddPath(PUnicodeChar(ldir+lname));
-          with PMANFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
+          with PManFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
             ftype:=typeDirectory;
         end;
       end
@@ -417,8 +389,8 @@ begin
         lname:=CheckFName(abasedir+ldir,sr.Name);
         if lname<>'' then
         begin
-          for j:=1 to Length(lname) do lname[j]:=UpCase(lname[j]);
-          with PMANFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
+//          for j:=1 to Length(lname) do lname[j]:=UpCase(lname[j]);
+          with PManFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
           begin
             ftype :=PAKExtType(lname);
             ftime :=sr.Time;
@@ -448,161 +420,15 @@ begin
   result:=0;
 
   ls:=UnicodeString(adir);
-  if not (ls[Length(ls)] in ['/','\']) then ls:=ls+'/';
+  if not (adir[Length(adir)] in ['/','\']) then ls:=ls+'/';
 
   Init;
 
   AddPath(nil);
   CycleDir(ls,self,0);
 
-  root:=CopyWide('MEDIA/');
-
   result:=total;
 end;
 {%ENDREGION}
-
-{$IFDEF DEBUG}
-function ParseMANMem(const aman:TRGManifest; afull:boolean=false):pointer;
-var
-  p:PMANFileInfo;
-  lman,lp,lc:pointer;
-  i:integer;
-begin
-  lman:=nil;
-
-  lman:=AddGroup(nil,'MANIFEST');
-//??  AddString (lman,'FILE' ,PUnicodeChar(ainfo.fname));
-  if afull then
-  begin
-    AddInteger(lman,'TOTAL',aman.total);
-    AddInteger(lman,'COUNT',aman.DirCapacity);
-  end;
-
-  for i:=0 to aman.DirCount-1 do
-  begin
-    if aman.IsDirDeleted(i) then continue;
-
-    lp:=AddGroup(lman,'FOLDER');
-    AddString (lp,'NAME' ,aman.Dirs[i].name);
-    if afull then
-      AddInteger(lp,'COUNT',aman.Dirs[i].count);
-    lp:=AddGroup(lp,'CHILDREN');
-
-
-    if aman.GetFirstFile(p,i)<>0 then
-    repeat
-      lc:=AddGroup(lp,'CHILD');
-      with p^ do
-      begin
-        AddString (lc,'NAME',Name);
-        AddInteger(lc,'TYPE',ftype);  // required for TL2 type 18 (dir to delete)
-        AddInteger(lc,'SIZE',size_s); // required for zero-size files (file to delete)
-        if afull then
-        begin
-          AddUnsigned(lc,'CRC'   ,checksum);
-          AddInteger (lc,'OFFSET',offset);
-//          if ABS(ainfo.ver)=verTL2 then
-          if ftime<>0 then
-            AddInteger64(lc,'TIME',ftime);
-        end;
-      end;
-   until aman.GetNextFile(p)=0
-  end;
-
-  result:=lman;
-end;
-
-procedure MANtoFile(const fname:string; const aman:TRGManifest; afull:boolean=false);
-var
-  lman:pointer;
-begin
-  lman:=ParseMANMem(aman, afull);
-  if lman<>nil then
-  begin
-    BuildTextFile(lman,PChar(fname));
-    DeleteNode(lman);
-  end;
-end;
-
-procedure FileToMAN(const fname:string; out aman:TRGManifest);
-var
-  lman,lp,lg,lc:pointer;
-  i,j,k,lentry,lcnt:integer;
-begin
-  lman:=ParseTextFile(PChar(fname));
-  if lman<>nil then
-  begin
-    if IsNodeName(lman,'MANIFEST') then
-    begin
-
-      for i:=0 to GetChildCount(lman)-1 do
-      begin
-        lc:=GetChild(lman,i);
-        case GetNodeType(lc) of
-          rgString: begin
-//            if IsNodeName(lc,'FILE') then ainfo.fname:=AsString(lc);
-          end;
-
-          rgInteger: begin
-            if IsNodeName(lc,'TOTAL') then aman.total:=AsInteger(lc);
-            if IsNodeName(lc,'COUNT') then aman.DirCapacity:=AsInteger(lc);
-          end;
-
-          rgGroup: begin
-            if IsNodeName(lc,'FOLDER') then
-            begin
-              if aman.DirCapacity=0 then
-                aman.DirCapacity:=GetGroupCount(lc);
-
-              // folders
-              for j:=0 to GetChildCount(lc)-1 do
-              begin
-                lentry:=aman.AddPath(AsString(FindNode(lc,'NAME')));
-                lcnt:=AsInteger(FindNode(lc,'COUNT'));
-                if lcnt>0 then
-                  aman.FileCapacity:=aman.FileCount+lcnt;
-
-                lp:=FindNode(lc,'CHILDREN');
-                if lp<>nil then
-                begin
-{
-                  if Length(aman.Entries[j].Files)=0 then
-                    SetLength(aman.Entries[j].Files,GetGroupCount(lp));
-}
-                  // children
-                  for k:=0 to GetChildCount(lp)-1 do
-                  begin
-                    lg:=GetChild(lp,k);
-                    if (GetNodeType(lg)=rgGroup) and
-                       (IsNodeName(lg,'CHILD')) then
-                    begin
-                      with PMANFileInfo(aman.Files[aman.AddFile(lentry,nil)])^ do
-                      begin
-                        name    :=AsString   (FindNode(lg,'NAME'  ));
-                        ftype   :=AsInteger  (FindNode(lg,'TYPE'  ));
-                        size_s  :=AsInteger  (FindNode(lg,'SIZE'  ));
-                        offset  :=AsInteger  (FindNode(lg,'OFFSET'));
-                        checksum:=AsUnsigned (FindNode(lg,'CRC'   ));
-                        ftime   :=AsInteger64(FindNode(lg,'TIME'  ));
-                      end;
-
-                    end;
-                  end; // children
-
-                end;
-              end; // folders
-
-            end;
-          end;
-
-        end;
-
-      end;
-    end;
-
-    DeleteNode(lman);
-  end;
-end;
-{$ENDIF DEBUG}
 
 end.

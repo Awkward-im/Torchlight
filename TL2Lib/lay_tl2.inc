@@ -12,8 +12,9 @@ begin
   for i:=0 to High(FeatureTags) do
   begin
 //    if atag<FeatureTags[i].id then break;
-    if atag=FeatureTags[i].id then exit(FeatureTags[i].name);
+    if atag=FeatureTags[i].id then exit(pointer(FeatureTags[i].name));
   end;
+  RGLog.Add('Unknown group TAG code: '+IntToStr(atag));
   result:=nil;
 end;
 
@@ -23,8 +24,9 @@ var
 begin
   for i:=0 to High(FeatureTags) do
   begin
-    if CompareWide(atag,FeatureTags[i].name)=0 then exit(FeatureTags[i].id);
+    if CompareWideI(atag,pointer(FeatureTags[i].name))=0 then exit(FeatureTags[i].id);
   end;
+  RGLog.Add('Unknown group TAG value '+WideToStr(atag));
   result:=-1;
 end;
 
@@ -57,6 +59,9 @@ begin
   end;
 
   if ldata.noflag<>0 then AddBool(anode,'NO TAG FOUND' ,true);
+  if (ldata.noflag<>0) and (ldata.noflag<>1) then
+    RGLog.Add('Notag value is not boolean but '+IntToStr(ldata.noflag));
+
   if ldata.tag>=0 then
   begin
     p:=GetTagTL2(ldata.tag);
@@ -404,7 +409,6 @@ var
   lval:array [0..31] of WideChar;
   lint64:Int64;
   i,lidx,lcnt:integer;
-  ltmp:word;
 begin
   anode:=FindNode(anode,aval);
   if anode<>nil then
@@ -426,7 +430,7 @@ begin
         until (aval^=',') or (aval^=#0);
         lval[lidx]:=#0;
 
-        Val(lval,lint64,ltmp);
+        Val(lval,lint64);
         astream.WriteQWord(qword(lint64));
       end;
 

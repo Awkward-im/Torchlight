@@ -5,15 +5,9 @@
   global text cache
 }
 {TODO: keep/calc info about all sub-dir and files, not direct children only}
-unit rgfs;
+unit RGFS;
 
 interface
-
-uses
-  Classes,
-  TextCache,
-  rgglobal;
-
 
 type
   PBaseInfo = ^TBaseInfo;
@@ -36,20 +30,14 @@ type
     parent:integer;     // parent dir index
     next  :integer;     // next file in current directory
   public
-    data:PByte;       // dir: WAS index in DIR list
-{
     ftime   :UInt64;    // MAN: TL2 only
     checksum:dword;     // MAN: CRC32
-    size_u  :dword;     // !! PAK: from TPAKFileHeader
-//    ftype   :byte;      // !! MAN: RGFileType unified type
-}
   end;
 
 type
   PDirInfo = ^TDirInfo;
   TDirInfo = object(TBaseInfo)
-//    index,              // index of file record for dir
-    count,              // ??count of child files and dirs
+    count,              // count of child files and dirs (from first to last)
     first,
     last:integer;
   end;
@@ -114,6 +102,7 @@ type
     //!! no check for "dir" name
     function  AppendFile(adir :integer     ; aname:PUnicodeChar):integer;
     function  AddFile   (adir :integer     ; aname:PUnicodeChar):integer;
+    function  AddFile   (adir :integer     ; afile:PFileInfo   ):integer;
     function  AddFile   (apath:PUnicodeChar; aname:PUnicodeChar):integer;
     function  AddFile   (apath:PUnicodeChar):integer;
 
@@ -162,7 +151,9 @@ type
 implementation
 
 uses
-  sysutils;
+  sysutils,
+  TextCache,
+  rgglobal;
 
 var
   Names:TTextCache;
@@ -250,7 +241,7 @@ begin
 end;
 
 
-function TBaseInfo.GetFileName():PUnicodeChar; inline;
+function TBaseInfo.GetFileName():PUnicodeChar;
 begin
   result:=GetName(self.fname);
 end;
@@ -260,7 +251,7 @@ begin
   self.fname:=SetName(aname);
 end;
 
-function TBaseInfo.GetFileNameLen():integer; inline;
+function TBaseInfo.GetFileNameLen():integer;
 begin
   result:=names.len[self.fname];
 end;
@@ -399,11 +390,14 @@ end;
 procedure TRGDirList.Free;
 begin
   Finalize(Dirs);
+  Dirs:=nil;
   FDirCount:=0;
 
   FDirDelFirst:=-1;
+  total:=0;
 
   FreeMem(FFiles);
+  FFiles:=nil;
   FCapacity:=0;
   FFileCount:=0;
   FFileDelFirst:=-1;
@@ -505,13 +499,12 @@ begin
       if FFileCount=0 then
       begin
         SetFilesCapacity(incFBase);
+        FFileCount:=1;               // MUST BE before Files[] using
         lrec:=Files[0];
         FillChar(lrec^,FInfoSize,0); // if ReallocMem used, it clear memory already
         lrec^.Name  :='';
         lrec^.next  :=-1;
         lrec^.parent:=-1;
-
-        FFileCount:=1;
       end
       else
         SetFilesCapacity(FFileCount+incFFile);
@@ -535,7 +528,7 @@ begin
   lrec:=Files[result];
   FillChar(lrec^,FInfoSize,0); // requires for case of "deleted" cell
   if (aname=nil) or (aname^=#0) then
-    lrec^.Name  :=nil
+    lrec^.Name:=nil
   else
   begin
     pc:=@p;
@@ -546,7 +539,7 @@ begin
       inc(pc);
     end;
     pc^:=#0;
-    lrec^.Name  :=@p{aname};
+    lrec^.Name:=@p{aname};
   end;
 
   lrec^.next  :=-1;
@@ -571,6 +564,23 @@ function TRGDirList.AddFile(apath:PUnicodeChar):integer;
 begin
   result:=AddFile(PUnicodeChar(ExtractFilePath(apath)),PUnicodeChar(ExtractFileName(apath)));
 end;
+
+function TRGDirList.AddFile(adir:integer; afile:PFileInfo):integer;
+begin
+  result:=AddFile(adir,''{afile^.Name});
+  // can't use move(afile^,Files[result]^,FInfoSize);
+  // coz afile and new can be different types
+  Files[result]^:=afile^;
+{
+  with Files[result]^ do
+  begin
+    fname   :=afile^.fname;
+    ftime   :=afile^.ftime;
+    checksum:=afile^.checksum;
+    size    :=afile^.size;
+  end;
+}
+end;
   {%ENDREGION Add}
 
   {%REGION Delete}
@@ -586,6 +596,7 @@ begin
   begin
     Name:='';
     next:=FFileDelFirst;
+//    FreeMem(data);
   end;
   FFileDelFirst:=aidx;
   dec(total);

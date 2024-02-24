@@ -1,4 +1,3 @@
-{TODO: add layout sublog to use Reserved filename}
 unit RGIO.Layout;
 
 interface
@@ -18,14 +17,16 @@ function ParseLayoutStream(astream     :TStream; atype:cardinal=ltLayout):pointe
 function ParseLayoutStream(astream     :TStream; const afname:string):pointer;
 function ParseLayoutFile  (const afname:string):pointer;
 
-function BuildLayoutMem   (data:pointer; out   bin    :pByte     ; aver:byte=verTL2):integer;
-function BuildLayoutStream(data:pointer;       astream:TStream   ; aver:byte=verTL2):integer;
-function BuildLayoutFile  (data:pointer; const fname  :AnsiString; aver:byte=verTL2):integer;
+function BuildLayoutMem   (data:pointer; out   bin    :pByte     ; aver:integer=verTL2):integer;
+function BuildLayoutStream(data:pointer;       astream:TStream   ; aver:integer=verTL2):integer;
+function BuildLayoutFile  (data:pointer; const fname  :AnsiString; aver:integer=verTL2):integer;
 
 function GetLayoutVersion(abuf:PByte):integer;
 
-function GetLayoutType(fname:PUnicodeChar):cardinal;
+function GetLayoutType(afname:PUnicodeChar):cardinal;
 function GetLayoutType(const afname:string):cardinal;
+
+{$i featuretags.inc}
 
 
 implementation
@@ -55,8 +56,6 @@ const
     'Particle Creator',
     'UI'
   );
-
-{$i featuretags.inc}
 
 const
   strGameMode : array [1..2] of PWideChar = (
@@ -145,7 +144,7 @@ type
     FPos     :PByte;
     FBinPos  :PByte;
     FBuffer  :UnicodeString;
-    FSize    :integer;
+//    FSize    :integer;
     FVer     :integer;
     FLayVer  :integer;
     FCount   :integer;
@@ -170,7 +169,7 @@ type
 
     // read TL1
     function  DoParseLayoutTL1  (atype:cardinal):pointer;
-    function  DoParseBlockTL1   (var anode:pointer; const aparent:Int64):integer;
+    function  DoParseBlockTL1   (var anode:pointer; const aparent:Int64; var aptr:PByte):integer;
     procedure ParseLogicGroupTL1(var anode:pointer; aid:Int64);
     procedure ParseTimelineTL1  (var anode:pointer; aid:Int64);
 
@@ -210,6 +209,35 @@ type
     procedure Init;
     procedure Free;
   end;
+
+
+function SearchId(aroot:pointer; anid:int64):pointer;
+var
+  lnode:pointer;
+  i,ltype:integer;
+begin
+  result:=nil;
+
+  for i:=0 to GetChildCount(aroot)-1 do
+  begin
+    lnode:=GetChild(aroot,i);
+    ltype:=GetNodeType(lnode);
+    if ltype=rgGroup then
+    begin
+      result:=SearchId(lnode,anid);
+      if result<>nil then exit;
+    end
+    else if ltype=rgInteger64 then
+    begin
+      if IsNodeName(lnode,'ID') then
+      begin
+        if AsInteger64(lnode)=anid then
+          exit(aroot);
+      end;
+    end;
+  end;
+end;
+
 
 procedure TRGLayoutFile.Init;
 begin
@@ -582,7 +610,9 @@ PWord(pcw+lsize)^:=#0;
       end;
 //      if (pcw<>nil) and (pcw^<>#0) then
       begin
-        AddString(anode,lname,pcw);
+        if      ltype=rgNote      then AddNote     (anode,lname,pcw)
+        else if ltype=rgTranslate then AddTranslate(anode,lname,pcw)
+        else{if ltype=rgString    then}AddString   (anode,lname,pcw);
         FreeMem(pcw);
       end;
     end;
@@ -602,23 +632,6 @@ PWord(pcw+lsize)^:=#0;
       lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
       lq.W:=memReadFloat(FPos); {if lq.W<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'W'),lq.W);
 
-(*
-    rgVector2: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Y'),lq.Y);
-    end;
-    rgVector3: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Y'),lq.Y);
-      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Z'),lq.Z);
-    end;
-    // Quaternion
-    rgVector4: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Y'),lq.Y);
-      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'Z'),lq.Z);
-      lq.W:=memReadFloat(FPos); {if lq.W<>0 then} AddFloat(anode,PWideChar(UnicodeString(lname)+'W'),lq.W);
-*)
       // Additional, not sure what it good really
       if CompareWide(lname,'ORIENTATION')=0 then
       begin
@@ -678,11 +691,6 @@ PWord(pcw+lsize)^:=#0;
       end;
       if ls<>'' then SetLength(ls,Length(ls)-1);
       AddString(anode,lname,Pointer(ls));
-{
-      pcw:=StrToWide(ls);
-      AddString(anode,lname,pcw);
-      FreeMem(pcw);
-}
     end
     else
     begin
@@ -699,8 +707,8 @@ procedure TRGLayoutFile.ParseLogicGroup(var anode:pointer);
 var
   lbuf:array [0..127] of WideChar;
   lgobj,lgroup,lglnk:pointer;
-  pcw:PWideChar;
-  lsize:integer;
+//  pcw:PWideChar;
+//  lsize:integer;
   lgroups,lglinks,i,j:integer;
 begin
   lgroup:=AddGroup(anode,'LOGICGROUP');
@@ -713,7 +721,7 @@ begin
     AddFloat    (lgobj,'X'       ,memReadFloat    (FPos));
     AddFloat    (lgobj,'Y'       ,memReadFloat    (FPos));
 
-    lsize:=memReadInteger(FPos); // absolute offset of next
+    {lsize:=}memReadInteger(FPos); // absolute offset of next
 
     lglinks:=memReadByte(FPos);
     for j:=0 to lglinks-1 do
@@ -857,7 +865,7 @@ begin
             FreeMem(pcw);
           end;
 
-          if l2ndval then
+//          if l2ndval then
           begin
             pcw:=memReadShortStringUTF8(FPos);
             if pcw<>nil then
@@ -948,7 +956,6 @@ var
   lfloat:Single;
   i,lcnt,lidx:integer;
   ltype:integer;
-  ltmp:word;
   lsametype:boolean;
 begin
   result:=0;
@@ -980,17 +987,17 @@ begin
         lval[lidx]:=#0;
 
         case atype of
-          rgInteger  : begin Val(lval,lint64 ,ltmp); astream.WriteDWord(dword(lint64));  end;
-          rgUnsigned : begin Val(lval,lint64 ,ltmp); astream.WriteDWord(dword(lint64));  end;
-          rgInteger64: begin Val(lval,lint64 ,ltmp); astream.WriteQWord(qword(lint64));  end;
-          rgFloat    : begin Val(lval,lfloat ,ltmp); astream.WriteFloat(lfloat);         end;
-          rgDouble   : begin Val(lval,ldouble,ltmp); astream.WriteQWord(qword(ldouble)); end;
+          rgInteger  : begin Val(lval,lint64 ); astream.WriteDWord(dword(lint64));  end;
+          rgUnsigned : begin Val(lval,lint64 ); astream.WriteDWord(dword(lint64));  end;
+          rgInteger64: begin Val(lval,lint64 ); astream.WriteQWord(qword(lint64));  end;
+          rgFloat    : begin Val(lval,lfloat ); astream.WriteFloat(lfloat);         end;
+          rgDouble   : begin Val(lval,ldouble); astream.WriteQWord(qword(ldouble)); end;
           rgBool     : begin
-            if (lval[0]='1') or (
-               (lval[0] in ['T','t']) and 
-               (lval[0] in ['R','r']) and 
-               (lval[0] in ['U','u']) and 
-               (lval[0] in ['E','e'])) then
+            if  (lval[0]='1') or (
+               ((lval[0]='T') or (lval[0]='t')) and 
+               ((lval[1]='R') or (lval[1]='r')) and 
+               ((lval[2]='U') or (lval[2]='u')) and 
+               ((lval[3]='E') or (lval[3]='e'))) then
               astream.WriteDWord(1)
             else
               astream.WriteDWord(0);
@@ -1273,14 +1280,14 @@ begin
   result:=verUnk;
 end;
 
-function GetLayoutType(fname:PUnicodeChar):cardinal;
+function GetLayoutType(afname:PUnicodeChar):cardinal;
 var
   ls:UnicodeString;
   i:integer;
 begin
-  if fname<>'' then
+  if (afname<>nil) and (afname^<>#0) then
   begin
-    ls:=UnicodeString(fname);
+    ls:=UnicodeString(afname);
     for i:=1 to Length(ls) do
     begin
       if ls[i]='\' then
@@ -1399,14 +1406,14 @@ begin
 end;
 
 
-function BuildLayoutStream(data:pointer; astream:TStream; aver:byte=verTL2):integer;
+function BuildLayoutStream(data:pointer; astream:TStream; aver:integer=verTL2):integer;
 var
   lrgl:TRGLayoutFile;
 begin
   result:=0;
   lrgl.Init;
-  lrgl.FVer:=aver;
-  case aver of
+  lrgl.FVer:=ABS(aver);
+  case ABS(aver) of
     verRG : result:=lrgl.DoBuildLayoutRG (data, astream);
     verHob: result:=lrgl.DoBuildLayoutHob(data, astream);
     verRGO: result:=lrgl.DoBuildLayoutRG (data, astream);
@@ -1416,7 +1423,7 @@ begin
   lrgl.Free;
 end;
 
-function BuildLayoutMem(data:pointer; out bin:pByte; aver:byte=verTL2):integer;
+function BuildLayoutMem(data:pointer; out bin:pByte; aver:integer=verTL2):integer;
 var
   ls:TMemoryStream;
 begin
@@ -1431,7 +1438,7 @@ begin
   end;
 end;
 
-function BuildLayoutFile(data:pointer; const fname:AnsiString; aver:byte=verTL2):integer;
+function BuildLayoutFile(data:pointer; const fname:AnsiString; aver:integer=verTL2):integer;
 var
   ls:TMemoryStream;
 begin

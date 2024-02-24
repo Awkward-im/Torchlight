@@ -1,5 +1,3 @@
-{TODO: layout only. make ID and PARENTID for any rgGroup? Or get PARENTID from parent (with check)}
-{TODO: search ID node with right value (really? here?!)}
 {TODO: make Vector2, Vector3 and Vector 4 values too}
 {TODO: As* for get value - add default values}
 {TODO: Add blob field for use as Hash for names or ID for layout nodes. but not both?}
@@ -133,7 +131,7 @@ begin
   if (astr=nil) or (astr^=#0) then exit;
   if astr^='-' then inc(astr);
   repeat
-    if not (astr^ in ['0'..'9']) then exit;
+    if not (ord(astr^) in [ord('0')..ord('9')]) then exit;
     inc(astr);
   until astr^=#0;
   result:=true;
@@ -290,10 +288,10 @@ begin
         rgBool     : begin
          if ( lp<>nil) and (
             ((lp[0]='1') and (lp[1]=#0)) or
-             (lp[0] in ['T','t']) and
-             (lp[1] in ['R','r']) and
-             (lp[2] in ['U','u']) and
-             (lp[3] in ['E','e']) and
+             ((lp[0]='T') or (lp[0]='t')) and
+             ((lp[1]='R') or (lp[1]='r')) and
+             ((lp[2]='U') or (lp[2]='u')) and
+             ((lp[3]='E') or (lp[3]='e')) and
              (lp[4]=#0)
             ) then PRGNode(anode)^.asBoolean:=true
             else   PRGNode(anode)^.asBoolean:=false;
@@ -710,7 +708,7 @@ begin
       // 1 - get path part
       i:=0;
       p1:=apath;
-      while not (apath^ in ['\','/',#0]) do
+      while not (ord(apath^) in [ord('\'),ord('/'),0]) do
       begin
         inc(apath);
         inc(i);

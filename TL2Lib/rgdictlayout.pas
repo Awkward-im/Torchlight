@@ -51,10 +51,6 @@ implementation
 uses
   rgglobal;
 
-const
-  SIGN_UNICODE = $FEFF;
-  SIGN_UTF8    = $BFBBEF;
-
 type
   PPropInfo = ^TPropInfo;
   TPropInfo = record
@@ -301,20 +297,23 @@ function TRGObject.GetPropInfoByName(aname:PWideChar; out aid:dword):integer;
 var
   lprop:PPropInfo;
   i,l:integer;
+  c:AnsiChar;
 begin
   if FLastObject<>nil then
   begin
     l:=Length(aname)-1;
     if l>=0 then
+    begin
+      c:=Char(ord(aname[l]));
       for i:=0 to PObjInfo(FLastObject)^.count-1 do
       begin
         lprop:=@(PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+i]);
 
         if lprop^.ptype in [rgVector2, rgVector3, rgVector4] then
         begin
-          if ((lprop^.ptype=rgVector2) and (aname[l] in ['X','x','Y','y'])) or
-             ((lprop^.ptype=rgVector3) and (aname[l] in ['X','x','Y','y','Z','z'])) or
-             ((lprop^.ptype=rgVector4) and (aname[l] in ['X','x','Y','y','Z','z','W','w'])) then
+          if ((lprop^.ptype=rgVector2) and (c in ['X','x','Y','y'])) or
+             ((lprop^.ptype=rgVector3) and (c in ['X','x','Y','y','Z','z'])) or
+             ((lprop^.ptype=rgVector4) and (c in ['X','x','Y','y','Z','z','W','w'])) then
     
             if (CompareWide(aname,lprop^.name,l)=0) then
             begin
@@ -334,29 +333,32 @@ begin
         end;
 
       end;
+    end;
   end;
 
   result:=rgUnknown;
 end;
-
 function TRGObject.GetPropInfoByName(aname:PWideChar; atype:integer; out aid:dword):integer;
 var
   lprop:PPropInfo;
   i,l:integer;
+  c:AnsiChar;
 begin
   if FLastObject<>nil then
   begin
     l:=Length(aname)-1;
     if l>=0 then
+    begin
+      c:=Char(ord(aname[l]));
       for i:=0 to PObjInfo(FLastObject)^.count-1 do
       begin
         lprop:=@(PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+i]);
 
         if (atype=rgFloat) and (lprop^.ptype in [rgVector2, rgVector3, rgVector4]) then
         begin
-          if ((lprop^.ptype=rgVector2) and (aname[l] in ['X','x','Y','y'])) or
-             ((lprop^.ptype=rgVector3) and (aname[l] in ['X','x','Y','y','Z','z'])) or
-             ((lprop^.ptype=rgVector4) and (aname[l] in ['X','x','Y','y','Z','z','W','w'])) then
+          if ((lprop^.ptype=rgVector2) and (c in ['X','x','Y','y'])) or
+             ((lprop^.ptype=rgVector3) and (c in ['X','x','Y','y','Z','z'])) or
+             ((lprop^.ptype=rgVector4) and (c in ['X','x','Y','y','Z','z','W','w'])) then
     
             if (CompareWide(aname,lprop^.name,l)=0) then
             begin
@@ -376,6 +378,7 @@ begin
         end;
 
       end;
+    end;
   end;
 
   result:=rgUnknown;
@@ -448,17 +451,17 @@ begin
 
   SetLength(layptr^.objects,1024);
   SetLength(layptr^.props  ,8192);
-
   lscene:=0;
   lobj  :=0;
   lprop :=0;
 
   pc:=layptr^.buf;
   if ORD(pc^)=SIGN_UNICODE then inc(pc);
-  repeat
-    while pc^ in [#9,' ',#13,#10] do inc(pc);
 
-    case pc^ of
+  repeat
+    while ord(pc^) in [9,ord(' '),13,10] do inc(pc);
+
+    case char(ord(pc^)) of
       // scene
       // ID:NAME
       '>': begin
@@ -466,7 +469,7 @@ begin
 
         lid:=0;
         // ID
-        while pc^ in ['0'..'9'] do
+        while ord(pc^) in [ord('0')..ord('9')] do
         begin
           lid:=lid*10+ORD(pc^)-ORD('0');
           inc(pc);
@@ -475,7 +478,7 @@ begin
         inc(pc);
         // name
         lname:=pc;
-        while not (pc^ in [#10,#13]) do inc(pc);
+        while not (ord(pc^) in [10,13]) do inc(pc);
         pc^:=#0;
         inc(pc);
 
@@ -493,7 +496,7 @@ begin
         inc(pc);
         lid:=0;
         // ID
-        while pc^ in ['0'..'9'] do
+        while ord(pc^) in [ord('0')..ord('9')] do
         begin
           lid:=lid*10+ORD(pc^)-ORD('0');
           inc(pc);
@@ -502,7 +505,7 @@ begin
         inc(pc);
         // name
         lname:=pc;
-        while not (pc^ in [#10,#13,':','=']) do inc(pc);
+        while not (ord(pc^) in [10,13,ord(':'),ord('=')]) do inc(pc);
         lval :=pc^='=';
         ldesc:=pc^=':';
         pc^:=#0;
@@ -510,7 +513,7 @@ begin
         // class (right now just skip)
         if lval then
         begin
-          while not (pc^ in [#10,#13,':']) do inc(pc);
+          while not (ord(pc^) in [10,13,ord(':')]) do inc(pc);
           ldesc:=pc^=':';
           pc^:=#0;
           inc(pc);
@@ -520,7 +523,7 @@ begin
         if ldesc then
         begin
           ldescr:=pc;
-          while not (pc^ in [#10,#13]) do inc(pc);
+          while not (ord(pc^) in [10,13]) do inc(pc);
           pc^:=#0;
           inc(pc);
         end;
@@ -540,7 +543,7 @@ begin
       '0'..'9': begin
         lid:=0;
         // ID
-        while pc^ in ['0'..'9'] do
+        while ord(pc^) in [ord('0')..ord('9')] do
         begin
           lid:=lid*10+ORD(pc^)-ORD('0');
           inc(pc);
@@ -549,7 +552,7 @@ begin
         inc(pc);
         // type
         i:=0;
-        while not (pc^ in [#10,#13,':']) do
+        while not (ord(pc^) in [10,13,ord(':')]) do
         begin
           ltype[i]:=pc^;
           inc(i);
@@ -559,7 +562,7 @@ begin
         inc(pc);
         // name
         lname:=pc;
-        while not (pc^ in [#10,#13,':','=']) do inc(pc);
+        while not (ord(pc^) in [10,13,ord(':'),ord('=')]) do inc(pc);
         lval :=pc^='=';
         ldesc:=pc^=':';
         pc^:=#0;
@@ -567,7 +570,7 @@ begin
         // value (right now just skip)
         if lval then
         begin
-          while not (pc^ in [#10,#13,':']) do inc(pc);
+          while not (ord(pc^) in [10,13,ord(':')]) do inc(pc);
           ldesc:=pc^=':';
           pc^:=#0;
           inc(pc);
@@ -577,7 +580,7 @@ begin
         if ldesc then
         begin
           ldescr:=pc;
-          while not (pc^ in [#10,#13]) do inc(pc);
+          while not (ord(pc^) in [10,13]) do inc(pc);
           pc^:=#0;
           inc(pc);
         end;
@@ -592,7 +595,7 @@ begin
         if pprop^.ptype=rgNotValid then
         begin
           Str(lid,ls);
-          RGLog.Add('Layout dict, not valid type '+UnicodeString(ltype)+' with id='+ls);
+          RGLog.AddWide(PUnicodeChar('Layout dict, not valid type '+UnicodeString(ltype)+' with id='+ls));
         end;
       end;
 
@@ -600,8 +603,7 @@ begin
     else
     end;
 
-    while not (pc^ in [#0,#10,#13]) do inc(pc);
-
+    while not (ord(pc^) in [0,10,13]) do inc(pc);
   until false;
 
   if lscene<Length(layptr^.scenes) then layptr^.scenes[lscene].id:=dword(-1);

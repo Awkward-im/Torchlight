@@ -1,286 +1,298 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4\n"
 
 #: formgui.rsbuildgrid
 msgid " Build file list. Please, wait..."
-msgstr ""
+msgstr " Построение списка файлов. Ждите..."
 
 #: formgui.rsbuildpreview
 msgid " Build preview"
-msgstr ""
+msgstr " Построение предпросмотра"
 
 #: formgui.rsbuildtree
 msgid " Build tree"
-msgstr ""
+msgstr " Построение дерева"
 
 #: formgui.rscantsave
 msgid "Can't save file"
-msgstr ""
+msgstr "Не могу сохранить файл"
 
 #: formgui.rsdirs
 msgid "; dirs: "
-msgstr ""
+msgstr "; папок: "
 
 #: formgui.rsextractdir
 msgid "Extract directory "
-msgstr ""
+msgstr "Распаковать папку "
 
 #: formgui.rsfilepath
 msgid "File path: "
-msgstr ""
+msgstr "Путь файла: "
 
 #: formgui.rsfilesunpacksucc
 msgid " files unpacked succesfully."
-msgstr ""
+msgstr " файлов распаковано."
 
 #: formgui.rssaved
 msgid "File saved"
-msgstr ""
+msgstr "Файл сохранён"
 
 #: formgui.rssavedas
 msgid "File saved as"
-msgstr ""
+msgstr "Файл сохранён как"
 
 #: formgui.rstotal
 msgid "Total: "
-msgstr ""
+msgstr "Всего: "
 
 #: formgui.rsunpacksucc
 msgid "unpacked succesfully."
-msgstr ""
+msgstr "распаковано удачно."
 
 #: formgui.rsunsaved
 msgid "You have unsaved changes. Exit anyway?"
-msgstr ""
+msgstr "Остались несохранённые изменения. Всё равно выйти?"
 
 #: formgui.rswarning
 msgid "Warning!"
-msgstr ""
+msgstr "Внимание!"
 
 #: tfilterform.caption
 msgid "File type to show"
-msgstr ""
+msgstr "Тип файлов для показа"
 
 #: tfilterform.lblcategory.caption
 msgctxt "tfilterform.lblcategory.caption"
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: tfilterform.lblextension.caption
 msgctxt "tfilterform.lblextension.caption"
 msgid "Extension"
-msgstr ""
+msgstr "Расширение"
 
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
-msgstr ""
+msgstr "Очистить"
 
 #: tmodinfoform.bbcancel.caption
 msgid "Cancel"
-msgstr ""
+msgstr "Отмена"
 
 #: tmodinfoform.bbsave.caption
+#, fuzzy
 msgctxt "tmodinfoform.bbsave.caption"
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: tmodinfoform.bbsave.hint
 msgid "Save to file"
-msgstr ""
+msgstr "Сохранить в файл"
 
 #: tmodinfoform.caption
 msgid "MOD Info"
-msgstr ""
+msgstr "Инф. о моде"
 
 #: tmodinfoform.lbldescr.caption
 msgid "Mod Description"
-msgstr ""
+msgstr "Описание мода"
 
 #: tmodinfoform.lblguid.caption
 msgid "Mod GUID (click button for new)"
-msgstr ""
+msgstr "GUID мода (нажмите на кнопу для нового)"
 
 #: tmodinfoform.lblnote.caption
 msgid "Don't keep version and GUID empty (or zero)"
-msgstr ""
+msgstr "Не сохраняйте версию и GUID пустыми (или нулевыми)"
 
 #: tmodinfoform.lblversion.caption
 msgid "Mod version"
-msgstr ""
+msgstr "Версия мода"
 
 #: tmodinfoform.leauthor.editlabel.caption
 msgid "Mod Author"
-msgstr ""
+msgstr "Автор мода"
 
 #: tmodinfoform.ledownload.editlabel.caption
 msgid "Mod Download URL"
-msgstr ""
+msgstr "URL скачивания мода"
 
 #: tmodinfoform.lefilename.editlabel.caption
 msgid "Mod File Name"
-msgstr ""
+msgstr "Имя файла мода"
 
 #: tmodinfoform.letitle.editlabel.caption
 msgid "Mod Title"
-msgstr ""
+msgstr "Название мода"
 
 #: tmodinfoform.lewebsite.editlabel.caption
 msgid "Mod Website URL"
-msgstr ""
+msgstr "URL сайта мода"
 
 #: trgguiform.actedexport.caption
 msgid "Export"
-msgstr ""
+msgstr "Экспорт"
 
 #: trgguiform.actedimport.caption
 msgid "Import"
-msgstr ""
+msgstr "Импорт"
 
 #: trgguiform.acteditdelete.caption
 msgid "&Delete"
-msgstr ""
+msgstr "Удалить"
 
 #: trgguiform.acteditdelete.hint
 msgid "Delete file(s)"
-msgstr ""
+msgstr "Удалить файл(ы)"
 
 #: trgguiform.acteditextract.caption
 msgid "&Extract"
-msgstr ""
+msgstr "Распаковать"
 
 #: trgguiform.acteditextract.hint
 msgid "Extract file(s)"
-msgstr ""
+msgstr "Распаковать файл(ы)"
 
 #: trgguiform.acteditreplace.caption
 msgid "&Replace"
-msgstr ""
+msgstr "Заменить"
 
 #: trgguiform.acteditreplace.hint
 msgid "Replace file(s)"
-msgstr ""
+msgstr "Заменить файл(ы)"
 
 #: trgguiform.acteditsearch.caption
 msgid "&Search"
-msgstr ""
+msgstr "Поиск"
 
 #: trgguiform.acteditsearch.hint
 msgid "Search files"
-msgstr ""
+msgstr "Поиск файлов"
 
 #: trgguiform.actedreset.caption
 msgid "Reset"
-msgstr ""
+msgstr "Сброс"
 
 #: trgguiform.actedreset.hint
 msgid "Remove any updates for file"
-msgstr ""
+msgstr "Удалить все изменения для файла"
 
 #: trgguiform.actedsave.caption
 msgctxt "trgguiform.actedsave.caption"
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: trgguiform.actedsave.hint
 msgid "Save editor content as update"
-msgstr ""
+msgstr "Сохранить содержимое редактора как обновление"
 
 #: trgguiform.actedsearch.caption
 msgid "Search"
-msgstr ""
+msgstr "Поиск"
 
 #: trgguiform.actedundo.caption
 msgid "Undo"
-msgstr ""
+msgstr "Отмена"
 
 #: trgguiform.actedundo.hint
 msgid "Undo edited changes"
-msgstr ""
+msgstr "Отменить редактируемые изменения"
 
 #: trgguiform.actfileclose.caption
 msgid "&Close"
-msgstr ""
+msgstr "Закрыть"
 
 #: trgguiform.actfileclose.hint
 msgid "Close file"
-msgstr ""
+msgstr "Закрыть файл"
 
 #: trgguiform.actfileexit.caption
 msgid "E&xit"
-msgstr ""
+msgstr "Выход"
 
 #: trgguiform.actfileexit.hint
 msgid "Exit program"
-msgstr ""
+msgstr "Выход из программы"
 
 #: trgguiform.actfileopen.caption
 msgid "&Open"
-msgstr ""
+msgstr "Открыть"
 
 #: trgguiform.actfileopen.hint
 msgid "Open file"
-msgstr ""
+msgstr "Открыть файл"
 
 #: trgguiform.actfilesave.caption
 msgid "&Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: trgguiform.actfilesave.hint
 msgid "Save file"
-msgstr ""
+msgstr "Сохранить файл"
 
 #: trgguiform.actfilesaveas.caption
 msgid "Save &As"
-msgstr ""
+msgstr "Сохранить как"
 
 #: trgguiform.acthelpabout.caption
 msgid "&About"
-msgstr ""
+msgstr "О программе"
 
 #: trgguiform.acthelpabout.hint
 msgid "About"
-msgstr ""
+msgstr "О программе"
 
 #: trgguiform.actinfoinfo.caption
 msgid "&Info"
-msgstr ""
+msgstr "Информация"
 
 #: trgguiform.actinfoinfo.hint
 msgid "Show TL2 MOD info"
-msgstr ""
+msgstr "Показать информацию о моде ТЛ2"
 
 #: trgguiform.actshowfilter.caption
 msgid "Type Filter"
-msgstr ""
+msgstr "Фильтр типов"
 
 #: trgguiform.actshowfilter.hint
 msgid "Show type filter"
-msgstr ""
+msgstr "Показать фильтр типов"
 
 #: trgguiform.actshowlog.caption
 msgid "Show Log"
-msgstr ""
+msgstr "Показать лог"
 
 #: trgguiform.actshowlog.hint
 msgid "Show Log window"
-msgstr ""
+msgstr "Показать окно лога"
 
 #: trgguiform.bbcollapse.hint
 msgid "Collapse tree"
-msgstr ""
+msgstr "Схлопнуть дерево"
 
 #: trgguiform.bbresetcolumns.caption
 msgid "View Reset"
-msgstr ""
+msgstr "Сброс настроек показа"
 
 #: trgguiform.bbsave.caption
+#, fuzzy
 msgctxt "trgguiform.bbsave.caption"
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: trgguiform.bbsave.hint
 msgid "Save (unpack) file to disk"
-msgstr ""
+msgstr "Сохранить (распаковать) файл на диск"
 
 #: trgguiform.caption
 msgid "RGGUI"
@@ -289,191 +301,191 @@ msgstr ""
 #: trgguiform.cbcategory.caption
 msgctxt "trgguiform.cbcategory.caption"
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: trgguiform.cbdir.caption
 msgctxt "trgguiform.cbdir.caption"
 msgid "Directory"
-msgstr ""
+msgstr "Каталог"
 
 #: trgguiform.cbext.caption
 msgctxt "trgguiform.cbext.caption"
 msgid "Ext"
-msgstr ""
+msgstr "Расширение"
 
 #: trgguiform.cbfastscan.caption
 msgid "Fast scan (no packed size)"
-msgstr ""
+msgstr "Быстрое сканирование (без размера)"
 
 #: trgguiform.cbmoddat.caption
 msgid "Make MOD.DAT for full TL2 mod unpack"
-msgstr ""
+msgstr "Создать MOD.DAT для распаковки мода ТЛ2"
 
 #: trgguiform.cbpacked.caption
 msgctxt "trgguiform.cbpacked.caption"
 msgid "Packed size"
-msgstr ""
+msgstr "Пакованый размер"
 
 #: trgguiform.cbsavesettings.caption
 msgid "Save Settings on exit"
-msgstr ""
+msgstr "Сохранять настройки при выходе"
 
 #: trgguiform.cbsaveutf8.caption
 msgid "Save text as UTF8"
-msgstr ""
+msgstr "Сохранять текст как UTF8"
 
 #: trgguiform.cbsavewidth.caption
 msgid "Save tree and grid width"
-msgstr ""
+msgstr "Сохранять ширину дерева и таблицы"
 
 #: trgguiform.cbscaleimage.caption
 msgid "Scale Image"
-msgstr ""
+msgstr "Масштаб"
 
 #: trgguiform.cbshowpreview.caption
 msgid "Show Preview"
-msgstr ""
+msgstr "Предпросмотр"
 
 #: trgguiform.cbsource.caption
 msgctxt "trgguiform.cbsource.caption"
 msgid "Source size"
-msgstr ""
+msgstr "Исходный размер"
 
 #: trgguiform.cbtest.caption
 msgid "DO NOT SAVE extracted files (test only)"
-msgstr ""
+msgstr "НЕ СОХРАНЯТЬ распакованные файлы (тест)"
 
 #: trgguiform.cbtime.caption
 msgctxt "trgguiform.cbtime.caption"
 msgid "Time"
-msgstr ""
+msgstr "Время"
 
 #: trgguiform.cbunpacked.caption
 msgctxt "trgguiform.cbunpacked.caption"
 msgid "Unpacked size"
-msgstr ""
+msgstr "Распакованный размер"
 
 #: trgguiform.cbunpacktree.caption
 msgid "Keep path"
-msgstr ""
+msgstr "Сохранять пути"
 
 #: trgguiform.cbusefname.caption
 msgid "Use file name as dir for unpack"
-msgstr ""
+msgstr "Имя файла как папка для распаковки"
 
 #: trgguiform.edtreefilter.texthint
 msgid "(filter)"
-msgstr ""
+msgstr "(фильтр)"
 
 #: trgguiform.gbcolumns.caption
 msgid "Show Columns"
-msgstr ""
+msgstr "Показать столбцы"
 
 #: trgguiform.gbdecoding.caption
 msgid "Text unpack"
-msgstr ""
+msgstr "Распаковка текста"
 
 #: trgguiform.grid.caption
 msgid "Grid"
-msgstr ""
+msgstr "Таблица"
 
 #: trgguiform.lbloffset.caption
 msgid "Offset:"
-msgstr ""
+msgstr "Смещение:"
 
 #: trgguiform.lbloutdir.caption
 msgid "Dir for extraction"
-msgstr ""
+msgstr "Папка для распаковки"
 
 #: trgguiform.lblsize.caption
 msgid "Size:"
-msgstr ""
+msgstr "Размер:"
 
 #: trgguiform.lbltime.caption
 msgid "Time:"
-msgstr ""
+msgstr "Время:"
 
 #: trgguiform.miedit.caption
 msgid "&Edit"
-msgstr ""
+msgstr "Редактор"
 
 #: trgguiform.miextractdir.caption
 msgid "Extract this dir"
-msgstr ""
+msgstr "Распаковать эту папку"
 
 #: trgguiform.miextracttree.caption
 msgid "Extract w. subdirs"
-msgstr ""
+msgstr "Распаковать с подкаталогами"
 
 #: trgguiform.miextractvisible.caption
 msgid "Extract visible"
-msgstr ""
+msgstr "Распаковать видимые"
 
 #: trgguiform.mifile.caption
 msgid "&File"
-msgstr ""
+msgstr "Файл"
 
 #: trgguiform.mihelp.caption
 msgid "&Help"
-msgstr ""
+msgstr "Помощь"
 
 #: trgguiform.rbbinonly.caption
 msgid "Binary only"
-msgstr ""
+msgstr "Только двоичные"
 
 #: trgguiform.rbgutsstyle.caption
 msgid "GUTS style"
-msgstr ""
+msgstr "Стиль GUTS"
 
 #: trgguiform.rbtextonly.caption
 msgid "Text only"
-msgstr ""
+msgstr "Только текст"
 
 #: trgguiform.rbtextrename.caption
 msgid "Rename text"
-msgstr ""
+msgstr "Переименовать текст"
 
 #: trgguiform.setings.caption
 msgid "Setings"
-msgstr ""
+msgstr "Настройки"
 
 #: trgguiform.sgmain.columns[0].title.caption
 msgid "State"
-msgstr ""
+msgstr "Сост."
 
 #: trgguiform.sgmain.columns[1].title.caption
 msgid "Dir"
-msgstr ""
+msgstr "Папка"
 
 #: trgguiform.sgmain.columns[2].title.caption
 msgid "Name"
-msgstr ""
+msgstr "Имя"
 
 #: trgguiform.sgmain.columns[3].title.caption
 msgctxt "trgguiform.sgmain.columns[3].title.caption"
 msgid "Ext"
-msgstr ""
+msgstr "Расш"
 
 #: trgguiform.sgmain.columns[4].title.caption
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: trgguiform.sgmain.columns[5].title.caption
 msgctxt "trgguiform.sgmain.columns[5].title.caption"
 msgid "Time"
-msgstr ""
+msgstr "Время"
 
 #: trgguiform.sgmain.columns[6].title.caption
 msgid "Packed"
-msgstr ""
+msgstr "Упак"
 
 #: trgguiform.sgmain.columns[7].title.caption
 msgid "Unpacked"
-msgstr ""
+msgstr "Распак"
 
 #: trgguiform.sgmain.columns[8].title.caption
 msgid "Source"
-msgstr ""
+msgstr "Исход"
 
 #: trgguiform.tbcategory.caption
 msgid "C"
@@ -482,7 +494,7 @@ msgstr ""
 #: trgguiform.tbcategory.hint
 msgctxt "trgguiform.tbcategory.hint"
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: trgguiform.tbdir.caption
 msgid "D"
@@ -491,7 +503,7 @@ msgstr ""
 #: trgguiform.tbdir.hint
 msgctxt "trgguiform.tbdir.hint"
 msgid "Directory"
-msgstr ""
+msgstr "Папка"
 
 #: trgguiform.tbext.caption
 msgid "E"
@@ -500,11 +512,11 @@ msgstr ""
 #: trgguiform.tbext.hint
 msgctxt "trgguiform.tbext.hint"
 msgid "Extension"
-msgstr ""
+msgstr "Расширение"
 
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
-msgstr ""
+msgstr "Информация о моде"
 
 #: trgguiform.tbpacked.caption
 msgid "P"
@@ -513,7 +525,7 @@ msgstr ""
 #: trgguiform.tbpacked.hint
 msgctxt "trgguiform.tbpacked.hint"
 msgid "Packed size"
-msgstr ""
+msgstr "Упакованный размер"
 
 #: trgguiform.tbsource.caption
 msgid "S"
@@ -522,7 +534,7 @@ msgstr ""
 #: trgguiform.tbsource.hint
 msgctxt "trgguiform.tbsource.hint"
 msgid "Source size"
-msgstr ""
+msgstr "Исходный размер"
 
 #: trgguiform.tbtime.caption
 msgid "T"
@@ -531,7 +543,7 @@ msgstr ""
 #: trgguiform.tbtime.hint
 msgctxt "trgguiform.tbtime.hint"
 msgid "Time"
-msgstr ""
+msgstr "Время"
 
 #: trgguiform.tbunpacked.caption
 msgid "U"
@@ -540,5 +552,4 @@ msgstr ""
 #: trgguiform.tbunpacked.hint
 msgctxt "trgguiform.tbunpacked.hint"
 msgid "Unpacked size"
-msgstr ""
-
+msgstr "Распакованный размер"

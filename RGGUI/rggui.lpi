@@ -247,6 +247,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitLogForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="unitfilterform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FilterForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="unitFilterForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

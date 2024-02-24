@@ -72,7 +72,7 @@ uses
   rgnode;
 
 const
-  strUIGameStates:array of PWideChar = (
+  strUIGameStates:array [0..6] of PWideChar = (
     nil, // NONE
     'Testing',
     'All',
@@ -82,7 +82,7 @@ const
     'Main Menu Mod'
   );
 
-  strUITypes:array of PWideChar = (
+  strUITypes:array [0..19] of PWideChar = (
     nil,
     'TEST MENU',
     'HUD MENU',
@@ -446,12 +446,12 @@ begin
     begin
       lnode:=AddGroup(result,'QUESTMARKER');
 
-      AddString  (lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
-      AddUnsigned(lnode,'NUMBER 1',memReadUnsigned(abuf));
-      AddFloat   (lnode,'FLOAT 1' ,memReadFloat   (abuf));
-      AddFloat   (lnode,'FLOAT 2' ,memReadFloat   (abuf));
-      AddFloat   (lnode,'FLOAT 3' ,memReadFloat   (abuf));
-      AddUnsigned(lnode,'NUMBER 2',memReadUnsigned(abuf));
+      AddString  (lnode,'FILE'     ,memReadShortStringBuf(abuf,@pcw,MAXLEN));
+      AddUnsigned(lnode,'QUEST'    ,memReadUnsigned(abuf)); // QUEST from MEDIA/QUESTS.DAT
+      AddFloat   (lnode,'POSITIONX',memReadFloat   (abuf)); // pos x
+      AddFloat   (lnode,'POSITIONY',memReadFloat   (abuf)); //
+      AddFloat   (lnode,'POSITIONZ',memReadFloat   (abuf)); // pos z
+      AddUnsigned(lnode,'MAP_ICON' ,memReadUnsigned(abuf)); // MAP_ICON from MEDIA/UI/MAP_ICONS.DAT
     end;
   end
   else
@@ -757,12 +757,12 @@ begin
   begin
     lnode:=GetChild(anode,i);
 
-    astream.WriteShortString(AsString  (FindNode(lnode,'FILE'    )));
-    astream.WriteDWord      (AsUnsigned(FindNode(lnode,'NUMBER 1')));
-    astream.WriteFloat      (AsFloat   (FindNode(lnode,'FLOAT 1' )));
-    astream.WriteFloat      (AsFloat   (FindNode(lnode,'FLOAT 2' )));
-    astream.WriteFloat      (AsFloat   (FindNode(lnode,'FLOAT 3' )));
-    astream.WriteDWord      (AsUnsigned(FindNode(lnode,'NUMBER 2')));
+    astream.WriteShortString(AsString  (FindNode(lnode,'FILE'     )));
+    astream.WriteDWord      (AsUnsigned(FindNode(lnode,'QUEST'    )));
+    astream.WriteFloat      (AsFloat   (FindNode(lnode,'POSITIONX')));
+    astream.WriteFloat      (AsFloat   (FindNode(lnode,'POSITIONY')));
+    astream.WriteFloat      (AsFloat   (FindNode(lnode,'POSITIONZ')));
+    astream.WriteDWord      (AsUnsigned(FindNode(lnode,'MAP_ICON' )));
   end;
 end;
 
@@ -807,26 +807,6 @@ begin
   end;
 end;
 
-function BuildRawMem(data:pointer; out bin:pByte; const fname:string):integer;
-var
-  ls:TMemoryStream;
-begin
-  result:=0;
-  ls:=TMemoryStream.Create;
-  try
-    result:=BuildRawStream(data,ls,fname);
-    if result>0 then
-    begin
-      result:=ls.Size;
-      GetMem(bin,result);
-      move(ls.Memory^,bin^,result);
-//      ls.CutBuffer(bin);
-    end;
-  finally
-    ls.Free;
-  end;
-end;
-
 function BuildRawStream(data:pointer; astream:TStream; const fname:string):integer;
 begin
   if      fname=RawNames[nmUNITDATA    ] then result:=EncodeUnitData    (astream,data)
@@ -839,6 +819,28 @@ begin
   else if fname=RawNames[nmPARTICLES   ] then result:=EncodeParticles   (astream,data)
   else if fname=RawNames[nmCELLDB      ] then result:=EncodeCellDB      (astream,data)
   else if fname=RawNames[nmQUESTMARKERS] then result:=EncodeQuestMarkers(astream,data);
+end;
+
+function BuildRawMem(data:pointer; out bin:pByte; const fname:string):integer;
+var
+  ls:TMemoryStream;
+  lfname:string;
+begin
+  result:=0;
+  lfname:=UpCase(ExtractFileNameOnly(fname));
+  ls:=TMemoryStream.Create;
+  try
+    result:=BuildRawStream(data,ls,lfname);
+    if result>0 then
+    begin
+      result:=ls.Size;
+      GetMem(bin,result);
+      move(ls.Memory^,bin^,result);
+//      ls.CutBuffer(bin);
+    end;
+  finally
+    ls.Free;
+  end;
 end;
 
 function BuildRawFile(data:pointer; const fname:string):integer;

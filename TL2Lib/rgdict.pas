@@ -58,10 +58,6 @@ const
   defdictname = 'dictionary.txt';
   deftagsname = 'tags.dat';
 
-const
-  SIGN_UNICODE = $FEFF;
-  SIGN_UTF8    = $BFBBEF;
-
 
 procedure TRGDict.Init(usecache:boolean=true);
 begin
@@ -215,7 +211,7 @@ begin
     if (lend^=#0) then break;
 
     lstart:=lend;
-    while not (lend^ in [#0, #10, #13]) do inc(lend);
+    while not (ord(lend^) in [0, 10, 13]) do inc(lend);
 
     if lend^<>#0 then
     begin
@@ -223,7 +219,7 @@ begin
       inc(lend);
     end;
     
-    while (lend^ in [#10, #13]) do inc(lend);
+    while ord(lend^) in [10, 13] do inc(lend);
 
     if lstart^='[' then
     begin
@@ -256,7 +252,7 @@ begin
             lsign:=false;
 
           ltmp:=0;
-          while pcw^ in ['0'..'9'] do
+          while ord(pcw^) in [ord('0')..ord('9')] do
           begin
             ltmp:=ltmp*10+ORD(pcw^)-ORD('0');
             inc(pcw);
@@ -608,7 +604,8 @@ resourcestring
   sNoFileStart     = 'No file starting tag';
   sNoBlockStart    = 'No block start';
   sNoOrignText     = 'No original text';
-  sNoTransText     = 'No translated text';
+// next line commented coz no translation case is ok, just use original
+//  sNoTransText     = 'No translated text';
   sNoEndBlock      = 'No end of block';
   sMoreOriginal    = 'More than one original';
   sMoreTranslation = 'More than one translation';
@@ -645,7 +642,7 @@ begin
     if lend^=#0 then break;
 
     lstart:=lend;
-    while not (lend^ in [#0, #10, #13]) do inc(lend);
+    while not (ord(lend^) in [0, 10, 13]) do inc(lend);
 
     if lend^<>#0 then
     begin
@@ -653,7 +650,7 @@ begin
       inc(lend);
     end;
     
-    while lend^ in [#10, #13] do inc(lend);
+    while ord(lend^) in [10, 13] do inc(lend);
 
     if lstart^<>#0 then
     begin

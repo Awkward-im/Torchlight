@@ -6,6 +6,7 @@ object MODInfoForm: TMODInfoForm
   Caption = 'MOD Info'
   ClientHeight = 311
   ClientWidth = 751
+  LCLVersion = '3.99.0.0'
   object seVersion: TSpinEditEx
     Left = 7
     Height = 23
@@ -105,8 +106,8 @@ object MODInfoForm: TMODInfoForm
     DefaultCaption = True
     Kind = bkOK
     ModalResult = 1
-    OnClick = bbOKClick
     TabOrder = 9
+    OnClick = bbOKClick
   end
   object bbCancel: TBitBtn
     Left = 551
@@ -118,8 +119,8 @@ object MODInfoForm: TMODInfoForm
     Caption = 'Cancel'
     Kind = bkCancel
     ModalResult = 2
-    OnClick = bbCancelClick
     TabOrder = 8
+    OnClick = bbCancelClick
   end
   object edGUID: TEdit
     Left = 113
@@ -136,8 +137,8 @@ object MODInfoForm: TMODInfoForm
     Width = 32
     Kind = bkRetry
     Margin = 4
-    OnClick = bbNewGUIDClick
     TabOrder = 4
+    OnClick = bbNewGUIDClick
   end
   object leFilename: TLabeledEdit
     Left = 8
@@ -159,8 +160,8 @@ object MODInfoForm: TMODInfoForm
     Caption = 'Save'
     Default = True
     Kind = bkOK
-    OnClick = bbSaveClick
     TabOrder = 11
+    OnClick = bbSaveClick
   end
   object lblNote: TLabel
     Left = 391
