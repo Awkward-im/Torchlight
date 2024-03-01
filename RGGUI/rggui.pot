@@ -92,10 +92,6 @@ msgstr ""
 msgid "MOD Info"
 msgstr ""
 
-#: tmodinfoform.lbldescr.caption
-msgid "Mod Description"
-msgstr ""
-
 #: tmodinfoform.lblguid.caption
 msgid "Mod GUID (click button for new)"
 msgstr ""
@@ -128,44 +124,50 @@ msgstr ""
 msgid "Mod Website URL"
 msgstr ""
 
+#: tmodinfoform.sgreq.columns[0].title.caption
+msgctxt "tmodinfoform.sgreq.columns[0].title.caption"
+msgid "Name"
+msgstr ""
+
+#: tmodinfoform.sgreq.columns[1].title.caption
+msgid "ID"
+msgstr ""
+
+#: tmodinfoform.sgreq.columns[2].title.caption
+msgid "Version"
+msgstr ""
+
+#: tmodinfoform.tsdelete.caption
+msgid "Delete"
+msgstr ""
+
+#: tmodinfoform.tsdescr.caption
+msgid "Description"
+msgstr ""
+
+#: tmodinfoform.tsdescr.hint
+msgctxt "tmodinfoform.tsdescr.hint"
+msgid "Mod Description"
+msgstr ""
+
+#: tmodinfoform.tsrequirement.caption
+msgid "Requirement"
+msgstr ""
+
 #: trgguiform.actedexport.caption
 msgid "Export"
+msgstr ""
+
+#: trgguiform.actedexport.hint
+msgid "Save file(s)"
 msgstr ""
 
 #: trgguiform.actedimport.caption
 msgid "Import"
 msgstr ""
 
-#: trgguiform.acteditdelete.caption
-msgid "&Delete"
-msgstr ""
-
-#: trgguiform.acteditdelete.hint
-msgid "Delete file(s)"
-msgstr ""
-
-#: trgguiform.acteditextract.caption
-msgid "&Extract"
-msgstr ""
-
-#: trgguiform.acteditextract.hint
-msgid "Extract file(s)"
-msgstr ""
-
-#: trgguiform.acteditreplace.caption
-msgid "&Replace"
-msgstr ""
-
-#: trgguiform.acteditreplace.hint
-msgid "Replace file(s)"
-msgstr ""
-
-#: trgguiform.acteditsearch.caption
-msgid "&Search"
-msgstr ""
-
-#: trgguiform.acteditsearch.hint
-msgid "Search files"
+#: trgguiform.actedimport.hint
+msgid "Import file"
 msgstr ""
 
 #: trgguiform.actedreset.caption
@@ -187,6 +189,10 @@ msgstr ""
 
 #: trgguiform.actedsearch.caption
 msgid "Search"
+msgstr ""
+
+#: trgguiform.actedsearch.hint
+msgid "Search in editor"
 msgstr ""
 
 #: trgguiform.actedundo.caption
@@ -241,12 +247,21 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: trgguiform.actinfoinfo.caption
-msgid "&Info"
+#: trgguiform.actresetview.caption
+msgid "Reset View"
 msgstr ""
 
-#: trgguiform.actinfoinfo.hint
-msgid "Show TL2 MOD info"
+#: trgguiform.actresetview.hint
+msgid "Reset panels and columns width"
+msgstr ""
+
+#: trgguiform.actscaleimage.caption
+msgctxt "trgguiform.actscaleimage.caption"
+msgid "Scale Image"
+msgstr ""
+
+#: trgguiform.actscaleimage.hint
+msgid "Scale small images"
 msgstr ""
 
 #: trgguiform.actshowfilter.caption
@@ -257,6 +272,16 @@ msgstr ""
 msgid "Show type filter"
 msgstr ""
 
+#: trgguiform.actshowinfo.caption
+msgctxt "trgguiform.actshowinfo.caption"
+msgid "&Info"
+msgstr ""
+
+#: trgguiform.actshowinfo.hint
+msgctxt "trgguiform.actshowinfo.hint"
+msgid "Show TL2 MOD info"
+msgstr ""
+
 #: trgguiform.actshowlog.caption
 msgid "Show Log"
 msgstr ""
@@ -265,40 +290,21 @@ msgstr ""
 msgid "Show Log window"
 msgstr ""
 
+#: trgguiform.actshowpreview.caption
+msgctxt "trgguiform.actshowpreview.caption"
+msgid "Show Preview"
+msgstr ""
+
+#: trgguiform.actshowpreview.hint
+msgid "Show preview/editor"
+msgstr ""
+
 #: trgguiform.bbcollapse.hint
 msgid "Collapse tree"
 msgstr ""
 
-#: trgguiform.bbresetcolumns.caption
-msgid "View Reset"
-msgstr ""
-
-#: trgguiform.bbsave.caption
-msgctxt "trgguiform.bbsave.caption"
-msgid "Save"
-msgstr ""
-
-#: trgguiform.bbsave.hint
-msgid "Save (unpack) file to disk"
-msgstr ""
-
 #: trgguiform.caption
 msgid "RGGUI"
-msgstr ""
-
-#: trgguiform.cbcategory.caption
-msgctxt "trgguiform.cbcategory.caption"
-msgid "Category"
-msgstr ""
-
-#: trgguiform.cbdir.caption
-msgctxt "trgguiform.cbdir.caption"
-msgid "Directory"
-msgstr ""
-
-#: trgguiform.cbext.caption
-msgctxt "trgguiform.cbext.caption"
-msgid "Ext"
 msgstr ""
 
 #: trgguiform.cbfastscan.caption
@@ -306,12 +312,7 @@ msgid "Fast scan (no packed size)"
 msgstr ""
 
 #: trgguiform.cbmoddat.caption
-msgid "Make MOD.DAT for full TL2 mod unpack"
-msgstr ""
-
-#: trgguiform.cbpacked.caption
-msgctxt "trgguiform.cbpacked.caption"
-msgid "Packed size"
+msgid "Make MOD.DAT for TL2 mod unpack"
 msgstr ""
 
 #: trgguiform.cbsavesettings.caption
@@ -326,31 +327,8 @@ msgstr ""
 msgid "Save tree and grid width"
 msgstr ""
 
-#: trgguiform.cbscaleimage.caption
-msgid "Scale Image"
-msgstr ""
-
-#: trgguiform.cbshowpreview.caption
-msgid "Show Preview"
-msgstr ""
-
-#: trgguiform.cbsource.caption
-msgctxt "trgguiform.cbsource.caption"
-msgid "Source size"
-msgstr ""
-
 #: trgguiform.cbtest.caption
 msgid "DO NOT SAVE extracted files (test only)"
-msgstr ""
-
-#: trgguiform.cbtime.caption
-msgctxt "trgguiform.cbtime.caption"
-msgid "Time"
-msgstr ""
-
-#: trgguiform.cbunpacked.caption
-msgctxt "trgguiform.cbunpacked.caption"
-msgid "Unpacked size"
 msgstr ""
 
 #: trgguiform.cbunpacktree.caption
@@ -363,10 +341,6 @@ msgstr ""
 
 #: trgguiform.edtreefilter.texthint
 msgid "(filter)"
-msgstr ""
-
-#: trgguiform.gbcolumns.caption
-msgid "Show Columns"
 msgstr ""
 
 #: trgguiform.gbdecoding.caption
@@ -446,6 +420,7 @@ msgid "Dir"
 msgstr ""
 
 #: trgguiform.sgmain.columns[2].title.caption
+msgctxt "trgguiform.sgmain.columns[2].title.caption"
 msgid "Name"
 msgstr ""
 
@@ -475,70 +450,77 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
-#: trgguiform.tbcategory.caption
+#: trgguiform.tbcolcategory.caption
+msgctxt "trgguiform.tbcolcategory.caption"
 msgid "C"
 msgstr ""
 
-#: trgguiform.tbcategory.hint
-msgctxt "trgguiform.tbcategory.hint"
+#: trgguiform.tbcolcategory.hint
+msgctxt "trgguiform.tbcolcategory.hint"
 msgid "Category"
 msgstr ""
 
-#: trgguiform.tbdir.caption
+#: trgguiform.tbcoldir.caption
+msgctxt "trgguiform.tbcoldir.caption"
 msgid "D"
 msgstr ""
 
-#: trgguiform.tbdir.hint
-msgctxt "trgguiform.tbdir.hint"
+#: trgguiform.tbcoldir.hint
+msgctxt "trgguiform.tbcoldir.hint"
 msgid "Directory"
 msgstr ""
 
-#: trgguiform.tbext.caption
+#: trgguiform.tbcolext.caption
+msgctxt "trgguiform.tbcolext.caption"
 msgid "E"
 msgstr ""
 
-#: trgguiform.tbext.hint
-msgctxt "trgguiform.tbext.hint"
+#: trgguiform.tbcolext.hint
+msgctxt "trgguiform.tbcolext.hint"
 msgid "Extension"
+msgstr ""
+
+#: trgguiform.tbcolpacked.caption
+msgctxt "trgguiform.tbcolpacked.caption"
+msgid "P"
+msgstr ""
+
+#: trgguiform.tbcolpacked.hint
+msgctxt "trgguiform.tbcolpacked.hint"
+msgid "Packed size"
+msgstr ""
+
+#: trgguiform.tbcolsource.caption
+msgctxt "trgguiform.tbcolsource.caption"
+msgid "S"
+msgstr ""
+
+#: trgguiform.tbcolsource.hint
+msgctxt "trgguiform.tbcolsource.hint"
+msgid "Source size"
+msgstr ""
+
+#: trgguiform.tbcoltime.caption
+msgctxt "trgguiform.tbcoltime.caption"
+msgid "T"
+msgstr ""
+
+#: trgguiform.tbcoltime.hint
+msgctxt "trgguiform.tbcoltime.hint"
+msgid "Time"
+msgstr ""
+
+#: trgguiform.tbcolunpacked.caption
+msgctxt "trgguiform.tbcolunpacked.caption"
+msgid "U"
+msgstr ""
+
+#: trgguiform.tbcolunpacked.hint
+msgctxt "trgguiform.tbcolunpacked.hint"
+msgid "Unpacked size"
 msgstr ""
 
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
-msgstr ""
-
-#: trgguiform.tbpacked.caption
-msgid "P"
-msgstr ""
-
-#: trgguiform.tbpacked.hint
-msgctxt "trgguiform.tbpacked.hint"
-msgid "Packed size"
-msgstr ""
-
-#: trgguiform.tbsource.caption
-msgid "S"
-msgstr ""
-
-#: trgguiform.tbsource.hint
-msgctxt "trgguiform.tbsource.hint"
-msgid "Source size"
-msgstr ""
-
-#: trgguiform.tbtime.caption
-msgid "T"
-msgstr ""
-
-#: trgguiform.tbtime.hint
-msgctxt "trgguiform.tbtime.hint"
-msgid "Time"
-msgstr ""
-
-#: trgguiform.tbunpacked.caption
-msgid "U"
-msgstr ""
-
-#: trgguiform.tbunpacked.hint
-msgctxt "trgguiform.tbunpacked.hint"
-msgid "Unpacked size"
 msgstr ""
 

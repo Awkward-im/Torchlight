@@ -9,8 +9,11 @@ var
 begin
   t := GetTickCount64;
   lpi.Init;
-  lpi.GetInfo(ParamStr(1),piParse);
-  lpi.UnpackAll('');
+  lpi.man.build(ParamStr(1));
+  lpi.Directory:=ParamStr(1);
+  lpi.Name  :='tedt';
+  lpi.Version:=verTL2;
+  lpi.packAll();
 
   lpi.Free;
   writeln(GetTickCount64 - t);

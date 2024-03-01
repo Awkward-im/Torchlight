@@ -1,4 +1,7 @@
-﻿{TODO: Add marks for all files/subdirs if dir marked for deleting}
+﻿{TODO: Apply (no save)}
+{TODO: if "file" was updated in editor. update file or buf?}
+{TODO: Rename+update->rename;delete,new|update+rename->update;new,update,delete old}
+{TODO: Add marks for all files/subdirs if dir marked for deleting}
 {TODO: Replace ctrl.PAK.Name, ctrl.PAK.Version and ctrl.PAK.modinfo}
 {TODO: Add update memory consumption count}
 {TODO: Add "add directory" action or at least function}
@@ -28,7 +31,7 @@ const
   act_file   = 2; // disk file
   act_copy   = 3; // just copy of unpacked original PAK data
   act_delete = 4; // delete from PAK
-  act_dir    = 5; // disk directory with files (??just act_file cycle or not??)
+  act_dir    = 5; // disk directory with files (??just act_file cycle or not?? "Build" from RGMAN)
   act_reset  = 6; // delete from update (reset), event only
   act_mark   = 7; // mark for delete (MOD data)
 
@@ -65,7 +68,7 @@ type
     procedure ClearElement(idx:integer);
     procedure FixSizes(idx:integer; adata:PByte; asize:cardinal);
     procedure CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
-    function  WriteToPAK(var apak:TRGPAK; const fname:string):boolean;
+    function  WriteToPAK(var apak:TRGPAK; const fname:string; aver:integer=1000):boolean;
 
   public
     property PAK:TRGPAK read FPAK write FPAK;
@@ -73,13 +76,13 @@ type
   public
     procedure Init;
     procedure Free;
-//    procedure Clear;
+    procedure Clear;
     function  Rebuild():integer;
 
-    function  SaveAs(const fname:string):boolean;
-    function Save: boolean;
+    function  SaveAs(const fname:string; aver:integer):boolean;
+    function  Save: boolean;
 
-procedure Trace();
+    procedure Trace();
 
     // Build file list and file info
     procedure GetFullInfo(idx:integer; var info:TRGFullInfo);
@@ -132,6 +135,7 @@ procedure Trace();
     function  AddFileData(afile:PWideChar; apath:PWideChar; acontent:boolean=false):integer;
   end;
 
+
 implementation
 
 uses
@@ -146,18 +150,25 @@ procedure TRGController.Init;
 begin
   Inherited Init(SizeOf(TRGCtrlInfo));
 
-  FPAK.Init;
+  FPAK:=TRGPAK.Create;
 end;
 
-procedure TRGController.Free;
+procedure TRGController.Clear;
 var
   i:integer;
 begin
-  FPAK.Free;
-  
   for i:=0 to FileCount-1 do
     if not IsFileDeleted(i) then
       ClearElement(i);
+
+  inherited Clear;
+end;
+
+procedure TRGController.Free;
+begin
+  FPAK.Free;
+  
+  Clear;
 
   inherited Free;
 end;
@@ -305,6 +316,7 @@ begin
   end;
 
   info.action:=p^.action;
+  // info.state:=UpdateState(idx);
   case info.action of
     act_mark  : info.state:=stateRemove;
     act_delete: info.state:=stateDelete;
@@ -668,7 +680,7 @@ end;
 
 {%REGION Save}
 
-function TRGController.WriteToPAK(var apak:TRGPAK; const fname:string):boolean;
+function TRGController.WriteToPAK(var apak:TRGPAK; const fname:string; aver:integer=1000):boolean;
 var
   p:PRGCtrlInfo;
   lman:PManFileInfo;
@@ -677,7 +689,8 @@ var
 begin
   result:=false;
 
-  apak.CreatePAK(fname,@FPAK.modinfo,FPAK.Version);
+  if aver=1000 then aver:=FPAK.Version;
+  apak.CreatePAK(fname,@FPAK.modinfo,aver);
 
   lbuf:=nil;
 
@@ -716,22 +729,23 @@ begin
   result:=true;
 end;
 
-function TRGController.SaveAs(const fname:string):boolean;
+function TRGController.SaveAs(const fname:string; aver:integer):boolean;
 var
   lpak:TRGPAK;
 begin
   result:=false;
 
   // just copy original (if only original is not directory)
-  if UpdatesCount=0 then // and not modinfo.modified
+  if (UpdatesCount=0) and (not FPAK.modinfo.modified) and (aver=FPAK.Version) then
   begin
     FPAK.Clone(fname);
+    result:=true;
   end
   else
   begin
-    lpak.Init;
+    lpak:=TRGPAK.Create;
 
-    if WriteToPAK(lpak,ExtractFileDir(fname)+'\'+ExtractFileNameOnly(fname)+'_TMP') then
+    if WriteToPAK(lpak,ExtractFileDir(fname)+'\'+ExtractFileNameOnly(fname)+'_TMP', aver) then
     begin
       lpak.Rename(fname);
       result:=true;
@@ -742,8 +756,26 @@ begin
 end;
 
 function TRGController.Save():boolean;
+var
+  lpak:TRGPAK;
+  lname:string;
 begin
-  result:=SaveAs(FPAK.Directory+FPAK.Name);
+  result:=false;
+//  result:=SaveAs(FPAK.Directory+FPAK.Name);
+
+  lname:=FPAK.Directory+FPAK.Name;
+  lpak:=TRGPAK.Create;
+  if WriteToPAK(lpak, lname+'_TMP') then
+  begin
+    FPAK.Free;
+    lpak.Rename(lname);
+    result:=true;
+
+    Clear;
+    FPAK:=lpak;
+    FPAK.OpenPAK;
+    Rebuild;
+  end;
 end;
 
 {%ENDREGION Save}

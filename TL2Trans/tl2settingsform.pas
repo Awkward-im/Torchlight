@@ -237,7 +237,7 @@ var
   config:TIniFile;
   i,lcnt:integer;
 begin
-  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+  config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   config.EraseSection(sNSBase+':'+sSectTabs);
 
@@ -277,7 +277,7 @@ procedure TTL2Settings.SaveGUISettings;
 var
   config:TIniFile;
 begin
-  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+  config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   config.WriteInteger(sNSBase+':'+sSectSettings,sGroupHeight,gbTranslation.Height);
 
@@ -292,7 +292,7 @@ var
   lstyle:TFontStyles;
   i:integer;
 begin
-  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+  config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   //--- Main
   config.WriteString(sNSBase+':'+sSectSettings,sDefFile  ,edDefaultFile.Text);

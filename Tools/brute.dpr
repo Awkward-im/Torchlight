@@ -5,15 +5,15 @@ uses
 
 const
   Signs:array of Char = (
-    '0','1','2','3','4','5','6','7','8','9',' ','_',
+//    '0','1','2','3','4','5','6','7','8','9',{' ',}'_',
     'A','B','C','D','E','F','G','H','I','J','K','L','M',
     'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'{,
     'a','b','c','d','e','f','g','h','i','j','k','l','m',
     'n','o','p','q','r','s','t','u','v','w','x','y','z'});
 
 const
-  minlen = 6;
-  maxlen = 6;
+  minlen = 7;
+  maxlen = 7;
 
 
 var
@@ -30,7 +30,7 @@ begin
   begin
 
     if (n<(length(s)-1)) and (Signs[i] in ['0'..'9']) then continue;
-    if ((n=1) or (n=length(s))) and ((Signs[i]=' ') {or (Signs[i]='_')}) then continue;
+    if ((n=1) or (n=length(s))) and ((Signs[i]=' ') or (Signs[i]='_')) then continue;
     if (s[n-1]=' ') and (Signs[i]=' ') then continue;
     s[n]:=Signs[i];
     if n = length(s) then
@@ -65,7 +65,7 @@ var
   i:integer;
 begin
   sl:=TStringList.Create;
-//  try
+  try
     sl.LoadFromFile('hashes.txt');
     SetLength(hashes,sl.Count);
     for i:=0 to sl.Count-1 do
@@ -80,17 +80,18 @@ begin
     // for all lengths
     for i:=minlen to maxlen do
     begin
-writeln(i);
+writeln('>>',i);
       ls[i+1]:=#0;
       ls[0]:=CHR(i);
-      ls[1]:='Z';
+      ls[1]:='A';
       ls[2]:='A';
       ls[3]:='P';
       add(ls,1);
     end;
 
-//  finally
+  finally
+    sl.Sort;
     sl.SaveToFile('result.txt');
     sl.Free;
-//  end;
+  end;
 end.

@@ -1,3 +1,4 @@
+{TODO: Rename As* method to Get*/Set*}
 {TODO: make Vector2, Vector3 and Vector 4 values too}
 {TODO: As* for get value - add default values}
 {TODO: Add blob field for use as Hash for names or ID for layout nodes. but not both?}
@@ -154,6 +155,7 @@ var
   i:integer;
 begin
   result:=0;
+  lhash:=0;
   if (anode<>nil) and (PRGNode(anode)^.nodetype=rgGroup) then
   begin
     if (aname<>nil) and (aname^<>#0) then lhash:=RGHash(aname);
@@ -749,6 +751,7 @@ function CloneNode(anode:pointer):pointer;
 var
   i:integer;
 begin
+  result:=nil;
   if PRGNode(anode)^.nodetype=rgUnknown then
   else
   begin

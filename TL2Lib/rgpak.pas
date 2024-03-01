@@ -32,8 +32,7 @@ const
   piFullParse = 2; // with packed/unpacked file size
 
 type
-  PPAKInfo = ^TRGPAK;
-  TRGPAK = object
+  TRGPAK = class
   private
     FStream:TStream;
     FBuf   :PByte;
@@ -61,8 +60,8 @@ type
     function  PAKHash(ast:TStream; asize:int64):dword;
 
   public
-    procedure Init;
-    procedure Free;
+    constructor Create;
+    destructor Destroy; override;
 
     function  OpenPAK:boolean;
     procedure ClosePAK;
@@ -181,25 +180,25 @@ type
   end;
 
 
-procedure TRGPAK.Init();
+constructor TRGPAK.Create();
 begin
-  FillChar(self,SizeOf(TRGPAK),0);
+  inherited;
+
+//  FillChar(self,SizeOf(TRGPAK),0);
   FVersion:=verUnk;
 
   man.Init;
 end;
 
-procedure TRGPAK.Free();
+destructor TRGPAK.Destroy();
 begin
   ClosePAK;
   man.Free();
   ClearModInfo(modinfo);
 
-  // clear
-  FName  :='';
-  FSrcDir:='';
-  FillChar(self,SizeOf(TRGPAK),0);
-  FVersion:=verUnk;
+//  FillChar(self,SizeOf(TRGPAK),0);
+
+  inherited;
 end;
 
 function TRGPAK.MakeDataFileName():String;
@@ -487,7 +486,7 @@ function RGPAKGetVersion(const aname:string):integer;
 var
   lPAK:TRGPAK;
 begin
-  lPAK.Init();
+  lPAK:=TRGPAK.Create();
   result:=lPAK.GetBaseInfo(aname);
 {
   if lPAKGetInfo(aname,piNoParse) then

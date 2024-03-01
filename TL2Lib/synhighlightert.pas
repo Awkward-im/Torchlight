@@ -341,7 +341,7 @@ begin
       TextProc();
     end;
 
-  else// inc(Run);
+//  else// inc(Run);
   end;
 end;
 

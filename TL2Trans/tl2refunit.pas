@@ -3,6 +3,9 @@
   It saves just text reference info like: file-line-tag
   and reference to base placement for doubles
 }
+{TODO:keep file and dir separately}
+{TODO:split saved data ro code blocks}
+{TODO:replace fname and tags by textcache}
 unit TL2RefUnit;
 
 interface
@@ -80,6 +83,17 @@ type
 
 
 implementation
+
+{
+  1 - dir+filename
+  2 - dir
+  3 - filename
+  4 - tag
+  5 - ref data
+  6 - unpacked dir
+  7 - packed file
+  8 - version
+}
 
 const
   rfIsSkill     = 1;

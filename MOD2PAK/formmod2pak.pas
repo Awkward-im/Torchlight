@@ -498,10 +498,10 @@ begin
   memDescription.Clear;
   if LoadModConfiguration(PChar(deGameDir.Text+'\PAKS\'+fname+'.DAT'),mi) then
   begin
-    memDescription.Append(sTitle +': '+String(WideString(mi.title))+
+    memDescription.Append(sTitle +': '+String(UnicodeString(mi.title))+
                                  ' v.'+IntToStr(mi.modver));
-    memDescription.Append(sAuthor+': '+String(WideString(mi.author)));
-    memDescription.Append(sDescr +': '+String(WideString(mi.descr)));
+    memDescription.Append(sAuthor+': '+String(UnicodeString(mi.author)));
+    memDescription.Append(sDescr +': '+String(UnicodeString(mi.descr)));
     ClearModInfo(mi);
   end;
 end;
@@ -556,7 +556,7 @@ var
   ini:TIniFile;
 begin
   try
-    ini:=TIniFile.Create(inifilename);
+    ini:=TMemIniFile.Create(inifilename);
     ini.WriteString (iniSection,iniGameDir     ,deGameDir.Text);
     ini.WriteString (iniSection,iniLastModPath ,FLastModPath);
     ini.WriteBool(iniSection,iniSaveSettings,cbSaveSettings.Checked);

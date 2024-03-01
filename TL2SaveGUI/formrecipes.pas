@@ -82,7 +82,7 @@ begin
   if (OldActualState   <>cbJustActual.Checked) or
      (OldHaveTitleState<>cbHaveTitle .Checked) then
   begin
-    config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+    config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
     config.WriteBool(sRecipes,sJustActual,cbJustActual.Checked);
     config.WriteBool(sRecipes,sHaveTitle ,cbHaveTitle .Checked);
 

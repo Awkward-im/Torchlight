@@ -770,7 +770,7 @@ begin
 
   if (FKind=ciPlayer) and (OldCheckPointsState<>cbCheckPoints.Checked) then
   begin
-    config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+    config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
     config.WriteBool(sStats,sCheckPoints,cbCheckPoints.Checked);
 
     config.UpdateFile;

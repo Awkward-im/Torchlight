@@ -86,9 +86,9 @@ begin
   ldir:=adir;
   if (ldir[Length(ldir)]<>'/') and (ldir[Length(ldir)]<>'\') then ldir:=ldir+'/';
 
-  p:=ParseTextFile(PChar(ldir+'MEDIA/FEATURETAGS.HIE'));
-  if p=nil then
-    p:=ParseDatFile(PChar(ldir+'MEDIA/FEATURETAGS.HIE.BINDAT'));
+                p:=ParseTextFile(PChar(ldir+'MEDIA/FEATURETAGS.HIE'));
+  if p=nil then p:=ParseDatFile (PChar(ldir+'MEDIA/FEATURETAGS.HIE'));
+  if p=nil then p:=ParseDatFile (PChar(ldir+'MEDIA/FEATURETAGS.HIE.BINDAT'));
 
   if p<>nil then
   begin

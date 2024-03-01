@@ -1466,10 +1466,10 @@ begin
       begin
         MakeModInfo(lmodinfo);
         LoadModConfiguration(PChar(sl[i]),lmodinfo);
-        FModTitle  :=String(WideString(lmodinfo.title));
-        FModAuthor :=String(WideString(lmodinfo.author));
-        FModDescr  :=String(WideString(lmodinfo.descr));
-        FModURL    :=String(WideString(lmodinfo.download));
+        FModTitle  :=String(UnicodeString(lmodinfo.title));
+        FModAuthor :=String(UnicodeString(lmodinfo.author));
+        FModDescr  :=String(UnicodeString(lmodinfo.descr));
+        FModURL    :=String(UnicodeString(lmodinfo.download));
         FModVersion:=lmodinfo.modver;
         FModID     :=lmodinfo.modid;
         ClearModInfo(lmodinfo);
@@ -1486,7 +1486,7 @@ end;
 
 function TTL2Translation.ProcessNode(anode:pointer; const afile:string; atype:integer):integer;
 var
-  ltag,ls:string;
+  ltag,ls:AnsiString;
   i,lline,lref:integer;
 begin
   result:=0;
@@ -1502,16 +1502,16 @@ begin
     end;
 
     rgTranslate: begin
-      ltag:=AnsiString(WideString(GetNodeName(anode)));
-      ls  :=AnsiString(WideString(AsTranslate(anode)));
+      ltag:=AnsiString(UnicodeString(GetNodeName(anode)));
+      ls  :=AnsiString(UnicodeString(AsTranslate(anode)));
       lline:=-1;
     end;
 
     rgString: begin
-      ltag:=AnsiString(WideString(GetNodeName(anode)));
+      ltag:=AnsiString(UnicodeString(GetNodeName(anode)));
 
       if ltag=sDescription then
-        ls:=AnsiString(WideString(AsString(anode)))
+        ls:=AnsiString(UnicodeString(AsString(anode)))
       else if (atype=1) and (
          (pos(sText_  ,ltag)=1) or
          (pos(sDialog_,ltag)=1) or
@@ -1523,7 +1523,7 @@ begin
          (ltag=sReturn  ) or
          (ltag=sComplete) or
          (ltag=sComplRet)) then
-        ls:=AnsiString(WideString(AsString(anode)));
+        ls:=AnsiString(UnicodeString(AsString(anode)));
 
       lline:=1;
     end;
@@ -1611,16 +1611,15 @@ begin
 
   FScanIdx:=0;
 
-  {TODO: Skip TRANSLATIONS directory}
   result:=MakeRGScan(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@self,nil)>0;
   if result then
   begin
     if ReadModInfo(PChar(afile), lmod) then
     begin
-      FModTitle  :=String(WideString(lmod.title));
-      FModAuthor :=String(WideString(lmod.author));
-      FModDescr  :=String(WideString(lmod.descr));
-      FModURL    :=String(WideString(lmod.download));
+      FModTitle  :=String(UnicodeString(lmod.title));
+      FModAuthor :=String(UnicodeString(lmod.author));
+      FModDescr  :=String(UnicodeString(lmod.descr));
+      FModURL    :=String(UnicodeString(lmod.download));
       FModVersion:=lmod.modver;
       FModID     :=lmod.modid;
       ClearModInfo(lmod);

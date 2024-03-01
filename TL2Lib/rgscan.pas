@@ -251,7 +251,7 @@ begin
   GetMem  (aptr ,SizeOf(TScanObj));
   FillChar(aptr^,SizeOf(TScanObj),0);
 
-  PScanObj(aptr)^.FMod.Init;
+  PScanObj(aptr)^.FMod:=TRGPAK.Create();
   if ldir='' then
     PScanObj(aptr)^.FMod.GetInfo(apath,piParse)
   else

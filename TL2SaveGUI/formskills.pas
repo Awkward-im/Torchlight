@@ -158,7 +158,7 @@ begin
      (OldCheckPoints<>cbCheckPoints.Checked) or
      (OldSaveFull   <>cbSaveFull   .Checked) then
   begin
-    config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+    config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
     config.WriteBool(sSkills,sCheckLevel ,cbCheckLevel .Checked);
     config.WriteBool(sSkills,sCheckPoints,cbCheckPoints.Checked);
     config.WriteBool(sSkills,sSaveFull   ,cbSaveFull   .Checked);

@@ -818,7 +818,8 @@ begin
   else if fname=RawNames[nmUI          ] then result:=EncodeUI          (astream,data)
   else if fname=RawNames[nmPARTICLES   ] then result:=EncodeParticles   (astream,data)
   else if fname=RawNames[nmCELLDB      ] then result:=EncodeCellDB      (astream,data)
-  else if fname=RawNames[nmQUESTMARKERS] then result:=EncodeQuestMarkers(astream,data);
+  else if fname=RawNames[nmQUESTMARKERS] then result:=EncodeQuestMarkers(astream,data)
+  else result:=0;
 end;
 
 function BuildRawMem(data:pointer; out bin:pByte; const fname:string):integer;

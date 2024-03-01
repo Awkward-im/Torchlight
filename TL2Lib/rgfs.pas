@@ -80,6 +80,7 @@ type
   // Base
   public
     procedure Init(aInfoSize:integer=SizeOf(TFileInfo));
+    procedure Clear;
     procedure Free;
 
   public
@@ -135,6 +136,7 @@ type
     function IsFileDeleted(aidx:integer):boolean;
     function IsDir        (aidx:integer):boolean;
     function PathOfFile   (aidx:integer):PWideChar;
+    function FileDir      (aidx:integer):integer;
     function DirName      (adir:integer):PWideChar;
     function IndexOf(p:pointer):integer;
 
@@ -277,6 +279,11 @@ begin
   result:=Dirs[Files[aidx]^.parent].Name;
 end;
 
+function TRGDirList.FileDir(aidx:integer):integer; inline;
+begin
+  result:=Files[aidx]^.parent;
+end;
+
 function TRGDirList.DirName(adir:integer):PWideChar; inline;
 var
   lpath:PWideChar;
@@ -387,7 +394,7 @@ begin
   FFileDelFirst:=-1;
 end;
 
-procedure TRGDirList.Free;
+procedure TRGDirList.Clear;
 begin
   Finalize(Dirs);
   Dirs:=nil;
@@ -402,6 +409,12 @@ begin
   FFileCount:=0;
   FFileDelFirst:=-1;
 end;
+
+procedure TRGDirList.Free;
+begin
+  Clear;
+end;
+
 {%ENDREGION Main}
 
 {%REGION Search}

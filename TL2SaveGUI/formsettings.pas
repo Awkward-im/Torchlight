@@ -115,7 +115,7 @@ procedure TfmSettings.bbSaveClick(Sender: TObject);
 var
   config:TIniFile;
 begin
-  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+  config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   config.WriteString (sSettings,sDBFile    ,edDBFile  .Text);
   config.WriteString (sSettings,sIconDir   ,edIconDir .Text);

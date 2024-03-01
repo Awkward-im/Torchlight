@@ -109,7 +109,7 @@ begin
         lidx:=slModList.Add(ls);
         if LoadModConfiguration(PChar(ls+'MOD.DAT'),mi) then
         begin
-          lbModList.AddItem(String(WideString(mi.title)),TObject(IntPtr(lidx)));
+          lbModList.AddItem(String(UnicodeString(mi.title)),TObject(IntPtr(lidx)));
           ClearModInfo(mi);
         end
         else
@@ -120,7 +120,7 @@ begin
         lidx:=slModList.Add(ls);
         if ReadModInfo(PChar(ls),mi) then
         begin
-          lbModList.AddItem(String(WideString(mi.title)),TObject(IntPtr(lidx)));
+          lbModList.AddItem(String(UnicodeString(mi.title)),TObject(IntPtr(lidx)));
           ClearModInfo(mi);
         end
         else
@@ -142,7 +142,7 @@ var
   lsect:string;
   i:integer;
 begin
-  ini:=TIniFile.Create('combine.ini',[ifoEscapeLineFeeds,ifoStripQuotes]);
+  ini:=TMemIniFile.Create('combine.ini',[ifoEscapeLineFeeds,ifoStripQuotes]);
   lsect:=ExtractFileName(deOutputDir.Text);
 
   ini.WriteString('base','last',lsect);
@@ -270,7 +270,7 @@ begin
           lidx:=slModList.Add(ld.Files[i]);
           if ReadModInfo(PChar(ld.Files[i]),mi) then
           begin
-            lbModList.AddItem(String(WideString(mi.title)),TObject(IntPtr(lidx)));
+            lbModList.AddItem(String(UnicodeString(mi.title)),TObject(IntPtr(lidx)));
             ClearModInfo(mi);
           end
           else
@@ -309,7 +309,7 @@ begin
           lidx:=slModList.Add(ls);
           if LoadModConfiguration(PChar(ls+'MOD.DAT'),mi) then
           begin
-            lbModList.AddItem(String(WideString(mi.title)),TObject(IntPtr(lidx)));
+            lbModList.AddItem(String(UnicodeString(mi.title)),TObject(IntPtr(lidx)));
             ClearModInfo(mi);
           end
           else
@@ -340,9 +340,9 @@ begin
 
   if l then
   begin
-    memDescription.Append('Name: '       +String(WideString(mi.title)));
-    memDescription.Append('Author: '     +String(WideString(mi.author)));
-    memDescription.Append('Description: '+String(WideString(mi.descr)));
+    memDescription.Append('Name: '       +String(UnicodeString(mi.title)));
+    memDescription.Append('Author: '     +String(UnicodeString(mi.author)));
+    memDescription.Append('Description: '+String(UnicodeString(mi.descr)));
     ClearModInfo(mi);
   end;
 end;

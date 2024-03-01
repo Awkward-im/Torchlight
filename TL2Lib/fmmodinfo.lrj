@@ -5,11 +5,17 @@
 {"hash":76147714,"name":"tmodinfoform.leauthor.editlabel.caption","sourcebytes":[77,111,100,32,65,117,116,104,111,114],"value":"Mod Author"},
 {"hash":117094332,"name":"tmodinfoform.lewebsite.editlabel.caption","sourcebytes":[77,111,100,32,87,101,98,115,105,116,101,32,85,82,76],"value":"Mod Website URL"},
 {"hash":29751356,"name":"tmodinfoform.ledownload.editlabel.caption","sourcebytes":[77,111,100,32,68,111,119,110,108,111,97,100,32,85,82,76],"value":"Mod Download URL"},
-{"hash":256717742,"name":"tmodinfoform.lbldescr.caption","sourcebytes":[77,111,100,32,68,101,115,99,114,105,112,116,105,111,110],"value":"Mod Description"},
 {"hash":190612841,"name":"tmodinfoform.lblguid.caption","sourcebytes":[77,111,100,32,71,85,73,68,32,40,99,108,105,99,107,32,98,117,116,116,111,110,32,102,111,114,32,110,101,119,41],"value":"Mod GUID (click button for new)"},
 {"hash":77089212,"name":"tmodinfoform.bbcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
 {"hash":102960261,"name":"tmodinfoform.lefilename.editlabel.caption","sourcebytes":[77,111,100,32,70,105,108,101,32,78,97,109,101],"value":"Mod File Name"},
 {"hash":9308581,"name":"tmodinfoform.bbsave.hint","sourcebytes":[83,97,118,101,32,116,111,32,102,105,108,101],"value":"Save to file"},
 {"hash":366789,"name":"tmodinfoform.bbsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
-{"hash":174894857,"name":"tmodinfoform.lblnote.caption","sourcebytes":[68,111,110,39,116,32,107,101,101,112,32,118,101,114,115,105,111,110,32,97,110,100,32,71,85,73,68,32,101,109,112,116,121,32,40,111,114,32,122,101,114,111,41],"value":"Don't keep version and GUID empty (or zero)"}
+{"hash":174894857,"name":"tmodinfoform.lblnote.caption","sourcebytes":[68,111,110,39,116,32,107,101,101,112,32,118,101,114,115,105,111,110,32,97,110,100,32,71,85,73,68,32,101,109,112,116,121,32,40,111,114,32,122,101,114,111,41],"value":"Don't keep version and GUID empty (or zero)"},
+{"hash":256717742,"name":"tmodinfoform.tsdescr.hint","sourcebytes":[77,111,100,32,68,101,115,99,114,105,112,116,105,111,110],"value":"Mod Description"},
+{"hash":156067838,"name":"tmodinfoform.tsdescr.caption","sourcebytes":[68,101,115,99,114,105,112,116,105,111,110],"value":"Description"},
+{"hash":78392485,"name":"tmodinfoform.tsdelete.caption","sourcebytes":[68,101,108,101,116,101],"value":"Delete"},
+{"hash":13956244,"name":"tmodinfoform.tsrequirement.caption","sourcebytes":[82,101,113,117,105,114,101,109,101,110,116],"value":"Requirement"},
+{"hash":346165,"name":"tmodinfoform.sgreq.columns[0].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
+{"hash":1236,"name":"tmodinfoform.sgreq.columns[1].title.caption","sourcebytes":[73,68],"value":"ID"},
+{"hash":214540302,"name":"tmodinfoform.sgreq.columns[2].title.caption","sourcebytes":[86,101,114,115,105,111,110],"value":"Version"}
 ]}

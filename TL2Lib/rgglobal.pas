@@ -31,8 +31,9 @@ const
   TL2ModData  = 'MOD.DAT';
 
 const
-  DefaultExt    = '.MOD';
-  DefaultFilter = 'MOD files|*.MOD|PAK files|*.PAK|MAN files|*.MAN|Supported files|*.MOD;*.PAK;*.MAN|All files|*.*';
+  DefaultExt     = '.MOD';
+  DefaultFilter  = 'MOD files|*.MOD|PAK files|*.PAK|MAN files|*.MAN|Supported files|*.MOD;*.PAK;*.MAN|All files|*.*';
+  DefWriteFilter = 'TL2 MOD file|*.MOD|TL2 PAK file|*.PAK|Hob PAK file|*.PAK|Rebel Galaxy PAK file|*.PAK|Rebel Galaxy Outlaw PAK file|*.PAK';
 
 //--- Constants
 
@@ -48,6 +49,21 @@ const
   verRG     = 4;
   verRGO    = 5;
   verTL2Mod = -verTL2;
+
+const
+  RGGames : array [0..5] of record
+    ver :integer;
+    name:string;
+  end = (
+    (ver:verTL1   ; name:'Torchlight I'),
+    (ver:verTL2   ; name:'Torchlight II'),
+    (ver:verTL2Mod; name:'Torchlight II Mod'),
+    (ver:verHob   ; name:'Hob'),
+    (ver:verRG    ; name:'Rebel Galaxy'),
+    (ver:verRGO   ; name:'Rebel Galaxy Outlaw')
+  );
+
+function GetGameName(aver:integer):string;
 
 const
   FloatPrec :integer = 6;
@@ -261,6 +277,7 @@ type
       ver :Word;
     end;
     modver  :Word;
+    modified:boolean;
   end;
 
 //===== Other =====
@@ -658,6 +675,17 @@ begin
     if (i>1) and not (aFileName[i-1] in ['/','\']) then
       Result:=Copy(aFileName,i);
   end;
+end;
+
+function GetGameName(aver:integer):string;
+var
+  i:integer;
+begin
+  for i:=0 to High(RGGames) do
+    if RGGames[i].ver=aver then
+      exit(RGGames[i].name);
+
+  result:='';
 end;
 
 //----- Data types -----

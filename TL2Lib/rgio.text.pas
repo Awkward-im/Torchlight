@@ -1,4 +1,4 @@
-﻿{TODO: change WriteWide to Logging?}
+﻿{TODO: change WriteWide to Logging? but we construct line from several parts}
 unit RGIO.Text;
 
 interface

@@ -58,7 +58,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Website URL'
     EditLabel.ParentColor = False
-    TabOrder = 6
+    TabOrder = 5
   end
   object leDownload: TLabeledEdit
     Left = 7
@@ -69,22 +69,14 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod Download URL'
     EditLabel.ParentColor = False
-    TabOrder = 7
-  end
-  object memDescr: TMemo
-    Left = 391
-    Height = 211
-    Top = 24
-    Width = 352
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    TabOrder = 5
+    TabOrder = 6
   end
   object lblDescr: TLabel
-    Left = 391
-    Height = 15
-    Top = 5
+    Left = 568
+    Height = 1
+    Top = 176
     Width = 88
-    Caption = 'Mod Description'
+    Anchors = [akTop, akLeft, akRight]
     ParentColor = False
   end
   object lblGUID: TLabel
@@ -106,7 +98,7 @@ object MODInfoForm: TMODInfoForm
     DefaultCaption = True
     Kind = bkOK
     ModalResult = 1
-    TabOrder = 9
+    TabOrder = 8
     OnClick = bbOKClick
   end
   object bbCancel: TBitBtn
@@ -119,7 +111,7 @@ object MODInfoForm: TMODInfoForm
     Caption = 'Cancel'
     Kind = bkCancel
     ModalResult = 2
-    TabOrder = 8
+    TabOrder = 7
     OnClick = bbCancelClick
   end
   object edGUID: TEdit
@@ -149,7 +141,7 @@ object MODInfoForm: TMODInfoForm
     EditLabel.Width = 376
     EditLabel.Caption = 'Mod File Name'
     EditLabel.ParentColor = False
-    TabOrder = 10
+    TabOrder = 9
   end
   object bbSave: TBitBtn
     Left = 391
@@ -157,10 +149,11 @@ object MODInfoForm: TMODInfoForm
     Hint = 'Save to file'
     Top = 274
     Width = 92
+    Anchors = [akLeft, akBottom]
     Caption = 'Save'
     Default = True
     Kind = bkOK
-    TabOrder = 11
+    TabOrder = 10
     OnClick = bbSaveClick
   end
   object lblNote: TLabel
@@ -168,10 +161,95 @@ object MODInfoForm: TMODInfoForm
     Height = 17
     Top = 247
     Width = 280
+    Anchors = [akLeft, akBottom]
     Caption = 'Don''t keep version and GUID empty (or zero)'
     Font.Height = 18
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
+  end
+  object PageControl: TPageControl
+    Left = 391
+    Height = 230
+    Top = 6
+    Width = 352
+    ActivePage = tsRequirement
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ParentShowHint = False
+    ShowHint = True
+    TabIndex = 2
+    TabOrder = 11
+    object tsDescr: TTabSheet
+      Hint = 'Mod Description'
+      Caption = 'Description'
+      ClientHeight = 202
+      ClientWidth = 344
+      object memDescr: TMemo
+        Left = 0
+        Height = 202
+        Top = 0
+        Width = 344
+        Align = alClient
+        TabOrder = 0
+      end
+    end
+    object tsDelete: TTabSheet
+      Caption = 'Delete'
+      ClientHeight = 202
+      ClientWidth = 344
+      object lbDelete: TListBox
+        Left = 0
+        Height = 202
+        Top = 0
+        Width = 344
+        Align = alClient
+        ItemHeight = 0
+        MultiSelect = True
+        TabOrder = 0
+        OnKeyDown = lbDeleteKeyDown
+      end
+    end
+    object tsRequirement: TTabSheet
+      Caption = 'Requirement'
+      ClientHeight = 202
+      ClientWidth = 344
+      TabVisible = False
+      object sgReq: TStringGrid
+        Left = 0
+        Height = 202
+        Top = 0
+        Width = 344
+        Align = alClient
+        AutoAdvance = aaDown
+        AutoFillColumns = True
+        ColCount = 3
+        Columns = <        
+          item
+            Title.Caption = 'Name'
+            Width = 188
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'ID'
+            Width = 108
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Version'
+            Width = 48
+          end>
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goEditing, goSmoothScroll]
+        RowCount = 1
+        TabAdvance = aaDown
+        TabOrder = 0
+        OnKeyDown = sgReqKeyDown
+        ColWidths = (
+          188
+          108
+          48
+        )
+      end
+    end
   end
 end

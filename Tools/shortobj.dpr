@@ -1,6 +1,7 @@
 uses
   classes,
   rgnode,
+  rgio.text,
   rgdict,
   sysutils,
   rgglobal;
@@ -12,14 +13,14 @@ var
 
 procedure ProcessObjects;
 var
-  l_scene,l_object,l_property,l_id,l_objid,l_type:string;
+  l_descr,l_scene,l_object,l_property,l_id,l_objid,l_type:string;
   l_scid,l_object1,l_objid1:string;
 
   sobj,gobj,lprop,lnode,lobj:pointer;
   lscene,lobject,lproperty:pointer;
   lobjs,lchilds,i,j,k:integer;
 begin
-  if objInfo=nil then objInfo:=ParseDATFile('objects.dat');
+  if objInfo=nil then objInfo:=ParseTextFile('objects.dat');
 
   for lobjs:=0 to GetChildCount(objInfo)-1 do
   begin
@@ -54,6 +55,7 @@ begin
             lobj:=GetChild(gobj,i);
             l_object1:='';
             l_objid1 :='';
+            l_descr  :='';
             // get object ID
             for j:=0 to GetChildCount(lobj)-1 do
             begin
@@ -62,7 +64,7 @@ begin
               if (l_object1<>'') and (l_objid1<>'') then
               begin
                 sl2.Add('');
-                sl2.Add('  *'+l_objid1+':'+l_object1);
+                sl2.Add('  *'+l_objid1+':'+l_object1+':'+l_descr);
                 l_objid1 :='';
                 l_object1:='';
               end;
@@ -72,6 +74,11 @@ begin
                 AddString(lobject,'NAME',AsString(lprop));
                 l_object:=string(widestring(AsString(lprop)));
                 l_object1:=l_object;
+              end
+              else if CompareWide(GetNodeName(lprop),'DESCRIPTION')=0 then
+              begin
+                AddString(lobject,'DESCRIPTION',AsString(lprop));
+                l_descr:=string(widestring(AsString(lprop)));
               end
               else if CompareWide(GetNodeName(lprop),'ID')=0 then
               begin
@@ -94,6 +101,11 @@ begin
                     l_property:=string(widestring(AsString(lnode)));
                     AddString(lproperty,'NAME',AsString(lnode))
                   end
+                  else if CompareWide(GetNodeName(lnode),'DESCRIPTION')=0 then
+                  begin
+                    l_descr:=string(widestring(AsString(lnode)));
+                    AddString(lproperty,'DESCRIPTION',AsString(lnode))
+                  end
                   else if CompareWide(GetNodeName(lnode),'ID')=0 then
                   begin
                     AddInteger(lproperty,'ID',AsInteger(lnode));
@@ -105,7 +117,7 @@ begin
                     l_type:=string(widestring(AsString(lnode)));
                    end;
                 end;
-                sl2.Add('    '+l_id+':'+l_type+':'+l_property);
+                sl2.Add('    '+l_id+':'+l_type+':'+l_property+':'+l_descr);
                 sl .Add(l_object+':'+l_objid+':'+l_property+':'+l_id+':'+l_type{+':'+l_scene});
                 sl1.Add(l_scene +':'+l_objid+':'+l_object+':'+l_id+':'+l_property+':'+l_type{+':'+l_scene});
               end;
@@ -127,7 +139,7 @@ begin
   slout:=AddGroup(nil,'LayoutObjects');
   objinfo:=nil;
   ProcessObjects;
-  WriteDatTree(slout,'objout.dat');
+  BuildTextFile(slout,'objout.dat');
   DeleteNode(slout);
   sl.Sort;
   sl.SaveToFile('sortedtags.txt');

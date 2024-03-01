@@ -399,7 +399,7 @@ if Funkn7[2]<>RGIdEmpty then DbgLn('  after scale[2]='+HexStr(Funkn7[2],16)+' at
 if FUnkn17<>$FFFFFFFF then DbgLn('pre-name is '+HexStr(FUnkn17,8));
 
   FName  :=AStream.ReadShortString();    // :55(pet) Char name
-DbgLn('  name:'+string(widestring(fname)));
+DbgLn('  name:'+string(UnicodeString(fname)));
   FSuffix:=AStream.ReadShortString();    // like mob title "(Teleporting)"
   if FIsChar then                        // if ver >=0x26 or FWardrobe
     FPlayer:=AStream.ReadShortString();  // "PLAYER" (prefix) !!!!! not exists for pets!!!!!!
