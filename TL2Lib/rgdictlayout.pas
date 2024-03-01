@@ -1,4 +1,5 @@
-﻿{TODO: make objects and props arrays expandable in LoadLayoutDict }
+﻿{TODO: GetObjectDescr and GetPropDescr (by ID or Name?)}
+{TODO: make objects and props arrays expandable in LoadLayoutDict }
 {TODO: change dicts to UTF8. just disk or memory too?}
 unit RGDictLayout;
 
@@ -24,9 +25,7 @@ type
     function GetObjectById  (aid:dword):pointer;
     function GetObjectByName(aname:PWideChar):pointer;
 
-    function GetObjectName():PWideChar;
-    function GetObjectName(aid:dword):PWideChar;
-
+    function GetObjectName(aid:dword=dword(-1)):PWideChar;
     function GetObjectId(aname:PWideChar):dword;
 
     function GetPropsCount:integer;
@@ -34,7 +33,6 @@ type
     function GetProperty(aid:dword):pointer;
     function GetPropInfoByIdx (idx:integer; out aid:dword; out aname:PWideChar):integer;
     function GetPropInfoById  (aid:dword; out aname:PWideChar):integer;
-    function GetPropInfoByName(aname:PWideChar; out aid:dword):integer;
     function GetPropInfoByName(aname:PWideChar; atype:integer; out aid:dword):integer;
 
     property Version:integer read FVersion write SetVersion;
@@ -202,24 +200,18 @@ end;
 
 function TRGObject.GetObjectId(aname:PWideChar):dword;
 begin
-  if GetObjectByName(aname)<>nil then
+  if aname<>nil then GetObjectByName(aname);
+  if FLastObject<>nil then
     result:=PObjInfo(FLastObject)^.id
   else
     result:=dword(-1);
 end;
 
-function TRGObject.GetObjectName():PWideChar;
+function TRGObject.GetObjectName(aid:dword=dword(-1)):PWideChar;
 begin
+  if aid=dword(-1) then GetObjectById(aid);
   if FLastObject<>nil then
     result:=PObjInfo(FLastObject)^.name
-  else
-    result:=nil;
-end;
-
-function TRGObject.GetObjectName(aid:dword):PWideChar;
-begin
-  if GetObjectById(aid)<>nil then
-    result:=GetObjectName()
   else
     result:=nil;
 end;
@@ -293,51 +285,6 @@ begin
 }
 end;
 
-function TRGObject.GetPropInfoByName(aname:PWideChar; out aid:dword):integer;
-var
-  lprop:PPropInfo;
-  i,l:integer;
-  c:AnsiChar;
-begin
-  if FLastObject<>nil then
-  begin
-    l:=Length(aname)-1;
-    if l>=0 then
-    begin
-      c:=Char(ord(aname[l]));
-      for i:=0 to PObjInfo(FLastObject)^.count-1 do
-      begin
-        lprop:=@(PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+i]);
-
-        if lprop^.ptype in [rgVector2, rgVector3, rgVector4] then
-        begin
-          if ((lprop^.ptype=rgVector2) and (c in ['X','x','Y','y'])) or
-             ((lprop^.ptype=rgVector3) and (c in ['X','x','Y','y','Z','z'])) or
-             ((lprop^.ptype=rgVector4) and (c in ['X','x','Y','y','Z','z','W','w'])) then
-    
-            if (CompareWide(aname,lprop^.name,l)=0) then
-            begin
-              aid:=lprop^.id;
-              result:=lprop^.ptype;//rgFloat;
-              exit;
-            end;
-        end
-        else
-        begin
-          if CompareWide(aname,lprop^.name)=0 then
-          begin
-            aid:=lprop^.id;
-            result:=lprop^.ptype;
-            exit;
-          end;
-        end;
-
-      end;
-    end;
-  end;
-
-  result:=rgUnknown;
-end;
 function TRGObject.GetPropInfoByName(aname:PWideChar; atype:integer; out aid:dword):integer;
 var
   lprop:PPropInfo;
@@ -354,7 +301,8 @@ begin
       begin
         lprop:=@(PLayoutInfo(FDict)^.Props[PObjInfo(FLastObject)^.start+i]);
 
-        if (atype=rgFloat) and (lprop^.ptype in [rgVector2, rgVector3, rgVector4]) then
+        if ((atype=rgUnknown) or (atype=rgFloat)) and
+           (lprop^.ptype in [rgVector2, rgVector3, rgVector4]) then
         begin
           if ((lprop^.ptype=rgVector2) and (c in ['X','x','Y','y'])) or
              ((lprop^.ptype=rgVector3) and (c in ['X','x','Y','y','Z','z'])) or
@@ -369,7 +317,7 @@ begin
         end
         else
         begin
-          if (lprop^.ptype=atype) and (CompareWide(aname,lprop^.name)=0) then
+          if ((atype=rgUnknown) or (lprop^.ptype=atype)) and (CompareWide(aname,lprop^.name)=0) then
           begin
             aid:=lprop^.id;
             result:=lprop^.ptype;//atype;
