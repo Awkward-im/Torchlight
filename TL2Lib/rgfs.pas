@@ -19,6 +19,9 @@ type
     procedure SetFileName(aname:PUnicodeChar);
     function  GetFileNameLen():integer;
   public
+    procedure SameNameAs(afi:PBaseInfo);
+    function  IsSameName(afi:PBaseInfo):boolean;
+
     property Name   :PUnicodeChar read GetFileName write SetFileName;
     property NameLen:integer      read GetFileNameLen;
   end;
@@ -256,6 +259,16 @@ end;
 function TBaseInfo.GetFileNameLen():integer;
 begin
   result:=names.len[self.fname];
+end;
+
+procedure TBaseInfo.SameNameAs(afi:PBaseInfo); inline;
+begin
+  fname:=afi^.fname;
+end;
+
+function TBaseInfo.IsSameName(afi:PBaseInfo):boolean; inline;
+begin
+  result:=fname=afi^.fname;
 end;
 
 function TRGDirList.IsDir(aidx:integer):boolean;

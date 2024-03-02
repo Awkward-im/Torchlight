@@ -212,6 +212,8 @@ var
 begin
   result:=0;
 
+  DirCapacity :=PAK.Man.DirCapacity;
+  FileCapacity:=PAK.Man.FileCapacity;
   // No need to check for existing
   for ldirs:=0 to PAK.Man.DirCount-1 do
   begin
@@ -219,13 +221,14 @@ begin
     begin
       ldir:=AppendDir(PAK.Man.Dirs[ldirs].name);
       if PAK.Man.GetFirstFile(lidx,ldir) then
-      repeat
-        lfile:=AppendFile(ldir,PAK.Man.Files[lidx]^.name);
-        with PRGCtrlInfo(Files[lfile])^ do
-         begin
-          source:=lidx;
-        end;
-      until not PAK.Man.GetNextFile(lidx);
+        repeat
+          lfile:=AppendFile(ldir,nil{PAK.Man.Files[lidx]^.name});
+          with PRGCtrlInfo(Files[lfile])^ do
+          begin
+            SameNameAs(PAK.Man.Files[lidx]);
+            source:=lidx;
+          end;
+        until not PAK.Man.GetNextFile(lidx);
     end;
   end;
 end;
