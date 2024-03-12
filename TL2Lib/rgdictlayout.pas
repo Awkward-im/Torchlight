@@ -209,7 +209,7 @@ end;
 
 function TRGObject.GetObjectName(aid:dword=dword(-1)):PWideChar;
 begin
-  if aid=dword(-1) then GetObjectById(aid);
+  if aid<>dword(-1) then GetObjectById(aid);
   if FLastObject<>nil then
     result:=PObjInfo(FLastObject)^.name
   else

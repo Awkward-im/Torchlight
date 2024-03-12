@@ -1,5 +1,13 @@
+{TODO: Differentiate actFileClose as is and from actFileOpen}
+{TODO: StatusBar.Panels[1].Text:='ready to work'}
+{TODO: Change StatusBar statistic when add/delete dir/file}
+{TODO: Enable grid filter on any add (FileCount>0}
+{TODO: AFTER SaveAs for new = setup all like for "Open"}
+{TODO: Implement "New PAK"}
+{TODO: Check "new dir" for root tree node}
+{TODO: 1-setting to save linked file on disk/mem; 2-ask every time/once}
 {TODO: save as for editor}
-{TODO: grid context menu: delete file (dir), undelete (delete update?), add file (dir), rename (name+data??)}
+{TODO: grid context menu: delete, undelete (delete update?), add, rename, move, copy}
 {TODO: Audio player as preview if bass.dll found}
 {TODO: disable edSave and actEdUndo when no SynEdit, modified, actEdReset check for files/dir}
 {TODO: Show files/dir on MEDIA level (yes, it possible)}
@@ -27,38 +35,23 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
   SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
-  rgglobal, rgpak, rgctrl;
+  rgglobal, rgpak, rgctrl, Types;
 
 type
 
   { TRGGUIForm }
 
   TRGGUIForm = class(TForm)
-    actResetView: TAction;
-    bbCollapse: TBitBtn;
-    cbUnpackTree: TCheckBox;
-    cbMODDAT: TCheckBox;
+    Setings: TTabSheet;
+    cbUnpackTree  : TCheckBox;
+    cbMODDAT      : TCheckBox;
     cbSaveSettings: TCheckBox;
-    cbSaveWidth: TCheckBox;
-    cbFastScan: TCheckBox;
-    cbTest: TCheckBox;
-    cbUseFName: TCheckBox;
-    deOutDir: TDirectoryEdit;
-    edTreeFilter: TTreeFilterEdit;
-    imgPreview: TImage;
-    ilBookmarks: TImageList;
-    ilMain: TImageList;
-    lblOutDir: TLabel;
-    PageControl: TPageControl;
-    pnlTreeFilter: TPanel;
-
-    pnlInfo: TPanel;
-    lblSize  : TLabel;  lblSizeVal: TLabel;
-    lblTime  : TLabel;  lblTimeVal: TLabel;
-    lblOffset: TLabel;  lblOffsetVal: TLabel;
-
-    pnlAdd: TPanel;
-    pnlTree: TPanel;
+    cbSaveWidth   : TCheckBox;
+    cbFastScan    : TCheckBox;
+    cbTest        : TCheckBox;
+    cbUseFName    : TCheckBox;
+    lblOutDir     : TLabel;
+    deOutDir      : TDirectoryEdit;
 
     gbDecoding: TGroupBox;
     rbGUTSStyle : TRadioButton;
@@ -67,29 +60,60 @@ type
     rbTextOnly  : TRadioButton;
     cbSaveUTF8  : TCheckBox;
 
+    edGridFilter: TEdit;
+    imgPreview: TImage;
+    ilBookmarks: TImageList;
+    ilMain     : TImageList;
+    PageControl: TPageControl;
+
+    pnlTree      : TPanel;
+    pnlTreeFilter: TPanel;
+    edTreeFilter : TTreeFilterEdit;
+    bbCollapse   : TBitBtn;
+    tvTree       : TTreeView;
+
+    Grid   : TTabSheet;
+    pnlAdd : TPanel;
+    pnlInfo: TPanel;
+    lblSize  : TLabel;  lblSizeVal  : TLabel;
+    lblTime  : TLabel;  lblTimeVal  : TLabel;
+    lblOffset: TLabel;  lblOffsetVal: TLabel;
+
     ReplaceDialog: TReplaceDialog;
     sgMain: TStringGrid;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     StatusBar: TStatusBar;
-    Setings: TTabSheet;
-    Grid: TTabSheet;
+    SynEdit     : TSynEdit;
     SynPopupMenu: TSynPopupMenu;
-    SynTSyn: TSynTSyn;
-    SynEdit: TSynEdit;
-    SynXMLSyn: TSynXMLSyn;
+    SynTSyn     : TSynTSyn;
+    SynXMLSyn   : TSynXMLSyn;
 
     ToolBar: TToolBar;
-    tbOpen    : TToolButton;
-    tbSaveAs  : TToolButton;
-    tbSep1    : TToolButton;
-    tbInfo    : TToolButton;
-    tbShowLog : TToolButton;
+    tbOpen     : TToolButton;
+    tbSave     : TToolButton;
+    tbSaveAs   : TToolButton;
+    tbSep1     : TToolButton;
+    tbInfo     : TToolButton;
+    tbShowLog  : TToolButton;
+    tbResetView: TToolButton;
+
+    mnuGrid: TPopupMenu;
+    miGridExport: TMenuItem;
+    miGridNew   : TMenuItem;
+    miGridAdd   : TMenuItem;
+    miGridRename: TMenuItem;
+    miGridReset : TMenuItem;
+    miGridDelete: TMenuItem;
 
     mnuTree: TPopupMenu;
-    miExtractTree   : TMenuItem;
-    miExtractDir    : TMenuItem;
-    miExtractVisible: TMenuItem;
+    miTreeExtract       : TMenuItem;
+    miTreeExtractDir    : TMenuItem;
+    miTreeExtractVisible: TMenuItem;
+    miTreeNew           : TMenuItem;
+    miTreeAdd           : TMenuItem;
+    miTreeDelete        : TMenuItem;
+    miTreeRestore       : TMenuItem;
 
     MainMenu: TMainMenu;
     miFile: TMenuItem;
@@ -120,6 +144,8 @@ type
 
     actShowPreview: TAction;
     actScaleImage : TAction;
+    actEdNew      : TAction;
+    actEdDelete   : TAction;
     actEdReset    : TAction; // Reset content to container
     actEdUndo     : TAction; // Reset content to last
     actEdSave     : TAction; // Save for update
@@ -127,7 +153,8 @@ type
     actEdExport   : TAction; // Export content
     actEdSearch   : TAction; // Seacrh/replace
 
-    actShowFilter: TAction;
+    actShowFilter : TAction;
+    actResetView  : TAction;
 
     tbGrid: TToolBar;
     tbEdPreview  : TToolButton;
@@ -150,13 +177,11 @@ type
     tbColSource  : TToolButton;
     tbColTime    : TToolButton;
     tbColUnpacked: TToolButton;
-    tbResetView: TToolButton;
-    tbSave: TToolButton;
 
-    tvTree: TTreeView;
-
+    procedure actEdDeleteExecute(Sender: TObject);
     procedure actEdExportExecute(Sender: TObject);
     procedure actEdImportExecute(Sender: TObject);
+    procedure actEdNewExecute(Sender: TObject);
     procedure actEdResetExecute(Sender: TObject);
     procedure actEdSaveExecute(Sender: TObject);
     procedure actEdSearchExecute(Sender: TObject);
@@ -169,18 +194,23 @@ type
     procedure actShowInfoExecute(Sender: TObject);
     procedure actShowFilterExecute(Sender: TObject);
     procedure actShowLogExecute(Sender: TObject);
-    procedure bbCollapseClick(Sender: TObject);
     procedure actScaleImageExecute(Sender: TObject);
-    procedure actPreviewExecute(Sender: TObject);
-    procedure ReplaceExecute(Sender: TObject);
     procedure actResetViewExecute(Sender: TObject);
-    procedure SetupView(Sender: TObject);
+    procedure actPreviewExecute(Sender: TObject);
+    procedure bbCollapseClick(Sender: TObject);
+    procedure edGridFilterChange(Sender: TObject);
+    procedure miTreeDeleteClick(Sender: TObject);
+    procedure miTreeNewClick(Sender: TObject);
+    procedure miTreeRestoreClick(Sender: TObject);
+    procedure ReplaceExecute(Sender: TObject);
+    procedure SetupColumns(Sender: TObject);
     procedure DoExtractDir(Sender: TObject);
     procedure DoExtractGrid(Sender: TObject);
     procedure DoExtractTree(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure sgMainCompareCells(Sender: TObject; ACol, ARow, BCol, BRow: Integer; var Result: integer);
+    procedure sgMainContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure sgMainDblClick(Sender: TObject);
     procedure sgMainGetCellHint(Sender: TObject; ACol, ARow: Integer; var HintText: String);
     procedure sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
@@ -188,6 +218,7 @@ type
     procedure sgMainSelection(Sender: TObject; aCol, aRow: Integer);
     procedure SynEditStatusChange(Sender: TObject; Changes: TSynStatusChanges);
     procedure tbColumnClick(Sender: TObject);
+    procedure tvTreeContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
     FUData:pointer;
@@ -205,14 +236,17 @@ type
     bShowPacked  : Boolean;
     bShowUnpacked: Boolean;
     bShowSource  : Boolean;
-
+    PopupNode: TTreeNode;
 
     procedure ClearInfo();
+    function FileClose: boolean;
     procedure FillGrid(idx:integer=-1);
     function  FillGridLine(arow: integer; const adir: string; afile: integer): boolean;
     procedure FillTree();
     procedure AddBranch(aroot: TTreeNode; const aname: string);
     function  GetPathFromNode(aNode: TTreeNode): string;
+    procedure MarkTree(adir: integer; aEnable: boolean);
+    procedure NewPAK;
     procedure OpenPAK(const aname: string);
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure PreviewImage(const aext: string);
@@ -220,8 +254,10 @@ type
     procedure PreviewText();
     procedure LoadSettings;
     procedure SaveSettings;
+    procedure SetupView;
     function  UnpackSingleFile(const adir, aname: string; var buf:PByte): boolean;
     procedure ExtractSingleDir(adir: integer; var buf:PByte);
+    procedure UpdateStatistic;
 
   public
 
@@ -259,11 +295,11 @@ uses
 
 const
   strParentDir = '. . /';
+  strDir       = '< DIR >';
 const
   lblNew     = '+';
   lblChanged = '*';
   lblDelete  = 'X';
-  lblRemove  = 'R';
 
 const
   colState  = 0;
@@ -302,6 +338,9 @@ const
   sTreeWidth    = 'width_tree';
   sGridWidth    = 'width_grid';
   sDebugLevel   = 'debuglevel';
+const
+  sDefDirName  = 'NEWDIR';
+  sDefFileName = 'NEWFILE.DAT';
 
 const
   defTreeWidth = 256;
@@ -309,7 +348,7 @@ const
 
 resourcestring
   rsWarning         = 'Warning!';
-  rsUnsaved         = 'You have unsaved changes. Exit anyway?';
+  rsUnsaved         = 'You have unsaved changes. Continue anyway?';
   rsBuildTree       = ' Build tree';
   rsBuildGrid       = ' Build file list. Please, wait...';
   rsBuildPreview    = ' Build preview';
@@ -322,6 +361,11 @@ resourcestring
   rsSaved           = 'File saved';
   rsSavedAs         = 'File saved as';
   rsCantSave        = 'Can''t save file';
+  rsCreateDir       = 'Create directory';
+  rsDirName         = 'Enter dir name';
+  rsCreateFile      = 'Create file';
+  rsFileName        = 'Enter file name';
+  rsReady           = 'Ready to work';
 
 {%ENDREGION Constants}
 
@@ -343,7 +387,7 @@ begin
   sgMain.Columns[colSource].Width:=80;
 end;
 
-procedure TRGGUIForm.SetupView(Sender: TObject);
+procedure TRGGUIForm.SetupColumns(Sender: TObject);
 begin
   sgMain.Columns[colDir   ].Visible:=(bShowDir     );
   sgMain.Columns[colExt   ].Visible:=(bShowExt     );
@@ -372,7 +416,7 @@ begin
   else if Sender=tbColPacked   then bShowPacked  :=not bShowPacked
   else if Sender=tbColUnpacked then bShowUnpacked:=not bShowUnpacked
   else if Sender=tbColSource   then bShowSource  :=not bShowSource;
-  SetupView(Sender);
+  SetupColumns(Sender);
 end;
 
 procedure TRGGUIForm.SaveSettings;
@@ -408,7 +452,8 @@ begin
     if cbSaveWidth.Checked then
     begin
       config.WriteInteger(sSectSettings,sTreeWidth,pnlTree.Width);
-      config.WriteInteger(sSectSettings,sGridWidth,sgMain .Width);
+      // don't use sgMain.Width coz it can be wrong with no preview on
+      config.WriteInteger(sSectSettings,sGridWidth,Self.Width-pnlAdd.Width);
     end;
 
     if      rbBinOnly   .Checked then i:=1
@@ -488,12 +533,44 @@ end;
 
 {%REGION Form}
 
+procedure TRGGUIForm.UpdateStatistic;
+begin
+  StatusBar.Panels[0].Text:=rsTotal+IntToStr(ctrl.total)+rsDirs+IntToStr(ctrl.DirCount);
+end;
+
+procedure TRGGUIForm.SetupView;
+begin
+  if ctrl.PAK.Name='' then
+  begin
+    Self.Caption:='RGGUI';
+    actFileClose .Enabled:=false;
+    actFileSave  .Enabled:=false;
+  end
+  else
+  begin
+    Self.Caption:='RGGUI - ('+GetGameName(ctrl.PAK.Version)+') '+AnsiString(ctrl.PAK.Name);
+    actFileClose .Enabled:=true;
+    actFileSave  .Enabled:=true;
+  end;
+
+  EdGridFilter.Text:='';
+
+  SetupColumns(Self);
+  UpdateStatistic();
+  StatusBar.Panels[1].Text:=rsReady;
+end;
+
+procedure TRGGUIForm.NewPAK;
+begin
+  ctrl.Init;
+  FillTree();
+  SetupView();
+end;
+
 procedure TRGGUIForm.FormCreate(Sender: TObject);
 begin
   FLastIndex:=-1;
   FUData    :=nil;
-
-//  ctrl.Init;
 
   fmLogForm:=nil;
   fmFilterForm:=TFilterForm.Create(Self);
@@ -501,7 +578,7 @@ begin
   SynTSyn:=TSynTSyn.Create(Self);
 
   LoadSettings();
-  SetupView(Self);
+  SetupColumns(Self);
   ClearInfo();
 
   RGTags.Import('RGDICT','TEXT');
@@ -513,7 +590,9 @@ begin
   LoadLayoutDict('LAYHOB', 'TEXT', verHob);
 
   if ParamCount>0 then
-    OpenPAK(ParamStr(1));
+    OpenPAK(ParamStr(1))
+  else
+    NewPAK();
 
   PageControl.ActivePageIndex:=1;
   inProcess:=false;
@@ -528,43 +607,42 @@ begin
     exit;
   end;
 
-//  ctrl.Free;
   SaveSettings();
 end;
 
-procedure TRGGUIForm.actFileCloseExecute(Sender: TObject);
+function TRGGUIForm.FileClose:boolean;
 begin
   if ctrl.UpdatesCount()>0 then
   begin
     if MessageDlg(rsWarning,rsUnsaved,mtWarning,
        [mbOK,mbCancel],0,mbCancel)<>mrOk then
     begin
-      exit;
+      exit(false);
     end;
   end;
 
   ctrl.Free;
 
-  actScaleImage.Visible:=false;
   sgMain.Clear;
-  ClearInfo();
   tvTree.Items.Clear;
-  actShowInfo.Enabled:=false;
+  ClearInfo();
   FreeAndNil(fmi);
 
-  actShowInfo  .Enabled:=false;
-  actFileClose .Enabled:=false;
-  actFileSave  .Enabled:=false;
-  actFileSaveAs.Enabled:=false;
+  result:=true;
+end;
+
+procedure TRGGUIForm.actFileCloseExecute(Sender: TObject);
+begin
+  if FileClose() then NewPAK();
 end;
 
 procedure TRGGUIForm.actFileExitExecute(Sender: TObject);
 begin
-  if actFileClose.Enabled then actFileCloseExecute(Sender);
-  if actFileClose.Enabled then exit;
-
-  actFileExit.Enabled:=false;
-  Close;
+  if FileClose() then
+  begin
+    actFileExit.Enabled:=false;
+    Close;
+  end;
 end;
 
 procedure TRGGUIForm.OpenPAK(const aname:string);
@@ -579,23 +657,10 @@ begin
     lmode:=piFullParse;
 
   if ctrl.PAK.GetInfo(aname,lmode) then
-  begin
     ctrl.Rebuild();
 
-//    no reason to set coz will overwrite by FillGrid anyway
-//    Self.Caption:='RGGUI - '+AnsiString(ctrl.PAK.Name);
-    StatusBar.Panels[0].Text:=rsTotal+IntToStr(ctrl.total)+rsDirs+IntToStr(ctrl.DirCount);
-
-    SetupView(Self);
-
-    FreeAndNil(fmi);
-    actShowInfo  .Enabled:=true;
-    actFileClose .Enabled:=true;
-    actFileSave  .Enabled:=true;
-    actFileSaveAs.Enabled:=true;
-  end;
-
   FillTree();
+  SetupView();
 end;
 
 procedure TRGGUIForm.actFileOpenExecute(Sender: TObject);
@@ -615,8 +680,7 @@ begin
       LastExt   :=OpenDialog.DefaultExt;
       LastFilter:=OpenDialog.FilterIndex;
 
-      if actFileClose.Enabled then actFileCloseExecute(Sender);
-
+      FileClose();
       OpenPAK(OpenDialog.FileName);
     end;
   finally
@@ -628,10 +692,11 @@ procedure TRGGUIForm.actFileSaveAsExecute(Sender: TObject);
 var
   dlg:TSaveDialog;
   lver:integer;
+//  wasnew:boolean;
 begin
   dlg:=TSaveDialog.Create(nil);
   try
-    case FPAK.Version of
+    case ctrl.PAK.Version of
       verTL2: dlg.FilterIndex:=2;
       verHob: dlg.FilterIndex:=3;
       verRG : dlg.FilterIndex:=4;
@@ -655,8 +720,13 @@ begin
         4: lver:=verRG;
         5: lver:=verRGO;
       end;
+//      wasnew:=ctrl.PAK.Name='';
       if ctrl.SaveAs(dlg.Filename,lver) then
+      begin
+        tvTreeSelectionChanged(self);
+        SetupView();
         ShowMessage(rsSavedAs+' '+dlg.Filename)
+      end
       else
         ShowMessage(rsCantSave+' '+dlg.Filename);
     end;
@@ -809,14 +879,18 @@ begin
   begin
     if sgMain.IsCellSelected[colDir,i] then
     begin
-      ldir :=sgMain.Cells[colDir ,i];
-      lname:=sgMain.Cells[colName,i]+sgMain.Cells[colExt,i];
-//      lsize:=ctrl.GetBinary(ctrl.SearchFile(ldir+lname),lptr);
-      lsize:=ctrl.GetBinary(IntPtr(sgMain.Objects[colName,i]),lptr);
-      if lsize>0 then
+      lsize:=IntPtr(sgMain.Objects[colName,i]);
+      if lsize>=0 then
       begin
-        if SaveFile(ldir, lname, lptr, lsize) then
-          inc(lcnt);
+  //      lsize:=ctrl.GetBinary(ctrl.SearchFile(ldir+lname),lptr);
+        lsize:=ctrl.GetBinary(lsize,lptr);
+        if lsize>0 then
+        begin
+          ldir :=sgMain.Cells[colDir ,i];
+          lname:=sgMain.Cells[colName,i]+sgMain.Cells[colExt,i];
+          if SaveFile(ldir, lname, lptr, lsize) then
+            inc(lcnt);
+        end;
       end;
     end;
 //    if (i mod 100)=0 then Application.ProcessMessages;
@@ -827,6 +901,33 @@ begin
     ShowMessage('File '+ldir+lname+#13#10+rsUnpackSucc)
   else if lcnt>1 then
     ShowMessage(IntToStr(lcnt)+rsFilesUnpackSucc);
+end;
+
+procedure TRGGUIForm.actEdDeleteExecute(Sender: TObject);
+var
+  i,lidx,lcnt,ldircnt:integer;
+begin
+  lcnt:=0;
+  ldircnt:=0;
+  for i:=1 to sgMain.RowCount-1 do
+  begin
+    if sgMain.IsCellSelected[colDir,i] then
+    begin
+      lidx:=IntPtr(sgMain.Objects[colName,i]);
+      if lidx>=0 then
+      begin
+        ctrl.MarkToRemove(lidx);
+        if PRGCtrlInfo(ctrl.Files[lidx])^.ftype=typeDirectory then
+        begin
+          MarkTree(ctrl.AsDir(lidx),false);
+          inc(ldircnt);
+        end;
+        inc(lcnt);
+      end;
+    end;
+  end;
+//  if ldircnt>0 then FillTree();
+  if lcnt>0 then FillGrid(IntPtr(tvTree.Selected.Data));
 end;
 
 {%ENDREGION Save}
@@ -844,18 +945,20 @@ end;
 procedure TRGGUIForm.DoExtractGrid(Sender: TObject);
 var
   ldata:PByte;
-  i:integer;
+  i,lcnt:integer;
 begin
   ldata:=nil;
+  lcnt:=0;
   for i:=1 to sgMain.RowCount-1 do
   begin
-    UnpackSingleFile(
+    if UnpackSingleFile(
         sgMain.Cells[colDir ,i],
         sgMain.Cells[colName,i]+
-        sgMain.Cells[colExt ,i],ldata);
+        sgMain.Cells[colExt ,i],ldata) then inc(lcnt);
 //    if (i mod 100)=0 then Application.ProcessMessages;
   end;
   FreeMem(ldata);
+  if lcnt>0 then ShowMessage(IntToStr(lcnt)+rsFilesUnpackSucc);
 end;
 
 procedure TRGGUIForm.ExtractSingleDir(adir:integer; var buf:PByte);
@@ -881,7 +984,7 @@ var
   ldata:PByte;
 begin
   ldata:=nil;
-  ExtractSingleDir(IntPtr(tvTree.Selected.Data),ldata);
+  ExtractSingleDir(IntPtr(PopupNode.Data),ldata);
   FreeMem(ldata);
 end;
 
@@ -894,7 +997,7 @@ var
 begin
   ldl:=rgDebugLevel;
 
-  idx:=IntPtr(tvTree.Selected.Data);
+  idx:=IntPtr(PopupNode.Data);
   if idx>0 then
   begin
     ls:=ctrl.Dirs[idx].Name;
@@ -919,6 +1022,7 @@ begin
     SaveModConfiguration(ctrl.PAK.modinfo,PChar(deOutDir.Text+'\'+'MOD.DAT'));
   end;
   StatusBar.Panels[1].Text:=rsFilePath+sgMain.Cells[colDir ,sgMain.Row];
+  ShowMessage(GetPathFromNode(PopupNode)+#13#10+rsUnpackSucc);
 
   rgDebugLevel:=ldl;
 end;
@@ -930,6 +1034,7 @@ end;
 procedure TRGGUIForm.ClearInfo();
 var
   b:boolean;
+  bNoTree,bRoot,bEmpty,bParent:boolean;
 begin
   lblSizeVal  .Caption:='';
   lblOffsetVal.Caption:='';
@@ -946,6 +1051,15 @@ begin
 
   FreeMem(FUData); FUData:=nil;
 
+  bNoTree:=tvTree.Items.Count=0;
+  bRoot  :=(not bNoTree) and (tvTree.Selected=tvTree.Items[0]);
+  bEmpty :=(not bNoTree) and
+          ((sgMain.RowCount=1) or
+          ((sgMain.RowCount=2) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0)));
+//            (IntPtr(UIntPtr(sgMain.Objects[colName,1]))=-1);
+  bParent:=(not bNoTree) and
+          ((sgMain.Row     =1) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0));
+
   if tvTree.Selected=nil then
     b:=false
   else if (IntPtr(UIntPtr(tvTree.Selected.Data))>1) then
@@ -953,10 +1067,16 @@ begin
   else
     b:=(sgMain.Row>0);
 
-  actEdReset .Enabled:=b;
-  actEdUndo  .Enabled:=b;
-  actEdSave  .Enabled:=b;
-  actEdExport.Enabled:=b;
+  // Single file actions
+  actEdUndo  .Enabled:=not (bNoTree or bEmpty or bParent);
+  actEdSave  .Enabled:=not (bNoTree or bEmpty or bParent);
+  // Selected files actions
+  actEdExport.Enabled:=not (bNoTree or bEmpty);
+  actEdReset .Enabled:=not (bNoTree or bEmpty);
+  actEdDelete.Enabled:=not (bNoTree or bEmpty);
+
+  actEdNew   .Enabled:=not bNoTree;
+  actEdImport.Enabled:=not bNoTree;
 end;
 
 procedure TRGGUIForm.actScaleImageExecute(Sender: TObject);
@@ -976,6 +1096,8 @@ var
 //  lsize:integer;
   lidx,y,x,lheight,lwidth:integer;
 begin
+  if FUSize=0 then exit;
+
   if actScaleImage.Checked then
   begin
     imgPreview.Stretch:=true;
@@ -1086,7 +1208,8 @@ begin
 //!!    pnlEditButtons.Visible:=true;
 
   pc:=PWideChar(FUData);
-  if ORD(pc^)=SIGN_UNICODE then inc(pc);
+  if pc<>nil then
+    if ORD(pc^)=SIGN_UNICODE then inc(pc);
 
   SynEdit.Highlighter:=SynTSyn;
   SynEdit.Text:=WideToStr(pc);
@@ -1098,7 +1221,8 @@ procedure TRGGUIForm.PreviewText();
 var
   ltext:string;
 begin
-  SetString(ltext,PChar(FUData),FUSize);
+  if FUSize>0 then
+    SetString(ltext,PChar(FUData),FUSize);
 
   SynEdit.Highlighter:=SynXMLSyn;
   SynEdit.Text:=ltext;
@@ -1130,6 +1254,8 @@ begin
 
   if lfile>=0 then
   begin
+    if ctrl.UpdateState(lfile)=stateDelete then Exit;
+
     RGLog.Reserve('Processing '+ldir+lname);
 
     ctrl.GetFullInfo(lfile,lrec);
@@ -1149,7 +1275,7 @@ begin
 
     FUSize:=ctrl.GetSource(lfile,FUData);
     FillGridLine(sgMain.Row,ldir,lfile);
-    if FUSize>0 then
+//    if FUSize>0 then
     begin
       if ltype=typeImageset then
       begin
@@ -1244,7 +1370,7 @@ end;
 
 procedure TRGGUIForm.actEdResetExecute(Sender: TObject);
 var
-  state,lfile:integer;
+  state,lfile,i:integer;
 begin
   {TODO: Ask about changes (if any)}
   {TODO: Delete updates}
@@ -1254,17 +1380,33 @@ begin
       sgMain.Cells[colName,sgMain.Row]+
       sgMain.Cells[colExt ,sgMain.Row]);
 }
-  lfile:=IntPtr(sgMain.Objects[colName,sgMain.Row]);
-  state:=ctrl.UpdateState(lfile);
-  ctrl.RemoveUpdate(lfile);
-  if state=stateNew then
+  for i:=1 to sgMain.RowCount-1 do
   begin
-    FillGrid(IntPtr(tvTree.Selected.Data));
-  end
-  else
-  begin
-    FillGridLine(sgMain.Row,sgMain.Cells[colDir ,sgMain.Row],lfile);
-    sgMainSelection(sgMain, colName, sgMain.Row);
+    if sgMain.IsCellSelected[colDir,i] then
+    begin
+      lfile:=IntPtr(sgMain.Objects[colName,i]);
+
+//      lfile:=IntPtr(sgMain.Objects[colName,sgMain.Row]);
+      state:=ctrl.UpdateState(lfile);
+      if ctrl.IsDir(lfile) then
+      begin
+        if state=stateDelete then
+        begin
+          MarkTree(ctrl.AsDir(lfile),true);
+        end;
+      end;
+      lfile:=ctrl.RemoveUpdate(lfile);
+      if (state=stateNew) or (lfile<0) then
+      begin
+        FillGrid(IntPtr(tvTree.Selected.Data));
+      end
+      else
+      begin
+        FillGridLine(sgMain.Row,sgMain.Cells[colDir ,sgMain.Row],lfile);
+        sgMainSelection(sgMain, colName, sgMain.Row);
+      end;
+
+    end;
   end;
 end;
 
@@ -1299,9 +1441,82 @@ begin
 //!!  SynEdit.Lines.LoadFromFile(,TEncoding.Unicode);
 end;
 
+procedure TRGGUIForm.actEdNewExecute(Sender: TObject);
+var
+  lNode:TTreeNode;
+  lpath,lname:string;
+  lcnt,lfile:integer;
+begin
+  lname:=UpCase(InputBox(rsCreateFile, rsFileName, sDefFileName));
+  if lname[Length(lname)]= '\' then lname[Length(lname)]:='/';
+
+  if tvTree.Items.Count=0 then
+  begin
+    lNode:=nil;
+    lpath:=''
+  end
+  else
+  begin
+    lNode:=tvTree.Selected;
+    lpath:=GetPathFromNode(lNode);
+  end;
+
+  if lname[Length(lname)]= '/' then
+  begin
+    lfile:=ctrl.NewDir(PUnicodeChar(UnicodeString(lpath+lname)));
+    if lfile>=0 then
+    begin
+      lNode:=tvTree.Items.AddChild(lNode,lname);
+      lNode.Data:=pointer(IntPtr(lfile));
+      tvTree.Selected:=lNode;
+    end;
+
+  end
+  else
+  begin
+    lcnt:=ctrl.FileCount;
+    lfile:=ctrl.UseData(nil,0,PUnicodeChar(UnicodeString(lpath+lname)));
+    // condition just to avoid flicks in root tree list
+    if ctrl.FileCount<>lcnt then
+    begin
+      FillGrid(IntPtr(tvTree.Selected.Data));
+    end;
+  end;
+end;
+
 {%ENDREGION Preview}
 
 {%REGION Grid}
+
+procedure TRGGUIForm.sgMainContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+var
+  isroot,isempty,isparent:boolean;
+begin
+(*
+  // Get row not under cursor but focused
+  isroot  :=tvTree.Selected=tvTree.Items[0];
+  isparent:=(sgMain.Row=1) and (sgMain.Cells[colName,1]=strParentDir);
+  isempty :=(sgMain.RowCount=1) or
+           ((sgMain.RowCount=2) and (sgMain.Cells[colName,1]=strParentDir));
+  // for selected rows
+  miGridExport.Visible:=not isempty;
+  miGridReset .Visible:=not isempty;
+  miGridDelete.Visible:=not isempty;
+{
+  miGridNew
+  miGridAdd
+}
+   miGridRename.Visible:=not (isempty or isparent);
+*)
+  mnuGrid.PopUp;
+  Handled:=true;
+end;
+
+procedure TRGGUIForm.edGridFilterChange(Sender: TObject);
+begin
+  if (ctrl.FileCount>0) {edGridFilter.Enabled} {and Length(edGridFilter.Text>3)} then
+    FillGrid(IntPtr(tvTree.Selected.Data));
+end;
 
 procedure TRGGUIForm.sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
 var
@@ -1366,11 +1581,9 @@ end;
 procedure TRGGUIForm.sgMainDblClick(Sender: TObject);
 var
   lname:string;
-  lparent:TTreeNode;
-  ldir:integer;
-  i:integer;
+  i,lidx:integer;
 begin
-  lname:=sgMain.Cells  [colName,sgMain.Row];
+  lname:=sgMain.Cells[colName,sgMain.Row];
   if lname[Length(lname)]='/' then
   begin
     if lname=strParentDir then
@@ -1379,27 +1592,18 @@ begin
     end
     else
     begin
-      ldir:=ctrl.FileDir(IntPtr(UIntPtr(sgMain.Objects[colName,sgMain.Row])));
-      if tvTree.Selected=tvTree.TopItem then
+      lidx:=IntPtr(UIntPtr(sgMain.Objects[colName,sgMain.Row]));
+      if ctrl.UpdateState(lidx)<>stateDelete then
       begin
-        lparent:=nil;
-        for i:=0 to tvTree.Items.Count-1 do
-          if IntPtr(UIntPtr(tvTree.Items[i].Data))=ldir then
-          begin
-            lparent:=tvTree.Items[i];
-            break;
-          end;
-      end
-      else
-        lparent:=tvTree.Selected;
-
-      if lparent<>nil then
-        for i:=0 to lparent.Count-1 do
-          if lparent.Items[i].Text=lname then
-          begin
-            tvTree.Selected:=lparent.Items[i];
-            break;
-          end;
+        lidx:=ctrl.AsDir(lidx);
+        if lidx>=0 then
+          for i:=0 to tvTree.Items.Count-1 do
+            if IntPtr(UIntPtr(tvTree.Items[i].Data))=lidx then
+            begin
+              tvTree.Selected:=tvTree.Items[i];
+              break;
+            end;
+      end;
     end;
   end;
 end;
@@ -1409,6 +1613,7 @@ var
   i:integer;
 begin
   if (ACol=colName) and (ARow>0) and (ARow<=sgMain.RowCount) and
+     (tvTree.Selected<>nil) and
      (IntPtr(UIntPtr(tvTree.Selected.Data))>=0) and
      (IntPtr(UIntPtr(sgMain.Objects[colName,ARow]))>=0) then
   begin
@@ -1439,20 +1644,19 @@ begin
 //  if afile^.size_s=0 then exit;
 
   lname:=WideToStr(ctrl.Files[afile]^.Name);
-  lext :=ExtractFileExt(lname);
-{
-  if edGridFilter.Text<>'' then
+   if Length(edGridFilter.Text)>0 then
     if Pos(edGridFilter.Text,lname)=0 then exit;
-}
 
-  for i:=0 to High(TableExt) do
-  begin
-    if lext=TableExt[i]._ext then
+  lext:=ExtractFileExt(lname);
+  if lext<>'' then
+    for i:=0 to High(TableExt) do
     begin
-      if not fmFilterForm.exts[i] then exit;
-      break;
+      if lext=TableExt[i]._ext then
+      begin
+        if not fmFilterForm.exts[i] then exit;
+        break;
+      end;
     end;
-  end;
 
   //--- Fill
   
@@ -1465,7 +1669,7 @@ begin
       sgMain.Objects[colName,arow]:=TObject(IntPtr(afile));
       sgMain.Cells[colName  ,arow]:=lname;
       sgMain.Cells[colDir   ,arow]:=adir;
-      sgMain.Cells[colType  ,arow]:=PAKCategoryName(PAKTypeToCategory(lrec.ftype));
+      sgMain.Cells[colType  ,arow]:=strDir{PAKCategoryName(PAKTypeToCategory(lrec.ftype))};
     end
     else
       exit;
@@ -1499,7 +1703,7 @@ begin
     stateNew    : c:=lblNew;
     stateChanged: c:=lblChanged;
     stateDelete : c:=lblDelete;
-    stateRemove : c:=lblRemove;
+//    stateRemove : c:=lblRemove;
   else
     c:=' ';
   end;
@@ -1512,7 +1716,7 @@ procedure TRGGUIForm.FillGrid(idx:integer=-1);
 var
   lname:string;
   i:integer;
-  lfile,lcnt:integer;
+  lfile,lcnt,lbase:integer;
 begin
   if inProcess then exit;
 
@@ -1525,7 +1729,7 @@ begin
   sgMain.BeginUpdate;
   lcnt:=1;
 
-  if idx<0 then
+  if idx<=0 then
   begin
     StatusBar.Panels[1].Text:=rsBuildGrid;
     Self.Caption:='RGGUI - '+AnsiString(ctrl.PAK.Name)+rsBuildGrid;
@@ -1552,15 +1756,16 @@ begin
   end
   else
   begin
-    if idx=1 then
+{    if idx=1 then
       sgMain.RowCount:=ctrl.Dirs[idx].count+1
     else
-    begin
+}    begin
       sgMain.RowCount:=ctrl.Dirs[idx].count+2;
       sgMain.Cells  [colName,lcnt]:=strParentDir;
       sgMain.Objects[colName,lcnt]:=TObject(-1);
       inc(lcnt);
     end;
+    lbase:=lcnt;
 
     if ctrl.GetFirstFile(lfile,idx) then
     begin
@@ -1573,7 +1778,7 @@ begin
   end;
 
   sgMain.RowCount:=lcnt;
-  actEdExport.Visible:=(lcnt-idx)>0;
+  actEdExport.Enabled:=(lcnt-lbase)>0;
 
   if lcnt=1 then
     ClearInfo
@@ -1592,6 +1797,62 @@ end;
 
 {%REGION Tree}
 
+procedure TRGGUIForm.tvTreeContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  PopupNode:=tvTree.GetNodeAt(MousePos.X, MousePos.Y);
+  if PopupNode<>nil then
+  begin
+    miTreeExtract       .Visible:=PopupNode.Enabled;
+    miTreeExtractDir    .Visible:=PopupNode.Enabled;
+    miTreeExtractVisible.Visible:=PopupNode.Enabled;
+    miTreeNew           .Visible:=PopupNode.Enabled;
+    miTreeAdd           .Visible:=PopupNode.Enabled;
+    miTreeDelete        .Visible:=PopupNode.Enabled and (PopupNode<>tvTree.Items[0]);
+    miTreeRestore       .Visible:=not PopupNode.Enabled;
+    mnuTree.PopUp;
+  end;
+  Handled:=true;
+end;
+
+procedure TRGGUIForm.miTreeDeleteClick(Sender: TObject);
+var
+  ldir:integer;
+begin
+  ldir:=IntPtr(UIntPtr(PopupNode.Data));
+  ctrl.MarkToRemove(ctrl.AsFile(ldir));
+  MarkTree(ldir,false);
+end;
+
+procedure TRGGUIForm.miTreeNewClick(Sender: TObject);
+var
+  lNode:TTreeNode;
+  lpathname,ldirname:string;
+  ldir:integer;
+begin
+  ldirname:=UpCase(InputBox(rsCreateDir, rsDirName, sDefDirName));
+  if ldirname='' then ldirname:=sDefDirName;
+  if      ldirname[Length(ldirname)]= '\' then ldirname[Length(ldirname)]:='/'
+  else if ldirname[Length(ldirname)]<>'/' then ldirname:=ldirname+'/';
+  lpathname:=GetPathFromNode(PopupNode);
+
+  ldir:=ctrl.NewDir(PUnicodeChar(UnicodeString(lpathname+ldirname)));
+  if ldir>=0 then
+  begin
+    lNode:=tvTree.Items.AddChild(PopupNode,ldirname);
+    lNode.Data:=pointer(IntPtr(ldir));
+    tvTree.Selected:=lNode;
+  end;
+end;
+
+procedure TRGGUIForm.miTreeRestoreClick(Sender: TObject);
+var
+  ldir:integer;
+begin
+  ldir:=IntPtr(UIntPtr(PopupNode.Data));
+  ctrl.RemoveUpdate(ctrl.AsFile(ldir));
+  MarkTree(ldir,true);
+end;
+
 procedure TRGGUIForm.bbCollapseClick(Sender: TObject);
 //var i:integer;
 begin
@@ -1608,8 +1869,14 @@ begin
 end;
 
 function TRGGUIForm.GetPathFromNode(aNode:TTreeNode):string;
+var
+  ldir:integer;
 begin
-  result:=ctrl.Dirs[IntPtr(UIntPtr(aNode.Data))].Name;
+  ldir:=IntPtr(UIntPtr(aNode.Data));
+  if ldir<0 then
+    result:=''
+  else
+	  result:=ctrl.Dirs[ldir].Name;
 {
   result:='';
   repeat
@@ -1636,6 +1903,20 @@ begin
   end;
 end;
 
+procedure TRGGUIForm.MarkTree(adir:integer; aEnable:boolean);
+var
+  i:integer;
+begin
+  for i:=0 to tvTree.Items.Count-1 do
+    if IntPtr(UIntPtr(tvTree.Items[i].Data))=adir then
+    begin
+      tvTree.Items[i].Enabled:=aEnable;
+      if not aEnable then
+        tvTree.Items[i].Collapse(true);
+      exit;
+    end;
+end;
+
 procedure TRGGUIForm.AddBranch(aroot:TTreeNode; const aname:string);
 var
   lnode:TTreeNode;
@@ -1651,6 +1932,8 @@ begin
         ls:=WideToStr(ctrl.Files[i]^.Name);
         lnode:=tvTree.Items.AddChild(aroot,ls);
         AddBranch(lnode,aname+ls);
+        if PRGCtrlInfo(ctrl.Files[i])^.action=act_delete then
+          lnode.Enabled:=false;
       end;
     until not ctrl.GetNextFile(i);
 end;
@@ -1671,7 +1954,9 @@ begin
 
   bbCollapse.Enabled:=tvTree.Items.Count>2;
   if bbCollapse.Enabled then
-    tvTree.Items[1].Selected:=true;
+    tvTree.Items[1].Selected:=true
+  else
+    tvTree.Items[0].Selected:=true;
 end;
 
 {%ENDREGION Tree}

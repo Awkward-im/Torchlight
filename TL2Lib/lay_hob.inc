@@ -14,18 +14,6 @@ const
   );
 
 const
-{
-// trigger decal react
-  IdGroupHob       = 4270653419;
-  IdGroupBake      = 4270023114;
-  IdGroupStepChild = 1006154892;
-  IdGroupMonster   = 3078161015;
-  IdReactGroup     = 684627136; //!!
-//  IdAreaTime = 3247079513;
-//  IdPulse = 449428563;
-//  IdAIJumpStart = 944695435;
-//  IdWarpFilter = 2384551518;
-}
   IdLogicGroupHob  = 2261606130;
   IdTimelineHob    = 2623981599;
   IdHackId         = 338732389;

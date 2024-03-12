@@ -4,6 +4,9 @@
   one list with file/dir records
   global text cache
 }
+{TODO: implement Files.data=Dir index for dirs}
+{TODO: check all variant of AddPath/AddFile what we uses (i.e. PUnicodeChar, string...}
+{TODO: Add file record on AddPath too (for Runtime). But AppendFile for MAN.Parse}
 {TODO: keep/calc info about all sub-dir and files, not direct children only}
 unit RGFS;
 
@@ -42,7 +45,8 @@ type
   TDirInfo = object(TBaseInfo)
     count,              // count of child files and dirs (from first to last)
     first,
-    last:integer;
+    last :integer;
+    index:integer;      // Index of Files array for this dir
   end;
   TDirEntries = array of TDirInfo;
 
@@ -85,6 +89,7 @@ type
     procedure Init(aInfoSize:integer=SizeOf(TFileInfo));
     procedure Clear;
     procedure Free;
+    procedure Link;
 
   public
     function SearchPath(apath:PUnicodeChar):integer;
@@ -104,11 +109,17 @@ type
   // Change info
   public
     //!! no check for "dir" name
-    function  AppendFile(adir :integer     ; aname:PUnicodeChar):integer;
-    function  AddFile   (adir :integer     ; aname:PUnicodeChar):integer;
-    function  AddFile   (adir :integer     ; afile:PFileInfo   ):integer;
-    function  AddFile   (apath:PUnicodeChar; aname:PUnicodeChar):integer;
-    function  AddFile   (apath:PUnicodeChar):integer;
+    function  AppendFile(adir:integer; aname:PUnicodeChar):integer;
+    {
+      Add File record after check for existing
+    }
+    function  AddFile  (adir:integer; aname:PUnicodeChar):integer;
+    function  CloneFile(adir:integer; afile:PFileInfo   ):integer;
+    {
+      Add File record with path creation
+    }
+    function  AddFile(apath:PUnicodeChar; aname:PUnicodeChar):integer;
+    function  AddFile(apath:PUnicodeChar):integer;
 
     procedure DeleteFile(aidx:integer);
     procedure DeleteFile(adir:integer; aname:PUnicodeChar);
@@ -116,7 +127,9 @@ type
 
     // Add dir name to main dir list, no check, !! no parent
     function AppendDir(apath:PUnicodeChar):integer;
-
+    {
+      Add dir name to main dir list with UpCase and check for existing
+    }
     function AddPath(apath:PUnicodeChar):integer;
     function AddPath(const apath:string):integer;
 
@@ -137,9 +150,15 @@ type
 
     function IsDirDeleted (adir:integer):boolean;
     function IsFileDeleted(aidx:integer):boolean;
+    // check what File record is for dir
     function IsDir        (aidx:integer):boolean;
     function PathOfFile   (aidx:integer):PWideChar;
+    // get Dir index which have file
     function FileDir      (aidx:integer):integer;
+    // get Dir index from File describing dir
+    function AsDir        (aidx:integer):integer;
+    // get File index from Dir list index
+    function AsFile       (adir:integer):integer;
     function DirName      (adir:integer):PWideChar;
     function IndexOf(p:pointer):integer;
 
@@ -272,9 +291,14 @@ begin
 end;
 
 function TRGDirList.IsDir(aidx:integer):boolean;
+var
+  p:PUnicodeChar;
 begin
   with Files[aidx]^ do
-    result:=Name[NameLen-1]='/';
+  begin
+    p:=Name;
+    result:=(p<>nil) and (p[NameLen-1]='/');
+  end;
 end;
 
 function TRGDirList.IsDirDeleted(adir:integer):boolean; inline;
@@ -297,7 +321,45 @@ begin
   result:=Files[aidx]^.parent;
 end;
 
-function TRGDirList.DirName(adir:integer):PWideChar; inline;
+function TRGDirList.AsDir(aidx:integer):integer;
+var
+  lp:PUnicodeChar;
+begin
+  lp:=ConcatWide(PathOfFile(aidx), Files[aidx]^.Name);
+  result:=SearchPathNorm(lp);
+  FreeMem(lp);
+end;
+
+function TRGDirList.AsFile(adir:integer):integer;
+var
+  lpath:PUnicodeChar;
+  lslash,ldir:integer;
+  c:UnicodeChar;
+begin
+// if files "data" set to index, can be done by cycle, else...
+// search parent path and "file" name
+  lpath:=Dirs[adir].Name;
+  if lpath=nil then exit(-1);
+
+  lslash:=Length(lpath)-2;
+  while (lslash>0) and (lpath[lslash]<>'/') do dec(lslash);
+
+  if lslash>0 then
+  begin
+    inc(lslash);
+    c:=lpath[lslash];
+    lpath[lslash]:=#0;
+    ldir:=SearchPathNorm(lpath);
+    lpath:=lpath+lslash;
+    lpath^:=c;
+  end
+  else
+    ldir:=0;
+
+  result:=SearchFile(ldir,lpath);
+end;
+
+function TRGDirList.DirName(adir:integer):PWideChar;
 var
   lpath:PWideChar;
   lslash:integer;
@@ -385,6 +447,8 @@ end;
 
 function TRGDirList.GetFirstFile(out idx:integer; adir:integer):boolean;
 begin
+  if adir<0 then exit(false);
+
   idx:=Dirs[adir].first;
   result:=idx>=0;
 end;
@@ -394,6 +458,32 @@ begin
   idx:=Files[idx]^.next;
   result:=idx>=0;
 end;
+
+procedure TRGDirList.Link;
+var
+  buf:array [0..511] of UnicodeChar;
+  p:PFileInfo;
+  i,ldir:integer;
+begin
+  for i:=0 to FileCount-1 do
+  begin
+    if isDir(i) then
+    begin
+      p:=Files[i];
+      ldir:=Dirs[p^.parent].NameLen;
+      move (Dirs[p^.parent].Name^, buf[0]   , ldir);
+      move (p^             .Name^, buf[ldir], p^.NameLen+1);
+
+      ldir:=SearchPathNorm(@buf[0]);
+      if ldir>=0 then
+      begin
+        Dirs [ldir].index:=i;
+//        Files[i   ].data :=pointer(ldir);
+      end;
+    end;
+  end;
+end;
+
 {%ENDREGION Common}
 
 {%REGION Main}
@@ -438,7 +528,7 @@ begin
   for i:=0 to FDirCount-1 do
   begin
     if not IsDirDeleted(i) then
-      if CompareWide(Dirs[i].Name,PUnicodeChar(apath))=0 then
+      if CompareWide(Dirs[i].Name,apath)=0 then
         exit(i);
   end;
 
@@ -591,11 +681,12 @@ begin
   result:=AddFile(PUnicodeChar(ExtractFilePath(apath)),PUnicodeChar(ExtractFileName(apath)));
 end;
 
-function TRGDirList.AddFile(adir:integer; afile:PFileInfo):integer;
+function TRGDirList.CloneFile(adir:integer; afile:PFileInfo):integer;
 begin
   result:=AddFile(adir,''{afile^.Name});
   // can't use move(afile^,Files[result]^,FInfoSize);
   // coz afile and new can be different types
+  // so, can be just move(afile^,Files[result]^,SizeOf(TfileInfo));
   Files[result]^:=afile^;
 {
   with Files[result]^ do
@@ -688,10 +779,11 @@ begin
     SetDirsCapacity(incEBase);
   if FDirCount=0 then
   begin
-    Dirs[0].Name  :='';
-    Dirs[0].count :=0;
-    Dirs[0].first :=-1;
-    Dirs[0].last  :=-1;
+    Dirs[0].Name :='';
+    Dirs[0].count:=0;
+    Dirs[0].first:=-1;
+    Dirs[0].last :=-1;
+    Dirs[0].index:=-1;
 
     FDirCount:=1;
     inc(total);
@@ -718,6 +810,7 @@ begin
   Dirs[result].count:=0;
   Dirs[result].first:=-1;
   Dirs[result].last :=-1;
+  Dirs[result].index:=-1;
   Dirs[result].Name :=apath;
 
   inc(total);

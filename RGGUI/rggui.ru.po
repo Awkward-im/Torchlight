@@ -27,6 +27,18 @@ msgstr " Построение дерева"
 msgid "Can't save file"
 msgstr "Не могу сохранить файл"
 
+#: formgui.rscreatedir
+msgid "Create directory"
+msgstr "Создать папку"
+
+#: formgui.rscreatefile
+msgid "Create file"
+msgstr "Создать файл"
+
+#: formgui.rsdirname
+msgid "Enter dir name"
+msgstr "ВВедите имя папки"
+
 #: formgui.rsdirs
 msgid "; dirs: "
 msgstr "; папок: "
@@ -35,6 +47,10 @@ msgstr "; папок: "
 msgid "Extract directory "
 msgstr "Распаковать папку "
 
+#: formgui.rsfilename
+msgid "Enter file name"
+msgstr "Введите имя файла"
+
 #: formgui.rsfilepath
 msgid "File path: "
 msgstr "Путь файла: "
@@ -42,6 +58,10 @@ msgstr "Путь файла: "
 #: formgui.rsfilesunpacksucc
 msgid " files unpacked succesfully."
 msgstr " файлов распаковано."
+
+#: formgui.rsready
+msgid "Ready to work"
+msgstr "Готово к работе"
 
 #: formgui.rssaved
 msgid "File saved"
@@ -60,8 +80,8 @@ msgid "unpacked succesfully."
 msgstr "распаковано удачно."
 
 #: formgui.rsunsaved
-msgid "You have unsaved changes. Exit anyway?"
-msgstr "Остались несохранённые изменения. Всё равно выйти?"
+msgid "You have unsaved changes. Continue anyway?"
+msgstr "Остались несохранённые изменения. Всё равно продолжить?"
 
 #: formgui.rswarning
 msgid "Warning!"
@@ -148,6 +168,7 @@ msgid "Version"
 msgstr "Версия"
 
 #: tmodinfoform.tsdelete.caption
+msgctxt "tmodinfoform.tsdelete.caption"
 msgid "Delete"
 msgstr "Удаление"
 
@@ -164,9 +185,18 @@ msgstr "Описание мода"
 msgid "Requirement"
 msgstr "Требование"
 
+#: trgguiform.acteddelete.caption
+msgctxt "trgguiform.acteddelete.caption"
+msgid "Delete"
+msgstr "Удаление"
+
+#: trgguiform.acteddelete.hint
+msgid "Mark file to delete at next saving"
+msgstr "Пометить файл для удаления при следующем сохранении"
+
 #: trgguiform.actedexport.caption
-msgid "Export"
-msgstr "Экспорт"
+msgid "Unpack"
+msgstr "Распаковать"
 
 #: trgguiform.actedexport.hint
 msgid "Save file(s)"
@@ -179,6 +209,10 @@ msgstr "Импорт"
 #: trgguiform.actedimport.hint
 msgid "Import file"
 msgstr "Импорт файла"
+
+#: trgguiform.actednew.caption
+msgid "New file/dir"
+msgstr "Новый файл/папка"
 
 #: trgguiform.actedreset.caption
 msgid "Reset"
@@ -349,6 +383,10 @@ msgstr "Сохранять пути"
 msgid "Use file name as dir for unpack"
 msgstr "Имя файла как папка для распаковки"
 
+#: trgguiform.edgridfilter.texthint
+msgid "Grid filter"
+msgstr "Фильтр таблицы"
+
 #: trgguiform.edtreefilter.texthint
 msgid "(filter)"
 msgstr "(фильтр)"
@@ -381,25 +419,48 @@ msgstr "Время:"
 msgid "&Edit"
 msgstr "Редактор"
 
-#: trgguiform.miextractdir.caption
-msgid "Extract this dir"
-msgstr "Распаковать эту папку"
-
-#: trgguiform.miextracttree.caption
-msgid "Extract w. subdirs"
-msgstr "Распаковать с подкаталогами"
-
-#: trgguiform.miextractvisible.caption
-msgid "Extract visible"
-msgstr "Распаковать видимые"
-
 #: trgguiform.mifile.caption
 msgid "&File"
 msgstr "Файл"
 
+#: trgguiform.migridrename.caption
+msgid "miGridRename"
+msgstr ""
+
 #: trgguiform.mihelp.caption
 msgid "&Help"
 msgstr "Помощь"
+
+#: trgguiform.mitreeadd.caption
+msgid "miTreeAdd"
+msgstr ""
+
+#: trgguiform.mitreedelete.caption
+msgid "Delete Dir"
+msgstr "Удалить папку"
+
+#: trgguiform.mitreeextract.caption
+msgctxt "trgguiform.mitreeextract.caption"
+msgid "Extract w. subdirs"
+msgstr "Распаковать с подкаталогами"
+
+#: trgguiform.mitreeextractdir.caption
+msgctxt "trgguiform.mitreeextractdir.caption"
+msgid "Extract this dir"
+msgstr "Распаковать эту папку"
+
+#: trgguiform.mitreeextractvisible.caption
+msgctxt "trgguiform.mitreeextractvisible.caption"
+msgid "Extract visible"
+msgstr "Распаковать видимые"
+
+#: trgguiform.mitreenew.caption
+msgid "miTreeNew"
+msgstr ""
+
+#: trgguiform.mitreerestore.caption
+msgid "Restore Dir"
+msgstr "Восстановить папку"
 
 #: trgguiform.rbbinonly.caption
 msgid "Binary only"
@@ -533,4 +594,3 @@ msgstr "Распакованный размер"
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
 msgstr "Информация о моде"
-

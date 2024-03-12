@@ -1311,7 +1311,7 @@ procedure TRGPAK.AddFile(adir:integer; ainfo:PFileInfo; asize_c:integer=0);
 var
   p:PManFileInfo;
 begin
-  p:=PManFileInfo(man.Files[man.AddFile(adir,ainfo)]);
+  p:=PManFileInfo(man.Files[man.CloneFile(adir,ainfo)]);
   p^.size_c:=asize_c;
 
 //  {p^.size_c:=}WriteFile(p^.data,^.size_u,GetExtInfo(p^.name,Version)^._pack,p^.offset);

@@ -59,7 +59,7 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx5024="True" idx3104="True"/>
+              <IgnoredMessages idx5024="True" idx4055="True" idx3104="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dDEBUG"/>
           </Other>
@@ -95,6 +95,11 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx5024="True" idx4055="True"/>
+            </CompilerMessages>
+          </Other>
         </CompilerOptions>
       </Item>
       <Item Name="Debug32">
@@ -140,7 +145,7 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx5024="True" idx3104="True"/>
+              <IgnoredMessages idx5024="True" idx4055="True" idx3104="True"/>
             </CompilerMessages>
           </Other>
         </CompilerOptions>
@@ -177,6 +182,11 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx5024="True" idx4055="True"/>
+            </CompilerMessages>
+          </Other>
         </CompilerOptions>
       </Item>
     </BuildModes>
@@ -278,6 +288,11 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CompilerMessages>
+        <IgnoredMessages idx5024="True" idx4055="True"/>
+      </CompilerMessages>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions>

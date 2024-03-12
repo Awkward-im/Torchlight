@@ -17,6 +17,18 @@ msgstr ""
 msgid "Can't save file"
 msgstr ""
 
+#: formgui.rscreatedir
+msgid "Create directory"
+msgstr ""
+
+#: formgui.rscreatefile
+msgid "Create file"
+msgstr ""
+
+#: formgui.rsdirname
+msgid "Enter dir name"
+msgstr ""
+
 #: formgui.rsdirs
 msgid "; dirs: "
 msgstr ""
@@ -25,12 +37,20 @@ msgstr ""
 msgid "Extract directory "
 msgstr ""
 
+#: formgui.rsfilename
+msgid "Enter file name"
+msgstr ""
+
 #: formgui.rsfilepath
 msgid "File path: "
 msgstr ""
 
 #: formgui.rsfilesunpacksucc
 msgid " files unpacked succesfully."
+msgstr ""
+
+#: formgui.rsready
+msgid "Ready to work"
 msgstr ""
 
 #: formgui.rssaved
@@ -50,7 +70,7 @@ msgid "unpacked succesfully."
 msgstr ""
 
 #: formgui.rsunsaved
-msgid "You have unsaved changes. Exit anyway?"
+msgid "You have unsaved changes. Continue anyway?"
 msgstr ""
 
 #: formgui.rswarning
@@ -138,6 +158,7 @@ msgid "Version"
 msgstr ""
 
 #: tmodinfoform.tsdelete.caption
+msgctxt "tmodinfoform.tsdelete.caption"
 msgid "Delete"
 msgstr ""
 
@@ -154,8 +175,17 @@ msgstr ""
 msgid "Requirement"
 msgstr ""
 
+#: trgguiform.acteddelete.caption
+msgctxt "trgguiform.acteddelete.caption"
+msgid "Delete"
+msgstr ""
+
+#: trgguiform.acteddelete.hint
+msgid "Mark file to delete at next saving"
+msgstr ""
+
 #: trgguiform.actedexport.caption
-msgid "Export"
+msgid "Unpack"
 msgstr ""
 
 #: trgguiform.actedexport.hint
@@ -168,6 +198,10 @@ msgstr ""
 
 #: trgguiform.actedimport.hint
 msgid "Import file"
+msgstr ""
+
+#: trgguiform.actednew.caption
+msgid "New file/dir"
 msgstr ""
 
 #: trgguiform.actedreset.caption
@@ -339,6 +373,10 @@ msgstr ""
 msgid "Use file name as dir for unpack"
 msgstr ""
 
+#: trgguiform.edgridfilter.texthint
+msgid "Grid filter"
+msgstr ""
+
 #: trgguiform.edtreefilter.texthint
 msgid "(filter)"
 msgstr ""
@@ -371,24 +409,47 @@ msgstr ""
 msgid "&Edit"
 msgstr ""
 
-#: trgguiform.miextractdir.caption
-msgid "Extract this dir"
-msgstr ""
-
-#: trgguiform.miextracttree.caption
-msgid "Extract w. subdirs"
-msgstr ""
-
-#: trgguiform.miextractvisible.caption
-msgid "Extract visible"
-msgstr ""
-
 #: trgguiform.mifile.caption
 msgid "&File"
 msgstr ""
 
+#: trgguiform.migridrename.caption
+msgid "miGridRename"
+msgstr ""
+
 #: trgguiform.mihelp.caption
 msgid "&Help"
+msgstr ""
+
+#: trgguiform.mitreeadd.caption
+msgid "miTreeAdd"
+msgstr ""
+
+#: trgguiform.mitreedelete.caption
+msgid "Delete Dir"
+msgstr ""
+
+#: trgguiform.mitreeextract.caption
+msgctxt "trgguiform.mitreeextract.caption"
+msgid "Extract w. subdirs"
+msgstr ""
+
+#: trgguiform.mitreeextractdir.caption
+msgctxt "trgguiform.mitreeextractdir.caption"
+msgid "Extract this dir"
+msgstr ""
+
+#: trgguiform.mitreeextractvisible.caption
+msgctxt "trgguiform.mitreeextractvisible.caption"
+msgid "Extract visible"
+msgstr ""
+
+#: trgguiform.mitreenew.caption
+msgid "miTreeNew"
+msgstr ""
+
+#: trgguiform.mitreerestore.caption
+msgid "Restore Dir"
 msgstr ""
 
 #: trgguiform.rbbinonly.caption

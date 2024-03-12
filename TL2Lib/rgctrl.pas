@@ -1,4 +1,9 @@
-﻿{TODO: Apply (no save)}
+﻿{TODO: combine several PAKS into one (at least, as catalogue) [like mod combiner doing]}
+{TODO: implement New PAK}
+{TODO: rename update methods}
+{TODO: File.ftype=dir -> "data" is Dirs index?}
+{TODO: check "delete" state for dirs (if corresponding file record marked)}
+{TODO: Apply (no save)}
 {TODO: if "file" was updated in editor. update file or buf?}
 {TODO: Rename+update->rename;delete,new|update+rename->update;new,update,delete old}
 {TODO: Add marks for all files/subdirs if dir marked for deleting}
@@ -31,7 +36,7 @@ const
   act_file   = 2; // disk file
   act_copy   = 3; // just copy of unpacked original PAK data
   act_delete = 4; // delete from PAK
-  act_dir    = 5; // disk directory with files (??just act_file cycle or not?? "Build" from RGMAN)
+  act_dir    = 5; // new dir
   act_reset  = 6; // delete from update (reset), event only
   act_mark   = 7; // mark for delete (MOD data)
 
@@ -100,6 +105,10 @@ type
     //--- Updater functions ---
 
     {
+      Rename file/dir
+    }
+    function Rename(idx:integer; newname:PWideChar):boolean;
+    {
       Amount of all updates
     }
     function  UpdatesCount(): integer;
@@ -114,8 +123,15 @@ type
     {
       Delete update
     }
-    procedure RemoveUpdate(idx:integer);
+    function RemoveUpdate(idx: integer): integer;
+    {
+      Mark to remove from PAK
+    }
     procedure MarkToRemove(idx:integer);
+    {
+      add new dir to both Dir and Files lists
+    }
+    function  NewDir(apath:PWideChar):integer;
     {
       use adata as buffer, no allocate
     }
@@ -274,7 +290,7 @@ procedure TRGController.CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
 var
   p:PManFileInfo;
 begin
-  if afrom^.action in [act_data, act_file] then
+  if afrom^.action in [act_dir, act_data, act_file] then
     p:=afrom
   else // if afrom.source<>0 then
     p:=PManFileInfo(FPAK.Man.Files[afrom^.source]);
@@ -296,7 +312,7 @@ begin
   info.path    :=PathOfFile(idx);
   info.checksum:=p^.checksum;
 
-  if p^.action in [act_data, act_file] then
+  if (p^.action in [act_data, act_file]) or (p^.source=0) then
   begin
     info.size_u:=p^.size_u;
     info.size_c:=p^.size_c;
@@ -408,16 +424,24 @@ begin
     result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
   end;
 
-  p^.checksum:=crc32(0,buf,p^.size_u);
-  if (p^.ftype in setData) and not isSource(buf) then
+  if result>0 then
   begin
-    if DecompileFile(buf,result,p^.name,lbuf) then
+    p^.checksum:=crc32(0,buf,p^.size_u);
+    if (p^.ftype in setData) and not isSource(buf) then
     begin
-      FreeMem(buf);
-      buf:=PByte(lbuf);
-      result:=(Length(lbuf)+1)*SizeOf(WideChar);
-      p^.size_s:=result;
+      if DecompileFile(buf,result,p^.name,lbuf) then
+      begin
+        FreeMem(buf);
+        buf:=PByte(lbuf);
+        result:=(Length(lbuf)+1)*SizeOf(WideChar);
+        p^.size_s:=result;
+      end;
     end;
+  end
+  else
+  begin
+    p^.checksum:=0;
+    p^.size_s  :=0;
   end;
 end;
 
@@ -435,14 +459,24 @@ begin
   begin
     result:=GetUpdate(idx,buf);
 
-    if (p^.ftype in setData) and isSource(buf) then
+    if result>0 then
     begin
-      lbuf:=buf;
-      buf:=nil;
-      result:=CompileFile(lbuf,p^.Name,buf,FPAK.Version);
-      p^.size_u:=result;
-      FreeMem(lbuf);
+      if (p^.ftype in setData) and isSource(buf) then
+      begin
+        lbuf:=buf;
+        buf:=nil;
+        result:=CompileFile(lbuf,p^.Name,buf,FPAK.Version);
+        p^.size_u:=result;
+        FreeMem(lbuf);
+      end;
+    end
+    else
+    begin
+      p^.size_u  :=0;
+      p^.checksum:=0;
+      exit;
     end;
+
   end
   else
   begin
@@ -465,7 +499,7 @@ begin
   p:=PRGCtrlInfo(Files[idx]);
   if p^.action in [act_data, act_file] then
   begin
-    GetUpdate(idx,buf);
+    if GetUpdate(idx,buf)=0 then exit;
 
     if GetExtInfo(p^.Name,FPAK.Version)^._pack then
     begin
@@ -512,6 +546,48 @@ end;
 
 {%REGION Updater}
 
+function TRGController.Rename(idx:integer; newname:PWideChar):boolean;
+var
+  ls:UnicodeString;
+  i,ltype:integer;
+begin
+  result:=false;
+  if idx>=0 then
+  begin
+    ltype:=PRGCtrlInfo(Files[idx])^.ftype;
+    i:=Length(newname);
+    // convert to UpperCase with slash for dirs
+    if i>0 then
+    begin
+      if ltype=typeDirectory{IsDir(Files[idx])} then
+        if (newname[i-1]<>'/') and (newname[i-1]<>'\') then inc(i);
+
+      SetLength(ls,i);
+      if ltype=typeDirectory then
+      begin
+        ls[i]:='/';
+        dec(i);
+      end;
+      while i>0 do
+      begin
+        ls[i]:=UpCase(newname[i-1]);
+        dec(i);
+      end;
+    end
+    else
+      ls:='';
+    // search for existing
+    GetFirstFile(i,FileDir(idx));
+    repeat
+      if CompareWide(Files[i]^.Name,PUnicodeChar(ls))=0 then exit;
+    until not GetNextFile(i);
+  
+    Files[idx]^.Name:=PUnicodeChar(ls);
+    if ltype=typeDirectory then RenameDir(PathOfFile(idx),Files[idx]^.Name,PUnicodeChar(ls));
+    result:=true;
+  end;
+end;
+
 function TRGController.UpdatesCount():integer;
 var
   i:integer;
@@ -536,14 +612,18 @@ begin
   end;
 end;
 
-procedure TRGController.RemoveUpdate(idx:integer);
+function TRGController.RemoveUpdate(idx:integer):integer;
 begin
   if idx>=0 then
   begin
     ClearElement(idx);
     if PRGCtrlInfo(Files[idx])^.source=0 then
+    begin
       DeleteFile(idx);
+      idx:=-1;
+    end;
   end;
+  result:=idx;
 end;
 
 procedure TRGController.MarkToRemove(idx:integer);
@@ -553,6 +633,46 @@ begin
     ClearElement(idx);
     PRGCtrlInfo(Files[idx])^.action:=act_delete;
   end;
+end;
+
+function TRGController.NewDir(apath:PWideChar):integer;
+var
+  lslash,ldir,lfile,lcnt:integer;
+  lc:UnicodeChar;
+begin
+  lcnt:=DirCount;
+  result:=AddPath(apath);
+  // if new dir was added
+  if DirCount<>lcnt then
+  begin
+    // search dir name start
+    lslash:=Length(apath)-2;
+    while (lslash>0) and (apath[lslash]<>'/') do dec(lslash);
+
+    // search parent dir
+    if lslash>0 then
+    begin
+      inc(lslash);
+      lc:=apath[lslash];
+      apath[lslash]:=#0; // "cut" text AFTER "/"
+      ldir:=SearchPath(apath);
+      apath[lslash]:=lc;
+    end
+    else
+      ldir:=0;
+
+    lfile:=AddFile(ldir,apath+lslash);
+    with PRGCtrlInfo(Files[lfile])^ do
+    begin
+      ftype :=typeDirectory;
+      action:=act_dir;
+// not used for dirs
+//      ftime :=DateTimeToFileTime(Now());
+    end;
+    Dirs[result].index:=lfile;
+  end
+  else
+    result:=-1;
 end;
 
 function TRGController.UseData(adata:PByte; asize:cardinal; apath:PWideChar):integer;
@@ -568,25 +688,6 @@ begin
     ftype :=PAKExtType(apath);
 
     FixSizes(result,adata,asize);
-{
-    size_s:=0;
-    size_u:=0;
-    size_c:=0;
-    case RGTypeOfFile(adata,asize) of
-      tofPacked   : size_c:=asize;
-      tofPackedHdr: begin
-        size_u:=PPAKFileHeader(adata)^.size_u;
-        size_c:=PPAKFileHeader(adata)^.size_c;
-      end;
-      tofRawHdr   : begin
-        size_u:=PPAKFileHeader(adata)^.size_u;
-        size_c:=PPAKFileHeader(adata)^.size_u;
-      end;
-    else
-      if (ftype in setData) and IsSource(adata) then size_s:=asize
-      else size_u:=asize;
-    end;  
-}
   end;
 end;
 
@@ -594,9 +695,15 @@ function TRGController.AddUpdate(adata:PByte; asize:cardinal; apath:PWideChar):i
 var
   lptr:PByte;
 begin
-  GetMem(lptr,asize);
-  move(adata^,lptr^,asize);
+  if adata=nil then asize:=0;
 
+  if asize=0 then
+    lptr:=nil
+  else
+  begin
+    GetMem(lptr,asize);
+    move(adata^,lptr^,asize);
+  end;
   result:=UseData(lptr,asize,apath);
 end;
 {
@@ -662,7 +769,9 @@ begin
       begin
         GetMem(lptr,lsize);
         BlockRead(f,lptr^,lsize);
-      end;
+      end
+      else
+        lptr:=nil;
       system.Close(f);
 
       result:=UseData(lptr,lsize,apath);
@@ -708,7 +817,7 @@ begin
         if p^.action=act_delete then continue;
 
         // 1 - create MAN record
-        lidx:=apak.man.AddFile(ldir,p);
+        lidx:=apak.man.CloneFile(ldir,p);
         lman:=PManFileInfo(apak.man.Files[lidx]);
 
         if not (lman^.ftype in [typeDirectory]) then
@@ -752,9 +861,19 @@ begin
     begin
       lpak.Rename(fname);
       result:=true;
+
+      if FPAK.Name='' then
+      begin
+        FPAK.Free;
+        Clear;
+        FPAK:=lpak;
+        FPAK.OpenPAK;
+        Rebuild;
+        exit;
+      end;
     end;
 
-    lpak.Free;
+	  lpak.Free;
   end;
 end;
 
