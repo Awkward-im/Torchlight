@@ -4,6 +4,8 @@
   one list with file/dir records
   global text cache
 }
+{TODO: Implement moving dir to another dir}
+{TODO: remove "total" changes/saving coz total = DirCount+FileCount (except deleted)}
 {TODO: implement Files.data=Dir index for dirs}
 {TODO: check all variant of AddPath/AddFile what we uses (i.e. PUnicodeChar, string...}
 {TODO: Add file record on AddPath too (for Runtime). But AppendFile for MAN.Parse}
@@ -125,6 +127,9 @@ type
     procedure DeleteFile(adir:integer; aname:PUnicodeChar);
     procedure DeleteFile(apath,aname:PUnicodeChar);
 
+    procedure MoveFile(aidx:integer; adir :integer);
+    procedure MoveFile(aidx:integer; apath:PUnicodeChar);
+
     // Add dir name to main dir list, no check, !! no parent
     function AppendDir(apath:PUnicodeChar):integer;
     {
@@ -139,6 +144,9 @@ type
 
     function RenameDir(const apath, oldname, newname:PUnicodeChar):integer;
     function RenameDir(const apath, newname:string):integer;
+
+    function MoveDir(adir:integer; adst:integer):integer;
+    function MoveDir(adir:integer; adst:PUnicodeChar):integer;
 
   // Properties
   public
@@ -683,20 +691,19 @@ end;
 
 function TRGDirList.CloneFile(adir:integer; afile:PFileInfo):integer;
 begin
-  result:=AddFile(adir,''{afile^.Name});
+  // not search for empty name anyway
+  result:=AppendFile(adir,''{afile^.Name});
   // can't use move(afile^,Files[result]^,FInfoSize);
   // coz afile and new can be different types
-  // so, can be just move(afile^,Files[result]^,SizeOf(TfileInfo));
-  Files[result]^:=afile^;
-{
+  // can't use assign coz it will copy "parent" and "next" fields too
+
   with Files[result]^ do
   begin
     fname   :=afile^.fname;
     ftime   :=afile^.ftime;
     checksum:=afile^.checksum;
-    size    :=afile^.size;
   end;
-}
+
 end;
   {%ENDREGION Add}
 
@@ -768,6 +775,22 @@ begin
   DeleteFile(SearchPath(apath),aname);
 end;
   {%ENDREGION Delete}
+
+procedure TRGDirList.MoveFile(aidx:integer; adir :integer);
+begin
+  CloneFile(adir,Files[aidx]);
+  DeleteFile(aidx);
+end;
+
+procedure TRGDirList.MoveFile(aidx:integer; apath:PUnicodeChar);
+var
+  ldir:integer;
+begin
+  ldir:=SearchPath(apath);
+  if ldir>=0 then
+    MoveFile(aidx,ldir);
+end;
+
 {%ENDREGION File}
 
 {%REGION Entry}
@@ -877,9 +900,15 @@ begin
       repeat
         ldel:=lidx;
         if not GetNextFile(lidx) then break;
-        DeleteFileRec(ldel);
+        if isDir(ldel) then
+          DeletePath(asDir(ldel))
+        else
+          DeleteFileRec(ldel);
       until false;
-      DeleteFileRec(ldel);
+      if isDir(ldel) then
+        DeletePath(asDir(ldel))
+      else
+        DeleteFileRec(ldel);
     end;
 
     // move from dir list to deleted dir list
@@ -916,7 +945,9 @@ begin
       DeleteFile(lparent,lpath+lslash+1);
 //      DeleteFile(Files[Dirs[i].index]^.parent,PUnicodeChar(apath)+lslash);
 //      DeleteFile(PUnicodeChar(Copy(apath,1,lslash)),PUnicodeChar(apath)+lslash);
-    end;
+    end
+    else
+      DeleteFile(0,lpath);
 
     // requires till .data will not work
     DeleteDir(adir);
@@ -967,9 +998,10 @@ begin
       repeat
         p:=Files[i];
         if CompareWide(p^.Name,PUnicodeChar(lnew))=0 then exit;
-        if CompareWide(p^.Name,PUnicodeChar(loldname))=0 then lfile:=i;
+        if CompareWide(p^.Name,PUnicodeChar(loldname))=0 then begin lfile:=i; break; end;
       until not GetNextFile(i);
     
+    result:=1;
     // replace old
     Files[lfile]^.Name:=PUnicodeChar(lnew);
 //    Files[Dirs[ldir].index]^.Name:=PUnicodeChar(lnew);   //!!!!!
@@ -986,6 +1018,7 @@ begin
         if CompareWide(PUnicodeChar(lold),lname,llen)=0 then
         begin
           Dirs[i].Name:=PUnicodeChar(lnew+Copy(lname,llen+1));
+          inc(result);
         end;
       end;
     end;
@@ -1011,6 +1044,28 @@ begin
     result:=RenameDir('',PUnicodeChar(lpath),PUnicodeChar(lnew))
 end;
   {%ENDREGION Rename}
+
+function TRGDirList.MoveDir(adir:integer; adst:integer):integer;
+begin
+  result:=0;
+  // search dst name
+  // if not exists, add file to parent and remove old, rename all children dirs
+  // if exists... try to move all children to dst, rename all children dirs
+  // if exists empty then delete old. if moving empty then ignore
+  // else: fast. [dst.last].next:=src.first; dst.last=src.last
+  // else: slow. check ALL files and subs
+end;
+
+function TRGDirList.MoveDir(adir:integer; adst:PUnicodeChar):integer;
+var
+  ldir:integer;
+begin
+  ldir:=SearchPath(adst); // AddPath(adst);
+  if ldir>=0 then
+    result:=MoveDir(adir,ldir)
+  else
+    result:=-1;
+end;
 
 {%ENDREGION Entry}
 

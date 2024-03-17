@@ -7,7 +7,6 @@ object CompareForm: TCompareForm
   ClientHeight = 509
   ClientWidth = 760
   OnClose = FormClose
-  LCLVersion = '2.3.0.0'
   object ToolBar: TToolBar
     Left = 0
     Height = 26
@@ -38,11 +37,10 @@ object CompareForm: TCompareForm
       ShowHint = True
       ParentShowHint = False
     end
-    object ToolButton2: TToolButton
+    object tbSep1: TToolButton
       Left = 70
-      Height = 5
+      Height = 22
       Top = 2
-      Caption = 'ToolButton2'
       Style = tbsDivider
     end
     object sbSave: TSpeedButton
@@ -81,11 +79,10 @@ object CompareForm: TCompareForm
       ShowHint = True
       ParentShowHint = False
     end
-    object ToolButton1: TToolButton
+    object tbSep2: TToolButton
       Left = 121
-      Height = 5
+      Height = 22
       Top = 2
-      Caption = 'ToolButton1'
       Style = tbsDivider
     end
     object sbCopyLine: TSpeedButton
@@ -1136,43 +1133,43 @@ object CompareForm: TCompareForm
       Enabled = False
       Hint = 'Save changes'
       ImageIndex = 2
-      OnExecute = actSaveExecute
       ShortCut = 16467
+      OnExecute = actSaveExecute
     end
     object actRefresh: TAction
       Caption = 'Recompare'
       Hint = 'Recompare'
       ImageIndex = 6
-      OnExecute = actRefreshExecute
       ShortCut = 16466
+      OnExecute = actRefreshExecute
     end
     object actCancel: TAction
       Caption = 'Cancel'
       Hint = 'Cancel'
       ImageIndex = 5
-      OnExecute = actCancelExecute
       ShortCut = 32856
+      OnExecute = actCancelExecute
     end
     object actNext: TAction
       Caption = 'Next difference'
       Hint = 'Next difference'
       ImageIndex = 0
-      OnExecute = actNextClick
       ShortCut = 32808
+      OnExecute = actNextClick
     end
     object actPrev: TAction
       Caption = 'Prev. difference'
       Hint = 'Prev. difference'
       ImageIndex = 1
-      OnExecute = actPrevClick
       ShortCut = 32806
+      OnExecute = actPrevClick
     end
     object actCopy: TAction
       Caption = 'Copy line'
       Hint = 'Copy line'
       ImageIndex = 3
-      OnExecute = actCopyClick
       ShortCut = 32805
+      OnExecute = actCopyClick
     end
   end
 end

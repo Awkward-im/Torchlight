@@ -1,4 +1,5 @@
-﻿{TODO: better way to set ftype that calc on request}
+﻿{TODO: remove total using (recalc for .Build)}
+{TODO: better way to set ftype that calc on request}
 {TODO: Add source file name to TManFileInfo}
 unit RGMan;
 
@@ -246,6 +247,7 @@ begin
     begin
       if not IsDirDeleted(i) then
       begin
+      inc(ltotal);
         ast.WriteShortString(Dirs[i].name);
         ast.WriteDWord(Dirs[i].count);
 

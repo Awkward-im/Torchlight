@@ -68,6 +68,11 @@ function DecompileFile(ain:PByte; ainsize:cardinal; const fname:string;
 function CompileFile  (ain:PByte; fname:PUnicodeChar; out aout:PByte; aver:integer):cardinal;
 function CompileFile  (ain:PByte; const fname:string; out aout:PByte; aver:integer):cardinal;
 
+const
+  RGExtExts : array [0..2] of string = ('.TXT', '.BINDAT', '.BINLAYOUT');
+
+function FixFileExt(const srcname:string):string;
+
 /////////////////////////////////////////////////////////
 
 implementation
@@ -422,7 +427,19 @@ begin
     if ldata<>ain then FreeMem(ldata);
 
     if p=nil then
+    begin
+      // special case, different format for TL2 and others
+{
+      if ltype=typeImageset then
+      begin
+        ltof:=Length(PAnsiChar(ldata))+1;
+        GetMem(PByte(aout),ltof);
+        move(ain^,PByte(aout)^,ltof);
+        result:=true;
+      end;
+}
       exit;
+    end;
 
     if asUTF8 then
       result:=NodeToUTF8(p,PAnsiChar(aout))
@@ -515,6 +532,22 @@ begin
   end;
 end;
 
+
+function FixFileExt(const srcname:string):string;
+var
+  lext:string;
+  i:integer;
+begin
+  lext:=UpCase(ExtractFileExt(srcname));
+  if lext<>'' then
+    for i:=0 to High(RGExtExts) do
+      if lext=RGExtExts[i] then
+      begin
+        result:=ChangeFileExt(srcname,'');
+        exit;
+      end;
+  result:=srcname;
+end;
 
 initialization
 

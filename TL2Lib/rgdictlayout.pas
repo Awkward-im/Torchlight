@@ -1,4 +1,5 @@
-﻿{TODO: GetObjectDescr and GetPropDescr (by ID or Name?)}
+﻿{TODO: check PScene, pobj for wrong syntax on parse}
+{TODO: GetObjectDescr and GetPropDescr (by ID or Name?)}
 {TODO: make objects and props arrays expandable in LoadLayoutDict }
 {TODO: change dicts to UTF8. just disk or memory too?}
 unit RGDictLayout;

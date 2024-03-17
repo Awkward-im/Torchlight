@@ -69,13 +69,13 @@
 interface
 
 uses
-{$IFnDEF FPC}
+{$IFNDEF FPC}
   Generics.Collections, Windows,
 {$ELSE}
-  LCLIntf, LCLType, Fgl,
+  {LCLIntf,} LCLType, Fgl,
 {$ENDIF}
   SysUtils,
-  Forms,
+//  Forms,
   Classes;
 
 const
@@ -177,7 +177,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('Samples', [TDiff]);
+//  RegisterComponents('Samples', [TDiff]);
 end;
 
 //------------------------------------------------------------------------------
@@ -411,7 +411,7 @@ begin
       inc(p);
       if (p mod 1024) = 1023 then
       begin
-        Application.ProcessMessages;
+//        Application.ProcessMessages;
         if FCancelled then exit;
       end;
       //nb: the Snake order is important here
@@ -432,7 +432,7 @@ begin
       inc(p);
       if (p mod 1024) = 1023 then
       begin
-        Application.ProcessMessages;
+//        Application.ProcessMessages;
         if FCancelled then exit;
       end;
       //nb: the Snake order is important here
@@ -493,7 +493,7 @@ begin
       inc(p);
       if (p mod 1024 = 1023) then
       begin
-        Application.ProcessMessages;
+//        Application.ProcessMessages;
         if FCancelled then exit;
       end;
       //nb: the Snake order is important here
@@ -514,7 +514,7 @@ begin
       inc(p);
       if (p mod 1024 = 1023) then
       begin
-        Application.ProcessMessages;
+//        Application.ProcessMessages;
         if FCancelled then exit;
       end;
       //nb: the Snake order is important here

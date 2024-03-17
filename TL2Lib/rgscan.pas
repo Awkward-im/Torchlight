@@ -14,12 +14,15 @@ uses
   rgglobal;
 
 type
+  // file accepted if result<>0
   TCheckNameProc = function(const adir,aname:string; aparam:pointer):integer;
+  // file accepted of result<>0; break cycle if result<0
   TProcessProc   = function(
           abuf:PByte; asize:integer;
           const adir,aname:string;
           aparam:pointer):integer;
 
+// Prepare - Do - End
 function MakeRGScan(
     const aroot,adir:string;
     aext:array of string;

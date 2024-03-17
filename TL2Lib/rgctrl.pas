@@ -1,8 +1,7 @@
-﻿{TODO: combine several PAKS into one (at least, as catalogue) [like mod combiner doing]}
-{TODO: implement New PAK}
+﻿{TODO: Update = AddDirectory (like man.build)}
+{TODO: combine several PAKS into one (at least, as catalogue) [like mod combiner doing]}
 {TODO: rename update methods}
 {TODO: File.ftype=dir -> "data" is Dirs index?}
-{TODO: check "delete" state for dirs (if corresponding file record marked)}
 {TODO: Apply (no save)}
 {TODO: if "file" was updated in editor. update file or buf?}
 {TODO: Rename+update->rename;delete,new|update+rename->update;new,update,delete old}
@@ -36,11 +35,12 @@ const
   act_file   = 2; // disk file
   act_copy   = 3; // just copy of unpacked original PAK data
   act_delete = 4; // delete from PAK
-  act_dir    = 5; // new dir
-  act_reset  = 6; // delete from update (reset), event only
+  act_dir    = 5; // (dir only) new dir
+  act_reset  = 6; // (event) delete from update (reset)
   act_mark   = 7; // mark for delete (MOD data)
 
 const
+  stateNone    = 0;
   stateNew     = 1;
   stateChanged = 2;
   stateDelete  = 3;
@@ -64,19 +64,41 @@ type
   end;
 
 type
+  TRGDoubleAction = (
+    da_ask,          // ask for action
+    da_stop,         // stop cycle
+    da_skip,         // skip existing file
+    da_skipdir,      // skip existing files in current dir (subdirs?)
+    da_skipall,      // skip all existing files
+    da_compare,      // compare and change
+    da_overwrite,    // overwrite existing file
+    da_overwritedir, // overwrite existing files in this dir (subdirs?)
+    da_overwriteall, // overwrite all existing files (for binaries only?)
+    da_renameold,    // rename existing (old) file (rename by template?)
+    da_saveas        // rename new file (rename by template?)
+  );
+
+type
+  // variant: "newdata" is filename if "newsize"=0
+  TRGOnDouble = function(idx:integer; newdata:PByte; newsize:integer):TRGDoubleAction of object;
+type
 
   { TRGController }
 
   TRGController = object(TRGDirList)
   private
     FPAK:TRGPAK;
+    FOnDouble:TRGOnDouble;
+
     procedure ClearElement(idx:integer);
     procedure FixSizes(idx:integer; adata:PByte; asize:cardinal);
     procedure CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
     function  WriteToPAK(var apak:TRGPAK; const fname:string; aver:integer=1000):boolean;
+    function  OnDoubleDef(idx:integer; newdata:PByte; newsize:integer):TRGDoubleAction;
 
   public
     property PAK:TRGPAK read FPAK write FPAK;
+    property OnDouble:TRGOnDouble read FOnDouble write FOnDouble;
 
   public
     procedure Init;
@@ -129,9 +151,13 @@ type
     }
     procedure MarkToRemove(idx:integer);
     {
-      add new dir to both Dir and Files lists
+      add new dir to both Dir and Files lists. negative result points to existing already
     }
     function  NewDir(apath:PWideChar):integer;
+    {
+      import dir with files and subdirs. apply different actions if files exists
+    }
+    function ImportDir(const adst, adir: string): integer;
     {
       use adata as buffer, no allocate
     }
@@ -157,16 +183,24 @@ implementation
 uses
   SysUtils,
   crc,
+  TL2Mod,
   rgfiletype,
   RGFile;
 
 { TRGController }
+
+
+function TRGController.OnDoubleDef(idx:integer; newdata:PByte; newsize:integer):TRGDoubleAction;
+begin
+  result:=da_overwriteall;
+end;
 
 procedure TRGController.Init;
 begin
   Inherited Init(SizeOf(TRGCtrlInfo));
 
   FPAK:=TRGPAK.Create;
+  FOnDouble:=@OnDoubleDef;
 end;
 
 procedure TRGController.Clear;
@@ -275,6 +309,7 @@ end;
 
 function TRGController.UpdateState(idx:integer):integer;
 begin
+  if idx<0 then exit(0);
   with PRGCtrlInfo(Files[idx])^ do
     case action of
       act_mark  : result:=stateRemove;
@@ -365,7 +400,7 @@ begin
       system.Reset(f);
       if IOResult=0 then
       begin
-        result:=FileSize(f);
+        result:=FileSize(f)+2;
         if result>0 then
         begin
           if (buf=nil) or (MemSize(buf)<result) then
@@ -373,7 +408,9 @@ begin
             FreeMem(buf);
             GetMem(buf,result);
           end;
-          BlockRead(f,buf^,result);
+          BlockRead(f,buf^,result-2);
+          buf[result-2]:=0;
+          buf[result-1]:=0;
         end;
         system.Close(f);
       end;
@@ -582,8 +619,10 @@ begin
       if CompareWide(Files[i]^.Name,PUnicodeChar(ls))=0 then exit;
     until not GetNextFile(i);
   
-    Files[idx]^.Name:=PUnicodeChar(ls);
-    if ltype=typeDirectory then RenameDir(PathOfFile(idx),Files[idx]^.Name,PUnicodeChar(ls));
+    if ltype=typeDirectory then
+      RenameDir(PathOfFile(idx),Files[idx]^.Name,PUnicodeChar(ls))
+    else
+      Files[idx]^.Name:=PUnicodeChar(ls);
     result:=true;
   end;
 end;
@@ -619,7 +658,10 @@ begin
     ClearElement(idx);
     if PRGCtrlInfo(Files[idx])^.source=0 then
     begin
-      DeleteFile(idx);
+      if isDir(idx) then
+        DeletePath(AsDir(idx))
+      else
+        DeleteFile(idx);
       idx:=-1;
     end;
   end;
@@ -672,7 +714,7 @@ begin
     Dirs[result].index:=lfile;
   end
   else
-    result:=-1;
+    result:=-result;
 end;
 
 function TRGController.UseData(adata:PByte; asize:cardinal; apath:PWideChar):integer;
@@ -808,6 +850,7 @@ begin
 
   for i:=0 to DirCount-1 do
   begin
+    if isDirDeleted(i) then continue;
     ldir:=apak.man.AddPath(Dirs[i].name);
 //    ldir:=lpak.AddDirectory(Dirs[i].name);
     if GetFirstFile(j,i) then
@@ -901,5 +944,193 @@ begin
 end;
 
 {%ENDREGION Save}
+
+{
+  Check file name to include or not. skip unknown, png if dds presents
+    and compiled data files if source presents
+  in : dir and filename to check
+  out: empty to skip, lname to include
+}
+function CheckFName(const adir,aname:UnicodeString):UnicodeString;
+var
+  lext:array [0..15] of UnicodeChar;
+  lname:UnicodeString;
+  lextpos,j,k:integer;
+begin
+  result:='';
+  
+  lextpos:=Length(aname);
+  while lextpos>1 do
+  begin
+    dec(lextpos);
+    if aname[lextpos]='.' then break;
+  end;
+  // extract ext
+  k:=0;
+  if lextpos>1 then
+    for j:=lextpos to Length(aname) do
+    begin
+      lext[k]:=UpCase(aname[j]);
+      inc(k);
+    end;
+  lext[k]:=#0;
+
+  if (CompareWide(lext,'.TXT'      )=0) or
+     (CompareWide(lext,'.BINDAT'   )=0) or
+     (CompareWide(lext,'.BINLAYOUT')=0) then
+  begin
+    lname:=Copy(aname,1,lextpos-1);
+    if FileExists(adir+lname) then exit;
+  end
+  else if CompareWide(lext,'.PNG')=0 then
+  begin
+    lname:=aname;
+    lname[lextpos+1]:='D';
+    lname[lextpos+2]:='D';
+    lname[lextpos+3]:='S';
+    if FileExists(adir+lname) then
+      exit
+    else
+      exit(aname);
+  end
+  else
+    lname:=aname;
+
+  // can't use lext coz need to delete ext to get real sometime
+  if PAKExtType(lname)<>typeUnknown then
+    result:=lname;
+end;
+
+{
+  Build files tree [from MEDIA folder] [from dir]
+  as is, bin+src (data cmp to choose), bin, src
+  abasedir - disk starting dir
+  actrl    - our manifest
+  aentry   - current manifest directory
+}
+function CycleDir(const adir:UnicodeString; var actrl:TRGController; aentry:integer;
+   aact:TRGDoubleAction):TRGDoubleAction;
+var
+  sr:TUnicodeSearchRec;
+  ldir,lname:UnicodeString;
+  i:integer;
+begin
+  ldir:=actrl.Dirs[aentry].name;
+
+  // IN: act=skip/over dir/all or ask
+  if FindFirst(adir+'*.*',faAnyFile and faDirectory,sr)=0 then
+  begin
+
+    repeat
+      if (sr.Attr and faDirectory)=faDirectory then
+      begin
+        if (sr.Name<>'.') and (sr.Name<>'..') then
+        begin
+          i:=actrl.NewDir(PUnicodeChar(ldir+sr.Name+'/'));
+          case CycleDir(adir+sr.Name+'/', actrl, ABS(i), aact) of
+            da_skipall     : aact:=da_skipall;
+            da_overwriteall: aact:=da_overwriteall;
+            da_stop:begin
+              aact:=da_stop;
+              break;
+            end;
+          else
+          end;
+        end;
+      end
+      else
+      begin
+        if UpCase(sr.Name)=TL2ModData then
+        begin
+          if actrl.PAK.modinfo.title=nil then
+            LoadModConfiguration(PChar(AnsiString(adir+TL2ModData)),actrl.PAK.modinfo);
+          continue;
+        end;
+        lname:=CheckFName(adir,sr.Name);
+        if lname<>'' then
+        begin
+          i:=actrl.SearchFile(aentry,PUnicodeChar(lname));
+          if i<0 then
+          begin
+            actrl.AddFileData(PUnicodeChar(adir+lname),PUnicodeChar(ldir+lname),false);
+          end
+          else
+          begin
+            if aact=da_ask then
+            begin
+              if actrl.OnDouble=nil then aact:=da_overwriteall
+              else
+                aact:=actrl.OnDouble(i,PByte(PUnicodeChar(ldir+lname)),0);
+            end;
+
+            case aact of
+              da_stop: begin
+                aact:=da_stop;
+                break;
+              end;
+
+              da_skip,
+              da_skipdir,
+              da_skipall: begin
+                if aact=da_skip then aact:=da_ask;
+                continue;
+              end;
+
+              da_overwrite,
+              da_overwritedir,
+              da_overwriteall: begin
+                if aact=da_overwrite then aact:=da_ask;
+//                if UpdateState(i)=stateNone then
+                actrl.AddFileData(PUnicodeChar(adir+lname),PUnicodeChar(ldir+lname),false);
+              end;
+
+//!! visual part. must be processed inside FOnDouble
+//!! But requires ctrl or new name or new content (buf+size)
+              da_compare: begin // data+size
+                aact:=da_ask;
+              end;
+              da_renameold: begin // name + check again. what if new name exists already?
+                aact:=da_ask;
+              end;
+              da_saveas: begin // name + check again
+                aact:=da_ask;
+              end;
+
+            else
+            end;
+
+          end;
+        end;
+      end;
+    until FindNext(sr)<>0;
+
+    FindClose(sr);
+  end;
+
+  // OUT: skip/over all, ask or stop
+  if aact in [da_stop,da_skipall,da_overwriteall] then
+    result:=aact
+  else
+    result:=da_ask;
+end;
+
+function TRGController.ImportDir(const adst, adir:string):integer;
+var
+  ls:UnicodeString;
+  ldir:integer;
+begin
+  result:=FileCount;
+
+  ls:=UnicodeString(adir);
+  if not (adir[Length(adir)] in ['/','\']) then ls:=ls+'/';
+
+  if DirCount=0 then AddPath(nil);
+  ldir:=SearchPath(adst);
+  if ldir<0 then ldir:=0;
+  CycleDir(ls,self,ldir,da_ask);
+
+  // new records only
+  result:=FileCount-result;
+end;
 
 end.

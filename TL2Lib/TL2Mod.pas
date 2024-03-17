@@ -164,6 +164,7 @@ begin
   result:=p-abuf;
 end;
 
+{TODO: static buf to GetMem/FreeMem}
 function WriteModInfo(out abuf:PByte; const amod:TTL2ModInfo):integer;
 var
   buf:array [0..16383] of byte;
@@ -183,7 +184,7 @@ var
   buf:array [0..16383] of byte;
   f:file of byte;
 begin
-  result:=WriteModInfoBuf(buf,amod);
+  result:=WriteModInfoBuf(@buf[0],amod);
   if result>0 then
   begin
 {$PUSH}
@@ -356,6 +357,7 @@ begin
   end;
 end;
 
+{TODO: GetMem buf if modinfo>16k}
 function ReadModInfo(fname:PChar; var amod:TTL2ModInfo):boolean;
 var
   buf:array [0..16383] of byte;
@@ -384,7 +386,7 @@ begin
   if i>MinTL2ModInfoSize then
   begin
     result:=ReadModInfoBuf(@buf,amod);
-    CopyWide(amod.filename,PWideChar(UnicodeString(ExtractFilenameOnly(fname))));
+    CopyWide(amod.filename,PUnicodeChar(UnicodeString(ExtractFilenameOnly(fname))));
   end
   else
     result:=false;

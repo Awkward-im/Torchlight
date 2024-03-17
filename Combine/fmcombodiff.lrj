@@ -1,7 +1,5 @@
 {"version":1,"strings":[
 {"hash":218671619,"name":"tcompareform.caption","sourcebytes":[67,111,109,112,97,114,101,32,102,105,108,101,115],"value":"Compare files"},
-{"hash":160486418,"name":"tcompareform.toolbutton2.caption","sourcebytes":[84,111,111,108,66,117,116,116,111,110,50],"value":"ToolButton2"},
-{"hash":160486417,"name":"tcompareform.toolbutton1.caption","sourcebytes":[84,111,111,108,66,117,116,116,111,110,49],"value":"ToolButton1"},
 {"hash":209750691,"name":"tcompareform.actsave.caption","sourcebytes":[83,97,118,101,32,99,104,97,110,103,101,115],"value":"Save changes"},
 {"hash":209750691,"name":"tcompareform.actsave.hint","sourcebytes":[83,97,118,101,32,99,104,97,110,103,101,115],"value":"Save changes"},
 {"hash":174338101,"name":"tcompareform.actrefresh.caption","sourcebytes":[82,101,99,111,109,112,97,114,101],"value":"Recompare"},

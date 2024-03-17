@@ -45,12 +45,25 @@ msgstr ""
 msgid "File path: "
 msgstr ""
 
+#: formgui.rsfiles
+msgid "Files: "
+msgstr ""
+
 #: formgui.rsfilesunpacksucc
 msgid " files unpacked succesfully."
 msgstr ""
 
+#: formgui.rsreadpak
+msgid " Read PAK. Parsing..."
+msgstr ""
+
 #: formgui.rsready
 msgid "Ready to work"
+msgstr ""
+
+#: formgui.rsrename
+msgctxt "formgui.rsrename"
+msgid "Rename file/dir"
 msgstr ""
 
 #: formgui.rssaved
@@ -61,8 +74,8 @@ msgstr ""
 msgid "File saved as"
 msgstr ""
 
-#: formgui.rstotal
-msgid "Total: "
+#: formgui.rsselectdir
+msgid "Select directory"
 msgstr ""
 
 #: formgui.rsunpacksucc
@@ -193,15 +206,34 @@ msgid "Save file(s)"
 msgstr ""
 
 #: trgguiform.actedimport.caption
-msgid "Import"
+msgctxt "trgguiform.actedimport.caption"
+msgid "Import file"
 msgstr ""
 
 #: trgguiform.actedimport.hint
+msgctxt "trgguiform.actedimport.hint"
 msgid "Import file"
+msgstr ""
+
+#: trgguiform.actedimportdir.caption
+msgid "Import dir"
+msgstr ""
+
+#: trgguiform.actedimportdir.hint
+msgid "Import directory (with subdirs)"
 msgstr ""
 
 #: trgguiform.actednew.caption
 msgid "New file/dir"
+msgstr ""
+
+#: trgguiform.actedrename.caption
+msgid "Rename"
+msgstr ""
+
+#: trgguiform.actedrename.hint
+msgctxt "trgguiform.actedrename.hint"
+msgid "Rename file/dir"
 msgstr ""
 
 #: trgguiform.actedreset.caption
@@ -337,6 +369,14 @@ msgstr ""
 msgid "Collapse tree"
 msgstr ""
 
+#: trgguiform.bbplay.caption
+msgid "Play"
+msgstr ""
+
+#: trgguiform.bbstop.caption
+msgid "Stop"
+msgstr ""
+
 #: trgguiform.caption
 msgid "RGGUI"
 msgstr ""
@@ -413,16 +453,12 @@ msgstr ""
 msgid "&File"
 msgstr ""
 
-#: trgguiform.migridrename.caption
-msgid "miGridRename"
-msgstr ""
-
 #: trgguiform.mihelp.caption
 msgid "&Help"
 msgstr ""
 
 #: trgguiform.mitreeadd.caption
-msgid "miTreeAdd"
+msgid "Add dir"
 msgstr ""
 
 #: trgguiform.mitreedelete.caption
@@ -445,7 +481,7 @@ msgid "Extract visible"
 msgstr ""
 
 #: trgguiform.mitreenew.caption
-msgid "miTreeNew"
+msgid "New directory"
 msgstr ""
 
 #: trgguiform.mitreerestore.caption

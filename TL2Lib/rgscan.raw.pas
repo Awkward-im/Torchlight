@@ -400,6 +400,27 @@ begin
   end;
 end;
 
+function ScanParticles(
+          abuf:PByte; asize:integer;
+          const adir,aname:string;
+          aparam:pointer):integer;
+begin
+end;
+
+function ScanCellsDB(
+          abuf:PByte; asize:integer;
+          const adir,aname:string;
+          aparam:pointer):integer;
+begin
+end;
+
+function ScanQuests(
+          abuf:PByte; asize:integer;
+          const adir,aname:string;
+          aparam:pointer):integer;
+begin
+end;
+
 function ScanRaw(const apath,aname:string):pointer;
 var
   p:pointer;
@@ -459,6 +480,22 @@ begin
   begin
     SetNodeName(result,'MENUS');
     MakeRGScan(apath,'MEDIA/UI/MENUS',['.LAYOUT'],@ScanUI,result,nil)
+  end
+
+  else if aname=RawNames[nmPARTICLES] then
+  begin
+    SetNodeName(result,'PARTICLES');
+    MakeRGScan(apath,'MEDIA/',['.LAYOUT'],@ScanParticles,result,nil)
+  end
+  else if aname=RawNames[nmCELLDB] then
+  begin
+    SetNodeName(result,'CELLS DB');
+    MakeRGScan(apath,'MEDIA/',['.LAYOUT'],@ScanCellsDB,result,nil)
+  end
+  else if aname=RawNames[nmQUESTMARKERS] then
+  begin
+    SetNodeName(result,'QUESTMARKERS');
+    MakeRGScan(apath,'MEDIA/',['.LAYOUT'],@ScanQuests,result,nil)
   end;
 
 end;

@@ -129,6 +129,7 @@ begin
     end;
   end;
 
+  {TODO: new mod info - title like "pack of ## mods", descr - list of mods. Check on Apply too}
   ini.Free;
 
   CheckTheButtons;

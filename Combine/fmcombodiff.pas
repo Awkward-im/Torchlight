@@ -32,8 +32,8 @@ type
     seNew: TSynEdit;
     StatusBar: TStatusBar;
     ToolBar: TToolBar;
-    ToolButton1: TToolButton;
-    ToolButton2: TToolButton;
+    tbSep2: TToolButton;
+    tbSep1: TToolButton;
     procedure actCancelExecute(Sender: TObject);
     procedure actCopyClick(Sender: TObject);
     procedure actNextClick(Sender: TObject);
@@ -234,6 +234,30 @@ begin
       actSaveExecute(Sender);
 end;
 
+procedure TCompareForm.actRefreshExecute(Sender: TObject);
+var
+  slold,slnew:TStrings;
+begin
+  GetPureText(seold,slold);
+  GetPureText(senew,slnew);
+
+  DoCompare(slold,slnew);
+
+  slold.Free;
+  slnew.Free;
+end;
+
+procedure TCompareForm.actSaveExecute(Sender: TObject);
+var
+  slold:TStrings;
+begin
+  GetPureText(seold,slold);
+
+  slold.WriteBOM:=true;
+  slold.SaveToFile(srcfile,TEncoding.Unicode);
+  slold.Free;
+end;
+
 procedure TCompareForm.actPrevClick(Sender: TObject);
 var
   row: integer;
@@ -263,30 +287,6 @@ begin
 //    senew.TopLine:=row;
   end;
   {TODO: actPrev.Enabled:=false if first occur}
-end;
-
-procedure TCompareForm.actRefreshExecute(Sender: TObject);
-var
-  slold,slnew:TStrings;
-begin
-  GetPureText(seold,slold);
-  GetPureText(senew,slnew);
-
-  DoCompare(slold,slnew);
-
-  slold.Free;
-  slnew.Free;
-end;
-
-procedure TCompareForm.actSaveExecute(Sender: TObject);
-var
-  slold:TStrings;
-begin
-  GetPureText(seold,slold);
-
-  slold.WriteBOM:=true;
-  slold.SaveToFile(srcfile,TEncoding.Unicode);
-  slold.Free;
 end;
 
 procedure TCompareForm.actNextClick(Sender: TObject);

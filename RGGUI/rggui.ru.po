@@ -55,13 +55,26 @@ msgstr "Введите имя файла"
 msgid "File path: "
 msgstr "Путь файла: "
 
+#: formgui.rsfiles
+msgid "Files: "
+msgstr "Файлов: "
+
 #: formgui.rsfilesunpacksucc
 msgid " files unpacked succesfully."
 msgstr " файлов распаковано."
 
+#: formgui.rsreadpak
+msgid " Read PAK. Parsing..."
+msgstr " Читаем PAK. Обрабатываем..."
+
 #: formgui.rsready
 msgid "Ready to work"
 msgstr "Готово к работе"
+
+#: formgui.rsrename
+msgctxt "formgui.rsrename"
+msgid "Rename file/dir"
+msgstr "Переименовать файд/папку"
 
 #: formgui.rssaved
 msgid "File saved"
@@ -71,9 +84,9 @@ msgstr "Файл сохранён"
 msgid "File saved as"
 msgstr "Файл сохранён как"
 
-#: formgui.rstotal
-msgid "Total: "
-msgstr "Всего: "
+#: formgui.rsselectdir
+msgid "Select directory"
+msgstr "Выберите папку"
 
 #: formgui.rsunpacksucc
 msgid "unpacked succesfully."
@@ -203,16 +216,35 @@ msgid "Save file(s)"
 msgstr "Сохранить файл(ы)"
 
 #: trgguiform.actedimport.caption
-msgid "Import"
-msgstr "Импорт"
-
-#: trgguiform.actedimport.hint
+msgctxt "trgguiform.actedimport.caption"
 msgid "Import file"
 msgstr "Импорт файла"
+
+#: trgguiform.actedimport.hint
+msgctxt "trgguiform.actedimport.hint"
+msgid "Import file"
+msgstr "Импорт файла"
+
+#: trgguiform.actedimportdir.caption
+msgid "Import dir"
+msgstr "Добавление папки"
+
+#: trgguiform.actedimportdir.hint
+msgid "Import directory (with subdirs)"
+msgstr "Добавить папку (с подкаталогами)"
 
 #: trgguiform.actednew.caption
 msgid "New file/dir"
 msgstr "Новый файл/папка"
+
+#: trgguiform.actedrename.caption
+msgid "Rename"
+msgstr "Переименовать"
+
+#: trgguiform.actedrename.hint
+msgctxt "trgguiform.actedrename.hint"
+msgid "Rename file/dir"
+msgstr "Переименовать файл/папку"
 
 #: trgguiform.actedreset.caption
 msgid "Reset"
@@ -347,6 +379,14 @@ msgstr "Поазать окно предпросмотра/редактора"
 msgid "Collapse tree"
 msgstr "Схлопнуть дерево"
 
+#: trgguiform.bbplay.caption
+msgid "Play"
+msgstr "Играть"
+
+#: trgguiform.bbstop.caption
+msgid "Stop"
+msgstr "Стоп"
+
 #: trgguiform.caption
 msgid "RGGUI"
 msgstr ""
@@ -423,17 +463,13 @@ msgstr "Редактор"
 msgid "&File"
 msgstr "Файл"
 
-#: trgguiform.migridrename.caption
-msgid "miGridRename"
-msgstr ""
-
 #: trgguiform.mihelp.caption
 msgid "&Help"
 msgstr "Помощь"
 
 #: trgguiform.mitreeadd.caption
-msgid "miTreeAdd"
-msgstr ""
+msgid "Add dir"
+msgstr "Добавить папку"
 
 #: trgguiform.mitreedelete.caption
 msgid "Delete Dir"
@@ -455,8 +491,8 @@ msgid "Extract visible"
 msgstr "Распаковать видимые"
 
 #: trgguiform.mitreenew.caption
-msgid "miTreeNew"
-msgstr ""
+msgid "New directory"
+msgstr "Новая папка"
 
 #: trgguiform.mitreerestore.caption
 msgid "Restore Dir"

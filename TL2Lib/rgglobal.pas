@@ -65,6 +65,7 @@ const
 
 function GetGameName(aver:integer):string;
 
+
 const
   FloatPrec :integer = 6;
   DoublePrec:integer = 8;
