@@ -1,5 +1,4 @@
 {}
-
 const
   IdGroupTL2      = 1;
   IdLogicGroupTL2 = 36;
@@ -447,8 +446,8 @@ var
   lobj,lprops:pointer;
   {lparent,}ldescr,lname,lid:pointer;
   lpdescr,lpname:PWideChar;
-  lgrpcnt,lcnt,i:integer;
-  lcpos,lpos,lPropPos,lAddPos:integer;
+  lchilds,lchild,lgrpcnt,lcnt,i:integer;
+  lcpos,lpos,lPropPos,lAddPos,lChildPos:integer;
   lChunkType:byte;
 begin
   result:=0;
@@ -457,14 +456,14 @@ begin
 
   //--- Chunk Header
 
-  lpos:=astream.Position;
-  astream.WriteDWord(0); // ChunkSize
-
   ldescr:=FindNode(lprops,'DESCRIPTOR');
   lpdescr:=AsString(ldescr);
   i:=integer(info.GetObjectId(lpdescr));
 
-  if i=-1 then exit;
+  if i=-1 then exit(-1);
+
+  lpos:=astream.Position;
+  astream.WriteDWord(0); // ChunkSize
 
   lChunkType:=i;
   astream.WriteByte(lChunkType);
@@ -519,6 +518,7 @@ begin
           i:=lcnt;
           break;
         end;
+    abstream.WriteByte(i);
 
     WriteThemesTL2(lprops,'ACTIVE THEMES'  ,abstream);
     WriteThemesTL2(lprops,'DEACTIVE THEMES',abstream);
@@ -544,7 +544,7 @@ begin
       BuildLogicGroup(FindNode(lprops,'LOGICGROUP'), astream);
     end;
 
-    astream.WriteDWordAt(astream.Position-lAddPos,lAddPos);
+    astream.WriteDWordAt(astream.Position-lAddPos-SizeOf(DWord),lAddPos);
   end;
 
   //--- Children
@@ -552,11 +552,21 @@ begin
   lobj:=FindNode(anode,'CHILDREN');
   if lobj=nil then lcnt:=0
   else lcnt:=GetGroupCount(lobj);
+  lChildPos:=astream.Position;
   astream.WriteWord(lcnt);
 
   lgrpcnt:=0;
+  lchilds:=0;
   for i:=0 to lcnt-1 do
-    lgrpcnt:=lgrpcnt+DoWriteBlockTL2(GetChild(lobj,i),astream,abstream); // BASEOBJECT
+  begin
+    lchild:=DoWriteBlockTL2(GetChild(lobj,i),astream,abstream); // BASEOBJECT
+    if lchild>=0 then
+    begin
+      inc(lchilds);
+      lgrpcnt:=lgrpcnt+lchild;
+    end;
+  end;
+  astream.WriteDWordAt(lchilds,lChildPos);
 
   if lChunkType=idGroupTL2 then
     abstream.WriteWordAt(lgrpcnt,lcpos);
@@ -571,7 +581,7 @@ var
   lbs:TMemoryStream;
   ldata:TLayoutBin;
   lobj:pointer;
-  i,lcnt,lsize,lchildpos:integer;
+  lChildsPos,lchilds,lchild,i,lcnt,lsize,lchildpos:integer;
 begin
   result:=astream.Position;
   info.Version:=verTL2;
@@ -584,6 +594,7 @@ begin
   lobj:=FindNode(anode,'OBJECTS');
   if lobj=nil then lcnt:=0
   else lcnt:=GetGroupCount(lobj);
+  lChildsPos:=astream.Position;
   astream.WriteWord(lcnt); // root baseobject count
 
   lsize:=0;
@@ -594,14 +605,24 @@ begin
   lbs:=TMemoryStream.Create;
   try
     lbs.Write(ldata,SizeOf(ldata));
-    lbs.WriteDWord(0);
-    lbs.WriteDWord(0);
+    lbs.WriteByte (0); // Game Mode
+    lbs.WriteDWord(0); // Active themes
+    lbs.WriteDWord(0); // DeActive themes
     lchildpos:=lbs.Position;
     lbs.WriteWord(0);    // reserve for childs
 
+    lchilds:=0;
     for i:=0 to lcnt-1 do
-      lsize:=lsize+DoWriteBlockTL2(GetChild(lobj,i),astream,lbs); // BASEOBJECT
+    begin
+      lchild:=DoWriteBlockTL2(GetChild(lobj,i),astream,lbs); // BASEOBJECT
+      if lchild>=0 then
+      begin
+        lsize:=lsize+lchild;
+        inc(lchilds);
+      end;
+    end;
 
+    astream.WriteWordAt(lchilds,lChildsPos);
     if lsize>0 then
     begin
       lbs.WriteWordAt(lsize,lchildpos);

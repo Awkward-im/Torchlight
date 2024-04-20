@@ -22,6 +22,9 @@ const
   tofPackedHdr = 3;   // packed binary data with header
   tofSrc       = 4;   // source
   tofSrcBin    = 5;   // compiled source
+  // next two used in GetSourceEncoding only
+  tofSrcUTF8   = 6;   // source encoding is UTF8
+  tofSrcWide   = 7;   // source encoding is UTF16LE
   tofEmpty     = $FF;
 
 // return tof* consts
@@ -30,6 +33,10 @@ function RGTypeOfFile(aBuf:PByte; aname:PWideChar=nil):integer;
 function RGTypeOfFile(aBuf:PByte; asize:cardinal):integer;
 // return true if text DAT/LAYOUT file type
 function IsSource(aBuf:PByte; aname:PWideChar=nil):boolean;
+// return source encoding or tofEmpty if unknown
+function GetSourceEncoding(aBuf:PByte):integer;
+// return compiled data files version, verUnk for text
+function GetDataVersion(aBuf:PByte):integer;
 
 //===== [Un]Packing =====
 
@@ -65,8 +72,16 @@ function DecompileFile(ain:PByte; ainsize:cardinal; fname:PUnicodeChar;
                        out aout; asUTF8:boolean=false):boolean;
 function DecompileFile(ain:PByte; ainsize:cardinal; const fname:string;
                        out aout; asUTF8:boolean=false):boolean;
+function DecompileFile(fname:PUnicodeChar; out aout; asUTF8:boolean=false):boolean;
+
 function CompileFile  (ain:PByte; fname:PUnicodeChar; out aout:PByte; aver:integer):cardinal;
 function CompileFile  (ain:PByte; const fname:string; out aout:PByte; aver:integer):cardinal;
+
+// recompile DAT/LAYOUT files to another version (if needs)
+// return true if conversion done
+function ConvertToVersion(var abuf:PByte; var asize:integer;
+    newver:integer; fname:PUnicodeChar):boolean;
+
 
 const
   RGExtExts : array [0..2] of string = ('.TXT', '.BINDAT', '.BINLAYOUT');
@@ -128,6 +143,18 @@ begin
   end;
 end;
 
+function GetSourceEncoding(aBuf:PByte):integer;
+begin
+  if (PDWord(abuf)^=(SIGN_UNICODE+ORD('[') shl 16)) or
+     (PWord (abuf)^=ORD('[')) then exit (tofSrcWide);
+  if (PDWord(abuf)^=(SIGN_UTF8   +ORD('[') shl 24)) or
+     ((AnsiChar(abuf^)='[') and
+      (AnsiChar(abuf[1]) in [#0,']','_','0'..'9','A'..'Z','a'..'z'])) then
+    exit(tofSrcUTF8);
+
+  result:=tofEmpty;
+end;
+
 function IsSource(aBuf:PByte; aname:PWideChar=nil):boolean;
 begin
   if aBuf<>nil then
@@ -138,13 +165,25 @@ begin
       result:=true;
     if result then
     begin
+{
       if (PDWord(abuf)^=(SIGN_UTF8   +ORD('[') shl 24)) or
          (PDWord(abuf)^=(SIGN_UNICODE+ORD('[') shl 16)) or
          ((Char(abuf^)='[') and (Char(abuf[1]) in [#0,']','_','0'..'9','A'..'Z','a'..'z'])) then
+}
+      if GetSourceEncoding(aBuf)<>tofEmpty then
         exit(true);
     end;
   end;
   result:=false;
+end;
+
+function GetDataVersion(aBuf:PByte):integer;
+begin
+  if IsSource(aBuf) then exit(verUnk);
+
+  result:=GetDatVersion(aBuf);
+  if result=verUnk then
+    result:=GetLayoutVersion(aBuf);
 end;
 
 //----- Unpack -----
@@ -403,8 +442,9 @@ begin
       else
 }
       begin
-        GetMem(PByte(aout),ainsize);
+        GetMem(PByte(aout),ainsize+SizeOf(WideChar));
         move(ain^,PByte(aout)^,ainsize);
+        PWord(PByte(aout)+ainsize)^:=0;
       end;
       exit;
     end;
@@ -451,43 +491,34 @@ end;
 
 function DecompileFile(ain:PByte; ainsize:cardinal; const fname:string;
                        out aout; asUTF8:boolean=false):boolean;
-{
-var
-  p:pointer;
-  ldata:PByte;
-  ltype,ltof:integer;
-}
 begin
   result:=DecompileFile(ain,ainsize,PUnicodeChar(UnicodeString(fname)),aout,asUTF8);
-{
-  result:=false;
-  ltype:=PAKExtType(fname);
-  if (ltype in setData) then
+end;
+
+function DecompileFile(fname:PUnicodeChar; out aout; asUTF8:boolean=false):boolean;
+var
+  f:file of byte;
+  lbuf:PByte;
+  lsize:integer;
+begin
+  Assign(f,fname);
+  {$I-}
+  Reset(f);
+  if IOResult=0 then
   begin
-    ltof:=RGTypeOfFile(ain,ainsize);
-    if ltof in [tofPacked, tofPackedHdr] then
-    begin
-      ldata:=nil;
-      RGFileUnpack(ain,ainsize,ldata);
-    end
-    else
-    begin
-      ldata:=ain;
-    end;
-    
-    if      ltype=typeLayout then p:=ParseLayoutMem(ldata,GetLayoutType(fname))
-    else if ltype=typeRAW    then p:=ParseRawMem   (ldata,fname) // or do nothing
-    else                          p:=ParseDatMem   (ldata,fname);
-
-    if ldata<>ain then FreeMem(ldata);
-
-    if p=nil then
-      exit;
-
-    result:=NodeToWide(p,aout);
-    DeleteNode(p);
+    lsize:=FileSize(f);
+    GetMem(lbuf,lsize+SizeOf(WideChar));
+    BlockRead(f,lbuf^,lsize);
+    Close(f);
+    PWord(lbuf+lsize)^:=0;
+    result:=DecompileFile(lbuf,lsize,fname,aout,asUTF8);
+    FreeMem(lbuf);
+  end
+  else
+  begin
+    PByte(aout):=nil;
+    result:=false;
   end;
-}
 end;
 
 function CompileFile(ain:PByte; fname:PUnicodeChar; out aout:PByte; aver:integer):cardinal;
@@ -538,7 +569,7 @@ var
   lext:string;
   i:integer;
 begin
-  lext:=UpCase(ExtractFileExt(srcname));
+  lext:=rgglobal.ExtractFileExt(srcname);
   if lext<>'' then
     for i:=0 to High(RGExtExts) do
       if lext=RGExtExts[i] then
@@ -547,6 +578,53 @@ begin
         exit;
       end;
   result:=srcname;
+end;
+
+function ConvertToVersion(var abuf:PByte; var asize:integer;
+    newver:integer; fname:PUnicodeChar):boolean;
+var
+  p:pointer;
+  oldver:integer;
+  isdat:boolean;
+begin
+  result:=false;
+
+  oldver:=GetDatVersion(aBuf);
+  if oldver<>verUnk then
+    isdat:=true
+  else
+  begin
+    oldver:=GetLayoutVersion(aBuf);
+    isdat:=false;
+  end;
+  
+  if oldver=ABS(newver) then exit;
+
+  // decompile from old, compile to new
+  if isdat then
+  begin
+    p:=ParseDatMem(abuf,fname);
+    if p<>nil then
+    begin
+      abuf:=nil;
+      asize:=BuildDatMem(p,abuf,ABS(newver));
+      if asize>0 then result:=true;
+    end;
+  end
+  else
+  begin
+    p:=ParseLayoutMem(abuf,GetLayoutType(fname));
+    if p<>nil then
+    begin
+      abuf:=nil;
+      asize:=BuildLayoutMem(p,abuf,ABS(newver));
+      if asize>0 then result:=true;
+    end;
+  end;
+  if p<>nil then
+  begin
+    DeleteNode(p);
+  end;
 end;
 
 initialization

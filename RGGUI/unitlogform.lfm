@@ -5,7 +5,6 @@ object fmLogForm: TfmLogForm
   Width = 478
   ClientHeight = 331
   ClientWidth = 478
-  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   object memLog: TMemo
@@ -28,5 +27,17 @@ object fmLogForm: TfmLogForm
     Kind = bkCancel
     TabOrder = 1
     OnClick = bbClearClick
+  end
+  object bbSave: TBitBtn
+    Left = 8
+    Height = 30
+    Hint = 'Save log to file'
+    Top = 296
+    Width = 75
+    Caption = 'Save'
+    Default = True
+    Kind = bkOK
+    TabOrder = 2
+    OnClick = bbSaveClick
   end
 end

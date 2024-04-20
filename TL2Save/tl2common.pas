@@ -3,7 +3,7 @@ unit TL2Common;
 interface
 
 procedure DbgLn(const atxt:string);
-function Check(aval:qword; const albl:string; aright:qword):qword;
+function Check(aval:qword ; const albl:string; aright:qword ):qword;
 function Check(aval:single; const albl:string; aright:single):single;
 function SecToTime ( sec:cardinal):string;
 function MSecToTime(msec:cardinal):string;

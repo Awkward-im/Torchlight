@@ -1,5 +1,4 @@
-{TODO: Add manipulation of required mods and deleted files. at least like AddRequirement and AddToDeleted}
-{TODO: implement read modinfo from stream}
+{TODO: hash calc for required mods}
 unit TL2Mod;
 
 interface
@@ -26,7 +25,7 @@ type
 
 function ReadModInfo    (fname:PChar   ; var   amod:TTL2ModInfo):boolean; export;
 function ReadModInfoBuf (abuf:PByte    ; var   amod:TTL2ModInfo):boolean;
-//function ReadModInfoStream(ast:TStream ; var   amod:TTL2ModInfo):boolean;
+function ReadModInfoStream(ast:TStream ; var   amod:TTL2ModInfo):boolean;
 function WriteModInfo   (fname:PChar   ; const amod:TTL2ModInfo):integer; export;
 function WriteModInfo   (out abuf:PByte; const amod:TTL2ModInfo):integer;
 function WriteModInfoBuf(    abuf:PByte; const amod:TTL2ModInfo):integer;
@@ -202,14 +201,10 @@ begin
   end;
 end;
 
-{
 function ReadModInfoStream(ast:TStream; var amod:TTL2ModInfo):boolean;
 var
-  mt:PTL2ModTech;
   lversion,lpos,i,lcnt:integer;
 begin
-  result:=false;
-
   FillChar(amod,SizeOf(amod),0);
 
   // wrong signature
@@ -218,9 +213,10 @@ begin
   lversion:=ast.ReadWord();
   if (lversion=0) or (lversion>4) then
   begin
+    ast.Position:=lpos;
     amod.modid:=-1;
     amod.title:=nil;
-    exit;
+    exit(false);
   end;
 
   result:=true;
@@ -245,11 +241,11 @@ begin
 
   amod.offData :=ast.ReadDWord();
   amod.offMan  :=ast.ReadDWord();
-  amod.title   :=ast.ReadShortString();
-  amod.author  :=ast.ReadShortString();
-  amod.descr   :=ast.ReadShortString();
-  amod.website :=ast.ReadShortString();
-  amod.download:=ast.ReadShortString();
+  amod.title   :=ast.ReadShortStringWide();
+  amod.author  :=ast.ReadShortStringWide();
+  amod.descr   :=ast.ReadShortStringWide();
+  amod.website :=ast.ReadShortStringWide();
+  amod.download:=ast.ReadShortStringWide();
   amod.modid   :=ast.ReadQWord();
   //-
   amod.flags   :=ast.ReadDWord();
@@ -259,7 +255,7 @@ begin
   SetLength(amod.reqs,lcnt);
   for i:=0 to lcnt-1 do
   begin
-    amod.reqs[i].name:=ast.ReadShortString();
+    amod.reqs[i].name:=ast.ReadShortStringWide();
     amod.reqs[i].id  :=ast.ReadQWord();
     if lversion<>1 then
       amod.reqs[i].ver:=ast.ReadWord();
@@ -270,28 +266,25 @@ begin
     lcnt:=ast.ReadWord();
     SetLength(amod.dels,lcnt);
     for i:=0 to lcnt-1 do
-      amod.dels[i]:=ast.ReadShortString();
+      amod.dels[i]:=ast.ReadShortStringWide();
   end;
 end;
-}
+
 function ReadModInfoBuf(abuf:PByte; var amod:TTL2ModInfo):boolean;
 var
-  mt:PTL2ModTech;
-  i,lcnt:integer;
+  lversion,i,lcnt:integer;
 begin
-  result:=false;
-
   FillChar(amod,SizeOf(amod),0);
-
-  mt:=pointer(abuf);
 
   // wrong signature
 
-  if (mt^.version=0) or (mt^.version>4) then
+  lversion:=PWord(abuf)^;
+
+  if (lversion=0) or (lversion>4) then
   begin
     amod.modid:=-1;
     amod.title:=nil;
-    exit;
+    exit(false);
   end;
 
   inc(abuf,2);
@@ -302,7 +295,7 @@ begin
 
   amod.modver:=memReadWord(abuf);
 
-  if mt^.version>=4 then
+  if lversion>=4 then
   begin
     // yes, first number is higher word
     tTL2VerRec(amod.gamever).arr[3]:=memReadWord(abuf);
@@ -317,7 +310,7 @@ begin
 }
   end;
 
-  if mt^.version=1 then
+  if lversion=1 then
   begin
     for i:=0 to amod.modver do
     begin
@@ -344,11 +337,11 @@ begin
   begin
     amod.reqs[i].name:=memReadShortString(abuf);
     amod.reqs[i].id  :=memReadInteger64(abuf);
-    if mt^.version<>1 then
+    if lversion<>1 then
       amod.reqs[i].ver:=memReadWord(abuf);
   end;
 
-  if mt^.version>=3 then
+  if lversion>=3 then
   begin
     lcnt:=memReadWord(abuf);
     SetLength(amod.dels,lcnt);

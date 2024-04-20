@@ -136,6 +136,7 @@ const
   rgWord      = 200;
   rgByte      = 201;
   rgBinary    = 202;
+  rgQWord     = 203;
   // special
   rgList      = $1000;
 
@@ -170,6 +171,8 @@ type
     Z: Single;
     W: Single;
   end;
+  PVector = ^TVector4;
+
 type
   TMatrix4x4 = array [0..3,0..3] of single;
 
@@ -226,11 +229,14 @@ const
 //  $43
   tl2saveCurrent  = $44; // last (current) version
 {
+  0x09 - ? after 3c 4b(cnt)+1*x bytes
   0x11 - movies
   0x17 - !!!!!! TL1 1.15 savegame
   0x27 - Coords (-999, -999, -999)
+  0x37 - ? 2b+2b(size)+[8b]
   0x38 - min for read/write
   0x3B - scramble
+  0x3C - ? after 37, 2b (Cnt)+[8b]
   0x3D - new scramble method
   0x41 - checksum
   0x43 - ?mod lists?
@@ -514,15 +520,15 @@ end;
 
 function CompareWideI(s1,s2:PWideChar; alen:integer=0):integer;
 var
-  c1,c2:UnicodeChar;
+  c1,c2:AnsiChar;
 begin
   if s1=s2  then exit(0);
   if s1=nil then if s2^=#0 then exit(0) else exit(-1);
   if s2=nil then if s1^=#0 then exit(0) else exit( 1);
 
   repeat
-    c1:=UpCase(s1^);
-    c2:=UpCase(s2^);
+    c1:=UpCase(AnsiChar(ORD(s1^)));
+    c2:=UpCase(AnsiChar(ORD(s2^)));
     if c1>c2 then exit( 1);
     if c1<c2 then exit(-1);
     if s1^=#0  then exit( 0);
@@ -664,7 +670,7 @@ end;
 // modification of SysUtils
 function ExtractFileExt(const aFileName: string):string;
 var
-  i:integer;
+  i,j:integer;
 begin
   Result:='';
   i:=Length(aFileName);
@@ -674,7 +680,13 @@ begin
   if (i>0) and (aFileName[i]='.') then
   begin
     if (i>1) and not (aFileName[i-1] in ['/','\']) then
-      Result:=Copy(aFileName,i);
+    begin
+//      Result:=Copy(aFileName,i);
+
+      SetLength(Result,Length(aFileName)-i+1);
+      for j:=i to Length(aFileName) do
+        Result[j-i+1]:=UpCase(aFileName[j]);
+    end;
   end;
 end;
 
@@ -741,7 +753,7 @@ begin
   if atype=nil then exit(rgNotSet);
 
   for i:=0 to High(RGType) do
-    if CompareWide(atype,RGType[i].name)=0 then
+    if CompareWideI(atype,RGType[i].name)=0 then
       exit(RGType[i].code);
 
   result:=rgNotValid;
@@ -787,17 +799,20 @@ end;
 {$Q-}
 function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
 var
+  lhash:Int64;
   i:integer;
 begin
   result:=0;
   if asize>0 then
   begin
-    result:=$14D3;
+    lhash:=$14D3;
 
     for i:=0 to asize-1 do
     begin
-      result:=result+(result shl 5)+aptr[i];
+      lhash:=(lhash+(lhash shl 5)+aptr[i]) and $FFFFFFFF;
     end;
+
+    result:=dword(lhash);
   end;
 end;
 {$POP}

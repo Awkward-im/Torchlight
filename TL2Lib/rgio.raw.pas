@@ -376,7 +376,7 @@ begin
     begin
       lnode:=AddGroup(result,'PARTICLE');
 
-      AddString(lnode,'FILE',memReadShortStringBuf (abuf,@pcw,MAXLEN));
+      AddString(lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
       pc:=memReadShortStringUTF8(abuf);
       if pc<>nil then
       begin
@@ -403,7 +403,7 @@ begin
     result:=AddGroup(nil,'CELLS DB');
     for i:=0 to lcnt-1 do
     begin
-      lnode:=AddGroup(result,'CELL');
+      lnode:=AddGroup(result,'LAYOUT');
 
       AddString(lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
       inc(abuf,24);
@@ -411,10 +411,10 @@ begin
       lcnt1:=memReadWord(abuf);
       if lcnt1>0 then
       begin
-         lunode:=AddGroup(lnode,'SUBCELLS');
+         lunode:=AddGroup(lnode,'CELLS');
          for j:=0 to lcnt1-1 do
          begin
-           lsubnode:=AddGroup(lunode,'SUBCELL');
+           lsubnode:=AddGroup(lunode,'CELL');
            pc:=memReadShortStringUTF8(abuf);
            if pc<>nil then
            begin
@@ -728,7 +728,7 @@ begin
 
     astream.WriteShortString(AsString(FindNode(lnode,'FILE')));
 
-    lunode:=FindNode(lnode,'SUBCELLS');
+    lunode:=FindNode(lnode,'CELLS');
     lcnt:=GetChildCount(lunode);
     astream.WriteWord(lcnt);
 

@@ -1,6 +1,5 @@
 {TODO: Set modified if any edit field changed}
 {TODO: restore edit fields if "Cancel" pressed. was saved by ok so just fill again}
-{TODO: Add interface to view/edit "requirement" and "Delete" lists}
 {
 fsModal in FormState
 Application.ModalLevel
@@ -30,17 +29,17 @@ type
     leAuthor  : TLabeledEdit;
     leFilename: TLabeledEdit;
     leWebsite : TLabeledEdit;
-    leDownload: TLabeledEdit;lblDescr  : TLabel;
-    lbDelete: TListBox;
-    memDescr: TMemo;
-    PageControl: TPageControl;
+    leDownload: TLabeledEdit;  lblDescr  : TLabel;
+    memDescr  : TMemo;
     seVersion : TSpinEditEx;   lblVersion: TLabel;
     bbNewGUID : TBitBtn;
     edGUID    : TEdit;         lblGUID   : TLabel;
-    sgReq: TStringGrid;
-    tsDescr: TTabSheet;
-    tsDelete: TTabSheet;
+    PageControl  : TPageControl;
+    tsDescr      : TTabSheet;
+    tsDelete     : TTabSheet;
+    lbDelete     : TListBox;
     tsRequirement: TTabSheet;
+    sgReq        : TStringGrid;
 
     procedure bbCancelClick (Sender: TObject);
     procedure bbNewGUIDClick(Sender: TObject);
@@ -53,8 +52,7 @@ type
     ffile:string;
     fmi:PTL2ModInfo;
   public
-    constructor Create(AOwner: TComponent; ami: PTL2ModInfo=nil;
-      aRO: boolean=false); overload;
+    constructor Create(AOwner: TComponent; ami: PTL2ModInfo=nil; aRO: boolean=false); overload;
 
     function  LoadFromFile(const aFile:string):boolean;
     procedure SaveToFile  (const aFile:string);
@@ -104,7 +102,7 @@ var
   dlg:TSaveDialog;
 begin
   dlg:=TSaveDialog.Create(nil);
-  dlg.FileName  :='MOD.DAT';
+  dlg.FileName  :=TL2ModData;
   dlg.DefaultExt:='.DAT';
   dlg.Filter    :='*.DAT|*.dat|All files|*.*';
   if dlg.Execute then

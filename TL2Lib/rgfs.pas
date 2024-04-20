@@ -4,7 +4,6 @@
   one list with file/dir records
   global text cache
 }
-{TODO: Implement moving dir to another dir}
 {TODO: remove "total" changes/saving coz total = DirCount+FileCount (except deleted)}
 {TODO: implement Files.data=Dir index for dirs}
 {TODO: check all variant of AddPath/AddFile what we uses (i.e. PUnicodeChar, string...}

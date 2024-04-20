@@ -589,7 +589,6 @@ var
   lchecksum,lsize:dword;
 begin
   FVersion:=tl2saveCurrent;
-
   lsout:=TMemoryStream.Create;
   try
     try
@@ -603,7 +602,6 @@ begin
         lsout.Write(lchecksum,4);
       end;
       lpos:=lsout.Position;
-
 {data}
       FStream.Position:=FDataStart;
       lsout.CopyFrom(FStream,FStream.Size-FDataStart-4);

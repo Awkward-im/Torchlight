@@ -1,6 +1,18 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: fmlayoutedit.rsdefault
+msgid "- default -"
+msgstr ""
+
+#: fmlayoutedit.rstextpreview
+msgid "This is text preview without children nodes. You can select child from tree."
+msgstr ""
+
+#: fmlayoutedit.rsundefined
+msgid "UNDEFINED"
+msgstr ""
+
 #: formgui.rsbuildgrid
 msgid " Build file list. Please, wait..."
 msgstr ""
@@ -53,6 +65,18 @@ msgstr ""
 msgid " files unpacked succesfully."
 msgstr ""
 
+#: formgui.rsimported
+msgid " files imported"
+msgstr ""
+
+#: formgui.rslinkingnote
+msgid "These files still on disk and not built-in until PAK/MOD saved."
+msgstr ""
+
+#: formgui.rsnothingimported
+msgid "Nothing was imported."
+msgstr ""
+
 #: formgui.rsreadpak
 msgid " Read PAK. Parsing..."
 msgstr ""
@@ -76,6 +100,10 @@ msgstr ""
 
 #: formgui.rsselectdir
 msgid "Select directory"
+msgstr ""
+
+#: formgui.rsunknownencoding
+msgid "Unknown source encoding"
 msgstr ""
 
 #: formgui.rsunpacksucc
@@ -106,6 +134,19 @@ msgstr ""
 
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
+msgstr ""
+
+#: tfmlogform.bbsave.caption
+msgctxt "tfmlogform.bbsave.caption"
+msgid "Save"
+msgstr ""
+
+#: tfmlogform.bbsave.hint
+msgid "Save log to file"
+msgstr ""
+
+#: tformlayoutedit.cbtxtpreview.caption
+msgid "Text preview"
 msgstr ""
 
 #: tmodinfoform.bbcancel.caption
@@ -554,7 +595,7 @@ msgstr ""
 
 #: trgguiform.tbcolcategory.hint
 msgctxt "trgguiform.tbcolcategory.hint"
-msgid "Category"
+msgid "Show/hide column: Category"
 msgstr ""
 
 #: trgguiform.tbcoldir.caption
@@ -564,7 +605,7 @@ msgstr ""
 
 #: trgguiform.tbcoldir.hint
 msgctxt "trgguiform.tbcoldir.hint"
-msgid "Directory"
+msgid "Show/hide column: Directory"
 msgstr ""
 
 #: trgguiform.tbcolext.caption
@@ -574,7 +615,7 @@ msgstr ""
 
 #: trgguiform.tbcolext.hint
 msgctxt "trgguiform.tbcolext.hint"
-msgid "Extension"
+msgid "Show/hide column: Extension"
 msgstr ""
 
 #: trgguiform.tbcolpacked.caption
@@ -584,7 +625,7 @@ msgstr ""
 
 #: trgguiform.tbcolpacked.hint
 msgctxt "trgguiform.tbcolpacked.hint"
-msgid "Packed size"
+msgid "Show/hide column: Packed size"
 msgstr ""
 
 #: trgguiform.tbcolsource.caption
@@ -594,7 +635,7 @@ msgstr ""
 
 #: trgguiform.tbcolsource.hint
 msgctxt "trgguiform.tbcolsource.hint"
-msgid "Source size"
+msgid "Show/hide column: Source size"
 msgstr ""
 
 #: trgguiform.tbcoltime.caption
@@ -604,7 +645,7 @@ msgstr ""
 
 #: trgguiform.tbcoltime.hint
 msgctxt "trgguiform.tbcoltime.hint"
-msgid "Time"
+msgid "Show/hide column: Time"
 msgstr ""
 
 #: trgguiform.tbcolunpacked.caption
@@ -614,10 +655,14 @@ msgstr ""
 
 #: trgguiform.tbcolunpacked.hint
 msgctxt "trgguiform.tbcolunpacked.hint"
-msgid "Unpacked size"
+msgid "Show/hide column: Unpacked size"
 msgstr ""
 
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
+msgstr ""
+
+#: unitlogform.rscantsave
+msgid "Can't save log file"
 msgstr ""
 

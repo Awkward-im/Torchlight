@@ -1,0 +1,168 @@
+object AskForm: TAskForm
+  Left = 350
+  Height = 203
+  Top = 31
+  Width = 579
+  Caption = 'File is exists already'
+  ClientHeight = 203
+  ClientWidth = 579
+  object cbForAll: TCheckBox
+    Left = 10
+    Height = 25
+    Top = 136
+    Width = 174
+    Caption = 'Use for all files of mod'
+    Font.Height = -16
+    OnChange = cbForAllChange
+    ParentFont = False
+    TabOrder = 0
+  end
+  object bbContinue: TBitBtn
+    Left = 472
+    Height = 30
+    Top = 165
+    Width = 99
+    Anchors = [akRight, akBottom]
+    Caption = '&Continue'
+    Default = True
+    Kind = bkOK
+    ModalResult = 1
+    OnClick = bbContinueClick
+    TabOrder = 1
+  end
+  object lblFileName: TLabel
+    Left = 8
+    Height = 21
+    Top = 8
+    Width = 563
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'lblFileName'
+    Font.Height = -16
+    ParentColor = False
+    ParentFont = False
+  end
+  object rbSkip: TRadioButton
+    Left = 10
+    Height = 25
+    Top = 62
+    Width = 48
+    Caption = 'Skip'
+    Checked = True
+    Font.Height = -16
+    ParentFont = False
+    TabOrder = 2
+    TabStop = True
+  end
+  object rbOverwrite: TRadioButton
+    Left = 10
+    Height = 25
+    Top = 88
+    Width = 87
+    Caption = 'Overwrite'
+    Font.Height = -16
+    ParentFont = False
+    TabOrder = 3
+  end
+  object lblWhatToDo: TLabel
+    Left = 8
+    Height = 21
+    Top = 33
+    Width = 181
+    Caption = 'Exists already. what to do?'
+    Font.Height = -16
+    ParentColor = False
+    ParentFont = False
+  end
+  object cbCurrentDir: TCheckBox
+    Left = 32
+    Height = 21
+    Top = 112
+    Width = 89
+    Caption = 'This dir only'
+    Font.Height = -13
+    ParentFont = False
+    TabOrder = 4
+  end
+  object bbStop: TBitBtn
+    Left = 392
+    Height = 30
+    Top = 165
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'Stop'
+    Kind = bkCancel
+    ModalResult = 1
+    OnClick = bbStopClick
+    TabOrder = 5
+  end
+  object bbCompare: TBitBtn
+    Left = 10
+    Height = 30
+    Top = 165
+    Width = 120
+    Anchors = [akRight, akBottom]
+    Caption = 'Compare'
+    Kind = bkRetry
+    ModalResult = 1
+    OnClick = bbCompareClick
+    TabOrder = 6
+  end
+  object lblOldSize: TLabel
+    Left = 304
+    Height = 15
+    Top = 39
+    Width = 60
+    Anchors = [akTop, akRight]
+    Caption = 'Old file size'
+    ParentColor = False
+  end
+  object lblNewSize: TLabel
+    Left = 304
+    Height = 15
+    Top = 62
+    Width = 65
+    Anchors = [akTop, akRight]
+    Caption = 'New file size'
+    ParentColor = False
+  end
+  object lblOldSizeNum: TLabel
+    Left = 392
+    Height = 15
+    Top = 39
+    Width = 79
+    Anchors = [akTop, akRight]
+    Caption = 'lblOldSizeNum'
+    ParentColor = False
+  end
+  object lblNewSizeNum: TLabel
+    Left = 392
+    Height = 15
+    Top = 62
+    Width = 84
+    Anchors = [akTop, akRight]
+    Caption = 'lblNewSizeNum'
+    ParentColor = False
+  end
+  object bbRename: TBitBtn
+    Left = 160
+    Height = 30
+    Top = 165
+    Width = 104
+    Caption = 'Rename old'
+    Kind = bkHelp
+    OnClick = bbRenameClick
+    TabOrder = 7
+  end
+  object bbSaveAs: TBitBtn
+    Left = 272
+    Height = 30
+    Top = 165
+    Width = 104
+    Caption = 'Rename new'
+    Kind = bkIgnore
+    ModalResult = 5
+    OnClick = bbSaveAsClick
+    TabOrder = 8
+  end
+end

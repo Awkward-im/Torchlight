@@ -13,10 +13,16 @@ interface
 uses
   rgglobal;
 
+const
+  sres_break   = $80000000; // break cycle
+  sres_fail    = $40000000; // test failed, no count increased
+  sres_nocheck = $20000000; // no  need to check content, name test only
+  sres_count   = $00FFFFFF; // mask to get item count
+  sres_mask    = sres_break or sres_fail;
+  
 type
-  // file accepted if result<>0
+  // PWideChar for mods
   TCheckNameProc = function(const adir,aname:string; aparam:pointer):integer;
-  // file accepted of result<>0; break cycle if result<0
   TProcessProc   = function(
           abuf:PByte; asize:integer;
           const adir,aname:string;
@@ -55,17 +61,16 @@ type
   TScanObj = object
   private
     FExts     :array of string;
-    FRoot     :string;     // not used, mod file path or scan starting dir
-    FDir      :PWideChar;  // not used, starting dir inside root
-    FParam    :pointer;
+    FRoot     :string;         // mod file path or scan starting dir
+    FDir      :PWideChar;      // starting dir inside root
+    FParam    :pointer;        // user data
     FMod      :TRGPAK;
     FCheckProc:TCheckNameProc;
     FActProc  :TProcessProc;
 
     FCount    :integer;
 
-    function  CheckExt (const afile:string):boolean;
-    function  CheckName(apath,afile:PWideChar):boolean;
+    function  CheckExt(const afile:string):boolean;
   public
     procedure Free;
     procedure ScanMod();
@@ -86,28 +91,19 @@ var
   ls:string;
   i:integer;
 begin
-  if FExts=nil then result:=true
-  else
+  result:=true;
+  // do not check dir names
+  if FExts<>nil then
   begin
-    ls:=UpCase(ExtractFileExt(afile));
-    for i:=0 to High(FExts) do
+    if afile[Length(afile)]<>'/' then
     begin
-      if ls=FExts[i] then
-        exit(true);
-    end;
-    result:=false;
-  end;
-end;
+      ls:=rgglobal.ExtractFileExt(afile);
+      for i:=0 to High(FExts) do
+        if ls=FExts[i] then exit;
 
-function TScanObj.CheckName(apath,afile:PWideChar):boolean;
-begin
-{
-  if (FDir<>nil) and (CompareWide(FDir,apath,Length(FDir))<>0) then
-    result:=false
-  else
-}
-    result:=CheckExt(afile) and
-      ((FCheckProc=nil) or (FCheckProc(apath,afile,FParam)>0));
+      result:=false;
+    end;
+  end;
 end;
 
 procedure TScanObj.ScanMod();
@@ -115,42 +111,46 @@ var
   lbuf:PByte;
   p:PManFileInfo;
   lname,lfname:PWideChar;
-  res,j,lsize:integer;
+  llen,lres,j,lsize:integer;
 begin
   lbuf:=nil;
+  llen:=Length(FDir);
   for j:=0 to FMod.man.DirCount-1 do
   begin
     if FMod.man.IsDirDeleted(j) then continue;
 
-    if (FDir=nil) or (CompareWide(FDir,FMod.man.Dirs[j].Name,Length(FDir))=0) then
+    lname:=FMod.man.Dirs[j].Name;
+    if (FDir=nil) or (CompareWide(FDir,lname,llen)=0) then
     begin
       if FMod.man.GetFirstFile(p,j)<>0 then
       begin
-        lname:=FMod.man.Dirs[j].Name;
         repeat
           lfname:=p^.name;
-          if (not (p^.ftype in [typeDirectory,typeDelete])) and
-             CheckName(lname,lfname) then
+          if (p^.ftype<>typeDelete) and CheckExt(lfname) then
           begin
-            if (FActProc=nil) then inc(FCount)
+            if FCheckProc<>nil then
+              lres:=FCheckProc(lname,lfname,FParam)
             else
+              lres:=0;
+
+            if (lres and sres_nocheck)=0 then
             begin
-              if (p^.size_s>0) and
-                 (p^.offset>0) then
+              if p^.ftype<>typeDirectory then // useful when FCheckProc=nil
               begin
-                lsize:=FMod.UnpackFile(lname,lfname,lbuf);
-
-                res:=FActProc(lbuf,lsize,lname,lfname,FParam);
-
-                if res>0 then inc(FCount)
-                else if res<0 then
-                begin
-                  FCount:=-ABS(FCount);
-                  FreeMem(lbuf);
-                  exit;
-                end;
-
-              end;
+                if FActProc<>nil then
+                  if (p^.size_s>0) and (p^.offset>0) then
+                  begin
+                    lsize:=FMod.UnpackFile(lname,lfname,lbuf);
+                    lres:=FActProc(lbuf,lsize,lname,lfname,FParam);
+                  end;
+              end
+              else lres:=sres_fail;
+            end;
+            if (lres and sres_fail )= 0 then inc(FCount);
+            if (lres and sres_break)<>0 then
+            begin
+              FreeMem(lbuf);
+              exit;
             end;
           end;
         until FMod.man.GetNextFile(p)=0;
@@ -167,57 +167,66 @@ var
   sr:TSearchRec;
   f:file of byte;
   lbuf:PByte;
-  ldir:string;
-  res,lsize:integer;
+  ldir,lname:string;
+  lres,lsize:integer;
 begin
-  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
+  if FindFirst(adir+'*.*',faAnyFile{ and faDirectory},sr)=0 then
   begin
+    ldir:=Copy(adir,Length(FRoot)+1);
     repeat
+      lname:=UpCase(sr.Name);
       if (sr.Attr and faDirectory)=faDirectory then
       begin
-        if (sr.Name<>'.') and (sr.Name<>'..') then
+        if (lname<>'.') and (lname<>'..') then
         begin
-          CycleDir(adir+'/'+sr.Name);
-          if FCount<0 then break;
+          if (FCheckProc<>nil) then
+            lres:=FCheckProc(ldir,lname+'/',FParam)
+          else
+            lres:=0;
+
+          if (lres and sres_fail )= 0 then CycleDir(adir+lname+'/');
+          if (lres and sres_break)<>0 then break;
         end;
       end
       else
       begin
-        ldir:=Copy(adir,Length(FRoot)+2)+'/'; // skip DirectorySeparator
-        if CheckExt(sr.Name) and
-           ((FCheckProc=nil) or (FCheckProc(ldir,sr.Name,FParam)>0)) then
+        if CheckExt(lname) then
         begin
-          if Pos('.MOD',UpCase(sr.Name))=(Length(sr.Name)-3) then
-          begin
-            if UpCase(sr.Name)<>TL2EditMod then //!!!!!!!!!!
-            begin
-              res:=MakeRGScan(adir+'/'+sr.Name,'',FExts,
-                  FActProc,FParam,FCheckProc);
-              if      res>0 then inc(FCount,res)
-              else if res<0 then break;
-            end;
-          end
-          else if (FActProc=nil) then inc(FCount)
+          if FCheckProc<>nil then
+            lres:=FCheckProc(ldir,lname,FParam)
           else
+            lres:=0;
+
+          if (lres and sres_nocheck)=0 then
           begin
-            Assign(f,adir+'/'+sr.Name);
-            Reset(f);
-            if IOResult=0 then
+            lsize:=Length(sr.Name)-3;
+            if (Pos('.MOD',lname)=lsize) or
+               (Pos('.PAK',lname)=lsize) then
             begin
-              lsize:=FileSize(f);
-              GetMem(lbuf,lsize);
-              BlockRead(f,lbuf^,lsize);
-              Close(f);
-              res:=FActProc(lbuf,lsize,ldir,sr.Name,FParam);
-              FreeMem(lbuf);
-              if res>0 then inc(FCount)
-              else if res<0 then
+              if lname<>TL2EditMod then
               begin
-                FCount:=-ABS(FCount);
-                break;
+                lres:=MakeRGScan(adir+lname,'',FExts,
+                    FActProc,FParam,FCheckProc);
+              end;
+            end
+            else if FActProc<>nil then
+            begin
+              Assign(f,adir+sr.Name);
+              Reset(f);
+              if IOResult=0 then
+              begin
+                lsize:=FileSize(f);
+                GetMem(lbuf,lsize);
+                BlockRead(f,lbuf^,lsize);
+                Close(f);
+                lres:=FActProc(lbuf,lsize,ldir,lname,FParam);
+                FreeMem(lbuf);
               end;
             end;
           end;
+
+          if (lres and sres_fail )= 0 then inc(FCount);
+          if (lres and sres_break)<>0 then break;
         end;
       end;
     until FindNext(sr)<>0;
@@ -238,9 +247,12 @@ begin
 
   if apath='' then Exit
   else if apath[Length(apath)] in ['/','\'] then
-    ldir:=Copy(apath,1,Length(apath)-1)
+  begin
+    ldir:=Copy(apath,1);
+    ldir[Length(ldir)]:='/';
+  end
   else if DirectoryExists(apath) then
-    ldir:=apath
+    ldir:=apath+'/'
   else if FileExists(apath) then
   begin
     ldir:='';
@@ -260,9 +272,8 @@ begin
   else
     PScanObj(aptr)^.FMod.Version:=verUnk;
 
-  PScanObj(aptr)^.FRoot :=ldir;
+  PScanObj(aptr)^.FRoot:=ldir;
 
-//  PScanObj(aptr)^.FExts :=Copy(aext);
   SetLength(PScanObj(aptr)^.FExts,Length(aext));
   for i:=0 to High(aext) do
     PScanObj(aptr)^.FExts[i]:=Copy(aext[i],1);
@@ -293,7 +304,7 @@ begin
 
   if PScanObj(aptr)^.FMod.Version=verUnk then
   begin
-    Assign(f,PScanObj(aptr)^.FRoot+DirectorySeparator+afile);
+    Assign(f,PScanObj(aptr)^.FRoot+afile);
     Reset(f);
     if IOResult=0 then
     begin
@@ -315,6 +326,7 @@ function DoRGScan(aptr:pointer; const apath:string;
     actproc:TProcessProc=nil; checkproc:TCheckNameProc=nil):integer;
 var
   ls:string;
+  llen:integer;
 begin
   if aptr=nil then Exit(0);
 
@@ -322,28 +334,25 @@ begin
 
   PScanObj(aptr)^.FCheckProc:=checkproc;
   PScanObj(aptr)^.FActProc  :=actproc;
-  PScanObj(aptr)^.FDir      :=StrToWide(apath);
+  ls:=apath;
+  llen:=Length(ls);
+  if (ls<>'') then
+  begin
+    if not (ls[llen] in ['\','/']) then ls:=ls+'/'
+    else if llen>1 then ls[llen]:='/'
+    else ls:='';
+  end;
+
+  PScanObj(aptr)^.FDir:=StrToWide(ls);
 
   if PScanObj(aptr)^.FMod.Version=verUnk then
-  begin
-    if apath='' then
-      PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot)
-    else
-    begin
-      ls:=apath;
-      if ls[Length(ls)] in ['/','\'] then SetLength(ls,High(ls));
-      if ls<>'' then
-        PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot+DirectorySeparator+ls)
-      else
-        PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot);
-    end;
-  end
+    PScanObj(aptr)^.CycleDir(PScanObj(aptr)^.FRoot+ls)
   else
     PScanObj(aptr)^.ScanMod();
   
   FreeMem(PScanObj(aptr)^.FDir);
 
-  result:=PScanObj(aptr)^.FCount;
+  result:=PScanObj(aptr)^.FCount; //!!
 end;
 
 function MakeRGScan(

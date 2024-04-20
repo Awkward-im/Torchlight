@@ -404,26 +404,138 @@ function ScanParticles(
           abuf:PByte; asize:integer;
           const adir,aname:string;
           aparam:pointer):integer;
+var
+  lnode:pointer;
+  pc:PUnicodeChar;
+  lbuf:array [0..127] of UnicodeChar;
+  i:integer;
 begin
+  result:=0;
+
+  if asize>0 then
+  begin
+    repeat
+      inc(abuf);
+      dec(asize);
+    until (asize=0) or (PAnsiChar(abuf)^ in [#9,' ']);
+    inc(abuf);
+    dec(asize);
+    i:=0;
+    while (asize>0) and (PAnsiChar(abuf)^ in ['A'..'Z','a'..'z','0'..'9','_']) do
+    begin
+      lbuf[i]:=UnicodeChar(abuf^);
+      inc(i);
+      inc(abuf);
+      dec(asize);
+    end;
+    lbuf[i]:=#0;
+    if i>0 then
+    begin
+      lnode:=AddGroup(aparam,'PARTICLE');
+
+      pc:=StrToWide(adir+aname);
+      AddString(lnode,'FILE',pc);
+      FreeMem(pc);
+
+      AddString(lnode,'NAME',@lbuf[0]);
+
+      result:=1;
+    end;
+  end;
 end;
 
 function ScanCellsDB(
           abuf:PByte; asize:integer;
           const adir,aname:string;
           aparam:pointer):integer;
+var
+  p:pointer;
+  lobj,lprops,lnode,lsubnode:pointer;
+  pc:pUnicodeChar;
+  i:integer;
 begin
+  result:=0;
+
+  if asize>0 then
+  begin
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseLayoutMem(abuf);
+    
+    if p<>nil then
+    begin
+      lnode:=AddGroup(aparam,'LAYOUT');
+
+      pc:=StrToWide(adir+aname);
+      AddString(lnode,'FILE',pc);
+      FreeMem(pc);
+
+      lobj:=FindNode(p,'WARPPOINTS');
+      if lobj<>nil then
+      begin
+        lnode:=AddGroup(lnode,'CELLS');
+
+        for i:=0 to GetChildCount(lobj)-1 do
+        begin
+          lsubnode:=AddGroup(lnode,'CELL');
+          lprops:=GetChild(lobj,i);
+          AddString   (lsubnode,'NAME',AsString   (FindNode(lprops,'WARP_NAME')));
+          AddInteger64(lsubnode,'GUID',AsInteger64(FindNode(lprops,'ID')));
+        end;
+      end;
+
+      result:=1;
+
+      DeleteNode(p);
+    end;
+  end;
 end;
+
+type
+  pparamrec = ^tparamrec;
+  tparamrec = record
+    node  : pointer;
+    quests: pointer;
+  end;
 
 function ScanQuests(
           abuf:PByte; asize:integer;
           const adir,aname:string;
           aparam:pointer):integer;
 begin
+// FILE: MEDIA/LEVELS/*.LAYOUT descriptor:POI, type: MAP_ICON; map_icon:iconname QUEST:questname
+// POSITION: summarize position (full tree)
+// QUEST: MEDIA/QUESTS.DAT   //QUEST/UNIQUE_ID where //QUEST/NAME = questname
+// MAP_ICON: MEDIA/QUESTS.DAT  //QUEST/ICON_ID where //QUEST/NAME = questname
+// or UI/MAPICONS.DAT MAP_ICONS/ICON/NAME=iconname UNIQUE_ID
+  result:=0;
+
+  if asize>0 then
+  begin
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseLayoutMem(abuf);
+    
+    // 1 - recurse walk on all nodes
+    // 2 - if 'DESCRIPTOR' = 'POI' then
+    // 3 - check pparamrec(aparam)^.quests node for [QUEST] NAME = questname
+    // 4 - get UNIQUE_ID and ICON_ID
+    // 5 - calculate sum of coords by "parent"
+    if p<>nil then
+    begin
+
+
+      result:=1;
+
+      DeleteNode(p);
+    end;
+  end;
 end;
 
 function ScanRaw(const apath,aname:string):pointer;
 var
   p:pointer;
+  tmp:tparamrec;
 begin
   result:=AddGroup(nil,'');
 
@@ -485,17 +597,28 @@ begin
   else if aname=RawNames[nmPARTICLES] then
   begin
     SetNodeName(result,'PARTICLES');
-    MakeRGScan(apath,'MEDIA/',['.LAYOUT'],@ScanParticles,result,nil)
+    MakeRGScan(apath,'MEDIA/PARTICLES',['.PU'],@ScanParticles,result,nil)
   end
   else if aname=RawNames[nmCELLDB] then
   begin
     SetNodeName(result,'CELLS DB');
-    MakeRGScan(apath,'MEDIA/',['.LAYOUT'],@ScanCellsDB,result,nil)
+    MakeRGScan(apath,'MEDIA/LEVELS',['.LAYOUT'],@ScanCellsDB,result,nil)
   end
   else if aname=RawNames[nmQUESTMARKERS] then
   begin
     SetNodeName(result,'QUESTMARKERS');
-    MakeRGScan(apath,'MEDIA/',['.LAYOUT'],@ScanQuests,result,nil)
+
+    tmp.quests:=ParseTextFile(PChar(apath+'MEDIA/QUESTS.DAT'));
+    if tmp.quests=nil then
+      tmp.quests:=ParseDatFile(PChar(apath+'MEDIA/QUESTS.DAT'));
+
+    if tmp.quests<>nil then
+    begin
+      tmp.node:=result;
+      MakeRGScan(apath,'MEDIA/',['.LAYOUT'],@ScanQuests,@tmp,nil);
+
+      DeleteNode(tmp.quests);
+    end;
   end;
 
 end;

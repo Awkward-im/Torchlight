@@ -265,6 +265,19 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitFilterForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="fmlayoutedit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="formLayoutEdit"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmLayoutEdit"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\synhighlightert.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="SynHighlightert"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -3,11 +3,14 @@ unit RGIO.Text;
 
 interface
 
-function NodeToWide       (anode:pointer; out aptr:PWideChar):ByteBool;
-function NodeToUTF8       (anode:pointer; out aptr:PAnsiChar):ByteBool;
+// "achild" is for show or not "CHILDREN" groups
+function NodeToWide       (anode:pointer; out aptr:PWideChar; achild:boolean=true):ByteBool;
+function NodeToUTF8       (anode:pointer; out aptr:PAnsiChar; achild:boolean=true):ByteBool;
 function BuildTextFile    (anode:pointer; fname:PChar):ByteBool;
 function BuildUTF8TextFile(anode:pointer; fname:PChar):ByteBool;
 
+function DumpNode(var buf:PByte; var idx:cardinal; anode:pointer;
+    atab:integer; achild:boolean=true):boolean;
 
 const
   errCantOpen      =  1; // Can't open file for parsing
@@ -89,7 +92,8 @@ begin
 end;
 
 
-function DumpNode(var buf:PByte; var idx:cardinal; anode:pointer; atab:integer):boolean;
+function DumpNode(var buf:PByte; var idx:cardinal; anode:pointer;
+     atab:integer; achild:boolean=true):boolean;
 var
   larr:array [0..127] of WideChar;
   lvalue:UnicodeString;
@@ -100,6 +104,12 @@ var
 begin
   result:=true;
 
+  ltype:=GetNodeType(anode);
+  lname:=GetNodeName(anode);
+  if (not achild) and (ltype=rgGroup) and (CompareWide(lname,'CHILDREN')=0) then exit;
+
+  llen:=Length(lname);
+
   i:=0;
   while i<atab do
   begin
@@ -107,10 +117,6 @@ begin
     inc(i);
   end;
 
-  lname:=GetNodeName(anode);
-  llen:=Length(lname);
-
-  ltype:=GetNodeType(anode);
   if ltype=rgGroup then
   begin
     // opening tag
@@ -128,7 +134,7 @@ begin
 
     // children
     for i:=0 to GetChildCount(anode)-1 do
-      DumpNode(buf,idx,GetChild(anode,i), atab+1);
+      DumpNode(buf,idx,GetChild(anode,i), atab+1, achild);
 
     // closing tag
     i:=atab;
@@ -233,7 +239,7 @@ end;
   end;
 end;
 
-function NodeToWide(anode:pointer; out aptr:PWideChar):ByteBool;
+function NodeToWide(anode:pointer; out aptr:PWideChar; achild:boolean=true):ByteBool;
 var
   lidx:cardinal;
 begin
@@ -245,7 +251,7 @@ begin
   aptr[0]:=WideChar($FEFF);
   lidx:=2;
 
-  result:=DumpNode(PByte(aptr),lidx,anode,0);
+  result:=DumpNode(PByte(aptr),lidx,anode,0,achild);
   
   if not result then
   begin
@@ -260,12 +266,12 @@ begin
   end;
 end;
 
-function NodeToUTF8(anode:pointer; out aptr:PAnsiChar):ByteBool;
+function NodeToUTF8(anode:pointer; out aptr:PAnsiChar; achild:boolean=true):ByteBool;
 var
   lwide:PWideChar;
   lsize:integer;
 begin
-  result:=NodeToWide(anode,lwide);
+  result:=NodeToWide(anode,lwide, achild);
   if result then  
   begin
     lsize:=Length(lwide);

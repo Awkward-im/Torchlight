@@ -26,12 +26,14 @@ type
     function GetObjectById  (aid:dword):pointer;
     function GetObjectByName(aname:PWideChar):pointer;
 
-    function GetObjectName(aid:dword=dword(-1)):PWideChar;
+    function GetObjectDescr(aid:dword=dword(-1)):PWideChar;
+    function GetObjectName (aid:dword=dword(-1)):PWideChar;
     function GetObjectId(aname:PWideChar):dword;
 
     function GetPropsCount:integer;
 
-    function GetProperty(aid:dword):pointer;
+    function GetProperty (aid:dword):pointer;
+    function GetPropDescr(aid:dword):PWideChar;
     function GetPropInfoByIdx (idx:integer; out aid:dword; out aname:PWideChar):integer;
     function GetPropInfoById  (aid:dword; out aname:PWideChar):integer;
     function GetPropInfoByName(aname:PWideChar; atype:integer; out aid:dword):integer;
@@ -217,6 +219,15 @@ begin
     result:=nil;
 end;
 
+function TRGObject.GetObjectDescr(aid:dword=dword(-1)):PWideChar;
+begin
+  if aid<>dword(-1) then GetObjectById(aid);
+  if FLastObject<>nil then
+    result:=PObjInfo(FLastObject)^.descr
+  else
+    result:=nil;
+end;
+
 function TRGObject.GetPropsCount:integer;
 begin
   if FLastObject<>nil then
@@ -239,6 +250,17 @@ begin
     end;
 
   result:=nil;
+end;
+
+function TRGObject.GetPropDescr(aid:dword):PWideChar;
+var
+  lprop:PPropInfo;
+begin
+  lprop:=GetProperty(aid);
+  if lprop<>nil then
+    result:=lprop^.descr
+  else
+    result:=nil;
 end;
 
 function TRGObject.GetPropInfoByIdx(idx:integer; out aid:dword; out aname:PWideChar):integer;

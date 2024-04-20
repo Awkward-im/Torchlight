@@ -1,15 +1,15 @@
+{TODO: Save pak or file: check setData binary files version, repack if needs}
+{TODO: add icon extract by imageset}
+{TODO: add hash calc and brute form}
 {TODO: Change StatusBar statistic when add/delete dir/file}
 {TODO: 1-setting to save linked file on disk/mem; 2-ask every time/once}
 {TODO: save as for editor}
-{TODO: Audio player as preview if bass.dll found}
 {TODO: memory settings: max size to load PAK into memory}
-{TODO: Add HASH calcualtor}
 {TODO: Add file search}
 {TODO: Implement to open DIR (not PAK/MOD/MAN) = ctrl.AddDirectory}
 {TODO: Status bar path changes on dir with files only}
 {TODO: option: keep PAK open}
 {TODO: option: ask unpack path}
-{TODO: Save: full repack or fast}
 {TODO: Tree changes: check update list}
 {TODO: replace bitbutton by speed button (scale problem)}
 {TODO: change grid/preview border moving}
@@ -23,7 +23,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
   SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
-  rgglobal, rgpak, rgctrl, Types;
+  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit;
 
 type
 
@@ -222,6 +222,7 @@ type
   private
     FUData:pointer;
     fmi:TForm;
+    fmLEdit:TForm;
     ctrl:TRGController;
     LastExt:string;
     LastFilter:integer;
@@ -253,7 +254,8 @@ type
     procedure PreviewSound;
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure PreviewImage(const aext: string);
-    procedure PreviewSource;
+    procedure PreviewSource();
+    procedure PreviewLayout();
     procedure PreviewText();
     procedure LoadSettings;
     procedure SaveSettings;
@@ -261,6 +263,7 @@ type
     function  UnpackSingleFile(const adir, aname: string; var buf:PByte): boolean;
     procedure ExtractSingleDir(adir: integer; var buf:PByte);
     procedure UpdateStatistic;
+    function  OnImportDouble(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
   public
 
@@ -288,6 +291,10 @@ uses
   unitLogForm,
   unitFilterForm,
   fmmodinfo,
+  fmAsk,
+  fmcombodiff,
+
+  rgIO.Text,
 
   rgfiletype,
   rgfile,
@@ -302,9 +309,11 @@ const
   strParentDir = '. . /';
   strDir       = '< DIR >';
 const
-  lblNew     = '+';
-  lblChanged = '*';
-  lblDelete  = 'X';
+  stlblNew     = '+';
+  stlblChanged = '*';
+  stlblDelete  = 'X';
+  stlblLinkNew = 'F+';
+  stlblLinkEd  = 'F*';
 
 const
   colState  = 0;
@@ -375,6 +384,10 @@ resourcestring
   rsFileName        = 'Enter file name';
   rsReady           = 'Ready to work';
   rsRename          = 'Rename file/dir';
+  rsImported        = ' files imported';
+  rsLinkingNote     = 'These files still on disk and not built-in until PAK/MOD saved.';
+  rsNothingImported = 'Nothing was imported.';
+  rsUnknownEncoding = 'Unknown source encoding';
 
 {%ENDREGION Constants}
 
@@ -504,7 +517,7 @@ begin
   bShowUnpacked:=config.ReadBool(sSectSettings,sShowUnpacked,false);
   bShowSource  :=config.ReadBool(sSectSettings,sShowSource  ,false);
 
-  actShowPreview.Checked:=config.ReadBool(sSectSettings,sShowPreview,false);
+  actShowPreview.Checked:=config.ReadBool(sSectSettings,sShowPreview,false); actPreviewExecute(Self);
   actScaleImage .Checked:=config.ReadBool(sSectSettings,sScaleImage ,false);
 
   rgDebugLevel:=TRGDebugLevel(config.ReadInteger(sSectSettings,sDebugLevel,1));
@@ -585,6 +598,9 @@ begin
 
   fmLogForm:=nil;
   fmFilterForm:=TFilterForm.Create(Self);
+  fmLEdit:=TFormLayoutEdit.Create(Self);
+  fmLEdit.Parent:=pnlAdd;
+  fmLEdit.Align:=alClient;
 
   SynTSyn:=TSynTSyn.Create(Self);
 
@@ -1035,6 +1051,8 @@ begin
   if sstream<>0 then bbStopClick(self);
   pnlAudio.Visible:=false;
 
+  fmLEdit.Visible:=false;
+
   SynEdit.Clear;
   SynEdit.Visible:=false;
 
@@ -1266,18 +1284,43 @@ begin
   actScaleImage.Visible:=true;
 end;
 
+procedure TRGGUIForm.PreviewLayout();
+begin
+  if FUData=nil then exit;
+
+  TFormLayoutEdit(fmLEdit).BuildTree(FUData);
+  fmLEdit.Visible:=true;
+end;
+
 procedure TRGGUIForm.PreviewSource();
 var
-  pc:PWideChar;
+  pc :PWideChar;
+  lpc:PAnsiChar;
 begin
+  if FUData=nil then exit;
+
 //!!    pnlEditButtons.Visible:=true;
-
-  pc:=PWideChar(FUData);
-  if pc<>nil then
-    if ORD(pc^)=SIGN_UNICODE then inc(pc);
-
   SynEdit.Highlighter:=SynTSyn;
-  SynEdit.Text:=WideToStr(pc);
+
+  case GetSourceEncoding(FUData) of
+    tofSrcUTF8: begin
+      lpc:=PAnsiChar(FUData);
+      if (PDword(FUData)^ and $00FFFFFF)=SIGN_UTF8 then inc(lpc,3);
+      SynEdit.Text:=lpc;
+    end;
+
+    tofSrcWide: begin
+      pc:=PWideChar(FUData);
+      if ORD(pc^)=SIGN_UNICODE then inc(pc);
+      SynEdit.Text:=WideToStr(pc);
+    end;
+
+  else
+    ShowMessage(rsUnknownEncoding);
+    exit;
+  end;
+
+  SynEdit.Modified:=false;
   SynEdit.Visible:=true;
   actEdSearch.Enabled:=true;
 end;
@@ -1286,8 +1329,11 @@ procedure TRGGUIForm.PreviewText();
 var
   ltext:string;
 begin
+  // Use LText coz FUData don't have #0 at the end
   if FUSize>0 then
-    SetString(ltext,PChar(FUData),FUSize);
+    SetString(ltext,PChar(FUData),FUSize)
+  else
+    ltext:='';
 
   SynEdit.Highlighter:=SynXMLSyn;
   SynEdit.Text:=ltext;
@@ -1336,39 +1382,48 @@ begin
     ltype:=PAKExtType(lext);
     if ltype in (setBinary+[typeDelete,typeDirectory]) then exit;
 
-     if not actShowPreview.Checked then exit;
+    if not actShowPreview.Checked then exit;
 
-    FUSize:=ctrl.GetSource(lfile,FUData);
-    FillGridLine(sgMain.Row,ldir,lfile);
-//    if FUSize>0 then
+    if ltype=typeLayout then
     begin
-      if ltype=typeImageset then
+      FUSize:=ctrl.GetBinary(lfile,FUData);
+
+      PreviewLayout()
+    end
+    else
+    begin
+      FUSize:=ctrl.GetSource(lfile,FUData);
+
+  //    if FUSize>0 then
       begin
-        if (FUSize>1) and (PByte(FUData)[1]<>0) then
-          lspec:=1
+        if ltype=typeImageset then
+        begin
+          if (FUSize>4) and (GetSourceEncoding(FUData)=tofSrcUTF8) then
+            lspec:=1
+          else
+            lspec:=2;
+        end
         else
-          lspec:=2;
-      end
-      else
-        lspec:=0;
-//!!      pnlEditButtons.Visible:=false;
-      // Text
-      if (ltype in setText) and (lspec in [0,1]) then PreviewText()
+          lspec:=0;
+  //!!      pnlEditButtons.Visible:=false;
+        // Text
+        if (ltype in setText) and (lspec in [0,1]) then PreviewText()
 
-      // DAT, RAW, ANIMATION, TEMPLATE, LAYOUT
-      else if (ltype in setData) and (lspec in [0,2]) then PreviewSource()
+        // DAT, RAW, ANIMATION, TEMPLATE, LAYOUT
+        else if (ltype in setData) and (lspec in [0,2]) then PreviewSource()
 
-      // Image
-      else if ltype in setImage then PreviewImage(lext)
+        // Image
+        else if ltype in setImage then PreviewImage(lext)
 
-      // Sound
-      else if ltype=typeSound then PreviewSound
+        // Sound
+        else if ltype=typeSound then PreviewSound
 
-      else
-      ;
+        else
+        ;
 
+      end;
     end;
-
+    FillGridLine(sgMain.Row,ldir,lfile);
   end;
   StatusBar.Panels[1].Text:=rsFilePath+ldir;
 end;
@@ -1468,7 +1523,6 @@ var
   ldir:integer;
 begin
   {TODO: Ask about changes (if any)}
-  {TODO: Delete updates}
 {
   lfile:=ctrl.SearchFile(
       sgMain.Cells[colDir ,sgMain.Row]+
@@ -1528,7 +1582,15 @@ begin
          sgMain.Cells[colExt ,sgMain.Row];
 //pc:=StrToWide(SynEdit.Text);
 //  lsize:=CompileFile(PByte(pc),lname,lbuf,ctrl.PAK.Version);
-  lsize:=CompileFile(PByte(PChar(SynEdit.Text)),lname,lbuf,ctrl.PAK.Version);
+  lsize:=0;
+  lbuf:=nil;
+
+  if fmLEdit.Visible then
+    lsize:=TFormLayoutEdit(fmLEdit).GetFile(lbuf,ctrl.PAK.Version);
+
+  if SynEdit.Visible then
+    lsize:=CompileFile(PByte(PChar(SynEdit.Text)),lname,lbuf,ctrl.PAK.Version);
+
   if lsize>0 then
   begin
     pc:=StrToWide(ldir+lname);
@@ -1588,15 +1650,117 @@ begin
   end;
 end;
 
+function TRGGUIForm.OnImportDouble(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
+var
+  ls:UnicodeString;
+  f:file of byte;
+  lold,lnew:PByte;
+  loldsize,lnewsize:integer;
+  istext:boolean;
+begin
+  lnew:=nil;
+  lold:=nil;
+
+  istext:=PAKExtType(ctrl.Files[idx]^.Name) in setData;
+
+  // if size=0 then newdata is PUnicodeChar'ed filename
+  lnewsize:=newsize;
+  if newsize=0 then
+  begin
+    if istext then
+    begin
+      DecompileFile(PUnicodeChar(newdata),lnew,false);
+      lnewsize:=Length(PUnicodeChar(lnew))*SizeOf(WideChar);
+    end
+    else
+    begin
+      {%I-}
+      AssignFile(f,PUnicodeChar(newdata));
+      Reset(f);
+      if IOResult=0 then
+      begin
+        lnewsize:=Filesize(f);
+        GetMem(lnew,lnewsize);
+        BlockRead(f,lnew^,lnewsize);
+        CloseFile(f);
+      end;
+    end;
+  end;
+
+  // Check for same file
+  loldsize:=ctrl.GetSource(idx,lold);
+  if loldsize=lnewsize then
+  begin
+    if CompareMem(lold,lnew,loldsize) then
+    begin
+      FreeMem(lold);
+      FreeMem(lnew);
+      exit(da_skip);
+    end;
+  end;
+
+  if newsize=0 then
+    ls:=PUnicodeChar(newdata)
+  else
+    ls:=UnicodeString(ctrl.PathOfFile(idx))+UnicodeString(ctrl.Files[idx]^.Name);
+  with tAskForm.Create(string(ls), loldsize, lnewsize) do
+  begin
+    ShowModal();
+    result:=TRGDoubleAction(MyResult);
+    Free;
+  end;
+  
+  case result of
+    da_renameold: begin
+      newdata:=PByte(StrToWide(
+          InputBox('Rename existing file', 'Enter new name', ctrl.Files[idx]^.Name) ));
+    end;
+
+    da_saveas: begin
+      newdata:=PByte(StrToWide(
+          InputBox('Rename new file', 'Enter new name', ctrl.Files[idx]^.Name) ));
+    end;
+
+    da_compare: begin
+      if istext then
+      begin
+        with TCompareForm.Create(lold,lnew) do
+        begin
+          if ShowModal()=mrOk then
+          begin
+            newdata:=PByte(UnicodeText());
+            newsize:=(Length(PUnicodeChar(newdata))+1)*SizeOf(WideChar);
+          end
+          else
+            result:=da_skip;
+
+          Free;
+        end;
+      end;
+    end;
+
+  else
+  end;
+
+  FreeMem(lold);
+  FreeMem(lnew);
+end;
+
 procedure TRGGUIForm.actEdImportDirExecute(Sender: TObject);
 var
   ldir:string;
+  lcnt:integer;
 begin
   if SelectDirectory(rsSelectDir,'',ldir) then
   begin
-    ctrl.ImportDir(GetPathFromNode(tvTree.Selected),ldir);
-    ctrl.Trace;
+    ctrl.OnDouble:=@OnImportDouble;
+    lcnt:=ctrl.ImportDir(GetPathFromNode(tvTree.Selected),ldir);
+    ctrl.OnDouble:=nil;
     FillTree();
+    if lcnt>0 then
+      ShowMessage(IntToStr(lcnt)+rsImported+#13#10+rsLinkingNote)
+    else
+      ShowMessage(rsNothingImported);
   end;
 end;
 
@@ -1859,7 +2023,7 @@ var
   lrec:TRGFullInfo;
   lname,lext:string;
   i:integer;
-  c:Char;
+  c:string[2];
 begin
   result:=false;
 
@@ -1924,10 +2088,11 @@ begin
   //--- Marks
 
   case lrec.state of
-    stateNew    : c:=lblNew;
-    stateChanged: c:=lblChanged;
-    stateDelete : c:=lblDelete;
-//    stateRemove : c:=lblRemove;
+    stateNew    : c:=stlblNew;
+    stateChanged: c:=stlblChanged;
+    stateDelete : c:=stlblDelete;
+    stateNew    +stateLink: c:=stlblLinkNew;
+    stateChanged+stateLink: c:=stlblLinkEd;
   else
     c:=' ';
   end;

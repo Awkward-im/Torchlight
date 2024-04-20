@@ -1,14 +1,15 @@
-﻿{TODO: Update = AddDirectory (like man.build)}
+﻿{TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
+{TODO: add act_file for PAK files. OR create new like act_link}
+{TODO: add PAK paths and import dirs catalogue}
+{TODO: Update = AddDirectory (like man.build)}
 {TODO: combine several PAKS into one (at least, as catalogue) [like mod combiner doing]}
 {TODO: rename update methods}
 {TODO: File.ftype=dir -> "data" is Dirs index?}
-{TODO: Apply (no save)}
 {TODO: if "file" was updated in editor. update file or buf?}
 {TODO: Rename+update->rename;delete,new|update+rename->update;new,update,delete old}
 {TODO: Add marks for all files/subdirs if dir marked for deleting}
 {TODO: Replace ctrl.PAK.Name, ctrl.PAK.Version and ctrl.PAK.modinfo}
 {TODO: Add update memory consumption count}
-{TODO: Add "add directory" action or at least function}
 unit RGCtrl;
 
 interface
@@ -26,13 +27,14 @@ type
     size  :integer; // size of Update data (looks like one of size_* double)
     source:integer; // MAN index
     action:integer; // Action of update
+    link  :integer; // index of PAK/imported directory
   end;
 
 // Updater action codes
 const
   act_none   = 0; // get info, no update action
   act_data   = 1; // text/binary data
-  act_file   = 2; // disk file
+  act_file   = 2; // disk file (or pak?) rename to link?
   act_copy   = 3; // just copy of unpacked original PAK data
   act_delete = 4; // delete from PAK
   act_dir    = 5; // (dir only) new dir
@@ -45,6 +47,8 @@ const
   stateChanged = 2;
   stateDelete  = 3;
   stateRemove  = 4;
+  stateLink    = 100;
+
 type
   PRGFullInfo = ^TRGFullInfo;
   TRGFullInfo = record
@@ -79,8 +83,8 @@ type
   );
 
 type
-  // variant: "newdata" is filename if "newsize"=0
-  TRGOnDouble = function(idx:integer; newdata:PByte; newsize:integer):TRGDoubleAction of object;
+  // "newdata" is filename if "newsize"=0
+  TRGOnDouble = function(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction of object;
 type
 
   { TRGController }
@@ -89,12 +93,13 @@ type
   private
     FPAK:TRGPAK;
     FOnDouble:TRGOnDouble;
+    FLinks:array of PWideChar;
 
     procedure ClearElement(idx:integer);
     procedure FixSizes(idx:integer; adata:PByte; asize:cardinal);
     procedure CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
     function  WriteToPAK(var apak:TRGPAK; const fname:string; aver:integer=1000):boolean;
-    function  OnDoubleDef(idx:integer; newdata:PByte; newsize:integer):TRGDoubleAction;
+    function  OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
   public
     property PAK:TRGPAK read FPAK write FPAK;
@@ -159,6 +164,10 @@ type
     }
     function ImportDir(const adst, adir: string): integer;
     {
+      import PAK content
+    }
+    function LinkPAK(afile:PWideChar):integer;
+    {
       use adata as buffer, no allocate
     }
     function  UseData  (adata:PByte; asize:cardinal; apath:PWideChar):integer;
@@ -190,7 +199,7 @@ uses
 { TRGController }
 
 
-function TRGController.OnDoubleDef(idx:integer; newdata:PByte; newsize:integer):TRGDoubleAction;
+function TRGController.OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 begin
   result:=da_overwriteall;
 end;
@@ -199,7 +208,9 @@ procedure TRGController.Init;
 begin
   Inherited Init(SizeOf(TRGCtrlInfo));
 
+  FLinks:=nil;
   FPAK:=TRGPAK.Create;
+  FPAK.Version:=verTL2;
   FOnDouble:=@OnDoubleDef;
 end;
 
@@ -210,6 +221,10 @@ begin
   for i:=0 to FileCount-1 do
     if not IsFileDeleted(i) then
       ClearElement(i);
+
+  for i:=0 to High(FLinks) do
+    FreeMem(FLinks[i]);
+  SetLength(FLinks,0);
 
   inherited Clear;
 end;
@@ -307,20 +322,6 @@ begin
   end;
 end;
 
-function TRGController.UpdateState(idx:integer):integer;
-begin
-  if idx<0 then exit(0);
-  with PRGCtrlInfo(Files[idx])^ do
-    case action of
-      act_mark  : result:=stateRemove;
-      act_delete: result:=stateDelete;
-      act_data,
-      act_file  : if source=0 then result:=stateNew else result:=stateChanged;
-    else
-      result:=0;
-    end;
-end;
-
 procedure TRGController.CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
 var
   p:PManFileInfo;
@@ -370,23 +371,45 @@ begin
   end;
 
   info.action:=p^.action;
-  // info.state:=UpdateState(idx);
+  info.state:=UpdateState(idx);
+{
   case info.action of
     act_mark  : info.state:=stateRemove;
     act_delete: info.state:=stateDelete;
-    act_data,
-    act_file  : if p^.source=0 then info.state:=stateNew else info.state:=stateChanged;
+    act_data  : if p^.source=0 then info.state:=stateNew else info.state:=stateChanged;
+    act_file  : if p^.source=0 then
+      info.state:=stateNew+stateLink
+    else
+      info.state:=stateChanged+stateLink;
   else
     info.state:=0;
   end
+}
+end;
+
+function TRGController.UpdateState(idx:integer):integer;
+begin
+  if idx<0 then exit(0);
+  with PRGCtrlInfo(Files[idx])^ do
+    case action of
+      act_mark  : result:=stateRemove;
+      act_delete: result:=stateDelete;
+      act_data  : if source=0 then result:=stateNew else result:=stateChanged;
+      act_file  : if source=0 then
+        result:=stateNew+stateLink
+      else
+        result:=stateChanged+stateLink;
+    else
+      result:=0;
+    end;
 end;
 
 {%REGION GetData}
 
 function TRGController.GetUpdate(idx:integer; var buf:PByte):dword;
 var
-  p:PRGCtrlInfo;
   f:File of byte;
+  p:PRGCtrlInfo;
 begin
   result:=0;
   p:=PRGCtrlInfo(Files[idx]);
@@ -396,8 +419,9 @@ begin
     // read from file
     if p^.action=act_file then
     begin
-      system.Assign(f,PWideChar(p^.data));
-      system.Reset(f);
+      {%I-}
+      AssignFile(f,PWideChar(p^.data));
+      Reset(f);
       if IOResult=0 then
       begin
         result:=FileSize(f)+2;
@@ -412,7 +436,7 @@ begin
           buf[result-2]:=0;
           buf[result-1]:=0;
         end;
-        system.Close(f);
+        CloseFile(f);
       end;
 
     end
@@ -957,9 +981,12 @@ var
   lname:UnicodeString;
   lextpos,j,k:integer;
 begin
+  lextpos:=Length(aname);
+  if aname[lextpos]='/' then
+    exit(aname);
+
   result:='';
   
-  lextpos:=Length(aname);
   while lextpos>1 do
   begin
     dec(lextpos);
@@ -1004,16 +1031,17 @@ end;
 {
   Build files tree [from MEDIA folder] [from dir]
   as is, bin+src (data cmp to choose), bin, src
-  abasedir - disk starting dir
-  actrl    - our manifest
-  aentry   - current manifest directory
+  adir   - current disk dir
+  actrl  - our manifest
+  aentry - current manifest directory
 }
 function CycleDir(const adir:UnicodeString; var actrl:TRGController; aentry:integer;
    aact:TRGDoubleAction):TRGDoubleAction;
 var
   sr:TUnicodeSearchRec;
-  ldir,lname:UnicodeString;
-  i:integer;
+  ldir,lname,ltmp:UnicodeString;
+  lbuf:PByte;
+  i,lsize:integer;
 begin
   ldir:=actrl.Dirs[aentry].name;
 
@@ -1056,11 +1084,17 @@ begin
           end
           else
           begin
+            RGLog.AddWide(PWideChar(adir+lname+' file exists already'));
             if aact=da_ask then
             begin
               if actrl.OnDouble=nil then aact:=da_overwriteall
               else
-                aact:=actrl.OnDouble(i,PByte(PUnicodeChar(ldir+lname)),0);
+              begin
+                ltmp :=adir+lname;
+                lbuf :=PByte(PUnicodeChar(ltmp));
+                lsize:=0;
+                aact:=actrl.OnDouble(i,PByte(lbuf),lsize);
+              end;
             end;
 
             case aact of
@@ -1088,12 +1122,20 @@ begin
 //!! But requires ctrl or new name or new content (buf+size)
               da_compare: begin // data+size
                 aact:=da_ask;
+                actrl.UseData(lbuf,lsize,PUnicodeChar(ldir+lname));
               end;
               da_renameold: begin // name + check again. what if new name exists already?
                 aact:=da_ask;
+                actrl.Rename(i,PUnicodeChar(lbuf));
+                actrl.AddFileData(PUnicodeChar(adir+lname),PUnicodeChar(ldir+lname),false);
+                FreeMem(lbuf);
               end;
               da_saveas: begin // name + check again
                 aact:=da_ask;
+                actrl.AddFileData(
+                    PUnicodeChar(adir+UnicodeString(PUnicodeChar(lbuf))),
+                    PUnicodeChar(ldir+lname),false);
+                FreeMem(lbuf);
               end;
 
             else
@@ -1130,6 +1172,28 @@ begin
   CycleDir(ls,self,ldir,da_ask);
 
   // new records only
+  // but skip starting empty file
+  if result=0 then result:=1;
+  result:=FileCount-result;
+end;
+
+function TRGController.LinkPAK(afile:PWideChar):integer;
+begin
+  result:=FileCount;
+  if DirCount=0 then AddPath(nil);
+  // Add PAK name to FLinks
+  // MakeRGScan()
+{
+function MakeRGScan(
+    const aroot,adir:string;
+    aext:array of string;
+    actproc:TProcessProc=nil; aparam:pointer=nil;
+    checkproc:TCheckNameProc=nil):integer;
+}
+//  MakeRGScan(nil,afile,[],nil{CheckPAKFile},self,nil{CheckPAKFName});
+  // set action=act_link
+
+  if result=0 then result:=1;
   result:=FileCount-result;
 end;
 

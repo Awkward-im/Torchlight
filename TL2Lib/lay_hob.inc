@@ -240,7 +240,6 @@ begin
     lname:=GetStr(lChunkType);
 
   AddString(lnode,'DESCRIPTOR',lname);
-  AddInteger64(lnode,'ID',lChunkId);
 
   pcw:=memReadShortStringUTF8(FPos);
   if pcw<>nil then
@@ -252,6 +251,7 @@ begin
     AddString(lnode,'NAME',lname);
 
   AddInteger64(lnode,'PARENTID',aparent);
+  AddInteger64(lnode,'ID'      ,lChunkId);
 
   //--- Properties
 
@@ -759,6 +759,7 @@ begin
       BuildLogicGroup(FindNode(lprops,'LOGICGROUP'), astream);
     end;
 
+    {TODO:Check, size WITH or WITHOUT size field}
     astream.WriteDWordAt(astream.Position-lAddPos,lAddPos);
   end;
 

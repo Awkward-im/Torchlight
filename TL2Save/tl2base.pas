@@ -95,7 +95,13 @@ end;
 procedure TL2BaseClass.LoadBlock(AStream:TStream);
 begin
   FDataSize:=AStream.Position-FDataOffset;
-  ReallocMem(FData ,FDataSize);
+
+  if (FData=nil) or (MemSize(FData)<FDataSize) then
+  begin
+    if FData<>nil then FreeMem(FData);
+    GetMem(FData,Align(FDataSize,1024));
+  end;
+
   AStream.Position:=FDataOffset;
   AStream.Read(FData^,FDataSize);
 end;
@@ -113,8 +119,14 @@ begin
   begin
     FDataSize  :=FileSize(f);
     FDataOffset:=0;
-    ReallocMem(  FData ,FDataSize);
-    BlockRead (f,FData^,FDataSize);
+
+    if (FData=nil) or (MemSize(FData)<FDataSize) then
+    begin
+      if FData<>nil then FreeMem(FData);
+      GetMem(FData,Align(FDataSize,1024));
+    end;
+
+    BlockRead(f,FData^,FDataSize);
     FKnownSize:=PDword(FData)^=FDataSize+SizeOf(DWord);
     if FKnownSize then
     begin

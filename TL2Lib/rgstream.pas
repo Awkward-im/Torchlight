@@ -12,6 +12,9 @@ type
   public
     // read
     function  ReadBytes(asize:cardinal):pointer;
+    function  ReadByteStringWide ():PUnicodeChar;
+    function  ReadShortStringWide():PUnicodeChar;
+    function  ReadDWordStringWide():PUnicodeChar;
     function  ReadByteString ():string;
     function  ReadShortString():string;
     function  ReadDWordString():string;
@@ -87,6 +90,51 @@ function TTL2Stream.ReadBytes(asize:cardinal):pointer;
 begin
   GetMem(result ,asize);
   Read  (result^,asize);
+end;
+
+function TTL2Stream.ReadByteStringWide():PUnicodeChar;
+var
+  lsize:cardinal;
+begin
+  lsize:=ReadByte();
+  if lsize>0 then
+  begin
+    GetMem(result ,(lsize+1)*SizeOf(WideChar));
+    Read  (result^, lsize   *SizeOf(WideChar));
+    result[lsize]:=#0;
+  end
+  else
+    result:=nil;
+end;
+
+function TTL2Stream.ReadShortStringWide():PUnicodeChar;
+var
+  lsize:cardinal;
+begin
+  lsize:=ReadWord();
+  if lsize>0 then
+  begin
+    GetMem(result ,(lsize+1)*SizeOf(WideChar));
+    Read  (result^, lsize   *SizeOf(WideChar));
+    result[lsize]:=#0;
+  end
+  else
+    result:=nil;
+end;
+
+function TTL2Stream.ReadDWordStringWide():PUnicodeChar;
+var
+  lsize:cardinal;
+begin
+  lsize:=ReadDWord();
+  if lsize>0 then
+  begin
+    GetMem(result ,(lsize+1)*SizeOf(WideChar));
+    Read  (result^, lsize   *SizeOf(WideChar));
+    result[lsize]:=#0;
+  end
+  else
+    result:=nil;
 end;
 
 function TTL2Stream.ReadByteString():string;

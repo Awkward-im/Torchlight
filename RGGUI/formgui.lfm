@@ -8,7 +8,6 @@ object RGGUIForm: TRGGUIForm
   ClientWidth = 944
   Menu = MainMenu
   ShowHint = True
-  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   object StatusBar: TStatusBar
@@ -48,7 +47,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 70
-      Height = 5
+      Height = 22
       Top = 2
       Style = tbsDivider
     end
@@ -1026,71 +1025,71 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep1: TToolButton
           Left = 47
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbEdReset: TToolButton
-          Left = 188
+          Left = 434
           Top = 2
           Action = actEdReset
           ShowCaption = False
         end
         object tbEdUndo: TToolButton
-          Left = 211
+          Left = 457
           Top = 2
           Action = actEdUndo
           ShowCaption = False
         end
         object tbEdSave: TToolButton
-          Left = 234
+          Left = 480
           Top = 2
           Action = actEdSave
           ShowCaption = False
         end
         object tbEdSep2: TToolButton
           Left = 180
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbEdImport: TToolButton
-          Left = 288
+          Left = 380
           Top = 2
           Action = actEdImport
           ShowCaption = False
         end
         object tbEdExport: TToolButton
-          Left = 311
+          Left = 403
           Top = 2
           Action = actEdExport
           ShowCaption = False
         end
         object tbEdSep3: TToolButton
-          Left = 280
-          Height = 8
+          Left = 372
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbEdSearch: TToolButton
-          Left = 257
+          Left = 503
           Top = 2
           Action = actEdSearch
           ShowCaption = False
         end
         object tbEdSep4: TToolButton
-          Left = 334
-          Height = 8
+          Left = 426
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbColDir: TToolButton
-          Left = 365
-          Hint = 'Directory'
+          Left = 211
+          Hint = 'Show/hide column: Directory'
           Top = 2
           AllowAllUp = True
           Caption = 'D'
@@ -1098,8 +1097,8 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColExt: TToolButton
-          Left = 388
-          Hint = 'Extension'
+          Left = 257
+          Hint = 'Show/hide column: Extension'
           Top = 2
           AllowAllUp = True
           Caption = 'E'
@@ -1107,8 +1106,8 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColCategory: TToolButton
-          Left = 411
-          Hint = 'Category'
+          Left = 234
+          Hint = 'Show/hide column: Category'
           Top = 2
           AllowAllUp = True
           Caption = 'C'
@@ -1116,8 +1115,8 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColTime: TToolButton
-          Left = 434
-          Hint = 'Time'
+          Left = 280
+          Hint = 'Show/hide column: Time'
           Top = 2
           AllowAllUp = True
           Caption = 'T'
@@ -1125,8 +1124,8 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColPacked: TToolButton
-          Left = 480
-          Hint = 'Packed size'
+          Left = 326
+          Hint = 'Show/hide column: Packed size'
           Top = 2
           AllowAllUp = True
           Caption = 'P'
@@ -1134,8 +1133,8 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColUnpacked: TToolButton
-          Left = 457
-          Hint = 'Unpacked size'
+          Left = 303
+          Hint = 'Show/hide column: Unpacked size'
           Top = 2
           AllowAllUp = True
           Caption = 'U'
@@ -1143,8 +1142,8 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColSource: TToolButton
-          Left = 503
-          Hint = 'Source size'
+          Left = 349
+          Hint = 'Show/hide column: Source size'
           Top = 2
           AllowAllUp = True
           Caption = 'S'
@@ -1152,7 +1151,7 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbFilter: TToolButton
-          Left = 342
+          Left = 188
           Top = 2
           Action = actShowFilter
           ShowCaption = False
@@ -1374,6 +1373,7 @@ object RGGUIForm: TRGGUIForm
       Caption = 'Search'
       Hint = 'Search in editor'
       ImageIndex = 6
+      ShortCut = 16454
       OnExecute = actEdSearchExecute
     end
     object actEdImportDir: TAction
@@ -1580,7 +1580,7 @@ object RGGUIForm: TRGGUIForm
     Top = 128
   end
   object ReplaceDialog: TReplaceDialog
-    Options = [frDown, frReplace, frReplaceAll, frHidePromptOnReplace]
+    Options = [frDown, frFindNext, frReplace, frReplaceAll, frHidePromptOnReplace]
     OnFind = ReplaceExecute
     OnReplace = ReplaceExecute
     Left = 72

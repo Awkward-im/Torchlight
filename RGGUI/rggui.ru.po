@@ -11,6 +11,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
+#: fmlayoutedit.rsdefault
+msgid "- default -"
+msgstr "- по умолчанию -"
+
+#: fmlayoutedit.rstextpreview
+msgid "This is text preview without children nodes. You can select child from tree."
+msgstr "Это текстовый предпросмотр без дочерних узлов. Вы можете выбрать дочерний узел в дереве."
+
+#: fmlayoutedit.rsundefined
+msgid "UNDEFINED"
+msgstr "НЕ ОПРЕДЕЛЁН"
+
 #: formgui.rsbuildgrid
 msgid " Build file list. Please, wait..."
 msgstr " Построение списка файлов. Ждите..."
@@ -63,6 +75,18 @@ msgstr "Файлов: "
 msgid " files unpacked succesfully."
 msgstr " файлов распаковано."
 
+#: formgui.rsimported
+msgid " files imported"
+msgstr " файлов импортировано"
+
+#: formgui.rslinkingnote
+msgid "These files still on disk and not built-in until PAK/MOD saved."
+msgstr "Эти файлы всё ещё на диске и не будут встроены до созранения PAK/MOD."
+
+#: formgui.rsnothingimported
+msgid "Nothing was imported."
+msgstr "Ничего не импортировано."
+
 #: formgui.rsreadpak
 msgid " Read PAK. Parsing..."
 msgstr " Читаем PAK. Обрабатываем..."
@@ -87,6 +111,10 @@ msgstr "Файл сохранён как"
 #: formgui.rsselectdir
 msgid "Select directory"
 msgstr "Выберите папку"
+
+#: formgui.rsunknownencoding
+msgid "Unknown source encoding"
+msgstr "Неизвестная кодировка"
 
 #: formgui.rsunpacksucc
 msgid "unpacked succesfully."
@@ -117,6 +145,19 @@ msgstr "Расширение"
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
 msgstr "Очистить"
+
+#: tfmlogform.bbsave.caption
+msgctxt "tfmlogform.bbsave.caption"
+msgid "Save"
+msgstr "Сохранить"
+
+#: tfmlogform.bbsave.hint
+msgid "Save log to file"
+msgstr "Сохранить лог"
+
+#: tformlayoutedit.cbtxtpreview.caption
+msgid "Text preview"
+msgstr "Текстовый предпросмотр"
 
 #: tmodinfoform.bbcancel.caption
 msgid "Cancel"
@@ -564,8 +605,8 @@ msgstr ""
 
 #: trgguiform.tbcolcategory.hint
 msgctxt "trgguiform.tbcolcategory.hint"
-msgid "Category"
-msgstr "Категория"
+msgid "Show/hide column: Category"
+msgstr "Показать/скрыть столбец: Категория"
 
 #: trgguiform.tbcoldir.caption
 msgctxt "trgguiform.tbcoldir.caption"
@@ -574,8 +615,8 @@ msgstr ""
 
 #: trgguiform.tbcoldir.hint
 msgctxt "trgguiform.tbcoldir.hint"
-msgid "Directory"
-msgstr "Каталог"
+msgid "Show/hide column: Directory"
+msgstr "Показать/скрыть столбец: Каталог"
 
 #: trgguiform.tbcolext.caption
 msgctxt "trgguiform.tbcolext.caption"
@@ -584,8 +625,8 @@ msgstr ""
 
 #: trgguiform.tbcolext.hint
 msgctxt "trgguiform.tbcolext.hint"
-msgid "Extension"
-msgstr "Расширение"
+msgid "Show/hide column: Extension"
+msgstr "Показать/скрыть столбец: Расширение"
 
 #: trgguiform.tbcolpacked.caption
 msgctxt "trgguiform.tbcolpacked.caption"
@@ -594,8 +635,8 @@ msgstr ""
 
 #: trgguiform.tbcolpacked.hint
 msgctxt "trgguiform.tbcolpacked.hint"
-msgid "Packed size"
-msgstr "Пакованый размер"
+msgid "Show/hide column: Packed size"
+msgstr "Показать/скрыть столбец: Пакованый размер"
 
 #: trgguiform.tbcolsource.caption
 msgctxt "trgguiform.tbcolsource.caption"
@@ -604,8 +645,8 @@ msgstr ""
 
 #: trgguiform.tbcolsource.hint
 msgctxt "trgguiform.tbcolsource.hint"
-msgid "Source size"
-msgstr "Исходный размер"
+msgid "Show/hide column: Source size"
+msgstr "Показать/скрыть столбец: Исходный размер"
 
 #: trgguiform.tbcoltime.caption
 msgctxt "trgguiform.tbcoltime.caption"
@@ -614,8 +655,8 @@ msgstr ""
 
 #: trgguiform.tbcoltime.hint
 msgctxt "trgguiform.tbcoltime.hint"
-msgid "Time"
-msgstr "Время"
+msgid "Show/hide column: Time"
+msgstr "Показать/скрыть столбец: Время"
 
 #: trgguiform.tbcolunpacked.caption
 msgctxt "trgguiform.tbcolunpacked.caption"
@@ -624,9 +665,13 @@ msgstr ""
 
 #: trgguiform.tbcolunpacked.hint
 msgctxt "trgguiform.tbcolunpacked.hint"
-msgid "Unpacked size"
-msgstr "Распакованный размер"
+msgid "Show/hide column: Unpacked size"
+msgstr "Показать/скрыть столбец: Распакованный размер"
 
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
 msgstr "Информация о моде"
+
+#: unitlogform.rscantsave
+msgid "Can't save log file"
+msgstr "Не могу сохранить лог в файл"

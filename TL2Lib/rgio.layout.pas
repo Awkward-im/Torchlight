@@ -566,8 +566,8 @@ begin
   if lsize>0 then
   begin
     llen:=asize div lsize;
-    if (llen>1)
-       and ((FVer=verTL1) xor ((asize mod lsize)=2))
+    if // (llen>1) and
+       ((FVer=verTL1) xor ((asize mod lsize)=2))
        then
     begin
       ltype:=ltype or rgList;
@@ -1069,6 +1069,7 @@ begin
       end;
 
     else
+      {TODO: Make check for names with SPACE and UNDERLINE as the same}
       lprop:=FindNode(anode,lpname);
       if lprop<>nil then
       begin
