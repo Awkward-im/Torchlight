@@ -1,4 +1,5 @@
 {NOTE: don't do it (node extract harder, global structure needs) separate node -> array of nodes like rgfs. pointer -> index}
+{TODO: change Add*** to AddNode+As***}
 {TODO: make variant of node with arrays of nodes for non-cutting actions}
 {TODO: Add UTF8Text field with one-time conversion on request}
 {TODO: Keep all numeric as Int64}
@@ -84,6 +85,7 @@ function AddBinary   (aparent:pointer; aname:PWideChar; aval:UInt32   ):pointer;
 function AddByte     (aparent:pointer; aname:PWideChar; aval:byte     ):pointer;
 function AddWord     (aparent:pointer; aname:PWideChar; aval:word     ):pointer;
 function AddCustom   (aparent:pointer; aname:PWideChar; aval:PWideChar; atype:PWideChar):pointer;
+function AddVector   (aparent:pointer; aname:PWideChar; var aval      ; atype:integer  ):pointer;
 
 
 implementation
@@ -411,7 +413,7 @@ begin
 
   lidx:=0;
   repeat
-    while not (aval^ in ['+','-','.','0'..'9']) do inc(aval);
+    while not (AnsiChar(ORD(aval^)) in ['+','-','.','0'..'9']) do inc(aval);
     lval[lidx]:=aval^;
     inc(lidx);
     inc(aval);
@@ -896,6 +898,17 @@ begin
   if result<>nil then PRGNode(result)^.len:=aval;
 end;
 
+function AddVector(aparent:pointer; aname:PWideChar; var aval; atype:integer):pointer;
+begin
+  if atype in setVector then
+  begin
+    result:=AddNode(aparent, aname, atype, nil);
+    AsVector(result, aval);
+  end
+  else
+    result:=nil;
+end;
+
 function AddCustom(aparent:pointer; aname:PWideChar; aval:PWideChar; atype:PWideChar):pointer;
 begin
   result:=AddNode(aparent, aname, rgUnknown, aval);
@@ -983,6 +996,8 @@ begin
   if (anode<>nil) then
   begin
     ltype:=GetNodeType(anode);
+// AddNode makes FillChar already. next actions works with right type anyway
+//    FillChar(PRGNode(anode)^.X,SizeOf(TVector4),0);
     if ltype=rgVector2 then
     begin
       PRGNode(anode)^.X:=TVector2(aval).X;

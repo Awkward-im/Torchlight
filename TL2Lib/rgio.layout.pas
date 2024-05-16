@@ -211,6 +211,17 @@ type
   end;
 
 
+function ReplaceChar(var astr:PWideChar; asrc,adst:WideChar):PWideChar;
+begin
+  result:=astr;
+  if astr<>nil then
+    while astr^<>#0 do
+    begin
+      if astr^=asrc then astr^:=adst;
+      inc(astr);
+    end;
+end;
+
 function SearchId(aroot:pointer; anid:int64):pointer;
 var
   lnode:pointer;
@@ -617,20 +628,23 @@ PWord(pcw+lsize)^:=#0;
       end;
     end;
     rgVector2: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
+      AddVector(anode,lname,lq,rgVector2);
     end;
     rgVector3: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
-      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
+      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
+      AddVector(anode,lname,lq,rgVector3);
     end;
     // Quaternion
     rgVector4: begin
-      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
-      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
-      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
-      lq.W:=memReadFloat(FPos); {if lq.W<>0 then} AddFloat(anode,VectorName(@lbuf,lname,'W'),lq.W);
+      lq.X:=memReadFloat(FPos); {if lq.X<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
+      lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
+      lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
+      lq.W:=memReadFloat(FPos); {if lq.W<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'W'),lq.W);
+      AddVector(anode,lname,lq,rgVector4);
 
       // Additional, not sure what it good really
       if CompareWide(lname,'ORIENTATION')=0 then
@@ -952,6 +966,7 @@ var
   lval:array [0..31] of WideChar;
   lint64:Int64;
   ldouble:Double;
+  vct:PVector;
   lp:PWideChar;
   lfloat:Single;
   i,lcnt,lidx:integer;
@@ -1023,6 +1038,71 @@ begin
            astream.WriteShortString(AsString(anode))
          else
            astream.WriteShortStringUTF8(AsString(anode));
+
+      rgVector2: begin
+        vct:=AsVector(anode);
+        astream.WriteFloat(vct^.X);
+        astream.WriteFloat(vct^.Y);
+      end;
+      rgVector3: begin
+        vct:=AsVector(anode);
+        astream.WriteFloat(vct^.X);
+        astream.WriteFloat(vct^.Y);
+        astream.WriteFloat(vct^.Z);
+      end;
+      rgVector4: begin
+        vct:=AsVector(anode);
+        astream.WriteFloat(vct^.X);
+        astream.WriteFloat(vct^.Y);
+        astream.WriteFloat(vct^.Z);
+        astream.WriteFloat(vct^.W);
+      end;
+    end;
+  end;
+end;
+
+function GetNodeByName(aparent:pointer; aname:PWideChar):pointer;
+var
+  ls:array [0..63] of WideChar;
+  i:integer;
+  lchar:boolean;
+begin
+  // check as is
+  result:=FindNode(aparent,aname);
+  // check for space to underline
+  if result=nil then
+  begin
+    i:=0;
+    lchar:=false;
+    while aname[i]<>#0 do
+    begin
+      ls[i]:=aname[i];
+      if aname[i]=' ' then
+      begin
+        ls[i]:='_';
+        lchar:=true;
+      end
+      else
+        ls[i]:=aname[i];
+      inc(i);
+    end;
+    ls[i]:=#0;
+    if lchar then result:=FindNode(aparent,@ls[0]);
+    // check for underline to space
+    if result=nil then
+    begin
+      i:=0;
+      lchar:=false;
+      while ls[i]<>#0 do
+      begin
+        if ls[i]='_' then
+        begin
+          ls[i]:=' ';
+          lchar:=true;
+        end;
+        inc(i);
+      end;
+      if lchar then result:=FindNode(aparent,@ls[0]);
     end;
   end;
 end;
@@ -1042,49 +1122,73 @@ begin
 
   for i:=0 to info.GetPropsCount()-1 do
   begin
-    vct.x:=0;
-    vct.y:=0;
-    vct.z:=0;
-    vct.w:=0;
-    lok:=false;
-
     ltype:=info.GetPropInfoByIdx(i,l_id,lpname);
-    case ltype of
-      rgVector2: begin
-//        lprop:=SearchVector(anode,lpname,'X'); if lprop<>nil then begin lok:=true; vct.X:=AsFloat(lprop); end;
+    lprop:=GetNodeByName(anode,lpname);
 
+    if lprop<>nil then
+    begin
+      lSizePos:=astream.Position;
+      astream.WriteWord(0);
+      case FVer of
+        verTL2: begin
+          astream.WriteByte(l_id);
+          WritePropertyValue(lprop,ltype,astream);
+        end;
+        verHob,
+        verRGO,
+        verRG : begin
+          astream.WriteDWord(l_id);
+          WritePropertyValue(lprop,ltype,astream);
+        end;
+      end;
+      lNewPos:=astream.Position;
+      astream.Position:=lSizePos;
+      astream.WriteWord(lNewPos-lSizePos-2);
+      astream.Position:=lNewPos;
+      inc(result);
+    end
+    // Check for at least one Vector part saved as <name>X|Y|Z|W separate nodes
+    else
+    begin
+      vct.x:=0;
+      vct.y:=0;
+      vct.z:=0;
+      vct.w:=0;
+      lok:=false;
+
+      if ltype=rgVector2 then
+      begin
         lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
         lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
       end;
-      rgVector3: begin
+      if ltype=rgVector3 then
+      begin
         lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
         lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
         lprop:=SearchVector(anode,lpname,'Z'); lok:=lok or (lprop<>nil); vct.Z:=AsFloat(lprop);
       end;
-      rgVector4: begin
+      if ltype=rgVector4 then
+      begin
         lprop:=SearchVector(anode,lpname,'X'); lok:=lok or (lprop<>nil); vct.X:=AsFloat(lprop);
         lprop:=SearchVector(anode,lpname,'Y'); lok:=lok or (lprop<>nil); vct.Y:=AsFloat(lprop);
         lprop:=SearchVector(anode,lpname,'Z'); lok:=lok or (lprop<>nil); vct.Z:=AsFloat(lprop);
         lprop:=SearchVector(anode,lpname,'W'); lok:=lok or (lprop<>nil); vct.W:=AsFloat(lprop);
       end;
 
-    else
-      {TODO: Make check for names with SPACE and UNDERLINE as the same}
-      lprop:=FindNode(anode,lpname);
-      if lprop<>nil then
+      if lok then
       begin
         lSizePos:=astream.Position;
         astream.WriteWord(0);
         case FVer of
           verTL2: begin
             astream.WriteByte(l_id);
-            WritePropertyValue(lprop,ltype,astream);
+            WriteVectorValue(vct,ltype,astream);
           end;
           verHob,
           verRGO,
           verRG : begin
             astream.WriteDWord(l_id);
-            WritePropertyValue(lprop,ltype,astream);
+            WriteVectorValue(vct,ltype,astream);
           end;
         end;
         lNewPos:=astream.Position;
@@ -1093,29 +1197,6 @@ begin
         astream.Position:=lNewPos;
         inc(result);
       end;
-    end;
-
-    if lok then
-    begin
-      lSizePos:=astream.Position;
-      astream.WriteWord(0);
-      case FVer of
-        verTL2: begin
-          astream.WriteByte(l_id);
-          WriteVectorValue(vct,ltype,astream);
-        end;
-        verHob,
-        verRGO,
-        verRG : begin
-          astream.WriteDWord(l_id);
-          WriteVectorValue(vct,ltype,astream);
-        end;
-      end;
-      lNewPos:=astream.Position;
-      astream.Position:=lSizePos;
-      astream.WriteWord(lNewPos-lSizePos-2);
-      astream.Position:=lNewPos;
-      inc(result);
     end;
 
   end;
@@ -1330,6 +1411,7 @@ var
   lrgl:TRGLayoutFile;
   ls:string;
 begin
+  if abuf=nil then exit(nil);
   lrgl.Init;
 
   lrgl.FStart:=abuf;

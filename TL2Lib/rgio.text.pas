@@ -1,4 +1,5 @@
-﻿{TODO: change WriteWide to Logging? but we construct line from several parts}
+﻿{TODO: Alternative DumpNode for Vectors as "value, value, value"}
+{TODO: change WriteWide to Logging?}
 unit RGIO.Text;
 
 interface
@@ -95,18 +96,36 @@ end;
 function DumpNode(var buf:PByte; var idx:cardinal; anode:pointer;
      atab:integer; achild:boolean=true):boolean;
 var
-  larr:array [0..127] of WideChar;
+  larr :array [0..127] of WideChar;
+  lcrlf:array [0..3] of WideChar;
   lvalue:UnicodeString;
   lpc,lname:PWideChar;
   lfloat:Single;
   i,j,llen:integer;
   ltype:integer;
+
+  procedure DumpVector(aletter:WideChar; avalue:Single);
+  var
+    lvalue:UnicodeString;
+  begin
+    larr[i]:=aletter;
+    WriteWide(buf,idx,larr);
+    if ABS(avalue)<1.0E-6 then Str(avalue:0:DoublePrec,lvalue) else Str(avalue:0:FloatPrec,lvalue);
+    FixFloatStr(lvalue);
+    WriteWide(buf,idx,pointer(lvalue));
+    WriteWide(buf,idx,lcrlf);
+  end;
+
 begin
   result:=true;
 
   ltype:=GetNodeType(anode);
   lname:=GetNodeName(anode);
   if (not achild) and (ltype=rgGroup) and (CompareWide(lname,'CHILDREN')=0) then exit;
+
+  lcrlf[0]:=#13;
+  lcrlf[1]:=#10;
+  lcrlf[2]:=#0;
 
   llen:=Length(lname);
 
@@ -153,89 +172,148 @@ begin
   end
   else
   begin
-    // property type
-    larr[i]:='<'; inc(i);
-    //!!
-    if ltype=rgUnknown then
-      lpc:=GetCustomType(anode)
-    else
-      lpc:=TypeToText(ltype);
-
-    if lpc<>nil then
-      while lpc^<>#0 do
-      begin
-        larr[i]:=lpc^;
-        inc(i);
-        inc(lpc);
-      end;
-    larr[i]:='>'; inc(i);
-
-    // property name
-    for j:=0 to llen-1 do
+    if ltype in [rgVector2, rgVector3, rgVector4] then
     begin
-      larr[i]:=lname[j];
-      inc(i);
-    end;
+      larr[i]:='<'; inc(i);
+      larr[i]:='F'; inc(i);
+      larr[i]:='L'; inc(i);
+      larr[i]:='O'; inc(i);
+      larr[i]:='A'; inc(i);
+      larr[i]:='T'; inc(i);
+      larr[i]:='>'; inc(i);
 
-    // construct value in ls
-    case ltype of
-      rgBool      : if asBool(anode) then lvalue:='true' else lvalue:='false';
-      rgString    : lvalue:=asString   (anode);
-      rgTranslate : lvalue:=asTranslate(anode);
-      rgNote      : lvalue:=asNote     (anode);
-      rgUnknown   : lvalue:=asString   (anode);
-      rgFloat     : begin
-        lfloat:=asFloat(anode);
+      // property name
+      for j:=0 to llen-1 do
+      begin
+        larr[i]:=lname[j];
+        inc(i);
+      end;
+      larr[i+1]:=':';
+      larr[i+2]:=#0;
+
+      DumpVector('X',asVector(anode)^.X);
+      DumpVector('Y',asVector(anode)^.Y);
+{
+      larr[i]:='X';
+      WriteWide(buf,idx,larr);
+      lfloat:=asVector(anode)^.X;
+      if ABS(lfloat)<1.0E-6 then Str(lfloat:0:DoublePrec,lvalue) else Str(lfloat:0:FloatPrec,lvalue);
+      FixFloatStr(lvalue);
+      WriteWide(buf,idx,pointer(lvalue));
+      WriteWide(buf,idx,lcrlf);
+
+      larr[i]:='Y';
+      WriteWide(buf,idx,larr);
+      lfloat:=asVector(anode)^.Y;
+      if ABS(lfloat)<1.0E-6 then Str(lfloat:0:DoublePrec,lvalue) else Str(lfloat:0:FloatPrec,lvalue);
+      FixFloatStr(lvalue);
+      WriteWide(buf,idx,pointer(lvalue));
+      WriteWide(buf,idx,lcrlf);
+}
+      if ltype in [rgVector3, rgVector4] then
+      begin
+        DumpVector('Z',asVector(anode)^.Z);
+{
+        larr[i]:='Z';
+        WriteWide(buf,idx,larr);
+        lfloat:=asVector(anode)^.Z;
+        if ABS(lfloat)<1.0E-6 then Str(lfloat:0:DoublePrec,lvalue) else Str(lfloat:0:FloatPrec,lvalue);
+        FixFloatStr(lvalue);
+        WriteWide(buf,idx,pointer(lvalue));
+        WriteWide(buf,idx,lcrlf);
+}
+        if ltype=rgVector4 then
+        begin
+          DumpVector('W',asVector(anode)^.W);
+{
+          larr[i]:='W';
+          WriteWide(buf,idx,larr);
+          lfloat:=asVector(anode)^.W;
+          if ABS(lfloat)<1.0E-6 then Str(lfloat:0:DoublePrec,lvalue) else Str(lfloat:0:FloatPrec,lvalue);
+          FixFloatStr(lvalue);
+          WriteWide(buf,idx,pointer(lvalue));
+          WriteWide(buf,idx,lcrlf);
+}
+        end;
+      end;
+    end
+    else
+    begin
+      // property type
+      larr[i]:='<'; inc(i);
+      //!!
+      if ltype=rgUnknown then
+        lpc:=GetCustomType(anode)
+      else
+        lpc:=TypeToText(ltype);
+
+      if lpc<>nil then
+        while lpc^<>#0 do
+        begin
+          larr[i]:=lpc^;
+          inc(i);
+          inc(lpc);
+        end;
+      larr[i]:='>'; inc(i);
+
+      // property name
+      for j:=0 to llen-1 do
+      begin
+        larr[i]:=lname[j];
+        inc(i);
+      end;
+
+      // construct value in ls
+      case ltype of
+        rgBool      : if asBool(anode) then lvalue:='true' else lvalue:='false';
+        rgString    : lvalue:=asString   (anode);
+        rgTranslate : lvalue:=asTranslate(anode);
+        rgNote      : lvalue:=asNote     (anode);
+        rgUnknown   : lvalue:=asString   (anode);
+        rgFloat     : begin
+          lfloat:=asFloat(anode);
 try
-        if ABS(lfloat)<1.0E-6 then
-//          Str(lfloat,lvalue)
-          Str(lfloat:0:DoublePrec,lvalue)
-        else
-          Str(lfloat:0:FloatPrec,lvalue);
+          if ABS(lfloat)<1.0E-6 then
+            Str(lfloat:0:DoublePrec,lvalue)
+          else
+            Str(lfloat:0:FloatPrec,lvalue);
 except
   RGLog.AddWide(lname);
   RGLog.Add('problem with float conversion');
 end;
-        FixFloatStr(lvalue);
+          FixFloatStr(lvalue);
+        end;
+        rgDouble    : begin
+          Str(asDouble(anode):0:DoublePrec,lvalue);
+          FixFloatStr(lvalue);
+        end;
+        rgInteger   : Str(asInteger  (anode),lvalue);
+        rgInteger64 : Str(asInteger64(anode),lvalue);
+        rgUnsigned  : Str(asUnsigned (anode),lvalue);
+  {
+        // user
+        rgWord      : Str(anode^.asWord     ,lvalue);
+        rgByte      : Str(anode^.asByte     ,lvalue);
+        rgBinary    : Str(anode^.len        ,lvalue);
+  }
+      else
+        lvalue:='';
       end;
-      rgDouble    : begin
-        Str(asDouble(anode):0:DoublePrec,lvalue);
-        FixFloatStr(lvalue);
+
+      // prop name or value is not empty
+      if (llen>0) or ((lvalue<>'') and (lvalue<>'0')) or WriteEmpty then
+      begin
+        larr[i]:=':'; inc(i);
       end;
-      rgInteger   : Str(asInteger  (anode),lvalue);
-      rgInteger64 : Str(asInteger64(anode),lvalue);
-      rgUnsigned  : Str(asUnsigned (anode),lvalue);
-      // custom
-{ 
-      rgVector2   : ;
-      rgVector3   : ;
-      rgVector4   : ;
-}
-{
-      // user
-      rgWord      : Str(anode^.asWord     ,lvalue);
-      rgByte      : Str(anode^.asByte     ,lvalue);
-      rgBinary    : Str(anode^.len        ,lvalue);
-}
-    else
-      lvalue:='';
+      larr[i]:=#0;
+      WriteWide(buf,idx,larr);
+
+      if (lvalue<>'') or WriteEmpty then
+        WriteWide(buf,idx,pointer(lvalue));
+
+      WriteWide(buf,idx,lcrlf);
     end;
 
-    // prop name or value is not empty
-    if (llen>0) or ((lvalue<>'') and (lvalue<>'0')) or WriteEmpty then
-    begin
-      larr[i]:=':'; inc(i);
-    end;
-    larr[i]:=#0;
-    WriteWide(buf,idx,larr);
-
-    if (lvalue<>'') or WriteEmpty then
-      WriteWide(buf,idx,pointer(lvalue));
-
-    larr[0]:=#13;
-    larr[1]:=#10;
-    larr[2]:=#0;
-    WriteWide(buf,idx,larr);
   end;
 end;
 

@@ -8,8 +8,6 @@
 {"hash":190612841,"name":"tmodinfoform.lblguid.caption","sourcebytes":[77,111,100,32,71,85,73,68,32,40,99,108,105,99,107,32,98,117,116,116,111,110,32,102,111,114,32,110,101,119,41],"value":"Mod GUID (click button for new)"},
 {"hash":77089212,"name":"tmodinfoform.bbcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
 {"hash":102960261,"name":"tmodinfoform.lefilename.editlabel.caption","sourcebytes":[77,111,100,32,70,105,108,101,32,78,97,109,101],"value":"Mod File Name"},
-{"hash":9308581,"name":"tmodinfoform.bbsave.hint","sourcebytes":[83,97,118,101,32,116,111,32,102,105,108,101],"value":"Save to file"},
-{"hash":366789,"name":"tmodinfoform.bbsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
 {"hash":174894857,"name":"tmodinfoform.lblnote.caption","sourcebytes":[68,111,110,39,116,32,107,101,101,112,32,118,101,114,115,105,111,110,32,97,110,100,32,71,85,73,68,32,101,109,112,116,121,32,40,111,114,32,122,101,114,111,41],"value":"Don't keep version and GUID empty (or zero)"},
 {"hash":256717742,"name":"tmodinfoform.tsdescr.hint","sourcebytes":[77,111,100,32,68,101,115,99,114,105,112,116,105,111,110],"value":"Mod Description"},
 {"hash":156067838,"name":"tmodinfoform.tsdescr.caption","sourcebytes":[68,101,115,99,114,105,112,116,105,111,110],"value":"Description"},
@@ -17,5 +15,16 @@
 {"hash":13956244,"name":"tmodinfoform.tsrequirement.caption","sourcebytes":[82,101,113,117,105,114,101,109,101,110,116],"value":"Requirement"},
 {"hash":346165,"name":"tmodinfoform.sgreq.columns[0].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
 {"hash":1236,"name":"tmodinfoform.sgreq.columns[1].title.caption","sourcebytes":[73,68],"value":"ID"},
-{"hash":214540302,"name":"tmodinfoform.sgreq.columns[2].title.caption","sourcebytes":[86,101,114,115,105,111,110],"value":"Version"}
+{"hash":214540302,"name":"tmodinfoform.sgreq.columns[2].title.caption","sourcebytes":[86,101,114,115,105,111,110],"value":"Version"},
+{"hash":11288268,"name":"tmodinfoform.tsadditional.caption","sourcebytes":[65,100,100,105,116,105,111,110,97,108],"value":"Additional"},
+{"hash":166593749,"name":"tmodinfoform.lblsteampreview.caption","sourcebytes":[80,114,101,118,105,101,119,32,102,105,108,101],"value":"Preview file"},
+{"hash":133303635,"name":"tmodinfoform.lblsteamtags.caption","sourcebytes":[83,116,101,97,109,32,116,97,103,115],"value":"Steam tags"},
+{"hash":166219139,"name":"tmodinfoform.lblsteamchanges.caption","sourcebytes":[67,104,97,110,103,101,115],"value":"Changes"},
+{"hash":38293950,"name":"tmodinfoform.lbllongdescr.caption","sourcebytes":[76,111,110,103,32,68,101,115,99,114,105,112,116,105,111,110],"value":"Long Description"},
+{"hash":201569093,"name":"tmodinfoform.lblsteamnote.caption","sourcebytes":[84,104,101,115,101,32,115,101,116,116,105,110,103,115,32,97,114,101,32,110,111,116,32,115,97,118,101,100,32,105,110,32,116,104,101,32,77,79,68,32,102,105,108,101],"value":"These settings are not saved in the MOD file"},
+{"hash":12558,"name":"tmodinfoform.ebtags.buttoncaption","sourcebytes":[46,46,46],"value":"..."},
+{"hash":12558,"name":"tmodinfoform.ebchanges.buttoncaption","sourcebytes":[46,46,46],"value":"..."},
+{"hash":12558,"name":"tmodinfoform.eblongdescr.buttoncaption","sourcebytes":[46,46,46],"value":"..."},
+{"hash":25650613,"name":"tmodinfoform.sbsave.hint","sourcebytes":[83,97,118,101,32,77,79,68,32,105,110,102,111,32,116,111,32,102,105,108,101],"value":"Save MOD info to file"},
+{"hash":72848405,"name":"tmodinfoform.sbopen.hint","sourcebytes":[76,111,97,100,32,77,79,68,32,105,110,102,111,32,102,114,111,109,32,102,105,108,101],"value":"Load MOD info from file"}
 ]}

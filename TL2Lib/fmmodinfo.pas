@@ -14,7 +14,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, ComCtrls, Grids, SpinEx, rgglobal, TL2Mod;
+  Buttons, ComCtrls, Grids, EditBtn, SpinEx, rgglobal, TL2Mod;
 
 type
 
@@ -23,7 +23,15 @@ type
   TMODInfoForm = class(TForm)
     bbOK      : TBitBtn;
     bbCancel  : TBitBtn;
-    bbSave    : TBitBtn;
+    ebTags: TEditButton;
+    ebChanges: TEditButton;
+    ebLongDescr: TEditButton;
+    edPreview: TFileNameEdit;
+    lblSteamNote: TLabel;
+    lblSteamPreview: TLabel;
+    lblSteamTags: TLabel;
+    lblSteamChanges: TLabel;
+    lblLongDescr: TLabel;
     lblNote   : TLabel;
     leTitle   : TLabeledEdit;
     leAuthor  : TLabeledEdit;
@@ -35,6 +43,9 @@ type
     bbNewGUID : TBitBtn;
     edGUID    : TEdit;         lblGUID   : TLabel;
     PageControl  : TPageControl;
+    sbSave: TSpeedButton;
+    sbOpen: TSpeedButton;
+    tsAdditional: TTabSheet;
     tsDescr      : TTabSheet;
     tsDelete     : TTabSheet;
     lbDelete     : TListBox;
@@ -44,13 +55,19 @@ type
     procedure bbCancelClick (Sender: TObject);
     procedure bbNewGUIDClick(Sender: TObject);
     procedure bbOKClick     (Sender: TObject);
-    procedure bbSaveClick   (Sender: TObject);
     procedure lbDeleteKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sgReqKeyDown   (Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure sbSaveClick    (Sender: TObject);
+    procedure sbOpenClick    (Sender: TObject);
 
+    procedure UseEditor     (Sender: TObject);
+    procedure OpenTagsEditor(Sender: TObject);
   private
     ffile:string;
     fmi:PTL2ModInfo;
+    procedure EditorCancelClick(Sender: TObject);
+    procedure EditorOKClick    (Sender: TObject);
+    procedure TagsOKClick(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ami: PTL2ModInfo=nil; aRO: boolean=false); overload;
 
@@ -97,7 +114,7 @@ begin
   if not (fsModal in FormState) then Close;
 end;
 
-procedure TMODInfoForm.bbSaveClick(Sender: TObject);
+procedure TMODInfoForm.sbSaveClick(Sender: TObject);
 var
   dlg:TSaveDialog;
 begin
@@ -107,6 +124,21 @@ begin
   dlg.Filter    :='*.DAT|*.dat|All files|*.*';
   if dlg.Execute then
     SaveToFile(dlg.FileName);
+  dlg.Free;
+end;
+
+procedure TMODInfoForm.sbOpenClick(Sender: TObject);
+var
+  dlg:TOpenDialog;
+begin
+  dlg:=TSaveDialog.Create(nil);
+  dlg.FileName  :=TL2ModData;
+  dlg.DefaultExt:='.DAT';
+  dlg.Filter    :='*.DAT|*.dat|All files|*.*';
+  if dlg.Execute then
+  begin
+    LoadFromFile(dlg.FileName);
+  end;
   dlg.Free;
 end;
 
@@ -149,21 +181,24 @@ begin
   end;
 end;
 
-constructor TMODInfoForm.Create(AOwner: TComponent; ami: PTL2ModInfo=nil;
-  aRO: boolean=false);
+constructor TMODInfoForm.Create(AOwner: TComponent; ami: PTL2ModInfo=nil; aRO: boolean=false);
 begin
   inherited Create(AOwner);
 
   ffile:='';
-  seVersion .ReadOnly:=aRO;
-  leTitle   .ReadOnly:=aRO;
-  leAuthor  .ReadOnly:=aRO;
-  leWebsite .ReadOnly:=aRO;
-  leDownload.ReadOnly:=aRO;
-  leFilename.ReadOnly:=aRO;
-  memDescr  .ReadOnly:=aRO;
-  edGUID    .ReadOnly:=aRO;
-  bbNewGUID .Enabled :=not aRO;
+  seVersion  .ReadOnly:=aRO;
+  leTitle    .ReadOnly:=aRO;
+  leAuthor   .ReadOnly:=aRO;
+  leWebsite  .ReadOnly:=aRO;
+  leDownload .ReadOnly:=aRO;
+  leFilename .ReadOnly:=aRO;
+  memDescr   .ReadOnly:=aRO;
+  edGUID     .ReadOnly:=aRO;
+  bbNewGUID  .Enabled :=not aRO;
+  edPreview  .ReadOnly:=aRO;
+  ebTags     .ReadOnly:=aRO;
+  ebChanges  .ReadOnly:=aRO;
+  ebLongDescr.ReadOnly:=aRO;
 
   if ami<>nil then
   begin
@@ -220,6 +255,11 @@ begin
         ami.reqs[i].ver:=0;
     end;
   end;
+
+  ami.steam_preview:=StrToWide(edPreview  .Text);
+  ami.steam_tags   :=StrToWide(ebTags     .Text);
+  ami.steam_descr  :=StrToWide(ebChanges  .Text);
+  ami.long_descr   :=StrToWide(ebLongDescr.Text);
 end;
 
 procedure TMODInfoForm.SaveToFile(const aFile:string);
@@ -259,6 +299,11 @@ begin
     sgReq.Cells[1,i+1]:=IntToStr (ami.reqs[i].id);
     sgReq.Cells[2,i+1]:=IntToStr (ami.reqs[i].ver);
   end;
+
+  edPreview  .Text:=WideToStr(ami.steam_preview);
+  ebTags     .Text:=WideToStr(ami.steam_tags);
+  ebChanges  .Text:=WideToStr(ami.steam_descr);
+  ebLongDescr.Text:=WideToStr(ami.long_descr);
 end;
 
 function TMODInfoForm.LoadFromFile(const aFile:string):boolean;
@@ -284,5 +329,210 @@ begin
 
   result:=ffile<>'';
 end;
+
+{%REGION Editor}
+procedure TMODInfoForm.EditorCancelClick(Sender:TObject);
+begin
+  (Sender as TBitBtn).Owner.Free;
+end;
+
+procedure TMODInfoForm.EditorOKClick(Sender:TObject);
+var
+  lpanel:TPanel;
+begin
+  lpanel:=((Sender as TBitBtn).Owner as TPanel);
+  (lpanel.Owner as TEditButton).Text:=
+     StringReplace((lpanel.Controls[2] as TMemo).Text,#13#10,'\n',[rfReplaceAll]);
+  lpanel.Free;
+end;
+
+procedure TMODInfoForm.UseEditor(Sender:TObject);
+var
+  lForm:TPanel;
+  ly:integer;
+begin
+  lForm:=TPanel.Create(Sender as TEditButton);
+  lForm.Parent:=(Sender as TEditButton).Parent;
+  lForm.Align :=alClient;
+
+  with TBitBtn.Create(lForm) do
+  begin
+    Parent :=lForm;
+    Kind   :=bkOk;
+    Default:=True;
+    Top    :=lForm.ClientHeight-4-Height;
+    Left   :=lForm.ClientWidth -2-Width;
+    Anchors:=[akRight,akBottom];
+    OnClick:=@EditorOKClick;
+    ly:=Top;
+  end;
+
+  with TBitBtn.Create(lForm) do
+  begin
+    Parent :=lForm;
+    Kind   :=bkCancel;
+    Top    :=ly;
+    Left   :=2;
+    Anchors:=[akLeft,akBottom];
+    OnClick:=@EditorCancelClick;
+  end;
+
+  with TMemo.Create(lForm) do
+  begin
+    Parent    :=lForm;
+    ScrollBars:=ssAutoBoth;
+    SetBounds(1,1,lForm.ClientWidth-2,ly-8);
+    Anchors   :=[akTop,akLeft,akRight,akBottom];
+    Text      :=StringReplace((Sender as TEditButton).Text,'\n',#13#10,[rfReplaceAll]);
+    Visible   :=true;
+  end;
+
+  lForm.Show;
+end;
+{%ENDREGION Editor}
+
+{%REGION Tags}
+procedure TMODInfoForm.TagsOKClick(Sender:TObject);
+var
+  lpanel:TPanel;
+  cg:TCheckGroup;
+  ls:string;
+  i:integer;
+begin
+  ls:='';
+  lpanel:=((Sender as TBitBtn).Owner as TPanel);
+  cg:=lpanel.Controls[0] as TCheckGroup;
+  for i:=0 to cg.Items.Count-1 do
+  begin
+    if cg.Checked[i] then
+    begin
+      if ls<>'' then ls:=ls+', ';
+      ls:=ls+cg.Items[i];
+    end;
+  end;
+  (lpanel.Owner as TEditButton).Text:=ls;
+  lpanel.Free;
+end;
+
+procedure TMODInfoForm.OpenTagsEditor(Sender:TObject);
+var
+  lForm:TPanel;
+  cg:TCheckGroup;
+  ltags:string;
+  aval:PAnsiChar;
+  lval:array [0..31] of AnsiChar;
+  i,j,lcnt,lidx:integer;
+begin
+  lForm:=TPanel.Create(Sender as TEditButton);
+  lForm.Parent:=(Sender as TEditButton).Parent;
+  lForm.Align :=alClient;
+
+  cg:=TCheckGroup.Create(lForm);
+  cg.Parent:=lForm;
+  cg.Visible:=False;
+  cg.Align :=alClient;
+  cg.Caption:='Steam tags';
+  cg.ColumnLayout:=clVerticalThenHorizontal;
+  cg.Items.AddStrings([
+      'Armor',
+      'Art',
+      'Audio',
+      'Balance',
+      'Bosses',
+      'Characters',
+      'Classes',
+      'Co-op',
+      'Game Modes',
+      'Gameplay',
+      'Items',
+      'Levels',
+      'Maps',
+      'Merchants',
+      'Models',
+      'Monsters',
+      'Multiplayer',
+      'Music',
+      'Pets',
+      'Pvp',
+      'Quests',
+      'Recipes',
+      'Skills',
+      'Socketables',
+      'Story',
+      'Textures',
+      'UI',
+      'Weapons']);
+  cg.ChildSizing.LeftRightSpacing:=2;
+  cg.ChildSizing.TopBottomSpacing:=4;
+  cg.Columns:=3;
+
+  with TBitBtn.Create(lForm) do
+  begin
+    Parent :=lForm;
+    Kind   :=bkOk;
+    Caption:='';
+    Layout :=blGlyphBottom;
+    Spacing:=0;
+    Default:=True;
+    Width  :=24;
+    Height :=24;
+    Top    :=lForm.ClientHeight-4-Height;
+    Left   :=lForm.ClientWidth -6-Width;
+    Anchors:=[akRight,akBottom];
+    OnClick:=@TagsOKClick;
+    j:=Top;
+  end;
+
+  with TBitBtn.Create(lForm) do
+  begin
+    Parent :=lForm;
+    Kind   :=bkCancel;
+    Caption:='';
+    Layout :=blGlyphBottom;
+    Spacing:=0;
+    Width  :=24;
+    Height :=24;
+    Top    :=j;
+    Left   :=lForm.ClientWidth-6-(4+Width)*2;
+    Anchors:=[akRight,akBottom];
+    OnClick:=@EditorCancelClick;
+  end;
+
+  ltags:=(Sender as TEditButton).Text;
+  if ltags<>'' then
+  begin
+    aval:=Pointer(ltags);
+    lcnt:=SplitCountA(aval,',');
+    if lcnt>0 then
+    begin
+      for i:=0 to lcnt-1 do
+      begin
+        lidx:=0;
+        repeat
+          while (aval^=',') or (aval^=' ') do inc(aval);
+          lval[lidx]:=aval^;
+          inc(lidx);
+          inc(aval);
+        until (aval^=',') or (aval^=' ') or (aval^=#0);
+        lval[lidx]:=#0;
+
+        for j:=0 to cg.Items.Count-1 do
+        begin
+          if lval=cg.Items[j] then
+          begin
+            cg.Checked[j]:=true;
+            break;
+          end;
+        end;
+
+      end;
+    end;
+  end;
+
+  cg.Visible:=True;
+  lForm.Show;
+end;
+
+{%ENDREGION Tags}
 
 end.

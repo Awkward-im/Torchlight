@@ -41,6 +41,7 @@ const
   SIGN_UNICODE = $FEFF;
   SIGN_UTF8    = $BFBBEF;
 
+{%REGION Game version}
 const
   verUnk    = 0;
   verTL1    = 1;
@@ -65,6 +66,7 @@ const
 
 function GetGameName(aver:integer):string;
 
+{%ENDREGION Game version}
 
 const
   FloatPrec :integer = 6;
@@ -100,14 +102,7 @@ function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 function ExtractFileNameOnly(const aFilename: string):string;
 function ExtractFileExt     (const aFileName: string):string;
 
-type
-  PPAKFileHeader = ^TPAKFileHeader;
-  TPAKFileHeader = packed record
-    size_u:UInt32;
-    size_c:UInt32;      // 0 means "no compression
-  end;
-
-//===== Data type codes =====
+{%REGION Data types}
 
 const
   // DAT and some common type codes
@@ -140,11 +135,10 @@ const
   // special
   rgList      = $1000;
 
-
 function TypeToText(atype:integer):PWideChar;
 function TextToType(atype:PWideChar):integer;
 
-//=====  =====
+//===== Custom types =====
 
 type
   TRGID      = Int64;
@@ -176,7 +170,42 @@ type
 type
   TMatrix4x4 = array [0..3,0..3] of single;
 
-//===== TL2 Savegame related =====
+{%ENDREGION Data types}
+
+{%REGION Savegame}
+
+const
+  tl2saveFirst    = $11; // ??
+  tl2saveMinimal  = $38; // minimal acceptable version
+  tl2saveEncoded  = $3B; // "scramble" byte introduced
+  tl2saveScramble = $3D; // new scramble method
+  tl2saveChecksum = $41; // checksum field added
+//  $43
+  tl2saveCurrent  = $44; // last (current) version
+{
+  0x09 - ? after 3c 4b(cnt)+1*x bytes
+  0x11 - movies
+  0x17 - !!!!!! TL1 1.15 savegame
+  0x27 - Coords (-999, -999, -999)
+  0x37 - ? 2b+2b(size)+[8b]
+  0x38 - min for read/write
+  0x3B - scramble
+  0x3C - ? after 37, 2b (Cnt)+[8b]
+  0x3D - new scramble method
+  0x41 - checksum
+  0x43 - ?mod lists?
+  0x44 - mod version in mod list
+}
+
+type            	
+  TL2SaveHeader = packed record
+    Version :DWord;
+    Encoded :ByteBool;
+    Checksum:Dword;
+  end;
+  TL2SaveFooter = packed record
+    filesize:DWord;
+  end;
 
 const
   TL2Cheat  = 238;
@@ -218,42 +247,16 @@ type
 type
   TL2Sex = (male, female, unisex);
 
-//----- Global savegame file structures -----
-
-const
-  tl2saveFirst    = $11; // ??
-  tl2saveMinimal  = $38; // minimal acceptable version
-  tl2saveEncoded  = $3B; // "scramble" byte introduced
-  tl2saveScramble = $3D; // new scramble method
-  tl2saveChecksum = $41; // checksum field added
-//  $43
-  tl2saveCurrent  = $44; // last (current) version
-{
-  0x09 - ? after 3c 4b(cnt)+1*x bytes
-  0x11 - movies
-  0x17 - !!!!!! TL1 1.15 savegame
-  0x27 - Coords (-999, -999, -999)
-  0x37 - ? 2b+2b(size)+[8b]
-  0x38 - min for read/write
-  0x3B - scramble
-  0x3C - ? after 37, 2b (Cnt)+[8b]
-  0x3D - new scramble method
-  0x41 - checksum
-  0x43 - ?mod lists?
-  0x44 - mod version in mod list
-}
-
-type            	
-  TL2SaveHeader = packed record
-    Version :DWord;
-    Encoded :ByteBool;
-    Checksum:Dword;
-  end;
-  TL2SaveFooter = packed record
-    filesize:DWord;
-  end;
+{%ENDREGION Savegame}
 
 //===== Container =====
+
+type
+  PPAKFileHeader = ^TPAKFileHeader;
+  TPAKFileHeader = packed record
+    size_u:UInt32;
+    size_c:UInt32;      // 0 means "no compression
+  end;
 
 type
   // fields are rearranged
@@ -291,12 +294,14 @@ type
 
 procedure QuaternionToMatrix(const q:TVector4; out m:TMatrix4x4);
 
-//===== Hash =====
+{%REGION Hash}
 
 function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
 function RGHash (instr:PWideChar; alen:integer=0):dword;
 function RGHashB(instr:PAnsiChar; alen:integer=0):dword;
 function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
+
+{%ENDREGION Hash}
 
 //==========================
 //===== Implementation =====
@@ -701,7 +706,7 @@ begin
   result:='';
 end;
 
-//----- Data types -----
+{%REGION Data types}
 
 const
   RGType : array [0..18] of record
@@ -759,6 +764,8 @@ begin
   result:=rgNotValid;
 end;
 
+{%ENDREGION Data types}
+
 //===== Other =====
 
 procedure QuaternionToMatrix(const q:TVector4; out m:TMatrix4x4);
@@ -791,7 +798,7 @@ begin
   m[0,3]:=0;            m[1,3]:=0;            m[2,3]:=0;            m[3,3]:=1;
 end;
 
-//===== Hash =====
+{%REGION Hash}
 
 //--- Save file
 
@@ -903,6 +910,8 @@ begin
   Result := (UInt64(h1) Shl 32) Or h2;
 end;
 {$POP}
+
+{%ENDREGION Hash}
 
 
 initialization

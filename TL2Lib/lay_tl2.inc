@@ -566,7 +566,7 @@ begin
       lgrpcnt:=lgrpcnt+lchild;
     end;
   end;
-  astream.WriteDWordAt(lchilds,lChildPos);
+  astream.WriteWordAt(lchilds,lChildPos);
 
   if lChunkType=idGroupTL2 then
     abstream.WriteWordAt(lgrpcnt,lcpos);

@@ -1,5 +1,5 @@
-﻿{TODO: check PScene, pobj for wrong syntax on parse}
-{TODO: GetObjectDescr and GetPropDescr (by ID or Name?)}
+﻿{TODO: replace icon name by imagelist index from ObjIcons on load}
+{TODO: check PScene, pobj for wrong syntax on parse}
 {TODO: make objects and props arrays expandable in LoadLayoutDict }
 {TODO: change dicts to UTF8. just disk or memory too?}
 unit RGDictLayout;
@@ -26,9 +26,14 @@ type
     function GetObjectById  (aid:dword):pointer;
     function GetObjectByName(aname:PWideChar):pointer;
 
+    function GetObjectCount:integer;
+    function GetObjectIdByIdx(idx:integer):dword;
+    function GetObjectId(aname:PWideChar=nil):dword;
     function GetObjectDescr(aid:dword=dword(-1)):PWideChar;
     function GetObjectName (aid:dword=dword(-1)):PWideChar;
-    function GetObjectId(aname:PWideChar):dword;
+    function GetObjectMenu (aid:dword=dword(-1)):PWideChar;
+    function GetObjectIcon (aid:dword=dword(-1)):PWideChar;
+    function CanObjectHaveChild(aid:dword=dword(-1)):boolean;
 
     function GetPropsCount:integer;
 
@@ -52,6 +57,8 @@ implementation
 uses
   rgglobal;
 
+{.$include objicons.inc}
+
 type
   PPropInfo = ^TPropInfo;
   TPropInfo = record
@@ -65,9 +72,12 @@ type
   TObjInfo = record
     name   :PWideChar;
     descr  :PWideChar;
-    start  :integer;
-    count  :integer;
+    menu   :PWideChar;
+    icon   :PWideChar; // integer;
     id     :dword;
+    start  :integer;
+    count  :word;
+    child  :ByteBool;
   end;
 type
   PSceneInfo = ^TSceneInfo;
@@ -124,12 +134,15 @@ begin
     exit;
   end;
   FVersion:=aver;
+  SelectScene(nil);
 end;
 
 function TRGObject.SelectScene(aname:PWideChar):pointer;
 var
   i:integer;
 begin
+  if FDict=nil then Exit(nil);
+
   // Get Default (if one scene only)
   if (aname=nil) or (aname^=#0) or
      (PLayoutInfo(FDict)^.scenes[1].id=dword(-1)) then
@@ -160,6 +173,34 @@ begin
   result        :=nil;
 end;
 
+function TRGObject.GetObjectCount:integer;
+begin
+  if FLastScene<>nil then
+    result:=PSceneInfo(FLastScene)^.count
+  else
+    result:=0;
+end;
+
+function TRGObject.GetObjectIdByIdx(idx:integer):dword;
+begin
+  if FLastScene<>nil then
+  begin
+    FLastObject:=@(PLayoutInfo(FDict)^.Objects[PSceneInfo(FLastScene)^.start+idx]);
+    result:=PObjInfo(FLastObject)^.id;
+  end
+  else
+    result:=dword(-1);
+end;
+
+function TRGObject.GetObjectId(aname:PWideChar=nil):dword;
+begin
+  if aname<>nil then GetObjectByName(aname);
+  if FLastObject<>nil then
+    result:=PObjInfo(FLastObject)^.id
+  else
+    result:=dword(-1);
+end;
+
 function TRGObject.GetObjectByName(aname:PWideChar):pointer;
 var
   i:integer;
@@ -181,7 +222,7 @@ function TRGObject.GetObjectById(aid:dword):pointer;
 var
   i:integer;
 begin
-  if FLastObjId=aid then
+  if (FLastObjId=aid) or (aid=dword(-1)) then
     exit(FLastObject);
 
   if FLastScene<>nil then
@@ -201,15 +242,6 @@ begin
 //  RGLog.Add('Object with id=0x'+HexStr(aid,8)+' was not found');
 end;
 
-function TRGObject.GetObjectId(aname:PWideChar):dword;
-begin
-  if aname<>nil then GetObjectByName(aname);
-  if FLastObject<>nil then
-    result:=PObjInfo(FLastObject)^.id
-  else
-    result:=dword(-1);
-end;
-
 function TRGObject.GetObjectName(aid:dword=dword(-1)):PWideChar;
 begin
   if aid<>dword(-1) then GetObjectById(aid);
@@ -227,6 +259,34 @@ begin
   else
     result:=nil;
 end;
+
+function TRGObject.GetObjectMenu(aid:dword=dword(-1)):PWideChar;
+begin
+  if aid<>dword(-1) then GetObjectById(aid);
+  if FLastObject<>nil then
+    result:=PObjInfo(FLastObject)^.menu
+  else
+    result:=nil;
+end;
+
+function TRGObject.GetObjectIcon(aid:dword=dword(-1)):PWideChar;
+begin
+  if aid<>dword(-1) then GetObjectById(aid);
+  if FLastObject<>nil then
+    result:=PObjInfo(FLastObject)^.icon
+  else
+    result:=nil;
+end;
+
+function TRGObject.CanObjectHaveChild(aid:dword=dword(-1)):boolean;
+begin
+  if aid<>dword(-1) then GetObjectById(aid);
+  if FLastObject<>nil then
+    result:=PObjInfo(FLastObject)^.child
+  else
+    result:=false;
+end;
+
 
 function TRGObject.GetPropsCount:integer;
 begin
@@ -375,7 +435,17 @@ end;
 
 
 //----- Processed -----
-
+{
+function GetMenuIndex(aname:PWideChar):integer;
+var
+  i:integer;
+begin
+  for i:=0 to High(ObjIcons) do
+  begin
+    if CompareWide(ObjIcons[i].name,aname)=0 then exit(i);
+  end;
+end;
+}
 {$I-}
 function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean):boolean;
 var
@@ -388,7 +458,7 @@ var
   pprop :PPropInfo;
   lid:dword;
   lobj,lprop,lscene,i:integer;
-  lval,ldesc:boolean;
+  licon,lmenu,lchild,lval,ldesc:boolean;
 begin
   result:=false;
 
@@ -462,7 +532,7 @@ begin
       end;
 
       // object
-      // ID:NAME[=CLASS][:DESCRIPTION]
+      // ID:NAME[>MENU][|ICON][;CHILD][=COMMENT][:DESCRIPTION]
       '*': begin
         inc(pc);
         lid:=0;
@@ -476,37 +546,89 @@ begin
         inc(pc);
         // name
         lname:=pc;
-        while not (ord(pc^) in [10,13,ord(':'),ord('=')]) do inc(pc);
-        lval :=pc^='=';
-        ldesc:=pc^=':';
+        while AnsiChar(ord(pc^)) in [' ','A'..'Z','a'..'z','_','0'..'9'] do inc(pc);
+        lmenu :=pc^='>';
+        licon :=pc^='|';
+        lchild:=pc^=';';
+        lval  :=pc^='=';
+        ldesc :=pc^=':';
         pc^:=#0;
         inc(pc);
-        // class (right now just skip)
+        
+        pobj:=@(layptr^.objects[lobj]);
+        inc(pscene^.count);
+        inc(lobj);
+        pobj^.id     :=lid;
+        pobj^.name   :=lname;
+        pobj^.start  :=lprop;
+        pobj^.count  :=0;
+        lname:=nil;
+
+        // lmenu
+        if lmenu then
+        begin
+          lname:=pc;
+          while AnsiChar(ord(pc^)) in [' ','A'..'Z','a'..'z','_','0'..'9'] do inc(pc);
+          licon :=pc^='|';
+          lchild:=pc^=';';
+          lval  :=pc^='=';
+          ldesc :=pc^=':';
+          pc^:=#0;
+          inc(pc);
+//          pobj^.menu:=GetMenuIndex(lname);
+          pobj^.menu:=lname;
+          lname:=nil;
+        end
+        else
+          pobj^.menu:=nil; // -1;
+
+        // licon
+        if licon then
+        begin
+          lname:=pc;
+          while AnsiChar(ord(pc^)) in [' ','A'..'Z','a'..'z','_','0'..'9'] do inc(pc);
+          lchild:=pc^=';';
+          lval  :=pc^='=';
+          ldesc :=pc^=':';
+          pc^:=#0;
+          inc(pc);
+          pobj^.icon:=lname;
+          lname:=nil;
+        end
+        else
+          pobj^.icon:=nil;
+
+        // lchild
+        if lchild then
+        begin
+          if pc^='1' then lchild:=true else lchild:=false; inc(pc);
+//          while AnsiChar(ord(pc^)) in [' ','A'..'Z','a'..'z','_','0'..'9'] do inc(pc);
+          lval  :=pc^='=';
+          ldesc :=pc^=':';
+          inc(pc);
+        end;
+        pobj^.child:=lchild;
+
+        // comment, class (right now just skip)
         if lval then
         begin
           while not (ord(pc^) in [10,13,ord(':')]) do inc(pc);
           ldesc:=pc^=':';
-          pc^:=#0;
+//          pc^:=#0;
           inc(pc);
         end;
+
         // description
-        ldescr:=nil;
         if ldesc then
         begin
           ldescr:=pc;
           while not (ord(pc^) in [10,13]) do inc(pc);
           pc^:=#0;
           inc(pc);
-        end;
-
-        pobj:=@(layptr^.objects[lobj]);
-        inc(pscene^.count);
-        inc(lobj);
-        pobj^.id     :=lid;
-        pobj^.name   :=lname;
-        pobj^.descr  :=ldescr;
-        pobj^.start  :=lprop;
-        pobj^.count  :=0;
+          pobj^.descr:=ldescr;
+        end
+        else
+          pobj^.descr:=nil;
       end;
 
       // property

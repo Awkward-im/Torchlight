@@ -7,11 +7,12 @@ uses
   SynEditHighlighterFoldBase, SynEditStrConst;
 
 type
-  TtkTokenKind = (tkNull, tkSpace, tkSymbol, tkGroup, tkType, tkProp, tkText, tkWrong, tkNumber);
+  TtkTokenKind = (tkNull, tkSpace, tkSymbol, tkGroup, tkType, tkProp, tkText, tkWrong, tkNumber, tkUnsup);
 
   TRangeState = (rsSign, rsGroup, rsOpenGroup, rsCloseGroup, rsType, rsCloseType, rsOpenType, rsProp, rsPoint, rsText);
 
 type
+  TOnPropCheck = function(aprop:PAnsiChar):boolean of object;
 
   TProcTableProc = procedure of object;
 
@@ -34,8 +35,11 @@ type
     fSymbolAttri: TSynHighlighterAttributes;
     fNumberAttri: TSynHighlighterAttributes;
     fWrongAttri : TSynHighlighterAttributes;
+    fUnsupAttri : TSynHighlighterAttributes;
 
-    fProcTable: array[#0..#255] of TProcTableProc;
+    fProcTable: array [#0..#255] of TProcTableProc;
+
+    FOnPropCheck:TOnPropCheck;
 
     procedure NullProc;
     procedure CarriageReturnProc;
@@ -74,6 +78,7 @@ type
     procedure ReSetRange; override;
 
     property IdentChars;
+    property OnPropCheck:TOnPropCheck read FOnPropCheck write FOnPropCheck;
   published
     property GroupAttri : TSynHighlighterAttributes read fGroupAttri  write fGroupAttri;
     property TypeAttri  : TSynHighlighterAttributes read fTypeAttri   write fTypeAttri;
@@ -83,6 +88,7 @@ type
     property SpaceAttri : TSynHighlighterAttributes read fSpaceAttri  write fSpaceAttri;
     property SymbolAttri: TSynHighlighterAttributes read fSymbolAttri write fSymbolAttri;
     property WrongAttri : TSynHighlighterAttributes read fWrongAttri  write fWrongAttri;
+    property UnsupAttri : TSynHighlighterAttributes read fUnsupAttri  write fUnsupAttri;
   end;
 
 implementation
@@ -105,6 +111,7 @@ begin
   fSpaceAttri  := TSynHighlighterAttributes.Create(@SYNS_AttrWhitespace    , SYNS_AttrSpace);
   fSymbolAttri := TSynHighlighterAttributes.Create(@SYNS_AttrSymbol        , SYNS_AttrSymbol);
   fWrongAttri  := TSynHighlighterAttributes.Create(@SYNS_AttrText          , SYNS_AttrUnknownWord);
+  fUnsupAttri  := TSynHighlighterAttributes.Create(@SYNS_AttrText          , SYNS_AttrUser);
 
   fGroupAttri .Foreground:= clMaroon;  fGroupAttri .Style:= [fsBold];
   fTypeAttri  .Foreground:= clPurple;  fTypeAttri  .Style:= [];
@@ -112,7 +119,8 @@ begin
   fNumberAttri.Foreground:= clGreen ;  fNumberAttri.Style:= [fsBold];
   fTextAttri  .Foreground:= clBlack ;  fTextAttri  .Style:= [];
   fSymbolAttri.Foreground:= clBlue  ;  fSymbolAttri.Style:= [];
-  fWrongAttri .Foreground:= clWhite ;  fGroupAttri .Style:= [fsBold];  fWrongAttri.Background:= clRed;
+  fWrongAttri .Foreground:= clWhite ;  fWrongAttri .Style:= [fsBold];  fWrongAttri.Background:= clRed;
+  fUnsupAttri .Foreground:= clBlack ;  fUnsupAttri .Style:= [fsBold];  fUnsupAttri.Background:= clLtGray;
 
   AddAttribute(fGroupAttri);
   AddAttribute(fTypeAttri);
@@ -122,6 +130,7 @@ begin
   AddAttribute(fSpaceAttri);
   AddAttribute(fSymbolAttri);
   AddAttribute(fWrongAttri);
+  AddAttribute(fUnsupAttri);
 
   SetAttributesOnChange(@DefHighlightChange);
 
@@ -232,10 +241,29 @@ begin
 end;
 
 procedure TSynTSyn.PropProc;
+var
+  buf:array [0..27] of AnsiChar;
+  i:integer;
 begin
   fRange := rsPoint;
   fTokenId := tkProp;
-  while (fLine[Run] in NameChars) do Inc(Run);
+  if Assigned(OnPropCheck) then
+  begin
+    i:=0;
+    while (fLine[Run] in NameChars) do
+    begin
+      buf[i]:=fLine[Run]; inc(i);
+      Inc(Run);
+    end;
+    buf[i]:=#0;
+
+    if not OnPropCheck(@buf[0]) then
+      fTokenId := tkUnsup;
+  end
+  else
+  begin
+    while (fLine[Run] in NameChars) do Inc(Run);
+  end;
 end;
 
 procedure TSynTSyn.TextProc;
@@ -431,6 +459,7 @@ begin
     tkSymbol : Result:= fSymbolAttri;
     tkSpace  : Result:= fSpaceAttri;
     tkWrong  : Result:= fWrongAttri;
+    tkUnsup  : Result:= fUnsupAttri;
   else
     Result := nil;
   end;
