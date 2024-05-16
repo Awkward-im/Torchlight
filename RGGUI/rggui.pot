@@ -1,8 +1,20 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: fmlayoutedit.rsalter
+msgid "If property name marked as unsupported but have space or underscore, try to switch them."
+msgstr ""
+
 #: fmlayoutedit.rsdefault
 msgid "- default -"
+msgstr ""
+
+#: fmlayoutedit.rsnewname
+msgid "Enter new name"
+msgstr ""
+
+#: fmlayoutedit.rsnewnamecap
+msgid "Change name of "
 msgstr ""
 
 #: fmlayoutedit.rstextpreview
@@ -11,6 +23,16 @@ msgstr ""
 
 #: fmlayoutedit.rsundefined
 msgid "UNDEFINED"
+msgstr ""
+
+#: fmlayoutedit.rsunsupobj
+msgid "This object is unsupported in current project version."
+msgstr ""
+
+#: fmlayoutedit.rsversion
+msgid ""
+"WARNING!\n"
+"This layout file version differs from current project version."
 msgstr ""
 
 #: formgui.rsbuildgrid
@@ -132,46 +154,72 @@ msgctxt "tfilterform.lblextension.caption"
 msgid "Extension"
 msgstr ""
 
-#: tfmlogform.bbclear.caption
-msgid "&Clear"
+#: tformlayoutedit.acttreedeletenode.caption
+msgid "Delete Object"
 msgstr ""
 
-#: tfmlogform.bbsave.caption
-msgctxt "tfmlogform.bbsave.caption"
-msgid "Save"
-msgstr ""
-
-#: tfmlogform.bbsave.hint
-msgid "Save log to file"
+#: tformlayoutedit.acttreerenamenode.caption
+msgid "Rename Object"
 msgstr ""
 
 #: tformlayoutedit.cbtxtpreview.caption
 msgid "Text preview"
 msgstr ""
 
+#: tformlayoutedit.miaddnode.caption
+msgctxt "tformlayoutedit.miaddnode.caption"
+msgid "Add Object"
+msgstr ""
+
 #: tmodinfoform.bbcancel.caption
 msgid "Cancel"
-msgstr ""
-
-#: tmodinfoform.bbsave.caption
-msgctxt "tmodinfoform.bbsave.caption"
-msgid "Save"
-msgstr ""
-
-#: tmodinfoform.bbsave.hint
-msgid "Save to file"
 msgstr ""
 
 #: tmodinfoform.caption
 msgid "MOD Info"
 msgstr ""
 
+#: tmodinfoform.ebchanges.buttoncaption
+msgctxt "tmodinfoform.ebchanges.buttoncaption"
+msgid "..."
+msgstr ""
+
+#: tmodinfoform.eblongdescr.buttoncaption
+msgctxt "tmodinfoform.eblongdescr.buttoncaption"
+msgid "..."
+msgstr ""
+
+#: tmodinfoform.ebtags.buttoncaption
+msgctxt "tmodinfoform.ebtags.buttoncaption"
+msgid "..."
+msgstr ""
+
 #: tmodinfoform.lblguid.caption
 msgid "Mod GUID (click button for new)"
 msgstr ""
 
+#: tmodinfoform.lbllongdescr.caption
+msgid "Long Description"
+msgstr ""
+
 #: tmodinfoform.lblnote.caption
 msgid "Don't keep version and GUID empty (or zero)"
+msgstr ""
+
+#: tmodinfoform.lblsteamchanges.caption
+msgid "Changes"
+msgstr ""
+
+#: tmodinfoform.lblsteamnote.caption
+msgid "These settings are not saved in the MOD file"
+msgstr ""
+
+#: tmodinfoform.lblsteampreview.caption
+msgid "Preview file"
+msgstr ""
+
+#: tmodinfoform.lblsteamtags.caption
+msgid "Steam tags"
 msgstr ""
 
 #: tmodinfoform.lblversion.caption
@@ -198,6 +246,14 @@ msgstr ""
 msgid "Mod Website URL"
 msgstr ""
 
+#: tmodinfoform.sbopen.hint
+msgid "Load MOD info from file"
+msgstr ""
+
+#: tmodinfoform.sbsave.hint
+msgid "Save MOD info to file"
+msgstr ""
+
 #: tmodinfoform.sgreq.columns[0].title.caption
 msgctxt "tmodinfoform.sgreq.columns[0].title.caption"
 msgid "Name"
@@ -209,6 +265,10 @@ msgstr ""
 
 #: tmodinfoform.sgreq.columns[2].title.caption
 msgid "Version"
+msgstr ""
+
+#: tmodinfoform.tsadditional.caption
+msgid "Additional"
 msgstr ""
 
 #: tmodinfoform.tsdelete.caption
@@ -227,6 +287,14 @@ msgstr ""
 
 #: tmodinfoform.tsrequirement.caption
 msgid "Requirement"
+msgstr ""
+
+#: trgguiform.actchangeversion.caption
+msgid "Change PAK version"
+msgstr ""
+
+#: trgguiform.actchangeversion.hint
+msgid "Change game target without rebuild files"
 msgstr ""
 
 #: trgguiform.acteddelete.caption
@@ -261,7 +329,7 @@ msgid "Import dir"
 msgstr ""
 
 #: trgguiform.actedimportdir.hint
-msgid "Import directory (with subdirs)"
+msgid "Import directory content (with subdirs)"
 msgstr ""
 
 #: trgguiform.actednew.caption
@@ -352,6 +420,14 @@ msgstr ""
 
 #: trgguiform.acthelpabout.hint
 msgid "About"
+msgstr ""
+
+#: trgguiform.actopendir.caption
+msgid "Open unpack dir"
+msgstr ""
+
+#: trgguiform.actopendir.hint
+msgid "Open directory for unpack files"
 msgstr ""
 
 #: trgguiform.actresetview.caption
@@ -496,10 +572,6 @@ msgstr ""
 
 #: trgguiform.mihelp.caption
 msgid "&Help"
-msgstr ""
-
-#: trgguiform.mitreeadd.caption
-msgid "Add dir"
 msgstr ""
 
 #: trgguiform.mitreedelete.caption
@@ -660,9 +732,5 @@ msgstr ""
 
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
-msgstr ""
-
-#: unitlogform.rscantsave
-msgid "Can't save log file"
 msgstr ""
 

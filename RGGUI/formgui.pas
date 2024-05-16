@@ -1,16 +1,16 @@
+{TODO: show layout game version at least for changed/added files}
 {TODO: Save pak or file: check setData binary files version, repack if needs}
 {TODO: add icon extract by imageset}
 {TODO: add hash calc and brute form}
-{TODO: Change StatusBar statistic when add/delete dir/file}
 {TODO: 1-setting to save linked file on disk/mem; 2-ask every time/once}
 {TODO: save as for editor}
 {TODO: memory settings: max size to load PAK into memory}
 {TODO: Add file search}
 {TODO: Implement to open DIR (not PAK/MOD/MAN) = ctrl.AddDirectory}
-{TODO: Status bar path changes on dir with files only}
+{TODO: StatusBar: change statistic when add/delete dir/file}
+{TODO: StatusBar: path changes on dir with files only}
 {TODO: option: keep PAK open}
 {TODO: option: ask unpack path}
-{TODO: Tree changes: check update list}
 {TODO: replace bitbutton by speed button (scale problem)}
 {TODO: change grid/preview border moving}
 unit formGUI;
@@ -30,11 +30,8 @@ type
   { TRGGUIForm }
 
   TRGGUIForm = class(TForm)
-    actEdRename: TAction;
-    actEdImportDir: TAction;
     bbPlay: TBitBtn;
     bbStop: TBitBtn;
-    miImportDir: TMenuItem;
     pnlAudio: TPanel;
     Setings: TTabSheet;
     cbUnpackTree  : TCheckBox;
@@ -64,6 +61,7 @@ type
     pnlTreeFilter: TPanel;
     edTreeFilter : TTreeFilterEdit;
     bbCollapse   : TBitBtn;
+    tbOpenDir: TToolButton;
     tvTree       : TTreeView;
 
     Grid   : TTabSheet;
@@ -95,6 +93,7 @@ type
     mnuGrid: TPopupMenu;
     miGridExport: TMenuItem;
     miGridNew   : TMenuItem;
+    miImportDir : TMenuItem;
     miGridAdd   : TMenuItem;
     miGridRename: TMenuItem;
     miGridReset : TMenuItem;
@@ -122,6 +121,8 @@ type
     miEditSearch : TMenuItem;
     miEditReplace: TMenuItem;
     miEditDelete : TMenuItem;
+    N2           : TMenuItem;
+    miChangeVersion: TMenuItem;
     miHelp: TMenuItem;
     miHelpAbout  : TMenuItem;
     miHelpShowLog: TMenuItem;
@@ -146,7 +147,11 @@ type
     actEdImport   : TAction; // Load (import) content
     actEdExport   : TAction; // Export content
     actEdSearch   : TAction; // Seacrh/replace
+    actEdRename   : TAction;
+    actEdImportDir: TAction;
 
+    actChangeVersion: TAction;
+    actOpenDir    : TAction;
     actShowFilter : TAction;
     actResetView  : TAction;
 
@@ -172,6 +177,7 @@ type
     tbColTime    : TToolButton;
     tbColUnpacked: TToolButton;
 
+    procedure actChangeVersionExecute(Sender: TObject);
     procedure actEdDeleteExecute(Sender: TObject);
     procedure actEdExportExecute(Sender: TObject);
     procedure actEdImportDirExecute(Sender: TObject);
@@ -187,6 +193,7 @@ type
     procedure actFileOpenExecute(Sender: TObject);
     procedure actFileSaveAsExecute(Sender: TObject);
     procedure actFileSaveExecute(Sender: TObject);
+    procedure actOpenDirExecute(Sender: TObject);
     procedure actShowInfoExecute(Sender: TObject);
     procedure actShowFilterExecute(Sender: TObject);
     procedure actShowLogExecute(Sender: TObject);
@@ -197,6 +204,7 @@ type
     procedure bbPlayClick(Sender: TObject);
     procedure bbStopClick(Sender: TObject);
     procedure edGridFilterChange(Sender: TObject);
+    procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
     procedure miTreeDeleteClick(Sender: TObject);
     procedure miTreeNewClick(Sender: TObject);
     procedure miTreeRestoreClick(Sender: TObject);
@@ -240,6 +248,7 @@ type
     bShowSource  : Boolean;
     PopupNode: TTreeNode;
 
+    procedure AddNewDir(anode: TTreeNode; const apath: string);
     procedure ClearInfo();
     function FileClose: boolean;
     procedure FillGrid(idx:integer=-1);
@@ -279,6 +288,7 @@ implementation
 {$R bass64.rc}
 
 uses
+  LCLIntf,
   LCLType,
   IntfGraphics,
   inifiles,
@@ -290,6 +300,7 @@ uses
 
   unitLogForm,
   unitFilterForm,
+  fmGameVersion,
   fmmodinfo,
   fmAsk,
   fmcombodiff,
@@ -353,7 +364,8 @@ const
   sGridWidth    = 'width_grid';
   sDebugLevel   = 'debuglevel';
 const
-  sDefDirName  = 'NEWDIR';
+  sMedia       = 'MEDIA';
+//  sDefDirName  = 'NEWDIR';
 //  sDefFileName = 'NEWFILE.DAT';
 
 const
@@ -388,6 +400,8 @@ resourcestring
   rsLinkingNote     = 'These files still on disk and not built-in until PAK/MOD saved.';
   rsNothingImported = 'Nothing was imported.';
   rsUnknownEncoding = 'Unknown source encoding';
+//  rsChooseVer       = 'Choose game';
+//  rsGameVer         = 'Game';
 
 {%ENDREGION Constants}
 
@@ -563,17 +577,15 @@ end;
 
 procedure TRGGUIForm.SetupView;
 begin
+  actFileSave.Enabled:=(ctrl.DirCount>1) or (ctrl.FileCount>0);
+
   if ctrl.PAK.Name='' then
   begin
     Self.Caption:='RGGUI';
-    actFileClose .Enabled:=false;
-    actFileSave  .Enabled:=false;
   end
   else
   begin
     Self.Caption:='RGGUI - ('+GetGameName(ctrl.PAK.Version)+') '+AnsiString(ctrl.PAK.Name);
-    actFileClose .Enabled:=true;
-    actFileSave  .Enabled:=true;
   end;
 
   EdGridFilter.Text:='';
@@ -784,6 +796,18 @@ begin
     ShowMessage(rsCantSave);
 end;
 
+procedure TRGGUIForm.actOpenDirExecute(Sender: TObject);
+var
+  loutdir:string;
+begin
+  if deOutDir.Text='' then deOutDir.Text:=ExtractFileDir(ParamStr(0));
+  loutdir:=deOutDir.Text;
+  if not (loutdir[Length(loutdir)] in ['\','/']) then loutdir:=loutdir+'\';
+  if cbUseFName.Checked   then loutdir:=loutdir+ctrl.PAK.Name+'\';
+
+  OpenDocument(loutdir);
+end;
+
 procedure TRGGUIForm.actShowInfoExecute(Sender: TObject);
 begin
   if fmi=nil then
@@ -807,6 +831,51 @@ begin
     fmLogForm.memLog.Text:=RGLog.Text;
   end;
   fmLogForm.ShowOnTop;
+end;
+
+procedure TRGGUIForm.FormDropFiles(Sender: TObject; const FileNames: array of string);
+var
+  lp:TPoint;
+  lnode:TTreeNode;
+  ls:string;
+  pc:PWideChar;
+  i:integer;
+begin
+  GetCursorPos(lp);
+  lnode:=nil;
+  // check Grid
+  if sgMain.MouseToCell(sgMain.ScreenToClient(lp)).X>=0 then
+  begin
+    lnode:=tvTree.Selected;
+  end
+  // check Tree
+  else
+  begin
+    lp:=tvTree.ScreenToClient(lp);
+    lnode:=tvTree.GetNodeAt(lp.X, lp.Y);
+  end;
+
+  if lnode<>nil then
+  begin
+    ls:=GetPathFromNode(lnode);
+    for i:=0 to High(FileNames) do
+    begin
+      if DirectoryExists(FileNames[i]) then
+      begin
+        ctrl.ImportDir(ls,FileNames[i]);
+      end
+      else if FileExists(FileNames[i]) then
+      begin
+        pc:=StrToWide(FileNames[i]);
+        ctrl.AddFileData(pc, PUnicodeChar(UnicodeString(
+            ls+
+            FixFileExt(ExtractFileName(FileNames[i])))), true);
+        FreeMem(pc);
+      end;
+    end;
+    FillTree();
+    exit;
+  end;
 end;
 
 {%ENDREGION Form}
@@ -1286,9 +1355,9 @@ end;
 
 procedure TRGGUIForm.PreviewLayout();
 begin
-  if FUData=nil then exit;
+//  if FUData=nil then exit;
 
-  TFormLayoutEdit(fmLEdit).BuildTree(FUData);
+  TFormLayoutEdit(fmLEdit).BuildTree(FUData,ctrl.PAK.Version);
   fmLEdit.Visible:=true;
 end;
 
@@ -1510,6 +1579,36 @@ begin
   end;
 //  if ldircnt>0 then FillTree();
   if lcnt>0 then FillGrid(IntPtr(tvTree.Selected.Data));
+end;
+
+procedure TRGGUIForm.actChangeVersionExecute(Sender: TObject);
+var
+  lf:TFmGameVer;
+  idx: integer;
+begin
+{
+  idx:=InputCombo(rsChooseVer, rsGameVer,
+      ['Torchligh I', 'Torchlight II', 'Hob', 'Rebel Galaxy', 'Rebel Galaxy Outlaw']);
+  case idx of
+    0: idx:=verTL1;
+    1: idx:=verTL2;
+    2: idx:=verHob;
+    3: idx:=verRG;
+    4: idx:=verRGO;
+  end;
+}
+  lf:=TFmGameVer.Create(Self);
+  lf.Version:=ctrl.PAK.Version;
+  if lf.ShowModal=mrOK then
+  begin
+    idx:=lf.Version;
+    if ctrl.PAK.Version<>idx then
+    begin
+      ctrl.PAK.Version:=idx;
+      SetupView();
+    end;
+  end;
+  lf.Free;
 end;
 
 procedure TRGGUIForm.actEdUndoExecute(Sender: TObject);
@@ -1753,6 +1852,11 @@ var
 begin
   if SelectDirectory(rsSelectDir,'',ldir) then
   begin
+    if (Sender as TAction).ActionComponent=miTreeAdd then
+    begin
+      AddNewDir(PopupNode,ExtractFileName(ldir));
+    end;
+
     ctrl.OnDouble:=@OnImportDouble;
     lcnt:=ctrl.ImportDir(GetPathFromNode(tvTree.Selected),ldir);
     ctrl.OnDouble:=nil;
@@ -1774,29 +1878,22 @@ begin
   if lname='' then exit;
   if lname[Length(lname)]= '\' then lname[Length(lname)]:='/';
 
-  if tvTree.Items.Count=0 then
-  begin
-    lNode:=nil;
-    lpath:=''
-  end
-  else
-  begin
-    lNode:=tvTree.Selected;
-    lpath:=GetPathFromNode(lNode);
-  end;
-
   if lname[Length(lname)]= '/' then
   begin
-    lfile:=ctrl.NewDir(PUnicodeChar(UnicodeString(lpath+lname)));
-    if lfile>=0 then
-    begin
-      lNode:=tvTree.Items.AddChild(lNode,lname);
-      lNode.Data:=pointer(IntPtr(lfile));
-      tvTree.Selected:=lNode;
-    end;
+    if tvTree.Items.Count=0 then
+      lNode:=nil
+    else
+      lNode:=tvTree.Selected;
+
+    AddNewDir(lNode,lname);
   end
   else
   begin
+    if tvTree.Items.Count=0 then
+      lpath:=''
+    else
+      lpath:=GetPathFromNode(tvTree.Selected);
+
     lcnt:=ctrl.FileCount;
     lfile:=ctrl.UseData(nil,0,PUnicodeChar(UnicodeString(lpath+lname)));
     // condition just to avoid flicks in root tree list
@@ -1847,8 +1944,10 @@ end;
 {%REGION Grid}
 
 procedure TRGGUIForm.sgMainContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+{
 var
   isroot,isempty,isparent:boolean;
+}
 begin
 (*
   // Get row not under cursor but focused
@@ -2187,6 +2286,32 @@ end;
 
 {%REGION Tree}
 
+procedure TRGGUIForm.AddNewDir(anode:TTreeNode; const apath:string);
+var
+  lnode:TTreeNode;
+  ls,lpath:string;
+  ldir:integer;
+begin
+  lpath:={UpCase}(apath);
+
+  if      lpath[Length(lpath)]= '\' then lpath[Length(lpath)]:='/'
+  else if lpath[Length(lpath)]<>'/' then lpath:=lpath+'/';
+
+  if anode=nil then
+    ls:=lpath
+  else
+    ls:=GetPathFromNode(anode)+lpath;
+
+  ldir:=ctrl.NewDir(PUnicodeChar(UnicodeString(ls)));
+  if ldir>=0 then
+  begin
+    lnode:=tvTree.Items.AddChild(anode,lpath);
+    lnode.Data:=pointer(IntPtr(ldir));
+    tvTree.Selected:=lnode;
+  end;
+
+end;
+
 procedure TRGGUIForm.tvTreeContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   PopupNode:=tvTree.GetNodeAt(MousePos.X, MousePos.Y);
@@ -2215,22 +2340,16 @@ end;
 
 procedure TRGGUIForm.miTreeNewClick(Sender: TObject);
 var
-  lNode:TTreeNode;
-  lpathname,ldirname:string;
-  ldir:integer;
+  ldirname:string;
 begin
-  ldirname:=UpCase(InputBox(rsCreateDir, rsDirName, sDefDirName));
-  if ldirname='' then ldirname:=sDefDirName;
-  if      ldirname[Length(ldirname)]= '\' then ldirname[Length(ldirname)]:='/'
-  else if ldirname[Length(ldirname)]<>'/' then ldirname:=ldirname+'/';
-  lpathname:=GetPathFromNode(PopupNode);
-
-  ldir:=ctrl.NewDir(PUnicodeChar(UnicodeString(lpathname+ldirname)));
-  if ldir>=0 then
+  if (PopupNode=tvTree.Items[0]) and (PopupNode.Count=0) then
+    ldirname:=sMedia
+  else
+    ldirname:='';
+  ldirname:=UpCase(InputBox(rsCreateDir, rsDirName, ldirname));
+  if ldirname<>'' then
   begin
-    lNode:=tvTree.Items.AddChild(PopupNode,ldirname);
-    lNode.Data:=pointer(IntPtr(ldir));
-    tvTree.Selected:=lNode;
+    AddNewDir(PopupNode,ldirname);
   end;
 end;
 

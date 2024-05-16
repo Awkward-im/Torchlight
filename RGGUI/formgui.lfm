@@ -3,6 +3,7 @@ object RGGUIForm: TRGGUIForm
   Height = 514
   Top = 205
   Width = 944
+  AllowDropFiles = True
   Caption = 'RGGUI'
   ClientHeight = 514
   ClientWidth = 944
@@ -10,6 +11,7 @@ object RGGUIForm: TRGGUIForm
   ShowHint = True
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDropFiles = FormDropFiles
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
@@ -74,6 +76,12 @@ object RGGUIForm: TRGGUIForm
       Left = 24
       Top = 2
       Action = actFileSave
+      ShowCaption = False
+    end
+    object tbOpenDir: TToolButton
+      Left = 144
+      Top = 2
+      Action = actOpenDir
       ShowCaption = False
     end
   end
@@ -1208,6 +1216,12 @@ object RGGUIForm: TRGGUIForm
       object miEditSearch: TMenuItem
         Action = actEdSearch
       end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object miChangeVersion: TMenuItem
+        Action = actChangeVersion
+      end
     end
     object miHelp: TMenuItem
       Caption = '&Help'
@@ -1249,7 +1263,6 @@ object RGGUIForm: TRGGUIForm
     object actFileClose: TAction
       Category = 'File'
       Caption = '&Close'
-      Enabled = False
       Hint = 'Close file'
       ImageIndex = 3
       ShortCut = 16499
@@ -1379,9 +1392,22 @@ object RGGUIForm: TRGGUIForm
     object actEdImportDir: TAction
       Category = 'Edit'
       Caption = 'Import dir'
-      Hint = 'Import directory (with subdirs)'
+      Hint = 'Import directory content (with subdirs)'
       ImageIndex = 7
       OnExecute = actEdImportDirExecute
+    end
+    object actChangeVersion: TAction
+      Caption = 'Change PAK version'
+      Hint = 'Change game target without rebuild files'
+      ImageIndex = 14
+      OnExecute = actChangeVersionExecute
+    end
+    object actOpenDir: TAction
+      Category = 'View'
+      Caption = 'Open unpack dir'
+      Hint = 'Open directory for unpack files'
+      ImageIndex = 0
+      OnExecute = actOpenDirExecute
     end
   end
   object ilMain: TImageList
@@ -1538,37 +1564,48 @@ object RGGUIForm: TRGGUIForm
     }
   end
   object mnuTree: TPopupMenu
+    Images = ilMain
     Left = 72
     Top = 176
     object miTreeExtract: TMenuItem
       Caption = 'Extract w. subdirs'
+      ImageIndex = 1
       ShortCut = 49
       OnClick = DoExtractTree
     end
     object miTreeExtractDir: TMenuItem
       Caption = 'Extract this dir'
+      ImageIndex = 1
       ShortCut = 50
       OnClick = DoExtractDir
     end
     object miTreeExtractVisible: TMenuItem
       Caption = 'Extract visible'
+      ImageIndex = 2
       ShortCut = 51
       OnClick = DoExtractGrid
     end
     object miTreeNew: TMenuItem
       Caption = 'New directory'
+      Enabled = False
+      ImageIndex = 16
+      ShortCut = 78
       OnClick = miTreeNewClick
     end
     object miTreeAdd: TMenuItem
-      Caption = 'Add dir'
-      Enabled = False
+      Action = actEdImportDir
+      ShortCut = 65
     end
     object miTreeDelete: TMenuItem
       Caption = 'Delete Dir'
+      ImageIndex = 3
+      ShortCut = 68
       OnClick = miTreeDeleteClick
     end
     object miTreeRestore: TMenuItem
       Caption = 'Restore Dir'
+      ImageIndex = 14
+      ShortCut = 82
       OnClick = miTreeRestoreClick
     end
   end

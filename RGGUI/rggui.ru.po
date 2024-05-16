@@ -9,11 +9,23 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.4.4\n"
+
+#: fmlayoutedit.rsalter
+msgid "If property name marked as unsupported but have space or underscore, try to switch them."
+msgstr "Если свойство помечено неподдерживаемым но содержит пробел или почёркивание, попробуйте поменять одно на другое."
 
 #: fmlayoutedit.rsdefault
 msgid "- default -"
 msgstr "- по умолчанию -"
+
+#: fmlayoutedit.rsnewname
+msgid "Enter new name"
+msgstr "Введите новое имя"
+
+#: fmlayoutedit.rsnewnamecap
+msgid "Change name of "
+msgstr "Смена имени у "
 
 #: fmlayoutedit.rstextpreview
 msgid "This is text preview without children nodes. You can select child from tree."
@@ -22,6 +34,18 @@ msgstr "Это текстовый предпросмотр без дочерни
 #: fmlayoutedit.rsundefined
 msgid "UNDEFINED"
 msgstr "НЕ ОПРЕДЕЛЁН"
+
+#: fmlayoutedit.rsunsupobj
+msgid "This object is unsupported in current project version."
+msgstr "Этот объект еподдерживаем в текущей версии проекта."
+
+#: fmlayoutedit.rsversion
+msgid ""
+"WARNING!\n"
+"This layout file version differs from current project version."
+msgstr ""
+"ВНИМАНИЕ!\n"
+"Версия этого файла отличается от версии текущего проекта."
 
 #: formgui.rsbuildgrid
 msgid " Build file list. Please, wait..."
@@ -49,7 +73,7 @@ msgstr "Создать файл"
 
 #: formgui.rsdirname
 msgid "Enter dir name"
-msgstr "ВВедите имя папки"
+msgstr "Введите имя папки"
 
 #: formgui.rsdirs
 msgid "; dirs: "
@@ -142,47 +166,73 @@ msgctxt "tfilterform.lblextension.caption"
 msgid "Extension"
 msgstr "Расширение"
 
-#: tfmlogform.bbclear.caption
-msgid "&Clear"
-msgstr "Очистить"
+#: tformlayoutedit.acttreedeletenode.caption
+msgid "Delete Object"
+msgstr "Удалить объект"
 
-#: tfmlogform.bbsave.caption
-msgctxt "tfmlogform.bbsave.caption"
-msgid "Save"
-msgstr "Сохранить"
-
-#: tfmlogform.bbsave.hint
-msgid "Save log to file"
-msgstr "Сохранить лог"
+#: tformlayoutedit.acttreerenamenode.caption
+msgid "Rename Object"
+msgstr "Переименовать объект"
 
 #: tformlayoutedit.cbtxtpreview.caption
 msgid "Text preview"
 msgstr "Текстовый предпросмотр"
 
+#: tformlayoutedit.miaddnode.caption
+msgctxt "tformlayoutedit.miaddnode.caption"
+msgid "Add Object"
+msgstr "Добавить объект"
+
 #: tmodinfoform.bbcancel.caption
 msgid "Cancel"
 msgstr "Отмена"
-
-#: tmodinfoform.bbsave.caption
-msgctxt "tmodinfoform.bbsave.caption"
-msgid "Save"
-msgstr "Сохранить"
-
-#: tmodinfoform.bbsave.hint
-msgid "Save to file"
-msgstr "Сохранить в файл"
 
 #: tmodinfoform.caption
 msgid "MOD Info"
 msgstr "Инф. о моде"
 
+#: tmodinfoform.ebchanges.buttoncaption
+msgctxt "tmodinfoform.ebchanges.buttoncaption"
+msgid "..."
+msgstr ""
+
+#: tmodinfoform.eblongdescr.buttoncaption
+msgctxt "tmodinfoform.eblongdescr.buttoncaption"
+msgid "..."
+msgstr ""
+
+#: tmodinfoform.ebtags.buttoncaption
+msgctxt "tmodinfoform.ebtags.buttoncaption"
+msgid "..."
+msgstr ""
+
 #: tmodinfoform.lblguid.caption
 msgid "Mod GUID (click button for new)"
 msgstr "GUID мода (нажмите на кнопу для нового)"
 
+#: tmodinfoform.lbllongdescr.caption
+msgid "Long Description"
+msgstr "Большое описание"
+
 #: tmodinfoform.lblnote.caption
 msgid "Don't keep version and GUID empty (or zero)"
-msgstr "Не сохраняйте версию и GUID пустыми (или нулевыми)"
+msgstr "Не держите версию и GUID пустыми (или нулевыми)"
+
+#: tmodinfoform.lblsteamchanges.caption
+msgid "Changes"
+msgstr "Изменения"
+
+#: tmodinfoform.lblsteamnote.caption
+msgid "These settings are not saved in the MOD file"
+msgstr "Эти настройки не сохраняются  в MOD файле"
+
+#: tmodinfoform.lblsteampreview.caption
+msgid "Preview file"
+msgstr "Обложка"
+
+#: tmodinfoform.lblsteamtags.caption
+msgid "Steam tags"
+msgstr "Тэги Стима"
 
 #: tmodinfoform.lblversion.caption
 msgid "Mod version"
@@ -208,6 +258,14 @@ msgstr "Название мода"
 msgid "Mod Website URL"
 msgstr "URL сайта мода"
 
+#: tmodinfoform.sbopen.hint
+msgid "Load MOD info from file"
+msgstr "Загрузить информацию о моде из файла"
+
+#: tmodinfoform.sbsave.hint
+msgid "Save MOD info to file"
+msgstr "Сохранить информацию о моде в файле"
+
 #: tmodinfoform.sgreq.columns[0].title.caption
 msgctxt "tmodinfoform.sgreq.columns[0].title.caption"
 msgid "Name"
@@ -220,6 +278,10 @@ msgstr ""
 #: tmodinfoform.sgreq.columns[2].title.caption
 msgid "Version"
 msgstr "Версия"
+
+#: tmodinfoform.tsadditional.caption
+msgid "Additional"
+msgstr "Добавочно"
 
 #: tmodinfoform.tsdelete.caption
 msgctxt "tmodinfoform.tsdelete.caption"
@@ -238,6 +300,14 @@ msgstr "Описание мода"
 #: tmodinfoform.tsrequirement.caption
 msgid "Requirement"
 msgstr "Требование"
+
+#: trgguiform.actchangeversion.caption
+msgid "Change PAK version"
+msgstr "Выбор версии PAK"
+
+#: trgguiform.actchangeversion.hint
+msgid "Change game target without rebuild files"
+msgstr "Выбор версии игры без пересбора"
 
 #: trgguiform.acteddelete.caption
 msgctxt "trgguiform.acteddelete.caption"
@@ -271,8 +341,8 @@ msgid "Import dir"
 msgstr "Добавление папки"
 
 #: trgguiform.actedimportdir.hint
-msgid "Import directory (with subdirs)"
-msgstr "Добавить папку (с подкаталогами)"
+msgid "Import directory content (with subdirs)"
+msgstr "Добавить содержимое папки (с подкаталогами)"
 
 #: trgguiform.actednew.caption
 msgid "New file/dir"
@@ -363,6 +433,14 @@ msgstr "О программе"
 #: trgguiform.acthelpabout.hint
 msgid "About"
 msgstr "О программе"
+
+#: trgguiform.actopendir.caption
+msgid "Open unpack dir"
+msgstr "Открыть папку распаковки"
+
+#: trgguiform.actopendir.hint
+msgid "Open directory for unpack files"
+msgstr "Открыть папку для распаковки файлов"
 
 #: trgguiform.actresetview.caption
 msgid "Reset View"
@@ -507,10 +585,6 @@ msgstr "Файл"
 #: trgguiform.mihelp.caption
 msgid "&Help"
 msgstr "Помощь"
-
-#: trgguiform.mitreeadd.caption
-msgid "Add dir"
-msgstr "Добавить папку"
 
 #: trgguiform.mitreedelete.caption
 msgid "Delete Dir"
@@ -672,6 +746,3 @@ msgstr "Показать/скрыть столбец: Распакованный
 msgid "Mod info"
 msgstr "Информация о моде"
 
-#: unitlogform.rscantsave
-msgid "Can't save log file"
-msgstr "Не могу сохранить лог в файл"

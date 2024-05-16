@@ -92,12 +92,15 @@
 {"hash":94079128,"name":"trgguiform.actedsearch.caption","sourcebytes":[83,101,97,114,99,104],"value":"Search"},
 {"hash":237437154,"name":"trgguiform.actedsearch.hint","sourcebytes":[83,101,97,114,99,104,32,105,110,32,101,100,105,116,111,114],"value":"Search in editor"},
 {"hash":110325618,"name":"trgguiform.actedimportdir.caption","sourcebytes":[73,109,112,111,114,116,32,100,105,114],"value":"Import dir"},
-{"hash":169868953,"name":"trgguiform.actedimportdir.hint","sourcebytes":[73,109,112,111,114,116,32,100,105,114,101,99,116,111,114,121,32,40,119,105,116,104,32,115,117,98,100,105,114,115,41],"value":"Import directory (with subdirs)"},
+{"hash":24303049,"name":"trgguiform.actedimportdir.hint","sourcebytes":[73,109,112,111,114,116,32,100,105,114,101,99,116,111,114,121,32,99,111,110,116,101,110,116,32,40,119,105,116,104,32,115,117,98,100,105,114,115,41],"value":"Import directory content (with subdirs)"},
+{"hash":251873278,"name":"trgguiform.actchangeversion.caption","sourcebytes":[67,104,97,110,103,101,32,80,65,75,32,118,101,114,115,105,111,110],"value":"Change PAK version"},
+{"hash":239189523,"name":"trgguiform.actchangeversion.hint","sourcebytes":[67,104,97,110,103,101,32,103,97,109,101,32,116,97,114,103,101,116,32,119,105,116,104,111,117,116,32,114,101,98,117,105,108,100,32,102,105,108,101,115],"value":"Change game target without rebuild files"},
+{"hash":194681346,"name":"trgguiform.actopendir.caption","sourcebytes":[79,112,101,110,32,117,110,112,97,99,107,32,100,105,114],"value":"Open unpack dir"},
+{"hash":93912435,"name":"trgguiform.actopendir.hint","sourcebytes":[79,112,101,110,32,100,105,114,101,99,116,111,114,121,32,102,111,114,32,117,110,112,97,99,107,32,102,105,108,101,115],"value":"Open directory for unpack files"},
 {"hash":68200595,"name":"trgguiform.mitreeextract.caption","sourcebytes":[69,120,116,114,97,99,116,32,119,46,32,115,117,98,100,105,114,115],"value":"Extract w. subdirs"},
 {"hash":125551378,"name":"trgguiform.mitreeextractdir.caption","sourcebytes":[69,120,116,114,97,99,116,32,116,104,105,115,32,100,105,114],"value":"Extract this dir"},
 {"hash":143528869,"name":"trgguiform.mitreeextractvisible.caption","sourcebytes":[69,120,116,114,97,99,116,32,118,105,115,105,98,108,101],"value":"Extract visible"},
 {"hash":208920009,"name":"trgguiform.mitreenew.caption","sourcebytes":[78,101,119,32,100,105,114,101,99,116,111,114,121],"value":"New directory"},
-{"hash":128346946,"name":"trgguiform.mitreeadd.caption","sourcebytes":[65,100,100,32,100,105,114],"value":"Add dir"},
 {"hash":212068130,"name":"trgguiform.mitreedelete.caption","sourcebytes":[68,101,108,101,116,101,32,68,105,114],"value":"Delete Dir"},
 {"hash":115311026,"name":"trgguiform.mitreerestore.caption","sourcebytes":[82,101,115,116,111,114,101,32,68,105,114],"value":"Restore Dir"}
 ]}
