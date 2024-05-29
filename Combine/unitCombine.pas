@@ -55,7 +55,7 @@ var
   lsize:integer;
   isold,istext:boolean;
 begin
-  result:=0;
+  result:=sres_fail;
 
   //--- Check for text files/ Convert from binary if needs
 
@@ -126,10 +126,10 @@ begin
     end;
 
     case pourdata(aparam)^.act of
-      stop: exit(-1);
+      stop: exit(sres_break);
 
       skip,
-      skipall: exit(1);
+      skipall: exit(sres_fail);
 
       overwrite,
       overwritedir,
@@ -168,7 +168,7 @@ begin
           else
           begin
             RGLog.Add('Old file kept');
-            exit(1);
+            exit;
           end;
 
           Free;
@@ -204,21 +204,20 @@ function checkproc(const adir,aname:string; aparam:pointer):integer;
 var
   ldst:string;
 begin
-  result:=0;
-
-  ldst:=UpCase(adir);
+  ldst:={UpCase}(adir);
   if Pos('MEDIA',adir)=1 then
   begin
-    ldst:=UpCase(aname);
-    if ldst<>'MOD.DAT' then // must be always coz outside MEDIA folder
+    ldst:={UpCase}(aname);
+    if ldst<>TL2ModData then // must be always coz outside MEDIA folder
     begin
       ldst:=ExtractFileExt(ldst);
       if (ldst<>'.BINDAT'   ) and
          (ldst<>'.BINLAYOUT') and
          (ldst<>'.RAW'      ) then
-        result:=1;
+        exit(1);
     end;
   end;
+  result:=sres_fail;
 end;
 
 function AddMod(const aroot, asrc:string):integer;

@@ -6,6 +6,7 @@ object MODInfoForm: TMODInfoForm
   Caption = 'MOD Info'
   ClientHeight = 320
   ClientWidth = 751
+  LCLVersion = '3.99.0.0'
   object seVersion: TSpinEditEx
     Left = 7
     Height = 23
@@ -212,7 +213,7 @@ object MODInfoForm: TMODInfoForm
         Columns = <        
           item
             Title.Caption = 'Name'
-            Width = 184
+            Width = 188
           end        
           item
             SizePriority = 0
@@ -231,7 +232,7 @@ object MODInfoForm: TMODInfoForm
         TabOrder = 0
         OnKeyDown = sgReqKeyDown
         ColWidths = (
-          184
+          188
           108
           48
         )

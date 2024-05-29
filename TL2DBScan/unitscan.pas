@@ -5,7 +5,7 @@ interface
 
 uses
   sqlite3
-  ,TL2Mod
+  ,RGMod
   ,RGGlobal
   ;
 

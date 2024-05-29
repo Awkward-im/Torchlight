@@ -385,7 +385,7 @@ begin
 
   lext:=UpCase(ExtractFileExt(fname));
 
-  if lext='.TXT' then
+  if (lext='.TXT') or (lext='.ADM') then
   begin
     // RAW.TXT
     // IMAGESET.TXT
@@ -488,11 +488,24 @@ begin
     if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
       lext:=ExtractFileExt(lext);
 
-    for i:=0 to High(TableExt) do
+    if (lext='.TXT') or (lext='.ADM') then
     begin
-      if TableExt[i]._ext=lext then
-        exit(TableExt[i]._type);
+      // RAW.TXT
+      // IMAGESET.TXT
+      // DAT.TXT
+      // LAYOUT.TXT
+      // ANIMATION.TXT
+      // HIE.TXT
+      // WDAT.TXT
+      lext:=UpCase(ExtractFileExt(Copy(aext,1,Length(aext)-4)));
     end;
+
+    if lext<>'' then
+      for i:=0 to High(TableExt) do
+      begin
+        if TableExt[i]._ext=lext then
+          exit(TableExt[i]._type);
+      end;
   end;
   result:=typeUnknown;
 end;

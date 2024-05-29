@@ -192,8 +192,8 @@ implementation
 uses
   SysUtils,
   crc,
-  TL2Mod,
-  rgfiletype,
+  RGMod,
+  RGFileType,
   RGFile;
 
 { TRGController }
@@ -519,31 +519,31 @@ begin
   if p^.action in [act_data, act_file] then
   begin
     result:=GetUpdate(idx,buf);
-
-    if result>0 then
-    begin
-      if (p^.ftype in setData) and isSource(buf) then
-      begin
-        lbuf:=buf;
-        buf:=nil;
-        result:=CompileFile(lbuf,p^.Name,buf,FPAK.Version);
-        p^.size_u:=result;
-        FreeMem(lbuf);
-      end;
-    end
-    else
-    begin
-      p^.size_u  :=0;
-      p^.checksum:=0;
-      exit;
-    end;
-
   end
   else
   begin
     if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit(0);
     result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
   end;
+
+  if result>0 then
+  begin
+    if (p^.ftype in setData) and isSource(buf) then
+    begin
+      lbuf:=buf;
+      buf:=nil;
+      result:=CompileFile(lbuf,p^.Name,buf,FPAK.Version);
+      p^.size_u:=result;
+      FreeMem(lbuf);
+    end;
+  end
+  else
+  begin
+    p^.size_u  :=0;
+    p^.checksum:=0;
+    exit;
+  end;
+
   p^.checksum:=crc32(0,buf,p^.size_u);
 end;
 
@@ -1005,7 +1005,7 @@ begin
   if (CompareWide(lext,'.TXT'      )=0) or
      (CompareWide(lext,'.BINDAT'   )=0) or
      (CompareWide(lext,'.BINLAYOUT')=0) or
-//     (CompareWide(lext,'.CMP'      )=0) or
+     (CompareWide(lext,'.CMP'      )=0) or
      (CompareWide(lext,'.ADM'      )=0) then
   begin
     lname:=Copy(aname,1,lextpos-1);
@@ -1073,7 +1073,7 @@ begin
         if UpCase(sr.Name)=TL2ModData then
         begin
           if actrl.PAK.modinfo.title=nil then
-            LoadModConfiguration(PChar(AnsiString(adir+TL2ModData)),actrl.PAK.modinfo);
+            LoadModConfig(PChar(AnsiString(adir+TL2ModData)),actrl.PAK.modinfo);
           continue;
         end;
         lname:=CheckFName(adir,sr.Name);

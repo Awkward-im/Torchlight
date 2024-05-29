@@ -1,3 +1,4 @@
+{TODO: preserve double compilation for TL1 layouts, .cmp and .adm}
 unit RGIO.Layout;
 
 interface
@@ -26,6 +27,7 @@ function GetLayoutVersion(abuf:PByte):integer;
 function GetLayoutType(afname:PUnicodeChar):cardinal;
 function GetLayoutType(const afname:string):cardinal;
 
+
 {$i featuretags.inc}
 
 
@@ -40,6 +42,7 @@ uses
 
   rgdict,
   rgdictlayout,
+  rgio.dat,
   rgstream,
   rgnode;
 
@@ -526,7 +529,7 @@ end;
 
 function TRGLayoutFile.ReadPropertyValue(aid:UInt32; asize:integer; anode:pointer):boolean;
 var
-  lbuf:array [0..127] of WideChar;
+//  lbuf:array [0..127] of WideChar;
   lls,ls:UnicodeString;
   lmatrix:TMatrix4x4;
   lq:TVector4;
@@ -1038,20 +1041,22 @@ begin
            astream.WriteShortString(AsString(anode))
          else
            astream.WriteShortStringUTF8(AsString(anode));
-
       rgVector2: begin
         vct:=AsVector(anode);
+//        WriteVectorValue(vct,ltype,astream);
         astream.WriteFloat(vct^.X);
         astream.WriteFloat(vct^.Y);
       end;
       rgVector3: begin
         vct:=AsVector(anode);
+//        WriteVectorValue(vct,ltype,astream);
         astream.WriteFloat(vct^.X);
         astream.WriteFloat(vct^.Y);
         astream.WriteFloat(vct^.Z);
       end;
       rgVector4: begin
         vct:=AsVector(anode);
+//        WriteVectorValue(vct,ltype,astream);
         astream.WriteFloat(vct^.X);
         astream.WriteFloat(vct^.Y);
         astream.WriteFloat(vct^.Z);
@@ -1345,13 +1350,14 @@ end;
 
 function IsProperLayout(abuf:pByte):boolean; inline;
 begin
-  result:=abuf^ in [5, 8, 9, 11, $5A];
+  result:=abuf^ in [1, 5, 8, 9, 11, $5A];
 end;
 
 function GetLayoutVersion(abuf:PByte):integer;
 begin
   if abuf<>nil then
     case abuf^ of
+      1  : exit(verTL1adm); // LAYOUT.ADM encoding
       5  : exit(verRG);
       8  : exit(verHob);
       9  : exit(verRGO);
@@ -1412,6 +1418,10 @@ var
   ls:string;
 begin
   if abuf=nil then exit(nil);
+
+  //!!!! Special case verTL1 LAYOUT.ADM format
+  if abuf^=1 then exit(ParseDatMem(abuf));
+
   lrgl.Init;
 
   lrgl.FStart:=abuf;
@@ -1510,7 +1520,14 @@ function BuildLayoutMem(data:pointer; out bin:pByte; aver:integer=verTL2):intege
 var
   ls:TMemoryStream;
 begin
+  if ABS(aver)=verTL1 then
+  begin
+    result:=BuildDatMem(data,bin,aver);
+    exit;
+  end;
+
   result:=0;
+
   ls:=TMemoryStream.Create;
   try
     result:=BuildLayoutStream(data,ls,aver);

@@ -60,7 +60,7 @@ implementation
 {$R *.lfm}
 
 uses
-  TL2Mod,
+  rgmod,
   fmModInfo,
   rgpak;
 

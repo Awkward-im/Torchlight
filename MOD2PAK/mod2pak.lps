@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Release32"/>
+    <BuildModes Active="Debug"/>
     <Units>
       <Unit>
         <Filename Value="mod2pak.lpr"/>
@@ -21,7 +21,6 @@
         <UnitName Value="formMod2Pak"/>
         <TopLine Value="342"/>
         <CursorPos X="33" Y="357"/>
-        <FoldState Value=" T4602 T7EFj T3jB0{Q2 pj9la08,"/>
         <UsageCount Value="66"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -40,7 +39,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="316"/>
-        <CursorPos X="6" Y="331"/>
+        <CursorPos X="93" Y="333"/>
         <UsageCount Value="64"/>
         <Loaded Value="True"/>
       </Unit>

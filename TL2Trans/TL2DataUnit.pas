@@ -231,7 +231,7 @@ uses
   rgio.dat,
   rgio.layout,
   rgscan,
-  TL2Mod;
+  rgmod;
 
 {$R ..\TL2Lib\dict.rc}
 

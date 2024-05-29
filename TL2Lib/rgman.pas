@@ -7,6 +7,7 @@ interface
 
 uses
   Classes,
+  zipper,
   rgfs,
   rgglobal;
 
@@ -63,6 +64,8 @@ type
     function SaveToStream(ast:TStream; aver:integer):integer;
     function SaveToFile  (const afname:string; aver:integer):integer;
 
+    function ParseZip(aunzip:TUnZipper):integer;
+
   // Properties statistic
   public
     Deleted:TDirEntries;
@@ -82,6 +85,7 @@ uses
   rwmemory,
 
   rgstream,
+  rgfile,
   rgfiletype;
 
 {%REGION Common}
@@ -128,7 +132,7 @@ procedure TRGManifest.Init;
 begin
   inherited Init(SizeOf(TManFileInfo));
 
-  Root      :='MEDIA/';
+  Root      :=nil;
   FLUnpacked:=0;
   FLPacked  :=0;
 end;
@@ -148,6 +152,7 @@ function TRGManifest.Parse(aptr:PByte; aver:integer):integer;
 const
   bufsize = 1024;
 var
+  pc:PWideChar;
   lbuf:array [0..bufsize-1] of byte;
   i,j:integer;
   lcnt,lentries,lentry,lfile:integer;
@@ -160,8 +165,8 @@ begin
       i:=memReadWord(aptr);                   // 0002 version/signature
       if i>=2 then                            // 0000 - no "checksum" field??
         memReadDWord(aptr);                   // checksum?
-      FreeMem(FRoot);
-      FRoot:=memReadShortString(aptr);        // root directory !!
+      pc:=memReadShortString(aptr);           // root directory !!
+      FreeMem(pc);
     end;
 
     verHob,
@@ -227,7 +232,7 @@ begin
       verTL2: begin
         ast.WriteWord (2); // writing always "new" version
         ast.WriteDWord(0); // Hash (game don't check it anyway)
-        ast.WriteShortString(Root);
+        ast.WriteShortString(strRootDir);
       end;
 
       verHob,
@@ -432,5 +437,73 @@ begin
   result:=total;
 end;
 {%ENDREGION}
+
+function TRGManifest.ParseZip(aunzip:TUnZipper):integer;
+var
+  lentry:TFullZipFileEntry;
+  lext,lname:string;
+//  lroot:array [0..63] of WideChar;
+  lrootlen:integer;
+  pc:PUnicodeChar;
+  i,j,lfile:integer;
+begin
+  // 1 - extract root
+  lname:=aunzip.Entries[0].ArchiveFileName;
+  lrootlen:=Length(FRoot);
+{
+  if lname<>'' then
+  begin
+    lrootlen:=1;
+    while not (lname[lrootlen] in ['/',#0]) do
+    begin
+      lroot[lrootlen-1]:=UnicodeChar(ORD(UpCase(lname[lrootlen])));
+      inc(lrootlen);
+    end;
+    lroot[lrootlen-1]:='/';
+    lroot[lrootlen]:=#0;
+    Root:=@lroot;
+  end;
+}
+  //!!!NEED to remove parent mod folder (maybe other than MEDIA/ too)
+  result:=aunzip.Entries.Count;
+  for i:=0 to result-1 do
+  begin
+    lentry:=aunzip.Entries[i];
+//    if lentry.IsDirectory then
+//      AddPath(ExtractFilePath(lentry.ArchiveFileName));
+//    else
+    begin
+      lname:=UpCase(lentry.ArchiveFileName);
+      // skip compiled files
+      if IsExtFile(lname) then
+      begin
+        for j:=0 to result-1 do
+        begin
+          if lname=UpCase(aunzip.Entries[j].ArchiveFileName) then
+          begin
+            lname:='';
+            break;
+          end;
+        end;
+        if lname='' then continue;
+      end;
+      lfile:=AddPath(ExtractPath(lname));
+      lfile:=AddFile(lfile,pointer(UnicodeString(ExtractName(lname))));
+      with PManFileInfo(Files[lfile])^ do
+      begin
+        checksum:=lentry.CRC32;
+        if lentry.IsDirectory then
+          ftype:=typeDirectory
+        else
+          ftype   :=PAKExtType(lname);
+        offset  :=i;
+        size_s  :=lentry.Size;
+        size_c  :=lentry.CompressedSize;
+        size_u  :=lentry.Size;
+        ftime   :=DateTimeToFileTime(lentry.DateTime);
+      end;
+    end;
+  end;
+end;
 
 end.

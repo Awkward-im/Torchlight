@@ -20,6 +20,7 @@ interface
 
 uses
   classes,
+  zipper,
   rgfs,
   rgman,
   rgglobal;
@@ -36,6 +37,9 @@ type
   private
     FStream:TStream;
     FBuf   :PByte;
+    // ZIP: buffer for extracted file
+    FUnZipper: TUnZipper;
+    FUnpSize :cardinal;
   public
     man    :TRGManifest;
     modinfo:TTL2ModInfo;
@@ -59,6 +63,10 @@ type
     // TL2 data hash calculation
     function  PAKHash(ast:TStream; asize:int64):dword;
 
+    Procedure CStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
+    Procedure DStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
+    procedure ReadModDat;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -69,6 +77,8 @@ type
     function  Clone(const aname:string):boolean;
     function  Rename(const newname:string):boolean;
   public
+    // Just Extract file from PAK, not unpack it
+    // not actual for TL1's zip
     function  ExtractFile(afi:PManFileInfo; out asize_u:cardinal; var abuf:PByte):cardinal;
     function  ExtractFile(const apath, aname:UnicodeString; out asize_u:cardinal; var abuf:PByte):cardinal;
   public
@@ -81,18 +91,29 @@ type
 
     function  UnpackAll (const adir:string):boolean;
 
+  public
     {
-      Packed file writing.
+      CreatePAK based on Manifest (didn't tested)
+    }
+    procedure Build;
+
+    {
+      Create new PAK file on disk, prepare header (and modinfo)
+    }
+    function  CreatePAK(const afname:string; amod:PTL2ModInfo; aver:integer):integer;
+    {
+      Packed file writing. Returns file offset in data block
     }
     function  WritePackedFile(adata:PByte; asize_u,asize_c:dword):dword;
     {
-      [Un]packed file writing. Only. No compilation
+      [Un]packed file writing. Only. No compilation. Returns size of writed data
     }
     function  WriteFile(adata:PByte; asize:integer; apack:boolean; var offset:dword):dword;
-  public
-    procedure Build;
-
-    function  CreatePAK(const afname:string; amod:PTL2ModInfo; aver:integer):integer;
+    {
+      Write Manifest, update header
+    }
+    procedure FinishPAK;
+(*
     {
       Add directory to MAN
       OnProgress
@@ -102,7 +123,7 @@ type
       Add file record to MAN, write file to PAK
     }
     procedure AddFile(adir:integer; ainfo:PFileInfo; asize_c:integer=0);
-    procedure FinishPAK;
+*)
   
   public
     property opened:boolean read GetOpenStatus;
@@ -149,7 +170,7 @@ uses
 
   rgfile,
   rgfiletype,
-  tl2mod;
+  rgmod;
 
 //===== Container =====
 
@@ -184,7 +205,6 @@ constructor TRGPAK.Create();
 begin
   inherited;
 
-//  FillChar(self,SizeOf(TRGPAK),0);
   FVersion:=verUnk;
 
   man.Init;
@@ -195,8 +215,8 @@ begin
   ClosePAK;
   man.Free();
   ClearModInfo(modinfo);
-
-//  FillChar(self,SizeOf(TRGPAK),0);
+  FreeMem(FBuf);
+  FUnZipper.Free;
 
   inherited;
 end;
@@ -204,6 +224,7 @@ end;
 function TRGPAK.MakeDataFileName():String;
 begin
   case FVersion of
+    verTL1   : result:=FSrcDir+FName+'.ZIP';
     verTL2,
     verHob,
     verRGO,
@@ -217,6 +238,7 @@ end;
 function TRGPAK.MakeManFileName():String;
 begin
   case FVersion of
+    verTL1   : result:=FSrcDir+FName+'.ZIP';
     verHob,
     verRGO,
     verRG    : result:=FSrcDir+FName+'.PAK';
@@ -225,6 +247,29 @@ begin
   else
     result:='';
   end;
+end;
+
+//--- Unzip to memory buffer helpers (events OnCreateStream and OnDoneStream) ---
+
+Procedure TRGPAK.CStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
+begin
+  AStream:=TMemoryStream.Create;
+end;
+
+Procedure TRGPAK.DStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
+begin
+  if AItem<>nil then
+  begin
+    FUnpSize:=AStream.Size;
+    if (FBuf=nil) or (MemSize(FBuf)<(FUnpSize+2)) then
+    begin
+      if FBuf<>nil then FreeMem(FBuf);
+      GetMem(FBuf,Align(FUnpSize+2,BufferPageSize));
+    end;
+    move((AStream as TMemoryStream).Memory^,FBuf^,FUnpSize);
+    PWord(FBuf+FUnpSize)^:=0;
+  end;
+  AStream.Free;
 end;
 
 //----- PAK/MOD -----
@@ -237,6 +282,7 @@ end;
 function TRGPAK.OpenPAK:boolean;
 begin
   if (FName='') or (FSize=0) then exit(false);
+  if ABS(FVersion)=verTL1    then exit(false);
 
   if FStream=nil then
   begin
@@ -293,6 +339,12 @@ begin
   //--- Check by ext
 
   lext:=UpCase(ExtractFileExt(aname));
+
+  if lext='.ZIP' then
+  begin
+    FVersion:=verTL1;
+    exit(verTL1);
+  end;
 
   if lext='.MAN' then
   begin
@@ -364,6 +416,23 @@ begin
 end;
 {$POP}
 
+procedure TRGPAK.ReadModDat();
+var
+  i:integer;
+begin
+  for i:=0 to FUnZipper.Entries.Count-1 do
+  begin
+    if UpCase(ExtractFileName(FUnZipper.Entries[i].ArchiveFileName))='MOD.DAT' then
+    begin
+      man.Root:=pointer(UnicodeString(ExtractFilePath(FUnZipper.Entries[i].ArchiveFileName)));
+      FUnZipper.UnZipFile(FUnZipper.Entries[i].ArchiveFileName);
+      ReadModConfig(FBuf,modinfo);
+
+      break;
+    end;
+  end;
+end;
+
 function TRGPAK.GetCommonInfo(const aname:string):boolean;
 var
   f:file of byte;
@@ -374,14 +443,31 @@ begin
 
   if FVersion=verUnk then exit;
 
+  man.Init;
+
+  //--- Parse: TL1 zip file + mod info
+
+  if ABS(FVersion)=verTL1 then
+  begin
+    FUnZipper:=TUnZipper.Create;
+
+    FUnZipper.FileName:=aname;
+    FUnZipper.UseUTF8:=True;
+    FUnZipper.OnCreateStream:=@CStream;
+    FUnZipper.OnDoneStream  :=@DStream;
+    FUnZipper.Examine;
+
+    ReadModDat();
+    result:=man.ParseZip(FUnZipper)>0;
+    exit;
+  end;
+
   //--- Parse: TL2ModInfo
 
   if FVersion=verTL2Mod then
     ReadModInfo(PChar(aname),modinfo);
 
   //--- Parse: read manifest
-
-  man.Init;
 
   if (FVersion=verTL2) and (Pos('.MAN',aname)<6) then
     Assign(f,aname+'.MAN')
@@ -402,39 +488,19 @@ begin
   Close(f);
 end;
 
-{$PUSH}
-{$I-}
 function TRGPAK.GetSizesInfo():boolean;
 var
   lfhdr:TPAKFileHeader;
   p:PManFileInfo;
-  lStream:TStream;
   i:integer;
 begin
+  if FVersion=verTL1 then exit(true);
+
   result:=false;
 
   if man.FileCount>0 then
   begin
-    // OpenPAK code analog
-    if FSize<=MaxSizeForMem then
-    begin
-      lStream:=TMemoryStream.Create;
-      try
-        TMemoryStream(lStream).LoadFromFile(MakeDataFileName());
-      except
-        FreeAndNil(lStream);
-      end;
-    end
-    else
-    begin
-      try
-        lStream:=TBufferedFileStream.Create(MakeDataFileName(),fmOpenRead);
-      except
-        lStream:=nil;
-      end;
-    end;
-
-    if lStream<>nil then
+    if OpenPAK then
     begin
       for i:=0 to man.DirCount-1 do
       begin
@@ -444,21 +510,18 @@ begin
         repeat
           if p^.offset<>0 then
           begin
-            lStream.Seek(modinfo.offData+p^.offset,soBeginning);
-            lStream.ReadBuffer(lfhdr,SizeOf(lfhdr));
+            FStream.Seek(modinfo.offData+p^.offset,soBeginning);
+            FStream.ReadBuffer(lfhdr,SizeOf(lfhdr));
             p^.size_u:=lfhdr.size_u;
             p^.size_c:=lfhdr.size_c;
           end;
         until man.GetNextFile(p)=0;
       end;
-      // ClosePAK analog
-      FreeAndNil(lStream);
+      ClosePAK;
+      result:=true;
     end;
-    
-    result:=true;
   end;
 end;
-{$POP}
 
 {
   Parse PAK/MOD/MAN file named ainfo.fname
@@ -557,6 +620,13 @@ var
 begin
   result:=0;
 
+  if ABS(FVersion)=verTL1 then
+  begin
+    asize_u:=0;
+    result :=0;
+    exit;
+  end;
+
   if opened then
   begin
     FStream.Seek(modinfo.offData+afi^.offset,soBeginning);
@@ -627,6 +697,18 @@ begin
   result:=0;
   if afi=nil then exit;
 //  if afi^.size_s=0 then exit;
+
+  if ABS(FVersion)=verTL1 then
+  begin
+    FUnZipper.UnZipFile(FUnZipper.Entries[afi^.offset].ArchiveFileName);
+
+    lin:=aout;
+    aout:=FBuf;
+    FBuf:=lin;
+
+    result:=FUnpSize;
+    exit;
+  end;
 
   lin:=nil;
   lsize_c:=ExtractFile(afi,lsize_u,lin);
@@ -732,6 +814,13 @@ var
   i:integer;
   lres:integer;
 begin
+  if ABS(FVersion)=verTL1 then
+  begin
+    FUnZipper.OutputPath:=adir;
+    FUnzipper.UnzipAllFiles;
+    exit(true);
+  end;
+
   result:=false;
 
   //--- Analize MAN part
@@ -868,7 +957,7 @@ end;
 {$POP}
 
 //----- Pack -----
-
+(*
 {TODO: pack separate file}
 procedure PackFile(var ainfo:TRGPAK;
     apath,aname:PUnicodeChar;
@@ -903,7 +992,7 @@ begin
 //    mi:=rgman.AddFile(ainfo.man,apath,aname);
   end;
 end;
-
+*)
 //----- something -----
 {$IFDEF DEBUG}
 function DoProgress(const ainfo:TRGPAK; adir:integer; afile:PManFileInfo):integer;
@@ -1025,7 +1114,7 @@ begin
       CloseFile(ffin);
 
       // DAT file
-      SaveModConfiguration(mi,PChar(lfname+'.DAT'));
+      SaveModConfig(mi,PChar(lfname+'.DAT'));
 
       result:=0;
     end;
@@ -1096,7 +1185,7 @@ var
   lmi:TTL2ModInfo;
 begin
   if FileExists(amod) then
-    LoadModConfiguration(PChar(amod),lmi)
+    LoadModConfig(PChar(amod),lmi)
   else
   begin
     MakeModInfo(lmi);
@@ -1117,8 +1206,8 @@ begin
     if not (ldir[Length(ldir)] in ['\','/']) then ldir:=ldir+'\';
   lname:=ldir+aname;
 
-  if      FileExists(lname+'.DAT'  ) then LoadModConfiguration(PChar(lname+'.DAT'  ),lmi)
-  else if FileExists(ldir+'MOD.DAT') then LoadModConfiguration(PChar(ldir+'MOD.DAT'),lmi)
+  if      FileExists(lname+'.DAT'  ) then LoadModConfig(PChar(lname+'.DAT'  ),lmi)
+  else if FileExists(ldir+'MOD.DAT') then LoadModConfig(PChar(ldir+'MOD.DAT'),lmi)
   else
   begin
     MakeModInfo(lmi);
@@ -1148,8 +1237,8 @@ begin
   FVersion:=aver;
   FSrcDir :=ExtractFilePath(afname);
   FName   :=ExtractFileNameOnly(afname);
-  GetMem(FBuf,BufferStartSize);
-  man.Root:='MEDIA/';
+  if FBuf=nil then GetMem(FBuf,BufferStartSize);
+  man.Root:=nil;
 
   lsname:=MakeDataFileName();
   if lsname='' then exit;
@@ -1239,7 +1328,6 @@ begin
     FStream.Write(PAKHeader,SizeOf(TPAKHeader));
   end;
 
-  FreeMem(FBuf);
   ClosePAK();
 end;
 
@@ -1296,7 +1384,7 @@ begin
 
   if result=0 then offset:=0;
 end;
-
+(*
 function TRGPAK.AddDirectory(apath:PWideChar):integer;
 begin
   result:=man.AddPath(apath);
@@ -1316,7 +1404,7 @@ begin
 
 //  {p^.size_c:=}WriteFile(p^.data,^.size_u,GetExtInfo(p^.name,Version)^._pack,p^.offset);
 end;
-
+*)
 {
   Use Manifest to build PAK from disk files
 }
@@ -1377,10 +1465,9 @@ begin
         GetMem(lin,lisize);
       end;
       BlockRead(f,lin^,p^.size_u);
-//      p^.data:=lin;
       Close(f);
 
-//      WriteFile(p);
+      WriteFile(lin,p^.size_u,PakTypeInfo(p^.ftype,FVersion)^._pack,p^.offset);
 
     until man.GetNextFile(p)=0;
     FreeMem(ldir);

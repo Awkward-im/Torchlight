@@ -5,14 +5,9 @@
   (check modified flag)
 }
 {TODO: Checkbox for hide "default" values in ValueEditor}
-{TODO: Root choosing in text mode = full laout text}
 {TODO: bool combo is for choose only, not text edit. Vector the same}
-{TODO: use NAME editor in panel}
-{TODO: update tree if NAME was changed}
-{TODO: implement node mode (with tree update)}
 {TODO: label to show and combobox to choose game version (dict, panel view) on-the-fly}
 {TODO: Check and implement Timeline and Logic Group editors (maybe as text only)}
-{TODO: implement Vector2,3,4 editor (button+form?)}
 
 unit fmLayoutEdit;
 
@@ -228,7 +223,7 @@ var
 begin
   result:=0;
 
-  hostinfo.Version:=aver;
+  hostinfo.Version:=ABS(aver);
   hostinfo.SelectScene('');
 
   Clear;
@@ -242,7 +237,7 @@ begin
   begin
     tvLayout.BeginUpdate;
 
-    info.Version:=GetLayoutVersion(adata);
+    info.Version:=ABS(GetLayoutVersion(adata));
     if info.Version=verUnk then info.Version:=aver;
     info.SelectScene('');
     BuildMenu;
@@ -265,16 +260,33 @@ begin
 end;
 
 procedure TFormLayoutEdit.tvLayoutSelectionChanged(Sender: TObject);
+var
+  lpc,pc:PAnsiChar;
 begin
   if tvLayout.Selected<>nil then
   begin
     if tvLayout.Selected.Data<>FRoot then
     begin
+      TSynTSyn(SynEdit.Highlighter).OnPropCheck:=@PropCheck;
       BuildPanel(tvLayout.Selected.Data);
     end
     else
     begin
       ClearPanel;
+      if cbTxtPreview.Checked then
+      begin
+        pc:=nil;
+        if NodeToUtf8(FRoot,pc) then
+        begin
+          TSynTSyn(SynEdit.Highlighter).OnPropCheck:=nil;
+          if (PDword(pc)^ and $00FFFFFF)=SIGN_UTF8 then lpc:=pc+3 else lpc:=pc;
+          SynEdit.Text:=lpc;
+          FreeMem(pc);
+          SynEdit.Modified:=false;
+          SynEdit.Visible:=true;
+        end;
+      end;
+
       if (hostinfo.Version<>verUnk) and (info.Version<>hostinfo.Version) then
       begin
         memHelp.Text:=rsVersion;
@@ -370,9 +382,11 @@ procedure TFormLayoutEdit.cbTxtPreviewChange(Sender: TObject);
 var
   lnode:pointer;
 begin
-  if veProp.Visible or SynEdit.Visible then
+  lnode:=tvLayout.Selected.Data;
+  if lnode=fRoot then
+    tvLayoutSelectionChanged(tvLayout)
+  else if veProp.Visible or SynEdit.Visible then
   begin
-    lnode:=tvLayout.Selected.Data;
     SaveEdited(lnode);
     BuildPanel(lnode);
   end;

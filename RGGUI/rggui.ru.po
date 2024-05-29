@@ -522,6 +522,10 @@ msgstr "Создать MOD.DAT при распаковке мода ТЛ2"
 msgid "Save Settings on exit"
 msgstr "Сохранять настройки при выходе"
 
+#: trgguiform.cbsavetl1adm.caption
+msgid "TL1: Save ADM files too"
+msgstr ""
+
 #: trgguiform.cbsaveutf8.caption
 msgid "Save text as UTF8"
 msgstr "Сохранять текст как UTF8"

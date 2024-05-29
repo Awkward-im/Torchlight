@@ -75,7 +75,7 @@ uses
 
   fmModInfo,
   unitCombine,
-  TL2Mod;
+  rgmod;
 
 procedure TFormMain.LoadPackSettings(const asect:string);
 var

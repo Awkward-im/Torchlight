@@ -14,7 +14,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, ComCtrls, Grids, EditBtn, SpinEx, rgglobal, TL2Mod;
+  Buttons, ComCtrls, Grids, EditBtn, SpinEx, rgglobal, rgmod;
 
 type
 
@@ -268,7 +268,7 @@ var
 begin
   FillChar(lmod,SizeOf(lmod),0);
   SaveToInfo(lmod);
-  SaveModConfiguration(lmod, PChar(aFile));
+  SaveModConfig(lmod, PChar(aFile));
 
   ClearModInfo(lmod);
 end;
@@ -312,7 +312,7 @@ var
 begin
   MakeModInfo(lmod);
 
-  if LoadModConfiguration(PChar(aFile),lmod) then
+  if LoadModConfig(PChar(aFile),lmod) then
   begin
     LoadFromInfo(lmod);
     ffile:=aFile;

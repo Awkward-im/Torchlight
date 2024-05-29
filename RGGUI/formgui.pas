@@ -1,3 +1,4 @@
+{TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
 {TODO: show layout game version at least for changed/added files}
 {TODO: Save pak or file: check setData binary files version, repack if needs}
 {TODO: add icon extract by imageset}
@@ -23,7 +24,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
   SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
-  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit;
+  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, SynHighlighterOgre;
 
 type
 
@@ -32,6 +33,7 @@ type
   TRGGUIForm = class(TForm)
     bbPlay: TBitBtn;
     bbStop: TBitBtn;
+    cbSaveTL1ADM: TCheckBox;
     pnlAudio: TPanel;
     Setings: TTabSheet;
     cbUnpackTree  : TCheckBox;
@@ -79,6 +81,7 @@ type
     SynEdit     : TSynEdit;
     SynPopupMenu: TSynPopupMenu;
     SynTSyn     : TSynTSyn;
+    SynOgreSyn  : TSynOgreSyn;
     SynXMLSyn   : TSynXMLSyn;
 
     ToolBar: TToolBar;
@@ -306,10 +309,11 @@ uses
   fmcombodiff,
 
   rgIO.Text,
+  rgIO.Layout,
 
   rgfiletype,
   rgfile,
-  TL2Mod,
+  rgmod,
   rgdict,
   rgdictlayout,
   rgstream;
@@ -615,6 +619,7 @@ begin
   fmLEdit.Align:=alClient;
 
   SynTSyn:=TSynTSyn.Create(Self);
+  SynOgreSyn:=TSynOgreSyn.Create(Self);
 
   LoadSettings();
   SetupColumns(Self);
@@ -701,7 +706,7 @@ begin
 
   if ctrl.PAK.GetInfo(aname,lmode) then
     ctrl.Rebuild();
-
+ctrl.Trace;
   FillTree();
   SetupView();
 end;
@@ -948,7 +953,12 @@ begin
       else if ltype=typeRAW then
         lext:=''
       else
-        lext:='.BINDAT';
+      begin
+        if ctrl.PAK.Version=verTL1 then
+          lext:='.ADM'
+        else
+          lext:='.BINDAT';
+      end;
     end;
 
     // save binary file
@@ -1097,7 +1107,7 @@ begin
 
   if (idx<0) and (cbMODDAT.Checked) and (ctrl.PAK.Version=verTL2Mod) then
   begin
-    SaveModConfiguration(ctrl.PAK.modinfo,PChar(deOutDir.Text+'\'+'MOD.DAT'));
+    SaveModConfig(ctrl.PAK.modinfo,PChar(deOutDir.Text+'\'+'MOD.DAT'));
   end;
   StatusBar.Panels[1].Text:=rsFilePath+sgMain.Cells[colDir ,sgMain.Row];
   ShowMessage(GetPathFromNode(PopupNode)+#13#10+rsUnpackSucc);
@@ -1105,7 +1115,7 @@ begin
   rgDebugLevel:=ldl;
 end;
 
-{%ENDREGION}
+{%ENDREGION Unpack}
 
 {%REGION Preview}
 
@@ -1153,11 +1163,6 @@ begin
 
   actEdNew   .Enabled:=not bNoTree;
   actEdImport.Enabled:=not bNoTree;
-end;
-
-procedure TRGGUIForm.actScaleImageExecute(Sender: TObject);
-begin
-  PreviewImage(sgMain.Cells[colExt,sgMain.Row]);
 end;
 
 procedure TRGGUIForm.PrepareSound;
@@ -1234,6 +1239,11 @@ begin
   bbStop.Visible:=false;
 
   pnlAudio.Visible:=true;
+end;
+
+procedure TRGGUIForm.actScaleImageExecute(Sender: TObject);
+begin
+  PreviewImage(sgMain.Cells[colExt,sgMain.Row]);
 end;
 
 procedure TRGGUIForm.PreviewImage(const aext:string);
@@ -1404,7 +1414,10 @@ begin
   else
     ltext:='';
 
-  SynEdit.Highlighter:=SynXMLSyn;
+  if SynOgreSyn.CheckType(sgMain.Cells[colExt,sgMain.Row]) then
+    SynEdit.Highlighter:=SynOgreSyn
+  else
+    SynEdit.Highlighter:=SynXMLSyn;
   SynEdit.Text:=ltext;
   SynEdit.Visible:=true;
   actEdSearch.Enabled:=true;
@@ -1448,7 +1461,7 @@ begin
       lblTimeVal.Caption:='0x'+HexStr(lrec.ftime,16);
     end;
 
-    ltype:=PAKExtType(lext);
+    ltype:=PAKExtType(lname{lext});
     if ltype in (setBinary+[typeDelete,typeDirectory]) then exit;
 
     if not actShowPreview.Checked then exit;
@@ -1456,8 +1469,10 @@ begin
     if ltype=typeLayout then
     begin
       FUSize:=ctrl.GetBinary(lfile,FUData);
-
-      PreviewLayout()
+      if GetLayoutVersion(FUData)=verUnk then
+        PreviewText()
+      else
+        PreviewLayout();
     end
     else
     begin
@@ -1465,15 +1480,15 @@ begin
 
   //    if FUSize>0 then
       begin
+        lspec:=0;
         if ltype=typeImageset then
         begin
-          if (FUSize>4) and (GetSourceEncoding(FUData)=tofSrcUTF8) then
-            lspec:=1
-          else
-            lspec:=2;
-        end
-        else
-          lspec:=0;
+          if (FUSize>4) then
+            case GetSourceEncoding(FUData) of
+              tofSrcUTF8: lspec:=1;
+              tofSrcWide: lspec:=2;
+            end;
+        end;
   //!!      pnlEditButtons.Visible:=false;
         // Text
         if (ltype in setText) and (lspec in [0,1]) then PreviewText()
@@ -1499,7 +1514,7 @@ end;
 
 procedure TRGGUIForm.SynEditStatusChange(Sender: TObject; Changes: TSynStatusChanges);
 begin
-  if scModified in Changes then Grid.Caption:='[*] Grid';
+  if (scModified in Changes) and SynEdit.Modified then Grid.Caption:='[*] Grid';
 end;
 
 procedure TRGGUIForm.actPreviewExecute(Sender: TObject);

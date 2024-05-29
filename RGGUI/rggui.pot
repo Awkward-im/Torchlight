@@ -510,6 +510,10 @@ msgstr ""
 msgid "Save Settings on exit"
 msgstr ""
 
+#: trgguiform.cbsavetl1adm.caption
+msgid "TL1: Save ADM files too"
+msgstr ""
+
 #: trgguiform.cbsaveutf8.caption
 msgid "Save text as UTF8"
 msgstr ""

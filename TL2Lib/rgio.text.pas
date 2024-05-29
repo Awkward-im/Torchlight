@@ -193,47 +193,12 @@ begin
 
       DumpVector('X',asVector(anode)^.X);
       DumpVector('Y',asVector(anode)^.Y);
-{
-      larr[i]:='X';
-      WriteWide(buf,idx,larr);
-      lfloat:=asVector(anode)^.X;
-      if ABS(lfloat)<1.0E-6 then Str(lfloat:0:DoublePrec,lvalue) else Str(lfloat:0:FloatPrec,lvalue);
-      FixFloatStr(lvalue);
-      WriteWide(buf,idx,pointer(lvalue));
-      WriteWide(buf,idx,lcrlf);
-
-      larr[i]:='Y';
-      WriteWide(buf,idx,larr);
-      lfloat:=asVector(anode)^.Y;
-      if ABS(lfloat)<1.0E-6 then Str(lfloat:0:DoublePrec,lvalue) else Str(lfloat:0:FloatPrec,lvalue);
-      FixFloatStr(lvalue);
-      WriteWide(buf,idx,pointer(lvalue));
-      WriteWide(buf,idx,lcrlf);
-}
       if ltype in [rgVector3, rgVector4] then
       begin
         DumpVector('Z',asVector(anode)^.Z);
-{
-        larr[i]:='Z';
-        WriteWide(buf,idx,larr);
-        lfloat:=asVector(anode)^.Z;
-        if ABS(lfloat)<1.0E-6 then Str(lfloat:0:DoublePrec,lvalue) else Str(lfloat:0:FloatPrec,lvalue);
-        FixFloatStr(lvalue);
-        WriteWide(buf,idx,pointer(lvalue));
-        WriteWide(buf,idx,lcrlf);
-}
         if ltype=rgVector4 then
         begin
           DumpVector('W',asVector(anode)^.W);
-{
-          larr[i]:='W';
-          WriteWide(buf,idx,larr);
-          lfloat:=asVector(anode)^.W;
-          if ABS(lfloat)<1.0E-6 then Str(lfloat:0:DoublePrec,lvalue) else Str(lfloat:0:FloatPrec,lvalue);
-          FixFloatStr(lvalue);
-          WriteWide(buf,idx,pointer(lvalue));
-          WriteWide(buf,idx,lcrlf);
-}
         end;
       end;
     end

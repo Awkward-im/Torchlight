@@ -6,6 +6,7 @@ object formLayoutEdit: TformLayoutEdit
   BorderStyle = bsNone
   ClientHeight = 488
   ClientWidth = 743
+  LCLVersion = '3.99.0.0'
   object pnlTree: TPanel
     Left = 0
     Height = 488
@@ -111,7 +112,7 @@ object formLayoutEdit: TformLayoutEdit
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goEditing, goAlwaysShowEditor, goThumbTracking, goSelectionActive]
       ColWidths = (
         200
-        300
+        304
       )
     end
     inline SynEdit: TSynEdit

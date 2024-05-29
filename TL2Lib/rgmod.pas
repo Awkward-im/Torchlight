@@ -1,16 +1,13 @@
 {TODO: hash calc for required mods}
-unit TL2Mod;
+// PUnicodeChar(UnicodeString(ExtractFilenameOnly(fname)))
+// PChar(string(strFile)+'MOD.DAT')
+unit RGMod;
 
 interface
 
 uses
   classes,
   rgglobal;
-
-type
-  tTL2VerRec = record
-    arr:array [0..3] of word;
-  end;
 
 type
   // v.4 mod binary header start
@@ -23,21 +20,38 @@ type
     offMan :DWord;
   end;
 
-function ReadModInfo    (fname:PChar   ; var   amod:TTL2ModInfo):boolean; export;
-function ReadModInfoBuf (abuf:PByte    ; var   amod:TTL2ModInfo):boolean;
-function ReadModInfoStream(ast:TStream ; var   amod:TTL2ModInfo):boolean;
-function WriteModInfo   (fname:PChar   ; const amod:TTL2ModInfo):integer; export;
+//--- [TL2] binary format ---
+
+function ReadModInfo       (fname:PChar; var   amod:TTL2ModInfo):boolean;
+function ReadModInfoBuf    (abuf:PByte ; var   amod:TTL2ModInfo):boolean;
+function ReadModInfoStream (ast:TStream; var   amod:TTL2ModInfo):boolean;
+function WriteModInfo   (fname:PChar   ; const amod:TTL2ModInfo):integer;
 function WriteModInfo   (out abuf:PByte; const amod:TTL2ModInfo):integer;
 function WriteModInfoBuf(    abuf:PByte; const amod:TTL2ModInfo):integer;
 function WriteModInfoStream(ast:TStream; const amod:TTL2ModInfo):integer;
 
 procedure ClearModInfo(var amod:TTL2ModInfo); export;
 procedure MakeModInfo (out amod:TTL2ModInfo); export;
-procedure CopyModInfo (out dst:TTL2ModInfo; const src:TTL2ModInfo);
+procedure CopyModInfo (out dst :TTL2ModInfo; const src:TTL2ModInfo);
 
-function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
-function SaveModConfiguration(const amod:TTL2ModInfo; strFile:PChar):boolean;
+//--- Text config format ---
 
+function ParseModConfig(anode:pointer; out amod:TTL2ModInfo):boolean;
+function ReadModConfig (abuf:PByte   ; out amod:TTL2ModInfo):boolean;
+function LoadModConfig (strFile:PChar; out amod:TTL2ModInfo):boolean;
+function BuildModConfig(const amod:TTL2ModInfo):pointer;
+function SaveModConfig (const amod:TTL2ModInfo; strFile:PChar):boolean;
+function WriteModConfig(const amod:TTL2ModInfo; var abuf:PByte):boolean;
+
+
+implementation
+
+uses
+  SysUtils, // CreateGUID call for MakeModInfo function
+  rgstream,
+  rwmemory,
+  rgio.text,
+  rgnode;
 
 const
   MinTL2ModInfoSize =
@@ -58,16 +72,7 @@ const
     2  // delete count (v.3+)
     ;
 
-implementation
-
-uses
-  SysUtils, // CreateGUID call for MakeModInfo function
-  rgstream,
-  rwmemory,
-  rgio.text,
-  rgnode;
-
-//----- MOD Header -----
+{%REGION ModInfo}
 
 function WriteModInfoStream(ast:TStream; const amod:TTL2ModInfo):integer;
 var
@@ -129,11 +134,13 @@ begin
   memWriteWord(p,amod.modver);
 
   // yes, first number is higher word
+  memWriteQWord(p,ReverseWords(amod.gamever));
+{
   memWriteWord(p,tTL2VerRec(amod.gamever).arr[3]);
   memWriteWord(p,tTL2VerRec(amod.gamever).arr[2]);
   memWriteWord(p,tTL2VerRec(amod.gamever).arr[1]);
   memWriteWord(p,tTL2VerRec(amod.gamever).arr[0]);
-
+}
   // not real values coz no data/manifest written yet
   memWriteDWord(p,amod.offData);
   memWriteDWord(p,amod.offMan);
@@ -298,15 +305,12 @@ begin
   if lversion>=4 then
   begin
     // yes, first number is higher word
+    amod.gamever:=ReverseWords(memReadQWord(abuf));
+{
     tTL2VerRec(amod.gamever).arr[3]:=memReadWord(abuf);
     tTL2VerRec(amod.gamever).arr[2]:=memReadWord(abuf);
     tTL2VerRec(amod.gamever).arr[1]:=memReadWord(abuf);
     tTL2VerRec(amod.gamever).arr[0]:=memReadWord(abuf);
-{
-    amod.gamever:=             (QWord(memReadWord(abuf)) shl 48);
-    amod.gamever:=amod.gamever+(QWord(memReadWord(abuf)) shl 32);
-    amod.gamever:=amod.gamever+(DWord(memReadWord(abuf)) shl 16);
-    amod.gamever:=amod.gamever+memReadWord(abuf);
 }
   end;
 
@@ -467,31 +471,28 @@ begin
   dst.modver  :=src.modver;
 end;
 
-//----- MOD.DAT -----
+{%ENDREGION ModInfo}
 
-function LoadModConfiguration(strFile:PChar; out amod:TTL2ModInfo):boolean;
+{%REGION ModConfig}
+
+function ParseModConfig(anode:pointer; out amod:TTL2ModInfo):boolean;
 var
-  lnode,lroot,lline:pointer;
+  lnode,lline:pointer;
   i,j,lcnt:integer;
 begin
   result:=false;
 
-  if (strFile<>nil) and not (strFile[Length(strFile)-1] in ['\','/']) then
-    lroot:=ParseTextFile(strFile)
-  else
-    lroot:=ParseTextFile(PChar(string(strFile)+'MOD.DAT'));
+  if anode=nil then exit;
 
-  if lroot=nil then exit;
-
-  if IsNodeName(lroot,'MOD') then
+  if IsNodeName(anode,'MOD') then
   begin
     result:=true;
 
     InitModInfo(amod);
 
-    for i:=0 to GetChildCount(lroot)-1 do
+    for i:=0 to GetChildCount(anode)-1 do
     begin
-      lnode:=GetChild(lroot,i);
+      lnode:=GetChild(anode,i);
       if      IsNodeName(lnode,'NAME'         ) then CopyWide(amod.title   ,AsString(lnode))
       else if IsNodeName(lnode,'AUTHOR'       ) then CopyWide(amod.author  ,AsString(lnode))
       else if IsNodeName(lnode,'DESCRIPTION'  ) then CopyWide(amod.descr   ,AsString(lnode))
@@ -543,12 +544,33 @@ begin
         end;
       end;
     end;
-
-    DeleteNode(lroot);
   end;
 end;
 
-function SaveModConfiguration(const amod:TTL2ModInfo; strFile:PChar):boolean;
+function ReadModConfig(abuf:PByte; out amod:TTL2ModInfo):boolean;
+var
+  lroot:pointer;
+begin
+  lroot:=ParseTextMem(abuf);
+
+  result:=ParseModConfig(lroot, amod);
+  DeleteNode(lroot);
+end;
+
+function LoadModConfig(strFile:PChar; out amod:TTL2ModInfo):boolean;
+var
+  lroot:pointer;
+begin
+  if (strFile<>nil) and not (strFile[Length(strFile)-1] in ['\','/']) then
+    lroot:=ParseTextFile(strFile)
+  else
+    lroot:=ParseTextFile(PChar(string(strFile)+'MOD.DAT'));
+
+  result:=ParseModConfig(lroot, amod);
+  DeleteNode(lroot);
+end;
+
+function BuildModConfig(const amod:TTL2ModInfo):pointer;
 var
   lroot,lgroup:pointer;
   i:integer;
@@ -582,6 +604,15 @@ begin
       AddInteger64(lgroup,'ID',amod.reqs[i].id);
   end;
 
+  result:=lroot;
+end;
+
+function SaveModConfig(const amod:TTL2ModInfo; strFile:PChar):boolean;
+var
+  lroot:pointer;
+begin
+  lroot:=BuildModConfig(amod);
+
   if (strFile<>nil) and not (strFile[Length(strFile)-1] in ['\','/']) then
     result:=BuildTextFile(lroot, strFile)
   else
@@ -590,5 +621,17 @@ begin
   DeleteNode(lroot);
 end;
 
+function WriteModConfig(const amod:TTL2ModInfo; var abuf:PByte):boolean;
+var
+  lroot:pointer;
+begin
+  lroot:=BuildModConfig(amod);
+
+  result:=NodeToWide(lroot,PWideChar(abuf));
+
+  DeleteNode(lroot);
+end;
+
+{%ENDREGION ModConfig}
 
 end.

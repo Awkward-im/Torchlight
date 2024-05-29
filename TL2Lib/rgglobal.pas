@@ -29,6 +29,8 @@ const
   TL2DataBase = 'tl2db2.db';
   TL2EditMod  = 'EDITORMOD.MOD';
   TL2ModData  = 'MOD.DAT';
+const
+  strRootDir  = 'MEDIA/';
 
 const
   DefaultExt     = '.MOD';
@@ -50,6 +52,7 @@ const
   verRG     = 4;
   verRGO    = 5;
   verTL2Mod = -verTL2;
+  verTL1adm = -verTL1;
 
 const
   RGGames : array [0..5] of record
@@ -101,6 +104,8 @@ function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 
 function ExtractFileNameOnly(const aFilename: string):string;
 function ExtractFileExt     (const aFileName: string):string;
+function ExtractPath(const apath:string):string;
+function ExtractName(const apath:string):string;
 
 {%REGION Data types}
 
@@ -694,6 +699,31 @@ begin
     end;
   end;
 end;
+
+function ExtractPath(const apath:string):string;
+var
+  i:integer;
+begin
+  Result:='';
+  i:=Length(apath);
+  if i=0 then exit;
+  dec(i);
+  while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
+  if i>0 then result:=copy(apath,1,i);
+end;
+
+function ExtractName(const apath:string):string;
+var
+  i:integer;
+begin
+  Result:='';
+  i:=Length(apath);
+  if i=0 then exit;
+  dec(i);
+  while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
+  if i>0 then result:=copy(apath,i+1) else result:=apath;
+end;
+
 
 function GetGameName(aver:integer):string;
 var

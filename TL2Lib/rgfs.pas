@@ -245,6 +245,8 @@ begin
   while (apath[i]='\') or (apath[i]='/') do inc(i);
   lrsize:=(lsize+1)-i;
   if (apath[lsize]<>'\') and (apath[lsize]<>'/') then inc(lrsize);
+  // case when path='/'
+  if lrsize=0 then lrsize:=1;
   SetLength(result,lrsize);
 
   j:=1;

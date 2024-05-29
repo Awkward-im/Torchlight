@@ -69,7 +69,7 @@ implementation
 uses
   INIFiles,
   rgglobal,
-  TL2Mod;
+  rgmod;
 
 resourcestring
   sTitle  = 'Title';
