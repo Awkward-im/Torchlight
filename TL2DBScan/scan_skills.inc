@@ -134,6 +134,8 @@ begin
 
   if asize>0 then
   begin
+    RGLog.Reserve('Scan '+adir+aname);
+
     p:=ParseTextMem(abuf);
     if p=nil then
       p:=ParseDatMem(abuf);
@@ -147,6 +149,8 @@ begin
 
       DeleteNode(p);
     end;
+
+    RGLog.Reserve('');
   end;
 end;
 
@@ -172,7 +176,9 @@ begin
       '    tier     TEXT,'+
       '    icon     TEXT,'+
       '    passive  INTEGER (1),'+
-      '    shared   INTEGER (1) );');
+      '    shared   INTEGER (1) );')
+  else
+    result:=true;
 end;
 
 {%ENDREGION}

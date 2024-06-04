@@ -59,6 +59,8 @@ begin
 
   if asize>0 then
   begin
+    RGLog.Reserve('Scan '+adir+aname);
+
     p:=ParseTextMem(abuf);
     if p=nil then
       p:=ParseDatMem(abuf);
@@ -72,6 +74,8 @@ begin
 
       DeleteNode(p);
     end;
+
+    RGLog.Reserve('');
   end;
 end;
 
@@ -90,7 +94,9 @@ begin
       '    id    INTEGER PRIMARY KEY,'+
       '    name  TEXT,'+
       '    title TEXT,'+
-      '    modid TEXT );');
+      '    modid TEXT );')
+  else
+    result:=true;
 end;
 
 {%ENDREGION}

@@ -61,6 +61,8 @@ begin
 
   if asize>0 then
   begin
+    RGLog.Reserve('Scan '+adir+aname);
+
     p:=ParseTextMem(abuf);
     if p=nil then
       p:=ParseDatMem(abuf);
@@ -74,16 +76,19 @@ begin
 
       DeleteNode(p);
     end;
+
+    RGLog.Reserve('');
   end;
 end;
 
 function CheckNameMobs(const adir,aname:string; aparam:pointer):integer;
 begin
-  result:=0;
+  // no need to check content and don't increase count
+  result:=sres_nocheck+sres_fail;
 
-  if Pos('MEDIA/UNITS/MONSTERS/PETS'           ,adir)>0 then exit;
-  if Pos('MEDIA/UNITS/MONSTERS/WARBOUNDS'      ,adir)>0 then exit;
-  if Pos('MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS',adir)>0 then exit;
+  if Pos('MEDIA/UNITS/MONSTERS/PETS/'           ,adir)>0 then exit;
+  if Pos('MEDIA/UNITS/MONSTERS/WARBOUNDS/'      ,adir)>0 then exit;
+  if Pos('MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS/',adir)>0 then exit;
 
 	result:=1;
 end;
@@ -103,7 +108,9 @@ begin
       '    id    INTEGER PRIMARY KEY,'+
       '    name  TEXT,'+
       '    title TEXT,'+
-      '    modid TEXT );');
+      '    modid TEXT );')
+  else
+    result:=true;
 end;
 
 {%ENDREGION}

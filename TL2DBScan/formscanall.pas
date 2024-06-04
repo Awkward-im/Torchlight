@@ -78,7 +78,7 @@ var
   lloglvl:integer;
 begin
   if cbDetailedLog.Checked then
-    lloglvl:=10;
+    lloglvl:=10
   else
     lloglvl:=1;
 
@@ -87,7 +87,6 @@ begin
     memLog.Append('Can''t prepare "'+aname+'" scanning');
     exit;
   end;
-  memLog.Append('Scanning '+aname);
 
   if cbUpdateAll.Checked then
   begin
@@ -195,7 +194,7 @@ procedure TfmScan.bbScanClick(Sender: TObject);
 begin
   memLog.Append('Preparing...');
 
-  if not RGOpenBase(db) then
+  if not RGOpenBase(db,TL2DataBase) then
   begin
     memLog.Append('Can''t prepare database');
     exit;
@@ -210,7 +209,7 @@ begin
 
   memLog.Append('Saving...');
 
-  if not RGCloseBase(db) then
+  if not RGCloseBase(db,TL2DataBase) then
     memLog.Append('Error while save database');
   memLog.Append('Done!');
 end;

@@ -110,6 +110,8 @@ begin
 
   if asize>0 then
   begin
+    RGLog.Reserve('Scan '+adir+aname);
+
     p:=ParseTextMem(abuf);
     if p=nil then
       p:=ParseDatMem(abuf);
@@ -123,15 +125,17 @@ begin
 
       DeleteNode(p);
     end;
+
+    RGLog.Reserve('');
   end;
 end;
 
 function ScanPets(ams:pointer):integer;
 begin
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning pets');
-  result:=       DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/PETS'           , @ProcessPets);
-  result:=result+DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/WARBOUNDS'      , @ProcessPets);
-  result:=result+DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS', @ProcessPets);
+  result:=       DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/PETS/'           , @ProcessPets);
+  result:=result+DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/WARBOUNDS/'      , @ProcessPets);
+  result:=result+DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS/', @ProcessPets);
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
@@ -150,7 +154,9 @@ begin
       '    icon        TEXT,'+
       '    graph_hp    TEXT,'+
       '    graph_armor TEXT,'+
-      '    graph_dmg   TEXT );');
+      '    graph_dmg   TEXT );')
+  else
+    result:=true;
 end;
 
 {%ENDREGION}

@@ -58,7 +58,19 @@ var
   p:pointer;
   pcw:PWideChar;
   i:integer;
+  c:AnsiChar;
 begin
+//  if agender='' then
+  begin
+    i:=Length(aclass);
+    if aclass[i-1]='_' then
+    begin
+      c:=aclass[i];
+      if (c='M') or (c='m') then begin agender:='M'; end;
+      if (c='F') or (c='f') then begin agender:='F'; end;
+    end;
+  end;
+
   agender:='';
   if autype<>'' then
   begin
@@ -83,15 +95,6 @@ begin
     end;
   end;
 
-  if agender='' then
-  begin
-    i:=Length(aclass);
-    if aclass[i-1]='_' then
-    begin
-      if UpCase(aclass[i])='M' then agender:='M';
-      if UpCase(aclass[i])='F' then agender:='F';
-    end;
-  end;
 end;
 
 function AddClassNode(ams:pointer; anode:pointer; const fname:string):integer;
@@ -221,16 +224,18 @@ begin
   result:=0;
   if asize>0 then
   begin
+    RGLog.Reserve('Scan '+adir+aname);
+
     p:=ParseTextMem(abuf);
     if p=nil then
       p:=ParseDatMem(abuf);
     
     if p<>nil then
     begin
-      if PModScanner(aparam)^.FRootLen>0 then
+{      if PModScanner(aparam)^.FRootLen>0 then
         ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
       else
-        ldir:=adir;
+}        ldir:=adir;
       if AddClassNode(aparam,p,ldir+aname)<>0 then
         result:=1
       else if PModScanner(aparam)^.FLogLevel>1 then
@@ -238,6 +243,8 @@ begin
 
       DeleteNode(p);
     end;
+
+    RGLog.Reserve('');
   end;
 end;
 
@@ -271,7 +278,9 @@ begin
       '    strength    INTEGER,'+
       '    dexterity   INTEGER,'+
       '    magic       INTEGER,'+
-      '    defense     INTEGER );');
+      '    defense     INTEGER );')
+  else
+    result:=true;
 end;
 
 {%ENDREGION}

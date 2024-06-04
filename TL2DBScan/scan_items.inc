@@ -190,15 +190,18 @@ begin
 
   if asize>0 then
   begin
+    RGLog.Reserve('Scan '+adir+aname);
+
     p:=ParseTextMem(abuf);
     if p=nil then
       p:=ParseDatMem(abuf);
+
     if p<>nil then
     begin
-      if PModScanner(aparam)^.FRootLen>0 then
+{      if PModScanner(aparam)^.FRootLen>0 then
         ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
       else
-        ldir:=adir;
+}        ldir:=adir;
       i:=AddItemNode(aparam,p,
           ldir+aname,
           Pos('MEDIA/UNITS/ITEMS/QUEST_ITEMS',adir)>0);
@@ -207,6 +210,8 @@ begin
 
       DeleteNode(p);
     end;
+
+    RGLog.Reserve('');
   end;
 end;
 
@@ -233,7 +238,9 @@ begin
       '    icon     TEXT,'+
       '    unittype TEXT,'+
       '    file     TEXT,'+
-      '    base     TEXT );');
+      '    base     TEXT );')
+  else
+    result:=true;
 end;
 
 {%ENDREGION}

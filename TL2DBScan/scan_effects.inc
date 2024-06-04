@@ -105,7 +105,9 @@ begin
       '  gooddes   TEXT,'+
       '  gooddesot TEXT,'+
       '  baddes    TEXT,'+
-      '  baddesot  TEXT);');
+      '  baddesot  TEXT);')
+  else
+    result:=true;
 end;
 
 {%ENDREGION Effects}

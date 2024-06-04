@@ -92,7 +92,9 @@ begin
       '    title  TEXT,'+
       '    modid  TEXT,'+
       '    type   TEXT,'+
-      '    gender CHAR );');
+      '    gender CHAR );')
+  else
+    result:=true;
 end;
 
 {%ENDREGION}

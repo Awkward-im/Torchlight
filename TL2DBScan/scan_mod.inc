@@ -110,7 +110,9 @@ begin
     PModScanner(ams)^.FModId  :='0';
     PModScanner(ams)^.FModMask:=' 0 ';
 }
-  end;
+  end
+  else
+    result:=true;
 end;
 
 {%ENDREGION}

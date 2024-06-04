@@ -74,6 +74,8 @@ var
 begin
   result:=0;
 
+  RGLog.Reserve('Scan graph '+aname);
+
   LoadFile(ams,'MEDIA/GRAPHS/STATS/'+aname+'.DAT',p);
   if p<>nil then
   begin
@@ -86,6 +88,7 @@ begin
     end;
     DeleteNode(p);
   end;
+  RGLog.Reserve('');
 end;
 
 procedure LoadDefaultGraphs(ams:pointer);
@@ -131,7 +134,9 @@ begin
       '  modid TEXT);');
 
 //!!!!!!!!!!!!!    LoadDefaultGraphs(ams);
-  end;
+  end
+  else
+    result:=true;
 end;
 {
 *SKILL_POINTS_PER_FAME_LEVEL

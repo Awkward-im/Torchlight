@@ -83,7 +83,9 @@ begin
       '  title TEXT,'+
       '  views INTEGER (1) DEFAULT (1),'+
       '  path  TEXT,'+
-      '  modid TEXT);');
+      '  modid TEXT);')
+  else
+    result:=true;
 end;
 
 {%ENDREGION Movies}

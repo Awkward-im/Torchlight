@@ -29,8 +29,8 @@ object fmScan: TfmScan
       Width = 75
       Caption = 'Scan'
       Kind = bkRetry
-      OnClick = bbScanClick
       TabOrder = 5
+      OnClick = bbScanClick
     end
     object memLog: TMemo
       Left = 328
@@ -74,9 +74,9 @@ object fmScan: TfmScan
       Width = 74
       Caption = 'Dir to scan'
       Checked = True
-      OnChange = rbDirToScanChange
       TabOrder = 0
       TabStop = True
+      OnChange = rbDirToScanChange
     end
     object rbFileToScan: TRadioButton
       Left = 0
@@ -84,8 +84,8 @@ object fmScan: TfmScan
       Top = 63
       Width = 77
       Caption = 'File to scan'
-      OnChange = rbFileToScanChange
       TabOrder = 3
+      OnChange = rbFileToScanChange
     end
     object gbWhatToScan: TGroupBox
       Left = 0
@@ -175,9 +175,9 @@ object fmScan: TfmScan
         Width = 97
         Caption = 'Update All Info'
         Checked = True
-        OnChange = cbUpdateAllChange
         State = cbChecked
         TabOrder = 9
+        OnChange = cbUpdateAllChange
       end
     end
     object cbDetailedLog: TCheckBox

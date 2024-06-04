@@ -172,7 +172,7 @@ begin
 
   if (apath[Length(apath)] in ['/','\']) or DirectoryExists(apath) then
   begin
-    result:=LoadModConfiguration(PChar(apath+'\MOD.DAT'),lmod);
+    result:=LoadModConfig(PChar(apath+'\MOD.DAT'),lmod);
     if result then lver:=verTL2Mod;
   end
   else if FileExists(apath) then
