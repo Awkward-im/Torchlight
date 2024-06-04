@@ -721,9 +721,10 @@ begin
   cbNewClass.Visible:=lChar or lPet;
   lblNew    .Visible:=lChar or lPet;
 
-  cbCheater .Visible:=lChar;
-  edNewClass.Visible:=lChar;
-  bbManual  .Visible:=lChar;
+  cbCheater     .Visible:=lChar;
+  edNewClass    .Visible:=lChar;
+  bbManual      .Visible:=lChar;
+  lblCustomClass.Visible:=lChar;
 
   edName    .ReadOnly:=not (lChar or lPet);
   seScale   .ReadOnly:=not (lChar or lPet);

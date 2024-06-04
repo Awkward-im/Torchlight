@@ -15,8 +15,8 @@ object fmSettings: TfmSettings
     Anchors = [akLeft, akBottom]
     DefaultCaption = True
     Kind = bkOK
-    OnClick = bbSaveClick
     TabOrder = 8
+    OnClick = bbSaveClick
   end
   object edIconDir: TDirectoryEdit
     Left = 8
@@ -37,7 +37,6 @@ object fmSettings: TfmSettings
     Top = 55
     Width = 78
     Caption = 'Icons directory'
-    Color = clDefault
     ParentColor = False
   end
   object edDBFile: TFileNameEdit
@@ -59,7 +58,6 @@ object fmSettings: TfmSettings
     Top = 6
     Width = 67
     Caption = 'Database file'
-    Color = clDefault
     ParentColor = False
   end
   object gbShow: TGroupBox
@@ -77,8 +75,8 @@ object fmSettings: TfmSettings
       Top = 24
       Width = 100
       Caption = 'Show Tech info'
-      OnClick = SettingsChanged
       TabOrder = 1
+      OnClick = SettingsChanged
     end
     object cbIdAsHex: TCheckBox
       Left = 8
@@ -86,8 +84,8 @@ object fmSettings: TfmSettings
       Top = 48
       Width = 131
       Caption = 'Show IDs in Hex form'
-      OnClick = SettingsChanged
       TabOrder = 2
+      OnClick = SettingsChanged
     end
     object cbShowAll: TCheckBox
       Left = 8
@@ -95,8 +93,8 @@ object fmSettings: TfmSettings
       Top = 0
       Width = 62
       Caption = 'Show all'
-      OnClick = SettingsChanged
       TabOrder = 0
+      OnClick = SettingsChanged
     end
   end
   object cbBackup: TCheckBox
@@ -152,8 +150,8 @@ object fmSettings: TfmSettings
       Caption = 'Rescan'
       Kind = bkRetry
       ModalResult = 4
-      OnClick = bbRescanClick
       TabOrder = 1
+      OnClick = bbRescanClick
     end
     object cbSaveScan: TCheckBox
       Left = 93

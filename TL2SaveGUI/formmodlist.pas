@@ -73,6 +73,8 @@ begin
   sbUp       .Enabled:=sgBound.Row>1;
   sbDown     .Enabled:=sgBound.Row<sgBound.RowCount-1;
   sbClipboard.Enabled:=sgBound.RowCount>1;
+
+  bbUpdate.Enabled:=true;
 end;
 
 procedure TfmModList.sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
@@ -107,7 +109,7 @@ begin
     sgFull  .Clear;
 
     CheckButtons;
-    bbUpdate.Enabled:=true;
+//    bbUpdate.Enabled:=true;
   end;
 end;
 

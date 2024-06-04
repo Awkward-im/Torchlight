@@ -98,8 +98,8 @@ object fmSkills: TfmSkills
     Default = True
     Enabled = False
     Kind = bkOK
-    OnClick = bbUpdateClick
     TabOrder = 7
+    OnClick = bbUpdateClick
   end
   object lblFreePoints: TLabel
     Left = 79
@@ -107,7 +107,6 @@ object fmSkills: TfmSkills
     Top = 15
     Width = 58
     Caption = 'Free points'
-    Color = clDefault
     ParentColor = False
   end
   object lblName: TLabel
@@ -116,7 +115,6 @@ object fmSkills: TfmSkills
     Top = 120
     Width = 54
     Caption = 'Skill name'
-    Color = clDefault
     ParentColor = False
   end
   object memDesc: TMemo
@@ -125,6 +123,7 @@ object fmSkills: TfmSkills
     Top = 144
     Width = 346
     Anchors = [akTop, akLeft, akRight]
+    ReadOnly = True
     TabOrder = 5
   end
   object btnReset: TButton
@@ -134,8 +133,8 @@ object fmSkills: TfmSkills
     Width = 75
     Anchors = [akLeft, akBottom]
     Caption = 'Reset'
-    OnClick = btnResetClick
     TabOrder = 6
+    OnClick = btnResetClick
   end
   object cbSaveFull: TCheckBox
     Left = 361
@@ -143,8 +142,8 @@ object fmSkills: TfmSkills
     Top = 88
     Width = 82
     Caption = 'Save Full list'
-    OnClick = cbSaveFullClick
     TabOrder = 4
+    OnClick = cbSaveFullClick
   end
   object seFreePoints: TSpinEditEx
     Left = 8

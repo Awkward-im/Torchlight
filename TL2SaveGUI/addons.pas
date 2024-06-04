@@ -18,6 +18,7 @@ const
   dirstart = 1024;
   dirdelta = 32;
 var
+  rootdir:string;
   dirlist:array of record
     full:string;
     name:string;
@@ -29,7 +30,6 @@ var
   sr:TSearchRec;
   lname:string;
 begin
-
   if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
   begin
     repeat
@@ -38,7 +38,7 @@ begin
       begin
         if (sr.Name<>'.') and (sr.Name<>'..') then
         begin
-          GetDirList(adir+'\'+sr.Name);
+          GetDirList(lname);
         end;
       end
       else
@@ -50,7 +50,7 @@ begin
           else
             SetLength(dirlist,Length(dirlist)+dirdelta);
         end;
-        dirlist[dircnt].full:=adir+'\'+sr.Name;
+        dirlist[dircnt].full:=lname;
         dirlist[dircnt].name:=UpCase(ExtractFileNameOnly(sr.Name));
         inc(dircnt);
 
@@ -74,11 +74,17 @@ end;
 
 function SearchForFileName(const adir,aname:string):string;
 var
+  ldir:string;
   i:integer;
 begin
+  if Pos(':',adir)=0 then
+    ldir:=UpCase(rootdir+'\'+adir)
+  else
+    ldir:=UpCase(adir);
+
   for i:=0 to High(dirlist) do
   begin
-    if Pos(adir,dirlist[i].full)=1 then
+    if Pos(ldir,UpCase(dirlist[i].full))=1 then
     begin
       if dirlist[i].name=aname then
       begin
@@ -174,7 +180,8 @@ end;
 
 initialization
 
-  MakeDirList(ExtractFileDir(ParamStr(0)));
+  rootdir:=ExtractFileDir(ParamStr(0));
+  MakeDirList(rootdir);
 
 finalization
 

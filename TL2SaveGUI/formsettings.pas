@@ -70,6 +70,7 @@ implementation
 
 uses
   IniFiles,
+  Windirs,
   tl2db,
   UnitScan,
   logging,
@@ -135,6 +136,36 @@ begin
   config.Free;
 end;
 
+procedure TfmSettings.LoadSettings;
+var
+  config:TIniFile;
+  lprof:string;
+begin
+  lprof:=GetWindowsSpecialDir(CSIDL_PROFILE);
+
+  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+
+  edDBFile    .Text   :=config.ReadString(sSettings,sDBFile  ,TL2DataBase);
+  edIconDir   .Text   :=config.ReadString(sSettings,sIconDir ,'icons');
+  edSaveDir   .Text   :=config.ReadString(sSettings,sSaveDir ,SavePath);
+  cbBackup    .Checked:=config.ReadBool  (sSettings,sBackup  ,true);
+  cbReloadDB  .Checked:=config.ReadBool  (sSettings,sReloadDB,false);
+
+  cbShowAll   .Checked:=config.ReadBool  (sSettings,sShowAll ,false);
+  cbShowTech  .Checked:=config.ReadBool  (sSettings,sShowTech,false);
+  cbIdAsHex   .Checked:=config.ReadBool  (sSettings,sIdAsHex ,false);
+
+  edModsDir   .Text   :=config.ReadString(sSettings,sModsDir ,ModsPath);
+  cbSaveScan  .Checked:=config.ReadBool  (sSettings,sSaveScan,true);
+
+  if (edSaveDir.Text=SavePath) or (edSaveDir.Text='') then
+      edSaveDir.Text:=StringReplace(SavePath,'%USERPROFILE%',lprof,[]);
+  if (edModsDir.Text=ModsPath) or (edModsDir.Text='') then
+      edModsDir.Text:=StringReplace(ModsPath,'%USERPROFILE%',lprof,[]);
+
+  config.Free;
+end;
+
 procedure TfmSettings.edModsDirChange(Sender: TObject);
 begin
   bbRescan.Enabled:=edModsDir.Text<>'';
@@ -143,6 +174,7 @@ end;
 function TfmSettings.AddToLog(var adata:string):integer;
 begin
   memLog.Append(adata);
+  Application.ProcessMessages;
   adata:='';
   result:=0;
 end;
@@ -164,7 +196,7 @@ begin
   end;
 }
   RGOpenBase(ldb,edDBFile.Text);
-  ScanPath(ldb,edModsDir.Text);
+  ScanPath  (ldb,edModsDir.Text);
   if cbSaveScan.Checked then
     RGSaveBase(ldb,edDBFile.Text);
 
@@ -181,28 +213,6 @@ end;
 procedure TfmSettings.SettingsChanged(Sender: TObject);
 begin
  if Assigned(FOnSettingsChanged) then FOnSettingsChanged();
-end;
-
-procedure TfmSettings.LoadSettings;
-var
-  config:TIniFile;
-begin
-  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
-
-  edDBFile    .Text   :=config.ReadString(sSettings,sDBFile  ,TL2DataBase);
-  edIconDir   .Text   :=config.ReadString(sSettings,sIconDir ,'icons');
-  edSaveDir   .Text   :=config.ReadString(sSettings,sSaveDir ,SavePath);
-  cbBackup    .Checked:=config.ReadBool  (sSettings,sBackup  ,true);
-  cbReloadDB  .Checked:=config.ReadBool  (sSettings,sReloadDB,false);
-
-  cbShowAll   .Checked:=config.ReadBool  (sSettings,sShowAll ,false);
-  cbShowTech  .Checked:=config.ReadBool  (sSettings,sShowTech,false);
-  cbIdAsHex   .Checked:=config.ReadBool  (sSettings,sIdAsHex ,false);
-
-  edModsDir   .Text   :=config.ReadString(sSettings,sModsDir ,ModsPath);
-  cbSaveScan  .Checked:=config.ReadBool  (sSettings,sSaveScan,true);
-
-  config.Free;
 end;
 
 procedure TfmSettings.FormCreate(Sender: TObject);

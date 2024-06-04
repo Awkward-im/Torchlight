@@ -241,7 +241,8 @@ end;
 
 procedure TfmSaveFile.SettingsChanged;
 begin
-  ChangeTree(false);
+  if SGame<>nil then
+    ChangeTree(false);
 end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);

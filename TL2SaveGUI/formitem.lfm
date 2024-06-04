@@ -12,9 +12,9 @@ object fmItem: TfmItem
     Height = 478
     Top = 0
     Width = 619
-    ActivePage = tsItemInfo
+    ActivePage = tsCommonInfo
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tsCommonInfo: TTabSheet
       Caption = 'Common'
@@ -26,7 +26,6 @@ object fmItem: TfmItem
         Top = 3
         Width = 32
         Caption = 'Name'
-        Color = clDefault
         ParentColor = False
       end
       object lblPrefix: TLabel
@@ -35,7 +34,6 @@ object fmItem: TfmItem
         Top = 77
         Width = 29
         Caption = 'Prefix'
-        Color = clDefault
         ParentColor = False
       end
       object lblSuffix: TLabel
@@ -44,7 +42,6 @@ object fmItem: TfmItem
         Top = 125
         Width = 29
         Caption = 'Suffix'
-        Color = clDefault
         ParentColor = False
       end
       object edName: TEdit
@@ -52,8 +49,8 @@ object fmItem: TfmItem
         Height = 23
         Top = 23
         Width = 233
-        OnChange = edNameChange
         TabOrder = 0
+        OnChange = edNameChange
       end
       object edPrefix: TEdit
         Left = 3
@@ -94,7 +91,6 @@ object fmItem: TfmItem
         Top = 25
         Width = 27
         Caption = 'Level'
-        Color = clDefault
         ParentColor = False
       end
       object edLevel: TEdit
@@ -124,7 +120,6 @@ object fmItem: TfmItem
           Top = 8
           Width = 11
           Caption = 'X:'
-          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -135,7 +130,6 @@ object fmItem: TfmItem
           Top = 32
           Width = 10
           Caption = 'Y:'
-          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -146,7 +140,6 @@ object fmItem: TfmItem
           Top = 58
           Width = 10
           Caption = 'Z:'
-          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -277,8 +270,8 @@ object fmItem: TfmItem
         Anchors = [akLeft, akBottom]
         Caption = '&Update'
         Kind = bkOK
-        OnClick = bbUpdateClick
         TabOrder = 14
+        OnClick = bbUpdateClick
       end
       object bbClearMod: TBitBtn
         Left = 216
@@ -289,10 +282,10 @@ object fmItem: TfmItem
         Anchors = [akLeft, akBottom]
         Kind = bkAbort
         Margin = 2
-        OnClick = bbClearModClick
         ParentShowHint = False
         ShowHint = True
         TabOrder = 12
+        OnClick = bbClearModClick
       end
       object edItemId: TEdit
         Left = 248
@@ -343,7 +336,6 @@ object fmItem: TfmItem
           Top = 8
           Width = 11
           Caption = 'X:'
-          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -354,7 +346,6 @@ object fmItem: TfmItem
           Top = 32
           Width = 10
           Caption = 'Y:'
-          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -365,7 +356,6 @@ object fmItem: TfmItem
           Top = 58
           Width = 10
           Caption = 'Z:'
-          Color = clDefault
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -409,7 +399,6 @@ object fmItem: TfmItem
         Top = 25
         Width = 43
         Caption = 'Position'
-        Color = clDefault
         ParentColor = False
       end
       object edPosition: TEdit
@@ -428,7 +417,6 @@ object fmItem: TfmItem
         Top = 56
         Width = 5
         Caption = '-'
-        Color = clDefault
         ParentColor = False
       end
       object lblPosType: TLabel
@@ -437,7 +425,6 @@ object fmItem: TfmItem
         Top = 80
         Width = 5
         Caption = '-'
-        Color = clDefault
         ParentColor = False
       end
       object lblEnchant: TLabel
@@ -446,7 +433,6 @@ object fmItem: TfmItem
         Top = 54
         Width = 77
         Caption = 'Enchant count'
-        Color = clDefault
         ParentColor = False
       end
       object edEnchant: TEdit
@@ -466,8 +452,8 @@ object fmItem: TfmItem
         Width = 48
         Alignment = taRightJustify
         NumbersOnly = True
-        OnChange = edStackChange
         TabOrder = 1
+        OnChange = edStackChange
       end
       object lblStack: TLabel
         Left = 318
@@ -475,7 +461,6 @@ object fmItem: TfmItem
         Top = 25
         Width = 28
         Caption = 'Stack'
-        Color = clDefault
         ParentColor = False
       end
       object lblArmor: TLabel
@@ -484,7 +469,6 @@ object fmItem: TfmItem
         Top = 140
         Width = 34
         Caption = 'Armor'
-        Color = clDefault
         ParentColor = False
       end
       object edWeaponDmg: TEdit
@@ -503,7 +487,6 @@ object fmItem: TfmItem
         Top = 236
         Width = 91
         Caption = 'Weapon Damage'
-        Color = clDefault
         ParentColor = False
       end
       object edArmorType: TEdit
@@ -522,7 +505,6 @@ object fmItem: TfmItem
         Top = 200
         Width = 79
         Caption = 'Armor by Type'
-        Color = clDefault
         ParentColor = False
       end
       object edArmor: TEdit
@@ -542,8 +524,8 @@ object fmItem: TfmItem
         Width = 48
         Alignment = taRightJustify
         NumbersOnly = True
-        OnChange = edSocketsChange
         TabOrder = 3
+        OnChange = edSocketsChange
       end
       object lblArmorType: TLabel
         Left = 80
@@ -551,7 +533,6 @@ object fmItem: TfmItem
         Top = 172
         Width = 60
         Caption = 'Armor type'
-        Color = clDefault
         ParentColor = False
       end
       object lblSockets: TLabel
@@ -560,7 +541,6 @@ object fmItem: TfmItem
         Top = 83
         Width = 40
         Caption = 'Sockets'
-        Color = clDefault
         ParentColor = False
       end
       object cbEquipped: TCheckBox
