@@ -6,6 +6,7 @@
   4 + scan packed mod content
 
 }
+{TODO: Create "Pause" and "Continue" functions}
 unit RGScan;
 
 interface
@@ -265,6 +266,8 @@ begin
 //  New(PScanObj(aptr));
   GetMem  (aptr ,SizeOf(TScanObj));
   FillChar(aptr^,SizeOf(TScanObj),0);
+
+  RGLog.Add('Scanning '+apath);
 
   PScanObj(aptr)^.FMod:=TRGPAK.Create();
   if ldir='' then

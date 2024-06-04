@@ -334,7 +334,9 @@ begin
 
   if (CompareWide(lext,'.TXT'      )=0) or
      (CompareWide(lext,'.BINDAT'   )=0) or
-     (CompareWide(lext,'.BINLAYOUT')=0) then
+     (CompareWide(lext,'.BINLAYOUT')=0) or
+     (CompareWide(lext,'.CMP'      )=0) or
+     (CompareWide(lext,'.ADM'      )=0) then
   begin
     lname:=Copy(aname,1,lextpos-1);
     if FileExists(adir+lname) then exit;

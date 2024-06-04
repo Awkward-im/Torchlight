@@ -23,6 +23,7 @@ const
   errCloseNoRoot   =  7; // Unconditional. Closing tag without any opened (no root)
   errUnknownTag    =  8; // Unknown property type
   errNoPropDelim   =  9; // No ':' sign after prop name
+  errNotTextData   = 10; // File is not in proper text format
 
 function WideToNode(abuf:PWideChar; asize:cardinal; out anode:pointer):integer;
 function UTF8ToNode(abuf:PAnsiChar; asize:cardinal; out anode:pointer):integer;
@@ -47,9 +48,10 @@ resourcestring
   strCloseNoRoot   = 'Unconditional. Closing tag without any opened (no root)';
   strUnknownTag    = 'Unknown property type';
   strNoPropDelim   = 'No ":" sign after prop name';
+  strNotTextData   = 'Data is not in proper text format';
 
 const
-  ErrorCodes: array [1..9] of string = (
+  ErrorCodes: array [1..10] of string = (
     strCantOpen,
     strTagNoClose,
     strTagCloseWrong,
@@ -58,7 +60,8 @@ const
     strRootNoClose, 
     strCloseNoRoot,
     strUnknownTag,
-    strNoPropDelim
+    strNoPropDelim,
+    strNotTextData
   );
 
 // Options
@@ -530,7 +533,7 @@ end;
 
 function WideToNode(abuf:PWideChar; asize:cardinal; out anode:pointer):integer;
 begin
-  result:=-1;
+  result:=errNotTextData;
   anode:=nil;
   if {(asize<2) or} (abuf=nil) or (abuf^=#0) then exit;
 
@@ -550,7 +553,7 @@ var
   lptr:PUnicodeChar;
   i:integer;
 begin
-  result:=-1;
+  result:=errNotTextData;
   anode:=nil;
 
   if (abuf=nil) or (abuf^=#0) then exit;
@@ -592,8 +595,8 @@ begin
     lerror:=errCantOpen;
   end;
 
-  if lerror<>0 then
-    RGLog.Add('Memory block', lerror shr 8, 'error: '+ErrorCodes[lerror and $FF]);
+  if (lerror<>0) and (lerror<>errNotTextData) then
+    RGLog.Add('Memory block', dword(lerror) shr 8, 'error: '+ErrorCodes[dword(lerror) and $FF]);
 end;
 
 {$PUSH}

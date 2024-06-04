@@ -664,6 +664,8 @@ var
   StartPos: Integer;
   ExtPos: Integer;
 begin
+  if aFilename='' then exit('');
+
   StartPos:=length(aFilename)+1;
   while (StartPos>1)
   and not (aFilename[StartPos-1] in AllowDirectorySeparators)

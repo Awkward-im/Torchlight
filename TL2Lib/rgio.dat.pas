@@ -138,7 +138,8 @@ begin
 
   if result=nil then
   begin
-    RGLog.Add('Unknown DAT tag with hash '+IntToStr(aid));
+    if rgDebugLevel<>dlNone then
+      RGLog.Add('Unknown DAT tag with hash '+IntToStr(aid));
 
     result:=RGIntToStr(@FBuffer,aid);
 
