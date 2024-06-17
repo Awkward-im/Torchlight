@@ -1,12 +1,14 @@
 {%REGION Mobs}
 
+{TODO: TL1: MEDIA/UNITS/MONSTERS/ UNITTYPE:PET}
+
 function AddMobToBase(ams:pointer; const anid,aname,atitle:string):boolean;
 var
   lmodid,lSQL:string;
 begin
   result:=false;
 
-  lmodid:=CheckForMod(ams,'mobs', anid, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'mobs', anid);
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO mobs (id, name, title, modid) VALUES ('+
@@ -57,7 +59,7 @@ function ProcessMobs(
 var
   p:pointer;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin

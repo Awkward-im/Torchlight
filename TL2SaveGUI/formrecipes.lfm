@@ -6,6 +6,7 @@ object fmRecipes: TfmRecipes
   BorderStyle = bsNone
   ClientHeight = 399
   ClientWidth = 565
+  LCLVersion = '3.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object sgRecipes: TStringGrid
@@ -54,8 +55,8 @@ object fmRecipes: TfmRecipes
     Width = 163
     Anchors = [akTop, akRight]
     Caption = 'Learn All'
-    OnClick = btnLearnAllClick
     TabOrder = 2
+    OnClick = btnLearnAllClick
   end
   object bbUpdate: TBitBtn
     Left = 467
@@ -66,8 +67,8 @@ object fmRecipes: TfmRecipes
     Caption = '&Update'
     Default = True
     Kind = bkOK
-    OnClick = bbUpdateClick
     TabOrder = 6
+    OnClick = bbUpdateClick
   end
   object cbJustActual: TCheckBox
     AnchorSideLeft.Control = sgRecipes
@@ -89,8 +90,8 @@ object fmRecipes: TfmRecipes
     Anchors = [akRight, akBottom]
     Caption = '&Clear'
     Kind = bkAbort
-    OnClick = bbClearClick
     TabOrder = 5
+    OnClick = bbClearClick
   end
   object cbHaveTitle: TCheckBox
     AnchorSideLeft.Control = sgRecipes

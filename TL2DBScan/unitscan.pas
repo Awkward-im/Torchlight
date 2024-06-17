@@ -1,10 +1,11 @@
 {$I-}
+{TODO: Check current dir/mod data version (Prepare) and DB version (RGOpenBase)}
 unit unitscan;
 
 interface
 
 uses
-  sqlite3
+  sqlite3dyn
   ,RGMod
   ,RGGlobal
   ;
@@ -44,7 +45,7 @@ function Prepare(
 procedure Finish(ams:pointer);
 
 {Load DB to memory/save back to disk}
-function RGOpenBase (out adb:PSQLite3; const fname:string=TL2DataBase):boolean;
+function RGOpenBase (out adb:PSQLite3; const fname:string=TL2DataBase; createas:integer=verTL2):boolean;
 function RGSaveBase (    adb:PSQLite3; const fname:string=TL2DataBase):integer;
 function RGCloseBase(var adb:PSQLite3; const fname:string=''):boolean;
 
@@ -73,6 +74,7 @@ type
     FModMask :string;   // mod id mask (optimization)         | ' '+FModId+' '
     scan     :pointer;  // PScanObj from RGScan
     db       :PSQLite3;
+    gamever  :integer;
     FRootLen :integer;  // Root dir name length
     FLogLevel:integer;
   end;
@@ -161,6 +163,7 @@ function Prepare(
 var
   lmod:TTL2ModInfo;
   lscan:pointer;
+  ls:string;
   lmodid:Int64;
   lver:integer;
 begin
@@ -172,19 +175,38 @@ begin
 
   if (apath[Length(apath)] in ['/','\']) or DirectoryExists(apath) then
   begin
-    result:=LoadModConfig(PChar(apath+'\MOD.DAT'),lmod);
-    if result then lver:=verTL2Mod;
+    result:=true;
+
+    FillChar(lmod,SizeOf(lmod),0);
+    if FileExists(apath+'media/massfile.dat.adm') then lver:=verTL1
+    else if FileExists(apath+'media/tags.dat') then lver:=verTL2
+    else if LoadModConfig(PChar(apath+'\MOD.DAT'),lmod) then
+    begin
+      // modid can be for TL1 mod too (just ignoring)
+      if lmod.modid=0 then lver:=verTL1Mod else lver:=verTL2Mod;
+    end
+    else
+      lver:=verTL1Mod;
+
+    if lmod.title=nil then
+    begin
+      ls:=ExtractName(apath);
+      if ls[Length(ls)] in ['\','/'] then SetLength(ls,Length(ls)-1);
+      lmod.Title:=CopyWide(PUnicodeChar(UnicodeString(ls)));
+    end;
   end
   else if FileExists(apath) then
   begin
     lver:=RGPAKGetVersion(apath);
-    if      lver=verTL2Mod then result:=ReadModInfo(PChar(apath),lmod)
-    else if lver=verTL2    then result:=true;
+    if (lver=verTL2Mod) or (lver=verTL1Mod) then
+      result:=ReadModInfo(PChar(apath),lmod)
+    else if (lver=verTL2) or (lver=verTL1) then
+      result:=true;
   end;
 
   if result then
   begin
-    if lver=verTL2Mod then
+    if (lver=verTL2Mod) or (lver=verTL1Mod) then
     begin
       AddTheMod(adb,lmod);
       lmodid:=lmod.modid;
@@ -196,7 +218,7 @@ begin
     GetMem  (ams ,SizeOf(TModScanner));
     FillChar(ams^,SizeOf(TModScanner),0);
 
-    PModScanner(ams)^.FRootLen:=PrepareRGScan(lscan, apath, ['.DAT'], ams);
+    PModScanner(ams)^.FRootLen:=PrepareRGScan(lscan, apath, ['.DAT','.ADM'], ams);
     if lscan<>nil then
     begin
 
@@ -208,6 +230,7 @@ begin
         Str(lmodid,FModId);
         FModMask :=' '+FModId+' ';
         FLogLevel:=aLogLvl;
+        gamever  :=ABS(lver);
       end;
 
     end
@@ -262,21 +285,23 @@ function DoCheck(const adir,aname:string; aparam:pointer):integer;
 var
   lext:string;
 begin
-  result:=1;
+  result:=1 or sres_nocheck;
   lext:=UpCase(ExtractFileExt(aname));
   if (lext='.MOD') or
-     (lext='.PAK') then
+     (lext='.PAK') or
+     (lext='.ZIP') then
   begin
     with PScanDir(aparam)^ do
-      ProcessSingleMod(db,path+'\'+adir+'\'+aname,log);
+      ProcessSingleMod(db,path+adir+'\'+aname,log);
   end
-  else if (UpCase(aname)='MOD.DAT') then
+//  else if (UpCase(aname)='MOD.DAT') then
+  else if (UpCase(aname)='MEDIA/') then
   begin
     with PScanDir(aparam)^ do
       if (adir='\') or (adir='/') then
         ProcessSingleMod(db,path,log)
       else
-        ProcessSingleMod(db,path+'\'+adir,log);
+        ProcessSingleMod(db,path+adir,log);
   end
   else
     exit(0);
@@ -289,17 +314,19 @@ begin
   result:=0;
   lsd.db  :=adb;
   lsd.path:=apath;
+  if not (lsd.path[Length(lsd.path)] in ['/','\']) then
+    lsd.path:=lsd.path+'/';
   lsd.log :=aLogLvl;
-  result:=MakeRGScan(apath,'',['.PAK','.MOD','.DAT'],nil,@lsd,@DoCheck);
+  result:=MakeRGScan(apath,'',['.PAK','.MOD','.ZIP','.DAT','.ADM'],nil,@lsd,@DoCheck);
 end;
 
 {%ENDREGION Scan dirs}
 
 {%REGION Base}
 
-function CreateTables(adb:PSQLite3):boolean;
+function CreateTables(adb:PSQLite3; aver:integer):boolean;
 begin
-  result:=CreateModTable      (adb);
+  result:=CreateModTable      (adb,ABS(aver));
 
   result:=CreateAddsTable     (adb);
   result:=CreateClassesTable  (adb);
@@ -317,13 +344,19 @@ begin
   result:=CreateWardrobeTable (adb);
 end;
 
-function RGOpenBase(out adb:PSQLite3; const fname:string=TL2DataBase):boolean;
+function RGOpenBase(out adb:PSQLite3; const fname:string=TL2DataBase; createas:integer=verTL2):boolean;
 begin
+  try
+    InitializeSQLite();
+  except
+    exit(false);
+  end;
+
   result:=sqlite3_open(':memory:',@adb)=SQLITE_OK;
   if result then
   begin
     if (fname='') or (CopyFromFile(adb,PChar(fname))<>SQLITE_OK) then
-      result:=CreateTables(adb);
+      result:=CreateTables(adb, createas);
   end;
 end;
 
@@ -341,6 +374,7 @@ begin
 
   result:=result and (sqlite3_close(adb)=SQLITE_OK);
   adb:=nil;
+  ReleaseSQLite();
 end;
 
 {%ENDREGION Base}

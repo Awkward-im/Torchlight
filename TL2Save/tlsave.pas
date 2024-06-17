@@ -1,28 +1,28 @@
-unit tl2save;
+unit TLSave;
 
 interface
 
 uses
+  sysutils,
   classes,
   tl2statistic,
   rgstream,
   tl2common,
   rgglobal,
   tl2map,
-  tl2item,
-  tl2effects,
-  tl2quest,
+  tlsgitem,
+  tlsgeffects,
+  tlsgquest,
   tl2stats,
-  tl2char;
+  tlsgchar;
 
 type
-  TTL2SaveFile = class
+  TTLSaveFile = class
   //--- common part
   private
     FStream:TStream;
 
-    procedure Error(const atext:string);
-    function FixItems(aItems:TTL2ItemList):boolean;
+    function FixItems(aItems:TTLItemList):boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -51,13 +51,14 @@ type
     FUnknown3  :PByte;
     FUnkn3Size :integer;
     
-    FCharInfo:TTL2Character;
-    FPetInfos:TTL2CharArray;
+    FCharInfo:TTLCharacter;
+    FPetInfos:TTLCharArray;
 
     FClassString :string;
     FDifficulty  :TL2Difficulty;
     FHardcore    :boolean;
     FNewGameCycle:integer;
+    FRetired     :boolean;
     FGameTime    :single;
 
     FBoundMods       :TTL2ModList;
@@ -67,8 +68,9 @@ type
     FKeyMapping:TTL2KeyMappingList;
     FFunctions :TTL2FunctionList;
 
-    FQuests:TTL2Quest;
+    FQuests:TTLQuest;
 
+    FCinematics:TL2StringList;
     FMovies    :TL2IdValList;
     FRecipes   :TL2IdList;
     FHistory   :TL2IdList;
@@ -79,7 +81,6 @@ type
     FWaypoint:string;
     FArea    :string;
 
-    Unk1     :byte;
     Unk2,Unk3:DWord;
     UnkCoord:TVector3;
 
@@ -99,7 +100,7 @@ type
 
     function  GetMapCount:integer;
     function  GetPetCount:integer;
-    function  GetPetInfo   (idx:integer):TTL2Character;
+    function  GetPetInfo   (idx:integer):TTLCharacter;
     function  GetKeyMapping(idx:integer):TTL2KeyMapping;
     function  GetMovie     (idx:integer):TL2IdVal;
     function  GetMap       (idx:integer):TTL2Map;
@@ -116,9 +117,9 @@ type
     property RecentModHistory:TTL2ModList read FRecentModHistory  write FRecentModHistory;
     property FullModHistory  :TTL2ModList read FFullModHistory    write FFullModHistory;
 
-    property CharInfo:TTL2Character read FCharInfo;
+    property CharInfo:TTLCharacter read FCharInfo;
     property PetCount:integer read GetPetCount;
-    property PetInfo[idx:integer]:TTL2Character read GetPetInfo;
+    property PetInfo[idx:integer]:TTLCharacter read GetPetInfo;
 
     property MapCount:integer read GetMapCount;
     property Maps[idx:integer]:TTL2Map read GetMap;
@@ -133,7 +134,7 @@ type
     property Keys     :TTL2KeyMappingList read FKeyMapping;
     property Functions:TTL2FunctionList   read FFunctions;
 
-    property Quests:TTL2Quest read FQuests;
+    property Quests:TTLQuest  read FQuests;
     property Stats :TTL2Stats read FLastBlock;
 
     // Statistic
@@ -223,52 +224,6 @@ begin
 
       flag:=not flag;
     end;
-(*
-    t = 0;
-    l_flag = 1;
-    if ( l_datasize )
-    {
-      l_enddata = &l_indata[l_datasize - 1];
-      l_start = l_indata;
-      do
-      {
-        if ( l_flag )
-          l_byte = *l_start++;
-        else
-          l_byte = *l_enddata--;
-        buf[t] = l_byte;
-        if ( l_byte && l_byte != -1 )
-          buf[t] = ~l_byte;
-        l_flag = !l_flag;
-        ++t;
-      }
-      while ( t < l_datasize );
-    }
-*)
-(*
-    t = 0;
-    l_flag = true;
-    if (_Size != NULL) {
-      l_end = _DstBuf + _Size + -0x1;
-      l_start = _DstBuf;
-      do {
-        if (l_flag) {
-          l_byte = *l_start;
-          l_start = l_start + 0x1;
-        }
-        else {
-          l_byte = *l_end;
-          l_end = l_end + -0x1;
-        }
-        buf[_Dst] = l_byte;
-        if ((l_byte != 0x0) && (l_byte != 0xff)) {
-          buf[_Dst] = ~l_byte;
-        }
-        l_flag = l_flag == false;
-        t = t + 0x1;
-      } while (t < _Size);
-    }
-*)
   end;
 end;
 
@@ -294,17 +249,17 @@ end;
 
 //----- Get/Set methods -----
 
-function TTL2SaveFile.GetPetCount:integer;
+function TTLSaveFile.GetPetCount:integer;
 begin
   result:=Length(FPetInfos);
 end;
 
-function TTL2SaveFile.GetMapCount:integer;
+function TTLSaveFile.GetMapCount:integer;
 begin
   result:=Length(FMaps);
 end;
 
-function TTL2SaveFile.GetMap(idx:integer):TTL2Map;
+function TTLSaveFile.GetMap(idx:integer):TTL2Map;
 begin
   if (idx>=0) and (idx<Length(FMaps)) then
     result:=FMaps[idx]
@@ -312,23 +267,23 @@ begin
     result:=nil;
 end;
 
-function TTL2SaveFile.GetStatistic(idx:integer):TRGInteger;
+function TTLSaveFile.GetStatistic(idx:integer):TRGInteger;
 begin
-  if (idx>=0) and (idx<StatsCount) then
+  if (idx>=0) and (idx<StatsCountTL2) then
     result:=FStatistic[idx]
   else if idx<0 then
-    result:=StatsCount
+    result:=StatsCountTL2
   else
     result:=0;
 end;
 
-procedure TTL2SaveFile.SetStatistic(idx:integer; aval:TRGInteger);
+procedure TTLSaveFile.SetStatistic(idx:integer; aval:TRGInteger);
 begin
-  if (idx>=0) and (idx<StatsCount) then
+  if (idx>=0) and (idx<StatsCountTL2) then
     FStatistic[idx]:=aval;
 end;
 
-function TTL2SaveFile.GetMovie(idx:integer):TL2IdVal;
+function TTLSaveFile.GetMovie(idx:integer):TL2IdVal;
 begin
   if (idx>=0) and (idx<Length(FMovies)) then
     result:=FMovies[idx]
@@ -339,7 +294,7 @@ begin
   end;
 end;
 
-function TTL2SaveFile.GetKeyMapping(idx:integer):TTL2KeyMapping;
+function TTLSaveFile.GetKeyMapping(idx:integer):TTL2KeyMapping;
 begin
   if (idx>=0) and (idx<Length(FKeyMapping)) then
     result:=FKeyMapping[idx]
@@ -351,7 +306,7 @@ begin
   end;
 end;
 
-function TTL2SaveFile.GetPetInfo(idx:integer):TTL2Character;
+function TTLSaveFile.GetPetInfo(idx:integer):TTLCharacter;
 begin
   if (idx>=0) and (idx<Length(FPetInfos)) then
     result:=FPetInfos[idx]
@@ -361,68 +316,150 @@ end;
 
 //----- Read data -----
 
-procedure TTL2SaveFile.ReadKeyMappingList;
+procedure TTLSaveFile.ReadKeyMappingList;
 var
-  lcnt:cardinal;
+  lid:TRGID;
+  i,lcnt,lcnt1:integer;
 begin
   lcnt:=FStream.ReadWord;
   SetLength(FKeyMapping,lcnt);
-  if lcnt>0 then
-    FStream.Read(FKeyMapping[0],lcnt*SizeOf(TTL2KeyMapping));
 
+  if FVersion>=tlsaveTL2Minimal then
+  begin
+    if lcnt>0 then
+      FStream.Read(FKeyMapping[0],lcnt*SizeOf(TTL2KeyMapping));
+  end
+  else
+  begin
+    // TL1 skills only
+    for i:=0 to lcnt-1 do
+    begin
+      lid:=TRGID(FStream.ReadQWord);
+      if lid<>-1 then
+      begin
+        FKeyMapping[i].id      :=lid;
+        FKeyMapping[i].datatype:=2;
+      end
+      else
+        FKeyMapping[i].datatype:=1;
+      FKeyMapping[i].key:=i;
+    end;
+  end;
   // F## keys, 12 for PC
-  lcnt:=FStream.ReadWord;
-  SetLength(FFunctions,lcnt);
-  if lcnt>0 then
-    FStream.Read(FFunctions[0],lcnt*SizeOf(TTL2Function));
+  lcnt1:=FStream.ReadWord;
+  SetLength(FFunctions,lcnt1);
+  if lcnt1>0 then
+    FStream.Read(FFunctions[0],lcnt1*SizeOf(TTL2Function));
+
+  // potion etc
+  if FVersion<tlsaveTL2Minimal then
+  begin
+    lcnt1:=FStream.ReadWord;
+    if lcnt1>lcnt then
+    begin
+      DbgLn('KeyMapping: '+IntToStr(lcnt1)+' items for '+IntToStr(lcnt)+' Skilled keys');
+      lcnt1:=lcnt;
+    end;
+
+    // TL1 items only
+    for i:=0 to lcnt1-1 do
+    begin
+      lid:=TRGID(FStream.ReadQWord);
+      if lid<>-1 then
+      begin
+        FKeyMapping[i].id      :=lid;
+        FKeyMapping[i].datatype:=0;
+      end;
+    end;
+  end;
+
 end;
 
-procedure TTL2SaveFile.ReadModList(var ml:TTL2ModList);
+procedure TTLSaveFile.ReadModList(var ml:TTL2ModList);
 var
-  lcnt:cardinal;
+  i,lcnt:integer;
 begin
   lcnt:=FStream.ReadDWord;
 
   SetLength(ml,lcnt);
-  if lcnt>0 then
-    FStream.Read(ml[0],lcnt*SizeOf(TTL2Mod));
+  for i:=0 to lcnt-1 do
+  begin
+    FStream.Read(ml[i].id,8);
+    if FVersion>=$44 then
+      FStream.Read(ml[i].version,2);
+  end;
+
+//  if lcnt>0 then FStream.Read(ml[0],lcnt*SizeOf(TTL2Mod));
 end;
 
-function TTL2SaveFile.ReadStatistic():boolean;
+function TTLSaveFile.ReadStatistic():boolean;
 var
   lcnt:cardinal;
 begin
-  lcnt:=FStream.ReadDWord;
-  if lcnt>=StatsCount then // SizeOf(FStatistic) div SizeOf(TRGInteger)
+  if FVersion>=tlsaveTL2Minimal then
   begin
-    result:=true;
-    FStream.Read(FStatistic,SizeOf(FStatistic));
-    // unknown statistic
-    if lcnt>StatsCount then
-      FStream.Seek(lcnt*SizeOf(TRGInteger)-SizeOf(FStatistic),soCurrent);
+    lcnt:=FStream.ReadDWord;
+    if lcnt>=StatsCountTL2 then // SizeOf(FStatistic) div SizeOf(TRGInteger)
+    begin
+      result:=true;
+      FStream.Read(FStatistic,SizeOf(FStatistic));
+      // unknown statistic
+      if lcnt>StatsCountTL2 then
+        FStream.Seek(lcnt*SizeOf(TRGInteger)-SizeOf(FStatistic),soCurrent);
+    end
+    else
+      result:=false;
   end
   else
-    result:=false;
+  begin
+    FStream.Read(FStatistic,StatsCountTL1*SizeOf(DWord));
+  end;
 end;
 
 //----- Write data -----
 
-procedure TTL2SaveFile.WriteKeyMappingList;
+procedure TTLSaveFile.WriteKeyMappingList;
 var
-  lcnt:cardinal;
+  lid:TRGID;
+  i,lcnt:integer;
 begin
   lcnt:=Length(FKeyMapping);
   FStream.WriteWord(lcnt);
   if lcnt>0 then
-    FStream.Write(FKeyMapping[0],lcnt*SizeOf(TTL2KeyMapping));
+    if FVersion>=tlsaveTL2Minimal then
+      FStream.Write(FKeyMapping[0],lcnt*SizeOf(TTL2KeyMapping))
+    else
+    begin
+      for i:=0 to lcnt-1 do
+      begin
+        if KeyMapping[i].datatype=2 then
+          lid:=KeyMapping[i].id
+        else
+          lid:=TRGID(-1);
+        FStream.WriteQWord(QWord(lid));
+      end;
+    end;
 
-  lcnt:=Length(FFunctions);
-  FStream.WriteWord(lcnt);
-  if lcnt>0 then
-    FStream.Write(FFunctions[0],lcnt*SizeOf(TTL2Function));
+  i:=Length(FFunctions);
+  FStream.WriteWord(i);
+  if i>0 then
+    FStream.Write(FFunctions[0],i*SizeOf(TTL2Function));
+
+  if FVersion<tlsaveTL2Minimal then
+  begin
+    FStream.WriteWord(lcnt);
+    for i:=0 to lcnt-1 do
+    begin
+      if KeyMapping[i].datatype=0 then
+        lid:=KeyMapping[i].id
+      else
+        lid:=TRGID(-1);
+      FStream.WriteQWord(QWord(lid));
+    end;
+  end;
 end;
 
-procedure TTL2SaveFile.WriteModList(ml:TTL2ModList);
+procedure TTLSaveFile.WriteModList(ml:TTL2ModList);
 var
   lcnt:cardinal;
 begin
@@ -433,18 +470,23 @@ begin
     FStream.Write(ml[0],lcnt*SizeOf(TTL2Mod));
 end;
 
-procedure TTL2SaveFile.WriteStatistic();
+procedure TTLSaveFile.WriteStatistic();
 begin
-  FStream.WriteDWord(StatsCount);
-  FStream.Write(FStatistic,SizeOf(FStatistic));
+  if FVersion>=tlsaveTL2Minimal then
+  begin
+    FStream.WriteDWord(StatsCountTL2);
+    FStream.Write(FStatistic,SizeOf(FStatistic));
+  end
+  else
+    FStream.Write(FStatistic,StatsCountTL1*SizeOf(DWord));
 end;
 
 //----- processing -----
 
-function ClearCheatItems(aItems:TTL2ItemList):boolean;
+function ClearCheatItems(aItems:TTLItemList):boolean;
 var
   i,j,k:integer;
-  l:TTL2EffectList;
+  l:TTLEffectList;
 begin
   result:=false;
   for i:=0 to High(aItems) do
@@ -465,7 +507,7 @@ begin
   end;
 end;
 
-function TTL2SaveFile.ClearCheat:boolean;
+function TTLSaveFile.ClearCheat:boolean;
 var
   i:integer;
 begin
@@ -486,11 +528,10 @@ begin
     end;
 end;
 
-{$I TL2Parse.inc}
+{$I TLSGParse.inc}
+{$I TLSGPrepare.inc}
 
-{$I TL2Prepare.inc}
-
-function TTL2SaveFile.FixItems(aItems:TTL2ItemList):boolean;
+function TTLSaveFile.FixItems(aItems:TTLItemList):boolean;
 var
   i:integer;
 begin
@@ -507,7 +548,7 @@ begin
   end;
 end;
 
-function TTL2SaveFile.FixModdedItems:boolean;
+function TTLSaveFile.FixModdedItems:boolean;
 var
   i:integer;
 begin
@@ -529,7 +570,7 @@ end;
 
 //===== Global savegame class things =====
 
-function TTL2SaveFile.LoadFromFile(const aname:string):boolean;
+function TTLSaveFile.LoadFromFile(const aname:string):boolean;
 var
   lchecksum,lsize:dword;
   lscramble:byte;
@@ -545,7 +586,7 @@ begin
 
     if FStream.Size<6 then
     begin
-      Error(sWrongSize);
+      RGLog.Add(sWrongSize);
       Exit;
     end;
 
@@ -553,12 +594,12 @@ begin
 {
     if (FVersion<tl2saveMinimal) or (FVersion>tl2saveCurrent) then
     begin
-      Error(sWrongVersion);
+      RGLog.Add(sWrongVersion);
       Exit;
     end;
 }
-    if FVersion>=tl2saveEncoded  then FStream.Read(lscramble,1) else lscramble:=0;
-    if FVersion>=tl2saveChecksum then FStream.Read(lchecksum,4);
+    if FVersion>=tlsaveTL2Encoded  then FStream.Read(lscramble,1) else lscramble:=0;
+    if FVersion>=tlsaveTL2Checksum then FStream.Read(lchecksum,4);
 
     FDataStart:=FStream.Position;
     
@@ -567,34 +608,38 @@ begin
 
     if lsize<>FStream.Size then
     begin
-      Error(sWrongFooter);
+      RGLog.Add(sWrongFooter);
       Exit;
     end;
     
     if lscramble<>0 then
       Decode(TMemoryStream(FStream).Memory+FDataStart,
                            FStream .Size  -FDataStart-SizeOf(lsize),
-                           FVersion>=tl2saveScramble);
+                           FVersion>=tlsaveTL2Scramble);
 
     result:=true;
   except
-    Error(sLoadFailed);
+    RGLog.Add(sLoadFailed);
   end;
 end;
 
-procedure TTL2SaveFile.SaveToFile(const aname:string; aencoded:boolean=false);
+procedure TTLSaveFile.SaveToFile(const aname:string; aencoded:boolean=false);
 var
   lsout:TMemoryStream;
   lpos:SizeInt;
   lchecksum,lsize:dword;
 begin
-  FVersion:=tl2saveCurrent;
+  if FVersion>=tlsaveTL2Minimal then
+    FVersion:=tlsaveTL2
+  else
+    FVersion:=tlsaveTL1;
+
   lsout:=TMemoryStream.Create;
   try
     try
       lsout.Write(FVersion,4);
-      if FVersion>=tl2saveEncoded  then lsout.Write(ORD(aencoded),1);
-      if FVersion>=tl2saveChecksum then
+      if FVersion>=tlsaveTL2Encoded  then lsout.Write(ORD(aencoded),1);
+      if FVersion>=tlsaveTL2Checksum then
       begin
         lchecksum:=CalcCheckSum(
           TMemoryStream(FStream).Memory+FDataStart,
@@ -607,7 +652,7 @@ begin
       lsout.CopyFrom(FStream,FStream.Size-FDataStart-4);
 {}
       // Modern only
-      if aencoded then
+      if aencoded and (FVersion>=tlsaveTL2Encoded) then
         Encode(lsout.Memory+lpos,
                lsout.Size  -lpos-4);
 
@@ -616,14 +661,14 @@ begin
 
       lsout.SaveToFile(aname);
     except
-      Error(sSavingFailed);
+      RGLog.Add(sSavingFailed);
     end;
   finally
     lsout.Free;
   end;
 end;
 
-procedure TTL2SaveFile.Clear;
+procedure TTLSaveFile.Clear;
 var
   i:integer;
 begin
@@ -639,6 +684,7 @@ begin
 
   SetLength(FKeyMapping,0);
   SetLength(FFunctions ,0);
+  SetLength(FCinematics,0);
 
   FreeMem(FUnknown1);
 
@@ -661,24 +707,18 @@ begin
   FLastBlock.Free;
 end;
 
-constructor TTL2SaveFile.Create;
+constructor TTLSaveFile.Create;
 begin
   inherited;
 
   FStream:=nil;
 end;
 
-destructor TTL2SaveFile.Destroy;
+destructor TTLSaveFile.Destroy;
 begin
   Clear;
 
   inherited;
-end;
-
-procedure TTL2SaveFile.Error(const atext:string);
-begin
-  if IsConsole then
-    writeln(atext);
 end;
 
 end.

@@ -6,7 +6,7 @@ object fmButtons: TfmButtons
   BorderStyle = bsNone
   ClientHeight = 46
   ClientWidth = 483
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.99.0.0'
   object btnExport: TButton
     Left = 10
     Height = 25
@@ -14,8 +14,8 @@ object fmButtons: TfmButtons
     Width = 75
     Caption = 'Export'
     Enabled = False
-    OnClick = btnExportClick
     TabOrder = 0
+    OnClick = btnExportClick
   end
   object btnImport: TButton
     Left = 96
@@ -24,8 +24,8 @@ object fmButtons: TfmButtons
     Width = 75
     Caption = 'Import'
     Enabled = False
-    OnClick = btnImportClick
     TabOrder = 1
+    OnClick = btnImportClick
   end
   object lblOffset: TLabel
     Left = 395
@@ -34,7 +34,6 @@ object fmButtons: TfmButtons
     Width = 80
     Anchors = [akTop, akRight]
     AutoSize = False
-    Color = clDefault
     ParentColor = False
   end
   object btnDelete: TButton

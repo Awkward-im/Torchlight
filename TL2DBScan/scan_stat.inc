@@ -7,7 +7,7 @@ begin
   result:=false;
 
   Str(aid,sid);
-  lmodid:=CheckForMod(ams,'stats', sid, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'stats', sid);
   if lmodid<>'' then
   begin
     if asaves then ssaves:='1' else ssaves:='0';
@@ -51,7 +51,7 @@ function ProcessStats(
 var
   p:pointer;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin
@@ -63,9 +63,10 @@ begin
     
     if p<>nil then
     begin
-      if not AddStatNode(aparam,p) then
-        if PModScanner(aparam)^.FLogLevel>1 then
-          RGLog.Add('can''t update '+aname);
+      if AddStatNode(aparam,p) then
+        result:=1
+      else if PModScanner(aparam)^.FLogLevel>1 then
+        RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
     end;
@@ -76,6 +77,12 @@ end;
 
 function ScanStats(ams:pointer):integer;
 begin
+  if PModScanner(ams)^.gamever=verTL1 then
+  begin
+    RGLog.Add('TL1 don''t support Stats setup');
+    exit(0);
+  end;
+
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning stats');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/STATS', @ProcessStats);
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');

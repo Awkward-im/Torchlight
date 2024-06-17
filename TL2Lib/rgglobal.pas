@@ -26,16 +26,20 @@ var
   RGLog :logging.TLog;
 
 const
+  TL1DataBase = 'tl1db.db';
   TL2DataBase = 'tl2db2.db';
   TL2EditMod  = 'EDITORMOD.MOD';
   TL2ModData  = 'MOD.DAT';
+  TL2GameVer  = $0001001900050002;
+  TL1GameVer  = $0001000F00000000;
+
 const
   strRootDir  = 'MEDIA/';
 
 const
-  DefaultExt     = '.MOD';
-  DefaultFilter  = 'MOD files|*.MOD|PAK files|*.PAK|MAN files|*.MAN|Supported files|*.MOD;*.PAK;*.MAN|All files|*.*';
-  DefWriteFilter = 'TL2 MOD file|*.MOD|TL2 PAK file|*.PAK|Hob PAK file|*.PAK|Rebel Galaxy PAK file|*.PAK|Rebel Galaxy Outlaw PAK file|*.PAK';
+  RGDefaultExt     = '.MOD';
+  RGDefReadFilter  = 'MOD files|*.MOD|PAK files|*.PAK|TL1 ZIP archives|*.ZIP|MAN files|*.MAN|Supported files|*.MOD;*.PAK;*.MAN;*.ZIP|All files|*.*';
+  RGDefWriteFilter = 'TL2 MOD file|*.MOD|TL2 PAK file|*.PAK|Hob PAK file|*.PAK|Rebel Galaxy PAK file|*.PAK|Rebel Galaxy Outlaw PAK file|*.PAK|TL1 archive|*.ZIP';
 
 //--- Constants
 
@@ -53,6 +57,7 @@ const
   verRGO    = 5;
   verTL2Mod = -verTL2;
   verTL1adm = -verTL1;
+  verTL1Mod = -verTL1;
 
 const
   RGGames : array [0..5] of record
@@ -106,6 +111,14 @@ function ExtractFileNameOnly(const aFilename: string):string;
 function ExtractFileExt     (const aFileName: string):string;
 function ExtractPath(const apath:string):string;
 function ExtractName(const apath:string):string;
+
+const
+  RGExtExts : array [0..4] of string = ('.TXT', '.BINDAT', '.BINLAYOUT', '.ADM', '.CMP');
+
+function IsExtFile(var srcname:string       ):boolean;
+function IsExtFile(var srcname:UnicodeString):boolean;
+function FixFileExt(const srcname:string):string;
+
 
 {%REGION Data types}
 
@@ -180,13 +193,14 @@ type
 {%REGION Savegame}
 
 const
-  tl2saveFirst    = $11; // ??
-  tl2saveMinimal  = $38; // minimal acceptable version
-  tl2saveEncoded  = $3B; // "scramble" byte introduced
-  tl2saveScramble = $3D; // new scramble method
-  tl2saveChecksum = $41; // checksum field added
-//  $43
-  tl2saveCurrent  = $44; // last (current) version
+  tlsaveTL1         = $17;
+//  tlsaveFirst    = $11; // TL2: Movie lists just after this version
+  tlsaveTL2Minimal  = $38; // minimal acceptable version
+  tlsaveTL2Encoded  = $3B; // "scramble" byte introduced
+  tlsaveTL2Scramble = $3D; // new scramble method
+  tlsaveTL2Checksum = $41; // checksum field added
+  tlsaveTL2ModBind  = $43; // mod binding lists
+  tlsaveTL2         = $44; // last (current) version
 {
   0x09 - ? after 3c 4b(cnt)+1*x bytes
   0x11 - movies
@@ -198,7 +212,7 @@ const
   0x3C - ? after 37, 2b (Cnt)+[8b]
   0x3D - new scramble method
   0x41 - checksum
-  0x43 - ?mod lists?
+  0x43 - mod lists (maybe something more)
   0x44 - mod version in mod list
 }
 
@@ -726,6 +740,64 @@ begin
   if i>0 then result:=copy(apath,i+1) else result:=apath;
 end;
 
+
+function FixFileExt(const srcname:string):string; inline;
+begin
+  result:=srcname;
+  IsExtFile(result);
+end;
+
+function IsExtFile(var srcname:UnicodeString):boolean;
+var
+  i,j,elen,slen:integer;
+begin
+  slen:=Length(srcname);
+  for i:=0 to High(RGExtExts) do
+  begin
+    elen:=Length(RGExtExts[i]);
+    if slen>elen then
+    begin
+      j:=slen;
+      while (elen>0) and (UpCase(AnsiChar(Ord(srcname[j])))=RGExtExts[i,elen]) do
+      begin
+        dec(elen);
+        dec(j);
+      end;
+      if elen=0 then
+      begin
+        SetLength(srcname,j);
+        exit(true);
+      end;
+    end;
+  end;
+  result:=false;
+end;
+
+function IsExtFile(var srcname:string):boolean;
+var
+  i,j,elen,slen:integer;
+begin
+  slen:=Length(srcname);
+  for i:=0 to High(RGExtExts) do
+  begin
+    elen:=Length(RGExtExts[i]);
+    if slen>elen then
+    begin
+      j:=slen;
+      while (elen>0) and (UpCase(srcname[j])=RGExtExts[i,elen]) do
+      begin
+        dec(elen);
+        dec(j);
+      end;
+      if elen=0 then
+      begin
+        SetLength(srcname,j);
+        exit(true);
+      end;
+    end;
+  end;
+  result:=false;
+end;
 
 function GetGameName(aver:integer):string;
 var

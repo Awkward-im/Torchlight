@@ -19,6 +19,10 @@ function GetModList:tModDataArray;
 
 {$ELSE}
 
+resourcestring
+
+  rsBaseGame = 'Base game';
+
 var
   GlobalModList:tModDataArray = nil;
 
@@ -32,7 +36,7 @@ begin
   aver:=0;
   if aid=0 then
   begin
-    result:='Torchlight 2';
+    result:=rsBaseGame;
     exit;
   end;
 

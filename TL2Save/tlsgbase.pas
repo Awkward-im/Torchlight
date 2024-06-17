@@ -1,4 +1,4 @@
-unit TL2Base;
+unit TLSGBase;
 
 interface
 
@@ -9,7 +9,7 @@ uses
 type
   TL2DataType = (dtChar, dtItem, dtEffect, dtMap, dtQuest, dtStat);
 type
-  TL2BaseClass = class
+  TLSGBaseClass = class
   private
     FData      :PByte;
     FDataOffset:PtrUInt;
@@ -27,16 +27,25 @@ type
 
     procedure Clear; virtual;
 
+    {
+      Set data size before DataOffset
+    }
     procedure FixSize(AStream:TStream);
 
+    {
+      Load data from file. Check for data size saved at start
+    }
     procedure LoadFromFile(const fname:string);
+    {
+      Save data to file. Save data size if marked as known
+    }
     procedure SaveToFile  (const fname:string);
 
     procedure LoadBlock(AStream:TStream);
     procedure SaveBlock(AStream:TStream);
 
-    procedure LoadFromStream(AStream:TStream); virtual; abstract;
-    procedure SaveToStream  (AStream:TStream); virtual; abstract;
+    procedure LoadFromStream(AStream:TStream; aVersion:integer); virtual; abstract;
+    procedure SaveToStream  (AStream:TStream; aVersion:integer); virtual; abstract;
     
     property Data      :PByte       read FData      ; // write FData;
     property DataOffset:PtrUInt     read FDataOffset write FDataOffset;
@@ -50,19 +59,19 @@ type
 implementation
 
 
-destructor TL2BaseClass.Destroy;
+destructor TLSGBaseClass.Destroy;
 begin
   InternalClear;
 
   inherited;
 end;
 
-procedure TL2BaseClass.Clear;
+procedure TLSGBaseClass.Clear;
 begin
   InternalClear;
 end;
 
-procedure TL2BaseClass.InternalClear;
+procedure TLSGBaseClass.InternalClear;
 begin
   if FData<>nil then
   begin
@@ -71,20 +80,20 @@ begin
   end;
 end;
 
-procedure TL2BaseClass.SetDataSize(asize:integer);
+procedure TLSGBaseClass.SetDataSize(asize:integer);
 begin
   FDataSize :=asize;
   FKnownSize:=true;
 end;
 
-procedure TL2BaseClass.FixSize(AStream:TStream);
+procedure TLSGBaseClass.FixSize(AStream:TStream);
 begin
   AStream.Position:=FDataOffset-SizeOf(DWord);
   AStream.WriteDWord(FDataSize);
   AStream.Position:=AStream.Position+FDataSize;
 end;
 
-procedure TL2BaseClass.SaveBlock(AStream:TStream);
+procedure TLSGBaseClass.SaveBlock(AStream:TStream);
 begin
   if FData<>nil then
   begin
@@ -92,7 +101,7 @@ begin
   end;
 end;
 
-procedure TL2BaseClass.LoadBlock(AStream:TStream);
+procedure TLSGBaseClass.LoadBlock(AStream:TStream);
 begin
   FDataSize:=AStream.Position-FDataOffset;
 
@@ -107,7 +116,7 @@ begin
 end;
 
 
-procedure TL2BaseClass.LoadFromFile(const fname:string);
+procedure TLSGBaseClass.LoadFromFile(const fname:string);
 var
   f:file of byte;
 begin
@@ -138,7 +147,7 @@ begin
 {$POP}
 end;
 
-procedure TL2BaseClass.SaveToFile(const fname:string);
+procedure TLSGBaseClass.SaveToFile(const fname:string);
 var
   f:file of byte;
 begin

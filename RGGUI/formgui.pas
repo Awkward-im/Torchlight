@@ -517,7 +517,7 @@ var
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  LastExt               :=config.ReadString (sSectSettings,sExt         ,DefaultExt);
+  LastExt               :=config.ReadString (sSectSettings,sExt         ,RGDefaultExt);
   LastFilter            :=config.ReadInteger(sSectSettings,sFilter      ,4);
   cbUnpackTree.Checked  :=config.ReadBool   (sSectSettings,sSavePath    ,true);
   cbUseFName.Checked    :=config.ReadBool   (sSectSettings,sUseFName    ,true);
@@ -720,7 +720,7 @@ begin
 //    OpenDialog.Title  :=rsFileOpen;
     OpenDialog.Options    :=[ofFileMustExist];
     OpenDialog.DefaultExt :=LastExt;
-    OpenDialog.Filter     :=DefaultFilter;
+    OpenDialog.Filter     :=RGDefReadFilter;
     OpenDialog.FilterIndex:=LastFilter;
 
     if OpenDialog.Execute then
@@ -749,13 +749,14 @@ begin
       verHob: dlg.FilterIndex:=3;
       verRG : dlg.FilterIndex:=4;
       verRGO: dlg.FilterIndex:=5;
+      verTL1: dlg.FilterIndex:=6;
     else
       dlg.FilterIndex:=1;
     end;
     dlg.InitialDir:=ctrl.PAK.Directory;
     dlg.FileName  :=ctrl.PAK.Name;
-    dlg.DefaultExt:=DefaultExt;
-    dlg.Filter    :=DefWriteFilter;
+    dlg.DefaultExt:=RGDefaultExt;
+    dlg.Filter    :=RGDefWriteFilter;
     dlg.Title     :='';
     dlg.Options   :=dlg.Options+[ofOverwritePrompt];
 
@@ -767,6 +768,7 @@ begin
         3: lver:=verHob;
         4: lver:=verRG;
         5: lver:=verRGO;
+        6: lver:=verTL1;
       end;
 //      wasnew:=ctrl.PAK.Name='';
       if ctrl.SaveAs(dlg.Filename,lver) then
@@ -1727,8 +1729,8 @@ begin
 //    OpenDialog.Title  :=rsFileOpen;
     OpenDialog.Options    :=[ofFileMustExist];
     OpenDialog.DefaultExt :='.*';
-    OpenDialog.Filter     :='';//DefaultFilter;
-    OpenDialog.FilterIndex:=0;//LastFilter;
+    OpenDialog.Filter     :='';
+    OpenDialog.FilterIndex:=0;
 
     if OpenDialog.Execute then
     begin

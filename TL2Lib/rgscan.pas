@@ -139,7 +139,7 @@ begin
               if p^.ftype<>typeDirectory then // useful when FCheckProc=nil
               begin
                 if FActProc<>nil then
-                  if (p^.size_s>0) and (p^.offset>0) then
+                  if (p^.size_s>0) {and (p^.offset>0)} then
                   begin
                     lsize:=FMod.UnpackFile(lname,lfname,lbuf);
                     lres:=FActProc(lbuf,lsize,lname,lfname,FParam);
@@ -147,7 +147,7 @@ begin
               end
               else lres:=sres_fail;
             end;
-            if (lres and sres_fail )= 0 then inc(FCount);
+            if (lres and sres_fail )= 0 then inc(FCount,lres and sres_count);
             if (lres and sres_break)<>0 then
             begin
               FreeMem(lbuf);
@@ -168,12 +168,15 @@ var
   sr:TSearchRec;
   f:file of byte;
   lbuf:PByte;
-  ldir,lname:string;
+  ladir,ldir,lname:string;
   lres,lsize:integer;
 begin
-  if FindFirst(adir+'*.*',faAnyFile{ and faDirectory},sr)=0 then
+  ladir:=adir;
+  if not (ladir[Length(ladir)] in ['/','\']) then ladir:=ladir+'/';
+
+  if FindFirst(ladir+'*.*',faAnyFile{ and faDirectory},sr)=0 then
   begin
-    ldir:=Copy(adir,Length(FRoot)+1);
+    ldir:=Copy(ladir,Length(FRoot)+1);
     repeat
       lname:=UpCase(sr.Name);
       if (sr.Attr and faDirectory)=faDirectory then
@@ -185,7 +188,7 @@ begin
           else
             lres:=0;
 
-          if (lres and sres_fail )= 0 then CycleDir(adir+lname+'/');
+          if (lres and sres_fail )= 0 then CycleDir(ladir+lname+'/');
           if (lres and sres_break)<>0 then break;
         end;
       end
@@ -206,13 +209,13 @@ begin
             begin
               if lname<>TL2EditMod then
               begin
-                lres:=MakeRGScan(adir+lname,'',FExts,
+                lres:=MakeRGScan(ladir+lname,'',FExts,
                     FActProc,FParam,FCheckProc);
               end;
             end
             else if FActProc<>nil then
             begin
-              Assign(f,adir+sr.Name);
+              Assign(f,ladir+sr.Name);
               Reset(f);
               if IOResult=0 then
               begin
@@ -226,7 +229,7 @@ begin
             end;
           end;
 
-          if (lres and sres_fail )= 0 then inc(FCount);
+          if (lres and sres_fail )= 0 then inc(FCount,lres and sres_count);
           if (lres and sres_break)<>0 then break;
         end;
       end;
@@ -275,6 +278,7 @@ begin
   else
     PScanObj(aptr)^.FMod.Version:=verUnk;
 
+  PScanObj(aptr)^.FMod.OpenPAK();
   PScanObj(aptr)^.FRoot:=ldir;
 
   SetLength(PScanObj(aptr)^.FExts,Length(aext));

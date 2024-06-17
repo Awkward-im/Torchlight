@@ -58,7 +58,7 @@ object fmScan: TfmScan
       Top = 84
       Width = 320
       DialogOptions = [ofFileMustExist, ofEnableSizing, ofViewDetail]
-      Filter = 'Mod files|*.MOD;*.PAK|All files|*.*'
+      Filter = 'Mod files|*.MOD;*.PAK;*.ZIP|All files|*.*'
       FilterIndex = 0
       HideDirectories = False
       ButtonWidth = 23
@@ -178,6 +178,14 @@ object fmScan: TfmScan
         State = cbChecked
         TabOrder = 9
         OnChange = cbUpdateAllChange
+      end
+      object cbWardrobe: TCheckBox
+        Left = 100
+        Height = 19
+        Top = 135
+        Width = 70
+        Caption = 'Wardrobe'
+        TabOrder = 10
       end
     end
     object cbDetailedLog: TCheckBox

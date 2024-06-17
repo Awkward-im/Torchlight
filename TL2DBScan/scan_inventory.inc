@@ -1,5 +1,7 @@
 {%REGION Inventory}
 
+{NOTE: TL1 don't have it}
+
 function AddInventoryToBase(ams:pointer; aId:UInt32; const aname:string; isContainer:boolean):boolean;
 var
   vm:pointer;
@@ -15,7 +17,7 @@ begin
   if sqlite3_prepare_v2(PModScanner(ams)^.db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
-      lupdate:=sqlite3_column_int(vm,0)>0;
+      lupdate:=sqlite3_column_int(vm,0)=0; //!! was ">0"
     sqlite3_finalize(vm);
   end;
 
@@ -66,7 +68,7 @@ function ProcessInventory(
 var
   p:pointer;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin
@@ -92,6 +94,12 @@ end;
 
 function ScanInventory(ams:pointer):integer;
 begin
+  if PModScanner(ams)^.gamever=verTL1 then
+  begin
+    RGLog.Add('TL1 don''t support Inventory setup');
+    exit(0);
+  end;
+
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning inventory');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/INVENTORY', @ProcessInventory);
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');

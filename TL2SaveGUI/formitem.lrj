@@ -32,6 +32,9 @@
 {"hash":173677795,"name":"tfmitem.lblsockets.caption","sourcebytes":[83,111,99,107,101,116,115],"value":"Sockets"},
 {"hash":146829940,"name":"tfmitem.cbequipped.caption","sourcebytes":[69,113,117,105,112,112,101,100],"value":"Equipped"},
 {"hash":98736916,"name":"tfmitem.cbrecognized.caption","sourcebytes":[82,101,99,111,103,110,105,122,101,100],"value":"Recognized"},
+{"hash":204225556,"name":"tfmitem.sgdmgbonus.columns[0].title.caption","sourcebytes":[69,108,101,109,101,110,116],"value":"Element"},
+{"hash":4810179,"name":"tfmitem.sgdmgbonus.columns[1].title.caption","sourcebytes":[66,111,110,117,115],"value":"Bonus"},
+{"hash":153372579,"name":"tfmitem.lblweapondamagebonuses.caption","sourcebytes":[87,101,97,112,111,110,32,68,97,109,97,103,101,32,66,111,110,117,115,101,115],"value":"Weapon Damage Bonuses"},
 {"hash":358752,"name":"tfmitem.tspropinfo.caption","sourcebytes":[80,114,111,112],"value":"Prop"},
 {"hash":185388308,"name":"tfmitem.cbactivated.caption","sourcebytes":[65,99,116,105,118,97,116,101,100],"value":"Activated"},
 {"hash":5680834,"name":"tfmitem.tsotherinfo.caption","sourcebytes":[79,116,104,101,114],"value":"Other"}

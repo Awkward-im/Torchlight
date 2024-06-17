@@ -83,12 +83,6 @@ function ConvertToVersion(var abuf:PByte; var asize:integer;
     newver:integer; fname:PUnicodeChar):boolean;
 
 
-const
-  RGExtExts : array [0..4] of string = ('.TXT', '.BINDAT', '.BINLAYOUT', '.ADM', '.CMP');
-
-function FixFileExt(const srcname:string):string;
-function IsExtFile (var   srcname:string):boolean;
-
 /////////////////////////////////////////////////////////
 
 implementation
@@ -564,38 +558,6 @@ begin
   end;
 end;
 
-
-function FixFileExt(const srcname:string):string;
-var
-  lext:string;
-  i:integer;
-begin
-  lext:=rgglobal.ExtractFileExt(srcname);
-  if lext<>'' then
-    for i:=0 to High(RGExtExts) do
-      if lext=RGExtExts[i] then
-      begin
-        result:=ChangeFileExt(srcname,'');
-        exit;
-      end;
-  result:=srcname;
-end;
-
-function IsExtFile(var srcname:string):boolean;
-var
-  lext:string;
-  i:integer;
-begin
-  lext:=rgglobal.ExtractFileExt(srcname);
-  if lext<>'' then
-    for i:=0 to High(RGExtExts) do
-      if lext=RGExtExts[i] then
-      begin
-        srcname:=ChangeFileExt(srcname,'');
-        exit(true);
-      end;
-  result:=false;
-end;
 
 function ConvertToVersion(var abuf:PByte; var asize:integer;
     newver:integer; fname:PUnicodeChar):boolean;

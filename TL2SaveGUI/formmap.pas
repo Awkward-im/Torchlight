@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
-  Buttons, tl2save, tl2map;
+  Buttons, tlsave, tl2map;
 
 type
 
@@ -28,11 +28,11 @@ type
     sgLayData: TStringGrid;
     procedure btnTriggerExportClick(Sender: TObject);
   private
-    SGame:TTL2SaveFile;
+    SGame:TTLSaveFile;
     MapIndex:integer;
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile; idx:integer);
+    procedure FillInfo(aSGame:TTLSaveFile; idx:integer);
 
   end;
 
@@ -46,6 +46,7 @@ implementation
 uses
   tl2db,
   tl2common,
+  tlsgtrigger,
   formSettings;
 
 resourcestring
@@ -81,7 +82,7 @@ begin
   ldlg.Free;
 end;
 
-procedure TfmMap.FillInfo(aSGame:TTL2SaveFile; idx:integer);
+procedure TfmMap.FillInfo(aSGame:TTLSaveFile; idx:integer);
 var
   lMap:TTL2Map;
   i:integer;

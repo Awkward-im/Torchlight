@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  tl2save;
+  tlsave;
 
 type
 
@@ -21,10 +21,10 @@ type
     procedure FormCreate(Sender: TObject);
   private
     StatEdits:array of TEdit;
-    SGame:TTL2SaveFile;
+    SGame:TTLSaveFile;
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile);
+    procedure FillInfo(aSGame:TTLSaveFile);
 
   end;
 
@@ -56,11 +56,11 @@ begin
   lx:=CoordLeft;
   ly:=CoordTop;
 
-  SetLength(StatEdits,StatsCount);
+  SetLength(StatEdits,StatsCountTL2);
 
-  for i:=0 to StatsCount-1 do
+  for i:=0 to StatsCountTL2-1 do
   begin
-    if i=((StatsCount+1) div 2) then
+    if i=((StatsCountTL2+1) div 2) then
     begin
       lx:=CoordLeft+WidthLabel+Gap+WidthEdit+16;
       ly:=CoordTop;
@@ -101,7 +101,7 @@ begin
   with gbStatistic do
   begin
     Width :=2*(CoordLeft+WidthLabel+Gap+WidthEdit)+24;
-    Height:=2*CoordTop+(HeightEdit+Gap)*(1+(StatsCount+1) div 2);
+    Height:=2*CoordTop+(HeightEdit+Gap)*(1+(StatsCountTL2+1) div 2);
   end;
   bbUpdate.Top:=gbStatistic.Top+gbStatistic.Height+8;
 end;
@@ -135,7 +135,7 @@ begin
   bbUpdate.Enabled:=false;
 end;
 
-procedure TfmStatistic.FillInfo(aSGame:TTL2SaveFile);
+procedure TfmStatistic.FillInfo(aSGame:TTLSaveFile);
 var
   i:integer;
 begin

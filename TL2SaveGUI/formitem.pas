@@ -6,14 +6,16 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, ComCtrls, formEffects, tl2item, tl2char;
+  Buttons, ComCtrls, Grids, formEffects, tlsgitem, tlsgchar;
 
 type
 
   { TfmItem }
 
   TfmItem = class(TForm)
+    lblWeaponDamageBonuses: TLabel;
     pcItemInfo: TPageControl;
+    sgDmgBonus: TStringGrid;
     tsCommonInfo: TTabSheet;
 
     // Common
@@ -37,7 +39,6 @@ type
     edNameById : TEdit;
     edPrefix   : TEdit;  lblPrefix: TLabel;
     edSuffix   : TEdit;  lblSuffix: TLabel;
-    edUnkn6    : TEdit;
 
     gbCoords: TGroupBox;
     edX : TEdit;  lblX : TLabel;
@@ -83,14 +84,14 @@ type
   private
     FEffects:TfmEffects;
 
-    FItem:TTL2Item;
-    FChar:TTL2Character;
+    FItem:TTLItem;
+    FChar:TTLCharacter;
     FMaxStack:integer;
 
-    procedure DrawItemIcon(aItem: TTL2Item; aImg: TImage);
+    procedure DrawItemIcon(aItem: TTLItem; aImg: TImage);
 
   public
-    procedure FillInfo(aItem:TTL2Item; aChar:TTL2Character=nil);
+    procedure FillInfo(aItem:TTLItem; aChar:TTLCharacter=nil);
 
   end;
 
@@ -101,6 +102,7 @@ implementation
 uses
   lazfileutils,
   formSettings,
+  tlsgeffects,
   addons,
   tl2db;
 
@@ -155,18 +157,19 @@ end;
 
 procedure TfmItem.bbClearModClick(Sender: TObject);
 begin
-  FItem.ModIds:=nil;
+  FItem.ModIds  :=nil;
+  FItem.ModNames:=nil;
   lbModList.Clear;
   bbClearMod.Visible:=false;
   bbUpdate.Visible:=true;
 end;
 
-function GetIconFileName(aItem:TTL2Item):string;
+function GetIconFileName(aItem:TTLItem):string;
 begin
   result:=SearchForFileName(fmSettings.edIconDir.Text,UpCase(GetItemIcon(aItem.ID)))
 end;
 
-procedure TfmItem.DrawItemIcon(aItem:TTL2Item; aImg:TImage);
+procedure TfmItem.DrawItemIcon(aItem:TTLItem; aImg:TImage);
 var
   licon:string;
 begin
@@ -187,7 +190,7 @@ begin
     end;
 end;
 
-procedure TfmItem.FillInfo(aItem:TTL2Item; aChar:TTL2Character=nil);
+procedure TfmItem.FillInfo(aItem:TTLItem; aChar:TTLCharacter=nil);
 var
   linv,lcont:string;
   i:integer;
@@ -248,19 +251,24 @@ begin
   cbFlag6.Checked:=aItem.Flags[5];
   cbFlag7.Checked:=aItem.Flags[6]; cbRecognized.Checked:=aItem.Flags[6];
 
+  sgDmgBonus.Clear;
+  sgDmgBonus.RowCount:=Length(aItem.DmgBonus)+1;
+  for i:=0 to High(aItem.DmgBonus) do
+  begin
+    sgDmgBonus.Cells[0,i+1]:=GetEffectDamageType(TTLEffectDamageType(aItem.DmgBonus[i].dmgtype));
+    sgDmgBonus.Cells[1,i+1]:=IntToStr(Round(aItem.DmgBonus[i].bonus));
+  end;
+
   //--- Setup changing visibility
 
   if fmSettings.cbShowTech.Checked then
   begin
     edItemId.Visible:=true;
     edItemId.Text:=TextId(aItem.ID);
-    edUnkn6 .Visible:=true;
-    edUnkn6 .Text:=IntToStr(Length(aItem.Unkn6));
   end
   else
   begin
     edItemId.Visible:=false;
-    edUnkn6 .Visible:=false;
   end;
 
   if fmSettings.cbShowAll.Checked then
@@ -281,8 +289,13 @@ begin
   DrawItemIcon(aItem,imgItem);
 
   lbModList.Clear;
-  for i:=0 to High(aItem.ModIds) do
-    lbModList.AddItem(GetTL2Mod(aItem.ModIds[i]),nil);
+  if aItem.ModIds<>nil then
+    for i:=0 to High(aItem.ModIds) do
+      lbModList.AddItem(GetTL2Mod(aItem.ModIds[i]),nil);
+  if aItem.ModNames<>nil then
+    for i:=0 to High(aItem.ModNames) do
+      lbModList.AddItem(aItem.ModNames[i],nil);
+
   bbClearMod.Visible:=Length(aItem.ModIds)<>0;
 
   bbUpdate.Visible:=false;

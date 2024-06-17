@@ -20,6 +20,7 @@ type
     magic    :string;
     defense  :string;
     gender   :string;
+    wardrobe :string;
   end;
 
 function AddClassToBase(ams:pointer; const aclass:tclassinfo):boolean;
@@ -29,7 +30,7 @@ var
 begin
   result:=false;
 
-  lmodid:=CheckForMod(ams,'classes', aclass.id, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'classes', aclass.id);
   if lmodid<>'' then
   begin
     lfile:=LowerCase(aclass.afile);
@@ -41,13 +42,13 @@ begin
           ' file, base, skills, icon,'+
           ' graph_hp, graph_mp, graph_stat, graph_skill, graph_fame,'+
           ' gender, strength, dexterity, magic, defense,'+
-          ' modid) VALUES ('+
+          ' modid, wardrobe) VALUES ('+
         aclass.id+', '+FixedText(aclass.name)+', '+FixedText(aclass.title)+', '+FixedText(aclass.descr)+
         ', '''+lfile+''', '''+lbase+''', '+FixedText(aclass.skill)+', '+FixedText(aclass.icon)+
         ', '''+aclass.gr_hp+''', '''+aclass.gr_mp+''', '''+aclass.gr_st+
         ''', '''+aclass.gr_sk+''', '''+aclass.gr_fm+''', '''+aclass.gender+
         ''', '+aclass.strength+', '+aclass.dexterity+', '+aclass.magic+', '+aclass.defense+
-        ', '+lmodid+')';
+        ', '+lmodid+', '+FixedText(aclass.wardrobe)+')';
     
     result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
   end;
@@ -60,21 +61,26 @@ var
   i:integer;
   c:AnsiChar;
 begin
+  // Fast way (by name)
 //  if agender='' then
   begin
     i:=Length(aclass);
     if aclass[i-1]='_' then
     begin
       c:=aclass[i];
-      if (c='M') or (c='m') then begin agender:='M'; end;
-      if (c='F') or (c='f') then begin agender:='F'; end;
+      if (c='M') or (c='m') then begin agender:='M'; exit; end;
+      if (c='F') or (c='f') then begin agender:='F'; exit; end;
     end;
   end;
 
+  // Slow way (by UNITTYPE)
   agender:='';
   if autype<>'' then
   begin
     LoadFile(ams,'MEDIA/UNITTYPES/'+autype+'.DAT',p);
+    if (p=nil) and (PModScanner(ams)^.gamever=verTL1) then
+      LoadFile(ams,'MEDIA/UNITTYPES/'+autype+'.DAT.ADM',p);
+
     if p<>nil then
     begin
       for i:=0 to GetChildCount(p)-1 do
@@ -106,9 +112,10 @@ var
   i,j:integer;
 begin
   result:=0;
-  lclass.afile:=fname;
+  lclass.afile:=FixFileExt(fname);
   lclass.title:='';
   lclass.skill:=',';
+  lclass.wardrobe:=',';
   lclass.strength :='0';
   lclass.dexterity:='0';
   lclass.magic    :='0';
@@ -137,6 +144,22 @@ begin
         begin
           if lslevel<>'' then lsname:=lsname+'#'+lslevel;
           lclass.skill:=lclass.skill+lsname+',';
+        end;
+      end;
+      if CompareWide(pcw,'WARDROBE_FEATUREOPTIONS')=0 then
+      begin
+{
+		[FEATUREOPTION]
+			<STRING>TYPE:HAIRCOLOR
+			<INTEGER64>VALUE:1100
+		[/FEATUREOPTION]
+}
+        // cycle through "FEATUREOPTION"
+        for j:=0 to GetChildCount(lnode)-1 do
+        begin
+          pp:=FindNode(GetChild(lnode,j),'VALUE');
+          if pp<>nil then
+            lclass.wardrobe:=lclass.wardrobe+IntToStr(AsInteger64(pp))+',';
         end;
       end;
     end
@@ -221,7 +244,7 @@ var
   p:pointer;
   ldir:string;
 begin
-  result:=0;
+  result:=sres_fail;
   if asize>0 then
   begin
     RGLog.Reserve('Scan '+adir+aname);
@@ -278,7 +301,8 @@ begin
       '    strength    INTEGER,'+
       '    dexterity   INTEGER,'+
       '    magic       INTEGER,'+
-      '    defense     INTEGER );')
+      '    defense     INTEGER,'+
+      '    wardrobe    TEXT );')
   else
     result:=true;
 end;

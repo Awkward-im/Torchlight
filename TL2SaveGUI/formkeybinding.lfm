@@ -19,6 +19,7 @@ object fmKeyBinding: TfmKeyBinding
         Width = 160
       end    
       item
+        Alignment = taCenter
         Title.Caption = 'Type'
         Width = 60
       end    

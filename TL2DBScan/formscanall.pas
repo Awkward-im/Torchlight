@@ -27,6 +27,7 @@ type
 
     cbUpdateAll: TCheckBox;
     cbDetailedLog: TCheckBox;
+    cbWardrobe: TCheckBox;
     edDirName: TDirectoryEdit;
     edFileName: TFileNameEdit;
     gbWhatToScan: TGroupBox;
@@ -60,6 +61,8 @@ implementation
 { TfmScan }
 
 uses
+  fmgameversion,
+  rgpak,
   logging,
   rgglobal,
   rgscan,
@@ -92,13 +95,18 @@ begin
   begin
     memLog.Append('Scanning all');
     ScanAll(lms);
+    Application.ProcessMessages;
   end
   else
   begin
-{
+
     // Wardrobe
-    ScanWardrobe(lms);
-}
+    if cbWardrobe.Checked then
+    begin
+      ScanWardrobe(lms);
+      Application.ProcessMessages;
+    end;
+
     // Pets
     if cbPets.Checked then
     begin
@@ -170,31 +178,64 @@ function DoCheck(const adir,aname:string; aparam:pointer):integer;
 var
   lext:string;
 begin
-  result:=1;
+  lext:=TfmScan(aparam).edDirName.Text;
+  result:=1 or sres_nocheck;
   lext:=UpCase(ExtractFileExt(aname));
   if (lext='.MOD') or
-     (lext='.PAK') then
+     (lext='.PAK') or
+     (lext='.ZIP') then
   begin
     with TfmScan(aparam) do
-      ProcessSingleMod(edDirName.Text+'\'+adir+'\'+aname);
+      ProcessSingleMod(edDirName.Text+adir+aname);
   end
-  else if (UpCase(aname)='MOD.DAT') then
+//  else if (UpCase(aname)='MOD.DAT') then
+  else if (UpCase(aname)='MEDIA/') then
   begin
     with TfmScan(aparam) do
       if (adir='\') or (adir='/') then
         ProcessSingleMod(edDirName.Text)
       else
-        ProcessSingleMod(edDirName.Text+'\'+adir);
+        ProcessSingleMod(edDirName.Text+adir);
   end
   else
     exit(0);
 end;
 
 procedure TfmScan.bbScanClick(Sender: TObject);
+var
+  lf:TfmGameVer;
+  lver:integer;
+  ldbname:string;
 begin
+  if (rbDirToScan .Checked and (edDirName .Text='')) or
+     (rbFileToScan.Checked and (edFileName.Text='')) then
+  begin
+    ShowMessage('Nothing choosed to scan');
+    exit;
+  end;
+
+  if rbFileToScan.Checked then
+  begin
+    lver:=RGPAKGetVersion(edFileName.Text);
+  end
+  else
+   lver:=verUnk;
+
   memLog.Append('Preparing...');
 
-  if not RGOpenBase(db,TL2DataBase) then
+  if not (lver in [verTL1, verTL2]) then
+  begin
+    lf:=TfmGameVer.Create(self);
+    lf.Classic:=true;
+    lf.ShowModal;
+    lver:=lf.Version;
+    lf.Free;
+  end;
+
+  if      lver=verTL1 then ldbname:=TL1DataBase
+  else if lver=verTL2 then ldbname:=TL2DataBase;
+
+  if not RGOpenBase(db,ldbname) then
   begin
     memLog.Append('Can''t prepare database');
     exit;
@@ -202,35 +243,44 @@ begin
 
   if rbDirToScan.Checked then
   begin
-    MakeRGScan(edDirName.Text,'',['.PAK','.MOD','.DAT'],nil,Self,@DoCheck);
+    if not (edDirName.Text[Length(edDirName.Text)] in ['/', '\']) then
+      edDirName.Text:=edDirName.Text+'/';
+
+    MakeRGScan(edDirName.Text,'',['.PAK','.MOD','.ZIP','.DAT','.ADM'],nil,Self,@DoCheck);
   end
   else //if rbFileToScan then
     ProcessSingleMod(edFileName.Text);
 
   memLog.Append('Saving...');
 
-  if not RGCloseBase(db,TL2DataBase) then
+  if not RGCloseBase(db,ldbname) then
     memLog.Append('Error while save database');
   memLog.Append('Done!');
+
 end;
 
 procedure TfmScan.cbUpdateAllChange(Sender: TObject);
 begin
-  cbPets   .Enabled:=not cbUpdateAll.Checked;
-  cbQuests .Enabled:=not cbUpdateAll.Checked;
-  cbStats  .Enabled:=not cbUpdateAll.Checked;
-  cbRecipes.Enabled:=not cbUpdateAll.Checked;
-  cbMobs   .Enabled:=not cbUpdateAll.Checked;
-  cbItems  .Enabled:=not cbUpdateAll.Checked;
-  cbProps  .Enabled:=not cbUpdateAll.Checked;
-  cbSkills .Enabled:=not cbUpdateAll.Checked;
-  cbClasses.Enabled:=not cbUpdateAll.Checked;
+  cbWardrobe.Enabled:=not cbUpdateAll.Checked;
+  cbPets    .Enabled:=not cbUpdateAll.Checked;
+  cbQuests  .Enabled:=not cbUpdateAll.Checked;
+  cbStats   .Enabled:=not cbUpdateAll.Checked;
+  cbRecipes .Enabled:=not cbUpdateAll.Checked;
+  cbMobs    .Enabled:=not cbUpdateAll.Checked;
+  cbItems   .Enabled:=not cbUpdateAll.Checked;
+  cbProps   .Enabled:=not cbUpdateAll.Checked;
+  cbSkills  .Enabled:=not cbUpdateAll.Checked;
+  cbClasses .Enabled:=not cbUpdateAll.Checked;
 end;
 
 procedure TfmScan.FormCreate(Sender: TObject);
 begin
   if not FileExists(TL2DataBase) then
-    ShowMessage('Database file not found.'#13#10+
+    ShowMessage('TL2 Database file not found.'#13#10+
+    'Better to use base game file scan first.');
+
+  if not FileExists(TL1DataBase) then
+    ShowMessage('TL1 Database file not found.'#13#10+
     'Better to use base game file scan first.');
 
   cbUpdateAllChange(cbUpdateAll);

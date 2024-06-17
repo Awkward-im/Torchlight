@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
-  CheckLst, tl2active;
+  CheckLst, tlsgactive;
 
 type
 
@@ -38,12 +38,12 @@ type
     procedure sgEffectsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 
   private
-    FObject:TL2ActiveClass;
+    FObject:TLActiveClass;
 
     procedure ClearData;
 
   public
-    procedure FillInfo(aobj:TL2ActiveClass);
+    procedure FillInfo(aobj:TLActiveClass);
   end;
 
 var
@@ -54,9 +54,9 @@ implementation
 {$R *.lfm}
 
 uses
-  tl2effects,
-  tl2base,
-  tl2char,
+  tlsgeffects,
+  TLSGBase,
+  tlsgchar,
   tl2db;
 
 resourcestring
@@ -114,7 +114,7 @@ procedure TfmEffects.sgEffectsSelectCell(Sender: TObject; aCol, aRow: Integer; v
 //procedure TfmEffects.sgEffectsAfterSelection(Sender: TObject; aCol, aRow: Integer);
 var
   ls:string;
-  leffect:TTL2Effect;
+  leffect:TTLEffect;
   i,llist,lidx:integer;
 begin
   if aRow=0 then exit;
@@ -168,9 +168,11 @@ begin
   edBaseClass .Visible:=FObject.DataType=dtChar;
   if edBaseClass.Visible then
   begin
-    if      (FObject as TTL2Character).IsChar then ls:=GetTL2Class(leffect.ClassId)
-    else if (FObject as TTL2Character).IsPet  then ls:=GetTL2Pet  (leffect.ClassId)
-    else                                           ls:=GetTL2Mob  (leffect.ClassId);
+    case (FObject as TTLCharacter).CharType of
+      ctPlayer: ls:=GetTL2Class(leffect.ClassId);
+      ctPet   : ls:=GetTL2Pet  (leffect.ClassId);
+      ctMob   : ls:=GetTL2Mob  (leffect.ClassId);
+    end;
     edBaseClass.Text:=ls;
   end;
 end;
@@ -202,9 +204,9 @@ begin
   clbFlags.AddItem(ef21,nil);
 end;
 
-procedure TfmEffects.FillInfo(aobj:TL2ActiveClass);
+procedure TfmEffects.FillInfo(aobj:TLActiveClass);
 var
-  leffect:TTL2Effect;
+  leffect:TTLEffect;
   i,j,lcnt:integer;
 //  dummy:boolean;
 begin

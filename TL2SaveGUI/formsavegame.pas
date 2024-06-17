@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls, Menus,
-  ActnList, ComCtrls, tl2save, formMovies, formRecipes, formQuests,
+  ActnList, ComCtrls, tlsave, formMovies, formRecipes, formQuests,
   formButtons, formKeyBinding, formStatistic, formSettings, formModList,
   formChar, formStat, formMap, formUnits, formSkills, formItems;
 
@@ -67,7 +67,7 @@ type
     FSkills    :TfmSkills;
     FItems     :TfmItems;
     
-    SGame:TTL2SaveFile;
+    SGame:TTLSaveFile;
 
     procedure ChangeTree(aselect:boolean);
     procedure CloseSaveGame;
@@ -90,7 +90,7 @@ uses
   LCLIntf,
   tl2db,
   unitGlobal,
-  tl2base;
+  TLSGBase;
 
 resourcestring
   rsSaveGameOpen = 'Open Savegame';
@@ -322,10 +322,8 @@ begin
 end;
 
 procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
-{
 var
   i:integer;
-}
 begin
   if FSettings.cbReloadDB.Checked then
   begin
@@ -339,7 +337,7 @@ begin
     ClearGameGlobals;
     CloseSaveGame;
 
-    SGame:=TTL2SaveFile.Create;
+    SGame:=TTLSaveFile.Create;
     SGame.LoadFromFile(FFileName);
     SGame.Parse();
     SetFilter(SGame.BoundMods);
@@ -473,7 +471,7 @@ begin
   if (tvSaveGame.Selected<>nil) then
   begin
     fmButtons.Name  :=tvSaveGame.Selected.Text;
-    fmButtons.SClass:=TL2BaseClass(tvSaveGame.Selected.Data);
+    fmButtons.SClass:=TLSGBaseClass(tvSaveGame.Selected.Data);
   end
   else
   begin
@@ -638,11 +636,14 @@ begin
     idxQuests: begin
       if FQuests=nil then
       begin
-        fmButtons.Offset:=SGame.Quests.DataOffset; //!!
-        FQuests:=TfmQuests.Create(Self);
-        FQuests.Parent:=MainPanel;
-        FQuests.Align :=alClient;
-        FQuests.FillInfo(SGame);
+        if SGame.Quests<>nil then
+        begin
+          fmButtons.Offset:=SGame.Quests.DataOffset; //!!
+          FQuests:=TfmQuests.Create(Self);
+          FQuests.Parent:=MainPanel;
+          FQuests.Align :=alClient;
+          FQuests.FillInfo(SGame);
+        end;
       end;
       SGEPage:=FQuests;
     end;
@@ -663,11 +664,14 @@ begin
     idxStatistic: begin
       if FStats=nil then
       begin
-        fmButtons.Offset:=SGame.Stats.DataOffset; //!!
-        FStats:=TfmStat.Create(Self);
-        FStats.Parent:=MainPanel;
-        FStats.Align :=alClient;
-        FStats.FillInfo(SGame);
+        if SGame.Stats<>nil then
+        begin
+          fmButtons.Offset:=SGame.Stats.DataOffset; //!!
+          FStats:=TfmStat.Create(Self);
+          FStats.Parent:=MainPanel;
+          FStats.Align :=alClient;
+          FStats.FillInfo(SGame);
+        end;
       end;
       SGEPage:=FStats;
     end;

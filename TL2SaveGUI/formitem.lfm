@@ -270,7 +270,7 @@ object fmItem: TfmItem
         Anchors = [akLeft, akBottom]
         Caption = '&Update'
         Kind = bkOK
-        TabOrder = 14
+        TabOrder = 13
         OnClick = bbUpdateClick
       end
       object bbClearMod: TBitBtn
@@ -311,14 +311,6 @@ object fmItem: TfmItem
         Caption = '?Visible'
         TabOrder = 7
         Visible = False
-      end
-      object edUnkn6: TEdit
-        Left = 280
-        Height = 23
-        Top = 327
-        Width = 40
-        ReadOnly = True
-        TabOrder = 13
       end
       object gbCoords1: TGroupBox
         Left = 496
@@ -559,6 +551,34 @@ object fmItem: TfmItem
         Width = 79
         Caption = 'Recognized'
         TabOrder = 7
+      end
+      object sgDmgBonus: TStringGrid
+        Left = 416
+        Height = 156
+        Top = 288
+        Width = 180
+        ColCount = 2
+        Columns = <        
+          item
+            Title.Caption = 'Element'
+            Width = 128
+          end        
+          item
+            Alignment = taRightJustify
+            SizePriority = 0
+            Title.Caption = 'Bonus'
+            Width = 48
+          end>
+        FixedCols = 0
+        RowCount = 1
+        TabOrder = 9
+      end
+      object lblWeaponDamageBonuses: TLabel
+        Left = 416
+        Height = 15
+        Top = 264
+        Width = 138
+        Caption = 'Weapon Damage Bonuses'
       end
     end
     object tsPropInfo: TTabSheet

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, tl2item, tl2char, formItem;
+  ComCtrls, tlsgitem, tlsgchar, formItem;
 
 type
 
@@ -22,11 +22,11 @@ type
     procedure lvItemListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
   private
     FItem:TfmItem;
-    FChar:TTL2Character;
-    FItems:TTL2ItemList;
+    FChar:TTLCharacter;
+    FItems:TTLItemList;
 
   public
-    procedure FillInfo(aItems:TTL2ItemList; aChar:TTL2Character=nil);
+    procedure FillInfo(aItems:TTLItemList; aChar:TTLCharacter=nil);
 
   end;
 
@@ -48,7 +48,7 @@ const
 
 procedure TfmItems.lvItemListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 var
-  litem:TTL2Item;
+  litem:TTLItem;
 begin
   if Selected then
   begin
@@ -72,10 +72,10 @@ begin
   FItem.Align :=alClient;
 end;
 
-procedure TfmItems.FillInfo(aItems:TTL2ItemList; aChar:TTL2Character=nil);
+procedure TfmItems.FillInfo(aItems:TTLItemList; aChar:TTLCharacter=nil);
 var
   ls:String;
-  litem:TTL2Item;
+  litem:TTLItem;
   i,limg:integer;
 begin
   FItems:=aItems;

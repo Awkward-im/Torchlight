@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  tl2base;
+  TLSGBase;
 
 type
 
@@ -21,17 +21,17 @@ type
     procedure btnImportClick(Sender: TObject);
 
   private
-    FClass:TL2BaseClass;
+    FClass:TLSGBaseClass;
     FName :string;
     FExt  :string;
 
     procedure SetOffset(aofs:integer);
-    procedure SetClass(aclass:TL2BaseClass);
+    procedure SetClass(aclass:TLSGBaseClass);
 
   public
-    property SClass:TL2BaseClass read FClass write SetClass;
-    property Name:string         read FName  write FName;
-    property Ext:string          read FExt   write FExt;
+    property SClass:TLSGBaseClass read FClass write SetClass;
+    property Name:string          read FName  write FName;
+    property Ext:string           read FExt   write FExt;
 
     property Offset:integer write SetOffset;
   end;
@@ -57,7 +57,7 @@ begin
     lblOffset.Caption:='0x'+HexStr(aofs,8);
 end;
 
-procedure TfmButtons.SetClass(aclass:TL2BaseClass);
+procedure TfmButtons.SetClass(aclass:TLSGBaseClass);
 begin
   FClass:=aclass;
   if aclass<>nil then
@@ -101,7 +101,8 @@ begin
       lstrm.LoadFromFile(ldlg.FileName);
       lstrm.Position:=0;
       FClass.Clear;
-      FClass.LoadFromStream(lstrm);
+{$NOTE Check version here}
+      FClass.LoadFromStream(lstrm, $44);
       lstrm.Free;
 
 //!!!!!!!      tvSaveGameSelectionChanged(Self);

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids,
-  StdCtrls, Buttons, tl2save;
+  StdCtrls, Buttons, tlsave;
 
 type
 
@@ -38,10 +38,10 @@ type
       BRow: Integer; var Result: integer);
 
   private
-    SGame:TTL2SaveFile;
+    SGame:TTLSaveFile;
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile);
+    procedure FillInfo(aSGame:TTLSaveFile);
 
   end;
 
@@ -87,7 +87,7 @@ begin
     result:=-result;
 end;
 
-procedure TfmStat.FillInfo(aSGame:TTL2SaveFile);
+procedure TfmStat.FillInfo(aSGame:TTLSaveFile);
 var
   lstat:TTL2Stats;
   i2f:record

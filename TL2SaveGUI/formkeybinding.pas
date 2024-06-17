@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids,
-  tl2save;
+  tlsave;
 
 type
 
@@ -17,7 +17,7 @@ type
   private
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile);
+    procedure FillInfo(aSGame:TTLSaveFile);
 
   end;
 
@@ -34,7 +34,9 @@ resourcestring
   rsItem  = 'item';
   rsSkill = 'skill';
 
-procedure TfmKeyBinding.FillInfo(aSGame:TTL2SaveFile);
+  rsNotUsed = 'Not used';
+
+procedure TfmKeyBinding.FillInfo(aSGame:TTLSaveFile);
 var
   i,j:integer;
   lmod:string;
@@ -66,8 +68,9 @@ begin
           end;
 
         else
-          sgKeyBinding.Cells[2,j]:=GetTL2Skill(id,lmod);
-          sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
+          lmod:='';
+          sgKeyBinding.Cells[2,j]:=rsNotUsed;// GetTL2Skill(id,lmod);
+          sgKeyBinding.Cells[3,j]:= '';//GetTL2Mod(lmod);
           if lmod<>'' then
             sgKeyBinding.Cells[1,j]:=rsSkill
           else

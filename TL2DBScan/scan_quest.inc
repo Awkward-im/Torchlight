@@ -7,7 +7,7 @@ begin
   result:=false;
 
   Str(aid,sid);
-  lmodid:=CheckForMod(ams,'quests', sid, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'quests', sid);
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO quests (id, name, title, modid) VALUES ('+
@@ -55,7 +55,7 @@ var
   p:pointer;
   i:int64;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin
@@ -69,8 +69,9 @@ begin
     begin
       i:=AddQuestNode(aparam,p);
 
-      if i=0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
-      if i<0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
+      if i=0  then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
+      if i=-1 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
+      if i>0  then result:=1;
 
       DeleteNode(p);
     end;

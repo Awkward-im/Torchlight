@@ -6,7 +6,7 @@ var
 begin
   result:=false;
 
-  lmodid:=CheckForMod(ams,'props', anid, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'props', anid);
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO props (id, name, title, quest, modid) VALUES ('+
@@ -49,7 +49,7 @@ function ProcessProps(
 var
   p:pointer;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin

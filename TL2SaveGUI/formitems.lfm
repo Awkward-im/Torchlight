@@ -6,6 +6,7 @@ object fmItems: TfmItems
   BorderStyle = bsNone
   ClientHeight = 519
   ClientWidth = 764
+  LCLVersion = '3.99.0.0'
   OnCreate = FormCreate
   object Splitter: TSplitter
     Left = 170

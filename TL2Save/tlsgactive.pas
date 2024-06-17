@@ -1,14 +1,14 @@
-unit TL2Active;
+unit TLSGActive;
 
 interface
 
 uses
   rgglobal,
-  TL2Base,
-  TL2Effects;
+  tlsgbase,
+  tlsgeffects;
 
 type
-  TL2ActiveClass = class(TL2BaseClass)
+  TLActiveClass = class(TLSGBaseClass)
   private
     procedure InternalClear;
 
@@ -34,8 +34,9 @@ type
     end;
 
     FDBMods  :string;
-    FModIds  :TL2IdList;
-    FEffects :array [0..2] of TTL2EffectList;
+    FModIds  :TL2IdList;               // TL2
+    FModNames:TL2StringList;           // TL1
+    FEffects :array [0..2] of TTLEffectList;
     FAugments:TL2StringList;
     FStats   :TL2IdValList;
 
@@ -44,8 +45,8 @@ type
   private
     function  GetStat(const iname:string):TRGInteger;
     procedure SetStat(const iname:string; aval:TRGInteger);
-    function  GetEffects(idx:integer):TTL2EffectList;
-    procedure SetEffects(idx:integer; aval:TTL2EffectList);
+    function  GetEffects(idx:integer):TTLEffectList;
+    procedure SetEffects(idx:integer; aval:TTLEffectList);
 
   public
     // true - mod found/replaced; false - unsupported mod
@@ -60,7 +61,8 @@ type
     property Coord  :TVector3   read FOrientation.FPosition;
 
     property ModIds  :TL2IdList      read FModIds   write FModIds;
-    property Effects[idx:integer]:TTL2EffectList read GetEffects write SetEffects;
+    property ModNames:TL2StringList  read FModNames write FModNames;
+    property Effects[idx:integer]:TTLEffectList read GetEffects write SetEffects;
     property Augments:TL2StringList  read FAugments;
     property Stats   :TL2IdValList   read FStats;
     property Stat[iname:string]:TRGInteger read GetStat  write SetStat;
@@ -74,25 +76,26 @@ uses
 
 //----- Init / Free -----
 
-constructor TL2ActiveClass.Create;
+constructor TLActiveClass.Create;
 begin
   inherited;
 end;
 
-destructor TL2ActiveClass.Destroy;
+destructor TLActiveClass.Destroy;
 begin
   InternalClear;
 
   inherited;
 end;
 
-procedure TL2ActiveClass.InternalClear;
+procedure TLActiveClass.InternalClear;
 var
   i,j:integer;
 begin
   FDBMods:='';
   
-  SetLength(FModIds,0);
+  SetLength(FModIds  ,0);
+  SetLength(FModNames,0);
 
   for i:=0 to 2 do
   begin
@@ -105,7 +108,7 @@ begin
   SetLength(FStats,0);
 end;
 
-procedure TL2ActiveClass.Clear;
+procedure TLActiveClass.Clear;
 begin
   InternalClear;
 
@@ -114,12 +117,12 @@ end;
 
 //----- properties -----
 
-function TL2ActiveClass.GetDBMods():string;
+function TLActiveClass.GetDBMods():string;
 begin
   result:=FDBMods;
 end;
 
-function TL2ActiveClass.GetStat(const iname:string):TRGInteger;
+function TLActiveClass.GetStat(const iname:string):TRGInteger;
 var
   i:integer;
 begin
@@ -131,7 +134,7 @@ begin
     result:=0;
 end;
 
-procedure TL2ActiveClass.SetStat(const iname:string; aval:TRGInteger);
+procedure TLActiveClass.SetStat(const iname:string; aval:TRGInteger);
 var
   i:integer;
 begin
@@ -140,7 +143,7 @@ begin
     Stats[i].value:=aval;
 end;
 
-function TL2ActiveClass.GetEffects(idx:integer):TTL2EffectList;
+function TLActiveClass.GetEffects(idx:integer):TTLEffectList;
 begin
   if (idx>=0) and (idx<=2) then
     result:=FEffects[idx]
@@ -148,7 +151,7 @@ begin
     result:=FEffects[0]
 end;
 
-procedure TL2ActiveClass.SetEffects(idx:integer; aval:TTL2EffectList);
+procedure TLActiveClass.SetEffects(idx:integer; aval:TTLEffectList);
 begin
   if (idx>=0) and (idx<=2) then
     FEffects[idx]:=aval
@@ -158,7 +161,7 @@ end;
 
 //----- Other -----
 
-function TL2ActiveClass.CheckForMods(alist:TTL2ModList):boolean;
+function TLActiveClass.CheckForMods(alist:TTL2ModList):boolean;
 var
   llist:TL2IdList;
   lmodid:TRGID;

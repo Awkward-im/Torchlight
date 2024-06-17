@@ -6,7 +6,7 @@ uses
   Classes,
   rgglobal,
   rgstream,
-  TL2Base;
+  TLSGBase;
 
 type
   tStatMob = packed record
@@ -74,7 +74,7 @@ type
   TTL2StringValList = array of TTL2StringVal;
 
 type
-  TTL2Stats = class(TL2BaseClass)
+  TTL2Stats = class(TLSGBaseClass)
   private
     procedure InternalClear;
 
@@ -84,8 +84,8 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TStream); override;
-    procedure SaveToStream  (AStream: TStream); override;
+    procedure LoadFromStream(AStream: TStream; aVersion:integer); override;
+    procedure SaveToStream  (AStream: TStream; aVersion:integer); override;
 
   private
     FStatMobs   :tStatMobArray;     // array [0..39] of byte;
@@ -119,7 +119,7 @@ type
     property Killers:TL2IdValList      read FStatKillers;
   end;
 
-function ReadLastBlock(AStream:TStream):TTL2Stats;
+function ReadLastBlock(AStream:TStream; aVersion:integer):TTL2Stats;
 
 
 implementation
@@ -159,7 +159,7 @@ begin
   inherited;
 end;
 
-procedure TTL2Stats.LoadFromStream(AStream:TStream);
+procedure TTL2Stats.LoadFromStream(AStream:TStream; aVersion:integer);
 var
   i,lcnt:integer;
 begin
@@ -291,7 +291,7 @@ begin
   LoadBlock(AStream);
 end;
 
-procedure TTL2Stats.SaveToStream(AStream:TStream);
+procedure TTL2Stats.SaveToStream(AStream:TStream; aVersion:integer);
 var
   i:integer;
 begin
@@ -367,10 +367,10 @@ begin
 end;
 
 
-function ReadLastBlock(AStream:TStream):TTL2Stats;
+function ReadLastBlock(AStream:TStream; aVersion:integer):TTL2Stats;
 begin
   result:=TTL2Stats.Create;
-  result.LoadFromStream(AStream);
+  result.LoadFromStream(AStream, aVersion);
 end;
 
 end.

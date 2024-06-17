@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ComCtrls, tl2save, tl2map, formChar;
+  ExtCtrls, ComCtrls, tlsave, tl2map, formChar;
 
 type
 
@@ -22,11 +22,11 @@ type
     procedure lvUnitListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
   private
     FChar:TfmChar;
-    SGame:TTL2SaveFile;
+    SGame:TTLSaveFile;
     FMap:TTL2Map;
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile; idx:integer);
+    procedure FillInfo(aSGame:TTLSaveFile; idx:integer);
 
   end;
 
@@ -39,7 +39,7 @@ implementation
 
 uses
   formButtons,
-  tl2char,
+  tlsgchar,
   tl2db;
 
 const
@@ -48,7 +48,7 @@ const
 
 procedure TfmUnits.lvUnitListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 var
-  lunit:TTL2Character;
+  lunit:TTLCharacter;
 begin
   if Selected then
   begin
@@ -72,10 +72,10 @@ begin
   FChar.Align :=alClient;
 end;
 
-procedure TfmUnits.FillInfo(aSGame:TTL2SaveFile; idx:integer);
+procedure TfmUnits.FillInfo(aSGame:TTLSaveFile; idx:integer);
 var
   ls:string;
-  lunit:TTL2Character;
+  lunit:TTLCharacter;
   i,limg:integer;
 begin
   SGame:=aSGame;

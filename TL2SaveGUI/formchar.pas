@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
   Spin, ExtCtrls, Buttons, Grids, SpinEx,
-  rgglobal, tl2save, tl2char, tl2db, formSkills, formItems, formEffects;
+  rgglobal, tlsave, tlsgchar, tl2db, formSkills, formItems, formEffects;
 
 type
   tCharInfoType = (ciPlayer, ciPet, ciUnit);
@@ -16,7 +16,9 @@ type
 
   TfmChar = class(TForm)
     bbUpdate: TBitBtn;
+
     lblCustomClass: TLabel;
+
     pnlTop: TPanel;
     pcCharInfo: TPageControl;
 
@@ -76,9 +78,22 @@ type
 
     // Wardrobe
     tsWardrobe: TTabSheet;
-    edSkin: TEdit;  lblSkin: TLabel;  cbSkins: TComboBox;
 
     gbWardrobe: TGroupBox;
+    lblWardFace     : TLabel;    cbWardFace     : TComboBox;
+    lblWardHair     : TLabel;    cbWardHair     : TComboBox;
+    lblWardColor    : TLabel;    cbWardColor    : TComboBox;
+    lblWardFeature1 : TLabel;    cbWardFeature1 : TComboBox;
+    lblWardFeature2 : TLabel;    cbWardFeature2 : TComboBox;
+    lblWardFeature3 : TLabel;    cbWardFeature3 : TComboBox;
+    lblWardGloves   : TLabel;    cbWardGloves   : TComboBox;
+    lblWardHead     : TLabel;    cbWardHead     : TComboBox;
+    lblWardTorso    : TLabel;    cbWardTorso    : TComboBox;
+    lblWardPants    : TLabel;    cbWardPants    : TComboBox;
+    lblWardShoulders: TLabel;    cbWardShoulders: TComboBox;
+    lblWardBoots    : TLabel;    cbWardBoots    : TComboBox;
+
+    edSkin: TEdit;  lblSkin: TLabel;  cbSkins: TComboBox;
 
     // Action
     tsAction: TTabSheet;
@@ -121,6 +136,7 @@ type
     procedure bbManualClick(Sender: TObject);
     procedure bbUpdateClick(Sender: TObject);
     procedure cbKeepBaseClick(Sender: TObject);
+    procedure cbWardFaceChange(Sender: TObject);
     procedure seFreePointsChange(Sender: TObject);
     procedure sgStatsEditingDone(Sender: TObject);
     procedure StatChange(Sender: TObject);
@@ -146,8 +162,13 @@ type
     FSkillForm:TfmSkills;
     FItems    :TfmItems;
 
-    FSGame:TTL2SaveFile;
-    FChar :TTL2Character;
+    FSGame:TTLSaveFile;
+    FChar :TTLCharacter;
+
+    // can be global
+    WardrobeData  : TWardrobeData;
+    WardIdx:array [0..11] of integer;
+    ClassWardrobe : array [0..11,0..49] of integer;
 
     FClasses:tClassArray;
     FPets   :tPetArray;
@@ -171,16 +192,19 @@ type
     procedure FillClassCombo();
     procedure FillPetInfo;
     procedure FillPlayerInfo;
+    procedure FillWardMatrix(const alist:string);
     procedure FixPlayerInfo;
     function GetClassIndex(id: TRGID): integer;
 
     function GetMainFlag:boolean;
+    function GetWardTitle(idx: integer; aval: integer): string;
     procedure SetupVisualPart;
 
     procedure SetCharSpell(cb: TComboBox; idx: integer);
     procedure GetCharSpell(cb: TComboBox; idx: integer);
     procedure InitSpellBlock;
     function SearchAltGender(aclass: TRGID; out aname: string): integer;
+    procedure SetWardCombo(acb: TComboBox; aidx: integer; aval: integer);
     procedure UpdatePetInfo();
     procedure UpdatePlayerInfo();
 
@@ -190,7 +214,7 @@ type
 
   public
     constructor Create(AOwner:TComponent; atype:tCharInfoType); overload;
-    procedure FillInfo(aChar:TTL2Character; aSGame:TTL2SaveFile=nil);
+    procedure FillInfo(aChar:TTLCharacter; aSGame:TTLSaveFile=nil);
 
     property IsMain    :boolean   read GetMainFlag;
     property Configured:boolean   read FConfigured write SetConfigured;
@@ -211,6 +235,8 @@ uses
   unitGlobal;
 
 resourcestring
+  rsDefault = 'Default';
+
   rsStrength   = 'Strength';
   rsDexterity  = 'Dexterity';
   rsFocus      = 'Focus';
@@ -416,7 +442,7 @@ begin
   else
     idx:=-1;
 
-  if FChar.IsChar then
+  if FChar.CharType=ctPlayer then
   begin
 
     if idx>=0 then
@@ -431,7 +457,7 @@ begin
     DrawCharIcon(licon,imgIcon);
   end;
 
-  if FChar.IsPet then
+  if FChar.CharType=ctPet then
   begin
     if idx>=0 then
     begin
@@ -555,7 +581,7 @@ begin
       edExperience.Text:=IntToStr(ExpGate[seLevel.Value-2]+1);
 
     FLevel:=seLevel.Value;
-    if FChar.IsChar then
+    if FChar.CharType=ctPlayer then
     begin
       RecalcFreePoints;
 
@@ -812,6 +838,7 @@ begin
       cbDifficulty.AddItem(rsExpert ,nil);
 
       pcCharInfo.ActivePage:=tsView;
+
     end;
 
     ciPet: begin
@@ -858,8 +885,120 @@ var
   i:integer;
 begin
   lbModList.Clear;
-  for i:=0 to High(FChar.ModIds) do
-    lbModList.AddItem(GetTL2Mod(FChar.ModIds[i]),nil);
+  if FChar.ModIds<>nil then
+    for i:=0 to High(FChar.ModIds) do
+      lbModList.AddItem(GetTL2Mod(FChar.ModIds[i]),nil);
+  if FChar.ModNames<>nil then
+    for i:=0 to High(FChar.ModNames) do
+      lbModList.AddItem(FChar.ModNames[i],nil);
+end;
+
+const
+  WardNames:array [0..11] of string = (
+    'FACE',
+    'HAIR',
+    'HAIRCOLOR',
+    'FEATURE1',
+    'FEATURE2',
+    'FEATURE3',
+    'GLOVES',
+    'HEAD',
+    'TORSO',
+    'PANTS',
+    'SHOULDERS',
+    'BOOTS'
+  );
+function WardNameToIdx(const aname:string):integer;
+var
+  i:integer;
+begin
+  for i:=0 to High(WardNames) do
+    if aname=WardNames[i] then exit(i);
+  result:=-1;
+end;
+
+function TfmChar.GetWardTitle(idx:integer; aval:integer):string;
+var
+  i:integer;
+begin
+  result:='';
+  if aval<0 then exit;
+  aval:=ClassWardrobe[idx,aval];
+  if aval<0 then exit;
+  for i:=0 to High(WardrobeData) do
+  begin
+    if WardrobeData[i].id=aval then
+    begin
+      result:=WardrobeData[i].name;
+      exit;
+    end;
+  end;
+end;
+
+procedure TfmChar.SetWardCombo(acb:TComboBox; aidx:integer; aval:integer);
+var
+  i:integer;
+begin
+  acb.Clear;
+  acb.Items.Add(rsDefault);
+  for i:=0 to WardIdx[aidx]-1 do
+    acb.Items.Add(GetWardTitle(aidx,i));
+  acb.ItemIndex:=aval+1;
+end;
+
+procedure TfmChar.FillWardMatrix(const alist:string);
+var
+  buf:array [0..15] of AnsiChar;
+  aval,pc:PAnsiChar;
+  lcnt,i,j,lval,ltype:integer;
+begin
+  FillChar(ClassWardrobe,SizeOf(ClassWardrobe),#255);
+
+  pc:=Pointer(alist);
+  lcnt:=SplitCountA(pointer(alist),',');
+  if lcnt>0 then
+  begin
+    FillChar(WardIdx,SizeOf(WardIdx),0);
+    for i:=0 to lcnt-1 do
+    begin
+      // Get next ID
+      j:=0;
+      repeat
+        while pc^=',' do inc(pc);
+        buf[j]:=pc^;
+        inc(j);
+        inc(pc);
+      until (pc^=',') or (pc^=#0);
+      buf[j]:=#0;
+      Val(buf,lval);
+      // Get type by ID
+      for j:=0 to High(WardrobeData) do
+      begin
+        // Add ID to matrix
+        if WardrobeData[j].id=lval then
+        begin
+          ltype:=WardNameToIdx(WardrobeData[j]._type);
+          ClassWardrobe[ltype,WardIdx[ltype]]:=lval;
+          inc(WardIdx[ltype]);
+          break;
+        end;
+      end;
+    end;
+
+    SetWardCombo(cbWardFace     , 0,FChar.Face     );
+    SetWardCombo(cbWardHair     , 1,FChar.Hairstyle);
+    SetWardCombo(cbWardColor    , 2,FChar.HairColor);
+    SetWardCombo(cbWardFeature1 , 3,FChar.Feature1 );
+    SetWardCombo(cbWardFeature2 , 4,FChar.Feature2 );
+    SetWardCombo(cbWardFeature3 , 5,FChar.Feature3 );
+    SetWardCombo(cbWardGloves   , 6,FChar.Gloves   );
+    SetWardCombo(cbWardHead     , 7,FChar.Head     );
+    SetWardCombo(cbWardTorso    , 8,FChar.Torso    );
+    SetWardCombo(cbWardPants    , 9,FChar.Pants    );
+    SetWardCombo(cbWardShoulders,10,FChar.Shoulders);
+    SetWardCombo(cbWardBoots    ,11,FChar.Boots    );
+  end;
+
 end;
 
 procedure TfmChar.FillPlayerInfo;
@@ -955,9 +1094,16 @@ begin
 
   DrawCharIcon(licon,imgIcon);
 
-  //----- Action
+  //--- Action ---
 
   InitSpellBlock();
+
+  //--- Wardrobe ---
+
+  if WardrobeData=nil then
+    GetWardrobe(WardrobeData);
+
+  FillWardMatrix(GetClassWardrobe(FChar.ID));
 
   //--- Statistic ---
 
@@ -1056,7 +1202,7 @@ begin
 
 end;
 
-procedure TfmChar.FillInfo(aChar:TTL2Character; aSGame:TTL2SaveFile=nil);
+procedure TfmChar.FillInfo(aChar:TTLCharacter; aSGame:TTLSaveFile=nil);
 var
   ls:string;
   i:integer;
@@ -1090,10 +1236,10 @@ begin
   FSGame:=aSGame;
   FChar :=aChar;
 
-  if      FChar.IsChar then FillPlayerInfo()
-  else if FChar.IsPet  then FillPetInfo()
+  case FChar.CharType of
+    ctPlayer: FillPlayerInfo();
+    ctPet   : FillPetInfo();
   else
-  begin
     edClass.Text:=GetTL2Mob(FChar.ID);
     seLevel.MaxValue:=999;
     seFame .MaxValue:=1;
@@ -1130,8 +1276,12 @@ begin
   edZ.Text:=FloatToStrF(FChar.Coord.Z,ffFixed,-8,2);
 
   lbModList.Clear;
-  for i:=0 to High(FChar.ModIds) do
-    lbModList.AddItem(GetTL2Mod(FChar.ModIds[i]),nil);
+  if FChar.ModIds<>nil then
+    for i:=0 to High(FChar.ModIds) do
+      lbModList.AddItem(GetTL2Mod(FChar.ModIds[i]),nil);
+  if FChar.ModNames<>nil then
+    for i:=0 to High(FChar.ModNames) do
+      lbModList.AddItem(FChar.ModNames[i],nil);
 
   sgStats.BeginUpdate;
   sgStats.Clear;
@@ -1212,6 +1362,21 @@ begin
     else
       FChar.FreeSkillPoints:=0;
   end;
+
+  //--- Wardrobe
+
+  FChar.Face     :=cbWardFace     .ItemIndex-1;
+  FChar.Hairstyle:=cbWardHair     .ItemIndex-1;
+  FChar.HairColor:=cbWardColor    .ItemIndex-1;
+  FChar.Feature1 :=cbWardFeature1 .ItemIndex-1;
+  FChar.Feature2 :=cbWardFeature2 .ItemIndex-1;
+  FChar.Feature3 :=cbWardFeature3 .ItemIndex-1;
+  FChar.Gloves   :=cbWardGloves   .ItemIndex-1;
+  FChar.Head     :=cbWardHead     .ItemIndex-1;
+  FChar.Torso    :=cbWardTorso    .ItemIndex-1;
+  FChar.Pants    :=cbWardPants    .ItemIndex-1;
+  FChar.Shoulders:=cbWardShoulders.ItemIndex-1;
+  FChar.Boots    :=cbWardBoots    .ItemIndex-1;
 
   //--- Statistic
   if sgStats.Modified then
@@ -1302,8 +1467,8 @@ begin
 
   //--- Personal
 
-  if FChar.IsChar then UpdatePlayerInfo();
-  if FChar.IsPet  then UpdatePetInfo();
+  if FChar.CharType=ctPlayer then UpdatePlayerInfo();
+  if FChar.CharType=ctPet    then UpdatePetInfo();
 
   bbUpdate.Enabled:=false;
   FChar.Changed:=true;
@@ -1327,6 +1492,11 @@ begin
     seFocus    .MinValue:=1;
     seVitality .MinValue:=1;
   end;
+end;
+
+procedure TfmChar.cbWardFaceChange(Sender: TObject);
+begin
+  bbUpdate.Enabled:=true;
 end;
 
 end.

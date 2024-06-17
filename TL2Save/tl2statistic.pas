@@ -13,7 +13,11 @@ uses
 resourcestring
   rsTotalTime   = 'Time Played';
   rsGold        = 'Gold Gathered';
+
+//  rsAncestors   = 'Ancestors';   // TL1
+  rsLevelsDone  = 'Levels Explored'; // TL1
   rsUnknownStat = 'Unknown Stat';
+
   rsSteps       = 'Steps Taken';
   rsQuestsDone  = 'Quests completed';
   rsDeaths      = 'Deaths';
@@ -35,11 +39,16 @@ resourcestring
   rsExploded    = 'Monsters Exploded';
 
 const
-  StatsCount = 22;
+  StatsCountTL1 = 18;
+  StatsCountTL2 = 22;
 
   statTotalTime  =  0; // total time in game, msec
   statGold       =  1; // gold collected
+  // unknown (yet) what is this
+  statAncestors  =  2; // TL1 or 0 (not time)
+  statLevelsDone =  2; // TL1
   statUnknown    =  2; // ?? has 0 on new, 2 on middle and 7 on NG+ main char
+
   statSteps      =  3; // steps done
   statQuests     =  4; // tasks (quests) done
   statDeaths     =  5; // number of deaths
@@ -61,7 +70,7 @@ const
   statExploded   = 21; // mobs exploded
 
 type
-  TTL2Statistic = array [0..StatsCount-1] of TRGInteger;
+  TTL2Statistic = array [0..StatsCountTL2-1] of TRGInteger;
 
 
 function GetStatDescr  (idx:integer):string;
@@ -80,7 +89,9 @@ begin
   case idx of
     statTotalTime : result:=rsTotalTime  ;
     statGold      : result:=rsGold       ;
-    statUnknown   : result:=rsUnknownStat;
+//    statAncestors : result:=rsAncestors  ;
+    statLevelsDone: result:=rsLevelsDone ;
+//    statUnknown   : result:=rsUnknownStat;
     statSteps     : result:=rsSteps      ;
     statQuests    : result:=rsQuestsDone ;
     statDeaths    : result:=rsDeaths     ;
@@ -118,10 +129,18 @@ end;
 function IsStatEditable(idx:integer):boolean;
 begin
   case idx of
+    statTotalTime,
+    statLevelTime: result:=false;
+  else
+    result:=true;
+  end;
+{
+  case idx of
     statDeaths: result:=true;
   else
     result:=false;
   end;
+}
 end;
 
 function IsStatNumeric(idx:integer):boolean;

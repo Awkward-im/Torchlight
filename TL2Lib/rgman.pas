@@ -64,7 +64,7 @@ type
     function SaveToStream(ast:TStream; aver:integer):integer;
     function SaveToFile  (const afname:string; aver:integer):integer;
 
-    function ParseZip(aunzip:TUnZipper):integer;
+    function ParseZip(aunzip:TUnZipper; afilter:boolean=true):integer;
 
   // Properties statistic
   public
@@ -440,72 +440,64 @@ begin
 end;
 {%ENDREGION}
 
-function TRGManifest.ParseZip(aunzip:TUnZipper):integer;
+
+function TRGManifest.ParseZip(aunzip:TUnZipper; afilter:boolean=true):integer;
 var
   lentry:TFullZipFileEntry;
-  lext,lname:string;
-//  lroot:array [0..63] of WideChar;
+  sl:TStringList;
+  lname:string;
   lrootlen:integer;
-  pc:PUnicodeChar;
-  i,j,lfile:integer;
+  i,lfile:integer;
 begin
-  // 1 - extract root
-  lname:=aunzip.Entries[0].ArchiveFileName;
   lrootlen:=Length(FRoot);
-{
-  if lname<>'' then
-  begin
-    lrootlen:=1;
-    while not (lname[lrootlen] in ['/',#0]) do
-    begin
-      lroot[lrootlen-1]:=UnicodeChar(ORD(UpCase(lname[lrootlen])));
-      inc(lrootlen);
-    end;
-    lroot[lrootlen-1]:='/';
-    lroot[lrootlen]:=#0;
-    Root:=@lroot;
-  end;
-}
-  //!!!NEED to remove parent mod folder (maybe other than MEDIA/ too)
+
   result:=aunzip.Entries.Count;
+
+  if afilter then
+  begin
+    sl:=TStringList.Create;
+    sl.Sorted:=true;
+    sl.Capacity:=result;
+
+    for i:=0 to result-1 do
+      sl.Add(UpCase(aunzip.Entries[i].ArchiveFileName));
+  end;
+
   for i:=0 to result-1 do
   begin
     lentry:=aunzip.Entries[i];
-//    if lentry.IsDirectory then
-//      AddPath(ExtractFilePath(lentry.ArchiveFileName));
-//    else
-    begin
-      lname:=UpCase(lentry.ArchiveFileName);
+    lname:=UpCase(lentry.ArchiveFileName);
+
+    if afilter then
       // skip compiled files
-      if IsExtFile(lname) then
+      if (not lentry.IsDirectory) and IsExtFile(lname) then
       begin
-        for j:=0 to result-1 do
-        begin
-          if lname=UpCase(aunzip.Entries[j].ArchiveFileName) then
-          begin
-            lname:='';
-            break;
-          end;
-        end;
-        if lname='' then continue;
+        if sl.IndexOf(lname)=0 then
+          continue;
       end;
-      lfile:=AddPath(ExtractPath(lname));
-      lfile:=AddFile(lfile,pointer(UnicodeString(ExtractName(lname))));
-      with PManFileInfo(Files[lfile])^ do
-      begin
-        checksum:=lentry.CRC32;
-        if lentry.IsDirectory then
-          ftype:=typeDirectory
-        else
-          ftype   :=PAKExtType(lname);
-        offset  :=i;
-        size_s  :=lentry.Size;
-        size_c  :=lentry.CompressedSize;
-        size_u  :=lentry.Size;
-        ftime   :=DateTimeToFileTime(lentry.DateTime);
-      end;
+
+    if lrootlen>0 then
+      lname:=Copy(lname,lrootlen+1);
+
+    lfile:=AddPath(ExtractPath(lname));
+    lfile:=AddFile(lfile,pointer(UnicodeString(ExtractName(lname))));
+    with PManFileInfo(Files[lfile])^ do
+    begin
+      checksum:=lentry.CRC32;
+      if lentry.IsDirectory then
+        ftype:=typeDirectory
+      else
+        ftype:=PAKExtType(lname);
+      offset  :=i;
+      size_s  :=lentry.Size;
+      size_c  :=lentry.CompressedSize;
+      size_u  :=lentry.Size;
+      ftime   :=DateTimeToFileTime(lentry.DateTime);
     end;
   end;
+
+  if afilter then
+    sl.Free;
 end;
 
 end.

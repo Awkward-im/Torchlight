@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
   Buttons, SpinEx, Types,
-  tl2char, rgglobal, tl2db;
+  tlsgchar, rgglobal, tl2db;
 
 type
 
@@ -47,7 +47,7 @@ type
     OldCheckPoints:boolean;
     OldSaveFull   :boolean;
 
-    FChar  :TTL2Character;  // reference to player (char level, free points, skills)
+    FChar  :TTLCharacter;  // reference to player (char level, free points, skills)
     FClass :TRGID;          // class id (to change skill list)
     FSkills:tSkillArray;    // class skills data
     FIcons :array of array [boolean] of TPicture; // skill icons learned/not
@@ -70,7 +70,7 @@ type
     procedure SetPlayerClass(const aclass: TRGID);
     procedure SetFame (aval:integer);
     procedure SetLevel(aval:integer);
-    procedure SetChar (achar:TTL2Character);
+    procedure SetChar (achar:TTLCharacter);
 
   public
     procedure RefreshInfo();
@@ -80,7 +80,7 @@ type
     property PlayerClass:TRGID read FClass write FNewClass;
     property Fame :integer write SetFame;
     property Level:integer write SetLevel;
-    property Player:TTL2Character read FChar write SetChar;
+    property Player:TTLCharacter read FChar write SetChar;
   end;
 
 
@@ -413,7 +413,7 @@ begin
   bbUpdate.Enabled:=FConfigured;
 end;
 
-procedure TfmSkills.SetChar(achar:TTL2Character);
+procedure TfmSkills.SetChar(achar:TTLCharacter);
 begin
   FChar:=achar;
   SetPlayerClass(FChar.ID);

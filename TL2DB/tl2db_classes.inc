@@ -21,6 +21,8 @@ function GetClassIcon(const aid:TRGID):string;
 
 function GetClassInfo(const aid:TRGID; out aicon:string; out astr, adex, aint, avit:integer):string;
 
+function GetClassWardrobe(const aid:TRGID):string;
+
 procedure GetClassGraphStat (const aid:TRGID; out agraph_hp,agraph_mp:string; out agraph_stat:integer);
 procedure GetClassGraphSkill(const aid:TRGID; out agraph_skill,agraph_fame:integer);
 
@@ -84,6 +86,11 @@ var
   lname:string;
 begin
   result:=GetTL2Class(aid,amods,lname);
+end;
+
+function GetClassWardrobe(const aid:TRGID):string;
+begin
+  result:=GetTextValue(aid,dbClassTable,'wardrobe');
 end;
 
 function GetTL2Class(const aid:TRGID):string;

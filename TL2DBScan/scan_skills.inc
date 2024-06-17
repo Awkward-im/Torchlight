@@ -20,7 +20,7 @@ var
 begin
   result:=false;
 
-  lmodid:=CheckForMod(ams,'skills', askill.id, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'skills', askill.id);
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO skills (id, name, title, descr, tier, icon,'+
@@ -130,7 +130,7 @@ function ProcessSkills(
 var
   p:pointer;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin

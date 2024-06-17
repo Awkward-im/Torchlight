@@ -1,10 +1,10 @@
-program tl2dump;
+program tl1dump;
 
 {$mode objfpc}{$H+}
 
 uses
   rgglobal,
-  tl2save{,tl2db};
+  tlsave{,tl2db};
 
 type
   tdummy = object
@@ -20,11 +20,11 @@ end;
 
 var
   dummy:tdummy;
-  tr:TTL2SaveFile;
+  tr:TTLSaveFile;
 begin
 //  LoadBases;
   RGLog.OnAdd:=@dummy.AddToLog;
-  tr:=TTL2SaveFile.Create;
+  tr:=TTLSaveFile.Create;
   tr.LoadFromFile(ParamStr(1));
   tr.Parse();
 

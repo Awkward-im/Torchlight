@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls, Buttons,
-  tl2save, rgglobal;
+  tlsave, rgglobal;
 
 type
 
@@ -29,14 +29,14 @@ type
     procedure sgRecipesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
-    SGame:TTL2SaveFile;
+    SGame:TTLSaveFile;
     OldActualState   :boolean;
     OldHaveTitleState:boolean;
 
     procedure FillInfoInt(alist: TL2IdList);
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile);
+    procedure FillInfo(aSGame:TTLSaveFile);
 
   end;
 
@@ -105,12 +105,6 @@ begin
   bbUpdate.Enabled:=true;
 end;
 
-procedure TfmRecipes.btnLearnAllClick(Sender: TObject);
-begin
-  FillInfoInt(GetRecipesList(cbJustActual.Checked, cbHaveTitle.Checked));
-  bbUpdate.Enabled:=true;
-end;
-
 procedure TfmRecipes.bbUpdateClick(Sender: TObject);
 var
   lRecipes:TL2IdList;
@@ -129,6 +123,12 @@ begin
   end;
   SGame.Recipes:=lRecipes;
   bbUpdate.Enabled:=false;
+end;
+
+procedure TfmRecipes.btnLearnAllClick(Sender: TObject);
+begin
+  FillInfoInt(GetRecipesList(cbJustActual.Checked, cbHaveTitle.Checked));
+  bbUpdate.Enabled:=true;
 end;
 
 procedure TfmRecipes.FillInfoInt(alist:TL2IdList);
@@ -150,7 +150,7 @@ begin
   sgRecipes.EndUpdate;
 end;
 
-procedure TfmRecipes.FillInfo(aSGame:TTL2SaveFile);
+procedure TfmRecipes.FillInfo(aSGame:TTLSaveFile);
 begin
   FillInfoInt(aSGame.Recipes);
 

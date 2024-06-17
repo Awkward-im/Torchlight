@@ -250,10 +250,6 @@
         <UnitName Value="RGScan"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>

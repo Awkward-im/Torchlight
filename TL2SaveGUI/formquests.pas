@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
-  tl2save;
+  tlsave;
 
 type
 
@@ -19,10 +19,10 @@ type
     procedure sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 
   private
-    SGame:TTL2SaveFile;
+    SGame:TTLSaveFile;
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile);
+    procedure FillInfo(aSGame:TTLSaveFile);
 
   end;
 
@@ -70,7 +70,7 @@ begin
   end;
 end;
 
-procedure TfmQuests.FillInfo(aSGame:TTL2SaveFile);
+procedure TfmQuests.FillInfo(aSGame:TTLSaveFile);
 var
   lname:string;
   lmod:string;

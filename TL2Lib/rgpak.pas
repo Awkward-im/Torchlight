@@ -33,6 +33,9 @@ const
   piFullParse = 2; // with packed/unpacked file size
 
 type
+
+  { TRGPAK }
+
   TRGPAK = class
   private
     FStream:TStream;
@@ -40,6 +43,8 @@ type
     // ZIP: buffer for extracted file
     FUnZipper: TUnZipper;
     FUnpSize :cardinal;
+    function UnpackFromPAK(afi: PManFileInfo; var aout: PByte): cardinal;
+    function UnpackFromZip(afi: PManFileInfo; var aout: PByte): cardinal;
   public
     man    :TRGManifest;
     modinfo:TTL2ModInfo;
@@ -65,13 +70,14 @@ type
 
     Procedure CStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
     Procedure DStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
-    procedure ReadModDat;
+
+    procedure ReadModDat(const aname: string);
 
   public
     constructor Create;
     destructor Destroy; override;
 
-    function  OpenPAK:boolean;
+    function  OpenPAK(force:boolean=false):boolean;
     procedure ClosePAK;
     function  GetInfo(const aname:string; aparse:integer=piNoParse):boolean;
     function  Clone(const aname:string):boolean;
@@ -249,29 +255,6 @@ begin
   end;
 end;
 
-//--- Unzip to memory buffer helpers (events OnCreateStream and OnDoneStream) ---
-
-Procedure TRGPAK.CStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
-begin
-  AStream:=TMemoryStream.Create;
-end;
-
-Procedure TRGPAK.DStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
-begin
-  if AItem<>nil then
-  begin
-    FUnpSize:=AStream.Size;
-    if (FBuf=nil) or (MemSize(FBuf)<(FUnpSize+2)) then
-    begin
-      if FBuf<>nil then FreeMem(FBuf);
-      GetMem(FBuf,Align(FUnpSize+2,BufferPageSize));
-    end;
-    move((AStream as TMemoryStream).Memory^,FBuf^,FUnpSize);
-    PWord(FBuf+FUnpSize)^:=0;
-  end;
-  AStream.Free;
-end;
-
 //----- PAK/MOD -----
 
 function TRGPAK.GetOpenStatus:boolean; inline;
@@ -279,14 +262,14 @@ begin
   result:=FStream<>nil;
 end;
 
-function TRGPAK.OpenPAK:boolean;
+function TRGPAK.OpenPAK(force:boolean=false):boolean;
 begin
   if (FName='') or (FSize=0) then exit(false);
-  if ABS(FVersion)=verTL1    then exit(false);
+  if ABS(FVersion) in [verUnk, verTL1] then exit(false);
 
   if FStream=nil then
   begin
-    if FSize<=MaxSizeForMem then //!!!!!!! get it just in Get Basic Info atm
+    if (FSize<=MaxSizeForMem) or force then //!!!!!!! get it just in Get Basic Info atm
     begin
       FStream:=TMemoryStream.Create;
       try
@@ -416,22 +399,101 @@ begin
 end;
 {$POP}
 
-procedure TRGPAK.ReadModDat();
-var
-  i:integer;
+function FixSize(var abuf:PByte; asize:integer):integer;
 begin
+  if abuf<>nil then
+    result:=MemSize(abuf);
+
+  if (abuf=nil) or (result<(asize+2)) then
+  begin
+    if abuf<>nil then FreeMem(abuf);
+    result:=Align(asize+2,BufferPageSize);
+    GetMem(abuf, result);
+  end;
+end;
+
+//--- Unzip to memory buffer helpers (events OnCreateStream and OnDoneStream) ---
+
+Procedure TRGPAK.CStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
+begin
+  AStream:=TMemoryStream.Create;
+end;
+
+Procedure TRGPAK.DStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
+begin
+  if AItem<>nil then
+  begin
+    FUnpSize:=AStream.Size;
+    FixSize(FBuf,FUnpSize);
+
+    move((AStream as TMemoryStream).Memory^,FBuf^,FUnpSize);
+    PWord(FBuf+FUnpSize)^:=0;
+  end;
+  AStream.Free;
+end;
+
+procedure TRGPAK.ReadModDat(const aname:string);
+var
+  lname:string;
+  lpos,i,lrootlen:integer;
+begin
+  lrootlen:=-1;
+  
   for i:=0 to FUnZipper.Entries.Count-1 do
   begin
-    if UpCase(ExtractFileName(FUnZipper.Entries[i].ArchiveFileName))='MOD.DAT' then
+
+    lname:=UpCase(FUnZipper.Entries[i].ArchiveFileName);
+
+    if lrootlen<0 then
     begin
-      man.Root:=pointer(UnicodeString(ExtractFilePath(FUnZipper.Entries[i].ArchiveFileName)));
+      lpos:=Pos('MEDIA/',lname);
+      if lpos>0 then
+      begin
+        if lpos=1 then lrootlen:=0
+        else
+        begin
+          if lname[lpos-1]='/' then
+          begin
+            lrootlen:=lpos-1;
+            man.Root:=pointer(UnicodeString(Copy(FUnZipper.Entries[i].ArchiveFileName,1,lrootlen)));
+          end;
+        end;
+      end;
+      if lrootlen>=0 then
+        continue;
+    end;
+
+    if ExtractFileName(lname)='MOD.DAT' then
+    begin
+      if lrootlen<0 then
+      begin
+        man.Root:=pointer(UnicodeString(ExtractFilePath(FUnZipper.Entries[i].ArchiveFileName)));
+        lrootlen:=Length(man.Root);
+      end;
       FUnZipper.UnZipFile(FUnZipper.Entries[i].ArchiveFileName);
       ReadModConfig(FBuf,modinfo);
 
       break;
     end;
   end;
+
+  if lrootlen<0 then lrootlen:=0;
+
+  if modinfo.title=nil then
+  begin
+    if man.Root<>nil then
+    begin
+      modinfo.title:=CopyWide(man.Root);
+      modinfo.title[lrootlen]:=#0;
+    end
+    else
+    begin
+      modinfo.title:=CopyWide(
+        pointer(UnicodeString(ExtractFileNameOnly(aname))));
+    end;
+  end;
 end;
+
 
 function TRGPAK.GetCommonInfo(const aname:string):boolean;
 var
@@ -449,6 +511,7 @@ begin
 
   if ABS(FVersion)=verTL1 then
   begin
+
     FUnZipper:=TUnZipper.Create;
 
     FUnZipper.FileName:=aname;
@@ -457,8 +520,9 @@ begin
     FUnZipper.OnDoneStream  :=@DStream;
     FUnZipper.Examine;
 
-    ReadModDat();
+    ReadModDat(aname);
     result:=man.ParseZip(FUnZipper)>0;
+
     exit;
   end;
 
@@ -689,7 +753,23 @@ end;
 
 //----- Unpack -----
 
-function TRGPAK.UnpackSingle(afi:PManFileInfo; var aout:PByte):cardinal;
+function TRGPAK.UnpackFromZip(afi:PManFileInfo; var aout:PByte):cardinal;
+var
+  lin:PByte;
+begin
+  result:=0;
+
+  FUnZipper.UnzipOneFile(FUnZipper.Entries[afi^.offset]);
+//  FUnZipper.UnZipFile(FUnZipper.Entries[afi^.offset].ArchiveFileName);
+
+  lin:=aout;
+  aout:=FBuf;
+  FBuf:=lin;
+
+  result:=FUnpSize;
+end;
+
+function TRGPAK.UnpackFromPAK(afi:PManFileInfo; var aout:PByte):cardinal;
 var
   lin:PByte;
   lsize_u,lsize_c:cardinal;
@@ -697,18 +777,6 @@ begin
   result:=0;
   if afi=nil then exit;
 //  if afi^.size_s=0 then exit;
-
-  if ABS(FVersion)=verTL1 then
-  begin
-    FUnZipper.UnZipFile(FUnZipper.Entries[afi^.offset].ArchiveFileName);
-
-    lin:=aout;
-    aout:=FBuf;
-    FBuf:=lin;
-
-    result:=FUnpSize;
-    exit;
-  end;
 
   lin:=nil;
   lsize_c:=ExtractFile(afi,lsize_u,lin);
@@ -732,14 +800,44 @@ begin
   end;
 end;
 
-function TRGPAK.UnpackFile(const afile:string; var aout:PByte):cardinal;
+function TRGPAK.UnpackSingle(afi:PManFileInfo; var aout:PByte):cardinal;
 begin
-  result:=UnpackSingle(PManFileInfo(man.Files[man.SearchFile(afile)]),aout);
+  if afi=nil then exit(0);
+
+  if ABS(FVersion)=verTL1 then
+    result:=UnpackFromZip(afi,aout)
+  else
+    result:=UnpackFromPAK(afi,aout);
+end;
+
+function TRGPAK.UnpackFile(const afile:string; var aout:PByte):cardinal;
+var
+  lfi:PManFileInfo;
+begin
+  lfi:=PManFileInfo(man.Files[man.SearchFile(afile)]);
+  if lfi=nil then exit(0);
+
+  if ABS(FVersion)=verTL1 then
+    result:=UnpackFromZip(lfi,aout)
+  else
+    result:=UnpackFromPAK(lfi,aout);
+//  result:=UnpackSingle(PManFileInfo(man.Files[man.SearchFile(afile)]),aout);
 end;
 
 function TRGPAK.UnpackFile(apath,aname:PUnicodeChar; var aout:PByte):cardinal;
+var
+  lfi:PManFileInfo;
 begin
-  result:=UnpackSingle(PManFileInfo(man.Files[man.SearchFile(apath,aname)]),aout);
+  lfi:=PManFileInfo(man.Files[man.SearchFile(apath,aname)]);
+  if lfi=nil then exit(0);
+
+  if ABS(FVersion)=verTL1 then
+  begin
+    result:=UnpackFromZip(lfi,aout);
+  end
+  else
+    result:=UnpackFromPAK(lfi,aout);
+//  result:=UnpackSingle(PManFileInfo(man.Files[man.SearchFile(apath,aname)]),aout);
 end;
 
 function TRGPAK.UnpackFile(const afile:string; const adir:string):boolean;
@@ -818,6 +916,7 @@ begin
   begin
     FUnZipper.OutputPath:=adir;
     FUnzipper.UnzipAllFiles;
+
     exit(true);
   end;
 

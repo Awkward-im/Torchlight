@@ -6,7 +6,8 @@
   return new      mod   line if not found and DoUpdate
   return          empty line if           no  DoUpdate
 }
-function CheckForMod(ams:pointer; const atable,anid,amodid:string):string;
+
+function CheckForMod(ams:pointer; const atable,awhere:string):string;
 var
   lSQL,lmodid:string;
   vm:pointer;
@@ -15,7 +16,7 @@ begin
   // let mean: ID not found
   result:=PModScanner(ams)^.FModMask;
 
-  lSQL:='SELECT modid FROM '+atable+' WHERE id='+anid;
+  lSQL:='SELECT modid FROM '+atable+' WHERE '+awhere;
   if sqlite3_prepare_v2(PModScanner(ams)^.db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
@@ -30,7 +31,7 @@ begin
           // ID found, mod found, update all - return existing mod line
           if lmodfound then result:=lmodid
           // ID found, mod not found, update all - return new mod line
-          else result:=lmodid+amodid+' ';
+          else result:=lmodid+PModScanner(ams)^.FModId+' ';
         end
         else
         begin
@@ -38,8 +39,8 @@ begin
           if not lmodfound then
           begin
             sqlite3_finalize(vm);
-            lmodid:=lmodid+amodid+' ';
-            lSQL:='UPDATE '+atable+' SET modid='''+lmodid+''' WHERE id='+anid;
+            lmodid:=lmodid+PModScanner(ams)^.FModId+' ';
+            lSQL:='UPDATE '+atable+' SET modid='''+lmodid+''' WHERE '+awhere;
             sqlite3_prepare_v2(PModScanner(ams)^.db,PChar(lSQL),-1,@vm,nil);
             sqlite3_step(vm);
           end;
@@ -53,15 +54,34 @@ begin
   if result<>'' then result:=''''+result+'''';
 end;
 
+function CheckNameForMod(ams:pointer; const atable,aname:string):string;
+begin
+  result:=CheckForMod(ams,atable,'name='''+aname+'''');
+end;
+
+function CheckIdForMod(ams:pointer; const atable,anid:string):string;
+begin
+  result:=CheckForMod(ams,atable,'id='+anid);
+end;
 
 function AddTheMod(adb:PSQLite3; const amodinfo:TTL2ModInfo):boolean;
 var
-  lmodid,lSQL:string;
+  lwhere,lmodid,lSQL,ltitle:string;
   vm:pointer;
   lver:integer;
 begin
-  Str(amodinfo.modid,lmodid);
-  lSQL:='SELECT version FROM Mods WHERE id='+lmodid;
+  ltitle:=amodinfo.title;
+  if (amodinfo.modid=0) or (amodinfo.modid=-1) then
+  begin
+    lmodid:='-1';
+    lwhere:='title='+ltitle;
+  end
+  else
+  begin
+    Str(amodinfo.modid,lmodid);
+    lwhere:='id='+lmodid;
+  end;
+  lSQL:='SELECT version FROM Mods WHERE '+lwhere;
   lver:=0;
   if sqlite3_prepare_v2(adb,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
   begin
@@ -73,12 +93,12 @@ begin
   if lver<>0 then
   begin
     if amodinfo.modver<=lver then exit(true);
-    lSQL:='UPDATE Mods SET version='+IntToStr(amodinfo.modver)+' WHERE id='+lmodid;
+    lSQL:='UPDATE Mods SET version='+IntToStr(amodinfo.modver)+' WHERE '+lwhere;
   end
   else
   begin
     lSQL:='INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
-          ' VALUES ('+lmodid              +', '+FixedText(amodinfo.title  )+
+          ' VALUES ('+lmodid              +', '+FixedText(ltitle)+
           ', '+IntToStr (amodinfo.modver )+', '+IntToStr (amodinfo.gamever)+
           ', '+FixedText(amodinfo.author )+', '+FixedText(amodinfo.descr)+
           ', '+FixedText(amodinfo.website)+', '+FixedText(amodinfo.download)+')';
@@ -86,7 +106,7 @@ begin
   result:=ExecuteDirect(adb,lSQL);
 end;
 
-function CreateModTable(adb:PSQLite3):boolean;
+function CreateModTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'mods') then
   begin
@@ -102,10 +122,18 @@ begin
       '    download TEXT,'+
       '    tags     TEXT );');
 
-    result:=ExecuteDirect(adb,
-      'INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
-            ' VALUES (0, ''Torchlight 2'', 0, 281582351482885, ''Runic Games'''+
-            ', ''Torchlight 2 game (without mods)'', NULL, NULL);');
+    if ABS(aver)=verTL1 then
+      result:=ExecuteDirect(adb,
+        'INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
+              ' VALUES (0, ''Torchlight'', 1, 0x0001000F00000000, ''Runic Games'''+
+              ', ''Torchlight game (without mods)'', NULL, NULL);');
+
+    if ABS(aver)=verTL2 then
+      result:=ExecuteDirect(adb,
+        'INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
+              ' VALUES (0, ''Torchlight 2'', 2, 0x0001001900090005, ''Runic Games'''+
+              ', ''Torchlight 2 game (without mods)'', NULL, NULL);');
+
 {!!!!!!!!!!!!!!
     PModScanner(ams)^.FModId  :='0';
     PModScanner(ams)^.FModMask:=' 0 ';

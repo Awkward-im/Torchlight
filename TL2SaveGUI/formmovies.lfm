@@ -6,6 +6,7 @@ object fmMovies: TfmMovies
   BorderStyle = bsNone
   ClientHeight = 306
   ClientWidth = 540
+  LCLVersion = '3.99.0.0'
   object sgMovies: TStringGrid
     Left = 0
     Height = 200
@@ -34,11 +35,13 @@ object fmMovies: TfmMovies
         ReadOnly = True
         SizePriority = 0
         Title.Caption = 'ID'
+        Width = 64
       end    
       item
         ReadOnly = True
         SizePriority = 0
         Title.Caption = 'Name'
+        Width = 64
       end    
       item
         ReadOnly = True
@@ -69,8 +72,8 @@ object fmMovies: TfmMovies
     Caption = '&Update'
     Default = True
     Kind = bkOK
-    OnClick = bbUpdateClick
     TabOrder = 1
+    OnClick = bbUpdateClick
   end
   object lblNote: TLabel
     Left = 8
@@ -78,7 +81,6 @@ object fmMovies: TfmMovies
     Top = 209
     Width = 163
     Caption = 'Just "Views" column is editable'
-    Color = clDefault
     ParentColor = False
   end
 end

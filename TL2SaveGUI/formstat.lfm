@@ -6,6 +6,7 @@ object fmStat: TfmStat
   BorderStyle = bsNone
   ClientHeight = 488
   ClientWidth = 741
+  LCLVersion = '3.99.0.0'
   object pcStatistic: TPageControl
     Left = 0
     Height = 488
@@ -34,7 +35,6 @@ object fmStat: TfmStat
           Top = 0
           Width = 84
           Caption = 'Character name'
-          Color = clDefault
           ParentColor = False
         end
         object edName: TEdit
@@ -51,7 +51,6 @@ object fmStat: TfmStat
           Top = 56
           Width = 79
           Caption = 'Character class'
-          Color = clDefault
           ParentColor = False
         end
         object edClass: TEdit
@@ -68,7 +67,6 @@ object fmStat: TfmStat
           Top = 112
           Width = 43
           Caption = 'Pet type'
-          Color = clDefault
           ParentColor = False
         end
         object edPet: TEdit
@@ -100,7 +98,6 @@ object fmStat: TfmStat
         Top = 7
         Width = 120
         Caption = 'Skill learn order history'
-        Color = clDefault
         ParentColor = False
       end
       object bbClearLearnHistory: TBitBtn
@@ -111,8 +108,8 @@ object fmStat: TfmStat
         Cancel = True
         Caption = 'Clear'
         Kind = bkCancel
-        OnClick = bbClearLearnHistoryClick
         TabOrder = 1
+        OnClick = bbClearLearnHistoryClick
       end
     end
     object tsMobs: TTabSheet

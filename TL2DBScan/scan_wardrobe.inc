@@ -1,5 +1,7 @@
 {%REGION Wardrobe}
 
+{NOTE: TL1 don't have it}
+
 type
   twardrobeinfo = record
     id    :string;
@@ -14,7 +16,7 @@ var
 begin
   result:=false;
 
-  lmodid:=CheckForMod(ams,'wardrobe', adata.id, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'wardrobe', adata.id);
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO wardrobe (id, name, type, gender, modid) VALUES ('+
@@ -38,7 +40,8 @@ begin
   for j:=0 to GetChildCount(anode)-1 do
   begin
     pp:=GetChild(anode,j);
-    if CompareWide(GetNodeName(pp),'FEATURE')=0 then
+    if (GetNodeType(pp)=rgGroup) and
+       (CompareWide(GetNodeName(pp),'FEATURE')=0) then
     begin
       for i:=0 to GetChildCount(pp)-1 do
       begin
@@ -66,19 +69,57 @@ begin
 
 end;
 
-function ScanWardrobe(ams:pointer):integer;
+function ProcessWardrobe(
+          abuf:PByte; asize:integer;
+          const adir,aname:string;
+          aparam:pointer):integer;
 var
   p:pointer;
+  i:int64;
 begin
-  result:=0;
+  result:=sres_fail;
+
+  if asize>0 then
+  begin
+    RGLog.Reserve('Scan '+adir+aname);
+
+    p:=ParseTextMem(abuf);
+    if p=nil then
+      p:=ParseDatMem(abuf);
+    
+    if p<>nil then
+    begin
+      i:=ScanWardrobeNode(aparam,p);
+
+      if i=0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
+//      if i=-1 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
+      if i>0 then result:=i;
+
+      DeleteNode(p);
+    end;
+
+    RGLog.Reserve('');
+  end;
+end;
+
+function CheckNameWard(const adir,aname:string; aparam:pointer):integer;
+begin
+  // no need to check subdirs content and don't increase count
+  if (Length(adir)>15) or (aname[Length(aname)]='/') then exit(sres_nocheck+sres_fail);
+
+	result:=1;
+end;
+
+function ScanWardrobe(ams:pointer):integer;
+begin
+  if PModScanner(ams)^.gamever=verTL1 then
+  begin
+    RGLog.Add('TL1 don''t support Wardrobe setup');
+    exit(0);
+  end;
 
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning wardrobe');
-  LoadFile(ams,'MEDIA/WARDROBE/WARDROBESETS.DAT',p);
-  if p<>nil then
-  begin
-    result:=ScanWardrobeNode(ams,p);
-    DeleteNode(p);
-  end;
+  result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/WARDROBE/', @ProcessWardrobe, @CheckNameWard);
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 

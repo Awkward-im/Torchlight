@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  Grids, tl2save, rgglobal, tl2db;
+  Grids, tlsave, rgglobal, tl2db;
 
 type
 
@@ -37,7 +37,7 @@ type
     procedure sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
 
   private
-    FSGame:TTL2SaveFile;
+    FSGame:TTLSaveFile;
 
     procedure CheckButtons;
     procedure FillGrid(agrid: TStringGrid; alist: TTL2ModList);
@@ -45,7 +45,7 @@ type
     procedure FillGridRow(agrid: TStringGrid; arow: integer; const amod: TModData);
 
   public
-    procedure FillInfo(aSGame: TTL2SaveFile);
+    procedure FillInfo(aSGame: TTLSaveFile);
 
   end;
 
@@ -193,7 +193,7 @@ begin
   end;
 end;
 
-procedure TfmModList.FillInfo(aSGame:TTL2SaveFile);
+procedure TfmModList.FillInfo(aSGame:TTLSaveFile);
 var
   llist:tModDataArray;
   i:integer;

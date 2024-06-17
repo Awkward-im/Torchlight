@@ -6,14 +6,13 @@ object fmMap: TfmMap
   BorderStyle = bsNone
   ClientHeight = 462
   ClientWidth = 722
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.99.0.0'
   object lblMatrix: TLabel
     Left = 8
     Height = 15
     Top = 51
     Width = 33
     Caption = 'Matrix'
-    Color = clDefault
     ParentColor = False
   end
   object lblMatrixValue: TLabel
@@ -23,7 +22,6 @@ object fmMap: TfmMap
     Width = 80
     Alignment = taCenter
     AutoSize = False
-    Color = clDefault
     ParentColor = False
   end
   object lbUnknList: TListBox
@@ -44,7 +42,6 @@ object fmMap: TfmMap
     Anchors = [akTop, akLeft, akRight]
     AutoSize = False
     Caption = 'Used Layouts'
-    Color = clDefault
     ParentColor = False
   end
   object lblTriggers: TLabel
@@ -53,7 +50,6 @@ object fmMap: TfmMap
     Top = 75
     Width = 43
     Caption = 'Triggers'
-    Color = clDefault
     ParentColor = False
   end
   object lblTriggerCount: TLabel
@@ -62,7 +58,6 @@ object fmMap: TfmMap
     Top = 75
     Width = 50
     AutoSize = False
-    Color = clDefault
     ParentColor = False
   end
   object sgLayData: TStringGrid
@@ -96,7 +91,6 @@ object fmMap: TfmMap
     Top = 8
     Width = 32
     Caption = 'Name'
-    Color = clDefault
     ParentColor = False
   end
   object lblMapName: TLabel
@@ -105,7 +99,6 @@ object fmMap: TfmMap
     Top = 27
     Width = 172
     AutoSize = False
-    Color = clDefault
     ParentColor = False
   end
   object btnTriggerExport: TButton
@@ -114,8 +107,8 @@ object fmMap: TfmMap
     Top = 75
     Width = 23
     Caption = 'E'
-    OnClick = btnTriggerExportClick
     TabOrder = 2
+    OnClick = btnTriggerExportClick
   end
   object lblTotalTime: TLabel
     Left = 8
@@ -123,7 +116,6 @@ object fmMap: TfmMap
     Top = 112
     Width = 62
     Caption = 'Total Time?'
-    Color = clDefault
     ParentColor = False
   end
   object lblTTimeValue: TLabel
@@ -132,7 +124,6 @@ object fmMap: TfmMap
     Top = 112
     Width = 80
     AutoSize = False
-    Color = clDefault
     ParentColor = False
   end
   object lblCurrentTime: TLabel
@@ -141,7 +132,6 @@ object fmMap: TfmMap
     Top = 136
     Width = 75
     Caption = 'Current Time?'
-    Color = clDefault
     ParentColor = False
   end
   object lblCTimeValue: TLabel
@@ -150,7 +140,6 @@ object fmMap: TfmMap
     Top = 136
     Width = 80
     AutoSize = False
-    Color = clDefault
     ParentColor = False
   end
   object sgLayouts: TStringGrid

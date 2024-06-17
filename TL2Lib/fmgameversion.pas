@@ -28,11 +28,15 @@ type
     rbGameRGO: TRadioButton;
     procedure FormCreate(Sender: TObject);
   private
+    FClassic: boolean;
+
     function  GetGameVer: integer;
     procedure SetGameVer(aver: integer);
+    procedure SetClassic(aval:boolean);
 
   public
     property Version:integer read GetGameVer write SetGameVer;
+    property Classic:boolean read FClassic   write SetClassic;
   end;
 
 var
@@ -54,6 +58,9 @@ begin
   rbGameHob.Caption:=GetGameName(verHob);
   rbGameRG .Caption:=GetGameName(verRG);
   rbGameRGO.Caption:=GetGameName(verRGO);
+
+  FClassic:=false;
+  rbGameTL2.Checked:=true;
 end;
 
 function TfmGameVer.GetGameVer:integer;
@@ -78,5 +85,12 @@ begin
   end;
 end;
 
-end.
+procedure TfmGameVer.SetClassic(aval:boolean);
+begin
+  FClassic:=aval;
+  rbGameHob.Enabled:=not aval;
+  rbGameRG .Enabled:=not aval;
+  rbGameRGO.Enabled:=not aval;
+end;
 
+end.

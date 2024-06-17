@@ -1,4 +1,7 @@
 {%REGION Movies}
+
+{NOTE: TL1 don't have it}
+
 function AddMovieToBase(ams:pointer;  aId:int64;
      const aname, atitle, apath:string; aviews:integer):boolean;
 var
@@ -7,7 +10,7 @@ begin
   result:=false;
 
   Str(aid,sid);
-  lmodid:=CheckForMod(ams,'movies', sid, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'movies', sid);
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO movies (id, name, title, path, views, modid) VALUES ('+
@@ -57,18 +60,24 @@ function ScanMovies(ams:pointer):integer;
 var
   p:pointer;
 begin
-  result:=0;
+  result:=sres_fail;
+
+  if PModScanner(ams)^.gamever=verTL1 then
+  begin
+    RGLog.Add('TL1 don''t support Movie clips setup');
+    exit;
+  end;
 
   LoadFile(ams,'MEDIA/MOVIES/MOVIES.DAT',p);
   if p<>nil then
   begin
-    if AddMovieNode(ams,p)>0 then
-      result:=1
-    else
+    result:=AddMovieNode(ams,p);
+    if result<=0 then
     begin
+      result:=sres_fail;
       if PModScanner(ams)^.FLogLevel>1 then RGLog.Add('can''t update MOVIES.DAT');
-      result:=0;
     end;
+
     DeleteNode(p);
   end;
 end;

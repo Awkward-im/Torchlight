@@ -6,8 +6,8 @@ object fmUnits: TfmUnits
   BorderStyle = bsNone
   ClientHeight = 540
   ClientWidth = 858
+  LCLVersion = '3.99.0.0'
   OnCreate = FormCreate
-  LCLVersion = '2.3.0.0'
   object pnlCharInfo: TPanel
     Left = 175
     Height = 540

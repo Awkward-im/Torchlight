@@ -3,6 +3,7 @@ object fmGameVer: TfmGameVer
   Height = 244
   Top = 250
   Width = 221
+  Caption = 'Choose'
   ClientHeight = 244
   ClientWidth = 221
   OnCreate = FormCreate

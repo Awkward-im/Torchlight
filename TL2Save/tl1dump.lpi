@@ -10,7 +10,7 @@
         <MainUnitHasScaledStatement Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="tl2dump"/>
+      <Title Value="tl1dump"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -21,11 +21,11 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="tl2dump"/>
+            <Filename Value="tl1dump"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);."/>
-            <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib"/>
+            <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -59,11 +59,11 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="tl2dump"/>
+            <Filename Value="tl1dump"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);."/>
-            <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib"/>
+            <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib;..\..\utils"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -90,11 +90,7 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="tl2dump.lpr"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="tl2save.pas"/>
+        <Filename Value="tl1dump.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
@@ -102,23 +98,9 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="tl2char.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Char"/>
-      </Unit>
-      <Unit>
         <Filename Value="tl2common.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Common"/>
-      </Unit>
-      <Unit>
-        <Filename Value="tl2item.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Item"/>
       </Unit>
       <Unit>
         <Filename Value="tl2map.pas"/>
@@ -126,25 +108,48 @@
         <UnitName Value="TL2Map"/>
       </Unit>
       <Unit>
-        <Filename Value="tl2effects.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Effects"/>
-      </Unit>
-      <Unit>
-        <Filename Value="tl2quest.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Quest"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\tl2types.pas"/>
+        <Filename Value="..\..\utils\logging.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="tl2parse.inc"/>
+        <Filename Value="tlsgbase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGBase"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsave.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSave"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgactive.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="tl2prepare.inc"/>
+        <Filename Value="tlsgchar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGChar"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgparse.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgprepare.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgitem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGItem"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgeffects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGEffects"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgquest.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
@@ -153,11 +158,11 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="tl2dump"/>
+      <Filename Value="tl1dump"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);."/>
-      <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib"/>
+      <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib;..\..\utils"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
   </CompilerOptions>

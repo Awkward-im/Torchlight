@@ -35,8 +35,19 @@ function GetTL2Mob  (const aid:TRGID; out amods:string):string; overload;
 function GetTL2Mob  (const aid:TRGID                  ):string; overload;
 function GetMobMods (const aid:TRGID):string;
 
-function GetTextValue(const aid:TRGID; const abase, afield:string):string;
-function GetIntValue (const aid:TRGID; const abase, afield:string):integer;
+type
+  TWardrobeData = array of record
+    id:integer;
+    _type:string; // integer;
+    name:string;
+  end;
+
+procedure GetWardrobe(var award:TWardrobeData);
+
+function GetTextValue(const atable, afield, acond:string):string;
+function GetIntValue (const atable, afield, acond:string):integer;
+function GetTextValue(const aid:TRGID; const atable, afield:string):string;
+function GetIntValue (const aid:TRGID; const atable, afield:string):integer;
 
 procedure SetFilter(amods:TTL2ModList);
 procedure SetFilter(amods:TL2IdList);
@@ -67,11 +78,12 @@ uses
 var
   db:PSQLite3=nil;
   ModFilter:string='';
+  gamever:integer;
 
 
 //----- Core functions -----
 
-function GetById(const id:TRGID; const abase:string; const awhere:string;
+function GetById(const id:TRGID; const atable:string; const awhere:string;
                  out amod:string; out aname:string):string;
 var
   aSQL,lwhere:string;
@@ -88,7 +100,7 @@ begin
       lwhere:=' AND '+awhere
     else
       lwhere:='';
-    aSQL:='SELECT title,modid,name FROM '+abase+' WHERE id='+aSQL+lwhere+' LIMIT 1';
+    aSQL:='SELECT title,modid,name FROM '+atable+' WHERE id='+aSQL+lwhere+' LIMIT 1';
 
     if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
     begin
@@ -105,7 +117,7 @@ begin
   end;
 end;
 
-function GetByName(const aname:string; const abase:string; out id:TRGID):string;
+function GetByName(const aname:string; const atable:string; out id:TRGID):string;
 var
   aSQL:string;
   vm:pointer;
@@ -115,7 +127,7 @@ begin
 
   if db<>nil then
   begin
-    aSQL:='SELECT id,title FROM '+abase+' WHERE name LIKE '''+aname+'''';
+    aSQL:='SELECT id,title FROM '+atable+' WHERE name LIKE '''+aname+'''';
 
     if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
     begin
@@ -129,7 +141,7 @@ begin
   end;
 end;
 
-function GetTextValue(const aid:TRGID; const abase, afield:string):string;
+function GetTextValue(const atable, afield, acond:string):string;
 var
   lSQL:string;
   vm:pointer;
@@ -137,8 +149,7 @@ begin
   result:='';
   if db<>nil then
   begin
-    Str(aid,lSQL);
-    lSQL:='SELECT '+afield+' FROM '+abase+' WHERE id='+lSQL;
+    lSQL:='SELECT '+afield+' FROM '+atable+' WHERE '+acond;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -150,7 +161,35 @@ begin
   end;
 end;
 
-function GetIntValue(const aid:TRGID; const abase, afield:string):integer;
+function GetTextValue(const aid:TRGID; const atable, afield:string):string;
+var
+  ls:string;
+{
+  lSQL:string;
+  vm:pointer;
+}
+begin
+  Str(aid,ls);
+  result:=GetTextValue(atable,afield,'id='+ls);
+{
+  result:='';
+  if db<>nil then
+  begin
+    Str(aid,lSQL);
+    lSQL:='SELECT '+afield+' FROM '+atable+' WHERE id='+lSQL;
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        result:=sqlite3_column_text(vm,0);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+}
+end;
+
+function GetIntValue(const atable, afield, acond:string):integer;
 var
   lSQL:string;
   vm:pointer;
@@ -159,8 +198,7 @@ begin
 
   if db<>nil then
   begin
-    Str(aid,lSQL);
-    lSQL:='SELECT '+afield+' FROM '+abase+' WHERE id='+lSQL;
+    lSQL:='SELECT '+afield+' FROM '+atable+' WHERE '+acond;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
@@ -170,6 +208,35 @@ begin
       sqlite3_finalize(vm);
     end;
   end;
+end;
+
+function GetIntValue(const aid:TRGID; const atable, afield:string):integer;
+var
+  ls:string;
+{
+  lSQL:string;
+  vm:pointer;
+}
+begin
+  Str(aid,ls);
+  result:=GetIntValue(atable,afield,'id='+ls);
+{
+  result:=-1;
+
+  if db<>nil then
+  begin
+    Str(aid,lSQL);
+    lSQL:='SELECT '+afield+' FROM '+atable+' WHERE id='+lSQL;
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        result:=sqlite3_column_int(vm,0);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+}
 end;
 
 //----- Movie Info -----
@@ -255,8 +322,50 @@ begin
   result:=GetTextValue(aid,'mobs','modid');
 end;
 
-//-----  -----
+//----- Wardrobe -----
 
+procedure GetWardrobe(var award:TWardrobeData);
+var
+  lSQL,ls:string;
+  vm:pointer;
+  i:integer;
+begin
+  if db<>nil then
+  begin
+
+    lSQL:='SELECT count(*) FROM Wardrobe';
+    i:=0;
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        i:=sqlite3_column_int(vm,0);
+      end;
+      sqlite3_finalize(vm);
+    end;
+
+    SetLength(award,i);
+
+    if i>0 then
+    begin
+      lSQL:='SELECT id, type, name FROM wardrobe';
+      if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+      begin
+        i:=0;
+        while sqlite3_step(vm)=SQLITE_ROW do
+        begin
+          award[i].id   :=sqlite3_column_int (vm,0);
+          award[i]._type:=sqlite3_column_text(vm,1);
+          award[i].name :=sqlite3_column_text(vm,2);
+          inc(i);
+        end;
+        sqlite3_finalize(vm);
+      end;
+    end;
+  end;
+end;
+
+//-----  -----
 
 procedure SetFilter(amods:TTL2ModList);
 var
@@ -389,6 +498,43 @@ begin
   sqlite3_close(pFile);
 end;
 
+procedure SetupGameVer;
+var
+  lSQL:string;
+  vm:pointer;
+begin
+  gamever:=verUnk;
+
+  if db<>nil then
+  begin
+    lSQL:='SELECT version FROM mods WHERE (id=0)';
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        case sqlite3_column_int(vm,0) of
+          1: gamever:=verTL1;
+          2: gamever:=verTL2;
+        else
+          gamever:=verUnk;
+        end;
+      end;
+      sqlite3_finalize(vm);
+    end;
+{
+    lSQL:='SELECT COUNT(*) FROM mods WHERE (id=0) AND (title=''''Torchlight'''')';
+    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        if sqlite3_column_int(vm,0)=0 then gamever:=verTL2 else gamever:=verTL1;
+      end;
+      sqlite3_finalize(vm);
+    end;
+}
+  end;
+end;
+
 function LoadBases(const fname:string=''):integer;
 var
   f:file of byte;
@@ -416,6 +562,7 @@ begin
     begin
       try
         result:=CopyFromFile(db,PChar(lfname));
+        SetupGameVer;
       except
         sqlite3_close(db);
         db:=nil;
@@ -433,6 +580,7 @@ procedure UseBase(adb:pointer);
 begin
   if db<>nil then sqlite3_close(db);
   db:=adb;
+  SetupGameVer;
 end;
 
 procedure FreeBases;
@@ -442,9 +590,14 @@ begin
     sqlite3_close(db);
     db:=nil;
     ReleaseSqlite;
+    gamever:=verUnk;
   end;
 end;
 
+
+initialization
+
+  gamever:=verUnk;
 
 finalization
 //  ReleaseSqlite;

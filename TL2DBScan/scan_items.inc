@@ -1,5 +1,7 @@
 {%REGION Items}
 
+{TODO: Search unittype and icon by one function (avoid double scan)}
+
 type
   tItemInfo = record
     id      :string;
@@ -22,7 +24,7 @@ var
 begin
   result:=false;
 
-  lmodid:=CheckForMod(ams,'items', aitem.id, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'items', aitem.id);
   if lmodid<>'' then
   begin
     lfile:=LowerCase(aitem.afile);
@@ -47,14 +49,15 @@ var
   lbase:string;
   i:integer;
 begin
-{
-  'SELECT unittype FROM items WHERE file='+fname
-}
+  result:=GetTextValue(PModScanner(ams)^.db,'items','unittype','file='''+fname+'''');
+  if result<>'' then exit;
   
-  result:='';
   lbase :='';
 
   LoadFile(ams,fname,p);
+  if (p=nil) and (PModScanner(ams)^.gamever=verTL1) then
+    LoadFile(ams,fname+'.ADM',p);
+
   if p=nil then
   begin
     if PModScanner(ams)^.FLogLevel>1 then
@@ -90,10 +93,15 @@ var
   lbase:string;
   i:integer;
 begin
-  result:='';
+  result:=GetTextValue(PModScanner(ams)^.db,'items','icon','file='''+fname+'''');
+  if result<>'' then exit;
+
   lbase :='';
 
   LoadFile(ams,fname,p);
+  if (p=nil) and (PModScanner(ams)^.gamever=verTL1) then
+    LoadFile(ams,fname+'.ADM',p);
+
   if p=nil then
   begin
     if PModScanner(ams)^.FLogLevel>1 then
@@ -131,14 +139,16 @@ var
   lnode:pointer;
   pcw:PWideChar;
   litem:tItemInfo;
+  gicon:string;
   i:integer;
 begin
   result:=0;
 
+  gicon        :='';
   litem.title  :='';
   litem.ausable:='0';
   litem.base   :='';
-  litem.afile  :=fname;
+  litem.afile  :=FixFileExt(fname);
   litem.stack  :='1';
 
   if aquest then litem.quest:='1' else litem.quest:='0';
@@ -155,8 +165,7 @@ begin
     else if CompareWide(pcw,'USES'        )=0 then litem.ausable:=AsString(lnode)
     else if CompareWide(pcw,'MAXSTACKSIZE')=0 then Str(AsInteger(lnode),litem.stack)
     else if CompareWide(pcw,'ICON'        )=0 then litem.icon:=ExtractFileNameOnly(AsString(lnode))
-    else if (litem.icon='') and (CompareWide(pcw,'GAMBLER_ICON')=0) then
-      litem.icon:=ExtractFileNameOnly(AsString(lnode))
+    else if CompareWide(pcw,'GAMBLER_ICON')=0 then gicon     :=ExtractFileNameOnly(AsString(lnode))
     else if CompareWide(pcw,'UNITTYPE')=0 then
     begin
       litem.unittype:=AsString(lnode);
@@ -166,6 +175,7 @@ begin
            litem.quest:='1';
     end;
   end;
+  if (litem.icon='') and (gicon<>'') then litem.icon:=gicon;
 
   if (litem.base<>'') then
   begin
@@ -186,7 +196,7 @@ var
   ldir:string;
   i:integer;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin

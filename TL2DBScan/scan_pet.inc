@@ -1,5 +1,7 @@
 {%REGION Pet}
 
+{TODO: TL1: MEDIA/UNITS/MONSTERS/ UNITTYPE:PET}
+
 type
   tpetinfo = record
     id      :string;
@@ -20,7 +22,7 @@ var
 begin
   result:=false;
 
-  lmodid:=CheckForMod(ams,'pets', aPet.id, PModScanner(ams)^.FModId);
+  lmodid:=CheckIdForMod(ams,'pets', aPet.id);
   if lmodid<>'' then
   begin
     Str(aPet.Scale:0:2,lscale);
@@ -106,7 +108,7 @@ function ProcessPets(
 var
   p:pointer;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin

@@ -82,7 +82,7 @@ const
     (_type:typeDAT       ; _ext:'.DAT'),
     (_type:typeDAT       ; _ext:'.TEMPLATE'),
     (_type:typeLayout    ; _ext:'.LAYOUT'),
-    (_type:typeUnknown   ; _ext:'.UILAYOUT'), //!!
+    (_type:typeUnknown   ; _ext:'.UILAYOUT'),
     (_type:typeMesh      ; _ext:'.MESH'),
     (_type:typeSkeleton  ; _ext:'.SKELETON'),
     (_type:typeDDS       ; _ext:'.DDS'),
@@ -477,13 +477,33 @@ end;
 function PAKExtType(const aext:string):integer;
 var
   lext:string;
-  i:integer;
+  i,j,elen,slen:integer;
 begin
   if aext<>'' then
   begin
     if aext[Length(aext)] in ['\','/'] then
       exit(typeDirectory);
 
+    lext:=UpCase(FixFileExt(aext));
+
+    slen:=Length(lext);
+    for i:=0 to High(TableExt) do
+    begin
+      elen:=Length(TableExt[i]._ext);
+      if slen>elen then
+      begin
+        j:=slen;
+        while (elen>0) and (lext[j]=TableExt[i]._ext[elen]) do
+        begin
+          dec(elen);
+          dec(j);
+        end;
+        if elen=0 then
+          exit(TableExt[i]._type);
+      end;
+    end;
+
+{
     lext:=UpCase(aext);
     if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
       lext:=ExtractFileExt(lext);
@@ -506,7 +526,9 @@ begin
         if TableExt[i]._ext=lext then
           exit(TableExt[i]._type);
       end;
+}
   end;
+
   result:=typeUnknown;
 end;
 

@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="tl1dump.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="5"/>
+        <CursorPos Y="33"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DB\tl2db.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="15"/>
+        <CursorPos X="3" Y="30"/>
+        <UsageCount Value="100"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2common.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Common"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="24"/>
+        <CursorPos Y="45"/>
+        <UsageCount Value="99"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2map.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Map"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="308"/>
+        <CursorPos Y="320"/>
+        <UsageCount Value="99"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="82"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgbase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGBase"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="61"/>
+        <CursorPos Y="71"/>
+        <UsageCount Value="70"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsave.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSave"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="12" Y="6"/>
+        <UsageCount Value="70"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgactive.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="70"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgchar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGChar"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="415"/>
+        <CursorPos X="15" Y="440"/>
+        <UsageCount Value="70"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgparse.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="105"/>
+        <CursorPos Y="108"/>
+        <UsageCount Value="70"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgprepare.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="70"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgitem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGItem"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="161"/>
+        <CursorPos Y="186"/>
+        <UsageCount Value="54"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgeffects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGEffects"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="634"/>
+        <CursorPos Y="665"/>
+        <UsageCount Value="54"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlsgquest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="36"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2quest.pas"/>
+        <UnitName Value="TL2Quest"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="235"/>
+        <CursorPos Y="263"/>
+        <UsageCount Value="66"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2item.pas"/>
+        <UnitName Value="TL2Item"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="65"/>
+        <CursorPos Y="79"/>
+        <UsageCount Value="62"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2effects.pas"/>
+        <UnitName Value="TL2Effects"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="617"/>
+        <CursorPos Y="639"/>
+        <UsageCount Value="50"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl1char.pas"/>
+        <UnitName Value="TL1Char"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="307"/>
+        <CursorPos X="29" Y="329"/>
+        <FoldState Value=" T3mB05811 pmNsU0B1 PDF0Q"/>
+        <UsageCount Value="44"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl1save.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="215"/>
+        <CursorPos X="11" Y="248"/>
+        <FoldState Value=" T3l803A pj4jX0D614 PkbmZ0}"/>
+        <UsageCount Value="46"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl1parse.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="29"/>
+        <CursorPos X="6" Y="42"/>
+        <UsageCount Value="29"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl1prepare.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2"/>
+        <CursorPos X="25" Y="17"/>
+        <UsageCount Value="29"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl1active.pas"/>
+        <UnitName Value="TL1Active"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="27"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2char.pas"/>
+        <UnitName Value="TL2Char"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="200"/>
+        <CursorPos X="10" Y="217"/>
+        <UsageCount Value="33"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgstream.pas"/>
+        <UnitName Value="RGStream"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="89"/>
+        <CursorPos Y="110"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2statistic.pas"/>
+        <UnitName Value="TL2Statistic"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="58"/>
+        <CursorPos X="42" Y="73"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgstream.pas"/>
+        <UnitName Value="RGStream"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="215"/>
+        <CursorPos Y="230"/>
+        <UsageCount Value="41"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="294" TopLine="280"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="296" TopLine="280"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="297" TopLine="280"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="294" TopLine="280"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="303" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="304" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="303" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="304" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="303" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="304" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="303" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="306" TopLine="289"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="313" TopLine="298"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="318" TopLine="298"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="175" TopLine="159"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="319" TopLine="305"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="175" TopLine="159"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="319" TopLine="305"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="460" TopLine="444"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="454" TopLine="444"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="456" TopLine="444"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="458" TopLine="444"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="460" TopLine="444"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="461" TopLine="444"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="175" TopLine="160"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="176" TopLine="160"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="177" TopLine="160"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="179" TopLine="160"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="184" TopLine="160"/>
+      </Position>
+      <Position>
+        <Filename Value="tlsgitem.pas"/>
+        <Caret Line="185" TopLine="161"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default">
+        <Mode Name="default">
+          <local>
+            <CommandLineParams Value="D:\Dropbox\src\Torchlight\TL2Save\3.svt"/>
+          </local>
+        </Mode>
+      </Modes>
+    </RunParams>
+    <HistoryLists>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+      <List Name="CommandLineParameters" Count="3">
+        <Item1 Value="D:\Dropbox\src\Torchlight\TL2Save\3.svt"/>
+        <Item2 Value="D:\Dropbox\src\Torchlight\TL2Save\TL1\0.svt"/>
+        <Item3 Value="D:\Dropbox\src\Torchlight\TL2Save\2.svt"/>
+      </List>
+      <List Name="WorkingDirectory" Type="File" Count="1"/>
+    </HistoryLists>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="tl2quest.pas"/>
+        <Line Value="140"/>
+      </Item>
+    </BreakPoints>
+    <Watches>
+      <Item>
+        <Expression Value="i7"/>
+      </Item>
+      <Item>
+        <Expression Value="FName"/>
+      </Item>
+      <Item>
+        <Expression Value="DataOffset"/>
+      </Item>
+      <Item>
+        <Expression Value="i1"/>
+      </Item>
+      <Item>
+        <Expression Value="i3"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

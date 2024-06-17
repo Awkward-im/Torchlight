@@ -20,7 +20,7 @@ begin
     exit;
 
   p:=astr;
-  if p^=asep then inc(p);
+  while p^=asep do inc(p);
   while p^<>#0 do
   begin
     if p^=asep then inc(result);
@@ -38,7 +38,7 @@ begin
     exit;
 
   p:=astr;
-  if p^=asep then inc(p);
+  while p^=asep do inc(p);
   while p^<>#0 do
   begin
     if p^=asep then inc(result);

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, Buttons,
-  StdCtrls, tl2save, rgglobal;
+  StdCtrls, tlsave, rgglobal;
 
 type
 
@@ -22,10 +22,10 @@ type
     procedure sgMoviesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
   private
-    SGame:TTL2SaveFile;
+    SGame:TTLSaveFile;
 
   public
-    procedure FillInfo(aSGame:TTL2SaveFile);
+    procedure FillInfo(aSGame:TTLSaveFile);
 
   end;
 
@@ -85,7 +85,7 @@ begin
   bbUpdate.Enabled:=false;
 end;
 
-procedure TfmMovies.FillInfo(aSGame:TTL2SaveFile);
+procedure TfmMovies.FillInfo(aSGame:TTLSaveFile);
 var
   lmax,i:integer;
   lmod,lname,ltitle,lpath:string;

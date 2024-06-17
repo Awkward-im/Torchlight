@@ -10,21 +10,22 @@ QUESTCOMPLETE questName = sets a quest to complete
 QUESTRESET questName = resets a quest to not be active or complete
 
 }
-unit TL2Quest;
+unit TLSGQuest;
 
 interface
 
 uses
   Classes,
   rgglobal,
-  TL2Base,
+  TLSGBase,
   TL2Common,
   rgstream;
 
 
 type
-  TTL2QuestData = record
-    id  :TRGID;
+  TTLQuestData = record
+    id  :TRGID;                        // TL2
+    name:string;                       // TL1
     q1  :TRGID;
     d1  :TRGInteger;
     d2  :TRGInteger;
@@ -33,10 +34,10 @@ type
 
     ofs :integer;
   end;
-  TTL2QuestList = array of TTL2QuestData;
+  TTLQuestList = array of TTLQuestData;
 
 type
-  TTL2Quest = class(TL2BaseClass)
+  TTLQuest = class(TLSGBaseClass)
   private
     procedure InternalClear;
 
@@ -46,12 +47,12 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TStream); override;
-    procedure SaveToStream  (AStream: TStream); override;
+    procedure LoadFromStream(AStream: TStream; aVersion:integer); override;
+    procedure SaveToStream  (AStream: TStream; aVersion:integer); override;
 
   private
     FQuestsDone  :TL2IdList;
-    FQuestsUnDone:TTL2QuestList;
+    FQuestsUnDone:TTLQuestList;
 
     function GetQuestsDoneNum  :integer;
     function GetQuestsUnDoneNum:integer;
@@ -59,32 +60,32 @@ type
     property QuestsDoneNum  :integer read GetQuestsDoneNum;
     property QuestsUnDoneNum:integer read GetQuestsUnDoneNum;
 
-    property QuestsDone  :TL2IdList     read FQuestsDone;
-    property QuestsUnDone:TTL2QuestList read FQuestsUnDone;
+    property QuestsDone  :TL2IdList    read FQuestsDone;
+    property QuestsUnDone:TTLQuestList read FQuestsUnDone;
   end;
 
 
-function ReadQuests(AStream:TStream):TTL2Quest;
+function ReadQuests(AStream:TStream; aVersion:integer):TTLQuest;
 
 
 implementation
 
 
-constructor TTL2Quest.Create;
+constructor TTLQuest.Create;
 begin
   inherited;
 
   DataType:=dtQuest;
 end;
 
-destructor TTL2Quest.Destroy;
+destructor TTLQuest.Destroy;
 begin
   InternalClear;
 
   inherited;
 end;
 
-procedure TTL2Quest.InternalClear;
+procedure TTLQuest.InternalClear;
 var
   i:integer;
 begin
@@ -95,7 +96,7 @@ begin
   SetLength(FQuestsUnDone,0);
 end;
 
-procedure TTL2Quest.Clear;
+procedure TTLQuest.Clear;
 begin
   InternalClear;
 
@@ -104,47 +105,62 @@ end;
 
 //----- Property methods -----
 
-function TTL2Quest.GetQuestsDoneNum:integer;
+function TTLQuest.GetQuestsDoneNum:integer;
 begin
   result:=Length(FQuestsDone);
 end;
 
-function TTL2Quest.GetQuestsUnDoneNum:integer;
+function TTLQuest.GetQuestsUnDoneNum:integer;
 begin
   result:=Length(FQuestsUnDone);
 end;
 
 //----- Save / load -----
 
-procedure TTL2Quest.LoadFromStream(AStream: TStream);
+procedure TTLQuest.LoadFromStream(AStream: TStream; aVersion:integer);
 var
   i,lcnt:integer;
-  loffset:integer;
+  loffset,lbase:cardinal;
 begin
-  DataSize  :=AStream.ReadDWord;
+  if aVersion>=tlsaveTL2Minimal then
+    DataSize:=AStream.ReadDWord;
+
   DataOffset:=AStream.Position;
 
   //--- Finished quests
 
-  FQuestsDone:=AStream.ReadIdList;
+  if aVersion>=tlsaveTL2Minimal then
+    FQuestsDone:=AStream.ReadIdList;
 
   //--- Active quests
+
+  // Offset to next quest is from quests block (TL2) or file (TL1) start
+  if aVersion>=tlsaveTL2Minimal then
+    lbase:=DataOffset
+  else
+    lbase:=0;
 
   lcnt:=AStream.ReadDWord;
   SetLength(FQuestsUnDone,lcnt);
   for i:=0 to lcnt-1 do
   begin
-    loffset:=AStream.ReadDWord; // Offset to next quest from quests block start
+    loffset:=AStream.ReadDWord;
     with FQuestsUnDone[i] do
     begin
       ofs:=AStream.Position;
 
-      id:=TRGID(AStream.ReadQWord);
+      if aVersion>=tlsaveTL2Minimal then
+        id:=TRGID(AStream.ReadQWord)
+      else
+      begin
+        name:=AStream.ReadShortString;
+      end;
       q1:=TRGID(Check(AStream.ReadQWord,'quest_8_'+HexStr(AStream.Position,8),QWord(RGIdEmpty)));
-      d1:=AStream.ReadDWord;
+      d1:=integer(AStream.ReadDWord);
       d2:=TRGInteger(Check(AStream.ReadDWord,'quest_4_'+HexStr(AStream.Position,8),$FFFFFFFF));
 
-      len :=(DataOffset+loffset)-AStream.Position;
+      len:=(lbase+loffset)-AStream.Position;
+
       data:=AStream.ReadBytes(len);
     end;
   end;
@@ -152,11 +168,13 @@ begin
   LoadBlock(AStream);
 end;
 
-procedure TTL2Quest.SaveToStream(AStream: TStream);
+procedure TTLQuest.SaveToStream(AStream: TStream; aVersion:integer);
 var
+  lbase,lpos:cardinal;
   i:integer;
 begin
-  AStream.WriteDWord(DataSize);
+  if aVersion>=tlsaveTL2Minimal then
+    AStream.WriteDWord(DataSize);
 
   if not Changed then
   begin
@@ -168,30 +186,45 @@ begin
 
   //--- Finished quests
 
-  AStream.WriteIdList(FQuestsDone);
+  if aVersion>=tlsaveTL2Minimal then
+    AStream.WriteIdList(FQuestsDone);
 
   //--- Active quests
+
+  // Offset to next quest is from quests block (TL2) or file (TL1) start
+  if aVersion>=tlsaveTL2Minimal then
+    lbase:=DataOffset
+  else
+    lbase:=0;
 
   AStream.WriteDWord(Length(FQuestsUnDone));
   for i:=0 to High(FQuestsUnDone) do
   begin
     with FQuestsUnDone[i] do
     begin
-      AStream.WriteDWord(
-          (AStream.Position-DataOffset+SizeOf(DWord))+
-          len+SizeOf(QWord)*2+SizeOf(DWord)*2);
-      AStream.WriteQWord(QWord(id));
+      lpos:=AStream.Position;
+      AStream.WriteDWord(0);
+
+      if aVersion>=tlsaveTL2Minimal then
+        AStream.WriteQWord(QWord(id))
+      else
+        AStream.WriteShortString(name);
+
       AStream.WriteQWord(QWord(q1));
       AStream.WriteDWord(DWord(d1));
       AStream.WriteDWord(DWord(d2));
       AStream.Write(data^,len);
+
+      AStream.WriteDWordAt(AStream.Position-lbase,lpos);
     end;
   end;
 
   //--- Update data size and internal buffer
 
   LoadBlock(AStream);
-  FixSize  (AStream);
+
+  if aVersion>=tlsaveTL2Minimal then
+    FixSize(AStream);
 end;
 
 (*
@@ -241,11 +274,11 @@ end;
     00 00 00 00
 *)
 
-function ReadQuests(AStream:TStream):TTL2Quest;
+function ReadQuests(AStream:TStream; aVersion:integer):TTLQuest;
 begin
-  result:=TTL2Quest.Create;
+  result:=TTLQuest.Create;
   try
-    result.LoadFromStream(AStream);
+    result.LoadFromStream(AStream, aVersion);
   except
     AStream.Position:=result.DataOffset+result.DataSize;
   end;

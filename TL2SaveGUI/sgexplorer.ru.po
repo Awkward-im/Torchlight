@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.4.4\n"
 
 #: formbuttons.rsexportdata
 msgctxt "formbuttons.rsexportdata"
@@ -25,6 +25,10 @@ msgstr "Импорт данных"
 #: formchar.rscasual
 msgid "Casual"
 msgstr "Новичок"
+
+#: formchar.rsdefault
+msgid "Default"
+msgstr "По-умолчанию"
 
 #: formchar.rsdexterity
 msgctxt "formchar.rsdexterity"
@@ -158,6 +162,10 @@ msgstr "Запрещён"
 #: formkeybinding.rsitem
 msgid "item"
 msgstr "предмет"
+
+#: formkeybinding.rsnotused
+msgid "Not used"
+msgstr ""
 
 #: formkeybinding.rsskill
 msgid "skill"
@@ -497,6 +505,54 @@ msgctxt "tfmchar.lblvitality.caption"
 msgid "Vitality"
 msgstr "Стойкость"
 
+#: tfmchar.lblwardboots.caption
+msgid "Boots"
+msgstr ""
+
+#: tfmchar.lblwardcolor.caption
+msgid "Hair color"
+msgstr ""
+
+#: tfmchar.lblwardface.caption
+msgid "Face"
+msgstr ""
+
+#: tfmchar.lblwardfeature1.caption
+msgid "Feature1"
+msgstr ""
+
+#: tfmchar.lblwardfeature2.caption
+msgid "Feature2"
+msgstr ""
+
+#: tfmchar.lblwardfeature3.caption
+msgid "Feature3"
+msgstr ""
+
+#: tfmchar.lblwardgloves.caption
+msgid "Gloves"
+msgstr ""
+
+#: tfmchar.lblwardhair.caption
+msgid "Hair style"
+msgstr ""
+
+#: tfmchar.lblwardhead.caption
+msgid "Head"
+msgstr ""
+
+#: tfmchar.lblwardpants.caption
+msgid "Pants"
+msgstr ""
+
+#: tfmchar.lblwardshoulders.caption
+msgid "Shoulders"
+msgstr ""
+
+#: tfmchar.lblwardtorso.caption
+msgid "Torso"
+msgstr ""
+
 #: tfmchar.lblwaypoint.caption
 msgid "Waypoint"
 msgstr "Телепорт"
@@ -571,7 +627,7 @@ msgstr "Другое"
 
 #: tfmchar.tsstat.caption
 msgid "Stats"
-msgstr "Хаарактеристики"
+msgstr "Характеристики"
 
 #: tfmchar.tsstatistic.caption
 msgctxt "tfmchar.tsstatistic.caption"
@@ -794,6 +850,10 @@ msgstr "Ёмкость"
 msgid "Suffix"
 msgstr "Суффикс"
 
+#: tfmitem.lblweapondamagebonuses.caption
+msgid "Weapon Damage Bonuses"
+msgstr ""
+
 #: tfmitem.lblweapondmg.caption
 msgid "Weapon Damage"
 msgstr "Урон оружием"
@@ -826,6 +886,14 @@ msgstr ""
 #: tfmitem.lblz1.caption
 msgctxt "tfmitem.lblz1.caption"
 msgid "Z:"
+msgstr ""
+
+#: tfmitem.sgdmgbonus.columns[0].title.caption
+msgid "Element"
+msgstr ""
+
+#: tfmitem.sgdmgbonus.columns[1].title.caption
+msgid "Bonus"
 msgstr ""
 
 #: tfmitem.tscommoninfo.caption
@@ -1469,6 +1537,10 @@ msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
 msgstr "Статистика"
 
+#: tl2db.rsbasegame
+msgid "Base game"
+msgstr ""
+
 #: tl2db.rshp
 msgid "Best Health Potion"
 msgstr "Лучшее зелье здоровья"
@@ -1680,3 +1752,4 @@ msgstr "Осмотрено тайников"
 #: tl2statistic.rsunknownstat
 msgid "Unknown Stat"
 msgstr "Неизвестная статистика"
+

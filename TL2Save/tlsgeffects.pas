@@ -1,18 +1,18 @@
 {}
-unit TL2Effects;
+unit TLSGEffects;
 
 interface
 
 uses
   Classes,
   rgglobal,
-  TL2Base,
+  TLSGBase,
   rgstream;
 
 type
-  TTL2EffectDamageType = (Physical, Magical, Fire, Ice, Electric, Poison, All);
-  TTL2EffectSource     = (OnCastCaster, OnCastReceiver, OnUpdateCaster, OnUpdateSelf);
-  TTL2EffectActivation = (Passive, Dynamic, Transfer);
+  TTLEffectDamageType = (Physical, Magical, Fire, Ice, Electric, Poison, All);
+  TTLEffectSource     = (OnCastCaster, OnCastReceiver, OnUpdateCaster, OnUpdateSelf);
+  TTLEffectActivation = (Passive, Dynamic, Transfer);
 
   TTL2EffectFlag = (
     modUnknown1          , // $00000001
@@ -59,10 +59,10 @@ type
   end;
 
 type
-  TTL2Effect = class;
-  TTL2EffectList = array of TTL2Effect;
+  TTLEffect = class;
+  TTLEffectList = array of TTLEffect;
 type
-  TTL2Effect = class(TL2BaseClass)
+  TTLEffect = class(TLSGBaseClass)
   private
     procedure InternalClear;
 
@@ -72,8 +72,8 @@ type
 
     procedure Clear; override;
 
-    procedure LoadFromStream(AStream: TStream); override;
-    procedure SaveToStream  (AStream: TStream); override;
+    procedure LoadFromStream(AStream: TStream; aVersion:integer); override;
+    procedure SaveToStream  (AStream: TStream; aVersion:integer); override;
 
   private
     FFlags       :TTL2EffectFlags;
@@ -87,14 +87,16 @@ type
     FProperties  :array of TRGFloat;
     FStats       :array of TTL2Stat;
     FEffectType  :integer;
-    FDamageType  :TTL2EffectDamageType;
-    FActivation  :TTL2EffectActivation;
+    FDamageType  :TTLEffectDamageType;
+    FActivation  :TTLEffectActivation;
     FLevel       :integer;
     FDuration    :TRGFloat;
     FUnknown1    :TRGFloat;
     FDisplayValue:TRGFloat;
-    FSource      :TTL2EffectSource;
+    FSource      :TTLEffectSource;
     FIcon        :string;
+
+    tmp:array [0..63] of byte;
 
     function GetProperties(idx:integer):TRGFloat; overload;
     function GetProperties:integer;               overload;
@@ -112,24 +114,24 @@ type
     property Properties  [idx:integer]:TRGFloat     read GetProperties; //!!
     property Stats       [idx:integer]:TTL2Stat     read GetStats     ; //!!
     property EffectType  :integer                   read FEffectType   write FEffectType;
-    property DamageType  :TTL2EffectDamageType      read FDamageType   write FDamageType;
-    property Activation  :TTL2EffectActivation      read FActivation   write FActivation;
+    property DamageType  :TTLEffectDamageType       read FDamageType   write FDamageType;
+    property Activation  :TTLEffectActivation       read FActivation   write FActivation;
     property Level       :integer                   read FLevel        write FLevel;
     property Duration    :TRGFloat                  read FDuration     write FDuration;
     property DisplayValue:TRGFloat                  read FDisplayValue write FDisplayValue;
-    property Source      :TTL2EffectSource          read FSource       write FSource;
+    property Source      :TTLEffectSource           read FSource       write FSource;
     property Unknown     :TRGFloat                  read FUnknown1     write FUnknown1;
     property Icon        :string                    read FIcon         write FIcon;
   end;
 
 
-function  ReadEffectList (AStream:TStream; atrans:boolean=false):TTL2EffectList;
-procedure WriteEffectList(AStream:TStream; alist:TTL2EffectList);
+function  ReadEffectList (AStream:TStream; aVersion:integer; atrans:boolean=false):TTLEffectList;
+procedure WriteEffectList(AStream:TStream; alist:TTLEffectList; aVersion:integer);
 
 function GetEffectType      (idx:integer):string;
-function GetEffectDamageType(aval:TTL2EffectDamageType):string;
-function GetEffectSource    (aval:TTL2EffectSource    ):string;
-function GetEffectActivation(aval:TTL2EffectActivation):string;
+function GetEffectDamageType(aval:TTLEffectDamageType):string;
+function GetEffectSource    (aval:TTLEffectSource    ):string;
+function GetEffectActivation(aval:TTLEffectActivation):string;
 
 implementation
 
@@ -405,24 +407,24 @@ begin
     result:='';
 end;
 
-function GetEffectDamageType(aval:TTL2EffectDamageType):string;
+function GetEffectDamageType(aval:TTLEffectDamageType):string;
 begin
   result:=EffectDamageTypes[ord(aval)];
 end;
 
-function GetEffectSource(aval:TTL2EffectSource):string;
+function GetEffectSource(aval:TTLEffectSource):string;
 begin
   result:=EffectSources[ord(aval)];
 end;
 
-function GetEffectActivation(aval:TTL2EffectActivation):string;
+function GetEffectActivation(aval:TTLEffectActivation):string;
 begin
   result:=EffectActivations[ord(aval)];
 end;
 
 //----- Effects class -----
 
-constructor TTL2Effect.Create(achar:boolean); overload;
+constructor TTLEffect.Create(achar:boolean); overload;
 begin
   inherited Create;
 
@@ -430,32 +432,32 @@ begin
   FFromChar:=achar;
 end;
 
-destructor TTL2Effect.Destroy;
+destructor TTLEffect.Destroy;
 begin
   InternalClear;
 
   inherited;
 end;
 
-procedure TTL2Effect.InternalClear;
+procedure TTLEffect.InternalClear;
 begin
   SetLength(FProperties,0);
   SetLength(FStats ,0);
 end;
 
-procedure TTL2Effect.Clear;
+procedure TTLEffect.Clear;
 begin
   InternalClear;
 
   inherited;
 end;
 
-function TTL2Effect.GetProperties():integer;
+function TTLEffect.GetProperties():integer;
 begin
   result:=Length(FProperties);
 end;
 
-function TTL2Effect.GetProperties(idx:integer):single;
+function TTLEffect.GetProperties(idx:integer):single;
 begin
   if (idx>=0) and (idx<Length(FProperties)) then
     result:=FProperties[idx]
@@ -463,12 +465,12 @@ begin
     result:=0;
 end;
 
-function TTL2Effect.GetStats():integer;
+function TTLEffect.GetStats():integer;
 begin
   result:=Length(FStats);
 end;
 
-function TTL2Effect.GetStats(idx:integer):TTL2Stat;
+function TTLEffect.GetStats(idx:integer):TTL2Stat;
 begin
   if (idx>=0) and (idx<Length(FStats)) then
     result:=FStats[idx]
@@ -480,29 +482,42 @@ begin
 end;
 
 
-procedure TTL2Effect.LoadFromStream(AStream: TStream);
+procedure TTLEffect.LoadFromStream(AStream: TStream; aVersion:integer);
 var
+  i3:QWord;
+  i1,i2,i4,i5,i6,i7,i8,i9:dword;
+  f:single;
   lcnt:integer;
 begin
   DataOffset:=AStream.Position;
 
-  FFlags:=TTL2EffectFlags(AStream.ReadDword);
-  FName :=AStream.ReadShortString();
+  if aVersion>=tlsaveTL2Minimal then
+    FFlags:=TTL2EffectFlags(AStream.ReadDword);
 
-  if modHasLinkName in FFlags then
-    FLinkName:=AStream.ReadShortString();
+  FName:=AStream.ReadShortString();
 
-  if modHasGraph in FFlags then
-    FGraph:=AStream.ReadShortString();
+  if aVersion>=tlsaveTL2Minimal then
+  begin
+    if modHasLinkName in FFlags then
+      FLinkName:=AStream.ReadShortString();
 
-  if modHasParticles in FFlags then
+    if modHasGraph in FFlags then
+      FGraph:=AStream.ReadShortString();
+
+    if modHasParticles in FFlags then
+      FParticles:=AStream.ReadShortString();
+
+    if modHasUnitTheme in FFlags then
+      FUnitThemeId:=TRGID(AStream.ReadQWord);
+
+    if FFromChar then
+      FClassId:=TRGID(AStream.ReadQWord);
+  end
+  else
+  begin
+    FGraph    :=AStream.ReadShortString(); //??
     FParticles:=AStream.ReadShortString();
-
-  if modHasUnitTheme in FFlags then
-    FUnitThemeId:=TRGID(AStream.ReadQWord);
-
-  if FFromChar then
-    FClassId:=TRGID(AStream.ReadQWord);
+  end;
 
   // 5 properties max
 
@@ -517,21 +532,47 @@ begin
     AStream.Read(FStats[0],lcnt*SizeOf(TTL2Stat));
 
   FEffectType  :=AStream.ReadDWord();
-  FDamageType  :=TTL2EffectDamageType(AStream.ReadDWord);
-  FActivation  :=TTL2EffectActivation(AStream.ReadDWord); // ????
-  FLevel       :=AStream.ReadDWord;
-  FDuration    :=AStream.ReadFloat;
-  FUnknown1    :=AStream.ReadFloat;  // 0 ??  SoakScale??
-  FDisplayValue:=AStream.ReadFloat;
-  FSource      :=TTL2EffectSource(AStream.ReadDWord);
+  FDamageType  :=TTLEffectDamageType(AStream.ReadDWord);
 
-  if modHasIcon in FFlags then
-    FIcon:=AStream.ReadByteString();
+  if aVersion>=tlsaveTL2Minimal then
+  begin
+    FActivation  :=TTLEffectActivation(AStream.ReadDWord); // ????
+    FLevel       :=AStream.ReadDWord;
+    FDuration    :=AStream.ReadFloat;
+    FUnknown1    :=AStream.ReadFloat;  // 0 ??  SoakScale??
+    FDisplayValue:=AStream.ReadFloat;
+    FSource      :=TTLEffectSource(AStream.ReadDWord);
+  end
+  else
+  begin
+    AStream.Read(tmp,64);
+    AStream.Position:=AStream.Position-64;
+    // 64 bytes
+    i1:=AStream.ReadDword;              // 4 booleans, not mask (0,1,1,1) (1,0,1,1)
+    i2:=AStream.ReadDword;              // 1 on pots, 0 on shirt
+    FLevel       :=AStream.ReadDWord;  // at least, looks like
+    i3:=AStream.ReadQWord;              // -1
+    i4:=AStream.ReadDword;              // 100 usually
+    i5:=AStream.ReadDword;              // pots=100, shirt =0
+    i6:=AStream.ReadDword;              // 0
+    i7:=AStream.ReadDword;              // "on time" ?
+    i8:=AStream.ReadDword;              // 0
+    f:=AStream.ReadFloat;              // 1.0 usually
+    FDuration    :=AStream.ReadFloat;
+    FUnknown1    :=AStream.ReadFloat;  // 0 ??  SoakScale??
+    FDisplayValue:=AStream.ReadFloat;
+    FSource      :=TTLEffectSource(AStream.ReadDWord); //?? =0
+    i9:=AStream.ReadDword;              // 0
+  end;
+
+  if aVersion>=tlsaveTL2Minimal then
+    if modHasIcon in FFlags then
+      FIcon:=AStream.ReadByteString();
 
   LoadBlock(AStream);
 end;
 
-procedure TTL2Effect.SaveToStream(AStream: TStream);
+procedure TTLEffect.SaveToStream(AStream: TStream; aVersion:integer);
 begin
   if not Changed then
   begin
@@ -541,23 +582,33 @@ begin
 
   DataOffset:=AStream.Position;
   
-  AStream.WriteDword(DWord(FFlags));
+  if aVersion>=tlsaveTL2Minimal then
+    AStream.WriteDword(DWord(FFlags));
+
   AStream.WriteShortString(FName);
 
-  if modHasLinkName in FFlags then
-    AStream.WriteShortString(FLinkName);
+  if aVersion>=tlsaveTL2Minimal then
+  begin
+    if modHasLinkName in FFlags then
+      AStream.WriteShortString(FLinkName);
 
-  if modHasGraph in FFlags then
+    if modHasGraph in FFlags then
+      AStream.WriteShortString(FGraph);
+
+    if modHasParticles in FFlags then
+      AStream.WriteShortString(FParticles);
+
+    if modHasUnitTheme in FFlags then
+      AStream.WriteQWord(QWord(FUnitThemeId));
+
+    if FFromChar then
+      AStream.WriteQWord(QWord(FClassId));
+  end
+  else
+  begin
     AStream.WriteShortString(FGraph);
-
-  if modHasParticles in FFlags then
     AStream.WriteShortString(FParticles);
-
-  if modHasUnitTheme in FFlags then
-    AStream.WriteQWord(QWord(FUnitThemeId));
-
-  if FFromChar then
-    AStream.WriteQWord(QWord(FClassId));
+  end;
 
   AStream.WriteByte(Length(FProperties));
   if Length(FProperties)>0 then
@@ -570,23 +621,49 @@ begin
   AStream.WriteDWord(FEffectType);
 
   AStream.WriteDWord(DWord(FDamageType));
-  AStream.WriteDWord(DWord(FActivation));
 
-  AStream.WriteDWord(FLevel);
-  AStream.WriteFloat(FDuration);
-  //??
-  AStream.WriteFloat(FUnknown1);
-  AStream.WriteFloat(FDisplayValue);
+  if aVersion>=tlsaveTL2Minimal then
+  begin
+    AStream.WriteDWord(DWord(FActivation));
 
-  AStream.WriteDWord(DWord(FSource));
+    AStream.WriteDWord(FLevel);
+    AStream.WriteFloat(FDuration);
+    //??
+    AStream.WriteFloat(FUnknown1);
+    AStream.WriteFloat(FDisplayValue);
 
-  if modHasIcon in FFlags then
-    AStream.WriteByteString(FIcon);
+    AStream.WriteDWord(DWord(FSource));
+  end
+  else
+  begin
+    AStream.Write(tmp,64);
+{
+    i:=AStream.WriteDword;              // 4 booleans, not mask (0,1,1,1) (1,0,1,1)
+    i:=AStream.WriteDword;              // 1 on pots, 0 on shirt
+    FLevel       :=AStream.WriteDWord;  // at least, looks like
+    i:=AStream.WriteQWord;              // -1
+    i:=AStream.WriteDword;              // 100 usually
+    i:=AStream.WriteDword;              // pots=100, shirt =0
+    i:=AStream.WriteDword;              // 0
+    i:=AStream.WriteDword;              // "on time" ?
+    i:=AStream.WriteDword;              // 0
+    f:=AStream.WriteFloat;              // 1.0 usually
+    FDuration    :=AStream.WriteFloat;
+    FUnknown1    :=AStream.WriteFloat;  // 0 ??  SoakScale??
+    FDisplayValue:=AStream.WriteFloat;
+    FSource      :=TTLEffectSource(AStream.WriteDWord); //?? =0
+    i:=AStream.WriteDword;              // 0
+}
+  end;
+
+  if aVersion>=tlsaveTL2Minimal then
+    if modHasIcon in FFlags then
+      AStream.WriteByteString(FIcon);
 
   LoadBlock(AStream);
 end;
 
-function ReadEffectList(AStream:TStream; atrans:boolean=false):TTL2EffectList;
+function ReadEffectList(AStream:TStream; aVersion:integer; atrans:boolean=false):TTLEffectList;
 var
   i,lcnt:integer;
 begin
@@ -597,19 +674,19 @@ begin
     SetLength(result,lcnt);
     for i:=0 to lcnt-1 do
     begin
-      result[i]:=TTL2Effect.Create(atrans);
-      result[i].LoadFromStream(AStream);
+      result[i]:=TTLEffect.Create(atrans);
+      result[i].LoadFromStream(AStream, aVersion);
     end;
   end;
 end;
 
-procedure WriteEffectList(AStream:TStream; alist:TTL2EffectList);
+procedure WriteEffectList(AStream:TStream; alist:TTLEffectList; aVersion:integer);
 var
   i:integer;
 begin
   AStream.WriteDWord(Length(alist));
   for i:=0 to High(alist) do
-    alist[i].SaveToStream(AStream);
+    alist[i].SaveToStream(AStream, aVersion);
 end;
 
 end.

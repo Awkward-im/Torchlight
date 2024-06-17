@@ -6,8 +6,16 @@ var
 begin
   result:=false;
 
-  Str(aid,sid);
-  lmodid:=CheckForMod(ams,'recipes', sid, PModScanner(ams)^.FModId);
+  if aId=-1 then
+  begin
+    sid:='-1';
+    lmodid:=CheckNameForMod(ams,'recipes', aname);
+  end
+  else
+  begin
+    Str(aid,sid);
+    lmodid:=CheckIdForMod(ams,'recipes', sid);
+  end;
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO recipes (id, name, title, modid) VALUES ('+
@@ -55,7 +63,7 @@ begin
     end;
   end;
 
-  if lid<>-1 then
+//  if lid<>-1 then
     if not AddRecipeToBase(ams,name,lid,title) then lid:=0;
 
   result:=lid;
@@ -69,7 +77,7 @@ var
   p:pointer;
   i:int64;
 begin
-  result:=0;
+  result:=sres_fail;
 
   if asize>0 then
   begin
@@ -83,8 +91,9 @@ begin
     begin
       i:=AddRecipeNode(aparam,p);
 
-      if i=0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
-      if i<0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
+      if i=0  then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
+//      if i=-1 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
+      if i>0  then result:=1;
 
       DeleteNode(p);
     end;
@@ -100,12 +109,15 @@ begin
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
 end;
 
+// Variant: to make two different structures, for TL1 and TL2 games
+// id can be AUTOINCREMENT then
 function CreateRecipesTable(adb:PSQLite3):boolean;
 begin
   if not IsTableExists(adb,'recipes') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE recipes ('+
-      '    id    INTEGER PRIMARY KEY,'+
+//      '    id    INTEGER PRIMARY KEY,'+
+      '    id    INTEGER,'+
       '    name  TEXT,'+
       '    title TEXT,'+
       '    modid TEXT );')

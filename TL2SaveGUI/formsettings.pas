@@ -79,8 +79,9 @@ uses
 { TfmSettings }
 
 const
-  ModsPath = '%USERPROFILE%\Documents\My Games\Runic Games\Torchlight 2\mods';
-  SavePath = '%USERPROFILE%\Documents\My Games\Runic Games\Torchlight 2\Save';
+  ModsTL1Path = '%USERPROFILE%/AppData/Roaming/runic games/torchlight/mods';
+  ModsPath    = '%USERPROFILE%\Documents\My Games\Runic Games\Torchlight 2\mods';
+  SavePath    = '%USERPROFILE%\Documents\My Games\Runic Games\Torchlight 2\Save';
 
 const
   sSettings   = 'Settings';

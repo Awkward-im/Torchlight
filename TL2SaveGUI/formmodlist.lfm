@@ -7,6 +7,7 @@ object fmModList: TfmModList
   Caption = 'Mod list'
   ClientHeight = 470
   ClientWidth = 701
+  LCLVersion = '3.99.0.0'
   Visible = True
   object sbUp: TSpeedButton
     Left = 352

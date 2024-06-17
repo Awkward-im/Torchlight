@@ -72,20 +72,20 @@ function ScanGraph(ams:pointer; const aname:string; amul:integer):integer;
 var
   p:pointer;
 begin
-  result:=0;
+  result:=sres_fail;
 
   RGLog.Reserve('Scan graph '+aname);
 
   LoadFile(ams,'MEDIA/GRAPHS/STATS/'+aname+'.DAT',p);
+  if (p=nil) and (PModScanner(ams)^.gamever=verTL1) then
+    LoadFile(ams,'MEDIA/GRAPHS/STATS/'+aname+'.DAT.ADM',p);
+
   if p<>nil then
   begin
     if AddGraphNode(ams,p,aname,amul)>0 then
       result:=1
-    else
-    begin
-      if PModScanner(ams)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
-      result:=0;
-    end;
+    else if PModScanner(ams)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
+
     DeleteNode(p);
   end;
   RGLog.Reserve('');
