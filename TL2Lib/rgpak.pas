@@ -402,7 +402,8 @@ end;
 function FixSize(var abuf:PByte; asize:integer):integer;
 begin
   if abuf<>nil then
-    result:=MemSize(abuf);
+    result:=MemSize(abuf)
+  else result:=0;
 
   if (abuf=nil) or (result<(asize+2)) then
   begin

@@ -85,7 +85,6 @@ uses
   rwmemory,
 
   rgstream,
-  rgfile,
   rgfiletype;
 
 {%REGION Common}
@@ -494,6 +493,7 @@ begin
       size_u  :=lentry.Size;
       ftime   :=DateTimeToFileTime(lentry.DateTime);
     end;
+
   end;
 
   if afilter then

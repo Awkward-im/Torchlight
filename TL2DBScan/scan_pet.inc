@@ -134,6 +134,12 @@ end;
 
 function ScanPets(ams:pointer):integer;
 begin
+  if PModScanner(ams)^.gamever=verTL1 then
+  begin
+    RGLog.Add('TL1 don''t separate mobs and pets. Cycle on mob scan.');
+    exit(0);
+  end;
+
   if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning pets');
   result:=       DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/PETS/'           , @ProcessPets);
   result:=result+DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/WARBOUNDS/'      , @ProcessPets);

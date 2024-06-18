@@ -25,7 +25,26 @@ var
   lid,lname,ltitle:string;
   i,lmask:integer;
 begin
-  lmask:=0;
+  if PModScanner(ams)^.gamever=verTL1 then
+  begin
+    lnode:=FindNode(anode,'UNITTYPE');
+    if lnode<>nil then
+    begin
+      if CompareWide(AsString(lnode),'PET')=0 then
+      begin
+        result:=AddPetNode(ams,anode);
+        if result then
+          RGLog.Add('Added as pet');
+        exit;
+      end;
+    end;
+  end;
+
+  lmask :=0;
+  lname :='';
+  ltitle:='';
+  lid   :='';
+
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
@@ -88,9 +107,12 @@ begin
   // no need to check content and don't increase count
   result:=sres_nocheck+sres_fail;
 
-  if Pos('MEDIA/UNITS/MONSTERS/PETS/'           ,adir)>0 then exit;
-  if Pos('MEDIA/UNITS/MONSTERS/WARBOUNDS/'      ,adir)>0 then exit;
-  if Pos('MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS/',adir)>0 then exit;
+  if PModScanner(aparam)^.gamever<>verTL1 then
+  begin
+    if Pos('MEDIA/UNITS/MONSTERS/PETS/'           ,adir)>0 then exit;
+    if Pos('MEDIA/UNITS/MONSTERS/WARBOUNDS/'      ,adir)>0 then exit;
+    if Pos('MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS/',adir)>0 then exit;
+  end;
 
 	result:=1;
 end;

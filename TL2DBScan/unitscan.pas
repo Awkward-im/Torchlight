@@ -123,9 +123,9 @@ end;
 {$i scan_classes.inc}
 {$i scan_inventory.inc}
 {$i scan_items.inc}
+{$i scan_pet.inc}
 {$i scan_mobs.inc}
 {$i scan_movies.inc}
-{$i scan_pet.inc}
 {$i scan_props.inc}
 {$i scan_recipes.inc}
 {$i scan_quest.inc}

@@ -228,8 +228,6 @@ begin
 
   end;
 
-  {TODO: search for base unittype if not found}
-  // Search class gender
   GetGender(ams, lclass.name, lunittype, lclass.gender);
   if lclass.skill=',' then lclass.skill:='';
   if AddClassToBase(ams,lclass) then

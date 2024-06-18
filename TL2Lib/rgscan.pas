@@ -249,7 +249,7 @@ var
 begin
   aptr:=nil;
 
-  if apath='' then Exit
+  if apath='' then Exit(0)
   else if apath[Length(apath)] in ['/','\'] then
   begin
     ldir:=Copy(apath,1);
@@ -262,7 +262,7 @@ begin
     ldir:='';
   end
   else
-    Exit;
+    Exit(0);
 
   result:=Length(ldir);
 
