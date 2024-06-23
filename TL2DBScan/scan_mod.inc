@@ -74,7 +74,7 @@ begin
   if (amodinfo.modid=0) or (amodinfo.modid=-1) then
   begin
     lmodid:='-1';
-    lwhere:='title='+ltitle;
+    lwhere:='title='+FixedText(ltitle);
   end
   else
   begin
@@ -112,7 +112,7 @@ begin
   begin
     result:=ExecuteDirect(adb,
       'CREATE TABLE mods ('+
-      '    id       INTEGER     PRIMARY KEY,'+
+      '    id       INTEGER,'+
       '    title    TEXT,'+
       '    version  INTEGER (2),'+
       '    gamever  INTEGER (8),'+

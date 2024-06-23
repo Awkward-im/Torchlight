@@ -1,4 +1,5 @@
-﻿{TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
+﻿{TODO: Use native files size, without final #0 (maybe except text)}
+{TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
 {TODO: add act_file for PAK files. OR create new like act_link}
 {TODO: add PAK paths and import dirs catalogue}
 {TODO: Update = AddDirectory (like man.build)}
@@ -424,17 +425,17 @@ begin
       Reset(f);
       if IOResult=0 then
       begin
-        result:=FileSize(f)+2;
+        result:=FileSize(f);
         if result>0 then
         begin
-          if (buf=nil) or (MemSize(buf)<result) then
+          if (buf=nil) or (MemSize(buf)<(result+2)) then
           begin
             FreeMem(buf);
-            GetMem(buf,result);
+            GetMem(buf,result+2);
           end;
-          BlockRead(f,buf^,result-2);
-          buf[result-2]:=0;
-          buf[result-1]:=0;
+          BlockRead(f,buf^,result);
+          buf[result  ]:=0;
+          buf[result+1]:=0;
         end;
         CloseFile(f);
       end;
@@ -446,12 +447,14 @@ begin
       result:=p^.size;
       if result>0 then
       begin
-        if (buf=nil) or (MemSize(buf)<result) then
+        if (buf=nil) or (MemSize(buf)<(result+2)) then
         begin
           FreeMem(buf);
-          GetMem(buf, result);
+          GetMem(buf, result+2);
         end;
         move(PByte(p^.data)^,buf^,result);
+        buf[result  ]:=0;
+        buf[result+1]:=0;
       end;
     end;
 
@@ -494,7 +497,7 @@ begin
       begin
         FreeMem(buf);
         buf:=PByte(lbuf);
-        result:=(Length(lbuf)+1)*SizeOf(WideChar);
+        result:=(Length(lbuf){+1})*SizeOf(WideChar);
         p^.size_s:=result;
       end;
     end;

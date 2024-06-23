@@ -65,6 +65,9 @@ function  LoadBases(const fname:string=''):integer;
 procedure FreeBases;
 procedure UseBase(adb:pointer);
 
+var
+  GameVersion:integer;
+
 //======================================
 
 {$UNDEF Interface}
@@ -78,7 +81,6 @@ uses
 var
   db:PSQLite3=nil;
   ModFilter:string='';
-  gamever:integer;
 
 
 //----- Core functions -----
@@ -503,7 +505,7 @@ var
   lSQL:string;
   vm:pointer;
 begin
-  gamever:=verUnk;
+  GameVersion:=verUnk;
 
   if db<>nil then
   begin
@@ -513,10 +515,10 @@ begin
       if sqlite3_step(vm)=SQLITE_ROW then
       begin
         case sqlite3_column_int(vm,0) of
-          1: gamever:=verTL1;
-          2: gamever:=verTL2;
+          1: GameVersion:=verTL1;
+          2: GameVersion:=verTL2;
         else
-          gamever:=verUnk;
+          GameVersion:=verUnk;
         end;
       end;
       sqlite3_finalize(vm);
@@ -590,14 +592,14 @@ begin
     sqlite3_close(db);
     db:=nil;
     ReleaseSqlite;
-    gamever:=verUnk;
+    GameVersion:=verUnk;
   end;
 end;
 
 
 initialization
 
-  gamever:=verUnk;
+  GameVersion:=verUnk;
 
 finalization
 //  ReleaseSqlite;

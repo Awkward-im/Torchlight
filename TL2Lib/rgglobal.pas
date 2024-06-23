@@ -93,8 +93,8 @@ function  ReverseWords(aval:QWord):QWord;
 
 function  StrToWide    (const src:string):PWideChar;
 function  FastStrToWide(const src:string):PWideChar;
-function  WideToStr    (src:PWideChar):string;
-function  FastWideToStr(src:PWideChar):string;
+function  WideToStr    (src:PWideChar;asize:integer=-1):string;
+function  FastWideToStr(src:PWideChar;asize:integer=-1):string;
 procedure CopyWide     (var adst:PWideChar; asrc:PWideChar; alen:integer=0);
 function  CopyWide     (asrc:PWideChar; alen:integer=0):PWideChar;
 function  CompareWide  (s1,s2:PWideChar; alen:integer=0):integer;
@@ -478,28 +478,27 @@ begin
 }
 end;
 
-function FastWideToStr(src:PWideChar):string;
+function FastWideToStr(src:PWideChar;asize:integer=-1):string;
 var
-  lsize,i:integer;
+  i:integer;
 begin
-  lsize:=Length(src);
-  if lsize=0 then exit('');
+  if asize<0 then asize:=Length(src);
+  if asize=0 then exit('');
 
-  SetLength(result,lsize);
-  for i:=1 to lsize do
+  SetLength(result,asize);
+  for i:=1 to asize do
     result[i]:=char(ord(src[i-1]));
 end;
 
-function WideToStr(src:PWideChar):string;
+function WideToStr(src:PWideChar;asize:integer=-1):string;
 var
   ws:UnicodeString;
-  lsize:integer;
 begin
-  lsize:=Length(src);
-  if lsize=0 then exit('');
+  if asize<0 then asize:=Length(src);
+  if asize=0 then exit('');
 
-  SetLength(ws,lsize);
-  move(src^,ws[1],lsize*SizeOf(WideChar));
+  SetLength(ws,asize);
+  move(src^,ws[1],asize*SizeOf(WideChar));
   result:=UTF8Encode(ws);
 end;
 

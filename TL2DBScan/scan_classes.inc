@@ -77,6 +77,7 @@ begin
   agender:='';
   if autype<>'' then
   begin
+    RGLog.Reserve('Check for gender unittype '+autype);
     LoadFile(ams,'MEDIA/UNITTYPES/'+autype+'.DAT',p);
     if (p=nil) and (PModScanner(ams)^.gamever=verTL1) then
       LoadFile(ams,'MEDIA/UNITTYPES/'+autype+'.DAT.ADM',p);

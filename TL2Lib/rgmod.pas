@@ -423,7 +423,7 @@ end;
 procedure InitModInfo(out amod:TTL2ModInfo);
 begin
   FillChar(amod,SizeOf(amod),0);
-  amod.gamever:=$0001001900050002;
+//  amod.gamever:=$0001001900050002;
 end;
 
 procedure MakeModInfo(out amod:TTL2ModInfo);

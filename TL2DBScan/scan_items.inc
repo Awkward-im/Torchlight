@@ -49,11 +49,12 @@ var
   lbase:string;
   i:integer;
 begin
-  result:=GetTextValue(PModScanner(ams)^.db,'items','unittype','file='''+fname+'''');
+  result:=GetTextValue(PModScanner(ams)^.db,'items','unittype','file='+FixedText(fname));
   if result<>'' then exit;
   
   lbase :='';
 
+  RGLog.Reserve('Check for unittype '+fname);
   LoadFile(ams,fname,p);
   if (p=nil) and (PModScanner(ams)^.gamever=verTL1) then
     LoadFile(ams,fname+'.ADM',p);
@@ -93,11 +94,12 @@ var
   lbase:string;
   i:integer;
 begin
-  result:=GetTextValue(PModScanner(ams)^.db,'items','icon','file='''+fname+'''');
+  result:=GetTextValue(PModScanner(ams)^.db,'items','icon','file='+FixedText(fname));
   if result<>'' then exit;
 
   lbase :='';
 
+  RGLog.Reserve('Check for icon '+fname);
   LoadFile(ams,fname,p);
   if (p=nil) and (PModScanner(ams)^.gamever=verTL1) then
     LoadFile(ams,fname+'.ADM',p);

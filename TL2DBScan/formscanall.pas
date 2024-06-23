@@ -235,7 +235,7 @@ begin
   if      lver=verTL1 then ldbname:=TL1DataBase
   else if lver=verTL2 then ldbname:=TL2DataBase;
 
-  if not RGOpenBase(db,ldbname) then
+  if not RGOpenBase(db,ldbname,lver) then
   begin
     memLog.Append('Can''t prepare database');
     exit;

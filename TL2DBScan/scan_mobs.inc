@@ -105,10 +105,10 @@ end;
 function CheckNameMobs(const adir,aname:string; aparam:pointer):integer;
 begin
   // no need to check content and don't increase count
-  result:=sres_nocheck+sres_fail;
-
   if PModScanner(aparam)^.gamever<>verTL1 then
   begin
+    result:=sres_nocheck+sres_fail;
+
     if Pos('MEDIA/UNITS/MONSTERS/PETS/'           ,adir)>0 then exit;
     if Pos('MEDIA/UNITS/MONSTERS/WARBOUNDS/'      ,adir)>0 then exit;
     if Pos('MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS/',adir)>0 then exit;

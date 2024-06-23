@@ -427,6 +427,7 @@ var
   lp:PWideChar;
   lval:array [0..47] of WideChar;
   i,ltype:integer;
+  res:word;
 begin
   result:=true;
 
@@ -473,12 +474,13 @@ begin
       else
         lp:=aval;
 
+      res:=0;
       case ltype of
-        rgInteger  : Val(lp,PRGNode(anode)^.asInteger);
-        rgFloat    : Val(lp,PRGNode(anode)^.asFloat);
-        rgDouble   : Val(lp,PRGNode(anode)^.asDouble);
-        rgInteger64: Val(lp,PRGNode(anode)^.asInteger64);
-        rgUnsigned : Val(lp,PRGNode(anode)^.asUnsigned);
+        rgInteger  : Val(lp,PRGNode(anode)^.asInteger,res);
+        rgFloat    : Val(lp,PRGNode(anode)^.asFloat,res);
+        rgDouble   : Val(lp,PRGNode(anode)^.asDouble,res);
+        rgInteger64: Val(lp,PRGNode(anode)^.asInteger64,res);
+        rgUnsigned : Val(lp,PRGNode(anode)^.asUnsigned,res);
         rgBool     : begin
          if  (lp<>nil) and (
              ((lp[0]='1') and (lp[1]=#0 )) or
@@ -491,13 +493,15 @@ begin
             else   PRGNode(anode)^.asBoolean:=false;
         end;
         // user
-        rgByte     : Val(lp,PRGNode(anode)^.asByte);
-        rgWord     : Val(lp,PRGNode(anode)^.asWord);
-        rgQWord    : Val(lp,PRGNode(anode)^.asQWord);
-        rgBinary   : Val(lp,PRGNode(anode)^.len);
+        rgByte     : Val(lp,PRGNode(anode)^.asByte,res);
+        rgWord     : Val(lp,PRGNode(anode)^.asWord,res);
+        rgQWord    : Val(lp,PRGNode(anode)^.asQWord,res);
+        rgBinary   : Val(lp,PRGNode(anode)^.len,res);
       else
         result:=false;
       end;
+      if res<>0 then
+        RGLog.Add('Wrong conversion to number: "'+string(lp)+'"');
     end;
   end;
 end;
