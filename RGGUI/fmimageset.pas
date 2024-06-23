@@ -62,7 +62,7 @@ implementation
 uses
   LCLType,
   dom,xmlreader,xmlread,
-  rgglobal, rgio.Text, rgNode;
+  rgglobal, rgio.Text, rgstream, rgNode;
 
 resourcestring
   rsSaveSprite = 'Save sprite';
@@ -276,6 +276,7 @@ var
   lpc:PAnsiChar;
   pc:PWideChar;
   lbuf:PByte;
+  lstr:TMemoryStream;
   lfile,lsize:integer;
 begin
   picfile:='';
@@ -312,9 +313,27 @@ begin
   begin
     lbuf:=nil;
     lsize:=actrl.GetSource(lfile,lbuf);
-    LoadImageFromMemory(lbuf,lsize,FImage);
+
+    if (lbuf[0]=ORD('D')) and
+       (lbuf[1]=ORD('D')) and
+       (lbuf[2]=ORD('S')) then
+    begin
+      LoadImageFromMemory(lbuf,lsize,FImage);
+      ConvertDataToBitmap(FImage,imgTexture.Picture.Bitmap);
+    end
+    else
+    begin
+      lstr:=TMemoryStream.Create();
+      try
+        // PUData cleared in ClearInfo() and/or FormClose;
+        lstr.SetBuffer(lbuf);
+        imgTexture.Picture.LoadFromStream(lstr);
+      finally
+        lstr.Free;
+      end;
+      ConvertBitmapToData(imgTexture.Picture.Bitmap,FImage);
+    end;
     FreeMem(lbuf);
-    ConvertDataToBitmap(FImage,imgTexture.Picture.Bitmap);
   end;
 end;
 
