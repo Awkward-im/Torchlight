@@ -1,0 +1,80 @@
+object FormImageset: TFormImageset
+  Left = 350
+  Height = 447
+  Top = 250
+  Width = 667
+  BorderStyle = bsNone
+  ClientHeight = 447
+  ClientWidth = 667
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object Splitter1: TSplitter
+    Left = 170
+    Height = 447
+    Top = 0
+    Width = 5
+  end
+  object imgTexture: TImage
+    Left = 175
+    Height = 447
+    Top = 0
+    Width = 492
+    Align = alClient
+    Proportional = True
+    Stretch = True
+    Transparent = True
+  end
+  object pnlLeft: TPanel
+    Left = 0
+    Height = 447
+    Top = 0
+    Width = 170
+    Align = alLeft
+    ClientHeight = 447
+    ClientWidth = 170
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 1
+    object lbImages: TListBox
+      Left = 1
+      Height = 270
+      Top = 1
+      Width = 168
+      Align = alClient
+      ItemHeight = 0
+      MultiSelect = True
+      PopupMenu = mnuImgSet
+      TabOrder = 0
+      OnClick = lbImagesClick
+      OnKeyDown = lbImagesKeyDown
+    end
+    object imgSprite: TImage
+      Left = 1
+      Height = 170
+      Top = 276
+      Width = 168
+      Align = alBottom
+      PopupMenu = mnuImgSet
+      Proportional = True
+      Stretch = True
+      Transparent = True
+    end
+    object Splitter2: TSplitter
+      Cursor = crVSplit
+      Left = 1
+      Height = 5
+      Top = 271
+      Width = 168
+      Align = alBottom
+      ResizeAnchor = akBottom
+    end
+  end
+  object mnuImgSet: TPopupMenu
+    Left = 71
+    Top = 134
+    object miExtract: TMenuItem
+      Caption = 'Extract'
+      OnClick = miExtractClick
+    end
+  end
+end

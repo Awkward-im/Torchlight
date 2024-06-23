@@ -24,16 +24,17 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
   SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
-  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, SynHighlighterOgre;
+  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset, SynHighlighterOgre;
 
 type
 
   { TRGGUIForm }
 
-  TRGGUIForm = class(TForm)
+   TRGGUIForm = class(TForm)
     bbPlay: TBitBtn;
     bbStop: TBitBtn;
     cbSaveTL1ADM: TCheckBox;
+    pnlGrid: TPanel;
     pnlAudio: TPanel;
     Setings: TTabSheet;
     cbUnpackTree  : TCheckBox;
@@ -69,9 +70,8 @@ type
     Grid   : TTabSheet;
     pnlAdd : TPanel;
     pnlInfo: TPanel;
-    lblSize  : TLabel;  lblSizeVal  : TLabel;
-    lblTime  : TLabel;  lblTimeVal  : TLabel;
-    lblOffset: TLabel;  lblOffsetVal: TLabel;
+    lblInfo1  : TLabel;
+    lblInfo2  : TLabel;
 
     ReplaceDialog: TReplaceDialog;
     sgMain: TStringGrid;
@@ -234,6 +234,7 @@ type
     FUData:pointer;
     fmi:TForm;
     fmLEdit:TForm;
+    fmImgset:TForm;
     ctrl:TRGController;
     LastExt:string;
     LastFilter:integer;
@@ -263,6 +264,7 @@ type
     procedure NewPAK;
     procedure OpenPAK(const aname: string);
     procedure PrepareSound;
+    procedure PreviewImageset();
     procedure PreviewSound;
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure PreviewImage(const aext: string);
@@ -272,6 +274,8 @@ type
     procedure LoadSettings;
     procedure SaveSettings;
     procedure SetupView;
+    procedure ShowImagesetInfo(const afile: string; ax, ay, awidth,
+      aheight: integer);
     function  UnpackSingleFile(const adir, aname: string; var buf:PByte): boolean;
     procedure ExtractSingleDir(adir: integer; var buf:PByte);
     procedure UpdateStatistic;
@@ -298,7 +302,8 @@ uses
   fpimage,
   fpwritebmp,
   lazTGA,
-  berodds,
+//  berodds,
+  Imaging, ImagingDds, ImagingTypes, ImagingComponents,
   fpc.Dynamic_Bass,
 
   unitLogForm,
@@ -404,6 +409,11 @@ resourcestring
   rsLinkingNote     = 'These files still on disk and not built-in until PAK/MOD saved.';
   rsNothingImported = 'Nothing was imported.';
   rsUnknownEncoding = 'Unknown source encoding';
+  rsSize            = 'Size';
+  rsOffset          = 'Offset';
+  rsTime            = 'Time';
+  rsImageFile       = 'Texture file';
+  rsSprite          = 'X: %d; Y: %d; Width: %d; Height: %d';
 //  rsChooseVer       = 'Choose game';
 //  rsGameVer         = 'Game';
 
@@ -416,7 +426,8 @@ resourcestring
 procedure TRGGUIForm.actResetViewExecute(Sender: TObject);
 begin
   pnlTree.Width:=defTreeWidth;
-  sgMain .Width:=defGridWidth;
+  pnlGrid.Width:=defGridWidth;
+  //  sgMain .Width:=defGridWidth;
   sgMain.Columns[colDir   ].Width:=256;
   sgMain.Columns[colName  ].Width:=144;
   sgMain.Columns[colExt   ].Width:=48;
@@ -614,10 +625,15 @@ begin
 
   fmLogForm:=nil;
   fmFilterForm:=TFilterForm.Create(Self);
+{
   fmLEdit:=TFormLayoutEdit.Create(Self);
   fmLEdit.Parent:=pnlAdd;
   fmLEdit.Align:=alClient;
-
+}{
+  fmImgSet:=TFormImageset.Create(Self);
+  fmImgSet.Parent:=pnlAdd;
+  fmImgSet.Align:=alClient;
+}
   SynTSyn:=TSynTSyn.Create(Self);
   SynOgreSyn:=TSynOgreSyn.Create(Self);
 
@@ -987,6 +1003,7 @@ var
 begin
   lcnt:=0;
   lptr:=nil;
+
   for i:=1 to sgMain.RowCount-1 do
   begin
     if sgMain.IsCellSelected[colDir,i] then
@@ -1125,14 +1142,14 @@ procedure TRGGUIForm.ClearInfo();
 var
   bNoTree,bRoot,bEmpty,bParent:boolean;
 begin
-  lblSizeVal  .Caption:='';
-  lblOffsetVal.Caption:='';
-  lblTimeVal  .Caption:='';
+  lblInfo1.Caption:='';
+  lblInfo2.Caption:='';
 
   if sstream<>0 then bbStopClick(self);
   pnlAudio.Visible:=false;
 
-  fmLEdit.Visible:=false;
+  if fmLEdit <>nil then fmLEdit .Visible:=false;
+  if fmImgSet<>nil then fmImgSet.Visible:=false;
 
   SynEdit.Clear;
   SynEdit.Visible:=false;
@@ -1257,6 +1274,7 @@ var
   lwriter: TFPWriterBMP;
   lfpc:TFPColor;
   ldata:PByte;
+  limg1:TImageData;
 //  lsize:integer;
   lidx,y,x,lheight,lwidth:integer;
 begin
@@ -1310,6 +1328,11 @@ begin
       FreeMem(lData);
     end;
 }
+    InitImage(limg1);
+    LoadImageFromMemory(FUData,FUsize,limg1);
+    ConvertDataToBitmap(limg1,imgPreview.Picture.Bitmap);
+    FreeImage(limg1);
+{    
     if LoadDDSImage(FUData,FUSize,ldata,lwidth,lheight) then
     begin
       limg:=TFPMemoryImage.Create(lwidth,lheight);
@@ -1345,7 +1368,7 @@ begin
   //    imgPreview.Picture.Assign(limg);
       limg.Free;
     end;
-
+}
   end
   else
   begin
@@ -1367,33 +1390,72 @@ end;
 
 procedure TRGGUIForm.PreviewLayout();
 begin
-//  if FUData=nil then exit;
+  if fmLedit=nil then
+  begin
+    fmLEdit:=TFormLayoutEdit.Create(Self);
+    fmLEdit.Parent:=pnlAdd;
+    fmLEdit.Align:=alClient;
+  end;
+
+  //  if FUData=nil then exit;
 
   TFormLayoutEdit(fmLEdit).BuildTree(FUData,ctrl.PAK.Version);
   fmLEdit.Visible:=true;
+end;
+
+procedure TRGGUIForm.ShowImagesetInfo(const afile:string; ax,ay, awidth, aheight:integer);
+begin
+  lblInfo1.Caption:=rsImageFile+': '+afile;
+  lblInfo2.Caption:=Format(rsSprite,[ax,ay,awidth,aheight]);
+end;
+
+procedure TRGGUIForm.PreviewImageset();
+begin
+  if fmImgSet=nil then
+  begin
+    fmImgSet:=TFormImageset.Create(Self);
+    fmImgSet.Parent:=pnlAdd;
+    fmImgSet.Align:=alClient;
+    TFormImageset(fmImgSet).OnImagesetInfo:=@ShowImagesetInfo;
+  end;
+
+  TFormImageset(fmImgSet).FillList(ctrl,FUData,FUSize);
+  fmImgSet.Visible:=true;
 end;
 
 procedure TRGGUIForm.PreviewSource();
 var
   pc :PWideChar;
   lpc:PAnsiChar;
+  ltext:string;
+  lsize:integer;
 begin
   if FUData=nil then exit;
 
 //!!    pnlEditButtons.Visible:=true;
   SynEdit.Highlighter:=SynTSyn;
 
+  lsize:=FUSize;
   case GetSourceEncoding(FUData) of
     tofSrcUTF8: begin
       lpc:=PAnsiChar(FUData);
-      if (PDword(FUData)^ and $00FFFFFF)=SIGN_UTF8 then inc(lpc,3);
-      SynEdit.Text:=lpc;
+      if (PDword(FUData)^ and $00FFFFFF)=SIGN_UTF8 then
+      begin
+        inc(lpc,3);
+        dec(lsize,3);
+      end;
+      SetString(ltext,lpc,lsize);
+      SynEdit.Text:=ltext;
     end;
 
     tofSrcWide: begin
       pc:=PWideChar(FUData);
-      if ORD(pc^)=SIGN_UNICODE then inc(pc);
-      SynEdit.Text:=WideToStr(pc);
+      if ORD(pc^)=SIGN_UNICODE then
+      begin
+        inc(pc);
+        dec(lsize,2);
+      end;
+      SynEdit.Text:=WideToStr(pc,lsize div 2);
     end;
 
   else
@@ -1455,12 +1517,12 @@ begin
 
     ctrl.GetFullInfo(lfile,lrec);
 
-    lblSizeVal  .Caption:=IntToStr(lrec.size_u);
-    lblOffsetVal.Caption:='0x'+HexStr(lrec.offset,8);
+    lblInfo1.Caption:=rsSize+': '+IntToStr(lrec.size_s)+'; '+
+                      rsOffset+': '+'0x'+HexStr(lrec.offset,8);
     try
-      lblTimeVal.Caption:=DateTimeToStr(FileTimeToDateTime(lrec.ftime));
+      lblInfo2.Caption:=rsTime+': '+DateTimeToStr(FileTimeToDateTime(lrec.ftime));
     except
-      lblTimeVal.Caption:='0x'+HexStr(lrec.ftime,16);
+      lblInfo2.Caption:=rsTime+': '+'0x'+HexStr(lrec.ftime,16);
     end;
 
     ltype:=PAKExtType(lname{lext});
@@ -1485,15 +1547,18 @@ begin
         lspec:=0;
         if ltype=typeImageset then
         begin
+          PreviewImageset();
+{
           if (FUSize>4) then
             case GetSourceEncoding(FUData) of
               tofSrcUTF8: lspec:=1;
               tofSrcWide: lspec:=2;
             end;
-        end;
+}
+        end
   //!!      pnlEditButtons.Visible:=false;
         // Text
-        if (ltype in setText) and (lspec in [0,1]) then PreviewText()
+        else if (ltype in setText) and (lspec in [0,1]) then PreviewText()
 
         // DAT, RAW, ANIMATION, TEMPLATE, LAYOUT
         else if (ltype in setData) and (lspec in [0,2]) then PreviewSource()
@@ -1701,7 +1766,7 @@ begin
   lsize:=0;
   lbuf:=nil;
 
-  if fmLEdit.Visible then
+  if (fmLEdit<>nil) and fmLEdit.Visible then
     lsize:=TFormLayoutEdit(fmLEdit).GetFile(lbuf,ctrl.PAK.Version);
 
   if SynEdit.Visible then

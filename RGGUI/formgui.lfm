@@ -160,9 +160,9 @@ object RGGUIForm: TRGGUIForm
     Height = 465
     Top = 26
     Width = 683
-    ActivePage = Setings
+    ActivePage = Grid
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 4
     object Setings: TTabSheet
       Caption = 'Setings'
@@ -309,155 +309,214 @@ object RGGUIForm: TRGGUIForm
       Caption = 'Grid'
       ClientHeight = 437
       ClientWidth = 675
-      object sgMain: TStringGrid
+      object tbGrid: TToolBar
         Left = 0
+        Height = 26
+        Top = 0
+        Width = 675
+        Images = ilMain
+        List = True
+        ShowCaptions = True
+        TabOrder = 2
+        object tbEdPreview: TToolButton
+          Left = 1
+          Top = 2
+          Action = actShowPreview
+          AllowAllUp = True
+          ShowCaption = False
+          Style = tbsCheck
+        end
+        object tbEdScale: TToolButton
+          Left = 24
+          Top = 2
+          Action = actScaleImage
+          AllowAllUp = True
+          ShowCaption = False
+          Style = tbsCheck
+        end
+        object tbEdSep1: TToolButton
+          Left = 47
+          Height = 22
+          Top = 2
+          ShowCaption = False
+          Style = tbsSeparator
+        end
+        object tbEdReset: TToolButton
+          Left = 434
+          Top = 2
+          Action = actEdReset
+          ShowCaption = False
+        end
+        object tbEdUndo: TToolButton
+          Left = 457
+          Top = 2
+          Action = actEdUndo
+          ShowCaption = False
+        end
+        object tbEdSave: TToolButton
+          Left = 480
+          Top = 2
+          Action = actEdSave
+          ShowCaption = False
+        end
+        object tbEdSep2: TToolButton
+          Left = 180
+          Height = 22
+          Top = 2
+          ShowCaption = False
+          Style = tbsSeparator
+        end
+        object tbEdImport: TToolButton
+          Left = 380
+          Top = 2
+          Action = actEdImport
+          ShowCaption = False
+        end
+        object tbEdExport: TToolButton
+          Left = 403
+          Top = 2
+          Action = actEdExport
+          ShowCaption = False
+        end
+        object tbEdSep3: TToolButton
+          Left = 372
+          Height = 22
+          Top = 2
+          ShowCaption = False
+          Style = tbsSeparator
+        end
+        object tbEdSearch: TToolButton
+          Left = 503
+          Top = 2
+          Action = actEdSearch
+          ShowCaption = False
+        end
+        object tbEdSep4: TToolButton
+          Left = 426
+          Height = 22
+          Top = 2
+          ShowCaption = False
+          Style = tbsSeparator
+        end
+        object tbColDir: TToolButton
+          Left = 211
+          Hint = 'Show/hide column: Directory'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'D'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColExt: TToolButton
+          Left = 257
+          Hint = 'Show/hide column: Extension'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'E'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColCategory: TToolButton
+          Left = 234
+          Hint = 'Show/hide column: Category'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'C'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColTime: TToolButton
+          Left = 280
+          Hint = 'Show/hide column: Time'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'T'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColPacked: TToolButton
+          Left = 326
+          Hint = 'Show/hide column: Packed size'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'P'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColUnpacked: TToolButton
+          Left = 303
+          Hint = 'Show/hide column: Unpacked size'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'U'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColSource: TToolButton
+          Left = 349
+          Hint = 'Show/hide column: Source size'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'S'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbFilter: TToolButton
+          Left = 188
+          Top = 2
+          Action = actShowFilter
+          ShowCaption = False
+        end
+        object edGridFilter: TEdit
+          Left = 55
+          Height = 23
+          Top = 2
+          Width = 125
+          CharCase = ecUppercase
+          TabOrder = 0
+          TextHint = 'Grid filter'
+          OnChange = edGridFilterChange
+        end
+      end
+      object Splitter2: TSplitter
+        Left = 328
         Height = 411
         Top = 26
-        Width = 360
-        Align = alLeft
-        AutoEdit = False
-        ColCount = 9
-        Columns = <        
-          item
-            Alignment = taCenter
-            ReadOnly = True
-            SizePriority = 0
-            Title.Caption = 'State'
-            Width = 40
-          end        
-          item
-            ReadOnly = True
-            Title.Caption = 'Dir'
-            Width = 256
-          end        
-          item
-            ReadOnly = True
-            Title.Caption = 'Name'
-            Width = 144
-          end        
-          item
-            ReadOnly = True
-            Title.Caption = 'Ext'
-          end        
-          item
-            ReadOnly = True
-            Title.Caption = 'Type'
-            Width = 80
-          end        
-          item
-            ReadOnly = True
-            Title.Caption = 'Time'
-            Width = 110
-          end        
-          item
-            Alignment = taRightJustify
-            ReadOnly = True
-            Title.Caption = 'Packed'
-            Width = 80
-          end        
-          item
-            Alignment = taRightJustify
-            ReadOnly = True
-            Title.Caption = 'Unpacked'
-            Width = 80
-          end        
-          item
-            Alignment = taRightJustify
-            ReadOnly = True
-            Title.Caption = 'Source'
-            Width = 80
-          end>
-        DefaultColWidth = 48
-        FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowSelect, goThumbTracking, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goFixedColSizing, goCellHints, goRowHighlight]
-        ParentShowHint = False
-        PopupMenu = mnuGrid
-        RangeSelectMode = rsmMulti
-        RowCount = 1
-        ShowHint = True
-        TabOrder = 0
-        OnCompareCells = sgMainCompareCells
-        OnContextPopup = sgMainContextPopup
-        OnDblClick = sgMainDblClick
-        OnGetCellHint = sgMainGetCellHint
-        OnHeaderClick = sgMainHeaderClick
-        OnHeaderSized = sgMainHeaderSized
-        OnKeyDown = sgMainKeyDown
-        OnSelection = sgMainSelection
+        Width = 5
       end
       object pnlAdd: TPanel
-        Left = 365
+        Left = 333
         Height = 411
         Top = 26
-        Width = 310
+        Width = 342
         Align = alClient
         ClientHeight = 411
-        ClientWidth = 310
-        TabOrder = 1
+        ClientWidth = 342
+        TabOrder = 0
         object pnlInfo: TPanel
           Left = 1
           Height = 40
           Top = 1
-          Width = 308
+          Width = 340
           Align = alTop
           ClientHeight = 40
-          ClientWidth = 308
+          ClientWidth = 340
           Color = cl3DLight
           ParentBackground = False
           ParentColor = False
           TabOrder = 0
-          object lblSize: TLabel
+          object lblInfo1: TLabel
             Left = 8
-            Height = 15
-            Top = 3
-            Width = 23
-            Caption = 'Size:'
-            ParentColor = False
-          end
-          object lblTime: TLabel
-            Left = 8
-            Height = 15
-            Top = 19
-            Width = 30
-            Caption = 'Time:'
-            ParentColor = False
-          end
-          object lblOffset: TLabel
-            Left = 152
-            Height = 15
-            Top = 3
-            Width = 35
-            Caption = 'Offset:'
-            ParentColor = False
-          end
-          object lblSizeVal: TLabel
-            AnchorSideLeft.Control = lblSize
-            AnchorSideLeft.Side = asrBottom
-            Left = 35
             Height = 1
             Top = 3
             Width = 1
-            BorderSpacing.Left = 4
             ParentColor = False
           end
-          object lblTimeVal: TLabel
-            AnchorSideLeft.Control = lblTime
-            AnchorSideLeft.Side = asrBottom
-            Left = 42
+          object lblInfo2: TLabel
+            Left = 8
             Height = 1
             Top = 19
             Width = 1
-            BorderSpacing.Left = 4
-            ParentColor = False
-          end
-          object lblOffsetVal: TLabel
-            AnchorSideLeft.Control = lblOffset
-            AnchorSideLeft.Side = asrBottom
-            Left = 191
-            Height = 1
-            Top = 3
-            Width = 1
-            BorderSpacing.Left = 4
             ParentColor = False
           end
         end
@@ -465,7 +524,7 @@ object RGGUIForm: TRGGUIForm
           Left = 1
           Height = 321
           Top = 89
-          Width = 308
+          Width = 340
           Align = alClient
           Center = True
           Proportional = True
@@ -476,7 +535,7 @@ object RGGUIForm: TRGGUIForm
           Left = 1
           Height = 321
           Top = 89
-          Width = 308
+          Width = 340
           Align = alClient
           Font.Height = -13
           Font.Name = 'Courier New'
@@ -943,6 +1002,8 @@ object RGGUIForm: TRGGUIForm
             object SynGutterMarks1: TSynGutterMarks
               Width = 24
               MouseActions = <>
+              MaxExtraMarksColums = 0
+              Options = [sgmoDeDuplicateMarksOnOverflow]
             end
             object SynGutterLineNumber1: TSynGutterLineNumber
               Width = 17
@@ -979,10 +1040,10 @@ object RGGUIForm: TRGGUIForm
           Left = 1
           Height = 48
           Top = 41
-          Width = 308
+          Width = 340
           Align = alTop
           ClientHeight = 48
-          ClientWidth = 308
+          ClientWidth = 340
           TabOrder = 2
           object bbPlay: TBitBtn
             Left = 8
@@ -1009,179 +1070,92 @@ object RGGUIForm: TRGGUIForm
           end
         end
       end
-      object Splitter2: TSplitter
-        Left = 360
+      object pnlGrid: TPanel
+        Left = 0
         Height = 411
         Top = 26
-        Width = 5
-      end
-      object tbGrid: TToolBar
-        Left = 0
-        Height = 26
-        Top = 0
-        Width = 675
-        Images = ilMain
-        List = True
-        ShowCaptions = True
+        Width = 328
+        Align = alLeft
+        ClientHeight = 411
+        ClientWidth = 328
+        ParentBackground = False
+        ParentColor = False
         TabOrder = 3
-        object tbEdPreview: TToolButton
+        object sgMain: TStringGrid
           Left = 1
-          Top = 2
-          Action = actShowPreview
-          AllowAllUp = True
-          ShowCaption = False
-          Style = tbsCheck
-        end
-        object tbEdScale: TToolButton
-          Left = 24
-          Top = 2
-          Action = actScaleImage
-          AllowAllUp = True
-          ShowCaption = False
-          Style = tbsCheck
-        end
-        object tbEdSep1: TToolButton
-          Left = 47
-          Height = 22
-          Top = 2
-          ShowCaption = False
-          Style = tbsSeparator
-        end
-        object tbEdReset: TToolButton
-          Left = 434
-          Top = 2
-          Action = actEdReset
-          ShowCaption = False
-        end
-        object tbEdUndo: TToolButton
-          Left = 457
-          Top = 2
-          Action = actEdUndo
-          ShowCaption = False
-        end
-        object tbEdSave: TToolButton
-          Left = 480
-          Top = 2
-          Action = actEdSave
-          ShowCaption = False
-        end
-        object tbEdSep2: TToolButton
-          Left = 180
-          Height = 22
-          Top = 2
-          ShowCaption = False
-          Style = tbsSeparator
-        end
-        object tbEdImport: TToolButton
-          Left = 380
-          Top = 2
-          Action = actEdImport
-          ShowCaption = False
-        end
-        object tbEdExport: TToolButton
-          Left = 403
-          Top = 2
-          Action = actEdExport
-          ShowCaption = False
-        end
-        object tbEdSep3: TToolButton
-          Left = 372
-          Height = 22
-          Top = 2
-          ShowCaption = False
-          Style = tbsSeparator
-        end
-        object tbEdSearch: TToolButton
-          Left = 503
-          Top = 2
-          Action = actEdSearch
-          ShowCaption = False
-        end
-        object tbEdSep4: TToolButton
-          Left = 426
-          Height = 22
-          Top = 2
-          ShowCaption = False
-          Style = tbsSeparator
-        end
-        object tbColDir: TToolButton
-          Left = 211
-          Hint = 'Show/hide column: Directory'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'D'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColExt: TToolButton
-          Left = 257
-          Hint = 'Show/hide column: Extension'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'E'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColCategory: TToolButton
-          Left = 234
-          Hint = 'Show/hide column: Category'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'C'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColTime: TToolButton
-          Left = 280
-          Hint = 'Show/hide column: Time'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'T'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColPacked: TToolButton
-          Left = 326
-          Hint = 'Show/hide column: Packed size'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'P'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColUnpacked: TToolButton
-          Left = 303
-          Hint = 'Show/hide column: Unpacked size'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'U'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColSource: TToolButton
-          Left = 349
-          Hint = 'Show/hide column: Source size'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'S'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbFilter: TToolButton
-          Left = 188
-          Top = 2
-          Action = actShowFilter
-          ShowCaption = False
-        end
-        object edGridFilter: TEdit
-          Left = 55
-          Height = 23
-          Top = 2
-          Width = 125
-          CharCase = ecUppercase
+          Height = 409
+          Top = 1
+          Width = 325
+          Anchors = [akTop, akLeft, akRight, akBottom]
+          AutoEdit = False
+          ColCount = 9
+          Columns = <          
+            item
+              Alignment = taCenter
+              ReadOnly = True
+              SizePriority = 0
+              Title.Caption = 'State'
+              Width = 40
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Dir'
+              Width = 256
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Name'
+              Width = 144
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Ext'
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Type'
+              Width = 80
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Time'
+              Width = 110
+            end          
+            item
+              Alignment = taRightJustify
+              ReadOnly = True
+              Title.Caption = 'Packed'
+              Width = 80
+            end          
+            item
+              Alignment = taRightJustify
+              ReadOnly = True
+              Title.Caption = 'Unpacked'
+              Width = 80
+            end          
+            item
+              Alignment = taRightJustify
+              ReadOnly = True
+              Title.Caption = 'Source'
+              Width = 80
+            end>
+          DefaultColWidth = 48
+          FixedCols = 0
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowSelect, goThumbTracking, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goFixedColSizing, goCellHints, goRowHighlight]
+          ParentShowHint = False
+          PopupMenu = mnuGrid
+          RangeSelectMode = rsmMulti
+          RowCount = 1
+          ShowHint = True
           TabOrder = 0
-          TextHint = 'Grid filter'
-          OnChange = edGridFilterChange
+          OnCompareCells = sgMainCompareCells
+          OnContextPopup = sgMainContextPopup
+          OnDblClick = sgMainDblClick
+          OnGetCellHint = sgMainGetCellHint
+          OnHeaderClick = sgMainHeaderClick
+          OnHeaderSized = sgMainHeaderSized
+          OnKeyDown = sgMainKeyDown
+          OnSelection = sgMainSelection
         end
       end
     end
@@ -1378,8 +1352,8 @@ object RGGUIForm: TRGGUIForm
     end
     object actEdExport: TAction
       Category = 'Edit'
-      Caption = 'Unpack'
-      Hint = 'Save file(s)'
+      Caption = 'Unpack selected'
+      Hint = 'Save selected file(s)'
       ImageIndex = 2
       OnExecute = actEdExportExecute
     end

@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   DefaultTranslator,
-  Forms, lazcontrols, imagesforlazarus, formGUI;
+  Forms, lazcontrols, imagesforlazarus, formGUI, Imaging;
 
 {$R *.res}
 
