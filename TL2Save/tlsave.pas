@@ -105,9 +105,11 @@ type
     function  GetMovie     (idx:integer):TL2IdVal;
     function  GetMap       (idx:integer):TTL2Map;
 
+    function  GetGameVersion:integer;
     function  GetStatistic (idx:integer):TRGInteger;
     procedure SetStatistic (idx:integer; aval:TRGInteger);
   public
+    property GameVersion :integer        read GetGameVersion;
     property Difficulty  :TL2Difficulty  read FDifficulty   write FDifficulty;
     property Hardcore    :boolean        read FHardcore     write FHardcore;
     property NewGameCycle:integer        read FNewGameCycle write FNewGameCycle;
@@ -248,6 +250,11 @@ begin
 end;
 
 //----- Get/Set methods -----
+
+function TTLSaveFile.GetGameVersion:integer;
+begin
+  if FVersion=tlsaveTL1 then result:=verTL1 else result:=verTL2;
+end;
 
 function TTLSaveFile.GetPetCount:integer;
 begin

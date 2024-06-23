@@ -88,6 +88,7 @@ implementation
 
 uses
   LCLIntf,
+  rgglobal,
   tl2db,
   unitGlobal,
   TLSGBase;
@@ -120,6 +121,9 @@ resourcestring
   rsPetNotFound   = 'Your pet type was not found in current mod list and was replaced by default one.';
   rsSorry         = 'Sorry, your character class ';
   rsClassNotFound = ' was not found for current mod list.'#13#10'Change it manually.';
+
+const
+  DefFilter = 'TL2 save|*.SVB|TL1 save|*.SVT|Supported files|*.SVB;*.SVT|All files|*.*';
 
 const
   DefaultExt = '.dmp';
@@ -307,9 +311,11 @@ begin
 
   OpenDialog:=TOpenDialog.Create(nil);
   try
-    OpenDialog.Title  :=rsSaveGameOpen;
-    OpenDialog.Options:=[ofFileMustExist];
-    OpenDialog.InitialDir:=FSettings.edSaveDir.Text;
+    OpenDialog.Title      :=rsSaveGameOpen;
+    OpenDialog.Options    :=[ofFileMustExist];
+    OpenDialog.Filter     :=DefFilter;
+    OpenDialog.FilterIndex:=3;
+    OpenDialog.InitialDir :=FSettings.edSaveDir.Text;
 
     if OpenDialog.Execute then
     begin
@@ -325,6 +331,9 @@ procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
 var
   i:integer;
 begin
+  if FSettings.DBState=0 then FreeBases;
+
+{
   if FSettings.cbReloadDB.Checked then
   begin
     if FSettings.DBState=0 then FreeBases;
@@ -332,7 +341,7 @@ begin
   end
   else if FSettings.DBState<>0 then
     FSettings.DBState:=LoadBases(FSettings.edDBFile.Text);
-
+}
   try
     ClearGameGlobals;
     CloseSaveGame;
@@ -340,6 +349,11 @@ begin
     SGame:=TTLSaveFile.Create;
     SGame.LoadFromFile(FFileName);
     SGame.Parse();
+    if SGame.GameVersion=verTL1 then
+      FSettings.DBState:=LoadBases(FSettings.edDBFileTL1.Text)
+    else
+      FSettings.DBState:=LoadBases(FSettings.edDBFileTL2.Text);
+
     SetFilter(SGame.BoundMods);
     LoadGameGlobals;
 {
@@ -383,6 +397,7 @@ begin
   try
     SaveDialog.Title     :=rsSaveGameSave;
     SaveDialog.Options   :=SaveDialog.Options+[ofOverwritePrompt];
+    SaveDialog.Filter    :=DefFilter;
     SaveDialog.DefaultExt:='.SVB';
     SaveDialog.InitialDir:=FSettings.edSaveDir.Text;
     if SaveDialog.Execute then

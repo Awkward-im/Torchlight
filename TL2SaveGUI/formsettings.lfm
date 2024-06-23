@@ -9,40 +9,41 @@ object fmSettings: TfmSettings
   OnCreate = FormCreate
   object bbSave: TBitBtn
     Left = 8
-    Height = 30
-    Top = 432
-    Width = 75
+    Height = 26
+    Top = 436
+    Width = 70
     Anchors = [akLeft, akBottom]
-    DefaultCaption = True
+    AutoSize = True
+    Caption = 'Save'
     Kind = bkOK
-    TabOrder = 8
+    TabOrder = 9
     OnClick = bbSaveClick
   end
-  object edIconDir: TDirectoryEdit
+  object edIconDirTL2: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 73
+    Top = 103
     Width = 366
     ShowHidden = False
     ButtonWidth = 23
     DirectInput = False
     NumGlyphs = 1
     MaxLength = 0
-    TabOrder = 1
+    TabOrder = 2
     OnChange = SettingsChanged
   end
   object lblIconDir: TLabel
     Left = 12
     Height = 15
-    Top = 55
+    Top = 85
     Width = 78
     Caption = 'Icons directory'
     ParentColor = False
   end
-  object edDBFile: TFileNameEdit
+  object edDBFileTL2: TFileNameEdit
     Left = 8
     Height = 23
-    Top = 25
+    Top = 24
     Width = 366
     FilterIndex = 0
     HideDirectories = False
@@ -63,12 +64,12 @@ object fmSettings: TfmSettings
   object gbShow: TGroupBox
     Left = 8
     Height = 96
-    Top = 188
+    Top = 214
     Width = 366
     Caption = 'What to show'
     ClientHeight = 76
     ClientWidth = 362
-    TabOrder = 4
+    TabOrder = 5
     object cbShowTech: TCheckBox
       Left = 8
       Height = 19
@@ -98,31 +99,36 @@ object fmSettings: TfmSettings
     end
   end
   object cbBackup: TCheckBox
-    Left = 8
+    Left = 392
     Height = 19
-    Top = 158
+    Top = 187
     Width = 94
     Caption = 'Make backups'
-    TabOrder = 3
+    TabOrder = 4
   end
   object cbReloadDB: TCheckBox
-    Left = 8
+    AnchorSideLeft.Control = bbSave
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = bbSave
+    AnchorSideTop.Side = asrCenter
+    Left = 88
     Height = 19
-    Top = 405
+    Top = 440
     Width = 212
+    BorderSpacing.Left = 10
     Caption = 'Reload database with savegame load'
-    TabOrder = 6
+    TabOrder = 7
     Visible = False
   end
   object gbModsScan: TGroupBox
     Left = 8
     Height = 118
-    Top = 284
+    Top = 310
     Width = 366
     Caption = 'Mods Scan'
     ClientHeight = 98
     ClientWidth = 362
-    TabOrder = 5
+    TabOrder = 6
     object edModsDir: TDirectoryEdit
       Left = 4
       Height = 23
@@ -165,29 +171,91 @@ object fmSettings: TfmSettings
   object memLog: TMemo
     Left = 385
     Height = 112
-    Top = 290
+    Top = 316
     Width = 305
     Anchors = [akTop, akLeft, akRight]
     ReadOnly = True
     ScrollBars = ssAutoVertical
-    TabOrder = 7
+    TabOrder = 8
   end
   object edSaveDir: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 124
+    Top = 185
     Width = 366
     ShowHidden = False
     ButtonWidth = 23
     NumGlyphs = 1
     MaxLength = 0
-    TabOrder = 2
+    TabOrder = 3
   end
   object lblSGFolder: TLabel
     Left = 12
     Height = 15
-    Top = 105
+    Top = 167
     Width = 145
     Caption = 'Default Savegame directory'
+  end
+  object edDBFileTL1: TFileNameEdit
+    Left = 8
+    Height = 23
+    Top = 55
+    Width = 366
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 1
+  end
+  object lblTL2DB: TLabel
+    Left = 380
+    Height = 15
+    Top = 29
+    Width = 20
+    Caption = 'TL2'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object lblTL1DB: TLabel
+    Left = 380
+    Height = 15
+    Top = 60
+    Width = 20
+    Caption = 'TL1'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object edIconDirTL1: TDirectoryEdit
+    Left = 8
+    Height = 23
+    Top = 134
+    Width = 366
+    ShowHidden = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 10
+    OnChange = SettingsChanged
+  end
+  object lblTL2Icon: TLabel
+    Left = 380
+    Height = 15
+    Top = 107
+    Width = 20
+    Caption = 'TL2'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object lblTL1Icon: TLabel
+    Left = 380
+    Height = 15
+    Top = 138
+    Width = 20
+    Caption = 'TL1'
+    Font.Style = [fsBold]
+    ParentFont = False
   end
 end

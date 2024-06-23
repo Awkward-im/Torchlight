@@ -25,15 +25,22 @@ type
     cbIdAsHex : TCheckBox;
     cbBackup  : TCheckBox;
     cbSaveScan: TCheckBox;
+    edDBFileTL1: TFileNameEdit;
+    edIconDirTL1: TDirectoryEdit;
     edSaveDir: TDirectoryEdit;
     edModsDir: TDirectoryEdit;
-    edIconDir : TDirectoryEdit;
+    edIconDirTL2 : TDirectoryEdit;
     gbModsScan: TGroupBox;
+    lblTL1Icon: TLabel;
+    lblTL2DB: TLabel;
+    lblTL1DB: TLabel;
     lblSGFolder: TLabel;
     lblModsDir: TLabel;
-  lblIconDir: TLabel;
-    edDBFile  : TFileNameEdit;   lblDBFile : TLabel;
+    lblIconDir: TLabel;
+    edDBFileTL2  : TFileNameEdit;
+    lblDBFile : TLabel;
     gbShow: TGroupBox;
+    lblTL2Icon: TLabel;
     memLog: TMemo;
 
     procedure bbRescanClick(Sender: TObject);
@@ -48,9 +55,11 @@ type
 
     function AddToLog(var adata: string): integer;
     procedure LoadSettings;
+    function GetIconDir:string;
 
   public
 
+    property IconDir:string read GetIconDir;
     property DBState:integer read FDBState write FDBState;
     property OnSettingsChanged:TOnSGSettingsChanged
         read  FOnSettingsChanged
@@ -85,8 +94,10 @@ const
 
 const
   sSettings   = 'Settings';
-  sDBFile     = 'dbfile';
-  sIconDir    = 'icondir';
+  sDBFileTL2  = 'dbfile';
+  sDBFileTL1  = 'dbfile_tl1';
+  sIconDirTL2 = 'icondir';
+  sIconDirTL1 = 'icondir_tl1';
   sSaveDir    = 'savedir';
   sModsDir    = 'modsdir';
   sSaveScan   = 'savescan';
@@ -113,14 +124,24 @@ begin
     Str(aid,result);
 end;
 
+function TfmSettings.GetIconDir:string;
+begin
+  if tl2db.GameVersion=verTL1 then
+    result:=edIconDirTL1.Text
+  else
+    result:=edIconDirTL2.Text;
+end;
+
 procedure TfmSettings.bbSaveClick(Sender: TObject);
 var
   config:TIniFile;
 begin
   config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  config.WriteString (sSettings,sDBFile    ,edDBFile  .Text);
-  config.WriteString (sSettings,sIconDir   ,edIconDir .Text);
+  config.WriteString (sSettings,sDBFileTL2 ,edDBFileTL2 .Text);
+  config.WriteString (sSettings,sDBFileTL1 ,edDBFileTL1 .Text);
+  config.WriteString (sSettings,sIconDirTL2,edIconDirTL2.Text);
+  config.WriteString (sSettings,sIconDirTL1,edIconDirTL1.Text);
   config.WriteString (sSettings,sSaveDir   ,edSaveDir .Text);
   config.WriteBool   (sSettings,sBackup    ,cbBackup  .Checked);
   config.WriteBool   (sSettings,sReloadDB  ,cbReloadDB.Checked);
@@ -146,11 +167,13 @@ begin
 
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  edDBFile    .Text   :=config.ReadString(sSettings,sDBFile  ,TL2DataBase);
-  edIconDir   .Text   :=config.ReadString(sSettings,sIconDir ,'icons');
-  edSaveDir   .Text   :=config.ReadString(sSettings,sSaveDir ,SavePath);
-  cbBackup    .Checked:=config.ReadBool  (sSettings,sBackup  ,true);
-  cbReloadDB  .Checked:=config.ReadBool  (sSettings,sReloadDB,false);
+  edDBFileTL2 .Text   :=config.ReadString(sSettings,sDBFileTL2 ,TL2DataBase);
+  edDBFileTL1 .Text   :=config.ReadString(sSettings,sDBFileTL1 ,TL2DataBase);
+  edIconDirTL2.Text   :=config.ReadString(sSettings,sIconDirTL2,'icons');
+  edIconDirTL1.Text   :=config.ReadString(sSettings,sIconDirTL1,'iconstl1');
+  edSaveDir   .Text   :=config.ReadString(sSettings,sSaveDir   ,SavePath);
+  cbBackup    .Checked:=config.ReadBool  (sSettings,sBackup    ,true);
+  cbReloadDB  .Checked:=config.ReadBool  (sSettings,sReloadDB  ,true);
 
   cbShowAll   .Checked:=config.ReadBool  (sSettings,sShowAll ,false);
   cbShowTech  .Checked:=config.ReadBool  (sSettings,sShowTech,false);
@@ -196,10 +219,10 @@ begin
     FDBState:=-1;
   end;
 }
-  RGOpenBase(ldb,edDBFile.Text);
+  RGOpenBase(ldb,edDBFileTL2.Text);
   ScanPath  (ldb,edModsDir.Text);
   if cbSaveScan.Checked then
-    RGSaveBase(ldb,edDBFile.Text);
+    RGSaveBase(ldb,edDBFileTL2.Text);
 
   if FDBState=0 then
     UseBase(ldb)
@@ -224,7 +247,7 @@ begin
 
   LoadSettings;
 
-  if not FileExists(edDBFile.Text) then
+  if not FileExists(edDBFileTL2.Text) then
   begin
     ShowMessage(rsDBNotFound);
     Self.Show;
@@ -238,7 +261,7 @@ begin
     Self.Activate;
   end;
 
-  //  FDBState:=LoadBases(edDBFile.Text);
+  //  FDBState:=LoadBases(edDBFileTL2.Text);
   FDBState:=-1;
 end;
 

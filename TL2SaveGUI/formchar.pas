@@ -474,7 +474,8 @@ procedure TfmChar.DrawIconInt(const aname,adir:string; aImg:TImage);
 var
   licon:string;
 begin
-  licon:=SearchForFileName(fmSettings.edIconDir.Text+'\'+adir+'\',UpCase(aname));
+
+  licon:=SearchForFileName(fmSettings.IconDir+'\'+adir+'\',UpCase(aname));
 
   if licon<>'' then
   begin
@@ -487,7 +488,7 @@ begin
 
   if licon='' then
     try
-      aImg.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
+      aImg.Picture.LoadFromFile(fmSettings.IconDir+'\unknown.png');
     except
       aImg.Picture.Clear;
     end;
@@ -497,7 +498,10 @@ end;
 
 procedure TfmChar.DrawCharIcon(const aname:string; aImg:TImage);
 begin
-  DrawIconInt(aname,dirCharIcon,aImg);
+  if aname='' then
+    DrawIconInt(edClass.Text+'icon',dirCharIcon,aImg)
+  else
+    DrawIconInt(aname,dirCharIcon,aImg);
 end;
 
 procedure TfmChar.StatChange(Sender: TObject);
@@ -643,7 +647,7 @@ begin
           cb.Items.AddObject(IntToStr(i),TObject(IntPtr(i)));
         cb.ItemIndex:=0;
 
-        licon:=SearchForFileName(fmSettings.edIconDir.Text+'\'+dirSpellIcon+'\',UpCase(SpellList[idx].icon));
+        licon:=SearchForFileName(fmSettings.IconDir+'\'+dirSpellIcon+'\',UpCase(SpellList[idx].icon));
         if licon<>'' then
           try
             TImage(cb.Tag).Picture.LoadFromFile(licon);
@@ -893,6 +897,7 @@ begin
       lbModList.AddItem(FChar.ModNames[i],nil);
 end;
 
+{%REGION Wardrobe}
 const
   WardNames:array [0..11] of string = (
     'FACE',
@@ -1000,6 +1005,7 @@ begin
   end;
 
 end;
+{%ENDREGION Wardrobe}
 
 procedure TfmChar.FillPlayerInfo;
 var

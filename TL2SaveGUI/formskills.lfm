@@ -153,6 +153,7 @@ object fmSkills: TfmSkills
     Width = 64
     MaxLength = 0
     NumbersOnly = True
+    SpinButtonWidth = 17
     TabOrder = 0
     OnChange = seFreePointsChange
     MaxValue = 200

@@ -1169,6 +1169,10 @@ msgstr ""
 msgid "Rescan"
 msgstr ""
 
+#: tfmsettings.bbsave.caption
+msgid "Save"
+msgstr ""
+
 #: tfmsettings.cbbackup.caption
 msgid "Make backups"
 msgstr ""
@@ -1215,6 +1219,26 @@ msgstr ""
 
 #: tfmsettings.lblsgfolder.caption
 msgid "Default Savegame directory"
+msgstr ""
+
+#: tfmsettings.lbltl1db.caption
+msgctxt "tfmsettings.lbltl1db.caption"
+msgid "TL1"
+msgstr ""
+
+#: tfmsettings.lbltl1icon.caption
+msgctxt "tfmsettings.lbltl1icon.caption"
+msgid "TL1"
+msgstr ""
+
+#: tfmsettings.lbltl2db.caption
+msgctxt "tfmsettings.lbltl2db.caption"
+msgid "TL2"
+msgstr ""
+
+#: tfmsettings.lbltl2icon.caption
+msgctxt "tfmsettings.lbltl2icon.caption"
+msgid "TL2"
 msgstr ""
 
 #: tfmskills.bbupdate.caption
@@ -1624,26 +1648,6 @@ msgstr ""
 msgid "Spell 4"
 msgstr ""
 
-#: tl2save.sloadfailed
-msgid "Savegame loading failed"
-msgstr ""
-
-#: tl2save.ssavingfailed
-msgid "Savegame saving failed"
-msgstr ""
-
-#: tl2save.swrongfooter
-msgid "Wrong save file size"
-msgstr ""
-
-#: tl2save.swrongsize
-msgid "Wrong file size"
-msgstr ""
-
-#: tl2save.swrongversion
-msgid "Wrong save file version"
-msgstr ""
-
 #: tl2statistic.rsbroken
 msgid "Breakables Broken"
 msgstr ""
@@ -1682,6 +1686,10 @@ msgstr ""
 
 #: tl2statistic.rsgold
 msgid "Gold Gathered"
+msgstr ""
+
+#: tl2statistic.rslevelsdone
+msgid "Levels Explored"
 msgstr ""
 
 #: tl2statistic.rsleveltime

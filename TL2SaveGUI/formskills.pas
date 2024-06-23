@@ -64,6 +64,7 @@ type
     function ApplyBuild(const alist: TL2IdValList): integer;
     procedure ClearData;
     procedure CreateIconList();
+    // check if character levelenough for aval'th element level of idx'es skill tier
     function  CheckTier(aval,aidx:integer):boolean;
     procedure DoLevelChange(doinc: boolean);
     function GetBuild(): TL2IdValList;
@@ -201,8 +202,8 @@ begin
     FIcons[i,false]:=TPicture.Create;
     FIcons[i,true ]:=TPicture.Create;
     try
-      FIcons[i,false].LoadFromFile(fmSettings.edIconDir.Text+'\skills\'+FSkills[i].icon+'.png');
-      FIcons[i,true ].LoadFromFile(fmSettings.edIconDir.Text+'\skills\'+FSkills[i].icon+'_gray.png');
+      FIcons[i,false].LoadFromFile(fmSettings.IconDir+'\skills\'+FSkills[i].icon+'.png');
+      FIcons[i,true ].LoadFromFile(fmSettings.IconDir+'\skills\'+FSkills[i].icon+'_gray.png');
     except
     end;
   end;
@@ -351,6 +352,7 @@ procedure TfmSkills.SetPlayerClass(const aclass:TRGID);
 var
   lbuild:TL2IdValList;
   i,j:integer;
+  lshowall:boolean;
 begin
   if FClass=aclass then
     exit;
@@ -376,11 +378,14 @@ begin
   begin
     sgSkills.RowCount:=1+Length(FSkills);
     j:=1;
+    lshowall:=tl2db.GameVersion=verTL1;
+
     for i:=0 to High(FSkills) do
     begin
-      // skip unlearnabled
-      if (FSkills[i].tier<>'') and
-         (FSkills[i].tier[1]<>',') then
+      // skip TL2 without TIER
+      if lshowall or (
+         (FSkills[i].tier<>'') and
+         (FSkills[i].tier[1]<>',')) then
       begin
         sgSkills.Objects[0,j]:=TObject(IntPtr(i));
 
@@ -460,10 +465,12 @@ end;
 function TfmSkills.GetBuild():TL2IdValList;
 var
   lcnt,i:integer;
+  lsaveall:boolean;
 begin
   Initialize(result);
   SetLength(result,sgSkills.RowCount-1);
   lcnt:=0;
+  lsaveall:=cbSaveFull.Checked or (tl2db.GameVersion=verTL1);
   for i:=1 to sgSkills.RowCount-1 do
   begin
     result[lcnt].value:=StrToInt(sgSkills.Cells[colLevel,i]);

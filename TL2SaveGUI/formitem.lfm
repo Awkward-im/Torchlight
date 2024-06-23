@@ -260,6 +260,7 @@ object fmItem: TfmItem
         Top = 344
         Width = 96
         Anchors = [akRight, akBottom]
+        Proportional = True
         Stretch = True
       end
       object bbUpdate: TBitBtn
@@ -379,6 +380,14 @@ object fmItem: TfmItem
           ReadOnly = True
           TabOrder = 2
         end
+      end
+      object edIconName: TEdit
+        Left = 248
+        Height = 23
+        Top = 344
+        Width = 247
+        Anchors = [akRight, akBottom]
+        TabOrder = 14
       end
     end
     object tsItemInfo: TTabSheet

@@ -1190,6 +1190,10 @@ msgstr "Файл"
 msgid "Rescan"
 msgstr "Скан."
 
+#: tfmsettings.bbsave.caption
+msgid "Save"
+msgstr ""
+
 #: tfmsettings.cbbackup.caption
 msgid "Make backups"
 msgstr "Делать резервную копию"
@@ -1237,6 +1241,26 @@ msgstr "Папка с модами"
 #: tfmsettings.lblsgfolder.caption
 msgid "Default Savegame directory"
 msgstr "Папка сэйвов по-умолчанию"
+
+#: tfmsettings.lbltl1db.caption
+msgctxt "tfmsettings.lbltl1db.caption"
+msgid "TL1"
+msgstr ""
+
+#: tfmsettings.lbltl1icon.caption
+msgctxt "tfmsettings.lbltl1icon.caption"
+msgid "TL1"
+msgstr ""
+
+#: tfmsettings.lbltl2db.caption
+msgctxt "tfmsettings.lbltl2db.caption"
+msgid "TL2"
+msgstr ""
+
+#: tfmsettings.lbltl2icon.caption
+msgctxt "tfmsettings.lbltl2icon.caption"
+msgid "TL2"
+msgstr ""
 
 #: tfmskills.bbupdate.caption
 msgid "Update"
@@ -1645,26 +1669,6 @@ msgstr "Заклинание 3"
 msgid "Spell 4"
 msgstr "Заклинание 4"
 
-#: tl2save.sloadfailed
-msgid "Savegame loading failed"
-msgstr "Загрузка файла провалена"
-
-#: tl2save.ssavingfailed
-msgid "Savegame saving failed"
-msgstr "Сохранение файла не удалось"
-
-#: tl2save.swrongfooter
-msgid "Wrong save file size"
-msgstr "Неверный размер файла сохранёнки"
-
-#: tl2save.swrongsize
-msgid "Wrong file size"
-msgstr "Неверный размер файла"
-
-#: tl2save.swrongversion
-msgid "Wrong save file version"
-msgstr "Неправильная версия файла"
-
 #: tl2statistic.rsbroken
 msgid "Breakables Broken"
 msgstr "Разбито разбиваемого"
@@ -1704,6 +1708,10 @@ msgstr "Азартных игр"
 #: tl2statistic.rsgold
 msgid "Gold Gathered"
 msgstr "Собрано золота"
+
+#: tl2statistic.rslevelsdone
+msgid "Levels Explored"
+msgstr ""
 
 #: tl2statistic.rsleveltime
 msgid "Level Time Played"

@@ -13,6 +13,7 @@ type
   { TfmItem }
 
   TfmItem = class(TForm)
+    edIconName: TEdit;
     lblWeaponDamageBonuses: TLabel;
     pcItemInfo: TPageControl;
     sgDmgBonus: TStringGrid;
@@ -102,6 +103,7 @@ implementation
 uses
   lazfileutils,
   formSettings,
+  rgglobal,
   tlsgeffects,
   addons,
   tl2db;
@@ -166,7 +168,7 @@ end;
 
 function GetIconFileName(aItem:TTLItem):string;
 begin
-  result:=SearchForFileName(fmSettings.edIconDir.Text,UpCase(GetItemIcon(aItem.ID)))
+  result:=SearchForFileName(fmSettings.IconDir,UpCase(GetItemIcon(aItem.ID)))
 end;
 
 procedure TfmItem.DrawItemIcon(aItem:TTLItem; aImg:TImage);
@@ -183,11 +185,13 @@ begin
     end;
 
   if licon='' then
+  begin
     try
-      aImg.Picture.LoadFromFile(fmSettings.edIconDir.Text+'\unknown.png');
+      aImg.Picture.LoadFromFile(fmSettings.IconDir+'\unknown.png');
     except
       aImg.Picture.Clear;
     end;
+  end;
 end;
 
 procedure TfmItem.FillInfo(aItem:TTLItem; aChar:TTLCharacter=nil);
@@ -286,6 +290,7 @@ begin
   for i:=0 to High(aItem.Augments) do
     lbAugments.AddItem(aItem.Augments[i],nil);
 }
+  edIconName.Text:=GetItemIcon(aItem.ID);
   DrawItemIcon(aItem,imgItem);
 
   lbModList.Clear;

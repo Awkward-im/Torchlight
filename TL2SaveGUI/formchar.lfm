@@ -12,9 +12,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsWardrobe
+    ActivePage = tsView
     Align = alClient
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -152,6 +152,7 @@ object fmChar: TfmChar
           FocusOnBuddyClick = True
           MaxLength = 0
           NumbersOnly = True
+          SpinButtonWidth = 17
           TabOrder = 0
           OnChange = StatChange
           MaxValue = 999
@@ -169,6 +170,7 @@ object fmChar: TfmChar
           FocusOnBuddyClick = True
           MaxLength = 0
           NumbersOnly = True
+          SpinButtonWidth = 17
           TabOrder = 1
           OnChange = StatChange
           MaxValue = 999
@@ -186,6 +188,7 @@ object fmChar: TfmChar
           FocusOnBuddyClick = True
           MaxLength = 0
           NumbersOnly = True
+          SpinButtonWidth = 17
           TabOrder = 2
           OnChange = StatChange
           MaxValue = 999
@@ -203,6 +206,7 @@ object fmChar: TfmChar
           FocusOnBuddyClick = True
           MaxLength = 0
           NumbersOnly = True
+          SpinButtonWidth = 17
           TabOrder = 3
           OnChange = StatChange
           MaxValue = 999
@@ -355,6 +359,7 @@ object fmChar: TfmChar
           FocusOnBuddyClick = True
           MaxLength = 0
           NumbersOnly = True
+          SpinButtonWidth = 17
           TabOrder = 2
           OnChange = seFameChange
           NullValue = 0
@@ -370,6 +375,7 @@ object fmChar: TfmChar
           FocusOnBuddyClick = True
           MaxLength = 0
           NumbersOnly = True
+          SpinButtonWidth = 17
           TabOrder = 0
           OnChange = seLevelChange
           MinValue = 1
@@ -418,6 +424,7 @@ object fmChar: TfmChar
         Top = 200
         Width = 60
         MaxLength = 0
+        SpinButtonWidth = 17
         TabOrder = 3
         OnChange = seFreePointsChange
         MaxValue = 1000
