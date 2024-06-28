@@ -63,7 +63,7 @@ begin
     begin
       if AddPropNode(aparam,p,Pos('MEDIA/UNITS/PROPS/QUESTPROPS',adir)>0) then
         result:=1
-      else if PModScanner(aparam)^.FLogLevel>1 then
+      else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
@@ -75,9 +75,9 @@ end;
 
 function ScanProps(ams:pointer):integer;
 begin
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning props');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning props');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/PROPS', @ProcessProps);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreatePropsTable(adb:PSQLite3):boolean;

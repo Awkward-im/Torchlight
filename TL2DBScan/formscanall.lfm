@@ -6,7 +6,6 @@ object fmScan: TfmScan
   Caption = 'Scan TL2 mods'
   ClientHeight = 381
   ClientWidth = 695
-  LCLVersion = '3.99.0.0'
   OnCreate = FormCreate
   object Splitter: TSplitter
     Left = 0

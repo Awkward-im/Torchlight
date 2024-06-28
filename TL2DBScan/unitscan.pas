@@ -16,7 +16,7 @@ function ScanGraph   (ams:pointer; const aname:string; amul:integer):integer;
 procedure LoadDefaultGraphs(ams:pointer);
 
 {scanning type}
-function ScanPath(adb:PSQLite3; const apath:string; aLogLvl:integer=1):integer;
+function ScanPath(adb:PSQLite3; const apath:string):integer;
 
 procedure ScanAll(ams:pointer);
 
@@ -39,7 +39,6 @@ function Prepare(
          adb:PSQLite3;
          const apath:string;
          out ams:pointer;
-         aLogLvl:integer=1;
          aupdateall:boolean=false):boolean;
 
 procedure Finish(ams:pointer);
@@ -76,14 +75,12 @@ type
     db       :PSQLite3;
     gamever  :integer;
     FRootLen :integer;  // Root dir name length
-    FLogLevel:integer;
   end;
 type
   PScanDir = ^TScanDir;
   TScanDir = record
     db  :PSQLite3;
     path:string;
-    log :integer;
   end;
 {
 const
@@ -158,7 +155,6 @@ function Prepare(
     adb:PSQLite3;
     const apath:string;
     out ams:pointer;
-    aLogLvl:integer=1;
     aupdateall:boolean=false):boolean;
 var
   lmod:TTL2ModInfo;
@@ -229,7 +225,6 @@ begin
         FDoUpdate:=aupdateall;
         Str(lmodid,FModId);
         FModMask :=' '+FModId+' ';
-        FLogLevel:=aLogLvl;
         gamever  :=ABS(lver);
       end;
 
@@ -266,11 +261,11 @@ end;
 
 {%REGION Scan dirs}
 
-procedure ProcessSingleMod(adb:PSQLite3; const aname:string; aLogLvl:integer);
+procedure ProcessSingleMod(adb:PSQLite3; const aname:string);
 var
   lms:pointer;
 begin
-  if not Prepare(adb,aname,lms,aLogLvl) then
+  if not Prepare(adb,aname,lms) then
   begin
     RGLog.Add('Can''t prepare "'+aname+'" scanning');
     exit;
@@ -286,28 +281,28 @@ var
   lext:string;
 begin
   result:=1 or sres_nocheck;
-  lext:=UpCase(ExtractFileExt(aname));
+  lext:=ExtractFileExt(aname);
   if (lext='.MOD') or
      (lext='.PAK') or
      (lext='.ZIP') then
   begin
     with PScanDir(aparam)^ do
-      ProcessSingleMod(db,path+adir+'\'+aname,log);
+      ProcessSingleMod(db,path+adir+'\'+aname);
   end
 //  else if (UpCase(aname)='MOD.DAT') then
   else if (UpCase(aname)='MEDIA/') then
   begin
     with PScanDir(aparam)^ do
       if (adir='\') or (adir='/') then
-        ProcessSingleMod(db,path,log)
+        ProcessSingleMod(db,path)
       else
-        ProcessSingleMod(db,path+adir,log);
+        ProcessSingleMod(db,path+adir);
   end
   else
     exit(0);
 end;
 
-function ScanPath(adb:PSQLite3; const apath:string; aLogLvl:integer=1):integer;
+function ScanPath(adb:PSQLite3; const apath:string):integer;
 var
   lsd:TScanDir;
 begin
@@ -316,7 +311,6 @@ begin
   lsd.path:=apath;
   if not (lsd.path[Length(lsd.path)] in ['/','\']) then
     lsd.path:=lsd.path+'/';
-  lsd.log :=aLogLvl;
   result:=MakeRGScan(apath,'',['.PAK','.MOD','.ZIP','.DAT','.ADM'],nil,@lsd,@DoCheck);
 end;
 

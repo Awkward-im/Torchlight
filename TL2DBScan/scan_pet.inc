@@ -65,7 +65,7 @@ begin
       if UpCase(lpet.gr_armor)<>'ARMOR_MINION_BYLEVEL' then
       begin
         ScanGraph(ams,lpet.gr_armor,1);
-        if PModScanner(ams)^.FLogLevel>2 then
+        if RGDebugLevel=dlDetailed then
           RGLog.Add('Pet armor graph is '+lpet.gr_armor);
       end
     end
@@ -75,7 +75,7 @@ begin
       if UpCase(lpet.gr_dmg)<>'DAMAGE_MINION_BYLEVEL' then
       begin
         ScanGraph(ams,lpet.gr_dmg,1);
-        if PModScanner(ams)^.FLogLevel>2 then
+        if RGDebugLevel=dlDetailed then
           RGLog.Add('Pet damage graph is '+lpet.gr_dmg);
       end
     end
@@ -85,7 +85,7 @@ begin
       if UpCase(lpet.gr_hp)<>'HEALTH_MINION_BYLEVEL' then
       begin
         ScanGraph(ams,lpet.gr_hp,1);
-        if PModScanner(ams)^.FLogLevel>2 then
+        if RGDebugLevel=dlDetailed then
           RGLog.Add('Pet health graph is '+lpet.gr_hp);
       end
     end
@@ -122,7 +122,7 @@ begin
     begin
       if AddPetNode(aparam,p) then
         result:=1
-      else if PModScanner(aparam)^.FLogLevel>1 then 
+      else if RGDebugLevel=dlDetailed then 
         RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
@@ -140,11 +140,11 @@ begin
     exit(0);
   end;
 
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning pets');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning pets');
   result:=       DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/PETS/'           , @ProcessPets);
   result:=result+DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/WARBOUNDS/'      , @ProcessPets);
   result:=result+DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS/BROTHER-IN-ARMS/', @ProcessPets);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreatePetsTable(adb:PSQLite3):boolean;

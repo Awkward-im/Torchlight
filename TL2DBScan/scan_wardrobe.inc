@@ -59,7 +59,7 @@ begin
 
       if not AddWardrobeToBase(ams,ldata) then
       begin
-        if PModScanner(ams)^.FLogLevel>1 then
+        if RGDebugLevel=dlDetailed then
           RGLog.Add('can''t update '+ldata.name);
       end
       else
@@ -91,8 +91,8 @@ begin
     begin
       i:=ScanWardrobeNode(aparam,p);
 
-      if i=0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
-//      if i=-1 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
+      if i=0 then if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
+//      if i=-1 then if RGDebugLevel=dlDetailed then RGLog.Add('don''t added ' +aname);
       if i>0 then result:=i;
 
       DeleteNode(p);
@@ -118,9 +118,9 @@ begin
     exit(0);
   end;
 
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning wardrobe');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning wardrobe');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/WARDROBE/', @ProcessWardrobe, @CheckNameWard);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateWardrobeTable(adb:PSQLite3):boolean;

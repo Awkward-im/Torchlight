@@ -81,9 +81,10 @@ var
   lloglvl:integer;
 begin
   if cbDetailedLog.Checked then
+    RGDebugLevel:=dlDetailed
     lloglvl:=10
   else
-    lloglvl:=1;
+    RGDebugLevel:=dlNormal;
 
   if not Prepare(db,aname,lms,lloglvl) then
   begin
@@ -180,7 +181,7 @@ var
 begin
   lext:=TfmScan(aparam).edDirName.Text;
   result:=1 or sres_nocheck;
-  lext:=UpCase(ExtractFileExt(aname));
+  lext:=ExtractFileExt(aname);
   if (lext='.MOD') or
      (lext='.PAK') or
      (lext='.ZIP') then
@@ -301,4 +302,3 @@ begin
 end;
 
 end.
-

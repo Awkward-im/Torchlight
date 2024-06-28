@@ -92,7 +92,7 @@ begin
     begin
       if AddMobNode(aparam,p) then
         result:=1
-      else if PModScanner(aparam)^.FLogLevel>1 then
+      else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
@@ -119,9 +119,9 @@ end;
 
 function ScanMobs(ams:pointer):integer;
 begin
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning mobs');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning mobs');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/MONSTERS', @ProcessMobs, @CheckNameMobs);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateMobsTable(adb:PSQLite3):boolean;

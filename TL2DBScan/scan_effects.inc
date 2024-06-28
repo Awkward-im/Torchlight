@@ -89,7 +89,7 @@ begin
   begin
     if AddEffectNode(ams,p)>0 then
       result:=1
-    else if PModScanner(ams)^.FLogLevel>1 then RGLog.Add('can''t update EFFECTSLIST.DAT');
+    else if RGDebugLevel=dlDetailed then RGLog.Add('can''t update EFFECTSLIST.DAT');
 
     DeleteNode(p);
   end;

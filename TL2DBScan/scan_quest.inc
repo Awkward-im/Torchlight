@@ -69,8 +69,8 @@ begin
     begin
       i:=AddQuestNode(aparam,p);
 
-      if i=0  then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
-      if i=-1 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
+      if i=0  then if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
+      if i=-1 then if RGDebugLevel=dlDetailed then RGLog.Add('don''t added ' +aname);
       if i>0  then result:=1;
 
       DeleteNode(p);
@@ -82,9 +82,9 @@ end;
 
 function ScanQuests(ams:pointer):integer;
 begin
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning quests');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning quests');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/QUESTS', @ProcessQuests);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateQuestsTable(adb:PSQLite3):boolean;

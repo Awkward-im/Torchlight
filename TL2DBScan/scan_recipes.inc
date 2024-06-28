@@ -91,8 +91,8 @@ begin
     begin
       i:=AddRecipeNode(aparam,p);
 
-      if i=0  then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
-//      if i=-1 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('don''t added ' +aname);
+      if i=0  then if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
+//      if i=-1 then if RGDebugLevel=dlDetailed then RGLog.Add('don''t added ' +aname);
       if i>0  then result:=1;
 
       DeleteNode(p);
@@ -104,9 +104,9 @@ end;
 
 function ScanRecipes(ams:pointer):integer;
 begin
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning recipes');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning recipes');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/RECIPES', @ProcessRecipes);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 // Variant: to make two different structures, for TL1 and TL2 games

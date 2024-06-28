@@ -61,7 +61,7 @@ begin
 
   if p=nil then
   begin
-    if PModScanner(ams)^.FLogLevel>1 then
+    if RGDebugLevel=dlDetailed then
       RGLog.Add('can''t load: '+fname);
     exit;
   end;
@@ -106,7 +106,7 @@ begin
 
   if p=nil then
   begin
-    if PModScanner(ams)^.FLogLevel>1 then
+    if RGDebugLevel=dlDetailed then
       RGLog.Add('can''t load: '+fname);
     exit;
   end;
@@ -217,8 +217,8 @@ begin
       i:=AddItemNode(aparam,p,
           ldir+aname,
           Pos('MEDIA/UNITS/ITEMS/QUEST_ITEMS',adir)>0);
-      if (i and 1)<>0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('No icon for '  +aname);
-      if (i and 2)<>0 then if PModScanner(aparam)^.FLogLevel>1 then RGLog.Add('can''t update '+aname);
+      if (i and 1)<>0 then if RGDebugLevel=dlDetailed then RGLog.Add('No icon for '  +aname);
+      if (i and 2)<>0 then if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
     end;
@@ -229,9 +229,9 @@ end;
 
 function ScanItems(ams:pointer):integer;
 begin
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning items');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning items');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/UNITS/ITEMS', @ProcessItems);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateItemsTable(adb:PSQLite3):boolean;

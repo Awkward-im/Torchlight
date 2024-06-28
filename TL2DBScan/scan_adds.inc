@@ -5,9 +5,9 @@
 
 function ScanAdds(ams:pointer):integer;
 begin
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning effects');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning effects');
   result:=ScanEffects(ams);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateAddsTable(adb:PSQLite3):boolean;

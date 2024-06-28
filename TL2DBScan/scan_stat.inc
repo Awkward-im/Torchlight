@@ -65,7 +65,7 @@ begin
     begin
       if AddStatNode(aparam,p) then
         result:=1
-      else if PModScanner(aparam)^.FLogLevel>1 then
+      else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
@@ -83,9 +83,9 @@ begin
     exit(0);
   end;
 
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add('Scanning stats');
+  if RGDebugLevel<>dlNone then RGLog.Add('Scanning stats');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/STATS', @ProcessStats);
-  if PModScanner(ams)^.FLogLevel>0 then RGLog.Add(IntToStr(result)+' records added');
+  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
 function CreateStatsTable(adb:PSQLite3):boolean;

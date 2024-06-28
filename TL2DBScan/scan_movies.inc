@@ -75,7 +75,7 @@ begin
     if result<=0 then
     begin
       result:=sres_fail;
-      if PModScanner(ams)^.FLogLevel>1 then RGLog.Add('can''t update MOVIES.DAT');
+      if RGDebugLevel=dlDetailed then RGLog.Add('can''t update MOVIES.DAT');
     end;
 
     DeleteNode(p);
