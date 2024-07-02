@@ -1,4 +1,3 @@
-{TODO: Buttons: proportional, inverse background (OnPaintBackground event)}
 {TODO: paint border for sprite on image (need to recalc coords)}
 unit fmImageset;
 
@@ -18,19 +17,26 @@ type
   { TFormImageset }
 
   TFormImageset = class(TForm)
+    cbDarkBg: TCheckBox;
     imgSprite: TImage;
     imgTexture: TImage;
     lbImages: TListBox;
+    miSelectAll: TMenuItem;
     miExtract: TMenuItem;
+    pnlSprite: TPanel;
     pnlLeft: TPanel;
     mnuImgSet: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
+    procedure cbDarkBgClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure DrawDarkBg(ASender: TObject; ACanvas: TCanvas;
+      ARect: TRect);
     procedure lbImagesClick(Sender: TObject);
     procedure lbImagesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure miExtractClick(Sender: TObject);
+    procedure miSelectAllClick(Sender: TObject);
   private
     picfile:string;
     FFileName:string;
@@ -136,8 +142,7 @@ begin
     begin
       if lbImages.Selected[i] then
       begin
-        NewImage(FCoords[i].Width,FCoords[i].Height,
-                FImage.Format,lsprite);
+        NewImage(FCoords[i].Width,FCoords[i].Height,FImage.Format,lsprite);
         CopyRect(FImage,
           FCoords[i].XPos ,FCoords[i].YPos,
           FCoords[i].Width,FCoords[i].Height,
@@ -152,14 +157,41 @@ begin
   end;
 end;
 
+procedure TFormImageset.miSelectAllClick(Sender: TObject);
+begin
+  lbImages.SelectAll;
+end;
+
 procedure TFormImageset.FormDestroy(Sender: TObject);
 begin
   FreeImage(FImage);
 end;
 
+procedure TFormImageset.DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
+begin
+  ACanvas.Brush.Color := clGray;
+  ACanvas.FillRect(ARect);
+end;
+
 procedure TFormImageset.FormCreate(Sender: TObject);
 begin
 //  InitImage(FImage);
+end;
+
+procedure TFormImageset.cbDarkBgClick(Sender: TObject);
+begin
+  if cbDarkBg.Checked then
+  begin
+    imgSprite .OnPaintBackground:=@DrawDarkBg;
+    imgTexture.OnPaintBackground:=@DrawDarkBg;
+  end
+  else
+  begin
+    imgSprite .OnPaintBackground:=nil;
+    imgTexture.OnPaintBackground:=nil;
+  end;
+  imgSprite .Repaint;
+  imgTexture.Repaint;
 end;
 
 procedure ReadXMLText(out ADoc: TXMLDocument; const astr:AnsiString);
@@ -283,7 +315,7 @@ begin
   FFileName:='';
   lbImages.Items.Clear;
   FreeImage(FImage);
-  InitImage(FImage);
+  imgSprite.Picture.Clear;
 
   lpc:=PAnsiChar(adata);
   if (PDword(adata)^ and $00FFFFFF)=SIGN_UTF8 then

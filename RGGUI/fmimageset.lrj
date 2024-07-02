@@ -1,3 +1,5 @@
 {"version":1,"strings":[
+{"hash":155035492,"name":"tformimageset.cbdarkbg.caption","sourcebytes":[68,97,114,107,32,66,97,99,107,103,114,111,117,110,100],"value":"Dark Background"},
+{"hash":195296268,"name":"tformimageset.miselectall.caption","sourcebytes":[83,101,108,101,99,116,32,97,108,108],"value":"Select all"},
 {"hash":217810916,"name":"tformimageset.miextract.caption","sourcebytes":[69,120,116,114,97,99,116],"value":"Extract"}
 ]}

@@ -221,7 +221,7 @@ begin
     if apath[i]='\' then
       result[j]:='/'
     else
-      result[j]:=UpCase(apath[i]);
+      result[j]:=UnicodeChar(ORD(UpCase(apath[i])));
     inc(i);
     inc(j);
   end;
@@ -255,7 +255,7 @@ begin
     if apath[i]='\' then
       result[j]:='/'
     else
-      result[j]:=UpCase(apath[i]);
+      result[j]:=FastUpCase(apath[i]);
     inc(i);
     inc(j);
   end;
@@ -565,7 +565,7 @@ begin
     pc:=@p;
     while aname^<>#0 do
     begin
-      pc^:=UpCase(aname^);
+      pc^:=FastUpCase(aname^);
       inc(aname);
       inc(pc);
     end;
@@ -596,7 +596,7 @@ begin
 
   result:=SearchFile(pointer(lpath),pointer(lname));
 end;
-{%ENDREGION}
+{%ENDREGION Search}
 
 {%REGION File}
   {%REGION Add}
@@ -659,7 +659,7 @@ begin
     pc:=@p;
     while aname^<>#0 do
     begin
-      pc^:=UpCase(aname^);
+      pc^:=FastUpCase(aname^);
       inc(aname);
       inc(pc);
     end;

@@ -383,7 +383,7 @@ var
 begin
   if (fname='') or (fname[Length(fname)]='/') then exit(nil);
 
-  lext:=UpCase(ExtractFileExt(fname));
+  lext:=ExtractFileExt(fname); // upcased into extraction
 
   if (lext='.TXT') or (lext='.ADM') then
   begin
@@ -394,7 +394,7 @@ begin
     // ANIMATION.TXT
     // HIE.TXT
     // WDAT.TXT
-    lext:=UpCase(ExtractFileExt(Copy(fname,1,Length(fname)-4)));
+    lext:=ExtractFileExt(Copy(fname,1,Length(fname)-4));
   end;
 
   if lext='' then exit(nil);

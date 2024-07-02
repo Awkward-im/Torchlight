@@ -410,9 +410,17 @@ msgctxt "tfilterform.lblextension.caption"
 msgid "Extension"
 msgstr "Расширение"
 
+#: tformimageset.cbdarkbg.caption
+msgid "Dark Background"
+msgstr ""
+
 #: tformimageset.miextract.caption
 msgid "Extract"
 msgstr "Извлечь"
+
+#: tformimageset.miselectall.caption
+msgid "Select all"
+msgstr ""
 
 #: tformlayoutedit.acttreedeletenode.caption
 msgid "Delete Object"

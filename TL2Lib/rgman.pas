@@ -326,7 +326,7 @@ begin
   if lextpos>1 then
     for j:=lextpos to Length(aname) do
     begin
-      lext[k]:=UpCase(aname[j]);
+      lext[k]:=FastUpCase(aname[j]);
       inc(k);
     end;
   lext[k]:=#0;
@@ -454,7 +454,7 @@ begin
 
   if afilter then
   begin
-    sl:=TStringList.Create;
+    sl:=TStringList.Create; sl.CaseSensitive:=true;
     sl.Sorted:=true;
     sl.Capacity:=result;
 
@@ -476,7 +476,8 @@ begin
       end;
 
     if lrootlen>0 then
-      lname:=Copy(lname,lrootlen+1);
+      Delete(lname,1,lrootlen);
+//      lname:=Copy(lname,lrootlen+1);
 
     lfile:=AddPath(ExtractPath(lname));
     lfile:=AddFile(lfile,pointer(UnicodeString(ExtractName(lname))));

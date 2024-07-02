@@ -28,7 +28,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
             <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
           <Parsing>
@@ -75,7 +75,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
             <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
@@ -112,7 +112,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
             <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
           <Parsing>
@@ -160,7 +160,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
             <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
@@ -287,6 +287,10 @@
         <Filename Value="Imaging\Imaging.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\components\virtualtreeview\laz.virtualtreeview_package.lpk"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -298,7 +302,7 @@
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
       <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
-      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
     </SearchPaths>
     <Linking>
       <Debugging>

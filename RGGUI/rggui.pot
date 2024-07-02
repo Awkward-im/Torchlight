@@ -398,8 +398,16 @@ msgctxt "tfilterform.lblextension.caption"
 msgid "Extension"
 msgstr ""
 
+#: tformimageset.cbdarkbg.caption
+msgid "Dark Background"
+msgstr ""
+
 #: tformimageset.miextract.caption
 msgid "Extract"
+msgstr ""
+
+#: tformimageset.miselectall.caption
+msgid "Select all"
 msgstr ""
 
 #: tformlayoutedit.acttreedeletenode.caption

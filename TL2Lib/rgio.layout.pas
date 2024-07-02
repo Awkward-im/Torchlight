@@ -372,11 +372,12 @@ begin
     result:=pointer(FBuffer);
 
 {$IFDEF DEBUG}  
-    unkn.add(nil,aid);
+    if (rgDebugLevel=dlDetailed) then
+      unkn.add(nil,aid);
 {$ENDIF}
   end
 {$IFDEF DEBUG}  
-  else
+  else if (rgDebugLevel=dlDetailed) then
     known.add(result,aid);
 {$ENDIF}
 end;
@@ -1381,7 +1382,7 @@ begin
       if ls[i]='\' then
         ls[i]:='/'
       else
-        ls[i]:=UpCase(ls[i]);
+        ls[i]:=FastUpCase(ls[i]);
     end;
 
     if      pos('MEDIA/UI'       ,ls)>0 then exit(ltUI)
@@ -1568,7 +1569,7 @@ initialization
 finalization
   
 {$IFDEF DEBUG}  
-  if known.count>0 then
+  if (rgDebugLevel=dlDetailed) and (known.count>0) then
   begin
     known.Sort;
     known.export('known-lay.dict'    ,asText);
@@ -1576,7 +1577,7 @@ finalization
   end;
   known.clear;
 
-  if unkn.count>0 then
+  if (rgDebugLevel=dlDetailed) and (unkn.count>0) then
   begin
     unkn.Sort;
     unkn.export('unknown-lay.dict',asText);

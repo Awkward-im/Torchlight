@@ -1,16 +1,13 @@
 {TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
 {TODO: show layout game version at least for changed/added files}
 {TODO: Save pak or file: check setData binary files version, repack if needs}
-{TODO: add icon extract by imageset}
 {TODO: add hash calc and brute form}
 {TODO: 1-setting to save linked file on disk/mem; 2-ask every time/once}
 {TODO: save as for editor}
-{TODO: memory settings: max size to load PAK into memory}
 {TODO: Add file search}
 {TODO: Implement to open DIR (not PAK/MOD/MAN) = ctrl.AddDirectory}
 {TODO: StatusBar: change statistic when add/delete dir/file}
 {TODO: StatusBar: path changes on dir with files only}
-{TODO: option: keep PAK open}
 {TODO: option: ask unpack path}
 {TODO: replace bitbutton by speed button (scale problem)}
 {TODO: change grid/preview border moving}
@@ -22,9 +19,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
-  ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
-  SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
-  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset, SynHighlighterOgre;
+  ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit, SynEdit,
+  SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
+  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset,
+  SynHighlighterOgre;
 
 type
 
@@ -722,7 +720,7 @@ begin
 
   if ctrl.PAK.GetInfo(aname,lmode) then
     ctrl.Rebuild();
-ctrl.Trace;
+//ctrl.Trace;
   FillTree();
   SetupView();
 end;
@@ -1267,16 +1265,8 @@ end;
 
 procedure TRGGUIForm.PreviewImage(const aext:string);
 var
-//  limg: TLazIntfImage;
-//  png: TCustomBitmap;
-  limg:TFPMemoryImage;
   lstr:TMemoryStream;
-  lwriter: TFPWriterBMP;
-  lfpc:TFPColor;
-  ldata:PByte;
-  limg1:TImageData;
-//  lsize:integer;
-  lidx,y,x,lheight,lwidth:integer;
+  limg:TImageData;
 begin
   if FUSize=0 then exit;
 
@@ -1294,81 +1284,10 @@ begin
      (PByte(FUData)[1]=ORD('D')) and
      (PByte(FUData)[2]=ORD('S'))) then
   begin
-{
-    LoadDDSImage(FUData, FUSize, ldata, lwidth, lheight);
-    try
-      png := TPortableNetworkgraphic.Create; // or TJpegImage.Create, or TBitmap.Create, or ...
-      try
-        png.SetSize(lWidth, lHeight);
-        png.PixelFormat := pf32bit;
-        limg := png.CreateIntfImage;
-        try
-          lidx:=0;
-          for y := 0 to lheight-1 do
-          begin
-            for x := 0 to lwidth-1 do
-            begin
-              lfpc.Red   := ldata[lidx+0] shl 8;
-              lfpc.Green := ldata[lidx+1] shl 8;
-              lfpc.Blue  := ldata[lidx+2] shl 8;
-              lfpc.Alpha := ldata[lidx+3] shl 8;
-              limg.Colors[x, y] := lfpc;
-              Inc(lidx, 4);
-            end;
-          end;
-          png.LoadFromIntfImage(limg);
-          imgPreview.Picture.Assign(png);
-        finally
-          limg.Free;
-        end;
-      finally
-        png.Free;
-      end;
-    finally
-      FreeMem(lData);
-    end;
-}
-    InitImage(limg1);
-    LoadImageFromMemory(FUData,FUsize,limg1);
-    ConvertDataToBitmap(limg1,imgPreview.Picture.Bitmap);
-    FreeImage(limg1);
-{    
-    if LoadDDSImage(FUData,FUSize,ldata,lwidth,lheight) then
-    begin
-      limg:=TFPMemoryImage.Create(lwidth,lheight);
-      lidx:=0;
-      for y:=0 to lheight-1 do
-      begin
-        for x:=0 to lwidth-1 do
-        begin
-          lfpc.Red  :=ldata[lidx+0] shl 8;
-          lfpc.Green:=ldata[lidx+1] shl 8;
-          lfpc.Blue :=ldata[lidx+2] shl 8;
-          lfpc.Alpha:=ldata[lidx+3] shl 8;
-          limg.Colors[x,y]:=lfpc;
-          inc(lidx,4);
-        end;
-      end;
-      FreeMem(ldata);
-
-      lstr:=TMemoryStream.Create();
-      try
-        lwriter := TFPWriterBMP.Create;
-        try
-          limg.SaveToStream(lstr, lwriter);
-          // or: lwriter.ImageWrite(lstr, limg);
-        finally
-          lwriter.Free;
-        end;
-        lstr.Position := 0;
-        imgPreview.Picture.LoadFromStream(lstr);
-      finally
-        lstr.Free;
-      end;
-  //    imgPreview.Picture.Assign(limg);
-      limg.Free;
-    end;
-}
+    InitImage(limg);
+    LoadImageFromMemory(FUData,FUsize,limg);
+    ConvertDataToBitmap(limg,imgPreview.Picture.Bitmap);
+    FreeImage(limg);
   end
   else
   begin

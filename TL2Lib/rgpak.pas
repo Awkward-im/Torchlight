@@ -321,7 +321,7 @@ begin
 
   //--- Check by ext
 
-  lext:=UpCase(ExtractFileExt(aname));
+  lext:=ExtractFileExt(aname);
 
   if lext='.ZIP' then
   begin
@@ -464,7 +464,7 @@ begin
         continue;
     end;
 
-    if ExtractFileName(lname)='MOD.DAT' then
+    if ExtractName(lname)='MOD.DAT' then
     begin
       if lrootlen<0 then
       begin
@@ -858,7 +858,7 @@ begin
       ldir:=adir;
     ForceDirectories(ldir);
 
-    Assign(f,ldir+'\'+ExtractFileName(afile));
+    Assign(f,ldir+'\'+ExtractName(afile));
     Rewrite(f);
     if IOResult=0 then
     begin

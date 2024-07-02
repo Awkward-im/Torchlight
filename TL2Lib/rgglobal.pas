@@ -91,6 +91,7 @@ function  RGIntToStr(dst:PWideChar; value:QWord):PWideChar;
 procedure FixFloatStr(var astr:UnicodeString);
 function  ReverseWords(aval:QWord):QWord;
 
+function  FastUpCase   (c:UnicodeChar):UnicodeChar;
 function  StrToWide    (const src:string):PWideChar;
 function  FastStrToWide(const src:string):PWideChar;
 function  WideToStr    (src:PWideChar;asize:integer=-1):string;
@@ -442,6 +443,13 @@ begin
   while (result<asize) and (abuf[result]<>#0) do inc(result);
 end;
 
+function FastUpCase(c:UnicodeChar):UnicodeChar; inline;
+begin
+  result:=c;
+  if ORD(c) in [97..122] then
+    result:=UnicodeChar(ORD(c)-32);
+end;
+
 function FastStrToWide(const src:string):PWideChar;
 var
   i:integer;
@@ -693,28 +701,6 @@ begin
 end;
 
 // modification of SysUtils
-function ExtractFileExt(const aFileName: string):string;
-var
-  i,j:integer;
-begin
-  Result:='';
-  i:=Length(aFileName);
-
-  while (i>0) and not (aFileName[i] in ['/','\','.']) do Dec(i);
-
-  if (i>0) and (aFileName[i]='.') then
-  begin
-    if (i>1) and not (aFileName[i-1] in ['/','\']) then
-    begin
-//      Result:=Copy(aFileName,i);
-
-      SetLength(Result,Length(aFileName)-i+1);
-      for j:=i to Length(aFileName) do
-        Result[j-i+1]:=UpCase(aFileName[j]);
-    end;
-  end;
-end;
-
 function ExtractPath(const apath:string):string;
 var
   i:integer;
@@ -737,6 +723,28 @@ begin
   dec(i);
   while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
   if i>0 then result:=copy(apath,i+1) else result:=apath;
+end;
+
+function ExtractFileExt(const aFileName: string):string;
+var
+  i,j:integer;
+begin
+  Result:='';
+  i:=Length(aFileName);
+
+  while (i>0) and not (aFileName[i] in ['/','\','.']) do Dec(i);
+
+  if (i>0) and (aFileName[i]='.') then
+  begin
+    if (i>1) and not (aFileName[i-1] in ['/','\']) then
+    begin
+//      Result:=Copy(aFileName,i);
+
+      SetLength(Result,Length(aFileName)-i+1);
+      for j:=i to Length(aFileName) do
+        Result[j-i+1]:=UpCase(aFileName[j]);
+    end;
+  end;
 end;
 
 

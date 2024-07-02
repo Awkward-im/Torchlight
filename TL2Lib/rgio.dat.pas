@@ -144,11 +144,12 @@ begin
     result:=RGIntToStr(@FBuffer,aid);
 
 {$IFDEF DEBUG}  
-    unkn.add(nil,aid);
+    if (rgDebugLevel=dlDetailed) then
+      unkn.add(nil,aid);
 {$ENDIF}
   end
 {$IFDEF DEBUG}  
-  else
+  else if (rgDebugLevel=dlDetailed) then
     known.add(result,aid);
 {$ENDIF}
 end;
@@ -481,7 +482,7 @@ begin
       // check the ext
       while spos<=epos do
       begin
-        FFileName[llen]:=UpCase(fname[spos]);
+        FFileName[llen]:=FastUpCase(fname[spos]);
         inc(spos);
         inc(llen);
       end;
@@ -629,7 +630,7 @@ initialization
 finalization
 
 {$IFDEF DEBUG}  
-  if known.count>0 then
+  if (rgDebugLevel=dlDetailed) and (known.count>0) then
   begin
     known.Sort;
     known.export('known-dat.dict'    ,asText);
@@ -637,7 +638,7 @@ finalization
   end;
   known.clear;
 
-  if unkn.count>0 then
+  if (rgDebugLevel=dlDetailed) and (unkn.count>0) then
   begin
     unkn.Sort;
     unkn.export('unknown-dat.dict',asText);

@@ -294,7 +294,7 @@ begin
   if anode=nil then exit;
 
   GetMem(aptr,4096);
-  aptr[0]:=WideChar($FEFF);
+  aptr[0]:=WideChar(SIGN_UNICODE);
   lidx:=2;
 
   result:=DumpNode(PByte(aptr),lidx,anode,0,achild);

@@ -634,7 +634,7 @@ begin
       end;
       while i>0 do
       begin
-        ls[i]:=UpCase(newname[i-1]);
+        ls[i]:=FastUpCase(newname[i-1]);
         dec(i);
       end;
     end
@@ -1000,7 +1000,7 @@ begin
   if lextpos>1 then
     for j:=lextpos to Length(aname) do
     begin
-      lext[k]:=UpCase(aname[j]);
+      lext[k]:=FastUpCase(aname[j]);
       inc(k);
     end;
   lext[k]:=#0;
