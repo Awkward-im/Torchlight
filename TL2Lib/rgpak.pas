@@ -305,6 +305,7 @@ var
   lmi  :TTL2ModTech   absolute buf;
   f:file of byte;
   lext:string;
+  lres:integer;
 begin
   FVersion:=verUnk;
 
@@ -313,15 +314,15 @@ begin
 
   if aname<>'' then
   begin
-    FSrcDir:=(ExtractFilePath    (aname));
-    FName  :=(ExtractFilenameOnly(aname));
+    FSrcDir:=(ExtractPath    (aname));
+    FName  :=(ExtractNameOnly(aname));
   end
   else
     exit(verUnk);
 
   //--- Check by ext
 
-  lext:=ExtractFileExt(aname);
+  lext:=ExtractExt(aname);
 
   if lext='.ZIP' then
   begin
@@ -351,7 +352,7 @@ begin
   end;
 
   buf[0]:=0;
-  BlockRead(f,buf,SizeOf(buf));
+  BlockRead(f,buf,SizeOf(buf),lres);
   Close(f);
 
   // check PAK version
@@ -376,23 +377,19 @@ begin
     modinfo.offData:=0;
     modinfo.offMan :=lhdr.ManOffset;
   end
-  else
+  //  if ((lmi.version=4) and (lmi.gamever[0]=1)) or (lext='.MOD') then
+  else if FVersion=verTL2MOD then
   begin
-    // if we have MOD header
-    if ((lmi.version=4) and (lmi.gamever[0]=1)) or
-       (lext='.MOD') then
-    begin
-      FVersion:=verTL2Mod;
-      modinfo.offData:=lmi.offData;
-      modinfo.offMan :=lmi.offMan;
-    end
-    else
-    begin
-      FVersion:=verTL2;
-      // really, it zero already
-      modinfo.offData:=0;
-      modinfo.offMan :=0;
-    end;
+    FVersion:=verTL2Mod;
+    modinfo.offData:=lmi.offData;
+    modinfo.offMan :=lmi.offMan;
+  end;
+  if (FVersion=verUnk) and (lext='.PAK') then
+  begin
+    FVersion:=verTL2;
+    // really, it zero already
+    modinfo.offData:=0;
+    modinfo.offMan :=0;
   end;
 
   result:=FVersion;
@@ -490,12 +487,13 @@ begin
     else
     begin
       modinfo.title:=CopyWide(
-        pointer(UnicodeString(ExtractFileNameOnly(aname))));
+        pointer(UnicodeString(ExtractNameOnly(aname))));
     end;
   end;
 end;
 
-
+{$PUSH}
+{$I-}
 function TRGPAK.GetCommonInfo(const aname:string):boolean;
 var
   f:file of byte;
@@ -552,6 +550,7 @@ begin
   end;
   Close(f);
 end;
+{$POP}
 
 function TRGPAK.GetSizesInfo():boolean;
 var
@@ -599,13 +598,8 @@ begin
   begin
     result:=GetCommonInfo(aname);
     
-    if aparse=piFullParse then
-    begin
-      if FSize=0 then
-        result:=false
-      else
-        result:=GetSizesInfo();
-    end;
+    if (aparse=piFullParse) and (FSize>0) then
+      result:=GetSizesInfo();
 
   end;
 end;
@@ -664,7 +658,7 @@ var
 begin
   ClosePAK();
   old  :=MakeDataFileName();
-  FName:=ExtractFilenameOnly(newname);
+  FName:=ExtractNameOnly(newname);
   new  :=MakeDataFileName();
   DeleteFile(new);
   result:=RenameFile(old,new);
@@ -777,6 +771,7 @@ var
 begin
   result:=0;
   if afi=nil then exit;
+  if (afi^.offset=0) or (afi^.size_s=0) then exit;
 //  if afi^.size_s=0 then exit;
 
   lin:=nil;
@@ -1160,7 +1155,7 @@ begin
       end;
       if lfname<>'' then ForceDirectories(lfname);
       if afname='' then
-        lfname:=lfname+ExtractFileNameOnly(asrc)
+        lfname:=lfname+ExtractNameOnly(asrc)
       else
         lfname:=lfname+afname;
 
@@ -1234,7 +1229,7 @@ begin
   if FileExists(apak) and
      FileExists(aman) then
   begin
-    lname:=ExtractFileNameOnly(apak);
+    lname:=ExtractNameOnly(apak);
     if adir<>'' then
     begin
       ldir:=adir;
@@ -1289,7 +1284,7 @@ begin
   else
   begin
     MakeModInfo(lmi);
-    lmi.title:=StrToWide(ExtractFileNameOnly(apak));
+    lmi.title:=StrToWide(ExtractNameOnly(apak));
   end;
   result:=RGPAKCombine(apak,aman,lmi,adir);
 
@@ -1335,8 +1330,8 @@ begin
   //--- Initialization
 
   FVersion:=aver;
-  FSrcDir :=ExtractFilePath(afname);
-  FName   :=ExtractFileNameOnly(afname);
+  FSrcDir :=ExtractPath(afname);
+  FName   :=ExtractNameOnly(afname);
   if FBuf=nil then GetMem(FBuf,BufferStartSize);
   man.Root:=nil;
 

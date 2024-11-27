@@ -1,4 +1,5 @@
-﻿{TODO: remove total using (recalc for .Build)}
+﻿{TODO: offset=0 treat as deleted?? or better to keep (for overwriting)}
+{TODO: remove total using (recalc for .Build)}
 {TODO: better way to set ftype that calc on request}
 {TODO: Add source file name to TManFileInfo}
 unit RGMan;

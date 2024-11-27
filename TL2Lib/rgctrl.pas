@@ -1,5 +1,4 @@
-﻿{TODO: Use native files size, without final #0 (maybe except text)}
-{TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
+﻿{TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
 {TODO: add act_file for PAK files. OR create new like act_link}
 {TODO: add PAK paths and import dirs catalogue}
 {TODO: Update = AddDirectory (like man.build)}
@@ -927,7 +926,7 @@ begin
   begin
     lpak:=TRGPAK.Create;
 
-    if WriteToPAK(lpak,ExtractFileDir(fname)+'\'+ExtractFileNameOnly(fname)+'_TMP', aver) then
+    if WriteToPAK(lpak,ExtractFileDir(fname)+'\'+ExtractNameOnly(fname)+'_TMP', aver) then
     begin
       lpak.Rename(fname);
       result:=true;

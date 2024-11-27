@@ -18,20 +18,20 @@ type
     imgGameTL1: TImage;
     imgGameTL2: TImage;
     imgGameHob: TImage;
-    imgGameRG: TImage;
+    imgGameRG : TImage;
     imgGameRGO: TImage;
     lblGame: TLabel;
     rbGameTL1: TRadioButton;
     rbGameTL2: TRadioButton;
     rbGameHob: TRadioButton;
-    rbGameRG: TRadioButton;
+    rbGameRG : TRadioButton;
     rbGameRGO: TRadioButton;
     procedure FormCreate(Sender: TObject);
   private
     FClassic: boolean;
 
     function  GetGameVer: integer;
-    procedure SetGameVer(aver: integer);
+    procedure SetGameVer(aver:integer);
     procedure SetClassic(aval:boolean);
 
   public

@@ -465,7 +465,7 @@ begin
   result:=nil;
 
   RGLog.Reserve('Processing '+afname);
-  lfname:=UpCase(ExtractFileNameOnly(afname));
+  lfname:=UpCase(ExtractNameOnly(afname));
 
   if      lfname=RawNames[nmUNITDATA    ] then result:=DecodeUnitData    (abuf)
   else if lfname=RawNames[nmSKILLS      ] then result:=DecodeSkills      (abuf)
@@ -828,7 +828,7 @@ var
   lfname:string;
 begin
   result:=0;
-  lfname:=UpCase(ExtractFileNameOnly(fname));
+  lfname:=UpCase(ExtractNameOnly(fname));
   ls:=TMemoryStream.Create;
   try
     result:=BuildRawStream(data,ls,lfname);
@@ -849,7 +849,7 @@ var
   ls:TMemoryStream;
   lfname:string;
 begin
-  lfname:=UpCase(ExtractFileNameOnly(fname));
+  lfname:=UpCase(ExtractNameOnly(fname));
   ls:=TMemoryStream.Create;
   try
     result:=BuildRawStream(data,ls,lfname);

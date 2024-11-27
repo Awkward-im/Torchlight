@@ -1,4 +1,5 @@
 {NOTE: don't do it (node extract harder, global structure needs) separate node -> array of nodes like rgfs. pointer -> index}
+{TODO: Add line numbers support}
 {TODO: change Add*** to AddNode+As***}
 {TODO: make variant of node with arrays of nodes for non-cutting actions}
 {TODO: Add UTF8Text field with one-time conversion on request}

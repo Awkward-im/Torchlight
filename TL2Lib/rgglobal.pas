@@ -108,9 +108,11 @@ function  GetLineWide(var aptr:PByte; var buf:pointer; var asize:integer):PWideC
 function  BufLen(abuf:PAnsiChar; asize:cardinal):integer;
 function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 
-function ExtractFileNameOnly(const aFilename: string):string;
-function ExtractFileExt     (const aFileName: string):string;
+function ExtractNameOnly(const aFilename: string):string;
+function ExtractExt     (const aFileName: string):string;
+function ExtractPath(const apath:UnicodeString):UnicodeString;
 function ExtractPath(const apath:string):string;
+function ExtractName(const apath:UnicodeString):UnicodeString;
 function ExtractName(const apath:string):string;
 
 const
@@ -680,7 +682,7 @@ end;
 }
 
 // from LazFileUtils
-function ExtractFileNameOnly(const aFilename: string):string;
+function ExtractNameOnly(const aFilename: string):string;
 var
   StartPos: Integer;
   ExtPos: Integer;
@@ -701,6 +703,18 @@ begin
 end;
 
 // modification of SysUtils
+function ExtractPath(const apath:UnicodeString):UnicodeString;
+var
+  i:integer;
+begin
+  Result:='';
+  i:=Length(apath);
+  if i=0 then exit;
+  dec(i);
+  while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
+  if i>0 then result:=copy(apath,1,i);
+end;
+
 function ExtractPath(const apath:string):string;
 var
   i:integer;
@@ -711,6 +725,18 @@ begin
   dec(i);
   while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
   if i>0 then result:=copy(apath,1,i);
+end;
+
+function ExtractName(const apath:UnicodeString):UnicodeString;
+var
+  i:integer;
+begin
+  Result:='';
+  i:=Length(apath);
+  if i=0 then exit;
+  dec(i);
+  while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
+  if i>0 then result:=copy(apath,i+1) else result:=apath;
 end;
 
 function ExtractName(const apath:string):string;
@@ -725,7 +751,7 @@ begin
   if i>0 then result:=copy(apath,i+1) else result:=apath;
 end;
 
-function ExtractFileExt(const aFileName: string):string;
+function ExtractExt(const aFileName: string):string;
 var
   i,j:integer;
 begin

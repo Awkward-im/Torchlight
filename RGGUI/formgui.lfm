@@ -1085,8 +1085,8 @@ object RGGUIForm: TRGGUIForm
           Left = 1
           Height = 409
           Top = 1
-          Width = 325
-          Anchors = [akTop, akLeft, akRight, akBottom]
+          Width = 326
+          Align = alClient
           AutoEdit = False
           ColCount = 9
           Columns = <          
@@ -1570,7 +1570,6 @@ object RGGUIForm: TRGGUIForm
     end
     object miTreeNew: TMenuItem
       Caption = 'New directory'
-      Enabled = False
       ImageIndex = 16
       ShortCut = 78
       OnClick = miTreeNewClick

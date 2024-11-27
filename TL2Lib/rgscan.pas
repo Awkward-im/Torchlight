@@ -98,7 +98,7 @@ begin
   begin
     if afile[Length(afile)]<>'/' then
     begin
-      ls:=rgglobal.ExtractFileExt(afile);
+      ls:=rgglobal.ExtractExt(afile);
       for i:=0 to High(FExts) do
         if ls=FExts[i] then exit;
 

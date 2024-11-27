@@ -383,7 +383,7 @@ var
 begin
   if (fname='') or (fname[Length(fname)]='/') then exit(nil);
 
-  lext:=ExtractFileExt(fname); // upcased into extraction
+  lext:=ExtractExt(fname); // upcased into extraction
 
   if (lext='.TXT') or (lext='.ADM') then
   begin
@@ -394,7 +394,7 @@ begin
     // ANIMATION.TXT
     // HIE.TXT
     // WDAT.TXT
-    lext:=ExtractFileExt(Copy(fname,1,Length(fname)-4));
+    lext:=ExtractExt(Copy(fname,1,Length(fname)-4));
   end;
 
   if lext='' then exit(nil);
@@ -506,7 +506,7 @@ begin
 {
     lext:=UpCase(aext);
     if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
-      lext:=ExtractFileExt(lext);
+      lext:=ExtractExt(lext);
 
     if (lext='.TXT') or (lext='.ADM') then
     begin
@@ -517,7 +517,7 @@ begin
       // ANIMATION.TXT
       // HIE.TXT
       // WDAT.TXT
-      lext:=UpCase(ExtractFileExt(Copy(aext,1,Length(aext)-4)));
+      lext:=ExtractExt(Copy(aext,1,Length(aext)-4));
     end;
 
     if lext<>'' then
@@ -546,7 +546,7 @@ begin
 
     lext:=UpCase(FastWideToStr(pointer(aext)));
     if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
-      lext:=ExtractFileExt(lext);
+      lext:=ExtractExt(lext);
 
     for i:=0 to High(TableExt) do
     begin

@@ -14,6 +14,7 @@ object MODInfoForm: TMODInfoForm
     Width = 88
     MaxLength = 0
     NumbersOnly = True
+    SpinButtonWidth = 17
     TabOrder = 2
     MaxValue = 65535
     NullValue = 0

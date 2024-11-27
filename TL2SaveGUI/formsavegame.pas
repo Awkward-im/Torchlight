@@ -382,11 +382,11 @@ procedure TfmSaveFile.MakeBackup(const fname:string);
 var
   ldir,ls:string;
 begin
-  ldir:=ExtractFilePath(fname)+'\Backup';
+  ldir:=ExtractPath(fname)+'\Backup';
   if not DirectoryExists(ldir) then
     MkDir(ldir);
   ls:=StringReplace(TimeToStr(Time()),':','-',[rfReplaceAll]);
-  RenameFile(fname,ldir+'\'+ExtractFileName(fname)+'.'+ls);
+  RenameFile(fname,ldir+'\'+ExtractName(fname)+'.'+ls);
 end;
 
 procedure TfmSaveFile.actFileSaveExecute(Sender: TObject);

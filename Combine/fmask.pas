@@ -65,7 +65,7 @@ begin
   cbForAll    .Checked:=tact(amode) in [skipall, overwriteall];
   cbCurrentDir.Checked:=tact(amode) = overwritedir;
 }
-  lext:=UpCase(ExtractFileExt(fname));
+  lext:=ExtractExt(fname);
   bbCompare.Visible:=
       (lext='.DAT') or
       (lext='.TEMPLATE') or

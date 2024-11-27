@@ -23,16 +23,16 @@ type
   TMODInfoForm = class(TForm)
     bbOK      : TBitBtn;
     bbCancel  : TBitBtn;
-    ebTags: TEditButton;
-    ebChanges: TEditButton;
+    ebTags     : TEditButton;
+    ebChanges  : TEditButton;
     ebLongDescr: TEditButton;
     edPreview: TFileNameEdit;
-    lblSteamNote: TLabel;
+    lblSteamNote   : TLabel;
     lblSteamPreview: TLabel;
-    lblSteamTags: TLabel;
+    lblSteamTags   : TLabel;
     lblSteamChanges: TLabel;
-    lblLongDescr: TLabel;
-    lblNote   : TLabel;
+    lblLongDescr   : TLabel;
+    lblNote        : TLabel;
     leTitle   : TLabeledEdit;
     leAuthor  : TLabeledEdit;
     leFilename: TLabeledEdit;
@@ -45,7 +45,7 @@ type
     PageControl  : TPageControl;
     sbSave: TSpeedButton;
     sbOpen: TSpeedButton;
-    tsAdditional: TTabSheet;
+    tsAdditional : TTabSheet;
     tsDescr      : TTabSheet;
     tsDelete     : TTabSheet;
     lbDelete     : TListBox;
@@ -67,7 +67,14 @@ type
     fmi:PTL2ModInfo;
     procedure EditorCancelClick(Sender: TObject);
     procedure EditorOKClick    (Sender: TObject);
-    procedure TagsOKClick(Sender: TObject);
+    procedure TagsOKClick      (Sender: TObject);
+
+    procedure SetField(i:integer; const astr:AnsiString);
+    function  GetField(i:integer):AnsiString;
+    procedure SetGUID(aid:Int64);
+    function  GetGUID:Int64;
+    procedure SetVersion(aver:integer);
+    function  GetVersion:integer;
   public
     constructor Create(AOwner: TComponent; ami: PTL2ModInfo=nil; aRO: boolean=false); overload;
 
@@ -75,6 +82,15 @@ type
     procedure SaveToFile  (const aFile:string);
     procedure LoadFromInfo(const ami: TTL2ModInfo);
     procedure SaveToInfo  (var   ami: TTL2ModInfo);
+
+    property  Title  :AnsiString index 1 read GetField   write SetField;
+    property  Author :AnsiString index 2 read GetField   write SetField;
+    property  Descr  :AnsiString index 3 read GetField   write SetField;
+    property  GUID   :AnsiString index 4 read GetField   write SetField;
+    property  URL    :AnsiString index 5 read GetField   write SetField;
+
+    property  ID     :Int64              read GetGUID    write SetGUID;
+    property  Version:Integer            read GetVersion write SetVersion;
   end;
 
 var
@@ -86,6 +102,50 @@ implementation
 
 uses
   LCLType;
+
+procedure TMODInfoForm.SetField(i:integer; const astr:AnsiString);
+begin
+  case i of
+    1: leTitle   .Text:=astr;
+    2: leAuthor  .Text:=astr;
+    3: memDescr  .Text:=astr;
+    4: edGUID    .Text:=astr;
+    5: leDownload.Text:=astr;
+  end;
+end;
+
+function TMODInfoForm.GetField(i:integer):AnsiString;
+begin
+  case i of
+    1: result:=leTitle   .Text;
+    2: result:=leAuthor  .Text;
+    3: result:=memDescr  .Text;
+    4: result:=edGUID    .Text;
+    5: result:=leDownload.Text;
+  else
+    result:='';
+  end;
+end;
+
+procedure TMODInfoForm.SetVersion(aver:integer);
+begin
+  seVersion.Value:=aver;
+end;
+
+function TMODInfoForm.GetVersion:integer;
+begin
+  result:=seVersion.Value;
+end;
+
+procedure TMODInfoForm.SetGUID(aid:Int64);
+begin
+  edGUID.Text:=IntToStr(aid);
+end;
+
+function TMODInfoForm.GetGUID:Int64;
+begin
+  Val(edGUID.Text,result);
+end;
 
 procedure TMODInfoForm.bbNewGUIDClick(Sender: TObject);
 var

@@ -502,6 +502,8 @@ function ScanQuests(
           abuf:PByte; asize:integer;
           const adir,aname:string;
           aparam:pointer):integer;
+var
+  p:pointer;
 begin
 // FILE: MEDIA/LEVELS/*.LAYOUT descriptor:POI, type: MAP_ICON; map_icon:iconname QUEST:questname
 // POSITION: summarize position (full tree)

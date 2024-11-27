@@ -1,3 +1,23 @@
+{TODO: Read*string: add finalizing zero}
+(*
+  function TStream.ReadAnsiString: AnsiString;
+
+  Var
+    TheSize : Longint;
+    P : PByte ;
+  begin
+    Result:='';
+    ReadBuffer (TheSize,SizeOf(TheSize));
+    SetLength(Result,TheSize);
+    // Illegal typecast if no AnsiStrings defined.
+    if TheSize>0 then
+     begin
+       ReadBuffer (Pointer(Result)^,TheSize);
+       P:=Pointer(Result)+TheSize;
+       p^:=0;
+     end;
+   end;
+*)
 unit RGStream;
 
 interface
@@ -20,6 +40,7 @@ type
     function  ReadDWordString():string;
     function  ReadShortStringUTF8():string;
     function  ReadFloat:single;
+    function  ReadInt32:integer;
     function  ReadCoord:TVector3;
     function  ReadShortStringList:TL2StringList;
     function  ReadIdList:TL2IDList;
@@ -42,6 +63,7 @@ type
     procedure WriteDWordString(const astr:PWideChar);
     procedure WriteShortStringUTF8(const astr:UnicodeString);
     procedure WriteFloat(aval:single);
+    procedure WriteInt32(aval:integer);
     procedure WriteCoord(aval:TVector3);
     procedure WriteShortStringList(alist:TL2StringList);
     procedure WriteIdList(alist:TL2IDList);
@@ -230,6 +252,11 @@ begin
 end;
 
 function TTL2Stream.ReadFloat:single;
+begin
+  Read(result,sizeOf(result));
+end;
+
+function TTL2Stream.ReadInt32:integer;
 begin
   Read(result,sizeOf(result));
 end;
@@ -466,6 +493,11 @@ end;
 
 
 procedure TTL2Stream.WriteFloat(aval:single);
+begin
+  Write(aval,SizeOf(aval));
+end;
+
+procedure TTL2Stream.WriteInt32(aval:integer);
 begin
   Write(aval,SizeOf(aval));
 end;

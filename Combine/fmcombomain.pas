@@ -109,22 +109,22 @@ begin
         lidx:=slModList.Add(ls);
         if LoadModConfiguration(PChar(ls+'MOD.DAT'),mi) then
         begin
-          lbModList.AddItem(String(UnicodeString(mi.title)),TObject(IntPtr(lidx)));
+          lbModList.AddItem(WideToStr(mi.title),TObject(IntPtr(lidx)));
           ClearModInfo(mi);
         end
         else
-          lbModList.AddItem(ExtractFileName(ls),TObject(IntPtr(lidx)));
+          lbModList.AddItem(ExtractName(ls),TObject(IntPtr(lidx)));
       end
       else
       begin
         lidx:=slModList.Add(ls);
         if ReadModInfo(PChar(ls),mi) then
         begin
-          lbModList.AddItem(String(UnicodeString(mi.title)),TObject(IntPtr(lidx)));
+          lbModList.AddItem(WideToStr(mi.title),TObject(IntPtr(lidx)));
           ClearModInfo(mi);
         end
         else
-          lbModList.AddItem(ExtractFileName(ls),TObject(IntPtr(lidx)));
+          lbModList.AddItem(ExtractName(ls),TObject(IntPtr(lidx)));
       end;
     end;
   end;
@@ -144,7 +144,7 @@ var
   i:integer;
 begin
   ini:=TMemIniFile.Create('combine.ini',[ifoEscapeLineFeeds,ifoStripQuotes]);
-  lsect:=ExtractFileName(deOutputDir.Text);
+  lsect:=ExtractName(deOutputDir.Text);
 
   ini.WriteString('base','last',lsect);
 
@@ -271,11 +271,11 @@ begin
           lidx:=slModList.Add(ld.Files[i]);
           if ReadModInfo(PChar(ld.Files[i]),mi) then
           begin
-            lbModList.AddItem(String(UnicodeString(mi.title)),TObject(IntPtr(lidx)));
+            lbModList.AddItem(WideToStr(mi.title),TObject(IntPtr(lidx)));
             ClearModInfo(mi);
           end
           else
-            lbModList.AddItem(ExtractFileName(ld.Files[i]),TObject(IntPtr(lidx)));
+            lbModList.AddItem(ExtractName(ld.Files[i]),TObject(IntPtr(lidx)));
         end;
       end;
       CheckTheButtons;
@@ -310,11 +310,11 @@ begin
           lidx:=slModList.Add(ls);
           if LoadModConfiguration(PChar(ls+'MOD.DAT'),mi) then
           begin
-            lbModList.AddItem(String(UnicodeString(mi.title)),TObject(IntPtr(lidx)));
+            lbModList.AddItem(WideToStr(mi.title),TObject(IntPtr(lidx)));
             ClearModInfo(mi);
           end
           else
-            lbModList.AddItem(ExtractFileName(ld.Files[i]),TObject(IntPtr(lidx)));
+            lbModList.AddItem(ExtractName(ld.Files[i]),TObject(IntPtr(lidx)));
         end;
       end;
       CheckTheButtons;
@@ -341,9 +341,9 @@ begin
 
   if l then
   begin
-    memDescription.Append('Name: '       +String(UnicodeString(mi.title)));
-    memDescription.Append('Author: '     +String(UnicodeString(mi.author)));
-    memDescription.Append('Description: '+String(UnicodeString(mi.descr)));
+    memDescription.Append('Name: '       +WideToStr(mi.title));
+    memDescription.Append('Author: '     +WideToStr(mi.author));
+    memDescription.Append('Description: '+WideToStr(mi.descr));
     ClearModInfo(mi);
   end;
 end;

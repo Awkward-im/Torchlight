@@ -591,8 +591,8 @@ var
   lpath,lname:UnicodeString;
 begin
   lname:=UnicodeString(fname);
-  lpath:=ExtractFilePath(lname);
-  lname:=ExtractFileName(lname); // copy(lname,Length(lpath)+1); Delete(lname,1,Length(lpath));
+  lpath:=ExtractPath(lname);
+  lname:=ExtractName(lname); // copy(lname,Length(lpath)+1); Delete(lname,1,Length(lpath));
 
   result:=SearchFile(pointer(lpath),pointer(lname));
 end;
@@ -687,7 +687,7 @@ end;
 
 function TRGDirList.AddFile(apath:PUnicodeChar):integer;
 begin
-  result:=AddFile(PUnicodeChar(ExtractFilePath(apath)),PUnicodeChar(ExtractFileName(apath)));
+  result:=AddFile(PUnicodeChar(ExtractPath(apath)),PUnicodeChar(ExtractName(apath)));
 end;
 
 function TRGDirList.CloneFile(adir:integer; afile:PFileInfo):integer;

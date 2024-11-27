@@ -75,7 +75,7 @@ begin
   ldir :=ExtractFileDir (fname)+'\';
   FDir :=ldir;
 //  lext :=ExtractFileExt (fname);
-  lname:=ExtractFileNameOnly(fname);
+  lname:=ExtractNameOnly(fname);
 
   if deDir.Text='' then deDir.Text:=ldir;
 

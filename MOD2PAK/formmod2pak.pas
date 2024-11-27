@@ -117,8 +117,8 @@ begin
   for i:=0 to sl.Count-1 do
   begin
     idx:=-1;
-    lext:=ExtractFileExt(sl[i]);
-    ls:=ExtractFilenameOnly(sl[i]);
+    lext:=ExtractExt(sl[i]);
+    ls:=ExtractNameOnly(sl[i]);
 
     // process active files
     if lext='.PAK' then
@@ -230,7 +230,7 @@ begin
     if FindFirst(ldir+'*.PA_',faAnyFile,sr)=0 then
     begin
       repeat
-        ls:=ExtractFilenameOnly(sr.Name);
+        ls:=ExtractNameOnly(sr.Name);
         ft1:=-1;
         if FileExists(ldir+ls+'.PAK') then
         begin
@@ -273,7 +273,7 @@ begin
           if FileExists(adir+'\PAKS\'+sr.Name+'.MAN') then
           begin
             adtimes[fdtimes]:=sr.Time;
-            sl.AddObject(UpCase(ExtractFilenameOnly(sr.Name)),TObject(UIntPtr(fdtimes)));
+            sl.AddObject(UpCase(ExtractNameOnly(sr.Name)),TObject(UIntPtr(fdtimes)));
             inc(fdtimes);
           end
           else
@@ -325,7 +325,7 @@ begin
 
   if (Length(fin)>3) and (Pos('.MOD',UpCase(fin))=(Length(fin)-3)) then
   begin
-    lfin:=ExtractFileNameOnly(fin);
+    lfin:=ExtractNameOnly(fin);
     // List: skip if in list already
     idx:=0;
     for i:=0 to lbActive.Count-1 do
@@ -425,7 +425,7 @@ begin
       Split(FileNames[i]);
     end;
     if Length(FileNames)>0 then
-      FLastModPath:=ExtractFilePath(FileNames[High(FileNames)]);
+      FLastModPath:=ExtractPath(FileNames[High(FileNames)]);
   end
   else
     ShowMessage('Can''t add files. Looks like you didn''t set game directory');
@@ -450,7 +450,7 @@ begin
         Split(dlgo.Files[i]);
       end;
       if dlgo.Files.Count>0 then
-        FLastModPath:=ExtractFilePath(dlgo.Files[dlgo.Files.Count-1]);
+        FLastModPath:=ExtractPath(dlgo.Files[dlgo.Files.Count-1]);
     end;
   finally
     dlgo.Free;
@@ -498,10 +498,10 @@ begin
   memDescription.Clear;
   if LoadModConfiguration(PChar(deGameDir.Text+'\PAKS\'+fname+'.DAT'),mi) then
   begin
-    memDescription.Append(sTitle +': '+String(UnicodeString(mi.title))+
-                                 ' v.'+IntToStr(mi.modver));
-    memDescription.Append(sAuthor+': '+String(UnicodeString(mi.author)));
-    memDescription.Append(sDescr +': '+String(UnicodeString(mi.descr)));
+    memDescription.Append(sTitle +': '+WideToStr(mi.title)+
+                                 ' v.'+IntToStr (mi.modver));
+    memDescription.Append(sAuthor+': '+WideToStr(mi.author));
+    memDescription.Append(sDescr +': '+WideToStr(mi.descr));
     ClearModInfo(mi);
   end;
 end;

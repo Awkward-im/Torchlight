@@ -54,6 +54,8 @@ uses
   rgnode;
 
 const
+  DefGameVer = $0001001900050002;
+const
   MinTL2ModInfoSize =
     2+ // mod format version
     2+ // mod version
@@ -76,6 +78,7 @@ const
 
 function WriteModInfoStream(ast:TStream; const amod:TTL2ModInfo):integer;
 var
+  lver:QWord;
   lpos:integer;
   i:integer;
 begin
@@ -86,7 +89,8 @@ begin
   ast.WriteWord(amod.modver);
 
   // yes, first number is higher word
-  ast.WriteQWord(ReverseWords(amod.gamever));
+  if amod.gamever=0 then lver:=DefGameVer else lver:=amod.gamever;
+  ast.WriteQWord(ReverseWords(lver));
 {
   ast.WriteWord(tTL2VerRec(amod.gamever).arr[3]);
   ast.WriteWord(tTL2VerRec(amod.gamever).arr[2]);
@@ -124,6 +128,7 @@ end;
 
 function WriteModInfoBuf(abuf:PByte; const amod:TTL2ModInfo):integer;
 var
+  lver:QWord;
   p:PByte;
   i:integer;
 begin
@@ -134,7 +139,8 @@ begin
   memWriteWord(p,amod.modver);
 
   // yes, first number is higher word
-  memWriteQWord(p,ReverseWords(amod.gamever));
+  if amod.gamever=0 then lver:=DefGameVer else lver:=amod.gamever;
+  memWriteQWord(p,ReverseWords(lver));
 {
   memWriteWord(p,tTL2VerRec(amod.gamever).arr[3]);
   memWriteWord(p,tTL2VerRec(amod.gamever).arr[2]);
@@ -383,7 +389,7 @@ begin
   if i>MinTL2ModInfoSize then
   begin
     result:=ReadModInfoBuf(@buf,amod);
-    CopyWide(amod.filename,PUnicodeChar(UnicodeString(ExtractFilenameOnly(fname))));
+    CopyWide(amod.filename,PUnicodeChar(UnicodeString(ExtractNameOnly(fname))));
   end
   else
     result:=false;

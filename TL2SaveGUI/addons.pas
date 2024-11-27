@@ -51,7 +51,7 @@ begin
             SetLength(dirlist,Length(dirlist)+dirdelta);
         end;
         dirlist[dircnt].full:=lname;
-        dirlist[dircnt].name:=UpCase(ExtractFileNameOnly(sr.Name));
+        dirlist[dircnt].name:=UpCase(ExtractNameOnly(sr.Name));
         inc(dircnt);
 
       end;

@@ -311,7 +311,7 @@ begin
   end;
 
   if ldebug<>'' then
-    DbgLn('start item '+string(UnicodeString(FName))+#13#10+
+    DbgLn('start item '+FName+#13#10+
     ldebug+
     'end item'#13#10'---------');
 

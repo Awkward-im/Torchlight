@@ -1,3 +1,8 @@
+{TODO: preview bytes values as different types}
+{TODO: make dump text/bytes search}
+{TODO: change dump text area encoding}
+{TODO: preview as dump by choice?}
+{TODO: check preview for offset=0 (mark as deleted)}
 {TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
 {TODO: show layout game version at least for changed/added files}
 {TODO: Save pak or file: check setData binary files version, repack if needs}
@@ -22,7 +27,7 @@ uses
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit, SynEdit,
   SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
   rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset,
-  SynHighlighterOgre;
+  SynHighlighterOgre, FWHexView{, FWHexView.MappedView};
 
 type
 
@@ -233,6 +238,7 @@ type
     fmi:TForm;
     fmLEdit:TForm;
     fmImgset:TForm;
+    hview:TFWHexView;
     ctrl:TRGController;
     LastExt:string;
     LastFilter:integer;
@@ -262,6 +268,7 @@ type
     procedure NewPAK;
     procedure OpenPAK(const aname: string);
     procedure PrepareSound;
+    procedure PreviewDump();
     procedure PreviewImageset();
     procedure PreviewSound;
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
@@ -272,8 +279,7 @@ type
     procedure LoadSettings;
     procedure SaveSettings;
     procedure SetupView;
-    procedure ShowImagesetInfo(const afile: string; ax, ay, awidth,
-      aheight: integer);
+    procedure ShowImagesetInfo(const afile: string; arect: TRect);
     function  UnpackSingleFile(const adir, aname: string; var buf:PByte): boolean;
     procedure ExtractSingleDir(adir: integer; var buf:PByte);
     procedure UpdateStatistic;
@@ -401,6 +407,7 @@ resourcestring
   rsDirName         = 'Enter dir name';
   rsCreateFile      = 'Create file';
   rsFileName        = 'Enter file name';
+  rsFileDirName        = 'Enter name (with / at the end for dir)';
   rsReady           = 'Ready to work';
   rsRename          = 'Rename file/dir';
   rsImported        = ' files imported';
@@ -890,7 +897,7 @@ begin
         pc:=StrToWide(FileNames[i]);
         ctrl.AddFileData(pc, PUnicodeChar(UnicodeString(
             ls+
-            FixFileExt(ExtractFileName(FileNames[i])))), true);
+            FixFileExt(ExtractName(FileNames[i])))), true);
         FreeMem(pc);
       end;
     end;
@@ -1138,6 +1145,7 @@ end;
 
 procedure TRGGUIForm.ClearInfo();
 var
+  lstr:TStream;
   bNoTree,bRoot,bEmpty,bParent:boolean;
 begin
   lblInfo1.Caption:='';
@@ -1152,6 +1160,13 @@ begin
   SynEdit.Clear;
   SynEdit.Visible:=false;
 
+  if hview<>nil then
+  begin
+    hview.Visible:=false;
+    lstr:=hview.DataStream;
+    lstr.Free;
+    hview.SetDataStream(nil,0);
+  end;
   imgPreview.Picture.Clear;
   imgPreview.Visible:=false;
   actScaleImage.Visible:=false;
@@ -1286,7 +1301,10 @@ begin
   begin
     InitImage(limg);
     LoadImageFromMemory(FUData,FUsize,limg);
+try
     ConvertDataToBitmap(limg,imgPreview.Picture.Bitmap);
+except
+end;
     FreeImage(limg);
   end
   else
@@ -1322,10 +1340,10 @@ begin
   fmLEdit.Visible:=true;
 end;
 
-procedure TRGGUIForm.ShowImagesetInfo(const afile:string; ax,ay, awidth, aheight:integer);
+procedure TRGGUIForm.ShowImagesetInfo(const afile:string; arect:TRect);
 begin
   lblInfo1.Caption:=rsImageFile+': '+afile;
-  lblInfo2.Caption:=Format(rsSprite,[ax,ay,awidth,aheight]);
+  lblInfo2.Caption:=Format(rsSprite,[arect.Left,arect.Top,arect.Right,arect.Bottom]);
 end;
 
 procedure TRGGUIForm.PreviewImageset();
@@ -1406,6 +1424,28 @@ begin
   actEdSearch.Enabled:=true;
 end;
 
+procedure TRGGUIForm.PreviewDump();
+var
+  lstr:TMemoryStream;
+begin
+  if hview=nil then
+  begin
+    hview:=TFWHexView.Create(self);
+    hview.Parent:=pnlAdd;
+    hview.Align:=alClient;
+  end
+  else
+  begin
+  end;
+  lstr:=TMemoryStream.Create();
+//  lstr.SetBuffer(FUData);
+  lstr.Write(FUData^,FUSize);
+  lstr.Position:=0;
+
+  hview.SetDataStream(lstr,0);
+  hview.Visible:=true;
+end;
+
 procedure TRGGUIForm.sgMainSelection(Sender: TObject; aCol, aRow: Integer);
 var
   lrec:TRGFullInfo;
@@ -1430,11 +1470,12 @@ begin
 
   if lfile>=0 then
   begin
-    if ctrl.UpdateState(lfile)=stateDelete then Exit;
+    if ctrl.UpdateState(lfile)=stateDelete then exit;
 
     RGLog.Reserve('Processing '+ldir+lname);
 
     ctrl.GetFullInfo(lfile,lrec);
+    if (lrec.offset=0) or (lrec.size_s=0) then exit;
 
     lblInfo1.Caption:=rsSize+': '+IntToStr(lrec.size_s)+'; '+
                       rsOffset+': '+'0x'+HexStr(lrec.offset,8);
@@ -1445,11 +1486,17 @@ begin
     end;
 
     ltype:=PAKExtType(lname{lext});
-    if ltype in (setBinary+[typeDelete,typeDirectory]) then exit;
+//    if ltype in (setBinary+[typeDelete,typeDirectory]) then exit;
+    if ltype in [typeDelete,typeDirectory] then exit;
 
     if not actShowPreview.Checked then exit;
 
-    if ltype=typeLayout then
+    if ltype in setBinary then
+    begin
+      FUSize:=ctrl.GetBinary(lfile,FUData);
+      PreviewDump();
+    end
+    else if ltype=typeLayout then
     begin
       FUSize:=ctrl.GetBinary(lfile,FUData);
       if GetLayoutVersion(FUData)=verUnk then
@@ -1508,7 +1555,7 @@ begin
   {TODO: Ask about changes (if any)}
   if actShowPreview.Checked then
   begin
-    sgMain.Align:=alLeft;
+    {sgMain}pnlGrid.Align:=alLeft;
     Splitter2.Visible:=true;
     pnlAdd.Visible:=true;
     if sgMain.RowCount>1 then
@@ -1519,7 +1566,7 @@ begin
     ClearInfo();
     pnlAdd.Visible:=false;
     Splitter2.Visible:=false;
-    sgMain.Align:=alClient;
+    {sgMain}pnlGrid.Align:=alClient;
   end;
 end;
 
@@ -1741,7 +1788,7 @@ begin
       // add update as file content (as is)
       ctrl.AddFileData(pc, PUnicodeChar(UnicodeString(
           GetPathFromNode(tvTree.Selected)+
-          FixFileExt(ExtractFileName(OpenDialog.FileName)))), true);
+          FixFileExt(ExtractName(OpenDialog.FileName)))), true);
       FreeMem(pc);
       FillGrid(IntPtr(tvTree.Selected.Data));
     end;
@@ -1855,7 +1902,7 @@ begin
   begin
     if (Sender as TAction).ActionComponent=miTreeAdd then
     begin
-      AddNewDir(PopupNode,ExtractFileName(ldir));
+      AddNewDir(PopupNode,ExtractName(ldir));
     end;
 
     ctrl.OnDouble:=@OnImportDouble;
@@ -1875,7 +1922,7 @@ var
   lpath,lname:string;
   lcnt,lfile:integer;
 begin
-  lname:=UpCase(InputBox(rsCreateFile, rsFileName, ''{sDefFileName}));
+  lname:=UpCase(InputBox(rsCreateFile, rsFileDirName, ''{sDefFileName}));
   if lname='' then exit;
   if lname[Length(lname)]= '\' then lname[Length(lname)]:='/';
 
@@ -1907,7 +1954,7 @@ end;
 
 procedure TRGGUIForm.actEdRenameExecute(Sender: TObject);
 var
-  lname:string;
+  lname,lhelp:string;
   lidx,i:integer;
   isdir:boolean;
 begin
@@ -1915,7 +1962,11 @@ begin
          sgMain.Cells[colExt ,sgMain.Row];
   lidx :=IntPtr(sgMain.Objects[colName,sgMain.Row]);
   isdir:=lname[Length(lname)]= '/';
-  lname:=UpCase(InputBox(rsRename, rsFileName, lname));
+  if isdir then
+    lhelp:=rsDirName
+  else
+    lhelp:=rsFileName;
+  lname:=UpCase(InputBox(rsRename, lhelp, lname));
 
   if isdir then
   begin
@@ -2135,7 +2186,7 @@ begin
    if Length(edGridFilter.Text)>0 then
     if Pos(edGridFilter.Text,lname)=0 then exit;
 
-  lext:=ExtractFileExt(lname);
+  lext:=ExtractExt(lname);
   if lext<>'' then
     for i:=0 to High(TableExt) do
     begin
@@ -2165,7 +2216,7 @@ begin
   else
   begin
     sgMain.Objects[colName,arow]:=TObject(IntPtr(afile));
-    sgMain.Cells[colName  ,arow]:=ExtractFileNameOnly(lname);
+    sgMain.Cells[colName  ,arow]:=ExtractNameOnly(lname);
     sgMain.Cells[colType  ,arow]:=PAKCategoryName(PAKTypeToCategory(lrec.ftype));
     sgMain.Cells[colDir   ,arow]:=adir;
     sgMain.Cells[colExt   ,arow]:=lext;

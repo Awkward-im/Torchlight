@@ -59,7 +59,7 @@ begin
 
   //--- Check for text files/ Convert from binary if needs
 
-  case UpCase(ExtractFileExt(aname)) of
+  case ExtractExt(aname) of
     '.DAT',
     '.TEMPLATE',
     '.ANIMATION',
@@ -136,7 +136,7 @@ begin
       overwriteall: ; // do nothing, just rewrite file
 
       renameold: begin
-        ls:=InputBox('Rename existing file', 'Enter new name', ExtractFileName(ldst));
+        ls:=InputBox('Rename existing file', 'Enter new name', ExtractName(ldst));
         RenameFile(ldst,ExtractFileDir(ldst)+ls);
         exit(1);
       end;
@@ -145,7 +145,7 @@ begin
         SaveDialog:=TSaveDialog.Create(nil);
         try
           SaveDialog.InitialDir:=ExtractFileDir (ldst);
-          SaveDialog.FileName  :=ExtractFileName(ldst);
+          SaveDialog.FileName  :=ExtractName(ldst);
           SaveDialog.DefaultExt:='';
           SaveDialog.Filter    :='';
           SaveDialog.Title     :='';
@@ -210,7 +210,7 @@ begin
     ldst:={UpCase}(aname);
     if ldst<>TL2ModData then // must be always coz outside MEDIA folder
     begin
-      ldst:=ExtractFileExt(ldst);
+      ldst:=ExtractExt(ldst);
       if (ldst<>'.BINDAT'   ) and
          (ldst<>'.BINLAYOUT') and
          (ldst<>'.RAW'      ) then

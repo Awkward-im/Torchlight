@@ -87,6 +87,10 @@ msgstr "; папок: "
 msgid "Extract directory "
 msgstr "Распаковать папку "
 
+#: formgui.rsfiledirname
+msgid "Enter name (with / at the end for dir)"
+msgstr ""
+
 #: formgui.rsfilename
 msgid "Enter file name"
 msgstr "Введите имя файла"

@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -74,7 +74,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -111,7 +111,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -159,7 +159,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -291,6 +291,10 @@
         <Filename Value="D:\Work\LazTrunk\lazarus\components\virtualtreeview\laz.virtualtreeview_package.lpk"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="HexView\FWHexView.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -301,7 +305,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
     </SearchPaths>
     <Linking>

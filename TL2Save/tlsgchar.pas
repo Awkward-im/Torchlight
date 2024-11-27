@@ -437,7 +437,7 @@ begin
   if FUnkn17<>$FFFFFFFF then DbgLn('pre-name is '+HexStr(FUnkn17,8));
 
   FName:=AStream.ReadShortString();    // Char name
-  DbgLn('  name:'+string(UnicodeString(fname)));
+  DbgLn('  name:'+FName);
 
   if aVersion>=tlsaveTL2Minimal then
   begin

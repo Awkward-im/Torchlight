@@ -6,6 +6,7 @@ object AskForm: TAskForm
   Caption = 'File is exists already'
   ClientHeight = 203
   ClientWidth = 579
+  LCLVersion = '3.99.0.0'
   object cbForAll: TCheckBox
     Left = 10
     Height = 25
@@ -13,9 +14,9 @@ object AskForm: TAskForm
     Width = 174
     Caption = 'Use for all files of mod'
     Font.Height = -16
-    OnChange = cbForAllChange
     ParentFont = False
     TabOrder = 0
+    OnChange = cbForAllChange
   end
   object bbContinue: TBitBtn
     Left = 472
@@ -27,8 +28,8 @@ object AskForm: TAskForm
     Default = True
     Kind = bkOK
     ModalResult = 1
-    OnClick = bbContinueClick
     TabOrder = 1
+    OnClick = bbContinueClick
   end
   object lblFileName: TLabel
     Left = 8
@@ -93,8 +94,8 @@ object AskForm: TAskForm
     Caption = 'Stop'
     Kind = bkCancel
     ModalResult = 1
-    OnClick = bbStopClick
     TabOrder = 5
+    OnClick = bbStopClick
   end
   object bbCompare: TBitBtn
     Left = 10
@@ -105,8 +106,8 @@ object AskForm: TAskForm
     Caption = 'Compare'
     Kind = bkRetry
     ModalResult = 1
-    OnClick = bbCompareClick
     TabOrder = 6
+    OnClick = bbCompareClick
   end
   object lblOldSize: TLabel
     Left = 304
@@ -151,8 +152,8 @@ object AskForm: TAskForm
     Width = 104
     Caption = 'Rename old'
     Kind = bkHelp
-    OnClick = bbRenameClick
     TabOrder = 7
+    OnClick = bbRenameClick
   end
   object bbSaveAs: TBitBtn
     Left = 272
@@ -162,7 +163,7 @@ object AskForm: TAskForm
     Caption = 'Rename new'
     Kind = bkIgnore
     ModalResult = 5
-    OnClick = bbSaveAsClick
     TabOrder = 8
+    OnClick = bbSaveAsClick
   end
 end
