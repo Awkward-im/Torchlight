@@ -197,8 +197,19 @@ end;
 
 {%REGION Name}
 function IsNodeName(anode:pointer; aname:PWideChar):boolean;
+var
+  lhash:dword;
 begin
-  result:=(anode<>nil) and (PRGNode(anode)^.hash=RGHash(aname));
+  if anode<>nil then
+  begin
+    if IsNumber(aname) then
+      Val(aname,lhash)
+    else
+      lhash:=RGHash(aname);
+    result:=PRGNode(anode)^.hash=lhash;
+  end
+  else
+    result:=false;
 end;
 
 function IsNodeName(anode:pointer; ahash:dword):boolean;
