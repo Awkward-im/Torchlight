@@ -87,7 +87,7 @@ begin
   if not IsTableExists(adb,'movies') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE movies ('+
-      '  id    INTEGER     PRIMARY KEY,'+
+      '  id    INTEGER PRIMARY KEY,'+
       '  name  TEXT,'+
       '  title TEXT,'+
       '  views INTEGER (1) DEFAULT (1),'+

@@ -1,13 +1,7 @@
 {%REGION Classes}
-
 type
-  tclassinfo = record
-    id       :string;
-    name     :string;
-    title    :string;
+  TClassInfo = object(TBaseUnitInfo)
     descr    :string;
-    afile    :string;
-    base     :string;
     skill    :string;
     icon     :string;
     gr_hp    :string;
@@ -21,34 +15,32 @@ type
     defense  :string;
     gender   :string;
     wardrobe :string;
+    sh_scale :string;
+    wpn_scale:string;
+    armor    :string;
   end;
 
-function AddClassToBase(ams:pointer; const aclass:tclassinfo):boolean;
+function AddClassToBase(ams:pointer; const aclass:TClassInfo):boolean;
 var
-  lmodid,lSQL,lfile,lbase:string;
-  i:integer;
+  lmodid,lSQL:string;
 begin
   result:=false;
 
   lmodid:=CheckIdForMod(ams,'classes', aclass.id);
   if lmodid<>'' then
   begin
-    lfile:=LowerCase(aclass.afile);
-    for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
-    lbase:=LowerCase(aclass.base);
-    for i:=1 to Length(lbase) do if lbase[i]='\' then lbase[i]:='/';
-
-    lSQL:='REPLACE INTO classes (id, name, title, descr,'+
-          ' file, base, skills, icon,'+
+    lSQL:='REPLACE INTO classes ('+DefUnitColumns+
+          ', descr, skills, icon,'+
           ' graph_hp, graph_mp, graph_stat, graph_skill, graph_fame,'+
           ' gender, strength, dexterity, magic, defense,'+
-          ' modid, wardrobe) VALUES ('+
-        aclass.id+', '+FixedText(aclass.name)+', '+FixedText(aclass.title)+', '+FixedText(aclass.descr)+
-        ', '''+lfile+''', '''+lbase+''', '+FixedText(aclass.skill)+', '+FixedText(aclass.icon)+
-        ', '''+aclass.gr_hp+''', '''+aclass.gr_mp+''', '''+aclass.gr_st+
+          ' modid, wardrobe, armor, shld_scale, wpn_scale) VALUES ('+
+        GetDefUnitValues(ams,@aclass)+', '+
+        FixedText(aclass.descr)+', '+FixedText(aclass.skill)+', '+FixedText(aclass.icon)+
+          ', '''+aclass.gr_hp+''', '''+aclass.gr_mp+''', '''+aclass.gr_st+
         ''', '''+aclass.gr_sk+''', '''+aclass.gr_fm+''', '''+aclass.gender+
         ''', '+aclass.strength+', '+aclass.dexterity+', '+aclass.magic+', '+aclass.defense+
-        ', '+lmodid+', '+FixedText(aclass.wardrobe)+')';
+        ', '+lmodid+', '+FixedText(aclass.wardrobe)+
+        ', '+aclass.armor+', '+aclass.sh_scale+', '+aclass.wpn_scale+')';
     
     result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
   end;
@@ -58,23 +50,33 @@ procedure GetGender(ams:pointer; const aclass,autype:string; out agender:string)
 var
   p:pointer;
   pcw:PWideChar;
+  ls:string;
   i:integer;
   c:AnsiChar;
 begin
-  // Fast way (by name)
-//  if agender='' then
+  agender:='';
+  // 1 - from Database
+  if autype<>'' then
   begin
-    i:=Length(aclass);
-    if aclass[i-1]='_' then
+    ls:=GetTextValue(PModScanner(ams)^.db,'unittypes','child','name='''+autype+'''');
+    if ls<>'' then
     begin
-      c:=aclass[i];
-      if (c='M') or (c='m') then begin agender:='M'; exit; end;
-      if (c='F') or (c='f') then begin agender:='F'; exit; end;
+           if Pos(',PLAYER_MALE,'  ,ls)>0 then agender:='M'
+      else if Pos(',PLAYER_FEMALE,',ls)>0 then agender:='F';
+      exit;
     end;
   end;
 
-  // Slow way (by UNITTYPE)
-  agender:='';
+  // 2 - Fast way (by name)
+  i:=Length(aclass);
+  if aclass[i-1]='_' then
+  begin
+    c:=aclass[i];
+    if (c='M') or (c='m') then begin agender:='M'; exit; end;
+    if (c='F') or (c='f') then begin agender:='F'; exit; end;
+  end;
+
+  // 3 - Slow way (by UNITTYPE)
   if autype<>'' then
   begin
     RGLog.Reserve('Check for gender unittype '+autype);
@@ -104,31 +106,31 @@ begin
 
 end;
 
-function AddClassNode(ams:pointer; anode:pointer; const fname:string):integer;
+function AddClassNode(ams:pointer; anode:pointer; const fname:string):boolean;
 var
   pp,lnode:pointer;
   pcw:PWideChar;
   lclass:tclassinfo;
-  lunittype,lsname,lslevel:string;
+  lsname,lslevel:string;
   i,j:integer;
 begin
-  result:=0;
-  lclass.afile:=FixFileExt(fname);
-  lclass.title:='';
-  lclass.skill:=',';
-  lclass.wardrobe:=',';
+  FillChar(lclass,SizeOf(lclass),0);
+  lclass.wardrobe :=',';
   lclass.strength :='0';
   lclass.dexterity:='0';
   lclass.magic    :='0';
   lclass.defense  :='0';
-  lunittype:='';
+  lclass.armor    :='0';
+  lclass.sh_scale :='1.0';
+  lclass.wpn_scale:='1.0';
 
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
-    pcw:=GetNodeName(lnode);
     if GetNodeType(lnode)=rgGroup then
     begin
+      pcw:=GetNodeName(lnode);
+
       if CompareWide(pcw,'SKILL')=0 then
       begin
         lsname :='';
@@ -149,12 +151,6 @@ begin
       end;
       if CompareWide(pcw,'WARDROBE_FEATUREOPTIONS')=0 then
       begin
-{
-		[FEATUREOPTION]
-			<STRING>TYPE:HAIRCOLOR
-			<INTEGER64>VALUE:1100
-		[/FEATUREOPTION]
-}
         // cycle through "FEATUREOPTION"
         for j:=0 to GetChildCount(lnode)-1 do
         begin
@@ -164,75 +160,84 @@ begin
         end;
       end;
     end
-    else if CompareWide(pcw,'BASEFILE'   )=0 then lclass.base :=AsString(lnode)
-    else if CompareWide(pcw,'NAME'       )=0 then lclass.name :=AsString(lnode)
-    else if CompareWide(pcw,'DISPLAYNAME')=0 then lclass.title:=AsString(lnode)
-    else if CompareWide(pcw,'DESCRIPTION')=0 then lclass.descr:=AsString(lnode)
-    else if CompareWide(pcw,'UNITTYPE'   )=0 then lunittype   :=AsString(lnode)
-    else if CompareWide(pcw,'UNIT_GUID'  )=0 then lclass.id   :=AsString(lnode)
-    else if CompareWide(pcw,'STRENGTH'   )=0 then Str(AsInteger(lnode),lclass.strength)
-    else if CompareWide(pcw,'DEXTERITY'  )=0 then Str(AsInteger(lnode),lclass.dexterity)
-    else if CompareWide(pcw,'MAGIC'      )=0 then Str(AsInteger(lnode),lclass.magic)
-    else if CompareWide(pcw,'DEFENSE'    )=0 then Str(AsInteger(lnode),lclass.defense)
-    else if CompareWide(pcw,'ICON'       )=0 then lclass.icon:=ExtractFileNameOnly(AsString(lnode))
+    else if not SetUnitInfo(lnode,@lclass) then
+    begin
+      pcw:=GetNodeName(lnode);
 
-    else if CompareWide(pcw,'MANA_GRAPH')=0 then
-    begin
-      lclass.gr_mp:=AsString(lnode);
-      if UpCase(lclass.gr_mp)<>'MANA_PLAYER_GENERIC' then
+      if      CompareWide(pcw,'DESCRIPTION' )=0 then lclass.descr:=AsString(lnode)
+      else if CompareWide(pcw,'ICON'        )=0 then lclass.icon:=ExtractNameOnly(AsString(lnode))
+      else if CompareWide(pcw,'STRENGTH'    )=0 then Str(AsInteger(lnode),lclass.strength)
+      else if CompareWide(pcw,'DEXTERITY'   )=0 then Str(AsInteger(lnode),lclass.dexterity)
+      else if CompareWide(pcw,'MAGIC'       )=0 then Str(AsInteger(lnode),lclass.magic)
+      else if CompareWide(pcw,'DEFENSE'     )=0 then Str(AsInteger(lnode),lclass.defense)
+      else if CompareWide(pcw,'ARMOR'	      )=0 then Str(AsInteger(lnode),lclass.armor)
+      else if CompareWide(pcw,'SHIELD_SCALE')=0 then Str(AsFloat(lnode):0:2,lclass.sh_scale)
+      else if CompareWide(pcw,'WEAPON_SCALE')=0 then Str(AsFloat(lnode):0:2,lclass.wpn_scale)
+
+      else if CompareWide(pcw,'MANA_GRAPH')=0 then
       begin
-        ScanGraph(ams,lclass.gr_mp,10);
-        if RGDebugLevel=dlDetailed then
-          RGLog.Add('Mana graph is '+lclass.gr_mp);
+        lclass.gr_mp:=AsString(lnode);
+        if UpCase(lclass.gr_mp)<>'MANA_PLAYER_GENERIC' then
+        begin
+          ScanGraph(ams,lclass.gr_mp,10);
+          if RGDebugLevel=dlDetailed then
+            RGLog.Add('Mana graph is '+lclass.gr_mp);
+        end
       end
-    end
-    else if CompareWide(pcw,'HEALTH_GRAPH')=0 then
-    begin
-      lclass.gr_hp:=AsString(lnode);
-      if UpCase(lclass.gr_hp)<>'HEALTH_PLAYER_GENERIC' then
+
+      else if CompareWide(pcw,'HEALTH_GRAPH')=0 then
       begin
-        ScanGraph(ams,lclass.gr_hp,10);
-        if RGDebugLevel=dlDetailed then
-          RGLog.Add('Health graph is '+lclass.gr_hp);
+        lclass.gr_hp:=AsString(lnode);
+        if UpCase(lclass.gr_hp)<>'HEALTH_PLAYER_GENERIC' then
+        begin
+          ScanGraph(ams,lclass.gr_hp,10);
+          if RGDebugLevel=dlDetailed then
+            RGLog.Add('Health graph is '+lclass.gr_hp);
+        end
       end
-    end
-    else if CompareWide(pcw,'STAT_POINTS_PER_LEVEL')=0 then
-    begin
-      lclass.gr_st:=AsString(lnode);
-      if UpCase(lclass.gr_st)<>'STAT_POINTS_PER_LEVEL' then
+
+      else if CompareWide(pcw,'STAT_POINTS_PER_LEVEL')=0 then
       begin
-        ScanGraph(ams,lclass.gr_st,1);
-        if RGDebugLevel=dlDetailed then
-          RGLog.Add('Stat point per level graph is '+lclass.gr_st);
+        lclass.gr_st:=AsString(lnode);
+        if UpCase(lclass.gr_st)<>'STAT_POINTS_PER_LEVEL' then
+        begin
+          ScanGraph(ams,lclass.gr_st,1);
+          if RGDebugLevel=dlDetailed then
+            RGLog.Add('Stat point per level graph is '+lclass.gr_st);
+        end
       end
-    end
-    else if CompareWide(pcw,'SKILL_POINTS_PER_LEVEL')=0 then
-    begin
-      lclass.gr_sk:=AsString(lnode);
-      if UpCase(lclass.gr_sk)<>'SKILL_POINTS_PER_LEVEL' then
+
+      else if CompareWide(pcw,'SKILL_POINTS_PER_LEVEL')=0 then
       begin
-        ScanGraph(ams,lclass.gr_sk,1);
-        if RGDebugLevel=dlDetailed then
-          RGLog.Add('Skill points per level graph is '+lclass.gr_sk);
+        lclass.gr_sk:=AsString(lnode);
+        if UpCase(lclass.gr_sk)<>'SKILL_POINTS_PER_LEVEL' then
+        begin
+          ScanGraph(ams,lclass.gr_sk,1);
+          if RGDebugLevel=dlDetailed then
+            RGLog.Add('Skill points per level graph is '+lclass.gr_sk);
+        end
       end
-    end
-    else if CompareWide(pcw,'SKILL_POINTS_PER_FAME_LEVEL')=0 then
-    begin
-      lclass.gr_fm:=AsString(lnode);
-      if UpCase(lclass.gr_fm)<>'SKILL_POINTS_PER_FAME_LEVEL' then
+
+      else if CompareWide(pcw,'SKILL_POINTS_PER_FAME_LEVEL')=0 then
       begin
-        ScanGraph(ams,lclass.gr_fm,1);
-        if RGDebugLevel=dlDetailed then
-          RGLog.Add('Skill points per fame level graph is '+lclass.gr_fm);
-      end
+        lclass.gr_fm:=AsString(lnode);
+        if UpCase(lclass.gr_fm)<>'SKILL_POINTS_PER_FAME_LEVEL' then
+        begin
+          ScanGraph(ams,lclass.gr_fm,1);
+          if RGDebugLevel=dlDetailed then
+            RGLog.Add('Skill points per fame level graph is '+lclass.gr_fm);
+        end
+      end;
     end;
 
   end;
 
-  GetGender(ams, lclass.name, lunittype, lclass.gender);
+  GetGender(ams, lclass.name, lclass.unittype, lclass.gender);
+
   if lclass.skill=',' then lclass.skill:='';
-  if AddClassToBase(ams,lclass) then
-    result:=1;
+  lclass.fname:=FixFileExt(fname);
+
+  result:=AddClassToBase(ams,lclass);
 end;
 
 function ProcessClasses(
@@ -258,7 +263,7 @@ begin
         ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
       else
 }        ldir:=adir;
-      if AddClassNode(aparam,p,ldir+aname)<>0 then
+      if AddClassNode(aparam,p,ldir+aname) then
         result:=1
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
@@ -282,13 +287,8 @@ begin
   if not IsTableExists(adb,'classes') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE classes ('+
-      '    id          INTEGER PRIMARY KEY,'+
-      '    name        TEXT,'+
-      '    title       TEXT,'+
-      '    modid       TEXT,'+
+      DefUnitDDL+
       '    descr       TEXT,'+
-      '    file        TEXT,'+
-      '    base        TEXT,'+
       '    skills      TEXT,'+
       '    gender      CHAR,'+
       '    icon        TEXT,'+
@@ -301,7 +301,10 @@ begin
       '    dexterity   INTEGER,'+
       '    magic       INTEGER,'+
       '    defense     INTEGER,'+
-      '    wardrobe    TEXT );')
+      '    wardrobe    TEXT,'+
+      '    armor       INTEGER,'+
+      '    shld_scale  REAL,'+
+      '    wpn_Scale   REAL);')
   else
     result:=true;
 end;

@@ -6,6 +6,7 @@ object fmScan: TfmScan
   Caption = 'Scan TL2 mods'
   ClientHeight = 381
   ClientWidth = 695
+  LCLVersion = '3.99.0.0'
   OnCreate = FormCreate
   object Splitter: TSplitter
     Left = 0
@@ -186,6 +187,14 @@ object fmScan: TfmScan
         Width = 70
         Caption = 'Wardrobe'
         TabOrder = 10
+      end
+      object cbAdds: TCheckBox
+        Left = 200
+        Height = 19
+        Top = 7
+        Width = 45
+        Caption = 'Adds'
+        TabOrder = 11
       end
     end
     object cbDetailedLog: TCheckBox

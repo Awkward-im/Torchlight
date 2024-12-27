@@ -28,6 +28,7 @@ type
     cbUpdateAll: TCheckBox;
     cbDetailedLog: TCheckBox;
     cbWardrobe: TCheckBox;
+    cbAdds: TCheckBox;
     edDirName: TDirectoryEdit;
     edFileName: TFileNameEdit;
     gbWhatToScan: TGroupBox;
@@ -43,6 +44,7 @@ type
     procedure rbFileToScanChange(Sender: TObject);
   private
     db:pointer;
+    gamever:integer;
 
     function  AddToLog(var adata:string):integer;
     procedure ProcessSingleMod(const aname: string);
@@ -78,15 +80,13 @@ end;
 procedure TfmScan.ProcessSingleMod(const aname:string);
 var
   lms:pointer;
-  lloglvl:integer;
 begin
   if cbDetailedLog.Checked then
     RGDebugLevel:=dlDetailed
-    lloglvl:=10
   else
     RGDebugLevel:=dlNormal;
 
-  if not Prepare(db,aname,lms,lloglvl) then
+  if not Prepare(db,aname,lms, false, gamever) then
   begin
     memLog.Append('Can''t prepare "'+aname+'" scanning');
     exit;
@@ -100,6 +100,13 @@ begin
   end
   else
   begin
+
+    // Adds
+    if cbAdds.Checked then
+    begin
+      ScanAdds(lms);
+      Application.ProcessMessages;
+    end;
 
     // Wardrobe
     if cbWardrobe.Checked then
@@ -179,9 +186,10 @@ function DoCheck(const adir,aname:string; aparam:pointer):integer;
 var
   lext:string;
 begin
-  lext:=TfmScan(aparam).edDirName.Text;
+//  lext:=TfmScan(aparam).edDirName.Text;
+  if aname='EDITORMOD.MOD' then exit(0);
   result:=1 or sres_nocheck;
-  lext:=ExtractFileExt(aname);
+  lext:=ExtractExt(aname);
   if (lext='.MOD') or
      (lext='.PAK') or
      (lext='.ZIP') then
@@ -205,8 +213,9 @@ end;
 procedure TfmScan.bbScanClick(Sender: TObject);
 var
   lf:TfmGameVer;
-  lver:integer;
-  ldbname:string;
+  lp,i:integer;
+  lpath,ldbname:string;
+  ls:string[7];
 begin
   if (rbDirToScan .Checked and (edDirName .Text='')) or
      (rbFileToScan.Checked and (edFileName.Text='')) then
@@ -217,26 +226,26 @@ begin
 
   if rbFileToScan.Checked then
   begin
-    lver:=RGPAKGetVersion(edFileName.Text);
+    gamever:=RGPAKGetVersion(edFileName.Text);
   end
   else
-   lver:=verUnk;
+   gamever:=verUnk;
 
-  memLog.Append('Preparing...');
-
-  if not (lver in [verTL1, verTL2]) then
+  if not (gamever in [verTL1, verTL2]) then
   begin
     lf:=TfmGameVer.Create(self);
     lf.Classic:=true;
     lf.ShowModal;
-    lver:=lf.Version;
+    gamever:=lf.Version;
     lf.Free;
   end;
 
-  if      lver=verTL1 then ldbname:=TL1DataBase
-  else if lver=verTL2 then ldbname:=TL2DataBase;
+  memLog.Append('Preparing for scan as '+GetGameName(gamever));
 
-  if not RGOpenBase(db,ldbname,lver) then
+  if      gamever=verTL1 then ldbname:=TL1DataBase
+  else if gamever=verTL2 then ldbname:=TL2DataBase;
+
+  if not RGOpenBase(db,ldbname,gamever) then
   begin
     memLog.Append('Can''t prepare database');
     exit;
@@ -246,8 +255,31 @@ begin
   begin
     if not (edDirName.Text[Length(edDirName.Text)] in ['/', '\']) then
       edDirName.Text:=edDirName.Text+'/';
+    lp:=Length(edDirName.Text)-7;
+    ls:='';
+    if lp>0 then
+    begin
+      for i:=1 to 7 do
+      begin
+        if edDirName.Text[lp+i]='\' then
+          ls:=ls+'/'
+        else
+          ls:=ls+UpCase(edDirName.Text[lp+i]);
+      end;
+    end;
 
-    MakeRGScan(edDirName.Text,'',['.PAK','.MOD','.ZIP','.DAT','.ADM'],nil,Self,@DoCheck);
+    if ls='/MEDIA/' then
+      lpath:=Copy(edDirName.Text,1,lp)
+    else if DirectoryExists(edDirName.Text+'MEDIA/') then
+      lpath:=edDirName.Text
+    else
+    begin
+      memLog.Append('MEDIA folder not found');
+      exit;
+    end;
+
+    MakeRGScan(lpath,'',['.PAK','.MOD','.ZIP','.DAT','.ADM'],nil,Self,@DoCheck);
+
   end
   else //if rbFileToScan then
     ProcessSingleMod(edFileName.Text);
@@ -262,6 +294,7 @@ end;
 
 procedure TfmScan.cbUpdateAllChange(Sender: TObject);
 begin
+  cbAdds    .Enabled:=not cbUpdateAll.Checked;
   cbWardrobe.Enabled:=not cbUpdateAll.Checked;
   cbPets    .Enabled:=not cbUpdateAll.Checked;
   cbQuests  .Enabled:=not cbUpdateAll.Checked;

@@ -51,7 +51,7 @@ function GetIntValue (const aid:TRGID; const atable, afield:string):integer;
 
 procedure SetFilter(amods:TTL2ModList);
 procedure SetFilter(amods:TL2IdList);
-procedure RestFilter;
+procedure ResetFilter;
 function  IsInModList(const alist:string; aid:TRGID        ):boolean; overload;
 function  IsInModList(const alist:string; amods:TTL2ModList):TRGID  ; overload;
 function  IsInModList(aid:TRGID         ; amods:TTL2ModList):boolean; overload;
@@ -335,7 +335,7 @@ begin
   if db<>nil then
   begin
 
-    lSQL:='SELECT count(*) FROM Wardrobe';
+    lSQL:='SELECT count(*) FROM wardrobe';
     i:=0;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
@@ -403,7 +403,7 @@ begin
   ModFilter:=ModFilter+')';
 end;
 
-procedure RestFilter;
+procedure ResetFilter;
 begin
   ModFilter:='';
 end;

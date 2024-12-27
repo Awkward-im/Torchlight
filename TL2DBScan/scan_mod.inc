@@ -59,10 +59,16 @@ begin
   result:=CheckForMod(ams,atable,'name='''+aname+'''');
 end;
 
+function CheckNamePlusForMod(ams:pointer; const atable,aname,aplus:string):string;
+begin
+  result:=CheckForMod(ams,atable,'(name='''+aname+''') AND ('+aplus+')');
+end;
+
 function CheckIdForMod(ams:pointer; const atable,anid:string):string;
 begin
   result:=CheckForMod(ams,atable,'id='+anid);
 end;
+
 
 function AddTheMod(adb:PSQLite3; const amodinfo:TTL2ModInfo):boolean;
 var

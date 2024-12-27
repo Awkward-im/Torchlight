@@ -159,10 +159,6 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="scan_classes.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="scan_graph.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -171,27 +167,11 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="scan_items.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="scan_mobs.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="scan_mod.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="scan_movies.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="scan_pet.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="scan_props.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
@@ -251,6 +231,30 @@
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="scan_unittypes.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="scan_u_classes.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="scan_u_items.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="scan_u_mobs.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="scan_u_pet.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="scan_u_props.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>

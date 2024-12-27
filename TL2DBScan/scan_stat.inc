@@ -93,7 +93,7 @@ begin
   if not IsTableExists(adb,'stats') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE stats ('+
-      '    id    INTEGER     PRIMARY KEY,'+
+      '    id    INTEGER PRIMARY KEY,'+
       '    name  TEXT,'+
       '    title TEXT,'+
       '    modid TEXT,'+

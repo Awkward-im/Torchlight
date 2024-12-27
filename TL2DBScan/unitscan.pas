@@ -20,6 +20,7 @@ function ScanPath(adb:PSQLite3; const apath:string):integer;
 
 procedure ScanAll(ams:pointer);
 
+function ScanUnitTypes(ams:pointer):integer;
 function ScanClasses  (ams:pointer):integer;
 function ScanInventory(ams:pointer):integer;
 function ScanItems    (ams:pointer):integer;
@@ -33,13 +34,16 @@ function ScanSkills   (ams:pointer):integer;
 function ScanStats    (ams:pointer):integer;
 function ScanWardrobe (ams:pointer):integer;
 
+function ScanAdds(ams:pointer):integer;
+
 {main single mod scanning}
 // prepare SINGLE mod file/unpacked directory
 function Prepare(
          adb:PSQLite3;
          const apath:string;
          out ams:pointer;
-         aupdateall:boolean=false):boolean;
+         aupdateall:boolean=false;
+         aver:integer=verUnk):boolean;
 
 procedure Finish(ams:pointer);
 
@@ -93,6 +97,22 @@ const
   h_ICON        = 6653358;
 }
 
+//!! not used atm: Return node name index in list
+type
+  TNameList = array of PWideChar;
+
+function GetNameIdx(anode:pointer; const alist:TNameList):integer;
+var
+  lname:PWideChar;
+  i:integer;
+begin
+  lname:=GetNodeName(anode);
+  for i:=0 to High(alist) do
+    if CompareWide(lname,alist[i])=0 then exit(i);
+  result:=-1;
+end;
+
+
 function FixedText(const astr:string):string;
 begin
   result:=#39+StringReplace(astr,#39,#39#39,[rfReplaceAll])+#39;
@@ -117,30 +137,31 @@ end;
 {$i scan_mod.inc}
 
 {$i scan_adds.inc}
-{$i scan_classes.inc}
+{$i scan_unittypes.inc}
 {$i scan_inventory.inc}
-{$i scan_items.inc}
-{$i scan_pet.inc}
-{$i scan_mobs.inc}
+{$i scan_wardrobe.inc}
+{$i scan_u_classes.inc}
+{$i scan_u_items.inc}
+{$i scan_u_pet.inc}
+{$i scan_u_mobs.inc}
+{$i scan_u_props.inc}
 {$i scan_movies.inc}
-{$i scan_props.inc}
 {$i scan_recipes.inc}
 {$i scan_quest.inc}
 {$i scan_skills.inc}
 {$i scan_stat.inc}
-{$i scan_wardrobe.inc}
 
 {%REGION Scan single mod}
 
 procedure ScanAll(ams:pointer);
 begin
   LoadDefaultGraphs(ams);
-//  ScanAdds    (ams);
-  ScanClasses  (ams);
+  ScanAdds     (ams);
+  ScanUnitTypes(ams);
   ScanInventory(ams);
+  ScanClasses  (ams);
   ScanItems    (ams);
   ScanMobs     (ams);
-  ScanMovies   (ams);
   ScanPets     (ams);
   ScanProps    (ams);
   ScanQuests   (ams);
@@ -148,6 +169,7 @@ begin
   ScanSkills   (ams);
   ScanStats    (ams);
   ScanWardrobe (ams);
+  ScanMovies   (ams);
 end;
 
 
@@ -155,54 +177,63 @@ function Prepare(
     adb:PSQLite3;
     const apath:string;
     out ams:pointer;
-    aupdateall:boolean=false):boolean;
+    aupdateall:boolean=false;
+    aver:integer=verUnk):boolean;
 var
   lmod:TTL2ModInfo;
   lscan:pointer;
   ls:string;
   lmodid:Int64;
-  lver:integer;
+  i:integer;
 begin
   result:=false;
   ams:=nil;
   if adb=nil then exit;
 
-  lver:=verUnk;
+  ls:='';
 
   if (apath[Length(apath)] in ['/','\']) or DirectoryExists(apath) then
   begin
     result:=true;
 
-    FillChar(lmod,SizeOf(lmod),0);
-    if FileExists(apath+'media/massfile.dat.adm') then lver:=verTL1
-    else if FileExists(apath+'media/tags.dat') then lver:=verTL2
-    else if LoadModConfig(PChar(apath+'\MOD.DAT'),lmod) then
+    if aver=verUnk then
     begin
-      // modid can be for TL1 mod too (just ignoring)
-      if lmod.modid=0 then lver:=verTL1Mod else lver:=verTL2Mod;
-    end
-    else
-      lver:=verTL1Mod;
+      FillChar(lmod,SizeOf(lmod),0);
+           if FileExists(apath+'media/massfile.dat.adm') then aver:=verTL1
+      else if FileExists(apath+'media/tags.dat')         then aver:=verTL2
+      else if LoadModConfig(PChar(apath+'\MOD.DAT'),lmod) then
+      begin
+        // modid can be for TL1 mod too (just ignoring)
+        if lmod.modid=0 then aver:=verTL1Mod else aver:=verTL2Mod;
+      end
+      else
+        aver:=verTL1Mod;
+    end;
 
-    if lmod.title=nil then
+    if (lmod.title=nil) and
+      ((aver=verTL1Mod) or (aver=verTL2Mod)) then
     begin
       ls:=ExtractName(apath);
       if ls[Length(ls)] in ['\','/'] then SetLength(ls,Length(ls)-1);
-      lmod.Title:=CopyWide(PUnicodeChar(UnicodeString(ls)));
+      lmod.title:=CopyWide(PUnicodeChar(UnicodeString(ls)));
     end;
   end
   else if FileExists(apath) then
   begin
-    lver:=RGPAKGetVersion(apath);
-    if (lver=verTL2Mod) or (lver=verTL1Mod) then
-      result:=ReadModInfo(PChar(apath),lmod)
-    else if (lver=verTL2) or (lver=verTL1) then
-      result:=true;
+    i:=RGPAKGetVersion(apath);
+    if aver<>i then
+    begin
+      RGLog.Add('Defined version '+GetGameName(aver)+
+        ' will be replaced by container version '+GetGameName(i));
+      aver:=i;
+    end;
+         if (aver=verTL2Mod) or (aver=verTL1Mod) then result:=ReadModInfo(PChar(apath),lmod)
+    else if (aver=verTL2   ) or (aver=verTL1   ) then result:=true;
   end;
 
   if result then
   begin
-    if (lver=verTL2Mod) or (lver=verTL1Mod) then
+    if (aver=verTL2Mod) or (aver=verTL1Mod) then
     begin
       AddTheMod(adb,lmod);
       lmodid:=lmod.modid;
@@ -225,7 +256,7 @@ begin
         FDoUpdate:=aupdateall;
         Str(lmodid,FModId);
         FModMask :=' '+FModId+' ';
-        gamever  :=ABS(lver);
+        gamever  :=ABS(aver);
       end;
 
     end
@@ -281,7 +312,7 @@ var
   lext:string;
 begin
   result:=1 or sres_nocheck;
-  lext:=ExtractFileExt(aname);
+  lext:=ExtractExt(aname);
   if (lext='.MOD') or
      (lext='.PAK') or
      (lext='.ZIP') then
@@ -323,6 +354,7 @@ begin
   result:=CreateModTable      (adb,ABS(aver));
 
   result:=CreateAddsTable     (adb);
+  result:=CreateUnitTypesTable(adb);
   result:=CreateClassesTable  (adb);
   result:=CreateGraphTable    (adb);
   result:=CreateInventoryTable(adb);

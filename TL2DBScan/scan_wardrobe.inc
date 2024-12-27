@@ -1,5 +1,6 @@
 {%REGION Wardrobe}
 
+{TODO: gender from class info (not all names ends from M and F)}
 {NOTE: TL1 don't have it}
 
 type
@@ -52,8 +53,11 @@ begin
         else if CompareWide(pcw,'GUID' )=0 then Str(AsInteger64(lnode),ldata.id)
         else if CompareWide(pcw,'CLASS')=0 then
         begin
-          ls:=asString(lnode);
-          ldata.gender:=UpCase(ls[length(ls)]);
+          ls:=UpCase(FastWideToStr(asString(lnode)));
+          ldata.gender:=ls[length(ls)];
+          if not (ldata.gender[1] in ['F','M']) then
+            if Pos('_F',ls)>0 then ldata.gender:='F'
+            else ldata.gender:='M';
         end;
       end;
 

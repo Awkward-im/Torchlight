@@ -1,4 +1,5 @@
 {%REGION Graph}
+{
 function AddGraphToBase(ams:pointer; const aname,agraph:string):boolean;
 var
   vm:pointer;
@@ -21,7 +22,7 @@ begin
   // graph found
   if lid>=0 then
   begin
-    if Pos(PModScanner(ams)^.FModMask,lmodid)<0 then
+    if Pos(PModScanner(ams)^.FModMask,lmodid)<1 then
     begin
       lSQL:='UPDATE graph SET modid='''+
           lmodid+PModScanner(ams)^.FModId+' '' WHERE id='+IntToStr(lid);
@@ -39,6 +40,23 @@ begin
 
     result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
   end;
+end;
+}
+function AddGraphToBase(ams:pointer; const aname, agraph:string):boolean;
+var
+  lmodid,lSQL:string;
+begin
+  result:=false;
+
+  lmodid:=CheckNamePlusForMod(ams,'graph', aname, 'value='''+agraph+'''');
+  if lmodid<>'' then
+  begin
+    lSQL:='REPLACE INTO graph (name, modid, value) VALUES ('''+
+        aname+''', '+lmodid+', '''+agraph+''')';
+
+    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
+  end;
+
 end;
 
 function AddGraphNode(ams:pointer; anode:pointer; const aname:string; amul:integer):integer;

@@ -166,7 +166,7 @@ begin
   if not IsTableExists(adb,'skills') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE skills ('+
-      '    id       INTEGER     PRIMARY KEY,'+
+      '    id       INTEGER PRIMARY KEY,'+
       '    name     TEXT,'+
       '    title    TEXT,'+
       '    modid    TEXT,'+
