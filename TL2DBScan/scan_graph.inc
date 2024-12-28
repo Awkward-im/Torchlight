@@ -42,20 +42,23 @@ begin
   end;
 end;
 }
-function AddGraphToBase(ams:pointer; const aname, agraph:string):boolean;
+function AddGraphToBase(ams:pointer; const aname, agraph:string):integer;
 var
   lmodid,lSQL:string;
 begin
-  result:=false;
-
   lmodid:=CheckNamePlusForMod(ams,'graph', aname, 'value='''+agraph+'''');
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO graph (name, modid, value) VALUES ('''+
         aname+''', '+lmodid+', '''+agraph+''')';
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
+  end
+  else
+    result:=-1;
 
 end;
 
@@ -81,14 +84,14 @@ begin
   if Length(ls)>0 then
   begin
     SetLength(ls,Length(ls)-1);
-    if AddGraphToBase(ams,aname,ls) then
-      result:=1;
+    result:=AddGraphToBase(ams,aname,ls);
   end;
 end;
 
 function ScanGraph(ams:pointer; const aname:string; amul:integer):integer;
 var
   p:pointer;
+  lres:integer;
 begin
   result:=sres_fail;
 
@@ -100,9 +103,11 @@ begin
 
   if p<>nil then
   begin
-    if AddGraphNode(ams,p,aname,amul)>0 then
-      result:=1
-    else if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
+    lres:=AddGraphNode(ams,p,aname,amul);
+         if lres>0 then result:=1
+    else if lres<0 then result:=0
+    else if RGDebugLevel=dlDetailed then
+      RGLog.Add('can''t update '+aname);
 
     DeleteNode(p);
   end;

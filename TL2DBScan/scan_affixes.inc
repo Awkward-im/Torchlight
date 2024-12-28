@@ -1,4 +1,6 @@
 {%REGION Effects}
+{NOTE: add base/mod NEW affixes only, not edit existing}
+{TODO: implement modid for aeffects}
 
 function AddAffixToBase(ams:pointer; const aname,acat:string):integer;
 var
@@ -13,9 +15,10 @@ begin
         ls1+', '+lmodid+', '+ls2+') RETURNING id;';
 
     result:=ReturnInt(PModScanner(ams)^.db,lSQL);
+    if result=-1 then result:=0;
   end
   else
-    result:=ReturnInt(PModScanner(ams)^.db,
+    result:=-ReturnInt(PModScanner(ams)^.db,
       'SELECT id FROM affixes WHERE (name='+ls1+') AND (category='+ls2+')');
 end;
 
@@ -179,14 +182,23 @@ begin
         lname:=ExtractNameOnly(aname);
 
       lid:=AddAffixToBase(aparam,lname,lcat);
-      if lid>=0 then
+      if lid>0 then
       begin
         result:=1;
         AddAffixEffectNode(aparam,p,lid);
       end
-      else if RGDebugLevel=dlDetailed then
-        RGLog.Add('can''t update '+aname);
-      
+      else if lid=0 then
+      begin
+        if RGDebugLevel=dlDetailed then
+          RGLog.Add('can''t update '+aname);
+      end
+      else
+      begin
+{
+        if RGDebugLevel=dlDetailed then
+          RGLog.Add('Affix '+aname+' exists already');
+}
+      end;
       DeleteNode(p);
     end;
 

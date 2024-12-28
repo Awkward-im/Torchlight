@@ -3,12 +3,10 @@
 {NOTE: TL1 don't have it}
 
 function AddMovieToBase(ams:pointer;  aId:int64;
-     const aname, atitle, apath:string; aviews:integer):boolean;
+     const aname, atitle, apath:string; aviews:integer):integer;
 var
   lmodid,lSQL,sid:string;
 begin
-  result:=false;
-
   Str(aid,sid);
   lmodid:=CheckIdForMod(ams,'movies', sid);
   if lmodid<>'' then
@@ -17,8 +15,13 @@ begin
         sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(apath)+
         ', '+IntToStr(aviews)+', '+lmodid+')';
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
+  end
+  else
+    result:=-1;
 end;
 
 function AddMovieNode(ams:pointer; anode:pointer):integer;
@@ -27,9 +30,10 @@ var
   pcw:PWideChar;
   lname,ltitle,lpath:string;
   lid:int64;
-  i,j,lviews:integer;
+  lcnt,i,j,lviews:integer;
 begin
   result:=0;
+  lcnt:=0;
 
   for i:=0 to GetChildCount(anode)-1 do
   begin
@@ -51,9 +55,13 @@ begin
     end;
 
     if lid<>-1 then
-      if AddMovieToBase(ams,lid,lname,ltitle,lpath,lviews) then inc(result);
+    begin
+      j:=AddMovieToBase(ams,lid,lname,ltitle,lpath,lviews);
+           if j>0 then inc(result)
+      else if j<0 then inc(lcnt);
+    end;
   end;
-
+  if (result=0) and (lcnt>0) then result:=-lcnt;
 end;
 
 function ScanMovies(ams:pointer):integer;
@@ -72,7 +80,7 @@ begin
   if p<>nil then
   begin
     result:=AddMovieNode(ams,p);
-    if result<=0 then
+    if result=0 then
     begin
       result:=sres_fail;
       if RGDebugLevel=dlDetailed then RGLog.Add('can''t update MOVIES.DAT');

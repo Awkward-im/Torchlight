@@ -14,12 +14,10 @@ type
     shared :char;
   end;
 
-function AddSkillToBase(ams:pointer; const askill:tSkillInfo):boolean;
+function AddSkillToBase(ams:pointer; const askill:tSkillInfo):integer;
 var
   lmodid,lSQL:string;
 begin
-  result:=false;
-
   lmodid:=CheckIdForMod(ams,'skills', askill.id);
   if lmodid<>'' then
   begin
@@ -29,11 +27,19 @@ begin
         ', '''+askill.graph+''', '+FixedText(askill.icon)+', '+
         askill.minlvl+', '+askill.maxlvl+', '+askill.passive+', '+askill.shared+', '+lmodid+')';
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
+  end
+  else
+  begin
+    result:=-1;
+    if RGDebugLevel=dlDetailed then RGLog.Add('Looks like ID '+askill.id+' used already');
   end;
 end;
 
-function AddSkillNode(ams:pointer; anode:pointer; ashared:boolean):boolean;
+function AddSkillNode(ams:pointer; anode:pointer; ashared:boolean):integer;
 var
   pp,ppp:pointer;
   pcw:PWideChar;
@@ -142,8 +148,9 @@ begin
     
     if p<>nil then
     begin
-      if AddSkillNode(aparam,p,Pos('MEDIA/SKILLS/SHARED',adir)>0) then
-        result:=1
+      result:=AddSkillNode(aparam,p,Pos('MEDIA/SKILLS/SHARED',adir)>0);
+           if result>0 then result:=1
+      else if result<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

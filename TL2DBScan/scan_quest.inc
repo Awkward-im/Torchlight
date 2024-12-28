@@ -1,11 +1,9 @@
 {%REGION Quests}
 
-function AddQuestToBase(ams:pointer; const aname:string; aId:int64; const atitle:string):boolean;
+function AddQuestToBase(ams:pointer; const aname:string; aId:int64; const atitle:string):integer;
 var
   lmodid,lSQL,sid:string;
 begin
-  result:=false;
-
   Str(aid,sid);
   lmodid:=CheckIdForMod(ams,'quests', sid);
   if lmodid<>'' then
@@ -13,8 +11,13 @@ begin
     lSQL:='REPLACE INTO quests (id, name, title, modid) VALUES ('+
         sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+lmodid+')';
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
+  end
+  else
+    result:=-1;
 end;
 
 function AddQuestNode(ams:pointer; anode:pointer):int64;
@@ -42,7 +45,7 @@ begin
   end;
 
   if lid<>-1 then
-    if not AddQuestToBase(ams,name,lid,title) then lid:=0;
+    lid:=AddQuestToBase(ams,name,lid,title);
 
   result:=lid;
 end;
@@ -69,10 +72,17 @@ begin
     begin
       i:=AddQuestNode(aparam,p);
 
-      if i=0  then if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
-      if i=-1 then if RGDebugLevel=dlDetailed then RGLog.Add('don''t added ' +aname);
-      if i>0  then result:=1;
-
+           if i>0 then result:=1
+      else if i=0 then
+      begin
+        if RGDebugLevel=dlDetailed then
+          RGLog.Add('can''t update '+aname)
+      end
+      else if i=-1 then
+      begin
+        if RGDebugLevel=dlDetailed then
+          RGLog.Add('don''t added ' +aname);
+      end;
       DeleteNode(p);
     end;
 

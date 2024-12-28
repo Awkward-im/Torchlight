@@ -11,12 +11,10 @@ type
     gender:string;
   end;
 
-function AddWardrobeToBase(ams:pointer; var adata:twardrobeinfo):boolean;
+function AddWardrobeToBase(ams:pointer; var adata:twardrobeinfo):integer;
 var
   lmodid,lSQL:string;
 begin
-  result:=false;
-
   lmodid:=CheckIdForMod(ams,'wardrobe', adata.id);
   if lmodid<>'' then
   begin
@@ -24,8 +22,13 @@ begin
         adata.id+', '+FixedText(adata.name)+', '+FixedText(adata.atype)+', '''+adata.gender+
         ''', '+lmodid+')';
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
+  end
+  else
+    result:=-1;
 end;
 
 function ScanWardrobeNode(ams:pointer; anode:pointer):integer;
@@ -34,9 +37,10 @@ var
   pcw:PWideChar;
   ls:string;
   ldata:twardrobeinfo;
-  i,j:integer;
+  i,j,lcnt:integer;
 begin
   result:=0;
+  lcnt:=0;
 
   for j:=0 to GetChildCount(anode)-1 do
   begin
@@ -61,16 +65,14 @@ begin
         end;
       end;
 
-      if not AddWardrobeToBase(ams,ldata) then
-      begin
-        if RGDebugLevel=dlDetailed then
-          RGLog.Add('can''t update '+ldata.name);
-      end
-      else
-        inc(result);
+      i:=AddWardrobeToBase(ams,ldata);
+           if i>0 then inc(result)
+      else if i<0 then inc(lcnt)
+      else if RGDebugLevel=dlDetailed then
+        RGLog.Add('can''t update '+ldata.name);
     end;
   end;
-
+  if (result=0) and (lcnt>0) then result:=-lcnt;
 end;
 
 function ProcessWardrobe(
@@ -79,7 +81,7 @@ function ProcessWardrobe(
           aparam:pointer):integer;
 var
   p:pointer;
-  i:int64;
+  i:integer;
 begin
   result:=sres_fail;
 
@@ -95,9 +97,10 @@ begin
     begin
       i:=ScanWardrobeNode(aparam,p);
 
-      if i=0 then if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
-//      if i=-1 then if RGDebugLevel=dlDetailed then RGLog.Add('don''t added ' +aname);
-      if i>0 then result:=i;
+           if i>0 then result:=i
+      else if i<0 then result:=0
+      else if RGDebugLevel=dlDetailed then
+        RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
     end;

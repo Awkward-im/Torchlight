@@ -1,8 +1,9 @@
 {%REGION Inventory}
 
 {NOTE: TL1 don't have it}
+{TODO: don't rewrite inventory}
 
-function AddInventoryToBase(ams:pointer; aId:UInt32; const aname:string; isContainer:boolean):boolean;
+function AddInventoryToBase(ams:pointer; aId:UInt32; const aname:string; isContainer:boolean):integer;
 var
   vm:pointer;
   lid,lcont,lSQL:string;
@@ -13,7 +14,7 @@ begin
   Str(aId,lid);
   lupdate:=true;
   lSQL:='SELECT COUNT(*) FROM inventory '+
-        'WHERE (id='+lid+') AND (name='''+aname+''') AND (isContaner='+lcont+')';
+        'WHERE (id='+lid+') AND (name='''+aname+''') AND (isContainer='+lcont+')';
   if sqlite3_prepare_v2(PModScanner(ams)^.db,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
@@ -25,13 +26,16 @@ begin
   begin
     lSQL:='REPLACE INTO inventory (id, name, isContainer) VALUES ('+
           lid+', '+FixedText(aname)+', '+lcont+')';
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
   end
   else
-    result:=false;
+    result:=-1;
 end;
 
-function AddInventoryNode(ams:pointer; anode:pointer; isContainer:boolean):boolean;
+function AddInventoryNode(ams:pointer; anode:pointer; isContainer:boolean):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
@@ -58,7 +62,7 @@ begin
     if lmask=3 then
       Exit(AddInventoryToBase(ams,lid,lname,isContainer));
   end;
-  result:=false;
+  result:=0;
 end;
 
 function ProcessInventory(
@@ -80,8 +84,9 @@ begin
 
     if p<>nil then
     begin
-      if AddInventoryNode(aparam,p,Pos('MEDIA/INVENTORY/CONTAINERS',adir)>0) then
-        result:=1
+      result:=AddInventoryNode(aparam,p,Pos('MEDIA/INVENTORY/CONTAINERS',adir)>0);
+           if result>0 then result:=1
+      else if result<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

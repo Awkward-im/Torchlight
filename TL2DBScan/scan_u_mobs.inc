@@ -35,36 +35,32 @@ type
     dmg_poison  :integer;
   end;
 
-function AddMobToBase(ams:pointer; const ami:TMobInfo):boolean;
+function AddMobToBase(ams:pointer; const ami:TMobInfo):integer;
 var
-  lmodid,lSQL:string;
+  lSQL:string;
 begin
-  result:=false;
+  lSQL:='REPLACE INTO mobs ('+DefUnitColumns+
+  ', armor_graph, damage_graph, dmgtype, champion, armor, '+
+  'arm_physical, arm_electric, arm_fire, arm_ice, arm_poison, '+
+  'dmg_physical, dmg_electric, dmg_fire, dmg_ice, dmg_poison) VALUES ('+
+  GetDefUnitValues(ams,@ami)+', '''+ami.armor_graph+''', '''+ami.damage_graph+''', '''+ami.dmgtype+
+  ''', '+IntToStr(ami.champion    )+', '+IntToStr(ami.armor       )+', '+IntToStr(ami.arm_physical)+
+  ', '+IntToStr(ami.arm_electric)+', '+IntToStr(ami.arm_fire    )+', '+IntToStr(ami.arm_ice)+
+  ', '+IntToStr(ami.arm_poison  )+', '+IntToStr(ami.dmg_physical)+', '+IntToStr(ami.dmg_electric)+
+  ', '+IntToStr(ami.dmg_fire    )+', '+IntToStr(ami.dmg_ice     )+', '+IntToStr(ami.dmg_poison)+')';
 
-  lmodid:=CheckIdForMod(ams,'mobs', ami.id);
-  if lmodid<>'' then
-  begin
-    lSQL:='REPLACE INTO mobs ('+DefUnitColumns+
-    ', armor_graph, damage_graph, dmgtype, champion, armor, '+
-    'arm_physical, arm_electric, arm_fire, arm_ice, arm_poison, '+
-    'dmg_physical, dmg_electric, dmg_fire, dmg_ice, dmg_poison, modid) VALUES ('+
-    GetDefUnitValues(ams,@ami)+', '''+ami.armor_graph+''', '''+ami.damage_graph+''', '''+ami.dmgtype+
-    ''', '+IntToStr(ami.champion    )+', '+IntToStr(ami.armor       )+', '+IntToStr(ami.arm_physical)+
-    ', '+IntToStr(ami.arm_electric)+', '+IntToStr(ami.arm_fire    )+', '+IntToStr(ami.arm_ice)+
-    ', '+IntToStr(ami.arm_poison  )+', '+IntToStr(ami.dmg_physical)+', '+IntToStr(ami.dmg_electric)+
-    ', '+IntToStr(ami.dmg_fire    )+', '+IntToStr(ami.dmg_ice     )+', '+IntToStr(ami.dmg_poison)+
-    ', '+lmodid+')';
-
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+  if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    result:=1
+  else
+    result:=0;
 end;
 
-function AddMobNode(ams:pointer; anode:pointer; const fname:string):boolean;
+function AddMobNode(ams:pointer; anode:pointer; const fname:string):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
   lmi:tmobinfo;
-  i:integer;
+  i,ltmp:integer;
 begin
   if PModScanner(ams)^.gamever=verTL1 then
   begin
@@ -74,7 +70,7 @@ begin
       if CompareWide(AsString(lnode),'PET')=0 then
       begin
         result:=AddPetNode(ams,anode,fname);
-        if result then
+        if result>0 then
           RGLog.Add('Added as pet');
         exit;
       end;
@@ -86,7 +82,13 @@ begin
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
-    if not SetUnitInfo(lnode,@lmi) then
+    ltmp:=SetUnitInfo(lnode,@lmi);
+    if ltmp<0 then
+    begin
+      lmi.modid:=CheckIdForMod(ams,'mobs', lmi.id);
+      if lmi.modid='' then exit(-1);
+    end
+    else if ltmp=0 then
     begin
       pcw:=GetNodeName(lnode);
            if CompareWide(pcw,'ARMOR_GRAPH'    )=0 then lmi.armor_graph :=AsString(lnode)
@@ -131,8 +133,9 @@ begin
     
     if p<>nil then
     begin
-      if AddMobNode(aparam,p,adir+aname) then
-        result:=1
+      result:=AddMobNode(aparam,p,adir+aname);
+           if result>0 then result:=1
+      else if result<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

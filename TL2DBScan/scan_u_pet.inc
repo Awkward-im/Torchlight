@@ -12,37 +12,40 @@ type
   end;
 
 
-function AddPetToBase(ams:pointer; var apet:TPetInfo):boolean;
+function AddPetToBase(ams:pointer; var apet:TPetInfo):integer;
 var
-  lmodid,lSQL:string;
+  lSQL:string;
 begin
-  result:=false;
+  lSQL:='REPLACE INTO pets ('+DefUnitColumns+', skins, icon, '+
+        'graph_hp, graph_armor, graph_dmg) VALUES ('+
+      GetDefUnitValues(ams,@apet)+', '+IntToStr(apet.skins)+', '+FixedText(apet.icon)+
+      ', '''+apet.gr_hp+''', '''+apet.gr_armor+''', '''+apet.gr_dmg+''')';
 
-  lmodid:=CheckIdForMod(ams,'pets', apet.id);
-  if lmodid<>'' then
-  begin
-    lSQL:='REPLACE INTO pets ('+DefUnitColumns+', skins, icon, '+
-          'graph_hp, graph_armor, graph_dmg, modid) VALUES ('+
-        GetDefUnitValues(ams,@apet)+', '+IntToStr(apet.skins)+', '+FixedText(apet.icon)+
-        ', '''+apet.gr_hp+''', '''+apet.gr_armor+''', '''+apet.gr_dmg+''', '+lmodid+')';
-
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+  if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    result:=1
+  else
+    result:=0;
 end;
 
-function AddPetNode(ams:pointer; anode:pointer; const fname:string):boolean;
+function AddPetNode(ams:pointer; anode:pointer; const fname:string):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
   lpet:tpetinfo;
-  i:integer;
+  i,ltmp:integer;
 begin
   FillChar(lpet,sizeOf(lpet),0);
 
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
-    if not SetUnitInfo(lnode,@lpet) then
+    ltmp:=SetUnitInfo(lnode,@lpet);
+    if ltmp<0 then
+    begin
+      lpet.modid:=CheckIdForMod(ams,'pets', lpet.id);
+      if lpet.modid='' then exit(-1);
+    end
+    else if ltmp=0 then
     begin
       pcw:=GetNodeName(lnode);
       if      CompareWide(pcw,'ICON'                 )=0 then lpet.icon :=ExtractNameOnly(AsString(lnode))
@@ -103,8 +106,9 @@ begin
     
     if p<>nil then
     begin
-      if AddPetNode(aparam,p, adir+aname) then
-        result:=1
+      result:=AddPetNode(aparam,p, adir+aname);
+           if result>0 then result:=1
+      else if result<0 then result:=0
       else if RGDebugLevel=dlDetailed then 
         RGLog.Add('can''t update '+aname);
 

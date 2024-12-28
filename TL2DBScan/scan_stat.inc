@@ -1,11 +1,10 @@
 {%REGION Stats}
 
-function AddStatToBase(ams:pointer; const aname:string; aId:int64; const atitle:string; asaves:boolean):boolean;
+function AddStatToBase(ams:pointer; const aname:string; aId:int64;
+          const atitle:string; asaves:boolean):integer;
 var
   lmodid,lSQL,sid,ssaves:string;
 begin
-  result:=false;
-
   Str(aid,sid);
   lmodid:=CheckIdForMod(ams,'stats', sid);
   if lmodid<>'' then
@@ -15,11 +14,16 @@ begin
     lSQL:='REPLACE INTO stats (id, name, title, saves, modid) VALUES ('+
         sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+ssaves+', '+lmodid+')';
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
+  end
+  else
+    result:=-1;
 end;
 
-function AddStatNode(ams:pointer; anode:pointer):boolean;
+function AddStatNode(ams:pointer; anode:pointer):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
@@ -63,8 +67,9 @@ begin
     
     if p<>nil then
     begin
-      if AddStatNode(aparam,p) then
-        result:=1
+      result:=AddStatNode(aparam,p);
+           if result>0 then result:=1
+      else if result<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

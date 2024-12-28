@@ -1,15 +1,21 @@
 {%REGION Recipes}
 
-function AddRecipeToBase(ams:pointer; const aname:string; aId:int64; const atitle:string):boolean;
+function AddRecipeToBase(ams:pointer; var aname:string; aId:int64;
+          const atitle, fname:string):integer;
 var
   lmodid,lSQL,sid:string;
 begin
-  result:=false;
-
   if aId=-1 then
   begin
-    sid:='-1';
     lmodid:=CheckNameForMod(ams,'recipes', aname);
+    if lmodid='' then
+    begin
+      if RGDebugLevel=dlDetailed then RGLog.Add('Looks like name "'+aname+
+          '" used already. trying to use filename.');
+      aname:=ExtractNameOnly(fname);
+      lmodid:=CheckNameForMod(ams,'recipes',aname);
+    end;
+    sid:='-1';
   end
   else
   begin
@@ -21,22 +27,26 @@ begin
     lSQL:='REPLACE INTO recipes (id, name, title, modid) VALUES ('+
         sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+lmodid+')';
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
+  end
+  else
+    result:=-1
 end;
 
-function AddRecipeNode(ams:pointer; anode:pointer):int64;
+function AddRecipeNode(ams:pointer; anode:pointer; const fname:string):int64;
 var
   lnode:pointer;
   pcw:PWideChar;
   name,title:string;
   lid:int64;
-  i,mask:integer;
+  i:integer;
 begin
   title:='';
   lid:=-1;
 
-  mask:=0;
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
@@ -44,27 +54,14 @@ begin
     if GetNodeType(lnode)<>rgGroup then
     begin
       pcw:=GetNodeName(lnode);
-      if CompareWide(pcw,'NAME')=0 then
-      begin
-        mask:=mask or 1;
-        name:=AsString(lnode);
-      end
-      else if CompareWide(pcw,'GUID')=0 then
-      begin
-        mask:=mask or 2;
-        lid:=AsInteger64(lnode);
-      end
-      else if CompareWide(pcw,'RESULT')=0 then
-      begin
-        mask:=mask or 4;
-        title:=AsString(lnode);
-      end;
-      if mask=7 then break;
+      if CompareWide(pcw,'NAME'  )=0 then name :=AsString(lnode)
+      // TL2 only
+      else if CompareWide(pcw,'GUID'  )=0 then lid  :=AsInteger64(lnode)
+      else if CompareWide(pcw,'RESULT')=0 then title:=AsString   (lnode)
     end;
   end;
 
-//  if lid<>-1 then
-    if not AddRecipeToBase(ams,name,lid,title) then lid:=0;
+  lid:=AddRecipeToBase(ams,name,lid,title,fname);
 
   result:=lid;
 end;
@@ -89,11 +86,12 @@ begin
     
     if p<>nil then
     begin
-      i:=AddRecipeNode(aparam,p);
+      i:=AddRecipeNode(aparam,p,aname);
 
-      if i=0  then if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
-//      if i=-1 then if RGDebugLevel=dlDetailed then RGLog.Add('don''t added ' +aname);
-      if i>0  then result:=1;
+           if result>0 then result:=1
+      else if result<0 then result:=0
+      else if RGDebugLevel=dlDetailed then
+        RGLog.Add('can''t update '+aname);
 
       DeleteNode(p);
     end;

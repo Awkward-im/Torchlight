@@ -55,7 +55,7 @@ begin
   lsetid:=AddSetToBase(ams, lname, ltitle);
   if lsetid<0 then exit;
 
-  result:=1;
+  result:=$10000;
 
   for i:=0 to GetChildCount(anode)-1 do
   begin
@@ -84,7 +84,8 @@ begin
         end;
       end;
       if (lcount>1) and (laffix<>'') then
-        AddSetAffixToBase(ams, lsetid, lcount, llevel, laffix);
+        if AddSetAffixToBase(ams, lsetid, lcount, llevel, laffix) then
+          inc(result);
     end;
 
   end;
@@ -126,7 +127,9 @@ function ScanSets(ams:pointer):integer;
 begin
   if RGDebugLevel<>dlNone then RGLog.Add('Scanning sets');
   result:=DoRGScan(PModScanner(ams)^.scan, 'MEDIA/SETS', @ProcessSets);
-  if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' set records added');
+  if RGDebugLevel<>dlNone then
+    RGLog.Add('Checked '+IntToStr(result shr 16)+
+        ' set records. Added '+IntToStr(result and $FFFF)+' set elements');
 end;
 
 function CreateSetsTable(adb:PSQLite3):boolean;

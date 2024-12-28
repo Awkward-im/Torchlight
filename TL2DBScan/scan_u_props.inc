@@ -7,36 +7,39 @@ type
     loop  :integer;
   end;
 
-function AddPropToBase(ams:pointer; const api:TPropsInfo):boolean;
+function AddPropToBase(ams:pointer; const api:TPropsInfo):integer;
 var
-  lmodid,lSQL:string;
+  lSQL:string;
 begin
-  result:=false;
+  lSQL:='REPLACE INTO props ('+DefUnitColumns+', quest, states, loop) VALUES ('+
+      GetDefUnitValues(ams,@api)+', '+api.quest+', '+IntToStr(api.states)+', '+
+      IntToStr(api.loop)+')';
 
-  lmodid:=CheckIdForMod(ams,'props', api.id);
-  if lmodid<>'' then
-  begin
-    lSQL:='REPLACE INTO props ('+DefUnitColumns+', quest, states, loop, modid) VALUES ('+
-        GetDefUnitValues(ams,@api)+', '+api.quest+', '+IntToStr(api.states)+', '+
-        IntToStr(api.loop)+', '+lmodid+')';
-
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+  if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    result:=1
+  else
+    result:=0;
 end;
 
-function AddPropNode(ams:pointer; anode:pointer; isquest:boolean; const fname:string):boolean;
+function AddPropNode(ams:pointer; anode:pointer; isquest:boolean; const fname:string):integer;
 var
   lpi:TPropsInfo;
   lnode:pointer;
   pcw:PWideChar;
-  i:integer;
+  i,ltmp:integer;
 begin
   FillChar(lpi,SizeOf(lpi),0);
 
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
-    if not SetUnitInfo(lnode,@lpi) then
+    ltmp:=SetUnitInfo(lnode,@lpi);
+    if ltmp<0 then
+    begin
+      lpi.modid:=CheckIdForMod(ams,'props', lpi.id);
+      if lpi.modid='' then exit(-1);
+    end
+    else if ltmp=0 then
     begin
       pcw:=GetNodeName(lnode);
       if CompareWide(pcw,'LOOPTYPE')=0 then
@@ -74,8 +77,9 @@ begin
     
     if p<>nil then
     begin
-      if AddPropNode(aparam,p,Pos('MEDIA/UNITS/PROPS/QUESTPROPS',adir)>0,adir+aname) then
-        result:=1
+      result:=AddPropNode(aparam,p,Pos('MEDIA/UNITS/PROPS/QUESTPROPS',adir)>0,adir+aname);
+           if result>0 then result:=1
+      else if result<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

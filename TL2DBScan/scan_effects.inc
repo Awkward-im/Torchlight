@@ -18,7 +18,7 @@ var
 begin
   result:=false;
 
-  lSQL:='REPLACE INTO effects (id, name, gooddes, gooddesot, baddes, baddesot, precision,'+
+  lSQL:='INSERT OR FAIL INTO effects (id, name, gooddes, gooddesot, baddes, baddesot, precision,'+
         ' value1, value2, value3, value4, value5) VALUES ('+
       IntToStr(aid)+', '+FixedText(aefi.name)+
       ', '+FixedText(aefi.gooddes  )+', '+FixedText(aefi.gooddesot)+
@@ -163,7 +163,7 @@ begin
   if not IsTableExists(adb,'effects') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE effects ('+
-      '  id        INTEGER,'+
+      '  id        INTEGER PRIMARY KEY,'+
       '  name      TEXT,'+
       '  gooddes   TEXT,'+
       '  gooddesot TEXT,'+

@@ -1,19 +1,21 @@
 {%REGION UnitTypes}
-function AddUnittypeToBase(ams:pointer; const aname, achild:string):boolean;
+function AddUnittypeToBase(ams:pointer; const aname, achild:string):integer;
 var
   lmodid,lSQL:string;
 begin
-  result:=false;
-
   lmodid:=CheckNamePlusForMod(ams,'unittypes', aname, 'child='''+achild+'''');
   if lmodid<>'' then
   begin
     lSQL:='REPLACE INTO unittypes (name, modid, child) VALUES ('''+
         aname+''', '+lmodid+', '''+achild+''')';
 
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
-
+    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+      result:=1
+    else
+      result:=0;
+  end
+  else
+    result:=-1;
 end;
 
 function AddUnittypeNode(ams:pointer; anode:pointer):integer;
@@ -39,8 +41,7 @@ begin
   end;
   if lname='' then lname:=GetNodeName(anode);
 
-  if AddUnitTypeToBase(ams,lname,lchild) then
-    result:=1;
+  result:=AddUnitTypeToBase(ams,lname,lchild);
 end;
 
 function ProcessUnittypes(
@@ -62,8 +63,9 @@ begin
 
     if p<>nil then
     begin
-      if AddUnitTypeNode(aparam,p)>0 then
-        result:=1
+      result:=AddUnitTypeNode(aparam,p);
+           if result>0 then result:=1
+      else if result<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 
@@ -80,7 +82,7 @@ var
   lname,lchild:string;
   lnode,llnode,lunode:pointer;
   pcw:PWideChar;
-  lid,i,j,k:integer;
+  lres,lid,i,j,k:integer;
   lmask:integer;
 begin
   result:=0;
@@ -154,9 +156,10 @@ begin
           end;
           if lname='' then lname:=GetNodeName(llnode); // larr[lid]
           lchild:=','+UpCase(lname)+lchild;            // use to avoid additional name check
-          if AddUnitTypeToBase(ams,lname,lchild) then
+          lres:=AddUnitTypeToBase(ams,lname,lchild);
+          if lres>0 then
             inc(result)
-          else if RGDebugLevel=dlDetailed then
+          else if (lres=0) and (RGDebugLevel=dlDetailed) then
             RGLog.Add('can''t add unittype '+lname);
         end;
         break;

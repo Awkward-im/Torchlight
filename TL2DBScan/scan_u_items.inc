@@ -61,35 +61,31 @@ type
     req_strength :integer;
   end;
 
-function AddItemToBase(ams:pointer; const aitem:tItemInfo):boolean;
+function AddItemToBase(ams:pointer; const aitem:tItemInfo):integer;
 var
-  lmodid,lSQL:string;
+  lSQL:string;
 begin
-  result:=false;
+  lSQL:='REPLACE INTO items ('+DefUnitColumns+
+        ', descr, itemset, icon, usable, quest, stack, level, sockets, speed, '+
+        'arm_electric, arm_fire, arm_ice, arm_physical, arm_poison, armormax, armormin, '+
+        'dmg_electric, dmg_fire, dmg_ice, dmg_physical, dmg_poison, maxdamage, mindamage, '+
+        'req_defense, req_dexterity, req_level, req_magic, req_strength) VALUES ('+
+      GetDefUnitValues(ams,@aitem)+
+      ', '+FixedText(aitem.descr)+', '+FixedText(aitem.itemset)+
+      ', '+FixedText(aitem.icon)+', '+aitem.usable+', '+aitem.quest+', '+aitem.stack+
+      ', '+IntToStr(aitem.level)+', '+IntToStr(aitem.sockets)+', '+IntToStr(aitem.speed)+
+      ', '+IntToStr(aitem.arm_electric)+', '+IntToStr(aitem.arm_fire)+', '+IntToStr(aitem.arm_ice)+
+      ', '+IntToStr(aitem.arm_physical)+', '+IntToStr(aitem.arm_poison)+
+      ', '+IntToStr(aitem.armormax)+', '+IntToStr(aitem.armormin)+
+      ', '+IntToStr(aitem.dmg_electric)+', '+IntToStr(aitem.dmg_fire)+', '+IntToStr(aitem.dmg_ice)+
+      ', '+IntToStr(aitem.dmg_physical)+', '+IntToStr(aitem.dmg_poison)+', '+IntToStr(aitem.maxdamage)+
+      ', '+IntToStr(aitem.mindamage)+', '+IntToStr(aitem.req_defense)+', '+IntToStr(aitem.req_dexterity)+
+      ', '+IntToStr(aitem.req_level)+', '+IntToStr(aitem.req_magic)+', '+IntToStr(aitem.req_strength)+')';
 
-  lmodid:=CheckIdForMod(ams,'items', aitem.id);
-  if lmodid<>'' then
-  begin
-    lSQL:='REPLACE INTO items ('+DefUnitColumns+
-          ', descr, itemset, icon, usable, quest, stack, level, sockets, speed, '+
-          'arm_electric, arm_fire, arm_ice, arm_physical, arm_poison, armormax, armormin, '+
-          'dmg_electric, dmg_fire, dmg_ice, dmg_physical, dmg_poison, maxdamage, mindamage, '+
-          'req_defense, req_dexterity, req_level, req_magic, req_strength, modid) VALUES ('+
-        GetDefUnitValues(ams,@aitem)+
-        ', '+FixedText(aitem.descr)+', '+FixedText(aitem.itemset)+
-        ', '+FixedText(aitem.icon)+', '+aitem.usable+', '+aitem.quest+', '+aitem.stack+
-        ', '+IntToStr(aitem.level)+', '+IntToStr(aitem.sockets)+', '+IntToStr(aitem.speed)+
-        ', '+IntToStr(aitem.arm_electric)+', '+IntToStr(aitem.arm_fire)+', '+IntToStr(aitem.arm_ice)+
-        ', '+IntToStr(aitem.arm_physical)+', '+IntToStr(aitem.arm_poison)+
-        ', '+IntToStr(aitem.armormax)+', '+IntToStr(aitem.armormin)+
-        ', '+IntToStr(aitem.dmg_electric)+', '+IntToStr(aitem.dmg_fire)+', '+IntToStr(aitem.dmg_ice)+
-        ', '+IntToStr(aitem.dmg_physical)+', '+IntToStr(aitem.dmg_poison)+', '+IntToStr(aitem.maxdamage)+
-        ', '+IntToStr(aitem.mindamage)+', '+IntToStr(aitem.req_defense)+', '+IntToStr(aitem.req_dexterity)+
-        ', '+IntToStr(aitem.req_level)+', '+IntToStr(aitem.req_magic)+', '+IntToStr(aitem.req_strength)+
-        ', '+lmodid+')';
-
-    result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
-  end;
+  if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    result:=1
+  else
+    result:=0;
 end;
 
 function GetBaseUnitType(ams:pointer; const fname:string):string;
@@ -192,7 +188,7 @@ var
   pcw:PWideChar;
   litem:tItemInfo;
   ls:string;
-  i:integer;
+  i,ltmp:integer;
 begin
   result:=0;
 
@@ -208,7 +204,13 @@ begin
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
-    if not SetUnitInfo(lnode,@litem) then
+    ltmp:=SetUnitInfo(lnode,@litem);
+    if ltmp<0 then
+    begin
+      litem.modid:=CheckIdForMod(ams,'items', litem.id);
+      if litem.modid='' then exit(4);
+    end
+    else if ltmp=0 then
     begin
       pcw:=GetNodeName(lnode);
 
@@ -245,6 +247,7 @@ begin
       else if CompareWide(pcw,'SOCKETS'           )=0 then litem.sockets      :=AsInteger(lnode)
       else if CompareWide(pcw,'SPEED'             )=0 then litem.speed        :=AsInteger(lnode)
     end;
+
   end;
   if (litem.icon='') and (ls<>'') then litem.icon:=ls;
 
@@ -260,7 +263,8 @@ begin
      (litem.unittype='QUESTITEM')) then
       litem.quest:='1';
 
-  if not AddItemToBase(ams,litem) then result:=result or 2;
+  i:=AddItemToBase(ams,litem);
+  if i=0 then result:=result or 2;
 end;
 
 function ProcessItems(
@@ -292,8 +296,12 @@ begin
           ldir+aname,
           Pos('MEDIA/UNITS/ITEMS/QUEST_ITEMS',adir)>0);
       if ((i and 1)<>0) and (RGDebugLevel=dlDetailed) then RGLog.Add('No icon for '  +aname);
-      if (i and 2)=0 then result:=1
-      else if RGDebugLevel=dlDetailed then RGLog.Add('can''t update '+aname);
+
+           if (i and 4)<>0 then result:=0
+      else if (i and 2) =0 then result:=1
+      else if RGDebugLevel=dlDetailed then
+        RGLog.Add('can''t update '+aname);
+
       DeleteNode(p);
     end;
 
