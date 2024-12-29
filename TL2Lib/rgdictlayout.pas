@@ -38,6 +38,7 @@ type
     function GetPropsCount:integer;
 
     function GetProperty (aid:dword):pointer;
+    function GetPropValue(aid:dword):pointer;
     function GetPropDescr(aid:dword):PWideChar;
     function GetPropInfoByIdx (idx:integer; out aid:dword; out aname:PWideChar):integer;
     function GetPropInfoById  (aid:dword; out aname:PWideChar):integer;
@@ -65,8 +66,19 @@ type
     name   :PWideChar;
     descr  :PWideChar;
     id     :dword;
-    ptype  :integer;
+//    ptype  :integer;
+    case ptype:integer of
+      rgBool,
+      rgInteger,
+      rgUnsigned,
+      rgInteger64: (asInt   :Int64);
+      rgFloat    : (AsFloat :Single);
+      rgDouble   : (AsDouble:Double);
+      rgVector2,
+      rgVector3,
+      rgVector4  : (AsVector:TVector4);
   end;
+
 type
   PObjInfo = ^TObjInfo;
   TObjInfo = record
@@ -312,6 +324,17 @@ begin
   result:=nil;
 end;
 
+function TRGObject.GetPropValue(aid:dword):pointer;
+var
+  lprop:PPropInfo;
+begin
+  lprop:=GetProperty(aid);
+  if lprop<>nil then
+    result:=@lprop^.AsVector
+  else
+    result:=nil;
+end;
+
 function TRGObject.GetPropDescr(aid:dword):PWideChar;
 var
   lprop:PPropInfo;
@@ -415,7 +438,6 @@ begin
   result:=rgUnknown;
 end;
 
-
 //----- Init/Clear -----
 
 procedure InitLayoutDict(var alay:TLayoutInfo);
@@ -435,6 +457,73 @@ end;
 
 
 //----- Processed -----
+
+// code from RGNode
+procedure SetFloatValue(var aval:PWideChar; var adst:Single);
+var
+  lval:array [0..47] of WideChar;
+  lidx:integer;
+begin
+  if aval^=#0 then
+  begin
+    adst:=0;
+    exit;
+  end;
+
+  lidx:=0;
+  repeat
+    while not (AnsiChar(ORD(aval^)) in ['+','-','.','0'..'9']) do inc(aval);
+    lval[lidx]:=aval^;
+    inc(lidx);
+    inc(aval);
+  until (aval^=',') or (aval^=#0);
+  lval[lidx]:=#0;
+  Val(lval, adst);
+end;
+
+procedure SetPropValue(aprop:PPropInfo; avalue:PWideChar);
+begin
+  if avalue<>nil then
+    case aprop^.ptype of
+      rgBool: begin
+        if ((avalue[0]='1') and (avalue[1]=#0 )) or
+          (((avalue[0]='T') or  (avalue[0]='t')) and
+           ((avalue[1]='R') or  (avalue[1]='r')) and
+           ((avalue[2]='U') or  (avalue[2]='u')) and
+           ((avalue[3]='E') or  (avalue[3]='e')) and
+            (avalue[4]=#0))
+         then aprop^.AsInt:=1
+//        else aprop^.AsInt:=1:=0;
+      end;
+      rgInteger,
+      rgUnsigned,
+      rgInteger64: begin
+        Val(avalue,aprop^.AsInt);
+      end;
+      rgFloat: begin
+        Val(avalue,aprop^.AsFloat);
+      end;
+      rgDouble: begin
+        Val(avalue,aprop^.AsDouble);
+      end;
+      rgVector2: begin
+        SetFloatValue(avalue,aprop^.AsVector.X);
+        SetFloatValue(avalue,aprop^.AsVector.Y);
+      end;
+      rgVector3: begin
+        SetFloatValue(avalue,aprop^.AsVector.X);
+        SetFloatValue(avalue,aprop^.AsVector.Y);
+        SetFloatValue(avalue,aprop^.AsVector.Z);
+      end;
+      rgVector4: begin
+        SetFloatValue(avalue,aprop^.AsVector.X);
+        SetFloatValue(avalue,aprop^.AsVector.Y);
+        SetFloatValue(avalue,aprop^.AsVector.Z);
+        SetFloatValue(avalue,aprop^.AsVector.W);
+      end;
+    end;
+end;
+
 {
 function GetMenuIndex(aname:PWideChar):integer;
 var
@@ -451,14 +540,14 @@ function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean):boolean;
 var
   ltype:array [0..31] of WideChar;
   ls:UnicodeString;
-  pc,lname,ldescr:PWideChar;
+  pc,lname,lvalue,ldescr:PWideChar;
   layptr:PLayoutInfo;
   pscene:PSceneInfo;
   pobj  :PObjInfo;
   pprop :PPropInfo;
   lid:dword;
   lobj,lprop,lscene,i:integer;
-  licon,lmenu,lchild,lval,ldesc:boolean;
+  lcomment,licon,lmenu,lchild,lval,ldesc:boolean;
 begin
   result:=false;
 
@@ -492,6 +581,7 @@ begin
 
   SetLength(layptr^.objects,1024);
   SetLength(layptr^.props  ,8192);
+//  FillChar(layptr^.props^,SizeOF(TPropInfo)*8192,0);
   lscene:=0;
   lobj  :=0;
   lprop :=0;
@@ -632,7 +722,7 @@ begin
       end;
 
       // property
-      // ID:TYPE:NAME[=VALUE][:DESCRIPTION]
+      // ID:TYPE:NAME[=(DEFAULT) VALUE][|COMMENT][:DESCRIPTION]
       '0'..'9': begin
         lid:=0;
         // ID
@@ -655,13 +745,25 @@ begin
         inc(pc);
         // name
         lname:=pc;
-        while not (ord(pc^) in [10,13,ord(':'),ord('=')]) do inc(pc);
-        lval :=pc^='=';
-        ldesc:=pc^=':';
+        while not (ord(pc^) in [10,13,ord(':'),ord('='),ord('|')]) do inc(pc);
+        lval    :=pc^='=';
+        ldesc   :=pc^=':';
+        lcomment:=pc^='|';
         pc^:=#0;
         inc(pc);
-        // value (right now just skip)
+        // (default) value
+        lvalue:=nil;
         if lval then
+        begin
+          lvalue:=pc;
+          while not (ord(pc^) in [10,13,ord(':'),ord('|')]) do inc(pc);
+          ldesc   :=pc^=':';
+          lcomment:=pc^='|';
+          pc^:=#0;
+          inc(pc);
+        end;
+        // comment (right now just skip)
+        if lcomment then
         begin
           while not (ord(pc^) in [10,13,ord(':')]) do inc(pc);
           ldesc:=pc^=':';
@@ -683,8 +785,10 @@ begin
         inc(lprop);
         pprop^.id   :=lid;
         pprop^.name :=lname;
+//        pprop^.value:=lvalue;
         pprop^.descr:=ldescr;
         pprop^.ptype:=TextToType(ltype);
+        SetPropValue(pprop,lvalue);
         if pprop^.ptype=rgNotValid then
         begin
           Str(lid,ls);

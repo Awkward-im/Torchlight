@@ -538,13 +538,16 @@ var
   vald:Double;
   lname,pcw:PWideChar;
   lptr:PByte;
+  pdefval:pointer;
   i,ltype,vali,lsize:integer;
   valu:UInt32;
+  valb:Boolean;
   llen:word;
 begin
   lptr:=FPos;
 
   ltype:=info.GetPropInfoById(aid,lname);
+  pdefval:=info.GetPropValue(aid);
   result:=ltype<>rgUnknown;
   if ltype=rgUnknown then
   begin
@@ -591,12 +594,30 @@ begin
   end;
 
   case ltype of
-    rgBool     : AddBool(anode,lname,memReadInteger(FPos)<>0);
-    rgInteger  : begin vali:=memReadInteger  (FPos); {if vali<>0 then} AddInteger  (anode,lname,vali); end;
-    rgUnsigned : begin valu:=memReadDWord    (FPos); {if valu<>0 then} AddUnsigned (anode,lname,valu); end;
-    rgFloat    : begin lq.X:=memReadFloat    (FPos); {if lq.X<>0 then} AddFloat    (anode,lname,lq.X); end;
-    rgInteger64: begin valq:=memReadInteger64(FPos); {if valq<>0 then} AddInteger64(anode,lname,valq); end;
-    rgDouble   : AddDouble(anode,lname,memReadDouble(FPos));
+    rgBool     : begin
+      valb:=memReadInteger(FPos)<>0;
+      if (pdefval=nil) or (valb<>Boolean(pdefval^)) then AddBool(anode,lname,valb);
+    end;
+    rgInteger  : begin
+      vali:=memReadInteger(FPos);
+      if (pdefval=nil) or (vali<>Integer(pdefval^)) then AddInteger(anode,lname,vali);
+    end;
+    rgUnsigned : begin
+      valu:=memReadDWord(FPos);
+      if (pdefval=nil) or (valu<>DWord(pdefval^)) then AddUnsigned (anode,lname,valu);
+    end;
+    rgFloat    : begin
+      lq.X:=memReadFloat(FPos);
+      if (pdefval=nil) or (lq.X<>Single(pdefval^)) then AddFloat(anode,lname,lq.X);
+    end;
+    rgInteger64: begin
+      valq:=memReadInteger64(FPos); {if valq<>0 then} 
+      if (pdefval=nil) or (valq<>Int64(pdefval^)) then AddInteger64(anode,lname,valq);
+    end;
+    rgDouble   : begin
+      vald:=memReadDouble(FPos);
+      if (pdefval=nil) or (vald<>Double(pdefval^)) then AddDouble(anode,lname,vald);
+    end;
     rgNote,
     rgTranslate,
     rgString: begin
@@ -622,7 +643,7 @@ PWord(pcw+lsize)^:=#0;
         verRGO,
         verHob: pcw:=memReadShortStringUTF8(FPos);
       end;
-//      if (pcw<>nil) and (pcw^<>#0) then
+//??      if (pcw<>nil) and (pcw^<>#0) then
       begin
         if      ltype=rgNote      then AddNote     (anode,lname,pcw)
         else if ltype=rgTranslate then AddTranslate(anode,lname,pcw)
@@ -633,13 +654,20 @@ PWord(pcw+lsize)^:=#0;
     rgVector2: begin
       lq.X:=memReadFloat(FPos); {if lq.X<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
       lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
-      AddVector(anode,lname,lq,rgVector2);
+      if (pdefval=nil) or (
+         (lq.X<>TVector2(pdefval^).X) or
+         (lq.Y<>TVector2(pdefval^).Y)) then
+        AddVector(anode,lname,lq,rgVector2);
     end;
     rgVector3: begin
       lq.X:=memReadFloat(FPos); {if lq.X<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
       lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
       lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
-      AddVector(anode,lname,lq,rgVector3);
+      if (pdefval=nil) or (
+         (lq.X<>TVector3(pdefval^).X) or
+         (lq.Y<>TVector3(pdefval^).Y) or
+         (lq.Z<>TVector3(pdefval^).Z)) then
+        AddVector(anode,lname,lq,rgVector3);
     end;
     // Quaternion
     rgVector4: begin
@@ -647,21 +675,28 @@ PWord(pcw+lsize)^:=#0;
       lq.Y:=memReadFloat(FPos); {if lq.Y<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Y'),lq.Y);
       lq.Z:=memReadFloat(FPos); {if lq.Z<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'Z'),lq.Z);
       lq.W:=memReadFloat(FPos); {if lq.W<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'W'),lq.W);
-      AddVector(anode,lname,lq,rgVector4);
-
-      // Additional, not sure what it good really
-      if CompareWide(lname,'ORIENTATION')=0 then
+      if (pdefval=nil) or (
+         (lq.X<>TVector4(pdefval^).X) or
+         (lq.Y<>TVector4(pdefval^).Y) or
+         (lq.Z<>TVector4(pdefval^).Z) or
+         (lq.W<>TVector4(pdefval^).W)) then
       begin
-         QuaternionToMatrix(lq,lmatrix);
-         {if lmatrix[2,0]<>0 then} AddFloat(anode,m20,lmatrix[2,0]);
-         {if lmatrix[1,0]<>0 then} AddFloat(anode,m10,lmatrix[1,0]);
-         {if lmatrix[0,0]<>0 then} AddFloat(anode,m00,lmatrix[0,0]);
-         {if lmatrix[2,1]<>0 then} AddFloat(anode,m21,lmatrix[2,1]);
-         {if lmatrix[1,1]<>0 then} AddFloat(anode,m11,lmatrix[1,1]);
-         {if lmatrix[0,1]<>0 then} AddFloat(anode,m01,lmatrix[0,1]);
-         {if lmatrix[2,2]<>0 then} AddFloat(anode,m22,lmatrix[2,2]);
-         {if lmatrix[1,2]<>0 then} AddFloat(anode,m12,lmatrix[1,2]);
-         {if lmatrix[0,2]<>0 then} AddFloat(anode,m02,lmatrix[0,2]);
+        AddVector(anode,lname,lq,rgVector4);
+
+        // Additional, not sure what it good really
+        if CompareWide(lname,'ORIENTATION')=0 then
+        begin
+           QuaternionToMatrix(lq,lmatrix);
+           {if lmatrix[2,0]<>0 then} AddFloat(anode,m20,lmatrix[2,0]);
+           {if lmatrix[1,0]<>0 then} AddFloat(anode,m10,lmatrix[1,0]);
+           {if lmatrix[0,0]<>0 then} AddFloat(anode,m00,lmatrix[0,0]);
+           {if lmatrix[2,1]<>0 then} AddFloat(anode,m21,lmatrix[2,1]);
+           {if lmatrix[1,1]<>0 then} AddFloat(anode,m11,lmatrix[1,1]);
+           {if lmatrix[0,1]<>0 then} AddFloat(anode,m01,lmatrix[0,1]);
+           {if lmatrix[2,2]<>0 then} AddFloat(anode,m22,lmatrix[2,2]);
+           {if lmatrix[1,2]<>0 then} AddFloat(anode,m12,lmatrix[1,2]);
+           {if lmatrix[0,2]<>0 then} AddFloat(anode,m02,lmatrix[0,2]);
+        end;
       end;
     end;
 
