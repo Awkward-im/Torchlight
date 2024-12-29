@@ -99,28 +99,27 @@ begin
     FBinPos:=FStart+lnext;
 end;
 
-function TRGLayoutFile.DoParseBlockTL1(var anode:pointer; const aparent:Int64; var aptr:PByte):integer;
+function TRGLayoutFile.DoParseBlockTL1(var anode:pointer; const aparent:Int64):integer;
 var
   lChunkId:Int64;
   lparent:Int64;
   bnode,lnode:pointer;
   pname:PWideChar;
-  lptr:pByte;
+  lSavedPos:pByte;
   pcw:PWideChar;
-  lChunkType:integer;
+  lChildOffset,lNextOffset,lChunkType:integer;
   lsize,i,lcnt:integer;
 begin
   result:=1;
 
   bnode:=AddGroup(anode,'BASEOBJECT');
   lnode:=AddGroup(bnode,'PROPERTIES');
-  lptr:=FPos;
-  
+
   //--- Chunk Header
 
-  lChunkType:=memReadInteger(aptr);
-  lChunkId:=memReadInteger64(aptr);
-  lparent :=memReadInteger64(aptr);
+  lChunkType:=memReadInteger(FPos);
+  lChunkId:=memReadInteger64(FPos);
+  lparent :=memReadInteger64(FPos);
 
   //--- Chunk Info
 
@@ -130,7 +129,7 @@ begin
   if rgDebugLevel=dlDetailed then
     FLog.Add('Object type '+IntToStr(lChunkType)+' ('+HexStr(lChunkType,2)+') '+string(pname));
 
-  pcw:=memReadDWordString(aptr);
+  pcw:=memReadDWordString(FPos);
   if pcw<>nil then
   begin
     AddString(lnode,'NAME',pcw);
@@ -146,7 +145,7 @@ begin
 
   for i:=0 to info.GetPropsCount()-1 do
   begin
-    lsize:=memReadDWord(aptr);
+    lsize:=memReadDWord(FPos);
     ReadPropertyValue(i,lsize*SizeOf(DWord), lnode);
     if rgDebugLevel=dlDetailed then
       FLog.Add('Property ('+IntToStr(i)+') with size '+IntToStr(lsize));
@@ -182,27 +181,34 @@ end;
 
   //--- Children
 
-  lcnt:=memReadDWord(aptr);
+  lcnt:=memReadDWord(FPos);
   if rgDebugLevel=dlDetailed then
     FLog.Add('Children count='+IntToStr(lcnt));
 
   if lChunkType=IdGroupTL1 then
   begin
-    lptr:=FStart+memReadDword(aptr); // offset to children
-    memReadDword(aptr);              // offset of next?
+    lChildOffset:=memReadDword(FPos); // offset to children
+    lNextOffset :=memReadDword(FPos); // offset of next?
+    lSavedPos:=FPos;
+    FPos:=FStart+lChildOffset;
   end
   else
-    lptr:=aptr;
+  begin
+    lChildOffset:=0;
+    lNextOffset :=0;
+  end;
 
   if lcnt>0 then
   begin
     lnode:=AddGroup(bnode,'CHILDREN');
     for i:=0 to lcnt-1 do
     begin
-      inc(result,DoParseBlockTL1(lnode,lChunkId,lptr));
+      inc(result,DoParseBlockTL1(lnode,lChunkId));
     end;
   end;
 
+  //!!!!!!!!!!!!!!
+  if lChildOffset<>0 then FPos:=lSavedPos;
 end;
 
 function TRGLayoutFile.DoParseLayoutTL1(atype:cardinal):pointer;
@@ -232,7 +238,7 @@ begin
   lobjcnt:=0;
   for i:=0 to lcnt-1 do
   begin
-    inc(lobjcnt,DoParseBlockTL1(lobj,-1,FPos));
+    inc(lobjcnt,DoParseBlockTL1(lobj,-1));
 {
    inc(lobjcnt,DoParseBlockTL1(lobj,-1));
 but after children count - offset 1st child, offset first next
@@ -253,7 +259,7 @@ but after children count - offset 1st child, offset first next
 
   lobj:=AddGroup(result,'OBJECTS');
   for i:=0 to lcnt-1 do                   // lcnt is root object count
-    inc(lobjcnt,DoParseBlockTL1(lobj,-1,FPos));
+    inc(lobjcnt,DoParseBlockTL1(lobj,-1));
 
 {
   memReadDword(FPos); // this is filesize-SizeOf(dword)

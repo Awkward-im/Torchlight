@@ -172,7 +172,7 @@ type
 
     // read TL1
     function  DoParseLayoutTL1  (atype:cardinal):pointer;
-    function  DoParseBlockTL1   (var anode:pointer; const aparent:Int64; var aptr:PByte):integer;
+    function  DoParseBlockTL1   (var anode:pointer; const aparent:Int64):integer;
     procedure ParseLogicGroupTL1(var anode:pointer; aid:Int64);
     procedure ParseTimelineTL1  (var anode:pointer; aid:Int64);
 
@@ -581,8 +581,7 @@ begin
   if lsize>0 then
   begin
     llen:=asize div lsize;
-    if // (llen>1) and
-       ((FVer=verTL1) xor ((asize mod lsize)=2))
+    if (((FVer=verTL1) and (llen>1)) xor ((asize mod lsize)=2))
        then
     begin
       ltype:=ltype or rgList;

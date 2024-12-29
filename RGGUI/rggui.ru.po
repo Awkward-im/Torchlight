@@ -89,7 +89,7 @@ msgstr "Распаковать папку "
 
 #: formgui.rsfiledirname
 msgid "Enter name (with / at the end for dir)"
-msgstr ""
+msgstr "Введите имя (с / в конце для папки)"
 
 #: formgui.rsfilename
 msgid "Enter file name"
@@ -147,6 +147,10 @@ msgstr "Файл сохранён"
 #: formgui.rssavedas
 msgid "File saved as"
 msgstr "Файл сохранён как"
+
+#: formgui.rssavedpatch
+msgid "Patch saved as"
+msgstr "Патч сохранён как"
 
 #: formgui.rsselectdir
 msgid "Select directory"
@@ -416,7 +420,7 @@ msgstr "Расширение"
 
 #: tformimageset.cbdarkbg.caption
 msgid "Dark Background"
-msgstr ""
+msgstr "Тёмный фон"
 
 #: tformimageset.miextract.caption
 msgid "Extract"
@@ -424,7 +428,7 @@ msgstr "Извлечь"
 
 #: tformimageset.miselectall.caption
 msgid "Select all"
-msgstr ""
+msgstr "Выбрать всё"
 
 #: tformlayoutedit.acttreedeletenode.caption
 msgid "Delete Object"
@@ -685,6 +689,14 @@ msgstr "Сохранить файл"
 #: trgguiform.actfilesaveas.caption
 msgid "Save &As"
 msgstr "Сохранить как"
+
+#: trgguiform.actfilesavepatch.caption
+msgid "Save &Patch"
+msgstr "Сохранить патч"
+
+#: trgguiform.actfilesavepatch.hint
+msgid "Save just changed files"
+msgstr "Сохранить только изменённые файлы"
 
 #: trgguiform.acthelpabout.caption
 msgid "&About"
@@ -997,4 +1009,3 @@ msgstr "Показать/скрыть столбец: Распакованный
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
 msgstr "Информация о моде"
-

@@ -136,6 +136,10 @@ msgstr ""
 msgid "File saved as"
 msgstr ""
 
+#: formgui.rssavedpatch
+msgid "Patch saved as"
+msgstr ""
+
 #: formgui.rsselectdir
 msgid "Select directory"
 msgstr ""
@@ -672,6 +676,14 @@ msgstr ""
 
 #: trgguiform.actfilesaveas.caption
 msgid "Save &As"
+msgstr ""
+
+#: trgguiform.actfilesavepatch.caption
+msgid "Save &Patch"
+msgstr ""
+
+#: trgguiform.actfilesavepatch.hint
+msgid "Save just changed files"
 msgstr ""
 
 #: trgguiform.acthelpabout.caption

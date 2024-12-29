@@ -1175,6 +1175,9 @@ object RGGUIForm: TRGGUIForm
       object miFileSaveAs: TMenuItem
         Action = actFileSaveAs
       end
+      object miSavePatch: TMenuItem
+        Action = actFileSavePatch
+      end
       object miFileClose: TMenuItem
         Action = actFileClose
       end
@@ -1243,14 +1246,6 @@ object RGGUIForm: TRGGUIForm
       ImageIndex = 2
       OnExecute = actFileSaveAsExecute
     end
-    object actFileClose: TAction
-      Category = 'File'
-      Caption = '&Close'
-      Hint = 'Close file'
-      ImageIndex = 3
-      ShortCut = 16499
-      OnExecute = actFileCloseExecute
-    end
     object actHelpAbout: TAction
       Category = 'View'
       Caption = '&About'
@@ -1263,14 +1258,6 @@ object RGGUIForm: TRGGUIForm
       ImageIndex = 8
       ShortCut = 32841
       OnExecute = actShowInfoExecute
-    end
-    object actFileExit: TAction
-      Category = 'File'
-      Caption = 'E&xit'
-      Hint = 'Exit program'
-      ImageIndex = 4
-      ShortCut = 32883
-      OnExecute = actFileExitExecute
     end
     object actShowLog: TAction
       Category = 'View'
@@ -1391,6 +1378,29 @@ object RGGUIForm: TRGGUIForm
       Hint = 'Open directory for unpack files'
       ImageIndex = 0
       OnExecute = actOpenDirExecute
+    end
+    object actFileSavePatch: TAction
+      Category = 'File'
+      Caption = 'Save &Patch'
+      Hint = 'Save just changed files'
+      ImageIndex = 2
+      OnExecute = actFileSavePatchExecute
+    end
+    object actFileClose: TAction
+      Category = 'File'
+      Caption = '&Close'
+      Hint = 'Close file'
+      ImageIndex = 3
+      ShortCut = 16499
+      OnExecute = actFileCloseExecute
+    end
+    object actFileExit: TAction
+      Category = 'File'
+      Caption = 'E&xit'
+      Hint = 'Exit program'
+      ImageIndex = 4
+      ShortCut = 32883
+      OnExecute = actFileExitExecute
     end
   end
   object ilMain: TImageList

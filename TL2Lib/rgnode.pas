@@ -513,7 +513,7 @@ begin
         result:=false;
       end;
       if res<>0 then
-        RGLog.Add('Wrong conversion to number: "'+string(lp)+'"');
+        RGLog.Add('Wrong conversion to number: "'+FastWideToStr(lp)+'"');
     end;
   end;
 end;

@@ -98,7 +98,8 @@ type
     procedure ClearElement(idx:integer);
     procedure FixSizes(idx:integer; adata:PByte; asize:cardinal);
     procedure CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
-    function  WriteToPAK(var apak:TRGPAK; const fname:string; aver:integer=1000):boolean;
+    function  WriteToPAK(var apak:TRGPAK; const fname:string;
+         aver:integer; achanges:boolean=false):boolean;
     function  OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
   public
@@ -111,7 +112,8 @@ type
     procedure Clear;
     function  Rebuild():integer;
 
-    function  SaveAs(const fname:string; aver:integer):boolean;
+    function  SavePatch(const fname:string; aver:integer):boolean;
+    function  SaveAs   (const fname:string; aver:integer):boolean;
     function  Save: boolean;
 
     procedure Trace();
@@ -330,7 +332,17 @@ begin
     p:=afrom
   else // if afrom.source<>0 then
     p:=PManFileInfo(FPAK.Man.Files[afrom^.source]);
-  move(p^,ato^,SizeOf(TManFileInfo));
+// can't use just move coz it changes PARENT, NEXT and OFFSET fields too
+//  move(p^,ato^,SizeOf(TManFileInfo));
+  ato^.size_u  :=ato^.size_u;
+  ato^.size_s  :=ato^.size_s;
+  ato^.size_c  :=ato^.size_c;
+  // not required usually
+//  ato^.name    :=afrom^.name;
+//  ato^.offset  :=afrom^.offset;
+//  ato^._ftype  :=afrom^._ftype;
+  ato^.ftime   :=afrom^.ftime;
+  ato^.checksum:=afrom^.checksum;
 end;
 
 procedure TRGController.GetFullInfo(idx:integer; var info:TRGFullInfo);
@@ -860,7 +872,8 @@ end;
 
 {%REGION Save}
 
-function TRGController.WriteToPAK(var apak:TRGPAK; const fname:string; aver:integer=1000):boolean;
+function TRGController.WriteToPAK(var apak:TRGPAK; const fname:string;
+    aver:integer; achanges:boolean=false):boolean;
 var
   p:PRGCtrlInfo;
   lman:PManFileInfo;
@@ -877,13 +890,19 @@ begin
   for i:=0 to DirCount-1 do
   begin
     if isDirDeleted(i) then continue;
-    ldir:=apak.man.AddPath(Dirs[i].name);
-//    ldir:=lpak.AddDirectory(Dirs[i].name);
+    ldir:=-1;
+
     if GetFirstFile(j,i) then
       repeat
+        if achanges then
+          if UpdateState(j)<>stateChanged then
+            Continue;
+
         p:=PRGCtrlInfo(Files[j]);
 
         if p^.action=act_delete then continue;
+
+        if ldir=-1 then ldir:=apak.man.AddPath(Dirs[i].name);
 
         // 1 - create MAN record
         lidx:=apak.man.CloneFile(ldir,p);
@@ -908,6 +927,23 @@ begin
 
   apak.FinishPAK;
   result:=true;
+end;
+
+function TRGController.SavePatch(const fname:string; aver:integer):boolean;
+var
+  lpak:TRGPAK;
+begin
+  result:=false;
+
+  lpak:=TRGPAK.Create;
+
+  if WriteToPAK(lpak,ExtractFileDir(fname)+'\'+ExtractNameOnly(fname)+'_TMP', aver, true) then
+  begin
+    lpak.Rename(fname);
+    result:=true;
+  end;
+
+  lpak.Free;
 end;
 
 function TRGController.SaveAs(const fname:string; aver:integer):boolean;
@@ -956,7 +992,7 @@ begin
 
   lname:=FPAK.Directory+FPAK.Name;
   lpak:=TRGPAK.Create;
-  if WriteToPAK(lpak, lname+'_TMP') then
+  if WriteToPAK(lpak, lname+'_TMP',FPAK.Version) then
   begin
     FPAK.Free;
     lpak.Rename(lname);

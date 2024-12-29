@@ -132,9 +132,9 @@ begin
       // 2 - have header, packed
       if (PPAKFileHeader(aBuf)^.size_c=asize-SizeOf(TPAKFileHeader)) and
          (abuf[8]=$78) and (abuf[9]=$9C) then exit(tofPackedHdr);
-      // 3 - no header, packed
-      if PWord(abuf)^=$9C78 then exit(tofPacked);
     end;
+    // 3 - no header, packed
+    if PWord(abuf)^=$9C78 then exit(tofPacked);
   end;
 end;
 

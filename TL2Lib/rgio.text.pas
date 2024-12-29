@@ -589,7 +589,7 @@ begin
 
   try
     lerror:=WideToNode(PWideChar(abuf),0,result);
-    if lerror<0 then
+    if (lerror=errNotTextData) or (lerror<0) then
       lerror:=UTF8ToNode(PAnsiChar(abuf),0,result);
   except
     lerror:=errCantOpen;

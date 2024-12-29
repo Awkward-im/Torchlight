@@ -34,9 +34,11 @@ type
   { TRGGUIForm }
 
    TRGGUIForm = class(TForm)
+    actFileSavePatch: TAction;
     bbPlay: TBitBtn;
     bbStop: TBitBtn;
     cbSaveTL1ADM: TCheckBox;
+    miSavePatch: TMenuItem;
     pnlGrid: TPanel;
     pnlAudio: TPanel;
     Setings: TTabSheet;
@@ -199,6 +201,7 @@ type
     procedure actFileOpenExecute(Sender: TObject);
     procedure actFileSaveAsExecute(Sender: TObject);
     procedure actFileSaveExecute(Sender: TObject);
+    procedure actFileSavePatchExecute(Sender: TObject);
     procedure actOpenDirExecute(Sender: TObject);
     procedure actShowInfoExecute(Sender: TObject);
     procedure actShowFilterExecute(Sender: TObject);
@@ -400,6 +403,7 @@ resourcestring
   rsFilePath        = 'File path: ';
   rsSaved           = 'File saved';
   rsSavedAs         = 'File saved as';
+  rsSavedPatch      = 'Patch saved as';
   rsCantSave        = 'Can''t save file';
   rsExtractDir      = 'Extract directory ';
   rsCreateDir       = 'Create directory';
@@ -824,6 +828,53 @@ begin
     ShowMessage(rsCantSave);
 end;
 
+procedure TRGGUIForm.actFileSavePatchExecute(Sender: TObject);
+var
+  dlg:TSaveDialog;
+  lver:integer;
+begin
+  dlg:=TSaveDialog.Create(nil);
+  try
+    case ctrl.PAK.Version of
+      verTL2: dlg.FilterIndex:=2;
+      verHob: dlg.FilterIndex:=3;
+      verRG : dlg.FilterIndex:=4;
+      verRGO: dlg.FilterIndex:=5;
+      verTL1: dlg.FilterIndex:=6;
+    else
+      dlg.FilterIndex:=1;
+    end;
+    dlg.InitialDir:=ctrl.PAK.Directory;
+    dlg.FileName  :=ctrl.PAK.Name;
+    dlg.DefaultExt:=RGDefaultExt;
+    dlg.Filter    :=RGDefWriteFilter;
+    dlg.Title     :='';
+    dlg.Options   :=dlg.Options+[ofOverwritePrompt];
+
+    if (dlg.Execute) then
+    begin
+      case dlg.FilterIndex of
+        1: lver:=verTL2Mod;
+        2: lver:=verTL2;
+        3: lver:=verHob;
+        4: lver:=verRG;
+        5: lver:=verRGO;
+        6: lver:=verTL1;
+      end;
+//      wasnew:=ctrl.PAK.Name='';
+      if ctrl.SavePatch(dlg.Filename,lver) then
+      begin
+        ShowMessage(rsSavedPatch+' '+dlg.Filename)
+      end
+      else
+        ShowMessage(rsCantSave+' '+dlg.Filename);
+    end;
+  finally
+    dlg.Free;
+  end;
+
+end;
+
 procedure TRGGUIForm.actOpenDirExecute(Sender: TObject);
 var
   loutdir:string;
@@ -972,7 +1023,12 @@ begin
     if (rbGUTSStyle.Checked) and (ltype in setData) then
     begin
       if ltype=typeLayout then
-        lext:='.BINLAYOUT'
+      begin
+        if ctrl.PAK.Version=verTL1 then
+          lext:='.CMP'
+        else
+          lext:='.BINLAYOUT'
+      end
       else if ltype=typeRAW then
         lext:=''
       else

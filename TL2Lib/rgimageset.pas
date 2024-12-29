@@ -35,15 +35,15 @@ type
     procedure Init;
     procedure Free;
     // source Imageset
-    function ParseFromFile  (const aname:string       ):boolean;  // disk file
-    function ParseFromMemory(abuf:PByte; asize:integer): boolean; // memory buffer
+    function ParseFromFile  (const aname:string       ):boolean;     // disk file
+    function ParseFromMemory(abuf:PByte; asize:integer):boolean;     // memory buffer
     // input picture
-    function UseImageset                         :boolean;        // file from imageset info
-    function UseImagePicture(apic:TPicture      ):boolean;        // TPicture class
-    function UseImageFile   (const aname:string ):boolean;        // disk file
-    function UseImageData   (adata:TImageData   ):boolean;        // from Imaging library
-    function UseController  (actrl:TRGController):boolean;        // game archive/PAK
-    function UseImageMemory (abuf:PByte; asize:integer):boolean;  // memory buffer
+    function UseImageset                         :boolean;           // file from imageset info
+    function UseImagePicture(apic:TPicture      ):boolean;           // TPicture class
+    function UseImageFile   (const aname:string ):boolean;           // disk file
+    function UseImageData   (adata:TImageData   ):boolean;           // from Imaging library
+    function UseController  (actrl:TRGController):boolean;           // game archive/PAK
+    function UseImageMemory (abuf:PByte; asize:integer):boolean;     // memory buffer
     // output path
     procedure OutputPath(const apath:string);
     // info
