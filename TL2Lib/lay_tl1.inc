@@ -165,7 +165,7 @@ begin
    else} if lChunkType=IdLogicGroupTL1 then
    begin
 // working
-//     ParseLogicGroupTL1(lnode,lChunkId);
+     ParseLogicGroupTL1(lnode,lChunkId);
    end
 
    //----- Timeline -----

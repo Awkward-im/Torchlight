@@ -66,7 +66,7 @@ type
     name   :PWideChar;
     descr  :PWideChar;
     id     :dword;
-//    ptype  :integer;
+    value  :boolean;
     case ptype:integer of
       rgBool,
       rgInteger,
@@ -329,7 +329,7 @@ var
   lprop:PPropInfo;
 begin
   lprop:=GetProperty(aid);
-  if lprop<>nil then
+  if (lprop<>nil) and (lprop^.value) then
     result:=@lprop^.AsVector
   else
     result:=nil;
@@ -483,6 +483,7 @@ end;
 
 procedure SetPropValue(aprop:PPropInfo; avalue:PWideChar);
 begin
+  aprop^.value:=avalue<>nil;
   if avalue<>nil then
     case aprop^.ptype of
       rgBool: begin
@@ -785,7 +786,6 @@ begin
         inc(lprop);
         pprop^.id   :=lid;
         pprop^.name :=lname;
-//        pprop^.value:=lvalue;
         pprop^.descr:=ldescr;
         pprop^.ptype:=TextToType(ltype);
         SetPropValue(pprop,lvalue);
