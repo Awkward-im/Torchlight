@@ -6,7 +6,7 @@ const
   IdTimelineTL1   = 34;
   IdLogicGroupTL1 = 35;
 
-procedure TRGLayoutFile.ProcessTLNames;
+procedure TRGLayoutFile.ProcessTLNames();
 var
   pcw:PWideChar;
   i,j:integer;
@@ -31,41 +31,90 @@ begin
   end;
 end;
 
+procedure TRGLayoutFile.PostProcess();
+var
+  lnode,pnode:pointer;
+  i,j,k:integer;
+begin
+  for i:=0 to cntNOItem-1 do
+  begin
+    // need to reattach node from root to parent
+    if (NOItems[i].dictid=IdGroupTL1) then
+    begin
+      if (NOItems[i].parent<>-1) then
+      begin
+        for j:=0 to cntNOItem-1 do
+        begin
+          if NOItems[i].parent=NOItems[j].layid then
+          begin
+            // check for CHILDREN
+            lnode:=nil;
+            pnode:=NOItems[j].node;
+            for k:=0 to GetChildCount(pnode)-1 do
+            begin
+              lnode:=GetChild(pnode,k);
+              if CompareWide(GetNodeName(lnode),'CHILDREN')=0 then
+                break
+              else
+                lnode:=nil;
+            end;
+            if lnode=nil then
+              lnode:=AddGroup(pnode,'CHILDREN');
+            CutNode(NOItems[i].node);
+            AddNode(lnode,NOItems[i].node);
+            break;
+          end;
+        end;
+      end;
+    end
+    else if (NOItems[i].dictid=IdLogicGroupTL1) then
+    begin
+      lnode:=GetChild(NOItems[i].node,0);
+      ParseLogicGroupTL1(lnode,NOItems[i].layid);
+    end
+    else if (NOItems[i].dictid=IdTimelineTL1) then
+    begin
+      lnode:=GetChild(NOItems[i].node,0);
+      ParseTimelineTL1(lnode,NOItems[i].layid);
+    end
+  end;
+end;
+
 procedure TRGLayoutFile.ParseTimelineTL1(var anode:pointer; aid:Int64);
 var
+  lid:int64;
   tlpoint,tlprop,tldata,tlobject:pointer;
-  lid:Int64;
+  lBinPos:PByte;
   ls,lvalue:UnicodeString;
-  lnext:dword;
   i,j,k,l:integer;
   lobjid,lcntvalue,lcntevent,lcntobj,lcntpoint:integer;
   isprop:boolean;
 begin
-  if FBinPos=nil then
+  lBinPos:=SeekBinaryData(aid);
+  if lBinPos=nil then
+  begin
     FLog.Add('Binary data ends already for Timeline ID='+IntToStr(aid));
-  lid:=memReadInteger64(FBinPos);
-  if lid<>aid then
-      FLog.Add('Timeline: wrong binary ID, '+IntToStr(aid)+' vs '+IntToStr(lid));
-  lnext:=memReadDWord(FBinPos);
+    exit;
+  end;
 
   tldata:=AddGroup(anode,'TIMELINEDATA');
   AddInteger64(tldata,'ID',aid);
 
-  lcntobj:=memReadDWord(FBinPos);
+  lcntobj:=memReadDWord(lBinPos);
   for i:=0 to lcntobj-1 do
   begin
     tlobject:=AddGroup(tldata,'TIMELINEOBJECT');
-    lid:=memReadInteger64(FBinPos);
+    lid:=memReadInteger64(lBinPos);
     AddInteger64(tlobject,'OBJECTID',lid);
 
-    lcntevent:=memReadDWord(FBinPos);
+    lcntevent:=memReadDWord(lBinPos);
     for j:=0 to lcntevent-1 do
     begin
       {
         Object name is:"OBJECTID" as ID for FUNCTION for events, PROPERTY for props
       }
-      lobjid:=memReadDWord(FBinPos);   // ID to get name
-      isprop:=memReadByte (FBinPos)=0; // 0 - property, 1 - event
+      lobjid:=memReadDWord(lBinPos);   // ID to get name
+      isprop:=memReadByte (lBinPos)=0; // 0 - property, 1 - event
 
       if cntTLItem>=Length(TLItems) then
         SetLength(TLItems,Length(TLItems)+100);
@@ -87,19 +136,19 @@ begin
       end;
       inc(cntTLItem);
 
-      lcntpoint:=memReadDWord(FBinPos);
+      lcntpoint:=memReadDWord(lBinPos);
       for k:=0 to lcntpoint-1 do
       begin
         tlpoint:=AddGroup(tlprop,'TIMELINEPOINT');
-        AddFloat (tlpoint,'TIMEPERCENT'  ,memReadFloat(FBinPos));
-        AddString(tlpoint,'INTERPOLATION',strInterpolation[memReadDword(FBinPos)]);
+        AddFloat (tlpoint,'TIMEPERCENT'  ,memReadFloat(lBinPos));
+        AddString(tlpoint,'INTERPOLATION',strInterpolation[memReadDword(lBinPos)]);
         if isprop then
         begin
           lvalue:='';
-          lcntvalue:=memReadDWord(FBinPos);
+          lcntvalue:=memReadDWord(lBinPos);
           for l:=0 to lcntvalue-1 do
           begin
-            Str(memReadFloat(FBinPos):0:FloatPrec,ls);
+            Str(memReadFloat(lBinPos):0:FloatPrec,ls);
             FixFloatStr(ls);
             if lvalue<>'' then lvalue:=lvalue+',';
             lvalue:=lvalue+ls;
@@ -109,11 +158,6 @@ begin
       end;
     end;
   end;
-
-  if (FStart+lnext)<FBinPos then
-    FBinPos:=nil
-  else
-    FBinPos:=FStart+lnext;
 end;
 
 procedure TRGLayoutFile.ParseLogicGroupTL1(var anode:pointer; aid:Int64);
@@ -128,24 +172,23 @@ var
   lo:TLogicObject;
   lbuf:array [0..127] of WideChar;
   lgroup,lgobj,lglnk:pointer;
-  lid:Int64;
+  lBinPos:PByte;
   lLinkPos:PByte;
-  lnext:dword;
   i,j,lcntobj,lcntlink:integer;
 begin
-  if FBinPos=nil then
+  lBinPos:=SeekBinaryData(aid);
+  if lBinPos=nil then
+  begin
     FLog.Add('Binary data ends already for LogicGroup ID='+IntToStr(aid));
-  lid:=memReadInteger64(FBinPos);
-  if lid<>aid then
-      FLog.Add('LogicGroup: wrong binary ID, '+IntToStr(aid)+' vs '+IntToStr(lid));
-  lnext:=memReadDWord(FBinPos);
+    exit;
+  end;
 
   lgroup:=AddGroup(anode,'LOGICGROUP');
-  lcntobj:=memReadDWord(FBinPos);
-  lLinkPos:=FBinPos+lcntobj*SizeOf(TLogicObject);
+  lcntobj:=memReadDWord(lBinPos);
+  lLinkPos:=lBinPos+lcntobj*SizeOf(TLogicObject);
   for i:=0 to lcntobj-1 do
   begin
-    memReadData(FBinPos,lo,SizeOf(lo));
+    memReadData(lBinPos,lo,SizeOf(lo));
 
     lgobj:=AddGroup(lgroup,'LOGICOBJECT');
     AddUnsigned (lgobj,'ID'      ,lo.id);
@@ -162,11 +205,6 @@ begin
       AddString (lglnk,'INPUTNAME' ,memReadDWordStringBuf(lLinkPos,@lbuf,127));
     end;
   end;
-
-  if (FStart+lnext)<FBinPos then
-    FBinPos:=nil
-  else
-    FBinPos:=FStart+lnext;
 end;
 
 function TRGLayoutFile.DoParseBlockTL1(var anode:pointer; const aparent:Int64):integer;
@@ -196,6 +234,8 @@ begin
 
   NOITems[cntNOItem].layid :=lChunkId;
   NOITems[cntNOItem].dictid:=lChunkType;
+  NOITems[cntNOItem].parent:=lparent;
+  NOITems[cntNOItem].node  :=bnode;
   inc(cntNOItem);
 
   //--- Chunk Info
@@ -239,7 +279,7 @@ begin
 
   //----- Logic group -----
 
-   else} if lChunkType=IdLogicGroupTL1 then
+   else}{ if lChunkType=IdLogicGroupTL1 then
    begin
      ParseLogicGroupTL1(lnode,lChunkId);
    end
@@ -250,7 +290,7 @@ begin
    begin
      ParseTimelineTL1(lnode,lChunkId);
    end;
-
+}
   //--- Children
 
   lcnt:=memReadDWord(FPos);
@@ -304,20 +344,16 @@ begin
   AddInteger(result,'VERSION',3);
   lc:=AddUnsigned(result,'COUNT',0);
 
+  lobj:=AddGroup(result,'OBJECTS');
+
   lcnt:=memReadDWord(FPos);     // count of Group
   if (RGDebugLevel=dlDetailed) then
     FLog.Add('Old format, groups: '+IntToStr(lcnt));
 
-  // what about logic and timeline inside group, BEFORE binary offset?
-  // maybe keep in mid and translate after all?
   lobjcnt:=0;
   for i:=0 to lcnt-1 do
   begin
     inc(lobjcnt,DoParseBlockTL1(lobj,-1));
-{
-   inc(lobjcnt,DoParseBlockTL1(lobj,-1));
-but after children count - offset 1st child, offset first next
-}
   end;
 
   lcnt:=memReadDWord(FPos);    // count of root elements except groups
@@ -325,18 +361,16 @@ but after children count - offset 1st child, offset first next
   FBinStart:=FStart+ltmp;
   if ltmp<>0 then
   begin
-    FBinPos:=FBinStart;
     if (RGDebugLevel=dlDetailed) then
       FLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
-//  AddUnsigned(result,'COUNT',lcnt);         //!!!! like TL2 - must be TOTAL objects
-
-  lobj:=AddGroup(result,'OBJECTS');
   for i:=0 to lcnt-1 do                   // lcnt is root object count
     inc(lobjcnt,DoParseBlockTL1(lobj,-1));
 
-  ProcessTLNames;
+  PostProcess();
+
+  ProcessTLNames();
 {
   memReadDword(FPos); // this is filesize-SizeOf(dword)
 }

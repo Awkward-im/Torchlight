@@ -139,6 +139,8 @@ type
 type
   tNodeObjItem = record
     layid  :int64;   // object ID in Layout
+    parent :int64;   // parent ID in Layout
+    node   :pointer; // BASEOBJECT node pointer
     dictid :integer; // object type = ID in dict
   end;
   tTLItem = record
@@ -194,8 +196,10 @@ type
     function  DoParseBlockTL1   (var anode:pointer; const aparent:Int64):integer;
     procedure ParseLogicGroupTL1(var anode:pointer; aid:Int64);
     procedure ParseTimelineTL1  (var anode:pointer; aid:Int64);
-    procedure ProcessTLNames;
+    procedure PostProcess();
+    procedure ProcessTLNames();
 
+    function  SeekBinaryData   (aid:int64):pointer;
     procedure ReadBinaryData   (var anode:pointer; var adata:TLayoutBin);
 
     // read TL2
@@ -400,6 +404,24 @@ begin
   else if (rgDebugLevel=dlDetailed) then
     known.add(result,aid);
 {$ENDIF}
+end;
+
+function TRGLayoutFile.SeekBinaryData(aid:int64):pointer;
+var
+  lid:int64;
+  lnext:cardinal;
+begin
+  result:=FBinStart;
+  if result<>nil then
+    while true do
+    begin
+      lid  :=memReadInteger64(result);
+      lnext:=memReadDWord    (result);
+      if result=(FStart+lnext+4) then break;
+      if lid=aid then exit(result);
+      result:=FStart+lnext;
+    end;
+  result:=nil;
 end;
 
 procedure TRGLayoutFile.ReadBinaryData(var anode:pointer; var adata:TLayoutBin);
@@ -663,13 +685,13 @@ PWord(pcw+lsize)^:=#0;
         verRGO,
         verHob: pcw:=memReadShortStringUTF8(FPos);
       end;
-//??      if (pcw<>nil) and (pcw^<>#0) then
+      if (pcw<>nil) and (pcw^<>#0) then
       begin
         if      ltype=rgNote      then AddNote     (anode,lname,pcw)
         else if ltype=rgTranslate then AddTranslate(anode,lname,pcw)
         else{if ltype=rgString    then}AddString   (anode,lname,pcw);
-        FreeMem(pcw);
       end;
+      FreeMem(pcw);
     end;
     rgVector2: begin
       lq.X:=memReadFloat(FPos); {if lq.X<>0 then} // AddFloat(anode,VectorName(@lbuf,lname,'X'),lq.X);
