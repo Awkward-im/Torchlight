@@ -6,13 +6,40 @@ const
   IdTimelineTL1   = 34;
   IdLogicGroupTL1 = 35;
 
+procedure TRGLayoutFile.ProcessTLNames;
+var
+  pcw:PWideChar;
+  i,j:integer;
+begin
+  for i:=0 to cntTLItem-1 do
+  begin
+    for j:=0 to cntNOItem-1 do
+    begin
+      if TLItems[i].layid=NOItems[j].layid then
+      begin
+        info.GetObjectById(NOItems[j].dictid);
+        if TLItems[i].isprop then
+          info.GetPropInfoById(TLItems[i].propid,pcw)
+        else
+          pcw:=info.GetFuncById(TLItems[i].propid);
+
+        if pcw<>nil then
+          AsString(TLItems[i].nameptr,pcw);
+        break;
+      end;
+    end;
+  end;
+end;
+
 procedure TRGLayoutFile.ParseTimelineTL1(var anode:pointer; aid:Int64);
 var
-  {tlpoint,tlnode,}tldata,tlobject:pointer;
+  tlpoint,tlprop,tldata,tlobject:pointer;
   lid:Int64;
+  ls,lvalue:UnicodeString;
   lnext:dword;
-  i,lcntobj:integer;
-//  j,lcntpoint:integer;
+  i,j,k,l:integer;
+  lobjid,lcntvalue,lcntevent,lcntobj,lcntpoint:integer;
+  isprop:boolean;
 begin
   if FBinPos=nil then
     FLog.Add('Binary data ends already for Timeline ID='+IntToStr(aid));
@@ -28,16 +55,59 @@ begin
   for i:=0 to lcntobj-1 do
   begin
     tlobject:=AddGroup(tldata,'TIMELINEOBJECT');
-    AddInteger64(tlobject,'OBJECTID',memReadInteger64(FPos));
+    lid:=memReadInteger64(FBinPos);
+    AddInteger64(tlobject,'OBJECTID',lid);
 
-{
-      ltlpoints:=memReadDWord();
-      for j:=0 to ltlpoints-1 do
+    lcntevent:=memReadDWord(FBinPos);
+    for j:=0 to lcntevent-1 do
+    begin
+      {
+        Object name is:"OBJECTID" as ID for FUNCTION for events, PROPERTY for props
+      }
+      lobjid:=memReadDWord(FBinPos);   // ID to get name
+      isprop:=memReadByte (FBinPos)=0; // 0 - property, 1 - event
+
+      if cntTLItem>=Length(TLItems) then
+        SetLength(TLItems,Length(TLItems)+100);
+
+      TLItems[cntTLItem].layid :=lid;
+      TLItems[cntTLItem].propid:=lobjid;
+      TLItems[cntTLItem].isprop:=isprop;
+
+      Str(lobjid,ls);
+      if isprop then
       begin
-        tlpoint:=AddGroup(tlnode,'TIMELINEPOINT');
-        AddFloat(tlpoint,'TIMEPERCENT',memReadFloat(FBinPos));
+        tlprop:=AddGroup(tlobject,'TIMELINEOBJECTPROPERTY');
+        TLItems[cntTLItem].nameptr:=AddString(tlprop,'OBJECTPROPERTYNAME',PWideChar(ls));
+      end
+      else
+      begin
+        tlprop:=AddGroup(tlobject,'TIMELINEOBJECTEVENT');
+        TLItems[cntTLItem].nameptr:=AddString(tlprop,'OBJECTEVENTNAME',PWideChar(ls));
       end;
-}
+      inc(cntTLItem);
+
+      lcntpoint:=memReadDWord(FBinPos);
+      for k:=0 to lcntpoint-1 do
+      begin
+        tlpoint:=AddGroup(tlprop,'TIMELINEPOINT');
+        AddFloat (tlpoint,'TIMEPERCENT'  ,memReadFloat(FBinPos));
+        AddString(tlpoint,'INTERPOLATION',strInterpolation[memReadDword(FBinPos)]);
+        if isprop then
+        begin
+          lvalue:='';
+          lcntvalue:=memReadDWord(FBinPos);
+          for l:=0 to lcntvalue-1 do
+          begin
+            Str(memReadFloat(FBinPos):0:FloatPrec,ls);
+            FixFloatStr(ls);
+            if lvalue<>'' then lvalue:=lvalue+',';
+            lvalue:=lvalue+ls;
+          end;
+          AddString(tlpoint,'VALUE',PWideChar(lvalue));
+        end;
+      end;
+    end;
   end;
 
   if (FStart+lnext)<FBinPos then
@@ -121,6 +191,13 @@ begin
   lChunkId:=memReadInteger64(FPos);
   lparent :=memReadInteger64(FPos);
 
+  if cntNOItem>=Length(NOItems) then
+    SetLength(NOItems,Length(NOItems)+100);
+
+  NOITems[cntNOItem].layid :=lChunkId;
+  NOITems[cntNOItem].dictid:=lChunkType;
+  inc(cntNOItem);
+
   //--- Chunk Info
 
   pname:=info.GetObjectName(lChunkType);
@@ -164,7 +241,6 @@ begin
 
    else} if lChunkType=IdLogicGroupTL1 then
    begin
-// working
      ParseLogicGroupTL1(lnode,lChunkId);
    end
 
@@ -172,11 +248,7 @@ begin
 
    else if lChunkType=IdTimelineTL1 then
    begin
-try
-// not finished
-//     ParseTimelineTL1(lnode,lChunkId);
-except
-end;
+     ParseTimelineTL1(lnode,lChunkId);
    end;
 
   //--- Children
@@ -219,6 +291,9 @@ var
 begin
   info.Version:=verTL1;
 
+  SetLength(TLItems,0); cntTLItem:=0;
+  SetLength(NOItems,0); cntNOItem:=0;
+  
   qw:=memReadInteger64(FPos);
   if qw<>$B81A3A0F4348455A then
     FLog.Add('TL1 Layout signature is not B81A3A0F4348455A but'+HexStr(qw,16));
@@ -261,11 +336,15 @@ but after children count - offset 1st child, offset first next
   for i:=0 to lcnt-1 do                   // lcnt is root object count
     inc(lobjcnt,DoParseBlockTL1(lobj,-1));
 
+  ProcessTLNames;
 {
   memReadDword(FPos); // this is filesize-SizeOf(dword)
 }
 
   asUnsigned(lc,lobjcnt);
+
+  SetLength(TLItems,0);
+  SetLength(NOItems,0);
 end;
 
 function TRGLayoutFile.DoBuildLayoutTL1(anode:pointer; astream:TStream):integer;

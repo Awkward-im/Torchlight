@@ -36,13 +36,15 @@ type
     function CanObjectHaveChild(aid:dword=dword(-1)):boolean;
 
     function GetPropsCount:integer;
-
     function GetProperty (aid:dword):pointer;
     function GetPropValue(aid:dword):pointer;
     function GetPropDescr(aid:dword):PWideChar;
     function GetPropInfoByIdx (idx:integer; out aid:dword; out aname:PWideChar):integer;
     function GetPropInfoById  (aid:dword; out aname:PWideChar):integer;
     function GetPropInfoByName(aname:PWideChar; atype:integer; out aid:dword):integer;
+
+    function GetFuncById (aid:dword):PWideChar;
+    function GetEventById(aid:dword):PWideChar;
 
     property Version:integer read FVersion write SetVersion;
   end;
@@ -60,6 +62,9 @@ uses
 
 {.$include objicons.inc}
 
+type
+  PFuncInfo = ^TFuncInfo;
+  TFuncInfo = PWideChar;
 type
   PPropInfo = ^TPropInfo;
   TPropInfo = record
@@ -87,8 +92,12 @@ type
     menu   :PWideChar;
     icon   :PWideChar; // integer;
     id     :dword;
-    start  :integer;
-    count  :word;
+    start  :integer;   // start of properties
+    fstart :integer;   // start of functions
+    estart :integer;   // start of events
+    count  :word;      // count of properties
+    fcount :word;      // count of functions
+    ecount :word;      // count of events
     child  :ByteBool;
   end;
 type
@@ -105,6 +114,8 @@ type
     scenes :array [0..3] of TSceneInfo;
     objects:array of TObjInfo;
     props  :array of TPropInfo;
+    funcs  :array of TFuncInfo;
+    events :array of TFuncInfo;
     buf    :PWideChar;
   end;
 
@@ -297,6 +308,29 @@ begin
     result:=PObjInfo(FLastObject)^.child
   else
     result:=false;
+end;
+
+
+function TRGObject.GetFuncById(aid:dword):PWideChar;
+begin
+  if FLastObject<>nil then
+  begin
+    if aid<PObjInfo(FLastObject)^.fcount then
+      exit(PLayoutInfo(FDict)^.Funcs[PObjInfo(FLastObject)^.fstart+aid]);
+  end;
+
+  result:=nil;
+end;
+
+function TRGObject.GetEventById(aid:dword):PWideChar;
+begin
+  if FLastObject<>nil then
+  begin
+    if aid<PObjInfo(FLastObject)^.ecount then
+      exit(PLayoutInfo(FDict)^.Events[PObjInfo(FLastObject)^.estart+aid]);
+  end;
+
+  result:=nil;
 end;
 
 
@@ -547,7 +581,7 @@ var
   pobj  :PObjInfo;
   pprop :PPropInfo;
   lid:dword;
-  lobj,lprop,lscene,i:integer;
+  levent,lfunc,lobj,lprop,lscene,i:integer;
   lcomment,licon,lmenu,lchild,lval,ldesc:boolean;
 begin
   result:=false;
@@ -582,10 +616,14 @@ begin
 
   SetLength(layptr^.objects,1024);
   SetLength(layptr^.props  ,8192);
+  SetLength(layptr^.funcs  ,8192);
+  SetLength(layptr^.events ,8192);
 //  FillChar(layptr^.props^,SizeOF(TPropInfo)*8192,0);
   lscene:=0;
   lobj  :=0;
   lprop :=0;
+  lfunc :=0;
+  levent:=0;
 
   pc:=layptr^.buf;
   if ORD(pc^)=SIGN_UNICODE then inc(pc);
@@ -652,7 +690,11 @@ begin
         pobj^.id     :=lid;
         pobj^.name   :=lname;
         pobj^.start  :=lprop;
+        pobj^.fstart :=lfunc;
+        pobj^.estart :=levent;
         pobj^.count  :=0;
+        pobj^.fcount :=0;
+        pobj^.ecount :=0;
         lname:=nil;
 
         // lmenu
@@ -720,6 +762,40 @@ begin
         end
         else
           pobj^.descr:=nil;
+      end;
+
+      // function
+      // !NAME[,NAME]
+      '!': begin
+        repeat
+          pc^:=#0;
+          inc(pc);
+
+          layptr^.funcs[lfunc]:=pc;
+          inc(pobj^.fcount);
+          inc(lfunc);
+
+          while not (ord(pc^) in [10,13,ord(',')]) do inc(pc);
+        until pc^<>',';
+        pc^:=#0;
+        inc(pc);
+      end;
+
+      // event
+      // !NAME[,NAME]
+      '#': begin
+        repeat
+          pc^:=#0;
+          inc(pc);
+
+          layptr^.events[levent]:=pc;
+          inc(pobj^.ecount);
+          inc(levent);
+
+          while not (ord(pc^) in [10,13,ord(',')]) do inc(pc);
+        until pc^<>',';
+        pc^:=#0;
+        inc(pc);
       end;
 
       // property

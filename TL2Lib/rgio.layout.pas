@@ -134,6 +134,20 @@ type
     DeactThemes:DWord;    // next x8 bytes are DeActive themes
 }
 
+// TL1 support types
+// For Timeline property/events names 
+type
+  tNodeObjItem = record
+    layid  :int64;   // object ID in Layout
+    dictid :integer; // object type = ID in dict
+  end;
+  tTLItem = record
+    layid  :int64;   // object ID in Layout
+    nameptr:pointer; // node - name
+    propid :dword;   // function/property ID
+    isprop :boolean; // property or event
+  end;
+
 type
 
   { TRGLayoutFile }
@@ -151,6 +165,11 @@ type
     FVer     :integer;
     FLayVer  :integer;
     FCount   :integer;
+    // TL1 now only
+    TLItems  :array of tTLItem;
+    NOItems  :array of tNodeObjItem;
+    cntTLItem:integer;
+    cntNOItem:integer;
 
   private
     function  ReadStr():PWideChar;
@@ -175,6 +194,7 @@ type
     function  DoParseBlockTL1   (var anode:pointer; const aparent:Int64):integer;
     procedure ParseLogicGroupTL1(var anode:pointer; aid:Int64);
     procedure ParseTimelineTL1  (var anode:pointer; aid:Int64);
+    procedure ProcessTLNames;
 
     procedure ReadBinaryData   (var anode:pointer; var adata:TLayoutBin);
 
