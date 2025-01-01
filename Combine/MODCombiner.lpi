@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -68,7 +68,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -99,7 +99,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -174,18 +174,6 @@
         <UnitName Value="RGGlobal"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="MODInfoForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmModInfo"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -194,35 +182,20 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="fmask.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="AskForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmAsk"/>
-      </Unit>
-      <Unit>
-        <Filename Value="unitcombocommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="unitComboCommon"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\rglogging.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="RGLogging"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGIO.Layout"/>
       </Unit>
       <Unit>
-        <Filename Value="fmcombodiff.pas"/>
+        <Filename Value="..\TL2Lib\forms\fmmodinfo.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="CompareForm"/>
-        <HasResources Value="True"/>
+        <ComponentName Value="MODInfoForm"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmComboDiff"/>
+        <UnitName Value="fmModInfo"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\3rdside\Diff.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -234,7 +207,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

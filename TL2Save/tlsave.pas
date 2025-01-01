@@ -606,7 +606,7 @@ begin
     end;
 }
     if FVersion>=tlsaveTL2Encoded  then FStream.Read(lscramble,1) else lscramble:=0;
-    if FVersion>=tlsaveTL2Checksum then FStream.Read(lchecksum,4);
+    if FVersion>=tlsaveTL2Checksum then FStream.Read(lchecksum,4) else lchecksum:=0;
 
     FDataStart:=FStream.Position;
     

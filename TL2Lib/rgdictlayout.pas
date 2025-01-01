@@ -63,7 +63,6 @@ uses
 {.$include objicons.inc}
 
 type
-  PFuncInfo = ^TFuncInfo;
   TFuncInfo = PWideChar;
 type
   PPropInfo = ^TPropInfo;

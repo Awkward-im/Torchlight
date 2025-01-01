@@ -25,17 +25,20 @@ type
     sbSave: TSpeedButton;
     sbTranslate: TSpeedButton;
     sgNotes: TStringGrid;
+    sbReload: TSpeedButton;
     procedure bbCancelClick(Sender: TObject);
     procedure bbSaveClick(Sender: TObject);
     procedure edSearchChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure sbAddClick(Sender: TObject);
     procedure sbDeleteClick(Sender: TObject);
+    procedure sbReloadClick(Sender: TObject);
     procedure sbSaveClick(Sender: TObject);
     procedure sbTranslateClick(Sender: TObject);
     procedure sgNotesDblClick(Sender: TObject);
   private
-
+    notesfile:AnsiString;
+    lang:AnsiString;
   public
 
   end;
@@ -48,6 +51,7 @@ implementation
 {$R *.lfm}
 
 uses
+  rgglobal,
   TL2SettingsForm;
 
 resourcestring
@@ -61,9 +65,10 @@ const
 
 procedure TTL2Notes.sbSaveClick(Sender: TObject);
 begin
+  if notesfile='' then
+    notesfile:=TL2NotesFile+'.'+lang+TL2NotesExt;
   try
-    sgNotes.SaveToCSVFile(
-        TL2NotesFile+'.'+TL2Settings.edTransLang.Text+TL2NotesExt,#9,false);
+    sgNotes.SaveToCSVFile(notesfile,#9,false);
     Caption:=sTitle;
   except
     exit;
@@ -79,6 +84,36 @@ begin
 
   if sgNotes.RowCount=1 then
     sbDelete.Enabled:=false;
+end;
+
+procedure TTL2Notes.sbReloadClick(Sender: TObject);
+var
+  ld,ls:string;
+  i:integer;
+begin
+  i:=4;
+  ld:=ExtractPath(ParamStr(0));
+  while i>0 do
+  begin
+    case i of
+      4: ls:=ld+'notes\'+TL2NotesFile+'.'+lang+TL2NotesExt;
+      3: ls:=ld+TL2NotesFile+'.'+lang+TL2NotesExt;
+      2: ls:=ld+'notes\'+TL2NotesFile+TL2NotesExt;
+      1: ls:=ld+TL2NotesFile+TL2NotesExt;
+    end;
+    if FileExists(ls) then
+    begin
+      try
+        sgNotes.LoadFromCSVFile(ls,#9,false);
+        notesfile:=ls;
+        break;
+      except
+      end;
+    end;
+
+    dec(i);
+  end;
+  bbCancelClick(Sender);
 end;
 
 procedure TTL2Notes.sbAddClick(Sender: TObject);
@@ -168,12 +203,10 @@ end;
 procedure TTL2Notes.FormCreate(Sender: TObject);
 begin
   Caption:=sTitle;
-  try
-    sgNotes.LoadFromCSVFile(
-        TL2NotesFile+'.'+TL2Settings.edTransLang.Text+TL2NotesExt,#9,false);
-  except
-  end;
-  bbCancelClick(Sender);
+  lang:=TL2Settings.lbLanguage.Items[TL2Settings.lbLanguage.ItemIndex];
+  SetLength(lang,pos(' ',lang)-1);
+  
+  sbReloadClick(Sender);
 end;
 
 end.

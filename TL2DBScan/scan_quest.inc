@@ -53,7 +53,7 @@ end;
 function ProcessQuests(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p:pointer;
   i:int64;

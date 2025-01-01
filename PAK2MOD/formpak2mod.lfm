@@ -7,6 +7,7 @@ object fmPAK2MOD: TfmPAK2MOD
   Caption = 'PAK2MOD'
   ClientHeight = 292
   ClientWidth = 506
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDropFiles = FormDropFiles
@@ -73,8 +74,8 @@ object fmPAK2MOD: TfmPAK2MOD
         Enabled = False
         Kind = bkHelp
         Margin = 1
-        OnClick = bbInfoClick
         TabOrder = 2
+        OnClick = bbInfoClick
       end
     end
     object tsPAK2MOD: TTabSheet
@@ -156,8 +157,8 @@ object fmPAK2MOD: TfmPAK2MOD
         Kind = bkRetry
         Margin = 1
         ModalResult = 4
-        OnClick = bbModInfoClick
         TabOrder = 4
+        OnClick = bbModInfoClick
       end
       object lblPAK: TLabel
         Left = 9
@@ -196,8 +197,8 @@ object fmPAK2MOD: TfmPAK2MOD
     Width = 75
     Caption = 'Clear'
     Kind = bkAbort
-    OnClick = bbClearClick
     TabOrder = 1
+    OnClick = bbClearClick
   end
   object bbConvert: TBitBtn
     Left = 369
@@ -209,7 +210,7 @@ object fmPAK2MOD: TfmPAK2MOD
     Default = True
     Kind = bkOK
     ModalResult = 1
-    OnClick = bbConvertClick
     TabOrder = 2
+    OnClick = bbConvertClick
   end
 end

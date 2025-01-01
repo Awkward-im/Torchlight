@@ -197,9 +197,9 @@ function JsonNumberValidate(const N: string): Boolean;
 function JsonStringValidate(const S: string): Boolean;
 { JsonStringEncode converts a pascal string to a json string }
 function JsonStringEncode(const S: string): string;
-{ JsonStringEncode converts a json string to a pascal string }
+{ JsonStringDecode converts a json string to a pascal string }
 function JsonStringDecode(const S: string): string;
-{ JsonStringEncode converts a json string to xml }
+{ JsonToXml converts a json string to xml }
 function JsonToXml(const S: string): string;
 
 implementation
@@ -330,24 +330,30 @@ begin
       if C^ = '\' then
       begin
         Inc(C);
-        if C^ = lC then
-          Inc(C)
-        else if C^ = 'u' then
-          if not ((C[1] in Hex) and (C[2] in Hex) and (C[3] in Hex) and (C[4] in Hex)) then
+        if C^ < ' ' then
         begin
           T.Tail := C;
           T.Kind := tkError;
           Exit(False);
         end;
+        if C^ = lC then
+          Inc(C)
+        else if C^ = 'u' then
+          if not ((C[1] in Hex) and (C[2] in Hex) and (C[3] in Hex) and (C[4] in Hex)) then
+          begin
+            T.Tail := C;
+            T.Kind := tkError;
+            Exit(False);
           end;
-    until C^ in [#0, #10, #13, lC];
-    if C^ = lC then
+      end
+      else if C^ = lC then
       begin
         Inc(C);
         T.Tail := C;
         T.Kind := tkString;
         Exit(True);
       end;
+    until C^ in [#0, #10, #13];
     T.Tail := C;
     T.Kind := tkError;
     Exit(False);
@@ -940,6 +946,7 @@ begin
   N := Child(Index);
   if N <> nil then
   begin
+    N.Free;
     FList.Delete(Index);
     if FList.Count = 0 then
     begin
@@ -956,6 +963,7 @@ begin
   N := Child(Name);
   if N <> nil then
   begin
+    N.Free;
     FList.Remove(N);
     if FList.Count = 0 then
     begin

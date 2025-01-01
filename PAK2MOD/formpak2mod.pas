@@ -141,7 +141,7 @@ end;
 
 procedure TfmPAK2MOD.bbModInfoClick(Sender: TObject);
 begin
-  with TMODInfoForm.Create(Self,false) do
+  with TMODInfoForm.Create(Self,nil,false) do
   begin
     if feMOD.Text<>'' then
       LoadFromFile(feMOD.Text)
@@ -160,7 +160,7 @@ end;
 
 procedure TfmPAK2MOD.bbInfoClick(Sender: TObject);
 begin
-  with TMODInfoForm.Create(Self,true) do
+  with TMODInfoForm.Create(Self,nil,true) do
   begin
     ClearModInfo(fmi);
     ReadMODInfo(PChar(feMODInput.Text),fmi);

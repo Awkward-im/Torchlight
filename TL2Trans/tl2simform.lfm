@@ -1,25 +1,29 @@
-object SimilaristForm: TSimilaristForm
+object SimilarForm: TSimilarForm
   Left = 590
-  Height = 623
+  Height = 502
   Top = 184
   Width = 663
-  ClientHeight = 623
+  Caption = 'Similars List'
+  ClientHeight = 502
   ClientWidth = 663
+  KeyPreview = True
   ParentFont = True
-  LCLVersion = '2.1.0.0'
-  object lbSimilars: TListBox
+  OnKeyDown = FormKeyDown
+  object lbSimList: TListBox
     Left = 8
-    Height = 309
-    Top = 6
+    Height = 194
+    Top = 40
     Width = 648
     Anchors = [akTop, akLeft, akRight, akBottom]
+    ExtendedSelect = False
     ItemHeight = 0
     TabOrder = 0
+    OnSelectionChange = lbSelectionChange
   end
   object lblTextLine: TLabel
     Left = 8
     Height = 15
-    Top = 344
+    Top = 271
     Width = 60
     Anchors = [akLeft, akBottom]
     AutoSize = False
@@ -27,8 +31,8 @@ object SimilaristForm: TSimilaristForm
   end
   object lblTextFile: TLabel
     Left = 80
-    Height = 15
-    Top = 344
+    Height = 23
+    Top = 265
     Width = 576
     Anchors = [akLeft, akRight, akBottom]
     AutoSize = False
@@ -37,64 +41,54 @@ object SimilaristForm: TSimilaristForm
   object memText: TMemo
     Left = 8
     Height = 91
-    Top = 370
+    Top = 297
     Width = 648
     Anchors = [akLeft, akRight, akBottom]
+    ReadOnly = True
     TabOrder = 1
   end
-  object memSim: TMemo
+  object memTrans: TMemo
     Left = 8
     Height = 91
-    Top = 472
+    Top = 403
     Width = 648
     Anchors = [akLeft, akRight, akBottom]
+    ReadOnly = True
     TabOrder = 2
   end
   object lblTextTag: TLabel
     Left = 328
-    Height = 15
-    Top = 320
+    Height = 22
+    Top = 241
     Width = 328
     Alignment = taRightJustify
     Anchors = [akRight, akBottom]
     AutoSize = False
     ParentColor = False
   end
-  object lblSimLine: TLabel
+  object edTmpl: TEdit
+    Left = 8
+    Height = 23
+    Top = 8
+    Width = 648
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 3
+  end
+  object lblPartial: TLabel
     Left = 8
     Height = 15
-    Top = 576
-    Width = 60
-    Anchors = [akLeft, akBottom]
-    AutoSize = False
-    ParentColor = False
+    Top = 245
+    Width = 100
+    Caption = '(Partial translation)'
   end
-  object lblSimFile: TLabel
-    Left = 80
-    Height = 15
-    Top = 576
-    Width = 576
-    Anchors = [akLeft, akRight, akBottom]
-    AutoSize = False
-    ParentColor = False
-  end
-  object lblSimTag: TLabel
-    Left = 328
-    Height = 15
-    Top = 600
-    Width = 328
-    Alignment = taRightJustify
-    Anchors = [akRight, akBottom]
-    AutoSize = False
-    ParentColor = False
-  end
-  object lblTotal: TLabel
+  object btnDupes: TButton
     Left = 8
-    Height = 15
-    Top = 320
-    Width = 189
-    Anchors = [akLeft, akBottom]
-    AutoSize = False
-    ParentColor = False
+    Height = 25
+    Top = 264
+    Width = 69
+    AutoSize = True
+    Caption = 'Doubles'
+    TabOrder = 4
+    OnClick = btnDupesClick
   end
 end

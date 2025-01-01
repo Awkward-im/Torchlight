@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="testtranslator.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="29"/>
+        <CursorPos Y="50"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="iso639.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="jsontools.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="trclass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TRClass"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="213"/>
+        <CursorPos Y="1294"/>
+        <FoldState Value=" TMi545011I p1w80101421 T7jAK87 PiDjIP TKjL034 PdvA0 T4lf07 TJoH1{X1 pkOnD1z]9jdlK1{~]AidmZ1~71],Hn41 T3mI0G7]ZDkJ0o3]92]9v3]hekT0{A3]\Kn30D2]Jak40I[/4ZjE0{S2[{u5d0 T6p00344 pAvI]9 T0pE4AA]gdlZA48]9XlJ4H8[I4kWA46 pjElX6F7 pjQj86N5 pj2i6AE4 PJiV8 TLsH053 Pi3tQ0B"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="24">
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="36" Column="24" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="35" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="36" TopLine="24"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="43" TopLine="24"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="35" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="43" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="44" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="50" TopLine="36"/>
+      </Position>
+      <Position>
+        <Filename Value="trclass.pas"/>
+        <Caret Line="101" Column="34" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="50" Column="31" TopLine="28"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="78" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="79" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="80" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="81" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="82" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="36" TopLine="28"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="37" TopLine="28"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="44" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="45" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="46" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="36" TopLine="29"/>
+      </Position>
+      <Position>
+        <Filename Value="testtranslator.lpr"/>
+        <Caret Line="50" TopLine="29"/>
+      </Position>
+      <Position>
+        <Filename Value="trclass.pas"/>
+        <Caret Line="237" TopLine="224"/>
+      </Position>
+      <Position>
+        <Filename Value="trclass.pas"/>
+        <Caret Line="81" Column="45" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="trclass.pas"/>
+        <Caret Line="55" Column="14" TopLine="21"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default">
+        <Mode Name="default"/>
+      </Modes>
+    </RunParams>
+    <HistoryLists>
+      <List Name="WorkingDirectory" Type="File" Count="1"/>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+      <List Name="CommandLineParameters" Count="2">
+        <Item2 Value="-h"/>
+      </List>
+    </HistoryLists>
+  </ProjectSession>
+</CONFIG>

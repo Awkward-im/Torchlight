@@ -24,7 +24,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -57,7 +57,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -90,7 +90,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -269,6 +269,13 @@
         <Filename Value="scan_sets.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmgameversion.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmGameVer"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmGameVersion"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -279,7 +286,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
     </SearchPaths>
     <Linking>

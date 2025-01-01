@@ -14,10 +14,10 @@ implementation
 {$R ..\TL2Lib\dict.rc}
 
 uses
+  Controls,
   Dialogs,
   fmAsk,
   fmComboDiff,
-  System.UITypes,
 
   sysutils,
 
@@ -30,15 +30,14 @@ uses
   rgio.Text,
   rgio.Layout,
   rgio.Dat,
-  rgnode,
-  unitComboCommon;
+  rgnode;
 
 type
   pourdata = ^tourdata;
   tourdata = record
     outdir :string;
     lastdir:string;
-    act   :tact;
+    act   :TRGDoubleAction;
   end;
 var
   scandata:tourdata;
@@ -46,7 +45,7 @@ var
 function actproc(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   f:file of byte;
   SaveDialog: TSaveDialog;
@@ -113,35 +112,35 @@ begin
 
     RGLog.Add(adir+aname+' file exists already');
 
-    if pourdata(aparam)^.act=ask then
+    if pourdata(aparam)^.act=da_ask then
     begin
       with tAskForm.Create(adir+aname, lsize, asize
            {, integer(pourdata(aparam)^.act)}) do
       begin
         ShowModal();
-        pourdata(aparam)^.act:=tact(MyResult);
+        pourdata(aparam)^.act:=MyResult;
         // 'skip' and 'overwrite' will be changed to 'ask' later?
         Free;
       end;
     end;
 
     case pourdata(aparam)^.act of
-      stop: exit(sres_break);
+      da_stop: exit(sres_break);
 
-      skip,
-      skipall: exit(sres_fail);
+      da_skip,
+      da_skipall: exit(sres_fail);
 
-      overwrite,
-      overwritedir,
-      overwriteall: ; // do nothing, just rewrite file
+      da_overwrite,
+      da_overwritedir,
+      da_overwriteall: ; // do nothing, just rewrite file
 
-      renameold: begin
+      da_renameold: begin
         ls:=InputBox('Rename existing file', 'Enter new name', ExtractName(ldst));
         RenameFile(ldst,ExtractFileDir(ldst)+ls);
         exit(1);
       end;
 
-      saveas: begin
+      da_saveas: begin
         SaveDialog:=TSaveDialog.Create(nil);
         try
           SaveDialog.InitialDir:=ExtractFileDir (ldst);
@@ -182,8 +181,8 @@ begin
     // Create directory (trying once per scanning dir)
     if pourdata(aparam)^.lastdir<>adir then
     begin
-      if not (pourdata(aparam)^.act in [skipall,overwriteall]) then
-        pourdata(aparam)^.act:=ask;
+      if not (pourdata(aparam)^.act in [da_skipall,da_overwriteall]) then
+        pourdata(aparam)^.act:=da_ask;
 
       ForceDirectories(pourdata(aparam)^.outdir+adir);
       pourdata(aparam)^.lastdir:=adir;
@@ -200,7 +199,7 @@ begin
   end;
 end;
 
-function checkproc(const adir,aname:string; aparam:pointer):integer;
+function checkproc(const adir,aname:string; aparam:pointer):cardinal;
 var
   ldst:string;
 begin
@@ -226,7 +225,7 @@ begin
 
   scandata.outdir :=aroot;
   scandata.lastdir:='';
-  scandata.act    :=ask;
+  scandata.act    :=da_ask;
 
   if not (aroot[Length(aroot)] in ['\','/']) then scandata.outdir:=scandata.outdir+'\';
 

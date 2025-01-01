@@ -25,6 +25,23 @@ msgid ""
 "and JSON processing"
 msgstr ""
 
+#: tdupeform.caption
+msgid "Dupe List"
+msgstr ""
+
+#: tdupeform.sgdupes.columns[0].title.caption
+msgctxt "tdupeform.sgdupes.columns[0].title.caption"
+msgid "File"
+msgstr ""
+
+#: tdupeform.sgdupes.columns[1].title.caption
+msgid "Line"
+msgstr ""
+
+#: tdupeform.sgdupes.columns[2].title.caption
+msgid "Tag"
+msgstr ""
+
 #: tedittextform.actmarkaspartial.hint
 msgid "Mark as Partial"
 msgstr ""
@@ -45,6 +62,10 @@ msgstr ""
 msgid "Previous untranslated"
 msgstr ""
 
+#: tedittextform.actshowdupe.hint
+msgid "Show doubles"
+msgstr ""
+
 #: tedittextform.actshowsample.hint
 msgid "Show Sample"
 msgstr ""
@@ -56,6 +77,15 @@ msgstr ""
 
 #: tedittextform.caption
 msgid "Edit text"
+msgstr ""
+
+#: tedittextform.lbltag.caption
+msgid "Tag:"
+msgstr ""
+
+#: tl2datamodule.sseveralrefs
+#, object-pascal-format
+msgid "This text presents in several (about %d) places."
 msgstr ""
 
 #: tl2dataunit.snoblockstart
@@ -78,20 +108,21 @@ msgstr ""
 msgid "No translated text"
 msgstr ""
 
+#: tl2dupeform.stotal
+msgctxt "tl2dupeform.stotal"
+msgid "Total"
+msgstr ""
+
+#: tl2edittext.sshow
+msgid "Click on \"Show Doubles\" button to show"
+msgstr ""
+
 #: tl2notesform.stitle
 msgid "Notes"
 msgstr ""
 
 #: tl2projectform.saffected
 msgid " line(s) affected"
-msgstr ""
-
-#: tl2projectform.sall
-msgid "&All"
-msgstr ""
-
-#: tl2projectform.saskexport
-msgid "Export All or just project?"
 msgstr ""
 
 #: tl2projectform.sbuildread
@@ -116,12 +147,12 @@ msgid ""
 "This text will be just hidden until you save and reload project."
 msgstr ""
 
-#: tl2projectform.sesccancel
-msgid "ESC to cancel"
+#: tl2projectform.sdupes
+msgid "Check doubles info."
 msgstr ""
 
-#: tl2projectform.sexport
-msgid "Export finished. Create file"
+#: tl2projectform.sesccancel
+msgid "ESC to cancel"
 msgstr ""
 
 #: tl2projectform.sfolderall
@@ -132,12 +163,12 @@ msgstr ""
 msgid "Importing"
 msgstr ""
 
-#: tl2projectform.snowarnings
-msgid "No any warnings"
+#: tl2projectform.snodoubles
+msgid "No doubles for this text"
 msgstr ""
 
-#: tl2projectform.sproject
-msgid "&Project"
+#: tl2projectform.snowarnings
+msgid "No any warnings"
 msgstr ""
 
 #: tl2projectform.sreplaces
@@ -150,7 +181,7 @@ msgstr ""
 
 #: tl2projectform.ssbtext
 #, object-pascal-format
-msgid "Preload files: %d; lines: base = %d, mods = %d | Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
+msgid "Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
 msgstr ""
 
 #: tl2projectform.sstopscan
@@ -168,16 +199,8 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: tl2projectform.swhatexport
-msgid "What to export"
-msgstr ""
-
 #: tl2settingsform.snotrealized
 msgid "Not realized yet"
-msgstr ""
-
-#: tl2settingsform.sopenaddon
-msgid "Choose additional file"
 msgstr ""
 
 #: tl2settingsform.ssettings
@@ -186,6 +209,7 @@ msgid "Settings"
 msgstr ""
 
 #: tl2simform.stotal
+msgctxt "tl2simform.stotal"
 msgid "Total"
 msgstr ""
 
@@ -200,10 +224,6 @@ msgstr ""
 
 #: tl2unit.sdothescan
 msgid "Do tree scan?"
-msgstr ""
-
-#: tl2unit.sexporting
-msgid "(exporting)"
 msgstr ""
 
 #: tl2unit.sloading
@@ -232,6 +252,14 @@ msgstr ""
 msgid "(scanning)"
 msgstr ""
 
+#: tl2unit.swrongdir
+msgid "Choosed directory don't looks like mod directory (have no MEDIA folder)"
+msgstr ""
+
+#: tmaintl2transform.actmodinfo.caption
+msgid "Mod Info"
+msgstr ""
+
 #: tmaintl2transform.caption
 msgctxt "tmaintl2transform.caption"
 msgid "Torchlight 2 Translation"
@@ -242,6 +270,7 @@ msgid "Scan selected dir only"
 msgstr ""
 
 #: tmaintl2transform.closepage.caption
+msgctxt "tmaintl2transform.closepage.caption"
 msgid "Close Page"
 msgstr ""
 
@@ -261,20 +290,12 @@ msgstr ""
 msgid "Exit program"
 msgstr ""
 
-#: tmaintl2transform.fileexport.caption
-msgid "&Export"
-msgstr ""
-
-#: tmaintl2transform.fileexport.hint
-msgid "Export project"
-msgstr ""
-
 #: tmaintl2transform.filenew.caption
-msgid "&New"
+msgid "Scan &dir"
 msgstr ""
 
 #: tmaintl2transform.filenew.hint
-msgid "New project"
+msgid "Scan unpacked mod (directory)"
 msgstr ""
 
 #: tmaintl2transform.fileopen.caption
@@ -305,7 +326,7 @@ msgid "Save project as..."
 msgstr ""
 
 #: tmaintl2transform.filescan.caption
-msgid "Scan mod"
+msgid "Scan &mod"
 msgstr ""
 
 #: tmaintl2transform.filescan.hint
@@ -355,6 +376,11 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
+#: tmaintl2transform.mnuclosepage.caption
+msgctxt "tmaintl2transform.mnuclosepage.caption"
+msgid "Close Page"
+msgstr ""
+
 #: tmaintl2transform.rbscanknown.caption
 msgid "Scan just known files"
 msgstr ""
@@ -365,47 +391,6 @@ msgstr ""
 
 #: tmaintl2transform.rbscantext.caption
 msgid "Scan all text files"
-msgstr ""
-
-#: tmodinfoform.bbcancel.caption
-msgctxt "tmodinfoform.bbcancel.caption"
-msgid "Cancel"
-msgstr ""
-
-#: tmodinfoform.caption
-msgid "MOD Info"
-msgstr ""
-
-#: tmodinfoform.lbldescr.caption
-msgid "Mod Description"
-msgstr ""
-
-#: tmodinfoform.lblguid.caption
-msgid "Mod GUID (click button for new)"
-msgstr ""
-
-#: tmodinfoform.lblversion.caption
-msgid "Mod version"
-msgstr ""
-
-#: tmodinfoform.leauthor.editlabel.caption
-msgid "Mod Author"
-msgstr ""
-
-#: tmodinfoform.ledownload.editlabel.caption
-msgid "Mod Download URL"
-msgstr ""
-
-#: tmodinfoform.lefilename.editlabel.caption
-msgid "Mod File Name"
-msgstr ""
-
-#: tmodinfoform.letitle.editlabel.caption
-msgid "Mod Title"
-msgstr ""
-
-#: tmodinfoform.lewebsite.editlabel.caption
-msgid "Mod Website URL"
 msgstr ""
 
 #: trclass.scanttranslate
@@ -421,6 +406,10 @@ msgstr ""
 #: trclass.stoolongtext
 msgctxt "trclass.stoolongtext"
 msgid "Text length too large"
+msgstr ""
+
+#: trclass.stoomanyrequest
+msgid "Too many requests. Please wait and resend your request."
 msgstr ""
 
 #: trclass.stoomuchtext
@@ -443,6 +432,18 @@ msgctxt "trclass.swronglanguage"
 msgid "Choosen language is unsupported"
 msgstr ""
 
+#: tsimilarform.btndupes.caption
+msgid "Doubles"
+msgstr ""
+
+#: tsimilarform.caption
+msgid "Similars List"
+msgstr ""
+
+#: tsimilarform.lblpartial.caption
+msgid "(Partial translation)"
+msgstr ""
+
 #: ttl2notes.bbcancel.caption
 msgctxt "ttl2notes.bbcancel.caption"
 msgid "Cancel"
@@ -459,6 +460,10 @@ msgstr ""
 
 #: ttl2notes.sbdelete.hint
 msgid "Delete note"
+msgstr ""
+
+#: ttl2notes.sbreload.hint
+msgid "Try to reload notes"
 msgstr ""
 
 #: ttl2notes.sbsave.hint
@@ -489,10 +494,6 @@ msgstr ""
 
 #: ttl2project.actexportfile.hint
 msgid "Save selected source text"
-msgstr ""
-
-#: ttl2project.actfilename.hint
-msgid "Short file names"
 msgstr ""
 
 #: ttl2project.actfilter.hint
@@ -531,10 +532,6 @@ msgstr ""
 msgid "Show lines with \"almost the same\" text"
 msgstr ""
 
-#: ttl2project.actshowtemplate.hint
-msgid "Show template text"
-msgstr ""
-
 #: ttl2project.acttranslate.hint
 msgid "Use online translate service"
 msgstr ""
@@ -543,28 +540,18 @@ msgstr ""
 msgid "Top-level folder filter"
 msgstr ""
 
-#: ttl2project.tl2projectgrid.columns[0].title.caption
-msgid "File"
-msgstr ""
-
-#: ttl2project.tl2projectgrid.columns[1].title.caption
-msgid "Attribute"
-msgstr ""
-
-#: ttl2project.tl2projectgrid.columns[2].title.caption
-msgid "Template"
-msgstr ""
-
-#: ttl2project.tl2projectgrid.columns[3].title.caption
-msgctxt "ttl2project.tl2projectgrid.columns[3].title.caption"
+#: ttl2project.tl2grid.columns[0].title.caption
+msgctxt "ttl2project.tl2grid.columns[0].title.caption"
 msgid "Value"
 msgstr ""
 
-#: ttl2project.tl2projectgrid.columns[4].title.caption
+#: ttl2project.tl2grid.columns[1].title.caption
+msgctxt "ttl2project.tl2grid.columns[1].title.caption"
 msgid "Part"
 msgstr ""
 
-#: ttl2project.tl2projectgrid.columns[5].title.caption
+#: ttl2project.tl2grid.columns[2].title.caption
+msgctxt "ttl2project.tl2grid.columns[2].title.caption"
 msgid "Translation"
 msgstr ""
 
@@ -580,10 +567,6 @@ msgstr ""
 
 #: ttl2settings.cbautoaspartial.caption
 msgid "Mark Autocorrected as partial"
-msgstr ""
-
-#: ttl2settings.cbexportparts.caption
-msgid "Export partially translated text"
 msgstr ""
 
 #: ttl2settings.cbhidepartial.caption
@@ -606,47 +589,22 @@ msgstr ""
 msgid "Reopen projects at start"
 msgstr ""
 
-#: ttl2settings.cbshowdebug.caption
-msgid "Show Debug Options"
-msgstr ""
-
-#: ttl2settings.cbtabsync.caption
-msgid "Tab Sync"
-msgstr ""
-
-#: ttl2settings.gbother.caption
-msgid "Other"
-msgstr ""
-
-#: ttl2settings.gbtranslategoogle.caption
-msgid "Google Translation"
-msgstr ""
-
-#: ttl2settings.gbtranslateyandex.caption
-msgid "Yandex Translation"
-msgstr ""
-
 #: ttl2settings.gbtranslation.caption
 msgctxt "ttl2settings.gbtranslation.caption"
-msgid "Translation (DblClick to Toggle)"
+msgid "Translation details"
 msgstr ""
 
-#: ttl2settings.lbladdfile.caption
-msgid "Additional files"
-msgstr ""
-
-#: ttl2settings.lblapikeygoogle.caption
-msgctxt "ttl2settings.lblapikeygoogle.caption"
-msgid "API Key"
-msgstr ""
-
-#: ttl2settings.lblapikeyyandex.caption
-msgctxt "ttl2settings.lblapikeyyandex.caption"
+#: ttl2settings.lblapikey.caption
+msgctxt "ttl2settings.lblapikey.caption"
 msgid "API Key"
 msgstr ""
 
 #: ttl2settings.lbldefaultfile.caption
 msgid "Default translation file"
+msgstr ""
+
+#: ttl2settings.lbldeffiledescr.caption
+msgid "This file used as basic translation file for new projects and final build"
 msgstr ""
 
 #: ttl2settings.lblfilter.caption
@@ -657,18 +615,9 @@ msgstr ""
 msgid "Reopen project to apply new list"
 msgstr ""
 
-#: ttl2settings.lblgetapikeygoogle.caption
-msgctxt "ttl2settings.lblgetapikeygoogle.caption"
+#: ttl2settings.lblgetapikey.caption
+msgctxt "ttl2settings.lblgetapikey.caption"
 msgid "Get your own API key"
-msgstr ""
-
-#: ttl2settings.lblgetapikeyyandex.caption
-msgctxt "ttl2settings.lblgetapikeyyandex.caption"
-msgid "Get your own API key"
-msgstr ""
-
-#: ttl2settings.lblimportdir.caption
-msgid "Importing files directory"
 msgstr ""
 
 #: ttl2settings.lbllang.caption
@@ -689,9 +638,5 @@ msgstr ""
 
 #: ttl2settings.lblworkdirectory.caption
 msgid "Working directory"
-msgstr ""
-
-#: ttl2settings.lblyandexnote.caption
-msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
 msgstr ""
 

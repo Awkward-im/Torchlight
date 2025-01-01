@@ -393,7 +393,7 @@ begin
       CloseFile(ffin);
 
       // DAT file
-      SaveModConfiguration(mi,PChar(ldir+lfin+'.DAT'));
+      SaveModConfig(mi,PChar(ldir+lfin+'.DAT'));
 {}
       if idx=0 then
       begin
@@ -496,7 +496,7 @@ var
   mi:TTL2ModInfo;
 begin
   memDescription.Clear;
-  if LoadModConfiguration(PChar(deGameDir.Text+'\PAKS\'+fname+'.DAT'),mi) then
+  if LoadModConfig(PChar(deGameDir.Text+'\PAKS\'+fname+'.DAT'),mi) then
   begin
     memDescription.Append(sTitle +': '+WideToStr(mi.title)+
                                  ' v.'+IntToStr (mi.modver));

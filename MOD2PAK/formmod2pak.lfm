@@ -6,10 +6,10 @@ object fmMod2Pak: TfmMod2Pak
   AllowDropFiles = True
   ClientHeight = 554
   ClientWidth = 753
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDropFiles = FormDropFiles
-  LCLVersion = '2.3.0.0'
   object lbReserve: TListBox
     Left = 8
     Height = 280
@@ -17,8 +17,8 @@ object fmMod2Pak: TfmMod2Pak
     Width = 296
     ExtendedSelect = False
     ItemHeight = 0
-    OnClick = lbReserveClick
     TabOrder = 0
+    OnClick = lbReserveClick
   end
   object lbActive: TListBox
     Left = 397
@@ -27,8 +27,8 @@ object fmMod2Pak: TfmMod2Pak
     Width = 296
     ExtendedSelect = False
     ItemHeight = 0
-    OnClick = lbActiveClick
     TabOrder = 1
+    OnClick = lbActiveClick
   end
   object bbAdd: TBitBtn
     Left = 313
@@ -38,8 +38,8 @@ object fmMod2Pak: TfmMod2Pak
     Caption = '&Add'
     Enabled = False
     Kind = bkOK
-    OnClick = bbAddClick
     TabOrder = 2
+    OnClick = bbAddClick
   end
   object bbClose: TBitBtn
     Left = 669
@@ -111,7 +111,6 @@ object fmMod2Pak: TfmMod2Pak
     Top = 4
     Width = 157
     Caption = 'Choose Game Directory'
-    Color = clDefault
     Font.Height = -15
     ParentColor = False
     ParentFont = False
@@ -158,8 +157,8 @@ object fmMod2Pak: TfmMod2Pak
     Caption = 'Delete'
     Enabled = False
     Kind = bkCancel
-    OnClick = bbDeleteClick
     TabOrder = 8
+    OnClick = bbDeleteClick
   end
   object memDescription: TMemo
     Left = 8
@@ -176,7 +175,6 @@ object fmMod2Pak: TfmMod2Pak
     Width = 296
     AutoSize = False
     Caption = 'Description'
-    Color = clDefault
     Font.Height = -13
     ParentColor = False
     ParentFont = False
@@ -189,8 +187,8 @@ object fmMod2Pak: TfmMod2Pak
     Caption = '&Apply'
     Enabled = False
     Kind = bkOK
-    OnClick = bbApplyClick
     TabOrder = 10
+    OnClick = bbApplyClick
   end
   object lblDirNote: TLabel
     Left = 9
@@ -198,7 +196,6 @@ object fmMod2Pak: TfmMod2Pak
     Top = 53
     Width = 202
     Caption = '* Files will be saved in PAKS subdir'
-    Color = clDefault
     Font.Height = -13
     ParentColor = False
     ParentFont = False

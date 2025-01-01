@@ -9,8 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, lazcontrols,
 //  DefaultTranslator,
-  tl2datamodule,TL2Unit
-  { you can add units after this };
+  tl2datamodule,TL2Unit;
 
 {$R *.res}
 

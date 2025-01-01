@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView;..\TL2Lib\forms;..\..\utils\3rdside"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -74,7 +74,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView;..\TL2Lib\forms;..\..\utils\3rdside"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -111,7 +111,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView;..\TL2Lib\forms;..\..\utils\3rdside"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -159,7 +159,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView;..\TL2Lib\forms;..\..\utils\3rdside"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -238,33 +238,9 @@
         <UnitName Value="RGPAK"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="MODInfoForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmModInfo"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TextCache"/>
-      </Unit>
-      <Unit>
-        <Filename Value="unitfilterform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FilterForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="unitFilterForm"/>
-      </Unit>
-      <Unit>
-        <Filename Value="fmlayoutedit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="formLayoutEdit"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmLayoutEdit"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\synhighlightert.pas"/>
@@ -274,14 +250,6 @@
       <Unit>
         <Filename Value="..\TL2Lib\objicons.inc"/>
         <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="fmimageset.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormImageset"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmImageset"/>
       </Unit>
       <Unit>
         <Filename Value="Imaging\Imaging.pas"/>
@@ -295,6 +263,18 @@
         <Filename Value="HexView\FWHexView.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmlayoutedit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="formLayoutEdit"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmLayoutEdit"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\3rdside\fpc.Dynamic_Bass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FPC.Dynamic_Bass"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -305,7 +285,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;Imaging;HexView;..\TL2Lib\forms;..\..\utils\3rdside"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
     </SearchPaths>
     <Linking>

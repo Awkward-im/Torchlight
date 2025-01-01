@@ -11,10 +11,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.4\n"
 
-#: fmimageset.rssavesprite
-msgid "Save sprite"
-msgstr "Сохранить спрайт"
-
 #: fmlayoutedit.rsalter
 msgid "If property name marked as unsupported but have space or underscore, try to switch them."
 msgstr "Если свойство помечено неподдерживаемым но содержит пробел или почёркивание, попробуйте поменять одно на другое."
@@ -403,167 +399,6 @@ msgstr ""
 #: imaging.sunknownformat
 msgid "Unknown and unsupported format"
 msgstr ""
-
-#: tfilterform.caption
-msgid "File type to show"
-msgstr "Тип файлов для показа"
-
-#: tfilterform.lblcategory.caption
-msgctxt "tfilterform.lblcategory.caption"
-msgid "Category"
-msgstr "Категория"
-
-#: tfilterform.lblextension.caption
-msgctxt "tfilterform.lblextension.caption"
-msgid "Extension"
-msgstr "Расширение"
-
-#: tformimageset.cbdarkbg.caption
-msgid "Dark Background"
-msgstr "Тёмный фон"
-
-#: tformimageset.miextract.caption
-msgid "Extract"
-msgstr "Извлечь"
-
-#: tformimageset.miselectall.caption
-msgid "Select all"
-msgstr "Выбрать всё"
-
-#: tformlayoutedit.acttreedeletenode.caption
-msgid "Delete Object"
-msgstr "Удалить объект"
-
-#: tformlayoutedit.acttreerenamenode.caption
-msgid "Rename Object"
-msgstr "Переименовать объект"
-
-#: tformlayoutedit.cbtxtpreview.caption
-msgid "Text preview"
-msgstr "Текстовый предпросмотр"
-
-#: tformlayoutedit.miaddnode.caption
-msgctxt "tformlayoutedit.miaddnode.caption"
-msgid "Add Object"
-msgstr "Добавить объект"
-
-#: tmodinfoform.bbcancel.caption
-msgid "Cancel"
-msgstr "Отмена"
-
-#: tmodinfoform.caption
-msgid "MOD Info"
-msgstr "Инф. о моде"
-
-#: tmodinfoform.ebchanges.buttoncaption
-msgctxt "tmodinfoform.ebchanges.buttoncaption"
-msgid "..."
-msgstr ""
-
-#: tmodinfoform.eblongdescr.buttoncaption
-msgctxt "tmodinfoform.eblongdescr.buttoncaption"
-msgid "..."
-msgstr ""
-
-#: tmodinfoform.ebtags.buttoncaption
-msgctxt "tmodinfoform.ebtags.buttoncaption"
-msgid "..."
-msgstr ""
-
-#: tmodinfoform.lblguid.caption
-msgid "Mod GUID (click button for new)"
-msgstr "GUID мода (нажмите на кнопу для нового)"
-
-#: tmodinfoform.lbllongdescr.caption
-msgid "Long Description"
-msgstr "Большое описание"
-
-#: tmodinfoform.lblnote.caption
-msgid "Don't keep version and GUID empty (or zero)"
-msgstr "Не держите версию и GUID пустыми (или нулевыми)"
-
-#: tmodinfoform.lblsteamchanges.caption
-msgid "Changes"
-msgstr "Изменения"
-
-#: tmodinfoform.lblsteamnote.caption
-msgid "These settings are not saved in the MOD file"
-msgstr "Эти настройки не сохраняются  в MOD файле"
-
-#: tmodinfoform.lblsteampreview.caption
-msgid "Preview file"
-msgstr "Обложка"
-
-#: tmodinfoform.lblsteamtags.caption
-msgid "Steam tags"
-msgstr "Тэги Стима"
-
-#: tmodinfoform.lblversion.caption
-msgid "Mod version"
-msgstr "Версия мода"
-
-#: tmodinfoform.leauthor.editlabel.caption
-msgid "Mod Author"
-msgstr "Автор мода"
-
-#: tmodinfoform.ledownload.editlabel.caption
-msgid "Mod Download URL"
-msgstr "URL скачивания мода"
-
-#: tmodinfoform.lefilename.editlabel.caption
-msgid "Mod File Name"
-msgstr "Имя файла мода"
-
-#: tmodinfoform.letitle.editlabel.caption
-msgid "Mod Title"
-msgstr "Название мода"
-
-#: tmodinfoform.lewebsite.editlabel.caption
-msgid "Mod Website URL"
-msgstr "URL сайта мода"
-
-#: tmodinfoform.sbopen.hint
-msgid "Load MOD info from file"
-msgstr "Загрузить информацию о моде из файла"
-
-#: tmodinfoform.sbsave.hint
-msgid "Save MOD info to file"
-msgstr "Сохранить информацию о моде в файле"
-
-#: tmodinfoform.sgreq.columns[0].title.caption
-msgctxt "tmodinfoform.sgreq.columns[0].title.caption"
-msgid "Name"
-msgstr "Имя"
-
-#: tmodinfoform.sgreq.columns[1].title.caption
-msgid "ID"
-msgstr ""
-
-#: tmodinfoform.sgreq.columns[2].title.caption
-msgid "Version"
-msgstr "Версия"
-
-#: tmodinfoform.tsadditional.caption
-msgid "Additional"
-msgstr "Добавочно"
-
-#: tmodinfoform.tsdelete.caption
-msgctxt "tmodinfoform.tsdelete.caption"
-msgid "Delete"
-msgstr "Удаление"
-
-#: tmodinfoform.tsdescr.caption
-msgid "Description"
-msgstr "Описание"
-
-#: tmodinfoform.tsdescr.hint
-msgctxt "tmodinfoform.tsdescr.hint"
-msgid "Mod Description"
-msgstr "Описание мода"
-
-#: tmodinfoform.tsrequirement.caption
-msgid "Requirement"
-msgstr "Требование"
 
 #: trgguiform.actchangeversion.caption
 msgid "Change PAK version"
@@ -1009,3 +844,4 @@ msgstr "Показать/скрыть столбец: Распакованный
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
 msgstr "Информация о моде"
+

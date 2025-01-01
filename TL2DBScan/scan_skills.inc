@@ -132,9 +132,10 @@ end;
 function ProcessSkills(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p:pointer;
+  lres:integer;
 begin
   result:=sres_fail;
 
@@ -148,9 +149,9 @@ begin
     
     if p<>nil then
     begin
-      result:=AddSkillNode(aparam,p,Pos('MEDIA/SKILLS/SHARED',adir)>0);
-           if result>0 then result:=1
-      else if result<0 then result:=0
+      lres:=AddSkillNode(aparam,p,Pos('MEDIA/SKILLS/SHARED',adir)>0);
+           if lres>0 then result:=1
+      else if lres<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

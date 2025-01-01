@@ -328,8 +328,7 @@ begin
 end;
 
 procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
-var
-  i:integer;
+//var  i:integer;
 begin
   if FSettings.DBState=0 then FreeBases;
 

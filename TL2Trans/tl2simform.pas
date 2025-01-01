@@ -1,4 +1,4 @@
-{TODO: Show/filter by single ref}
+{TODO: Edit translation in form (+button) with set for others}
 unit TL2SimForm;
 
 {$mode objfpc}{$H+}
@@ -6,31 +6,33 @@ unit TL2SimForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  TL2DataUnit;
 
 type
 
-  { TSimilaristForm }
+  { TSimilarForm }
 
-  TSimilaristForm = class(TForm)
-    lblTotal: TLabel;
+  TSimilarForm = class(TForm)
+    btnDupes: TButton;
+    lblPartial : TLabel;
     lblTextLine: TLabel;
     lblTextFile: TLabel;
-    lblTextTag: TLabel;
-    lblSimLine: TLabel;
-    lblSimFile: TLabel;
-    lblSimTag: TLabel;
-    lbSimilars: TListBox;
-    memText: TMemo;
-    memSim: TMemo;
-    procedure lbSimilarsSelectionChange(Sender: TObject; User: boolean);
+    lblTextTag : TLabel;
+    lbSimList: TListBox;
+    edTmpl  : TEdit;
+    memText : TMemo;
+    memTrans: TMemo;
+    procedure btnDupesClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure lbSelectionChange(Sender: TObject; User: boolean);
   private
-    procedure FillDupeList;
-    procedure FillList;
-    procedure lbDupesSelectionChange(Sender: TObject; User: boolean);
+    fdata:PTL2Translation;
+    procedure FillList(const adata:TTL2Translation; aline:integer);
 
   public
-    constructor Create(AOwner:TComponent; Sims:boolean); overload;
+    constructor Create(AOwner:TComponent; const adata:TTL2Translation;
+        aline:integer); overload;
   end;
 
 
@@ -39,132 +41,97 @@ implementation
 {$R *.lfm}
 
 uses
-  tl2projectform,
-  TL2DataUnit;
+  LCLType,
+  TL2DupeForm;
 
-resourcestring
-  sTotal = 'Total';
+{ TSimilarForm }
 
-{ TSimilaristForm }
-
-constructor TSimilaristForm.Create(AOwner:TComponent; Sims:Boolean);
+constructor TSimilarForm.Create(AOwner:TComponent; const adata:TTL2Translation; aline:integer);
 begin
   inherited Create(AOwner);
 
-  Font.Assign((AOwner as TTL2Project).Font);
+  Font.Assign(Application.MainForm.Font);
 
-  if Sims then
+  fdata:=@adata;
+  FillList(adata,aline);
+end;
+
+procedure TSimilarForm.lbSelectionChange(Sender: TObject; User: boolean);
+var
+  i:integer;
+begin
+  i:=IntPtr(lbSimList.Items.Objects[lbSimList.ItemIndex]);
+
+  lblPartial.Visible:=fdata^.State[i] = stPartial;
+
+  memText .Text:=fdata^.Line [i];
+  memTrans.Text:=fdata^.Trans[i];
+
+  if fdata^.RefCount[i]=1 then
   begin
-    Caption:='Similarist '+(AOwner as TTL2Project).ProjectName;
-    lbSimilars.OnSelectionChange:=@lbSimilarsSelectionChange;
-    FillList;
+    btnDupes   .Visible:=false;
+    lblTextLine.Visible:=true;
+    lblTextFile.Visible:=true;
+    lblTextTag .Visible:=true;
+{
+    lblTextLine.Caption:=IntToStr(fdata^.SrcLine[i]);
+    lblTextFile.Caption:=fdata^.SrcFile[i];
+    lblTextTag .Caption:=fdata^.SrcTag [i];
+}
+    i:=fdata^.Ref[i];
+    lblTextLine.Caption:=IntToStr(fdata^.Refs.GetLine(i));
+    lblTextFile.Caption:=fdata^.Refs.GetFile(i);
+    lblTextTag .Caption:=fdata^.Refs.GetTag(i);
   end
   else
   begin
-    Caption:='Duplist '+(AOwner as TTL2Project).ProjectName;
-    lbSimilars.OnSelectionChange:=@lbDupesSelectionChange;
-    FillDupeList;
+    btnDupes   .Visible:=true;
+    lblTextLine.Visible:=false;
+    lblTextFile.Visible:=false;
+    lblTextTag .Visible:=false;
   end;
 end;
 
-procedure TSimilaristForm.lbSimilarsSelectionChange(Sender: TObject; User: boolean);
+procedure TSimilarForm.btnDupesClick(Sender: TObject);
+begin
+  with TDupeForm.Create(Self,fdata^,
+      IntPtr(lbSimList.Items.Objects[lbSimList.ItemIndex])) do
+  begin
+    ShowModal;
+    Free;
+  end;
+end;
+
+procedure TSimilarForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key=VK_ESCAPE then ModalResult:=mrOk;
+end;
+
+procedure TSimilarForm.FillList(const adata:TTL2Translation; aline:integer);
 var
+  ltmpl:AnsiString;
   i:integer;
 begin
-  i:=IntPtr(lbSimilars.Items.Objects[lbSimilars.ItemIndex]);
-  with (Owner as TTL2Project) do
-  begin
-    lblTextLine.Caption:=IntToStr(data.FileLine[i]);
-    lblTextFile.Caption:=data._File [i];
-    lblTextTag .Caption:=data.Attrib[i];
-    memText.Text       :=data.Line  [i];
-    i:=data.SimIndex[i];
-    lblSimLine .Caption:=IntToStr(data.FileLine[i]);
-    lblSimFile .Caption:=data._File [i];
-    lblSimTag  .Caption:=data.Attrib[i];
-    memSim.Text        :=data.Line  [i];
-  end;
-end;
+  lbSimList.Clear;
 
-procedure TSimilaristForm.lbDupesSelectionChange(Sender: TObject; User: boolean);
-var
-  lridx,i:integer;
-begin
-  with (Owner as TTL2Project) do
+  ltmpl:=adata.Template[aline];
+  edTmpl.Text:=ltmpl;
+  i:=0;
+  // better to select by some way
+  lbSimList.AddItem(adata.Line[aline],TObject(IntPtr(aline)));
+  while i<adata.LineCount do
   begin
-    lridx:=IntPtr(lbSimilars.Items.Objects[lbSimilars.ItemIndex]);
-    lblTextLine.Caption:=IntToStr(data.ref.GetLine(lridx));
-    lblTextFile.Caption:=data.ref.GetFile(lridx);
-    lblTextTag .Caption:=data.ref.GetTag (lridx);
-    lridx:=data.ref.Dupe[lridx]-1;
-    lblSimLine .Caption:=IntToStr(data.ref.GetLine(lridx));
-    lblSimFile .Caption:=data.ref.GetFile(lridx);
-    lblSimTag  .Caption:=data.ref.GetTag (lridx);
-
-    memText.Text:='';
-    memSim .Text:='';
-    for i:=0 to data.Lines-1 do
+    if i<>aline then
     begin
-      if lridx=data.refs[i] then
-      begin
-        memText.Text:=data.Line [i];
-        memSim .Text:=data.Trans[i];
-        break;
-      end;
+      if adata.Template[i]=ltmpl then
+        lbSimList.AddItem(adata.Line[i],TObject(IntPtr(i)))
     end;
-  end;
-end;
-
-procedure TSimilaristForm.FillList;
-var
-  i:integer;
-begin
-  lbSimilars.Clear;
-
-  with (Owner as TTL2Project) do
-  begin
-    i:=(cntBaseLines+cntModLines);
-    while i<data.Lines do
-    begin
-      if data.SimIndex[i]>=0 then
-        lbSimilars.AddItem(data.Line[i],TObject(IntPtr(i)));
-      inc(i);
-    end;
-
-    lblTotal.Caption:=sTotal+': '+IntToStr(lbSimilars.Items.Count);
+    inc(i);
   end;
 
-  if lbSimilars.Count>0 then
-    lbSimilars.ItemIndex:=0;
+  lbSimList.ItemIndex:=0;
 end;
 
-procedure TSimilaristForm.FillDupeList;
-var
-  i,j:integer;
-begin
-  lbSimilars.Clear;
-
-  with (Owner as TTL2Project) do
-  begin
-    i:=0;
-    while i<data.Referals do
-    begin
-      j:=data.ref.Dupe[i];
-      // search line index where ref.dup<-1
-      // =0 = dupe in preloads
-      // >0 = ref # +1
-      // <0 - base, count of doubles
-//      txt:=SearchForRef();
-      if j>0 then
-        lbSimilars.AddItem(data.ref.GetFile(i),TObject(IntPtr(i)));
-      inc(i);
-    end;
-    lblTotal.Caption:=sTotal+': '+IntToStr(lbSimilars.Items.Count);
-  end;
-
-  if lbSimilars.Items.Count>0 then
-    lbSimilars.ItemIndex:=0;
-end;
 
 end.
 

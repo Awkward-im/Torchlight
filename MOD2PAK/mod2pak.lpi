@@ -157,10 +157,6 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
       </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

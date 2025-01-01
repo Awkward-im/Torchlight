@@ -1,30 +1,32 @@
 object TL2Notes: TTL2Notes
   Left = 291
-  Height = 378
+  Height = 380
   Top = 301
-  Width = 252
+  Width = 286
   BorderStyle = bsSizeToolWin
-  ClientHeight = 378
-  ClientWidth = 252
-  OnCreate = FormCreate
+  ClientHeight = 380
+  ClientWidth = 286
+  Constraints.MinHeight = 360
+  Constraints.MinWidth = 286
   ShowHint = True
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '3.99.0.0'
+  OnCreate = FormCreate
   object pnlTop: TPanel
     Left = 0
     Height = 42
     Top = 0
-    Width = 252
+    Width = 286
     Align = alTop
     ClientHeight = 42
-    ClientWidth = 252
+    ClientWidth = 286
     TabOrder = 0
     object edSearch: TEdit
       Left = 8
       Height = 23
       Top = 8
       Width = 144
-      OnChange = edSearchChange
       TabOrder = 0
+      OnChange = edSearchChange
     end
     object sbAdd: TSpeedButton
       Left = 160
@@ -48,7 +50,7 @@ object TL2Notes: TTL2Notes
       OnClick = sbDeleteClick
     end
     object sbSave: TSpeedButton
-      Left = 219
+      Left = 253
       Height = 22
       Hint = 'Save notes'
       Top = 8
@@ -58,23 +60,33 @@ object TL2Notes: TTL2Notes
       ImageIndex = 2
       OnClick = sbSaveClick
     end
+    object sbReload: TSpeedButton
+      Left = 224
+      Height = 22
+      Hint = 'Try to reload notes'
+      Top = 8
+      Width = 23
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 11
+      OnClick = sbReloadClick
+    end
   end
   object pnlEdit: TPanel
     Left = 0
     Height = 178
     Top = 42
-    Width = 252
+    Width = 286
     Align = alTop
     BorderStyle = bsSingle
     ClientHeight = 174
-    ClientWidth = 248
+    ClientWidth = 282
     TabOrder = 1
     Visible = False
     object edTitle: TEdit
       Left = 6
       Height = 23
       Top = 8
-      Width = 234
+      Width = 268
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       TabOrder = 0
@@ -83,12 +95,12 @@ object TL2Notes: TTL2Notes
       Left = 6
       Height = 90
       Top = 40
-      Width = 234
+      Width = 268
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 1
     end
     object bbSave: TBitBtn
-      Left = 165
+      Left = 199
       Height = 30
       Top = 136
       Width = 75
@@ -96,11 +108,11 @@ object TL2Notes: TTL2Notes
       Caption = '&Save'
       Default = True
       Kind = bkOK
-      OnClick = bbSaveClick
       TabOrder = 2
+      OnClick = bbSaveClick
     end
     object bbCancel: TBitBtn
-      Left = 76
+      Left = 110
       Height = 30
       Top = 136
       Width = 75
@@ -108,8 +120,8 @@ object TL2Notes: TTL2Notes
       Cancel = True
       Caption = 'Cancel'
       Kind = bkCancel
-      OnClick = bbCancelClick
       TabOrder = 3
+      OnClick = bbCancelClick
     end
     object sbTranslate: TSpeedButton
       Left = 6
@@ -124,9 +136,9 @@ object TL2Notes: TTL2Notes
   end
   object sgNotes: TStringGrid
     Left = 0
-    Height = 158
+    Height = 160
     Top = 220
-    Width = 252
+    Width = 286
     Align = alClient
     AutoEdit = False
     AutoFillColumns = True
@@ -139,7 +151,7 @@ object TL2Notes: TTL2Notes
       end    
       item
         Title.Caption = 'Value'
-        Width = 148
+        Width = 186
       end>
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect, goSmoothScroll, goCellHints, goRowHighlight]
@@ -148,7 +160,7 @@ object TL2Notes: TTL2Notes
     OnDblClick = sgNotesDblClick
     ColWidths = (
       100
-      148
+      186
     )
   end
 end

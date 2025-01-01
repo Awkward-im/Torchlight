@@ -7,9 +7,9 @@ object FormMain: TFormMain
   Caption = 'Combine mods to pack'
   ClientHeight = 531
   ClientWidth = 753
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.3.0.0'
   object lbModList: TListBox
     Left = 8
     Height = 264
@@ -18,8 +18,8 @@ object FormMain: TFormMain
     Anchors = [akTop, akLeft, akBottom]
     ItemHeight = 0
     MultiSelect = True
-    OnClick = lbModListClick
     TabOrder = 3
+    OnClick = lbModListClick
   end
   object bbAddFile: TBitBtn
     Left = 8
@@ -28,8 +28,8 @@ object FormMain: TFormMain
     Width = 128
     Caption = 'Add file'
     Kind = bkOK
-    OnClick = bbAddFileClick
     TabOrder = 1
+    OnClick = bbAddFileClick
   end
   object sbUp: TSpeedButton
     Left = 311
@@ -73,7 +73,6 @@ object FormMain: TFormMain
     Top = 5
     Width = 164
     Caption = 'Choose Output Directory'
-    Color = clDefault
     Font.Height = -15
     ParentColor = False
     ParentFont = False
@@ -86,8 +85,8 @@ object FormMain: TFormMain
     Caption = '&Apply'
     Enabled = False
     Kind = bkOK
-    OnClick = bbApplyClick
     TabOrder = 4
+    OnClick = bbApplyClick
   end
   object bbAddDir: TBitBtn
     Left = 168
@@ -96,8 +95,8 @@ object FormMain: TFormMain
     Width = 136
     Caption = 'Add directory'
     Kind = bkOK
-    OnClick = bbAddDirClick
     TabOrder = 2
+    OnClick = bbAddDirClick
   end
   object bbDelete: TSpeedButton
     Left = 311
@@ -118,7 +117,6 @@ object FormMain: TFormMain
     Alignment = taCenter
     AutoSize = False
     Caption = 'Mods in pack'
-    Color = clDefault
     Font.Height = -16
     ParentColor = False
     ParentFont = False
@@ -130,8 +128,8 @@ object FormMain: TFormMain
     Width = 88
     Caption = 'Pack info'
     Kind = bkHelp
-    OnClick = bbModInfoClick
     TabOrder = 5
+    OnClick = bbModInfoClick
   end
   object lblDescr: TLabel
     Left = 8
@@ -140,7 +138,6 @@ object FormMain: TFormMain
     Width = 66
     Anchors = [akLeft, akBottom]
     Caption = 'Description'
-    Color = clDefault
     Font.Height = -13
     ParentColor = False
     ParentFont = False
@@ -179,9 +176,9 @@ object FormMain: TFormMain
     Top = 23
     Width = 232
     ItemHeight = 15
-    OnChange = cbPresetChange
     ReadOnly = True
     TabOrder = 9
+    OnChange = cbPresetChange
   end
   object bbSave: TBitBtn
     Left = 249
@@ -190,8 +187,8 @@ object FormMain: TFormMain
     Width = 104
     Caption = 'Save'
     Kind = bkOK
-    OnClick = bbSaveClick
     TabOrder = 10
+    OnClick = bbSaveClick
   end
   object lblPreset: TLabel
     Left = 8
@@ -199,7 +196,6 @@ object FormMain: TFormMain
     Top = 5
     Width = 37
     Caption = 'Presets'
-    Color = clDefault
     ParentColor = False
   end
   object ImageList: TImageList

@@ -9,8 +9,8 @@
         <Filename Value="MODCombiner.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="23"/>
-        <UsageCount Value="97"/>
+        <CursorPos X="34" Y="13"/>
+        <UsageCount Value="101"/>
       </Unit>
       <Unit>
         <Filename Value="fmcombomain.pas"/>
@@ -19,9 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmComboMain"/>
-        <TopLine Value="171"/>
-        <CursorPos X="9" Y="186"/>
-        <UsageCount Value="97"/>
+        <TopLine Value="134"/>
+        <CursorPos X="21" Y="338"/>
+        <UsageCount Value="101"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -32,11 +32,58 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="309"/>
         <CursorPos Y="324"/>
+        <UsageCount Value="100"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\textcache.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="96"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
+        <Filename Value="unitCombine.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="12" Y="17"/>
+        <UsageCount Value="86"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGIO.Layout"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="487"/>
+        <CursorPos X="25" Y="502"/>
+        <UsageCount Value="58"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmmodinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MODInfoForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmModInfo"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="24"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\3rdside\Diff.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="24"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="283"/>
         <CursorPos X="16" Y="298"/>
@@ -44,7 +91,6 @@
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
-        <IsPartOfProject Value="True"/>
         <ComponentName Value="MODInfoForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
@@ -55,39 +101,18 @@
         <UsageCount Value="92"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\utils\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="92"/>
-      </Unit>
-      <Unit>
-        <Filename Value="unitCombine.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
-        <CursorPos X="16" Y="29"/>
-        <UsageCount Value="82"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="fmask.pas"/>
-        <IsPartOfProject Value="True"/>
         <ComponentName Value="AskForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmAsk"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="89"/>
         <CursorPos Y="111"/>
         <UsageCount Value="81"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitcombocommon.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="unitComboCommon"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="21"/>
@@ -95,7 +120,6 @@
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rglogging.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="RGLogging"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="137"/>
@@ -103,28 +127,15 @@
         <UsageCount Value="54"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="RGIO.Layout"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="487"/>
-        <CursorPos X="25" Y="502"/>
-        <UsageCount Value="54"/>
-      </Unit>
-      <Unit>
         <Filename Value="fmcombodiff.pas"/>
-        <IsPartOfProject Value="True"/>
         <ComponentName Value="CompareForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmComboDiff"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="2"/>
         <CursorPos X="43" Y="132"/>
         <UsageCount Value="38"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="fmmodinfo.pas"/>
@@ -197,123 +208,152 @@
         <CursorPos X="3" Y="859"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmcombodiff.pas"/>
+        <ComponentName Value="CompareForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmComboDiff"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="41" Y="21"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmask.pas"/>
+        <ComponentName Value="AskForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmAsk"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="91"/>
+        <CursorPos X="23" Y="124"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="28">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="267" Column="53" TopLine="241"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="204" Column="14" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="245" Column="3" TopLine="243"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="220" Column="19" TopLine="220"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="197" Column="3" TopLine="176"/>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="40" Column="27" TopLine="24"/>
       </Position>
       <Position>
         <Filename Value="unitCombine.pas"/>
-        <Caret Line="20" TopLine="5"/>
+        <Caret Line="152" Column="10" TopLine="133"/>
       </Position>
       <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="10" Column="31"/>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="121" Column="32" TopLine="106"/>
       </Position>
       <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="188" Column="18" TopLine="172"/>
+        <Filename Value="..\TL2Lib\forms\fmask.pas"/>
+        <Caret Line="42" Column="17" TopLine="27"/>
       </Position>
       <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="210" Column="28" TopLine="195"/>
+        <Filename Value="..\TL2Lib\forms\fmask.pas"/>
+        <Caret Line="79" Column="13" TopLine="65"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmask.pas"/>
+        <Caret Line="124" Column="23" TopLine="93"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="157" Column="54" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="228" Column="24" TopLine="212"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="184" Column="55" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="151" Column="87" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="155" Column="22" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="128" Column="21" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="151" Column="52" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="48" Column="35" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="151" Column="66" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="135" Column="53" TopLine="119"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="17" Column="7"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="151" Column="7" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="232" Column="62" TopLine="213"/>
+      </Position>
+      <Position>
+        <Filename Value="unitCombine.pas"/>
+        <Caret Line="202" Column="69" TopLine="186"/>
       </Position>
       <Position>
         <Filename Value="fmcombomain.pas"/>
-        <Caret Line="202" Column="5" TopLine="188"/>
+        <Caret Line="113" Column="25" TopLine="95"/>
       </Position>
       <Position>
         <Filename Value="fmcombomain.pas"/>
-        <Caret Line="45" TopLine="32"/>
+        <Caret Line="196" Column="16" TopLine="181"/>
       </Position>
       <Position>
         <Filename Value="fmcombomain.pas"/>
-        <Caret Line="72" TopLine="58"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="210" Column="28"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="109" TopLine="94"/>
+        <Caret Line="229" Column="3" TopLine="211"/>
       </Position>
       <Position>
         <Filename Value="fmcombomain.pas"/>
-        <Caret Line="105" TopLine="76"/>
+        <Caret Line="227" Column="34" TopLine="211"/>
       </Position>
       <Position>
         <Filename Value="fmcombomain.pas"/>
-        <Caret Line="427" TopLine="181"/>
-      </Position>
-      <Position>
-        <Filename Value="fmask.pas"/>
-        <Caret Line="69" Column="18" TopLine="57"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="99" TopLine="67"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="235" TopLine="108"/>
-      </Position>
-      <Position>
-        <Filename Value="fmask.pas"/>
-        <Caret Line="69" Column="18" TopLine="57"/>
-      </Position>
-      <Position>
-        <Filename Value="fmask.pas"/>
-        <Caret Line="70" Column="18" TopLine="58"/>
-      </Position>
-      <Position>
-        <Filename Value="fmask.pas"/>
-        <Caret Line="72" Column="18" TopLine="60"/>
-      </Position>
-      <Position>
-        <Filename Value="fmask.pas"/>
-        <Caret Line="106" Column="3" TopLine="91"/>
+        <Caret Line="311" Column="27" TopLine="296"/>
       </Position>
       <Position>
         <Filename Value="unitCombine.pas"/>
-        <Caret Line="133" Column="18" TopLine="116"/>
+        <Caret Line="151" Column="74" TopLine="135"/>
       </Position>
       <Position>
         <Filename Value="unitCombine.pas"/>
-        <Caret Line="48" Column="15" TopLine="33"/>
+        <Caret Line="152" Column="3" TopLine="135"/>
       </Position>
       <Position>
         <Filename Value="unitCombine.pas"/>
-        <Caret Line="13" Column="35"/>
-      </Position>
-      <Position>
-        <Filename Value="fmcombodiff.pas"/>
-        <Caret Line="124" Column="28" TopLine="105"/>
+        <Caret Line="151" Column="52" TopLine="135"/>
       </Position>
       <Position>
         <Filename Value="unitCombine.pas"/>
-        <Caret Line="240" Column="3" TopLine="216"/>
+        <Caret Line="20" Column="3" TopLine="16"/>
       </Position>
       <Position>
         <Filename Value="unitCombine.pas"/>
-        <Caret Line="29" Column="16"/>
+        <Caret Line="149" TopLine="149"/>
       </Position>
     </JumpHistory>
     <RunParams>

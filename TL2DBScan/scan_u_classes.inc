@@ -249,10 +249,11 @@ end;
 function ProcessClasses(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p:pointer;
   ldir:string;
+  lres:integer;
 begin
   result:=sres_fail;
   if asize>0 then
@@ -269,9 +270,9 @@ begin
         ldir:=Copy(adir,PModScanner(aparam)^.FRootLen+2)
       else
 }        ldir:=adir;
-      result:=AddClassNode(aparam,p,ldir+aname);
-           if result>0 then result:=1
-      else if result<0 then result:=0
+      lres:=AddClassNode(aparam,p,ldir+aname);
+           if lres>0 then result:=1
+      else if lres<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

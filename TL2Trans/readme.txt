@@ -41,6 +41,7 @@ Main hotkeys:
 Ctrl-B         - Build translation file from default file and 'import' directory
 Ctrl-E         - Export
 Ctrl-F         - Change font
+Ctrl-M         - Scan mod file for new project
 Ctrl-N         - Show tree to start scan for new project
 Ctrl-O         - Open saved project
 Ctrl-S         - Save project

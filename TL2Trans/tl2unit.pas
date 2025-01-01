@@ -14,6 +14,7 @@ type
   { TMainTL2TransForm }
 
   TMainTL2TransForm = class(TForm)
+    actModInfo: TAction;
     FileScan: TAction;
     FileBuild: TAction;
     HelpNotes: TAction;
@@ -21,7 +22,6 @@ type
     bbCloseTree: TBitBtn;
     cbScanCurDir: TCheckBox;
     FileExit: TAction;
-    FileExport: TAction;
     FileNew: TAction;
     FileOpen: TAction;
     FileSave: TAction;
@@ -32,15 +32,17 @@ type
     MenuItem1: TMenuItem;
     miFileBuild: TMenuItem;
     miFileScanMod: TMenuItem;
+    mnuClosePage: TMenuItem;
     rbScanKnown: TRadioButton;
     rbScanText: TRadioButton;
+    TabPopup: TPopupMenu;
     TL2ActionList: TActionList;
     TL2Toolbar: TToolBar;
     tbFileNew: TToolButton;
     tbFileOpen: TToolButton;
     tbFileSave: TToolButton;
     tbSeparator1: TToolButton;
-    tbFileExport: TToolButton;
+    tbModInfo: TToolButton;
     tbHelpAbout: TToolButton;
     tbFontEdit: TToolButton;
     tbSeparator2: TToolButton;
@@ -53,7 +55,6 @@ type
     miFileOpen: TMenuItem;
     miFileSave: TMenuItem;
     miFileSaveAs: TMenuItem;
-    miFileExport: TMenuItem;
     miFileSep1: TMenuItem;
     miFileSep2: TMenuItem;
     miClosePage: TMenuItem;
@@ -66,13 +67,13 @@ type
     tbHelpNotes: TToolButton;
     tbBuild: TToolButton;
     tbScanMod: TToolButton;
+    procedure actModInfoExecute(Sender: TObject);
     procedure FileScanExecute(Sender: TObject);
     procedure HelpNotesExecute(Sender: TObject);
     procedure bbCloseTreeClick(Sender: TObject);
     procedure ClosePageExecute(Sender: TObject);
     procedure FileBuildExecute(Sender: TObject);
     procedure FileExitExecute(Sender: TObject);
-    procedure FileExportExecute(Sender: TObject);
     procedure FileNewExecute(Sender: TObject);
     procedure FileOpenExecute(Sender: TObject);
     procedure FileSaveAsExecute(Sender: TObject);
@@ -83,6 +84,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure HelpAboutExecute(Sender: TObject);
+    procedure mnuClosePageClick(Sender: TObject);
     procedure TL2PageControlChange(Sender: TObject);
     procedure TL2PageControlCloseTabClicked(Sender: TObject);
     procedure TL2PageControlMouseUp(Sender: TObject; Button: TMouseButton;
@@ -110,6 +112,8 @@ implementation
 {$R *.lfm}
 
 uses
+  rgglobal,
+  fmmodinfo,
   TL2DataModule,
   TL2ProjectForm,
   TL2SettingsForm,
@@ -128,7 +132,7 @@ resourcestring
   sScanning       = '(scanning)';
   sLoading        = '(loading)';
   sSaving         = '(saving)';
-  sExporting      = '(exporting)';
+  sWrongDir       = 'Choosed directory don''t looks like mod directory (have no MEDIA folder)';
 
 function ExtractJustName(const fname:AnsiString):AnsiString;
 var
@@ -158,7 +162,7 @@ begin
   b:=TL2PAgeControl.ActivePageIndex<>0;
   FileSave  .Enabled:=b;
   FileSaveAs.Enabled:=b;
-  fileExport.Enabled:=b;
+  actModInfo.Enabled:=b;
 
   UpdateStatusBar(ActiveProject);
 end;
@@ -168,21 +172,34 @@ begin
   ClosePageExecute(Sender);
 end;
 
+procedure TMainTL2TransForm.mnuClosePageClick(Sender: TObject);
+var
+  ls:string;
+begin
+  CanClosePage(TabPopup.Tag,ls);
+end;
+
 procedure TMainTL2TransForm.TL2PageControlMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   p: TPOINT;
   ls:string;
-  i: Integer;
+  ltab: Integer;
 begin
+  p.x := X;
+  p.y := Y;
+//    p:=TL2PageControl.ScreenToClient(p);
+  ltab:=TL2PageControl.IndexOfPageAt(p);
+  if ltab = -1 then exit;
+
   if Button = mbMiddle then
   begin
-    p.x := X;
-    p.y := Y;
-//    p:=TL2PageControl.ScreenToClient(p);
-    i:=TL2PageControl.IndexOfPageAt(p);
-    if i = -1 then exit;
-    CanClosePage(i,ls);
+    CanClosePage(ltab,ls);
+  end
+  else if Button = mbRight then
+  begin
+    TabPopup.Tag:=ltab;
+    TabPopup.PopUp;
   end;
 end;
 
@@ -193,6 +210,7 @@ begin
   ts:=TL2PageControl.AddTabSheet;
   ts.ShowHint:=false;
   ts.Caption :=aname;
+
   with TTL2Project.Create(ts) do
   begin
     Parent :=ts;
@@ -202,6 +220,7 @@ begin
 
     ProjectName:=aname;
   end;
+
   TL2PageControl.ActivePage:=ts;
 end;
 
@@ -271,6 +290,7 @@ var
 begin
   CreateSettingsTab;
   Self.Font.Assign(TL2DM.TL2Font);
+
   if ParamCount()>0 then
   begin
     OpenProject(ParamStr(1),true);
@@ -325,6 +345,8 @@ begin
 
   if (Key=VK_TAB) and (ssCtrl in Shift) then
   begin
+//    TL2PageControl.SelectNextPage(not (ssShift in Shift));
+
     if ssShift in Shift then
     begin
       i:=TL2PageControl.ActivePageIndex-1;
@@ -336,12 +358,13 @@ begin
       if i=TL2PageControl.PageCount then i:=0;
     end;
     TL2PageControl.ActivePageIndex:=i;
+
     Key:=0;
   end;
 
   if i>0 then
   begin
-    ActiveProject.TL2ProjectGrid.SetFocus;
+    ActiveProject.TL2Grid.SetFocus;
   end;
 
   inherited;
@@ -353,6 +376,7 @@ var
   lprj:TTL2Project;
 begin
   result:=false;
+  s:='';
 
   TL2PageControl.ActivePageIndex:=idx;
   lprj:=ActiveProject;
@@ -376,6 +400,7 @@ begin
 
   TL2PageControl.ActivePageIndex:=idx-1;
   ltab:=TL2PageControl.Pages[idx];
+//  TL2PageControl.RemoveControl(TControl(TL2PageControl.Pages[idx]));// удаление таба
   ltab.Parent:=nil;
   ltab.Free;
 end;
@@ -415,13 +440,6 @@ begin
   TL2TreePanel.Visible:=false;
 end;
 
-procedure TMainTL2TransForm.HelpNotesExecute(Sender: TObject);
-begin
-  if TL2Notes=nil then
-    TL2Notes:=TTL2Notes.Create(Self);
-  TL2Notes.Show;
-end;
-
 procedure TMainTL2TransForm.TL2ShellTreeViewDblClick(Sender: TObject);
 var
   ls,lname:AnsiString;
@@ -433,11 +451,11 @@ begin
     lname:=TL2ShellTreeView.Path;
     if lname[Length(lname)] in ['\','/'] then
       SetLength(lname,Length(lname)-1);
-    lname:=ExtractFileName(lname);
+    lname:=ExtractName(lname);
 
     NewTab(lname);
     SetTABCaption(sScanning);
-    if not ActiveProject.New(TL2ShellTreeView.Path,
+    if not ActiveProject.NewFromDir(TL2ShellTreeView.Path,
         rbScanText.Checked,not cbScanCurDir.Checked) then
     CanClosePage(TL2PageControl.ActivePageIndex,ls);
   end;
@@ -461,6 +479,11 @@ begin
     CanClosePage(TL2PageControl.PageIndex,ls);
 end;
 
+procedure TMainTL2TransForm.FileExitExecute(Sender: TObject);
+begin
+  Close;
+end;
+
 procedure TMainTL2TransForm.FileBuildExecute(Sender: TObject);
 begin
   Build(@UpdateStatusBar);
@@ -475,20 +498,41 @@ begin
   try
     OpenDialog.DefaultExt:='.MOD';
     OpenDialog.Filter    :='MOD files|*.MOD|PAK files|*.PAK|All supported|*.MOD;*.PAK|All files|*.*';
+    OpenDialog.Options   :=[ofEnableSizing,ofFileMustExist];
     if OpenDialog.Execute then
     begin
       NewTab(OpenDialog.FileName);
       SetTABCaption(sScanning);
-      if not ActiveProject.New1(OpenDialog.FileName) then
-      CanClosePage(TL2PageControl.ActivePageIndex,ls);
+      if not ActiveProject.NewFromFile(OpenDialog.FileName) then
+        CanClosePage(TL2PageControl.ActivePageIndex,ls);
     end;
   finally
     OpenDialog.Free;
   end;
 end;
 
-procedure TMainTL2TransForm.FileNewExecute(Sender: TObject);
+procedure TMainTL2TransForm.actModInfoExecute(Sender: TObject);
+var
+  prj:TTL2Project;
 begin
+  with TMODInfoForm.Create(Self,nil,true) do
+  begin
+    prj:=ActiveProject;
+    Title :=prj.data.ModTitle;
+    Author:=prj.data.ModAuthor;
+    Descr :=prj.data.ModDescr;
+    ID    :=prj.data.ModID;
+    ShowModal;
+    Free;
+  end;
+end;
+
+procedure TMainTL2TransForm.FileNewExecute(Sender: TObject);
+var
+  ldlg:TSelectDirectoryDialog;
+  ls:AnsiString;
+begin
+{
   try
     TL2ShellTreeView.Root:=TL2Settings.edRootDir.Text;
   except
@@ -497,6 +541,32 @@ begin
   TL2ShellTreeView.Refresh(nil);
   TL2TreePanel.Visible:=true;
   TL2ShellTreeView.SetFocus;
+}
+  ldlg:=TSelectDirectoryDialog.Create(nil);
+  try
+    ldlg.InitialDir:=TL2Settings.edRootDir.Text;
+    ldlg.FileName  :='';
+    ldlg.Options   :=[ofEnableSizing,ofPathMustExist];
+    if ldlg.Execute then
+    begin
+      if Pos('\MEDIA',UpCase(ldlg.FileName))=(Length(ldlg.FileName)-6+1) then
+        ls:=Copy(ldlg.FileName,Length(ldlg.FileName)-6)
+      else if DirectoryExists(ldlg.FileName+'\MEDIA') then
+        ls:=ldlg.FileName
+      else
+      begin
+        ShowMessage(sWrongDir);
+        exit;
+      end;
+
+      NewTab(ls);
+      SetTABCaption(sScanning);
+      if not ActiveProject.NewFromDir(ls,false,true) then
+        CanClosePage(TL2PageControl.ActivePageIndex,ls);
+    end;
+  finally
+    ldlg.Free;
+  end;
 end;
 
 procedure TMainTL2TransForm.OpenProject(const fname:string; silent:boolean=false);
@@ -505,7 +575,7 @@ var
 begin
   if not FileExists(fname) then exit;
 
-  lname:=ExtractJustName(ExtractFileName(fname));
+  lname:=ExtractJustName(ExtractName(fname));
 
   NewTab(lname);
   SetTABCaption(sLoading);
@@ -562,7 +632,7 @@ begin
     SaveDialog.Options   :=SaveDialog.Options+[ofOverwritePrompt,ofNoChangeDir];
     if (SaveDialog.Execute) then
     begin
-      ls:=ExtractFileName(SaveDialog.Filename);
+      ls:=ExtractName(SaveDialog.Filename);
       if (ls<>'') then
       begin
         prj.FileName   :=SaveDialog.Filename;
@@ -591,18 +661,6 @@ begin
   prj.Save;
 end;
 
-procedure TMainTL2TransForm.FileExportExecute(Sender: TObject);
-begin
-  SetTABCaption(sExporting);
-  ActiveProject.DoExport();
-  SetTABCaption('');
-end;
-
-procedure TMainTL2TransForm.FileExitExecute(Sender: TObject);
-begin
-  Close;
-end;
-
 procedure TMainTL2TransForm.FontEditAccept(Sender: TObject);
 begin
   TL2DM.TL2Font.Assign((Sender as TFontEdit).Dialog.Font);
@@ -614,9 +672,20 @@ begin
   (Sender as TFontEdit).Dialog.Font.Assign(TL2DM.TL2Font);
 end;
 
+procedure TMainTL2TransForm.HelpNotesExecute(Sender: TObject);
+begin
+  if TL2Notes=nil then
+    TL2Notes:=TTL2Notes.Create(Self);
+  TL2Notes.Show;
+end;
+
 procedure TMainTL2TransForm.HelpAboutExecute(Sender: TObject);
 begin
-  with TAboutForm.Create(Self) do ShowModal;
+  with TAboutForm.Create(Self) do
+  begin
+    ShowModal;
+    Free;
+  end;
 end;
 
 

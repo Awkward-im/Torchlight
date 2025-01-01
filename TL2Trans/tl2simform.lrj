@@ -1,0 +1,5 @@
+{"version":1,"strings":[
+{"hash":55652980,"name":"tsimilarform.caption","sourcebytes":[83,105,109,105,108,97,114,115,32,76,105,115,116],"value":"Similars List"},
+{"hash":229137193,"name":"tsimilarform.lblpartial.caption","sourcebytes":[40,80,97,114,116,105,97,108,32,116,114,97,110,115,108,97,116,105,111,110,41],"value":"(Partial translation)"},
+{"hash":191599235,"name":"tsimilarform.btndupes.caption","sourcebytes":[68,111,117,98,108,101,115],"value":"Doubles"}
+]}

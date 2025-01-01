@@ -13,6 +13,9 @@ procedure SetFilterWords(const atext:AnsiString);
 
 function CheckPunctuation(const src:AnsiString; var target:AnsiString; checkonly:boolean=true):boolean;
 
+const
+  defFilter = 'a an the of by to for his her their';
+
 
 implementation
 
@@ -707,6 +710,9 @@ begin
     end;
   end;
 end;
+
+initialization
+  SetFilterWords(defFilter);
 
 finalization
   SetLength(Filter,0);

@@ -151,7 +151,7 @@ end;
 function ProcessAffixes(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p,lnode:pointer;
   lname,lcat:string;

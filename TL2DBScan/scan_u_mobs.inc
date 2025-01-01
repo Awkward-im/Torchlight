@@ -1,6 +1,5 @@
 {%REGION Mobs}
 
-{TODO: TL1: MEDIA/UNITS/MONSTERS/ UNITTYPE:PET}
 {
 PORTRAIT	STRING
 LEVEL	INTEGER
@@ -117,9 +116,10 @@ end;
 function ProcessMobs(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p:pointer;
+  lres:integer;
 begin
   result:=sres_fail;
 
@@ -133,9 +133,9 @@ begin
     
     if p<>nil then
     begin
-      result:=AddMobNode(aparam,p,adir+aname);
-           if result>0 then result:=1
-      else if result<0 then result:=0
+      lres:=AddMobNode(aparam,p,adir+aname);
+           if lres>0 then result:=1
+      else if lres<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 
@@ -146,7 +146,7 @@ begin
   end;
 end;
 
-function CheckNameMobs(const adir,aname:string; aparam:pointer):integer;
+function CheckNameMobs(const adir,aname:string; aparam:pointer):cardinal;
 begin
   // no need to check content and don't increase count
   if PModScanner(aparam)^.gamever<>verTL1 then

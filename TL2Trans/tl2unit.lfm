@@ -8,10 +8,11 @@ object MainTL2TransForm: TMainTL2TransForm
   ClientWidth = 1007
   KeyPreview = True
   Menu = TL2MainMenu
+  ShowHint = True
+  LCLVersion = '3.99.0.0'
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
-  ShowHint = True
   object TL2StatusBar: TStatusBar
     Left = 0
     Height = 23
@@ -86,14 +87,11 @@ object MainTL2TransForm: TMainTL2TransForm
       Width = 248
       Align = alCustom
       Anchors = [akTop, akLeft, akRight, akBottom]
-      FileSortType = fstNone
-      ReadOnly = True
       RowSelect = True
       TabOrder = 1
+      Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
       OnDblClick = TL2ShellTreeViewDblClick
       OnKeyDown = TL2ShellTreeViewKeyDown
-      Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
-      ObjectTypes = [otFolders]
     end
     object bbCloseTree: TBitBtn
       Left = 219
@@ -102,9 +100,9 @@ object MainTL2TransForm: TMainTL2TransForm
       Width = 30
       Anchors = [akTop, akRight]
       Kind = bkAbort
-      OnClick = bbCloseTreeClick
       Spacing = 0
       TabOrder = 2
+      OnClick = bbCloseTreeClick
     end
   end
   object TL2Splitter: TSplitter
@@ -121,11 +119,11 @@ object MainTL2TransForm: TMainTL2TransForm
     Align = alClient
     Images = TL2DataModule.TL2ImageList
     MultiLine = True
+    Options = [nboShowCloseButtons, nboMultiLine, nboDoChangeOnSetIndex]
     TabOrder = 3
     OnChange = TL2PageControlChange
     OnCloseTabClicked = TL2PageControlCloseTabClicked
     OnMouseUp = TL2PageControlMouseUp
-    Options = [nboShowCloseButtons, nboMultiLine, nboDoChangeOnSetIndex]
   end
   object TL2Toolbar: TToolBar
     Left = 0
@@ -150,14 +148,14 @@ object MainTL2TransForm: TMainTL2TransForm
       Top = 2
       Action = FileSave
     end
-    object tbFileExport: TToolButton
+    object tbModInfo: TToolButton
       Left = 96
       Top = 2
-      Action = FileExport
+      Action = actModInfo
     end
     object tbSeparator1: TToolButton
       Left = 142
-      Height = 22
+      Height = 8
       Top = 2
       Style = tbsSeparator
     end
@@ -168,7 +166,7 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object tbSeparator2: TToolButton
       Left = 173
-      Height = 22
+      Height = 8
       Top = 2
       Style = tbsSeparator
     end
@@ -195,8 +193,8 @@ object MainTL2TransForm: TMainTL2TransForm
   end
   object TL2ActionList: TActionList
     Images = TL2DataModule.TL2ImageList
-    Left = 287
-    Top = 447
+    Left = 376
+    Top = 72
     object FontEdit: TFontEdit
       Category = 'Dialog'
       Caption = '&Font'
@@ -210,46 +208,11 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object FileNew: TAction
       Category = 'File'
-      Caption = '&New'
-      Hint = 'New project'
+      Caption = 'Scan &dir'
+      Hint = 'Scan unpacked mod (directory)'
       ImageIndex = 0
-      OnExecute = FileNewExecute
       ShortCut = 16462
-    end
-    object FileOpen: TAction
-      Category = 'File'
-      Caption = '&Open'
-      Hint = 'Open project'
-      ImageIndex = 1
-      OnExecute = FileOpenExecute
-      ShortCut = 16463
-    end
-    object FileSave: TAction
-      Category = 'File'
-      Caption = '&Save'
-      Enabled = False
-      Hint = 'Save project'
-      ImageIndex = 2
-      OnExecute = FileSaveExecute
-      ShortCut = 16467
-    end
-    object FileSaveAs: TAction
-      Category = 'File'
-      Caption = 'Save &As...'
-      Enabled = False
-      Hint = 'Save project as...'
-      ImageIndex = 5
-      OnExecute = FileSaveAsExecute
-      ShortCut = 24659
-    end
-    object FileExport: TAction
-      Category = 'File'
-      Caption = '&Export'
-      Enabled = False
-      Hint = 'Export project'
-      ImageIndex = 3
-      OnExecute = FileExportExecute
-      ShortCut = 16453
+      OnExecute = FileNewExecute
     end
     object HelpAbout: TAction
       Category = 'Help'
@@ -261,49 +224,84 @@ object MainTL2TransForm: TMainTL2TransForm
     object ClosePage: TAction
       Caption = 'Close Page'
       ImageIndex = 21
-      OnExecute = ClosePageExecute
       ShortCut = 16499
+      OnExecute = ClosePageExecute
     end
     object HelpNotes: TAction
       Category = 'Help'
       Caption = 'Show Notes'
       Hint = 'Show Notes'
       ImageIndex = 8
-      OnExecute = HelpNotesExecute
       ShortCut = 32840
+      OnExecute = HelpNotesExecute
+    end
+    object FileScan: TAction
+      Category = 'File'
+      Caption = 'Scan &mod'
+      Hint = 'Scan compiled mod'
+      ImageIndex = 26
+      ShortCut = 16461
+      OnExecute = FileScanExecute
+    end
+    object FileOpen: TAction
+      Category = 'File'
+      Caption = '&Open'
+      Hint = 'Open project'
+      ImageIndex = 1
+      ShortCut = 16463
+      OnExecute = FileOpenExecute
+    end
+    object FileSave: TAction
+      Category = 'File'
+      Caption = '&Save'
+      Enabled = False
+      Hint = 'Save project'
+      ImageIndex = 2
+      ShortCut = 16467
+      OnExecute = FileSaveExecute
+    end
+    object FileSaveAs: TAction
+      Category = 'File'
+      Caption = 'Save &As...'
+      Enabled = False
+      Hint = 'Save project as...'
+      ImageIndex = 5
+      ShortCut = 24659
+      OnExecute = FileSaveAsExecute
     end
     object FileBuild: TAction
       Category = 'File'
       Caption = '&Build'
       Hint = 'Build translation'
       ImageIndex = 24
-      OnExecute = FileBuildExecute
       ShortCut = 16450
+      OnExecute = FileBuildExecute
     end
     object FileExit: TAction
       Category = 'File'
       Caption = 'E&xit'
       Hint = 'Exit program'
       ImageIndex = 18
-      OnExecute = FileExitExecute
       ShortCut = 32883
+      OnExecute = FileExitExecute
     end
-    object FileScan: TAction
-      Category = 'File'
-      Caption = 'Scan mod'
-      Hint = 'Scan compiled mod'
-      ImageIndex = 26
-      OnExecute = FileScanExecute
+    object actModInfo: TAction
+      Caption = 'Mod Info'
+      ImageIndex = 16
+      OnExecute = actModInfoExecute
     end
   end
   object TL2MainMenu: TMainMenu
     Images = TL2DataModule.TL2ImageList
-    Left = 287
-    Top = 512
+    Left = 296
+    Top = 72
     object miFile: TMenuItem
       Caption = '&File'
       object miFileNew: TMenuItem
         Action = FileNew
+      end
+      object miFileScanMod: TMenuItem
+        Action = FileScan
       end
       object miFileOpen: TMenuItem
         Action = FileOpen
@@ -314,14 +312,8 @@ object MainTL2TransForm: TMainTL2TransForm
       object miFileSaveAs: TMenuItem
         Action = FileSaveAs
       end
-      object miFileExport: TMenuItem
-        Action = FileExport
-      end
       object miFileBuild: TMenuItem
         Action = FileBuild
-      end
-      object miFileScanMod: TMenuItem
-        Action = FileScan
       end
       object miFileSep1: TMenuItem
         Caption = '-'
@@ -344,6 +336,16 @@ object MainTL2TransForm: TMainTL2TransForm
       object miHelpAbout: TMenuItem
         Action = HelpAbout
       end
+    end
+  end
+  object TabPopup: TPopupMenu
+    Images = TL2DataModule.TL2ImageList
+    Left = 448
+    Top = 72
+    object mnuClosePage: TMenuItem
+      Caption = 'Close Page'
+      ImageIndex = 21
+      OnClick = mnuClosePageClick
     end
   end
 end

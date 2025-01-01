@@ -182,7 +182,7 @@ begin
   Finish(lms);
 end;
 
-function DoCheck(const adir,aname:string; aparam:pointer):integer;
+function DoCheck(const adir,aname:string; aparam:pointer):cardinal;
 var
   lext:string;
 begin

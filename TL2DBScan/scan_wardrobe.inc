@@ -78,7 +78,7 @@ end;
 function ProcessWardrobe(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p:pointer;
   i:integer;
@@ -109,7 +109,7 @@ begin
   end;
 end;
 
-function CheckNameWard(const adir,aname:string; aparam:pointer):integer;
+function CheckNameWard(const adir,aname:string; aparam:pointer):cardinal;
 begin
   // no need to check subdirs content and don't increase count
   if (Length(adir)>15) or (aname[Length(aname)]='/') then exit(sres_nocheck+sres_fail);

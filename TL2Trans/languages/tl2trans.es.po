@@ -43,6 +43,24 @@ msgstr ""
 "excepto por traduccion online\n"
 "y procesamiento JSON"
 
+#: tdupeform.caption
+msgid "Dupe List"
+msgstr ""
+
+#: tdupeform.sgdupes.columns[0].title.caption
+#, fuzzy
+msgctxt "tdupeform.sgdupes.columns[0].title.caption"
+msgid "File"
+msgstr "Archivo"
+
+#: tdupeform.sgdupes.columns[1].title.caption
+msgid "Line"
+msgstr ""
+
+#: tdupeform.sgdupes.columns[2].title.caption
+msgid "Tag"
+msgstr ""
+
 #: tedittextform.actmarkaspartial.hint
 msgid "Mark as Partial"
 msgstr "Marcar como parcial"
@@ -63,6 +81,10 @@ msgstr "Linea anterior"
 msgid "Previous untranslated"
 msgstr "Anterior sin traducir"
 
+#: tedittextform.actshowdupe.hint
+msgid "Show doubles"
+msgstr ""
+
 #: tedittextform.actshowsample.hint
 msgid "Show Sample"
 msgstr "Visualizar muestra"
@@ -75,6 +97,15 @@ msgstr "Traducir"
 #: tedittextform.caption
 msgid "Edit text"
 msgstr "Editar texto"
+
+#: tedittextform.lbltag.caption
+msgid "Tag:"
+msgstr ""
+
+#: tl2datamodule.sseveralrefs
+#, object-pascal-format
+msgid "This text presents in several (about %d) places."
+msgstr ""
 
 #: tl2dataunit.snoblockstart
 msgid "No block start"
@@ -96,6 +127,16 @@ msgstr "Sin texto original"
 msgid "No translated text"
 msgstr "Sin texto traducido"
 
+#: tl2dupeform.stotal
+#, fuzzy
+msgctxt "tl2dupeform.stotal"
+msgid "Total"
+msgstr "Total"
+
+#: tl2edittext.sshow
+msgid "Click on \"Show Doubles\" button to show"
+msgstr ""
+
 #: tl2notesform.stitle
 msgid "Notes"
 msgstr "Notas"
@@ -103,14 +144,6 @@ msgstr "Notas"
 #: tl2projectform.saffected
 msgid " line(s) affected"
 msgstr " linea(s) afectadas"
-
-#: tl2projectform.sall
-msgid "&All"
-msgstr "&Todo"
-
-#: tl2projectform.saskexport
-msgid "Export All or just project?"
-msgstr "¿Exportar todo o solo el proyecto?"
 
 #: tl2projectform.sbuildread
 msgid "Build translation. Read"
@@ -136,13 +169,13 @@ msgstr ""
 "¿Esta seguro de eliminar la(s) linea(s) seleccionada(s)?\n"
 "Este texto solo permanecera oculto hasta que guarde y reabra el proyecto."
 
+#: tl2projectform.sdupes
+msgid "Check doubles info."
+msgstr ""
+
 #: tl2projectform.sesccancel
 msgid "ESC to cancel"
 msgstr "ESC para cancelar"
-
-#: tl2projectform.sexport
-msgid "Export finished. Create file"
-msgstr "Exportación Finalizada. Cree Archivo"
 
 #: tl2projectform.sfolderall
 msgid "- All -"
@@ -152,13 +185,13 @@ msgstr "- Todo -"
 msgid "Importing"
 msgstr "Importando"
 
+#: tl2projectform.snodoubles
+msgid "No doubles for this text"
+msgstr ""
+
 #: tl2projectform.snowarnings
 msgid "No any warnings"
 msgstr "Sin advertencias"
-
-#: tl2projectform.sproject
-msgid "&Project"
-msgstr "&Proyecto"
 
 #: tl2projectform.sreplaces
 msgid "Total replaces"
@@ -169,8 +202,9 @@ msgid "-- Root --"
 msgstr "-- arraigar --"
 
 #: tl2projectform.ssbtext
-#, object-pascal-format
-msgid "Preload files: %d; lines: base = %d, mods = %d | Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
+#, object-pascal-format, fuzzy, badformat
+#| msgid "Preload files: %d; lines: base = %d, mods = %d | Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
+msgid "Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
 msgstr "Precargar archivos: %d; lineas: base = %d, mods = %d | Archivos de Proyecto: %d; Etiquetas: %d; líneas: %d | Traducido: %d; Parcialmente: %d | Dobles: %d"
 
 #: tl2projectform.sstopscan
@@ -190,17 +224,9 @@ msgstr ""
 msgid "Warning"
 msgstr "Advertencia"
 
-#: tl2projectform.swhatexport
-msgid "What to export"
-msgstr "Que exportar"
-
 #: tl2settingsform.snotrealized
 msgid "Not realized yet"
 msgstr "Todavia sin realizar"
-
-#: tl2settingsform.sopenaddon
-msgid "Choose additional file"
-msgstr "Seleccione archivo adicional"
 
 #: tl2settingsform.ssettings
 msgctxt "tl2settingsform.ssettings"
@@ -208,6 +234,7 @@ msgid "Settings"
 msgstr "Configuracion"
 
 #: tl2simform.stotal
+msgctxt "tl2simform.stotal"
 msgid "Total"
 msgstr "Total"
 
@@ -223,10 +250,6 @@ msgstr "¿Desea escanear esta carpeta?"
 #: tl2unit.sdothescan
 msgid "Do tree scan?"
 msgstr "¿Escanear subcarpetas?"
-
-#: tl2unit.sexporting
-msgid "(exporting)"
-msgstr "(exportando)"
 
 #: tl2unit.sloading
 msgid "(loading)"
@@ -254,6 +277,14 @@ msgstr "(guardando)"
 msgid "(scanning)"
 msgstr "(escaneando)"
 
+#: tl2unit.swrongdir
+msgid "Choosed directory don't looks like mod directory (have no MEDIA folder)"
+msgstr ""
+
+#: tmaintl2transform.actmodinfo.caption
+msgid "Mod Info"
+msgstr ""
+
 #: tmaintl2transform.caption
 msgctxt "tmaintl2transform.caption"
 msgid "Torchlight 2 Translation"
@@ -264,6 +295,7 @@ msgid "Scan selected dir only"
 msgstr "Solo escanear carpeta seleccionada"
 
 #: tmaintl2transform.closepage.caption
+msgctxt "tmaintl2transform.closepage.caption"
 msgid "Close Page"
 msgstr "Cerrar pagina"
 
@@ -283,20 +315,16 @@ msgstr "S&alir"
 msgid "Exit program"
 msgstr "Cerrar programa"
 
-#: tmaintl2transform.fileexport.caption
-msgid "&Export"
-msgstr "&Exportar"
-
-#: tmaintl2transform.fileexport.hint
-msgid "Export project"
-msgstr "Exportar proyecto"
-
 #: tmaintl2transform.filenew.caption
-msgid "&New"
+#, fuzzy
+#| msgid "&New"
+msgid "Scan &dir"
 msgstr "&Nuevo"
 
 #: tmaintl2transform.filenew.hint
-msgid "New project"
+#, fuzzy
+#| msgid "New project"
+msgid "Scan unpacked mod (directory)"
 msgstr "Nuevo proyecto"
 
 #: tmaintl2transform.fileopen.caption
@@ -327,7 +355,7 @@ msgid "Save project as..."
 msgstr "Guardar el proyecto como..."
 
 #: tmaintl2transform.filescan.caption
-msgid "Scan mod"
+msgid "Scan &mod"
 msgstr ""
 
 #: tmaintl2transform.filescan.hint
@@ -377,6 +405,12 @@ msgstr "&Archivo"
 msgid "&Help"
 msgstr "&Ayuda"
 
+#: tmaintl2transform.mnuclosepage.caption
+#, fuzzy
+msgctxt "tmaintl2transform.mnuclosepage.caption"
+msgid "Close Page"
+msgstr "Cerrar pagina"
+
 #: tmaintl2transform.rbscanknown.caption
 msgid "Scan just known files"
 msgstr "Escanear archivos conocidos"
@@ -388,48 +422,6 @@ msgstr "Archivos *.DAT,  *.LAYOUT and *.TEMPLATE"
 #: tmaintl2transform.rbscantext.caption
 msgid "Scan all text files"
 msgstr "Escenar todos los archivos de texto"
-
-#: tmodinfoform.bbcancel.caption
-#, fuzzy
-msgctxt "tmodinfoform.bbcancel.caption"
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: tmodinfoform.caption
-msgid "MOD Info"
-msgstr ""
-
-#: tmodinfoform.lbldescr.caption
-msgid "Mod Description"
-msgstr ""
-
-#: tmodinfoform.lblguid.caption
-msgid "Mod GUID (click button for new)"
-msgstr ""
-
-#: tmodinfoform.lblversion.caption
-msgid "Mod version"
-msgstr ""
-
-#: tmodinfoform.leauthor.editlabel.caption
-msgid "Mod Author"
-msgstr ""
-
-#: tmodinfoform.ledownload.editlabel.caption
-msgid "Mod Download URL"
-msgstr ""
-
-#: tmodinfoform.lefilename.editlabel.caption
-msgid "Mod File Name"
-msgstr ""
-
-#: tmodinfoform.letitle.editlabel.caption
-msgid "Mod Title"
-msgstr ""
-
-#: tmodinfoform.lewebsite.editlabel.caption
-msgid "Mod Website URL"
-msgstr ""
 
 #: trclass.scanttranslate
 msgctxt "trclass.scanttranslate"
@@ -445,6 +437,10 @@ msgstr "Codigo API bloqueado"
 msgctxt "trclass.stoolongtext"
 msgid "Text length too large"
 msgstr "Texto demasiado largo"
+
+#: trclass.stoomanyrequest
+msgid "Too many requests. Please wait and resend your request."
+msgstr ""
 
 #: trclass.stoomuchtext
 msgctxt "trclass.stoomuchtext"
@@ -466,6 +462,18 @@ msgctxt "trclass.swronglanguage"
 msgid "Choosen language is unsupported"
 msgstr "Lenguage seleccionado no esta soportado"
 
+#: tsimilarform.btndupes.caption
+msgid "Doubles"
+msgstr ""
+
+#: tsimilarform.caption
+msgid "Similars List"
+msgstr ""
+
+#: tsimilarform.lblpartial.caption
+msgid "(Partial translation)"
+msgstr ""
+
 #: ttl2notes.bbcancel.caption
 msgctxt "ttl2notes.bbcancel.caption"
 msgid "Cancel"
@@ -483,6 +491,10 @@ msgstr "Agregar Nota"
 #: ttl2notes.sbdelete.hint
 msgid "Delete note"
 msgstr "Eliminar nota"
+
+#: ttl2notes.sbreload.hint
+msgid "Try to reload notes"
+msgstr ""
 
 #: ttl2notes.sbsave.hint
 msgid "Save notes"
@@ -513,10 +525,6 @@ msgstr "Copiar texto original seleccionado al portapapeles"
 #: ttl2project.actexportfile.hint
 msgid "Save selected source text"
 msgstr "Guardar texto original seleccionado"
-
-#: ttl2project.actfilename.hint
-msgid "Short file names"
-msgstr "Nombres de archivo cortos"
 
 #: ttl2project.actfilter.hint
 msgid "Filter"
@@ -554,10 +562,6 @@ msgstr "Mostrar lineas duplicadas"
 msgid "Show lines with \"almost the same\" text"
 msgstr "Mostrar lineas con texto \"Similar\""
 
-#: ttl2project.actshowtemplate.hint
-msgid "Show template text"
-msgstr "Mostar texto de plantilla"
-
 #: ttl2project.acttranslate.hint
 msgid "Use online translate service"
 msgstr "Usar servicio de traducción online"
@@ -566,30 +570,26 @@ msgstr "Usar servicio de traducción online"
 msgid "Top-level folder filter"
 msgstr "Filtro de carpeta de nivel superior"
 
-#: ttl2project.tl2projectgrid.columns[0].title.caption
-msgid "File"
+#: ttl2project.tl2grid.columns[0].title.caption
+#, fuzzy
+#| msgid "File"
+msgctxt "ttl2project.tl2grid.columns[0].title.caption"
+msgid "Value"
 msgstr "Archivo"
 
-#: ttl2project.tl2projectgrid.columns[1].title.caption
-msgid "Attribute"
+#: ttl2project.tl2grid.columns[1].title.caption
+#, fuzzy
+#| msgid "Attribute"
+msgctxt "ttl2project.tl2grid.columns[1].title.caption"
+msgid "Part"
 msgstr "Atributos"
 
-#: ttl2project.tl2projectgrid.columns[2].title.caption
-msgid "Template"
-msgstr "Plantilla"
-
-#: ttl2project.tl2projectgrid.columns[3].title.caption
-msgctxt "ttl2project.tl2projectgrid.columns[3].title.caption"
-msgid "Value"
-msgstr "Valor"
-
-#: ttl2project.tl2projectgrid.columns[4].title.caption
-msgid "Part"
-msgstr "Parte"
-
-#: ttl2project.tl2projectgrid.columns[5].title.caption
+#: ttl2project.tl2grid.columns[2].title.caption
+#, fuzzy
+#| msgid "Template"
+msgctxt "ttl2project.tl2grid.columns[2].title.caption"
 msgid "Translation"
-msgstr "Traducción"
+msgstr "Plantilla"
 
 #: ttl2settings.bbfontedit.caption
 msgctxt "ttl2settings.bbfontedit.caption"
@@ -604,10 +604,6 @@ msgstr "&Guardar"
 #: ttl2settings.cbautoaspartial.caption
 msgid "Mark Autocorrected as partial"
 msgstr "Marcar autocorregido como parcial"
-
-#: ttl2settings.cbexportparts.caption
-msgid "Export partially translated text"
-msgstr "Exportar texto traducido parcialmente"
 
 #: ttl2settings.cbhidepartial.caption
 msgid "Hide Partial with Translated"
@@ -629,48 +625,26 @@ msgstr "Eliminar etiquetas en la traducción"
 msgid "Reopen projects at start"
 msgstr "Reapertura de proyectos al inicio"
 
-#: ttl2settings.cbshowdebug.caption
-msgid "Show Debug Options"
-msgstr "Mostrar opciones de depuración"
-
-#: ttl2settings.cbtabsync.caption
-msgid "Tab Sync"
-msgstr ""
-
-#: ttl2settings.gbother.caption
-msgid "Other"
-msgstr "Otro"
-
-#: ttl2settings.gbtranslategoogle.caption
-msgid "Google Translation"
-msgstr "Traduccion Google"
-
-#: ttl2settings.gbtranslateyandex.caption
-msgid "Yandex Translation"
-msgstr "Traduccion Yandex"
-
 #: ttl2settings.gbtranslation.caption
+#, fuzzy
+#| msgid "Translation (DblClick to Toggle)"
 msgctxt "ttl2settings.gbtranslation.caption"
-msgid "Translation (DblClick to Toggle)"
+msgid "Translation details"
 msgstr "Traducción (DblClick to Alternar)"
 
-#: ttl2settings.lbladdfile.caption
-msgid "Additional files"
-msgstr "Archivos adicionales"
-
-#: ttl2settings.lblapikeygoogle.caption
-msgctxt "ttl2settings.lblapikeygoogle.caption"
-msgid "API Key"
-msgstr "Codigo API"
-
-#: ttl2settings.lblapikeyyandex.caption
-msgctxt "ttl2settings.lblapikeyyandex.caption"
+#: ttl2settings.lblapikey.caption
+#, fuzzy
+msgctxt "ttl2settings.lblapikey.caption"
 msgid "API Key"
 msgstr "Codigo API"
 
 #: ttl2settings.lbldefaultfile.caption
 msgid "Default translation file"
 msgstr "Archivo de traduccion por defecto"
+
+#: ttl2settings.lbldeffiledescr.caption
+msgid "This file used as basic translation file for new projects and final build"
+msgstr ""
 
 #: ttl2settings.lblfilter.caption
 msgid "Words to exclude from comparing"
@@ -680,19 +654,11 @@ msgstr "Palabras a excluir de la comparacion"
 msgid "Reopen project to apply new list"
 msgstr "Reabrir proyecto para aplicar nueva lista"
 
-#: ttl2settings.lblgetapikeygoogle.caption
-msgctxt "ttl2settings.lblgetapikeygoogle.caption"
+#: ttl2settings.lblgetapikey.caption
+#, fuzzy
+msgctxt "ttl2settings.lblgetapikey.caption"
 msgid "Get your own API key"
 msgstr "Obten to propio codigo API"
-
-#: ttl2settings.lblgetapikeyyandex.caption
-msgctxt "ttl2settings.lblgetapikeyyandex.caption"
-msgid "Get your own API key"
-msgstr "Obten to propio codigo API"
-
-#: ttl2settings.lblimportdir.caption
-msgid "Importing files directory"
-msgstr "Importando carpeta de archivos"
 
 #: ttl2settings.lbllang.caption
 msgid "Translation language"
@@ -713,8 +679,4 @@ msgstr "Traductores"
 #: ttl2settings.lblworkdirectory.caption
 msgid "Working directory"
 msgstr "Carpeta de trabajo"
-
-#: ttl2settings.lblyandexnote.caption
-msgid "Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols."
-msgstr "Tamaño del texto es inferior a 10Kb. Limite diario es 1.000.000 caracteres. Limite mensual es 10.000.000 caracteres."
 

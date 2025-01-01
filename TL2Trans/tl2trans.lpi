@@ -32,7 +32,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -84,7 +84,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -112,6 +112,9 @@
               <ShowExecInfo Value="True"/>
               <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx5024="True"/>
+            </CompilerMessages>
             <OtherDefines Count="1">
               <Define0 Value="DEBUG"/>
             </OtherDefines>
@@ -127,7 +130,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -154,6 +157,9 @@
               <ShowExecInfo Value="True"/>
               <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx5024="True"/>
+            </CompilerMessages>
           </Other>
         </CompilerOptions>
       </Item>
@@ -169,7 +175,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -208,7 +214,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -334,7 +340,7 @@
       <Unit>
         <Filename Value="tl2simform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SimilaristForm"/>
+        <ComponentName Value="SimilarForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SimForm"/>
@@ -372,19 +378,29 @@
         <UnitName Value="RGGlobal"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\TL2Mod.pas"/>
+        <Filename Value="..\..\utils\textcache.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="TextCache"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
+        <Filename Value="..\TL2Lib\rgmod.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGMod"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2dupeform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DupeForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2DupeForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmmodinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MODInfoForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmModInfo"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\utils\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -396,7 +412,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
     </SearchPaths>
     <Linking>

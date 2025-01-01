@@ -36,7 +36,7 @@ begin
     result:=-1
 end;
 
-function AddRecipeNode(ams:pointer; anode:pointer; const fname:string):int64;
+function AddRecipeNode(ams:pointer; anode:pointer; const fname:string):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
@@ -61,18 +61,16 @@ begin
     end;
   end;
 
-  lid:=AddRecipeToBase(ams,name,lid,title,fname);
-
-  result:=lid;
+  result:=AddRecipeToBase(ams,name,lid,title,fname);
 end;
 
 function ProcessRecipes(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p:pointer;
-  i:int64;
+  lres:integer;
 begin
   result:=sres_fail;
 
@@ -86,10 +84,9 @@ begin
     
     if p<>nil then
     begin
-      i:=AddRecipeNode(aparam,p,aname);
-
-           if result>0 then result:=1
-      else if result<0 then result:=0
+      lres:=AddRecipeNode(aparam,p,aname);
+           if lres>0 then result:=1
+      else if lres<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

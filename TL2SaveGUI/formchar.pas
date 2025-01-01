@@ -954,7 +954,7 @@ end;
 procedure TfmChar.FillWardMatrix(const alist:string);
 var
   buf:array [0..15] of AnsiChar;
-  aval,pc:PAnsiChar;
+  pc:PAnsiChar;
   lcnt,i,j,lval,ltype:integer;
 begin
   FillChar(ClassWardrobe,SizeOf(ClassWardrobe),#255);

@@ -1,23 +1,23 @@
 object EditTextForm: TEditTextForm
   Left = 696
-  Height = 357
+  Height = 407
   Top = 278
   Width = 533
   Caption = 'Edit text'
-  ClientHeight = 357
+  ClientHeight = 407
   ClientWidth = 533
-  OnClose = FormClose
   ParentFont = True
   ShowHint = True
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '3.99.0.0'
+  OnClose = FormClose
   object pnl_1_File: TPanel
     Left = 0
-    Height = 25
+    Height = 49
     Top = 0
     Width = 533
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 25
+    ClientHeight = 49
     ClientWidth = 533
     TabOrder = 0
     object lblFile: TLabel
@@ -29,50 +29,36 @@ object EditTextForm: TEditTextForm
       AutoSize = False
       ParentColor = False
     end
-  end
-  object pnl_2_Sample: TPanel
-    Left = 0
-    Height = 56
-    Top = 25
-    Width = 533
-    Align = alTop
-    ClientHeight = 56
-    ClientWidth = 533
-    TabOrder = 1
-    Visible = False
-    object memSample: TMemo
+    object lblTag: TLabel
       Left = 6
-      Height = 49
-      Top = 2
-      Width = 502
-      Anchors = [akTop, akLeft, akRight]
-      ReadOnly = True
-      TabOrder = 0
+      Height = 15
+      Top = 30
+      Width = 23
+      Caption = 'Tag:'
     end
-    object btnCloseSample: TSpeedButton
-      Left = 514
-      Height = 16
-      Top = 2
-      Width = 16
-      Anchors = [akTop, akRight]
-      Flat = True
-      Images = TL2DataModule.TL2ImageList
-      ImageIndex = 21
-      OnClick = btnCloseSampleClick
+    object lblTagValue: TLabel
+      AnchorSideLeft.Control = lblTag
+      AnchorSideLeft.Side = asrBottom
+      Left = 35
+      Height = 15
+      Top = 30
+      Width = 490
+      AutoSize = False
+      BorderSpacing.Left = 6
     end
   end
   object pnl_3_Original: TPanel
     Left = 0
-    Height = 73
-    Top = 81
+    Height = 155
+    Top = 49
     Width = 533
     Align = alClient
-    ClientHeight = 73
+    ClientHeight = 155
     ClientWidth = 533
-    TabOrder = 2
+    TabOrder = 1
     object memOriginal: TMemo
       Left = 6
-      Height = 65
+      Height = 147
       Top = 4
       Width = 519
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -83,12 +69,12 @@ object EditTextForm: TEditTextForm
   object pnl_4_Toolbar: TPanel
     Left = 0
     Height = 30
-    Top = 154
+    Top = 204
     Width = 533
     Align = alBottom
     ClientHeight = 30
     ClientWidth = 533
-    TabOrder = 3
+    TabOrder = 2
     object sbPrev: TSpeedButton
       Left = 37
       Height = 22
@@ -162,36 +148,45 @@ object EditTextForm: TEditTextForm
       ImageIndex = 15
       ShowCaption = False
     end
+    object sbShowDupe: TSpeedButton
+      Left = 240
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actShowDupe
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 7
+    end
   end
   object pnl_5_Translation: TPanel
     Left = 0
     Height = 136
-    Top = 184
+    Top = 234
     Width = 533
     Align = alBottom
     ClientHeight = 136
     ClientWidth = 533
-    TabOrder = 4
+    TabOrder = 3
     object memTrans: TMemo
       Left = 8
       Height = 126
       Top = 4
       Width = 517
       Anchors = [akTop, akLeft, akRight]
-      OnKeyDown = memTransKeyDown
       ScrollBars = ssAutoVertical
       TabOrder = 0
+      OnKeyDown = memTransKeyDown
     end
   end
   object pnl_6_Bottom: TPanel
     Left = 0
     Height = 37
-    Top = 320
+    Top = 370
     Width = 533
     Align = alBottom
     ClientHeight = 37
     ClientWidth = 533
-    TabOrder = 5
+    TabOrder = 4
     object lblNumber: TLabel
       Left = 8
       Height = 1
@@ -220,60 +215,61 @@ object EditTextForm: TEditTextForm
       DefaultCaption = True
       Kind = bkOK
       ModalResult = 1
-      OnClick = bbOKClick
       TabOrder = 1
+      OnClick = bbOKClick
     end
   end
   object ActionList: TActionList
     Images = TL2DataModule.TL2ImageList
-    Left = 216
-    Top = 329
+    Left = 104
+    Top = 320
     object actPrevLine: TAction
       Hint = 'Previous line'
       ImageIndex = 12
-      OnExecute = actPrevLineExecute
       ShortCut = 32805
+      OnExecute = actPrevLineExecute
     end
     object actNextLine: TAction
       Hint = 'Next line'
       ImageIndex = 13
-      OnExecute = actNextLineExecute
       ShortCut = 32807
+      OnExecute = actNextLineExecute
     end
     object actPrevUntranslated: TAction
       Hint = 'Previous untranslated'
       ImageIndex = 14
-      OnExecute = actPrevUntranslatedExecute
       ShortCut = 32806
+      OnExecute = actPrevUntranslatedExecute
     end
     object actNextUntranslated: TAction
       Hint = 'Next untranslated'
       ImageIndex = 15
-      OnExecute = actNextUntranslatedExecute
       ShortCut = 32808
+      OnExecute = actNextUntranslatedExecute
     end
     object actMarkAsPartial: TAction
       GroupIndex = 1
       Hint = 'Mark as Partial'
-      ImageIndex = 8
-      OnExecute = actMarkAsPartialExecute
+      ImageIndex = 11
       ShortCut = 32848
+      OnExecute = actMarkAsPartialExecute
     end
     object actShowSample: TAction
       Hint = 'Show Sample'
       ImageIndex = 17
-      OnExecute = actShowSampleExecute
       ShortCut = 32851
+      OnExecute = actShowSampleExecute
     end
     object actTranslate: TAction
       Hint = 'Translate'
-      OnExecute = actTranslateExecute
+      ImageIndex = 8
       ShortCut = 32852
+      OnExecute = actTranslateExecute
     end
-  end
-  object mnuColor: TPopupMenu
-    AutoPopup = False
-    Left = 176
-    Top = 328
+    object actShowDupe: TAction
+      Hint = 'Show doubles'
+      ImageIndex = 7
+      OnExecute = actShowDupeExecute
+    end
   end
 end

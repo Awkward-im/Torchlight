@@ -51,9 +51,10 @@ end;
 function ProcessStats(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p:pointer;
+  lres:integer;
 begin
   result:=sres_fail;
 
@@ -67,9 +68,9 @@ begin
     
     if p<>nil then
     begin
-      result:=AddStatNode(aparam,p);
-           if result>0 then result:=1
-      else if result<0 then result:=0
+      lres:=AddStatNode(aparam,p);
+           if lres>0 then result:=1
+      else if lres<0 then result:=0
       else if RGDebugLevel=dlDetailed then
         RGLog.Add('can''t update '+aname);
 

@@ -25,6 +25,21 @@ var
 var
   RGLog :logging.TLog;
 
+type
+  TRGDoubleAction = (
+    da_ask,          // ask for action
+    da_stop,         // stop cycle
+    da_skip,         // skip existing file
+    da_skipdir,      // skip existing files in current dir (subdirs?)
+    da_skipall,      // skip all existing files
+    da_compare,      // compare and change
+    da_overwrite,    // overwrite existing file
+    da_overwritedir, // overwrite existing files in this dir (subdirs?)
+    da_overwriteall, // overwrite all existing files (for binaries only?)
+    da_renameold,    // rename existing (old) file (rename by template?)
+    da_saveas        // rename new file (rename by template?)
+  );
+
 const
   TL1DataBase = 'tl1db.db';
   TL2DataBase = 'tl2db2.db';
@@ -83,6 +98,8 @@ const
 //--- Functions
 
 {$i rg_split.inc}
+
+function MakeMethod(Data, Code:Pointer):TMethod;
 
 function  FileTimeToDateTime(const FileTime: Int64): TDateTime;
 function  DateTimeToFileTime(adate: TDateTime): Int64;
@@ -336,6 +353,12 @@ implementation
 {$UNDEF Interface}
 
 {$i rg_split.inc}
+
+function MakeMethod(Data, Code:Pointer):TMethod;
+begin
+  Result.Data:=Data;
+  Result.Code:=Code;
+end;
 
 type
   tTL2VerRec = record

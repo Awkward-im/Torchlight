@@ -68,21 +68,6 @@ type
   end;
 
 type
-  TRGDoubleAction = (
-    da_ask,          // ask for action
-    da_stop,         // stop cycle
-    da_skip,         // skip existing file
-    da_skipdir,      // skip existing files in current dir (subdirs?)
-    da_skipall,      // skip all existing files
-    da_compare,      // compare and change
-    da_overwrite,    // overwrite existing file
-    da_overwritedir, // overwrite existing files in this dir (subdirs?)
-    da_overwriteall, // overwrite all existing files (for binaries only?)
-    da_renameold,    // rename existing (old) file (rename by template?)
-    da_saveas        // rename new file (rename by template?)
-  );
-
-type
   // "newdata" is filename if "newsize"=0
   TRGOnDouble = function(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction of object;
 type

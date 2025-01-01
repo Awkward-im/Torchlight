@@ -13,7 +13,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -53,7 +53,7 @@
         <Filename Value="scanall.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="24"/>
+        <CursorPos X="21" Y="13"/>
         <UsageCount Value="167"/>
       </Unit>
       <Unit>
@@ -63,8 +63,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formScanAll"/>
-        <TopLine Value="74"/>
-        <CursorPos X="39" Y="89"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="184"/>
+        <CursorPos X="67" Y="185"/>
         <UsageCount Value="167"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -98,7 +99,6 @@
       <Unit>
         <Filename Value="scan_inventory.inc"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <TopLine Value="3"/>
         <CursorPos Y="16"/>
@@ -442,8 +442,20 @@
         <CursorPos Y="249"/>
         <UsageCount Value="9"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmgameversion.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmGameVer"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmGameVersion"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="25">
+    <JumpHistory HistoryIndex="27">
       <Position>
         <Filename Value="scan_u_mobs.inc"/>
         <Caret Line="50" Column="97" TopLine="32"/>
@@ -514,10 +526,6 @@
       </Position>
       <Position>
         <Filename Value="scan_quest.inc"/>
-        <Caret Line="50" TopLine="67"/>
-      </Position>
-      <Position>
-        <Filename Value="scan_quest.inc"/>
         <Caret Line="30" TopLine="27"/>
       </Position>
       <Position>
@@ -547,6 +555,18 @@
       <Position>
         <Filename Value="scan_inventory.inc"/>
         <Caret Line="18" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="scan_inventory.inc"/>
+        <Caret Line="16" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="unitscan.pas"/>
+        <Caret Line="236" Column="30" TopLine="221"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="281" Column="79" TopLine="265"/>
       </Position>
     </JumpHistory>
     <RunParams>

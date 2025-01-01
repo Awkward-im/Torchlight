@@ -1,3 +1,5 @@
+{TODO: use ext array in Create like ['.DAT','.LAYOUT' etc]}
+{TODO: use double act codes like in ctrl}
 unit fmAsk;
 
 {$mode ObjFPC}{$H+}
@@ -5,7 +7,8 @@ unit fmAsk;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
+  rgglobal;
 
 type
 
@@ -36,7 +39,7 @@ type
   private
 
   public
-    MyResult:integer;
+    MyResult:TRGDoubleAction;
 
     constructor Create(const fname:string; aoldsize,anewsize:integer{; amode:integer}); overload;
   end;
@@ -47,9 +50,6 @@ var
 implementation
 
 {$R *.lfm}
-
-uses
-  unitComboCommon;
 
 { TAskForm }
 
@@ -76,7 +76,7 @@ begin
   lblOldSizeNum.Caption:=IntToStr(aoldsize);
   lblNewSizeNum.Caption:=IntToStr(anewsize);
 
-  MyResult:=ord(tact.ask);
+  MyResult:=da_ask;
 end;
 
 procedure TAskForm.cbForAllChange(Sender: TObject);
@@ -89,35 +89,35 @@ procedure TAskForm.bbContinueClick(Sender: TObject);
 begin
   if rbSkip.Checked then
   begin
-    if cbForAll.Checked then MyResult:=ord(tact.skipall)
-    else                     MyResult:=ord(tact.skip)
+    if cbForAll.Checked then MyResult:=da_skipall
+    else                     MyResult:=da_skip
   end
   else //if rbOverwrite.Checked then
   begin
-    if      cbForAll    .Checked then MyResult:=ord(tact.overwriteall)
-    else if cbCurrentDir.Checked then MyResult:=ord(tact.overwritedir)
-    else                              MyResult:=ord(tact.overwrite)
+    if      cbForAll    .Checked then MyResult:=da_overwriteall
+    else if cbCurrentDir.Checked then MyResult:=da_overwritedir
+    else                              MyResult:=da_overwrite
   end;
 end;
 
 procedure TAskForm.bbRenameClick(Sender: TObject);
 begin
-  MyResult:=ord(tact.renameold);
+  MyResult:=da_renameold;
 end;
 
 procedure TAskForm.bbSaveAsClick(Sender: TObject);
 begin
-  MyResult:=ord(tact.saveas);
+  MyResult:=da_saveas;
 end;
 
 procedure TAskForm.bbStopClick(Sender: TObject);
 begin
-  MyResult:=ord(tact.stop);
+  MyResult:=da_stop;
 end;
 
 procedure TAskForm.bbCompareClick(Sender: TObject);
 begin
-  MyResult:=ord(tact.ask);
+  MyResult:=da_compare;
 end;
 
 end.

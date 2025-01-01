@@ -2,6 +2,7 @@
 {"hash":174543573,"name":"ttl2notes.sbadd.hint","sourcebytes":[65,100,100,32,110,111,116,101],"value":"Add note"},
 {"hash":171807845,"name":"ttl2notes.sbdelete.hint","sourcebytes":[68,101,108,101,116,101,32,110,111,116,101],"value":"Delete note"},
 {"hash":124973571,"name":"ttl2notes.sbsave.hint","sourcebytes":[83,97,118,101,32,110,111,116,101,115],"value":"Save notes"},
+{"hash":176555251,"name":"ttl2notes.sbreload.hint","sourcebytes":[84,114,121,32,116,111,32,114,101,108,111,97,100,32,110,111,116,101,115],"value":"Try to reload notes"},
 {"hash":2857157,"name":"ttl2notes.bbsave.caption","sourcebytes":[38,83,97,118,101],"value":"&Save"},
 {"hash":77089212,"name":"ttl2notes.bbcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
 {"hash":140145445,"name":"ttl2notes.sbtranslate.hint","sourcebytes":[84,114,97,110,115,108,97,116,101],"value":"Translate"},

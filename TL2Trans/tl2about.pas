@@ -39,7 +39,7 @@ uses
 
 procedure TAboutForm.FormCreate(Sender: TObject);
 begin
-  lblVersion.Caption:='v.0.1';
+  lblVersion.Caption:='v.2.0';
   lblCompiled.Caption:=
     'Compiled at '+{$I %DATE%}+' '+{$I %TIME%}+
     ' with FreePascal v.'+{$I %FPCVERSION%}+

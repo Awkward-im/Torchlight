@@ -2,6 +2,7 @@
 
 uses
   rgglobal,
+  rgdict,
   rgnode,
   rgdictlayout,
   rgio.layout,
@@ -11,6 +12,8 @@ var
   p:pointer;
   ver:integer;
 begin
+  RGTags.Import('RGDICT','TEXT');
+
   LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
   LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
   LoadLayoutDict('LAYRG' , 'TEXT', verRG);

@@ -6,13 +6,12 @@ object TL2Settings: TTL2Settings
   BorderStyle = bsNone
   ClientHeight = 561
   ClientWidth = 875
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
   ParentFont = True
+  OnCreate = FormCreate
   object lblDefaultFile: TLabel
     Left = 8
     Height = 15
-    Top = 53
+    Top = 104
     Width = 392
     Alignment = taCenter
     AutoSize = False
@@ -21,8 +20,9 @@ object TL2Settings: TTL2Settings
   object edDefaultFile: TFileNameEdit
     Left = 8
     Height = 23
-    Top = 73
+    Top = 124
     Width = 392
+    OnAcceptFileName = edDefaultFileAcceptFileName
     DialogTitle = 'Default translation filename'
     FilterIndex = 0
     HideDirectories = False
@@ -35,7 +35,7 @@ object TL2Settings: TTL2Settings
   object lblRootDirectory: TLabel
     Left = 8
     Height = 15
-    Top = 104
+    Top = 54
     Width = 392
     Alignment = taCenter
     AutoSize = False
@@ -44,7 +44,7 @@ object TL2Settings: TTL2Settings
   object edRootDir: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 122
+    Top = 72
     Width = 392
     DialogTitle = 'Root mod files directory'
     ShowHidden = False
@@ -78,114 +78,26 @@ object TL2Settings: TTL2Settings
     AutoSize = False
     Caption = 'Working directory'
   end
-  object lblAddFile: TLabel
-    Left = 8
-    Height = 15
-    Top = 375
-    Width = 364
-    Alignment = taCenter
-    Anchors = [akLeft, akBottom]
-    AutoSize = False
-    Caption = 'Additional files'
-  end
-  object lbAddFileList: TListBox
-    Left = 8
-    Height = 157
-    Top = 395
-    Width = 364
-    Anchors = [akLeft, akBottom]
-    ItemHeight = 0
-    TabOrder = 8
-  end
   object bbSaveSettings: TBitBtn
-    Left = 792
-    Height = 30
-    Top = 522
-    Width = 75
+    Left = 797
+    Height = 26
+    Top = 526
+    Width = 70
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Caption = '&Save'
     Default = True
     Kind = bkOK
+    TabOrder = 9
     OnClick = bbSaveSettingsClick
-    TabOrder = 13
-  end
-  object sbAddonUp: TSpeedButton
-    Left = 377
-    Height = 22
-    Top = 395
-    Width = 23
-    Anchors = [akLeft, akBottom]
-    Images = TL2DataModule.TL2ImageList
-    ImageIndex = 23
-    OnClick = TL2ArrowUpClick
-  end
-  object sbAddonAdd: TSpeedButton
-    Left = 377
-    Height = 22
-    Top = 452
-    Width = 23
-    Anchors = [akLeft, akBottom]
-    Images = TL2DataModule.TL2ImageList
-    ImageIndex = 6
-    OnClick = sbAddonAddClick
-  end
-  object sbAddonDel: TSpeedButton
-    Left = 377
-    Height = 22
-    Top = 484
-    Width = 23
-    Anchors = [akLeft, akBottom]
-    Images = TL2DataModule.TL2ImageList
-    ImageIndex = 7
-    OnClick = sbAddonDelClick
-  end
-  object sbAddonDown: TSpeedButton
-    Left = 377
-    Height = 22
-    Top = 530
-    Width = 23
-    Anchors = [akLeft, akBottom]
-    Images = TL2DataModule.TL2ImageList
-    ImageIndex = 22
-    OnClick = TL2ArrowDownClick
-  end
-  object cbExportParts: TCheckBox
-    Left = 8
-    Height = 19
-    Top = 198
-    Width = 175
-    Caption = 'Export partially translated text'
-    TabOrder = 4
-  end
-  object edImportDir: TDirectoryEdit
-    Left = 8
-    Height = 23
-    Top = 171
-    Width = 392
-    ShowHidden = False
-    ButtonWidth = 23
-    DirectInput = False
-    NumGlyphs = 1
-    AutoSize = False
-    MaxLength = 0
-    TabOrder = 3
-  end
-  object lblImportDir: TLabel
-    Left = 8
-    Height = 15
-    Top = 153
-    Width = 392
-    Alignment = taCenter
-    AutoSize = False
-    Caption = 'Importing files directory'
   end
   object cbImportParts: TCheckBox
     Left = 8
     Height = 19
-    Top = 223
-    Width = 176
+    Top = 194
+    Width = 174
     Caption = 'Mark imported lines as partial'
-    TabOrder = 5
+    TabOrder = 3
   end
   object lblLang: TLabel
     Left = 536
@@ -199,20 +111,20 @@ object TL2Settings: TTL2Settings
     Height = 23
     Top = 4
     Width = 114
-    TabOrder = 9
+    TabOrder = 6
   end
   object lbLanguage: TListBox
-    Left = 412
+    Left = 8
     Height = 157
     Top = 395
     Width = 184
     Anchors = [akLeft, akBottom]
     ItemHeight = 0
+    TabOrder = 7
     OnSelectionChange = lbLanguageSelectionChange
-    TabOrder = 10
   end
   object lblProgramLanguage: TLabel
-    Left = 412
+    Left = 8
     Height = 15
     Top = 375
     Width = 184
@@ -228,7 +140,7 @@ object TL2Settings: TTL2Settings
     Width = 167
     Anchors = [akLeft, akBottom]
     ItemHeight = 0
-    TabOrder = 11
+    TabOrder = 8
   end
   object lblTranslators: TLabel
     Left = 608
@@ -243,209 +155,150 @@ object TL2Settings: TTL2Settings
   object cbAutoAsPartial: TCheckBox
     Left = 8
     Height = 19
-    Top = 248
-    Width = 176
+    Top = 217
+    Width = 174
     Caption = 'Mark Autocorrected as partial'
-    TabOrder = 6
+    TabOrder = 4
   end
   object gbTranslation: TGroupBox
-    Left = 412
-    Height = 20
-    Top = 40
+    Left = 408
+    Height = 296
+    Top = 72
     Width = 455
     Anchors = [akTop, akLeft, akRight]
-    Caption = 'Translation (DblClick to Toggle)'
-    ClientHeight = 0
+    Caption = 'Translation details'
+    ClientHeight = 276
     ClientWidth = 451
-    TabOrder = 14
-    OnDblClick = gbTranslationClick
-    object gbTranslateGoogle: TGroupBox
+    TabOrder = 10
+    Visible = False
+    object lblAPIKey: TLabel
       Left = 4
-      Height = 85
-      Top = 155
-      Width = 445
-      Anchors = [akTop, akLeft, akRight]
-      Caption = 'Google Translation'
-      ClientHeight = 65
-      ClientWidth = 441
-      TabOrder = 1
-      object lblAPIKeyGoogle: TLabel
-        Left = 4
-        Height = 15
-        Top = 2
-        Width = 40
-        Caption = 'API Key'
-      end
-      object memAPIKeyGoogle: TMemo
-        Left = 4
-        Height = 34
-        Top = 24
-        Width = 432
-        Anchors = [akTop, akLeft, akRight]
-        TabOrder = 0
-      end
-      object lblGetAPIKeyGoogle: TLabel
-        Cursor = crHandPoint
-        Left = 323
-        Height = 15
-        Top = 2
-        Width = 113
-        Alignment = taRightJustify
-        Anchors = [akTop, akRight]
-        Caption = 'Get your own API key'
-        Font.Color = clBlue
-        Font.Style = [fsUnderline]
-        ParentFont = False
-        OnClick = lblGetAPIKeyGoogleClick
-      end
-    end
-    object gbTranslateYandex: TGroupBox
-      Left = 4
-      Height = 142
-      Top = 5
-      Width = 445
-      Anchors = [akTop, akLeft, akRight]
-      Caption = 'Yandex Translation'
-      ClientHeight = 122
-      ClientWidth = 441
-      TabOrder = 0
-      object lblAPIKeyYandex: TLabel
-        Left = 4
-        Height = 15
-        Top = 2
-        Width = 40
-        Caption = 'API Key'
-      end
-      object memAPIKeyYandex: TMemo
-        Left = 4
-        Height = 40
-        Top = 24
-        Width = 432
-        Anchors = [akTop, akLeft, akRight]
-        TabOrder = 0
-      end
-      object lblGetAPIKeyYandex: TLabel
-        Cursor = crHandPoint
-        Left = 323
-        Height = 15
-        Top = 2
-        Width = 113
-        Alignment = taRightJustify
-        Anchors = [akTop, akRight]
-        Caption = 'Get your own API key'
-        Font.Color = clBlue
-        Font.Style = [fsUnderline]
-        ParentFont = False
-        Visible = False
-        OnClick = lblGetAPIKeyYandexClick
-      end
-      object lblYandexNote: TLabel
-        Left = 4
-        Height = 47
-        Top = 70
-        Width = 432
-        Anchors = [akTop, akLeft, akRight]
-        AutoSize = False
-        Caption = 'Text length is not more than 10Kb. Day limit is 1 000 000 symbols. Month limit is 10 000 000 symbols.'
-        WordWrap = True
-      end
-    end
-  end
-  object gbOther: TGroupBox
-    AnchorSideTop.Control = gbTranslation
-    AnchorSideTop.Side = asrBottom
-    Left = 412
-    Height = 301
-    Top = 64
-    Width = 455
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Top = 4
-    Caption = 'Other'
-    ClientHeight = 281
-    ClientWidth = 451
-    TabOrder = 12
-    object cbRemoveTags: TCheckBox
-      Left = 8
-      Height = 19
-      Top = 0
-      Width = 164
-      Caption = 'Remove tags on translation'
-      TabOrder = 0
-    end
-    object lblFilter: TLabel
-      Left = 8
       Height = 15
-      Top = 32
-      Width = 364
+      Top = 74
+      Width = 40
+      Caption = 'API Key'
+    end
+    object lblGetAPIKey: TLabel
+      Cursor = crHandPoint
+      Left = 323
+      Height = 15
+      Top = 74
+      Width = 113
+      Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      Caption = 'Get your own API key'
+      Font.Color = clBlue
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      Visible = False
+      OnClick = lblGetAPIKeyClick
+    end
+    object memAPIKey: TMemo
+      Left = 4
+      Height = 40
+      Top = 96
+      Width = 432
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 0
+    end
+    object lblNote: TLabel
+      Left = 4
+      Height = 47
+      Top = 144
+      Width = 432
+      Anchors = [akTop, akLeft, akRight]
       AutoSize = False
-      Caption = 'Words to exclude from comparing'
+      WordWrap = True
     end
-    object edFilterWords: TEdit
-      Left = 8
-      Height = 23
-      Top = 48
-      Width = 364
-      TabOrder = 1
+    object lblDescr: TLabel
+      Left = 4
+      Height = 47
+      Top = 24
+      Width = 432
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      WordWrap = True
     end
-    object lblFilterNote: TLabel
-      Left = 8
+    object lblTitle: TLabel
+      Left = 4
       Height = 17
-      Top = 80
-      Width = 364
+      Top = 1
+      Width = 432
       AutoSize = False
-      Caption = 'Reopen project to apply new list'
-    end
-    object bbFontEdit: TBitBtn
-      Left = 8
-      Height = 26
-      Top = 248
-      Width = 70
-      Anchors = [akLeft, akBottom]
-      AutoSize = True
-      Caption = '&Font'
-      Images = TL2DataModule.TL2ImageList
-      ImageIndex = 4
-      OnClick = btnFontEditClick
-      TabOrder = 3
-    end
-    object cbReopenProjects: TCheckBox
-      AnchorSideLeft.Side = asrBottom
-      Left = 8
-      Height = 19
-      Top = 112
-      Width = 144
-      BorderSpacing.Left = 8
-      Caption = 'Reopen projects at start'
-      TabOrder = 2
-    end
-    object cbShowDebug: TCheckBox
-      Left = 8
-      Height = 19
-      Top = 224
-      Width = 132
-      Anchors = [akLeft, akBottom]
-      Caption = 'Show Debug Options'
-      TabOrder = 4
     end
   end
   object cbHidePartial: TCheckBox
     Left = 8
     Height = 19
     Hint = 'Hide partially translated with translated by "Hide ready" button'
-    Top = 272
-    Width = 165
+    Top = 241
+    Width = 163
     Caption = 'Hide Partial with Translated'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 7
+    TabOrder = 5
   end
-  object cbTabSync: TCheckBox
+  object bbFontEdit: TBitBtn
+    Left = 200
+    Height = 26
+    Top = 526
+    Width = 70
+    Anchors = [akLeft, akBottom]
+    AutoSize = True
+    Caption = '&Font'
+    Images = TL2DataModule.TL2ImageList
+    ImageIndex = 4
+    TabOrder = 11
+    OnClick = btnFontEditClick
+  end
+  object cbRemoveTags: TCheckBox
+    Left = 412
+    Height = 19
+    Top = 40
+    Width = 162
+    Caption = 'Remove tags on translation'
+    TabOrder = 12
+  end
+  object lblFilter: TLabel
+    Left = 8
+    Height = 15
+    Top = 296
+    Width = 364
+    AutoSize = False
+    Caption = 'Words to exclude from comparing'
+  end
+  object edFilterWords: TEdit
+    Left = 8
+    Height = 23
+    Top = 317
+    Width = 364
+    TabOrder = 13
+  end
+  object lblFilterNote: TLabel
+    Left = 8
+    Height = 17
+    Top = 345
+    Width = 364
+    AutoSize = False
+    Caption = 'Reopen project to apply new list'
+  end
+  object cbReopenProjects: TCheckBox
+    AnchorSideLeft.Side = asrBottom
     Left = 8
     Height = 19
-    Top = 308
-    Width = 68
-    Caption = 'Tab Sync'
-    TabOrder = 15
-    Visible = False
+    Top = 265
+    Width = 142
+    BorderSpacing.Left = 8
+    Caption = 'Reopen projects at start'
+    TabOrder = 14
+  end
+  object lblDefFileDescr: TLabel
+    Left = 8
+    Height = 40
+    Top = 152
+    Width = 392
+    AutoSize = False
+    Caption = 'This file used as basic translation file for new projects and final build'
+    WordWrap = True
   end
 end

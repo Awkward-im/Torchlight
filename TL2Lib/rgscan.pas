@@ -23,11 +23,11 @@ const
   
 type
   // PWideChar for mods
-  TCheckNameProc = function(const adir,aname:string; aparam:pointer):integer;
+  TCheckNameProc = function(const adir,aname:string; aparam:pointer):cardinal;
   TProcessProc   = function(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 
 // Prepare - Do - End
 function MakeRGScan(

@@ -1,0 +1,70 @@
+object DupeForm: TDupeForm
+  Left = 590
+  Height = 485
+  Top = 184
+  Width = 663
+  Caption = 'Dupe List'
+  ClientHeight = 485
+  ClientWidth = 663
+  KeyPreview = True
+  ParentFont = True
+  OnKeyDown = FormKeyDown
+  object memText: TMemo
+    Left = 8
+    Height = 92
+    Top = 280
+    Width = 648
+    Anchors = [akLeft, akRight, akBottom]
+    ReadOnly = True
+    TabOrder = 0
+  end
+  object memTrans: TMemo
+    Left = 8
+    Height = 92
+    Top = 383
+    Width = 648
+    Anchors = [akLeft, akRight, akBottom]
+    ReadOnly = True
+    TabOrder = 1
+  end
+  object sgDupes: TStringGrid
+    Left = 8
+    Height = 266
+    Top = 6
+    Width = 648
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 4
+    ColumnClickSorts = True
+    Columns = <    
+      item
+        ReadOnly = True
+        Title.Caption = 'File'
+        Width = 404
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Line'
+        Width = 64
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Tag'
+        Width = 128
+      end>
+    DefaultColWidth = 48
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowSelect, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goFixedColSizing, goCellEllipsis]
+    RowCount = 1
+    TabOrder = 2
+    OnDblClick = sgDupesDblClick
+    ColWidths = (
+      48
+      404
+      64
+      128
+    )
+  end
+end

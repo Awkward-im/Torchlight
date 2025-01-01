@@ -107,7 +107,7 @@ begin
       if ls[Length(ls)] in ['\','/'] then
       begin
         lidx:=slModList.Add(ls);
-        if LoadModConfiguration(PChar(ls+'MOD.DAT'),mi) then
+        if LoadModConfig(PChar(ls+'MOD.DAT'),mi) then
         begin
           lbModList.AddItem(WideToStr(mi.title),TObject(IntPtr(lidx)));
           ClearModInfo(mi);
@@ -193,7 +193,7 @@ begin
 
   DeleteDirectory(deOutputDir.Text,true);
 
-  SaveModConfiguration(newModInfo,PChar(deOutputDir.Text+'\MOD.DAT'));
+  SaveModConfig(newModInfo,PChar(deOutputDir.Text+'\MOD.DAT'));
 
   lptr:=RGLog.OnAdd;
   RGLog.OnAdd:=@AddToLog;
@@ -224,9 +224,9 @@ end;
 
 procedure TFormMain.bbModInfoClick(Sender: TObject);
 begin
-  with TMODInfoForm.Create(Self,false) do
+  with TMODInfoForm.Create(Self,@newModInfo,false) do
   begin
-    LoadFromInfo(newModInfo);
+//    LoadFromInfo(newModInfo);
     if ShowModal=mrOk then
       SaveToInfo(newModInfo);
   end;
@@ -308,7 +308,7 @@ begin
 //        if slModList.IndexOf(ls)<0 then
         begin
           lidx:=slModList.Add(ls);
-          if LoadModConfiguration(PChar(ls+'MOD.DAT'),mi) then
+          if LoadModConfig(PChar(ls+'MOD.DAT'),mi) then
           begin
             lbModList.AddItem(WideToStr(mi.title),TObject(IntPtr(lidx)));
             ClearModInfo(mi);
@@ -335,7 +335,7 @@ begin
   memDescription.Append('Source: '+fname);
 
   if fname[Length(fname)]='\' then
-    l:=LoadModConfiguration(PChar(fname+'MOD.DAT'),mi)
+    l:=LoadModConfig(PChar(fname+'MOD.DAT'),mi)
   else
     l:=ReadModInfo(PChar(fname),mi);
 

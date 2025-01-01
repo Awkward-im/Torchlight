@@ -270,7 +270,7 @@ end;
 function ProcessItems(
           abuf:PByte; asize:integer;
           const adir,aname:string;
-          aparam:pointer):integer;
+          aparam:pointer):cardinal;
 var
   p:pointer;
   ldir:string;
