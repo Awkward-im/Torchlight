@@ -18,7 +18,7 @@ uses
   Classes,
   rgglobal,
   TLSGBase,
-  TL2Common,
+  TLSGCommon,
   rgstream;
 
 

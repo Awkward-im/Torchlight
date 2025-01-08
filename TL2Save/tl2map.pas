@@ -10,7 +10,7 @@ uses
   rgstream,
   tlsgchar,
   tlsgtrigger,
-  tl2common,
+  tlsgcommon,
   tlsgitem;
 
 type

@@ -28,7 +28,7 @@ msgstr "Новичок"
 
 #: formchar.rsdefault
 msgid "Default"
-msgstr "По-умолчанию"
+msgstr "По умолчанию"
 
 #: formchar.rsdexterity
 msgctxt "formchar.rsdexterity"
@@ -165,7 +165,7 @@ msgstr "предмет"
 
 #: formkeybinding.rsnotused
 msgid "Not used"
-msgstr ""
+msgstr "Не исп."
 
 #: formkeybinding.rsskill
 msgid "skill"
@@ -507,15 +507,15 @@ msgstr "Стойкость"
 
 #: tfmchar.lblwardboots.caption
 msgid "Boots"
-msgstr ""
+msgstr "Обувь"
 
 #: tfmchar.lblwardcolor.caption
 msgid "Hair color"
-msgstr ""
+msgstr "Цвет волос"
 
 #: tfmchar.lblwardface.caption
 msgid "Face"
-msgstr ""
+msgstr "Лицо"
 
 #: tfmchar.lblwardfeature1.caption
 msgid "Feature1"
@@ -531,27 +531,27 @@ msgstr ""
 
 #: tfmchar.lblwardgloves.caption
 msgid "Gloves"
-msgstr ""
+msgstr "Перчатки"
 
 #: tfmchar.lblwardhair.caption
 msgid "Hair style"
-msgstr ""
+msgstr "Стиль волос"
 
 #: tfmchar.lblwardhead.caption
 msgid "Head"
-msgstr ""
+msgstr "Голова"
 
 #: tfmchar.lblwardpants.caption
 msgid "Pants"
-msgstr ""
+msgstr "Штаны"
 
 #: tfmchar.lblwardshoulders.caption
 msgid "Shoulders"
-msgstr ""
+msgstr "Наплечники"
 
 #: tfmchar.lblwardtorso.caption
 msgid "Torso"
-msgstr ""
+msgstr "Тело"
 
 #: tfmchar.lblwaypoint.caption
 msgid "Waypoint"
@@ -852,7 +852,7 @@ msgstr "Суффикс"
 
 #: tfmitem.lblweapondamagebonuses.caption
 msgid "Weapon Damage Bonuses"
-msgstr ""
+msgstr "Бонусы урона оружием"
 
 #: tfmitem.lblweapondmg.caption
 msgid "Weapon Damage"
@@ -890,11 +890,11 @@ msgstr ""
 
 #: tfmitem.sgdmgbonus.columns[0].title.caption
 msgid "Element"
-msgstr ""
+msgstr "Элемент"
 
 #: tfmitem.sgdmgbonus.columns[1].title.caption
 msgid "Bonus"
-msgstr ""
+msgstr "Бонус"
 
 #: tfmitem.tscommoninfo.caption
 msgctxt "tfmitem.tscommoninfo.caption"
@@ -1192,7 +1192,7 @@ msgstr "Скан."
 
 #: tfmsettings.bbsave.caption
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: tfmsettings.cbbackup.caption
 msgid "Make backups"
@@ -1563,7 +1563,7 @@ msgstr "Статистика"
 
 #: tl2db.rsbasegame
 msgid "Base game"
-msgstr ""
+msgstr "Базовая игра"
 
 #: tl2db.rshp
 msgid "Best Health Potion"
@@ -1711,7 +1711,7 @@ msgstr "Собрано золота"
 
 #: tl2statistic.rslevelsdone
 msgid "Levels Explored"
-msgstr ""
+msgstr "Уровней исследовано"
 
 #: tl2statistic.rsleveltime
 msgid "Level Time Played"
@@ -1760,4 +1760,3 @@ msgstr "Осмотрено тайников"
 #: tl2statistic.rsunknownstat
 msgid "Unknown Stat"
 msgstr "Неизвестная статистика"
-

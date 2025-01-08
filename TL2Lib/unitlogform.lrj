@@ -1,5 +1,0 @@
-{"version":1,"strings":[
-{"hash":44706690,"name":"tfmlogform.bbclear.caption","sourcebytes":[38,67,108,101,97,114],"value":"&Clear"},
-{"hash":242093973,"name":"tfmlogform.bbsave.hint","sourcebytes":[83,97,118,101,32,108,111,103,32,116,111,32,102,105,108,101],"value":"Save log to file"},
-{"hash":366789,"name":"tfmlogform.bbsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
-]}

@@ -193,6 +193,8 @@ begin
   ls:=GetSkillNames(aclass);
   if ls<>'' then
   begin
+    i:=SplitCountA(pointer(ls),',');
+{    
     pc:=pointer(ls);
     if pc^=',' then inc(pc); // must be always
     i:=0;
@@ -201,6 +203,7 @@ begin
       if pc^=',' then inc(i);
       inc(pc);
     end;
+}
     SetLength(askills,i);
 
     if i>0 then
@@ -237,10 +240,10 @@ begin
                 askills[i].icon   :=sqlite3_column_text (vm,4);
                 askills[i].passive:=CHR(sqlite3_column_int(vm,5)+ORD('0'));
                 askills[i].learn  :=lvl;
+                inc(i);
               end;
               sqlite3_finalize(vm);
             end;
-            inc(i);
             ltmp:='';
             lvl :=0;
           end;
@@ -249,6 +252,8 @@ begin
         end;
         inc(pc);
       end;
+      if i<Length(askills) then
+        SetLength(askills,i);
     end;
 {
     sl:=ls.Split(',');

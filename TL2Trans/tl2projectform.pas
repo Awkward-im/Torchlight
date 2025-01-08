@@ -202,7 +202,7 @@ begin
   begin
     ltyp:=data.State[i];
     if      (ltyp=stPartial) then inc(lcnt)
-    else if (ltyp=stReady) then inc(lc);
+    else if (ltyp=stReady  ) then inc(lc);
   end;
 
   result:=Format(sSBText,
@@ -743,8 +743,8 @@ begin
     Modified:=true;
     OnSBUpdate(Self);
     pnlFolders.Visible:=true;
-    FillFoldersCombo(true);
-    FillProjectGrid('');
+    FillFoldersCombo(true); // calls   FillProjectGrid('') through changes
+//    FillProjectGrid('');
   end;
 end;
 
@@ -1575,53 +1575,14 @@ end;
 
 //==== BUILD ====
 
-procedure CycleDirBuild(sl:TStringList; const adir:AnsiString);
+procedure TTL2Project.Build;
 var
-  sr:TSearchRec;
-  lext,lname:AnsiString;
-begin
-  if FindFirst(adir+'\*.*',faAnyFile and faDirectory,sr)=0 then
-  begin
-    repeat
-      lname:=adir+'\'+sr.Name;
-      if (sr.Attr and faDirectory)=faDirectory then
-      begin
-        if (sr.Name<>'.') and (sr.Name<>'..') then
-          CycleDirBuild(sl, lname);
-      end
-      else
-      begin
-        lext:=ExtractExt(lname);
-        if lext='.DAT' then
-          sl.Add(lname);
-      end;
-    until FindNext(sr)<>0;
-    FindClose(sr);
-  end;
-end;
-
-procedure Build(aprogress:TSBUpdateEvent);
-var
-  data:TTL2Translation;
-  sl:TStringList;
   ldir:AnsiString;
   ldlg:TSelectDirectoryDialog;
   i:integer;
 begin
   data.Init;
   
-  data.Filter:=flNoSearch;
-  data.Mode  :=tmDefault;
-
-  ldir:=TL2Settings.edDefaultFile.Text;
-  if ldir='' then
-    ldir:=DefDATFile;
-
-  aprogress(TObject(1),sBuildRead+' '+ldir);
-  data.LoadFromFile(ldir);
-  
-  // ready for import files
-
   ldlg:=TSelectDirectoryDialog.Create(nil);
   try
     ldlg.InitialDir:=TL2Settings.edWorkDir.Text;
@@ -1629,20 +1590,8 @@ begin
     ldlg.Options   :=[ofAllowMultiSelect,ofEnableSizing,ofPathMustExist];
     if ldlg.Execute then
     begin
-      sl:=TStringList.Create();
-
       for i:=0 to ldlg.Files.Count-1 do
-        CycleDirBuild(sl, ldlg.Files[i]);
-      
-      data.Mode  :=tmMod;
-      data.Filter:=flNoFilter;
-      for i:=0 to sl.Count-1 do
-      begin
-        aprogress(TObject(1),sBuildRead+' '+sl[i]);
-        data.LoadFromFile(sl[i]);
-      end;
-
-      sl.Free;
+        data.Build(ldlg.Files[i]);
     end;
 
   finally
@@ -1652,14 +1601,11 @@ begin
   //!! Here export all
   data.Mode:=tmDefault;
 
-//  ldir:=TL2Settings.edWorkDir.Text;
-//  if (ldir<>'') and (ldir[Length(ldir)]<>'\') then ldir:=ldir+'\';
-
-  aprogress(TObject(1),sBuildWrite);
-  data.SaveToFile(''{ldir+DefDATFile},stPartial,true);
-  aprogress(nil,sBuildWrite);
-
-  data.Free;
+  Modified:=true;
+  OnSBUpdate(Self);
+  pnlFolders.Visible:=true;
+  FillFoldersCombo(true); // calls   FillProjectGrid('') through changes
+//  FillProjectGrid('');
 end;
 
 end.

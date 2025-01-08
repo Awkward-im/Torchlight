@@ -5,9 +5,9 @@ interface
 uses
   sysutils,
   classes,
-  tl2statistic,
+  tlsgstatistic,
   rgstream,
-  tl2common,
+  tlsgcommon,
   rgglobal,
   tl2map,
   tlsgitem,

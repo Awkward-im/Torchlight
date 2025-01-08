@@ -1,4 +1,4 @@
-unit TL2Common;
+unit TLSGCommon;
 
 interface
 
@@ -12,13 +12,11 @@ function MSecToTime(msec:cardinal):string;
 implementation
 
 uses
-  logging,
   rgglobal;
 
-procedure DbgLn(const atxt:string);
+procedure DbgLn(const atxt:string); inline;
 begin
   RGLog.Add(atxt);
-//  if IsConsole then writeln(atxt);
 end;
 
 function Check(aval:qword; const albl:string; aright:qword):qword;
@@ -32,7 +30,6 @@ begin
     Str(aval  ,lleft);
     Str(aright,lright);
     RGLog.Add('  Unknown value '+lleft+' at label '+albl+' must be ['+lright+']');
-//    if IsConsole then  writeln('  Unknown value ',aval,' at label ',albl,' must be [',aright,']');
   end;
 end;
 
@@ -47,7 +44,6 @@ begin
     Str(aval:0:4  ,lleft);
     Str(aright:0:4,lright);
     RGLog.Add('  Unknown value '+lleft+' at label '+albl+' must be ['+lright+']');
-//    if IsConsole then writeln(' Unknown value ',aval:0:4,' at label ',albl,' must be [',aright:0:4,']');
   end;
 end;
 

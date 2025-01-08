@@ -6,7 +6,7 @@ uses
   SysUtils,
   Classes,
   rgstream,
-  tl2common,
+  tlsgcommon,
   TLSGBase,
   tlsgactive,
   rgglobal,

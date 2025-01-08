@@ -125,7 +125,7 @@ function ReadLastBlock(AStream:TStream; aVersion:integer):TTL2Stats;
 implementation
 
 uses
-  TL2Common;
+  TLSGCommon;
 
 constructor TTL2Stats.Create;
 begin

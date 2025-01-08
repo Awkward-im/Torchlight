@@ -3,7 +3,7 @@
   which can be found in standard window
   No real data work
 }
-unit TL2Statistic;
+unit TLSGStatistic;
 
 interface
 
@@ -82,7 +82,7 @@ function IsStatNumeric (idx:integer):boolean;
 implementation
 
 uses
-  TL2Common;
+  TLSGCommon;
 
 function GetStatDescr(idx:integer):string;
 begin

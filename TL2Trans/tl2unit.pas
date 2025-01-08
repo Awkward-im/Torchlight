@@ -486,7 +486,8 @@ end;
 
 procedure TMainTL2TransForm.FileBuildExecute(Sender: TObject);
 begin
-  Build(@UpdateStatusBar);
+  NewTab('Build Translation');
+  ActiveProject.Build;
 end;
 
 procedure TMainTL2TransForm.FileScanExecute(Sender: TObject);

@@ -51,7 +51,7 @@ implementation
 
 uses
   rgglobal,
-  tl2common,
+  tlsgcommon,
   tl2stats,
   tl2db;
 

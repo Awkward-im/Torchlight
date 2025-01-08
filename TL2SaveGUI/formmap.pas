@@ -45,7 +45,7 @@ implementation
 
 uses
   tl2db,
-  tl2common,
+  tlsgcommon,
   tlsgtrigger,
   formSettings;
 

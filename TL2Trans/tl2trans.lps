@@ -19,6 +19,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="101"/>
         <CursorPos X="3" Y="116"/>
         <UsageCount Value="200"/>
@@ -29,7 +30,6 @@
         <Filename Value="tl2dataunit.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2DataUnit"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
         <TopLine Value="1489"/>
         <CursorPos X="3" Y="1493"/>
@@ -82,8 +82,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1016"/>
-        <CursorPos X="22" Y="1042"/>
+        <TopLine Value="1343"/>
+        <CursorPos Y="1567"/>
+        <FoldState Value=" T46031 PCje0 TL,b041 T7IG{O T8j52G]TEH2 TMvS81021J p1,Z0]c3l30A6 pj1jR0{;2]A5mR094]9dkF03]SlOm10P]IiejZ0N5]R3je0M[94Ek70d3]Rfk20j213 PlGlQ0 T6lM02Y PiT$X]F0lT248[{O594I](j8R4e7[84i26KB].Xia43C]9ck9465 pjJi16c]rkFkX43[j43e83[i4Zjc238[95R42[r4YlC23A]9ajY44A]i4jS6F8 PiCkO6 TKu505G"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -103,9 +104,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="108"/>
+        <TopLine Value="212"/>
         <CursorPos X="3" Y="124"/>
-        <FoldState Value=" T46021 PDiU0 T7JHn T8iE271 TMne0102]A3kL0M126 Pj4m[f46kM028 PI[E50kW264[/4Nm42P"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -158,7 +158,7 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TRClass"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="759"/>
+        <TopLine Value="1132"/>
         <CursorPos X="49" Y="739"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -198,7 +198,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="195"/>
+        <UsageCount Value="204"/>
       </Unit>
       <Unit>
         <Filename Value="tl2dupeform.pas"/>
@@ -210,7 +210,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="46"/>
         <CursorPos X="32" Y="63"/>
-        <UsageCount Value="192"/>
+        <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -224,7 +224,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="41"/>
       </Unit>
     </Units>
     <OtherDefines Count="1">

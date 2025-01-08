@@ -5,7 +5,7 @@ interface
 uses
   classes,
   rgstream,
-  tl2common,
+  tlsgcommon,
   rgglobal,
   TLSGBase,
   tlsgactive,

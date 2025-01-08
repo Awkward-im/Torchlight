@@ -5,6 +5,8 @@
 }
 {NOTES:
     Dupes stores as index of next double, less than 0 means end of link
+    LoadedRefs is buffer to reserve unreaded yet dats (dupes) and
+      keep indexes between text and refs coz refs loading before text
 }
 {TODO: Separate text cache to dir, files, tags.}
 unit TL2RefUnit;
@@ -90,6 +92,9 @@ type
     function AddLinkChecked(aref,aload:integer):integer;
     // add loaded ref link to new string
     function AddLoadedLink(aload:integer):integer;
+    // add ref from another reference class
+    function CopyLink(const aref:TTL2Reference; aidx:integer):integer;
+    // add single ref (adupe) to existing (aref) as double
     function AddDouble(aref,adupe:integer):integer;
     function AddLoadedRef(idx:integer):integer;  // idx is index of LoadedRefs array
     function AddRef(const afile,atag:AnsiString; aline:integer):integer;
@@ -345,6 +350,32 @@ end;
 
 {%ENDREGION Addition}
 
+function TTL2Reference.AddLoadedRef(idx:integer):integer;
+begin
+  if (idx<0) or (Length(LoadedRefs)=0) then exit(-1);
+
+  if cntRefs>=Length(arRefs) then
+    SetLength(arRefs,Length(arRefs)+increment*20);
+
+  move(LoadedRefs[idx],arRefs[cntRefs],SizeOf(tRefData));
+{
+  with arRefs[cntRefs] do
+  begin
+//    id   :=MaxID; inc(MaxID);
+    _dir :=LoadedRefs[idx]._dir;
+    _file:=LoadedRefs[idx]._file;
+    _tag :=LoadedRefs[idx]._tag;
+    _line:=LoadedRefs[idx]._line;
+    _dup :=LoadedReds[idx]._dup;
+    _flag:=LoadedRefs[idx]._flag;
+//    result:=id;
+  end;
+}
+  result:=cntRefs;
+
+  inc(cntRefs);
+end;
+
 function TTL2Reference.AddLinkChecked(aref,aload:integer):integer;
 var
   oidx:integer;
@@ -405,30 +436,14 @@ begin
   end;
 end;
 
-function TTL2Reference.AddLoadedRef(idx:integer):integer;
+function TTL2Reference.CopyLink(const aref:TTL2Reference; aidx:integer):integer;
 begin
-  if (idx<0) or (Length(LoadedRefs)=0) then exit(-1);
-
-  if cntRefs>=Length(arRefs) then
-    SetLength(arRefs,Length(arRefs)+increment*20);
-
-  move(LoadedRefs[idx],arRefs[cntRefs],SizeOf(tRefData));
-{
-  with arRefs[cntRefs] do
+  result:=-1;
+  while aidx>0 do
   begin
-//    id   :=MaxID; inc(MaxID);
-    _dir :=LoadedRefs[idx]._dir;
-    _file:=LoadedRefs[idx]._file;
-    _tag :=LoadedRefs[idx]._tag;
-    _line:=LoadedRefs[idx]._line;
-    _dup :=LoadedReds[idx]._dup;
-    _flag:=LoadedRefs[idx]._flag;
-//    result:=id;
+    result:=AddDouble(result,AddRef(aref.GetFile(aidx),aref.GetTag(aidx),aref.GetLine(aidx)));
+    aidx  :=aref.Dupe[aidx];
   end;
-}
-  result:=cntRefs;
-
-  inc(cntRefs);
 end;
 
 function TTL2Reference.AddDouble(aref,adupe:integer):integer;
@@ -590,7 +605,7 @@ begin
   if (idx>=0) and (idx<cntRefs) then
     result:=arRefs[idx]._dup
   else
-    result:=0;
+    result:=-1;
 end;
 
 procedure TTL2Reference.SetDup(idx:integer; aval:integer);

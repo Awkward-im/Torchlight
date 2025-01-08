@@ -9,7 +9,6 @@ object TL2Project: TTL2Project
   KeyPreview = True
   ParentFont = True
   ShowHint = True
-  LCLVersion = '3.99.0.0'
   Visible = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -39,7 +38,7 @@ object TL2Project: TTL2Project
       end    
       item
         Title.Caption = 'Translation'
-        Width = 585
+        Width = 581
       end>
     DefaultColWidth = 48
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
@@ -58,7 +57,7 @@ object TL2Project: TTL2Project
       48
       269
       28
-      585
+      581
     )
   end
   object memEdit: TMemo

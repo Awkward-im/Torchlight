@@ -92,6 +92,7 @@ implementation
 uses
   INIFiles,
   LCLType,
+  addons,
   formsettings;
 
 const
@@ -194,16 +195,18 @@ end;
 
 procedure TfmSkills.CreateIconList();
 var
+  ls:string;
   i:integer;
 begin
   SetLength(FIcons,Length(FSkills));
+  ls:=fmSettings.IconDir+'\skills';
   for i:=0 to High(FIcons) do
   begin
     FIcons[i,false]:=TPicture.Create;
     FIcons[i,true ]:=TPicture.Create;
     try
-      FIcons[i,false].LoadFromFile(fmSettings.IconDir+'\skills\'+FSkills[i].icon+'.png');
-      FIcons[i,true ].LoadFromFile(fmSettings.IconDir+'\skills\'+FSkills[i].icon+'_gray.png');
+      FIcons[i,false].LoadFromFile(SearchForFileName(ls,UpCase(FSkills[i].icon)));
+      FIcons[i,true ].LoadFromFile(SearchForFileName(ls,UpCase(FSkills[i].icon+'_gray')));
     except
     end;
   end;

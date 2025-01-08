@@ -10,8 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  DefaultTranslator, Forms, lazcontrols, imagesforlazarus, formgui,
-  FPC.Dynamic_Bass;
+  DefaultTranslator, Forms, lazcontrols, imagesforlazarus, formgui;
 
 {$R *.res}
 

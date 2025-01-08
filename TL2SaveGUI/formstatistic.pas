@@ -36,7 +36,7 @@ implementation
 { TfmStatistic }
 
 uses
-  tl2statistic;
+  tlsgstatistic;
 
 
 const

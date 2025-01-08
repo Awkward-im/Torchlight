@@ -84,6 +84,7 @@ type
 
     // events
     FOnFileScan   : TOnFileScan;    // File info while scanning
+    FOnFileBuild  : TOnFileScan;    // File info while builds
     FOnLineAdd    : TOnLineChanged; // Line count on add
     FOnLineChanged: TOnLineChanged; // Line number (not count) when changed
     FOnProgress   : TOnLineChanged; // Line count total (negative value)/processing
@@ -154,6 +155,8 @@ type
     }
     function  LoadFromFile(const fname:AnsiString):integer;
     procedure SaveToFile  (const fname:AnsiString; astat:tTextStatus=stPartial; askip:boolean=false);
+    procedure Build       (const adir:string; const abase:string='');
+    function  LoadFromTranslation(const src:TTL2Translation):integer;
     // import from translation project file
     function  ImportFromFile(const fname:AnsiString):integer;
     // import from formatted text: original #9(tab) translation
@@ -180,6 +183,7 @@ type
 
     // events
     property OnFileScan   :TOnFileScan    read FOnFileScan    write FOnFileScan;
+    property OnFileBuild  :TOnFileScan    read FOnFileBuild   write FOnFileBuild;
     property OnLineAdd    :TOnLineChanged read FOnLineAdd     write FOnLineAdd;
     property OnLineChanged:TOnLineChanged read FOnLineChanged write FOnLineChanged;
     property OnProgress   :TOnLineChanged read FOnProgress    write FOnProgress;
@@ -228,6 +232,7 @@ type
 var
   BaseTranslation:TTL2Translation;
 
+
 //============================================
 
 implementation
@@ -257,14 +262,16 @@ type
     _part:boolean;
   end;
 
-// Open file error codes
 
 resourcestring
+  // Open file error codes
   sNoFileStart  = 'No file starting tag';
   sNoBlockStart = 'No block start';
   sNoOrignText  = 'No original text';
   sNoTransText  = 'No translated text';
   sNoEndBlock   = 'No end of block';
+
+  sBaseTranslation = 'Base translation';
 
 const
   dwPrefix    = $4B574100;
@@ -861,6 +868,28 @@ begin
     3: FErrText:=sNoOrignText;  // no original text
     4: FErrText:=sNoTransText;  // no translated text
     5: FErrText:=sNoEndBlock;   // no end of block
+  end;
+end;
+
+function TTL2Translation.LoadFromTranslation(const src:TTL2Translation):integer;
+var
+  i,j:integer;
+begin
+  result:=0;
+  for i:=0 to src.cntText-1 do
+  begin
+{
+    if Length(lInfo)>0 then
+      i:=AddStringOnLoad(lsrc,ldst,ltmpl,
+        lInfo[lcnt]._ref,lInfo[lcnt]._part)
+    else
+}
+    if src.State[i]<>stDeleted then
+    begin
+      j:=Refs.CopyLink(src.Refs,src.Ref[i]);
+      if AddStringOnLoad(src.Line[i],src.Trans[i],src.Template[i],
+          j,src.State[i]=stPartial)>0 then inc(result);
+    end;
   end;
 end;
 
@@ -1917,54 +1946,53 @@ begin
   end;
 end;
 
-procedure Build(const adir:string);
+procedure TTL2Translation.Build(const adir:string; const abase:string='');
 var
-  data:TTL2Translation;
   sl:TStringList;
-//  ldir:AnsiString;
   i:integer;
 begin
-  data.Init;
-{  
-  data.Filter:=flNoSearch;
-  data.Mode  :=tmDefault;
+//  don't need if we will use severa lcalls with dirs
+//  Init;
 
-  ldir:=TL2Settings.edDefaultFile.Text;
-  if ldir='' then
-    ldir:=DefDATFile;
+  if {cntText=0} Mode=tmOriginal then
+  begin
+    Filter:=flNoSearch;
 
-  aprogress(TObject(1),sBuildRead+' '+ldir);
-  data.LoadFromFile(ldir);
-}
-  if BaseTranslation.cntText>0 then
-  begin
-  end
-  else
-  begin
+    if BaseTranslation.cntText>0 then
+    begin
+      if Assigned(FOnFileBuild) then
+        FOnFileBuild(sBaseTranslation,0,0);
+
+      LoadFromTranslation(BaseTranslation);
+    end
+    else if abase<>'' then
+    begin
+      if Assigned(FOnFileBuild) then
+        FOnFileBuild(sBaseTranslation+'('+abase+')',0,0);
+
+      LoadFromFile(abase);
+    end;
   end;
   
   sl:=TStringList.Create();
 
   CycleDirBuild(sl, adir);
   
-  data.Mode  :=tmMod;
-  data.Filter:=flNoFilter;
+  Mode  :=tmMod;
+  Filter:=flNoFilter;
   for i:=0 to sl.Count-1 do
   begin
-//    if Assigned(data.FOnFileScan) then data.FOnFileScan(sl[i],i+1,sl.Count);
+    if sl[i]<>abase then
+    begin
+      if Assigned(FOnFileBuild) then FOnFileBuild(sl[i],i+1,sl.Count);
 
-//    aprogress(TObject(1),sBuildRead+' '+sl[i]);
-    data.LoadFromFile(sl[i]);
+      LoadFromFile(sl[i]);
+    end;
   end;
 
   sl.Free;
 
-  //!! Here export all
-  data.Mode:=tmDefault;
-
-  data.SaveToFile(''{ldir+DefDATFile},stPartial,true);
-
-  data.Free;
+  Mode:=tmDefault;
 end;
 
 initialization

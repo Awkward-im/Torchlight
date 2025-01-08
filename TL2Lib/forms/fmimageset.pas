@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, rgimageset, rgctrl;
+  Menus, rglclimageset, rgctrl;
 
 //!! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 type
@@ -119,7 +119,7 @@ begin
     begin
       if lbImages.Selected[i] then
       begin
-        FImageset.GetSprite(i);
+        FImageset.ExtractSprite(i);
       end;
     end;
   end;
