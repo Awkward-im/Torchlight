@@ -967,6 +967,7 @@ var
   pc:PUnicodeChar;
   loutdir,lext:string;
   ltype,lsize:integer;
+  ldecompiled:boolean;
 begin
   result:=false;
 
@@ -985,6 +986,7 @@ begin
 //  ltype:=GetExtInfo(aname,rgpi.ver)^._type;
   ltype:=PAKExtType(aname);
 
+  ldecompiled:=false;
   // save decoded file
   if (not rbBinOnly.Checked) and (ltype in setData) then
   begin
@@ -993,6 +995,7 @@ begin
     // was: just parse binary, now - convert to text too
     if DecompileFile(adata, asize, adir+aname, pc, cbSaveUTF8.Checked) then
     begin
+      ldecompiled:=true;
       if not cbTest.Checked then
       begin
         if rbTextRename.Checked or (ltype=typeRAW) then
@@ -1025,7 +1028,14 @@ begin
       if ltype=typeLayout then
       begin
         if ctrl.PAK.Version=verTL1 then
-          lext:='.CMP'
+        begin
+          // TL1 have different LAYOUT format for UI dir
+          if (not ldecompiled) and
+             (Pos('MEDIA/UI/',UpCase(StringReplace(adir,'\','/',[rfReplaceAll])))=1) then
+            lext:=''
+          else
+            lext:='.CMP'
+        end
         else
           lext:='.BINLAYOUT'
       end
@@ -1033,7 +1043,11 @@ begin
         lext:=''
       else
       begin
-        if ctrl.PAK.Version=verTL1 then
+        // TL1 and TL2 have XML form of Imageset
+        if (ltype=typeImageset) and (not ldecompiled) and
+           (ABS(ctrl.PAK.Version) in [verTL1,verTL2]) then
+          lext:=''
+        else if ctrl.PAK.Version=verTL1 then
           lext:='.ADM'
         else
           lext:='.BINDAT';
