@@ -259,6 +259,7 @@
         <Filename Value="..\TL2Lib\forms\fmlayoutedit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="formLayoutEdit"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmLayoutEdit"/>
       </Unit>

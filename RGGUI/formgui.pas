@@ -10,7 +10,6 @@
 {TODO: 1-setting to save linked file on disk/mem; 2-ask every time/once}
 {TODO: save as for editor}
 {TODO: Add file search}
-{TODO: Implement to open DIR (not PAK/MOD/MAN) = ctrl.AddDirectory}
 {TODO: StatusBar: change statistic when add/delete dir/file}
 {TODO: StatusBar: path changes on dir with files only}
 {TODO: option: ask unpack path}
@@ -1269,12 +1268,14 @@ end;
 
 procedure TRGGUIForm.PrepareSound;
 var
-//  f:File Of Byte;
-//  res:TFPResourceHandle;
   res:TResourceStream;
+{
+  f:File Of Byte;
+  res:TFPResourceHandle;
   lHandle:THANDLE;
   lptr:PByte;
   lsize:integer;
+}
 begin
   if not Load_BASSDLL('bass.dll') then
   begin

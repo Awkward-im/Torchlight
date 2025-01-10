@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="txttolay.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="3"/>
+        <CursorPos X="32" Y="23"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="17"/>
+        <CursorPos X="3" Y="31"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgglobal.pas"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgio.layout.pas"/>
+        <UnitName Value="RGIO.Layout"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="931"/>
+        <CursorPos Y="945"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <UnitName Value="RGIO.Layout"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1030"/>
+        <CursorPos Y="1030"/>
+        <FoldState Value=" T44021 TMjGQ1071515 p5v5011J p1vO0]TCj6ME TLjL0]G3 pNwM08]P7k8I! T8k92C2 PiEiQ2 T3lf0P7 pj0kR0s2[95H0}L]AlZqE0A[J4BjR0{B1 pibl40o5]9dkL046]/aig0 T6lg02K]FN/N]F0m62GD]dYlN26B]9XkL2A7]9ZiR6B3[94QL38[Q4iZG31 pkJV4{y5 pjRiB858]99iGA57[94j86R3]9FiVH59]j1j44x[R4Ij14JC piYmZ23L"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="610"/>
+        <CursorPos Y="623"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgnode.pas"/>
+        <UnitName Value="RGNode"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="155"/>
+        <CursorPos Y="175"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgdictlayout.pas"/>
+        <UnitName Value="RGDictLayout"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="118"/>
+        <CursorPos Y="217"/>
+        <UsageCount Value="12"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="1052" TopLine="1038"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="1043" TopLine="1038"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="1040" TopLine="1034"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="1114" TopLine="1101"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="1040" TopLine="1025"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="1114" TopLine="1101"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="671" TopLine="650"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="676" TopLine="671"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="81" Column="24" TopLine="74"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="235" Column="16" TopLine="212"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="1030" TopLine="1030"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="453" TopLine="450"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="455" TopLine="449"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="459" TopLine="455"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="460" TopLine="454"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="462" TopLine="454"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="463" TopLine="454"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="464" TopLine="454"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="466" TopLine="454"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="453" TopLine="437"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="455" TopLine="437"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="459" TopLine="437"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="460" TopLine="437"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="462" TopLine="437"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="463" TopLine="438"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="464" TopLine="439"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="466" TopLine="441"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="453" TopLine="451"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="455" TopLine="449"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="459" TopLine="449"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default">
+        <Mode Name="default">
+          <local>
+            <CommandLineParams Value="greel.layout TL2"/>
+          </local>
+        </Mode>
+      </Modes>
+    </RunParams>
+    <HistoryLists>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+      <List Name="CommandLineParameters" Count="6">
+        <Item1 Value="greel.layout TL2"/>
+        <Item2 Value="1_2.LAYOUT hob"/>
+        <Item3 Value="1_2.LAYOUT"/>
+        <Item4 Value="PASS_BB_A.LAYOUT"/>
+        <Item5 Value="BOMBER.txt"/>
+        <Item6 Value="ELECTRICMANE.LAYOUT"/>
+      </List>
+      <List Name="WorkingDirectory" Type="File" Count="1"/>
+    </HistoryLists>
+  </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="FStart"/>
+      </Item>
+      <Item>
+        <Expression Value="FPos-FStart"/>
+        <DisplayStyle Value="wdfHex"/>
+      </Item>
+      <Item>
+        <Expression Value="lptr"/>
+      </Item>
+      <Item>
+        <Expression Value="lChunkSize"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

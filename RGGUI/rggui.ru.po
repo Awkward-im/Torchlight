@@ -400,6 +400,22 @@ msgstr ""
 msgid "Unknown and unsupported format"
 msgstr ""
 
+#: tformlayoutedit.acttreedeletenode.caption
+msgid "Delete Object"
+msgstr "Удалить объект"
+
+#: tformlayoutedit.acttreerenamenode.caption
+msgid "Rename Object"
+msgstr "Переименовать объект"
+
+#: tformlayoutedit.cbtxtpreview.caption
+msgid "Text preview"
+msgstr "Как текст"
+
+#: tformlayoutedit.miaddnode.caption
+msgid "Add Object"
+msgstr "Добавить объект"
+
 #: trgguiform.actchangeversion.caption
 msgid "Change PAK version"
 msgstr "Выбор версии PAK"
@@ -844,4 +860,3 @@ msgstr "Показать/скрыть столбец: Распакованный
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
 msgstr "Информация о моде"
-

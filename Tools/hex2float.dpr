@@ -5,6 +5,6 @@
       true:  (f:single);
   end;
 begin
-  tr.h:=$B81A3A0F;
+  Val('$'+ParamStr(1),tr.h);
   writeln(tr.f:0:4);
 end.

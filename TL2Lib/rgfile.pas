@@ -47,9 +47,10 @@ function GetDataVersion(aBuf:PByte):integer;
   Note:
     ????Use aout as buf if not NIL, reallocate if needs
 }
-function RGFileUnpack      (ain:PByte  ; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
-function RGFileUnpackStream(ain:TStream; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
-function RGFileUnpackFile  (const fname:string           ; var aout:PByte; aoutsize:cardinal=0):cardinal;
+function RGFileUnpackBufSafe(ain:PByte  ; ainsize:cardinal; var aout:PByte):cardinal;
+function RGFileUnpack       (ain:PByte  ; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
+function RGFileUnpackStream (ain:TStream; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
+function RGFileUnpackFile   (const fname:string           ; var aout:PByte; aoutsize:cardinal=0):cardinal;
 
 // rgfiletype or here?
 // check for source or binary
@@ -91,6 +92,7 @@ uses
   sysutils,
   paszlib,
   zstream,
+  zbase,
 //  bufstream,
 
   rgnode,
@@ -222,6 +224,66 @@ begin
   end;
 end;
 }
+
+function RGFileUnpackBufSafe(ain:PByte; ainsize:cardinal; var aout:PByte):cardinal;
+var
+  zstream: z_stream;
+  delta  : integer;
+  lres,lsize: integer;
+begin
+  FillChar(zstream, SizeOf(z_stream), 0);
+
+  delta:=Align(ainsize,4096);
+
+  result:=0;
+  
+  if aout=nil then
+    lsize:=0
+  else
+    lsize:=MemSize(aout);
+
+  if lsize<delta then
+  begin
+    lsize:=delta;
+    FreeMem(aout);
+    GetMem(aout,lsize);
+  end;
+
+  try
+    zstream.next_in   := ain;
+    zstream.avail_in  := ainsize;
+    zstream.next_out  := aout;
+    zstream.avail_out := lsize;
+
+    if InflateInit(zstream)<0 then exit;
+
+    try
+      lres:=inflate(zstream, Z_NO_FLUSH);
+      if lres<0 then exit;
+
+      while (lres<>Z_STREAM_END) do
+      begin
+        Inc(lsize, delta);
+        ReallocMem(aout, lsize);
+
+        zstream.next_out  := (aout+zstream.total_out);
+        zstream.avail_out := delta;
+        lres:=inflate(zstream, Z_NO_FLUSH);
+        if lres<0 then exit;
+      end;
+    finally
+      inflateEnd(zstream);
+    end;
+
+//    ReallocMem(aout, zstream.total_out);
+    result:=zstream.total_out;
+
+  finally
+    if lres<0 then
+      FreeMem(aout);
+  end;
+end;
+
 function RGFileUnpack(ain:PByte; ainsize:cardinal; var aout:PByte; aoutsize:cardinal=0):cardinal;
 var
   lin:PByte;

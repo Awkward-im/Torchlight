@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="laytotxt.dpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos Y="23"/>
+        <UsageCount Value="81"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="81"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="81"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgglobal.pas"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgio.layout.pas"/>
+        <UnitName Value="RGIO.Layout"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="931"/>
+        <CursorPos Y="945"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <UnitName Value="RGIO.Layout"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="1133"/>
+        <CursorPos Y="751"/>
+        <FoldState Value=" T44021 TMjGQ1071515 p5v5011J p1vO0]TCj6ME TLjL0]G3 pNwM08]P7k8I! T8k92C2 PiEiQ2 T3lf0P7 pj0kR0s2[95H0}L]AlZqE0A[J4BjR0{B014 pignH0K6[e4jZ0D1 PBF0 T6lg02K PiN/N]F0m62GD]kYlN26B]9XkL2A7]9ZiR6B3[94QL38[Q4iZG31 pkJV4{y5 pjRiB858]99iGA57[94j86R3]9FiVH5814]lajf8B5]:ciEI3B PiKmS2^"/>
+        <UsageCount Value="40"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="501"/>
+        <CursorPos X="29" Y="539"/>
+        <FoldState Value=" T0908E pkJkP43A]9Pka4C4 picL849]8dkC26235 Pi8k74 T3J0A1]Paj70E]9jRk20d[94XkX0Z011]hJl10 T6K018]E1u0]ELo60J%"/>
+        <UsageCount Value="40"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="305"/>
+        <CursorPos Y="317"/>
+        <UsageCount Value="38"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\rwmemory.pas"/>
+        <UnitName Value="RWMemory"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="104"/>
+        <CursorPos Y="113"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\dict.pas"/>
+        <UnitName Value="Dict"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="294"/>
+        <CursorPos Y="293"/>
+        <FoldState Value=" T4B01 TCHD5 T7RE.2 PgjBE T8S237 piYjE262 TMiA41]h3kT086]PejR0602124 pjFlL09[M4XjI]9[u4]9G4 Pi5iN0 T6kU01A PCsf]E0mD2B34B]wElW4FG]namU28]nNi42L"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgnode.pas"/>
+        <UnitName Value="RGNode"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="517"/>
+        <CursorPos Y="482"/>
+        <UsageCount Value="25"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgio.text.pas"/>
+        <UnitName Value="RGIO.Text"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="122"/>
+        <CursorPos Y="137"/>
+        <UsageCount Value="14"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgdict.pas"/>
+        <UnitName Value="RGDict"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="383"/>
+        <CursorPos Y="407"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\lay_tl1.inc"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="150"/>
+        <CursorPos Y="177"/>
+        <UsageCount Value="31"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="795" TopLine="776"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="796" TopLine="776"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="798" TopLine="782"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="802" TopLine="782"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="803" TopLine="782"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="804" TopLine="794"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="805" TopLine="794"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="809" TopLine="794"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="816" TopLine="806"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="817" TopLine="806"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="819" TopLine="806"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="820" TopLine="806"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="823" TopLine="818"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="824" TopLine="818"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="825" TopLine="818"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="833" TopLine="818"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="836" TopLine="818"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="838" TopLine="818"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="846" TopLine="834"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="880" TopLine="865"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="817" TopLine="802"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="771" TopLine="762"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="765" TopLine="759"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="760" TopLine="754"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="915" TopLine="900"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="760" TopLine="744"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgio.layout.pas"/>
+        <Caret Line="915" TopLine="901"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_tl2.inc"/>
+        <Caret Line="223" TopLine="205"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="292" TopLine="298"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\lay_hob.inc"/>
+        <Caret Line="317" TopLine="305"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default">
+        <Mode Name="default">
+          <local>
+            <CommandLineParams Value="GREELTRAILER_MEDIUMSHOTB.LAYOUT.BINLAYOUT"/>
+          </local>
+        </Mode>
+      </Modes>
+    </RunParams>
+    <HistoryLists>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+      <List Name="CommandLineParameters" Count="17">
+        <Item1 Value="GREELTRAILER_MEDIUMSHOTB.LAYOUT.BINLAYOUT"/>
+        <Item2 Value="out.layout"/>
+        <Item3 Value="1X1_CLIFF_S0E1W1_PB_LANDMARK_BANDITCAMP.LAYOUT.BINLAYOUT"/>
+        <Item4 Value="PLAYER_INVENTORY.LAYOUT.BINLAYOUT"/>
+        <Item5 Value="DEAD_UNKNOWN_01.LAYOUT.BINLAYOUT"/>
+        <Item6 Value="CAVETEMPLATE.LAYOUT.cmp"/>
+        <Item7 Value="DETONATE.LAYOUT.cmp"/>
+        <Item8 Value="BLUEBEAM.LAYOUT.cmp"/>
+        <Item9 Value="REQUEST_PADAWAN.LAYOUT.cmp"/>
+        <Item10 Value="HEALBOTEMHBM1.LAYOUT.cmp"/>
+        <Item11 Value="TESTROOM.LAYOUT.cmp"/>
+        <Item12 Value="GLOBAL_SKY.LAYOUT.BINLAYOUT"/>
+        <Item13 Value="GREELTRAILER_MEDIUMSHOT.LAYOUT.BINLAYOUT"/>
+        <Item14 Value="WARP_FROM_VISTA.LAYOUT.BINLAYOUT"/>
+        <Item15 Value="2_1.LAYOUT.BINLAYOUT"/>
+        <Item16 Value="COP_WALKER.LAYOUT"/>
+        <Item17 Value="ELECTRICMANE.LAYOUT"/>
+      </List>
+      <List Name="WorkingDirectory" Type="File" Count="1"/>
+    </HistoryLists>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\TL2Lib\lay_tl1.inc"/>
+        <Line Value="132"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\TL2Lib\lay_tl1.inc"/>
+        <Line Value="148"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\TL2Lib\rgnode.pas"/>
+        <Line Value="649"/>
+      </Item>
+    </BreakPoints>
+    <Watches>
+      <Item>
+        <Expression Value="PRGNode(aparent)^"/>
+      </Item>
+      <Item>
+        <Expression Value="FBinPos-FStart"/>
+        <DisplayStyle Value="wdfHex"/>
+      </Item>
+      <Item>
+        <Expression Value="FPos-FStart"/>
+        <DisplayStyle Value="wdfHex"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

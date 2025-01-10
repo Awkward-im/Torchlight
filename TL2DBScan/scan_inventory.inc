@@ -25,7 +25,7 @@ begin
   if lupdate then
   begin
     lSQL:='REPLACE INTO inventory (id, name, isContainer) VALUES ('+
-          lid+', '+FixedText(aname)+', '+lcont+')';
+          lid+', '''+aname+''', '+lcont+')';
     if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
       result:=1
     else

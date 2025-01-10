@@ -388,6 +388,22 @@ msgstr ""
 msgid "Unknown and unsupported format"
 msgstr ""
 
+#: tformlayoutedit.acttreedeletenode.caption
+msgid "Delete Object"
+msgstr ""
+
+#: tformlayoutedit.acttreerenamenode.caption
+msgid "Rename Object"
+msgstr ""
+
+#: tformlayoutedit.cbtxtpreview.caption
+msgid "Text preview"
+msgstr ""
+
+#: tformlayoutedit.miaddnode.caption
+msgid "Add Object"
+msgstr ""
+
 #: trgguiform.actchangeversion.caption
 msgid "Change PAK version"
 msgstr ""

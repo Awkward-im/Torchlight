@@ -221,14 +221,15 @@ uses
   ;
 
 resourcestring
-  sWrongAPIKey    = 'Wrong API key';
-  sKeyBlocked     = 'API key blocked';
-  sTooMuchText    = 'Day text potion out of limit';
-  sTooLongText    = 'Text length too large';
-  sTooManyRequest = 'Too many requests. Please wait and resend your request.';
-  sCantTranslate  = 'Text can''t be translated';
-  sWrongLanguage  = 'Choosen language is unsupported';
-  sUnknownError   = 'Unknown Error';
+  sWrongAPIKey      = 'Wrong API key';
+  sKeyBlocked       = 'API key blocked';
+  sTooMuchText      = 'Day text potion out of limit';
+  sTooLongText      = 'Text length too large';
+  sTooManyRequest   = 'Too many requests. Please wait and resend your request.';
+  sCantTranslate    = 'Text can''t be translated';
+  sWrongLanguage    = 'Choosen language is unsupported';
+  sUnknownError     = 'Unknown Error';
+  sSessionIsInvalid = 'Session is invalid';
 
 {%REGION Base}
 constructor TTranslateBase.Create;
@@ -926,6 +927,7 @@ begin
               401: FResult:=sWrongAPIKey;
               402: FResult:=sKeyBlocked;
               404: FResult:=sTooMuchText;
+              405: FResult:=sSessionIsInvalid;
               413: FResult:=sTooLongText;
               422: FResult:=sCantTranslate;
               501: FResult:=sWrongLanguage;
