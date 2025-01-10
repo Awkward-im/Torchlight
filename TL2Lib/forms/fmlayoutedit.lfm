@@ -6,7 +6,7 @@ object formLayoutEdit: TformLayoutEdit
   BorderStyle = bsNone
   ClientHeight = 488
   ClientWidth = 743
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   object pnlTree: TPanel
     Left = 0
     Height = 488
@@ -583,6 +583,8 @@ object formLayoutEdit: TformLayoutEdit
         object SynGutterMarks1: TSynGutterMarks
           Width = 24
           MouseActions = <>
+          MaxExtraMarksColums = 0
+          Options = [sgmoDeDuplicateMarksOnOverflow]
         end
         object SynGutterLineNumber1: TSynGutterLineNumber
           Width = 17

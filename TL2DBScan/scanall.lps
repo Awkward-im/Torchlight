@@ -13,7 +13,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -64,8 +64,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formScanAll"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="184"/>
-        <CursorPos X="67" Y="185"/>
+        <TopLine Value="52"/>
+        <CursorPos X="3" Y="68"/>
         <UsageCount Value="167"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -227,7 +227,6 @@
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
@@ -303,6 +302,18 @@
         <TopLine Value="112"/>
         <CursorPos X="73" Y="132"/>
         <UsageCount Value="32"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmgameversion.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmGameVer"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmGameVersion"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="scan_classes.inc"/>
@@ -443,11 +454,9 @@
         <UsageCount Value="9"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\forms\fmgameversion.pas"/>
+        <Filename Value="..\Addons\logging.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmGameVer"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmGameVersion"/>
+        <UnitName Value="Logging"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
@@ -455,7 +464,7 @@
         <UsageCount Value="20"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="27">
+    <JumpHistory HistoryIndex="28">
       <Position>
         <Filename Value="scan_u_mobs.inc"/>
         <Caret Line="50" Column="97" TopLine="32"/>
@@ -567,6 +576,10 @@
       <Position>
         <Filename Value="formscanall.pas"/>
         <Caret Line="281" Column="79" TopLine="265"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="185" Column="67" TopLine="184"/>
       </Position>
     </JumpHistory>
     <RunParams>

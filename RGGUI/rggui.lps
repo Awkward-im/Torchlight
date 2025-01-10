@@ -47,7 +47,6 @@
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="TextCache"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="144"/>
@@ -72,7 +71,6 @@
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\components\virtualtreeview\laz.virtualtreeview_package.lpk"/>
-        <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
@@ -93,7 +91,6 @@
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\3rdside\fpc.Dynamic_Bass.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="FPC.Dynamic_Bass"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
@@ -103,7 +100,6 @@
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\3rdside\HexView\FWHexView.pas"/>
-        <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
@@ -112,7 +108,6 @@
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\3rdside\Imaging\Imaging.pas"/>
-        <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
@@ -573,6 +568,34 @@
         <TopLine Value="117"/>
         <CursorPos Y="132"/>
         <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\HexView\FWHexView.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\Imaging\Imaging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\fpc.Dynamic_Bass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FPC.Dynamic_Bass"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="6">

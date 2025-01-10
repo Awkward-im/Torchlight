@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside;..\..\utils\3rdside\HexView;..\..\utils\3rdside\Imaging"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -74,7 +74,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside;..\..\utils\3rdside\HexView;..\..\utils\3rdside\Imaging"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -111,7 +111,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside;..\..\utils\3rdside\HexView;..\..\utils\3rdside\Imaging"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -159,7 +159,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside;..\..\utils\3rdside\HexView;..\..\utils\3rdside\Imaging"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -238,21 +238,12 @@
         <UnitName Value="RGPAK"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\utils\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TextCache"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\TL2Lib\synhighlightert.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="SynHighlightert"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\objicons.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="D:\Work\LazTrunk\lazarus\components\virtualtreeview\laz.virtualtreeview_package.lpk"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
@@ -264,17 +255,17 @@
         <UnitName Value="fmLayoutEdit"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\utils\3rdside\fpc.Dynamic_Bass.pas"/>
+        <Filename Value="..\Addons\HexView\FWHexView.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\Imaging\Imaging.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\fpc.Dynamic_Bass.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FPC.Dynamic_Bass"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\utils\3rdside\HexView\FWHexView.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\utils\3rdside\Imaging\Imaging.pas"/>
-        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -286,7 +277,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside;..\..\utils\3rdside\HexView;..\..\utils\3rdside\Imaging"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
     </SearchPaths>
     <Linking>

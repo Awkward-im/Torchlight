@@ -32,7 +32,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -84,7 +84,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -130,7 +130,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -175,7 +175,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -214,7 +214,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -359,15 +359,6 @@
         <UnitName Value="TL2NotesForm"/>
       </Unit>
       <Unit>
-        <Filename Value="iso639.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="trclass.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TRClass"/>
-      </Unit>
-      <Unit>
         <Filename Value="tl2text.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Text"/>
@@ -376,11 +367,6 @@
         <Filename Value="..\TL2Lib\rgglobal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\utils\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TextCache"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgmod.pas"/>
@@ -402,6 +388,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmModInfo"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Logging"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -412,7 +403,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(BuildMode)"/>
     </SearchPaths>
     <Linking>

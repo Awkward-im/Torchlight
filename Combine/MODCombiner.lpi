@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -68,7 +68,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -99,7 +99,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -174,10 +174,6 @@
         <UnitName Value="RGGlobal"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\utils\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="unitCombine.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -194,7 +190,7 @@
         <UnitName Value="fmModInfo"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\utils\3rdside\Diff.pas"/>
+        <Filename Value="..\Addons\Diff.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
@@ -207,7 +203,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\..\utils;..\TL2Lib\forms;..\..\utils\3rdside"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formPak2Mod"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="146"/>
-        <CursorPos X="37" Y="163"/>
-        <FoldState Value=" T4602 T8i721 T3iP0J01522 PiRjf0F"/>
+        <TopLine Value="46"/>
+        <CursorPos X="19" Y="66"/>
+        <FoldState Value=" T8i721 T3iP0J01522 PiRjf0F"/>
         <UsageCount Value="57"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -38,12 +38,23 @@
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="57"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmmodinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MODInfoForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmModInfo"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgman.pas"/>
@@ -86,11 +97,17 @@
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\forms\fmmodinfo.pas"/>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="MODInfoForm"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmModInfo"/>
+        <UnitName Value="Logging"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
@@ -98,7 +115,7 @@
         <UsageCount Value="20"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="3">
+    <JumpHistory HistoryIndex="5">
       <Position>
         <Filename Value="formpak2mod.pas"/>
         <Caret Line="166" Column="14" TopLine="99"/>
@@ -114,6 +131,14 @@
       <Position>
         <Filename Value="formpak2mod.pas"/>
         <Caret Line="144" Column="37" TopLine="126"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="166" Column="31" TopLine="144"/>
+      </Position>
+      <Position>
+        <Filename Value="formpak2mod.pas"/>
+        <Caret Line="66" Column="19" TopLine="46"/>
       </Position>
     </JumpHistory>
     <RunParams>

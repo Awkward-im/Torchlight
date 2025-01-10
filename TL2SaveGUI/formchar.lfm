@@ -6,6 +6,7 @@ object fmChar: TfmChar
   BorderStyle = bsNone
   ClientHeight = 502
   ClientWidth = 640
+  LCLVersion = '4.99.0.0'
   OnDestroy = FormDestroy
   object pcCharInfo: TPageControl
     Left = 0

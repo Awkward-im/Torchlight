@@ -116,14 +116,13 @@ type
     function NewFromDir (const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
     function Load(const fname:AnsiString; silent:boolean=false):boolean;
     procedure Save();
+    procedure Build();
     procedure MoveToIndex(idx: integer);
     procedure UpdateGrid(idx: integer);
 
     property StatusBarText:AnsiString read GetStatusText;
     property OnSBUpdate:TSBUpdateEvent read FSBUpdate write FSBUpdate;
   end;
-
-procedure Build(aprogress:TSBUpdateEvent);
 
 
 implementation

@@ -1,5 +1,4 @@
 {TODO: Set modified if any edit field changed}
-{TODO: restore edit fields if "Cancel" pressed. was saved by ok so just fill again}
 {
 fsModal in FormState
 Application.ModalLevel
@@ -157,6 +156,9 @@ end;
 
 procedure TMODInfoForm.bbCancelClick(Sender: TObject);
 begin
+  if fmi<>nil then
+    LoadFromInfo(fmi^);
+
   Close;
 end;
 

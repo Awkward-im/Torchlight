@@ -1,0 +1,6 @@
+{"version":1,"strings":[
+{"hash":35666359,"name":"tformlayoutedit.cbtxtpreview.caption","sourcebytes":[84,101,120,116,32,112,114,101,118,105,101,119],"value":"Text preview"},
+{"hash":90010052,"name":"tformlayoutedit.miaddnode.caption","sourcebytes":[65,100,100,32,79,98,106,101,99,116],"value":"Add Object"},
+{"hash":261865876,"name":"tformlayoutedit.acttreedeletenode.caption","sourcebytes":[68,101,108,101,116,101,32,79,98,106,101,99,116],"value":"Delete Object"},
+{"hash":228427908,"name":"tformlayoutedit.acttreerenamenode.caption","sourcebytes":[82,101,110,97,109,101,32,79,98,106,101,99,116],"value":"Rename Object"}
+]}

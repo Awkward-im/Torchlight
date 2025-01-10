@@ -346,7 +346,7 @@ end;
 procedure TFormLayoutEdit.vePropSelection(Sender: TObject; aCol, aRow: Integer);
 begin
 //  memHelp.Lines[2]:='Property '+veProp.Keys[aRow];
-  memHelp.Lines[2]:=TypeToText(IntPtr(veProp.Objects[1,aRow-1]))+', '+
+  memHelp.Lines[2]:=FastWideToStr(TypeToText(IntPtr(veProp.Objects[1,aRow-1])))+', '+
       info.GetPropDescr(IntPtr(veProp.Objects[0,aRow-1]));
 end;
 
@@ -757,6 +757,7 @@ procedure TFormLayoutEdit.BuildMenu;
 var
   lmi,lmisub:TMenuItem;
   lmenu:PWideChar;
+  ls:AnsiString;
   i,j:integer;
 begin
   miAddNode.Clear;
@@ -771,10 +772,11 @@ begin
     lmi.OnClick   :=@DoAddNode;
     if lmenu<>nil then
     begin
+      ls:=FastWideToStr(lmenu);
       lmisub:=nil;
       for j:=0 to miAddNode.Count-1 do
       begin
-        if miAddNode.Items[j].Caption=lmenu then
+        if miAddNode.Items[j].Caption=ls then
         begin
           lmisub:=miAddNode.Items[j];
           break;
@@ -783,7 +785,7 @@ begin
       if lmisub=nil then
       begin
         lmisub:=TMenuItem.Create(miAddNode);
-        lmisub.Caption:=lmenu;
+        lmisub.Caption:=ls;
         miAddNode.Add(lmisub);
       end;
       lmisub.Add(lmi);

@@ -21,8 +21,6 @@ uses
 
   sysutils,
 
-  logging,
-  
   rgglobal,
   rgscan,
   rgdict,
