@@ -81,6 +81,8 @@ type
 
     function BuildTree(adata:PByte; aver:integer):integer;
     function GetFile(out abuf: PByte; aver: integer): integer;
+
+    property Edit:TSynEdit read SynEdit write SynEdit;
   end;
 
 var

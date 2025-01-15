@@ -677,6 +677,14 @@ msgstr ""
 msgid "Dir for extraction"
 msgstr ""
 
+#: trgguiform.micalchash.caption
+msgid "Calc Hash"
+msgstr ""
+
+#: trgguiform.micalchash.hint
+msgid "Calculate selection hash"
+msgstr ""
+
 #: trgguiform.miedit.caption
 msgid "&Edit"
 msgstr ""

@@ -45,7 +45,10 @@ type
 
     function GetFuncById (aid:dword):PWideChar;
     function GetEventById(aid:dword):PWideChar;
-
+{$IFDEF DEBUG}
+    function GetFuncArray :pointer;
+    function GetEventArray:pointer;
+{$ENDIF}
     property Version:integer read FVersion write SetVersion;
   end;
 
@@ -126,6 +129,18 @@ var
   DictObjRGO:TLayoutInfo;
 
 //----- Objects -----
+
+{$IFDEF DEBUG}
+function TRGObject.GetFuncArray :pointer;
+begin
+  result:=pointer(PLayoutInfo(FDict)^.funcs);
+end;
+
+function TRGObject.GetEventArray:pointer;
+begin
+  result:=pointer(PLayoutInfo(FDict)^.events);
+end;
+{$ENDIF}
 
 procedure TRGObject.Init;
 begin
@@ -781,7 +796,7 @@ begin
       end;
 
       // event
-      // !NAME[,NAME]
+      // #NAME[,NAME]
       '#': begin
         repeat
           pc^:=#0;

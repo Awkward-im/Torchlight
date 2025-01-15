@@ -102,5 +102,7 @@
 {"hash":143528869,"name":"trgguiform.mitreeextractvisible.caption","sourcebytes":[69,120,116,114,97,99,116,32,118,105,115,105,98,108,101],"value":"Extract visible"},
 {"hash":208920009,"name":"trgguiform.mitreenew.caption","sourcebytes":[78,101,119,32,100,105,114,101,99,116,111,114,121],"value":"New directory"},
 {"hash":212068130,"name":"trgguiform.mitreedelete.caption","sourcebytes":[68,101,108,101,116,101,32,68,105,114],"value":"Delete Dir"},
-{"hash":115311026,"name":"trgguiform.mitreerestore.caption","sourcebytes":[82,101,115,116,111,114,101,32,68,105,114],"value":"Restore Dir"}
+{"hash":115311026,"name":"trgguiform.mitreerestore.caption","sourcebytes":[82,101,115,116,111,114,101,32,68,105,114],"value":"Restore Dir"},
+{"hash":39100696,"name":"trgguiform.micalchash.caption","sourcebytes":[67,97,108,99,32,72,97,115,104],"value":"Calc Hash"},
+{"hash":205463336,"name":"trgguiform.micalchash.hint","sourcebytes":[67,97,108,99,117,108,97,116,101,32,115,101,108,101,99,116,105,111,110,32,104,97,115,104],"value":"Calculate selection hash"}
 ]}

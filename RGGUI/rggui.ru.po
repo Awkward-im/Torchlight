@@ -689,6 +689,14 @@ msgstr "Таблица"
 msgid "Dir for extraction"
 msgstr "Папка для распаковки"
 
+#: trgguiform.micalchash.caption
+msgid "Calc Hash"
+msgstr "Считать  хэш"
+
+#: trgguiform.micalchash.hint
+msgid "Calculate selection hash"
+msgstr "Считать хэш выделенного текста"
+
 #: trgguiform.miedit.caption
 msgid "&Edit"
 msgstr "Редактор"

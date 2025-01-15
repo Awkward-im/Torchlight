@@ -1309,6 +1309,7 @@ begin
       if GetNodeType(tlprop)<>rgGroup then continue;
 
       pcw:=GetNodeName(tlprop);
+
       if CompareWide(pcw,'TIMELINEOBJECTPROPERTY')=0 then
       begin
         ltype:=1;
@@ -1316,12 +1317,18 @@ begin
         WriteStr(pcw,astream);
         WriteStr(nil,astream);
       end
-      else// if CompareWide(pcw,'TIMELINEOBJECTEVENT')=0 then
+      else if CompareWide(pcw,'TIMELINEOBJECTEVENT')=0 then
       begin
         ltype:=2;
         pcw:=AsString(FindNode(tlprop,'OBJECTEVENTNAME'));
         WriteStr(nil,astream);
         WriteStr(pcw,astream);
+      end
+      else // if CompareWide(pcw,'??TIMELINEUNKNOWN')=0 then
+      begin
+        ltype:=0;
+        WriteStr(nil,astream);
+        WriteStr(nil,astream);
       end;
 
       ltlpoints:=GetGroupCount(tlprop);
@@ -1358,7 +1365,7 @@ begin
         begin
           pcw:=AsString(FindNode(tlpoint,'VALUE_1'));
           astream.WriteShortStringUTF8(pcw);
-          if (ltype=1) or (pcw<>nil) then // condition for hob?
+          if (ltype=0) or (ltype=1) or (pcw<>nil) then // condition for hob?
             astream.WriteShortStringUTF8(AsString(FindNode(tlpoint,'VALUE')));
         end;
 

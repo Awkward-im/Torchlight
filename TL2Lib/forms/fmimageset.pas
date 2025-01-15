@@ -44,6 +44,7 @@ type
 
   public
     procedure FillList(const actrl: TRGController; adata: PByte; asize: integer);
+    procedure FillList(const fname:string);
 
     property OnImagesetInfo:TOnImagesetInfo read FOnImagesetInfo write FOnImagesetInfo;
   end;
@@ -60,7 +61,8 @@ uses
   rgglobal;
 
 resourcestring
-  rsSaveSprite = 'Save sprite';
+  rsSaveSprite   = 'Save sprite';
+  rsLoadImageset = 'Load imageset';
 
 procedure TFormImageset.lbImagesClick(Sender: TObject);
 begin
@@ -178,6 +180,47 @@ begin
     end;
 
     if not FImageset.UseController(actrl) then ;
+    FImageset.GetImage(imgTexture.Picture);
+  end;
+
+end;
+
+procedure TFormImageset.FillList(const fname:string);
+var
+  ldlg:TOpenDialog;
+  lfname:string;
+  i:integer;
+begin
+  if fname='' then
+  begin
+    ldlg:=TOpenDialog.Create(nil);
+    ldlg.Filter:='Imageset|*.imageset';
+    ldlg.Title:=rsLoadImageset;
+    lfname:='';
+    if ldlg.Execute then
+    begin
+      ChDir(ldlg.InitialDir);
+      lfname:=ldlg.FileName;
+    end;
+    ldlg.Free;
+  end
+  else
+  begin
+    Chdir(ExtractFilePath(fname));
+    lfname:=fname;
+  end;
+  if lfname='' then exit;
+
+  lbImages.Items.Clear;
+  imgSprite.Picture.Clear;
+
+  if FImageset.ParseFromFile(lfname) then
+  begin
+    for i:=0 to FImageset.Count-1 do
+    begin
+      lbImages.Items.Add(FImageset.Name[i]);
+    end;
+
     FImageset.GetImage(imgTexture.Picture);
   end;
 

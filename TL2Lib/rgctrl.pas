@@ -144,6 +144,7 @@ type
     procedure MarkToRemove(idx:integer);
     {
       add new dir to both Dir and Files lists. negative result points to existing already
+      MUST ends by slash
     }
     function  NewDir(apath:PWideChar):integer;
     {
@@ -652,14 +653,22 @@ end;
 
 function TRGController.UpdatesCount():integer;
 var
-  i:integer;
+  i,ldirs:integer;
 begin
   result:=0;
+  ldirs:=0;
   for i:=0 to FileCount-1 do
   begin
     if not IsFileDeleted(i) then
-      if PRGCtrlInfo(Files[i])^.action<>act_none then inc(result);
+      if PRGCtrlInfo(Files[i])^.action<>act_none then
+      begin
+        inc(result);
+        if PRGCtrlInfo(Files[i])^.action=act_dir then
+          inc(ldirs);
+      end;
   end;
+  // ignore changes if empty dir added only
+  if ldirs=result then result:=0;
 end;
 
 function TRGController.UpdateChanges():integer;

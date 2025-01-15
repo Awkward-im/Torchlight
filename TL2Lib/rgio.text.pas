@@ -381,7 +381,7 @@ var
   lend,pc:PWideChar;
   lparent,lsize,lline,ltype,ldst,idx:integer;
   lname:array [0..127] of WideChar;
-  leof,lclose:boolean;
+  leoln,leof,lclose:boolean;
 begin
   anode:=nil;
 
@@ -398,7 +398,17 @@ begin
     lsize:=aptr-pc;
 
     // skip newline
-    while (aptr<lend) and (ord(aptr^) in [10,13]) do inc(aptr); // inc lline here?
+    leoln:=false;
+    while (aptr<lend) and (ord(aptr^) in [10,13]) do
+    begin
+      // increment line number for empty lines
+      if ord(aptr^)=13 then
+      begin
+        if leoln then inc(lline);
+        leoln:=true;
+      end;
+      inc(aptr); // inc lline here?
+    end;
     inc(lline);
     leof:=(aptr>=lend) or (aptr^=#0);
     if lsize=0 then

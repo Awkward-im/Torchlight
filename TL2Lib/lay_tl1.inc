@@ -269,28 +269,7 @@ begin
   end;
 
   //--- Additional data
-{
-  if lChunkType=IdGroupTL1 then
-  begin
-    lcnt:=memReadDWord(aptr); // children count
-    memReadDWord(aptr); // children start
-    memReadDword(aptr); // first outside group
-  end
 
-  //----- Logic group -----
-
-   else}{ if lChunkType=IdLogicGroupTL1 then
-   begin
-     ParseLogicGroupTL1(lnode,lChunkId);
-   end
-
-   //----- Timeline -----
-
-   else if lChunkType=IdTimelineTL1 then
-   begin
-     ParseTimelineTL1(lnode,lChunkId);
-   end;
-}
   //--- Children
 
   lcnt:=memReadDWord(FPos);

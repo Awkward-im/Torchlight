@@ -55,7 +55,7 @@ type
     isSkills  :Boolean;
 
   private
-    function  GetStr(aid:dword):PWideChar;
+    function  GetStr(aid:dword; isroot:boolean=false):PWideChar;
     procedure ParseBlock (var aptr:PByte; var anode:pointer);
     function  ParseBuffer(    abuf:PByte; out anode:pointer):integer;
     procedure BuildBlock (aStream:TStream; anode:pointer);
@@ -70,7 +70,7 @@ type
 
 {%REGION DAT decode}
 
-function TRGDATFile.GetStr(aid:dword):PWideChar;
+function TRGDATFile.GetStr(aid:dword; isroot:boolean=false):PWideChar;
 var
   pc:PWideChar;
   lhash:dword;
@@ -138,6 +138,12 @@ begin
 
   if result=nil then
   begin
+    if isroot then
+    begin
+      if aid=RGHash(FFileName) then
+        exit(@FFileName);
+    end;
+
     if rgDebugLevel<>dlNone then
       RGLog.Add('Unknown DAT tag with hash '+IntToStr(aid));
 
@@ -163,7 +169,7 @@ var
   i,lcnt,lsub,ltype:integer;
 begin
   lhash:=memReadDWord(aptr);
-  lname:=GetStr(lhash);
+  lname:=GetStr(lhash, anode=nil);
   // Special situatuions
   if anode=nil then
   begin
@@ -175,11 +181,14 @@ begin
       if (CompareWide(lname,'SKILL')=0) then
         isSkills:=true;
     end;
+{!moved to GetStr
+    // check unknown root node with filename hash
     if (lname=nil) or (lname=@FBuffer) then
     begin
       if lhash=RGHash(FFileName) then
         lname:=@FFileName;
     end;
+}
   end;
   lnode:=AddGroup(anode,lname);
 

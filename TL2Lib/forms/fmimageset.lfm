@@ -6,7 +6,6 @@ object FormImageset: TFormImageset
   BorderStyle = bsNone
   ClientHeight = 447
   ClientWidth = 667
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object Splitter1: TSplitter
