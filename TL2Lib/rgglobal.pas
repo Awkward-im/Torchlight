@@ -105,6 +105,7 @@ function  FileTimeToDateTime(const FileTime: Int64): TDateTime;
 function  DateTimeToFileTime(adate: TDateTime): Int64;
 function  RGStrToInt(src:PWideChar):QWord;
 function  RGIntToStr(dst:PWideChar; value:QWord):PWideChar;
+procedure FixFloatStr(var astr:AnsiString);
 procedure FixFloatStr(var astr:UnicodeString);
 function  ReverseWords(aval:QWord):QWord;
 
@@ -426,6 +427,31 @@ function DateTimeToFileTime(adate: TDateTime): Int64;
 begin
   adate  := adate - FileTimeBase;
   Result := Trunc(adate * FileTimeStep);
+end;
+
+procedure FixFloatStr(var astr:AnsiString);
+var
+  j,l:integer;
+begin
+  l:=Length(astr);
+  j:=l;
+
+  while j>1 do
+  begin
+    if      (astr[j]='0') then dec(j)
+    else if (astr[j]='.') then
+    begin
+      dec(j);
+      break;
+    end
+    else break;
+  end;
+  if (j=2) and (astr[1]='-') and (astr[2]='0') then
+  begin
+    astr[1]:='0';
+    j:=1;
+  end;
+  if j<l then SetLength(astr,j);
 end;
 
 procedure FixFloatStr(var astr:UnicodeString);

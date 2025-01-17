@@ -118,12 +118,14 @@ end;
 {$i scan_effects.inc}
 {$i scan_affixes.inc}
 {$i scan_sets.inc}
+{$i scan_unitthemes.inc}
 
 function ScanAdds(ams:pointer):integer;
 begin
   result:=ScanEffects(ams);
   result:=ScanAffixes(ams);
   result:=ScanSets(ams);
+  result:=ScanUThemes(ams);
 end;
 
 function CreateAddsTable(adb:PSQLite3):boolean;
@@ -131,6 +133,7 @@ begin
   result:=CreateEffectsTable(adb);
   result:=CreateAffixesTable(adb);
   result:=CreateSetsTable(adb);
+  result:=CreateUThemesTable(adb);
 
   result:=CreateFilesTable(adb);
 end;

@@ -7,13 +7,22 @@ object fmEffects: TfmEffects
   Caption = 'Effects'
   ClientHeight = 513
   ClientWidth = 620
-  LCLVersion = '3.99.0.0'
   OnCreate = FormCreate
+  object lblEffects: TLabel
+    Left = 2
+    Height = 15
+    Top = 4
+    Width = 296
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Effects'
+    ParentColor = False
+  end
   object sgEffects: TStringGrid
-    Left = 4
+    Left = 2
     Height = 208
     Top = 24
-    Width = 292
+    Width = 296
     AutoEdit = False
     ColCount = 3
     Columns = <    
@@ -34,152 +43,216 @@ object fmEffects: TfmEffects
       end>
     ExtendedSelect = False
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goDblClickAutoSize, goSmoothScroll, goSelectionActive]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goDblClickAutoSize, goSmoothScroll, goSelectionActive, goCellEllipsis]
     RowCount = 1
     TabOrder = 0
     OnSelectCell = sgEffectsSelectCell
   end
-  object lblEffects: TLabel
-    Left = 4
+  object lblEffectName: TLabel
+    Left = 2
     Height = 15
-    Top = 4
-    Width = 292
-    Alignment = taCenter
-    AutoSize = False
-    Caption = 'Effects'
+    Top = 239
+    Width = 65
+    Caption = 'Effect Name'
     ParentColor = False
   end
-  object edLinkName: TEdit
-    Left = 8
+  object edEffectName: TEdit
+    Left = 2
     Height = 23
-    Top = 302
-    Width = 288
-    TabOrder = 2
-  end
-  object edGraph: TEdit
-    Left = 8
-    Height = 23
-    Top = 346
-    Width = 288
-    TabOrder = 3
-  end
-  object edParticles: TEdit
-    Left = 8
-    Height = 23
-    Top = 391
-    Width = 288
-    TabOrder = 4
-  end
-  object edIcon: TEdit
-    Left = 8
-    Height = 23
-    Top = 435
-    Width = 288
-    TabOrder = 5
+    Top = 256
+    Width = 296
+    TabOrder = 1
   end
   object lblLinkName: TLabel
-    Left = 8
+    Left = 2
     Height = 15
     Top = 283
     Width = 57
     Caption = 'Link Name'
     ParentColor = False
   end
+  object edLinkName: TEdit
+    Left = 2
+    Height = 23
+    Top = 302
+    Width = 296
+    TabOrder = 2
+  end
   object lblGraph: TLabel
-    Left = 8
+    Left = 2
     Height = 15
     Top = 328
     Width = 32
     Caption = 'Graph'
     ParentColor = False
   end
+  object edGraph: TEdit
+    Left = 2
+    Height = 23
+    Top = 346
+    Width = 296
+    TabOrder = 3
+  end
   object lblParticles: TLabel
-    Left = 8
+    Left = 2
     Height = 15
     Top = 373
     Width = 44
     Caption = 'Particles'
     ParentColor = False
   end
+  object edParticles: TEdit
+    Left = 2
+    Height = 23
+    Top = 391
+    Width = 296
+    TabOrder = 4
+  end
   object lblIcon: TLabel
-    Left = 8
+    Left = 2
     Height = 15
     Top = 418
     Width = 23
     Caption = 'Icon'
     ParentColor = False
   end
+  object edIcon: TEdit
+    Left = 2
+    Height = 23
+    Top = 435
+    Width = 296
+    TabOrder = 5
+  end
   object lblUnitTheme: TLabel
-    Left = 8
+    Left = 2
     Height = 15
     Top = 463
     Width = 62
     Caption = 'Unit Theme'
     ParentColor = False
   end
-  object lblBaseClass: TLabel
-    Left = 424
-    Height = 15
-    Top = 347
-    Width = 54
-    Caption = 'Base Class'
-    ParentColor = False
+  object edUnitTheme: TEdit
+    Left = 2
+    Height = 23
+    Top = 480
+    Width = 296
+    TabOrder = 6
   end
-  object lblDuration: TLabel
-    Left = 559
-    Height = 15
-    Top = 41
-    Width = 46
-    Caption = 'Duration'
-    ParentColor = False
-  end
-  object lblDamageType: TLabel
-    Left = 496
-    Height = 15
-    Top = 208
-    Width = 70
-    Caption = 'Damage type'
-    ParentColor = False
-  end
-  object lblActivation: TLabel
-    Left = 424
-    Height = 15
-    Top = 256
-    Width = 54
-    Caption = 'Activation'
-    ParentColor = False
+  object clbFlags: TCheckListBox
+    AnchorSideLeft.Side = asrBottom
+    Left = 304
+    Height = 244
+    Top = 4
+    Width = 128
+    Anchors = [akTop, akLeft, akRight]
+    ExtendedSelect = False
+    ItemHeight = 0
+    TabOrder = 7
   end
   object lblLevel: TLabel
-    Left = 559
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
     Height = 15
-    Top = 12
+    Top = 4
     Width = 27
+    BorderSpacing.Left = 8
     Caption = 'Level'
     ParentColor = False
   end
-  object lblUnknown: TLabel
-    Left = 560
+  object edLevel: TEdit
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 23
+    Top = 22
+    Width = 60
+    BorderSpacing.Left = 8
+    TabOrder = 8
+  end
+  object lblDuration: TLabel
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
     Height = 15
+    Top = 52
+    Width = 46
+    BorderSpacing.Left = 8
+    Caption = 'Duration'
+    ParentColor = False
+  end
+  object edDuration: TEdit
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 23
     Top = 70
+    Width = 60
+    BorderSpacing.Left = 8
+    TabOrder = 9
+  end
+  object lblUnknown: TLabel
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 15
+    Top = 104
     Width = 51
+    BorderSpacing.Left = 8
     Caption = 'Unknown'
     ParentColor = False
   end
+  object edUnknown1: TEdit
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 23
+    Top = 122
+    Width = 60
+    BorderSpacing.Left = 8
+    TabOrder = 10
+  end
   object lblDisplay: TLabel
-    Left = 559
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
     Height = 15
-    Top = 99
+    Top = 153
     Width = 38
+    BorderSpacing.Left = 8
     Caption = 'Display'
     ParentColor = False
   end
-  object lblSource: TLabel
-    Left = 424
+  object edDisplay: TEdit
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 23
+    Top = 171
+    Width = 60
+    BorderSpacing.Left = 8
+    TabOrder = 11
+  end
+  object lblDamageType: TLabel
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
     Height = 15
-    Top = 301
-    Width = 36
-    Caption = 'Source'
+    Top = 203
+    Width = 70
+    BorderSpacing.Left = 8
+    Caption = 'Damage type'
     ParentColor = False
+  end
+  object edDamageType: TEdit
+    AnchorSideLeft.Control = clbFlags
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 23
+    Top = 221
+    Width = 80
+    BorderSpacing.Left = 8
+    TabOrder = 12
   end
   object lblProperties: TLabel
     Left = 304
@@ -189,22 +262,73 @@ object fmEffects: TfmEffects
     Caption = 'Properties'
     ParentColor = False
   end
-  object clbFlags: TCheckListBox
-    Left = 304
-    Height = 244
-    Top = 4
-    Width = 184
-    ExtendedSelect = False
-    ItemHeight = 0
-    TabOrder = 7
-  end
   object lbProps: TListBox
     Left = 304
     Height = 112
     Top = 276
-    Width = 112
+    Width = 128
     ItemHeight = 0
     TabOrder = 13
+  end
+  object lblActivation: TLabel
+    AnchorSideLeft.Control = edActivation
+    Left = 440
+    Height = 15
+    Top = 256
+    Width = 54
+    Caption = 'Activation'
+    ParentColor = False
+  end
+  object edActivation: TEdit
+    AnchorSideLeft.Control = lbProps
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 23
+    Top = 276
+    Width = 173
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    TabOrder = 14
+  end
+  object lblSource: TLabel
+    AnchorSideLeft.Control = edSource
+    Left = 440
+    Height = 15
+    Top = 304
+    Width = 36
+    Caption = 'Source'
+    ParentColor = False
+  end
+  object edSource: TEdit
+    AnchorSideLeft.Control = lbProps
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 23
+    Top = 321
+    Width = 173
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    TabOrder = 15
+  end
+  object lblBaseClass: TLabel
+    AnchorSideLeft.Control = edBaseClass
+    Left = 440
+    Height = 15
+    Top = 347
+    Width = 54
+    Caption = 'Base Class'
+    ParentColor = False
+  end
+  object edBaseClass: TEdit
+    AnchorSideLeft.Control = lbProps
+    AnchorSideLeft.Side = asrBottom
+    Left = 440
+    Height = 23
+    Top = 365
+    Width = 173
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    TabOrder = 16
   end
   object sgStats: TStringGrid
     Left = 304
@@ -229,83 +353,5 @@ object fmEffects: TfmEffects
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goRowSelect, goDblClickAutoSize, goSmoothScroll]
     RowCount = 1
     TabOrder = 17
-  end
-  object lblEffectName: TLabel
-    Left = 9
-    Height = 15
-    Top = 239
-    Width = 65
-    Caption = 'Effect Name'
-    ParentColor = False
-  end
-  object edEffectName: TEdit
-    Left = 8
-    Height = 23
-    Top = 256
-    Width = 288
-    TabOrder = 1
-  end
-  object edLevel: TEdit
-    Left = 496
-    Height = 23
-    Top = 8
-    Width = 60
-    TabOrder = 8
-  end
-  object edDamageType: TEdit
-    Left = 496
-    Height = 23
-    Top = 224
-    Width = 80
-    TabOrder = 12
-  end
-  object edActivation: TEdit
-    Left = 424
-    Height = 23
-    Top = 276
-    Width = 189
-    TabOrder = 14
-  end
-  object edSource: TEdit
-    Left = 424
-    Height = 23
-    Top = 321
-    Width = 189
-    TabOrder = 15
-  end
-  object edDuration: TEdit
-    Left = 496
-    Height = 23
-    Top = 37
-    Width = 60
-    TabOrder = 9
-  end
-  object edUnknown1: TEdit
-    Left = 496
-    Height = 23
-    Top = 66
-    Width = 60
-    TabOrder = 10
-  end
-  object edDisplay: TEdit
-    Left = 496
-    Height = 23
-    Top = 95
-    Width = 60
-    TabOrder = 11
-  end
-  object edBaseClass: TEdit
-    Left = 424
-    Height = 23
-    Top = 365
-    Width = 189
-    TabOrder = 16
-  end
-  object edUnitTheme: TEdit
-    Left = 8
-    Height = 23
-    Top = 480
-    Width = 288
-    TabOrder = 6
   end
 end

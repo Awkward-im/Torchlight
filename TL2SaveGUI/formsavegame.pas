@@ -332,15 +332,6 @@ procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
 begin
   if FSettings.DBState=0 then FreeBases;
 
-{
-  if FSettings.cbReloadDB.Checked then
-  begin
-    if FSettings.DBState=0 then FreeBases;
-    FSettings.DBState:=LoadBases(FSettings.edDBFile.Text);
-  end
-  else if FSettings.DBState<>0 then
-    FSettings.DBState:=LoadBases(FSettings.edDBFile.Text);
-}
   try
     ClearGameGlobals;
     CloseSaveGame;

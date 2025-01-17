@@ -84,8 +84,9 @@ type
     FUnitThemeId :TRGID;
     FClassId     :TRGID;
     FFromChar    :boolean;
-    FProperties  :array of TRGFloat;
+    FProperties  :array [0..4] of TRGFloat;
     FStats       :array of TTL2Stat;
+    FPropCount   :integer;
     FEffectType  :integer;
     FDamageType  :TTLEffectDamageType;
     FActivation  :TTLEffectActivation;
@@ -98,9 +99,9 @@ type
 
     tmp:array [0..63] of byte;
 
+    function GetProperties():integer;             overload;
     function GetProperties(idx:integer):TRGFloat; overload;
-    function GetProperties:integer;               overload;
-    function GetStats:integer;                    overload;
+    function GetStats     ():integer;             overload;
     function GetStats     (idx:integer):TTL2Stat; overload;
 
   public
@@ -134,6 +135,10 @@ function GetEffectSource    (aval:TTLEffectSource    ):string;
 function GetEffectActivation(aval:TTLEffectActivation):string;
 
 implementation
+
+uses
+  sysutils,
+  tlsgcommon;
 
 const
   EffectDamageTypes : array [0..6] of string = (
@@ -441,7 +446,7 @@ end;
 
 procedure TTLEffect.InternalClear;
 begin
-  SetLength(FProperties,0);
+  FillChar(FProperties,SizeOf(FProperties),0);
   SetLength(FStats ,0);
 end;
 
@@ -454,7 +459,7 @@ end;
 
 function TTLEffect.GetProperties():integer;
 begin
-  result:=Length(FProperties);
+  result:=FPropCount;
 end;
 
 function TTLEffect.GetProperties(idx:integer):single;
@@ -520,11 +525,19 @@ begin
   end;
 
   // 5 properties max
-
-  lcnt:=AStream.ReadByte();
-  SetLength(FProperties,lcnt);
-  if lcnt>0 then
-    AStream.Read(FProperties[0],lcnt*SizeOf(TRGFloat));
+  FPropCount:=AStream.ReadByte();
+  if FPropCount>0 then
+  begin
+    if FPropCount>Length(FProperties) then
+    begin
+      DbgLn('Effect props '+IntToStr(FPropCount)+' more than maximum');
+      AStream.Read(FProperties[0],Length(FProperties)*SizeOf(TRGFloat));
+      AStream.Position:=AStream.Position+(FPropCount-Length(FProperties))*SizeOf(TRGFloat);
+      FPropCount:=Length(FProperties);
+    end
+    else
+      AStream.Read(FProperties[0],FPropCount*SizeOf(TRGFloat));
+  end;
 
   lcnt:=AStream.ReadWord;
   SetLength(FStats,lcnt);
@@ -539,7 +552,7 @@ begin
     FActivation  :=TTLEffectActivation(AStream.ReadDWord); // ????
     FLevel       :=AStream.ReadDWord;
     FDuration    :=AStream.ReadFloat;
-    FUnknown1    :=AStream.ReadFloat;  // 0 ??  SoakScale??
+    FUnknown1    :=AStream.ReadFloat;   // 0 ??  SoakScale??
     FDisplayValue:=AStream.ReadFloat;
     FSource      :=TTLEffectSource(AStream.ReadDWord);
   end
@@ -550,16 +563,16 @@ begin
     // 64 bytes
     i1:=AStream.ReadDword;              // 4 booleans, not mask (0,1,1,1) (1,0,1,1)
     i2:=AStream.ReadDword;              // 1 on pots, 0 on shirt
-    FLevel       :=AStream.ReadDWord;  // at least, looks like
+    FLevel       :=AStream.ReadDWord;   // at least, looks like
     i3:=AStream.ReadQWord;              // -1
     i4:=AStream.ReadDword;              // 100 usually
     i5:=AStream.ReadDword;              // pots=100, shirt =0
     i6:=AStream.ReadDword;              // 0
     i7:=AStream.ReadDword;              // "on time" ?
     i8:=AStream.ReadDword;              // 0
-    f:=AStream.ReadFloat;              // 1.0 usually
+    f:=AStream.ReadFloat;               // 1.0 usually
     FDuration    :=AStream.ReadFloat;
-    FUnknown1    :=AStream.ReadFloat;  // 0 ??  SoakScale??
+    FUnknown1    :=AStream.ReadFloat;   // 0 ??  SoakScale??
     FDisplayValue:=AStream.ReadFloat;
     FSource      :=TTLEffectSource(AStream.ReadDWord); //?? =0
     i9:=AStream.ReadDword;              // 0
@@ -610,9 +623,9 @@ begin
     AStream.WriteShortString(FParticles);
   end;
 
-  AStream.WriteByte(Length(FProperties));
-  if Length(FProperties)>0 then
-    AStream.Write(FProperties[0],Length(FProperties)*SizeOf(TRGFloat));
+  AStream.WriteByte(FPropCount);
+  if FPropCount>0 then
+    AStream.Write(FProperties[0],FPropCount*SizeOf(TRGFloat));
 
   AStream.WriteWord(Length(FStats));
   if Length(FStats)>0 then

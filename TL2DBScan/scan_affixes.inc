@@ -1,4 +1,4 @@
-{%REGION Effects}
+{%REGION Affixes}
 {NOTE: add base/mod NEW affixes only, not edit existing}
 {TODO: implement modid for aeffects}
 

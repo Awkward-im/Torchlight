@@ -7,7 +7,6 @@
 {"hash":111254093,"name":"tfmsettings.cbidashex.caption","sourcebytes":[83,104,111,119,32,73,68,115,32,105,110,32,72,101,120,32,102,111,114,109],"value":"Show IDs in Hex form"},
 {"hash":258565052,"name":"tfmsettings.cbshowall.caption","sourcebytes":[83,104,111,119,32,97,108,108],"value":"Show all"},
 {"hash":222444307,"name":"tfmsettings.cbbackup.caption","sourcebytes":[77,97,107,101,32,98,97,99,107,117,112,115],"value":"Make backups"},
-{"hash":34762148,"name":"tfmsettings.cbreloaddb.caption","sourcebytes":[82,101,108,111,97,100,32,100,97,116,97,98,97,115,101,32,119,105,116,104,32,115,97,118,101,103,97,109,101,32,108,111,97,100],"value":"Reload database with savegame load"},
 {"hash":190172462,"name":"tfmsettings.gbmodsscan.caption","sourcebytes":[77,111,100,115,32,83,99,97,110],"value":"Mods Scan"},
 {"hash":219145945,"name":"tfmsettings.lblmodsdir.caption","sourcebytes":[77,111,100,115,32,100,105,114,101,99,116,111,114,121],"value":"Mods directory"},
 {"hash":93100414,"name":"tfmsettings.bbrescan.caption","sourcebytes":[82,101,115,99,97,110],"value":"Rescan"},

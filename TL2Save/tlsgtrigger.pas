@@ -10,22 +10,17 @@ uses
 type
   // record with fixed size 136 bytes
   TTL2Trigger = packed record
-    flags1   :array [0..3] of Byte;
+    flags1   :array [0..3] of Byte; // byte + (byte+word)/(3 byte)
     flags2   :array [0..3] of Byte;
+{0x4b=0,1,2 = 0x10 - amount of dwords?
+}
     f1      :TRGFloat; // 0x08
-    f2      :TRGFloat; // 0x0C
-    f3      :TRGFloat; // 0x10
-    f4      :TRGFloat; // 0x14
+    f2      :TRGFloat; // 0x0C      // integer/boolean. like flag1 (1+(3=flag1 sometime)) 0/1/60+
+    f3      :TRGFloat; // 0x10      // integer? GUID? can be both 0, -1 or something. Float sometime
+    f4      :TRGFloat; // 0x14      // 
     // fixed size block
     // real name finished by #00
     atype   :array [0..21] of WideChar; // 0x18
-    // 0x34
-{
-    valf1   :RGFloat; // 0x34
-    valf2   :RGFloat; // 0x38
-    valf3   :RGFloat; // 0x3C
-    valf_1  :RGFloat; // 0x40 maybe not
-}
     // 0x44
     val_f1  :TRGFloat; // 0x44
     val_f2  :TRGFloat; // 0x48
@@ -40,16 +35,17 @@ type
     posx    :TRGFloat; // 0x78
     posy    :TRGFloat; // 0x7C
     posz    :TRGFloat; // 0x80
-    val_i1  :Word;    // 0x84
-    val_i2  :Word;    // 0x86
+    val_i1  :Word;     // 0x84
+    val_i2  :Word;     // 0x86
   end;
 
+  // record with fixe size 61 byte
   TTL1Trigger = packed record
-    val_i1  :Word;
-    val_i2  :Word;
-    val1_f1 :TRGFloat;
-    val1_f2 :TRGFloat;
-    val1_f3 :TRGFloat;
+    val_i1  :Word;     // byte + 3 byte (next: same or -1 to current?)
+    val_i2  :Word;     // 1 - val_f1=float
+    val1_f1 :TRGFloat; // dword: integer? boolean?
+    val1_f2 :TRGFloat; // \  GUID? child? (roompiece id)
+    val1_f3 :TRGFloat; // /
     val1_f4 :TRGFloat; // 0
     parentid:TRGID;
     id      :TRGID;
@@ -58,7 +54,7 @@ type
     posy    :TRGFloat;
     posz    :TRGFloat;
     b       :Byte;
-    val_f1  :TRGFloat;
+    val_f1  :TRGFloat; // integer? 2+2?
   end;
 
   TTLTriggerList = array of TTL2Trigger;

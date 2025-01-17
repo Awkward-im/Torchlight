@@ -16,6 +16,7 @@ type
     bbClear: TBitBtn;
     bbUpdate: TBitBtn;
     cbModList: TComboBox;
+    lblChoosedModId: TLabel;
     sgBound: TStringGrid;
     sgFull: TStringGrid;
     lblFull: TLabel;
@@ -27,6 +28,7 @@ type
     sbAdd: TSpeedButton;
     sbDelete: TSpeedButton;
     sbClipboard: TSpeedButton;
+    procedure cbModListCloseUp(Sender: TObject);
     procedure sbClipboardClick(Sender: TObject);
     procedure bbClearClick    (Sender: TObject);
     procedure bbUpdateClick   (Sender: TObject);
@@ -191,6 +193,23 @@ begin
     end;
     agrid.Columns[2].Visible:=fmSettings.cbShowTech.Checked;
   end;
+end;
+
+procedure TfmModList.cbModListCloseUp(Sender: TObject);
+var
+  llist:tModDataArray;
+  lid:TRGID;
+  idx:integer;
+begin
+  idx:=cbModList.ItemIndex;
+  if idx>=0 then
+  begin
+    llist:=GetModList;
+    idx:=IntPtr(cbModList.Items.Objects[idx]);
+    lblChoosedModId.Caption:=TextId(llist[idx].id){HexStr(llist[idx].id,16)}
+  end
+  else
+    lblChoosedModId.Caption:='';
 end;
 
 procedure TfmModList.FillInfo(aSGame:TTLSaveFile);

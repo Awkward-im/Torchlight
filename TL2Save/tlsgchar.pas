@@ -421,7 +421,7 @@ begin
   FScale:=AStream.ReadFloat;           // scale (1.0 for char) (pet size)
 
   Funkn7[0]:=TRGID(AStream.ReadQWord); // -1 // !! "master" runtime ID, player or "unit spawner"
-  Funkn7[1]:=TRGID(AStream.ReadQWord); // -1 // /unit spawner/ in some layouts
+  Funkn7[1]:=TRGID(AStream.ReadQWord); // -1 // /(chest?) unit spawner/ in some layouts
   if Funkn7[0]<>RGIdEmpty then DbgLn('  after scale[0]='+HexStr(Funkn7[0],16)+' at '+HexStr(AStream.Position,8));
   if Funkn7[1]<>RGIdEmpty then DbgLn('  after scale[1]='+HexStr(Funkn7[1],16)+' at '+HexStr(AStream.Position,8));
 

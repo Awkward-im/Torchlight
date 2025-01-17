@@ -893,6 +893,10 @@ msgstr ""
 msgid "Prop"
 msgstr ""
 
+#: tfmitems.cbequipped.caption
+msgid "Equipped only"
+msgstr ""
+
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
 msgid "Key"
 msgstr ""
@@ -1179,10 +1183,6 @@ msgstr ""
 
 #: tfmsettings.cbidashex.caption
 msgid "Show IDs in Hex form"
-msgstr ""
-
-#: tfmsettings.cbreloaddb.caption
-msgid "Reload database with savegame load"
 msgstr ""
 
 #: tfmsettings.cbsavescan.caption

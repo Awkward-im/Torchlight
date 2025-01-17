@@ -1,11 +1,4 @@
-unit awkSQLite3;
-
-interface
-
-uses
-  SQLite3Dyn;
-
-{$DEFINE Interface}
+{$IFDEF Interface}
 
 function IsTableExists (db:PSQLite3; const aTable:AnsiString):boolean;
 function IsColumnExists(db:PSQLite3; const aTable,aColumn:AnsiString):boolean;
@@ -30,10 +23,7 @@ function ReturnText  (db:PSQLite3; const aSQL:AnsiString):string;
 function GetIntValue (db:PSQLite3; const atable, afield, acond:string):integer;
 function ReturnInt   (db:PSQLite3; const aSQL:AnsiString):integer;
 
-{$UNDEF Interface}
-
-implementation
-
+{$ELSE}
 
 function GetTextValue(db:PSQLite3; const atable, afield, acond:string):string;
 var
@@ -210,22 +200,4 @@ function OpenDatabase(var db:PSQLite3; const aname:AnsiString):boolean;
 begin
   result:=sqlite3_open(pointer(aname),@db)=SQLITE_OK;
 end;
-
-
-procedure InitDatabase;
-begin
-end;
-
-procedure FreeDatabase;
-begin
-end;
-
-initialization
-
-  InitDatabase;
-
-finalization
-
-  FreeDatabase;
-
-end.
+{$ENDIF}

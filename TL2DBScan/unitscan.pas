@@ -56,9 +56,9 @@ function RGCloseBase(var adb:PSQLite3; const fname:string=''):boolean;
 implementation
 
 uses
-  awkSQLite3
-  ,sysutils
+  sysutils
   ,Logging
+  ,tl2db
   ,RGScan
   ,rgPAK
   ,rgio.DAT

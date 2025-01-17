@@ -293,7 +293,7 @@ msgid ""
 "Database file not found.\n"
 "Check settings and rescan if needs"
 msgstr ""
-"Баа данных не найдена\n"
+"База данных не найдена\n"
 "Проверьте настройки и пересканируйте если надо"
 
 #: formsettings.rsneedtoscan
@@ -914,6 +914,10 @@ msgstr "Другое"
 msgid "Prop"
 msgstr "Окруж."
 
+#: tfmitems.cbequipped.caption
+msgid "Equipped only"
+msgstr "Надетое"
+
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
 msgid "Key"
 msgstr "Клавиша"
@@ -1201,10 +1205,6 @@ msgstr "Делать резервную копию"
 #: tfmsettings.cbidashex.caption
 msgid "Show IDs in Hex form"
 msgstr "Показать ID шестнадцатеричными"
-
-#: tfmsettings.cbreloaddb.caption
-msgid "Reload database with savegame load"
-msgstr "Перезагрузить базу с загрузкой сохранёнки"
 
 #: tfmsettings.cbsavescan.caption
 msgid "Save mods database after scan"
@@ -1571,7 +1571,7 @@ msgstr "Лучшее зелье здоровья"
 
 #: tl2db.rslmb
 msgid "Left mouse button"
-msgstr "Левая кнпка мыши"
+msgstr "Левая кнопка мыши"
 
 #: tl2db.rsmp
 msgid "Best Mana Potion"
@@ -1643,11 +1643,11 @@ msgstr "Быстрый доступ 9"
 
 #: tl2db.rsrmb
 msgid "Right mouse button"
-msgstr "Праавя кнопка мыши"
+msgstr "Правая кнопка мыши"
 
 #: tl2db.rsrmbalt
 msgid "Right mouse button (alternative)"
-msgstr "Правкая кнопка мыши (альтернативная)"
+msgstr "Правая кнопка мыши (альтернативная)"
 
 #: tl2db.rsset
 msgid "Set"
@@ -1668,4 +1668,3 @@ msgstr "Заклинание 3"
 #: tl2db.rsspell4
 msgid "Spell 4"
 msgstr "Заклинание 4"
-

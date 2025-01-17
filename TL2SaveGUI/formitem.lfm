@@ -6,7 +6,6 @@ object fmItem: TfmItem
   BorderStyle = bsNone
   ClientHeight = 478
   ClientWidth = 619
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object pcItemInfo: TPageControl
     Left = 0

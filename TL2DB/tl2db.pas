@@ -3,9 +3,12 @@ unit tl2db;
 interface
 
 uses
+  sqlite3dyn,
   rgglobal;
 
 {$DEFINE Interface}
+
+{$Include db_common.inc}
 
 {$Include tl2db_skills.inc}
 
@@ -27,6 +30,10 @@ uses
 
 {$Include tl2db_keys.inc}
 
+{$Include tl2db_effects.inc}
+
+function GetUnitTheme(const aid:TRGID):string;
+
 function GetTL2Quest(const aid:TRGID; out amods:string; out aname:string):string; overload;
 function GetTL2Quest(const aid:TRGID; out amods:string):string; overload;
 function GetTL2Quest(const aid:TRGID                  ):string; overload;
@@ -44,8 +51,6 @@ type
 
 procedure GetWardrobe(var award:TWardrobeData);
 
-function GetTextValue(const atable, afield, acond:string):string;
-function GetIntValue (const atable, afield, acond:string):integer;
 function GetTextValue(const aid:TRGID; const atable, afield:string):string;
 function GetIntValue (const aid:TRGID; const atable, afield:string):integer;
 
@@ -74,9 +79,7 @@ var
 
 implementation
 
-uses
-//  sysutils,
-  sqlite3dyn;
+{$Include db_common.inc}
 
 var
   db:PSQLite3=nil;
@@ -143,26 +146,6 @@ begin
   end;
 end;
 
-function GetTextValue(const atable, afield, acond:string):string;
-var
-  lSQL:string;
-  vm:pointer;
-begin
-  result:='';
-  if db<>nil then
-  begin
-    lSQL:='SELECT '+afield+' FROM '+atable+' WHERE '+acond;
-    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      if sqlite3_step(vm)=SQLITE_ROW then
-      begin
-        result:=sqlite3_column_text(vm,0);
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end;
-end;
-
 function GetTextValue(const aid:TRGID; const atable, afield:string):string;
 var
   ls:string;
@@ -172,7 +155,7 @@ var
 }
 begin
   Str(aid,ls);
-  result:=GetTextValue(atable,afield,'id='+ls);
+  result:=GetTextValue(db,atable,afield,'id='+ls);
 {
   result:='';
   if db<>nil then
@@ -191,27 +174,6 @@ begin
 }
 end;
 
-function GetIntValue(const atable, afield, acond:string):integer;
-var
-  lSQL:string;
-  vm:pointer;
-begin
-  result:=-1;
-
-  if db<>nil then
-  begin
-    lSQL:='SELECT '+afield+' FROM '+atable+' WHERE '+acond;
-    if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      if sqlite3_step(vm)=SQLITE_ROW then
-      begin
-        result:=sqlite3_column_int(vm,0);
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end;
-end;
-
 function GetIntValue(const aid:TRGID; const atable, afield:string):integer;
 var
   ls:string;
@@ -221,7 +183,7 @@ var
 }
 begin
   Str(aid,ls);
-  result:=GetIntValue(atable,afield,'id='+ls);
+  result:=GetIntValue(db,atable,afield,'id='+ls);
 {
   result:=-1;
 
@@ -277,8 +239,20 @@ end;
 
 {$Include tl2db_keys.inc}
 
+//----- Effects -----
+
+{$Include tl2db_effects.inc}
 
 {$Include tl2db_settings.inc}
+
+//----- Unit theme -----
+
+function GetUnitTheme(const aid:TRGID):string;
+begin
+  result:=GetTextValue(aid,'dicuthemes','name');
+  if result='' then
+    result:='0x'+HexStr(aid,16)
+end;
 
 //----- Quests -----
 
@@ -328,7 +302,7 @@ end;
 
 procedure GetWardrobe(var award:TWardrobeData);
 var
-  lSQL,ls:string;
+  lSQL:string;
   vm:pointer;
   i:integer;
 begin
@@ -461,44 +435,6 @@ begin
 end;
 
 //===== Database load =====
-
-function CopyToFile(db:PSQLite3; afname:PChar):integer;
-var
-  pFile  :PSQLite3;
-  pBackup:PSQLite3Backup;
-begin
-  result:=sqlite3_open(afname, @pFile);
-  if result=SQLITE_OK then
-  begin
-    pBackup:=sqlite3_backup_init(pFile, 'main', db, 'main');
-    if pBackup<>nil then
-    begin
-      sqlite3_backup_step  (pBackup, -1);
-      sqlite3_backup_finish(pBackup);
-    end;
-    result:=sqlite3_errcode(pFile);
-  end;
-  sqlite3_close(pFile);
-end;
-
-function CopyFromFile(db:PSQLite3; afname:PChar):integer;
-var
-  pFile  :PSQLite3;
-  pBackup:PSQLite3Backup;
-begin
-  result:=sqlite3_open(afname, @pFile);
-  if result=SQLITE_OK then
-  begin
-    pBackup:=sqlite3_backup_init(db, 'main', pFile, 'main');
-    if pBackup<>nil then
-    begin
-      sqlite3_backup_step  (pBackup, -1);
-      sqlite3_backup_finish(pBackup);
-    end;
-    result:=sqlite3_errcode(db);
-  end;
-  sqlite3_close(pFile);
-end;
 
 procedure SetupGameVer;
 var

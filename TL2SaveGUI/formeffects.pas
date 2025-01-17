@@ -54,6 +54,7 @@ implementation
 {$R *.lfm}
 
 uses
+  rgglobal,
   tlsgeffects,
   TLSGBase,
   tlsgchar,
@@ -92,6 +93,7 @@ begin
   edGraph     .Text:='';
   edParticles .Text:='';
   edIcon      .Text:='';
+  edUnitTheme .Text:='';
   edBaseClass .Text:='';
 
   for i:=0 to clbFlags.Items.Count-1 do
@@ -113,7 +115,7 @@ end;
 procedure TfmEffects.sgEffectsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 //procedure TfmEffects.sgEffectsAfterSelection(Sender: TObject; aCol, aRow: Integer);
 var
-  ls:string;
+  ls1,ls:string;
   leffect:TTLEffect;
   i,llist,lidx:integer;
 begin
@@ -126,12 +128,16 @@ begin
 
   leffect:=FObject.Effects[llist][lidx];
 
+  // Left side
+
   edEffectName.Text:=GetEffectType(leffect.EffectType);
   edLinkName  .Text:=leffect.LinkName;
   edGraph     .Text:=leffect.Graph;
   edParticles .Text:=leffect.Particles;
   edIcon      .Text:=leffect.Icon;
-  edUnitTheme .Text:='0x'+HexStr(leffect.UnitThemeId,16);
+  edUnitTheme .Text:=GetUnitTheme(leffect.UnitThemeId);
+
+  // Right side
 
   for i:=0 to clbFlags.Items.Count-1 do
   begin
@@ -139,11 +145,13 @@ begin
     clbFlags.Checked[i]:=(DWord(leffect.Flags) and (1 shl i))<>0;
   end;
 
+  ls1:=GetEffectValueNames(leffect.EffectType);
   lbProps.Clear;
   for i:=0 to leffect.Properties-1 do
   begin
     Str(leffect.Properties[i]:0:4,ls);
-    lbProps.AddItem(ls,nil);
+    FixFloatStr(ls);
+    lbProps.AddItem(GetEffectValueName(ls1,i)+' = '+ls,nil);
   end;
 
   sgStats.Clear;
@@ -160,9 +168,9 @@ begin
   edSource    .Text:=GetEffectSource(leffect.Source);
 
   edLevel.Text:=IntToStr(leffect.Level);
-  Str(leffect.Duration:0:4,ls); edDuration.Text:=ls;
-  Str(leffect.Unknown:0:4,ls); edUnknown1.Text:=ls;
-  Str(leffect.DisplayValue:0:4,ls); edDisplay .Text:=ls;
+  Str(leffect.Duration    :0:4,ls); FixFloatStr(ls); edDuration.Text:=ls;
+  Str(leffect.Unknown     :0:4,ls); FixFloatStr(ls); edUnknown1.Text:=ls;
+  Str(leffect.DisplayValue:0:4,ls); FixFloatStr(ls); edDisplay .Text:=ls;
 
   lblBaseClass.Visible:=FObject.DataType=dtChar;
   edBaseClass .Visible:=FObject.DataType=dtChar;
@@ -208,7 +216,7 @@ procedure TfmEffects.FillInfo(aobj:TLActiveClass);
 var
   leffect:TTLEffect;
   i,j,lcnt:integer;
-//  dummy:boolean;
+  dummy:boolean;
 begin
   FObject:=aobj;
 
@@ -226,18 +234,22 @@ begin
       begin
         leffect:=aobj.Effects[i][j];
         sgEffects.Objects[0,lcnt]:=TObject(i*1000+j);
-        sgEffects.Cells[0,lcnt]:=IntToStr(i+1);
-        sgEffects.Cells[1,lcnt]:=IntToStr(leffect.EffectType);
+        sgEffects.Cells  [0,lcnt]:=GetEffectActivation(TTLEffectActivation(i));//IntToStr(i+1);
+        sgEffects.Cells  [1,lcnt]:=IntToStr(leffect.EffectType);
         if leffect.Name<>'' then
           sgEffects.Cells[2,lcnt]:=leffect.Name
         else
           sgEffects.Cells[2,lcnt]:='<'+GetEffectType(leffect.EffectType)+'>';
         inc(lcnt);
       end;
-    sgEffects.Row:=1;
 //    sgEffectsSelectCell(sgEffects,0,1,dummy);
   end;
   sgEffects.EndUpdate;
+  if sgEffects.RowCount>1 then
+    if sgEffects.RowCount=2 then
+      sgEffectsSelectCell(sgEffects,1,1,dummy)
+    else
+      sgEffects.Row:=1;
 end;
 
 end.

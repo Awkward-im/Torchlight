@@ -6,7 +6,6 @@ object fmSaveFile: TfmSaveFile
   ClientHeight = 700
   ClientWidth = 1000
   Menu = MainMenu
-  LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   object Splitter: TSplitter

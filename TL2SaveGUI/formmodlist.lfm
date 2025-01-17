@@ -7,7 +7,6 @@ object fmModList: TfmModList
   Caption = 'Mod list'
   ClientHeight = 470
   ClientWidth = 701
-  LCLVersion = '3.99.0.0'
   Visible = True
   object sbUp: TSpeedButton
     Left = 352
@@ -199,6 +198,7 @@ object fmModList: TfmModList
     Sorted = True
     Style = csDropDownList
     TabOrder = 5
+    OnCloseUp = cbModListCloseUp
   end
   object sbClipboard: TSpeedButton
     Left = 352
@@ -211,5 +211,11 @@ object fmModList: TfmModList
     ShowHint = True
     ParentShowHint = False
     OnClick = sbClipboardClick
+  end
+  object lblChoosedModId: TLabel
+    Left = 392
+    Height = 1
+    Top = 56
+    Width = 1
   end
 end

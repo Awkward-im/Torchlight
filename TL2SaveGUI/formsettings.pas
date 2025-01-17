@@ -19,7 +19,6 @@ type
   TfmSettings = class(TForm)
     bbSave: TBitBtn;
     bbRescan: TBitBtn;
-    cbReloadDB: TCheckBox;
     cbShowAll : TCheckBox;
     cbShowTech: TCheckBox;
     cbIdAsHex : TCheckBox;
@@ -105,7 +104,6 @@ const
   sIdAsHex    = 'idashex';
   sShowAll    = 'showall';
   sBackup     = 'backup';
-  sReloadDB   = 'reloaddb';
 
 resourcestring
   rsDBNotFound =
@@ -144,7 +142,6 @@ begin
   config.WriteString (sSettings,sIconDirTL1,edIconDirTL1.Text);
   config.WriteString (sSettings,sSaveDir   ,edSaveDir .Text);
   config.WriteBool   (sSettings,sBackup    ,cbBackup  .Checked);
-  config.WriteBool   (sSettings,sReloadDB  ,cbReloadDB.Checked);
 
   config.WriteBool   (sSettings,sShowAll   ,cbShowAll .Checked);
   config.WriteBool   (sSettings,sShowTech  ,cbShowTech.Checked);
@@ -173,7 +170,6 @@ begin
   edIconDirTL1.Text   :=config.ReadString(sSettings,sIconDirTL1,'iconstl1');
   edSaveDir   .Text   :=config.ReadString(sSettings,sSaveDir   ,SavePath);
   cbBackup    .Checked:=config.ReadBool  (sSettings,sBackup    ,true);
-  cbReloadDB  .Checked:=config.ReadBool  (sSettings,sReloadDB  ,true);
 
   cbShowAll   .Checked:=config.ReadBool  (sSettings,sShowAll ,false);
   cbShowTech  .Checked:=config.ReadBool  (sSettings,sShowTech,false);
