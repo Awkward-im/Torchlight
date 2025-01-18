@@ -13,7 +13,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\TL2DB"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -63,9 +63,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formScanAll"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="52"/>
-        <CursorPos X="3" Y="68"/>
+        <CursorPos X="16" Y="66"/>
         <UsageCount Value="167"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -73,9 +72,10 @@
       <Unit>
         <Filename Value="unitscan.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="221"/>
-        <CursorPos X="30" Y="236"/>
+        <TopLine Value="45"/>
+        <CursorPos X="4" Y="61"/>
         <UsageCount Value="167"/>
         <Loaded Value="True"/>
       </Unit>
@@ -226,14 +226,6 @@
         <UsageCount Value="164"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\utils\textcache.pas"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="163"/>
-      </Unit>
-      <Unit>
         <Filename Value="scan_unittypes.inc"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
@@ -314,6 +306,24 @@
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Logging"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\textcache.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="163"/>
       </Unit>
       <Unit>
         <Filename Value="scan_classes.inc"/>
@@ -454,9 +464,8 @@
         <UsageCount Value="9"/>
       </Unit>
       <Unit>
-        <Filename Value="..\Addons\logging.pas"/>
+        <Filename Value="..\TL2DB\tl2db.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Logging"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
@@ -464,7 +473,7 @@
         <UsageCount Value="20"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="28">
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="scan_u_mobs.inc"/>
         <Caret Line="50" Column="97" TopLine="32"/>
@@ -580,6 +589,10 @@
       <Position>
         <Filename Value="formscanall.pas"/>
         <Caret Line="185" Column="67" TopLine="184"/>
+      </Position>
+      <Position>
+        <Filename Value="formscanall.pas"/>
+        <Caret Line="66" Column="16" TopLine="52"/>
       </Position>
     </JumpHistory>
     <RunParams>

@@ -118,7 +118,7 @@ end;
 {$i scan_effects.inc}
 {$i scan_affixes.inc}
 {$i scan_sets.inc}
-{$i scan_unitthemes.inc}
+{$i scan_themes.inc}
 
 function ScanAdds(ams:pointer):integer;
 begin
@@ -126,6 +126,9 @@ begin
   result:=ScanAffixes(ams);
   result:=ScanSets(ams);
   result:=ScanUThemes(ams);
+  result:=ScanLevelsets(ams);
+  //?? not modded only
+  result:=ScanLThemes(ams);
 end;
 
 function CreateAddsTable(adb:PSQLite3):boolean;
@@ -134,6 +137,8 @@ begin
   result:=CreateAffixesTable(adb);
   result:=CreateSetsTable(adb);
   result:=CreateUThemesTable(adb);
+  result:=CreateLevelSetsTable(adb);
+  result:=CreateLThemesTable(adb);
 
   result:=CreateFilesTable(adb);
 end;

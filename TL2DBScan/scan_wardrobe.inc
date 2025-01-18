@@ -132,6 +132,8 @@ end;
 
 function CreateWardrobeTable(adb:PSQLite3):boolean;
 begin
+  if PModScanner(ams)^.gamever=verTL1 then exit(false);
+
   if not IsTableExists(adb,'wardrobe') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE wardrobe ('+

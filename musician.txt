@@ -306,6 +306,7 @@ consumables for music skills or combos. It can be an item or just stat.
   en: 
 
 Full Chargebar: no mana cost, speedup, damage+25%
+(direct AoE, stun/move out/damage enemy?)
 ======================================
 weapon:
 ------

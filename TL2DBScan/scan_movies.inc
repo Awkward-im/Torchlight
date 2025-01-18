@@ -92,6 +92,8 @@ end;
 
 function CreateMoviesTable(adb:PSQLite3):boolean;
 begin
+  if PModScanner(ams)^.gamever=verTL1 then exit(false);
+
   if not IsTableExists(adb,'movies') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE movies ('+

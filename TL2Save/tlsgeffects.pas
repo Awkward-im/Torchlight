@@ -553,6 +553,9 @@ begin
     FLevel       :=AStream.ReadDWord;
     FDuration    :=AStream.ReadFloat;
     FUnknown1    :=AStream.ReadFloat;   // 0 ??  SoakScale??
+    if FUnknown1<>0 then
+      DbgLn('Affix unknown1='+FloatToStr(FUnknown1)+' ['+HexStr(dword(FUnknown1),8)+
+      '] (not zero) at '+HexStr(AStream.Position-4,8));
     FDisplayValue:=AStream.ReadFloat;
     FSource      :=TTLEffectSource(AStream.ReadDWord);
   end

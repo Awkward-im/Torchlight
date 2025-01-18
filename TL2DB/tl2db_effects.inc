@@ -18,11 +18,11 @@ begin
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
     begin
-      result:=           sqlite3_column_text(vm,0);
-      result:=result+','+sqlite3_column_text(vm,1);
-      result:=result+','+sqlite3_column_text(vm,2);
-      result:=result+','+sqlite3_column_text(vm,3);
-      result:=result+','+sqlite3_column_text(vm,4);
+      result:=sqlite3_column_text(vm,0)+
+          ','+sqlite3_column_text(vm,1)+
+          ','+sqlite3_column_text(vm,2)+
+          ','+sqlite3_column_text(vm,3)+
+          ','+sqlite3_column_text(vm,4);
     end;
     sqlite3_finalize(vm);
   end;

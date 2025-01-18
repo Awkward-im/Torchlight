@@ -113,6 +113,8 @@ end;
 
 function CreateInventoryTable(adb:PSQLite3):boolean;
 begin
+  if PModScanner(ams)^.gamever=verTL1 then exit(false);
+
   if not IsTableExists(adb,'inventory') then
     result:=ExecuteDirect(adb,
       'CREATE TABLE inventory ('+
