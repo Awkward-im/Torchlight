@@ -1690,9 +1690,15 @@ begin
 
         // Text
         else if ltype=typeUI then PreviewText()
-        else if ltype=typeFX then PreviewText()
+        else if (ltype=typeFX) then
+        begin
+          if RGTypeExtIsText(lext) then
+            PreviewText()
+          else
+            PreviewDump()
+        end
 
-        // DAT, RAW, ANIMATION, TEMPLATE, LAYOUT
+        // DAT, RAW, ANIMATION, TEMPLATE
         else if (ltype and $FF)=typeData then PreviewSource()
 
         // Image

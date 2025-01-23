@@ -293,7 +293,7 @@ begin
   lext:=UpCase(aext);
   case RGTypeOfExt(aext) of
     typeUI   : result:=true;
-    typeFX   : if (lext<>'.SB'  ) and (lext<>'.SBIN'   ) then result:=false;
+    typeFX   : if (lext<>'.SB'  ) and (lext<>'.SBIN'   ) then result:=true;
     typeOther: if (lext ='.TXT' ) or  (lext ='.ANNO'   ) then result:=true;
     typeFont : if (lext ='.FONT') or  (lext ='.FONTDEF') then result:=true;
   end;

@@ -82,14 +82,14 @@ begin
         lmax :=p^.size_u;
         lmaxc:=p^.size_c;
       end;
-      if p^.ftype in [typeData,typeLayout] then inc(lprocess);
-      if p^.ftype=typeData then bgin inc(ldat);
+      if (p^.ftype=typeData) or (p^.ftype=typeLayout) then inc(lprocess);
+      if p^.ftype=typeData   then inc(ldat);
       if p^.ftype=typeLayout then inc(llay);
 
       if p^.size_s<>p^.size_u then llsize:='!!';
       llog.Add(llsize+
           ls+FastWideToStr(p^.name)+
-          '; type:'       +PAKCategoryName(p^.ftype)+
+          '; type:'       +RGTypeGroupName(p^.ftype)+
           '; source size:'+IntToStr(p^.size_s)+
           '; compr:'      +IntToStr(p^.size_c)+
           '; unpacked:'   +IntToStr(p^.size_u));

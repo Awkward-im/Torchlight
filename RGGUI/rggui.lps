@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1565"/>
-        <CursorPos X="40" Y="1573"/>
-        <FoldState Value=" T4N051 PQnN0 TLvZ0311 p4xI0603212 pf-]A6 PLrE]Z7YG~6 T8nX21 TMpd0101172Z]r)90]K3r40D315 pkRmY0J]9jEk20F62]BlRqb0g2]KFkO06]IiYj90421116]V1og032]Mdj50j1]e8kE0L3]9Ajg04[)4Kja0O1]aejP0^6]9al50G4 PiMiR0 T6s9027]*EwG])15211 pLud02E pVyd037 T0sE2hE]-cpZ628H51C plBvR250927A pjTpA4Y8]ZXk743A[94iGA3C]9glE42851131128 PkRrG2 TK?Q0N p0zc0FK"/>
+        <TopLine Value="1569"/>
+        <CursorPos Y="1697"/>
+        <FoldState Value=" T4N051 PQnN0 TLvZ031 T7YG~6 T8nX2]EMpd0101172 T3r40D315 pkRmY0J]9jEk20F625 PlQv6]/6s902]kpEwG0321]QKnM]P0sE2hE picpZ628H51C]rBuR2I"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -233,11 +233,10 @@
       <Unit>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
         <UnitName Value="RGIO.Layout"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1426"/>
         <CursorPos Y="1453"/>
         <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_hob.inc"/>
@@ -400,11 +399,10 @@
       <Unit>
         <Filename Value="..\TL2Lib\rgfiletype.pas"/>
         <UnitName Value="RGFileType"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="42"/>
-        <CursorPos Y="57"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="275"/>
+        <CursorPos X="75" Y="296"/>
         <UsageCount Value="26"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_tl1.inc"/>
@@ -550,9 +548,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitFilterForm"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="71"/>
-        <CursorPos Y="112"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="70"/>
+        <CursorPos X="50" Y="88"/>
         <FoldState Value=" T46021 T3jR0E5 picjL0T2 PZi60e"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
@@ -566,27 +564,7 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1634" TopLine="1619"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1635" TopLine="1631"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1637" TopLine="1631"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1639" TopLine="1631"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1647" TopLine="1631"/>
-      </Position>
+    <JumpHistory HistoryIndex="26">
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="1649" TopLine="1631"/>
@@ -686,6 +664,14 @@
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="1695" TopLine="1682"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1697" TopLine="1681"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\unitfilterform.pas"/>
+        <Caret Line="88" Column="50" TopLine="70"/>
       </Position>
     </JumpHistory>
     <RunParams>

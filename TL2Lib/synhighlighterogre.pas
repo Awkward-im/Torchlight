@@ -444,7 +444,7 @@ begin
 end;
 
 const
-  extTypes : array [0..10] of record
+  extTypes : array [0..12] of record
     ext:string;
     idx:integer;
   end = (
@@ -458,6 +458,10 @@ const
    (ext:'.CGFX'; idx:3),
    (ext:'.FX'  ; idx:3),
    (ext:'.HLSL'; idx:3),
+
+   (ext:'.VERT'; idx:3),
+   (ext:'.FRAG'; idx:3),
+
    (ext:'.GLSL'; idx:3)
   );
 
