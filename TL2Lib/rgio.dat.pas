@@ -571,12 +571,15 @@ begin
   if IOResult=0 then
   begin
     lsize:=FileSize(f);
-    GetMem(lbuf,lsize);
-    BlockRead(f,lbuf^,lsize);
+    if lsize>0 then
+    begin
+      GetMem(lbuf,lsize);
+      BlockRead(f,lbuf^,lsize);
+      RGLog.Reserve('Processing '+afname);
+      result:=ParseDatMem(lbuf,PUnicodeChar(UnicodeString(afname)));
+      FreeMem(lbuf);
+    end;
     Close(f);
-    RGLog.Reserve('Processing '+afname);
-    result:=ParseDatMem(lbuf,PUnicodeChar(UnicodeString(afname)));
-    FreeMem(lbuf);
   end;
 end;
 

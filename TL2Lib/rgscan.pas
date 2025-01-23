@@ -127,7 +127,7 @@ begin
       begin
         repeat
           lfname:=p^.name;
-          if (p^.ftype<>typeDelete) and CheckExt(lfname) then
+          if CheckExt(lfname) then
           begin
             if FCheckProc<>nil then
               lres:=FCheckProc(lname,lfname,FParam)

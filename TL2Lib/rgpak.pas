@@ -1525,8 +1525,8 @@ begin
 
     if man.GetFirstFile(p,i)<>0 then
     repeat
-      if (p^.ftype in [typeDirectory,typeDelete]) or
-         (p^.size_s = 0) then
+      if (p^.ftype =typeDirectory) or
+         (p^.size_s=0) then
       begin
         if OnPAKProgress<>nil then
         begin
@@ -1562,7 +1562,7 @@ begin
       BlockRead(f,lin^,p^.size_u);
       Close(f);
 
-      WriteFile(lin,p^.size_u,PakTypeInfo(p^.ftype,FVersion)^._pack,p^.offset);
+      WriteFile(lin,p^.size_u,RGTypeExtInfo(p^.Name,FVersion)^._pack,p^.offset);
 
     until man.GetNextFile(p)=0;
     FreeMem(ldir);

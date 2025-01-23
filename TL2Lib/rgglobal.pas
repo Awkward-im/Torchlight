@@ -43,6 +43,9 @@ type
 const
   TL1DataBase = 'tl1db.db';
   TL2DataBase = 'tl2db2.db';
+  HobDataBase = 'hobdb.db';
+  RGDataBase  = 'rgdb.db';
+  RGODataBase = 'rgodb.db';
   TL2EditMod  = 'EDITORMOD.MOD';
   TL2ModData  = 'MOD.DAT';
   TL2GameVer  = $0001001900050002;

@@ -486,7 +486,7 @@ var
 begin
   if cbSaveSettings.Checked then
   begin
-    config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+    config:=TMemIniFile.Create(ExtractPath(ParamStr(0))+INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
     config.WriteString (sSectSettings,sOutDir      ,deOutDir.Text);
     config.WriteString (sSectSettings,sExt         ,LastExt);
@@ -535,7 +535,7 @@ procedure TRGGUIForm.LoadSettings;
 var
   config:TIniFile;
 begin
-  config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+  config:=TIniFile.Create(ExtractPath(ParamStr(0))+INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   LastExt               :=config.ReadString (sSectSettings,sExt         ,RGDefaultExt);
   LastFilter            :=config.ReadInteger(sSectSettings,sFilter      ,4);
@@ -1054,11 +1054,11 @@ begin
     if not ForceDirectories(loutdir) then exit;
 
 //  ltype:=GetExtInfo(aname,rgpi.ver)^._type;
-  ltype:=PAKExtType(aname);
+  ltype:=RGTypeOfExt(aname);
 
   ldecompiled:=false;
   // save decoded file
-  if (not rbBinOnly.Checked) and (ltype in setData) then
+  if (not rbBinOnly.Checked) and ((ltype and $FF)=typeData) then
   begin
     RGLog.Reserve('Processing '+adir+aname);
 
@@ -1068,7 +1068,7 @@ begin
       ldecompiled:=true;
       if not cbTest.Checked then
       begin
-        if rbTextRename.Checked or (ltype=typeRAW) then
+        if rbTextRename.Checked or (ltype=typeRaw) then
           lext:='.TXT'
         else
           lext:='';
@@ -1093,7 +1093,7 @@ begin
   begin
     // set decoding binary file extension
     lext:='';
-    if (rbGUTSStyle.Checked) and (ltype in setData) then
+    if (rbGUTSStyle.Checked) and ((ltype and $FF)=typeData) then
     begin
       if ltype=typeLayout then
       begin
@@ -1109,7 +1109,7 @@ begin
         else
           lext:='.BINLAYOUT'
       end
-      else if ltype=typeRAW then
+      else if ltype=typeRaw then
         lext:=''
       else
       begin
@@ -1125,7 +1125,7 @@ begin
     end;
 
     // save binary file
-    if not (rbTextOnly.Checked and (ltype in setData)) then
+    if not (rbTextOnly.Checked and ((ltype and $FF)=typeData)) then
     begin
       AssignFile(f,loutdir+aname+lext);
       Rewrite(f);
@@ -1218,8 +1218,8 @@ begin
     ldir:=ctrl.Dirs[adir].Name;
     repeat
       lname:=ctrl.Files[lfile]^.Name;
-      ltype:=PAKExtType(lname);
-      if not (ltype in [typeDelete,typeDirectory]) then
+      ltype:=RGTypeOfExt(lname);
+      if (ltype<>typeDirectory) then
         UnpackSingleFile(ldir,lname,buf);
     until not ctrl.GetNextFile(lfile);
   end;
@@ -1539,8 +1539,7 @@ begin
     end;
 
   else
-    ShowMessage(rsUnknownEncoding);
-    exit;
+    SynEdit.Text:=rsUnknownEncoding;
   end;
 
   SynEdit.Modified:=false;
@@ -1551,12 +1550,40 @@ end;
 procedure TRGGUIForm.PreviewText();
 var
   ltext:string;
+  pc:PWideChar;
+  lpc:PAnsiChar;
+  lsize:integer;
 begin
   // Use LText coz FUData don't have #0 at the end
-  if FUSize>0 then
-    SetString(ltext,PChar(FUData),FUSize)
-  else
-    ltext:='';
+  ltext:='';
+  lsize:=FUSize;
+
+  if lsize>0 then
+  begin
+    // Check for Unicode
+    if lsize>=2 then
+    begin
+      pc:=PWideChar(FUData);
+      if ORD(pc^)=SIGN_UNICODE then
+      begin
+        inc(pc);
+        dec(lsize,2);
+      end;
+      if ((lsize and 1)=0) and (ORD(pc^)<256) then
+        ltext:=WideToStr(pc,lsize div 2);
+    end;
+    // Check for Ansi/UTF8
+    if ltext='' then
+    begin
+      lpc:=PAnsiChar(FUData);
+      if (lsize>3) and ((PDword(FUData)^ and $00FFFFFF)=SIGN_UTF8) then
+      begin
+        inc(lpc,3);
+        dec(lsize,3);
+      end;
+      SetString(ltext,lpc,lsize);
+    end;
+  end;
 
   if SynOgreSyn.CheckType(sgMain.Cells[colExt,sgMain.Row]) then
     SynEdit.Highlighter:=SynOgreSyn
@@ -1593,7 +1620,7 @@ procedure TRGGUIForm.sgMainSelection(Sender: TObject; aCol, aRow: Integer);
 var
   lrec:TRGFullInfo;
   ldir,lname,lext:string;
-  lspec,ltype,lfile:integer;
+  ltype,lfile:integer;
 begin
   ClearInfo();
   if (aCol<1) or (aRow<1) or
@@ -1628,16 +1655,19 @@ begin
       lblInfo2.Caption:=rsTime+': '+'0x'+HexStr(lrec.ftime,16);
     end;
 
-    ltype:=PAKExtType(lname{lext});
-//    if ltype in (setBinary+[typeDelete,typeDirectory]) then exit;
-    if ltype in [typeDelete,typeDirectory] then exit;
+    ltype:=RGTypeOfExt(lname{lext});
+
+    if (ltype=typeDirectory) then exit;
 
     if not actShowPreview.Checked then exit;
 
-    if ltype in setBinary then
+    if (ltype and $FF) in [typeUnknown,typeFont,typeModel,typeOther] then
     begin
       FUSize:=ctrl.GetBinary(lfile,FUData);
-      PreviewDump();
+      if RGTypeExtIsText(lext) then
+        PreviewText()
+      else
+        PreviewDump();
     end
     else if ltype=typeLayout then
     begin
@@ -1653,27 +1683,20 @@ begin
 
   //    if FUSize>0 then
       begin
-        lspec:=0;
         if ltype=typeImageset then
         begin
           PreviewImageset();
-{
-          if (FUSize>4) then
-            case GetSourceEncoding(FUData) of
-              tofSrcUTF8: lspec:=1;
-              tofSrcWide: lspec:=2;
-            end;
-}
         end
-  //!!      pnlEditButtons.Visible:=false;
+
         // Text
-        else if (ltype in setText) and (lspec in [0,1]) then PreviewText()
+        else if ltype=typeUI then PreviewText()
+        else if ltype=typeFX then PreviewText()
 
         // DAT, RAW, ANIMATION, TEMPLATE, LAYOUT
-        else if (ltype in setData) and (lspec in [0,2]) then PreviewSource()
+        else if (ltype and $FF)=typeData then PreviewSource()
 
         // Image
-        else if ltype in setImage then PreviewImage(lext)
+        else if ltype=typeImage then PreviewImage(lext)
 
         // Sound
         else if ltype=typeSound then PreviewSound
@@ -1951,7 +1974,7 @@ begin
   lnew:=nil;
   lold:=nil;
 
-  istext:=PAKExtType(ctrl.Files[idx]^.Name) in setData;
+  istext:=(RGTypeOfExt(ctrl.Files[idx]^.Name) and $FF)=typeData;
 
   // if size=0 then newdata is PUnicodeChar'ed filename
   lnewsize:=newsize;
@@ -2331,14 +2354,16 @@ begin
 
   lext:=ExtractExt(lname);
   if lext<>'' then
-    for i:=0 to High(TableExt) do
+    for i:=0 to RGTypeExtCount()-1 do
     begin
-      if lext=TableExt[i]._ext then
+      if lext=RGTypeExtFromList(i) then
       begin
         if not fmFilterForm.exts[i] then exit;
         break;
       end;
     end;
+  if RGTypeOfExt(lext)=typeUnknown then
+    if not fmFilterForm.UnknownIsOn then exit;
 
   //--- Fill
   
@@ -2360,7 +2385,7 @@ begin
   begin
     sgMain.Objects[colName,arow]:=TObject(IntPtr(afile));
     sgMain.Cells[colName  ,arow]:=ExtractNameOnly(lname);
-    sgMain.Cells[colType  ,arow]:=PAKCategoryName(PAKTypeToCategory(lrec.ftype));
+    sgMain.Cells[colType  ,arow]:=RGTypeGroupName(lrec.ftype);
     sgMain.Cells[colDir   ,arow]:=adir;
     sgMain.Cells[colExt   ,arow]:=lext;
 

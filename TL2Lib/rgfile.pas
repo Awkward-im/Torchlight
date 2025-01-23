@@ -111,7 +111,7 @@ begin
   result:=RGTypeOfFile(aBuf,MemSize(aBuf));
   if result=tofRaw then
   begin
-    if PakExtType(aname) in setData then
+    if (RGTypeOfExt(aname) and $FF)=typeData then
       if IsSource(aBuf, nil) then
         result:=tofSrc
       else
@@ -157,7 +157,7 @@ begin
   if aBuf<>nil then
   begin
     if aname<>nil then
-      result:=PakExtType(aname) in setData
+      result:=(RGTypeOfExt(aname) and $FF)=typeData
     else
       result:=true;
     if result then
@@ -488,8 +488,8 @@ var
   ltype,ltof:integer;
 begin
   result:=false;
-  ltype:=PAKExtType(fname);
-  if (ltype in setData) then
+  ltype:=RGTypeOfExt(fname);
+  if (ltype and $FF)=typeData then
   begin
     if IsSource(ain) then
     begin
@@ -584,8 +584,8 @@ var
   ltype:integer;
 begin
   result:=0;
-  ltype:=PAKExtType(fname);
-  if (ltype in setData) then
+  ltype:=RGTypeOfExt(fname);
+  if (ltype and $FF)=typeData then
   begin
     p:=ParseTextMem(ain);
     if p=nil then
@@ -605,8 +605,8 @@ var
   ltype:integer;
 begin
   result:=0;
-  ltype:=PAKExtType(fname);
-  if (ltype in setData) then
+  ltype:=RGTypeOfExt(fname);
+  if (ltype and $FF)=typeData then
   begin
     p:=ParseTextMem(ain);
     if p=nil then

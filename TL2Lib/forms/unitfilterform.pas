@@ -30,6 +30,7 @@ type
     exts:array of boolean;
 
     function  DirIsOn:boolean;
+    function  UnknownIsOn:boolean;
     procedure LoadSettings(config: TIniFile);
     procedure SaveSettings(config: TIniFile);
   end;
@@ -48,22 +49,26 @@ uses
 const
   strSection = 'Filter';
   strShowDir = 'ShowDir';
+  strShowUnk = 'ShowUnknown';
 
 procedure TFilterForm.SaveSettings(config:TIniFile);
 var
   i:integer;
 begin
-  for i:=1 to clbCategory.Count-1 do
+{
+for i:=1 to clbCategory.Count-1 do
   begin
-    if IntPtr(clbCategory.Items.Objects[i])=catFolder then
+    if IntPtr(clbCategory.Items.Objects[i])=typeDirectory then
     begin
       config.WriteBool(strSection,strShowDir,clbCategory.Checked[i]);
       break;
     end;
   end;
-
+}
+  config.WriteBool(strSection,strShowDir,clbCategory.Checked[1]);
+  config.WriteBool(strSection,strShowUnk,clbCategory.Checked[clbCategory.Count-1]);
   for i:=0 to High(exts) do
-    config.WriteBool(strSection,TableExt[i]._ext,exts[i]);
+    config.WriteBool(strSection,RGTypeExtFromList(i),exts[i]);
 end;
 
 procedure TFilterForm.LoadSettings(config:TIniFile);
@@ -72,22 +77,28 @@ var
   lstate:integer;
 begin
   for i:=0 to High(exts) do
-    exts[i]:=config.ReadBool(strSection,TableExt[i]._ext,true);
+    exts[i]:=config.ReadBool(strSection,RGTypeExtFromList(i),true);
 
   // check categories by checking all exts
-  for i:=1 to clbCategory.Count-1 do
+  clbCategory.Checked[1]:=config.ReadBool(strSection,strShowDir,true);
+  clbCategory.Checked[clbCategory.Count-1]:=
+    config.ReadBool(strSection,strShowUnk,true);
+
+  for i:=2{1} to clbCategory.Count-2 do
   begin
-    if IntPtr(clbCategory.Items.Objects[i])=catFolder then
+{
+    if IntPtr(clbCategory.Items.Objects[i])=typeDirectory then
       clbCategory.Checked[i]:=config.ReadBool(strSection,strShowDir,true)
     else
+}
     begin
       lstate:=-1;
-      for j:=0 to High(TableExt) do
+      for j:=0 to RGTypeExtCount()-1 do
       begin
-        if PAKTypeToCategory(TableExt[j]._type)=
+        if RGTypeGroup(RGTypeFromList(j))=
            IntPtr(clbCategory.Items.Objects[i]) then
         begin
-          if lstate<0 then lstate:=ORD(exts[j])
+               if lstate<0             then lstate:=ORD(exts[j])
           else if lstate<>ORD(exts[j]) then lstate:=2;
         end;
       end;
@@ -101,22 +112,40 @@ begin
 end;
 
 function TFilterForm.DirIsOn:boolean;
-var
-  i:integer;
+//var i:integer;
 begin
+  result:=clbCategory.Checked[1];
+{
   for i:=1 to clbCategory.Count-1 do
   begin
-    if IntPtr(clbCategory.Items.Objects[i])=catFolder then
+    if IntPtr(clbCategory.Items.Objects[i])=typeDirectory then
     begin
       exit(clbCategory.Checked[i]);
     end;
   end;
   result:=false;
+}
+end;
+
+function TFilterForm.UnknownIsOn:boolean;
+//var i:integer;
+begin
+  result:=clbCategory.Checked[clbCategory.Count-1];
+{
+  for i:=1 to clbCategory.Count-1 do
+  begin
+    if IntPtr(clbCategory.Items.Objects[i])=typeUnknown then
+    begin
+      exit(clbCategory.Checked[i]);
+    end;
+  end;
+  result:=false;
+}
 end;
 
 procedure TFilterForm.FormCreate(Sender: TObject);
 begin
-  SetLength(exts,Length(TableExt));
+  SetLength(exts,RGTypeExtCount());
   FillCategoryList();
 //  FillExtList();
 end;
@@ -127,16 +156,15 @@ begin
   begin
     Clear;
     AddItem('All',nil);
-    AddItem(PAKCategoryName(catUnknown),TObject(catUnknown));
-    AddItem(PAKCategoryName(catModel  ),TObject(catModel  ));
-    AddItem(PAKCategoryName(catImage  ),TObject(catImage  ));
-    AddItem(PAKCategoryName(catSound  ),TObject(catSound  ));
-    AddItem(PAKCategoryName(catFolder ),TObject(catFolder ));
-    AddItem(PAKCategoryName(catFont   ),TObject(catFont   ));
-    AddItem(PAKCategoryName(catData   ),TObject(catData   ));
-    AddItem(PAKCategoryName(catLayout ),TObject(catLayout ));
-    AddItem(PAKCategoryName(catShaders),TObject(catShaders));
-    AddItem(PAKCategoryName(catOther  ),TObject(catOther  ));
+    AddItem(RGTypeGroupName(typeDirectory),TObject(IntPtr(RGTypeGroup(typeDirectory))));
+    AddItem(RGTypeGroupName(typeData     ),TObject(IntPtr(RGTypeGroup(typeData     ))));
+    AddItem(RGTypeGroupName(typeModel    ),TObject(IntPtr(RGTypeGroup(typeModel    ))));
+    AddItem(RGTypeGroupName(typeImage    ),TObject(IntPtr(RGTypeGroup(typeImage    ))));
+    AddItem(RGTypeGroupName(typeSound    ),TObject(IntPtr(RGTypeGroup(typeSound    ))));
+    AddItem(RGTypeGroupName(typeFX       ),TObject(IntPtr(RGTypeGroup(typeFX       ))));
+    AddItem(RGTypeGroupName(typeFont     ),TObject(IntPtr(RGTypeGroup(typeFont     ))));
+    AddItem(RGTypeGroupName(typeOther    ),TObject(IntPtr(RGTypeGroup(typeOther    ))));
+    AddItem(RGTypeGroupName(typeUnknown  ),TObject(IntPtr(RGTypeGroup(typeUnknown  ))));
     clbCategory.Selected[0]:=true;
   end;
 end;
@@ -198,7 +226,7 @@ var
 begin
   lext:=IntPtr(clbExtension.Items.Objects[Index]);
   exts[lext]:=clbExtension.Checked[Index];
-  lcat:=PAKTypeToCategory(TableExt[lext]._type);
+  lcat:=RGTypeGroup(RGTypeFromList(lext));
 
   lstate:=clbExtension.State[0];
   for i:=0 to clbExtension.Count-1 do
@@ -228,12 +256,12 @@ begin
   with clbExtension do
   begin
     Clear;
-    for i:=0 to High(TableExt) do
+    for i:=0 to RGTypeExtCount()-1 do
     begin
       if (filter<0) or
-          (PAKTypeToCategory(TableExt[i]._type)=filter) then
+         (RGTypeGroup(RGTypeFromList(i))=filter) then
       begin
-        AddItem(TableExt[i]._ext,TObject(IntPtr(i)));
+        AddItem(RGTypeExtFromList(i),TObject(IntPtr(i)));
       end;
     end;
   end;

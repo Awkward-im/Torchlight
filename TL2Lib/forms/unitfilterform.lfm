@@ -6,13 +6,14 @@ object FilterForm: TFilterForm
   Caption = 'File type to show'
   ClientHeight = 310
   ClientWidth = 416
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object clbCategory: TCheckListBox
     Left = 11
     Height = 272
     Top = 26
     Width = 184
+    Anchors = [akTop, akLeft, akBottom]
     ItemHeight = 0
     TabOrder = 0
     OnItemClick = clbCategoryItemClick
@@ -23,6 +24,7 @@ object FilterForm: TFilterForm
     Height = 272
     Top = 26
     Width = 184
+    Anchors = [akTop, akLeft, akBottom]
     ItemHeight = 0
     TabOrder = 1
     OnItemClick = clbExtensionItemClick

@@ -62,7 +62,7 @@ type
     size_s  :dword;     // ?? MAN: looks like source,not compiled, size (unusable)
     offset  :dword;     // !! MAN: PAK data block offset (??changed to "data" field)
 // unnecessary
-    ftype   :byte;      // !! MAN: RGFileType unified type
+    ftype   :word;      // !! MAN: RGFileType unified type
     action  :byte;      // act_* constant
     state   :byte;      // state* constant
   end;
@@ -304,22 +304,23 @@ begin
         size_c:=PPAKFileHeader(adata)^.size_u;
       end;
     else
-      if (ftype in setData) and IsSource(adata) then size_s:=asize
+      if ((ftype and $FF)=typeData) and IsSource(adata) then size_s:=asize
       else size_u:=asize;
     end;  
   end;
 end;
 
 procedure TRGController.CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
-var
-  p:PManFileInfo;
+//var p:PManFileInfo;
 begin
+// can't use just move coz it changes PARENT, NEXT and OFFSET fields too
+{
   if afrom^.action in [act_dir, act_data, act_file] then
     p:=afrom
   else // if afrom.source<>0 then
     p:=PManFileInfo(FPAK.Man.Files[afrom^.source]);
-// can't use just move coz it changes PARENT, NEXT and OFFSET fields too
-//  move(p^,ato^,SizeOf(TManFileInfo));
+  move(p^,ato^,SizeOf(TManFileInfo));
+}
   ato^.size_u  :=ato^.size_u;
   ato^.size_s  :=ato^.size_s;
   ato^.size_c  :=ato^.size_c;
@@ -352,7 +353,7 @@ begin
     info.size_c:=p^.size_c;
     info.size_s:=p^.size_s;
     info.offset:=0;
-    info.ftype :=PAKExtType(info.name);
+    info.ftype :=RGTypeOfExt(info.name);
     info.ftime :=p^.ftime;
   end
   else
@@ -488,7 +489,7 @@ begin
   if result>0 then
   begin
     p^.checksum:=crc32(0,buf,p^.size_u);
-    if (p^.ftype in setData) and not isSource(buf) then
+    if ((p^.ftype  and $FF)=typeData) and not isSource(buf) then
     begin
       if DecompileFile(buf,result,p^.name,lbuf) then
       begin
@@ -528,7 +529,7 @@ begin
 
   if result>0 then
   begin
-    if (p^.ftype in setData) and isSource(buf) then
+    if ((p^.ftype and $FF)=typeData) and isSource(buf) then
     begin
       lbuf:=buf;
       buf:=nil;
@@ -562,9 +563,9 @@ begin
   begin
     if GetUpdate(idx,buf)=0 then exit;
 
-    if GetExtInfo(p^.Name,FPAK.Version)^._pack then
+    if RGTypeExtInfo(p^.Name,FPAK.Version)^._pack then
     begin
-      if (p^.ftype in setData) and isSource(buf) then
+      if ((p^.ftype and $FF)=typeData) and isSource(buf) then
       begin
         lbuf:=buf;
         buf:=nil;
@@ -759,7 +760,7 @@ begin
     size  :=asize;
     action:=act_data;
     ftime :=DateTimeToFileTime(Now());
-    ftype :=PAKExtType(apath);
+    ftype :=RGTypeOfExt(apath);
 
     FixSizes(result,adata,asize);
   end;
@@ -807,7 +808,7 @@ begin
   p^.size_u:=lman^.size_u;
   p^.size_c:=lman^.size_c;
   p^.ftime :=lman^.ftime;
-  p^.ftype :=PAKExtType(lman^.Name);
+  p^.ftype :=RGTypeOfExt(lman^.Name);
 end;
 
 function TRGController.AddFileData(afile:PWideChar; apath:PWideChar; acontent:boolean=false):integer;
@@ -823,7 +824,7 @@ begin
     ClearElement(result);
     with PRGCtrlInfo(Files[result])^ do
     begin
-      ftype :=PAKExtType(apath);
+      ftype :=RGTypeOfExt(apath);
       data  :=PByte(CopyWide(afile));
       action:=act_file;
       ftime :=0;
@@ -1058,7 +1059,7 @@ begin
     lname:=aname;
 
   // can't use lext coz need to delete ext to get real sometime
-  if PAKExtType(lname)<>typeUnknown then
+  if RGTypeOfExt(PUnicodeChar(lname))<>typeUnknown then
     result:=lname;
 end;
 

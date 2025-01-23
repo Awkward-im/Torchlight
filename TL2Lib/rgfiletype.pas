@@ -9,162 +9,49 @@ unit RGFileType;
 interface
 
 const
-  typeUnknown    = 00;
-  typeMesh       = 01;
-  typeSkeleton   = 02;
-  typeMaterial   = 03;
-  typeDDS        = 04;
-  typeImage      = 05;
-  typeSound      = 06;
-  typeDirectory  = 07;
-  typeRAW        = 08;
-  typeImageSet   = 09;
-  typeTTF        = 10;
-  typeFont       = 11;
-  typeAnimation  = 12;
-  typeDAT        = 13;
-  typeLayout     = 14;
-  typeHIE        = 15;
-  typeDelete     = 16;
-  typeScheme     = 17;
-  typeLookNFeel  = 18;
-  typeMPP        = 19;
-  typeBIK        = 20;
-  typeJPG        = 21;
-  typeProgram    = 22;
-  typeCompositor = 23;
-  typeShader     = 24;
-  typePU         = 25;
-  typeAnno       = 26;
-  typeSBIN       = 27;
-  typeWDAT       = 28;
+  typeUnknown    = $0000; // all unknown files
+  typeData       = $0001; // non-visual text data
+  typeLayout     = $0101; //   special, TL1 UI Layouts are UI type
+  typeRaw        = $0201; //   special
+  typeImageSet   = $0301; //   special. format: migrate between Data (TL1,TL2) and UI (Hob,RGO)
+  typeUI         = $0401; //   special
+  typeModel      = $0002; // 3d-related
+  typeImage      = $0003; // graphic
+  typeMovie      = $0103; //   special
+  typeSound      = $0004;
+  typeFont       = $0005;
+  typeFX         = $0006; // fx/particle related
+  typeDirectory  = $0007;
+  typeOther      = $0008;
 
-//----- Category -----
+  typeLast       = 8;
 
-const
-  catUnknown = $00;
-  catModel   = $01; // .MDL .MESH .SKELETON .MATERIAL
-  catImage   = $02; // .DDS .BMP .PNG .TGA .IMAGESET .JPG .BIK
-  catSound   = $03; // .OGG .WAV
-  catFolder  = $04;
-  catFont    = $05; // .TTF .FONT .FONTDEF
-  catData    = $06; // .DAT .TEMPLATE .ANIMATION .HIE .WDAT .RAW
-  catLayout  = $07; // .LAYOUT
-  catShaders = $08; // .PROGRAM .COMPOSITOR .FRAG .FX .HLSL .VERT
-  catOther   = $09; // .LOOKNFEEL .SCHEME .MPP .MPD .PU .ANNO .SBIN
-
-function PAKTypeToCommon  (atype:integer;aver:integer):integer;
-function PAKTypeToReal    (atype:integer;aver:integer):integer;
-function PAKTypeToCategory(atype:integer):integer;
-
-function PAKCategoryName(acategory:integer):string;
-function PAKExtCategory(const aext:string):integer;
-function PAKExtType    (const aext:string):integer;
-function PAKExtType    (const aext:UnicodeString):integer;
+// get category from PAK type
+function RGTypeOfType(atype:integer; aver:integer):integer;
+// get category from extension
+function RGTypeOfExt(const aext:string):integer;
+function RGTypeOfExt(const aext:PUnicodeChar):integer;
+// get PAK type from filename
+function PAKTypeOfName(const fname:PWideChar; aver:integer):integer;
 
 type
   PPAKExtInfo = ^TPAKExtInfo;
   TPAKExtInfo = record
-    _type    :byte;
+    _type    :word;
     _pack    :bytebool;
     _compile :bytebool;
   end;
+// get info about packing and compilation by extension
+function RGTypeExtInfo(const fname:string   ; aver:integer):PPAKExtInfo;
+function RGTypeExtInfo(const fname:PWideChar; aver:integer):PPAKExtInfo;
+function RGTypeExtIsText(const aext:string):boolean;
 
-function PAKTypeInfo(      atype:integer  ; aver:integer):PPAKExtInfo;
-function GetExtInfo (const fname:string   ; aver:integer):PPAKExtInfo;
-//function GetExtInfo(const fname:PWideChar; aver:integer):PPAKExtInfo;
+function RGTypeExtCount:integer;
+function RGTypeExtFromList(idx:integer):string;
+function RGTypeFromList   (idx:integer):integer;
 
-const
-  TableExt: array [0..39] of record
-     _type: byte;
-     _ext : string;
-  end = (
-    (_type:typeDAT       ; _ext:'.DAT'),
-    (_type:typeDAT       ; _ext:'.TEMPLATE'),
-    (_type:typeLayout    ; _ext:'.LAYOUT'),
-    (_type:typeUnknown   ; _ext:'.UILAYOUT'),
-    (_type:typeMesh      ; _ext:'.MESH'),
-    (_type:typeSkeleton  ; _ext:'.SKELETON'),
-    (_type:typeDDS       ; _ext:'.DDS'),
-    (_type:typeImage     ; _ext:'.PNG'),
-    (_type:typeSound     ; _ext:'.WAV'),
-    (_type:typeSound     ; _ext:'.OGG'),
-    (_type:typeMaterial  ; _ext:'.MATERIAL'),
-    (_type:typeRAW       ; _ext:'.RAW'),
-    (_type:typeImageSet  ; _ext:'.IMAGESET'),
-    (_type:typeTTF       ; _ext:'.TTF'),
-    (_type:typeTTF       ; _ext:'.TTC'),
-    (_type:typeFont      ; _ext:'.FONT'),
-    (_type:typeAnimation ; _ext:'.ANIMATION'),
-    (_type:typeHIE       ; _ext:'.HIE'),
-    (_type:typeScheme    ; _ext:'.SCHEME'),
-    (_type:typeLookNFeel ; _ext:'.LOOKNFEEL'),
-    (_type:typeMPP       ; _ext:'.MPP'),
-    (_type:typeMPP       ; _ext:'.MPD'),
-    (_type:typeBIK       ; _ext:'.BIK'),
-    (_type:typeJPG       ; _ext:'.JPG'),
-    (_type:typeMesh      ; _ext:'.MDL'),
-    (_type:typeImage     ; _ext:'.BMP'),
-    (_type:typeImage     ; _ext:'.TGA'),
-    (_type:typeProgram   ; _ext:'.PROGRAM'),
-    (_type:typeFont      ; _ext:'.FONTDEF'),
-    (_type:typeCompositor; _ext:'.COMPOSITOR'),
-    (_type:typeShader    ; _ext:'.FRAG'),
-    (_type:typeShader    ; _ext:'.FX'),
-    (_type:typeShader    ; _ext:'.HLSL'),
-    (_type:typeShader    ; _ext:'.VERT'),
-    (_type:typePU        ; _ext:'.PU'),
-    (_type:typeAnno      ; _ext:'.ANNO'),
-    (_type:typeSBIN      ; _ext:'.SBIN'),
-    (_type:typeWDAT      ; _ext:'.WDAT'),
-    (_type:typeDAT       ; _ext:'.ADM'), // TL1 binary DAT form
-    (_type:typeLayout    ; _ext:'.CMP')  // TL1 binary LAYOUT form
-//    (_type:typeDelete    ; _ext:'<OTHER>'),
-//    (_type:typeDirectory ; _ext:'<DIR>')
-  );
-
-  setBinary = [
-    typeUnknown,
-    typeMesh,
-    typeSkeleton,
-    typeTTF,
-    typeMPP,
-    typeBIK,
-    typeSBIN
-  ];
-
-  setImage = [
-    typeDDS,
-    typeImage,
-    typeJPG
-  ];
-
-  setSound = [
-    typeSound
-  ];
-
-  setText = [
-    typeScheme,
-    typeFont,
-    typeImageSet,   // TL2
-    typeLookNFeel,
-    typeMaterial,
-    typeProgram,
-    typeCompositor,
-    typeShader,
-    typePU,
-    typeAnno
-  ];
-
-  setData = [
-    typeAnimation,
-    typeImageSet,   // Hob, RG, RGO
-    typeDAT,
-    typeWDAT,
-    typeHIE,
-    typeLayout,
-    typeRAW
-  ];
+function RGTypeGroup(atype:integer):integer;
+function RGTypeGroupName(atype:integer):string; inline;
 
 //========================================================
 
@@ -173,19 +60,6 @@ implementation
 uses
   rgglobal;
 
-const
-  CategoryList:array of string = (
-    'Unknown',
-    'Model',
-    'Image',
-    'Sound',
-    'Directory',
-    'Font',
-    'Data',
-    'Layout',
-    'Shaders',
-    'Other'
-  );
 
 //--- TL2 File Types
 const
@@ -198,7 +72,7 @@ const
   tl2Sound       = $06; // .WAV .OGG
   tl2Directory   = $07;
   tl2Material    = $08; // .MATERIAL
-  tl2RAW         = $09; // .RAW
+  tl2Raw         = $09; // .RAW
   tl2UILayout    = $0A; // .UILAYOUT
   tl2ImageSet    = $0B; // .IMAGESET
   tl2TTF         = $0C; // .TTF .TTC
@@ -206,347 +80,292 @@ const
   tl2SrcDat      = $0E; // source .DAT
   tl2SrcLayout   = $0F; // source .LAYOUT
   tl2Animation   = $10; // .ANIMATION (what about source?)
-  tl2HIE         = $11; // .HIE       (what about source?)
-  tl2Other       = $12; // ('Removed' Directory)
+  tl2Hie         = $11; // .HIE       (what about source?)
+  tl2Unknown     = $12; // ('Removed' Directory)
   tl2Scheme      = $13; // .SCHEME
   tl2LookNFeel   = $14; // .LOOKNFEEL ??
   tl2MPP         = $15; // .MPP [.MPD]
   tl2SrcTemplate = $16; // source .TEMPLATE
   tl2BIK         = $17; // .BIK
   tl2JPG         = $18; // .JPG
-  tl2Unknown     = $FF;
+
+  tl2Last         = $18;
 
 //--- Hob File Types
+const                  // hob flags: 1 - Add to pak?; 2 - binary reader?compile?; 3 - pack?
+  hobText       = $00; //  0 111(TEXT)              .TXT
+  hobModel      = $01; //  1 111(MESH)              .MDL .MESH
+  hobSkeleton   = $02; //  2 111(SKELETON)          .SKELETON
+  hobDDS        = $03; //  3 111(TEXTURE)           .DDS .GNF (RGO) .XTX (RGO)
+  hobImage      = $04; //  4 111(TEXTURE)           .BMP .PNG .TGA .JPG (RGO)
+  hobPicture    = $05; //  5 100(TEXTURE)           .JPG (HOB)
+  hobSound      = $06; //  6 111(SOUND)             .OGG .WAV
+  hobMusic      = $07; //  7 000(MUSIC)             .MP3
+  hobDirectory  = $08; //  8 111(DIRECTORY)
+  hobMaterial   = $09; //  9 111(MATERIAL)          .MATERIAL
+  hobRaw        = $0A; // 10 111(RAW)               .RAW
+  hobUILayout   = $0B; // 11 111(UI LAYOUT)         .UILAYOUT
+  hobImageset   = $0C; // 12 111(UI IMAGESET)       .IMAGESET
+  hobTTF        = $0D; // 13 111(FONT)              .TTF .TTC .OTF (RGO)
+  hobFONT       = $0E; // 14 111(FONT DEF)          .FONT
+  hobDat        = $0F; // 15 111(DAT)               .DAT
+  hobLayout     = $10; // 16 111(LAYOUT)            .LAYOUT
+  hobAnimation  = $11; // 17 111(ANIMATION)         .ANIMATION
+  hobHie        = $12; // 18 111(HIERARCHY)         .HIE
+  hobUnknown    = $13; // 19 100(UNKNOWN)           unknown/no ext?
+  hobScheme     = $14; // 20 111(UI SCHEME)         .SCHEME
+  hobLookNFeel  = $15; // 21 111(UI LOOKNFEEL)      .LOOKNFEEL
+  hobMPP        = $16; // 22 111(PATH MAP)          .MPP
+  hobTemplate   = $17; // 23 111(TEMPLATE)          .TEMPLATE
+  hobProgram    = $18; // 24 111(PROGRAM)           .PROGRAM
+  hobFontDef    = $19; // 25 111(FONDDEF)           .FONTDEF
+  hobCompositor = $1A; // 26 111(COMPOSITOR)        .COMPOSITOR
+  hobShader     = $1B; // 27 110(FX)                .FX .HLSL .FRAG .VERT .GLSLC
+  hobBIK        = $1C; // 28 000(MOVIE)             .BIK
+  hobPU         = $1D; // 29 111(PARTICLE UNIVERSE) .PU .PUA
+  hobAnno       = $1E; // 30 111(LIP SYNC)          .ANNO
+  hobSBIN       = $1F; // 31 101(SB)                .SB (HOB) .SBIN (RGO)
+  //.sbin (31) is actually compiled from .pu (29), .material (9) and .compositor (26)
+  hobHeightBin  = $20; // 32 111(HEIGHT BIN)        .HEIGHTBIN (HOB)
+  hobWDat       = $20; //                           .WDAT (RGO)
+  // Hob only
+  hobCol        = $21; // 33 111(COLLISION)         .COL
+  HobRedirect   = $22; // 34 111(REDIRECT)
+  hobBank       = $23; // 35 111(FMOD BANK)         .BANK
+  hobCache      = $24; // 36 000(CACHE)             .CACHE
+
+  hobLast        = $24;
+
+//    (_type:typeData    ; _tl2:tl2Unknown  ; _hob:hobUnknown   ; _ext:'.ADM'),        // TL1 binary DAT/Layout
+//    (_type:typeLayout  ; _tl2:tl2Unknown  ; _hob:hobUnknown   ; _ext:'.CMP'),        // TL1 binary LAYOUT
+
+{TODO: ?? put all exts into one string, separated by #0 and add field with offset}
+{TODO: add field for category}
 const
-  hobUnknown    = $00;
-  hobModel      = $01; // .MDL .MESH
-  hobSkeleton   = $02; // .SKELETON
-  hobDDS        = $03; // .DDS
-  hobImage      = $04; // .BMP .PNG .TGA
-//  hobReserved1  = $05;
-  hobSound      = $06; // .OGG .WAV
-//  hobReserved2  = $07;
-  hobDirectory  = $08;
-  hobMaterial   = $09; // .MATERIAL
-  hobRAW        = $0A; // .RAW
-//  hobReserved3  = $0B;
-  hobImageset   = $0C; // .IMAGESET
-  hobTTF        = $0D; // .TTF
-//  hobReserved4  = $0E;
-  hobDAT        = $0F; // .DAT
-  hobLayout     = $10; // .LAYOUT
-  hobAnimation  = $11; // .ANIMATION
-//  hobReserved5  = $12;
-//  hobReserved6  = $13;
-//  hobReserved7  = $14;
-//  hobReserved8  = $15;
-//  hobReserved9  = $16;
-//  hobReserved10 = $17;
-  hobProgram    = $18; // .PROGRAM
-  hobFontDef    = $19; // .FONTDEF
-  hobCompositor = $1A; // .COMPOSITOR
-  hobShader     = $1B; // .FRAG .FX .HLSL .VERT
-//  hobReserved11 = $1C;
-  hobPU         = $1D; // .PU
-  hobAnno       = $1E; // .ANNO
-  hobSBIN       = $1F; // .SBIN
-  //(not my comment) .sbin (31) is actually compiled from .pu (29) and .compositor (26)
-  hobWDAT       = $20; // .WDAT
+  TableExt: array of record
+     _ext : string;
+     _type: word;
+     _tl2 : byte;
+     _hob : byte;
+  end = (
+    (_ext:'.DAT'       ; _type:typeData    ; _tl2:tl2Dat      ; _hob:hobDat       ),
+    (_ext:'.TEMPLATE'  ; _type:typeData    ; _tl2:tl2Dat      ; _hob:hobTemplate  ),
+    (_ext:'.ANIMATION' ; _type:typeData    ; _tl2:tl2Animation; _hob:hobAnimation ),
+    (_ext:'.HIE'       ; _type:typeData    ; _tl2:tl2Hie      ; _hob:hobHie       ),
+    (_ext:'.WDAT'      ; _type:typeData    ; _tl2:tl2Unknown  ; _hob:hobWDat      ),
+
+    // TL1 "UI" directory - XML format (typeUI = UILayout) 
+    (_ext:'.LAYOUT'    ; _type:typeLayout  ; _tl2:tl2Layout   ; _hob:hobLayout    ),
+
+    // TL1, TL2 - XML; Hob, RG and RG - DAT file format
+    (_ext:'.IMAGESET'  ; _type:typeImageSet; _tl2:tl2Imageset ; _hob:hobImageset  ),
+                                           
+    (_ext:'.RAW'       ; _type:typeRaw     ; _tl2:tl2Raw      ; _hob:hobRaw       ),
+                                                                                  
+    (_ext:'.UILAYOUT'  ; _type:typeUI      ; _tl2:tl2UILayout ; _hob:hobUILayout  ),
+    (_ext:'.SCHEME'    ; _type:typeUI      ; _tl2:tl2Scheme   ; _hob:hobScheme    ),
+    (_ext:'.LOOKNFEEL' ; _type:typeUI      ; _tl2:tl2LookNFeel; _hob:hobLookNFeel ),
+                                                                                  
+    (_ext:'.MESH'      ; _type:typeModel   ; _tl2:tl2Mesh     ; _hob:hobModel     ),
+    (_ext:'.MDL'       ; _type:typeModel   ; _tl2:tl2Unknown  ; _hob:hobModel     ),
+    (_ext:'.SKELETON'  ; _type:typeModel   ; _tl2:tl2Skeleton ; _hob:hobSkeleton  ),
+                                                                                  
+    (_ext:'.DDS'       ; _type:typeImage   ; _tl2:tl2DDS      ; _hob:hobDDS       ),
+    (_ext:'.PNG'       ; _type:typeImage   ; _tl2:tl2PNG      ; _hob:hobImage     ),
+    (_ext:'.JPG'       ; _type:typeImage   ; _tl2:tl2JPG      ; _hob:hobPicture   ),  // hobImage for RGO
+    (_ext:'.TGA'       ; _type:typeImage   ; _tl2:tl2Unknown  ; _hob:hobImage     ),
+    (_ext:'.BMP'       ; _type:typeImage   ; _tl2:tl2Unknown  ; _hob:hobImage     ),
+    (_ext:'.GNF'       ; _type:typeImage   ; _tl2:tl2Unknown  ; _hob:hobDDS       ),  // RGO only
+    (_ext:'.XTX'       ; _type:typeImage   ; _tl2:tl2Unknown  ; _hob:hobDDS       ),  // RGO only
+                                                                                  
+    (_ext:'.BIK'       ; _type:typeMovie   ; _tl2:tl2BIK      ; _hob:hobBIK       ),
+                                                                                  
+    (_ext:'.WAV'       ; _type:typeSound   ; _tl2:tl2Sound    ; _hob:hobSound     ),
+    (_ext:'.OGG'       ; _type:typeSound   ; _tl2:tl2Sound    ; _hob:hobSound     ),
+    (_ext:'.MP3'       ; _type:typeSound   ; _tl2:tl2Unknown  ; _hob:hobMusic     ),
+    (_ext:'.BANK'      ; _type:typeSound   ; _tl2:tl2Unknown  ; _hob:hobBank      ),  // Hob only
+                                                                                  
+    (_ext:'.TTF'       ; _type:typeFont    ; _tl2:tl2TTF      ; _hob:hobTTF       ),
+    (_ext:'.TTC'       ; _type:typeFont    ; _tl2:tl2TTF      ; _hob:hobTTF       ),
+    (_ext:'.OTF'       ; _type:typeFont    ; _tl2:tl2Unknown  ; _hob:hobTTF       ),  // RGO only
+    (_ext:'.FONT'      ; _type:typeFont    ; _tl2:tl2Font     ; _hob:hobFont      ),  // Text
+    (_ext:'.FONTDEF'   ; _type:typeFont    ; _tl2:tl2Unknown  ; _hob:hobFontDef   ),  // Text
+                                                                                  
+    (_ext:'.MATERIAL'  ; _type:typeFX      ; _tl2:tl2Material ; _hob:hobMaterial  ),
+    (_ext:'.PROGRAM'   ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobProgram   ),
+    (_ext:'.COMPOSITOR'; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobCompositor),
+    (_ext:'.PU'        ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobPU        ),
+    (_ext:'.FX'        ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobShader    ),
+    (_ext:'.HLSL'      ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobShader    ),
+    (_ext:'.FRAG'      ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobShader    ),
+    (_ext:'.VERT'      ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobShader    ),
+    (_ext:'.GLSLC'     ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobShader    ),
+    // Binary form of PU, Compositor and Material
+    (_ext:'.SBIN'      ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobSBIN      ),
+    (_ext:'.SB'        ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobSBIN      ),  // Hob only
+    (_ext:'.PUA'       ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobPU        ),
+    (_ext:'.TXT'       ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobText      ),  // Text
+    (_ext:'.ANNO'      ; _type:typeFX      ; _tl2:tl2Unknown  ; _hob:hobAnno      ),  // Text
+                                                                                  
+    (_ext:'.MPP'       ; _type:typeOther   ; _tl2:tl2MPP      ; _hob:hobMPP       ),
+    (_ext:'.MPD'       ; _type:typeOther   ; _tl2:tl2MPP      ; _hob:hobUnknown   ), 
+    (_ext:'.HEIGHTBIN' ; _type:typeOther   ; _tl2:tl2Unknown  ; _hob:hobHeightBin ),
+    (_ext:'.COL'       ; _type:typeOther   ; _tl2:tl2Unknown  ; _hob:hobCol       ),  // Hob only
+    (_ext:'.CACHE'     ; _type:typeOther   ; _tl2:tl2Unknown  ; _hob:hobCache     )   // Hob only
+
+//    (_type:typeDirectory ; _ext:'<DIR>')
+  );
 
 type
   PTableExt = ^TTableExt;
   TTableExt = array of TPAKExtInfo;
 const
   TableTL2Info:TTableExt = (
-    (_type:typeDat      ; _pack:true ; _compile:true ),
-    (_type:typeLayout   ; _pack:true ; _compile:true ),
-    (_type:typeMesh     ; _pack:true ; _compile:false),
-    (_type:typeSkeleton ; _pack:true ; _compile:false),
-    (_type:typeDDS      ; _pack:true ; _compile:false),
-    (_type:typeImage    ; _pack:false; _compile:false),
-    (_type:typeSound    ; _pack:true ; _compile:false),
-    (_type:typeDirectory; _pack:false; _compile:false),
-    (_type:typeMaterial ; _pack:true ; _compile:false),
-    (_type:typeRAW      ; _pack:true ; _compile:true ),
-    (_type:typeUnknown  ; _pack:true ; _compile:false),
-    (_type:typeImageset ; _pack:true ; _compile:false),
-    (_type:typeTTF      ; _pack:true ; _compile:false),
-    (_type:typeFont     ; _pack:true ; _compile:false),
-    (_type:typeUnknown  ; _pack:true ; _compile:false),
-    (_type:typeUnknown  ; _pack:true ; _compile:false),
-    (_type:typeAnimation; _pack:true ; _compile:true ),
-    (_type:typeHIE      ; _pack:true ; _compile:true ),
-    (_type:typeDelete   ; _pack:false; _compile:false),
-    (_type:typeScheme   ; _pack:true ; _compile:false),
-    (_type:typeLookNFeel; _pack:true ; _compile:false),
-    (_type:typeMPP      ; _pack:true ; _compile:false),
-    (_type:typeUnknown  ; _pack:true ; _compile:false),
-    (_type:typeBIK      ; _pack:false; _compile:false),
-    (_type:typeJPG      ; _pack:false; _compile:false)
+    (_type:typeData       ; _pack:true ; _compile:true ),  // tl2Dat        
+    (_type:typeLayout     ; _pack:true ; _compile:true ),  // tl2Layout     
+    (_type:typeModel      ; _pack:true ; _compile:false),  // tl2Mesh       
+    (_type:typeModel      ; _pack:true ; _compile:false),  // tl2Skeleton   
+    (_type:typeImage      ; _pack:true ; _compile:false),  // tl2DDS        
+    (_type:typeImage      ; _pack:false; _compile:false),  // tl2PNG        
+    (_type:typeSound      ; _pack:true ; _compile:false),  // tl2Sound      
+    (_type:typeDirectory  ; _pack:false; _compile:false),  // tl2Directory  
+    (_type:typeFX         ; _pack:true ; _compile:false),  // tl2Material   
+    (_type:typeRAW        ; _pack:true ; _compile:true ),  // tl2Raw        
+    (_type:typeUI         ; _pack:true ; _compile:false),  // tl2UILayout   
+    (_type:typeImageset   ; _pack:true ; _compile:false),  // tl2ImageSet   
+    (_type:typeFont       ; _pack:true ; _compile:false),  // tl2TTF        
+    (_type:typeFont       ; _pack:true ; _compile:false),  // tl2Font       
+    (_type:typeUnknown    ; _pack:true ; _compile:false),  // tl2SrcDat     
+    (_type:typeUnknown    ; _pack:true ; _compile:false),  // tl2SrcLayout  
+    (_type:typeData       ; _pack:true ; _compile:true ),  // tl2Animation  
+    (_type:typeData       ; _pack:true ; _compile:true ),  // tl2Hie        
+    (_type:typeUnknown    ; _pack:false; _compile:false),  // tl2Other      
+    (_type:typeUI         ; _pack:true ; _compile:false),  // tl2Scheme     
+    (_type:typeUI         ; _pack:true ; _compile:false),  // tl2LookNFeel  
+    (_type:typeOther      ; _pack:true ; _compile:false),  // tl2MPP        
+    (_type:typeUnknown    ; _pack:true ; _compile:false),  // tl2SrcTemplate
+    (_type:typeMovie      ; _pack:false; _compile:false),  // tl2BIK        
+    (_type:typeImage      ; _pack:false; _compile:false)   // tl2JPG        
   );
   
   TableHobInfo:TTableExt = (
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeMesh      ; _pack:true ; _compile:false),
-    (_type:typeSkeleton  ; _pack:true ; _compile:false),
-    (_type:typeDDS       ; _pack:true ; _compile:false),
-    (_type:typeImage     ; _pack:true ; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeSound     ; _pack:false; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeDirectory ; _pack:false; _compile:false),
-    (_type:typeMaterial  ; _pack:true ; _compile:false),
-    (_type:typeRAW       ; _pack:true ; _compile:true ),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeImageset  ; _pack:true ; _compile:true ),
-    (_type:typeTTF       ; _pack:true ; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeDAT       ; _pack:true ; _compile:true ),
-    (_type:typeLayout    ; _pack:true ; _compile:true ),
-    (_type:typeAnimation ; _pack:true ; _compile:true ),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typeProgram   ; _pack:true ; _compile:false),
-    (_type:typeFont      ; _pack:true ; _compile:false),
-    (_type:typeCompositor; _pack:true ; _compile:false),
-    (_type:typeShader    ; _pack:true ; _compile:false),
-    (_type:typeUnknown   ; _pack:true ; _compile:false),
-    (_type:typePU        ; _pack:true ; _compile:false),
-    (_type:typeAnno      ; _pack:true ; _compile:false),
-    (_type:typeSBIN      ; _pack:true ; _compile:false),
-    (_type:typeWDAT      ; _pack:true ; _compile:true )
+    (_type:typeOther       ; _pack:true ; _compile:false),  // hobText
+    (_type:typeModel       ; _pack:true ; _compile:false),  // hobModel
+    (_type:typeModel       ; _pack:true ; _compile:false),  // hobSkeleton
+    (_type:typeImage       ; _pack:true ; _compile:false),  // hobDDS
+    (_type:typeImage       ; _pack:true ; _compile:false),  // hobImage
+    (_type:typeImage       ; _pack:true ; _compile:false),  // hobPicture
+    (_type:typeSound       ; _pack:false; _compile:false),  // hobSound
+    (_type:typeSound       ; _pack:false; _compile:false),  // hobMusic
+    (_type:typeDirectory   ; _pack:false; _compile:false),  // hobDirectory
+    (_type:typeFX          ; _pack:true ; _compile:false),  // hobMaterial
+    (_type:typeRAW         ; _pack:true ; _compile:true ),  // hobRaw
+    (_type:typeUI          ; _pack:true ; _compile:false),  // hobUILayout
+    (_type:typeImageset    ; _pack:true ; _compile:true ),  // hobImageset
+    (_type:typeFont        ; _pack:true ; _compile:false),  // hobTTF
+    (_type:typeFont        ; _pack:true ; _compile:false),  // hobFONT
+    (_type:typeData        ; _pack:true ; _compile:true ),  // hobDat
+    (_type:typeLayout      ; _pack:true ; _compile:true ),  // hobLayout
+    (_type:typeData        ; _pack:true ; _compile:true ),  // hobAnimation
+    (_type:typeData        ; _pack:true ; _compile:true ),  // hobHie
+    (_type:typeUnknown     ; _pack:true ; _compile:false),  // hobUnknown
+    (_type:typeUI          ; _pack:true ; _compile:false),  // hobScheme
+    (_type:typeUI          ; _pack:true ; _compile:false),  // hobLookNFeel
+    (_type:typeOther       ; _pack:true ; _compile:false),  // hobMPP
+    (_type:typeData        ; _pack:true ; _compile:true ),  // hobTemplate
+    (_type:typeFX          ; _pack:true ; _compile:false),  // hobProgram
+    (_type:typeFont        ; _pack:true ; _compile:false),  // hobFontDef
+    (_type:typeFX          ; _pack:true ; _compile:false),  // hobCompositor
+    (_type:typeFX          ; _pack:true ; _compile:false),  // hobShader
+    (_type:typeMovie       ; _pack:false; _compile:false),  // hobBIK
+    (_type:typeFX          ; _pack:true ; _compile:false),  // hobPU
+    (_type:typeOther       ; _pack:true ; _compile:false),  // hobAnno
+    (_type:typeFX          ; _pack:true ; _compile:false),  // hobSBin
+    (_type:typeOther       ; _pack:true ; _compile:false),  // hobHeightBin
+    (_type:typeOther       ; _pack:true ; _compile:false)   // hobCol
   );
 
-const
-  TableIntInfo: array of record
-    _category: byte;
-    _tl2     : byte;
-    _hob     : byte;
-  end = (
-    (_category:catUnknown; _tl2:tl2Unknown  ; _hob:hobUnknown),
-    (_category:catModel  ; _tl2:tl2Mesh     ; _hob:hobModel),
-    (_category:catModel  ; _tl2:tl2Skeleton ; _hob:hobSkeleton),
-    (_category:catModel  ; _tl2:tl2Material ; _hob:hobMaterial),
-    (_category:catImage  ; _tl2:tl2DDS      ; _hob:hobDDS),
-    (_category:catImage  ; _tl2:tl2PNG      ; _hob:hobImage),
-    (_category:catSound  ; _tl2:tl2Sound    ; _hob:hobSound),
-    (_category:catFolder ; _tl2:tl2Directory; _hob:hobDirectory),
-    (_category:catData   ; _tl2:tl2RAW      ; _hob:hobRAW),
-    (_category:catImage  ; _tl2:tl2ImageSet ; _hob:hobImageSet),
-    (_category:catFont   ; _tl2:tl2TTF      ; _hob:hobTTF),
-    (_category:catFont   ; _tl2:tl2Font     ; _hob:hobFontDef),
-    (_category:catData   ; _tl2:tl2Animation; _hob:hobAnimation),
-    (_category:catData   ; _tl2:tl2DAT      ; _hob:hobDAT),
-    (_category:catLayout ; _tl2:tl2Layout   ; _hob:hobLayout),
-    (_category:catData   ; _tl2:tl2HIE      ; _hob:hobUnknown),
-    (_category:catFolder ; _tl2:tl2Other    ; _hob:hobUnknown),
-    (_category:catOther  ; _tl2:tl2Scheme   ; _hob:hobUnknown),
-    (_category:catOther  ; _tl2:tl2LookNFeel; _hob:hobUnknown),
-    (_category:catOther  ; _tl2:tl2MPP      ; _hob:hobUnknown),
-    (_category:catImage  ; _tl2:tl2BIK      ; _hob:hobUnknown),
-    (_category:catImage  ; _tl2:tl2JPG      ; _hob:hobUnknown),
-    (_category:catShaders; _tl2:tl2Unknown  ; _hob:hobProgram),
-    (_category:catShaders; _tl2:tl2Unknown  ; _hob:hobCompositor),
-    (_category:catShaders; _tl2:tl2Unknown  ; _hob:hobShader),
-    (_category:catOther  ; _tl2:tl2Unknown  ; _hob:hobPU),
-    (_category:catOther  ; _tl2:tl2Unknown  ; _hob:hobAnno),
-    (_category:catOther  ; _tl2:tl2Unknown  ; _hob:hobSBIN),
-    (_category:catData   ; _tl2:tl2Unknown  ; _hob:hobWDAT)
-  );
-
-function PAKTypeInfo(atype:integer; aver:integer):PPAKExtInfo;
-var
-  lptr:PTableExt;
-  i:integer;
-begin
-  if ABS(aver)=verTL2 then
-    lptr:=@TableTL2Info
-  else
-    lptr:=@TableHobInfo;
-
-  for i:=0 to High(lptr^) do
-    if atype=lptr^[i]._type then
-      exit(@lptr^[i]);
-
-  result:=nil;
-end;
-
-function GetExtInfo(const fname:string; aver:integer):PPAKExtInfo;
+function RGTypeExtIsText(const aext:string):boolean;
 var
   lext:string;
-  lptr:PTableExt;
-  i,j:integer;
 begin
-  if (fname='') or (fname[Length(fname)]='/') then exit(nil);
-
-  lext:=ExtractExt(fname); // upcased into extraction
-
-  if (lext='.TXT') or (lext='.ADM') then
-  begin
-    // RAW.TXT
-    // IMAGESET.TXT
-    // DAT.TXT
-    // LAYOUT.TXT
-    // ANIMATION.TXT
-    // HIE.TXT
-    // WDAT.TXT
-    lext:=ExtractExt(Copy(fname,1,Length(fname)-4));
+  result:=false;
+  lext:=UpCase(aext);
+  case RGTypeOfExt(aext) of
+    typeUI   : result:=true;
+    typeFX   : if (lext<>'.SB'  ) and (lext<>'.SBIN'   ) then result:=false;
+    typeOther: if (lext ='.TXT' ) or  (lext ='.ANNO'   ) then result:=true;
+    typeFont : if (lext ='.FONT') or  (lext ='.FONTDEF') then result:=true;
   end;
-
-  if lext='' then exit(nil);
-
-  for i:=0 to High(TableExt) do
-    if lext=TableExt[i]._ext then
-    begin
-      if ABS(aver)=verTL2 then
-        lptr:=@TableTL2Info
-      else
-        lptr:=@TableHobInfo;
-
-      for j:=0 to High(lptr^) do
-        if TableExt[i]._type=lptr^[j]._type then
-          exit(@lptr^[j]);
-    end;
-
-  result:=nil;
 end;
-{
-function GetExtInfo(const fname:PWideChar; aver:integer):PPAKExtInfo;
-var
+
+function RGTypeExtCount:integer; inline;
 begin
-  result:=GetExtInfo(,aver);
+  result:=Length(TableExt);
 end;
-}
-function PAKCategoryName(acategory:integer):string;
+
+function RGTypeExtFromList(idx:integer):string;
 begin
-  if (acategory>=Low(CategoryList)) and (acategory<Length(CategoryList)) then
-    result:=CategoryList[acategory]
+  if (idx>=0) and (idx<Length(TableExt)) then
+    result:=TableExt[idx]._ext
   else
-    result:=CategoryList[catUnknown];
+    result:='';
 end;
 
-function PAKTypeToCategory(atype:integer):integer;
+function RGTypeFromList(idx:integer):integer;
 begin
-  if (atype>=Low(TableIntInfo)) and (atype<Length(TableIntInfo)) then
-    result:=TableIntInfo[atype]._category
+  if (idx>=0) and (idx<Length(TableExt)) then
+    result:=TableExt[idx]._type
   else
-    result:=catUnknown;
+    result:=typeUnknown;
 end;
 
-function PAKTypeToCommon(atype:integer; aver:integer):integer;
+function RGTypeOfType(atype:integer; aver:integer):integer;
 var
-  lt:TTableExt;
+  lt:PTableExt;
 begin
-  case aver of
-    verTL2Mod,
-    verTL2: lt:=TableTL2Info;
+  case ABS(aver) of
+    verTL2: lt:=@TableTL2Info;
     verHob,
     verRGO,
-    verRG : lt:=TableHobInfo;
+    verRG : lt:=@TableHobInfo; 
   else
-    exit(atype);
+    exit(typeUnknown);
   end;
-  if (atype>=Low(lt)) and (atype<Length(lt)) then
-    result:=lt[atype]._type
-  else
-    result:=atype;
-end;
 
-function PAKTypeToReal(atype:integer; aver:integer):integer;
-begin
-  if (atype>=Low(TableIntInfo)) and (atype<Length(TableIntInfo)) then
+  if (atype>=Low(lt^)) and (atype<Length(lt^)) then
   begin
-    case aver of
-      verTL2Mod,
-      verTL2: result:=TableIntInfo[atype]._tl2;
-      verHob,
-      verRGO,
-      verRG : result:=TableIntInfo[atype]._hob;
+    //!! same code for WDAT (RGO) and HEIGHTBIN (Hob)
+    if (atype=hobWDat) then
+    begin
+      if (aver=verHob) then
+        result:=typeOther  // default
+      else // RG, RGO
+        result:=typeData;
+    end
     else
-      result:=atype;
-    end;
+      result:=lt^[atype]._type
   end
   else
-    result:=atype;
+    result:=typeUnknown;
 end;
 
-function PAKExtType(const aext:string):integer;
+function RGTypeOfExt(const aext:string):integer;
 var
   lext:string;
-  i,j,elen,slen:integer;
+  i:integer;
 begin
   if aext<>'' then
   begin
     if aext[Length(aext)] in ['\','/'] then
       exit(typeDirectory);
 
-    lext:=UpCase(FixFileExt(aext));
+    lext:=FixFileExt(aext);
 
-    slen:=Length(lext);
-    for i:=0 to High(TableExt) do
-    begin
-      elen:=Length(TableExt[i]._ext);
-      if slen>elen then
-      begin
-        j:=slen;
-        while (elen>0) and (lext[j]=TableExt[i]._ext[elen]) do
-        begin
-          dec(elen);
-          dec(j);
-        end;
-        if elen=0 then
-          exit(TableExt[i]._type);
-      end;
-    end;
-
-{
-    lext:=UpCase(aext);
     if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
       lext:=ExtractExt(lext);
 
-    if (lext='.TXT') or (lext='.ADM') then
-    begin
-      // RAW.TXT
-      // IMAGESET.TXT
-      // DAT.TXT
-      // LAYOUT.TXT
-      // ANIMATION.TXT
-      // HIE.TXT
-      // WDAT.TXT
-      lext:=ExtractExt(Copy(aext,1,Length(aext)-4));
-    end;
-
-    if lext<>'' then
-      for i:=0 to High(TableExt) do
-      begin
-        if TableExt[i]._ext=lext then
-          exit(TableExt[i]._type);
-      end;
-}
-  end;
-
-  result:=typeUnknown;
-end;
-
-function PAKExtType(const aext:UnicodeString):integer;
-var
-  lext:string;
-  i:integer;
-  c:AnsiChar;
-begin
-  if aext<>'' then
-  begin
-    c:=char(ord(aext[Length(aext)]));
-    if c in ['\','/'] then
-      exit(typeDirectory);
-
-    lext:=UpCase(FastWideToStr(pointer(aext)));
-    if (lext[1]<>'.') or (lext[2] in ['.','/','\']) then
-      lext:=ExtractExt(lext);
+    lext:=UpCase(lext);
 
     for i:=0 to High(TableExt) do
     begin
@@ -554,12 +373,138 @@ begin
         exit(TableExt[i]._type);
     end;
   end;
+
   result:=typeUnknown;
 end;
 
-function PAKExtCategory(const aext:string):integer;
+function RGTypeOfExt(const aext:PUnicodeChar):integer;
 begin
-  result:=PAKTypeToCategory(PAKExtType(aext));
+  if (aext<>nil) and (aext[0]<>#0) then
+    result:=RGTypeOfExt(FastWideToStr(aext))
+  else
+    result:=typeUnknown;
+end;
+
+function PAKTypeOfName(const fname:PWideChar; aver:integer):integer;
+var
+  lext:string;
+  i:integer;
+begin
+  if (fname[Length(fname)]='/') then
+  begin
+    if ABS(aver)=verTL2 then exit(tl2Directory) else exit(hobDirectory);
+  end;
+
+  lext:=ExtractExt(FastWideToStr(fname));
+
+  for i:=0 to High(TableExt) do
+    if lext=TableExt[i]._ext then
+    begin
+      if ABS(aver)=verTL2 then
+        exit(TableExt[i]._tl2)
+      else
+      begin
+        //!! cheat: Hob saves JPG as hobPicture, RGO saves as hobImage
+        if (lext='.JPG') then
+        begin
+          if aver=verHob then
+            exit(hobPicture) // default
+          else
+            exit(hobImage);
+        end
+        else
+          exit(TableExt[i]._hob)
+      end;
+    end;
+end;
+
+function RGTypeExtInfo(const fname:string; aver:integer):PPAKExtInfo;
+var
+  lext:string;
+  i:integer;
+  wastxt:boolean;
+begin
+  if (fname='') or (fname[Length(fname)]='/') then exit(nil);
+
+  lext:=ExtractExt(fname); // upcased into extraction
+  wastxt:=(lext='.TXT');
+
+  if (lext='.ADM') or
+     (lext='.CMP') or
+     (lext='.BINDAT') or
+     (lext='.BINLAYOUT') or
+     wastxt then
+  begin
+    lext:=ExtractExt(Copy(fname,1,Length(fname)-4));
+  end;
+
+  if (lext='') then
+  begin
+    if not wastxt then exit;
+    lext:='.TXT';
+  end;
+
+  for i:=0 to High(TableExt) do
+    if lext=TableExt[i]._ext then
+    begin
+      if ABS(aver)=verTL2 then
+        exit(@(TableTL2Info[TableExt[i]._tl2]))
+      else
+        exit(@(TableHobInfo[TableExt[i]._hob]))
+    end;
+
+  result:=nil;
+end;
+
+function RGTypeExtInfo(const fname:PWideChar; aver:integer):PPAKExtInfo;
+begin
+  result:=RGTypeExtInfo(FastWideToStr(fname),aver);
+end;
+
+
+const
+  catFolder  = $00;
+  catData    = $01;
+  catModel   = $02;
+  catImage   = $03;
+  catSound   = $04;
+  catShaders = $05;
+  catFont    = $06;
+  catOther   = $07;
+  catUnknown = $08;
+
+const
+  CategoryList:array [0..8] of string = (
+    'Directory',
+    'Data',
+    'Model',
+    'Image',
+    'Sound',
+    'Shaders',
+    'Font',
+    'Other',
+    'Unknown'
+  );
+
+function RGTypeGroup(atype:integer):integer;
+begin
+  case (atype and $FF) of
+    typeDirectory: result:=catFolder;
+    typeData     : result:=catData;
+    typeModel    : result:=catModel;
+    typeImage    : result:=catImage;
+    typeSound    : result:=catSound;
+    typeFX       : result:=catShaders;
+    typeFont     : result:=catFont;
+    typeOther    : result:=catOther;
+  else
+    result:=catUnknown;
+  end;
+end;
+
+function RGTypeGroupName(atype:integer):string; inline;
+begin
+  result:=CategoryList[RGTypeGroup(atype)];
 end;
 
 end.

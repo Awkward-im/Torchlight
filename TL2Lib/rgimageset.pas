@@ -333,9 +333,9 @@ begin
     begin
       GetMem(lbuf,lsize+2);
       BlockRead(f,lbuf^,lsize);
-      result:=ParseFromMemory(lbuf,lsize);
       lbuf[lsize  ]:=0;
       lbuf[lsize+1]:=0;
+      result:=ParseFromMemory(lbuf,lsize);
       FreeMem(lbuf);
     end;
     CloseFile(f);

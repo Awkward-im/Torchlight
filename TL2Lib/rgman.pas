@@ -20,11 +20,11 @@ type
     size_s  :dword;     // MAN: looks like source,not compiled, size (unusable)
     size_c  :dword;     // PAK: from TPAKFileHeader
     offset  :dword;     // MAN: PAK data block offset (??changed to "data" field)
-    _ftype  :byte;      // MAN: RGFileType unified type
+    _ftype  :word;      // MAN: RGFileType unified type
   private
-    function GetFType:byte;
+    function GetFType:word;
   public
-    property ftype:Byte read GetFType write _ftype;
+    property ftype:word read GetFType write _ftype;
   end;
   TAManFileInfo = array of TManFileInfo;
 
@@ -89,9 +89,9 @@ uses
   rgfiletype;
 
 {%REGION Common}
-function TManFileInfo.GetFType:byte;
+function TManFileInfo.GetFType:word;
 begin
-  if _ftype=typeUnknown then _ftype:=PAKExtType(Name);
+  if _ftype=typeUnknown then _ftype:=RGTypeOfExt(Name);
   result:=_ftype;
 end;
 
@@ -193,7 +193,7 @@ begin
       with PManFileInfo(Files[lfile])^ do
       begin
         checksum:=memReadDWord(aptr);
-        ftype   :=PAKTypeToCommon(memReadByte(aptr),aver);
+        ftype   :=RGTypeOfType(memReadByte(aptr),aver);
         Name    :=memReadShortStringBuf(aptr,@lbuf,bufsize);
         offset  :=memReadDWord(aptr);
         size_s  :=memReadDWord(aptr);
@@ -262,7 +262,8 @@ begin
           with p^ do
           begin
             ast.WriteDWord(checksum);
-            ast.WriteByte(PAKTypeToReal(ftype,aver));
+            ast.WriteByte(PAKTypeOfName(p^.Name,aver));
+//            ast.WriteByte(PAKTypeToReal(ftype,aver));
             ast.WriteShortString(p^.Name);
             ast.WriteDWord(offset);
             ast.WriteDWord(size_s);
@@ -356,7 +357,7 @@ begin
     lname:=aname;
 
   // can't use lext coz need to delete ext to get real sometime
-  if PAKExtType(lname)<>typeUnknown then
+  if RGTypeOfExt(PUnicodeChar(lname))<>typeUnknown then
     result:=lname;
 end;
 
@@ -401,7 +402,7 @@ begin
 //          for j:=1 to Length(lname) do lname[j]:=UpCase(lname[j]);
           with PManFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
           begin
-            ftype :=PAKExtType(lname);
+            ftype :=RGTypeOfExt(PUnicodeChar(lname));
             ftime :=sr.Time;
             size_s:=sr.Size;
             //!!
@@ -488,7 +489,7 @@ begin
       if lentry.IsDirectory then
         ftype:=typeDirectory
       else
-        ftype:=PAKExtType(lname);
+        ftype:=RGTypeOfExt(lname);
       offset  :=i;
       size_s  :=lentry.Size;
       size_c  :=lentry.CompressedSize;

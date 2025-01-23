@@ -201,7 +201,7 @@ begin
   if hostinfo.GetObjectName=nil then exit(false);
   if SpecObject then exit(true);
 
-  for i:=0 to 3 do
+  for i:=0 to High(toskip) do
     if StrComp(aprop, toskip[i])=0 then exit(true);
 
   i:=0;

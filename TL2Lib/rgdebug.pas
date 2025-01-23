@@ -63,7 +63,7 @@ begin
     repeat
       dec(lcnt);
       llsize:='';
-      if (p^.ftype=typeDirectory) or (p^.ftype=typeDelete) then
+      if (p^.ftype=typeDirectory) then
       begin
         inc(ldir);
         ls:='    Dir: ';
@@ -82,8 +82,8 @@ begin
         lmax :=p^.size_u;
         lmaxc:=p^.size_c;
       end;
-      if p^.ftype in [typeWDat,typeDat,typeLayout,typeHie,typeAnimation] then inc(lprocess);
-      if p^.ftype=typeDAT then inc(ldat);
+      if p^.ftype in [typeData,typeLayout] then inc(lprocess);
+      if p^.ftype=typeData then bgin inc(ldat);
       if p^.ftype=typeLayout then inc(llay);
 
       if p^.size_s<>p^.size_u then llsize:='!!';

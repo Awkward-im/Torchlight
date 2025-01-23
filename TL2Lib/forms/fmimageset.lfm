@@ -86,7 +86,6 @@ object FormImageset: TFormImageset
         Proportional = True
         Stretch = True
         Transparent = True
-        OnPaintBackground = DrawDarkBg
       end
     end
   end
