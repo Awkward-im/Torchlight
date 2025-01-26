@@ -28,7 +28,7 @@ implementation
 
 uses
   rgglobal,
-  tl2db;
+  rgdb;
 
 resourcestring
   rsItem  = 'item';
@@ -53,18 +53,18 @@ begin
       sgKeyBinding.RowCount:=sgKeyBinding.RowCount+1;
       with aSGame.Keys[i] do
       begin
-        sgKeybinding.Cells[0,j]:=GetTL2KeyType(key);
+        sgKeybinding.Cells[0,j]:=RGDBGetTL2KeyType(key);
         case datatype of
           0: begin
             sgKeyBinding.Cells[1,j]:=rsItem;
-            sgKeyBinding.Cells[2,j]:=GetTL2Item(id,lmod);
-            sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
+            sgKeyBinding.Cells[2,j]:=RGDBGetItem(id,lmod);
+            sgKeyBinding.Cells[3,j]:=RGDBGetMod(lmod);
           end;
 
           2: begin
             sgKeyBinding.Cells[1,j]:=rsSkill;
-            sgKeyBinding.Cells[2,j]:=GetTL2Skill(id,lmod);
-            sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
+            sgKeyBinding.Cells[2,j]:=RGDBGetSkill(id,lmod);
+            sgKeyBinding.Cells[3,j]:=RGDBGetMod(lmod);
           end;
 
         else
@@ -91,8 +91,8 @@ begin
           sgKeyBinding.RowCount:=sgKeyBinding.RowCount+1;
           sgKeyBinding.Cells[0,j]:='F'+IntToStr(i+1);
           sgKeyBinding.Cells[1,j]:=rsSkill;
-          sgKeyBinding.Cells[2,j]:=GetTL2Skill(id,lmod);
-          sgKeyBinding.Cells[3,j]:=GetTL2Mod(lmod);
+          sgKeyBinding.Cells[2,j]:=RGDBGetSkill(id,lmod);
+          sgKeyBinding.Cells[3,j]:=RGDBGetMod(lmod);
         end;
       end;
   end;

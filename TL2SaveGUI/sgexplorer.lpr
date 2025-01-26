@@ -10,9 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  DefaultTranslator,
-  Forms, lazcontrols,
-  formSaveGame;
+  DefaultTranslator, Forms, lazcontrols, formSaveGame;
 
 {$R *.res}
 

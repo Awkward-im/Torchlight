@@ -6,7 +6,7 @@ object fmRecipes: TfmRecipes
   BorderStyle = bsNone
   ClientHeight = 399
   ClientWidth = 565
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object sgRecipes: TStringGrid

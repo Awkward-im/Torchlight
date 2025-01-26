@@ -443,13 +443,15 @@ msgstr "Сохранить файл(ы)"
 
 #: trgguiform.actedimport.caption
 msgctxt "trgguiform.actedimport.caption"
-msgid "Import file"
-msgstr "Импорт файла"
+msgid "Import file(s)"
+msgstr ""
+"Импорт файла\n"
+"(ов)"
 
 #: trgguiform.actedimport.hint
 msgctxt "trgguiform.actedimport.hint"
-msgid "Import file"
-msgstr "Импорт файла"
+msgid "Import file(s)"
+msgstr "Импорт файла(ов)"
 
 #: trgguiform.actedimportdir.caption
 msgid "Import dir"

@@ -16,7 +16,7 @@ begin
       'REPLACE INTO dicfiles (file) VALUES ('''+lfile+''') RETURNING id;');
 end;
 
-function CreateFilesTable(adb:PSQLite3):boolean;
+function CreateFilesTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'files') then
     result:=ExecuteDirect(adb,
@@ -131,16 +131,16 @@ begin
   result:=ScanLThemes(ams);
 end;
 
-function CreateAddsTable(adb:PSQLite3):boolean;
+function CreateAddsTable(adb:PSQLite3; aver:integer):boolean;
 begin
-  result:=CreateEffectsTable(adb);
-  result:=CreateAffixesTable(adb);
-  result:=CreateSetsTable(adb);
-  result:=CreateUThemesTable(adb);
-  result:=CreateLevelSetsTable(adb);
-  result:=CreateLThemesTable(adb);
+  result:=CreateEffectsTable  (adb,aver);
+  result:=CreateAffixesTable  (adb,aver);
+  result:=CreateSetsTable     (adb,aver);
+  result:=CreateUThemesTable  (adb,aver);
+  result:=CreateLevelSetsTable(adb,aver);
+  result:=CreateLThemesTable  (adb,aver);
 
-  result:=CreateFilesTable(adb);
+  result:=CreateFilesTable(adb,aver);
 end;
 
 {%ENDREGION Adds}

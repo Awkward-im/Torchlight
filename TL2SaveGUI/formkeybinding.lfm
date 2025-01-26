@@ -6,6 +6,7 @@ object fmKeyBinding: TfmKeyBinding
   BorderStyle = bsNone
   ClientHeight = 449
   ClientWidth = 598
+  LCLVersion = '4.99.0.0'
   object sgKeyBinding: TStringGrid
     Left = 0
     Height = 449

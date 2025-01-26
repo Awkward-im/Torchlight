@@ -7,7 +7,7 @@ uses
   rgstream,
   tlsgcommon,
   rgglobal,
-  TLSGBase,
+  tlsgbase,
   tlsgactive,
   tlsgeffects,
   tlsgitem;
@@ -220,7 +220,7 @@ function ReadCharData(AStream:TStream; aVersion:integer; aCharType:TTL2CharType)
 implementation
 
 uses
-  tl2db;
+  rgdb;
 
 //----- Init / Free -----
 
@@ -264,9 +264,9 @@ begin
   if FDBMods='' then
   begin
     case FCharType of
-      ctPlayer: FDBMods:=GetClassMods(FID);
-      ctPet   : FDBMods:=GetPetMods(FID);
-      ctMob   : FDBMods:=GetMobMods(FID);
+      ctPlayer: FDBMods:=RGDBGetClassMods(FID);
+      ctPet   : FDBMods:=RGDBGetPetMods(FID);
+      ctMob   : FDBMods:=RGDBGetMobMods(FID);
     end;
   end;
   result:=FDBMods;
@@ -277,7 +277,7 @@ var
   i:integer;
 begin
 
-  i:=GetStatIdx(Stats,iname);
+  i:=RGDBGetStatIdx(Stats,iname);
   if i>=0 then
     result:=Stats[i].value
   else
@@ -288,7 +288,7 @@ procedure TTLCharacter.SetStat(const iname:string; aval:TRGInteger);
 var
   i:integer;
 begin
-  i:=GetStatIdx(Stats,iname);
+  i:=RGDBGetStatIdx(Stats,iname);
   if i>=0 then
     Stats[i].value:=aval;
 end;
@@ -584,13 +584,13 @@ begin
 
     if FCharType=ctPlayer then
     begin
-      i:=GetStatIdx(FStats,DefaultStats[DefStatStat].id);
+      i:=RGDBGetStatIdx(FStats,DefaultStats[DefStatStat].id);
       if i>=0 then
       begin
         if      FFreeStatPoints<FStats[i].value then FFreeStatPoints:=FStats[i].value
         else if FFreeStatPoints>FStats[i].value then FStats[i].value:=FFreeStatPoints;
       end;
-      i:=GetStatIdx(FStats,DefaultStats[DefStatSkill].id);
+      i:=RGDBGetStatIdx(FStats,DefaultStats[DefStatSkill].id);
       if i>=0 then
       begin
         if      FFreeSkillPoints<FStats[i].value then FFreeSkillPoints:=FStats[i].value
@@ -622,13 +622,13 @@ begin
 
   if FCharType=ctPlayer then
   begin
-    i:=GetStatIdx(FStats,DefaultStats[DefStatStat].id);
+    i:=RGDBGetStatIdx(FStats,DefaultStats[DefStatStat].id);
     if i>=0 then
     begin
       if      FFreeStatPoints<FStats[i].value then FFreeStatPoints:=FStats[i].value
       else if FFreeStatPoints>FStats[i].value then FStats[i].value:=FFreeStatPoints;
     end;
-    i:=GetStatIdx(FStats,DefaultStats[DefStatSkill].id);
+    i:=RGDBGetStatIdx(FStats,DefaultStats[DefStatSkill].id);
     if i>=0 then
     begin
       if      FFreeSkillPoints<FStats[i].value then FFreeSkillPoints:=FStats[i].value
@@ -851,7 +851,7 @@ begin
   // so, we just replace pet type by one of standard type
   if not result and (FCharType<>ctPlayer) then
   begin
-    FID:=GetDefaultPet();
+    FID:=RGDBGetDefaultPet();
     Changed:=true;
     result:=true;
   end;

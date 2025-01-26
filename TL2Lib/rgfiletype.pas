@@ -416,6 +416,8 @@ begin
           exit(TableExt[i]._hob)
       end;
     end;
+
+  if ABS(aver)=verTL2 then exit(tl2Unknown) else exit(hobUnknown);
 end;
 
 function RGTypeExtInfo(const fname:string; aver:integer):PPAKExtInfo;
@@ -440,7 +442,7 @@ begin
 
   if (lext='') then
   begin
-    if not wastxt then exit;
+    if not wastxt then exit(nil);
     lext:='.TXT';
   end;
 

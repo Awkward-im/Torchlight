@@ -40,7 +40,7 @@ implementation
 uses
   formButtons,
   tlsgchar,
-  tl2db;
+  rgdb;
 
 const
   imgModded = 4;

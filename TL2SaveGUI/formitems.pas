@@ -39,8 +39,7 @@ implementation
 
 uses
   formButtons,
-  rgglobal,
-  tl2db;
+  rgglobal;
 
 const
   imgGold     = 0;

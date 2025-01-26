@@ -1048,13 +1048,16 @@ end;
 
 function TRGDirList.MoveDir(adir:integer; adst:integer):integer;
 begin
-  result:=0;
   // search dst name
   // if not exists, add file to parent and remove old, rename all children dirs
   // if exists... try to move all children to dst, rename all children dirs
   // if exists empty then delete old. if moving empty then ignore
   // else: fast. [dst.last].next:=src.first; dst.last=src.last
   // else: slow. check ALL files and subs
+  if adst>=0 then
+    result:=MoveDir(adir,adst)
+  else
+    result:=-1;
 end;
 
 function TRGDirList.MoveDir(adir:integer; adst:PUnicodeChar):integer;

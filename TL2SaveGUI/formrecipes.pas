@@ -50,7 +50,7 @@ uses
   addons,
   formSettings,
   INIfiles,
-  tl2db;
+  rgdb;
 
 const
   sRecipes    = 'Recipes';
@@ -127,7 +127,7 @@ end;
 
 procedure TfmRecipes.btnLearnAllClick(Sender: TObject);
 begin
-  FillInfoInt(GetRecipesList(cbJustActual.Checked, cbHaveTitle.Checked));
+  FillInfoInt(RGDBGetRecipesList(cbJustActual.Checked, cbHaveTitle.Checked));
   bbUpdate.Enabled:=true;
 end;
 
@@ -142,8 +142,8 @@ begin
 
   for i:=0 to High(alist) do
   begin
-    sgRecipes.Cells[colTitle,i+1]:=GetTL2Recipes(alist[i],lmod);
-    sgRecipes.Cells[colMod  ,i+1]:=GetTL2Mod(lmod);
+    sgRecipes.Cells[colTitle,i+1]:=RGDBGetRecipes(alist[i],lmod);
+    sgRecipes.Cells[colMod  ,i+1]:=RGDBGetMod(lmod);
     sgRecipes.Cells[colId   ,i+1]:=TextId(alist[i]);
   end;
 

@@ -213,7 +213,7 @@ begin
   if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' affix records added');
 end;
 
-function CreateAffixesTable(adb:PSQLite3):boolean;
+function CreateAffixesTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'affixes') then
     result:=ExecuteDirect(adb,

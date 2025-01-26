@@ -90,9 +90,9 @@ begin
   end;
 end;
 
-function CreateMoviesTable(adb:PSQLite3):boolean;
+function CreateMoviesTable(adb:PSQLite3; aver:integer):boolean;
 begin
-  if PModScanner(ams)^.gamever=verTL1 then exit(false);
+  if aver=verTL1 then exit(false);
 
   if not IsTableExists(adb,'movies') then
     result:=ExecuteDirect(adb,

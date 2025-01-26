@@ -3,8 +3,7 @@ unit TLSGBase;
 interface
 
 uses
-  Classes,
-  rgstream;
+  Classes;
 
 type
   TL2DataType = (dtChar, dtItem, dtEffect, dtMap, dtQuest, dtStat);

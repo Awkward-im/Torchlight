@@ -132,7 +132,7 @@ begin
         ' set records. Added '+IntToStr(result and $FFFF)+' set elements');
 end;
 
-function CreateSetsTable(adb:PSQLite3):boolean;
+function CreateSetsTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'dicsets') then
     result:=ExecuteDirect(adb,

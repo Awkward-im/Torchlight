@@ -431,12 +431,12 @@ msgstr ""
 
 #: trgguiform.actedimport.caption
 msgctxt "trgguiform.actedimport.caption"
-msgid "Import file"
+msgid "Import file(s)"
 msgstr ""
 
 #: trgguiform.actedimport.hint
 msgctxt "trgguiform.actedimport.hint"
-msgid "Import file"
+msgid "Import file(s)"
 msgstr ""
 
 #: trgguiform.actedimportdir.caption

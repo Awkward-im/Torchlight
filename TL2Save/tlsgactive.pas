@@ -72,7 +72,7 @@ type
 implementation
 
 uses
-  tl2db;
+  rgdb;
 
 //----- Init / Free -----
 
@@ -127,7 +127,7 @@ var
   i:integer;
 begin
 
-  i:=GetStatIdx(Stats,iname);
+  i:=RGDBGetStatIdx(Stats,iname);
   if i>=0 then
     result:=Stats[i].value
   else
@@ -138,7 +138,7 @@ procedure TLActiveClass.SetStat(const iname:string; aval:TRGInteger);
 var
   i:integer;
 begin
-  i:=GetStatIdx(Stats,iname);
+  i:=RGDBGetStatIdx(Stats,iname);
   if i>=0 then
     Stats[i].value:=aval;
 end;
@@ -181,7 +181,7 @@ begin
     llist:=nil;
     for i:=0 to High(ModIds) do
     begin
-      if IsInModList(ModIds[i],alist) then
+      if RGDBIsInModList(ModIds[i],alist) then
       begin
         SetLength(llist,Length(llist)+1);
         llist[High(llist)]:=ModIds[i];
@@ -199,7 +199,7 @@ begin
     // Remark: ModIds must be nil already
     lmods:=GetDBMods;
 
-    lmodid:=IsInModList(lmods, alist);
+    lmodid:=RGDBIsInModList(lmods, alist);
     if lmodid<>RGIdEmpty then
     begin
       if lmodid<>0 then

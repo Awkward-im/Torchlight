@@ -169,7 +169,7 @@ begin
   if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
-function CreateSkillsTable(adb:PSQLite3):boolean;
+function CreateSkillsTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'skills') then
     result:=ExecuteDirect(adb,

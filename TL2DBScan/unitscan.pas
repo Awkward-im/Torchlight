@@ -58,7 +58,7 @@ implementation
 uses
   sysutils
   ,Logging
-  ,tl2db
+  ,rgdb
   ,RGScan
   ,rgPAK
   ,rgio.DAT
@@ -353,21 +353,21 @@ function CreateTables(adb:PSQLite3; aver:integer):boolean;
 begin
   result:=CreateModTable      (adb,ABS(aver));
 
-  result:=CreateAddsTable     (adb);
-  result:=CreateUnitTypesTable(adb);
-  result:=CreateClassesTable  (adb);
-  result:=CreateGraphTable    (adb);
-  result:=CreateInventoryTable(adb);
-  result:=CreateItemsTable    (adb);
-  result:=CreateMobsTable     (adb);
-  result:=CreateMoviesTable   (adb);
-  result:=CreatePetsTable     (adb);
-  result:=CreatePropsTable    (adb);
-  result:=CreateQuestsTable   (adb);
-  result:=CreateRecipesTable  (adb);
-  result:=CreateSkillsTable   (adb);
-  result:=CreateStatsTable    (adb);
-  result:=CreateWardrobeTable (adb);
+  result:=CreateAddsTable     (adb,ABS(aver));
+  result:=CreateUnitTypesTable(adb,ABS(aver));
+  result:=CreateClassesTable  (adb,ABS(aver));
+  result:=CreateGraphTable    (adb,ABS(aver));
+  result:=CreateInventoryTable(adb,ABS(aver));
+  result:=CreateItemsTable    (adb,ABS(aver));
+  result:=CreateMobsTable     (adb,ABS(aver));
+  result:=CreateMoviesTable   (adb,ABS(aver));
+  result:=CreatePetsTable     (adb,ABS(aver));
+  result:=CreatePropsTable    (adb,ABS(aver));
+  result:=CreateQuestsTable   (adb,ABS(aver));
+  result:=CreateRecipesTable  (adb,ABS(aver));
+  result:=CreateSkillsTable   (adb,ABS(aver));
+  result:=CreateStatsTable    (adb,ABS(aver));
+  result:=CreateWardrobeTable (adb,ABS(aver));
 end;
 
 function RGOpenBase(out adb:PSQLite3; const fname:string=TL2DataBase; createas:integer=verTL2):boolean;

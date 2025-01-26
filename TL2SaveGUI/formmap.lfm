@@ -6,7 +6,7 @@ object fmMap: TfmMap
   BorderStyle = bsNone
   ClientHeight = 462
   ClientWidth = 722
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   object lblMatrix: TLabel
     Left = 8
     Height = 15

@@ -187,7 +187,7 @@ var
   lext:string;
 begin
 //  lext:=TfmScan(aparam).edDirName.Text;
-  if aname='EDITORMOD.MOD' then exit(0);
+  if aname=TL2EditMod then exit(0);
   result:=1 or sres_nocheck;
   lext:=ExtractExt(aname);
   if (lext='.MOD') or

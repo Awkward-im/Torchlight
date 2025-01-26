@@ -6,7 +6,7 @@ object fmButtons: TfmButtons
   BorderStyle = bsNone
   ClientHeight = 46
   ClientWidth = 483
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   object btnExport: TButton
     Left = 10
     Height = 25

@@ -37,7 +37,7 @@ implementation
 uses
   LCLType,
   addons,
-  tl2db;
+  rgdb;
 
 const
   colTitle = 0;
@@ -99,8 +99,8 @@ begin
   begin
     for i:=0 to High(aSGame.Movies) do
     begin
-      ltitle:=GetTL2Movie(aSGame.Movies[i].id,lmod,lmax,lname,lpath);
-      lmod:=GetTL2Mod(lmod);
+      ltitle:=RGDBGetTL2Movie(aSGame.Movies[i].id,lmod,lmax,lname,lpath);
+      lmod:=RGDBGetMod(lmod);
 
       sgMovies.Objects[0,i+1]:=TObject(IntPtr(i));
       sgMovies.Objects[1,i+1]:=TObject(IntPtr(lmax));

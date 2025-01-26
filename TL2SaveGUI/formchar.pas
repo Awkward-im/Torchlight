@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
   Spin, ExtCtrls, Buttons, Grids, SpinEx,
-  rgglobal, tlsave, tlsgchar, tl2db, formSkills, formItems, formEffects;
+  rgglobal, tlsave, tlsgchar, rgdb, formSkills, formItems, formEffects;
 
 type
   tCharInfoType = (ciPlayer, ciPet, ciUnit);
@@ -601,7 +601,7 @@ end;
 
 procedure TfmChar.DrawPetIcon(aclass:TRGID; aImg:TImage);
 begin
-  DrawIconInt(GetPetIcon(aclass),dirPetIcon,aImg);
+  DrawIconInt(RGDBGetPetIcon(aclass),dirPetIcon,aImg);
 end;
 
 procedure TfmChar.cbMorphChange(Sender: TObject);
@@ -669,7 +669,7 @@ var
   lspell:TTL2Spell;
 begin
   lspell:=FChar.Spells[idx];
-  cb.Text:=GetTL2Skill(lspell.name,lid);
+  cb.Text:=RGDBGetSkill(lspell.name,lid);
   cbSpellChange(cb);
   TComboBox(cb.Tag).Text:=IntToStr(lspell.level);
 end;
@@ -891,7 +891,7 @@ begin
   lbModList.Clear;
   if FChar.ModIds<>nil then
     for i:=0 to High(FChar.ModIds) do
-      lbModList.AddItem(GetTL2Mod(FChar.ModIds[i]),nil);
+      lbModList.AddItem(RGDBGetMod(FChar.ModIds[i]),nil);
   if FChar.ModNames<>nil then
     for i:=0 to High(FChar.ModNames) do
       lbModList.AddItem(FChar.ModNames[i],nil);
@@ -1014,7 +1014,7 @@ var
 begin
   //--- Stat ---
 
-  GetClassInfo(FChar.ID,licon,FBaseStr,FBaseDex,FBaseInt,FBaseVit);
+  RGDBGetClassInfo(FChar.ID,licon,FBaseStr,FBaseDex,FBaseInt,FBaseVit);
 
   seLevel.MaxValue:=Length(ExpGate);
   seFame .MaxValue:=Length(FameGate);
@@ -1022,9 +1022,9 @@ begin
 
   // Graphs
 
-  GetClassGraphStat(FChar.ID,ls,ls1,FStatPerLevel);
-  HPTier:=GetGraphArray(ls );
-  MPTier:=GetGraphArray(ls1);
+  RGDBGetClassGraphStat(FChar.ID,ls,ls1,FStatPerLevel);
+  HPTier:=RGDBGetGraphArray(ls );
+  MPTier:=RGDBGetGraphArray(ls1);
 
   if Length(HPTier)=0 then
   begin
@@ -1067,7 +1067,7 @@ begin
 
   //--- View ---
 
-  GetClassList(FClasses);
+  RGDBGetClassList(FClasses);
 
   // set gender buttons
   i:=GetClassIndex(FChar.ID);
@@ -1077,7 +1077,7 @@ begin
     rbFemale.Checked:=FClasses[i].gender='F';
     rbUnisex.Checked:=not (FClasses[i].gender in ['F','M']);
 
-    edClass.Text:=GetTL2Class(FChar.ID);
+    edClass.Text:=RGDBGetClass(FChar.ID);
   end
   else
   begin
@@ -1107,9 +1107,9 @@ begin
   //--- Wardrobe ---
 
   if WardrobeData=nil then
-    GetWardrobe(WardrobeData);
+    RGDBGetWardrobe(WardrobeData);
 
-  FillWardMatrix(GetClassWardrobe(FChar.ID));
+  FillWardMatrix(RGDBGetClassWardrobe(FChar.ID));
 
   //--- Statistic ---
 
@@ -1135,7 +1135,7 @@ begin
 
   //--- View ---
 
-  GetPetList(FPets);
+  RGDBGetPetList(FPets);
 
 
   cbNewClass.Clear;
@@ -1184,9 +1184,9 @@ begin
 
   DrawPetIcon(FChar.ID,imgIcon);
 
-  edClass.Text:=GetTL2Pet(FChar.ID);
+  edClass.Text:=RGDBGetPet(FChar.ID);
   if edClass.Text=HexStr(FChar.ID,16) then
-     edClass.Text:=GetTL2Mob(FChar.ID);
+     edClass.Text:=RGDBGetMob(FChar.ID);
 
   //--- Wardrobe ---
 
@@ -1246,7 +1246,7 @@ begin
     ctPlayer: FillPlayerInfo();
     ctPet   : FillPetInfo();
   else
-    edClass.Text:=GetTL2Mob(FChar.ID);
+    edClass.Text:=RGDBGetMob(FChar.ID);
     seLevel.MaxValue:=999;
     seFame .MaxValue:=1;
   end;
@@ -1284,7 +1284,7 @@ begin
   lbModList.Clear;
   if FChar.ModIds<>nil then
     for i:=0 to High(FChar.ModIds) do
-      lbModList.AddItem(GetTL2Mod(FChar.ModIds[i]),nil);
+      lbModList.AddItem(RGDBGetMod(FChar.ModIds[i]),nil);
   if FChar.ModNames<>nil then
     for i:=0 to High(FChar.ModNames) do
       lbModList.AddItem(FChar.ModNames[i],nil);
@@ -1295,9 +1295,9 @@ begin
   for i:=0 to High(FChar.Stats) do
   begin
     sgStats.Objects[0,i+1]:=TObject(IntPtr(i));
-    sgStats.Cells[0,i+1]:=GetTL2Stat(FChar.Stats[i].id,ls);
+    sgStats.Cells[0,i+1]:=RGDBGetTL2Stat(FChar.Stats[i].id,ls);
     sgStats.Cells[1,i+1]:=IntToStr  (FChar.Stats[i].value);
-    sgStats.Cells[2,i+1]:=GetTL2Mod(ls);
+    sgStats.Cells[2,i+1]:=RGDBGetMod(ls);
   end;
 
   sgStats.EndUpdate;

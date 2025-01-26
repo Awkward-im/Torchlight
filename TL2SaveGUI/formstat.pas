@@ -14,8 +14,23 @@ type
 
   TfmStat = class(TForm)
     bbClearLearnHistory: TBitBtn;
+    cbFlag: TCheckBox;
+    edLevel: TEdit;
+    edTimeTotal: TEdit;
+    edTimeSeans: TEdit;
+    edUGNum: TEdit;
+    edUG0: TEdit;
+    edUG1: TEdit;
+    edUG2: TEdit;
+    edUG3: TEdit;
     gbInitial: TGroupBox;
-    edName : TEdit;  lblName : TLabel;
+    edName : TEdit;
+    gbUnknown: TGroupBox;
+    gbBlock: TGroupBox;
+    lblLevel: TLabel;
+    lblTimeTotal: TLabel;
+    lblTimeSeans: TLabel;
+  lblName : TLabel;
     edClass: TEdit;  lblClass: TLabel;
     edPet  : TEdit;  lblPet  : TLabel;
     lbSkillHistory      : TListBox;
@@ -53,7 +68,7 @@ uses
   rgglobal,
   tlsgcommon,
   tl2stats,
-  tl2db;
+  rgdb;
 
 procedure TfmStat.bbClearLearnHistoryClick(Sender: TObject);
 var
@@ -95,6 +110,7 @@ var
     false: (i:TRGInteger);
     true : (f:TRGFloat);
   end;
+  ls:string;
   i:integer;
 begin
   SGame:=aSGame;
@@ -106,10 +122,21 @@ begin
   edClass.Text:=lstat.PlayerClass;
   edPet  .Text:=lstat.PetClass;
 
+  edUGNum.Text:=IntToStr(lstat.Unknown.Index);
+  edUG0  .Text:=IntToStr(lstat.Unknown.Data[0]);
+  edUG1  .Text:=IntToStr(lstat.Unknown.Data[1]);
+  edUG2  .Text:=IntToStr(lstat.Unknown.Data[2]);
+  edUG3  .Text:=IntToStr(lstat.Unknown.Data[3]);
+
+  cbFlag.Checked:=lstat.BaseStat.flag<>0;
+  edlevel.Text:=IntToStr(lstat.BaseStat.level);
+  edTimeTotal.Text:=SecToTime(trunc(lstat.BaseStat.timeTotal));
+  edTimeSeans.Text:=SecToTime(trunc(lstat.BaseStat.timeSession));
+
   // skill learn history
   lbSkillHistory.Clear;
   for i:=0 to High(aSGame.History) do
-    lbSkillHistory.AddItem(GetTL2Skill(aSGame.History[i]),nil);
+    lbSkillHistory.AddItem(RGDBGetSkill(aSGame.History[i]),nil);
   bbClearLearnHistory.Enabled:=Length(aSGame.History)>0;
 
   // mobs
@@ -118,16 +145,16 @@ begin
   sgMobs.RowCount:=1+Length(lstat.Mobs);
   for i:=0 to High(lstat.Mobs) do
   begin
-    sgMobs.Cells[ 1,i+1]:=GetTL2Mob(lstat.Mobs[i].id);
-    sgMobs.Cells[ 2,i+1]:=IntToStr (lstat.Mobs[i].field1);
-    sgMobs.Cells[ 3,i+1]:=IntToStr (lstat.Mobs[i].field2);
-    sgMobs.Cells[ 4,i+1]:=IntToStr (lstat.Mobs[i].exp   );
-    sgMobs.Cells[ 5,i+1]:=IntToStr (lstat.Mobs[i].field4);
-    sgMobs.Cells[ 6,i+1]:=IntToStr (lstat.Mobs[i].field5);
-    sgMobs.Cells[ 7,i+1]:=IntToStr (lstat.Mobs[i].field6);
-    sgMobs.Cells[ 8,i+1]:=IntToStr (lstat.Mobs[i].field7);
-    sgMobs.Cells[ 9,i+1]:=IntToStr (lstat.Mobs[i].field8);
-    sgMobs.Cells[10,i+1]:=IntToStr (lstat.Mobs[i].field9);
+    sgMobs.Cells[ 1,i+1]:=RGDBGetMob(lstat.Mobs[i].id);
+    sgMobs.Cells[ 2,i+1]:=IntToStr  (lstat.Mobs[i].field1);
+    sgMobs.Cells[ 3,i+1]:=IntToStr  (lstat.Mobs[i].field2);
+    sgMobs.Cells[ 4,i+1]:=IntToStr  (lstat.Mobs[i].exp   );
+    sgMobs.Cells[ 5,i+1]:=IntToStr  (lstat.Mobs[i].field4);
+    sgMobs.Cells[ 6,i+1]:=IntToStr  (lstat.Mobs[i].field5);
+    sgMobs.Cells[ 7,i+1]:=IntToStr  (lstat.Mobs[i].field6);
+    sgMobs.Cells[ 8,i+1]:=IntToStr  (lstat.Mobs[i].field7);
+    sgMobs.Cells[ 9,i+1]:=IntToStr  (lstat.Mobs[i].field8);
+    sgMobs.Cells[10,i+1]:=IntToStr  (lstat.Mobs[i].field9);
   end;
   sgMobs.EndUpdate;
 
@@ -137,14 +164,14 @@ begin
   sgItems.RowCount:=1+Length(lstat.Items);
   for i:=0 to High(lstat.Items) do
   begin
-    sgItems.Cells[1,i+1]:=GetTL2Item(lstat.Items[i].id);
-    sgItems.Cells[2,i+1]:=IntToStr  (lstat.Items[i].Normals);
-    sgItems.Cells[3,i+1]:=IntToStr  (lstat.Items[i].Blues);
-    sgItems.Cells[4,i+1]:=IntToStr  (lstat.Items[i].Greens);
-    sgItems.Cells[5,i+1]:=IntToStr  (lstat.Items[i].Golden);
-    sgItems.Cells[6,i+1]:=IntToStr  (lstat.Items[i].IsSet);
-    sgItems.Cells[7,i+1]:=IntToStr  (lstat.Items[i].Bonuses);
-    sgItems.Cells[8,i+1]:=IntToStr  (lstat.Items[i].Bought);
+    sgItems.Cells[1,i+1]:=RGDBGetItem(lstat.Items[i].id);
+    sgItems.Cells[2,i+1]:=IntToStr   (lstat.Items[i].Normals);
+    sgItems.Cells[3,i+1]:=IntToStr   (lstat.Items[i].Blues);
+    sgItems.Cells[4,i+1]:=IntToStr   (lstat.Items[i].Greens);
+    sgItems.Cells[5,i+1]:=IntToStr   (lstat.Items[i].Golden);
+    sgItems.Cells[6,i+1]:=IntToStr   (lstat.Items[i].IsSet);
+    sgItems.Cells[7,i+1]:=IntToStr   (lstat.Items[i].Bonuses);
+    sgItems.Cells[8,i+1]:=IntToStr   (lstat.Items[i].Bought);
   end;
   sgItems.EndUpdate;
 
@@ -154,10 +181,10 @@ begin
   sgSkills.RowCount:=1+Length(lstat.Skills);
   for i:=0 to High(lstat.Skills) do
   begin
-    sgSkills.Cells[0,i+1]:=GetTL2Skill(lstat.Skills[i].id);
-    sgSkills.Cells[1,i+1]:=IntToStr(lstat.Skills[i].times);
-    sgSkills.Cells[2,i+1]:=IntToStr(lstat.Skills[i].field2);
-    sgSkills.Cells[3,i+1]:=IntToStr(lstat.Skills[i].level);
+    sgSkills.Cells[0,i+1]:=RGDBGetSkill(lstat.Skills[i].id);
+    sgSkills.Cells[1,i+1]:=IntToStr    (lstat.Skills[i].times);
+    sgSkills.Cells[2,i+1]:=IntToStr    (lstat.Skills[i].field2);
+    sgSkills.Cells[3,i+1]:=IntToStr    (lstat.Skills[i].level);
   end;
   sgSkills.EndUpdate;
 
@@ -212,8 +239,8 @@ begin
   sgKillers.RowCount:=1+Length(lstat.Killers);
   for i:=0 to High(lstat.Killers) do
   begin
-    sgKillers.Cells[1,i+1]:=GetTL2Mob(lstat.Killers[i].id);
-    sgKillers.Cells[2,i+1]:=IntToStr (lstat.Killers[i].value);
+    sgKillers.Cells[1,i+1]:=RGDBGetMob(lstat.Killers[i].id);
+    sgKillers.Cells[2,i+1]:=IntToStr  (lstat.Killers[i].value);
   end;
   sgKillers.EndUpdate;
 

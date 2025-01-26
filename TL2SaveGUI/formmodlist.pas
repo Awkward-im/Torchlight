@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  Grids, tlsave, rgglobal, tl2db;
+  Grids, tlsave, rgglobal, rgdb;
 
 type
 
@@ -127,7 +127,7 @@ begin
     idx:=cbModList.ItemIndex;
     if idx>=0 then
     begin
-      llist:=GetModList;
+      llist:=RGDBGetModList;
       idx:=IntPtr(cbModList.Items.Objects[idx]);
       lid:=llist[idx].id;
       found:=false;
@@ -174,9 +174,9 @@ end;
 
 procedure TfmModList.FillGridRow(agrid:TStringGrid; arow:integer; const amod:TTL2Mod);
 begin
-  agrid.Cells[0,arow]:=GetTL2Mod(amod.id);
-  agrid.Cells[1,arow]:=IntToStr (amod.version);
-  agrid.Cells[2,arow]:=TextId   (amod.id);
+  agrid.Cells[0,arow]:=RGDBGetMod(amod.id);
+  agrid.Cells[1,arow]:=IntToStr  (amod.version);
+  agrid.Cells[2,arow]:=TextId    (amod.id);
 end;
 
 procedure TfmModList.FillGrid(agrid:TStringGrid; alist:TTL2ModList);
@@ -198,13 +198,12 @@ end;
 procedure TfmModList.cbModListCloseUp(Sender: TObject);
 var
   llist:tModDataArray;
-  lid:TRGID;
   idx:integer;
 begin
   idx:=cbModList.ItemIndex;
   if idx>=0 then
   begin
-    llist:=GetModList;
+    llist:=RGDBGetModList();
     idx:=IntPtr(cbModList.Items.Objects[idx]);
     lblChoosedModId.Caption:=TextId(llist[idx].id){HexStr(llist[idx].id,16)}
   end
@@ -219,7 +218,7 @@ var
 begin
   FSGame:=aSGame;
 
-  llist:=GetModList;
+  llist:=RGDBGetModList();
   cbModList.Clear;
   cbModList.Items.Capacity:=Length(llist);
   for i:=0 to High(llist) do
@@ -230,7 +229,7 @@ begin
   FillGrid(sgFull  ,FSGame.FullModHistory);
 
   CheckButtons;
-  SetFilter(FSGame.BoundMods);
+  RGDBSetFilter(FSGame.BoundMods);
   bbUpdate.Enabled:=false;
 end;
 

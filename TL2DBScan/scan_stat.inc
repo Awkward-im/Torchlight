@@ -94,9 +94,9 @@ begin
   if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
-function CreateStatsTable(adb:PSQLite3):boolean;
+function CreateStatsTable(adb:PSQLite3; aver:integer):boolean;
 begin
-  if PModScanner(ams)^.gamever=verTL1 then exit(false);
+  if aver=verTL1 then exit(false);
 
   if not IsTableExists(adb,'stats') then
     result:=ExecuteDirect(adb,

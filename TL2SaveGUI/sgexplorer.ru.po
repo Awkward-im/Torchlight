@@ -304,6 +304,141 @@ msgstr ""
 "Лучше просканировать вашу коллекцию модов\n"
 "если ещё не делали это или она менялась"
 
+#: rgdb.rsbasegame
+msgctxt "rgdb.rsbasegame"
+msgid "Base game"
+msgstr "Базовая игра"
+
+#: rgdb.rshp
+msgctxt "rgdb.rshp"
+msgid "Best Health Potion"
+msgstr "Лучшее зелье здоровья"
+
+#: rgdb.rslmb
+msgctxt "rgdb.rslmb"
+msgid "Left mouse button"
+msgstr "Левая кнопка мыши"
+
+#: rgdb.rsmp
+msgctxt "rgdb.rsmp"
+msgid "Best Mana Potion"
+msgstr "Лучшее зелье маны"
+
+#: rgdb.rspethp
+msgctxt "rgdb.rspethp"
+msgid "Best Pet Health Potion"
+msgstr "Лучшее зелье здоровья питомцу"
+
+#: rgdb.rspetmp
+msgctxt "rgdb.rspetmp"
+msgid "Best Pet Mana Potion"
+msgstr "Лучшее зелье маны питомцу"
+
+#: rgdb.rspetspell1
+msgctxt "rgdb.rspetspell1"
+msgid "Pet spell 1"
+msgstr "Заклинание питомца 1"
+
+#: rgdb.rspetspell2
+msgctxt "rgdb.rspetspell2"
+msgid "Pet spell 2"
+msgstr "Заклинание питомца 2"
+
+#: rgdb.rspetspell3
+msgctxt "rgdb.rspetspell3"
+msgid "Pet spell 3"
+msgstr "Заклинание питомца 3"
+
+#: rgdb.rspetspell4
+msgctxt "rgdb.rspetspell4"
+msgid "Pet spell 4"
+msgstr "Заклинание питомца 4"
+
+#: rgdb.rsqk0
+msgctxt "rgdb.rsqk0"
+msgid "Quckslot 0"
+msgstr "Быстрый доступ 0"
+
+#: rgdb.rsqk1
+msgctxt "rgdb.rsqk1"
+msgid "Quckslot 1"
+msgstr "Быстрый доступ 1"
+
+#: rgdb.rsqk2
+msgctxt "rgdb.rsqk2"
+msgid "Quckslot 2"
+msgstr "Быстрый доступ 2"
+
+#: rgdb.rsqk3
+msgctxt "rgdb.rsqk3"
+msgid "Quckslot 3"
+msgstr "Быстрый доступ 3"
+
+#: rgdb.rsqk4
+msgctxt "rgdb.rsqk4"
+msgid "Quckslot 4"
+msgstr "Быстрый доступ 4"
+
+#: rgdb.rsqk5
+msgctxt "rgdb.rsqk5"
+msgid "Quckslot 5"
+msgstr "Быстрый доступ 5"
+
+#: rgdb.rsqk6
+msgctxt "rgdb.rsqk6"
+msgid "Quckslot 6"
+msgstr "Быстрый доступ 6"
+
+#: rgdb.rsqk7
+msgctxt "rgdb.rsqk7"
+msgid "Quckslot 7"
+msgstr "Быстрый доступ 7"
+
+#: rgdb.rsqk8
+msgctxt "rgdb.rsqk8"
+msgid "Quckslot 8"
+msgstr "Быстрый доступ 8"
+
+#: rgdb.rsqk9
+msgctxt "rgdb.rsqk9"
+msgid "Quckslot 9"
+msgstr "Быстрый доступ 9"
+
+#: rgdb.rsrmb
+msgctxt "rgdb.rsrmb"
+msgid "Right mouse button"
+msgstr "Правая кнопка мыши"
+
+#: rgdb.rsrmbalt
+msgctxt "rgdb.rsrmbalt"
+msgid "Right mouse button (alternative)"
+msgstr "Правая кнопка мыши (альтернативная)"
+
+#: rgdb.rsset
+msgctxt "rgdb.rsset"
+msgid "Set"
+msgstr "Установить"
+
+#: rgdb.rsspell1
+msgctxt "rgdb.rsspell1"
+msgid "Spell 1"
+msgstr "Заклинание 1"
+
+#: rgdb.rsspell2
+msgctxt "rgdb.rsspell2"
+msgid "Spell 2"
+msgstr "Заклинание 2"
+
+#: rgdb.rsspell3
+msgctxt "rgdb.rsspell3"
+msgid "Spell 3"
+msgstr "Заклинание 3"
+
+#: rgdb.rsspell4
+msgctxt "rgdb.rsspell4"
+msgid "Spell 4"
+msgstr "Заклинание 4"
+
 #: tfmbuttons.btndelete.caption
 msgid "Delete"
 msgstr "Удалить"
@@ -519,15 +654,15 @@ msgstr "Лицо"
 
 #: tfmchar.lblwardfeature1.caption
 msgid "Feature1"
-msgstr ""
+msgstr "Свойство1"
 
 #: tfmchar.lblwardfeature2.caption
 msgid "Feature2"
-msgstr ""
+msgstr "Свойство2"
 
 #: tfmchar.lblwardfeature3.caption
 msgid "Feature3"
-msgstr ""
+msgstr "Свойство3"
 
 #: tfmchar.lblwardgloves.caption
 msgid "Gloves"
@@ -1314,13 +1449,32 @@ msgctxt "tfmstat.bbclearlearnhistory.caption"
 msgid "Clear"
 msgstr "Очистить"
 
+#: tfmstat.cbflag.caption
+msgid "Flag"
+msgstr "Флаг"
+
+#: tfmstat.gbblock.caption
+msgctxt "tfmstat.gbblock.caption"
+msgid "Common"
+msgstr "Общее"
+
 #: tfmstat.gbinitial.caption
 msgid "Initial data"
-msgstr "Начальное место"
+msgstr "Начальные данные"
+
+#: tfmstat.gbunknown.caption
+msgctxt "tfmstat.gbunknown.caption"
+msgid "Unknown"
+msgstr "Неизвестно"
 
 #: tfmstat.lblclass.caption
 msgid "Character class"
 msgstr "Класс героя"
+
+#: tfmstat.lbllevel.caption
+msgctxt "tfmstat.lbllevel.caption"
+msgid "Level"
+msgstr "Уровень"
 
 #: tfmstat.lblname.caption
 msgctxt "tfmstat.lblname.caption"
@@ -1334,6 +1488,14 @@ msgstr "Тип питомца"
 #: tfmstat.lblskillhistorytitle.caption
 msgid "Skill learn order history"
 msgstr "История изучения умений"
+
+#: tfmstat.lbltimeseans.caption
+msgid "Session time"
+msgstr "Время сессии"
+
+#: tfmstat.lbltimetotal.caption
+msgid "Total time"
+msgstr "Общее время"
 
 #: tfmstat.sgarea1.columns[0].title.caption
 msgctxt "tfmstat.sgarea1.columns[0].title.caption"
@@ -1561,110 +1723,110 @@ msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
 msgstr "Статистика"
 
-#: tl2db.rsbasegame
-msgid "Base game"
-msgstr "Базовая игра"
+#: tlsave.sloadfailed
+msgid "Savegame loading failed"
+msgstr "Неудачная загрузка сохранёнки"
 
-#: tl2db.rshp
-msgid "Best Health Potion"
-msgstr "Лучшее зелье здоровья"
+#: tlsave.ssavingfailed
+msgid "Savegame saving failed"
+msgstr "Неудачная запись сохранёнки"
 
-#: tl2db.rslmb
-msgid "Left mouse button"
-msgstr "Левая кнопка мыши"
+#: tlsave.swrongfooter
+msgid "Wrong save file size"
+msgstr "Неверный размер сохранёнки"
 
-#: tl2db.rsmp
-msgid "Best Mana Potion"
-msgstr "Лучшее зелье маны"
+#: tlsave.swrongsize
+msgid "Wrong file size"
+msgstr "Невернй размер файла"
 
-#: tl2db.rspethp
-msgid "Best Pet Health Potion"
-msgstr "Лучшее зелье здоровья питомцу"
+#: tlsgstatistic.rsbroken
+msgid "Breakables Broken"
+msgstr "Сломано предметов"
 
-#: tl2db.rspetmp
-msgid "Best Pet Mana Potion"
-msgstr "Лучшее зелье маны питомцу"
+#: tlsgstatistic.rschampions
+msgid "Champions Killed"
+msgstr "Убито героев"
 
-#: tl2db.rspetspell1
-msgid "Pet spell 1"
-msgstr "Заклинание питомца 1"
+#: tlsgstatistic.rsdeaths
+msgid "Deaths"
+msgstr "Смертей"
 
-#: tl2db.rspetspell2
-msgid "Pet spell 2"
-msgstr "Заклинание питомца 2"
+#: tlsgstatistic.rsdmgdealt
+msgid "Highest Damage Dealt"
+msgstr "Максимальный нанесенный урон"
 
-#: tl2db.rspetspell3
-msgid "Pet spell 3"
-msgstr "Заклинание питомца 3"
+#: tlsgstatistic.rsdmgtaken
+msgid "Highest Damage Taken"
+msgstr "Максимальный полученный урон"
 
-#: tl2db.rspetspell4
-msgid "Pet spell 4"
-msgstr "Заклинание питомца 4"
+#: tlsgstatistic.rsenchanted
+msgid "Items Enchanted"
+msgstr "Зачаровано предметов"
 
-#: tl2db.rsqk0
-msgid "Quckslot 0"
-msgstr "Быстрый доступ 0"
+#: tlsgstatistic.rsexploded
+msgid "Monsters Exploded"
+msgstr "Взорвано чудовищ"
 
-#: tl2db.rsqk1
-msgid "Quckslot 1"
-msgstr "Быстрый доступ 1"
+#: tlsgstatistic.rsfish
+msgid "Fish Caught"
+msgstr "Поймано рыбы"
 
-#: tl2db.rsqk2
-msgid "Quckslot 2"
-msgstr "Быстрый доступ 2"
+#: tlsgstatistic.rsgambled
+msgid "Times Gambled"
+msgstr "Азартных игр"
 
-#: tl2db.rsqk3
-msgid "Quckslot 3"
-msgstr "Быстрый доступ 3"
+#: tlsgstatistic.rsgold
+msgid "Gold Gathered"
+msgstr "Собрано золота"
 
-#: tl2db.rsqk4
-msgid "Quckslot 4"
-msgstr "Быстрый доступ 4"
+#: tlsgstatistic.rslevelsdone
+msgid "Levels Explored"
+msgstr "Изучено уровней"
 
-#: tl2db.rsqk5
-msgid "Quckslot 5"
-msgstr "Быстрый доступ 5"
+#: tlsgstatistic.rsleveltime
+msgid "Level Time Played"
+msgstr "Время игры на уровне"
 
-#: tl2db.rsqk6
-msgid "Quckslot 6"
-msgstr "Быстрый доступ 6"
+#: tlsgstatistic.rsmonsters
+msgid "Monsters Killed"
+msgstr "Убито чудовищ"
 
-#: tl2db.rsqk7
-msgid "Quckslot 7"
-msgstr "Быстрый доступ 7"
+#: tlsgstatistic.rsportal
+msgid "Portals Used"
+msgstr "Использовано порталов"
 
-#: tl2db.rsqk8
-msgid "Quckslot 8"
-msgstr "Быстрый доступ 8"
+#: tlsgstatistic.rspotions
+msgid "Potions Used"
+msgstr "Выпито зелий"
 
-#: tl2db.rsqk9
-msgid "Quckslot 9"
-msgstr "Быстрый доступ 9"
+#: tlsgstatistic.rsquestsdone
+msgid "Quests completed"
+msgstr "Выполнено заданий"
 
-#: tl2db.rsrmb
-msgid "Right mouse button"
-msgstr "Правая кнопка мыши"
+#: tlsgstatistic.rsskills
+msgid "Skills Used"
+msgstr "Использовано навыков"
 
-#: tl2db.rsrmbalt
-msgid "Right mouse button (alternative)"
-msgstr "Правая кнопка мыши (альтернативная)"
+#: tlsgstatistic.rssteps
+msgid "Steps Taken"
+msgstr "Сделано шагов"
 
-#: tl2db.rsset
-msgid "Set"
-msgstr "Установить"
+#: tlsgstatistic.rstotaltime
+msgid "Time Played"
+msgstr "Игровое время"
 
-#: tl2db.rsspell1
-msgid "Spell 1"
-msgstr "Заклинание 1"
+#: tlsgstatistic.rstransmuted
+msgid "Items Transmuted"
+msgstr "Превращено предметов"
 
-#: tl2db.rsspell2
-msgid "Spell 2"
-msgstr "Заклинание 2"
+#: tlsgstatistic.rstraps
+msgid "Traps Sprung"
+msgstr "Активировано капканов"
 
-#: tl2db.rsspell3
-msgid "Spell 3"
-msgstr "Заклинание 3"
+#: tlsgstatistic.rstreasures
+msgid "Lootables Looted"
+msgstr "Осмотрено тайников"
 
-#: tl2db.rsspell4
-msgid "Spell 4"
-msgstr "Заклинание 4"
+#: tlsgstatistic.rsunknownstat
+msgid "Unknown Stat"
+msgstr "Неизвестная статистика"

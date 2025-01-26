@@ -60,7 +60,10 @@ begin
       else if CompareWide(pcw,'RESULT')=0 then title:=AsString   (lnode)
     end;
   end;
-
+{
+  if PModScanner(ams)^.gamever=verTL1 then
+    title:=name;
+}
   result:=AddRecipeToBase(ams,name,lid,title,fname);
 end;
 
@@ -106,7 +109,7 @@ end;
 
 // Variant: to make two different structures, for TL1 and TL2 games
 // id can be AUTOINCREMENT then
-function CreateRecipesTable(adb:PSQLite3):boolean;
+function CreateRecipesTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'recipes') then
     result:=ExecuteDirect(adb,

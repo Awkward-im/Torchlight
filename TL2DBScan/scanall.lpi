@@ -24,7 +24,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\TL2DB"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\RGDB"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -57,7 +57,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\TL2DB"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\RGDB"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -90,7 +90,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\TL2DB"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\RGDB"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -278,7 +278,7 @@
         <UnitName Value="Logging"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2DB\tl2db.pas"/>
+        <Filename Value="..\RGDB\rgdb.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
@@ -291,7 +291,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\TL2DB"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\RGDB"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
     </SearchPaths>
     <Linking>

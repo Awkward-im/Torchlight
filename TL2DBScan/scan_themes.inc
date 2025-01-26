@@ -267,7 +267,7 @@ begin
 end;
 
 
-function CreateLevelsetsTable(adb:PSQLite3):boolean;
+function CreateLevelsetsTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'dicpieces') then
     result:=ExecuteDirect(adb,
@@ -279,9 +279,9 @@ begin
     result:=true;
 end;
 
-function CreateLThemesTable(adb:PSQLite3):boolean;
+function CreateLThemesTable(adb:PSQLite3; aver:integer):boolean;
 begin
-  if PModScanner(ams)^.gamever=verTL1 then exit(false);
+  if aver=verTL1 then exit(false);
 
   if not IsTableExists(adb,'diclthemes') then
     result:=ExecuteDirect(adb,
@@ -292,7 +292,7 @@ begin
     result:=true;
 end;
 
-function CreateUThemesTable(adb:PSQLite3):boolean;
+function CreateUThemesTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'dictuthemes') then
     result:=ExecuteDirect(adb,

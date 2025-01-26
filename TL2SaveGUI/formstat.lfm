@@ -6,7 +6,6 @@ object fmStat: TfmStat
   BorderStyle = bsNone
   ClientHeight = 488
   ClientWidth = 741
-  LCLVersion = '3.99.0.0'
   object pcStatistic: TPageControl
     Left = 0
     Height = 488
@@ -76,6 +75,127 @@ object fmStat: TfmStat
           Width = 248
           ReadOnly = True
           TabOrder = 2
+        end
+      end
+      object gbUnknown: TGroupBox
+        Left = 284
+        Height = 58
+        Top = 8
+        Width = 312
+        Caption = 'Unknown'
+        ClientHeight = 38
+        ClientWidth = 308
+        TabOrder = 1
+        object edUGNum: TEdit
+          Left = 8
+          Height = 23
+          Top = 5
+          Width = 32
+          Alignment = taCenter
+          ReadOnly = True
+          TabOrder = 0
+        end
+        object edUG0: TEdit
+          Left = 56
+          Height = 23
+          Top = 5
+          Width = 48
+          Alignment = taCenter
+          ReadOnly = True
+          TabOrder = 1
+        end
+        object edUG1: TEdit
+          Left = 120
+          Height = 23
+          Top = 5
+          Width = 48
+          Alignment = taCenter
+          ReadOnly = True
+          TabOrder = 2
+        end
+        object edUG2: TEdit
+          Left = 184
+          Height = 23
+          Top = 5
+          Width = 48
+          Alignment = taCenter
+          ReadOnly = True
+          TabOrder = 3
+        end
+        object edUG3: TEdit
+          Left = 248
+          Height = 23
+          Top = 5
+          Width = 48
+          Alignment = taCenter
+          ReadOnly = True
+          TabOrder = 4
+        end
+      end
+      object gbBlock: TGroupBox
+        Left = 284
+        Height = 114
+        Top = 80
+        Width = 312
+        Caption = 'Common'
+        ClientHeight = 94
+        ClientWidth = 308
+        TabOrder = 2
+        object lblLevel: TLabel
+          Left = 66
+          Height = 15
+          Top = 7
+          Width = 27
+          Caption = 'Level'
+        end
+        object edLevel: TEdit
+          Left = 8
+          Height = 23
+          Top = 3
+          Width = 48
+          ReadOnly = True
+          TabOrder = 0
+        end
+        object edTimeTotal: TEdit
+          Left = 8
+          Height = 23
+          Top = 32
+          Width = 104
+          Alignment = taCenter
+          ReadOnly = True
+          TabOrder = 1
+        end
+        object lblTimeTotal: TLabel
+          Left = 122
+          Height = 15
+          Top = 36
+          Width = 54
+          Caption = 'Total time'
+        end
+        object edTimeSeans: TEdit
+          Left = 10
+          Height = 23
+          Top = 64
+          Width = 102
+          Alignment = taCenter
+          ReadOnly = True
+          TabOrder = 2
+        end
+        object lblTimeSeans: TLabel
+          Left = 122
+          Height = 15
+          Top = 68
+          Width = 66
+          Caption = 'Session time'
+        end
+        object cbFlag: TCheckBox
+          Left = 224
+          Height = 19
+          Top = 7
+          Width = 40
+          Alignment = taLeftJustify
+          Caption = 'Flag'
+          TabOrder = 3
         end
       end
     end

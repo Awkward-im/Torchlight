@@ -89,7 +89,7 @@ implementation
 uses
   LCLIntf,
   rgglobal,
-  tl2db,
+  rgdb,
   unitGlobal,
   TLSGBase;
 
@@ -330,7 +330,7 @@ end;
 procedure TfmSaveFile.actFileReloadExecute(Sender: TObject);
 //var  i:integer;
 begin
-  if FSettings.DBState=0 then FreeBases;
+  if FSettings.DBState=0 then RGDBFreeBase;
 
   try
     ClearGameGlobals;
@@ -340,11 +340,11 @@ begin
     SGame.LoadFromFile(FFileName);
     SGame.Parse();
     if SGame.GameVersion=verTL1 then
-      FSettings.DBState:=LoadBases(FSettings.edDBFileTL1.Text)
+      FSettings.DBState:=RGDBLoadBase(FSettings.edDBFileTL1.Text)
     else
-      FSettings.DBState:=LoadBases(FSettings.edDBFileTL2.Text);
+      FSettings.DBState:=RGDBLoadBase(FSettings.edDBFileTL2.Text);
 
-    SetFilter(SGame.BoundMods);
+    RGDBSetFilter(SGame.BoundMods);
     LoadGameGlobals;
 {
     for i:=0 to MainPanel.ControlCount-1 do
@@ -423,7 +423,7 @@ begin
   begin
     if not SGame.CharInfo.CheckForMods(SGame.BoundMods) then
     begin
-      ShowMessage(rsSorry+GetTL2Class(SGame.CharInfo.ID)+rsClassNotFound);
+      ShowMessage(rsSorry+RGDBGetClass(SGame.CharInfo.ID)+rsClassNotFound);
       exit;
     end;
     for i:=0 to SGame.PetCount-1 do

@@ -97,7 +97,7 @@ begin
   if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
-function CreateQuestsTable(adb:PSQLite3):boolean;
+function CreateQuestsTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'quests') then
     result:=ExecuteDirect(adb,

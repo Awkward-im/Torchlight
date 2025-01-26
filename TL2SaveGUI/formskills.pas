@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
   Buttons, SpinEx, Types,
-  tlsgchar, rgglobal, tl2db;
+  tlsgchar, rgglobal, rgdb;
 
 type
 
@@ -142,7 +142,7 @@ begin
 
   config.Free;
 
-  LoadTiers(FTiers); //!! by mod so maybe make global
+  RGDBLoadTiers(FTiers); //!! by mod so maybe make global
 end;
 
 procedure TfmSkills.FormDestroy(Sender: TObject);
@@ -249,7 +249,7 @@ begin
     idx:=IntPtr(sgSkills.Objects[0,aRow]);
 
     lblName.Caption:=FSkills[idx].title;
-    memDesc.Text   :=GetSkillInfo(FSkills[idx].id,ltier,licon);
+    memDesc.Text   :=RGDBGetSkillInfo(FSkills[idx].id,ltier,licon);
   end;
 end;
 
@@ -366,13 +366,13 @@ begin
   btnResetClick(Self);
 
   FClass:=aclass;
-  GetClassGraphSkill(FClass,FSkLevel,FSkFame);
+  RGDBGetClassGraphSkill(FClass,FSkLevel,FSkFame);
 
   sgSkills.BeginUpdate;
   sgSkills.Clear;
 
   ClearData;
-  CreateSkillList(aclass,FSkills);
+  RGDBCreateSkillList(aclass,FSkills);
   CreateIconList();
 
   sgSkills.Columns[colIcon   ].Visible:=FSkills<>nil;
@@ -381,7 +381,7 @@ begin
   begin
     sgSkills.RowCount:=1+Length(FSkills);
     j:=1;
-    lshowall:=tl2db.GameVersion=verTL1;
+    lshowall:=rgdb.GameVersion=verTL1;
 
     for i:=0 to High(FSkills) do
     begin
@@ -473,11 +473,11 @@ begin
   Initialize(result);
   SetLength(result,sgSkills.RowCount-1);
   lcnt:=0;
-  lsaveall:=cbSaveFull.Checked or (tl2db.GameVersion=verTL1);
+  lsaveall:=cbSaveFull.Checked or (rgdb.GameVersion=verTL1);
   for i:=1 to sgSkills.RowCount-1 do
   begin
     result[lcnt].value:=StrToInt(sgSkills.Cells[colLevel,i]);
-    if cbSaveFull.Checked or (result[lcnt].value>0) then
+    if lsaveall or (result[lcnt].value>0) then
     begin
       if FSkills<>nil then // !!
         result[lcnt].id:=FSkills[IntPtr(sgSkills.Objects[0,i])].id

@@ -4,7 +4,7 @@ program tl1dump;
 
 uses
   rgglobal,
-  tlsave{,tl2db};
+  tlsave;
 
 type
   tdummy = object

@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1569"/>
-        <CursorPos Y="1697"/>
-        <FoldState Value=" T4N051 PQnN0 TLvZ031 T7YG~6 T8nX2]EMpd0101172 T3r40D315 pkRmY0J]9jEk20F625 PlQv6]/6s902]kpEwG0321]QKnM]P0sE2hE picpZ628H51C]rBuR2I"/>
+        <TopLine Value="1776"/>
+        <CursorPos Y="1925"/>
+        <FoldState Value=" T4N051 PQnN0 TLvZ033 pF=10811117 Pd-R]Q7YG~6 T8mO2p1 TJio31_4]vlCp1]HMpd010]n2Y p4)D0]K3r40D])iZjD0r5[94kL0J]9jEk20F6]9VkH0.1]9LlA0Z[R42kE0q[R4WlC0E4]9Hjf0K[a4Djb03[a4AjS032 pidj50V[R48k00L3[R5g04[a4Kja0O1]aejP0^6]9al50G4 PiMiR0 T6s902R]OV(E05I PYwc]N0sE2hE]NcpZ62C]9Xjf434 pj6ig873 pigM879[Z4kJ23B[Z4m925[94ak6212[I4iE466 pibiT258[}N5V4Y62B[}q578AD]92lG42A[~T5F2A[l4cib86C PiYm72 TK?P0N p0zT0F$"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -60,7 +60,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="13" Y="9"/>
-        <UsageCount Value="151"/>
+        <UsageCount Value="158"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\fmlayoutedit.pas"/>
@@ -72,7 +72,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="767"/>
         <CursorPos X="27" Y="788"/>
-        <UsageCount Value="58"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\HexView\FWHexView.pas"/>
@@ -81,7 +81,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="61"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\Imaging\Imaging.pas"/>
@@ -90,7 +90,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="61"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\fpc.Dynamic_Bass.pas"/>
@@ -100,7 +100,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="61"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
@@ -108,7 +108,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="144"/>
         <CursorPos Y="167"/>
-        <UsageCount Value="198"/>
+        <UsageCount Value="197"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\components\virtualtreeview\laz.virtualtreeview_package.lpk"/>
@@ -116,7 +116,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="48"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\3rdside\fpc.Dynamic_Bass.pas"/>
@@ -125,7 +125,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="21"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\3rdside\HexView\FWHexView.pas"/>
@@ -133,7 +133,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="21"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\3rdside\Imaging\Imaging.pas"/>
@@ -141,21 +141,21 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="21"/>
       </Unit>
       <Unit>
         <Filename Value="Imaging\Imaging.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="3387"/>
         <CursorPos Y="3402"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="55"/>
       </Unit>
       <Unit>
         <Filename Value="HexView\FWHexView.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="5281"/>
         <CursorPos X="18" Y="5296"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="42"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\fmmodinfo.pas"/>
@@ -166,7 +166,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="300"/>
         <CursorPos X="19" Y="315"/>
-        <UsageCount Value="201"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="unitfilterform.pas"/>
@@ -176,7 +176,7 @@
         <UnitName Value="unitFilterForm"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="32" Y="20"/>
-        <UsageCount Value="198"/>
+        <UsageCount Value="197"/>
       </Unit>
       <Unit>
         <Filename Value="fmlayoutedit.pas"/>
@@ -187,7 +187,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="122"/>
         <CursorPos X="7" Y="151"/>
-        <UsageCount Value="201"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="fmimageset.pas"/>
@@ -198,7 +198,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="31"/>
         <CursorPos X="11" Y="60"/>
-        <UsageCount Value="76"/>
+        <UsageCount Value="75"/>
       </Unit>
       <Unit>
         <Filename Value="unitlogform.pas"/>
@@ -209,7 +209,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="64"/>
         <CursorPos X="14" Y="75"/>
-        <UsageCount Value="189"/>
+        <UsageCount Value="188"/>
       </Unit>
       <Unit>
         <Filename Value="fmgameversion.pas"/>
@@ -220,7 +220,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="52"/>
         <CursorPos X="7" Y="77"/>
-        <UsageCount Value="99"/>
+        <UsageCount Value="98"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgman.pas"/>
@@ -228,7 +228,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="256"/>
         <CursorPos X="21" Y="281"/>
-        <UsageCount Value="97"/>
+        <UsageCount Value="96"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
@@ -236,14 +236,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1426"/>
         <CursorPos Y="1453"/>
-        <UsageCount Value="39"/>
+        <UsageCount Value="38"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_hob.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="780"/>
         <CursorPos X="39" Y="781"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgfs.pas"/>
@@ -251,14 +251,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="435"/>
         <CursorPos Y="453"/>
-        <UsageCount Value="98"/>
+        <UsageCount Value="97"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\treeview.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2269"/>
         <CursorPos Y="2286"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
@@ -266,7 +266,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="334"/>
         <CursorPos X="3" Y="339"/>
-        <UsageCount Value="99"/>
+        <UsageCount Value="98"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgfile.pas"/>
@@ -274,7 +274,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="593"/>
         <CursorPos X="20" Y="609"/>
-        <UsageCount Value="98"/>
+        <UsageCount Value="97"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgdictlayout.pas"/>
@@ -282,21 +282,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="753"/>
         <CursorPos X="28" Y="773"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\TL2Mod.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="468"/>
         <CursorPos Y="484"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="36"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2956"/>
         <CursorPos Y="2971"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\grids.pas"/>
@@ -304,7 +304,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="11401"/>
         <CursorPos Y="11419"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.text.pas"/>
@@ -312,7 +312,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="575"/>
         <CursorPos Y="592"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="24"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.dat.pas"/>
@@ -320,7 +320,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="618"/>
         <CursorPos X="22" Y="641"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="fmcombodiff.pas"/>
@@ -331,7 +331,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="202"/>
         <CursorPos Y="209"/>
-        <UsageCount Value="108"/>
+        <UsageCount Value="107"/>
       </Unit>
       <Unit>
         <Filename Value="fmask.pas"/>
@@ -342,7 +342,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="68"/>
         <CursorPos X="38" Y="82"/>
-        <UsageCount Value="106"/>
+        <UsageCount Value="105"/>
       </Unit>
       <Unit>
         <Filename Value="d:\Work\LazTrunk\lazarus\lcl\valedit.pas"/>
@@ -350,7 +350,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="765"/>
         <CursorPos Y="780"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="d:\Work\lazarus\lcl\grids.pas"/>
@@ -358,35 +358,35 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="10318"/>
         <CursorPos Y="10334"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="811"/>
         <CursorPos X="14" Y="826"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\fpcsrc\rtl\objpas\classes\collect.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="272"/>
         <CursorPos X="3" Y="274"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_tl2.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="470"/>
         <CursorPos Y="572"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\interfaces\win32\win32callback.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1145"/>
         <CursorPos Y="1159"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\groupededit.pp"/>
@@ -394,7 +394,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="295"/>
         <CursorPos X="23" Y="308"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgfiletype.pas"/>
@@ -402,14 +402,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="275"/>
         <CursorPos X="75" Y="296"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="25"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_tl1.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="201"/>
         <CursorPos Y="214"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\components\synedit\synedit.pp"/>
@@ -417,7 +417,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2936"/>
         <CursorPos Y="2955"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\components\synedit\synedittextbuffer.pp"/>
@@ -425,7 +425,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="414"/>
         <CursorPos Y="428"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\synhighlighterogre.pas"/>
@@ -433,7 +433,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="277"/>
         <CursorPos Y="292"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\rwmemory.pas"/>
@@ -441,20 +441,20 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="119"/>
         <CursorPos Y="135"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="Imaging.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1223"/>
         <CursorPos Y="1229"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="callstack_memprofiler.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="4" Y="10"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgimageset.pas"/>
@@ -462,21 +462,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="165"/>
         <CursorPos X="42" Y="181"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="18"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2510"/>
         <CursorPos Y="2525"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Download\FWHexView-master\FWHexView.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="16"/>
         <CursorPos X="3" Y="31"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Download\FWHexView-master\FWHexView_D.LCL.lpk"/>
@@ -484,21 +484,21 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="17"/>
       </Unit>
       <Unit>
         <Filename Value="Imaging\ImagingComponents.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="558"/>
         <CursorPos Y="580"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="HexView\FWHexView.Common.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="651"/>
         <CursorPos X="19" Y="666"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgmod.pas"/>
@@ -506,14 +506,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="127"/>
         <CursorPos X="24" Y="146"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customcheckbox.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="155"/>
         <CursorPos Y="173"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rglclimageset.pas"/>
@@ -521,7 +521,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="39"/>
         <CursorPos X="18" Y="43"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
@@ -532,7 +532,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="106"/>
         <CursorPos X="25" Y="122"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.raw.pas"/>
@@ -540,7 +540,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="117"/>
         <CursorPos Y="132"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\unitfilterform.pas"/>
@@ -551,8 +551,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="70"/>
         <CursorPos X="50" Y="88"/>
-        <FoldState Value=" T46021 T3jR0E5 picjL0T2 PZi60e"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -561,7 +560,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="225"/>
         <CursorPos Y="241"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="26">

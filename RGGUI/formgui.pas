@@ -1926,42 +1926,28 @@ procedure TRGGUIForm.actEdImportExecute(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
   pc:PWideChar;
+  ldir:string;
+  i:integer;
 begin
   OpenDialog:=TOpenDialog.Create(nil);
   try
 //    OpenDialog.Title  :=rsFileOpen;
-    OpenDialog.Options    :=[ofFileMustExist];
+    OpenDialog.Options    :=[ofFileMustExist,ofAllowMultiSelect,ofEnableSizing];
     OpenDialog.DefaultExt :='.*';
     OpenDialog.Filter     :='';
     OpenDialog.FilterIndex:=0;
 
     if OpenDialog.Execute then
     begin
-      pc:=StrToWide(OpenDialog.FileName);
-{
-      // if file = source then compile it
-      // 1 - read file into "li" buffer
-      llen:=FileSize();
-      lo:=nil;
-      // 2 - compile if source
-      if IsSource(li,pc) then
+      ldir:=GetPathFromNode(tvTree.Selected);
+      for i:=0 to OpenDialog.Files.Count-1 do
       begin
-        lsize:=CompileFile(li, OpenDialog.FileName, lo, ctrl.PAK.Version);
-        // 3 - use original if not compiled
-        if lsize>0 then
-        begin
-          FreeMem(li);
-          li  :=lo;
-          llen:=lsize;
-        end;
+        pc:=StrToWide(OpenDialog.Files[i]);
+        // add update as file content (as is)
+        ctrl.AddFileData(pc, PUnicodeChar(UnicodeString(
+            ldir+FixFileExt(ExtractName(OpenDialog.Files[i])))), true);
+        FreeMem(pc);
       end;
-      UseData(li, llen, PUnicodeChar(UnicodeString(GetPathFromNode(tvTree.Selected));
-}
-      // add update as file content (as is)
-      ctrl.AddFileData(pc, PUnicodeChar(UnicodeString(
-          GetPathFromNode(tvTree.Selected)+
-          FixFileExt(ExtractName(OpenDialog.FileName)))), true);
-      FreeMem(pc);
       FillGrid(IntPtr(tvTree.Selected.Data));
     end;
   finally

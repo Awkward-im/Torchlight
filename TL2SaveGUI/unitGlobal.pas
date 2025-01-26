@@ -14,7 +14,7 @@ interface
 
 uses
   rgglobal,
-  tl2db;
+  rgdb;
 
 procedure LoadGameGlobals;
 procedure ClearGameGlobals;
@@ -47,20 +47,20 @@ var
 begin
   if Length(ExpGate)=0 then
   begin
-    ExpGate:=GetGraphArray('EXPERIENCEGATE');
+    ExpGate:=RGDBGetGraphArray('EXPERIENCEGATE');
     if Length(ExpGate)=0 then
       ExpGate:=Copy(DefaultExpGate);
   end;
 
   if Length(FameGate)=0 then
   begin
-    FameGate:=GetGraphArray('FAMEGATE');
+    FameGate:=RGDBGetGraphArray('FAMEGATE');
     if Length(FameGate)=0 then
       FameGate:=Copy(DefaultFameGate);
   end;
   if Length(HPperVit)=0 then
   begin
-    HPperVit:=GetGraphArray('HP_PLAYER_BONUS_VITALITY');
+    HPperVit:=RGDBGetGraphArray('HP_PLAYER_BONUS_VITALITY');
     if Length(HPperVit)=0 then
     begin
       SetLength(HPperVit,1000);
@@ -70,7 +70,7 @@ begin
   end;
   if Length(MPperFocus)=0 then
   begin
-    MPperFocus:=GetGraphArray('MANA_PLAYER_BONUS_FOCUS');
+    MPperFocus:=RGDBGetGraphArray('MANA_PLAYER_BONUS_FOCUS');
     if Length(MPperFocus)=0 then
     begin
       SetLength(MPperFocus,1000);
@@ -79,7 +79,7 @@ begin
     end;
   end;
 
-  CreateSpellList(SpellList);
+  RGDBCreateSpellList(SpellList);
 end;
 
 end.

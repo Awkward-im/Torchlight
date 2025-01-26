@@ -58,7 +58,7 @@ uses
   tlsgeffects,
   TLSGBase,
   tlsgchar,
-  tl2db;
+  rgdb;
 
 resourcestring
   ef00 = 'Unknown1';
@@ -135,7 +135,7 @@ begin
   edGraph     .Text:=leffect.Graph;
   edParticles .Text:=leffect.Particles;
   edIcon      .Text:=leffect.Icon;
-  edUnitTheme .Text:=GetUnitTheme(leffect.UnitThemeId);
+  edUnitTheme .Text:=RGDBGetUnitTheme(leffect.UnitThemeId);
 
   // Right side
 
@@ -145,20 +145,20 @@ begin
     clbFlags.Checked[i]:=(DWord(leffect.Flags) and (1 shl i))<>0;
   end;
 
-  ls1:=GetEffectValueNames(leffect.EffectType);
+  ls1:=RGDBGetEffectValueNames(leffect.EffectType);
   lbProps.Clear;
   for i:=0 to leffect.Properties-1 do
   begin
     Str(leffect.Properties[i]:0:4,ls);
     FixFloatStr(ls);
-    lbProps.AddItem(GetEffectValueName(ls1,i)+' = '+ls,nil);
+    lbProps.AddItem(RGDBGetEffectValueName(ls1,i)+' = '+ls,nil);
   end;
 
   sgStats.Clear;
   sgStats.RowCount:=1+leffect.Stats;
   for i:=0 to leffect.Stats-1 do
   begin
-    sgStats.Cells[0,i+1]:=GetTL2Stat(leffect.Stats[i].id);
+    sgStats.Cells[0,i+1]:=RGDBGetTL2Stat(leffect.Stats[i].id);
     Str(leffect.Stats[i].percentage:0:4,ls);
     sgStats.Cells[1,i+1]:=ls;
   end;
@@ -177,9 +177,9 @@ begin
   if edBaseClass.Visible then
   begin
     case (FObject as TTLCharacter).CharType of
-      ctPlayer: ls:=GetTL2Class(leffect.ClassId);
-      ctPet   : ls:=GetTL2Pet  (leffect.ClassId);
-      ctMob   : ls:=GetTL2Mob  (leffect.ClassId);
+      ctPlayer: ls:=RGDBGetClass(leffect.ClassId);
+      ctPet   : ls:=RGDBGetPet  (leffect.ClassId);
+      ctMob   : ls:=RGDBGetMob  (leffect.ClassId);
     end;
     edBaseClass.Text:=ls;
   end;

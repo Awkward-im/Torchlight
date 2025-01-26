@@ -5,11 +5,11 @@ interface
 uses
   SysUtils,
   Classes,
+  rgglobal,
   rgstream,
   tlsgcommon,
-  TLSGBase,
+  tlsgbase,
   tlsgactive,
-  rgglobal,
   tlsgeffects;
 
 type
@@ -102,7 +102,7 @@ procedure WriteItemList(AStream:TStream; alist:TTLItemList; aVersion:integer);
 implementation
 
 uses
-  tl2db;
+  rgdb;
 
 constructor TTLItem.Create;
 begin
@@ -127,7 +127,7 @@ end;
 function TTLItem.GetDBMods():string;
 begin
   if FDBMods='' then
-    FDBMods:=GetItemMods(FID);
+    FDBMods:=RGDBGetItemMods(FID);
   result:=FDBMods;
 end;
 
@@ -135,7 +135,7 @@ function TTLItem.GetUsability:boolean;
 begin
   if FUseState<0 then
   begin
-    FUseState:=GetItemUsability(id);
+    FUseState:=RGDBGetItemUsability(id);
   end;
   result:=FUseState>0;
 end;
@@ -490,7 +490,7 @@ begin
       // Check : alternative object with same unittype
       // Action: replace one item by another
       // Remark: change JUST id, not name etc
-      lmodid:=GetAlt(id,alist,lid);
+      lmodid:=RGDBGetAltItem(id,alist,lid);
       if lmodid<>RGIdEmpty then
       begin
         if lid<>id then

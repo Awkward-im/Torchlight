@@ -168,7 +168,7 @@ begin
   if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
-function CreateMobsTable(adb:PSQLite3):boolean;
+function CreateMobsTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'mobs') then
     result:=ExecuteDirect(adb,

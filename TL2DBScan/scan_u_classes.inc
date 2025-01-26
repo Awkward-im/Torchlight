@@ -238,10 +238,27 @@ begin
 
   end;
 
-  GetGender(ams, lclass.name, lclass.unittype, lclass.gender);
+  // no gender info in TL1
+  if (PModScanner(ams)^.gamever=verTL1) then
+    lclass.gender:='U'
+  else
+  begin
+    GetGender(ams, lclass.name, lclass.unittype, lclass.gender);
+    if lclass.gender='' then
+    begin
+      lclass.gender:='U';
+      RGLog.Add('Unknown gender for '+lclass.name);
+    end;
+  end;
 
   if lclass.skill=',' then lclass.skill:='';
   lclass.fname:=FixFileExt(fname);
+
+  if (lclass.icon='') {and (PModScanner(ams)^.gamever=verTL1)} then
+  begin
+    lclass.icon:=LowerCase(lclass.name+'icon');
+    RGLog.Add('No icon name for '+lclass.name+'. Set it as '+lclass.icon);
+  end;
 
   result:=AddClassToBase(ams, lclass);
 end;
@@ -290,7 +307,7 @@ begin
   if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
-function CreateClassesTable(adb:PSQLite3):boolean;
+function CreateClassesTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'classes') then
     result:=ExecuteDirect(adb,

@@ -33,7 +33,7 @@ implementation
 
 uses
   formSettings,
-  tl2db;
+  rgdb;
 
 procedure TfmQuests.sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 begin
@@ -89,10 +89,10 @@ begin
     sgQuests.RowCount:=sgQuests.RowCount+Length(aSGame.Quests.QuestsDone);
     for i:=0 to High(aSGame.Quests.QuestsDone) do
     begin
-      sgQuests.Cells[0,j]:=GetTL2Quest(aSGame.Quests.QuestsDone[i],lmod,lname);
+      sgQuests.Cells[0,j]:=RGDBGetQuest(aSGame.Quests.QuestsDone[i],lmod,lname);
       sgQuests.Cells[1,j]:='1';
       sgQuests.Cells[2,j]:=lname;
-      sgQuests.Cells[3,j]:=GetTL2Mod(lmod);
+      sgQuests.Cells[3,j]:=RGDBGetMod(lmod);
       sgQuests.Cells[4,j]:=TextId(aSGame.Quests.QuestsDone[i]);
       inc(j);
     end;
@@ -105,10 +105,10 @@ begin
     begin
       sgQuests.Objects[0,j]:=TObject(IntPtr(i));
 
-      sgQuests.Cells[0,j]:=GetTL2Quest(aSGame.Quests.QuestsUnDone[i].id,lmod,lname);
+      sgQuests.Cells[0,j]:=RGDBGetQuest(aSGame.Quests.QuestsUnDone[i].id,lmod,lname);
       sgQuests.Cells[1,j]:='0';
       sgQuests.Cells[2,j]:=lname;
-      sgQuests.Cells[3,j]:=GetTL2Mod(lmod);
+      sgQuests.Cells[3,j]:=RGDBGetMod(lmod);
       sgQuests.Cells[4,j]:=TextId(aSGame.Quests.QuestsUnDone[i].id);
       inc(j);
     end;

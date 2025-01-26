@@ -133,7 +133,7 @@ begin
   if RGDebugLevel<>dlNone then RGLog.Add(IntToStr(result)+' records added');
 end;
 
-function CreatePetsTable(adb:PSQLite3):boolean;
+function CreatePetsTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'pets') then
     result:=ExecuteDirect(adb,

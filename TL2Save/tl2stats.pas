@@ -18,7 +18,7 @@ type
     field5:TRGInteger; // <= field1
     field6:TRGInteger; // <= field1
     field7:TRGInteger;
-    field8:Word;       // by phys? no :(
+    field8:Word;       // by phys? no :( ??times damaged by
     field9:Word;
   end;
   tStatMobArray = array of tStatMob;
@@ -61,6 +61,13 @@ type
   end;
   tStatLevelUpArray = array of tStatLevelUp;
 
+  tBaseStat = packed record
+    flag       :byte;
+    timeTotal  :TRGDouble;
+    timeSession:TRGDouble;
+    level      :dword;
+  end;
+
   tUnkn9 = packed record
     index:byte;
     data :array [0..3] of word;
@@ -96,9 +103,7 @@ type
     FStatArea2  :TTL2StringValList;
     FStatKillers:TL2IdValList;
 
-    FUnkn1   :Word;
-    FUnkn2   :Word;
-    FUnkn17  :array [0..16] of byte;
+    FBaseStat:tBaseStat;
     FUnkn9   :tUnkn9;
     FUnknLast:DWord;
 
@@ -110,13 +115,15 @@ type
     property PlayerClass:string read FStatClass;
     property PetClass   :string read FStatPet;
 
-    property Mobs   :tStatMobArray     read FStatMobs;
-    property Items  :tStatItemArray    read FStatItems;
-    property Skills :tStatSkillArray   read FStatSkills;
-    property LevelUp:tStatLevelUpArray read FStatLevelUp;
-    property Area1  :TTL2StringValList read FStatArea1;
-    property Area2  :TTL2StringValList read FStatArea2;
-    property Killers:TL2IdValList      read FStatKillers;
+    property Mobs    :tStatMobArray     read FStatMobs;
+    property Items   :tStatItemArray    read FStatItems;
+    property Skills  :tStatSkillArray   read FStatSkills;
+    property LevelUp :tStatLevelUpArray read FStatLevelUp;
+    property Area1   :TTL2StringValList read FStatArea1;
+    property Area2   :TTL2StringValList read FStatArea2;
+    property Killers :TL2IdValList      read FStatKillers;
+    property BaseStat:tBaseStat         read FBaseStat;
+    property Unknown :tUnkn9            read FUnkn9;
   end;
 
 function ReadLastBlock(AStream:TStream; aVersion:integer):TTL2Stats;
@@ -166,18 +173,9 @@ begin
   DataSize  :=AStream.ReadDWord;
   DataOffset:=AStream.Position;
   
-  FUnkn1:=Check(AStream.ReadWord,'last block 1_'+HexStr(AStream.Position,8),1);
-  FUnkn2:=Check(AStream.ReadWord,'last block 2_'+HexStr(AStream.Position,8),0);
-  //??
-  AStream.Read(FUnkn17[0],17);
-{
-  AStream.ReadDWord; // 3DF65D40 = 0.12
-  AStream.ReadDword; // 0x####0040
-  AStream.ReadDWord; // 3DF65D40 = 0.12
-  AStream.ReadDWord; // 0x######40
+  AStream.Read(FBaseStat,21);
+  Check(FBaseStat.flag,'last block 1_'+HexStr(AStream.Position,8),1);
 
-  AStream.ReadByte;  // 0
-}
   // mobs
   lcnt:=AStream.ReadDWord;
   SetLength(FStatMobs,lcnt);
@@ -305,10 +303,7 @@ begin
 
   DataOffset:=AStream.Position;
 
-  AStream.WriteWord(FUnkn1);
-  AStream.WriteWord(FUnkn2);
-
-  AStream.Write(FUnkn17[0],17);
+  AStream.Write(FBaseStat,21);
 
   // mobs
   AStream.WriteDWord(Length(FStatMobs));

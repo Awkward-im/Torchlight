@@ -44,7 +44,7 @@ implementation
 {$R *.lfm}
 
 uses
-  tl2db,
+  rgdb,
   tlsgcommon,
   tlsgtrigger,
   formSettings;

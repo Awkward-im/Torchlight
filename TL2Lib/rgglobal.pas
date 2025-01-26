@@ -42,7 +42,7 @@ type
 
 const
   TL1DataBase = 'tl1db.db';
-  TL2DataBase = 'tl2db2.db';
+  TL2DataBase = 'tl2db.db';
   HobDataBase = 'hobdb.db';
   RGDataBase  = 'rgdb.db';
   RGODataBase = 'rgodb.db';
@@ -185,8 +185,9 @@ function TextToType(atype:PWideChar):integer;
 type
   TRGID      = Int64;
   TRGInteger = Int32;
-  TRGFloat   = single;
+  TRGFloat   = single; // 4 bytes
   TRGUInt    = UInt32;
+  TRGDouble  = double; // 8 bytes
 
 const
   RGIdEmpty = TRGID(-1);

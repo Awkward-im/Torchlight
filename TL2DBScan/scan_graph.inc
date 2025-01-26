@@ -145,7 +145,7 @@ begin
   ScanGraph(ams,'SKILLTIER7_PASSIVE',1);
 end;
 
-function CreateGraphTable(adb:PSQLite3):boolean;
+function CreateGraphTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'graph') then
   begin

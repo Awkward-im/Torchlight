@@ -285,6 +285,141 @@ msgid ""
 "if you didn't it before or it was changed"
 msgstr ""
 
+#: rgdb.rsbasegame
+msgctxt "rgdb.rsbasegame"
+msgid "Base game"
+msgstr ""
+
+#: rgdb.rshp
+msgctxt "rgdb.rshp"
+msgid "Best Health Potion"
+msgstr ""
+
+#: rgdb.rslmb
+msgctxt "rgdb.rslmb"
+msgid "Left mouse button"
+msgstr ""
+
+#: rgdb.rsmp
+msgctxt "rgdb.rsmp"
+msgid "Best Mana Potion"
+msgstr ""
+
+#: rgdb.rspethp
+msgctxt "rgdb.rspethp"
+msgid "Best Pet Health Potion"
+msgstr ""
+
+#: rgdb.rspetmp
+msgctxt "rgdb.rspetmp"
+msgid "Best Pet Mana Potion"
+msgstr ""
+
+#: rgdb.rspetspell1
+msgctxt "rgdb.rspetspell1"
+msgid "Pet spell 1"
+msgstr ""
+
+#: rgdb.rspetspell2
+msgctxt "rgdb.rspetspell2"
+msgid "Pet spell 2"
+msgstr ""
+
+#: rgdb.rspetspell3
+msgctxt "rgdb.rspetspell3"
+msgid "Pet spell 3"
+msgstr ""
+
+#: rgdb.rspetspell4
+msgctxt "rgdb.rspetspell4"
+msgid "Pet spell 4"
+msgstr ""
+
+#: rgdb.rsqk0
+msgctxt "rgdb.rsqk0"
+msgid "Quckslot 0"
+msgstr ""
+
+#: rgdb.rsqk1
+msgctxt "rgdb.rsqk1"
+msgid "Quckslot 1"
+msgstr ""
+
+#: rgdb.rsqk2
+msgctxt "rgdb.rsqk2"
+msgid "Quckslot 2"
+msgstr ""
+
+#: rgdb.rsqk3
+msgctxt "rgdb.rsqk3"
+msgid "Quckslot 3"
+msgstr ""
+
+#: rgdb.rsqk4
+msgctxt "rgdb.rsqk4"
+msgid "Quckslot 4"
+msgstr ""
+
+#: rgdb.rsqk5
+msgctxt "rgdb.rsqk5"
+msgid "Quckslot 5"
+msgstr ""
+
+#: rgdb.rsqk6
+msgctxt "rgdb.rsqk6"
+msgid "Quckslot 6"
+msgstr ""
+
+#: rgdb.rsqk7
+msgctxt "rgdb.rsqk7"
+msgid "Quckslot 7"
+msgstr ""
+
+#: rgdb.rsqk8
+msgctxt "rgdb.rsqk8"
+msgid "Quckslot 8"
+msgstr ""
+
+#: rgdb.rsqk9
+msgctxt "rgdb.rsqk9"
+msgid "Quckslot 9"
+msgstr ""
+
+#: rgdb.rsrmb
+msgctxt "rgdb.rsrmb"
+msgid "Right mouse button"
+msgstr ""
+
+#: rgdb.rsrmbalt
+msgctxt "rgdb.rsrmbalt"
+msgid "Right mouse button (alternative)"
+msgstr ""
+
+#: rgdb.rsset
+msgctxt "rgdb.rsset"
+msgid "Set"
+msgstr ""
+
+#: rgdb.rsspell1
+msgctxt "rgdb.rsspell1"
+msgid "Spell 1"
+msgstr ""
+
+#: rgdb.rsspell2
+msgctxt "rgdb.rsspell2"
+msgid "Spell 2"
+msgstr ""
+
+#: rgdb.rsspell3
+msgctxt "rgdb.rsspell3"
+msgid "Spell 3"
+msgstr ""
+
+#: rgdb.rsspell4
+msgctxt "rgdb.rsspell4"
+msgid "Spell 4"
+msgstr ""
+
 #: tfmbuttons.btndelete.caption
 msgid "Delete"
 msgstr ""
@@ -1293,12 +1428,31 @@ msgctxt "tfmstat.bbclearlearnhistory.caption"
 msgid "Clear"
 msgstr ""
 
+#: tfmstat.cbflag.caption
+msgid "Flag"
+msgstr ""
+
+#: tfmstat.gbblock.caption
+msgctxt "tfmstat.gbblock.caption"
+msgid "Common"
+msgstr ""
+
 #: tfmstat.gbinitial.caption
 msgid "Initial data"
 msgstr ""
 
+#: tfmstat.gbunknown.caption
+msgctxt "tfmstat.gbunknown.caption"
+msgid "Unknown"
+msgstr ""
+
 #: tfmstat.lblclass.caption
 msgid "Character class"
+msgstr ""
+
+#: tfmstat.lbllevel.caption
+msgctxt "tfmstat.lbllevel.caption"
+msgid "Level"
 msgstr ""
 
 #: tfmstat.lblname.caption
@@ -1312,6 +1466,14 @@ msgstr ""
 
 #: tfmstat.lblskillhistorytitle.caption
 msgid "Skill learn order history"
+msgstr ""
+
+#: tfmstat.lbltimeseans.caption
+msgid "Session time"
+msgstr ""
+
+#: tfmstat.lbltimetotal.caption
+msgid "Total time"
 msgstr ""
 
 #: tfmstat.sgarea1.columns[0].title.caption
@@ -1540,111 +1702,111 @@ msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
 msgstr ""
 
-#: tl2db.rsbasegame
-msgid "Base game"
+#: tlsave.sloadfailed
+msgid "Savegame loading failed"
 msgstr ""
 
-#: tl2db.rshp
-msgid "Best Health Potion"
+#: tlsave.ssavingfailed
+msgid "Savegame saving failed"
 msgstr ""
 
-#: tl2db.rslmb
-msgid "Left mouse button"
+#: tlsave.swrongfooter
+msgid "Wrong save file size"
 msgstr ""
 
-#: tl2db.rsmp
-msgid "Best Mana Potion"
+#: tlsave.swrongsize
+msgid "Wrong file size"
 msgstr ""
 
-#: tl2db.rspethp
-msgid "Best Pet Health Potion"
+#: tlsgstatistic.rsbroken
+msgid "Breakables Broken"
 msgstr ""
 
-#: tl2db.rspetmp
-msgid "Best Pet Mana Potion"
+#: tlsgstatistic.rschampions
+msgid "Champions Killed"
 msgstr ""
 
-#: tl2db.rspetspell1
-msgid "Pet spell 1"
+#: tlsgstatistic.rsdeaths
+msgid "Deaths"
 msgstr ""
 
-#: tl2db.rspetspell2
-msgid "Pet spell 2"
+#: tlsgstatistic.rsdmgdealt
+msgid "Highest Damage Dealt"
 msgstr ""
 
-#: tl2db.rspetspell3
-msgid "Pet spell 3"
+#: tlsgstatistic.rsdmgtaken
+msgid "Highest Damage Taken"
 msgstr ""
 
-#: tl2db.rspetspell4
-msgid "Pet spell 4"
+#: tlsgstatistic.rsenchanted
+msgid "Items Enchanted"
 msgstr ""
 
-#: tl2db.rsqk0
-msgid "Quckslot 0"
+#: tlsgstatistic.rsexploded
+msgid "Monsters Exploded"
 msgstr ""
 
-#: tl2db.rsqk1
-msgid "Quckslot 1"
+#: tlsgstatistic.rsfish
+msgid "Fish Caught"
 msgstr ""
 
-#: tl2db.rsqk2
-msgid "Quckslot 2"
+#: tlsgstatistic.rsgambled
+msgid "Times Gambled"
 msgstr ""
 
-#: tl2db.rsqk3
-msgid "Quckslot 3"
+#: tlsgstatistic.rsgold
+msgid "Gold Gathered"
 msgstr ""
 
-#: tl2db.rsqk4
-msgid "Quckslot 4"
+#: tlsgstatistic.rslevelsdone
+msgid "Levels Explored"
 msgstr ""
 
-#: tl2db.rsqk5
-msgid "Quckslot 5"
+#: tlsgstatistic.rsleveltime
+msgid "Level Time Played"
 msgstr ""
 
-#: tl2db.rsqk6
-msgid "Quckslot 6"
+#: tlsgstatistic.rsmonsters
+msgid "Monsters Killed"
 msgstr ""
 
-#: tl2db.rsqk7
-msgid "Quckslot 7"
+#: tlsgstatistic.rsportal
+msgid "Portals Used"
 msgstr ""
 
-#: tl2db.rsqk8
-msgid "Quckslot 8"
+#: tlsgstatistic.rspotions
+msgid "Potions Used"
 msgstr ""
 
-#: tl2db.rsqk9
-msgid "Quckslot 9"
+#: tlsgstatistic.rsquestsdone
+msgid "Quests completed"
 msgstr ""
 
-#: tl2db.rsrmb
-msgid "Right mouse button"
+#: tlsgstatistic.rsskills
+msgid "Skills Used"
 msgstr ""
 
-#: tl2db.rsrmbalt
-msgid "Right mouse button (alternative)"
+#: tlsgstatistic.rssteps
+msgid "Steps Taken"
 msgstr ""
 
-#: tl2db.rsset
-msgid "Set"
+#: tlsgstatistic.rstotaltime
+msgid "Time Played"
 msgstr ""
 
-#: tl2db.rsspell1
-msgid "Spell 1"
+#: tlsgstatistic.rstransmuted
+msgid "Items Transmuted"
 msgstr ""
 
-#: tl2db.rsspell2
-msgid "Spell 2"
+#: tlsgstatistic.rstraps
+msgid "Traps Sprung"
 msgstr ""
 
-#: tl2db.rsspell3
-msgid "Spell 3"
+#: tlsgstatistic.rstreasures
+msgid "Lootables Looted"
 msgstr ""
 
-#: tl2db.rsspell4
-msgid "Spell 4"
+#: tlsgstatistic.rsunknownstat
+msgid "Unknown Stat"
 msgstr ""
 

@@ -158,7 +158,7 @@ begin
   end;
 end;
 
-function CreateEffectsTable(adb:PSQLite3):boolean;
+function CreateEffectsTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'effects') then
     result:=ExecuteDirect(adb,

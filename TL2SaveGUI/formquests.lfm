@@ -6,7 +6,7 @@ object fmQuests: TfmQuests
   BorderStyle = bsNone
   ClientHeight = 391
   ClientWidth = 665
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   object sgQuests: TStringGrid
     Left = 8
     Height = 339

@@ -6,7 +6,7 @@ object fmMovies: TfmMovies
   BorderStyle = bsNone
   ClientHeight = 306
   ClientWidth = 540
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   object sgMovies: TStringGrid
     Left = 0
     Height = 200

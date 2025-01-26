@@ -13,7 +13,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\TL2DB"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons;..\RGDB"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -318,6 +318,14 @@
         <UsageCount Value="20"/>
       </Unit>
       <Unit>
+        <Filename Value="..\TL2DB\tl2db.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
@@ -464,7 +472,7 @@
         <UsageCount Value="9"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2DB\tl2db.pas"/>
+        <Filename Value="..\RGDB\rgdb.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>

@@ -177,7 +177,7 @@ resourcestring
   sLoadFailed   = 'Savegame loading failed';
   sSavingFailed = 'Savegame saving failed';
   sWrongSize    = 'Wrong file size';
-  sWrongVersion = 'Wrong save file version';
+//  sWrongVersion = 'Wrong save file version';
   sWrongFooter  = 'Wrong save file size';
 
 //----- support functions -----

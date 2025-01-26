@@ -79,7 +79,7 @@ implementation
 uses
   IniFiles,
   Windirs,
-  tl2db,
+  rgdb,
   UnitScan,
   logging,
   RGGlobal;
@@ -124,7 +124,7 @@ end;
 
 function TfmSettings.GetIconDir:string;
 begin
-  if tl2db.GameVersion=verTL1 then
+  if rgdb.GameVersion=verTL1 then
     result:=edIconDirTL1.Text
   else
     result:=edIconDirTL2.Text;
@@ -221,7 +221,7 @@ begin
     RGSaveBase(ldb,edDBFileTL2.Text);
 
   if FDBState=0 then
-    UseBase(ldb)
+    RGDBUseBase(ldb)
   else
     RGCloseBase(ldb,'');
 

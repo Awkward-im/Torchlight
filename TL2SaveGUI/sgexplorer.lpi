@@ -26,8 +26,8 @@
             <Filename Value="sgexplorer"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan;..\TL2Lib"/>
+            <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
+            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -62,9 +62,9 @@
             <Filename Value="sgexplorer"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
+            <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <Libraries Value="D:\SVN\UpLazTrunk\cross\lib\x86_64-linux\"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan;..\TL2Lib"/>
+            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -91,8 +91,8 @@
             <Filename Value="sgexplorer"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\utils;..\TL2DBScan;..\TL2Lib"/>
+            <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
+            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -284,10 +284,6 @@
         <UnitName Value="formModList"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2DB\tl2db.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\TL2Save\tl2stats.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Stats"/>
@@ -306,6 +302,73 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\RGDB\rgdb.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Logging"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsave.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSave"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgprepare.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgchar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGChar"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgbase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGBase"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgstatistic.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGStatistic"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgactive.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGActive"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGCommon"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgeffects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGEffects"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgitem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGItem"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgparse.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgquest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGQuest"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Save\tlsgtrigger.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLSGTrigger"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -315,8 +378,8 @@
       <Filename Value="sgexplorer"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Save;..\TL2DB;..\TL2Lib;..\TL2DBScan"/>
+      <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
+      <OtherUnitFiles Value="..\TL2Save;..\TL2Lib;..\TL2DBScan;..\RGDB;..\Addons"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

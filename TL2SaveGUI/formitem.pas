@@ -106,7 +106,7 @@ uses
   rgglobal,
   tlsgeffects,
   addons,
-  tl2db;
+  rgdb;
 
 procedure TfmItem.FormCreate(Sender: TObject);
 begin
@@ -120,7 +120,7 @@ procedure TfmItem.edStackChange(Sender: TObject);
 begin
   if not edStack.ReadOnly then
   begin
-    if FMaxStack<0 then FMaxStack:=GetItemStack(FItem.ID);
+    if FMaxStack<0 then FMaxStack:=RGDBGetItemStack(FItem.ID);
     if StrToIntDef(edStack.Text,1)>FMaxStack then
       edStack.Text:=IntToStr(FMaxStack);
     bbUpdate.Visible:=true;
@@ -168,7 +168,7 @@ end;
 
 function GetIconFileName(aItem:TTLItem):string;
 begin
-  result:=SearchForFileName(fmSettings.IconDir,UpCase(GetItemIcon(aItem.ID)))
+  result:=SearchForFileName(fmSettings.IconDir,UpCase(RGDBGetItemIcon(aItem.ID)))
 end;
 
 procedure TfmItem.DrawItemIcon(aItem:TTLItem; aImg:TImage);
@@ -207,9 +207,9 @@ begin
   edSockets.ReadOnly:=FChar=nil;
   
   if aItem.IsProp then
-    edNameById.Text:=GetTL2Prop(aItem.ID)
+    edNameById.Text:=RGDBGetProp(aItem.ID)
   else
-    edNameById.Text:=GetTL2Item(aItem.ID);
+    edNameById.Text:=RGDBGetItem(aItem.ID);
   edName  .Text:=aItem.Name;
   edPrefix.Text:=aItem.Prefix;
   edSuffix.Text:=aItem.Suffix;
@@ -237,7 +237,7 @@ begin
 
   edEnchant .Text    := IntToStr(aItem.EnchantCount);
   edPosition.Text    := IntToStr(aItem.Position);
-  linv:=GetItemPosition(aItem.Position, lcont);
+  linv:=RGDBGetItemPosition(aItem.Position, lcont);
   lblContType.Caption:= lcont;
   lblPosType .Caption:= linv;
   edSockets.Text     := IntToStr(aItem.SocketCount);
@@ -290,13 +290,13 @@ begin
   for i:=0 to High(aItem.Augments) do
     lbAugments.AddItem(aItem.Augments[i],nil);
 }
-  edIconName.Text:=GetItemIcon(aItem.ID);
+  edIconName.Text:=RGDBGetItemIcon(aItem.ID);
   DrawItemIcon(aItem,imgItem);
 
   lbModList.Clear;
   if aItem.ModIds<>nil then
     for i:=0 to High(aItem.ModIds) do
-      lbModList.AddItem(GetTL2Mod(aItem.ModIds[i]),nil);
+      lbModList.AddItem(RGDBGetMod(aItem.ModIds[i]),nil);
   if aItem.ModNames<>nil then
     for i:=0 to High(aItem.ModNames) do
       lbModList.AddItem(aItem.ModNames[i],nil);
