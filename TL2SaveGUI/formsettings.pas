@@ -165,7 +165,7 @@ begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   edDBFileTL2 .Text   :=config.ReadString(sSettings,sDBFileTL2 ,TL2DataBase);
-  edDBFileTL1 .Text   :=config.ReadString(sSettings,sDBFileTL1 ,TL2DataBase);
+  edDBFileTL1 .Text   :=config.ReadString(sSettings,sDBFileTL1 ,TL1DataBase);
   edIconDirTL2.Text   :=config.ReadString(sSettings,sIconDirTL2,'icons');
   edIconDirTL1.Text   :=config.ReadString(sSettings,sIconDirTL1,'iconstl1');
   edSaveDir   .Text   :=config.ReadString(sSettings,sSaveDir   ,SavePath);

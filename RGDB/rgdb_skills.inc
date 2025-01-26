@@ -169,7 +169,7 @@ end;
 
 function RGDBCreateSkillList(const aclass:TRGID; out askills:tSkillArray):integer;
 var
-  lSQL,ls:string;
+  lwhere, lSQL,ls:string;
   ltmp:string[127];
   pc:PChar;
 //  sl:TStringArray;
@@ -194,6 +194,11 @@ begin
 
     if result>0 then
     begin
+      if ModFilter<>'' then
+        lwhere:=' AND '+ModFilter
+      else
+        lwhere:='';
+
       pc:=pointer(ls);
       if pc^=',' then inc(pc); // must be always
       ltmp:='';
@@ -214,7 +219,7 @@ begin
 
           ',': begin
             lSQL:='SELECT id, title, maxlevel, tier, icon, passive FROM skills'+
-                  ' WHERE name LIKE '''+ltmp+'''';
+                  ' WHERE (name LIKE '''+ltmp+''')'+lwhere;
             if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
             begin
               if sqlite3_step(vm)=SQLITE_ROW then
@@ -254,19 +259,24 @@ end;
 
 function RGDBCreateSpellList(out askills:tSkillArray):integer;
 var
-  lSQL:string;
+  lwhere, lSQL:string;
   vm:pointer;
   i:integer;
 begin
   if db<>nil then
   begin
-    result:=ReturnInt(db,'SELECT count(*) FROM skills WHERE (shared<>0) AND (title<>'''')');
+    if ModFilter<>'' then
+      lwhere:=' AND '+ModFilter
+    else
+      lwhere:='';
+
+    result:=ReturnInt(db,'SELECT count(*) FROM skills WHERE (shared<>0) AND (title<>'''')'+lwhere);
 
     if result>0 then
     begin
       SetLength(askills,result);
       lSQL:='SELECT id, name, title, maxlevel, icon FROM skills'+
-            ' WHERE shared<>0 AND title<>''''';
+            ' WHERE (shared<>0) AND (title<>'''')'+lwhere;
       if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
       begin
         i:=0;
