@@ -32,56 +32,34 @@ procedure DoProcessFile(const fname:string);
 var
   f:file of byte;
   buf:pByte;
-  slout:pointer;
-  lext:string;
-  ltype,l:integer;
+  slout:PWideChar;
+  l:integer;
 begin
-  ltype:=0;
-  lext:=UpCase(ExtractFileExt(fname));
-
-  if (lext='.LAYOUT') then ltype:=2
-  else
+  AssignFile(f,fname);
+  Reset(f);
+  if IOResult=0 then
   begin
-    for l:=0 to High(GoodExtArray) do
-      if lext=GoodExtArray[l] then
-      begin
-        ltype:=1;
-        break;
-      end;
-    if ltype=0 then
+    RGLog.Reserve('Processing file '+fname);
+
+    l:=FileSize(f);
+    GetMem(buf,l);
+    BlockRead(f,buf^,l);
+    CloseFile(f);
+
+    slout:=nil;
+    if DecompileFile(buf, l, fname, slout) then
     begin
-      lext:=UpCase(fname);
-      for l:=0 to High(GoodExtArray) do
-        if Pos(GoodExtArray[l]+'.',lext)>0 then
-        begin
-          ltype:=-1;
-          break;
-        end;
-    end;
-  end;
-
-  if ltype<>0 then
-  begin
-    AssignFile(f,fname);
-    Reset(f);
-    if IOResult=0 then
-    begin
-      RGLog.Reserve('Processing file '+fname);
-
-      l:=FileSize(f);
-      GetMem(buf,l);
-      BlockRead(f,buf^,l);
-      CloseFile(f);
-
-      slout:=nil;
-      if DecompileFile(buf, l, fname, slout) then
+      AssignFile(f,fname+'.1.TXT');
+      Rewrite(f);
+      if IOResult=0 then
       begin
-        BuildTextFile(slout,PChar(fname+'.1.TXT'));
-        DeleteNode(slout);
+        BlockWrite(f,slout^,Length(slout)*SizeOf(WideChar));
+        CloseFile(f);
       end;
-
-      FreeMem(buf);
+      FreeMem(slout);
     end;
+
+    FreeMem(buf);
   end;
 end;
 

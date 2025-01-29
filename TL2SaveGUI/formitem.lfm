@@ -6,7 +6,6 @@ object fmItem: TfmItem
   BorderStyle = bsNone
   ClientHeight = 478
   ClientWidth = 619
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object pcItemInfo: TPageControl
     Left = 0
@@ -71,8 +70,8 @@ object fmItem: TfmItem
       end
       object lbModList: TListBox
         Left = 3
-        Height = 113
-        Top = 327
+        Height = 96
+        Top = 344
         Width = 202
         Anchors = [akLeft, akBottom]
         ItemHeight = 0
@@ -176,7 +175,7 @@ object fmItem: TfmItem
       object gbFlags: TGroupBox
         Left = 3
         Height = 46
-        Top = 264
+        Top = 258
         Width = 176
         Caption = 'Flags'
         ClientHeight = 26
@@ -266,20 +265,21 @@ object fmItem: TfmItem
       end
       object bbUpdate: TBitBtn
         Left = 248
-        Height = 31
-        Top = 408
-        Width = 75
+        Height = 26
+        Top = 414
+        Width = 84
         Anchors = [akLeft, akBottom]
+        AutoSize = True
         Caption = '&Update'
         Kind = bkOK
         TabOrder = 13
         OnClick = bbUpdateClick
       end
       object bbClearMod: TBitBtn
-        Left = 216
+        Left = 212
         Height = 26
         Hint = 'Clear mod list'
-        Top = 328
+        Top = 344
         Width = 26
         Anchors = [akLeft, akBottom]
         Kind = bkAbort
@@ -389,6 +389,22 @@ object fmItem: TfmItem
         Width = 247
         Anchors = [akRight, akBottom]
         TabOrder = 14
+      end
+      object lblModList: TLabel
+        Left = 3
+        Height = 15
+        Top = 324
+        Width = 43
+        Anchors = [akLeft, akBottom]
+        Caption = 'Mod list'
+      end
+      object lblIconName: TLabel
+        Left = 248
+        Height = 15
+        Top = 324
+        Width = 56
+        Anchors = [akRight, akBottom]
+        Caption = 'Icon name'
       end
     end
     object tsItemInfo: TTabSheet
@@ -602,6 +618,23 @@ object fmItem: TfmItem
         Width = 68
         Caption = 'Activated'
         TabOrder = 0
+      end
+      object edPropState: TEdit
+        Left = 8
+        Height = 23
+        Top = 48
+        Width = 48
+        Alignment = taRightJustify
+        NumbersOnly = True
+        TabOrder = 1
+        OnChange = edStackChange
+      end
+      object lblPropState: TLabel
+        Left = 64
+        Height = 15
+        Top = 52
+        Width = 54
+        Caption = 'Prop State'
       end
     end
     object tsOtherInfo: TTabSheet

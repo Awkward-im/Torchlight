@@ -543,11 +543,7 @@ begin
   Application.MainForm.Caption:=ls;
 
   FChar.Skills:=GetBuild();
-
-  if FPoints>0 then
-    FChar.FreeSkillPoints:=FPoints
-  else
-    FChar.FreeSkillPoints:=0;
+  FChar.FreeSkillPoints:=FPoints;
 
   //!! what about statistic? need to check!
   //!! what about STAT (history?) need to clear!

@@ -42,6 +42,7 @@ type
   private
     FVersion   :dword;
     FDataStart :integer;
+    FModified  :boolean;
 
     //--- Blocks
     FLastBlock :TTL2Stats;
@@ -109,6 +110,8 @@ type
     function  GetStatistic (idx:integer):TRGInteger;
     procedure SetStatistic (idx:integer; aval:TRGInteger);
   public
+    property Modified:boolean read FModified write FModified;
+    
     property GameVersion :integer        read GetGameVersion;
     property Difficulty  :TL2Difficulty  read FDifficulty   write FDifficulty;
     property Hardcore    :boolean        read FHardcore     write FHardcore;
@@ -179,6 +182,16 @@ resourcestring
   sWrongSize    = 'Wrong file size';
 //  sWrongVersion = 'Wrong save file version';
   sWrongFooter  = 'Wrong save file size';
+
+type            	
+  TL2SaveHeader = packed record
+    Version :DWord;
+    Encoded :ByteBool;
+    Checksum:Dword;
+  end;
+  TL2SaveFooter = packed record
+    filesize:DWord;
+  end;
 
 //----- support functions -----
 
@@ -719,6 +732,7 @@ begin
   inherited;
 
   FStream:=nil;
+  FModified:=false;
 end;
 
 destructor TTLSaveFile.Destroy;

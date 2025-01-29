@@ -7,7 +7,6 @@ object fmModList: TfmModList
   Caption = 'Mod list'
   ClientHeight = 470
   ClientWidth = 701
-  LCLVersion = '4.99.0.0'
   Visible = True
   object sbUp: TSpeedButton
     Left = 352
@@ -46,10 +45,11 @@ object fmModList: TfmModList
     OnClick = sbDeleteClick
   end
   object bbClear: TBitBtn
-    Left = 392
+    Left = 384
     Height = 30
-    Top = 177
+    Top = 227
     Width = 90
+    Anchors = [akLeft, akBottom]
     Caption = 'Clear'
     Kind = bkAbort
     TabOrder = 0
@@ -58,8 +58,9 @@ object fmModList: TfmModList
   object bbUpdate: TBitBtn
     Left = 602
     Height = 30
-    Top = 177
+    Top = 227
     Width = 90
+    Anchors = [akLeft, akBottom]
     Caption = '&Update'
     Kind = bkOK
     TabOrder = 1
@@ -76,24 +77,27 @@ object fmModList: TfmModList
   object lblRecent: TLabel
     Left = 4
     Height = 15
-    Top = 232
+    Top = 259
     Width = 36
+    Anchors = [akLeft, akBottom]
     Caption = 'Recent'
     ParentColor = False
   end
   object lblFull: TLabel
     Left = 352
     Height = 15
-    Top = 232
+    Top = 259
     Width = 58
+    Anchors = [akLeft, akBottom]
     Caption = 'Full history'
     ParentColor = False
   end
   object sgBound: TStringGrid
     Left = 4
-    Height = 187
+    Height = 237
     Top = 20
     Width = 340
+    Anchors = [akTop, akLeft, akBottom]
     AutoEdit = False
     ColCount = 3
     Columns = <    
@@ -127,8 +131,9 @@ object fmModList: TfmModList
   object sgRecent: TStringGrid
     Left = 4
     Height = 187
-    Top = 248
+    Top = 275
     Width = 340
+    Anchors = [akLeft, akBottom]
     AutoEdit = False
     ColCount = 3
     Columns = <    
@@ -160,8 +165,9 @@ object fmModList: TfmModList
   object sgFull: TStringGrid
     Left = 352
     Height = 187
-    Top = 248
+    Top = 275
     Width = 340
+    Anchors = [akLeft, akBottom]
     AutoEdit = False
     ColCount = 3
     Columns = <    
@@ -190,17 +196,6 @@ object fmModList: TfmModList
       107
     )
   end
-  object cbModList: TComboBox
-    Left = 392
-    Height = 23
-    Top = 20
-    Width = 300
-    ItemHeight = 15
-    Sorted = True
-    Style = csDropDownList
-    TabOrder = 5
-    OnCloseUp = cbModListCloseUp
-  end
   object sbClipboard: TSpeedButton
     Left = 352
     Height = 22
@@ -214,9 +209,35 @@ object fmModList: TfmModList
     OnClick = sbClipboardClick
   end
   object lblChoosedModId: TLabel
-    Left = 392
+    Left = 391
     Height = 1
-    Top = 56
+    Top = 220
     Width = 1
+    Anchors = [akLeft, akBottom]
+  end
+  object lfeAvailMods: TListFilterEdit
+    Left = 384
+    Height = 23
+    Top = 4
+    Width = 308
+    ButtonWidth = 23
+    Anchors = [akTop, akLeft, akRight]
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 5
+    FilteredListbox = lbAvailMods
+  end
+  object lbAvailMods: TListBox
+    Left = 384
+    Height = 169
+    Top = 32
+    Width = 308
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = 1
+    ExtendedSelect = False
+    ItemHeight = 0
+    TabOrder = 6
+    OnDblClick = lbAvailModsDblClick
+    OnSelectionChange = lbAvailModsSelectionChange
   end
 end

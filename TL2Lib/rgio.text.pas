@@ -123,6 +123,8 @@ begin
   result:=true;
 
   ltype:=GetNodeType(anode);
+  if not (ltype in rgValidNodeTypes) then exit(false);
+
   lname:=GetNodeName(anode);
   if (not achild) and (ltype=rgGroup) and (CompareWide(lname,'CHILDREN')=0) then exit;
 

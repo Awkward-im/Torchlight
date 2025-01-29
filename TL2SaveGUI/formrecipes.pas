@@ -108,13 +108,14 @@ end;
 procedure TfmRecipes.bbUpdateClick(Sender: TObject);
 var
   lRecipes:TL2IdList;
-  ls:string;
+//  ls:string;
   i:integer;
 begin
+{
   ls:=Application.MainForm.Caption;
   ls[1]:='*';
   Application.MainForm.Caption:=ls;
-
+}
   lRecipes:=SGame.Recipes;
   SetLength(lRecipes,sgRecipes.RowCount-1);
   for i:=1 to sgRecipes.RowCount-1 do
@@ -122,6 +123,7 @@ begin
     lRecipes[i-1]:=StrToInt64(sgRecipes.Cells[colId,i]);
   end;
   SGame.Recipes:=lRecipes;
+  SGame.Modified:=true;
   bbUpdate.Enabled:=false;
 end;
 

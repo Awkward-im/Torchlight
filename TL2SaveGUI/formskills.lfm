@@ -6,7 +6,6 @@ object fmSkills: TfmSkills
   BorderStyle = bsNone
   ClientHeight = 500
   ClientWidth = 714
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object sgSkills: TStringGrid

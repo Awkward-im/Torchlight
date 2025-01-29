@@ -6,7 +6,6 @@ object fmUnits: TfmUnits
   BorderStyle = bsNone
   ClientHeight = 540
   ClientWidth = 858
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object pnlCharInfo: TPanel
     Left = 175
@@ -33,8 +32,8 @@ object fmUnits: TfmUnits
     TabOrder = 2
     object lvUnitList: TListView
       Left = 1
-      Height = 538
-      Top = 1
+      Height = 515
+      Top = 24
       Width = 168
       Align = alClient
       AutoWidthLastColumn = True
@@ -45,10 +44,26 @@ object fmUnits: TfmUnits
       HideSelection = False
       ReadOnly = True
       SmallImages = fmSaveFile.imgIcons
+      SortColumn = 0
       SortType = stText
       TabOrder = 0
       ViewStyle = vsReport
+      OnChange = lvUnitListChange
       OnSelectItem = lvUnitListSelectItem
+    end
+    object lvfeUnitList: TListViewFilterEdit
+      Left = 1
+      Height = 23
+      Top = 1
+      Width = 168
+      OnAfterFilter = lvfeUnitListAfterFilter
+      ButtonWidth = 23
+      Align = alTop
+      NumGlyphs = 1
+      MaxLength = 0
+      TabOrder = 1
+      TextHint = '(filter)'
+      FilteredListview = lvUnitList
     end
   end
 end

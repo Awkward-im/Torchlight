@@ -1,4 +1,5 @@
 {NOTE: don't do it (node extract harder, global structure needs) separate node -> array of nodes like rgfs. pointer -> index}
+{TODO: Add "invisible" node type. no cycle, no output, advanced only}
 {TODO: Add line numbers support}
 {TODO: change Add*** to AddNode+As***}
 {TODO: make variant of node with arrays of nodes for non-cutting actions}

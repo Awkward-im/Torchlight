@@ -45,28 +45,29 @@ var
   f:file of byte;
   ldlg:TSaveDialog;
 begin
-  with SGame.Quests.QuestsUnDone[IntPtr(sgQuests.Objects[0,sgQuests.Row])] do
-  begin
-    ldlg:=TSaveDialog.Create(nil);
-    try
-      ldlg.FileName  :=sgQuests.Cells[2,sgQuests.Row];
-      ldlg.DefaultExt:='.qst';
+  ldlg:=TSaveDialog.Create(nil);
+  try
+    ldlg.FileName  :=sgQuests.Cells[2,sgQuests.Row];
+    ldlg.DefaultExt:='.qst';
 //      ldlg.Title     :=rsExportData;
-      ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
-      if ldlg.Execute then
-      begin
-        AssignFile(f,ldlg.FileName);
-        Rewrite(f);
-        BlockWrite(f,id,SizeOf(id));
-        BlockWrite(f,q1,SizeOf(q1));
-        BlockWrite(f,d1,SizeOf(d1));
-        BlockWrite(f,d2,SizeOf(d2));
-        BlockWrite(f,data^,len);
-        CloseFile(f);
-      end;
-    finally
-      ldlg.Free;
+    ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
+    if ldlg.Execute then
+    begin
+      AssignFile(f,ldlg.FileName);
+      Rewrite(f);
+      if IOResult=0 then
+        with SGame.Quests.QuestsUnDone[IntPtr(sgQuests.Objects[0,sgQuests.Row])] do
+        begin
+          BlockWrite(f,id,SizeOf(id));
+          BlockWrite(f,q1,SizeOf(q1));
+          BlockWrite(f,d1,SizeOf(d1));
+          BlockWrite(f,d2,SizeOf(d2));
+          BlockWrite(f,data^,len);
+          CloseFile(f);
+        end;
     end;
+  finally
+    ldlg.Free;
   end;
 end;
 

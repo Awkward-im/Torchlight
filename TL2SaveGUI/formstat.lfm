@@ -6,6 +6,7 @@ object fmStat: TfmStat
   BorderStyle = bsNone
   ClientHeight = 488
   ClientWidth = 741
+  LCLVersion = '4.99.0.0'
   object pcStatistic: TPageControl
     Left = 0
     Height = 488

@@ -18,7 +18,7 @@ type
     field5:TRGInteger; // <= field1
     field6:TRGInteger; // <= field1
     field7:TRGInteger;
-    field8:Word;       // by phys? no :( ??times damaged by
+    field8:Word;       // by phys? no :( ??times damaged by (has drop?)
     field9:Word;
   end;
   tStatMobArray = array of tStatMob;

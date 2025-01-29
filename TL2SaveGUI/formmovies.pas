@@ -19,8 +19,7 @@ type
 
     procedure bbUpdateClick(Sender: TObject);
     procedure sgMoviesEditingDone(Sender: TObject);
-    procedure sgMoviesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
-      );
+    procedure sgMoviesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     SGame:TTLSaveFile;
 
@@ -70,13 +69,14 @@ end;
 
 procedure TfmMovies.bbUpdateClick(Sender: TObject);
 var
-  ls:string;
+//  ls:string;
   i:integer;
 begin
+{
   ls:=Application.MainForm.Caption;
   ls[1]:='*';
   Application.MainForm.Caption:=ls;
-
+}
   for i:=1 to sgMovies.RowCount do
   begin
     SGame.Movies[IntPtr(sgMovies.Objects[0,i])].value:=

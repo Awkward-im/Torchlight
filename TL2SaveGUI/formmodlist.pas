@@ -1,3 +1,5 @@
+{NOTE: save List index in Objects of ListBox coz skip Vanilla}
+{NOTE: llist:=RGDBGetModList cached DB data just once in global mod list}
 unit formModList;
 
 {$mode objfpc}{$H+}
@@ -6,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  Grids, tlsave, rgglobal, rgdb;
+  Grids, ListFilterEdit, ListViewFilterEdit, tlsave, rgglobal, rgdb;
 
 type
 
@@ -17,6 +19,8 @@ type
     bbUpdate: TBitBtn;
     cbModList: TComboBox;
     lblChoosedModId: TLabel;
+    lbAvailMods: TListBox;
+    lfeAvailMods: TListFilterEdit;
     sgBound: TStringGrid;
     sgFull: TStringGrid;
     lblFull: TLabel;
@@ -28,7 +32,8 @@ type
     sbAdd: TSpeedButton;
     sbDelete: TSpeedButton;
     sbClipboard: TSpeedButton;
-    procedure cbModListCloseUp(Sender: TObject);
+    procedure lbAvailModsDblClick(Sender: TObject);
+    procedure lbAvailModsSelectionChange(Sender: TObject; User: boolean);
     procedure sbClipboardClick(Sender: TObject);
     procedure bbClearClick    (Sender: TObject);
     procedure bbUpdateClick   (Sender: TObject);
@@ -41,10 +46,9 @@ type
   private
     FSGame:TTLSaveFile;
 
-    procedure CheckButtons;
+    procedure CheckButtons(doupdate:boolean);
     procedure FillGrid(agrid: TStringGrid; alist: TTL2ModList);
     procedure FillGridRow(agrid: TStringGrid; arow: integer; const amod: TTL2Mod);
-    procedure FillGridRow(agrid: TStringGrid; arow: integer; const amod: TModData);
 
   public
     procedure FillInfo(aSGame: TTLSaveFile);
@@ -65,41 +69,46 @@ uses
 { TfmModList }
 
 resourcestring
+  rsMaximum  = 'Can''t add more than 10 mods.';
   rsDoClear  = 'Are you sure to clear mod list?';
   rsReminder = 'Don''t forget to check modded objects.'#13#10+
                'Or use "Fix Modded objects" item from Main menu';
 
-procedure TfmModList.CheckButtons;
+procedure TfmModList.CheckButtons(doupdate:boolean);
 begin
   sbDelete   .Enabled:=sgBound.RowCount>1;
   sbUp       .Enabled:=sgBound.Row>1;
   sbDown     .Enabled:=sgBound.Row<sgBound.RowCount-1;
   sbClipboard.Enabled:=sgBound.RowCount>1;
 
-  bbUpdate.Enabled:=true;
+  bbClear.Enabled:=(sgBound.RowCount >1) or
+                   (sgRecent.RowCount>1) or
+                   (sgFull.RowCount  >1);
+
+  bbUpdate.Enabled:=bbUpdate.Enabled or doupdate;
 end;
 
 procedure TfmModList.sgBoundAfterSelection(Sender: TObject; aCol, aRow: Integer);
 begin
-  CheckButtons;
+  CheckButtons(false);
 end;
 
 procedure TfmModList.sbUpClick(Sender: TObject);
 begin
   sgBound.MoveColRow(false,sgBound.Row,sgBound.Row-1);
-  CheckButtons;
+  CheckButtons(true);
 end;
 
 procedure TfmModList.sbDownClick(Sender: TObject);
 begin
   sgBound.MoveColRow(false,sgBound.Row,sgBound.Row+1);
-  CheckButtons;
+  CheckButtons(true);
 end;
 
 procedure TfmModList.sbDeleteClick(Sender: TObject);
 begin
   sgBound.DeleteRow(sgBound.Row);
-  CheckButtons;
+  CheckButtons(true);
 end;
 
 procedure TfmModList.bbClearClick(Sender: TObject);
@@ -110,66 +119,91 @@ begin
     sgRecent.Clear;
     sgFull  .Clear;
 
-    CheckButtons;
-//    bbUpdate.Enabled:=true;
+    CheckButtons(true);
   end;
+end;
+
+procedure TfmModList.sbClipboardClick(Sender: TObject);
+var
+  ls:string;
+  i:integer;
+begin
+  ls:='';
+  for i:=1 to sgBound.RowCount-1 do
+    ls:=ls+sgBound.Cells[0,i]+' v.'+sgBound.Cells[1,i]+#13#10;
+
+  Clipboard.asText:=ls;
 end;
 
 procedure TfmModList.sbAddClick(Sender: TObject);
 var
-  lid:TRGID;
+  lid,gid:TRGID;
   llist:tModDataArray;
   i,idx:integer;
   found:boolean;
 begin
   if sgBound.RowCount<11 then
   begin
-    idx:=cbModList.ItemIndex;
+    idx:=lbAvailMods.ItemIndex;
     if idx>=0 then
     begin
+      idx:=IntPtr(lbAvailMods.Items.Objects[idx]);
       llist:=RGDBGetModList;
-      idx:=IntPtr(cbModList.Items.Objects[idx]);
       lid:=llist[idx].id;
       found:=false;
       for i:=1 to sgBound.RowCount-1 do
       begin
-        found:=StrToInt(sgBound.Cells[2,i])=lid;
+        Val(sgBound.Cells[2,i],gid);
+        found:=gid=lid;
         if found then break;
       end;
       if not found then
       begin
         if sgBound.RowCount=0 then
-          sgBound.RowCount:=2
+        begin
+          i:=1;
+          sgBound.RowCount:=2;
+        end
         else
+        begin
+          i:=sgBound.RowCount;
           sgBound.RowCount:=sgBound.RowCount+1;
-        FillGridRow(sgBound,sgBound.RowCount-1,llist[idx]);
+        end;
+
+        with llist[idx] do
+        begin
+          sgBound.Cells[0,i]:=title;
+          sgBound.Cells[1,i]:=IntToStr(version);
+          sgBound.Cells[2,i]:=TextId  (id);
+        end;
       end;
     end;
-  end;
-  CheckButtons;
+  end
+  else
+    ShowMessage(rsMaximum);
+
+  CheckButtons(true);
 end;
 
-procedure TfmModList.sbClipboardClick(Sender: TObject);
+procedure TfmModList.lbAvailModsSelectionChange(Sender: TObject; User: boolean);
 var
-  sl:TStringList;
-  i:integer;
+  llist:tModDataArray;
+  idx:integer;
 begin
-  sl:=TStringList.Create;
-  try
-    for i:=1 to sgBound.RowCount-1 do
-      sl.Add(sgBound.Cells[0,i]+' v.'+sgBound.Cells[1,i]);
-
-    Clipboard.asText:=sl.Text;
-  finally
-    sl.Free;
-  end;
+  idx:=lbAvailMods.ItemIndex;
+  if idx>=0 then
+  begin
+    idx:=IntPtr(lbAvailMods.Items.Objects[idx]);
+    llist:=RGDBGetModList();
+    lblChoosedModId.Caption:=TextId(llist[idx].id)
+  end
+  else
+    lblChoosedModId.Caption:='';
 end;
 
-procedure TfmModList.FillGridRow(agrid:TStringGrid; arow:integer; const amod:TModData);
+procedure TfmModList.lbAvailModsDblClick(Sender: TObject);
 begin
-  agrid.Cells[0,arow]:=amod.title;
-  agrid.Cells[1,arow]:=IntToStr(amod.version);
-  agrid.Cells[2,arow]:=TextId  (amod.id);
+  sbAddClick(Sender);
 end;
 
 procedure TfmModList.FillGridRow(agrid:TStringGrid; arow:integer; const amod:TTL2Mod);
@@ -195,22 +229,6 @@ begin
   end;
 end;
 
-procedure TfmModList.cbModListCloseUp(Sender: TObject);
-var
-  llist:tModDataArray;
-  idx:integer;
-begin
-  idx:=cbModList.ItemIndex;
-  if idx>=0 then
-  begin
-    llist:=RGDBGetModList();
-    idx:=IntPtr(cbModList.Items.Objects[idx]);
-    lblChoosedModId.Caption:=TextId(llist[idx].id){HexStr(llist[idx].id,16)}
-  end
-  else
-    lblChoosedModId.Caption:='';
-end;
-
 procedure TfmModList.FillInfo(aSGame:TTLSaveFile);
 var
   llist:tModDataArray;
@@ -219,16 +237,24 @@ begin
   FSGame:=aSGame;
 
   llist:=RGDBGetModList();
-  cbModList.Clear;
-  cbModList.Items.Capacity:=Length(llist);
+  lfeAvailMods.Clear;
+  lfeAvailMods.Items.Capacity:=Length(llist);
   for i:=0 to High(llist) do
-    cbModList.AddItem(llist[i].title,TObject(IntPtr(i)));
+    with llist[i] do
+    begin
+      if id<>0 then
+        lfeAvailMods.Items.AddObject(title+' v.'+IntToStr(version),TObject(IntPtr(i)));
+    end;
+
+  lfeAvailMods.ForceFilter(' ');
+  lfeAvailMods.ForceFilter('');
 
   FillGrid(sgBound ,FSGame.BoundMods);
   FillGrid(sgRecent,FSGame.RecentModHistory);
   FillGrid(sgFull  ,FSGame.FullModHistory);
 
-  CheckButtons;
+  CheckButtons(false);
+
   RGDBSetFilter(FSGame.BoundMods);
   bbUpdate.Enabled:=false;
 end;
@@ -236,13 +262,14 @@ end;
 procedure TfmModList.bbUpdateClick(Sender: TObject);
 var
   llist:TTL2ModList;
-  ls:string;
+//  ls:string;
   i:integer;
 begin
+{
   ls:=Application.MainForm.Caption;
   ls[1]:='*';
   Application.MainForm.Caption:=ls;
-
+}
   if sgBound.RowCount=0 then
     FSGame.BoundMods:=nil
   else
@@ -258,6 +285,11 @@ begin
 
   if sgRecent.RowCount=0 then FSGame.RecentModHistory:=nil;
   if sgFull  .RowCount=0 then FSGame.FullModHistory  :=nil;
+
+  RGDBSetFilter(FSGame.BoundMods);
+
+  FSGame.Modified:=true;
+
   bbUpdate.Enabled:=false;
   ShowMessage(rsReminder);
 end;

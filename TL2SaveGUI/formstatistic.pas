@@ -21,7 +21,7 @@ type
     procedure FormCreate(Sender: TObject);
   private
     StatEdits:array of TEdit;
-    SGame:TTLSaveFile;
+    FSGame:TTLSaveFile;
 
   public
     procedure FillInfo(aSGame:TTLSaveFile);
@@ -118,20 +118,22 @@ end;
 
 procedure TfmStatistic.bbUpdateClick(Sender: TObject);
 var
-  ls:string;
+//  ls:string;
   i:integer;
 begin
+{
   ls:=Application.MainForm.Caption;
   ls[1]:='*';
   Application.MainForm.Caption:=ls;
-
+}
   for i:=0 to High(StatEdits) do
   begin
     if StatEdits[i].Enabled then
     begin
-      SGame.Statistic[i]:=StrToInt(StatEdits[i].Text);
+      FSGame.Statistic[i]:=StrToInt(StatEdits[i].Text);
     end;
   end;
+  FSGame.Modified:=true;
   bbUpdate.Enabled:=false;
 end;
 
@@ -139,12 +141,13 @@ procedure TfmStatistic.FillInfo(aSGame:TTLSaveFile);
 var
   i:integer;
 begin
+  FSGame:=aSGame;
+
   for i:=0 to High(StatEdits) do
   begin
-    StatEdits[i].Text:=GetStatText(i,aSGame.Statistic[i]);
+    StatEdits[i].Text:=GetStatText(i,FSGame.Statistic[i]);
   end;
 
-  SGame:=aSGame;
   bbUpdate.Enabled:=false;
 end;
 

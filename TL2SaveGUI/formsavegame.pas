@@ -243,12 +243,6 @@ begin
   SGame.Free;
 end;
 
-procedure TfmSaveFile.SettingsChanged;
-begin
-  if SGame<>nil then
-    ChangeTree(false);
-end;
-
 procedure TfmSaveFile.FormCreate(Sender: TObject);
 {
 var
@@ -271,9 +265,9 @@ begin
   FSkills:=TfmSkills.Create(Self); FSkills.Parent:=MainPanel; FSkills.Align:=alClient;
   FChar  :=TfmChar.Create(Self,ciPlayer); FChar.Parent:=MainPanel; FChar.Align:=alClient; FChar.SkillForm:=FSkills;
   FPet   :=TfmChar.Create(Self,ciPet   ); FPet .Parent:=MainPanel; FPet .Align:=alClient;
-
+  {$IFDEF DEBUG}
   fmButtons.Visible:=true;
-
+  {$ENDIF}
   CreateTree;
 
   if ParamCount()>0 then
@@ -281,6 +275,12 @@ begin
     FFileName:=ParamStr(1);
     actFileReloadExecute(Sender);
   end;
+end;
+
+procedure TfmSaveFile.SettingsChanged;
+begin
+  if SGame<>nil then
+    ChangeTree(false);
 end;
 
 procedure TfmSaveFile.CloseSaveGame;

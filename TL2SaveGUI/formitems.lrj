@@ -1,3 +1,4 @@
 {"version":1,"strings":[
-{"hash":132867097,"name":"tfmitems.cbequipped.caption","sourcebytes":[69,113,117,105,112,112,101,100,32,111,110,108,121],"value":"Equipped only"}
+{"hash":132867097,"name":"tfmitems.cbequipped.caption","sourcebytes":[69,113,117,105,112,112,101,100,32,111,110,108,121],"value":"Equipped only"},
+{"hash":218345129,"name":"tfmitems.lvfeitemlist.texthint","sourcebytes":[40,102,105,108,116,101,114,41],"value":"(filter)"}
 ]}

@@ -19,6 +19,8 @@
 {"hash":1466,"name":"tfmitem.lblx1.caption","sourcebytes":[88,58],"value":"X:"},
 {"hash":1482,"name":"tfmitem.lbly1.caption","sourcebytes":[89,58],"value":"Y:"},
 {"hash":1498,"name":"tfmitem.lblz1.caption","sourcebytes":[90,58],"value":"Z:"},
+{"hash":90650084,"name":"tfmitem.lblmodlist.caption","sourcebytes":[77,111,100,32,108,105,115,116],"value":"Mod list"},
+{"hash":101124501,"name":"tfmitem.lbliconname.caption","sourcebytes":[73,99,111,110,32,110,97,109,101],"value":"Icon name"},
 {"hash":330429,"name":"tfmitem.tsiteminfo.caption","sourcebytes":[73,116,101,109],"value":"Item"},
 {"hash":111192878,"name":"tfmitem.lblposition.caption","sourcebytes":[80,111,115,105,116,105,111,110],"value":"Position"},
 {"hash":45,"name":"tfmitem.lblconttype.caption","sourcebytes":[45],"value":"-"},
@@ -37,5 +39,6 @@
 {"hash":153372579,"name":"tfmitem.lblweapondamagebonuses.caption","sourcebytes":[87,101,97,112,111,110,32,68,97,109,97,103,101,32,66,111,110,117,115,101,115],"value":"Weapon Damage Bonuses"},
 {"hash":358752,"name":"tfmitem.tspropinfo.caption","sourcebytes":[80,114,111,112],"value":"Prop"},
 {"hash":185388308,"name":"tfmitem.cbactivated.caption","sourcebytes":[65,99,116,105,118,97,116,101,100],"value":"Activated"},
+{"hash":39834053,"name":"tfmitem.lblpropstate.caption","sourcebytes":[80,114,111,112,32,83,116,97,116,101],"value":"Prop State"},
 {"hash":5680834,"name":"tfmitem.tsotherinfo.caption","sourcebytes":[79,116,104,101,114],"value":"Other"}
 ]}

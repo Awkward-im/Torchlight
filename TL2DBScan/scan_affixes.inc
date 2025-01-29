@@ -30,7 +30,7 @@ type
     effect  :integer;
     affix   :integer;
     duration:integer;
-    values  :array [0..5] of integer;
+    values  :array [0..5] of single;
   end;
 
 function AddAffixEffectToBase(ams:pointer; const aei:TAffixEffectInfo):boolean;
@@ -41,9 +41,9 @@ begin
         'value, value1, value2, value3, value4 ,value5) VALUES ('+
         IntToStr(aei.affix)+', '+IntToStr(aei.effect)+', '+
         FixedText(aei.name)+', '''+aei.dmgtype+''', '+IntToStr(aei.duration)+', '+
-        IntToStr(aei.values[0])+', '+IntToStr(aei.values[1])+', '+
-        IntToStr(aei.values[2])+', '+IntToStr(aei.values[3])+', '+
-        IntToStr(aei.values[4])+', '+IntToStr(aei.values[5])+')';
+        FloatToStr(aei.values[0])+', '+FloatToStr(aei.values[1])+', '+
+        FloatToStr(aei.values[2])+', '+FloatToStr(aei.values[3])+', '+
+        FloatToStr(aei.values[4])+', '+FloatToStr(aei.values[5])+')';
 
   result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
 end;
@@ -73,12 +73,12 @@ begin
         laei.dmgtype:='';
         laei.effect :=-1;
         laei.duration :=0;
-        laei.values[0]:=0;
-        laei.values[1]:=0;
-        laei.values[2]:=0;
-        laei.values[3]:=0;
-        laei.values[4]:=0;
-        laei.values[5]:=0;
+        laei.values[0]:=0.0;
+        laei.values[1]:=0.0;
+        laei.values[2]:=0.0;
+        laei.values[3]:=0.0;
+        laei.values[4]:=0.0;
+        laei.values[5]:=0.0;
         for j:=0 to GetChildCount(lnode)-1 do
         begin
           llnode:=GetChild(lnode,j);
@@ -88,7 +88,7 @@ begin
           else if CompareWide(pcw,'DAMAGE_TYPE')=0 then
             laei.dmgtype:=AsString(llnode)
           else if CompareWide(pcw,'VALUE')=0 then
-            laei.values[0]:=trunc(AsFloat(llnode)*100)
+            laei.values[0]:=AsFloat(llnode)
           else if CompareWide(pcw,'DURATION')=0 then
           begin
             ls:=AsString(llnode);
@@ -121,7 +121,7 @@ begin
                  begin
                    lunode:=FindNode(lnode,pcw);
                    if lunode<>nil then
-                     laei.values[k]:=trunc(AsFloat(lunode)*100);
+                     laei.values[k]:=AsFloat(lunode);
                  end;
 {
                  ls:=sqlite3_column_text(vm,k);
@@ -131,7 +131,7 @@ begin
                    lunode:=FindNode(llnode,pcw);
                    FreeMem(pcw);
                    if lunode<>nil then
-                     laei.values[k]:=trunc(AsFloat(lunode)*100);
+                     laei.values[k]:=AsFloat(lunode);
                  end;
 }
                end;
@@ -233,12 +233,12 @@ begin
       '  name     TEXT,'   +
       '  dmgtype  TEXT,'   +
       '  duration INTEGER,'+
-      '  value    INTEGER,'+
-      '  value1   INTEGER,'+
-      '  value2   INTEGER,'+
-      '  value3   INTEGER,'+
-      '  value4   INTEGER,'+
-      '  value5   INTEGER);')
+      '  value    REAL,'+
+      '  value1   REAL,'+
+      '  value2   REAL,'+
+      '  value3   REAL,'+
+      '  value4   REAL,'+
+      '  value5   REAL);')
   else
     result:=true;
   

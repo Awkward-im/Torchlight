@@ -177,6 +177,10 @@ const
   // special
   rgList      = $1000;
 
+  rgValidNodeTypes = [rgNotSet,rgInteger,rgFloat,rgDouble,rgUnsigned,rgString,rgBool,
+                      rgInteger64,rgTranslate,rgNote,rgVector2,rgVector3,rgVector4,
+                      rgWord,rgByte,rgBinary,rgQWord];
+
 function TypeToText(atype:integer):PWideChar;
 function TextToType(atype:PWideChar):integer;
 
@@ -240,16 +244,6 @@ const
   0x43 - mod lists (maybe something more)
   0x44 - mod version in mod list
 }
-
-type            	
-  TL2SaveHeader = packed record
-    Version :DWord;
-    Encoded :ByteBool;
-    Checksum:Dword;
-  end;
-  TL2SaveFooter = packed record
-    filesize:DWord;
-  end;
 
 const
   TL2Cheat  = 238;

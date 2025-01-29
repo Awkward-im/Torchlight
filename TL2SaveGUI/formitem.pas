@@ -1,3 +1,5 @@
+{TODO: signal about changes}
+
 unit formItem;
 
 {$mode objfpc}{$H+}
@@ -14,6 +16,8 @@ type
 
   TfmItem = class(TForm)
     edIconName: TEdit;
+    lblIconName: TLabel;
+    lblModList: TLabel;
     lblWeaponDamageBonuses: TLabel;
     pcItemInfo: TPageControl;
     sgDmgBonus: TStringGrid;
@@ -71,6 +75,8 @@ type
     // Prop
     tsPropInfo: TTabSheet;
     cbActivated : TCheckBox;
+    edPropState: TEdit;
+    lblPropState: TLabel;
 
     // Other
     tsOtherInfo: TTabSheet;
@@ -151,7 +157,7 @@ begin
   Application.MainForm.Caption:=ls;
 
   FItem.Name:=edName.Text;
-  FItem.Stack:=StrToIntDef(edStack.Text,1);
+  FItem.ItemStack:=StrToIntDef(edStack.Text,1);
   FItem.Changed:=true;
   if FChar<>nil then FChar.Changed:=true;
   bbUpdate.Visible:=false;
@@ -198,21 +204,29 @@ procedure TfmItem.FillInfo(aItem:TTLItem; aChar:TTLCharacter=nil);
 var
   linv,lcont:string;
   i:integer;
+  lprop:boolean;
 begin
   FItem:=aItem;
   FChar:=aChar;
+  lprop:=aItem.IsProp;
+
+  pcItemInfo.ActivePage:=tsCommonInfo;
+
   FMaxStack:=-1;
 
   edStack  .ReadOnly:=FChar=nil;
   edSockets.ReadOnly:=FChar=nil;
   
+  //--- Common ---
+
+  edName  .Text:=aItem.Name;
+  edPrefix.Text:=aItem.Prefix;
+  edSuffix.Text:=aItem.Suffix;
+
   if aItem.IsProp then
     edNameById.Text:=RGDBGetProp(aItem.ID)
   else
     edNameById.Text:=RGDBGetItem(aItem.ID);
-  edName  .Text:=aItem.Name;
-  edPrefix.Text:=aItem.Prefix;
-  edSuffix.Text:=aItem.Suffix;
 
   edX.Text:=FloatToStrF(aItem.Position1.X,ffFixed,-8,2);
   edY.Text:=FloatToStrF(aItem.Position1.Y,ffFixed,-8,2);
@@ -232,35 +246,49 @@ begin
     edZ1.Text:=FloatToStrF(aItem.Coord.Z,ffFixed,-8,2);
   end;
 
-  edLevel   .Text    := IntToStr(aItem.Level);
-  edStack   .Text    := IntToStr(aItem.Stack);
-
-  edEnchant .Text    := IntToStr(aItem.EnchantCount);
-  edPosition.Text    := IntToStr(aItem.Position);
-  linv:=RGDBGetItemPosition(aItem.Position, lcont);
-  lblContType.Caption:= lcont;
-  lblPosType .Caption:= linv;
-  edSockets.Text     := IntToStr(aItem.SocketCount);
-
-  edWeaponDmg   .Text   := IntToStr(aItem.WeaponDamage);
-  edArmor       .Text   := IntToStr(aItem.Armor);
-  edArmorType   .Text   := IntToStr(aItem.ArmorType);
-  lblArmorByType.Caption:= ''; //!!
-
-  cbFlag1.Checked:=aItem.Flags[0]; cbEquipped  .Checked:=aItem.Flags[0];
-  cbFlag2.Checked:=aItem.Flags[1]; cbEnabled   .Checked:=aItem.Flags[1];
+  cbFlag1.Checked:=aItem.Flags[0];
+  cbFlag2.Checked:=aItem.Flags[1];
   cbFlag3.Checked:=aItem.Flags[2];
   cbFlag4.Checked:=aItem.Flags[3];
-  cbFlag5.Checked:=aItem.Flags[4]; cbVisible   .Checked:=aItem.Flags[4];
+  cbFlag5.Checked:=aItem.Flags[4];
   cbFlag6.Checked:=aItem.Flags[5];
-  cbFlag7.Checked:=aItem.Flags[6]; cbRecognized.Checked:=aItem.Flags[6];
+  cbFlag7.Checked:=aItem.Flags[6];
 
-  sgDmgBonus.Clear;
-  sgDmgBonus.RowCount:=Length(aItem.DmgBonus)+1;
-  for i:=0 to High(aItem.DmgBonus) do
+  tsPropInfo.TabVisible:=lprop;
+  tsItemInfo.TabVisible:=not lprop;
+  if lprop then
   begin
-    sgDmgBonus.Cells[0,i+1]:=GetEffectDamageType(TTLEffectDamageType(aItem.DmgBonus[i].dmgtype));
-    sgDmgBonus.Cells[1,i+1]:=IntToStr(Round(aItem.DmgBonus[i].bonus));
+    edPropState.Text:=IntToStr(aItem.PropState);
+  end
+  else
+  begin
+    edLevel   .Text    := IntToStr(aItem.Level);
+    edStack   .Text    := IntToStr(aItem.ItemStack);
+    edEnchant .Text    := IntToStr(aItem.EnchantCount);
+    edSockets.Text     := IntToStr(aItem.SocketCount);
+
+    edPosition.Text    := IntToStr(aItem.Position);
+    linv:=RGDBGetItemPosition(aItem.Position, lcont);
+    lblContType.Caption:= lcont;
+    lblPosType .Caption:= linv;
+
+    edWeaponDmg   .Text   := IntToStr(aItem.WeaponDamage);
+    edArmor       .Text   := IntToStr(aItem.Armor);
+    edArmorType   .Text   := IntToStr(aItem.ArmorType);
+    lblArmorByType.Caption:= ''; //!!
+
+    cbEquipped  .Checked:=aItem.Flags[0];
+    cbEnabled   .Checked:=aItem.Flags[1];
+    cbVisible   .Checked:=aItem.Flags[4];
+    cbRecognized.Checked:=aItem.Flags[6];
+
+    sgDmgBonus.Clear;
+    sgDmgBonus.RowCount:=Length(aItem.DmgBonus)+1;
+    for i:=0 to High(aItem.DmgBonus) do
+    begin
+      sgDmgBonus.Cells[0,i+1]:=GetEffectDamageType(TTLEffectDamageType(aItem.DmgBonus[i].dmgtype));
+      sgDmgBonus.Cells[1,i+1]:=IntToStr(Round(aItem.DmgBonus[i].bonus));
+    end;
   end;
 
   //--- Setup changing visibility

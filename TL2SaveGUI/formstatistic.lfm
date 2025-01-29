@@ -6,7 +6,6 @@ object fmStatistic: TfmStatistic
   BorderStyle = bsNone
   ClientHeight = 377
   ClientWidth = 602
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object bbUpdate: TBitBtn
     Left = 24

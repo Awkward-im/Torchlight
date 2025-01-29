@@ -168,6 +168,10 @@ msgstr ""
 msgid "Are you sure to clear mod list?"
 msgstr ""
 
+#: formmodlist.rsmaximum
+msgid "Can't add more than 10 mods."
+msgstr ""
+
 #: formmodlist.rsreminder
 msgid ""
 "Don't forget to check modded objects.\n"
@@ -436,6 +440,10 @@ msgstr ""
 msgid "Apply custom class name"
 msgstr ""
 
+#: tfmchar.bbnewclass.hint
+msgid "Apply new class"
+msgstr ""
+
 #: tfmchar.bbupdate.caption
 msgctxt "tfmchar.bbupdate.caption"
 msgid "&Update"
@@ -498,10 +506,6 @@ msgstr ""
 
 #: tfmchar.lblarea.caption
 msgid "Area"
-msgstr ""
-
-#: tfmchar.lblcurrent.caption
-msgid "Morphed view"
 msgstr ""
 
 #: tfmchar.lblcustomclass.caption
@@ -576,6 +580,11 @@ msgctxt "tfmchar.lblmodlist.caption"
 msgid "Mod list"
 msgstr ""
 
+#: tfmchar.lblmorph.caption
+msgctxt "tfmchar.lblmorph.caption"
+msgid "Morphed view"
+msgstr ""
+
 #: tfmchar.lblmorphnote.caption
 msgid "* Permanent time is 5555"
 msgstr ""
@@ -589,7 +598,8 @@ msgctxt "tfmchar.lblname.caption"
 msgid "Character name"
 msgstr ""
 
-#: tfmchar.lblnew.caption
+#: tfmchar.lblnewclass.caption
+msgctxt "tfmchar.lblnewclass.caption"
 msgid "Choose new class"
 msgstr ""
 
@@ -929,9 +939,18 @@ msgstr ""
 msgid "Enchant count"
 msgstr ""
 
+#: tfmitem.lbliconname.caption
+msgid "Icon name"
+msgstr ""
+
 #: tfmitem.lbllevel.caption
 msgctxt "tfmitem.lbllevel.caption"
 msgid "Level"
+msgstr ""
+
+#: tfmitem.lblmodlist.caption
+msgctxt "tfmitem.lblmodlist.caption"
+msgid "Mod list"
 msgstr ""
 
 #: tfmitem.lblname.caption
@@ -950,6 +969,10 @@ msgstr ""
 
 #: tfmitem.lblprefix.caption
 msgid "Prefix"
+msgstr ""
+
+#: tfmitem.lblpropstate.caption
+msgid "Prop State"
 msgstr ""
 
 #: tfmitem.lblsockets.caption
@@ -1030,6 +1053,11 @@ msgstr ""
 
 #: tfmitems.cbequipped.caption
 msgid "Equipped only"
+msgstr ""
+
+#: tfmitems.lvfeitemlist.texthint
+msgctxt "tfmitems.lvfeitemlist.texthint"
+msgid "(filter)"
 msgstr ""
 
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
@@ -1700,6 +1728,11 @@ msgstr ""
 #: tfmstatistic.gbstatistic.caption
 msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
+msgstr ""
+
+#: tfmunits.lvfeunitlist.texthint
+msgctxt "tfmunits.lvfeunitlist.texthint"
+msgid "(filter)"
 msgstr ""
 
 #: tlsave.sloadfailed

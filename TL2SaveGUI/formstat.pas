@@ -71,12 +71,13 @@ uses
   rgdb;
 
 procedure TfmStat.bbClearLearnHistoryClick(Sender: TObject);
-var
-  llist:TL2IdList;
+//var
+//  llist:TL2IdList;
 begin
-  llist:=SGame.History;
-  SetLength(llist,0);
-  SGame.History:=llist;
+//  llist:=SGame.History;
+//  SetLength(llist,0);
+  SGame.History:=nil;
+  SGame.Modified:=true;
 
   lbSkillHistory.Clear;
   bbClearLearnHistory.Enabled:=false;
@@ -110,7 +111,6 @@ var
     false: (i:TRGInteger);
     true : (f:TRGFloat);
   end;
-  ls:string;
   i:integer;
 begin
   SGame:=aSGame;

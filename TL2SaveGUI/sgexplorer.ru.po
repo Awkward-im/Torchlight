@@ -179,6 +179,10 @@ msgstr "Сохранить триггеры"
 msgid "Are you sure to clear mod list?"
 msgstr "Вы уверены, что хотите очистить список модов?"
 
+#: formmodlist.rsmaximum
+msgid "Can't add more than 10 mods."
+msgstr "Нельзя добавить больше 10 модов."
+
 #: formmodlist.rsreminder
 msgid ""
 "Don't forget to check modded objects.\n"
@@ -455,6 +459,10 @@ msgstr "Импорт"
 msgid "Apply custom class name"
 msgstr "Применить своё имя класса"
 
+#: tfmchar.bbnewclass.hint
+msgid "Apply new class"
+msgstr "Применить новый класс"
+
 #: tfmchar.bbupdate.caption
 msgctxt "tfmchar.bbupdate.caption"
 msgid "&Update"
@@ -518,10 +526,6 @@ msgstr "Гардероб"
 #: tfmchar.lblarea.caption
 msgid "Area"
 msgstr "Область"
-
-#: tfmchar.lblcurrent.caption
-msgid "Morphed view"
-msgstr "Вид в морфе"
 
 #: tfmchar.lblcustomclass.caption
 msgid "Type here your custom class name"
@@ -597,6 +601,11 @@ msgctxt "tfmchar.lblmodlist.caption"
 msgid "Mod list"
 msgstr "Список Модов"
 
+#: tfmchar.lblmorph.caption
+msgctxt "tfmchar.lblmorph.caption"
+msgid "Morphed view"
+msgstr "Вид в морфе"
+
 #: tfmchar.lblmorphnote.caption
 msgid "* Permanent time is 5555"
 msgstr "* 5555 для \"Постоянно\""
@@ -610,7 +619,8 @@ msgctxt "tfmchar.lblname.caption"
 msgid "Character name"
 msgstr "Имя персонажа"
 
-#: tfmchar.lblnew.caption
+#: tfmchar.lblnewclass.caption
+msgctxt "tfmchar.lblnewclass.caption"
 msgid "Choose new class"
 msgstr "Выберите новый класс"
 
@@ -950,10 +960,19 @@ msgstr ""
 msgid "Enchant count"
 msgstr "Кол-во зачарований"
 
+#: tfmitem.lbliconname.caption
+msgid "Icon name"
+msgstr "Имя иконки"
+
 #: tfmitem.lbllevel.caption
 msgctxt "tfmitem.lbllevel.caption"
 msgid "Level"
 msgstr "Уровень"
+
+#: tfmitem.lblmodlist.caption
+msgctxt "tfmitem.lblmodlist.caption"
+msgid "Mod list"
+msgstr "Список Модов"
 
 #: tfmitem.lblname.caption
 msgctxt "tfmitem.lblname.caption"
@@ -972,6 +991,10 @@ msgstr ""
 #: tfmitem.lblprefix.caption
 msgid "Prefix"
 msgstr "Префикс"
+
+#: tfmitem.lblpropstate.caption
+msgid "Prop State"
+msgstr "Состояние"
 
 #: tfmitem.lblsockets.caption
 msgid "Sockets"
@@ -1052,6 +1075,11 @@ msgstr "Окруж."
 #: tfmitems.cbequipped.caption
 msgid "Equipped only"
 msgstr "Надетое"
+
+#: tfmitems.lvfeitemlist.texthint
+msgctxt "tfmitems.lvfeitemlist.texthint"
+msgid "(filter)"
+msgstr "(фильтр)"
 
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
 msgid "Key"
@@ -1722,6 +1750,11 @@ msgstr "Обновить"
 msgctxt "tfmstatistic.gbstatistic.caption"
 msgid "Statistic"
 msgstr "Статистика"
+
+#: tfmunits.lvfeunitlist.texthint
+msgctxt "tfmunits.lvfeunitlist.texthint"
+msgid "(filter)"
+msgstr "(фильтр)"
 
 #: tlsave.sloadfailed
 msgid "Savegame loading failed"

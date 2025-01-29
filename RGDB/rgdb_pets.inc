@@ -13,8 +13,9 @@ type
 function RGDBGetPet    (const aid:TRGID; out amods:string):string; overload;
 function RGDBGetPet    (const aid:TRGID                  ):string; overload;
 
-function RGDBGetPetMods(const aid:TRGID):string;
-function RGDBGetPetIcon(const aid:TRGID):string;
+function RGDBGetPetMods (const aid:TRGID):string;
+function RGDBGetPetIcon (const aid:TRGID):string;
+function RGDBGetPetSkins(const aid:TRGID):integer;
 
 function RGDBGetPetList(out alist:tPetArray):integer;
 function RGDBGetDefaultPet:TRGID;
@@ -107,6 +108,11 @@ end;
 function RGDBGetPetMods(const aid:TRGID):string;
 begin
   result:=RGDBGetTextValue(aid,dbPetTable,'modid');
+end;
+
+function RGDBGetPetSkins(const aid:TRGID):integer;
+begin
+  result:=RGDBGetIntValue(aid,dbPetTable,'skins');
 end;
 
 //----- List -----

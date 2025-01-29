@@ -6,7 +6,6 @@ object fmItems: TfmItems
   BorderStyle = bsNone
   ClientHeight = 519
   ClientWidth = 764
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object Splitter: TSplitter
     Left = 170
@@ -25,8 +24,8 @@ object fmItems: TfmItems
     TabOrder = 1
     object lvItemList: TListView
       Left = 1
-      Height = 498
-      Top = 20
+      Height = 475
+      Top = 43
       Width = 168
       Align = alClient
       AutoWidthLastColumn = True
@@ -41,6 +40,7 @@ object fmItems: TfmItems
       SortType = stText
       TabOrder = 0
       ViewStyle = vsReport
+      OnChange = lvItemListChange
       OnSelectItem = lvItemListSelectItem
     end
     object cbEquipped: TCheckBox
@@ -52,6 +52,20 @@ object fmItems: TfmItems
       Caption = 'Equipped only'
       TabOrder = 1
       OnChange = cbEquippedChange
+    end
+    object lvfeItemList: TListViewFilterEdit
+      Left = 1
+      Height = 23
+      Top = 20
+      Width = 168
+      OnAfterFilter = lvfeItemListAfterFilter
+      ButtonWidth = 23
+      Align = alTop
+      NumGlyphs = 1
+      MaxLength = 0
+      TabOrder = 2
+      TextHint = '(filter)'
+      FilteredListview = lvItemList
     end
   end
   object pnlItem: TPanel

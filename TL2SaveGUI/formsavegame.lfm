@@ -6,7 +6,6 @@ object fmSaveFile: TfmSaveFile
   ClientHeight = 700
   ClientWidth = 1000
   Menu = MainMenu
-  LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   object Splitter: TSplitter
@@ -149,8 +148,8 @@ object fmSaveFile: TfmSaveFile
   object imgIcons: TImageList
     Height = 24
     Width = 24
-    Left = 478
-    Top = 115
+    Left = 480
+    Top = 112
     Bitmap = {
       4C7A0A00000018000000180000007C3200000000000078DACD7C07585447D4F6
       DDCAEEB2855DB600BB0B2CBDF7DEBBF4A288224541C55EB12BF65E62EF1ABB62

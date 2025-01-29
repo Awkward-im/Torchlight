@@ -101,7 +101,7 @@ begin
       lstrm.LoadFromFile(ldlg.FileName);
       lstrm.Position:=0;
       FClass.Clear;
-{$NOTE Check version here}
+{NOTE: Check version here}
       FClass.LoadFromStream(lstrm, $44);
       lstrm.Free;
 

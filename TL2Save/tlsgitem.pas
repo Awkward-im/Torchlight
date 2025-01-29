@@ -83,13 +83,16 @@ type
     property Position1:TVector3 read FPosition1;
     property IsUsable:boolean read GetUsability;
 
-    property Stack       :integer read FStackSize write FStackSize;
+    // Items
+    property ItemStack   :integer read FStackSize write FStackSize;
     property EnchantCount:integer read FEnchantmentCount write FEnchantmentCount;
     property Position    :integer read FStashPosition;
     property SocketCount :integer read FSocketCount ; // write FSocketCount;
     property WeaponDamage:integer read FWeaponDamage;
     property Armor       :integer read FArmor;
     property ArmorType   :integer read FArmorType;
+    // Props
+    property PropState   :integer read FStackSize write FStackSize;
 
     property DmgBonus:TDmgBonusList read FDmgBonus;
   end;
@@ -255,8 +258,9 @@ begin
   if aVersion>=tlsaveTL2Minimal then
     FLevel:=integer(AStream.ReadDWord);
 
+  // prop: chest: 1 - opened
   FStackSize  :=integer(AStream.ReadDWord); //-1 (or 0-1 for 2-state) props
-  FSocketCount:=integer(AStream.ReadDWord); // 0  or unknown for props
+  FSocketCount:=integer(AStream.ReadDWord); // 0  or unknown for props (loop?)
 
   FSocketables:=ReadItemList(AStream, aVersion);
 

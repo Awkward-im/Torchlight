@@ -1,9 +1,9 @@
-uses tl2save,tl2db;
+uses tl2save,rgdb;
 
 var
   tr:TTL2SaveFile;
 begin
-  LoadBases;
+  RGDBLoadBase;
   tr:=TTL2SaveFile.Create;
   tr.LoadFromFile(ParamStr(1));
   tr.parse;
@@ -11,5 +11,5 @@ begin
   tr.prepare;
   tr.SaveToFile(ParamStr(1)+'.bin');
   tr.Free;
-  FreeBases;
+  RGDBFreeBase;
 end.

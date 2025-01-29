@@ -6,7 +6,6 @@ object fmChar: TfmChar
   BorderStyle = bsNone
   ClientHeight = 502
   ClientWidth = 640
-  LCLVersion = '4.99.0.0'
   OnDestroy = FormDestroy
   object pcCharInfo: TPageControl
     Left = 0
@@ -441,7 +440,7 @@ object fmChar: TfmChar
       object lblMorphTime: TLabel
         Left = 92
         Height = 15
-        Top = 239
+        Top = 244
         Width = 66
         Caption = 'Morph Time'
         ParentColor = False
@@ -462,31 +461,32 @@ object fmChar: TfmChar
         AutoSize = False
         ParentColor = False
       end
-      object lblNew: TLabel
-        Left = 368
+      object lblNewClass: TLabel
+        AnchorSideRight.Control = lbNewClass
+        AnchorSideRight.Side = asrBottom
+        Left = 531
         Height = 15
-        Top = 184
-        Width = 256
+        Top = 141
+        Width = 93
         Alignment = taRightJustify
-        Anchors = [akTop, akLeft, akRight]
-        AutoSize = False
+        Anchors = [akTop, akRight]
         Caption = 'Choose new class'
         ParentColor = False
       end
       object cbMorph: TComboBox
         Left = 4
         Height = 23
-        Top = 204
+        Top = 212
         Width = 288
         ItemHeight = 15
         Style = csDropDownList
-        TabOrder = 4
+        TabOrder = 10
         OnChange = cbMorphChange
       end
       object seScale: TFloatSpinEdit
-        Left = 4
+        Left = 323
         Height = 23
-        Top = 147
+        Top = 24
         Width = 65
         Increment = 0.05
         MaxValue = 2
@@ -496,9 +496,11 @@ object fmChar: TfmChar
         OnChange = ToSetUpdate
       end
       object lblScale: TLabel
-        Left = 80
+        AnchorSideLeft.Control = seScale
+        AnchorSideLeft.Side = asrCenter
+        Left = 342
         Height = 15
-        Top = 152
+        Top = 4
         Width = 27
         Caption = 'Scale'
         ParentColor = False
@@ -506,10 +508,10 @@ object fmChar: TfmChar
       object edMorphTime: TEdit
         Left = 4
         Height = 23
-        Top = 235
+        Top = 240
         Width = 80
         NumbersOnly = True
-        TabOrder = 5
+        TabOrder = 11
         OnChange = ToSetUpdate
       end
       object lblName: TLabel
@@ -528,10 +530,10 @@ object fmChar: TfmChar
         Anchors = [akTop, akRight]
         Stretch = True
       end
-      object lblCurrent: TLabel
+      object lblMorph: TLabel
         Left = 4
         Height = 15
-        Top = 184
+        Top = 192
         Width = 76
         Caption = 'Morphed view'
         ParentColor = False
@@ -539,7 +541,7 @@ object fmChar: TfmChar
       object lblMorphNote: TLabel
         Left = 4
         Height = 15
-        Top = 266
+        Top = 271
         Width = 131
         Caption = '* Permanent time is 5555'
         ParentColor = False
@@ -552,7 +554,7 @@ object fmChar: TfmChar
         Width = 59
         Anchors = [akLeft, akBottom]
         Caption = 'Cheater'
-        TabOrder = 10
+        TabOrder = 12
         OnChange = ToSetUpdate
       end
       object edClass: TEdit
@@ -571,27 +573,15 @@ object fmChar: TfmChar
         Anchors = [akTop, akRight]
         Stretch = True
       end
-      object cbNewClass: TComboBox
-        Left = 336
-        Height = 23
-        Top = 204
-        Width = 288
-        Anchors = [akTop, akRight]
-        AutoSize = False
-        ItemHeight = 15
-        ReadOnly = True
-        TabOrder = 7
-        OnChange = cbNewClassChange
-      end
       object gbGender: TGroupBox
-        Left = 271
+        Left = 268
         Height = 60
         Top = 72
         Width = 120
         Caption = 'Gender'
         ClientHeight = 40
         ClientWidth = 116
-        TabOrder = 6
+        TabOrder = 4
         object rbMale: TRadioButton
           Left = 8
           Height = 19
@@ -621,25 +611,23 @@ object fmChar: TfmChar
         end
       end
       object edNewClass: TEdit
-        Left = 368
+        Left = 4
         Height = 23
-        Top = 235
+        Top = 161
         Width = 256
-        Anchors = [akTop, akRight]
-        TabOrder = 8
+        TabOrder = 5
       end
       object bbManual: TBitBtn
-        Left = 336
+        Left = 268
         Height = 30
         Hint = 'Apply custom class name'
-        Top = 232
+        Top = 158
         Width = 27
-        Anchors = [akTop, akRight]
         Kind = bkYes
         Margin = 3
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 9
+        TabOrder = 6
         OnClick = bbManualClick
       end
       object edClassId: TEdit
@@ -651,12 +639,63 @@ object fmChar: TfmChar
         TabOrder = 2
       end
       object lblCustomClass: TLabel
-        Left = 336
+        Left = 8
         Height = 15
-        Top = 266
+        Top = 141
         Width = 183
-        Anchors = [akTop, akRight]
         Caption = 'Type here your custom class name'
+      end
+      object lbNewClass: TListBox
+        Left = 336
+        Height = 233
+        Top = 189
+        Width = 288
+        Anchors = [akTop, akRight, akBottom]
+        ItemHeight = 0
+        TabOrder = 8
+        OnSelectionChange = lbNewClassSelectionChange
+      end
+      object lfeNewClass: TListFilterEdit
+        Left = 368
+        Height = 23
+        Top = 161
+        Width = 255
+        ButtonWidth = 23
+        Anchors = [akTop, akRight]
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 7
+        FilteredListbox = lbNewClass
+      end
+      object bbNewClass: TBitBtn
+        Left = 336
+        Height = 30
+        Hint = 'Apply new class'
+        Top = 160
+        Width = 27
+        Anchors = [akTop, akRight]
+        Kind = bkYes
+        Margin = 3
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 9
+        OnClick = bbNewClassClick
+      end
+      object lblSkin: TLabel
+        Left = 61
+        Height = 15
+        Top = 300
+        Width = 22
+        Caption = 'Skin'
+        ParentColor = False
+      end
+      object seSkin: TSpinEdit
+        Left = 4
+        Height = 23
+        Top = 296
+        Width = 48
+        TabOrder = 13
+        OnChange = ToSetUpdate
       end
     end
     object tsWardrobe: TTabSheet
@@ -877,32 +916,6 @@ object fmChar: TfmChar
           TabOrder = 11
           OnChange = cbWardFaceChange
         end
-      end
-      object cbSkins: TComboBox
-        Left = 432
-        Height = 23
-        Top = 48
-        Width = 192
-        ItemHeight = 15
-        Style = csDropDownList
-        TabOrder = 2
-      end
-      object lblSkin: TLabel
-        Left = 592
-        Height = 15
-        Top = 19
-        Width = 22
-        Caption = 'Skin'
-        ParentColor = False
-      end
-      object edSkin: TEdit
-        Left = 432
-        Height = 23
-        Top = 19
-        Width = 48
-        NumbersOnly = True
-        TabOrder = 1
-        OnChange = ToSetUpdate
       end
     end
     object tsAction: TTabSheet
