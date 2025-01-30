@@ -53,7 +53,7 @@ type
       BRow: Integer; var Result: integer);
 
   private
-    SGame:TTLSaveFile;
+    FSGame:TTLSaveFile;
 
   public
     procedure FillInfo(aSGame:TTLSaveFile);
@@ -74,10 +74,10 @@ procedure TfmStat.bbClearLearnHistoryClick(Sender: TObject);
 //var
 //  llist:TL2IdList;
 begin
-//  llist:=SGame.History;
+//  llist:=FSGame.History;
 //  SetLength(llist,0);
-  SGame.History:=nil;
-  SGame.Modified:=true;
+  FSGame.History:=nil;
+  FSGame.Modified:=true;
 
   lbSkillHistory.Clear;
   bbClearLearnHistory.Enabled:=false;
@@ -113,9 +113,9 @@ var
   end;
   i:integer;
 begin
-  SGame:=aSGame;
+  FSGame:=aSGame;
 
-  lstat:=aSGame.Stats;
+  lstat:=FSGame.Stats;
 
   // common
   edName .Text:=lstat.PlayerName;

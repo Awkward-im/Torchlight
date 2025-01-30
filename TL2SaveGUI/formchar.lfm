@@ -12,9 +12,9 @@ object fmChar: TfmChar
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsView
+    ActivePage = tsStat
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -22,11 +22,11 @@ object fmChar: TfmChar
       ClientWidth = 632
       object gbGlobal: TGroupBox
         Left = 8
-        Height = 107
-        Top = 317
+        Height = 110
+        Top = 315
         Width = 279
         Caption = 'Global'
-        ClientHeight = 87
+        ClientHeight = 90
         ClientWidth = 275
         TabOrder = 1
         object lblDifficulty: TLabel
@@ -49,7 +49,7 @@ object fmChar: TfmChar
         object lblNGState: TLabel
           Left = 144
           Height = 15
-          Top = 37
+          Top = 33
           Width = 46
           Caption = 'NG State'
           ParentColor = False
@@ -82,6 +82,14 @@ object fmChar: TfmChar
           Style = csDropDownList
           TabOrder = 1
           OnChange = ToSetUpdate
+        end
+        object cbRetired: TCheckBox
+          Left = 144
+          Height = 19
+          Top = 64
+          Width = 55
+          Caption = 'Retired'
+          TabOrder = 3
         end
       end
       object gbBaseStats: TGroupBox

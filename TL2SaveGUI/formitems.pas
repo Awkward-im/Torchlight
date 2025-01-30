@@ -1,4 +1,5 @@
 {TODO: make different icons for activated and not activated props}
+{TODO: make icon for quest items. Check QuestID? or database "quest" field?}
 unit formItems;
 
 {$mode objfpc}{$H+}
@@ -7,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, ListViewFilterEdit, tlsgitem, tlsgchar, formItem;
+  ComCtrls, ListViewFilterEdit, tlsave, tlsgitem, tlsgchar, formItem;
 
 type
 
@@ -28,13 +29,14 @@ type
     procedure lvItemListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
   private
     FItem:TfmItem;
+    FSGame:TTLSaveFile;
     FChar:TTLCharacter;
     FItems:TTLItemList;
     procedure FillItemList();
     function GetItemIcon(idx: integer): integer;
 
   public
-    procedure FillInfo(aItems:TTLItemList; aChar:TTLCharacter=nil);
+    procedure FillInfo(aSGame:TTLSaveFile; aItems:TTLItemList; aChar:TTLCharacter=nil);
 
   end;
 
@@ -65,7 +67,7 @@ begin
 
     litem:=FItems[UIntPtr(Item.Data)];
 
-    FItem.FillInfo(litem,FChar);
+    FItem.FillInfo(FSGame,litem,FChar);
     FItem.Visible:=true;
 
     fmButtons.btnExport.Enabled:=true;
@@ -155,14 +157,17 @@ begin
 
     if lvItemList.Items.Count>0 then
       lvItemList.ItemIndex:=0;
-  end;
+  end
+  else
+    lvItemList.Columns[0].Caption:='0 / 0 [0]';
 
   lvfeItemList.FilteredListView:=lvItemList;
   lvfeItemList.SortData:=true;
 end;
 
-procedure TfmItems.FillInfo(aItems:TTLItemList; aChar:TTLCharacter=nil);
+procedure TfmItems.FillInfo(aSGame:TTLSaveFile; aItems:TTLItemList; aChar:TTLCharacter=nil);
 begin
+  FSGame:=aSGame;
   FItems:=aItems;
   FChar :=aChar;
 

@@ -11,7 +11,7 @@ uses
 type
   tStatMob = packed record
     id    :TRGID;
-    field1:TRGInteger; // ?? amount killed, player+aoe
+    field1:TRGInteger; // ?? amount killed, player+aoe (looks like hit amount sometime)
     field2:TRGInteger; // ?? amount killed, player+pet
     exp   :TRGInteger;
     field4:TRGInteger;
@@ -70,7 +70,7 @@ type
 
   tUnkn9 = packed record
     index:byte;
-    data :array [0..3] of word;
+    data :array [0..3] of word; // 1st group - times to start game
   end;
 
 type

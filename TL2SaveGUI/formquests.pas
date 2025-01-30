@@ -19,7 +19,7 @@ type
     procedure sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 
   private
-    SGame:TTLSaveFile;
+    FSGame:TTLSaveFile;
 
   public
     procedure FillInfo(aSGame:TTLSaveFile);
@@ -56,7 +56,7 @@ begin
       AssignFile(f,ldlg.FileName);
       Rewrite(f);
       if IOResult=0 then
-        with SGame.Quests.QuestsUnDone[IntPtr(sgQuests.Objects[0,sgQuests.Row])] do
+        with FSGame.Quests.QuestsUnDone[IntPtr(sgQuests.Objects[0,sgQuests.Row])] do
         begin
           BlockWrite(f,id,SizeOf(id));
           BlockWrite(f,q1,SizeOf(q1));
@@ -77,7 +77,7 @@ var
   lmod:string;
   i,j:integer;
 begin
-  SGame:=aSGame;
+  FSGame:=aSGame;
 
   sgQuests.BeginUpdate;
   sgQuests.Clear;

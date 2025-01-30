@@ -42,7 +42,7 @@ type
   private
     FPrefix:string;
 
-//    FIsProp:boolean;
+    FQuestID:TRGID;
 
     FEnchantmentCount:integer;
     FStashPosition   :integer;
@@ -59,11 +59,6 @@ type
 
     FPosition1:TVector3;
 
-    FUnkn1:array [0..2] of TRGID;
-    FUnkn2:array [0..28] of byte;
-    FUnkn4:DWord;
-    FUnkn5:array [0..2] of DWord;
-
     FDmgBonus:array of TDamageBonus;
 
     FUseState:integer;
@@ -75,6 +70,16 @@ type
   protected
     function GetDBMods():string; override;
   public
+    FUnkn1:array [0..2] of TRGID;
+    FUnkn2b:byte;  // 0 - use 21 and 22; 1 - use 20
+    FUnkn20:TRGID; // layout link?
+    FUnkn21:TRGID; // unit spawner?
+    FUnkn22:TRGID; // used with 21 only
+    FUnkn23:DWord;
+
+    FUnkn4:DWord;
+    FUnkn5:integer;
+
     property Prefix:string read FPrefix;
 
     property IsProp:boolean read GetPropFlag;
@@ -91,6 +96,8 @@ type
     property WeaponDamage:integer read FWeaponDamage;
     property Armor       :integer read FArmor;
     property ArmorType   :integer read FArmorType;
+
+    property QuestID     :TRGID   read FQuestID;
     // Props
     property PropState   :integer read FStackSize write FStackSize;
 
@@ -124,7 +131,7 @@ end;
 
 function TTLItem.GetPropFlag:boolean;
 begin
-  result:=FUnkn2[0]<>0;
+  result:=not ((FUnkn20=RGIdEmpty) and (FUnkn21=RGIdEmpty) and (FUnkn22=RGIdEmpty));
 end;
 
 function TTLItem.GetDBMods():string;
@@ -203,30 +210,24 @@ begin
   else
     AStream.Read(FUnkn1,16);
 
-  //??
+  {
+    AStream.ReadByte;  // 0 (1 - "Layout link")
+    AStream.ReadQWord; // -1 or "Layout Link" ID on location
+    AStream.ReadQWord; // -1 or "Unit spawner"
+    AStream.ReadQWord; // -1 or unknown (for unit spawner)
+    AStream.ReadDWord; // 0
+  }
+  FUnkn2b:=AStream.ReadByte();
+  if FUnkn2b>1 then ldebug:=ldebug+'funk2b '+IntToStr(FUnkn2b)+' at '+HexStr(AStream.Position,8)+#13#10;
+  FUnkn20:=TRGID(AStream.ReadQWord());
+  FUnkn21:=TRGID(AStream.ReadQWord());
   if aVersion>=tlsaveTL2Minimal then
-  begin
-    AStream.Read(FUnkn2,29);
-    if FUnkn2[0]>1 then ldebug:=ldebug+'funk2 '+HexStr(AStream.Position,8)+#13#10;
-    if pDWord(@FUnkn2[25])^<>0 then ldebug:=ldebug+'funk2(last) '+HexStr(AStream.Position,8)+#13#10;
-    {
-      AStream.ReadByte;  // 0 (1 - "Layout link")
-      AStream.ReadQWord; // -1 or "Layout Link" ID on location
-      AStream.ReadQWord; // -1 or "Unit spawner"
-      AStream.ReadQWord; // -1 or unknown (for unit spawner)
-      AStream.ReadDWord; // 0
-    }
-  end
+    FUnkn22:=TRGID(AStream.ReadQWord())
   else
-  begin
-    {
-      AStream.ReadByte;  // 0 (1 - "Layout link")
-      AStream.ReadQWord; // -1 or "Layout Link" ID on location
-      AStream.ReadQWord; // -1 or "Unit spawner"
-      AStream.ReadDWord; // 0
-    }
-    AStream.Read(FUnkn2,21);
-  end;
+    FUnkn22:=RGIdEmpty;
+
+  FUnkn23:=AStream.ReadDWord();
+  if FUnkn23<>0 then ldebug:=ldebug+'funk23='+IntToStr(FUnkn23)+' at '+HexStr(AStream.Position,8)+#13#10;
 
   FEnchantmentCount:=integer(AStream.ReadDWord); // enchantment count // prop=E56DE12D
   FStashPosition   :=integer(AStream.ReadDWord); // stash position $285 = 645 . -1 for props
@@ -248,7 +249,15 @@ begin
   else
   begin
     AStream.Read(FFlags,6);
-    //    0 1 1 1 0 1
+{
+      0 -
+      1 - 
+      2 - 
+      3 - 
+      4 - 
+      5 - 
+
+}
   end;
 
   // coordinates
@@ -275,12 +284,8 @@ begin
   FArmor       :=integer(AStream.ReadDWord); // -1 for non-armor
   FArmorType   :=integer(AStream.ReadDWord); // 0 for items, 0-15 for props
 
-  //??
-  {TL1 = quest item. id(8b), =$16}
-  AStream.Read(FUnkn5,12);
-  if FUnkn5[0]<>$FFFFFFFF then ldebug:=ldebug+'Unkn5[0]='+HexStr(FUnkn5[0],8)+' at '+HexStr(AStream.Position,8)+#13#10;
-  if FUnkn5[1]<>$FFFFFFFF then ldebug:=ldebug+'Unkn5[1]='+HexStr(FUnkn5[1],8)+' at '+HexStr(AStream.Position,8)+#13#10;
-  if FUnkn5[2]<>$FFFFFFFF then ldebug:=ldebug+'Unkn5[2]='+HexStr(FUnkn5[2],8)+' at '+HexStr(AStream.Position,8)+#13#10;
+  FQuestID:=TRGID (AStream.ReadQWord());
+  FUnkn5  :=integer(AStream.ReadDWord());
 {
   37 gold = 3*454; 48 = 0; 109, 51 = 211 - same values for same location?
   AStream.ReadQWord; // *FF
@@ -357,27 +362,12 @@ begin
     AStream.Write(FUnkn1,16);
 
   //??
+  AStream.WriteByte(FUnkn2b);
+  AStream.WriteQWord(QWord(FUnkn20));
+  AStream.WriteQWord(QWord(FUnkn21));
   if aVersion>=tlsaveTL2Minimal then
-  begin
-    AStream.Write(FUnkn2,29);
-    {
-      AStream.WriteByte;      // 0
-      AStream.WriteQWord;     // *FF
-      AStream.WriteQWord;     // *FF
-      AStream.WriteQWord;     // *FF
-      AStream.WriteDWord;     // 0
-    }
-  end
-  else
-  begin
-    AStream.Write(FUnkn2,21);
-    {
-      AStream.WriteByte;      // 0
-      AStream.WriteQWord;     // *FF
-      AStream.WriteQWord;     // *FF
-      AStream.WriteDWord;     // 0
-    }
-  end;
+    AStream.WriteQWord(QWord(FUnkn22));
+  AStream.WriteDWord(FUnkn23);
 
   AStream.WriteDWord(DWord(FEnchantmentCount)); // enchantment count
   AStream.WriteDWord(DWord(FStashPosition   )); // stash position

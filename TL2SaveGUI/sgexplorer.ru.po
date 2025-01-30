@@ -489,6 +489,10 @@ msgstr "Хардкор"
 msgid "Keep base stats"
 msgstr "Оставить базовые характеристики"
 
+#: tfmchar.cbretired.caption
+msgid "Retired"
+msgstr "В отставке"
+
 #: tfmchar.gbaction.caption
 msgid "Action"
 msgstr "Действие"
@@ -996,6 +1000,10 @@ msgstr "Префикс"
 msgid "Prop State"
 msgstr "Состояние"
 
+#: tfmitem.lblquestid.caption
+msgid "Quest ID"
+msgstr ""
+
 #: tfmitem.lblsockets.caption
 msgid "Sockets"
 msgstr "Слотов"
@@ -1007,6 +1015,47 @@ msgstr "Ёмкость"
 #: tfmitem.lblsuffix.caption
 msgid "Suffix"
 msgstr "Суффикс"
+
+#: tfmitem.lblunkn1_1.caption
+msgid "Unkn1_1"
+msgstr ""
+
+#: tfmitem.lblunkn1_2.caption
+msgid "Unkn1_2"
+msgstr ""
+
+#: tfmitem.lblunkn1_3.caption
+msgid "Unkn1_3"
+msgstr ""
+
+#: tfmitem.lblunkn2_1.caption
+msgid "LayLink"
+msgstr ""
+
+#: tfmitem.lblunkn2_2.caption
+msgid "UNSpawner"
+msgstr ""
+
+#: tfmitem.lblunkn2_3.caption
+msgid "Unkn2_3"
+msgstr ""
+
+#: tfmitem.lblunkn2_4.caption
+msgid "Unkn2_4"
+msgstr ""
+
+#: tfmitem.lblunkn2_byte.caption
+msgid "Unkn2_byte"
+msgstr ""
+
+#: tfmitem.lblunkn4.caption
+msgid "Unkn4"
+msgstr ""
+
+#: tfmitem.lblunkn5_3.caption
+msgctxt "tfmitem.lblunkn5_3.caption"
+msgid "Unkn5"
+msgstr ""
 
 #: tfmitem.lblweapondamagebonuses.caption
 msgid "Weapon Damage Bonuses"
@@ -1071,6 +1120,10 @@ msgstr "Другое"
 #: tfmitem.tspropinfo.caption
 msgid "Prop"
 msgstr "Окруж."
+
+#: tfmitem.tstechinfo.caption
+msgid "Technical"
+msgstr "Техническое"
 
 #: tfmitems.cbequipped.caption
 msgid "Equipped only"

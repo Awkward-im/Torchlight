@@ -4,6 +4,7 @@
 {"hash":217984121,"name":"tfmchar.lbldifficulty.caption","sourcebytes":[68,105,102,102,105,99,117,108,116,121],"value":"Difficulty"},
 {"hash":143303269,"name":"tfmchar.cbhardcore.caption","sourcebytes":[72,97,114,100,99,111,114,101],"value":"Hardcore"},
 {"hash":156937605,"name":"tfmchar.lblngstate.caption","sourcebytes":[78,71,32,83,116,97,116,101],"value":"NG State"},
+{"hash":147523812,"name":"tfmchar.cbretired.caption","sourcebytes":[82,101,116,105,114,101,100],"value":"Retired"},
 {"hash":125706275,"name":"tfmchar.gbbasestats.caption","sourcebytes":[66,97,115,101,32,115,116,97,116,115],"value":"Base stats"},
 {"hash":193743624,"name":"tfmchar.lblstrength.caption","sourcebytes":[83,116,114,101,110,103,116,104],"value":"Strength"},
 {"hash":262986361,"name":"tfmchar.lbldexterity.caption","sourcebytes":[68,101,120,116,101,114,105,116,121],"value":"Dexterity"},

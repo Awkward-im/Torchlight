@@ -191,12 +191,12 @@ begin
   lshowall:=fmSettings.cbShowAll.Checked;
   lNode.Items[idxCharacter ].Items[1].Visible:=lshowall;
   lNode.Items[idxKeyMapping].Visible:=lshowall;
-  lNode.Items[idxMovies    ].Visible:=lshowall;
+  lNode.Items[idxMovies    ].Visible:=lshowall {and (SGame.GameVersion=verTL2)};
 //  lNode.Items[idxModList   ].Visible:=lshowall;
   lNode.Items[idxQuests    ].Visible:=lshowall;
   lNode.Items[idxRecipes   ].Visible:=lshowall;
   lNode.Items[idxMaps      ].Visible:=lshowall;
-  lNode.Items[idxStatistic ].Visible:=lshowall;
+  lNode.Items[idxStatistic ].Visible:=lshowall and (SGame.GameVersion=verTL2);
 
   lcnt:=SGame.PetCount;
   lNode:=tvSaveGame.Items[idxSavegame].Items[idxPets];
@@ -563,7 +563,7 @@ begin
             end;
 
             1: begin
-              FItems.FillInfo(SGame.CharInfo.Items, SGame.CharInfo);
+              FItems.FillInfo(SGame,SGame.CharInfo.Items, SGame.CharInfo);
               SGEPage:=FItems;
             end;
           end;
@@ -587,7 +587,7 @@ begin
           SGEPage:=FPet;
         end;
         3: begin
-          FItems.FillInfo(SGame.PetInfo[lidx].Items, SGame.PetInfo[lidx]);
+          FItems.FillInfo(SGame,SGame.PetInfo[lidx].Items, SGame.PetInfo[lidx]);
           SGEPage:=FItems;
         end;
       end;
@@ -625,11 +625,11 @@ begin
               SGEPage:=FUnits;
             end;
             1: begin
-              FItems.FillInfo(SGame.Maps[lidx].PropList);
+              FItems.FillInfo(SGame,SGame.Maps[lidx].PropList);
               SGEPage:=FItems;
             end;
             2: begin
-              FItems.FillInfo(SGame.Maps[lidx].QuestItems);
+              FItems.FillInfo(SGame,SGame.Maps[lidx].QuestItems);
               SGEPage:=FItems;
             end;
           end;

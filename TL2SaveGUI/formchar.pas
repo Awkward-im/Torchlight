@@ -17,6 +17,7 @@ type
   TfmChar = class(TForm)
     bbNewClass: TBitBtn;
     bbUpdate: TBitBtn;
+    cbRetired: TCheckBox;
     seSkin: TSpinEdit;
 
     lblCustomClass: TLabel;
@@ -800,6 +801,8 @@ begin
   cbNGState   .ItemIndex:=FSGame.NewGameCycle;
   cbDifficulty.ItemIndex:=ORD(FSGame.Difficulty);
   cbHardcore  .Checked  :=FSGame.Hardcore;
+//  cbRetired.Visible:=FSGame.Version:=verTL1;
+  cbRetired   .Checked  :=FSGame.Retired;
 
   //--- View ---
 
@@ -852,6 +855,7 @@ begin
   FSGame.NewGameCycle:=cbNGState.ItemIndex;
   FSGame.Difficulty  :=TL2Difficulty(cbDifficulty.ItemIndex);
   FSGame.Hardcore    :=cbHardcore.Checked;
+  FSGame.Retired     :=cbRetired.Checked;
 
   //--- View ---
 
@@ -1528,7 +1532,7 @@ begin
   //--- Wardrobe ---
 
   // skip pet/NPC wardrobe right now
-  tsWardrobe.TabVisible:=lChar and lshowall;
+  tsWardrobe.TabVisible:=lChar and lshowall and (FSGame.GameVersion=verTL2);
 
   //--- Action ---
 
@@ -1566,7 +1570,7 @@ begin
   if tsItems.TabVisible then
     if FItems<>nil then
     begin
-      FItems.FillInfo(FChar.Items, FChar);
+      FItems.FillInfo(FSGame, FChar.Items, FChar);
     end;
 
   bbUpdate.Enabled:=false;

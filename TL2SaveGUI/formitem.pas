@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, ComCtrls, Grids, formEffects, tlsgitem, tlsgchar;
+  Buttons, ComCtrls, Grids, formEffects, tlsgitem, tlsgchar, tlsave;
 
 type
 
@@ -16,11 +16,35 @@ type
 
   TfmItem = class(TForm)
     edIconName: TEdit;
+    edQuestName: TEdit;
+    edUnkn1_1: TEdit;
+    edQuestID: TEdit;
+    edUnkn1_2: TEdit;
+    edUnkn1_3: TEdit;
+    edUnkn2_byte: TEdit;
+    edUnkn2_1: TEdit;
+    edUnkn2_2: TEdit;
+    edUnkn2_3: TEdit;
+    edUnkn2_4: TEdit;
+    edUnkn4: TEdit;
+    edUnkn5: TEdit;
+    lblUnkn1_1: TLabel;
+    lblQuestID: TLabel;
+    lblUnkn1_2: TLabel;
+    lblUnkn1_3: TLabel;
+    lblUnkn2_byte: TLabel;
+    lblUnkn2_1: TLabel;
+    lblUnkn2_2: TLabel;
+    lblUnkn2_3: TLabel;
+    lblUnkn2_4: TLabel;
+    lblUnkn4: TLabel;
     lblIconName: TLabel;
     lblModList: TLabel;
+    lblUnkn5_3: TLabel;
     lblWeaponDamageBonuses: TLabel;
     pcItemInfo: TPageControl;
     sgDmgBonus: TStringGrid;
+    tsTechInfo: TTabSheet;
     tsCommonInfo: TTabSheet;
 
     // Common
@@ -91,6 +115,7 @@ type
   private
     FEffects:TfmEffects;
 
+    FSGame:TTLSaveFile;
     FItem:TTLItem;
     FChar:TTLCharacter;
     FMaxStack:integer;
@@ -98,7 +123,7 @@ type
     procedure DrawItemIcon(aItem: TTLItem; aImg: TImage);
 
   public
-    procedure FillInfo(aItem:TTLItem; aChar:TTLCharacter=nil);
+    procedure FillInfo(aSGame:TTLSaveFile; aItem:TTLItem; aChar:TTLCharacter=nil);
 
   end;
 
@@ -120,6 +145,8 @@ begin
   FEffects.Parent :=tsOtherInfo;
   FEffects.Align  :=alClient;
   FEffects.Visible:=true;
+
+  pcItemInfo.ActivePage:=tsCommonInfo;
 end;
 
 procedure TfmItem.edStackChange(Sender: TObject);
@@ -200,17 +227,31 @@ begin
   end;
 end;
 
-procedure TfmItem.FillInfo(aItem:TTLItem; aChar:TTLCharacter=nil);
+procedure TfmItem.FillInfo(aSGame:TTLSaveFile; aItem:TTLItem; aChar:TTLCharacter=nil);
 var
   linv,lcont:string;
   i:integer;
   lprop:boolean;
 begin
-  FItem:=aItem;
-  FChar:=aChar;
-  lprop:=aItem.IsProp;
+  FSGame:=aSGame;
+  FItem :=aItem;
+  FChar :=aChar;
 
-  pcItemInfo.ActivePage:=tsCommonInfo;
+  lprop :=aItem.IsProp;
+
+  tsPropInfo .TabVisible:=lprop;
+  tsItemInfo .TabVisible:=not lprop;
+  tsOtherInfo.TabVisible:=fmSettings.cbShowAll.Checked;
+  tsTechInfo .TabVisible:=
+      fmSettings.cbShowTech.Checked and
+      fmSettings.cbShowAll.Checked;
+
+  if ((pcItemInfo.ActivePage=tsPropInfo ) and tsPropInfo .TabVisible) or
+     ((pcItemInfo.ActivePage=tsOtherInfo) and tsOtherInfo.TabVisible) or
+     ((pcItemInfo.ActivePage=tsItemInfo ) and tsItemInfo .TabVisible) or
+     ((pcItemInfo.ActivePage=tsTechInfo ) and tsTechInfo .TabVisible) then
+  else
+    pcItemInfo.ActivePage:=tsCommonInfo;
 
   FMaxStack:=-1;
 
@@ -223,7 +264,7 @@ begin
   edPrefix.Text:=aItem.Prefix;
   edSuffix.Text:=aItem.Suffix;
 
-  if aItem.IsProp then
+  if lprop then
     edNameById.Text:=RGDBGetProp(aItem.ID)
   else
     edNameById.Text:=RGDBGetItem(aItem.ID);
@@ -253,9 +294,34 @@ begin
   cbFlag5.Checked:=aItem.Flags[4];
   cbFlag6.Checked:=aItem.Flags[5];
   cbFlag7.Checked:=aItem.Flags[6];
+  cbFlag7.Visible:=FSGame.GameVersion=verTL2;
 
-  tsPropInfo.TabVisible:=lprop;
-  tsItemInfo.TabVisible:=not lprop;
+  //--- Technical ---
+
+  if tsTechInfo.TabVisible then
+  begin
+    edUnkn1_1.Text:=TextId(aItem.FUnkn1[0]);
+    edUnkn1_2.Text:=TextId(aItem.FUnkn1[1]);
+    edUnkn1_3.Text:=TextId(aItem.FUnkn1[2]);
+    edUnkn1_3 .Visible:=FSGame.GameVersion=verTL2;
+    lblUnkn1_3.Visible:=FSGame.GameVersion=verTL2;
+
+    edUnkn2_byte.Text:=IntToStr(aItem.FUnkn2b);
+    edUnkn2_1   .Text:=TextId  (aItem.FUnkn20);
+    edUnkn2_2   .Text:=TextId  (aItem.FUnkn21);
+    edUnkn2_3   .Text:=TextId  (aItem.FUnkn22);
+    edUnkn2_4   .Text:=IntToStr(aItem.FUnkn23);
+    edUnkn2_3 .Visible:=FSGame.GameVersion=verTL2;
+    lblUnkn2_3.Visible:=FSGame.GameVersion=verTL2;
+
+    edUnkn4.Text  :=IntToStr(aItem.FUnkn4);
+
+    edQuestID  .Text:=TextId(aItem.QuestID);
+    edQuestName.Text:=RGDBGetQuest(aItem.QuestID);
+    edUnkn5    .Text:=IntToStr(integer(aItem.FUnkn5))+
+        ' / '+BinStr(aItem.FUnkn5,8);
+  end;
+
   if lprop then
   begin
     edPropState.Text:=IntToStr(aItem.PropState);
@@ -303,15 +369,8 @@ begin
     edItemId.Visible:=false;
   end;
 
-  if fmSettings.cbShowAll.Checked then
-  begin
-    tsOtherInfo.TabVisible:=true;
+  if tsOtherInfo.TabVisible then
     FEffects.FillInfo(aItem);
-  end
-  else
-  begin
-    tsOtherInfo.TabVisible:=false;
-  end;
 
 {
   lbAugments.Clear;

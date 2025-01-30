@@ -21,7 +21,7 @@ type
     procedure sgMoviesEditingDone(Sender: TObject);
     procedure sgMoviesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
-    SGame:TTLSaveFile;
+    FSGame:TTLSaveFile;
 
   public
     procedure FillInfo(aSGame:TTLSaveFile);
@@ -79,7 +79,7 @@ begin
 }
   for i:=1 to sgMovies.RowCount do
   begin
-    SGame.Movies[IntPtr(sgMovies.Objects[0,i])].value:=
+    FSGame.Movies[IntPtr(sgMovies.Objects[0,i])].value:=
         StrToInt(sgMovies.Cells[colViews,i]);
   end;
   bbUpdate.Enabled:=false;
@@ -89,32 +89,54 @@ procedure TfmMovies.FillInfo(aSGame:TTLSaveFile);
 var
   lmax,i:integer;
   lmod,lname,ltitle,lpath:string;
+  lIsTL1:boolean;
 begin
-  SGame:=aSGame;
+  FSGame:=aSGame;
+  lIsTL1:=FSGame.GameVersion=verTL1;
 
   sgMovies.BeginUpdate;
   sgMovies.Clear;
-  sgMovies.RowCount:=Length(aSGame.Movies)+1;
-  if Length(aSGame.Movies)>0 then
+
+  // really, check lists for NIL must be enough
+  if lIsTL1 then
   begin
-    for i:=0 to High(aSGame.Movies) do
+    sgMovies.RowCount:=Length(aSGame.Cinematics)+1;
+    if Length(FSGame.Cinematics)>0 then
     begin
-      ltitle:=RGDBGetTL2Movie(aSGame.Movies[i].id,lmod,lmax,lname,lpath);
-      lmod:=RGDBGetMod(lmod);
-
-      sgMovies.Objects[0,i+1]:=TObject(IntPtr(i));
-      sgMovies.Objects[1,i+1]:=TObject(IntPtr(lmax));
-
-      sgMovies.Cells[colTitle,i+1]:=ltitle;
-      sgMovies.Cells[colViews,i+1]:=IntToStr(aSGame.Movies[i].value);
-      sgMovies.Cells[colPath ,i+1]:=lpath;
-      sgMovies.Cells[colID   ,i+1]:=IntToStr(aSGame.Movies[i].id);
-      sgMovies.Cells[colName ,i+1]:=lname;
-      sgMovies.Cells[colMod  ,i+1]:=lmod;
+      for i:=0 to High(FSGame.Cinematics) do
+      begin
+        sgMovies.Cells[colTitle,i+1]:=FSGame.Cinematics[i];
+      end;
     end;
-    sgMovies.Row:=1;
+  end
+  else
+  begin
+    sgMovies.RowCount:=Length(aSGame.Movies)+1;
+    if Length(FSGame.Movies)>0 then
+    begin
+      for i:=0 to High(aSGame.Movies) do
+      begin
+        ltitle:=RGDBGetTL2Movie(FSGame.Movies[i].id,lmod,lmax,lname,lpath);
+        lmod:=RGDBGetMod(lmod);
+
+        sgMovies.Objects[0,i+1]:=TObject(IntPtr(i));
+        sgMovies.Objects[1,i+1]:=TObject(IntPtr(lmax));
+
+        sgMovies.Cells[colTitle,i+1]:=ltitle;
+        sgMovies.Cells[colViews,i+1]:=IntToStr(aSGame.Movies[i].value);
+        sgMovies.Cells[colPath ,i+1]:=lpath;
+        sgMovies.Cells[colID   ,i+1]:=IntToStr(aSGame.Movies[i].id);
+        sgMovies.Cells[colName ,i+1]:=lname;
+        sgMovies.Cells[colMod  ,i+1]:=lmod;
+      end;
+      sgMovies.Row:=1;
+    end;
   end;
   sgMovies.EndUpdate;
+
+  sgMovies.Columns[colViews].ReadOnly:=lIsTL1;
+  lblNote.Visible:=not lIsTL1;
+
   bbUpdate.Enabled:=false;
 end;
 

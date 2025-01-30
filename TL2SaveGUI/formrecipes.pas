@@ -29,7 +29,7 @@ type
     procedure sgRecipesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
-    SGame:TTLSaveFile;
+    FSGame:TTLSaveFile;
     OldActualState   :boolean;
     OldHaveTitleState:boolean;
 
@@ -116,14 +116,14 @@ begin
   ls[1]:='*';
   Application.MainForm.Caption:=ls;
 }
-  lRecipes:=SGame.Recipes;
+  lRecipes:=FSGame.Recipes;
   SetLength(lRecipes,sgRecipes.RowCount-1);
   for i:=1 to sgRecipes.RowCount-1 do
   begin
     lRecipes[i-1]:=StrToInt64(sgRecipes.Cells[colId,i]);
   end;
-  SGame.Recipes:=lRecipes;
-  SGame.Modified:=true;
+  FSGame.Recipes:=lRecipes;
+  FSGame.Modified:=true;
   bbUpdate.Enabled:=false;
 end;
 
@@ -159,7 +159,7 @@ begin
   sgRecipes.Columns[colId-1].Visible:=fmSettings.cbShowTech.Checked;
 
   bbUpdate.Enabled:=false;
-  SGame:=aSGame;
+  FSGame:=aSGame;
 end;
 
 end.

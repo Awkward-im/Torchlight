@@ -25,7 +25,7 @@ type
     procedure lvUnitListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
   private
     FChar:TfmChar;
-    SGame:TTLSaveFile;
+    FSGame:TTLSaveFile;
     FMap:TTL2Map;
     function GetItemIcon(idx: integer): integer;
 
@@ -117,7 +117,7 @@ procedure TfmUnits.FillInfo(aSGame:TTLSaveFile; idx:integer);
 var
   i:integer;
 begin
-  SGame:=aSGame;
+  FSGame:=aSGame;
   FMap:=aSGame.Maps[idx];
 
   FChar.Visible:=false;

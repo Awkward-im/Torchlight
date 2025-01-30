@@ -274,8 +274,11 @@ begin
       lpath:=edDirName.Text
     else
     begin
+      lpath:=edDirName.Text;
+{ Lets think what this is dir with another mods
       memLog.Append('MEDIA folder not found');
       exit;
+}
     end;
 
     MakeRGScan(lpath,'',['.PAK','.MOD','.ZIP','.DAT','.ADM'],nil,Self,@DoCheck);

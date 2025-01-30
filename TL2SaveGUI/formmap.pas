@@ -28,7 +28,7 @@ type
     sgLayData: TStringGrid;
     procedure btnTriggerExportClick(Sender: TObject);
   private
-    SGame:TTLSaveFile;
+    FSGame:TTLSaveFile;
     MapIndex:integer;
 
   public
@@ -59,11 +59,11 @@ var
   ldlg:TSaveDialog;
   lstrm:TMemoryStream;
 begin
-  lMap:=SGame.Maps[MapIndex];
+  lMap:=FSGame.Maps[MapIndex];
   ldlg:=TSaveDialog.Create(nil);
   ldlg.Title:=rsSaveTrigger;
-  ldlg.FileName:=SGame.CharInfo.Name+' map_'+IntToStr(MapIndex)+' ('+
-      SGame.Maps[MapIndex].Name+')_trigger';
+  ldlg.FileName:=FSGame.CharInfo.Name+' map_'+IntToStr(MapIndex)+' ('+
+      FSGame.Maps[MapIndex].Name+')_trigger';
   ldlg.DefaultExt:='.dmp';
   if ldlg.Execute then
   begin
@@ -87,7 +87,7 @@ var
   lMap:TTL2Map;
   i:integer;
 begin
-  SGame:=aSGame;
+  FSGame:=aSGame;
   MapIndex:=idx;
   lMap:=aSGame.Maps[idx];
 

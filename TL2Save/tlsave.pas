@@ -117,6 +117,7 @@ type
     property Hardcore    :boolean        read FHardcore     write FHardcore;
     property NewGameCycle:integer        read FNewGameCycle write FNewGameCycle;
     property GameTime    :single         read FGameTime     write FGameTime; //!! control!!
+    property Retired     :boolean        read FRetired      write FRetired;
 
     property BoundMods       :TTL2ModList read FBoundMods         write FBoundMods;
     property RecentModHistory:TTL2ModList read FRecentModHistory  write FRecentModHistory;
@@ -132,6 +133,7 @@ type
     property History:TL2IdList read FHistory write FHistory;
     property Recipes:TL2IdList read FRecipes write FRecipes;
 
+    property Cinematics:TL2StringList         read FCinematics;
     property Movies    :TL2IdValList          read FMovies;
     property Movie     [idx:integer]:TL2IdVal read GetMovie;
 

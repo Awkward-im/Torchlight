@@ -12,9 +12,9 @@ object fmItem: TfmItem
     Height = 478
     Top = 0
     Width = 619
-    ActivePage = tsCommonInfo
+    ActivePage = tsTechInfo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 0
     object tsCommonInfo: TTabSheet
       Caption = 'Common'
@@ -639,6 +639,172 @@ object fmItem: TfmItem
     end
     object tsOtherInfo: TTabSheet
       Caption = 'Other'
+    end
+    object tsTechInfo: TTabSheet
+      Caption = 'Technical'
+      ClientHeight = 450
+      ClientWidth = 611
+      object lblUnkn1_1: TLabel
+        Left = 16
+        Height = 15
+        Top = 45
+        Width = 45
+        Caption = 'Unkn1_1'
+      end
+      object edUnkn1_1: TEdit
+        Left = 88
+        Height = 23
+        Top = 41
+        Width = 160
+        TabOrder = 0
+      end
+      object lblUnkn1_2: TLabel
+        Left = 16
+        Height = 15
+        Top = 80
+        Width = 45
+        Caption = 'Unkn1_2'
+      end
+      object edUnkn1_2: TEdit
+        Left = 88
+        Height = 23
+        Top = 76
+        Width = 160
+        TabOrder = 1
+      end
+      object lblUnkn1_3: TLabel
+        Left = 16
+        Height = 15
+        Top = 117
+        Width = 45
+        Caption = 'Unkn1_3'
+      end
+      object edUnkn1_3: TEdit
+        Left = 88
+        Height = 23
+        Top = 113
+        Width = 160
+        TabOrder = 2
+      end
+      object lblUnkn2_byte: TLabel
+        Left = 348
+        Height = 15
+        Top = 34
+        Width = 62
+        Caption = 'Unkn2_byte'
+      end
+      object edUnkn2_byte: TEdit
+        Left = 420
+        Height = 23
+        Top = 30
+        Width = 160
+        TabOrder = 3
+      end
+      object lblUnkn2_1: TLabel
+        Left = 348
+        Height = 15
+        Top = 68
+        Width = 40
+        Caption = 'LayLink'
+      end
+      object edUnkn2_1: TEdit
+        Left = 420
+        Height = 23
+        Top = 64
+        Width = 160
+        TabOrder = 4
+      end
+      object lblUnkn2_2: TLabel
+        Left = 348
+        Height = 15
+        Top = 100
+        Width = 62
+        Caption = 'UNSpawner'
+      end
+      object edUnkn2_2: TEdit
+        Left = 420
+        Height = 23
+        Top = 96
+        Width = 160
+        TabOrder = 5
+      end
+      object lblUnkn2_3: TLabel
+        Left = 348
+        Height = 15
+        Top = 136
+        Width = 45
+        Caption = 'Unkn2_3'
+      end
+      object edUnkn2_3: TEdit
+        Left = 420
+        Height = 23
+        Top = 132
+        Width = 160
+        TabOrder = 6
+      end
+      object lblUnkn2_4: TLabel
+        Left = 348
+        Height = 15
+        Top = 168
+        Width = 45
+        Caption = 'Unkn2_4'
+      end
+      object edUnkn2_4: TEdit
+        Left = 420
+        Height = 23
+        Top = 164
+        Width = 160
+        TabOrder = 7
+      end
+      object lblUnkn4: TLabel
+        Left = 16
+        Height = 15
+        Top = 290
+        Width = 34
+        Caption = 'Unkn4'
+      end
+      object edUnkn4: TEdit
+        Left = 104
+        Height = 23
+        Top = 286
+        Width = 160
+        TabOrder = 8
+      end
+      object lblQuestID: TLabel
+        Left = 16
+        Height = 15
+        Top = 351
+        Width = 45
+        Caption = 'Quest ID'
+      end
+      object edQuestID: TEdit
+        Left = 104
+        Height = 23
+        Top = 347
+        Width = 160
+        TabOrder = 9
+      end
+      object edUnkn5: TEdit
+        Left = 104
+        Height = 23
+        Top = 412
+        Width = 160
+        TabOrder = 10
+      end
+      object lblUnkn5_3: TLabel
+        Left = 16
+        Height = 15
+        Top = 416
+        Width = 34
+        Caption = 'Unkn5'
+      end
+      object edQuestName: TEdit
+        Left = 272
+        Height = 23
+        Top = 347
+        Width = 308
+        TabOrder = 11
+      end
     end
   end
 end
