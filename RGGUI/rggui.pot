@@ -429,6 +429,14 @@ msgstr ""
 msgid "Save selected file(s)"
 msgstr ""
 
+#: trgguiform.actedfontedit.caption
+msgid "&Font"
+msgstr ""
+
+#: trgguiform.actedfontedit.hint
+msgid "Change source code font"
+msgstr ""
+
 #: trgguiform.actedimport.caption
 msgctxt "trgguiform.actedimport.caption"
 msgid "Import file(s)"
@@ -687,6 +695,10 @@ msgstr ""
 
 #: trgguiform.miedit.caption
 msgid "&Edit"
+msgstr ""
+
+#: trgguiform.mieditreplace.caption
+msgid "Replace"
 msgstr ""
 
 #: trgguiform.mifile.caption

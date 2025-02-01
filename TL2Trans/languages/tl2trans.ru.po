@@ -106,6 +106,10 @@ msgstr "Тэг:"
 msgid "This text presents in several (about %d) places."
 msgstr "Этот текст есть в нескольких (примерно %d) местах."
 
+#: tl2dataunit.sbasetranslation
+msgid "Base translation"
+msgstr "Базовый перевод"
+
 #: tl2dataunit.snoblockstart
 msgid "No block start"
 msgstr "Нет начала блока"
@@ -125,11 +129,6 @@ msgstr "Нет исходного текста"
 #: tl2dataunit.snotranstext
 msgid "No translated text"
 msgstr "Нет текста перевода"
-
-#: tl2dupeform.stotal
-msgctxt "tl2dupeform.stotal"
-msgid "Total"
-msgstr "Всего"
 
 #: tl2edittext.sshow
 msgid "Click on \"Show Doubles\" button to show"
@@ -224,6 +223,14 @@ msgstr ""
 msgid "Warning"
 msgstr "Предупреждение"
 
+#: tl2settingsform.rsusefreekey
+msgid "Paid or Free Key (free)"
+msgstr "Платный или нет ключ ( бесплатно)"
+
+#: tl2settingsform.rsusepaidkey
+msgid "Paid or Free Key (paid)"
+msgstr "Платный или нет ключ ( платно)"
+
 #: tl2settingsform.snotrealized
 msgid "Not realized yet"
 msgstr "Не реализовано"
@@ -232,11 +239,6 @@ msgstr "Не реализовано"
 msgctxt "tl2settingsform.ssettings"
 msgid "Settings"
 msgstr "Настройки"
-
-#: tl2simform.stotal
-msgctxt "tl2simform.stotal"
-msgid "Total"
-msgstr "Всего"
 
 #: tl2unit.sdefaultcaption
 msgctxt "tl2unit.sdefaultcaption"
@@ -419,41 +421,42 @@ msgid "Scan all text files"
 msgstr "Проверять все файлы"
 
 #: trclass.scanttranslate
-msgctxt "trclass.scanttranslate"
 msgid "Text can't be translated"
-msgstr "Текст не может быть переведен"
+msgstr "Текст не может быть переведён"
 
 #: trclass.skeyblocked
-msgctxt "trclass.skeyblocked"
 msgid "API key blocked"
-msgstr "API-ключ заблокирован"
+msgstr "API ключ заблокирован"
+
+#: trclass.snohost
+msgid "No host address defined"
+msgstr "Адрес сайта не определён"
+
+#: trclass.ssessionisinvalid
+msgid "Session is invalid"
+msgstr "Сессия неверная"
 
 #: trclass.stoolongtext
-msgctxt "trclass.stoolongtext"
 msgid "Text length too large"
-msgstr "Превышен максимально допустимый размер текста"
+msgstr "Текст слишком длинный"
 
 #: trclass.stoomanyrequest
 msgid "Too many requests. Please wait and resend your request."
 msgstr "Слишком много запросов. Подалуйста, подождите и попробуйте снова."
 
 #: trclass.stoomuchtext
-msgctxt "trclass.stoomuchtext"
 msgid "Day text potion out of limit"
 msgstr "Превышено суточное ограничение на объем переведенного текста"
 
 #: trclass.sunknownerror
-msgctxt "trclass.sunknownerror"
 msgid "Unknown Error"
 msgstr "Неизвестная ошибка"
 
 #: trclass.swrongapikey
-msgctxt "trclass.swrongapikey"
 msgid "Wrong API key"
 msgstr "Неправильный API-ключ"
 
 #: trclass.swronglanguage
-msgctxt "trclass.swronglanguage"
 msgid "Choosen language is unsupported"
 msgstr "Заданное направление перевода не поддерживается"
 
@@ -629,12 +632,6 @@ msgctxt "ttl2settings.gbtranslation.caption"
 msgid "Translation details"
 msgstr "Детали перевода"
 
-#: ttl2settings.lblapikey.caption
-#, fuzzy
-msgctxt "ttl2settings.lblapikey.caption"
-msgid "API Key"
-msgstr "Ключ API"
-
 #: ttl2settings.lbldefaultfile.caption
 msgid "Default translation file"
 msgstr "Файл перевода по-умолчанию"
@@ -652,7 +649,6 @@ msgid "Reopen project to apply new list"
 msgstr "Переоткройте проект, чтобы применить список"
 
 #: ttl2settings.lblgetapikey.caption
-#, fuzzy
 msgctxt "ttl2settings.lblgetapikey.caption"
 msgid "Get your own API key"
 msgstr "Получить свой ключ API"
@@ -676,4 +672,3 @@ msgstr "Переводчики"
 #: ttl2settings.lblworkdirectory.caption
 msgid "Working directory"
 msgstr "Рабочий каталог"
-

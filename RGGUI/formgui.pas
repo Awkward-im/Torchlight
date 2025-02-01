@@ -34,8 +34,10 @@ type
 
    TRGGUIForm = class(TForm)
     actFileSavePatch: TAction;
+    actEdFontEdit: TAction;
     bbPlay: TBitBtn;
     bbStop: TBitBtn;
+    bbFontEdit: TBitBtn;
     cbSaveTL1ADM: TCheckBox;
     miCalcHash: TMenuItem;
     miSavePatch: TMenuItem;
@@ -70,6 +72,7 @@ type
     edTreeFilter : TTreeFilterEdit;
     bbCollapse   : TBitBtn;
     tbOpenDir: TToolButton;
+    ToolButton1: TToolButton;
     tvTree       : TTreeView;
 
     Grid   : TTabSheet;
@@ -202,6 +205,7 @@ type
     procedure actFileSaveAsExecute(Sender: TObject);
     procedure actFileSaveExecute(Sender: TObject);
     procedure actFileSavePatchExecute(Sender: TObject);
+    procedure actEdFontEditExecute(Sender: TObject);
     procedure actOpenDirExecute(Sender: TObject);
     procedure actShowInfoExecute(Sender: TObject);
     procedure actShowFilterExecute(Sender: TObject);
@@ -290,7 +294,7 @@ type
     function  OnImportDouble(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
   public
-
+    SrcFont: TFont;
   end;
 
 var
@@ -379,6 +383,13 @@ const
   sTreeWidth    = 'width_tree';
   sGridWidth    = 'width_grid';
   sDebugLevel   = 'debuglevel';
+  sSectSrcFont  = 'srcfont';
+  sFontName     = 'Name';
+  sFontCharset  = 'Charset';
+  sFontSize     = 'Size';
+  sFontStyle    = 'Style';
+  sFontColor    = 'Color';
+
 const
   sMedia       = 'MEDIA';
 //  sDefDirName  = 'NEWDIR';
@@ -387,6 +398,15 @@ const
 const
   defTreeWidth = 256;
   defGridWidth = 360;
+
+//----- default settings -----
+
+const
+  defFontName    = 'Arial Unicode MS'; // 'MS Sans Serif'
+  defFontCharset = DEFAULT_CHARSET;
+  defFontSize    = 10;
+  defFontStyle   = '';
+  defFontColor   = clWindowText;
 
 resourcestring
   rsWarning         = 'Warning!';
@@ -482,6 +502,8 @@ end;
 procedure TRGGUIForm.SaveSettings;
 var
   config:TIniFile;
+  ls:AnsiString;
+  lstyle:TFontStyles;
   i:integer;
 begin
   if cbSaveSettings.Checked then
@@ -524,6 +546,20 @@ begin
     config.WriteInteger(sSectSettings,sDecoding,i);
     config.WriteBool   (sSectSettings,sSaveUTF8,cbSaveUTF8.Checked);
 
+    //--- Font
+    config.WriteString (sSectSrcFont,sFontName   ,SrcFont.Name);
+    config.WriteInteger(sSectSrcFont,sFontCharset,SrcFont.Charset);
+    config.WriteInteger(sSectSrcFont,sFontSize   ,SrcFont.Size);
+    config.WriteString (sSectSrcFont,sFontColor  ,ColorToString(SrcFont.Color));
+
+    lstyle:=SrcFont.Style;
+    ls:='';
+    if fsBold      in lstyle then ls:='bold ';
+    if fsItalic    in lstyle then ls:=ls+'italic ';
+    if fsUnderline in lstyle then ls:=ls+'underline ';
+    if fsStrikeOut in lstyle then ls:=ls+'strikeout ';
+    config.WriteString(sSectSrcFont,sFontStyle,ls);
+
     fmFilterForm.SaveSettings(config);
 
     config.UpdateFile;
@@ -534,6 +570,8 @@ end;
 procedure TRGGUIForm.LoadSettings;
 var
   config:TIniFile;
+  ls:AnsiString;
+  lstyle:TFontStyles;
 begin
   config:=TIniFile.Create(ExtractPath(ParamStr(0))+INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
@@ -581,6 +619,21 @@ begin
   else
     rbTextRename.Checked:=true;
   end;
+
+//--- Font
+  SrcFont.Name   :=config.ReadString (sSectSrcFont,sFontName   ,defFontName);
+  SrcFont.Charset:=config.ReadInteger(sSectSrcFont,sFontCharset,defFontCharset);
+  SrcFont.Size   :=config.ReadInteger(sSectSrcFont,sFontSize   ,defFontSize);
+  SrcFont.Color  :=StringToColor(
+      config.ReadString(sSectSrcFont,sFontColor,ColorToString(defFontColor)));
+
+  ls:=config.ReadString(sSectSrcFont,sFontStyle,defFontStyle);
+  lstyle:=[];
+  if Pos('bold'     ,ls)<>0 then lstyle:=lstyle+[fsBold];
+  if Pos('italic'   ,ls)<>0 then lstyle:=lstyle+[fsItalic];
+  if Pos('underline',ls)<>0 then lstyle:=lstyle+[fsUnderline];
+  if Pos('strikeout',ls)<>0 then lstyle:=lstyle+[fsStrikeOut];
+  SrcFont.Style:=lstyle;
 
   fmFilterForm.LoadSettings(config);
   config.Free;
@@ -632,6 +685,7 @@ begin
   FLastIndex:=-1;
   FUData    :=nil;
   sgSortColumn:=-1;
+  SrcFont:=TFont.Create;
 
   fmLogForm:=nil;
   fmFilterForm:=TFilterForm.Create(Self);
@@ -670,8 +724,9 @@ end;
 
 procedure TRGGUIForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if actFileExit.Enabled then actFileExitExecute(Sender);
-  if actFileExit.Enabled then
+  //  if actFileExit.Enabled then actFileExitExecute(Sender);
+//  if actFileExit.Enabled then
+  if not FileClose then
   begin
     CloseAction:=caNone;
     exit;
@@ -679,6 +734,7 @@ begin
 
   Unload_BASSDLL;
   SaveSettings();
+  SrcFont.Free;
 end;
 
 function TRGGUIForm.FileClose:boolean;
@@ -709,9 +765,9 @@ end;
 
 procedure TRGGUIForm.actFileExitExecute(Sender: TObject);
 begin
-  if FileClose() then
+//  if FileClose() then
   begin
-    actFileExit.Enabled:=false;
+//    actFileExit.Enabled:=false;
     Close;
   end;
 end;
@@ -874,6 +930,23 @@ begin
     dlg.Free;
   end;
 
+end;
+
+procedure TRGGUIForm.actEdFontEditExecute(Sender: TObject);
+var
+  FontDialog:TFontDialog;
+begin
+  FontDialog:=TFontDialog.Create(nil);
+  try
+    FontDialog.Font.Assign(SrcFont);
+    if FontDialog.Execute then
+    begin
+      SrcFont.Assign(FontDialog.Font);
+      SynEdit.Font.Assign(SrcFont);
+    end;
+  finally
+    FontDialog.Free;
+  end;
 end;
 
 procedure TRGGUIForm.actOpenDirExecute(Sender: TObject);
@@ -1474,9 +1547,9 @@ begin
     fmLEdit:=TFormLayoutEdit.Create(Self);
     fmLEdit.Parent:=pnlAdd;
     fmLEdit.Align:=alClient;
-    fmledit.SynEdit.PopupMenu:=SynPopupMenu;
+    fmLedit.SynEdit.PopupMenu:=SynPopupMenu;
   end;
-
+  fmLedit.SynEdit.Font.Assign(SrcFont);
   //  if FUData=nil then exit;
 
   TFormLayoutEdit(fmLEdit).BuildTree(FUData,ctrl.PAK.Version);

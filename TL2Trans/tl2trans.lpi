@@ -393,6 +393,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Logging"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\Addons\trclass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TRClass"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

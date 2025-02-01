@@ -7,7 +7,9 @@ object TL2Settings: TTL2Settings
   ClientHeight = 561
   ClientWidth = 875
   ParentFont = True
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   object lblDefaultFile: TLabel
     Left = 8
     Height = 15
@@ -134,21 +136,20 @@ object TL2Settings: TTL2Settings
     Caption = 'Program Language'
   end
   object lbTranslators: TListBox
-    Left = 608
+    Left = 412
     Height = 157
-    Top = 395
+    Top = 84
     Width = 167
-    Anchors = [akLeft, akBottom]
     ItemHeight = 0
     TabOrder = 8
+    OnSelectionChange = lbTranslatorsSelectionChange
   end
   object lblTranslators: TLabel
-    Left = 608
+    Left = 412
     Height = 15
-    Top = 375
+    Top = 64
     Width = 167
     Alignment = taCenter
-    Anchors = [akLeft, akBottom]
     AutoSize = False
     Caption = 'Translators'
   end
@@ -162,69 +163,88 @@ object TL2Settings: TTL2Settings
   end
   object gbTranslation: TGroupBox
     Left = 408
-    Height = 296
-    Top = 72
-    Width = 455
+    Height = 200
+    Top = 256
+    Width = 456
     Anchors = [akTop, akLeft, akRight]
+    AutoSize = True
     Caption = 'Translation details'
-    ClientHeight = 276
-    ClientWidth = 451
+    ChildSizing.LeftRightSpacing = 4
+    ChildSizing.TopBottomSpacing = 4
+    ClientHeight = 180
+    ClientWidth = 452
     TabOrder = 10
-    Visible = False
-    object lblAPIKey: TLabel
+    object lblTitle: TLabel
       Left = 4
-      Height = 15
-      Top = 74
-      Width = 40
-      Caption = 'API Key'
+      Height = 17
+      Top = 0
+      Width = 444
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+    end
+    object lblDescr: TLabel
+      AnchorSideTop.Control = lblTitle
+      AnchorSideTop.Side = asrBottom
+      Left = 4
+      Height = 1
+      Top = 21
+      Width = 444
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Top = 4
+      WordWrap = True
+    end
+    object cbAPIKey: TCheckBox
+      AnchorSideTop.Control = lblDescr
+      AnchorSideTop.Side = asrBottom
+      Left = 4
+      Height = 17
+      Top = 26
+      Width = 18
+      BorderSpacing.Top = 4
+      TabOrder = 1
+      OnChange = cbAPIKeyChange
     end
     object lblGetAPIKey: TLabel
+      AnchorSideTop.Control = lblDescr
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = memAPIKey
+      AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 323
+      Left = 327
       Height = 15
-      Top = 74
+      Top = 26
       Width = 113
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
+      BorderSpacing.Top = 4
+      BorderSpacing.Right = 8
       Caption = 'Get your own API key'
       Font.Color = clBlue
       Font.Style = [fsUnderline]
       ParentFont = False
-      Visible = False
       OnClick = lblGetAPIKeyClick
     end
     object memAPIKey: TMemo
+      AnchorSideTop.Control = cbAPIKey
+      AnchorSideTop.Side = asrBottom
       Left = 4
       Height = 40
-      Top = 96
-      Width = 432
+      Top = 47
+      Width = 444
       Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Top = 4
       TabOrder = 0
     end
     object lblNote: TLabel
+      AnchorSideTop.Control = memAPIKey
+      AnchorSideTop.Side = asrBottom
       Left = 4
-      Height = 47
-      Top = 144
-      Width = 432
+      Height = 1
+      Top = 91
+      Width = 444
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
+      BorderSpacing.Top = 4
       WordWrap = True
-    end
-    object lblDescr: TLabel
-      Left = 4
-      Height = 47
-      Top = 24
-      Width = 432
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      WordWrap = True
-    end
-    object lblTitle: TLabel
-      Left = 4
-      Height = 17
-      Top = 1
-      Width = 432
-      AutoSize = False
     end
   end
   object cbHidePartial: TCheckBox

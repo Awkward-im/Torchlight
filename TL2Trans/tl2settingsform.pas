@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons;
+  Buttons,  trclass;
 
 const
   DefDATFile    = 'TRANSLATION.DAT';
@@ -31,8 +31,8 @@ type
     edTransLang: TEdit;
     edWorkDir: TDirectoryEdit;
     gbTranslation: TGroupBox;
+    cbAPIKey: TCheckBox;
     lblTitle: TLabel;
-    lblAPIKey: TLabel;
     lblDefFileDescr: TLabel;
     lblFilter: TLabel;
     lblFilterNote: TLabel;
@@ -50,16 +50,19 @@ type
     memAPIKey: TMemo;
     procedure bbSaveSettingsClick(Sender: TObject);
     procedure btnFontEditClick(Sender: TObject);
+    procedure cbAPIKeyChange(Sender: TObject);
     procedure edDefaultFileAcceptFileName(Sender: TObject; var Value: String);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure lbLanguageSelectionChange(Sender: TObject; User: boolean);
-    procedure lblGetAPIKeyGoogleClick(Sender: TObject);
     procedure lblGetAPIKeyClick(Sender: TObject);
+    procedure lbTranslatorsSelectionChange(Sender: TObject; User: boolean);
   private
     procedure ApplyLoadedLang(const alang:AnsiString);
     procedure ApplyLoadedTrans(const alang: AnsiString);
     procedure FillLocalesList;
     procedure FillTranslatorList;
+    function GetSelectedTranslator: TTranslateBase;
     procedure LoadSettings();
     procedure SaveSettings();
 
@@ -71,7 +74,6 @@ type
 var
   TL2Settings:TTL2Settings;
 
-//function TranslateYandex(const src:AnsiString):AnsiString;
 function Translate(const src:AnsiString):AnsiString;
 
 implementation
@@ -85,7 +87,6 @@ uses
   LCLIntf,
 
   iso639,
-  trclass,
 
   rgglobal,
   TL2Text,
@@ -95,6 +96,9 @@ uses
 resourcestring
   sNotRealized    = 'Not realized yet';
   sSettings       = 'Settings';
+
+  rsUseFreeKey    = 'Paid or Free Key (free)';
+  rsUsePaidKey    = 'Paid or Free Key (paid)';
 
 { TTL2Settings }
 
@@ -120,8 +124,6 @@ const
   sFontStyle    = 'Style';
   sFontColor    = 'Color';
   sTranslator   = 'Translator';
-  sYAPIKey      = 'YandexAPIKey';
-  sGAPIKey      = 'GoogleAPIKey';
   sTransLang    = 'Language';
   sPrgTransLang = 'PrgLanguage';
   sFilter       = 'filter';
@@ -129,15 +131,29 @@ const
   sReopenFiles  = 'reopenfiles';
   sRemoveTags   = 'removetags';
   sHidePartial  = 'hidepartial';
+  sFreeKey      = 'freekey';
+  sPaidKey      = 'paidkey';
+  sUsePaid      = 'usepaid';
+
+//----- translation settings -----
 
 const
-  YandexKeyURL   = 'https://translate.yandex.com/developers/keys';
-//  GoogleKeyURL   = '';
   MyYandexAPIKey = 'trnsl.1.1.20200101T160123Z.3e57638fddd71006.49c9489591b0e6a07ab3e6cf12886b99fecdf26b';
 //  AbramoffYandexAPIkey = 'trnsl.1.1.20140120T030428Z.c4c35e8a7d79c03e.defc651bed90c4424445c47be30e6b531bc4b063';
   MyLanguage     = 'ru';
+const
+  TransList:array of string = (
+    'Google'       ,
+    'Yandex'       ,
+    'DeepL'        ,
+//    'Bing'         ,
+//    'Babylon'      ,
+//   'M-Translate'  ,
+    'Translate',
+    'MyMemory'
+  );
 
-//----- default settings -----
+//----- font settings -----
 
 const
   DefFontName    = 'Arial Unicode MS'; // 'MS Sans Serif'
@@ -191,9 +207,11 @@ end;
 
 procedure TTL2Settings.SaveSettings();
 var
+  ltr:TTranslateBase;
   config:TIniFile;
   ls:AnsiString;
   lstyle:TFontStyles;
+  i:integer;
 begin
   config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
@@ -226,12 +244,17 @@ begin
   ls:=lbLanguage.Items[lbLanguage.ItemIndex];
   config.WriteString(sNSBase+':'+sTranslation,sPrgTransLang,copy(ls,1,pos(' ',ls)-1));
   config.WriteString(sNSBase+':'+sTranslation,sTransLang,edTransLang.Text);
-
-  config.WriteString(sNSBase+':'+sTranslation,sYAPIKey,memAPIKey.Text);
-//  config.WriteString(sNSBase+':'+sTranslation,sGAPIKey,memAPIKeyGoogle.Text);
-
   config.WriteString(sNSBase+':'+sTranslation,sTranslator,
     lbTranslators.Items[lbTranslators.ItemIndex]);
+
+  for i:=0 to lbTranslators.Items.Count-1 do
+  begin
+    ls:=lbTranslators.Items[i];
+    ltr:=TTranslateBase(lbTranslators.Items.Objects[i]);
+    config.WriteString(sTranslation+':'+ls,sFreeKey,ltr.FreeKey);
+    config.WriteString(sTranslation+':'+ls,sPaidKey,ltr.PaidKey);
+    config.WriteBool  (sTranslation+':'+ls,sUsePaid,ltr.UsePaid);
+  end;
 
   //--- Other
   config.WriteBool(sNSBase+':'+sSectSettings,sRemoveTags,cbRemoveTags.Checked);
@@ -246,9 +269,11 @@ end;
 
 procedure TTL2Settings.LoadSettings();
 var
+  ltr:TTranslateBase;
   config:TIniFile;
   ls:AnsiString;
   lstyle:TFontStyles;
+  i:integer;
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
@@ -285,8 +310,19 @@ begin
   edFilterWords.Caption:=config.ReadString(sNSBase+':'+sSectSettings,sFilter,defFilter);
 
   //--- Translation
-  memAPIKey.Text:=config.ReadString(sNSBase+':'+sTranslation,sYAPIKey,MyYandexAPIKey);
-//  memAPIKeyGoogle.Text:=config.ReadString(sNSBase+':'+sTranslation,sGAPIKey,'');
+  for i:=0 to lbTranslators.Items.Count-1 do
+  begin
+    ls:=lbTranslators.Items[i];
+    ltr:=TTranslateBase(lbTranslators.Items.Objects[i]);
+    ltr.FreeKey:=config.ReadString(sTranslation+':'+ls,sFreeKey,'');
+    ltr.PaidKey:=config.ReadString(sTranslation+':'+ls,sPaidKey,'');
+    ltr.UsePaid:=config.ReadBool  (sTranslation+':'+ls,sUsePaid,false);
+
+    if (ltr.FreeKey='') and
+       (ltr.PaidKey='') and
+       (LowerCase(ls)='yandex') then
+      ltr.FreeKey:=MyYandexAPIKey;
+  end;
 
   edTransLang.Text:=config.ReadString(sNSBase+':'+sTranslation,sTransLang   ,MyLanguage);
   ApplyLoadedLang ( config.ReadString(sNSBase+':'+sTranslation,sPrgTransLang,'en'));
@@ -406,38 +442,17 @@ begin
   else
     ls:=src;
 
-  case LowerCase(TL2Settings.lbTranslators.Items[
-                 TL2Settings.lbTranslators.ItemIndex]) of
-    'google': begin
-      ltr:=TTranslateGoogle.Create;
-      ltr.Key:=TL2Settings.memAPIKey.Text;
-    end;
-    'yandex': begin
-      ltr:=TTranslateYandex.Create;
-      ltr.Key:=TL2Settings.memAPIKey.Text;
-    end;
-    'deepl'        : ltr:=TTranslateDeepL.Create;
-//    'bing'         : ltr:=TTranslateBing.Create;
-//    'babylon'      : ltr:=TTranslateBabylon.Create;
-//    'm-translate'  : ltr:=TTranslateMTranslate.Create;
-    'translate.com': ltr:=TTranslateTranslate.Create;
-    'mymemory'     : ltr:=TTranslateMyMemory.Create;
-  else
-    exit;
-  end;
+  ltr:=TL2Settings.GetSelectedTranslator();
 
-  try
-    ltr.LangSrc :='en';
-    ltr.LangDst :=TL2Settings.edTransLang.Text;
-    ltr.Original:=ls;
-    lcode:=ltr.Translate;
-    if lcode<>0 then
-      ShowMessage('Error ('+IntToStr(lcode)+'): '+ltr.ResultNote)
-    else
-      result:=ltr.Translated;
-  finally
-    ltr.Free;
-  end;
+  // Skip NIL checking for now
+  ltr.LangSrc :='en';
+  ltr.LangDst :=TL2Settings.edTransLang.Text;
+  ltr.Original:=ls;
+  lcode:=ltr.Translate;
+  if lcode<>0 then
+    ShowMessage('Error ('+IntToStr(lcode)+'): '+ltr.ResultNote)
+  else
+    result:=ltr.Translated;
 end;
 
 procedure TTL2Settings.ApplyLoadedTrans(const alang:AnsiString);
@@ -458,37 +473,85 @@ begin
   lbTranslators.ItemIndex:=idx;
 end;
 
-procedure TTL2Settings.lblGetAPIKeyClick(Sender: TObject);
+function TTL2Settings.GetSelectedTranslator:TTranslateBase;
 begin
-  OpenURL(YandexKeyURL);
+  result:=TTranslateBase(lbTranslators.Items.Objects[lbTranslators.ItemIndex]);
 end;
 
-procedure TTL2Settings.lblGetAPIKeyGoogleClick(Sender: TObject);
+procedure TTL2Settings.cbAPIKeyChange(Sender: TObject);
+var
+  ltr:TTranslateBase;
 begin
-  ShowMessage(sNotRealized);
-//  OpenURL(GoogleKeyURL);
+  ltr:=GetSelectedTranslator();
+
+  ltr.UsePaid:=cbAPIKey.Checked;
+
+  if cbAPIKey.Checked then
+  begin
+    cbAPIKey.Caption:=rsUsePaidKey;
+    memAPIKey.Text:=ltr.PaidKey;
+  end
+  else
+  begin
+    cbAPIKey.Caption:=rsUseFreeKey;
+    memAPIKey.Text:=ltr.FreeKey;
+  end;
+  lblGetAPIKey.Visible:=(cbAPIKey.Checked  and (ltr.PaidKeyURL<>'')) or
+                   ((not cbAPIKey.Checked) and (ltr.FreeKeyURL<>''));
 end;
-{
-procedure TTL2Settings.FillTranslatorData;
+
+procedure TTL2Settings.lblGetAPIKeyClick(Sender: TObject);
+var
+  ltr:TTranslateBase;
+  lurl:string;
 begin
-  lblName.Caption :=ltr.Name;
+  ltr:=GetSelectedTranslator();
+
+  if cbAPIKey.Checked then
+    lurl:=ltr.PaidKeyURL
+  else
+    lurl:=ltr.FreeKeyURL;
+
+  OpenURL(lurl);
+end;
+
+procedure TTL2Settings.lbTranslatorsSelectionChange(Sender: TObject; User: boolean);
+var
+  ltr:TTranslateBase;
+begin
+  ltr:=GetSelectedTranslator();
+
+  lblTitle.Caption:=ltr.Name;
   lblDescr.Caption:=ltr.Descr;
-  lblSite.Caption :=ltr.Site;
-  lblNotes.Caption:=ltr.Notes;
-  memAPIKey.Text  :=ltr.Key;
+  lblNote.Caption :=ltr.Notes;
+
+  if (trFreeKey in ltr.Supported) or (trPaidKey in ltr.Supported) then
+  begin
+    cbAPIKey.Enabled:=(trFreeKey in ltr.Supported) and (trPaidKey in ltr.Supported);
+    cbAPIKey.Checked:=ltr.UsePaid;  // must checked at setup
+    cbAPIKeyChange(cbAPIKey);
+//    if cbAPIKey.Checked then memAPIKey.Text:=ltr.PaidKey
+//    else                     memAPIKey.Text:=ltr.FreeKey;
+    cbAPIKey .Visible:=true;
+    memAPIKey.Visible:=true;
+  end
+  else
+  begin
+    cbAPIKey    .Visible:=false;
+    memAPIKey   .Visible:=false;
+    lblGetAPIKey.Visible:=false;
+  end;
 end;
-}
+
 procedure TTL2Settings.FillTranslatorList;
+var
+  i:integer;
 begin
   lbTranslators.Clear;
-  lbTranslators.AddItem('Google'       ,nil);
-  lbTranslators.AddItem('Yandex'       ,nil);
-  lbTranslators.AddItem('DeepL'        ,nil);
-//  lbTranslators.AddItem('Bing'         ,nil);
-//  lbTranslators.AddItem('Babylon'      ,nil);
-//  lbTranslators.AddItem('M-Translate'  ,nil);
-  lbTranslators.AddItem('Translate.com',nil);
-  lbTranslators.AddItem('MyMemory'     ,nil);
+
+  for i:=0 to High(TransList) do
+    lbTranslators.AddItem(TransList[i],TObject(CreateTranslatorByName(TransList[i])));
+
   lbTranslators.ItemIndex:=0;
 end;
 
@@ -506,6 +569,14 @@ begin
   FillLocalesList;
   FillTranslatorList;
   LoadSettings;
+end;
+
+procedure TTL2Settings.FormDestroy(Sender: TObject);
+var
+  i:integer;
+begin
+  for i:=0 to lbTranslators.Items.Count-1 do
+    TTranslateBase(lbTranslators.Items.Objects[i]).Free;
 end;
 
 end.

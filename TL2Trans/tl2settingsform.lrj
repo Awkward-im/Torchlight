@@ -9,7 +9,6 @@
 {"hash":175324867,"name":"ttl2settings.lbltranslators.caption","sourcebytes":[84,114,97,110,115,108,97,116,111,114,115],"value":"Translators"},
 {"hash":262712828,"name":"ttl2settings.cbautoaspartial.caption","sourcebytes":[77,97,114,107,32,65,117,116,111,99,111,114,114,101,99,116,101,100,32,97,115,32,112,97,114,116,105,97,108],"value":"Mark Autocorrected as partial"},
 {"hash":165832227,"name":"ttl2settings.gbtranslation.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110,32,100,101,116,97,105,108,115],"value":"Translation details"},
-{"hash":105599369,"name":"ttl2settings.lblapikey.caption","sourcebytes":[65,80,73,32,75,101,121],"value":"API Key"},
 {"hash":240489369,"name":"ttl2settings.lblgetapikey.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
 {"hash":242355710,"name":"ttl2settings.cbhidepartial.hint","sourcebytes":[72,105,100,101,32,112,97,114,116,105,97,108,108,121,32,116,114,97,110,115,108,97,116,101,100,32,119,105,116,104,32,116,114,97,110,115,108,97,116,101,100,32,98,121,32,34,72,105,100,101,32,114,101,97,100,121,34,32,98,117,116,116,111,110],"value":"Hide partially translated with translated by \"Hide ready\" button"},
 {"hash":120270388,"name":"ttl2settings.cbhidepartial.caption","sourcebytes":[72,105,100,101,32,80,97,114,116,105,97,108,32,119,105,116,104,32,84,114,97,110,115,108,97,116,101,100],"value":"Hide Partial with Translated"},

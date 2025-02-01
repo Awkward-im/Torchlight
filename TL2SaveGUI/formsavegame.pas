@@ -551,7 +551,7 @@ begin
       case tvSaveGame.Selected.level of
         1: begin
           fmButtons.Offset:=SGame.CharInfo.DataOffset;
-          FChar.FillInfo(SGame.CharInfo, SGame);
+          FChar.FillInfo(SGame,SGame.CharInfo);
           SGEPage:=FChar;
         end;
 
@@ -583,7 +583,7 @@ begin
       case tvSaveGame.Selected.level of
         1,2: begin
           fmButtons.Offset:=SGame.PetInfo[lidx].DataOffset;
-          FPet.FillInfo(SGame.PetInfo[lidx]);
+          FPet.FillInfo(SGame,SGame.PetInfo[lidx]);
           SGEPage:=FPet;
         end;
         3: begin

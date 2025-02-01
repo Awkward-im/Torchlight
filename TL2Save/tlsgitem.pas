@@ -249,7 +249,7 @@ begin
   else
   begin
     AStream.Read(FFlags,6);
-{
+{ looks like no "equipped" flag
       0 -
       1 - 
       2 - 
@@ -284,7 +284,7 @@ begin
   FArmor       :=integer(AStream.ReadDWord); // -1 for non-armor
   FArmorType   :=integer(AStream.ReadDWord); // 0 for items, 0-15 for props
 
-  FQuestID:=TRGID (AStream.ReadQWord());
+  FQuestID:=TRGID  (AStream.ReadQWord());
   FUnkn5  :=integer(AStream.ReadDWord());
 {
   37 gold = 3*454; 48 = 0; 109, 51 = 211 - same values for same location?

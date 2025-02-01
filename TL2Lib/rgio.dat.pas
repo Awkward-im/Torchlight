@@ -127,7 +127,7 @@ begin
       FBuffer[2]:='V';
       FBuffer[3]:='E';
       FBuffer[4]:='L';
-      for i:=0 to cntLevels-1 do
+      for i:=0 to cntLevels do
       begin
         RGIntToStr(@FBuffer[5],i);
         if aid=RGHash(@FBuffer) then

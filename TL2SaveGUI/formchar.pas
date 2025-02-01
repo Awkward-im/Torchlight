@@ -222,7 +222,7 @@ type
 
   public
     constructor Create(AOwner:TComponent; atype:tCharInfoType); overload;
-    procedure FillInfo(aChar:TTLCharacter; aSGame:TTLSaveFile=nil);
+    procedure FillInfo(aSGame: TTLSaveFile; aChar: TTLCharacter);
 
     property IsMain    :boolean   read GetMainFlag;
     property Configured:boolean   read FConfigured write SetConfigured;
@@ -1469,7 +1469,7 @@ begin
 end;
 
 // set visibility depending of settings and fill common data
-procedure TfmChar.FillInfo(aChar:TTLCharacter; aSGame:TTLSaveFile=nil);
+procedure TfmChar.FillInfo(aSGame:TTLSaveFile; aChar:TTLCharacter);
 var
   ls:string;
   i:integer;

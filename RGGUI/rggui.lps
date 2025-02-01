@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1776"/>
-        <CursorPos Y="1925"/>
-        <FoldState Value=" T4N051 PQnN0 TLvZ033 pF=10811117 Pd-R]Q7YG~6 T8mO2p1 TJio31_4]vlCp1]HMpd010]n2Y p4)D0]K3r40D])iZjD0r5[94kL0J]9jEk20F6]9VkH0.1]9LlA0Z[R42kE0q[R4WlC0E4]9Hjf0K[a4Djb03[a4AjS032 pidj50V[R48k00L3[R5g04[a4Kja0O1]aejP0^6]9al50G4 PiMiR0 T6s902R]OV(E05I PYwc]N0sE2hE]NcpZ62C]9Xjf434 pj6ig873 pigM879[Z4kJ23B[Z4m925[94ak6212[I4iE466 pibiT258[}N5V4Y62B[}q578AD]92lG42A[~T5F2A[l4cib86C PiYm72 TK?P0N p0zT0F$"/>
+        <TopLine Value="725"/>
+        <CursorPos Y="736"/>
+        <FoldState Value=" T4N051 PQnR0 TLx3033 pF*T0A01117 PTzI]Q7YG~A TJipX1_4]nlCp11 TMq701021C2 p4&apos;W0]J3rO0D]=j8jT0*4121]Dl8o00F4 piZjH03[V4Wk40{Q5]JclW0g2]JFkO06[I4Yj904[b4DjP0K1[95b03124]Bdl00V2[94kX0L[c4Ajg045]9Kja0O1]:e]u^6]9al50G4 PiMiR0 T6z101]\1J]SM\905I PYwc]R0tI444121619]$ft82D5 pidif6H3]9bT6C9[84jW28C1B pkTq4212]KXiE466[T4iT25017]BgjV4Y62B](Wl78AD]92lG42A]TZkF2A[n4cib86C PiYm72 TK%C0N p0zT0Fo"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -60,7 +60,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="13" Y="9"/>
-        <UsageCount Value="158"/>
+        <UsageCount Value="159"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\fmlayoutedit.pas"/>
@@ -72,7 +72,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="767"/>
         <CursorPos X="27" Y="788"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="66"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\HexView\FWHexView.pas"/>
@@ -81,7 +81,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="61"/>
+        <UsageCount Value="62"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\Imaging\Imaging.pas"/>
@@ -90,7 +90,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="61"/>
+        <UsageCount Value="62"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\fpc.Dynamic_Bass.pas"/>
@@ -100,7 +100,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="61"/>
+        <UsageCount Value="62"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
@@ -293,10 +293,11 @@
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="2956"/>
-        <CursorPos Y="2971"/>
-        <UsageCount Value="7"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="2156"/>
+        <CursorPos Y="2182"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\grids.pas"/>
@@ -350,7 +351,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="765"/>
         <CursorPos Y="780"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="d:\Work\lazarus\lcl\grids.pas"/>
@@ -358,21 +359,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="10318"/>
         <CursorPos Y="10334"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="811"/>
         <CursorPos X="14" Y="826"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\fpcsrc\rtl\objpas\classes\collect.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="272"/>
         <CursorPos X="3" Y="274"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_tl2.inc"/>
@@ -386,7 +387,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1145"/>
         <CursorPos Y="1159"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\groupededit.pp"/>
@@ -425,7 +426,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="414"/>
         <CursorPos Y="428"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\synhighlighterogre.pas"/>
@@ -548,10 +549,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitFilterForm"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="70"/>
         <CursorPos X="50" Y="88"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -562,115 +563,134 @@
         <CursorPos Y="241"/>
         <UsageCount Value="9"/>
       </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\font.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="931"/>
+        <CursorPos Y="947"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="26">
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1649" TopLine="1631"/>
+        <Caret Line="943" TopLine="795"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1650" TopLine="1631"/>
+        <Caret Line="944" TopLine="795"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1651" TopLine="1631"/>
+        <Caret Line="939" TopLine="795"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1555" TopLine="1408"/>
+        <Caret Line="938" TopLine="795"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1560" Column="26" TopLine="1408"/>
+        <Caret Line="735" TopLine="647"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1558" TopLine="1408"/>
+        <Caret Line="736" TopLine="647"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1562" TopLine="1408"/>
+        <Caret Line="737" TopLine="647"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1565" TopLine="1408"/>
+        <Caret Line="735" TopLine="647"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1566" TopLine="1418"/>
+        <Caret Line="734" Column="12" TopLine="647"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1567" TopLine="1419"/>
+        <Caret Line="735" Column="19" TopLine="647"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1568" TopLine="1423"/>
+        <Caret Line="767" TopLine="724"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1580" Column="67" TopLine="1558"/>
+        <Caret Line="769" TopLine="724"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
-        <Caret Line="1560" TopLine="1554"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1561" TopLine="1554"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1563" TopLine="1563"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1566" TopLine="1560"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1568" TopLine="1560"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1569" TopLine="1560"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1574" TopLine="1563"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1568" Column="8" TopLine="1557"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1667" TopLine="1661"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1675" TopLine="1661"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1685" TopLine="1673"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1689" TopLine="1682"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1695" TopLine="1682"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1697" TopLine="1681"/>
+        <Caret Line="770" TopLine="724"/>
       </Position>
       <Position>
         <Filename Value="..\TL2Lib\forms\unitfilterform.pas"/>
         <Caret Line="88" Column="50" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="2141" TopLine="2123"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="735" TopLine="724"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="736" TopLine="724"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="737" TopLine="724"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="944" TopLine="928"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="945" TopLine="928"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="948" TopLine="928"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="2165" TopLine="2150"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="2174" TopLine="2150"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="2175" TopLine="2150"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="2177" TopLine="2151"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customform.inc"/>
+        <Caret Line="2182" TopLine="2156"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="772" TopLine="724"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="770" Column="3" TopLine="725"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="761" Column="28" TopLine="725"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="760" Column="40" TopLine="725"/>
       </Position>
     </JumpHistory>
     <RunParams>

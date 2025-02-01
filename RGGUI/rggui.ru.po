@@ -441,6 +441,14 @@ msgstr "Распаковать выбранное"
 msgid "Save selected file(s)"
 msgstr "Сохранить файл(ы)"
 
+#: trgguiform.actedfontedit.caption
+msgid "&Font"
+msgstr "Шрифт"
+
+#: trgguiform.actedfontedit.hint
+msgid "Change source code font"
+msgstr "изменить шрифт для исходного кода"
+
 #: trgguiform.actedimport.caption
 msgctxt "trgguiform.actedimport.caption"
 msgid "Import file(s)"
@@ -702,6 +710,10 @@ msgstr "Считать хэш выделенного текста"
 #: trgguiform.miedit.caption
 msgid "&Edit"
 msgstr "Редактор"
+
+#: trgguiform.mieditreplace.caption
+msgid "Replace"
+msgstr "Заменить"
 
 #: trgguiform.mifile.caption
 msgid "&File"

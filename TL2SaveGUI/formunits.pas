@@ -61,7 +61,7 @@ begin
        IntToStr(lvUnitList.Items.Count)+' ['+IntToStr(Length(FMap.MobInfos))+']';
     lunit:=FMap.MobInfos[UIntPtr(Item.Data)];
 
-    FChar.FillInfo(lunit);
+    FChar.FillInfo(FSGame, lunit);
     FChar.Visible:=true;
 
     fmButtons.btnExport.Enabled:=true;

@@ -29,6 +29,7 @@
         <Filename Value="tl2dataunit.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2DataUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <TopLine Value="1489"/>
         <CursorPos X="3" Y="1493"/>
@@ -42,7 +43,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2EditText"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <TopLine Value="64"/>
         <CursorPos Y="83"/>
@@ -84,7 +84,6 @@
         <EditorIndex Value="1"/>
         <TopLine Value="83"/>
         <CursorPos X="22" Y="119"/>
-        <FoldState Value=" T46031 PCjd0 TL,a041 T8j52G TMvR8102]H3l20A6 pj1jR0{;2]A5mR094]9dkF03]SlOm10P]IiejZ0N5]R3je0M[94Ek70d3]Rfk20j211 PjJl10 T6lL02X PiP$8]F0lS248[{O594I](j8R4e7[84i26KB].Xia43C]9ck9465 pjJi16c]rkFkX43[j43e83[i4Zjc238[95R42[r4YlC23A]9ajY44A]i4jS6F4 PHjJ4 TKu405D"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -104,8 +103,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="212"/>
-        <CursorPos X="3" Y="124"/>
+        <TopLine Value="432"/>
+        <CursorPos Y="448"/>
+        <FoldState Value=" T3kb0M216121]3 PlMq606"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -194,7 +194,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="62"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\logging.pas"/>
@@ -204,7 +204,14 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="41"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\trclass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TRClass"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="41"/>
       </Unit>
     </Units>
     <OtherDefines Count="1">
@@ -248,6 +255,13 @@
       </Item>
       <Item>
         <Expression Value="lstr"/>
+      </Item>
+      <Item>
+        <Expression Value="lbTranslators.Items"/>
+      </Item>
+      <Item>
+        <Expression Value="o"/>
+        <DisplayFormat PointerAddrInherit="False"/>
       </Item>
     </Watches>
   </Debugging>
