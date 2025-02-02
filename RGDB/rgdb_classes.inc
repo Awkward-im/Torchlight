@@ -270,18 +270,22 @@ var
 begin
   if db<>nil then
   begin
-    if ModFilter<>'' then
-      lwhere:=' AND '+ModFilter
+    // no gender support for TL1 so check by name only
+    if GameVersion=verTL1 then
+      lwhere:=' WHERE NOT (file LIKE ''%base.dat'')'
     else
-      lwhere:='';
+    begin
+      lwhere:=' WHERE (gender<>'''')';
+      if ModFilter<>'' then
+        lwhere:=lwhere+' AND '+ModFilter;
+    end;
 
-    result:=ReturnInt(db,'SELECT count(*) FROM '+dbClassTable+' WHERE gender<>'''''+lwhere);
+    result:=ReturnInt(db,'SELECT count(*) FROM '+dbClassTable+lwhere);
 
     if result>0 then
     begin
       SetLength(alist,result);
-      lSQL:='SELECT id, name, title, icon, gender FROM '+dbClassTable+
-            ' WHERE gender<>'''''+lwhere;
+      lSQL:='SELECT id, name, title, icon, gender FROM '+dbClassTable+lwhere;
 
       if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
       begin
@@ -292,7 +296,10 @@ begin
           alist[i].name  :=sqlite3_column_text (vm,1);
           alist[i].title :=sqlite3_column_text (vm,2);
           alist[i].icon  :=sqlite3_column_text (vm,3);
-          alist[i].gender:=sqlite3_column_text (vm,4)^;
+          if GameVersion=verTL1 then
+            alist[i].gender:='?'
+          else
+            alist[i].gender:=sqlite3_column_text(vm,4)^;
           inc(i);
         end;
         sqlite3_finalize(vm);

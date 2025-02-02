@@ -189,10 +189,10 @@ begin
   lNode.Items[idxStatistic].Data:=pointer(SGame.Stats);
 
   lshowall:=fmSettings.cbShowAll.Checked;
+  lNode.Items[idxModList   ].Visible:=SGame.GameVersion<>verTL1;
   lNode.Items[idxCharacter ].Items[1].Visible:=lshowall;
   lNode.Items[idxKeyMapping].Visible:=lshowall;
   lNode.Items[idxMovies    ].Visible:=lshowall {and (SGame.GameVersion=verTL2)};
-//  lNode.Items[idxModList   ].Visible:=lshowall;
   lNode.Items[idxQuests    ].Visible:=lshowall;
   lNode.Items[idxRecipes   ].Visible:=lshowall;
   lNode.Items[idxMaps      ].Visible:=lshowall;

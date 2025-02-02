@@ -12,9 +12,9 @@ object fmItem: TfmItem
     Height = 478
     Top = 0
     Width = 619
-    ActivePage = tsTechInfo
+    ActivePage = tsCommonInfo
     Align = alClient
-    TabIndex = 4
+    TabIndex = 0
     TabOrder = 0
     object tsCommonInfo: TTabSheet
       Caption = 'Common'
@@ -107,7 +107,7 @@ object fmItem: TfmItem
       object gbCoords: TGroupBox
         Left = 496
         Height = 101
-        Top = 120
+        Top = 23
         Width = 104
         Anchors = [akTop, akRight]
         Caption = 'Coordinates'
@@ -317,7 +317,7 @@ object fmItem: TfmItem
       object gbCoords1: TGroupBox
         Left = 496
         Height = 101
-        Top = 231
+        Top = 136
         Width = 104
         Anchors = [akTop, akRight]
         Caption = 'Altered'
@@ -383,9 +383,9 @@ object fmItem: TfmItem
         end
       end
       object edIconName: TEdit
-        Left = 248
+        Left = 353
         Height = 23
-        Top = 344
+        Top = 308
         Width = 247
         Anchors = [akRight, akBottom]
         TabOrder = 14
@@ -399,9 +399,9 @@ object fmItem: TfmItem
         Caption = 'Mod list'
       end
       object lblIconName: TLabel
-        Left = 248
+        Left = 544
         Height = 15
-        Top = 324
+        Top = 288
         Width = 56
         Anchors = [akRight, akBottom]
         Caption = 'Icon name'

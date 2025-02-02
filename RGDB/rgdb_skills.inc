@@ -87,50 +87,53 @@ end;
 
 //----- Skill List -----
 
-procedure GetNextSkill(const abase:string; var askill:string);
+procedure GetNextSkill(abase:integer; var askill:string);
 var
   lSQL,lskill,lbase:string;
   vm:pointer;
 begin
-  lSQL:='SELECT skills, base FROM classes WHERE file='''+abase+'''';
+  Str(abase,lbase);
+  lSQL:='SELECT c.skills, c.base FROM classes c, dicfiles f '+
+        'WHERE f.id='+lbase+' AND f.file=c.file';
 
   if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
     begin
       lskill:=sqlite3_column_text(vm,0);
-      lbase :=sqlite3_column_text(vm,1);
+      abase :=sqlite3_column_int (vm,1);
       if askill='' then askill:=lskill else askill:=askill+Copy(lskill,2);
     end
     else
-      lbase:='';
+      abase:=0;
     sqlite3_finalize(vm);
-    if lbase<>'' then GetNextSkill(lbase,askill);
+    if abase>0 then GetNextSkill(abase,askill);
   end;
 end;
 
 function RGDBGetSkillNames(const aclass:TRGID):string;
 var
-  lSQL,lbase:string;
+  lSQL,lid:string;
+  lbase:integer;
   vm:pointer;
 begin
   result:='';
 
   if db<>nil then
   begin
-    Str(aclass,lbase);
-    lSQL:='SELECT skills, base FROM classes WHERE id='+lbase;
+    Str(aclass,lid);
+    lSQL:='SELECT skills, base FROM classes WHERE id='+lid;
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
       begin
         result:=sqlite3_column_text(vm,0);
-        lbase :=sqlite3_column_text(vm,1);
+        lbase :=sqlite3_column_int (vm,1);
       end
       else
-        lbase :='';
+        lbase :=0;
       sqlite3_finalize(vm);
-      if lbase<>'' then GetNextSkill(lbase,result);
+      if lbase>0 then GetNextSkill(lbase,result);
 
       if result<>'' then result:=Copy(result,2,Length(result)-2);
     end;

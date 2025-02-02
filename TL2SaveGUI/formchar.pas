@@ -501,7 +501,9 @@ var
 begin
   if lbNewClass.ItemIndex<0 then exit;
   idx:=IntPtr(lbNewClass.Items.Objects[lbNewClass.ItemIndex]);
-  if FClasses[idx].id=FChar.ID then exit;
+  // not usable for not updated but changed class
+//  if FClasses[idx].id=FChar.ID then exit;
+  if FClasses[idx].name=edClass.Text then exit;
 
   ChangeClass(idx);
 end;
@@ -521,7 +523,11 @@ begin
   begin
     Val(edClassId.Text,lid);
     if (idx>=0) and (FClasses[idx].Id<>lid) then
-      licon:=FClasses[idx].icon
+    begin
+      licon:=FClasses[idx].icon;
+      if licon='' then
+        licon:=FClasses[idx].name+'icon';
+    end
     else
       licon:='';
     DrawIconInt(licon,dirCharIcon,imgMorph);
@@ -661,31 +667,42 @@ var
   licon:string;
   i:integer;
 begin
-  // set gender buttons
   i:=GetClassIndex(aid);
-  if i>=0 then
-  begin
-    rbMale  .Checked:=FClasses[i].gender='M';
-    rbFemale.Checked:=FClasses[i].gender='F';
-    rbUnisex.Checked:=not (FClasses[i].gender in ['F','M']);
+  licon:='';
 
-    edClass.Text:=RGDBGetClass(aid);
-    licon:=FClasses[i].icon;
+  // set gender buttons
+  edClass.Text:=aclass;
+  if FSGame.GameVersion=verTL2 then
+  begin
+    if i>=0 then
+    begin
+      rbMale  .Checked:=FClasses[i].gender='M';
+      rbFemale.Checked:=FClasses[i].gender='F';
+      rbUnisex.Checked:=not (FClasses[i].gender in ['F','M']);
+
+      edClass.Text:=RGDBGetClass(aid);
+      licon:=FClasses[i].icon;
+    end
+    else
+    begin
+      // trying to guess
+      rbUnisex.Checked:=true;
+      i:=Length(aclass);
+      if (i>2) and (aclass[i-1]='_') then
+      begin
+        rbFemale.Checked:=aclass[i]='F';
+        rbMale  .Checked:=aclass[i]='M';
+      end;
+//      licon:=aclass;
+      i:=-1;
+    end;
   end
   else
   begin
-    edClass.Text:=aclass;
-    // trying to guess
     rbUnisex.Checked:=true;
-    i:=Length(aclass);
-    if (i>2) and (aclass[i-1]='_') then
-    begin
-      rbFemale.Checked:=aclass[i]='F';
-      rbMale  .Checked:=aclass[i]='M';
-    end;
-    licon:=aclass;
-    i:=-1;
+    if i>=0     then licon:=FClasses[i].icon;
   end;
+
   edClassId.Text:=TextId(aid);
 
   FillClassList(true);
@@ -711,17 +728,22 @@ begin
     ls:=FClasses[i].title;
     if ls='' then continue;
 
-    if (rbMale  .Checked and (FClasses[i].gender='M')) or
-       (rbFemale.Checked and (FClasses[i].gender='F')) then
+    if FSGame.GameVersion=verTL2 then
     begin
-      lfeNewClass.Items.AddObject(FClasses[i].title,TObject(IntPtr(i)));
+      if (rbMale  .Checked and (FClasses[i].gender='M')) or
+         (rbFemale.Checked and (FClasses[i].gender='F')) then
+      begin
+        lfeNewClass.Items.AddObject(FClasses[i].title,TObject(IntPtr(i)));
+      end
+      else if rbUnisex.Checked then
+      begin
+        if      FClasses[i].gender='M' then ls:=ls+' ('+rsMale  +')'
+        else if FClasses[i].gender='F' then ls:=ls+' ('+rsFemale+')';
+        lfeNewClass.Items.AddObject(ls,TObject(IntPtr(i)));
+      end;
     end
-    else if rbUnisex.Checked then
-    begin
-      if      FClasses[i].gender='M' then ls:=ls+' ('+rsMale  +')'
-      else if FClasses[i].gender='F' then ls:=ls+' ('+rsFemale+')';
-      lfeNewClass.Items.AddObject(ls,TObject(IntPtr(i)));
-    end;
+    else
+      lfeNewClass.Items.AddObject(FClasses[i].title,TObject(IntPtr(i)));
   end;
   lfeNewClass.Items.EndUpdate;
   lfeNewClass.ForceFilter(' ');
@@ -1519,6 +1541,8 @@ begin
   cbMorph     .Visible:=lPet and lshowall;
 
   gbGender    .Visible:=lChar and lshowall;
+  rbMale  .Enabled:=FSGame.GameVersion<>verTL1;
+  rbFeMale.Enabled:=FSGame.GameVersion<>verTL1;
 
   seScale     .Visible:=lshowall;
   lblScale    .Visible:=lshowall;
