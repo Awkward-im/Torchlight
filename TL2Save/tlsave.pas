@@ -112,6 +112,7 @@ type
   public
     property Modified:boolean read FModified write FModified;
     
+//    property SaveVersion :dword          read FVersion;
     property GameVersion :integer        read GetGameVersion;
     property Difficulty  :TL2Difficulty  read FDifficulty   write FDifficulty;
     property Hardcore    :boolean        read FHardcore     write FHardcore;

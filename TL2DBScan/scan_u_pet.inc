@@ -46,7 +46,9 @@ begin
     else if ltmp=0 then
     begin
       pcw:=GetNodeName(lnode);
-      if      CompareWide(pcw,'ICON'                 )=0 then lpet.icon :=ExtractNameOnly(AsString(lnode))
+      if      CompareWide(pcw,'ICON'                 )=0 then lpet.icon :=AsString(lnode)
+      // just as reserve
+      else if CompareWide(pcw,'PORTRAIT'             )=0 then lpet.icon :=AsString(lnode)
       else if CompareWide(pcw,'TEXTURE_OVERRIDE_LIST')=0 then lpet.skins:=GetChildCount(lnode)
       else if CompareWide(pcw,'ARMOR_GRAPH')=0 then
       begin

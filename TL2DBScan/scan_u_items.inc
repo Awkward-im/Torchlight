@@ -3,29 +3,6 @@
 {TODO: Search unittype and icon by one function (avoid double scan)}
 {TODO: Add effects to items}
 
-{
-SPEED	INTEGER The speed of attack The higher the number, the slower the attack speed.
-The speed descriptions break down like this:
-Slowest: 130+
-Slow: 129 - 110
-Average: 109 - 90
-Fast: 89 - 80
-Fastest: < 80
-
-USES	STRING Number of uses the item has (CONSUMABLE)	
-MAXSTACKSIZE	INTEGER Maximum stack size for this item.	
-UNIDENTIFIED_NAME	TRANSLATE Name to display when the item is not identified.	
-MAXLEVEL	INTEGER Percent of the spawn level graph to use for the top end of the dungeon level spawn range.	
-MINLEVEL	INTEGER Percent of the spawn level graph to use for the low end of the dungeon level spawn range roll.	
-MAXVALUE	FLOAT Percent of the value graph to use for the top end of the value range roll	
-MINVALUE	FLOAT Percent of the damage graph to use for the low end of the value range roll	
-RANGE	FLOAT The attack range of the item (WEAPON types only). a character can perform an attack at this range, target might not be in STRIKE_RANGE though.	
-STRIKERANGE	FLOAT The range at which an item (WEAPON) is able to hit a target	
-
-MESHFILE_SECONDARY	STRING Only used for weapons that need to mirror depending on which hand their in (claws)	
-
-}
-
 type
   tItemInfo = object(TBaseUnitInfo)
     descr        :string;

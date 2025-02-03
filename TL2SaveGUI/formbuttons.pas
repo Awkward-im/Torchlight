@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  TLSGBase;
+  TLSGBase,tlsave;
 
 type
 
@@ -21,6 +21,7 @@ type
     procedure btnImportClick(Sender: TObject);
 
   private
+    FSGame:TTLSaveFile;
     FClass:TLSGBaseClass;
     FName :string;
     FExt  :string;
@@ -29,9 +30,10 @@ type
     procedure SetClass(aclass:TLSGBaseClass);
 
   public
-    property SClass:TLSGBaseClass read FClass write SetClass;
-    property Name:string          read FName  write FName;
-    property Ext:string           read FExt   write FExt;
+    property SGame :TTLSaveFile   read FSGame   write FSGame;
+    property SClass:TLSGBaseClass read FClass   write SetClass;
+    property Name  :string        read FName    write FName;
+    property Ext   :string        read FExt     write FExt;
 
     property Offset:integer write SetOffset;
   end;
@@ -42,6 +44,9 @@ var
 implementation
 
 {$R *.lfm}
+
+uses
+  rgglobal;
 
 { TfmButtons }
 
@@ -69,6 +74,8 @@ end;
 procedure TfmButtons.btnExportClick(Sender: TObject);
 var
   ldlg:TSaveDialog;
+  lstrm:TMemoryStream;
+  lver:byte;
 begin
   ldlg:=TSaveDialog.Create(nil);
   try
@@ -77,7 +84,19 @@ begin
     ldlg.Title     :=rsExportData;
     ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
     if ldlg.Execute then
-      FClass.SaveToFile(ldlg.FileName);
+    begin
+      if FSGame.GameVersion=verTL1 then
+        lver:=tlsaveTL1
+      else
+        lver:=tlsaveTL2;
+
+      lstrm:=TMemoryStream.Create;
+      lstrm.WriteByte(lver);
+      FClass.SaveToStream(lstrm,lver);
+      lstrm.Position:=0;
+      lstrm.SaveToFile(ldlg.FileName);
+      lstrm.Free;
+    end;
   finally
     ldlg.Free;
   end;
@@ -87,6 +106,7 @@ procedure TfmButtons.btnImportClick(Sender: TObject);
 var
   ldlg:TOpenDialog;
   lstrm:TMemoryStream;
+  lver:byte;
 begin
 
   ldlg:=TOpenDialog.Create(nil);
@@ -100,9 +120,10 @@ begin
       lstrm:=TMemoryStream.Create;
       lstrm.LoadFromFile(ldlg.FileName);
       lstrm.Position:=0;
+      lver:=lstrm.ReadByte();
+      // still trying to load (and convert) version
       FClass.Clear;
-{NOTE: Check version here}
-      FClass.LoadFromStream(lstrm, $44);
+      FClass.LoadFromStream(lstrm,lver);
       lstrm.Free;
 
 //!!!!!!!      tvSaveGameSelectionChanged(Self);

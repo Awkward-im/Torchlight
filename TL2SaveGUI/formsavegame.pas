@@ -339,6 +339,7 @@ begin
     SGame:=TTLSaveFile.Create;
     SGame.LoadFromFile(FFileName);
     SGame.Parse();
+    fmButtons.SGame:=SGame;
     if SGame.GameVersion=verTL1 then
       FSettings.DBState:=RGDBLoadBase(FSettings.edDBFileTL1.Text)
     else

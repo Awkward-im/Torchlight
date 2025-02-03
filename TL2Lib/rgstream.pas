@@ -68,7 +68,7 @@ type
     procedure WriteShortStringList(alist:TL2StringList);
     procedure WriteIdList(alist:TL2IDList);
     procedure WriteIdValList(alist:TL2IDValList);
-    procedure WriteFiller(alen:cardinal);
+    procedure WriteFiller(alen:integer);
   end;
 
 type
@@ -538,7 +538,7 @@ begin
     Write(alist[0],lcnt*SizeOf(TL2IDVal));
 end;
 
-procedure TTL2Stream.WriteFiller(alen:cardinal);
+procedure TTL2Stream.WriteFiller(alen:integer);
 var
   i:integer;
 begin
