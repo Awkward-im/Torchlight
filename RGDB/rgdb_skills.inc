@@ -134,8 +134,8 @@ begin
         lbase :=0;
       sqlite3_finalize(vm);
       if lbase>0 then GetNextSkill(lbase,result);
-
-      if result<>'' then result:=Copy(result,2,Length(result)-2);
+      // not so necessary
+      if (result<>'') and (result[1]=',') then result:=Copy(result,2);
     end;
   end;
 end;

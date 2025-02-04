@@ -116,7 +116,8 @@ resourcestring
   rsProps  = 'Props';
   rsQItem  = 'Quest items';
 
-  rsNoSaveGame = 'Can''t load savegame file';
+  rsWrongClass    = 'Warning! Current player class is not the same as source';
+  rsNoSaveGame    = 'Can''t load savegame file';
 //  rsNoBase = 'Can''t load database';
   rsPetNotFound   = 'Your pet type was not found in current mod list and was replaced by default one.';
   rsSorry         = 'Sorry, your character class ';
@@ -339,12 +340,17 @@ begin
     SGame:=TTLSaveFile.Create;
     SGame.LoadFromFile(FFileName);
     SGame.Parse();
+
+    if SGame.Stats.PlayerClass<>SGame.ClassString then
+      ShowMessage(rsWrongClass);
+
     fmButtons.SGame:=SGame;
     if SGame.GameVersion=verTL1 then
       FSettings.DBState:=RGDBLoadBase(FSettings.edDBFileTL1.Text)
     else
       FSettings.DBState:=RGDBLoadBase(FSettings.edDBFileTL2.Text);
 
+    FSettings.ModListChanged:=true;
     RGDBSetFilter(SGame.BoundMods);
     LoadGameGlobals;
 {

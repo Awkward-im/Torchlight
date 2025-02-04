@@ -1497,7 +1497,7 @@ var
   i:integer;
   lshowall,lChar,lPet:boolean;
 begin
-  if FConfigured and (FKind=ciPlayer) then
+  if FConfigured and (FKind=ciPlayer) and not fmSettings.ModListChanged then
   begin
     UpdateModList();
     exit;
@@ -1599,6 +1599,7 @@ begin
 
   bbUpdate.Enabled:=false;
   FConfigured:=true;
+  if FKind=ciPlayer then fmSettings.ModListChanged:=false;
 //  seLevel.SetFocus;
 end;
 

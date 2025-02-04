@@ -289,6 +289,7 @@ begin
   RGDBSetFilter(FSGame.BoundMods);
 
   FSGame.Modified:=true;
+  fmSettings.ModListChanged:=true;
 
   bbUpdate.Enabled:=false;
   ShowMessage(rsReminder);

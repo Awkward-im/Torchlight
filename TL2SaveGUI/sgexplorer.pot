@@ -277,6 +277,10 @@ msgstr ""
 msgid "Units"
 msgstr ""
 
+#: formsavegame.rswrongclass
+msgid "Warning! Current player class is not the same as source"
+msgstr ""
+
 #: formsettings.rsdbnotfound
 msgid ""
 "Database file not found.\n"

@@ -57,6 +57,7 @@ type
     function GetIconDir:string;
 
   public
+    ModListChanged:boolean;
 
     property IconDir:string read GetIconDir;
     property DBState:integer read FDBState write FDBState;

@@ -292,6 +292,10 @@ msgstr "Глобальная статистика"
 msgid "Units"
 msgstr "Юниты"
 
+#: formsavegame.rswrongclass
+msgid "Warning! Current player class is not the same as source"
+msgstr "Внимание: Класс игрока не совпадает начальным"
+
 #: formsettings.rsdbnotfound
 msgid ""
 "Database file not found.\n"

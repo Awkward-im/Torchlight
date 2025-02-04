@@ -47,7 +47,7 @@ type
     OldCheckPoints:boolean;
     OldSaveFull   :boolean;
 
-    FChar  :TTLCharacter;  // reference to player (char level, free points, skills)
+    FChar  :TTLCharacter;   // reference to player (char level, free points, skills)
     FClass :TRGID;          // class id (to change skill list)
     FSkills:tSkillArray;    // class skills data
     FIcons :array of array [boolean] of TPicture; // skill icons learned/not
@@ -67,7 +67,7 @@ type
     // check if character levelenough for aval'th element level of idx'es skill tier
     function  CheckTier(aval,aidx:integer):boolean;
     procedure DoLevelChange(doinc: boolean);
-    function GetBuild(): TL2IdValList;
+    function  GetBuild(): TL2IdValList;
     procedure SetPlayerClass(const aclass: TRGID);
     procedure SetFame (aval:integer);
     procedure SetLevel(aval:integer);
@@ -357,7 +357,7 @@ var
   i,j:integer;
   lshowall:boolean;
 begin
-  if FClass=aclass then
+  if (FClass=aclass) and (not fmSettings.ModListChanged) then
     exit;
 
   if FConfigured then
@@ -394,9 +394,7 @@ begin
 
         sgSkills.Cells[colName   ,j]:=FSkills[i].title;
         sgSkills.Cells[colPassive,j]:=FSkills[i].passive;
-//        sgSkills.Cells[colMinus  ,j]:='-';
         sgSkills.Cells[colLevel  ,j]:=IntToStr(FSkills[i].learn);
-//        sgSkills.Cells[colPlus   ,j]:='+';
         inc(j);
       end;
     end;
@@ -519,7 +517,7 @@ begin
 
   //--- new build
 
-  if not FConfigured then
+  if (not FConfigured) or fmSettings.ModListChanged then
   begin
     FConfigured:=true;
 
