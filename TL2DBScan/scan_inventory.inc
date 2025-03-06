@@ -102,7 +102,7 @@ function ScanInventory(ams:pointer):integer;
 begin
   if PModScanner(ams)^.gamever=verTL1 then
   begin
-    RGLog.Add('TL1 don''t support Inventory setup');
+    if RGDebugLevel<>dlNone then RGLog.Add('TL1 don''t support Inventory setup');
     exit(0);
   end;
 

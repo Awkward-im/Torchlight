@@ -18,6 +18,45 @@ type
     bbNewClass: TBitBtn;
     bbUpdate: TBitBtn;
     cbRetired: TCheckBox;
+    edUnkn1: TEdit;
+    edUnkn9_1: TEdit;
+    edUnkn9_2: TEdit;
+    edUnkn11: TEdit;
+    edUnkn12: TEdit;
+    edUnkn14_1: TEdit;
+    edUnkn14_2: TEdit;
+    edUnkn14_3: TEdit;
+    edUnkn15_1: TEdit;
+    edUnkn15_2: TEdit;
+    edUnkn15_3: TEdit;
+    edUnkn2: TEdit;
+    edUnkn3: TEdit;
+    edUnkn4_1: TEdit;
+    edUnkn4_2: TEdit;
+    edUnkn7_0: TEdit;
+    edUnkn7_1: TEdit;
+    edUnkn7_2: TEdit;
+    edUnkn17: TEdit;
+    Label1: TLabel;
+    lblUnkn1: TLabel;
+    lblUnkn9_1: TLabel;
+    lblUnkn9_2: TLabel;
+    lblUnkn11: TLabel;
+    lblUnkn12: TLabel;
+    lblUnkn14_1: TLabel;
+    lblUnkn14_2: TLabel;
+    lblUnkn14_3: TLabel;
+    lblUnkn15_1: TLabel;
+    lblUnkn15_2: TLabel;
+    lblUnkn15_3: TLabel;
+    lblUnkn2: TLabel;
+    lblUnkn3: TLabel;
+    lblUnkn4_1: TLabel;
+    lblUnkn4_2: TLabel;
+    lblUnkn7_0: TLabel;
+    lblUnkn7_1: TLabel;
+    lblUnkn7_2: TLabel;
+    lblUnkn17: TLabel;
     seSkin: TSpinEdit;
 
     lblCustomClass: TLabel;
@@ -27,6 +66,7 @@ type
 
     pnlTop: TPanel;
     pcCharInfo: TPageControl;
+    tsTechInfo: TTabSheet;
 
     // Stats
     tsStat: TTabSheet;
@@ -1285,6 +1325,11 @@ begin
   lblWaypoint.Visible:=lChar;
   sgStats.Columns[1].ReadOnly:=not lChar;
 
+  //--- Tech
+  tsTechInfo .TabVisible:=
+      fmSettings.cbShowTech.Checked and
+      fmSettings.cbShowAll.Checked;
+
   //--- Items
   tsItems.TabVisible:=not (lChar or lPet);
 end;
@@ -1588,6 +1633,28 @@ begin
     sgStats.Cells  [2,i+1]:=RGDBGetMod(ls);
   end;
   sgStats.EndUpdate;
+
+  //--- Technical ---
+
+  edUnkn1   .Text:=TextId  (FChar.FUnkn1);
+  edUnkn2   .Text:=IntToStr(FChar.FUnkn2);
+  edUnkn3   .Text:=IntToStr(FChar.FUnkn3);
+  edUnkn4_1 .Text:=IntToStr(FChar.FUnkn4_1);
+  edUnkn4_2 .Text:=IntToStr(FChar.FUnkn4_2);
+  edUnkn7_0 .Text:=TextId  (FChar.FUnkn7[0]);
+  edUnkn7_1 .Text:=TextId  (FChar.FUnkn7[1]);
+  edUnkn7_2 .Text:=TextId  (FChar.FUnkn7[2]);
+  edUnkn17  .Text:=IntToStr(Integer(FChar.FUnkn17));
+  edUnkn9_1 .Text:=IntToStr(FChar.FUnkn9_1);
+  edUnkn9_2 .Text:=IntToStr(FChar.FUnkn9_2);
+  edUnkn11  .Text:=IntToStr(FChar.FUnkn11);
+  edUnkn12  .Text:=IntToStr(FChar.FUnkn12);
+  edUnkn14_1.Text:=IntToStr(FChar.FUnkn14_1);
+  edUnkn14_2.Text:=IntToStr(FChar.FUnkn14_2);
+  edUnkn14_3.Text:=IntToStr(FChar.FUnkn14_3);
+  edUnkn15_1.Text:=IntToStr(integer(FChar.FUnkn15_1));
+  edUnkn15_2.Text:=TextId  (TRGID(FChar.FUnkn15_2));
+  edUnkn15_3.Text:=IntToStr(Integer(FChar.FUnkn15_3));
 
   //--- Items ---
 

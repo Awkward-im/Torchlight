@@ -6,16 +6,15 @@ object fmChar: TfmChar
   BorderStyle = bsNone
   ClientHeight = 502
   ClientWidth = 640
-  LCLVersion = '4.99.0.0'
   OnDestroy = FormDestroy
   object pcCharInfo: TPageControl
     Left = 0
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsStat
+    ActivePage = tsTechInfo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 6
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -1275,6 +1274,284 @@ object fmChar: TfmChar
         Width = 43
         Caption = 'Mod list'
         ParentColor = False
+      end
+    end
+    object tsTechInfo: TTabSheet
+      Caption = 'Technical'
+      ClientHeight = 432
+      ClientWidth = 632
+      object lblUnkn1: TLabel
+        Left = 9
+        Height = 15
+        Top = 13
+        Width = 34
+        Caption = 'Unkn1'
+      end
+      object edUnkn1: TEdit
+        Left = 71
+        Height = 23
+        Top = 13
+        Width = 150
+        TabOrder = 0
+      end
+      object edUnkn2: TEdit
+        Left = 71
+        Height = 23
+        Top = 52
+        Width = 150
+        TabOrder = 1
+      end
+      object lblUnkn2: TLabel
+        Left = 9
+        Height = 15
+        Top = 52
+        Width = 48
+        Caption = 'pre-ward'
+      end
+      object edUnkn3: TEdit
+        Left = 71
+        Height = 23
+        Top = 85
+        Width = 150
+        TabOrder = 2
+      end
+      object lblUnkn3: TLabel
+        Left = 9
+        Height = 15
+        Top = 85
+        Width = 34
+        Caption = 'Unkn3'
+      end
+      object edUnkn4_1: TEdit
+        Left = 71
+        Height = 23
+        Top = 118
+        Width = 150
+        TabOrder = 3
+      end
+      object lblUnkn4_1: TLabel
+        Left = 9
+        Height = 15
+        Top = 118
+        Width = 45
+        Caption = 'Unkn4_1'
+      end
+      object edUnkn4_2: TEdit
+        Left = 71
+        Height = 23
+        Top = 149
+        Width = 150
+        TabOrder = 4
+      end
+      object lblUnkn4_2: TLabel
+        Left = 9
+        Height = 15
+        Top = 149
+        Width = 45
+        Caption = 'Is_boss?'
+      end
+      object edUnkn7_0: TEdit
+        Left = 71
+        Height = 23
+        Top = 188
+        Width = 150
+        TabOrder = 5
+      end
+      object lblUnkn7_0: TLabel
+        Left = 9
+        Height = 15
+        Top = 188
+        Width = 45
+        Caption = 'Unkn7_0'
+      end
+      object edUnkn7_1: TEdit
+        Left = 71
+        Height = 23
+        Top = 217
+        Width = 150
+        TabOrder = 6
+      end
+      object lblUnkn7_1: TLabel
+        Left = 9
+        Height = 15
+        Top = 217
+        Width = 45
+        Caption = 'Unkn7_1'
+      end
+      object edUnkn7_2: TEdit
+        Left = 71
+        Height = 23
+        Top = 244
+        Width = 150
+        TabOrder = 7
+      end
+      object lblUnkn7_2: TLabel
+        Left = 9
+        Height = 15
+        Top = 244
+        Width = 45
+        Caption = 'Unkn7_2'
+      end
+      object edUnkn17: TEdit
+        Left = 71
+        Height = 23
+        Top = 272
+        Width = 150
+        TabOrder = 8
+      end
+      object lblUnkn17: TLabel
+        Left = 9
+        Height = 15
+        Top = 272
+        Width = 52
+        Caption = 'pre-name'
+      end
+      object edUnkn9_1: TEdit
+        Left = 71
+        Height = 23
+        Top = 316
+        Width = 150
+        TabOrder = 9
+      end
+      object lblUnkn9_1: TLabel
+        Left = 9
+        Height = 15
+        Top = 316
+        Width = 45
+        Caption = 'Unkn9_1'
+      end
+      object edUnkn9_2: TEdit
+        Left = 71
+        Height = 23
+        Top = 344
+        Width = 150
+        TabOrder = 10
+      end
+      object lblUnkn9_2: TLabel
+        Left = 9
+        Height = 15
+        Top = 344
+        Width = 45
+        Caption = 'Unkn9_2'
+      end
+      object edUnkn11: TEdit
+        Left = 424
+        Height = 23
+        Top = 13
+        Width = 150
+        TabOrder = 11
+      end
+      object lblUnkn11: TLabel
+        Left = 362
+        Height = 15
+        Top = 13
+        Width = 40
+        Caption = 'Unkn11'
+      end
+      object edUnkn12: TEdit
+        Left = 424
+        Height = 23
+        Top = 45
+        Width = 150
+        TabOrder = 12
+      end
+      object lblUnkn12: TLabel
+        Left = 362
+        Height = 15
+        Top = 45
+        Width = 40
+        Caption = 'Unkn12'
+      end
+      object edUnkn14_1: TEdit
+        Left = 424
+        Height = 23
+        Top = 108
+        Width = 150
+        TabOrder = 13
+      end
+      object lblUnkn14_1: TLabel
+        Left = 362
+        Height = 15
+        Top = 108
+        Width = 51
+        Caption = 'Unkn14_1'
+      end
+      object edUnkn14_2: TEdit
+        Left = 424
+        Height = 23
+        Top = 136
+        Width = 150
+        TabOrder = 14
+      end
+      object lblUnkn14_2: TLabel
+        Left = 362
+        Height = 15
+        Top = 136
+        Width = 51
+        Caption = 'Unkn14_2'
+      end
+      object edUnkn14_3: TEdit
+        Left = 424
+        Height = 23
+        Top = 164
+        Width = 150
+        TabOrder = 15
+      end
+      object lblUnkn14_3: TLabel
+        Left = 362
+        Height = 15
+        Top = 164
+        Width = 51
+        Caption = 'Unkn14_3'
+      end
+      object edUnkn15_1: TEdit
+        Left = 424
+        Height = 23
+        Top = 216
+        Width = 150
+        TabOrder = 16
+      end
+      object lblUnkn15_1: TLabel
+        Left = 362
+        Height = 15
+        Top = 216
+        Width = 51
+        Caption = 'Unkn15_1'
+      end
+      object edUnkn15_2: TEdit
+        Left = 424
+        Height = 23
+        Top = 244
+        Width = 150
+        TabOrder = 17
+      end
+      object lblUnkn15_2: TLabel
+        Left = 362
+        Height = 15
+        Top = 244
+        Width = 34
+        Caption = 'quest?'
+      end
+      object edUnkn15_3: TEdit
+        Left = 424
+        Height = 23
+        Top = 272
+        Width = 150
+        TabOrder = 18
+      end
+      object lblUnkn15_3: TLabel
+        Left = 362
+        Height = 15
+        Top = 272
+        Width = 51
+        Caption = 'Unkn15_3'
+      end
+      object Label1: TLabel
+        Left = 435
+        Height = 15
+        Top = 90
+        Width = 106
+        Caption = 'armor(pre,pre, post)'
       end
     end
     object tsItems: TTabSheet

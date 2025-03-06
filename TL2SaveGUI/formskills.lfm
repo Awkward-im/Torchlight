@@ -95,7 +95,6 @@ object fmSkills: TfmSkills
     Width = 90
     Anchors = [akRight, akBottom]
     Caption = 'Update'
-    Default = True
     Enabled = False
     Kind = bkOK
     TabOrder = 7

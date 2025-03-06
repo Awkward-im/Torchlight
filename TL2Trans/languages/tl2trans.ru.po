@@ -130,6 +130,10 @@ msgstr "Нет исходного текста"
 msgid "No translated text"
 msgstr "Нет текста перевода"
 
+#: tl2dataunit.swronglineamount
+msgid "Wrong line amount in text and info files"
+msgstr ""
+
 #: tl2edittext.sshow
 msgid "Click on \"Show Doubles\" button to show"
 msgstr "Нажмите на \"Показать дубли\" для просмотра"
@@ -420,43 +424,63 @@ msgstr "*.DAT,  *.LAYOUT и *.TEMPLATE файлы"
 msgid "Scan all text files"
 msgstr "Проверять все файлы"
 
-#: trclass.scanttranslate
+#: trclass.rscanttranslate
+#, fuzzy
+msgctxt "trclass.rscanttranslate"
 msgid "Text can't be translated"
 msgstr "Текст не может быть переведён"
 
-#: trclass.skeyblocked
+#: trclass.rskeyblocked
+#, fuzzy
+msgctxt "trclass.rskeyblocked"
 msgid "API key blocked"
 msgstr "API ключ заблокирован"
 
-#: trclass.snohost
+#: trclass.rsnohost
+#, fuzzy
+msgctxt "trclass.rsnohost"
 msgid "No host address defined"
 msgstr "Адрес сайта не определён"
 
-#: trclass.ssessionisinvalid
+#: trclass.rssessionisinvalid
+#, fuzzy
+msgctxt "trclass.rssessionisinvalid"
 msgid "Session is invalid"
 msgstr "Сессия неверная"
 
-#: trclass.stoolongtext
+#: trclass.rstoolongtext
+#, fuzzy
+msgctxt "trclass.rstoolongtext"
 msgid "Text length too large"
 msgstr "Текст слишком длинный"
 
-#: trclass.stoomanyrequest
+#: trclass.rstoomanyrequest
+#, fuzzy
+msgctxt "trclass.rstoomanyrequest"
 msgid "Too many requests. Please wait and resend your request."
 msgstr "Слишком много запросов. Подалуйста, подождите и попробуйте снова."
 
-#: trclass.stoomuchtext
+#: trclass.rstoomuchtext
+#, fuzzy
+msgctxt "trclass.rstoomuchtext"
 msgid "Day text potion out of limit"
 msgstr "Превышено суточное ограничение на объем переведенного текста"
 
-#: trclass.sunknownerror
+#: trclass.rsunknownerror
+#, fuzzy
+msgctxt "trclass.rsunknownerror"
 msgid "Unknown Error"
 msgstr "Неизвестная ошибка"
 
-#: trclass.swrongapikey
+#: trclass.rswrongapikey
+#, fuzzy
+msgctxt "trclass.rswrongapikey"
 msgid "Wrong API key"
 msgstr "Неправильный API-ключ"
 
-#: trclass.swronglanguage
+#: trclass.rswronglanguage
+#, fuzzy
+msgctxt "trclass.rswronglanguage"
 msgid "Choosen language is unsupported"
 msgstr "Заданное направление перевода не поддерживается"
 
@@ -672,3 +696,4 @@ msgstr "Переводчики"
 #: ttl2settings.lblworkdirectory.caption
 msgid "Working directory"
 msgstr "Рабочий каталог"
+

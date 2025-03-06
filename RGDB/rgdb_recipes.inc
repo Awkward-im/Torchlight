@@ -4,12 +4,22 @@ function RGDBGetRecipes(const aname:string; out amod:string):string; overload;
 function RGDBGetRecipes(const id:TRGID    ; out amod:string):string; overload;
 function RGDBGetRecipes(const id:TRGID                     ):string; overload;
 
+function RGDBGetRecipeIcon(const id:TRGID):string;
+
 function RGDBGetRecipesList(aactual,atitled:boolean):TL2IdList;
 
 {$ELSE}
 
 const
   dbRecipeTable = 'recipes';
+
+function RGDBGetRecipeIcon(const id:TRGID):string;
+var
+  ls:string;
+begin
+  Str(id,ls);
+  result:=ReturnText(db,'SELECT icon FROM '+dbRecipeTable+' WHERE id='+ls);
+end;
 
 function RGDBGetRecipes(const aname:string; out amod:string):string; overload;
 var

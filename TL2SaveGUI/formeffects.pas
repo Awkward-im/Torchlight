@@ -19,7 +19,7 @@ type
     edActivation: TEdit;  lblActivation: TLabel;
     edSource    : TEdit;  lblSource    : TLabel;
     edDuration  : TEdit;  lblDuration  : TLabel;
-    edUnknown1  : TEdit;  lblUnknown   : TLabel;
+    edElapsed   : TEdit;  lblElapsed   : TLabel;
     edDisplay   : TEdit;  lblDisplay   : TLabel;
     edBaseClass : TEdit;  lblBaseClass : TLabel;
     edUnitTheme : TEdit;  lblUnitTheme : TLabel;
@@ -55,6 +55,7 @@ implementation
 
 uses
   rgglobal,
+  tlsgcommon,
   tlsgeffects,
   TLSGBase,
   tlsgchar,
@@ -108,7 +109,7 @@ begin
   edSource    .Text:='';
   edLevel     .Text:='';
   edDuration  .Text:='';
-  edUnknown1  .Text:='';
+  edElapsed   .Text:='';
   edDisplay   .Text:='';
 end;
 
@@ -167,9 +168,9 @@ begin
   edActivation.Text:=GetEffectActivation(leffect.Activation);
   edSource    .Text:=GetEffectSource(leffect.Source);
 
-  edLevel.Text:=IntToStr(leffect.Level);
+  edLevel     .Text:=IntToStr(leffect.Level);
   Str(leffect.Duration    :0:4,ls); FixFloatStr(ls); edDuration.Text:=ls;
-  Str(leffect.Unknown     :0:4,ls); FixFloatStr(ls); edUnknown1.Text:=ls;
+  edElapsed   .Text:=SecToTime(Trunc(leffect.Elapsed));
   Str(leffect.DisplayValue:0:4,ls); FixFloatStr(ls); edDisplay .Text:=ls;
 
   lblBaseClass.Visible:=FObject.DataType=dtChar;

@@ -92,7 +92,7 @@ type
     FActivation  :TTLEffectActivation;
     FLevel       :integer;
     FDuration    :TRGFloat;
-    FUnknown1    :TRGFloat;
+    FElapsed     :TRGFloat;
     FDisplayValue:TRGFloat;
     FSource      :TTLEffectSource;
     FIcon        :string;
@@ -121,7 +121,7 @@ type
     property Duration    :TRGFloat                  read FDuration     write FDuration;
     property DisplayValue:TRGFloat                  read FDisplayValue write FDisplayValue;
     property Source      :TTLEffectSource           read FSource       write FSource;
-    property Unknown     :TRGFloat                  read FUnknown1     write FUnknown1;
+    property Elapsed     :TRGFloat                  read FElapsed      write FElapsed;
     property Icon        :string                    read FIcon         write FIcon;
   end;
 
@@ -447,7 +447,7 @@ end;
 procedure TTLEffect.InternalClear;
 begin
   FillChar(FProperties,SizeOf(FProperties),0);
-  SetLength(FStats ,0);
+  SetLength(FStats,0);
 end;
 
 procedure TTLEffect.Clear;
@@ -552,10 +552,7 @@ begin
     FActivation  :=TTLEffectActivation(AStream.ReadDWord); // ????
     FLevel       :=AStream.ReadDWord;
     FDuration    :=AStream.ReadFloat;
-    FUnknown1    :=AStream.ReadFloat;   // 0 ??  SoakScale??
-    if FUnknown1<>0 then
-      DbgLn('Affix '+IntToStr(FEffectType)+' unknown1='+FloatToStr(FUnknown1)+' ['+HexStr(dword(FUnknown1),8)+
-      '] (not zero) at '+HexStr(AStream.Position-4,8));
+    FElapsed     :=AStream.ReadFloat;
     FDisplayValue:=AStream.ReadFloat;
     FSource      :=TTLEffectSource(AStream.ReadDWord);
   end
@@ -575,7 +572,7 @@ begin
     i8:=AStream.ReadDword;              // 0
     f:=AStream.ReadFloat;               // 1.0 usually
     FDuration    :=AStream.ReadFloat;
-    FUnknown1    :=AStream.ReadFloat;   // 0 ??  SoakScale??
+    FElapsed     :=AStream.ReadFloat;
     FDisplayValue:=AStream.ReadFloat;
     FSource      :=TTLEffectSource(AStream.ReadDWord); //?? =0
     i9:=AStream.ReadDword;              // 0
@@ -645,7 +642,7 @@ begin
     AStream.WriteDWord(FLevel);
     AStream.WriteFloat(FDuration);
     //??
-    AStream.WriteFloat(FUnknown1);
+    AStream.WriteFloat(FElapsed);
     AStream.WriteFloat(FDisplayValue);
 
     AStream.WriteDWord(DWord(FSource));
@@ -654,21 +651,21 @@ begin
   begin
     AStream.Write(tmp,64);
 {
-    i:=AStream.WriteDword;              // 4 booleans, not mask (0,1,1,1) (1,0,1,1)
-    i:=AStream.WriteDword;              // 1 on pots, 0 on shirt
-    FLevel       :=AStream.WriteDWord;  // at least, looks like
-    i:=AStream.WriteQWord;              // -1
-    i:=AStream.WriteDword;              // 100 usually
-    i:=AStream.WriteDword;              // pots=100, shirt =0
-    i:=AStream.WriteDword;              // 0
-    i:=AStream.WriteDword;              // "on time" ?
-    i:=AStream.WriteDword;              // 0
-    f:=AStream.WriteFloat;              // 1.0 usually
-    FDuration    :=AStream.WriteFloat;
-    FUnknown1    :=AStream.WriteFloat;  // 0 ??  SoakScale??
-    FDisplayValue:=AStream.WriteFloat;
-    FSource      :=TTLEffectSource(AStream.WriteDWord); //?? =0
-    i:=AStream.WriteDword;              // 0
+    AStream.WriteDword();              // 4 booleans, not mask (0,1,1,1) (1,0,1,1)
+    AStream.WriteDword();              // 1 on pots, 0 on shirt
+    AStream.WriteDWord(FLevel);    // at least, looks like
+    AStream.WriteQWord();              // -1
+    AStream.WriteDword();              // 100 usually
+    AStream.WriteDword();              // pots=100, shirt =0
+    AStream.WriteDword();              // 0
+    AStream.WriteDword();              // "on time" ?
+    AStream.WriteDword();              // 0
+    AStream.WriteFloat();              // 1.0 usually
+    AStream.WriteFloat(FDuration);
+    AStream.WriteFloat(FElapsed);
+    AStream.WriteFloat(FDisplayValue);
+    AStream.WriteDWord(DWord(FSource)); //?? =0
+    AStream.WriteDword();              // 0
 }
   end;
 

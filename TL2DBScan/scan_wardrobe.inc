@@ -121,7 +121,7 @@ function ScanWardrobe(ams:pointer):integer;
 begin
   if PModScanner(ams)^.gamever=verTL1 then
   begin
-    RGLog.Add('TL1 don''t support Wardrobe setup');
+    if RGDebugLevel<>dlNone then RGLog.Add('TL1 don''t support Wardrobe setup');
     exit(0);
   end;
 

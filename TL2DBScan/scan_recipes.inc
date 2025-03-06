@@ -1,7 +1,7 @@
 {%REGION Recipes}
 
 function AddRecipeToBase(ams:pointer; var aname:string; aId:int64;
-          const atitle, fname:string):integer;
+          const atitle, aicon, fname:string):integer;
 var
   lmodid,lSQL,sid:string;
 begin
@@ -24,8 +24,8 @@ begin
   end;
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO recipes (id, name, title, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+lmodid+')';
+    lSQL:='REPLACE INTO recipes (id, name, title, icon, modid) VALUES ('+
+        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+aicon+', '+lmodid+')';
 
     if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
       result:=1
@@ -40,11 +40,12 @@ function AddRecipeNode(ams:pointer; anode:pointer; const fname:string):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
-  name,title:string;
+  name,title,licon:string;
   lid:int64;
   i:integer;
 begin
   title:='';
+  licon:='';
   lid:=-1;
 
   for i:=0 to GetChildCount(anode)-1 do
@@ -57,6 +58,7 @@ begin
       if CompareWide(pcw,'NAME'  )=0 then name :=AsString(lnode)
       // TL2 only
       else if CompareWide(pcw,'GUID'  )=0 then lid  :=AsInteger64(lnode)
+      else if CompareWide(pcw,'ICON'  )=0 then licon:=AsString   (lnode)
       else if CompareWide(pcw,'RESULT')=0 then title:=AsString   (lnode)
     end;
   end;
@@ -64,7 +66,7 @@ begin
   if PModScanner(ams)^.gamever=verTL1 then
     title:=name;
 }
-  result:=AddRecipeToBase(ams,name,lid,title,fname);
+  result:=AddRecipeToBase(ams,name,lid,title,licon,fname);
 end;
 
 function ProcessRecipes(
@@ -118,6 +120,7 @@ begin
       '    id    INTEGER,'+
       '    name  TEXT,'+
       '    title TEXT,'+
+      '    icon  TEXT,'+
       '    modid TEXT );')
   else
     result:=true;

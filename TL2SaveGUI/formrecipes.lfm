@@ -19,6 +19,14 @@ object fmRecipes: TfmRecipes
     ColumnClickSorts = True
     Columns = <    
       item
+        MinSize = 34
+        MaxSize = 34
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Icon'
+        Width = 34
+      end    
+      item
         SizePriority = 0
         Title.Caption = 'Title'
         Width = 180
@@ -33,9 +41,12 @@ object fmRecipes: TfmRecipes
         Width = 132
       end>
     DefaultColWidth = 48
+    DefaultRowHeight = 34
+    FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowSelect, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
     RowCount = 1
     TabOrder = 0
+    OnDrawCell = sgRecipesDrawCell
     OnKeyDown = sgRecipesKeyDown
   end
   object btnDeleteWrong: TButton

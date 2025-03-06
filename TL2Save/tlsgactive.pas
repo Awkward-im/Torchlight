@@ -29,8 +29,8 @@ type
 
     // Orientation
     FOrientation:packed record
-      FPosition     :TVector3;
-      FRotation     :array [0..3,0..3] of TRGFloat;
+      FPosition:TVector3;
+      FRotation:array [0..3,0..3] of TRGFloat;
     end;
 
     FDBMods  :string;

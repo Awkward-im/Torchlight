@@ -107,6 +107,10 @@ msgstr ""
 msgid "This text presents in several (about %d) places."
 msgstr ""
 
+#: tl2dataunit.sbasetranslation
+msgid "Base translation"
+msgstr ""
+
 #: tl2dataunit.snoblockstart
 msgid "No block start"
 msgstr "Sin bloque de inicio"
@@ -127,11 +131,9 @@ msgstr "Sin texto original"
 msgid "No translated text"
 msgstr "Sin texto traducido"
 
-#: tl2dupeform.stotal
-#, fuzzy
-msgctxt "tl2dupeform.stotal"
-msgid "Total"
-msgstr "Total"
+#: tl2dataunit.swronglineamount
+msgid "Wrong line amount in text and info files"
+msgstr ""
 
 #: tl2edittext.sshow
 msgid "Click on \"Show Doubles\" button to show"
@@ -224,6 +226,14 @@ msgstr ""
 msgid "Warning"
 msgstr "Advertencia"
 
+#: tl2settingsform.rsusefreekey
+msgid "Paid or Free Key (free)"
+msgstr ""
+
+#: tl2settingsform.rsusepaidkey
+msgid "Paid or Free Key (paid)"
+msgstr ""
+
 #: tl2settingsform.snotrealized
 msgid "Not realized yet"
 msgstr "Todavia sin realizar"
@@ -232,11 +242,6 @@ msgstr "Todavia sin realizar"
 msgctxt "tl2settingsform.ssettings"
 msgid "Settings"
 msgstr "Configuracion"
-
-#: tl2simform.stotal
-msgctxt "tl2simform.stotal"
-msgid "Total"
-msgstr "Total"
 
 #: tl2unit.sdefaultcaption
 msgctxt "tl2unit.sdefaultcaption"
@@ -423,44 +428,55 @@ msgstr "Archivos *.DAT,  *.LAYOUT and *.TEMPLATE"
 msgid "Scan all text files"
 msgstr "Escenar todos los archivos de texto"
 
-#: trclass.scanttranslate
-msgctxt "trclass.scanttranslate"
+#: trclass.rscanttranslate
+msgctxt "trclass.rscanttranslate"
 msgid "Text can't be translated"
-msgstr "Texto no puede ser traducido"
+msgstr ""
 
-#: trclass.skeyblocked
-msgctxt "trclass.skeyblocked"
+#: trclass.rskeyblocked
+msgctxt "trclass.rskeyblocked"
 msgid "API key blocked"
-msgstr "Codigo API bloqueado"
+msgstr ""
 
-#: trclass.stoolongtext
-msgctxt "trclass.stoolongtext"
+#: trclass.rsnohost
+msgctxt "trclass.rsnohost"
+msgid "No host address defined"
+msgstr ""
+
+#: trclass.rssessionisinvalid
+msgctxt "trclass.rssessionisinvalid"
+msgid "Session is invalid"
+msgstr ""
+
+#: trclass.rstoolongtext
+msgctxt "trclass.rstoolongtext"
 msgid "Text length too large"
-msgstr "Texto demasiado largo"
+msgstr ""
 
-#: trclass.stoomanyrequest
+#: trclass.rstoomanyrequest
+msgctxt "trclass.rstoomanyrequest"
 msgid "Too many requests. Please wait and resend your request."
 msgstr ""
 
-#: trclass.stoomuchtext
-msgctxt "trclass.stoomuchtext"
+#: trclass.rstoomuchtext
+msgctxt "trclass.rstoomuchtext"
 msgid "Day text potion out of limit"
-msgstr "Texto supera el limite diario"
+msgstr ""
 
-#: trclass.sunknownerror
-msgctxt "trclass.sunknownerror"
+#: trclass.rsunknownerror
+msgctxt "trclass.rsunknownerror"
 msgid "Unknown Error"
-msgstr "Error desconocido"
+msgstr ""
 
-#: trclass.swrongapikey
-msgctxt "trclass.swrongapikey"
+#: trclass.rswrongapikey
+msgctxt "trclass.rswrongapikey"
 msgid "Wrong API key"
-msgstr "Codigo API erroneo"
+msgstr ""
 
-#: trclass.swronglanguage
-msgctxt "trclass.swronglanguage"
+#: trclass.rswronglanguage
+msgctxt "trclass.rswronglanguage"
 msgid "Choosen language is unsupported"
-msgstr "Lenguage seleccionado no esta soportado"
+msgstr ""
 
 #: tsimilarform.btndupes.caption
 msgid "Doubles"
@@ -631,12 +647,6 @@ msgstr "Reapertura de proyectos al inicio"
 msgctxt "ttl2settings.gbtranslation.caption"
 msgid "Translation details"
 msgstr "Traducción (DblClick to Alternar)"
-
-#: ttl2settings.lblapikey.caption
-#, fuzzy
-msgctxt "ttl2settings.lblapikey.caption"
-msgid "API Key"
-msgstr "Codigo API"
 
 #: ttl2settings.lbldefaultfile.caption
 msgid "Default translation file"

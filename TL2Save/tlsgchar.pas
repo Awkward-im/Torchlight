@@ -80,7 +80,7 @@ type
     FAlignment      :TTL2Alignment;
     FBravery        :TRGFloat;
     FAIType         :TTL2AIType;
-
+{
     // unknowns
     FUnkn1          :TRGID;
     FUnkn2          :Byte;
@@ -99,7 +99,7 @@ type
     FUnkn15_1       :DWord;
     FUnkn15_2       :QWord;
     FUnkn15_3       :DWord;
-
+}
     // player's Wardrobe etc
     FFace           :integer;
     FHairstyle      :integer;
@@ -158,6 +158,24 @@ type
   protected
     function  GetDBMods():string; override;
   public
+    FUnkn1          :TRGID;
+    FUnkn2          :Byte;
+    FUnkn3          :DWord;
+    FUnkn4_1        :byte;
+    FUnkn4_2        :byte;
+    FUnkn7          :array [0..2] of TRGID;
+    FUnkn17         :DWord;
+    FUnkn9_1        :DWord;
+    FUnkn9_2        :DWord;
+    FUnkn11         :DWord;
+    FUnkn12         :DWord;
+    FUnkn14_1,
+    FUnkn14_2,
+    FUnkn14_3       :DWord;
+    FUnkn15_1       :DWord;
+    FUnkn15_2       :QWord;
+    FUnkn15_3       :DWord;
+
     function CheckForMods(alist:TTL2ModList):boolean;
 
     property Action:TTL2Action read FAction write FAction;
@@ -432,8 +450,7 @@ begin
   end;
 
   //??
-  FUnkn17:=AStream.ReadDWord;
-  //  isPet:=(FUnkn17=$FFFFFFFF); //  const. elfly=69DF417B ?? if not -1 then "player" presents
+  FUnkn17:=AStream.ReadDWord; //  looks like random seed
   if FUnkn17<>$FFFFFFFF then DbgLn('pre-name is '+HexStr(FUnkn17,8));
 
   FName:=AStream.ReadShortString();    // Char name

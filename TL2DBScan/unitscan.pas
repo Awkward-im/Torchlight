@@ -134,6 +134,38 @@ begin
     anode:=nil;
 end;
 
+function IsBase(const aclass, fname:string):boolean;
+var
+  lname:string;
+  lpos:integer;
+begin
+  // check by class name
+  lpos:=Length(aclass)-3;
+  if lpos>0 then
+  begin
+    if ((aclass[lpos  ]='b') or (aclass[lpos  ]='B')) and
+       ((aclass[lpos+1]='a') or (aclass[lpos+1]='A')) and
+       ((aclass[lpos+2]='s') or (aclass[lpos+2]='S')) and
+       ((aclass[lpos+3]='e') or (aclass[lpos+3]='E')) then
+      exit(true);
+  end;
+  // check by file name
+  if fname<>'' then
+  begin
+    lname:=ExtractNameOnly(fname);
+    lpos:=Length(lname)-3;
+    if lpos>0 then
+    begin
+    if ((lname[lpos  ]='b') or (lname[lpos  ]='B')) and
+       ((lname[lpos+1]='a') or (lname[lpos+1]='A')) and
+       ((lname[lpos+2]='s') or (lname[lpos+2]='S')) and
+       ((lname[lpos+3]='e') or (lname[lpos+3]='E')) then
+      exit(true);
+    end;
+  end;
+  result:=false;
+end;
+
 {$i scan_mod.inc}
 
 {$i scan_adds.inc}
@@ -223,8 +255,9 @@ begin
     i:=RGPAKGetVersion(apath);
     if aver<>i then
     begin
-      RGLog.Add('Defined version '+GetGameName(aver)+
-        ' will be replaced by container version '+GetGameName(i));
+      if ABS(aver)<>ABS(i) then
+        RGLog.Add('Defined version '+GetGameName(aver)+
+          ' will be replaced by container version '+GetGameName(i));
       aver:=i;
     end;
          if (aver=verTL2Mod) or (aver=verTL1Mod) then result:=ReadModInfo(PChar(apath),lmod)

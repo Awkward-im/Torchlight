@@ -1,3 +1,4 @@
+{TODO: calc stDelete. if exists, rebuild Templates, save them 1st, then idxs?}
 {TODO: save translation language in info}
 {TODO: DeleteString (mark for delete). Delete Refs or not?}
 {TODO: ReadSrc, not StringList use but manual CRLF scan and "Copy" to string?}
@@ -42,7 +43,6 @@ type
     origin: AnsiString;
     transl: AnsiString;
     tmpl  : integer;      // index in template list
-    ref   : integer;      // index of first placement PLUS 1
     state : tTextStatus;
   end;
 
@@ -111,25 +111,19 @@ type
       -----
       ?? = found in base
     }
-    function AddStringOnLoad(const aorig,atrans,atmpl:AnsiString;
-             aref:integer; apart:boolean):integer;
-    function AddStringOnScan(const aorig: AnsiString; aref:integer): integer;
-
-    function  GetTemplate(idx:integer):AnsiString;
-    function  GetSource(idx:integer):AnsiString;
-    procedure SetTrans (idx:integer; const translated: AnsiString);
-    function  GetTrans (idx:integer):AnsiString;
+    function AddStringOnImport(const aorig,atrans,atmpl:AnsiString; apart:boolean):integer;
+    function AddStringOnLoad  (const aorig,atrans:AnsiString):integer;
+    function AddStringOnScan  (const aorig:AnsiString):integer;
 
     function  SearchTemplate(const atmpl:AnsiString):integer;
     function  AddTemplate   (const atmpl:AnsiString):integer;
+    function  GetTemplate (idx:integer):AnsiString;
+    function  GetSource   (idx:integer):AnsiString;
+    procedure SetTrans    (idx:integer; const translated: AnsiString);
+    function  GetTrans    (idx:integer):AnsiString;
     function  GetRef      (idx:integer):integer;
     function  GetRef      (idx:integer; num:integer):integer;
     function  GetRefCount (idx:integer):integer;
-{
-    function  GetRefFile  (idx:integer):AnsiString;
-    function  GetRefTag   (idx:integer):AnsiString;
-    function  GetRefLine  (idx:integer):integer;
-}
     function  GetSkillFlag(idx:integer):boolean;
     function  HaveSimilars(idx:integer):boolean;
 
@@ -138,7 +132,7 @@ type
     function  ProcessNode(anode:pointer; const afile:string; atype:integer):integer;
 
     procedure SaveInfo(const fname:AnsiString);
-    procedure LoadInfo(const fname:AnsiString; var aInfo);
+    procedure LoadInfo(const fname:AnsiString);
 
   public
     FModList: array of AnsiString;
@@ -178,7 +172,7 @@ type
     // find lines w/o translation with idx-ed template and fill them
     function CheckTheSame(idx:integer; markAsPart:boolean):integer;
     // replaced partial lines with ready, empty with filled template
-    function  CheckLine(const asrc,atrans:AnsiString;
+    function CheckLine(const asrc,atrans:AnsiString;
          const atmpl:AnsiString=''; astate:tTextStatus=stReady):integer;
 
     // events
@@ -215,11 +209,6 @@ type
     // Return index of "num"-th double of idx'ed line
     property Ref     [idx:integer; num:integer]:integer read GetRef;
     property RefCount[idx:integer]:integer     read GetRefCount;
-{
-    property SrcLine [idx:integer]:integer     read GetRefLine;
-    property SrcFile [idx:integer]:AnsiString  read GetRefFile;
-    property SrcTag  [idx:integer]:AnsiString  read GetRefTag;
-}
     property IsSkill [idx:integer]:boolean     read GetSkillFlag;
 
     property Line    [idx:integer]:AnsiString  read GetSource;
@@ -254,15 +243,6 @@ uses
 
 {$R ..\TL2Lib\dict.rc}
 
-type
-  PTmpInfo = ^TTmpInfo;
-  TTmpInfo = array of record
-    tmpl :string;
-    _ref :integer;
-    _part:boolean;
-  end;
-
-
 resourcestring
   // Open file error codes
   sNoFileStart  = 'No file starting tag';
@@ -270,6 +250,8 @@ resourcestring
   sNoOrignText  = 'No original text';
   sNoTransText  = 'No translated text';
   sNoEndBlock   = 'No end of block';
+
+  sWrongLineAmount = 'Wrong line amount in text and info files';
 
   sBaseTranslation = 'Base translation';
 
@@ -316,6 +298,8 @@ const
   sEndBlock    = '[/TRANSLATION]';
   sOriginal    = '<STRING>ORIGINAL:';
   sTranslated  = '<STRING>TRANSLATION:';
+  sFile        = '<STRING>FILE:';
+  sProperty    = '<STRING>PROPERTY:';
   // Translation
   sTranslate   = '<TRANSLATE>';
   sDescription = 'DESCRIPTION';
@@ -449,7 +433,7 @@ begin
   result:=0;
   if (idx>=0) and (idx<cntText) then
   begin
-    lref:=arText[idx].ref;
+    lref:=Refs[idx];
     while lref>=0 do
     begin
       inc(result);
@@ -461,7 +445,7 @@ end;
 function TTL2Translation.GetRef(idx:integer):integer;
 begin
   if (idx>=0) and (idx<cntText) then
-    result:=arText[idx].ref
+    result:=Refs[idx]
   else
     result:=-1;
 end;
@@ -472,7 +456,7 @@ begin
   result:=-1;
   if (idx>=0) and (idx<cntText) then
   begin
-    lref:=arText[idx].ref;
+    lref:=Refs[idx];
     while lref>=0 do
     begin
       result:=lref;
@@ -500,7 +484,7 @@ var
 begin
   if (idx>=0) and (idx<cntText) then
   begin
-    lref:=arText[idx].ref;
+    lref:=Refs[idx];
     repeat
       if Refs.IsSkill[lref] then exit(true);
       lref:=FRefs.Dupe[lref];
@@ -508,41 +492,6 @@ begin
   end;
   result:=false;
 end;
-{
-function TTL2Translation.GetRefLine(idx:integer):integer;
-begin
-  if (idx>=0) and (idx<cntText) then
-    result:=Refs.GetLine(arText[idx].aref)
-  else
-    result:=-1;
-end;
-
-function TTL2Translation.GetRefFile(idx:integer):AnsiString;
-begin
-  result:='';
-
-  if (idx>=0) and (idx<cntText) then
-  begin
-    if arText[idx].aref>=0 then
-    begin
-      result:=Refs.GetFile(arText[idx].aref);
-    end;
-  end;
-end;
-
-function TTL2Translation.GetRefTag(idx:integer):AnsiString;
-begin
-  result:='';
-
-  if (idx>=0) and (idx<cntText) then
-  begin
-    if arText[idx].aref>=0 then
-    begin
-      result:=Refs.GetTag(arText[idx].aref);
-    end;
-  end;
-end;
-}
 
 function TTL2Translation.SearchTemplate(const atmpl:AnsiString):integer;
 var
@@ -656,8 +605,7 @@ begin
   end;
 end;
 
-function TTL2Translation.AddStringOnLoad(const aorig,atrans,atmpl:AnsiString;
-      aref:integer; apart:boolean):integer;
+function TTL2Translation.AddStringOnImport(const aorig,atrans,atmpl:AnsiString; apart:boolean):integer;
 var
   ltrans,ltmpl:AnsiString;
   ltype:tTextStatus;
@@ -730,7 +678,6 @@ begin
         stReady: ;
       end;
     end;
-    arText[i].ref:=Refs.AddLinkChecked(arText[i].ref,aref);
     exit;
   end;
 
@@ -775,7 +722,6 @@ begin
   arText[cntText].state :=ltype;
   arText[cntText].origin:=aorig;
   arText[cntText].tmpl  :=AddTemplate(ltmpl);
-  arText[cntText].ref   :=Refs.AddLoadedLink(aref);
 
   inc(cntText);
 
@@ -785,7 +731,7 @@ begin
   result:=cntText;
 end;
 
-function TTL2Translation.AddStringOnScan(const aorig:AnsiString; aref:integer):integer;
+function TTL2Translation.AddStringOnScan(const aorig:AnsiString):integer;
 var
   ltmpl:AnsiString;
   i:integer;
@@ -803,7 +749,6 @@ begin
     begin
       if aorig=arText[i].origin then
       begin
-        arText[i].ref:=Refs.AddDouble(arText[i].ref,aref);
         result:=-(i+1);
         exit;
       end;
@@ -822,7 +767,6 @@ begin
     // i=idx+1 already
     if i>0 then
     begin
-      arText[i-1].ref:=Refs.AddDouble(arText[i-1].ref,aref);
       result:=-i;
       exit;
     end;
@@ -843,7 +787,6 @@ begin
     state :=stOriginal;
     origin:=aorig;
     tmpl  :=AddTemplate(ltmpl);
-    ref   :=aref;
   end;
 
   inc(cntText);
@@ -856,49 +799,103 @@ end;
 
 //===== Read translation =====
 
-procedure TTL2Translation.Error(acode:integer; const afname:AnsiString; aline:integer);
-begin
-  FErrFile:=afname;
-  FErrCode:=acode;
-  FErrLine:=aline+1;
-
-  case acode of
-    1: FErrText:=sNoFileStart;  // no file starting tag
-    2: FErrText:=sNoBlockStart; // no block start
-    3: FErrText:=sNoOrignText;  // no original text
-    4: FErrText:=sNoTransText;  // no translated text
-    5: FErrText:=sNoEndBlock;   // no end of block
-  end;
-end;
-
 function TTL2Translation.LoadFromTranslation(const src:TTL2Translation):integer;
 var
+  sl:TStringList;
   i,j:integer;
 begin
   result:=0;
   for i:=0 to src.cntText-1 do
   begin
-{
-    if Length(lInfo)>0 then
-      i:=AddStringOnLoad(lsrc,ldst,ltmpl,
-        lInfo[lcnt]._ref,lInfo[lcnt]._part)
-    else
-}
     if src.State[i]<>stDeleted then
     begin
-      j:=Refs.CopyLink(src.Refs,src.Ref[i]);
-      if AddStringOnLoad(src.Line[i],src.Trans[i],src.Template[i],
-          j,src.State[i]=stPartial)>0 then inc(result);
+      j:=AddStringOnImport(src.Line[i],src.Trans[i],src.Template[i],src.State[i]=stPartial);
+      if j>0 then inc(result);
+      if j=0 then continue;
+      Refs.CopyLink(ABS(j)-1,src.Refs,i);
     end;
   end;
+
+  if result>0 then
+  begin
+    // Roots
+    for i:=0 to src.Refs.RootCount-1 do
+    begin
+      Refs.AddRoot(src.Refs.Root[i]);
+    end;
+
+    sl:=TStringList.Create;
+    sl.Sorted:=true;
+
+    // MOD list
+    i:=Length(FModList);
+    if i=0 then
+    begin
+      if FModTitle<>'' then sl.Add(FModTitle)
+    end
+    else
+      for j:=0 to i-1 do
+        sl.Add(FModList[j]);
+
+    i:=Length(src.FModList);
+    if i=0 then
+    begin
+      if src.FModTitle<>'' then sl.Add(src.FModTitle)
+    end
+    else
+      for j:=0 to i-1 do
+        sl.Add(src.FModList[j]);
+
+    SetLength(FModList,sl.Count);
+    for i:=0 to sl.Count-1 do
+      FModList[i]:=sl[i];
+
+    sl.Free;
+  end;
+
+end;
+
+procedure TTL2Translation.Error(acode:integer; const afname:AnsiString; aline:integer);
+begin
+  FErrFile:=afname;
+  FErrCode:=ABS(acode);
+  FErrLine:=aline+1;
+
+  case FErrCode of
+    1: FErrText:=sNoFileStart;     // no file starting tag
+    2: FErrText:=sNoBlockStart;    // no block start
+    3: FErrText:=sNoOrignText;     // no original text
+    4: FErrText:=sNoTransText;     // no translated text
+    5: FErrText:=sNoEndBlock;      // no end of block
+    6: FErrText:=sWrongLineAmount; // different lines amount in text and info
+  end;
+  RGLog.Add(FErrFile,FErrLine,FErrText);
+end;
+
+function TTL2Translation.AddStringOnLoad(const aorig,atrans:AnsiString):integer;
+begin
+  //--- in case when no/wrong Info file
+  if Length(arText)=0 then
+    SetLength(arText,16000)
+  else if cntText>=Length(arText) then
+    SetLength(arText,cntText+increment);
+
+  arText[cntText].transl:=atrans;
+  arText[cntText].origin:=aorig;
+
+  inc(cntText);
+
+  if Assigned(FOnLineAdd) then
+    FOnLineAdd(cntText-1);
+
+  result:=cntText;
 end;
 
 function TTL2Translation.LoadFromFile(const fname:AnsiString):integer;
 var
   slin:TStringList;
-  lInfo:TTmpInfo;
-  s,ltmpl,lsrc,ldst:AnsiString;
-  lcnt,lline:integer;
+  s,lsrc,ldst:AnsiString;
+  loldcnt,lcnt,lline:integer;
   i,stage:integer;
 begin
   FErrCode:=0;
@@ -909,8 +906,6 @@ begin
   result:=0;
   if fname='' then exit;
 
-  lInfo:=nil;
-
   slin:=TStringList.Create;
   try
     slin.LoadFromFile(fname,TEncoding.Unicode);
@@ -919,13 +914,14 @@ begin
     exit;
   end;
 
-  LoadInfo(fname, lInfo);
+  LoadInfo(fname);
 
 {
   Filter:=flNoSearch;
   Mode  :=tmOriginal;
 }
   lline:=0;
+  loldcnt:=Length(arText);
   lcnt:=0;
   lsrc:='';
   ldst:='';
@@ -953,6 +949,8 @@ begin
           begin
             i:=Pos(sTranslated,s);
             if i<>0 then ldst:=Copy(s,i+Length(sTranslated));
+            //!!!!
+            if ldst=lsrc then ldst:='';
           end;
 
           if (i=0) then
@@ -963,38 +961,20 @@ begin
 
               if (lsrc<>'') {and (ldst<>'')} then
               begin
-                result:=0;
-
-                if Length(lInfo)>0 then
-                begin
-                  ltmpl:=lInfo[lcnt].tmpl
-                end
-                else
-                  ltmpl:='';
-
-
-                if Length(lInfo)>0 then
-                  i:=AddStringOnLoad(lsrc,ldst,ltmpl,
-                    lInfo[lcnt]._ref,lInfo[lcnt]._part)
-                else
-                  i:=AddStringOnLoad(lsrc,ldst,ltmpl,-1,false);
-
-                if i>0 then
-                  inc(result);
-
-                inc(lcnt);
+                if AddStringOnLoad(lsrc,ldst)>0 then
+                  inc(lcnt);
               end
               else if lsrc='' then
               begin
-                Error(3,fname,lline); // no original text
                 result:=-3;
+                Error(result,fname,lline); // no original text
 //!!                break;
 {
               end
               else if ldst='' then
               begin
-                Error(4,fname,lline); // no translated text
                 result:=-4;
+                Error(result,fname,lline); // no translated text
 //!!                break;
 }
               end;
@@ -1002,8 +982,8 @@ begin
             end
             else
             begin
-              Error(5,fname,lline); // no end of block
               result:=-5;
+              Error(result,fname,lline); // no end of block
 //??            break;
             end;
           end;
@@ -1021,8 +1001,8 @@ begin
           else if Pos(sEndFile,s)<>0 then break // end of file
           else
           begin
-            Error(2,fname,lline); // no block start
             result:=-2;
+            Error(result,fname,lline); // no block start
 //??            break;
           end;
         end;
@@ -1033,8 +1013,8 @@ begin
             stage:=2
           else
           begin
-            Error(1,fname,lline); // no file starting tag
             result:=-1;
+            Error(result,fname,lline); // no file starting tag
             break;
           end;
         end;
@@ -1045,9 +1025,44 @@ begin
 
   slin.Free;
 
-  Refs.DoneLoading;
+  // fix state
+  for i:=0 to High(arText) do
+  begin
+    with arText[i] do
+    begin
+      if (transl<>'') and (transl<>origin) then
+        state:=stReady
+      else
+        state:=stOriginal;
+    end;
+  end;
 
-  SetLength(lInfo,0);
+  if lcnt<>loldcnt then
+  begin
+    // RebuildTemplate();
+    for i:=0 to High(arText) do
+    begin
+      with arText[i] do
+      begin
+{
+        if (transl<>'') and (transl<>origin) then
+          state:=stReady
+        else
+          state:=stOriginal;
+}
+        tmpl:=AddTemplate(FilteredString(origin));
+      end;
+    end;
+    if loldcnt>0 then
+    begin
+      result:=-6;
+      Error(result,fname,loldcnt); // wrong line amount in text and info
+    end;
+  end
+  else if arTmpl=nil then
+    RebuildTemplate();
+
+  result:=lcnt;
 end;
 
 //===== Export =====
@@ -1056,7 +1071,7 @@ procedure TTL2Translation.SaveToFile(const fname:AnsiString; astat:tTextStatus=s
 var
   sl:TStringList;
   ls:AnsiString;
-  l,i,lstart:integer;
+  l,i:integer;
   lst:tTextStatus;
 begin
   FErrCode:=0;
@@ -1071,9 +1086,7 @@ begin
 
   sl.Add(sBeginFile);
 
-  lstart:=0;
-
-  for i:=lstart to cntText-1 do
+  for i:=0 to cntText-1 do
   begin
     lst:=arText[i].state;
     if lst<>stDeleted then
@@ -1115,7 +1128,7 @@ end;
 
 //===== Info =====
 
-procedure TTL2Translation.LoadInfo(const fname:AnsiString; var aInfo);
+procedure TTL2Translation.LoadInfo(const fname:AnsiString);
 var
   lstrm:tMemoryStream;
   ls:string;
@@ -1150,20 +1163,20 @@ begin
 
       // flags
       lamount:=lstrm.ReadDWord();
-      SetLength(TTmpInfo(aInfo),lamount);
+      SetLength(arText,lamount);
 
       for i:=0 to lamount-1 do
       begin
-        ltmp:=lstrm.ReadDWord();
+        // old version
         if lver=0 then
         begin
-          TTmpInfo(aInfo)[i]._ref :=integer(ltmp);
-          TTmpInfo(aInfo)[i]._part:=lstrm.ReadByte()<>0;
+          lstrm.ReadDWord(); // ignore ref
+          //!! will need to change to stReady if translation presents
+          if lstrm.ReadByte()<>0 then arText[i].state:=stPartial else arText[i].state:=stOriginal;
         end
         else
         begin
-          TTmpInfo(aInfo)[i]._ref :=integer(ltmp and $00FFFFFF);
-          TTmpInfo(aInfo)[i]._part:=(ltmp and $01000000)<>0;
+          arText[i].state:=TTextStatus(lstrm.ReadByte());
         end;
       end;
 
@@ -1179,9 +1192,9 @@ begin
         case ltype of
           // Templates
           1: begin
-            for i:=0 to lamount-1 do
+            for i:=0 to High(arText) do
             begin
-              TTmpInfo(aInfo)[i].tmpl:=lstrm.ReadAnsiString();
+              arText[i].tmpl:=AddTemplate(lstrm.ReadAnsiString());
             end;
           end;
 
@@ -1244,11 +1257,8 @@ begin
       lst:=arText[i].state;
       if lst<>stDeleted then
       begin
+        lstrm.WriteByte(ORD(lst));
         inc(lcnt);
-        ladd:=dword(arText[i].ref);
-        if arText[i].state=stPartial then
-          ladd:=ladd or $01000000;
-        lstrm.WriteDWord(ladd);
       end;
     end;
     lstrm.WriteDWordAt(lcnt,lpos);
@@ -1359,7 +1369,6 @@ begin
   else
     ls:=atmpl;
 
-  // for all project (not preload) lines
   for i:=0 to cntText-1 do
   begin
     litem:=@arText[i];
@@ -1531,10 +1540,18 @@ end;
 
 procedure TTL2Translation.Free;
 begin
+  FErrFile:='';
+  FErrText:='';
+  FModTitle:='';
+  FModAuthor:='';
+  FModDescr:='';
+  FModURL:='';
+
   SetLength(arText,0);
   cntText:=0;
   SetLength(arTmpl,0);
   cntTmpl:=0;
+  SetLength(FModList,0);
 
   FRefs.Free;
 end;
@@ -1644,7 +1661,8 @@ begin
       ls:=Copy(s,i,Length(s));
       if (ls<>'') and (ls<>' ') then
       begin
-        i:=AddStringOnScan(ls, FRefs.AddRef(lfile,ltag,lfline));
+        i:=AddStringOnScan(ls);
+        if i<>0 then Refs.AddRef(ABS(i)-1,Refs.NewRef(lfile,ltag,lfline));
       end;
     end;
 
@@ -1831,7 +1849,8 @@ begin
   if (ls<>'') and (ls<>' ') then
   begin
     result:=1;
-    i:=AddStringOnScan(ls, FRefs.AddRef(afile,ltag,lline));
+    i:=AddStringOnScan(ls);
+    if i<>0 then Refs.AddRef(ABS(i)-1,Refs.NewRef(afile,ltag,lline));
   end;
 end;
 
@@ -1950,6 +1969,7 @@ procedure TTL2Translation.Build(const adir:string; const abase:string='');
 var
   sl:TStringList;
   i:integer;
+  lt:TTL2Translation;
 begin
 //  don't need if we will use severa lcalls with dirs
 //  Init;
@@ -1986,7 +2006,11 @@ begin
     begin
       if Assigned(FOnFileBuild) then FOnFileBuild(sl[i],i+1,sl.Count);
 
-      LoadFromFile(sl[i]);
+//      LoadFromFile(sl[i]);
+      lt.Init;
+      lt.LoadFromFile(sl[i]);
+      LoadFromTranslation(lt);
+      lt.Free;
     end;
   end;
 

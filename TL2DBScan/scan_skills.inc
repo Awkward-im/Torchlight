@@ -8,6 +8,7 @@ type
     descr  :string;
     graph  :string;
     icon   :string;
+//    fname  :string;
     minlvl :string;
     maxlvl :string;
     passive:char;
@@ -183,6 +184,7 @@ begin
       '    maxlevel INTEGER,'+
       '    tier     TEXT,'+
       '    icon     TEXT,'+
+//      '    file     TEXT,'+
       '    passive  INTEGER (1),'+
       '    shared   INTEGER (1) );')
   else

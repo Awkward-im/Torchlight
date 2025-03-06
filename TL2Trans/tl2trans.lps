@@ -31,8 +31,9 @@
         <UnitName Value="TL2DataUnit"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="1489"/>
-        <CursorPos X="3" Y="1493"/>
+        <TopLine Value="1380"/>
+        <CursorPos X="35" Y="1356"/>
+        <FoldState Value=" T4E021 PDlg0 TCfF5 TLi604012 PCj74\"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -68,12 +69,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TL2DataModule"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="330"/>
         <CursorPos X="31" Y="345"/>
         <UsageCount Value="202"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="tl2projectform.pas"/>
@@ -82,8 +81,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="83"/>
-        <CursorPos X="22" Y="119"/>
+        <TopLine Value="1569"/>
+        <CursorPos X="40" Y="1591"/>
+        <FoldState Value=" T46031 PCjd0 TL,a041 T8jM2F TMvR8102]H3l20A6 pj1jR0{;2]A5mR094]9dkF03213 pkXm10P]KiejZ0N5]T3je0M4[T4l4mU0K[w4Lk60d011 T6lL02W PiM!Y0 T0lS248[{L594I]\j8R4e7[84i26KB piXia43C]9ck9465 pjJi16c521]BbkX43[l43e83[k4Zjc238[95R42[t4YlC230[B5el065[k40iS853 PCjA4 TKu405?"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -105,7 +105,6 @@
         <EditorIndex Value="3"/>
         <TopLine Value="432"/>
         <CursorPos Y="448"/>
-        <FoldState Value=" T3kb0M216121]3 PlMq606"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -117,7 +116,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SimForm"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="61"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -127,8 +127,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2RefUnit"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="586"/>
-        <CursorPos Y="323"/>
+        <TopLine Value="906"/>
+        <CursorPos Y="922"/>
         <UsageCount Value="212"/>
         <Loaded Value="True"/>
       </Unit>
@@ -177,9 +177,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2DupeForm"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="46"/>
-        <CursorPos X="32" Y="63"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="57"/>
+        <CursorPos X="24" Y="88"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -194,7 +194,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="62"/>
+        <UsageCount Value="77"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\logging.pas"/>
@@ -204,14 +204,14 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="56"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\trclass.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TRClass"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="56"/>
       </Unit>
     </Units>
     <OtherDefines Count="1">
@@ -248,20 +248,11 @@
     </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="data"/>
+        <Expression Value="artext"/>
+        <DisplayFormat ArrayNavBarInherit="False"/>
       </Item>
       <Item>
-        <Expression Value="ltr"/>
-      </Item>
-      <Item>
-        <Expression Value="lstr"/>
-      </Item>
-      <Item>
-        <Expression Value="lbTranslators.Items"/>
-      </Item>
-      <Item>
-        <Expression Value="o"/>
-        <DisplayFormat PointerAddrInherit="False"/>
+        <Expression Value="refs"/>
       </Item>
     </Watches>
   </Debugging>

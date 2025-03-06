@@ -531,6 +531,10 @@ msgctxt "tfmchar.gbwardrobe.caption"
 msgid "Wardrobe"
 msgstr "Гардероб"
 
+#: tfmchar.label1.caption
+msgid "armor(pre,pre, post)"
+msgstr ""
+
 #: tfmchar.lblarea.caption
 msgid "Area"
 msgstr "Область"
@@ -652,6 +656,82 @@ msgstr "Сила"
 #: tfmchar.lbltowntime.caption
 msgid "Town Time"
 msgstr "Время в городе"
+
+#: tfmchar.lblunkn1.caption
+msgid "Unkn1"
+msgstr ""
+
+#: tfmchar.lblunkn11.caption
+msgid "Unkn11"
+msgstr ""
+
+#: tfmchar.lblunkn12.caption
+msgid "Unkn12"
+msgstr ""
+
+#: tfmchar.lblunkn14_1.caption
+msgid "Unkn14_1"
+msgstr ""
+
+#: tfmchar.lblunkn14_2.caption
+msgid "Unkn14_2"
+msgstr ""
+
+#: tfmchar.lblunkn14_3.caption
+msgid "Unkn14_3"
+msgstr ""
+
+#: tfmchar.lblunkn15_1.caption
+msgid "Unkn15_1"
+msgstr ""
+
+#: tfmchar.lblunkn15_2.caption
+msgid "quest?"
+msgstr ""
+
+#: tfmchar.lblunkn15_3.caption
+msgid "Unkn15_3"
+msgstr ""
+
+#: tfmchar.lblunkn17.caption
+msgid "pre-name"
+msgstr ""
+
+#: tfmchar.lblunkn2.caption
+msgid "pre-ward"
+msgstr ""
+
+#: tfmchar.lblunkn3.caption
+msgid "Unkn3"
+msgstr ""
+
+#: tfmchar.lblunkn4_1.caption
+msgid "Unkn4_1"
+msgstr ""
+
+#: tfmchar.lblunkn4_2.caption
+msgid "Unkn4_2"
+msgstr ""
+
+#: tfmchar.lblunkn7_0.caption
+msgid "Unkn7_0"
+msgstr ""
+
+#: tfmchar.lblunkn7_1.caption
+msgid "Unkn7_1"
+msgstr ""
+
+#: tfmchar.lblunkn7_2.caption
+msgid "Unkn7_2"
+msgstr ""
+
+#: tfmchar.lblunkn9_1.caption
+msgid "Unkn9_1"
+msgstr ""
+
+#: tfmchar.lblunkn9_2.caption
+msgid "Unkn9_2"
+msgstr ""
 
 #: tfmchar.lblvitality.caption
 msgctxt "tfmchar.lblvitality.caption"
@@ -787,6 +867,12 @@ msgctxt "tfmchar.tsstatistic.caption"
 msgid "Statistic"
 msgstr "Статистика"
 
+#: tfmchar.tstechinfo.caption
+#, fuzzy
+msgctxt "tfmchar.tstechinfo.caption"
+msgid "Technical"
+msgstr "Техническое"
+
 #: tfmchar.tsview.caption
 msgid "View"
 msgstr "Вид"
@@ -865,9 +951,11 @@ msgid "Unit Theme"
 msgstr "Тема юнита"
 
 #: tfmeffects.lblunknown.caption
-msgctxt "tfmeffects.lblunknown.caption"
-msgid "Unknown"
-msgstr "Неизвестно"
+#, fuzzy
+#| msgid "Elapsed"
+msgctxt "tfmeffects.lblelapsed.caption"
+msgid "Time of"
+msgstr "Прошло"
 
 #: tfmeffects.sgeffects.columns[0].title.caption
 msgid "List"
@@ -1126,6 +1214,7 @@ msgid "Prop"
 msgstr "Окруж."
 
 #: tfmitem.tstechinfo.caption
+msgctxt "tfmitem.tstechinfo.caption"
 msgid "Technical"
 msgstr "Техническое"
 
@@ -1368,17 +1457,27 @@ msgid "Learn just actual"
 msgstr "Учить актуальное"
 
 #: tfmrecipes.sgrecipes.columns[0].title.caption
+#, fuzzy
+#| msgid "Title"
 msgctxt "tfmrecipes.sgrecipes.columns[0].title.caption"
-msgid "Title"
+msgid "Icon"
 msgstr "Название"
 
 #: tfmrecipes.sgrecipes.columns[1].title.caption
+#, fuzzy
+#| msgid "Mod"
 msgctxt "tfmrecipes.sgrecipes.columns[1].title.caption"
-msgid "Mod"
+msgid "Title"
 msgstr "Мод"
 
 #: tfmrecipes.sgrecipes.columns[2].title.caption
+#, fuzzy
 msgctxt "tfmrecipes.sgrecipes.columns[2].title.caption"
+msgid "Mod"
+msgstr "Мод"
+
+#: tfmrecipes.sgrecipes.columns[3].title.caption
+msgctxt "tfmrecipes.sgrecipes.columns[3].title.caption"
 msgid "Id"
 msgstr ""
 
@@ -1920,3 +2019,4 @@ msgstr "Осмотрено тайников"
 #: tlsgstatistic.rsunknownstat
 msgid "Unknown Stat"
 msgstr "Неизвестная статистика"
+

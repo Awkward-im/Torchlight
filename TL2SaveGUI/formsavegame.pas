@@ -341,7 +341,8 @@ begin
     SGame.LoadFromFile(FFileName);
     SGame.Parse();
 
-    if SGame.Stats.PlayerClass<>SGame.ClassString then
+    if (SGame.GameVersion=verTL2) and
+       (UpCase(SGame.Stats.PlayerClass)<>UpCase(SGame.ClassString)) then
       ShowMessage(rsWrongClass);
 
     fmButtons.SGame:=SGame;
@@ -479,6 +480,7 @@ begin
   fmButtons.btnExport.Enabled:=(tvSaveGame.Selected<>nil) and (tvSaveGame.Selected.Data<>nil);
   fmButtons.btnImport.Enabled:=false;
   fmButtons.Offset:=-1;
+  fmButtons.Size  :=-1;
   fmButtons.Ext   :=DefaultExt;
   if (tvSaveGame.Selected<>nil) then
   begin
@@ -558,6 +560,7 @@ begin
       case tvSaveGame.Selected.level of
         1: begin
           fmButtons.Offset:=SGame.CharInfo.DataOffset;
+          fmButtons.Size  :=SGame.CharInfo.DataSize;
           FChar.FillInfo(SGame,SGame.CharInfo);
           SGEPage:=FChar;
         end;
@@ -590,6 +593,7 @@ begin
       case tvSaveGame.Selected.level of
         1,2: begin
           fmButtons.Offset:=SGame.PetInfo[lidx].DataOffset;
+          fmButtons.Offset:=SGame.PetInfo[lidx].DataSize;
           FPet.FillInfo(SGame,SGame.PetInfo[lidx]);
           SGEPage:=FPet;
         end;
@@ -617,6 +621,7 @@ begin
           end;
           FMaps.FillInfo(SGame,lidx);
           fmButtons.Offset:=SGame.Maps[lidx].DataOffset;
+          fmButtons.Offset:=SGame.Maps[lidx].DataSize;
           SGEPage:=FMaps;
         end;
         3: begin
@@ -651,6 +656,7 @@ begin
         if SGame.Quests<>nil then
         begin
           fmButtons.Offset:=SGame.Quests.DataOffset; //!!
+          fmButtons.Offset:=SGame.Quests.DataSize;   //!!
           FQuests:=TfmQuests.Create(Self);
           FQuests.Parent:=MainPanel;
           FQuests.Align :=alClient;
@@ -679,6 +685,7 @@ begin
         if SGame.Stats<>nil then
         begin
           fmButtons.Offset:=SGame.Stats.DataOffset; //!!
+          fmButtons.Offset:=SGame.Stats.DataSize;   //!!
           FStats:=TfmStat.Create(Self);
           FStats.Parent:=MainPanel;
           FStats.Align :=alClient;

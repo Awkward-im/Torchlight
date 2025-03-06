@@ -7,7 +7,6 @@ object fmEffects: TfmEffects
   Caption = 'Effects'
   ClientHeight = 513
   ClientWidth = 620
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object lblEffects: TLabel
     Left = 2
@@ -192,18 +191,18 @@ object fmEffects: TfmEffects
     BorderSpacing.Left = 8
     TabOrder = 9
   end
-  object lblUnknown: TLabel
+  object lblElapsed: TLabel
     AnchorSideLeft.Control = clbFlags
     AnchorSideLeft.Side = asrBottom
     Left = 440
     Height = 15
     Top = 104
-    Width = 51
+    Width = 41
     BorderSpacing.Left = 8
-    Caption = 'Unknown'
+    Caption = 'Elapsed'
     ParentColor = False
   end
-  object edUnknown1: TEdit
+  object edElapsed: TEdit
     AnchorSideLeft.Control = clbFlags
     AnchorSideLeft.Side = asrBottom
     Left = 440

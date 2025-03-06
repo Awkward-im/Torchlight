@@ -72,7 +72,7 @@ begin
 
   if PModScanner(ams)^.gamever=verTL1 then
   begin
-    RGLog.Add('TL1 don''t support Movie clips setup');
+    if RGDebugLevel<>dlNone then RGLog.Add('TL1 don''t support Movie clips setup');
     exit;
   end;
 

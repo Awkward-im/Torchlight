@@ -30,7 +30,7 @@ object fmButtons: TfmButtons
   object lblOffset: TLabel
     Left = 395
     Height = 14
-    Top = 16
+    Top = 5
     Width = 80
     Anchors = [akTop, akRight]
     AutoSize = False
@@ -44,5 +44,14 @@ object fmButtons: TfmButtons
     Caption = 'Delete'
     Enabled = False
     TabOrder = 2
+  end
+  object lblSize: TLabel
+    Left = 395
+    Height = 14
+    Top = 26
+    Width = 80
+    Anchors = [akTop, akRight]
+    AutoSize = False
+    ParentColor = False
   end
 end

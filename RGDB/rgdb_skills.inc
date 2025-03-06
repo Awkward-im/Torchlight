@@ -203,7 +203,7 @@ begin
         lwhere:='';
 
       pc:=pointer(ls);
-      if pc^=',' then inc(pc); // must be always
+      if pc^=',' then inc(pc);
       ltmp:='';
       lvl :=0;
       i:=0;

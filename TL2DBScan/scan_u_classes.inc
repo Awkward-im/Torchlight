@@ -110,6 +110,7 @@ var
   lclass:tclassinfo;
   lsname,lslevel:string;
   i,j:integer;
+  lbasic:boolean;
 begin
   FillChar(lclass,SizeOf(lclass),0);
   lclass.wardrobe :=',';
@@ -244,17 +245,20 @@ begin
   else
   begin
     GetGender(ams, lclass.name, lclass.unittype, lclass.gender);
-    if lclass.gender='' then
-    begin
-      lclass.gender:='U';
-      RGLog.Add('Unknown gender for '+lclass.name);
-    end;
+//    if lclass.gender='' then lclass.gender:='U';
   end;
 
   if lclass.skill=',' then lclass.skill:='';
   lclass.fname:=FixFileExt(fname);
 
-  if (lclass.icon='') {and (PModScanner(ams)^.gamever=verTL1)} then
+  // some optimization
+  if (lclass.gender='') or (lclass.icon='') then
+    lbasic:=IsBase(lclass.name,fname);
+
+  if (lclass.gender='') and (not lbasic) then
+      RGLog.Add('Unknown gender for '+lclass.name);
+
+  if (lclass.icon='') and (not lbasic) {and (PModScanner(ams)^.gamever=verTL1)} then
   begin
     lclass.icon:=LowerCase(lclass.name+'icon');
     RGLog.Add('No icon name for '+lclass.name+'. Set it as '+lclass.icon);

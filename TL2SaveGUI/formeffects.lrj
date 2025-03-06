@@ -12,7 +12,7 @@
 {"hash":106901301,"name":"tfmeffects.lblunittheme.caption","sourcebytes":[85,110,105,116,32,84,104,101,109,101],"value":"Unit Theme"},
 {"hash":5426364,"name":"tfmeffects.lbllevel.caption","sourcebytes":[76,101,118,101,108],"value":"Level"},
 {"hash":210283758,"name":"tfmeffects.lblduration.caption","sourcebytes":[68,117,114,97,116,105,111,110],"value":"Duration"},
-{"hash":206722702,"name":"tfmeffects.lblunknown.caption","sourcebytes":[85,110,107,110,111,119,110],"value":"Unknown"},
+{"hash":184776454,"name":"tfmeffects.lblunknown.caption","sourcebytes":[84,105,109,101,32,111,102],"value":"Time of"},
 {"hash":185234121,"name":"tfmeffects.lbldisplay.caption","sourcebytes":[68,105,115,112,108,97,121],"value":"Display"},
 {"hash":222118677,"name":"tfmeffects.lbldamagetype.caption","sourcebytes":[68,97,109,97,103,101,32,116,121,112,101],"value":"Damage type"},
 {"hash":114087587,"name":"tfmeffects.lblproperties.caption","sourcebytes":[80,114,111,112,101,114,116,105,101,115],"value":"Properties"},

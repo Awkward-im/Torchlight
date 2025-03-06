@@ -7,8 +7,15 @@
     Dupes stores as index of next double, less than 0 means end of link
     LoadedRefs is buffer to reserve unreaded yet dats (dupes) and
       keep indexes between text and refs coz refs loading before text
+
+    Use Index array (like text lines), element - index of ref chain start
+    no need IDs then (and REF field in text array too)
+    if we have Text without ref, then add double, delete doubles. How to recognize,
+    delete or not text after all refs deleting? Flag in index?
+    if only keep flag in Index
 }
 {TODO: Separate text cache to dir, files, tags.}
+{TODO: OnDeleteRefGroup event for DeleteDir/File/Tag}
 unit TL2RefUnit;
 
 interface
@@ -25,6 +32,8 @@ type
         txt: integer;  // index of text in array
         cnt: integer;  // count of referals
       end;
+      tRefTextArr = array of tRefText;
+      PRefData = ^tRefData;
       tRefData = packed record
         // constant part (fills on scan)
         _dir : integer;
@@ -34,20 +43,18 @@ type
         // runtime part
         _root: integer;
         _flag: integer;
-        _dup : integer; // index of next ref
+        _dup : integer; // index of next ref.
+                        // positive - index of next ref element, negative (-1) is the end
       end;
 
   private
     arRefs  : array of tRefData;
-    arDirs  : array of tRefText;
-    arFiles : array of tRefText;
-    arTags  : array of tRefText;
+    arIndex : array of integer; // variant: "empty"=-1; else 1byte for "noref", 3 byte for index
+    arDirs  : tRefTextArr;
+    arFiles : tRefTextArr;
+    arTags  : tRefTextArr;
     names   : tTextCache;
-
-    LoadedRefs: array of tRefData;
-
-//    fRoot   : AnsiString;
-    arRoots  : array of AnsiString;
+    arRoots : array of AnsiString;
 
     // last used
     lastDir : AnsiString;
@@ -56,14 +63,15 @@ type
     lastTagIdx:integer;
     lastRoot: integer;
 
-    cntRefs : integer; // referals (lines)
+    cntRefs : integer; // referals
+    cntIndex: integer; // same as text lines
     cntDirs : integer; // dirs
     cntFiles: integer; // filenames
     cntTags : integer; // tags
     cntRoots: integer;
 
     procedure IntDeleteRef(aidx:integer);
-    procedure DeleteRef(aid:integer);
+    procedure DeleteRef   (aid :integer);
 
     procedure DeleteDir (const fdir :AnsiString);
     procedure DeleteFile(const fname:AnsiString);
@@ -71,49 +79,48 @@ type
     function  AddDir    (const fdir :AnsiString):integer;
     function  AddFile   (const fname:AnsiString):integer;
     function  AddTag    (const atag :AnsiString):integer;
+    function  AddWithCheck(const atxt:AnsiString; var alast:AnsiString;
+        var arr:tRefTextArr; var acnt:integer; aincr:integer):integer;
+    function NewRefInt(adir,afile,atag,aline,aflag:integer):integer;
 
-    function  GetOpt(idx,aflag:integer):boolean;
-    procedure SetOpt(idx,aflag:integer; aval:boolean);
-    function  GetFlag(idx:integer):integer;
-    procedure SetFlag(idx:integer; aval:integer);
-    function  GetDup (idx:integer):integer;
-    procedure SetDup (idx:integer; aval:integer);
+    function  GetOpt (aidx,aflag:integer):boolean;
+    procedure SetOpt (aidx,aflag:integer; aval:boolean);
+    function  GetFlag(aidx:integer):integer;
+    procedure SetFlag(aidx:integer; aval:integer);
+    function  GetDup (aidx:integer):integer;
+    procedure SetDup (aidx:integer; aval:integer);
 
-    function GetRootByIdx(idx:integer):AnsiString;
-    function GetDirByIdx (idx:integer):AnsiString;
-    function GetFileByIdx(idx:integer):AnsiString;
-    function GetTagByIdx (idx:integer):AnsiString;
+    function GetRootByIdx(aidx:integer):AnsiString;
+    function GetDirByIdx (aidx:integer):AnsiString;
+    function GetFileByIdx(aidx:integer):AnsiString;
+    function GetTagByIdx (aidx:integer):AnsiString;
+
+    function  GetRef  (idx:integer):integer;
+    function  GetNoRef(idx:integer):boolean;
+    procedure SetNoRef(idx:integer; aval:boolean);
 
   public
     procedure Init;
     procedure Free;
 
-    // add loaded ref link to existing line (with refs check)
-    function AddLinkChecked(aref,aload:integer):integer;
-    // add loaded ref link to new string
-    function AddLoadedLink(aload:integer):integer;
     // add ref from another reference class
-    function CopyLink(const aref:TTL2Reference; aidx:integer):integer;
-    // add single ref (adupe) to existing (aref) as double
-    function AddDouble(aref,adupe:integer):integer;
-    function AddLoadedRef(idx:integer):integer;  // idx is index of LoadedRefs array
-    function AddRef(const afile,atag:AnsiString; aline:integer):integer;
-    // unised atm
-    function GetRef(idx:integer; var afile,atag:AnsiString):integer;
+    function CopyLink(dst:integer; const aref:TTL2Reference; aidx:integer):integer;
 
-    // idx - reference
-    function GetLine (idx:integer):integer;
-    function GetDir  (idx:integer):AnsiString;
-    function GetFName(idx:integer):AnsiString;
-    function GetFile (idx:integer):AnsiString;   // Dir+FName
-    function GetTag  (idx:integer):AnsiString;
-    function GetRoot (idx:integer):AnsiString;
+    function NewRef(const afile,atag:AnsiString; aline:integer):integer;
+    function AddRef(idx:integer; aref:integer):integer;
+
+    function GetPlace(aidx:integer; var afile,atag:AnsiString):integer;  // unised atm
+    function GetLine (aidx:integer):integer;
+    function GetDir  (aidx:integer):AnsiString;
+    function GetFName(aidx:integer):AnsiString;
+    function GetFile (aidx:integer):AnsiString;   // Dir+FName
+    function GetTag  (aidx:integer):AnsiString;
+    function GetRoot (aidx:integer):AnsiString;
     // moved to public coz used for scan
     function AddRoot(const aroot:AnsiString):integer;
 
     procedure SaveToStream  (astrm:TStream);
     procedure LoadFromStream(astrm:TStream);
-    procedure DoneLoading;                       // just clear loaded refs array
 
     // idx physical index of array
     property  RefCount :integer read cntRefs;
@@ -121,16 +128,20 @@ type
     property  FileCount:integer read cntFiles;
     property  TagCount :integer read cntTags;
     property  RootCount:integer read cntRoots;
-    property  Dirs [idx:integer]:AnsiString read GetDirByIdx;
-    property  Files[idx:integer]:AnsiString read GetFileByIdx;
-    property  Tags [idx:integer]:AnsiString read GetTagByIdx;
-    property  Root [idx:integer]:AnsiString read GetRootByIdx;
+    property  Dirs [aidx:integer]:AnsiString read GetDirByIdx;
+    property  Files[aidx:integer]:AnsiString read GetFileByIdx;
+    property  Tags [aidx:integer]:AnsiString read GetTagByIdx;
+    property  Root [aidx:integer]:AnsiString read GetRootByIdx;
 
     // index of next place of line
-    property  Dupe       [idx:integer]:integer         read GetDup  write SetDup;
-    property  Flag       [idx:integer]:integer         read GetFlag write SetFlag;
-    property  IsSkill    [idx:integer]:boolean index 1 read GetOpt  write SetOpt;
-    property  IsTranslate[idx:integer]:boolean index 2 read GetOpt  write SetOpt;
+    property  Dupe       [aidx:integer]:integer         read GetDup  write SetDup;
+    property  Flag       [aidx:integer]:integer         read GetFlag write SetFlag;
+    property  IsSkill    [aidx:integer]:boolean index 1 read GetOpt  write SetOpt;
+    property  IsTranslate[aidx:integer]:boolean index 2 read GetOpt  write SetOpt;
+
+    // idx is text line index
+    property  Ref  [idx:integer]:integer read GetRef; default;
+    property  NoRef[idx:integer]:boolean read GetNoRef write SetNoRef;
   end;
 
 
@@ -146,23 +157,63 @@ const
   RefSizeV1 = SizeOf(Integer)*4;
 
 const
+  rfNoRef   = 1 shl 24; // used as Index flag
+  rfNoChain = 1 shl 23; // $800000 "no ref" and no others
+  rfNoFlags = $7FFFFF;
+
+  rfIsNewChain  = $80;  // used for save/load only
+  rfIsNoRef     = $40;  // used for save/load only
   rfIsSkill     = 1;
   rfIsTranslate = 2;
+  rfIsDeleted   = 4;
+  rfIsDummy     = 8;
 
 const
   increment = 50;
+
+procedure TTL2Reference.SetNoRef(idx:integer; aval:boolean); inline;
+begin
+  if arIndex=nil then exit;
+
+  if arIndex[idx]=-1 then
+    arIndex[idx]:=rfNoChain    or rfNoRef
+  else
+    arIndex[idx]:=arIndex[idx] or rfNoRef;
+end;
+
+function TTL2Reference.GetNoRef(idx:integer):boolean; inline;
+begin
+  if arIndex=nil then exit(true);
+  result:=((arIndex[idx] and rfNoRef)<>0) and (arIndex[idx]<>-1);
+end;
+
+function TTL2Reference.GetRef(idx:integer):integer;
+begin
+  if arIndex=nil then exit(-1);
+  result:=arIndex[idx];
+  if result<>-1 then
+  begin
+    if (result and rfNoChain)<>0 then exit(-1);
+    result:=result and rfNoFlags;
+  end;
+end;
 
 procedure TTL2Reference.IntDeleteRef(aidx:integer);
 begin
   dec(arDirs [arRefs[aidx]._dir ].cnt);
   dec(arFiles[arRefs[aidx]._file].cnt);
   dec(arTags [arRefs[aidx]._tag ].cnt);
-  arRefs[aidx]._line:=0; // arRefs[aidx]._line:=-arRefs[aidx]._line; // in case to check/restore
+  arRefs[aidx]._flag:=arRefs[aidx]._flag or rfIsDeleted;
+  //!! check if it was a chain start
 end;
 
 procedure TTL2Reference.DeleteRef(aid:integer);
 begin
-  IntDeleteRef(aid);
+  while aid>=0 do
+  begin
+    IntDeleteRef(aid);
+    aid:=arRefs[aid]._dup;
+  end;
   // Text line must be deleted outside
 end;
 
@@ -238,90 +289,80 @@ end;
 {%ENDREGION Deletion}
 
 {%REGION Addition /fold}
+{
+  if same as last - increase count
+  save names count. Add
+  if names count the same, exists. Search, increase count.
+  else check array size, add
+}
+
+function TTL2Reference.AddWithCheck(const atxt:AnsiString; var alast:AnsiString;
+    var arr:tRefTextArr; var acnt:integer; aincr:integer):integer;
+var
+  i,lcnt,lidx:integer;
+begin
+  if atxt='' then exit(-1);
+
+  if (acnt>0) and (atxt=alast) then
+  begin
+    inc(arr[acnt-1].cnt);
+    exit(acnt-1);
+  end;
+
+  alast:=atxt;
+
+  lcnt:=names.Count;
+  lidx:=names.Add(PAnsiChar(atxt));
+  // new dir record
+  if lcnt<names.Count then
+  begin
+    if acnt>=Length(arr) then
+      SetLength(arr,acnt+aincr);
+
+    arr[acnt].txt:=lidx;
+    arr[acnt].cnt:=1;
+
+    result:=acnt;
+    inc(acnt);
+  end
+  else // search for old
+  begin
+    for i:=0 to acnt-1 do
+    begin
+      if arr[i].txt=lidx then
+      begin
+        inc(arr[i].cnt);
+        exit(i);
+      end;
+    end;
+    // must not happen but...
+    result:=-1;
+  end;
+end;
+
 function TTL2Reference.AddDir(const fdir:AnsiString):integer;
 begin
-  // 1 times per dir (else - delete this check!)
-  if (cntDirs>0) and (fdir=lastDir) then
-  begin
-    inc(arDirs[cntDirs-1].cnt);
-    exit(cntDirs-1);
-  end;
-
-  lastDir:=fdir;
-  if cntDirs>=Length(arDirs) then
-  begin
-    SetLength(arDirs,cntDirs+increment);
-  end;
-  arDirs[cntDirs].txt:=names.Add(PAnsiChar(fdir));
-  arDirs[cntDirs].cnt:=1;
-
-  result:=cntDirs;
-  inc(cntDirs);
+  result:=AddWithCheck(fdir,lastDir,arDirs,cntDirs,increment);
 end;
 
 function TTL2Reference.AddFile(const fname:AnsiString):integer;
 begin
-  // 1 times per file (else - delete this check!)
-  if (cntFiles>0) and (fname=lastFile) then
-  begin
-    inc(arFiles[cntFiles-1].cnt);
-    exit(cntFiles-1);
-  end;
-
-  lastFile:=fname;
-  if cntFiles>=Length(arFiles) then
-  begin
-    SetLength(arFiles,cntFiles+increment*10);
-  end;
-  arFiles[cntFiles].txt:=names.Add(PAnsiChar(fname));
-  arFiles[cntFiles].cnt:=1;
-
-  result:=cntFiles;
-  inc(cntFiles);
+  result:=AddWithCheck(fname,lastFile,arFiles,cntFiles,increment*10);
 end;
 
 function TTL2Reference.AddTag(const atag:AnsiString):integer;
-var
-  lcnt,lidx,i:integer;
 begin
   if atag='' then exit(0);
 
   // can be several times. So, save idx too.
-  // or delete for full Tag names check
   if (lastTagIdx>=0) and (atag=lastTag) then
   begin
     inc(arTags[lastTagIdx].cnt);
     exit(lastTagIdx);
   end;
 
-  lcnt:=names.count;
-  lidx:=names.Add(PAnsiChar(atag));
-  if lcnt<names.count then
-  begin
-    if cntTags>=Length(arTags) then
-    begin
-      SetLength(arTags,cntTags+increment);
-    end;
-    arTags[cntTags].txt:=lidx;
-    arTags[cntTags].cnt:=1;
+  result:=AddWithCheck(atag,lastTag,arTags,cntTags,increment);
 
-    result:=cntTags;
-    inc(cntTags);
-  end
-  else
-  begin
-    result:=-1; // must not be but...
-    for i:=0 to cntTags-1 do
-    begin
-      if arTags[i].txt=lidx then
-      begin
-        inc(arTags[i].cnt);
-        result:=i;
-        break;
-      end;
-    end;
-  end;
-  lastTag   :=atag;
   lastTagIdx:=result;
 end;
 
@@ -350,154 +391,156 @@ end;
 
 {%ENDREGION Addition}
 
-function TTL2Reference.AddLoadedRef(idx:integer):integer;
-begin
-  if (idx<0) or (Length(LoadedRefs)=0) then exit(-1);
-
-  if cntRefs>=Length(arRefs) then
-    SetLength(arRefs,Length(arRefs)+increment*20);
-
-  move(LoadedRefs[idx],arRefs[cntRefs],SizeOf(tRefData));
-{
-  with arRefs[cntRefs] do
-  begin
-//    id   :=MaxID; inc(MaxID);
-    _dir :=LoadedRefs[idx]._dir;
-    _file:=LoadedRefs[idx]._file;
-    _tag :=LoadedRefs[idx]._tag;
-    _line:=LoadedRefs[idx]._line;
-    _dup :=LoadedReds[idx]._dup;
-    _flag:=LoadedRefs[idx]._flag;
-//    result:=id;
-  end;
-}
-  result:=cntRefs;
-
-  inc(cntRefs);
-end;
-
-function TTL2Reference.AddLinkChecked(aref,aload:integer):integer;
+// dst and aidx - line index
+function TTL2Reference.CopyLink(dst:integer; const aref:TTL2Reference; aidx:integer):integer;
 var
-  oidx:integer;
-  found:boolean;
-begin
-  if aref<0 then exit(AddLoadedLink(aload));
-
-  result:=aref;
-  if (aload<0) or (Length(LoadedRefs)=0) then exit;
-
-  while aload>=0 do
-  begin
-    // search new ref in chain of old
-    found:=false;
-    oidx:=aref;
-    while oidx>=0 do
-    begin
-      // not sure what we need to check for same line number
-      if (arRefs[oidx]._dir =LoadedRefs[aload]._dir ) and 
-         (arRefs[oidx]._file=LoadedRefs[aload]._file) and
-         (arRefs[oidx]._tag =LoadedRefs[aload]._tag ) {and
-         (arRefs[oidx]._line=LoadedRefs[aload]._line)} then
-      begin
-        found:=true;
-        break;
-      end;
-
-      oidx:=arRefs[oidx]._dup;
-    end;
-
-    // add link as first to not break checking cycle
-    if not found then
-    begin
-      oidx:=result;
-      result:=AddLoadedRef(aload);
-      arRefs[result]._dup:=oidx;
-    end;
-
-    aload:=LoadedRefs[aload]._dup;
-  end;
-end;
-
-// This will add link to existing ref array and return 1st index
-function TTL2Reference.AddLoadedLink(aload:integer):integer;
-var
-  lidx:integer;
-begin
-  result:=AddLoadedRef(aload);
-  if result<0 then exit;
-  // add link to the end
-  lidx:=result;
-  aload:=LoadedRefs[aload]._dup;
-  while aload>=0 do
-  begin
-    arRefs[lidx]._dup:=AddLoadedRef(aload);  // add loaded dup as new dup
-    lidx:=arRefs[lidx]._dup;                 // next dup will be added to new
-    aload:=LoadedRefs[aload]._dup;           // next loaded dup
-  end;
-end;
-
-function TTL2Reference.CopyLink(const aref:TTL2Reference; aidx:integer):integer;
+  lfcnt,lfile:integer;
+  ldcnt,ldir :integer;
+  lidx,ltag:integer;
+  lnoref, lfound:boolean;
 begin
   result:=-1;
-  while aidx>0 do
-  begin
-    result:=AddDouble(result,AddRef(aref.GetFile(aidx),aref.GetTag(aidx),aref.GetLine(aidx)));
-    aidx  :=aref.Dupe[aidx];
-  end;
-end;
+  if {(aref=nil) or }(aref.cntIndex=0) then exit;
 
-function TTL2Reference.AddDouble(aref,adupe:integer):integer;
-var
-  oldref:integer;
-begin
-  result:=aref;
-  if adupe>=0 then
+  lnoref:=aref.NoRef[aidx];
+
+  aidx:=aref.Ref[aidx]; // line index to ref index
+  while aidx>=0 do
   begin
-    if aref<0 then
-      result:=adupe
-    else
+    lfound:=false;
+    
+    lfcnt:=cntFiles;
+    ldcnt:=cntDirs;
+    ldir :=AddDir (aref.GetDir  (aidx));
+    lfile:=AddFile(aref.GetFName(aidx));
+    ltag :=AddTag (aref.GetTag  (aidx));
+
+    // if BOTH File and Dir exists already
+    if (lfcnt=cntFiles) and (ldcnt=cntDirs) then
     begin
-      oldref:=arRefs[aref]._dup;
-      arRefs[aref ]._dup:=adupe;
-      arRefs[adupe]._dup:=oldref;
+      lidx:=Ref[dst];
+      while lidx>=0 do
+      begin
+        if (arRefs[lidx]._file=lfile) and
+           (arRefs[lidx]._dir =ldir ) and
+           (arRefs[lidx]._tag =ltag ) then
+        begin
+          lfound:=true;
+          break;
+        end;
+        lidx:=arRefs[lidx]._dup;
+      end;
     end;
+
+    if not lfound then
+    begin
+      AddRef(dst,NewRefInt(ldir,lfile,ltag,aref.GetLine(aidx),aref.GetFlag(aidx)));
+    end;
+
+    aidx:=aref.Dupe[aidx];
   end;
+
+  NoRef[dst]:=lnoref;
 end;
 
-function TTL2Reference.AddRef(const afile,atag:AnsiString; aline:integer):integer;
-var
-  ldir,lfile:AnsiString;
+function TTL2Reference.NewRefInt(adir,afile,atag,aline,aflag:integer):integer;
 begin
   if cntRefs>=Length(arRefs) then
     SetLength(arRefs,Length(arRefs)+increment*20);
 
-  ldir :=ExtractPath(afile);
-  lfile:=ExtractName(afile);
   with arRefs[cntRefs] do
   begin
-    _dir :=AddDir (ldir);
-    _file:=AddFile(lfile);
-    _tag :=AddTag (atag);
+    _dir :=adir;
+    _file:=afile;
+    _tag :=atag;
     _line:=ABS(aline);
     _dup :=-1;
     _root:=lastRoot;
-    _flag:=0;
-//!!
-    if Pos('/SKILLS/',afile)=7 then
-      _flag:=_flag or rfIsSkill;
-
-    if aline<0 then
-      _flag:=_flag or rfIsTranslate;
+    _flag:=aflag;
   end;
   result:=cntRefs;
   inc(cntRefs);
 end;
 
-function TTL2Reference.GetRef(idx:integer; var afile,atag:AnsiString):integer;
+function TTL2Reference.NewRef(const afile,atag:AnsiString; aline:integer):integer;
+var
+  lflag,ldir,lfile,ltag:integer;
 begin
-  if (idx>=0) and (idx<cntRefs) then
+  if afile<>'' then
   begin
-    with arRefs[idx] do
+    if cntRefs>=Length(arRefs) then
+      SetLength(arRefs,Length(arRefs)+increment*20);
+
+    ldir :=AddDir (ExtractPath(afile));
+    lfile:=AddFile(ExtractName(afile));
+    ltag :=AddTag (atag);
+
+    lflag:=0;
+    if Pos('/SKILLS/',afile)=7 then
+      lflag:=lflag or rfIsSkill;
+
+    if aline<0 then
+      lflag:=lflag or rfIsTranslate;
+
+    result:=NewRefInt(ldir,lfile,ltag,aline,lflag);
+  end
+  else
+    result:=rfNoRef or rfNoChain; // "no ref" without ref index
+end;
+
+function TTL2Reference.AddRef(idx:integer; aref:integer):integer;
+var
+  i:integer;
+begin
+  if idx>cntIndex then exit(-1); // it WRONG if will happen
+
+  if idx=cntIndex then
+  begin
+    i:=0;
+    if arIndex=nil then
+      i:=16000
+    else if cntIndex>=Length(arIndex) then
+      i:=Length(arIndex)+increment*10;
+    if i>0 then
+    begin
+      SetLength(arIndex,i);
+      for i:=cntIndex to High(arIndex) do
+        arIndex[i]:=-1;
+    end;
+
+    inc(cntIndex);
+  end;
+
+  // has no old ref, use new
+  if arIndex[idx]=-1 then
+     arIndex[idx]:=aref
+  else // have old
+  begin
+    // "no ref" new - keep as flag
+    if (aref and rfNoRef)<>0 then
+      arIndex[idx]:=arIndex[idx] or rfNoRef
+    else // aref as pure index
+    begin
+      // if real old, save flag + old as dup
+      if (arIndex[idx] and rfNoChain)=0 then
+      begin
+        arRefs[aref]._dup:=arIndex[idx] and rfNoFlags;
+        arIndex[idx]:=aref or (arIndex[idx] and rfNoRef);
+      end
+      else // old was just flag
+        arIndex[idx]:=aref or rfNoRef;
+    end;
+  end;
+
+  result:=0;
+end;
+
+{%REGION Ref info /fold}
+function TTL2Reference.GetPlace(aidx:integer; var afile,atag:AnsiString):integer;
+begin
+  if (aidx>=0) and (aidx<cntRefs) then
+  begin
+    with arRefs[aidx] do
     begin
       afile :=names.str[arDirs[_dir].txt] + names.str[arFiles[_file].txt];
       atag  :=names.str[arTags[_tag].txt];
@@ -508,154 +551,155 @@ begin
     result:=-1;
 end;
 
-{%REGION Getters /fold}
-
-function TTL2Reference.GetLine(idx:integer):integer;
+function TTL2Reference.GetLine(aidx:integer):integer;
 begin
-  if (idx>=0) and (idx<cntRefs) then
-    result:=arRefs[idx]._line
+  if (aidx>=0) and (aidx<cntRefs) then
+    result:=arRefs[aidx]._line
   else
     result:=-1;
 end;
 
-function TTL2Reference.GetRoot(idx:integer):AnsiString;
+function TTL2Reference.GetRoot(aidx:integer):AnsiString;
 begin
-  if (idx>=0) and (idx<cntRefs) then
-    result:=GetRootByIdx(arRefs[idx]._root)
+  if (aidx>=0) and (aidx<cntRefs) then
+    result:=GetRootByIdx(arRefs[aidx]._root)
   else
     result:='';
 end;
 
-function TTL2Reference.GetDir(idx:integer):AnsiString;
+function TTL2Reference.GetDir(aidx:integer):AnsiString;
 begin
-  if (idx>=0) and (idx<cntRefs) then
-    result:=names.str[arDirs[arRefs[idx]._dir].txt]
+  if (aidx>=0) and (aidx<cntRefs) then
+    result:=names.str[arDirs[arRefs[aidx]._dir].txt]
   else
     result:='';
 end;
 
-function TTL2Reference.GetFName(idx:integer):AnsiString;
+function TTL2Reference.GetFName(aidx:integer):AnsiString;
 begin
-  if (idx>=0) and (idx<cntRefs) then
-    result:=names.str[arFiles[arRefs[idx]._file].txt]
+  if (aidx>=0) and (aidx<cntRefs) then
+    result:=names.str[arFiles[arRefs[aidx]._file].txt]
   else
     result:='';
 end;
 
-function TTL2Reference.GetFile(idx:integer):AnsiString;
+function TTL2Reference.GetFile(aidx:integer):AnsiString;
 begin
-  if (idx>=0) and (idx<cntRefs) then
+  if (aidx>=0) and (aidx<cntRefs) then
   begin
     result:=
-      names.str[arDirs [arRefs[idx]._dir ].txt] +
-      names.str[arFiles[arRefs[idx]._file].txt]
+      names.str[arDirs [arRefs[aidx]._dir ].txt] +
+      names.str[arFiles[arRefs[aidx]._file].txt]
   end
   else
     result:='';
 end;
 
-function TTL2Reference.GetTag(idx:integer):AnsiString;
+function TTL2Reference.GetTag(aidx:integer):AnsiString;
 begin
-  if (idx>=0) and (idx<cntRefs) then
-    result:=names.str[arTags[arRefs[idx]._tag].txt]
+  if (aidx>=0) and (aidx<cntRefs) then
+    result:=names.str[arTags[arRefs[aidx]._tag].txt]
   else
     result:='';
 end;
 
-function TTL2Reference.GetRootByIdx(idx:integer):AnsiString;
+//--- Duplicates ---
+
+function TTL2Reference.GetDup(aidx:integer):integer;
 begin
-  if (idx>0) and (idx<=cntRoots) then
-    result:=arRoots[idx-1]
+  if (aidx>=0) and (aidx<cntRefs) then
+    result:=arRefs[aidx]._dup
+  else
+    result:=-1;
+end;
+
+procedure TTL2Reference.SetDup(aidx:integer; aval:integer);
+begin
+  if (aidx>=0) and (aidx<cntRefs) {and
+     (aval>=0) and (aval<cntRefs)} then
+    arRefs[aidx]._dup:=aval;
+end;
+
+//--- Option flag ---
+
+function TTL2Reference.GetFlag(aidx:integer):integer;
+begin
+  if (aidx>=0) and (aidx<cntRefs) then
+    result:=arRefs[aidx]._flag
+  else
+    result:=0;
+end;
+
+procedure TTL2Reference.SetFlag(aidx:integer; aval:integer);
+begin
+  if (aidx>=0) and (aidx<cntRefs) then
+    arRefs[aidx]._flag:=aval;
+end;
+
+//--- Separate option ---
+
+function TTL2Reference.GetOpt(aidx,aflag:integer):boolean;
+begin
+  if (aidx>=0) and (aidx<cntRefs) then
+    result:=(arRefs[aidx]._flag and aflag)<>0
+  else
+    result:=false;
+end;
+
+procedure TTL2Reference.SetOpt(aidx,aflag:integer; aval:boolean);
+var
+  f:integer;
+begin
+  if (aidx>=0) and (aidx<cntRefs) then
+  begin
+    f:=(arRefs[aidx]._flag and not aflag);
+    if aval then
+      f:=f or aflag;
+    arRefs[aidx]._flag:=f;
+  end;
+end;
+
+{%ENDREGION Ref info}
+
+{%REGION Arrays getters}
+function TTL2Reference.GetRootByIdx(aidx:integer):AnsiString;
+begin
+  if (aidx>0) and (aidx<=cntRoots) then
+    result:=arRoots[aidx-1]
   else if cntRoots=1 then
     result:=arRoots[0]
   else
     result:='';
 end;
 
-function TTL2Reference.GetDirByIdx(idx:integer):AnsiString;
+function TTL2Reference.GetDirByIdx(aidx:integer):AnsiString;
 begin
-  if (idx>=0) and (idx<cntDirs) then
-    result:=names.str[arDirs[idx].txt]
+  if (aidx>=0) and (aidx<cntDirs) then
+    result:=names.str[arDirs[aidx].txt]
   else
     result:='';
 end;
 
-function TTL2Reference.GetFileByIdx(idx:integer):AnsiString;
+function TTL2Reference.GetFileByIdx(aidx:integer):AnsiString;
 begin
-  if (idx>=0) and (idx<cntFiles) then
-    result:=names.str[arFiles[idx].txt]
+  if (aidx>=0) and (aidx<cntFiles) then
+    result:=names.str[arFiles[aidx].txt]
   else
     result:='';
 end;
 
-function TTL2Reference.GetTagByIdx(idx:integer):AnsiString;
+function TTL2Reference.GetTagByIdx(aidx:integer):AnsiString;
 begin
-  if (idx>=0) and (idx<cntTags) then
-    result:=names.str[arTags[idx].txt]
+  if (aidx>=0) and (aidx<cntTags) then
+    result:=names.str[arTags[aidx].txt]
   else
     result:='';
 end;
-{%ENDREGION Getters}
+{%ENDREGION Arrays getters}
 
-
-//--- Duplicates ---
-
-function TTL2Reference.GetDup(idx:integer):integer;
-begin
-  if (idx>=0) and (idx<cntRefs) then
-    result:=arRefs[idx]._dup
-  else
-    result:=-1;
-end;
-
-procedure TTL2Reference.SetDup(idx:integer; aval:integer);
-begin
-  // theoretically can be less than zero if reference to base
-  if (idx>=0) and (idx<cntRefs) {and
-     (aval>=0) and (aval<cntRefs)} then
-    arRefs[idx]._dup:=aval;
-end;
-
-//--- Option flag ---
-
-function TTL2Reference.GetFlag(idx:integer):integer;
-begin
-  if (idx>=0) and (idx<cntRefs) then
-    result:=arRefs[idx]._flag
-  else
-    result:=0;
-end;
-
-procedure TTL2Reference.SetFlag(idx:integer; aval:integer);
-begin
-  if (idx>=0) and (idx<cntRefs) then
-    arRefs[idx]._flag:=aval;
-end;
-
-//--- Separate option ---
-
-function TTL2Reference.GetOpt(idx,aflag:integer):boolean;
-begin
-  if (idx>=0) and (idx<cntRefs) then
-    result:=(arRefs[idx]._flag and aflag)<>0
-  else
-    result:=false;
-end;
-
-procedure TTL2Reference.SetOpt(idx,aflag:integer; aval:boolean);
-var
-  f:integer;
-begin
-  if (idx>=0) and (idx<cntRefs) then
-  begin
-    f:=(arRefs[idx]._flag and not aflag);
-    if aval then
-      f:=f or aflag;
-    arRefs[idx]._flag:=f;
-  end;
-end;
 
 //-----  -----
+
 {
   ld,lf and lt arrays used for case when some elements can be deleted.
   but if we have deleted REFs then we must use IDs (not indexes) for dupes here
@@ -664,7 +708,31 @@ end;
 procedure TTL2Reference.SaveToStream(astrm:TStream);
 var
   ld,lf,lt:array of integer;
-  i,lidx,lrefpos,lpos:integer;
+  ldup, i,lidx,lcnt,lrefpos,lpos:integer;
+  lflag:dword;
+
+  // local to avoid ld, lf and lt arrays passing
+  // if "no ref" only, write flag only
+  function WriteOneElement(aref:PRefData; aflag:dword):boolean;
+  begin
+    if aref=nil then
+    begin
+      astrm.WriteDWord(rfIsNoRef{aflag});
+      exit(true);
+    end;
+
+    result:=(aref^._flag and rfIsDeleted)=0;
+    if result then
+    begin
+      astrm.WriteDWord((aref^._flag or aflag) or
+                       (aref^._root shl 16));
+      astrm.WriteDWord(ld[aref^._dir ]);
+      astrm.WriteDWord(lf[aref^._file]);
+      astrm.WriteDWord(lt[aref^._tag ]);
+      astrm.WriteDWord(aref^._line    );
+    end;
+  end;
+
 begin
   try
     lrefpos:=astrm.Position;
@@ -675,7 +743,7 @@ begin
     for i:=0 to cntRoots-1 do
       astrm.WriteAnsiString(arRoots[i]);
     
-    // dirs
+    // dirs without empty (deleted)
     SetLength(ld,cntDirs);
     lidx:=0;
     lpos:=astrm.Position;
@@ -693,7 +761,7 @@ begin
     end;
     astrm.WriteDWordAt(lidx,lpos);
 
-    // files
+    // files without empty (deleted)
     SetLength(lf,cntFiles);
     lidx:=0;
     lpos:=astrm.Position;
@@ -711,7 +779,7 @@ begin
     end;
     astrm.WriteDWordAt(lidx,lpos);
     
-    // tags
+    // tags without empty (deleted)
     SetLength(lt,cntTags);
     lidx:=0;
     lpos:=astrm.Position;
@@ -729,26 +797,50 @@ begin
     end;
     astrm.WriteDWordAt(lidx,lpos);
 
-    // refs
+    // refs chain by chain
+    lcnt:=0;
     lidx:=0;
     lpos:=astrm.Position;
     astrm.WriteDWord(0);
-    for i:=0 to cntRefs-1 do
+    astrm.WriteDWord(0);
+
+    {
+      First chain element will have rfIsNewChain flag.
+      "no ref" element writes flag only.
+      end of chain is last or before IsNewChain-flagged element
+    }
+    for i:=0 to cntIndex-1 do
     begin
-      with arRefs[i] do
-        if _line>0 then
+      ldup:=arIndex[i];
+      if ldup<>-1 then // -1, ref, "noref" or ref+"noref"
+      begin
+        if (ldup and rfNoRef)<>0 then lflag:=rfIsNoRef else lflag:=0;
+        ldup:=ldup and rfNoFlags; // real ref index
+        // normal ref exists
+        if (ldup and rfNoChain)=0 then
         begin
-          astrm.WriteDWord(ld[_dir ]  );
-          astrm.WriteDWord(lf[_file]  );
-          astrm.WriteDWord(lt[_tag ]  );
-          astrm.WriteDWord(_line      );
-          astrm.WriteDWord(_root      );
-          astrm.WriteDWord(_flag      ); // skills, translate etc
-          astrm.WriteDWord(DWord(_dup));
           inc(lidx);
+          if WriteOneElement(@arRefs[ldup],rfIsNewChain+lflag) then
+          begin
+            inc(lcnt);
+            ldup:=arRefs[ldup]._dup;
+            while ldup>=0 do
+            begin
+              if WriteOneElement(@arRefs[ldup],0) then inc(lcnt);
+              ldup:=arRefs[ldup]._dup;
+            end;
+          end;
         end
+        // "no ref" only
+        else if lflag=rfIsNoRef then
+        begin
+          inc(lidx);
+          WriteOneElement(nil,lflag);
+        end;
+      end
     end;
-    astrm.WriteDWordAt(lidx,lpos);
+    astrm.WriteDWordAt(lidx,lpos);    // length of Index array
+    astrm.WriteDWordAt(lcnt,lpos+4);  // count of real refs
 
     astrm.WriteDWordAt((astrm.Position-lrefpos-SizeOf(DWord)) or
         (RefVersion shl 24),lrefpos);
@@ -783,7 +875,7 @@ var
   laiRoots, laiDirs,laiFiles,laiTags:array of integer;
   ls:AnsiString;
   lflag,lpos,i,lrefsize,lsize,linfosize:integer;
-  ltmp:integer;
+  lidx,lref:integer;
 begin
   lpos    :=astrm.Position;
   lrefsize:=0;
@@ -805,21 +897,21 @@ begin
       for i:=0 to lsize-1 do
         laiRoots[i]:=AddRoot(astrm.ReadAnsiString());
 
-      // dirs
+      // dirs (directly to existing)
       lsize:=astrm.ReadDWord();
       if arDirs=nil then SetLength(arDirs,lsize);
       SetLength(laiDirs,lsize);
       for i:=0 to lsize-1 do
         laiDirs[i]:=AddDir(astrm.ReadAnsiString());
 
-      // files
+      // files (directly to existing)
       lsize:=astrm.ReadDWord();
       if arFiles=nil then SetLength(arFiles,lsize);
       SetLength(laiFiles,lsize);
       for i:=0 to lsize-1 do
         laiFiles[i]:=AddFile(astrm.ReadAnsiString());
 
-      // tags
+      // tags (directly to existing)
       lsize:=astrm.ReadDWord();
       if arTags=nil then SetLength(arTags,lsize);
       SetLength(laiTags,lsize);
@@ -827,23 +919,47 @@ begin
         laiTags[i]:=AddTag(astrm.ReadAnsiString());
 
       // refs
-      lsize:=astrm.ReadDWord();
-      SetLength(LoadedRefs,lsize);
-      for i:=0 to lsize-1 do
+      cntIndex:=astrm.ReadDword();
+      SetLength(arIndex,cntIndex);
+      cntRefs:=astrm.ReadDword();
+      SetLength(arRefs,cntRefs);
+      i:=0;
+      lidx:=0;
+
+      while i<cntRefs do
       begin
-        with LoadedRefs[i] do
+        lflag:=astrm.ReadDword();
+        if lflag=rfIsNoRef then
         begin
-          _dir :=laiDirs [astrm.ReadDWord()];
-          _file:=laiFiles[astrm.ReadDWord()];
-          _tag :=laiTags [astrm.ReadDWord()];
-          _line:=astrm.ReadDWord();
+          arIndex[lidx]:=rfNoRef;
+          inc(lidx);
+        end
+        else
+        begin
+          if (lflag and rfIsNewChain)<>0 then
+          begin
+            arIndex[lidx]:=i;
+            if (lflag and rfIsNoRef)<>0 then arIndex[lidx]:=arIndex[lidx] or rfNoRef;
+            inc(lidx);
+          end
+          else
+          begin
+            arRefs[i-1]._dup:=i;
+          end;
 
-          _root:=astrm.ReadDWord();
-          if _root>0 then
-            _root:=laiRoots[_root];
+          with arRefs[i] do
+          begin
+            _root:=(lflag shr 16);
+            if _root>0 then _root:=laiRoots[_root-1];
+            _flag:=(lflag and $FFFF) and (not rfIsNewChain or rfIsNoRef);
 
-          _flag:=astrm.ReadDWord();   // skills, translate etc
-          _dup :=Integer(astrm.ReadDWord());
+            _dir :=laiDirs [astrm.ReadDWord()];
+            _file:=laiFiles[astrm.ReadDWord()];
+            _tag :=laiTags [astrm.ReadDWord()];
+            _line:=astrm.ReadDWord();
+            _dup:=-1;
+          end;
+          inc(i);
         end;
       end;
 
@@ -874,16 +990,19 @@ begin
         larTags[i]:=astrm.ReadAnsiString();
 
       // refs
-      lsize:=astrm.ReadDWord();
-      SetLength(LoadedRefs,lsize);
+      cntRefs:=astrm.ReadDWord();
+      cntIndex:=cntRefs;
+      SetLength(arIndex,cntIndex);
+      SetLength(arRefs,cntRefs);
       linfosize:=astrm.ReadWord();
 
       FillChar(oldref,SizeOf(oldref),0);
-      for i:=0 to lsize-1 do
+      for i:=0 to cntRefs-1 do
       begin
+        arIndex[i]:=i;
         astrm.ReadBuffer(oldref,linfosize);
         ls:=larFiles[oldref._file];
-        with LoadedRefs[i] do
+        with arRefs[i] do
         begin
           _dir :=AddDir (ExtractPath(ls));
           _file:=AddFile(ExtractName(ls));
@@ -899,7 +1018,7 @@ begin
         begin
           lflag:=0;
           if Pos('SKILLS',ls)=7 then lflag:=lflag or rfIsSkill;
-          LoadedRefs[i]._flag:=lflag;
+          arRefs[i]._flag:=lflag;
         end;
       end;
 
@@ -908,9 +1027,9 @@ begin
       
       if astrm.Position<(lpos+lrefsize) then
       begin
-        ltmp:=AddRoot(astrm.ReadAnsiString());
+        lref:=AddRoot(astrm.ReadAnsiString());
         for i:=0 to lsize-1 do
-          LoadedRefs[i]._root:=ltmp;
+          arRefs[i]._root:=lref;
       end;
 
     end;
@@ -919,11 +1038,6 @@ begin
   end;
 
   astrm.Position:=lpos+lrefsize;
-end;
-
-procedure TTL2Reference.DoneLoading;
-begin
-  SetLength(LoadedRefs,0);
 end;
 
 //-----  -----
@@ -941,7 +1055,11 @@ procedure TTL2Reference.Free;
 begin
   names.Clear;
 //  SetLength(LoadedRefs,0);
+  lastDir :='';
+  lastFile:='';
+  lastTag :='';
 
+  SetLength(arIndex,0); cntIndex:=0;
   SetLength(arRoots,0); cntRoots:=0;
   SetLength(arRefs ,0); cntRefs :=0;
   SetLength(arFiles,0); cntFiles:=0;

@@ -88,6 +88,10 @@ msgstr ""
 msgid "This text presents in several (about %d) places."
 msgstr ""
 
+#: tl2dataunit.sbasetranslation
+msgid "Base translation"
+msgstr ""
+
 #: tl2dataunit.snoblockstart
 msgid "No block start"
 msgstr ""
@@ -108,9 +112,8 @@ msgstr ""
 msgid "No translated text"
 msgstr ""
 
-#: tl2dupeform.stotal
-msgctxt "tl2dupeform.stotal"
-msgid "Total"
+#: tl2dataunit.swronglineamount
+msgid "Wrong line amount in text and info files"
 msgstr ""
 
 #: tl2edittext.sshow
@@ -199,6 +202,14 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
+#: tl2settingsform.rsusefreekey
+msgid "Paid or Free Key (free)"
+msgstr ""
+
+#: tl2settingsform.rsusepaidkey
+msgid "Paid or Free Key (paid)"
+msgstr ""
+
 #: tl2settingsform.snotrealized
 msgid "Not realized yet"
 msgstr ""
@@ -206,11 +217,6 @@ msgstr ""
 #: tl2settingsform.ssettings
 msgctxt "tl2settingsform.ssettings"
 msgid "Settings"
-msgstr ""
-
-#: tl2simform.stotal
-msgctxt "tl2simform.stotal"
-msgid "Total"
 msgstr ""
 
 #: tl2unit.sdefaultcaption
@@ -393,42 +399,53 @@ msgstr ""
 msgid "Scan all text files"
 msgstr ""
 
-#: trclass.scanttranslate
-msgctxt "trclass.scanttranslate"
+#: trclass.rscanttranslate
+msgctxt "trclass.rscanttranslate"
 msgid "Text can't be translated"
 msgstr ""
 
-#: trclass.skeyblocked
-msgctxt "trclass.skeyblocked"
+#: trclass.rskeyblocked
+msgctxt "trclass.rskeyblocked"
 msgid "API key blocked"
 msgstr ""
 
-#: trclass.stoolongtext
-msgctxt "trclass.stoolongtext"
+#: trclass.rsnohost
+msgctxt "trclass.rsnohost"
+msgid "No host address defined"
+msgstr ""
+
+#: trclass.rssessionisinvalid
+msgctxt "trclass.rssessionisinvalid"
+msgid "Session is invalid"
+msgstr ""
+
+#: trclass.rstoolongtext
+msgctxt "trclass.rstoolongtext"
 msgid "Text length too large"
 msgstr ""
 
-#: trclass.stoomanyrequest
+#: trclass.rstoomanyrequest
+msgctxt "trclass.rstoomanyrequest"
 msgid "Too many requests. Please wait and resend your request."
 msgstr ""
 
-#: trclass.stoomuchtext
-msgctxt "trclass.stoomuchtext"
+#: trclass.rstoomuchtext
+msgctxt "trclass.rstoomuchtext"
 msgid "Day text potion out of limit"
 msgstr ""
 
-#: trclass.sunknownerror
-msgctxt "trclass.sunknownerror"
+#: trclass.rsunknownerror
+msgctxt "trclass.rsunknownerror"
 msgid "Unknown Error"
 msgstr ""
 
-#: trclass.swrongapikey
-msgctxt "trclass.swrongapikey"
+#: trclass.rswrongapikey
+msgctxt "trclass.rswrongapikey"
 msgid "Wrong API key"
 msgstr ""
 
-#: trclass.swronglanguage
-msgctxt "trclass.swronglanguage"
+#: trclass.rswronglanguage
+msgctxt "trclass.rswronglanguage"
 msgid "Choosen language is unsupported"
 msgstr ""
 
@@ -592,11 +609,6 @@ msgstr ""
 #: ttl2settings.gbtranslation.caption
 msgctxt "ttl2settings.gbtranslation.caption"
 msgid "Translation details"
-msgstr ""
-
-#: ttl2settings.lblapikey.caption
-msgctxt "ttl2settings.lblapikey.caption"
-msgid "API Key"
 msgstr ""
 
 #: ttl2settings.lbldefaultfile.caption

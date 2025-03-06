@@ -55,22 +55,27 @@ type
     FTiers :tTierArray;     // tier array (!!must be global for mod build)
 
     FPoints    :integer;    // free points for current skill build
+    FInitial   :integer;    // skill points for known skills at game start
     FLevel     :integer;
     FFame      :integer;
     FSkLevel   :integer;
     FSkFame    :integer;
     FNewClass  :TRGID;
 
-    function ApplyBuild(const alist: TL2IdValList): integer;
     procedure ClearData;
     procedure CreateIconList();
-    // check if character levelenough for aval'th element level of idx'es skill tier
+    // check if character level enough for aval'th element level of idx'es skill tier
     function  CheckTier(aval,aidx:integer):boolean;
     procedure DoLevelChange(doinc: boolean);
+
     function  GetBuild(): TL2IdValList;
-    procedure SetPlayerClass(const aclass: TRGID);
+    function  ApplyBuild(const alist: TL2IdValList): integer;
+    // get count of skillpoints for start of game
+    function  GetInitialPoints(const abuild:TL2IdValList):integer;
+
     procedure SetFame (aval:integer);
     procedure SetLevel(aval:integer);
+    procedure SetPlayerClass(const aclass: TRGID);
     procedure SetChar (achar:TTLCharacter);
 
   public
@@ -109,24 +114,6 @@ const
   colLevel   = 4;
   colPlus    = 5;
 
-
-function TfmSkills.CheckTier(aval,aidx:integer):boolean;
-var
-  i,llevel:integer;
-begin
-  result:=true;
-  llevel:=FChar.Level;
-  for i:=0 to High(FTiers) do
-  begin
-    if FSkills[aidx].tier=FTiers[i].name then
-    begin
-      if (aval<Length(FTiers[i].levels)) and
-         (FTiers[i].levels[aval]>llevel) then
-        result:=false;
-      break;
-    end;
-  end;
-end;
 
 procedure TfmSkills.FormCreate(Sender: TObject);
 var
@@ -232,7 +219,7 @@ begin
       begin
         lRect:=aRect;
         InflateRect(lRect,-1,-1);
-        sgSKills.Canvas.StretchDraw(lRect,bmp);
+        sgSkills.Canvas.StretchDraw(lRect,bmp);
       end;
     end;
   end;
@@ -274,6 +261,47 @@ begin
   end;
 end;
 
+procedure TfmSkills.cbSaveFullClick(Sender: TObject);
+begin
+  bbUpdate.Enabled:=true;
+end;
+
+
+function TfmSkills.CheckTier(aval,aidx:integer):boolean;
+var
+  i,llevel:integer;
+begin
+  result:=true;
+  llevel:=FChar.Level;
+  for i:=0 to High(FTiers) do
+  begin
+    if FSkills[aidx].tier=FTiers[i].name then
+    begin
+      if (aval<Length(FTiers[i].levels)) and
+         (FTiers[i].levels[aval]>llevel) then
+        result:=false;
+      break;
+    end;
+  end;
+end;
+
+procedure TfmSkills.SetFame(aval:integer);
+begin
+  inc(FPoints,(aval-FFame)*FSkFame);
+  FFame:=aval;
+
+  bbUpdate.Enabled:=true;
+end;
+
+procedure TfmSkills.SetLevel(aval:integer);
+begin
+  inc(FPoints,(aval-FLevel)*FSkLevel);
+  FLevel:=aval;
+
+  bbUpdate.Enabled:=true;
+end;
+
+
 procedure TfmSkills.DoLevelChange(doinc:boolean);
 var
   lval,idx:integer;
@@ -314,11 +342,6 @@ begin
     seFreePoints.Value:=FPoints;
     bbUpdate.Enabled:=true;
   end;
-end;
-
-procedure TfmSkills.cbSaveFullClick(Sender: TObject);
-begin
-  bbUpdate.Enabled:=true;
 end;
 
 procedure TfmSkills.btnResetClick(Sender: TObject);
@@ -425,6 +448,30 @@ begin
   SetPlayerClass(FChar.ID);
 end;
 
+function TFmSkills.GetInitialPoints(const abuild:TL2IdValList):integer;
+var
+  i,j:integer;
+begin
+  result:=0;
+  for i:=0 to High(FSkills) do
+  begin
+    if FSkills[i].learn>0 then
+    begin
+      for j:=0 to high(abuild) do
+      begin
+        if FSkills[i].id=abuild[j].id then
+        begin
+          // check what no skill reset was
+          // no level check (value>0 mean learned already)
+          if abuild[j].value>=FSkills[i].learn then
+            inc(result,FSkills[i].learn);
+          break;
+        end;
+      end;
+    end;
+  end;
+end;
+
 function TfmSkills.ApplyBuild(const alist:TL2IdValList):integer;
 var
   ls:string;
@@ -488,23 +535,6 @@ begin
     end;
   end;
   SetLength(result,lcnt);
-end;
-
-
-procedure TfmSkills.SetFame(aval:integer);
-begin
-  inc(FPoints,(aval-FFame)*FSkFame);
-  FFame:=aval;
-
-  bbUpdate.Enabled:=true;
-end;
-
-procedure TfmSkills.SetLevel(aval:integer);
-begin
-  inc(FPoints,(aval-FLevel)*FSkLevel);
-  FLevel:=aval;
-
-  bbUpdate.Enabled:=true;
 end;
 
 

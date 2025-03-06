@@ -22,18 +22,18 @@ object SimilarForm: TSimilarForm
   end
   object lblTextLine: TLabel
     Left = 8
-    Height = 15
-    Top = 271
+    Height = 23
+    Top = 241
     Width = 60
     Anchors = [akLeft, akBottom]
     AutoSize = False
     ParentColor = False
   end
   object lblTextFile: TLabel
-    Left = 80
+    Left = 8
     Height = 23
     Top = 265
-    Width = 576
+    Width = 648
     Anchors = [akLeft, akRight, akBottom]
     AutoSize = False
     ParentColor = False
@@ -57,12 +57,11 @@ object SimilarForm: TSimilarForm
     TabOrder = 2
   end
   object lblTextTag: TLabel
-    Left = 328
+    Left = 80
     Height = 22
     Top = 241
     Width = 328
-    Alignment = taRightJustify
-    Anchors = [akRight, akBottom]
+    Anchors = [akLeft, akBottom]
     AutoSize = False
     ParentColor = False
   end
@@ -75,10 +74,12 @@ object SimilarForm: TSimilarForm
     TabOrder = 3
   end
   object lblPartial: TLabel
-    Left = 8
+    Left = 556
     Height = 15
     Top = 245
     Width = 100
+    Alignment = taRightJustify
+    Anchors = [akRight, akBottom]
     Caption = '(Partial translation)'
   end
   object btnDupes: TButton

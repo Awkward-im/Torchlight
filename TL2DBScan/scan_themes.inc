@@ -172,12 +172,12 @@ function ScanLThemes(ams:pointer):integer;
 begin
   if PModScanner(ams)^.gamever=verTL1 then
   begin
-    RGLog.Add('TL1 don''t support Level themes');
+    if RGDebugLevel<>dlNone then RGLog.Add('TL1 don''t support Level themes');
     exit(0);
   end;
   if PModScanner(ams)^.FModId[1]<>'0' then
   begin
-    RGLog.Add('Support Level themes for vanilla game now only');
+    if RGDebugLevel<>dlNone then RGLog.Add('Support Level themes for vanilla game now only');
     exit(0);
   end;
 
