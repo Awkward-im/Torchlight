@@ -14,6 +14,7 @@ interface
 
 uses
   Classes,
+  TL2Text,
   TL2RefUnit;
 
 // filters
@@ -74,6 +75,7 @@ type
     cntTmpl : integer;              // max Template index
     arText  : array of TDATString;
     arTmpl  : array of AnsiString;  // Templates list
+    FRefilter:boolean;
 
     noteIndex:integer;
     
@@ -88,6 +90,8 @@ type
     FOnLineAdd    : TOnLineChanged; // Line count on add
     FOnLineChanged: TOnLineChanged; // Line number (not count) when changed
     FOnProgress   : TOnLineChanged; // Line count total (negative value)/processing
+
+    FOnFilterChange:TOnFilterChange;
 
     // single mod info
     FModTitle  : AnsiString;
@@ -115,6 +119,7 @@ type
     function AddStringOnLoad  (const aorig,atrans:AnsiString):integer;
     function AddStringOnScan  (const aorig:AnsiString):integer;
 
+    procedure FilterChange  (const anewfilter:AnsiString);
     function  SearchTemplate(const atmpl:AnsiString):integer;
     function  AddTemplate   (const atmpl:AnsiString):integer;
     function  GetTemplate (idx:integer):AnsiString;
@@ -232,7 +237,6 @@ uses
   rgdict,
   rgdictlayout,
 
-  TL2Text,
   rgglobal,
   rgstream,
   rgnode,
@@ -491,6 +495,12 @@ begin
     until lref=0;
   end;
   result:=false;
+end;
+
+procedure TTL2Translation.FilterChange(const anewfilter:AnsiString);
+begin
+  RebuildTemplate(-1);
+  if OnFilterChange<>nil then OnFilterChange(anewfilter);
 end;
 
 function TTL2Translation.SearchTemplate(const atmpl:AnsiString):integer;
@@ -1037,7 +1047,9 @@ begin
     end;
   end;
 
-  if lcnt<>loldcnt then
+  if (arTmpl=nil) or FRefilter then
+    RebuildTemplate()
+  else if lcnt<>loldcnt then
   begin
     // RebuildTemplate();
     for i:=0 to High(arText) do
@@ -1058,9 +1070,7 @@ begin
       result:=-6;
       Error(result,fname,loldcnt); // wrong line amount in text and info
     end;
-  end
-  else if arTmpl=nil then
-    RebuildTemplate();
+  end;
 
   result:=lcnt;
 end;
@@ -1180,6 +1190,7 @@ begin
         end;
       end;
 
+      FRefilter:=true;
       while lstrm.Position<lstrm.Size do
       begin
         ltype:=lstrm.ReadByte();
@@ -1192,10 +1203,18 @@ begin
         case ltype of
           // Templates
           1: begin
-            for i:=0 to High(arText) do
+            if FRefilter then
             begin
-              arText[i].tmpl:=AddTemplate(lstrm.ReadAnsiString());
-            end;
+              if lver>0 then
+                lstrm.Position:=lstrm.Position+lsize
+              else
+                break;
+            end
+            else
+              for i:=0 to High(arText) do
+              begin
+                arText[i].tmpl:=AddTemplate(lstrm.ReadAnsiString());
+              end;
           end;
 
           // Mod info
@@ -1214,6 +1233,12 @@ begin
             SetLength(FModList,lamount);
             for i:=0 to lamount-1 do
               FModList[i]:=lstrm.ReadAnsiString();
+          end;
+
+          //!! good to read before template loads to check, need to set or rebuild
+          4: begin
+            ls:=lstrm.ReadAnsiString();
+            FRefilter:=ls<>GetFilterWords();
           end;
 
         // unknown block
@@ -1262,6 +1287,12 @@ begin
       end;
     end;
     lstrm.WriteDWordAt(lcnt,lpos);
+
+    // 4 - filter words. save before templates to be sure what need to read or rebuild on load
+    lstrm.WriteByte(4);
+    lpos:=lstrm.Position;
+    lstrm.WriteAnsiString(GetFilterWords());
+    lstrm.WriteDWordAt(lstrm.Position-lpos-SizeOf(DWord),lpos);
 
     // 1 - templates
     lstrm.WriteByte(1);
@@ -1540,17 +1571,15 @@ end;
 
 procedure TTL2Translation.Free;
 begin
-  FErrFile:='';
-  FErrText:='';
-  FModTitle:='';
+  FErrFile  :='';
+  FErrText  :='';
+  FModTitle :='';
   FModAuthor:='';
-  FModDescr:='';
-  FModURL:='';
+  FModDescr :='';
+  FModURL   :='';
 
-  SetLength(arText,0);
-  cntText:=0;
-  SetLength(arTmpl,0);
-  cntTmpl:=0;
+  SetLength(arText,0);  cntText:=0;
+  SetLength(arTmpl,0);  cntTmpl:=0;
   SetLength(FModList,0);
 
   FRefs.Free;
@@ -1570,6 +1599,10 @@ begin
 
   Filter:=flNoSearch;
   Mode  :=tmOriginal;
+  FRefilter:=false;
+
+  FOnFilterChange:=OnFilterChange;
+  OnFilterChange :=@FilterChange;
 end;
 
 //===== Read sources =====

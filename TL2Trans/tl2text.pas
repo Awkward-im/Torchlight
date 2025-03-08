@@ -8,13 +8,21 @@ function RemoveColor(const textin:AnsiString; out textout:AnsiString):boolean;
 function InsertColor(const aselected, acolor:AnsiString):AnsiString;
 
 function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
-function FilteredString(const astr:AnsiString):AnsiString;
-procedure SetFilterWords(const atext:AnsiString);
 
 function CheckPunctuation(const src:AnsiString; var target:AnsiString; checkonly:boolean=true):boolean;
 
+// Filter
+
+type
+  TOnFilterChange = procedure (const newfilter:AnsiString) of object;
+var
+  OnFilterChange:TOnFilterChange=nil;
 const
   defFilter = 'a an the of by to for his her their';
+
+function  FilteredString(const astr:AnsiString):AnsiString;
+procedure SetFilterWords(const astr:AnsiString);
+function  GetFilterWords:AnsiString;
 
 
 implementation
@@ -27,6 +35,7 @@ const
   sColorPrefix = #124'c';
 
 var
+  curFilter:AnsiString='';
   filter: TStringArray=nil;
 
 function InsertColor(const aselected, acolor:AnsiString):AnsiString;
@@ -94,230 +103,6 @@ function RemoveTags(const src:AnsiString):AnsiString;
 begin
   RemoveColor(src,result);
   result:=StringReplace(result,'\n',' ',[rfReplaceAll]);
-end;
-
-procedure SetFilterWords(const atext:AnsiString);
-begin
-  Filter:=atext.Split(' ');
-end;
-
-{
-  convert letters to lowcase
-  remove color information
-  remove numbers
-  !! KEEP '_','+','%' as significat chars
-  remove \n and other punctuation
-}
-function FilteredString(const astr:AnsiString):AnsiString;
-const
-  sWord = ['A'..'Z','a'..'z'{'_','0'..'9'}];
-var
-  lword:String[63];
-  p:PAnsiChar;
-  i,j,k,ldi:integer;
-  b,wasletter:boolean;
-begin
-  result:='';
-  SetLength(result,Length(astr));
-  ldi:=1;
-  i:=1;
-  wasletter:=false;
-  while i<=Length(astr) do
-  begin
-    case astr[i] of
-      '0'..'9': begin
-        wasletter:=true;
-      end;
-
-      '-': begin
-        p:=pointer(astr)+i;
-        if p^ in ['[','0'..'9'] then
-        begin
-          result[ldi]:='-';
-          inc(ldi);
-        end;
-        wasletter:=false;
-      end;
-
-      {'_',}'+','%': begin
-        result[ldi]:=astr[i];
-        inc(ldi);
-        wasletter:=false;
-      end;
-
-      'a'..'z',
-      'A'..'Z': begin
-        // Filter
-        if not wasletter then
-        begin
-          p:=pointer(astr)+i-1;
-          j:=0;
-          // 1 - get word
-          lword:='';
-          while p^ in sWord do
-          begin
-            if p^ in ['A'..'Z'] then
-              lword:=lword+AnsiChar(ORD(p^)+(ORD('a')-ORD('A')))
-            else
-              lword:=lword+p^;
-            inc(p);
-            inc(j);
-          end;
-          // 2 - search word
-          b:=false;
-          for k:=0 to High(Filter) do
-          begin
-            if lword=Filter[k] then
-            begin
-              b:=true;
-              break;
-            end;
-          end;
-          if b then
-          begin
-            inc(i,j);
-            continue;
-          end;
-        end;
-
-{
-  calculate word len, save index then decrease for numbers
-  and compare it
-}
-        case astr[i] of
-          'a'..'z': begin
-            // Suffixes
-            p:=pointer(astr)+i-1;
-            // ['s] ex. master's
-            if (i>2) and (p^='s') and
-               ((p-1)^ in ['''','`']) and
-               ((p-2)^ in sWord) and
-               not ((p+1)^ in sWord) then
-            begin
-             inc(i);
-             continue;
-            end;
-            if wasletter then
-            begin
-              // [-ed, -es] Ex. mastered or provides
-              if (p^='e') and ((p+1)^ in ['d','s']) and
-                 not ((p+2)^ in sWord) then
-              begin
-                inc(i,2);
-                continue;
-              end
-              // [-ing] mastering
-              else if (p^='i') and ((p+1)^='n') and
-                  ((p+2)^='g') and not ((p+3)^ in sWord) then
-              begin
-                inc(i,3);
-                continue;
-              end
-              // [-s] ex. Sells
-              else if (p^='s') and not ((p+1)^ in sWord) then
-              begin
-               inc(i);
-               continue;
-              end;
-
-            end;
-
-            // regular letters
-            result[ldi]:=astr[i];
-            inc(ldi);
-            wasletter:=true;
-          end;
-
-          'A'..'Z': begin
-            // Roman numbers
-            if (astr[i] in ['I','V','X']) and not wasletter then
-            begin
-              p:=pointer(astr)+i-1;
-              j:=0;
-              repeat
-                inc(p); inc(j);
-              until not (p^ in ['I','V','X']);
-              if not (p^ in sWord) then
-              begin
-                inc(i,j);
-                continue;
-              end;
-            end;
-
-            // Regular letters
-            result[ldi]:=AnsiChar(ORD(astr[i])-ORD('A')+ORD('a'));
-            inc(ldi);
-            wasletter:=true;
-          end;
-        end;
-      end;
-
-      '\': begin // skip ANY slash combo
-        inc(i);
-        // special for \\n
-        if (i<Length(astr)) and (astr[i]='\') and (astr[i+1]='n') then inc(i);
-        wasletter:=false;
-{
-        if astr[i]='n' then
-        begin
-        end;
-}
-      end;
-
-      #124: begin
-        inc(i);
-        if astr[i]='u' then
-        begin
-        end
-        else if astr[i]='c' then
-        begin
-          inc(i,8);
-        end;
-        wasletter:=false;
-      end;
-
-      '<','[': begin
-        k:=i;
-        // value type
-        if astr[i]='[' then
-        begin
-          if (i<Length(astr)) and (astr[i+1]='[') then 
-          begin
-            inc(i);
-            j:=2
-          end
-          else 
-            j:=1;
-        end
-        else // if astr[i]='<'
-          j:=0;
-        inc(i);
-
-        while (i<=Length(astr)) and (astr[i] in ['A'..'Z','a'..'z','0'..'9',':']) do inc(i);
-        if (i>Length(astr)) or
-           ((j<>0) and (astr[i]='>')) or
-           ((j= 0) and (astr[i]=']')) or
-           ((j= 2) and ((i=Length(astr))) and (astr[i+1]<>']')) then
-        begin
-          i:=k;
-        end
-        else if j=2 then inc(i);
-        
-        wasletter:=false;
-      end;
-
-    else // any other symbols
-      wasletter:=false;
-    end;
-    inc(i);
-  end;
-  SetLength(result,ldi-1);
-
-  for i:=1 to ldi-1 do
-  begin
-    if result[i] in ['A'..'Z','a'..'z'] then exit;
-  end;
-  result:='';
 end;
 
 function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
@@ -710,6 +495,248 @@ begin
     end;
   end;
 end;
+
+
+function GetFilterWords:AnsiString; inline;
+begin
+  result:=curFilter;
+end;
+
+procedure SetFilterWords(const astr:AnsiString);
+begin
+  if (astr='') and (curFilter<>defFilter) then
+  begin
+    curFilter:=defFilter;
+    Filter:=curFilter.Split(' ');
+    if OnFilterChange<>nil then OnFilterChange(curFilter);
+  end
+  else if curFilter<>astr then
+  begin
+    curFilter:=astr;
+    Filter:=curFilter.Split(' ');
+    if OnFilterChange<>nil then OnFilterChange(curFilter);
+  end;
+end;
+
+{
+  convert letters to lowcase
+  remove color information
+  remove numbers
+  !! KEEP '_','+','%' as significat chars
+  remove \n and other punctuation
+}
+function FilteredString(const astr:AnsiString):AnsiString;
+const
+  sWord = ['A'..'Z','a'..'z'{'_','0'..'9'}];
+var
+  lword:String[63];
+  p:PAnsiChar;
+  i,j,k,ldi:integer;
+  b,wasletter:boolean;
+begin
+  result:='';
+  SetLength(result,Length(astr));
+  ldi:=1;
+  i:=1;
+  wasletter:=false;
+  while i<=Length(astr) do
+  begin
+    case astr[i] of
+      '0'..'9': begin
+        wasletter:=true;
+      end;
+
+      '-': begin
+        p:=pointer(astr)+i;
+        if p^ in ['[','0'..'9'] then
+        begin
+          result[ldi]:='-';
+          inc(ldi);
+        end;
+        wasletter:=false;
+      end;
+
+      {'_',}'+','%': begin
+        result[ldi]:=astr[i];
+        inc(ldi);
+        wasletter:=false;
+      end;
+
+      'a'..'z',
+      'A'..'Z': begin
+        // Filter
+        if not wasletter then
+        begin
+          p:=pointer(astr)+i-1;
+          j:=0;
+          // 1 - get word
+          lword:='';
+          while p^ in sWord do
+          begin
+            if p^ in ['A'..'Z'] then
+              lword:=lword+AnsiChar(ORD(p^)+(ORD('a')-ORD('A')))
+            else
+              lword:=lword+p^;
+            inc(p);
+            inc(j);
+          end;
+          // 2 - search word
+          b:=false;
+          for k:=0 to High(Filter) do
+          begin
+            if lword=Filter[k] then
+            begin
+              b:=true;
+              break;
+            end;
+          end;
+          if b then
+          begin
+            inc(i,j);
+            continue;
+          end;
+        end;
+
+{
+  calculate word len, save index then decrease for numbers
+  and compare it
+}
+        case astr[i] of
+          'a'..'z': begin
+            // Suffixes
+            p:=pointer(astr)+i-1;
+            // ['s] ex. master's
+            if (i>2) and (p^='s') and
+               ((p-1)^ in ['''','`']) and
+               ((p-2)^ in sWord) and
+               not ((p+1)^ in sWord) then
+            begin
+             inc(i);
+             continue;
+            end;
+            if wasletter then
+            begin
+              // [-ed, -es] Ex. mastered or provides
+              if (p^='e') and ((p+1)^ in ['d','s']) and
+                 not ((p+2)^ in sWord) then
+              begin
+                inc(i,2);
+                continue;
+              end
+              // [-ing] mastering
+              else if (p^='i') and ((p+1)^='n') and
+                  ((p+2)^='g') and not ((p+3)^ in sWord) then
+              begin
+                inc(i,3);
+                continue;
+              end
+              // [-s] ex. Sells
+              else if (p^='s') and not ((p+1)^ in sWord) then
+              begin
+               inc(i);
+               continue;
+              end;
+
+            end;
+
+            // regular letters
+            result[ldi]:=astr[i];
+            inc(ldi);
+            wasletter:=true;
+          end;
+
+          'A'..'Z': begin
+            // Roman numbers
+            if (astr[i] in ['I','V','X']) and not wasletter then
+            begin
+              p:=pointer(astr)+i-1;
+              j:=0;
+              repeat
+                inc(p); inc(j);
+              until not (p^ in ['I','V','X']);
+              if not (p^ in sWord) then
+              begin
+                inc(i,j);
+                continue;
+              end;
+            end;
+
+            // Regular letters
+            result[ldi]:=AnsiChar(ORD(astr[i])-ORD('A')+ORD('a'));
+            inc(ldi);
+            wasletter:=true;
+          end;
+        end;
+      end;
+
+      '\': begin // skip ANY slash combo
+        inc(i);
+        // special for \\n
+        if (i<Length(astr)) and (astr[i]='\') and (astr[i+1]='n') then inc(i);
+        wasletter:=false;
+{
+        if astr[i]='n' then
+        begin
+        end;
+}
+      end;
+
+      #124: begin
+        inc(i);
+        if astr[i]='u' then
+        begin
+        end
+        else if astr[i]='c' then
+        begin
+          inc(i,8);
+        end;
+        wasletter:=false;
+      end;
+
+      '<','[': begin
+        k:=i;
+        // value type
+        if astr[i]='[' then
+        begin
+          if (i<Length(astr)) and (astr[i+1]='[') then 
+          begin
+            inc(i);
+            j:=2
+          end
+          else 
+            j:=1;
+        end
+        else // if astr[i]='<'
+          j:=0;
+        inc(i);
+
+        while (i<=Length(astr)) and (astr[i] in ['A'..'Z','a'..'z','0'..'9',':']) do inc(i);
+        if (i>Length(astr)) or
+           ((j<>0) and (astr[i]='>')) or
+           ((j= 0) and (astr[i]=']')) or
+           ((j= 2) and ((i=Length(astr))) and (astr[i+1]<>']')) then
+        begin
+          i:=k;
+        end
+        else if j=2 then inc(i);
+        
+        wasletter:=false;
+      end;
+
+    else // any other symbols
+      wasletter:=false;
+    end;
+    inc(i);
+  end;
+  SetLength(result,ldi-1);
+
+  for i:=1 to ldi-1 do
+  begin
+    if result[i] in ['A'..'Z','a'..'z'] then exit;
+  end;
+  result:='';
+end;
+
 
 initialization
   SetFilterWords(defFilter);
