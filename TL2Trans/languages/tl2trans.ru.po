@@ -132,7 +132,7 @@ msgstr "Нет текста перевода"
 
 #: tl2dataunit.swronglineamount
 msgid "Wrong line amount in text and info files"
-msgstr ""
+msgstr "Несовпадает количество строк в тексте и информации"
 
 #: tl2edittext.sshow
 msgid "Click on \"Show Doubles\" button to show"
@@ -143,25 +143,34 @@ msgctxt "tl2notesform.stitle"
 msgid "Notes"
 msgstr "Заметки"
 
+#: tl2projectform.rsfixall
+msgid "Fix all"
+msgstr "Исправить всё"
+
+#: tl2projectform.rsfixone
+msgid "Fix this"
+msgstr "Исправить"
+
+#: tl2projectform.rsnext
+msgid "Next note"
+msgstr "Далее"
+
+#: tl2projectform.rsnotes
+msgid "Punctuation note"
+msgstr "Пунктутация"
+
+#: tl2projectform.rsnowarnings
+msgctxt "tl2projectform.rsnowarnings"
+msgid "No any warnings"
+msgstr "Никаких предупреждений нет"
+
 #: tl2projectform.saffected
 msgid " line(s) affected"
 msgstr " строк(а/и) исправлено"
 
-#: tl2projectform.sbuildread
-msgid "Build translation. Read"
-msgstr "Строим перевод. Читаем"
-
-#: tl2projectform.sbuildwrite
-msgid "Build translation in file."
-msgstr "Записываем перевод в файл."
-
 #: tl2projectform.scheckline
 msgid "Check importing translations"
 msgstr "Проверка импорта перевода"
-
-#: tl2projectform.sdoautocorrect
-msgid "Autocorrect all these notices?"
-msgstr "Исправить все замечания?"
 
 #: tl2projectform.sdodelete
 msgid ""
@@ -190,10 +199,6 @@ msgstr "Импорт"
 #: tl2projectform.snodoubles
 msgid "No doubles for this text"
 msgstr "Нет дублей для этого текста"
-
-#: tl2projectform.snowarnings
-msgid "No any warnings"
-msgstr "Никаких предупреждений нет"
 
 #: tl2projectform.sreplaces
 msgid "Total replaces"
@@ -243,6 +248,26 @@ msgstr "Не реализовано"
 msgctxt "tl2settingsform.ssettings"
 msgid "Settings"
 msgstr "Настройки"
+
+#: tl2text.rsdssign
+msgid "Target have sign at the end"
+msgstr "Перевод со знаком в конце"
+
+#: tl2text.rsdstspace
+msgid "Target have space(s) at the end"
+msgstr "Перевод с пробелом в конце"
+
+#: tl2text.rssrcsign
+msgid "Source have sign at the end"
+msgstr "Исходник со знаком в конце"
+
+#: tl2text.rssrcspace
+msgid "Source have space(s) at the end"
+msgstr "Исходник с пробелом в конце"
+
+#: tl2text.rssrctags
+msgid "Source have tags or parameters"
+msgstr "Исходник с тегами или параметрами"
 
 #: tl2unit.sdefaultcaption
 msgctxt "tl2unit.sdefaultcaption"
@@ -425,61 +450,51 @@ msgid "Scan all text files"
 msgstr "Проверять все файлы"
 
 #: trclass.rscanttranslate
-#, fuzzy
 msgctxt "trclass.rscanttranslate"
 msgid "Text can't be translated"
 msgstr "Текст не может быть переведён"
 
 #: trclass.rskeyblocked
-#, fuzzy
 msgctxt "trclass.rskeyblocked"
 msgid "API key blocked"
 msgstr "API ключ заблокирован"
 
 #: trclass.rsnohost
-#, fuzzy
 msgctxt "trclass.rsnohost"
 msgid "No host address defined"
 msgstr "Адрес сайта не определён"
 
 #: trclass.rssessionisinvalid
-#, fuzzy
 msgctxt "trclass.rssessionisinvalid"
 msgid "Session is invalid"
 msgstr "Сессия неверная"
 
 #: trclass.rstoolongtext
-#, fuzzy
 msgctxt "trclass.rstoolongtext"
 msgid "Text length too large"
 msgstr "Текст слишком длинный"
 
 #: trclass.rstoomanyrequest
-#, fuzzy
 msgctxt "trclass.rstoomanyrequest"
 msgid "Too many requests. Please wait and resend your request."
 msgstr "Слишком много запросов. Подалуйста, подождите и попробуйте снова."
 
 #: trclass.rstoomuchtext
-#, fuzzy
 msgctxt "trclass.rstoomuchtext"
 msgid "Day text potion out of limit"
 msgstr "Превышено суточное ограничение на объем переведенного текста"
 
 #: trclass.rsunknownerror
-#, fuzzy
 msgctxt "trclass.rsunknownerror"
 msgid "Unknown Error"
 msgstr "Неизвестная ошибка"
 
 #: trclass.rswrongapikey
-#, fuzzy
 msgctxt "trclass.rswrongapikey"
 msgid "Wrong API key"
 msgstr "Неправильный API-ключ"
 
 #: trclass.rswronglanguage
-#, fuzzy
 msgctxt "trclass.rswronglanguage"
 msgid "Choosen language is unsupported"
 msgstr "Заданное направление перевода не поддерживается"
@@ -696,4 +711,3 @@ msgstr "Переводчики"
 #: ttl2settings.lblworkdirectory.caption
 msgid "Working directory"
 msgstr "Рабочий каталог"
-

@@ -147,8 +147,8 @@ resourcestring
   sFolderAll      = '- All -';    // minus+space to be first
   sRoot           = '-- Root --'; // minus+minus+space to be second
   sWarning        = 'Warning';
-  sBuildRead      = 'Build translation. Read';
-  sBuildWrite     = 'Build translation in file.';
+//  sBuildRead      = 'Build translation. Read';
+//  sBuildWrite     = 'Build translation in file.';
   sReplaces       = 'Total replaces';
   sTransFileError = 'Error %d in translation file %s, line %d:'#13#10'%s';
   sSBText         = 'Project files: %d; tags: %d; lines: %d | ' +
@@ -159,11 +159,15 @@ resourcestring
                     'This text will be just hidden until you save and reload project.';
   sStopScan       = 'Do you want to break scan? It clear full scan process.';
   sEscCancel      = 'ESC to cancel';
-  sNoWarnings     = 'No any warnings';
-  sDoAutocorrect  = 'Autocorrect all these notices?';
   sAffected       = ' line(s) affected';
   sNoDoubles      = 'No doubles for this text';
   sDupes          = 'Check doubles info.';
+
+  rsNoWarnings    = 'No any warnings';
+  rsNotes         = 'Punctuation note';
+  rsNext          = 'Next note';
+  rsFixOne        = 'Fix this';
+  rsFixAll        = 'Fix all';
 
 const
   colOrigin  = 1;
@@ -232,33 +236,65 @@ end;
 procedure TTL2Project.actCheckTranslationExecute(Sender: TObject);
 var
   idx,lcnt:integer;
+  lres:dword;
+  lask:boolean;
 begin
-  idx:=data.NextNoticed();
-  if idx<0 then idx:=data.FirstNoticed();
-  if idx>=0 then
+  lask:=true;
+  lcnt:=0;
+
+  idx:=IntPtr(TL2Grid.Objects[0,TL2Grid.Row]);
+  lres:=data.NextNoticed(true,idx);
+  if idx<0 then
   begin
-    MoveToIndex(idx);
-    if MessageDlg(sDoAutocorrect,mtConfirmation,mbOkCancel,0)=mrOk then
+    idx:=-1;
+    lres:=data.NextNoticed(true,idx);
+  end;
+
+  while idx>=0 do
+  begin
+
+    if lask and (lres<>0) then
     begin
-      lcnt:=0;
-      idx:=data.FirstNoticed(true);
-      while idx>0 do
-      begin
-        inc(lcnt);
-        if TL2Settings.cbAutoAsPartial.Checked then
-        begin
-          data.State[idx]:=stPartial;
+      MoveToIndex(idx);
+      case QuestionDlg(rsNotes,CheckDescription(lres),mtConfirmation,
+        [mrContinue,rsNext,'IsDefault',mrYes,rsFixOne,mrYesToAll,rsFixAll,mrCancel],'') of
+
+        mrContinue: begin
+          lres:=0;
         end;
-        UpdateGrid(idx);
-        idx:=data.NextNoticed(true);
+
+        mrYes: begin
+        end;
+
+        mrYesToAll: begin
+          lask:=false;
+        end;
+
+        mrCancel: break;
       end;
-      Modified:=true;
-      OnSBUpdate(Self);
-      ShowMessage(IntToStr(lcnt)+sAffected);
     end;
+
+    if (lres and cpfNeedToFix)<>0 then
+    begin
+      dec(idx);
+      data.NextNoticed(false,idx); // yes, yes, check it again but with fix at same time
+      inc(lcnt);
+      if TL2Settings.cbAutoAsPartial.Checked then
+        data.State[idx]:=stPartial;
+      UpdateGrid(idx);
+    end;
+
+    lres:=data.NextNoticed(true,idx);
+  end;
+
+  if lcnt>0 then
+  begin
+    Modified:=true;
+    OnSBUpdate(Self);
+    ShowMessage(IntToStr(lcnt)+sAffected);
   end
   else
-    ShowMessage(sNoWarnings);
+    ShowMessage(rsNoWarnings);
 end;
 
 procedure TTL2Project.actHideReadyExecute(Sender: TObject);
@@ -678,34 +714,53 @@ end;
 
 procedure TTL2Project.MoveToIndex(idx:integer);
 var
-  i:integer;
+  lrow,i:integer;
 begin
-  for i:=1 to TL2Grid.RowCount-1 do
-  begin
-    if idx=IntPtr(TL2Grid.Objects[0,i]) then
+  lrow:=TL2Grid.Row;
+  if (lrow<(TL2Grid.RowCount-1)) and (idx=IntPtr(TL2Grid.Objects[0,lrow+1])) then TL2Grid.Row:=lrow+1
+  else if (lrow>1)               and (idx=IntPtr(TL2Grid.Objects[0,lrow-1])) then TL2Grid.Row:=lrow-1
+  else if (idx<>IntPtr(TL2Grid.Objects[0,lrow])) then
+    for i:=1 to TL2Grid.RowCount-1 do
     begin
-      TL2Grid.Row   :=i;
-      TL2Grid.TopRow:=i;
-      exit;
+      if idx=IntPtr(TL2Grid.Objects[0,i]) then
+      begin
+        TL2Grid.Row   :=i;
+        TL2Grid.TopRow:=i;
+        exit;
+      end;
     end;
-  end;
 end;
 
 procedure TTL2Project.UpdateGrid(idx:integer);
 var
-  i:integer;
+  lrow,i:integer;
 begin
-  for i:=1 to TL2Grid.RowCount-1 do
+  lrow:=TL2Grid.Row;
+  if (lrow<(TL2Grid.RowCount-1)) and (idx=IntPtr(TL2Grid.Objects[0,lrow+1])) then inc(lrow)
+  else if (lrow>1)               and (idx=IntPtr(TL2Grid.Objects[0,lrow-1])) then dec(lrow)
+  else if (idx<>IntPtr(TL2Grid.Objects[0,lrow])) then
   begin
-    if idx=IntPtr(TL2Grid.Objects[0,i]) then
+    lrow:=0;
+    for i:=1 to TL2Grid.RowCount-1 do
     begin
-      TL2Grid.Cells[colTrans,i]:=data.Trans[idx];
-      if data.State[idx]=stPartial then
-        TL2Grid.Cells[colPartial,i]:='1'
-      else
-        TL2Grid.Cells[colPartial,i]:='0';
-      exit;
+      if idx=IntPtr(TL2Grid.Objects[0,i]) then
+      begin
+        lrow:=i;
+        break;
+      end;
     end;
+  end;
+
+  if lrow<>0 then
+  begin
+    TL2Grid.Cells[colTrans,lrow]:=data.Trans[idx];
+    if data.State[idx]=stPartial then
+      TL2Grid.Cells[colPartial,lrow]:='1'
+    else
+      TL2Grid.Cells[colPartial,lrow]:='0';
+
+    TL2Grid.Row   :=lrow;
+    TL2Grid.TopRow:=lrow;
   end;
 end;
 
@@ -1576,7 +1631,6 @@ end;
 
 procedure TTL2Project.Build;
 var
-  ldir:AnsiString;
   ldlg:TSelectDirectoryDialog;
   i:integer;
 begin

@@ -9,7 +9,18 @@ function InsertColor(const aselected, acolor:AnsiString):AnsiString;
 
 function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
 
-function CheckPunctuation(const src:AnsiString; var target:AnsiString; checkonly:boolean=true):boolean;
+// Punctuation
+const
+  cpfSrcSpace =$01;
+  cpfDstSpace =$02;
+  cpfSrcSign  =$04;
+  cpfDstSign  =$08;
+  cpfSrcTags  =$10; {unimplemented}
+const
+  cpfNeedToFix = cpfSrcSpace or cpfSrcSign;
+
+function CheckPunctuation(const src:AnsiString; var target:AnsiString; checkonly:boolean=true):dword;
+function CheckDescription(res:dword):AnsiString;
 
 // Filter
 
@@ -29,6 +40,13 @@ implementation
 
 uses
   SysUtils;
+
+resourcestring
+  rsSrcSpace = 'Source have space(s) at the end';
+  rsDstSpace = 'Target have space(s) at the end';
+  rsSrcSign  = 'Source have sign at the end';
+  rsDsSign   = 'Target have sign at the end';
+  rsSrcTags  = 'Source have tags or parameters';
 
 const
   sColorSuffix = #124'u';
@@ -439,13 +457,13 @@ end;
   code can be simplified coz src must have text with something for translation (not empty, with words)
   if source words must be longer than 1 letter, can be simplified even more
 }
-function CheckPunctuation(const src:AnsiString; var target:AnsiString; checkonly:boolean=true):boolean;
+function CheckPunctuation(const src:AnsiString; var target:AnsiString; checkonly:boolean=true):dword;
 var
   i,j:integer;
   isDSpace,isSpace:boolean;
   lsrc,ldst:Char;
 begin
-  result:=false;
+  result:=0;
 
   j:=Length(target);
   if j>0 then
@@ -481,21 +499,41 @@ begin
       else
         ldst:=#0;
 
-      if (( isSpace   xor  isDSpace) or     // no both spaces or
-          ((lsrc =#0) xor (ldst =#0))) then // no both signs
+
+      if (isSpace xor isDSpace) then    // no both spaces or
+      begin
+        if not checkonly then
+        begin
+          if isSpace then target:=target+' ';
+        end;
+
+        if isSpace  then result:=result or cpfSrcSpace;
+        if isDSpace then result:=result or cpfDstSpace;
+      end;
+
+      if (lsrc =#0) xor (ldst =#0) then // no both signs
       begin
         if not checkonly then
         begin
           if ldst=#0 then Insert(lsrc,target,j+1);
-          if isSpace then target:=target+' ';
         end;
-        result:=true;
-        exit;
+
+        if lsrc<>#0 then result:=result or cpfSrcSign;
+        if ldst<>#0 then result:=result or cpfDstSign;
       end;
     end;
   end;
 end;
 
+function CheckDescription(res:dword):AnsiString;
+begin
+  result:='';
+  if (res and cpfSrcSpace)<>0 then result:=result+rsSrcSpace+#13#10;
+  if (res and cpfDstSpace)<>0 then result:=result+rsDstSpace+#13#10;
+  if (res and cpfSrcSign )<>0 then result:=result+rsSrcSign +#13#10;
+  if (res and cpfDstSign )<>0 then result:=result+rsDsSign  +#13#10;
+  if (res and cpfSrcTags )<>0 then result:=result+rsSrcTags +#13#10;
+end;
 
 function GetFilterWords:AnsiString; inline;
 begin

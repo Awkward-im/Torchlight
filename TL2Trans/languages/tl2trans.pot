@@ -124,24 +124,33 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
+#: tl2projectform.rsfixall
+msgid "Fix all"
+msgstr ""
+
+#: tl2projectform.rsfixone
+msgid "Fix this"
+msgstr ""
+
+#: tl2projectform.rsnext
+msgid "Next note"
+msgstr ""
+
+#: tl2projectform.rsnotes
+msgid "Punctuation note"
+msgstr ""
+
+#: tl2projectform.rsnowarnings
+msgctxt "tl2projectform.rsnowarnings"
+msgid "No any warnings"
+msgstr ""
+
 #: tl2projectform.saffected
 msgid " line(s) affected"
 msgstr ""
 
-#: tl2projectform.sbuildread
-msgid "Build translation. Read"
-msgstr ""
-
-#: tl2projectform.sbuildwrite
-msgid "Build translation in file."
-msgstr ""
-
 #: tl2projectform.scheckline
 msgid "Check importing translations"
-msgstr ""
-
-#: tl2projectform.sdoautocorrect
-msgid "Autocorrect all these notices?"
 msgstr ""
 
 #: tl2projectform.sdodelete
@@ -168,10 +177,6 @@ msgstr ""
 
 #: tl2projectform.snodoubles
 msgid "No doubles for this text"
-msgstr ""
-
-#: tl2projectform.snowarnings
-msgid "No any warnings"
 msgstr ""
 
 #: tl2projectform.sreplaces
@@ -217,6 +222,26 @@ msgstr ""
 #: tl2settingsform.ssettings
 msgctxt "tl2settingsform.ssettings"
 msgid "Settings"
+msgstr ""
+
+#: tl2text.rsdssign
+msgid "Target have sign at the end"
+msgstr ""
+
+#: tl2text.rsdstspace
+msgid "Target have space(s) at the end"
+msgstr ""
+
+#: tl2text.rssrcsign
+msgid "Source have sign at the end"
+msgstr ""
+
+#: tl2text.rssrcspace
+msgid "Source have space(s) at the end"
+msgstr ""
+
+#: tl2text.rssrctags
+msgid "Source have tags or parameters"
 msgstr ""
 
 #: tl2unit.sdefaultcaption

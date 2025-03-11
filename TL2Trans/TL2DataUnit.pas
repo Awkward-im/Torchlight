@@ -77,8 +77,6 @@ type
     arTmpl  : array of AnsiString;  // Templates list
     FRefilter:boolean;
 
-    noteIndex:integer;
-    
     FFMode    : tTextMode;
     FFilter   : tSearchFilter;
     FUpdPart  : tUpdatePart;
@@ -170,9 +168,8 @@ type
     function  Scan(const afile:AnsiString):boolean;
 
     procedure RebuildTemplate(idx:integer=-1);
-    // modification
-    function  FirstNoticed(acheckonly:boolean=true):integer;
-    function  NextNoticed (acheckonly:boolean=true):integer;
+
+    function  NextNoticed(acheckonly:boolean; var idx:integer):integer;
 
     // find lines w/o translation with idx-ed template and fill them
     function CheckTheSame(idx:integer; markAsPart:boolean):integer;
@@ -325,29 +322,23 @@ const
 
 //===== Support =====
 
-function TTL2Translation.FirstNoticed(acheckonly:boolean=true):integer;
+function TTL2Translation.NextNoticed(acheckonly:boolean; var idx:integer):integer;
 begin
-  noteIndex:=-1;
-  result:=NextNoticed(acheckonly);
-end;
+  result:=0;
 
-function TTL2Translation.NextNoticed(acheckonly:boolean=true):integer;
-begin
-  inc(noteIndex);
-  if noteIndex>=cntText then noteIndex:=0;
+  inc(idx);
+  if idx>=cntText then idx:=0;
 
-  while noteIndex<cntText do
+  while idx<cntText do
   begin
-    if CheckPunctuation(arText[noteIndex].origin,arText[noteIndex].transl,acheckonly) then
-    begin
-      result:=noteIndex;
+    result:=CheckPunctuation(arText[idx].origin,arText[idx].transl,acheckonly);
+    if (result<>0) and (acheckonly or ((result and cpfNeedToFix)<>0)) then
       exit;
-    end;
 
-    inc(noteIndex);
+    inc(idx);
   end;
 
-  result:=-1;
+  idx:=-1;
 end;
 
 procedure TTL2Translation.SetTrans(idx:integer; const translated: AnsiString);
@@ -1588,8 +1579,6 @@ end;
 procedure TTL2Translation.Init;
 begin
   FillChar(self,SizeOf(TTL2Translation),#0);
-
-  noteIndex:=-1;
 
   FModID:=-1;
 
