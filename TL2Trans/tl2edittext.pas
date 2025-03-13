@@ -185,9 +185,16 @@ begin
     lblTag.Visible:=true;
     actShowDupe.Visible:=false;
   end
+  else if i=0 then
+  begin
+    lblFile    .Caption:=rsNoRef;
+    lblTagValue.Caption:='';
+    lblTag.Visible:=false;
+    actShowDupe.Visible:=false;
+  end
   else
   begin
-	  lblFile    .Caption:=StringReplace(sSeveralRefs,'%d',IntToStr(i),[]);
+	  lblFile    .Caption:=StringReplace(rsSeveralRefs,'%d',IntToStr(i),[]);
 		lblTagValue.Caption:=sShow;
     lblTag.Visible:=false;
     actShowDupe.Visible:=true;

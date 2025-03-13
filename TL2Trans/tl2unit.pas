@@ -218,7 +218,7 @@ begin
     Visible:=true;
     OnSBUpdate:=@UpdateStatusBar;
 
-    ProjectName:=aname;
+    ProjectName:=ExtractNameOnly(aname);
   end;
 
   TL2PageControl.ActivePage:=ts;

@@ -11,11 +11,18 @@ function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
 
 // Punctuation
 const
-  cpfSrcSpace =$01;
-  cpfDstSpace =$02;
-  cpfSrcSign  =$04;
-  cpfDstSign  =$08;
-  cpfSrcTags  =$10; {unimplemented}
+  cpfSrcSpace  = $0001;
+  cpfDstSpace  = $0002;
+  cpfSrcSign   = $0004;
+  cpfDstSign   = $0008;
+  cpfSrcLine   = $0010;
+  cpfDstLine   = $0020;
+  cpfSrcColor  = $0040;
+  cpfDstColor  = $0080;
+  cpfSrcColEnd = $0100;
+  cpfDstColEnd = $0200;
+  cpfSrcTags   = $0400;
+
 const
   cpfNeedToFix = cpfSrcSpace or cpfSrcSign;
 
@@ -42,11 +49,17 @@ uses
   SysUtils;
 
 resourcestring
-  rsSrcSpace = 'Source have space(s) at the end';
-  rsDstSpace = 'Target have space(s) at the end';
-  rsSrcSign  = 'Source have sign at the end';
-  rsDsSign   = 'Target have sign at the end';
-  rsSrcTags  = 'Source have tags or parameters';
+  rsSrcSpace  = 'Source have space(s) at the end';
+  rsDstSpace  = 'Target have space(s) at the end';
+  rsSrcSign   = 'Source have sign at the end';
+  rsDsSign    = 'Target have sign at the end';
+  rsSrcTags   = 'Source have tags or parameters';
+  rsSrcLine   = 'Source have more lines than target';
+  rsDstLine   = 'Source have less lines than target';
+  rsSrcColor  = 'Source have more colors than target';
+  rsDstColor  = 'Source have less colors than target';
+  rsSrcColEnd = 'Source have more |u than target';
+  rsDstColEnd = 'Source have less |u than target';
 
 const
   sColorSuffix = #124'u';
@@ -459,7 +472,7 @@ end;
 }
 function CheckPunctuation(const src:AnsiString; var target:AnsiString; checkonly:boolean=true):dword;
 var
-  i,j:integer;
+  lcnt,i,j:integer;
   isDSpace,isSpace:boolean;
   lsrc,ldst:Char;
 begin
@@ -468,10 +481,10 @@ begin
   j:=Length(target);
   if j>0 then
   begin
-    isSpace:=false;
     i:=Length(src);
     if i>0 then  // empty lines blocked by program, so it always true
     begin
+      isSpace:=false;
       // 1 - skip trailing spaces (keep it's check to the end)
       while (src[i]=' ') and (i>0) do
       begin
@@ -521,6 +534,28 @@ begin
         if lsrc<>#0 then result:=result or cpfSrcSign;
         if ldst<>#0 then result:=result or cpfDstSign;
       end;
+
+      // check simple tags
+      lcnt:=0;
+      i:=-1; while true do begin i:=Pos('\n',lsrc,i+2); if i=0 then break; inc(lcnt); end;
+      i:=-1; while true do begin i:=Pos('\n',ldst,i+2); if i=0 then break; dec(lcnt); end;
+           if lcnt>0 then result:=result or cpfSrcLine
+      else if lcnt<0 then result:=result or cpfDstLine;
+
+      lcnt:=0;
+      i:=-1; while true do begin i:=Pos('|c',lsrc,i+2); if i=0 then break; inc(lcnt); end;
+      i:=-1; while true do begin i:=Pos('|c',ldst,i+2); if i=0 then break; dec(lcnt); end;
+           if lcnt>0 then result:=result or cpfSrcColor
+      else if lcnt<0 then result:=result or cpfDstColor;
+
+      lcnt:=0;
+      i:=-1; while true do begin i:=Pos('|u',lsrc,i+2); if i=0 then break; inc(lcnt); end;
+      i:=-1; while true do begin i:=Pos('|u',ldst,i+2); if i=0 then break; dec(lcnt); end;
+           if lcnt>0 then result:=result or cpfSrcColEnd
+      else if lcnt<0 then result:=result or cpfDstColEnd;
+      // don't check count(|c) = count(|u). keep it for author
+
+      // Here must be check for <PARAM> and [PARAM]
     end;
   end;
 end;

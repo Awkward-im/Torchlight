@@ -101,8 +101,13 @@ msgstr "Редактировать текст"
 msgid "Tag:"
 msgstr "Тэг:"
 
-#: tl2datamodule.sseveralrefs
+#: tl2datamodule.rsnoref
+msgid "Text don't have any references"
+msgstr "Ссылки на текст неизвестны"
+
+#: tl2datamodule.rsseveralrefs
 #, object-pascal-format
+msgctxt "tl2datamodule.rsseveralrefs"
 msgid "This text presents in several (about %d) places."
 msgstr "Этот текст есть в нескольких (примерно %d) местах."
 
@@ -253,9 +258,33 @@ msgstr "Настройки"
 msgid "Target have sign at the end"
 msgstr "Перевод со знаком в конце"
 
+#: tl2text.rsdstcolend
+msgid "Source have less |u than target"
+msgstr "В исходнике меньше |u чем в переводе"
+
+#: tl2text.rsdstcolor
+msgid "Source have less colors than target"
+msgstr "В исходнике меньше цветов чем в переводе"
+
+#: tl2text.rsdstline
+msgid "Source have less lines than target"
+msgstr "В исходнике меньше строк чем в переводе"
+
 #: tl2text.rsdstspace
 msgid "Target have space(s) at the end"
 msgstr "Перевод с пробелом в конце"
+
+#: tl2text.rssrccolend
+msgid "Source have more |u than target"
+msgstr "В исходнике больше |u чем в переводе"
+
+#: tl2text.rssrccolor
+msgid "Source have more colors than target"
+msgstr "В исходнике больше цветов чем в переводе"
+
+#: tl2text.rssrcline
+msgid "Source have more lines than target"
+msgstr "В исходнике больше строк чем в переводе"
 
 #: tl2text.rssrcsign
 msgid "Source have sign at the end"

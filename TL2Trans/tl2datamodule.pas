@@ -34,7 +34,8 @@ function FillColorPopup(amemo:TMemo; const asrc:AnsiString):boolean;
 function CreateFileTab(const adata:TTL2Translation; aRef:integer; aOwner:TWinControl):TForm;
 
 resourcestring
-  sSeveralRefs = 'This text presents in several (about %d) places.';
+  rsSeveralRefs = 'This text presents in several (about %d) places.';
+  rsNoRef       = 'Text don''t have any references';
 
 
 implementation

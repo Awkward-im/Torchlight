@@ -9,7 +9,6 @@ object TL2Project: TTL2Project
   KeyPreview = True
   ParentFont = True
   ShowHint = True
-  LCLVersion = '4.99.0.0'
   Visible = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -39,7 +38,7 @@ object TL2Project: TTL2Project
       end    
       item
         Title.Caption = 'Translation'
-        Width = 585
+        Width = 581
       end>
     DefaultColWidth = 48
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
@@ -53,12 +52,13 @@ object TL2Project: TTL2Project
     OnHeaderSized = TL2GridHeaderSized
     OnKeyDown = TL2GridKeyDown
     OnSelectEditor = TL2GridSelectEditor
+    OnSelectCell = TL2GridSelectCell
     OnSetCheckboxState = TL2GridSetCheckboxState
     ColWidths = (
       48
       269
       28
-      585
+      581
     )
   end
   object memEdit: TMemo

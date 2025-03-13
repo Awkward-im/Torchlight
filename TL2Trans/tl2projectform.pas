@@ -76,6 +76,7 @@ type
     procedure ExportClipBrdClick(Sender: TObject);
     procedure ExportFileClick(Sender: TObject);
     procedure TL2GridClick(Sender: TObject);
+    procedure TL2GridSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
     procedure TranslateClick(Sender: TObject);
     procedure ReplaceClick(Sender: TObject);
     procedure dlgOnReplace(Sender: TObject);
@@ -316,9 +317,16 @@ begin
     idx:=data.Ref[idx,0];
     ls:=data.Refs.GetTag(idx)+' | '+data.Refs.GetFile(idx);
   end
+  else if lcnt=0 then
+    ls:=rsNoRef
   else
-    ls:=StringReplace(sSeveralRefs,'%d',IntToStr(lcnt),[])+' '+sDupes;
+    ls:=StringReplace(rsSeveralRefs,'%d',IntToStr(lcnt),[])+' '+sDupes;
   OnSBUpdate(Self,ls);
+end;
+
+procedure TTL2Project.TL2GridSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
+begin
+  if (aRow>0) then TL2GridClick(self);
 end;
 
 procedure TTL2Project.TL2GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

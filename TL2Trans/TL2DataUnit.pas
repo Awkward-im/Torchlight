@@ -1282,6 +1282,7 @@ begin
     // 4 - filter words. save before templates to be sure what need to read or rebuild on load
     lstrm.WriteByte(4);
     lpos:=lstrm.Position;
+    lstrm.WriteDWord(0);
     lstrm.WriteAnsiString(GetFilterWords());
     lstrm.WriteDWordAt(lstrm.Position-lpos-SizeOf(DWord),lpos);
 
