@@ -54,6 +54,7 @@ uses
   addons,
   formSettings,
   INIfiles,
+  rgtrans,
   rgdb;
 
 const
@@ -213,7 +214,7 @@ begin
   for i:=0 to High(alist) do
   begin
     sgRecipes.Objects[0,i+1]:=TObject(IntPtr(i));
-    sgRecipes.Cells[colTitle,i+1]:=RGDBGetRecipes(alist[i],lmod);
+    sgRecipes.Cells[colTitle,i+1]:=GetTranslation(fmSettings.Translation,RGDBGetRecipes(alist[i],lmod));
     sgRecipes.Cells[colMod  ,i+1]:=RGDBGetMod(lmod);
     sgRecipes.Cells[colId   ,i+1]:=TextId(alist[i]);
   end;

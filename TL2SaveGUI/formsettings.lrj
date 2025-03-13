@@ -15,5 +15,6 @@
 {"hash":22770,"name":"tfmsettings.lbltl2db.caption","sourcebytes":[84,76,50],"value":"TL2"},
 {"hash":22769,"name":"tfmsettings.lbltl1db.caption","sourcebytes":[84,76,49],"value":"TL1"},
 {"hash":22770,"name":"tfmsettings.lbltl2icon.caption","sourcebytes":[84,76,50],"value":"TL2"},
-{"hash":22769,"name":"tfmsettings.lbltl1icon.caption","sourcebytes":[84,76,49],"value":"TL1"}
+{"hash":22769,"name":"tfmsettings.lbltl1icon.caption","sourcebytes":[84,76,49],"value":"TL1"},
+{"hash":27393701,"name":"tfmsettings.lbltranslation.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110,32,102,105,108,101],"value":"Translation file"}
 ]}

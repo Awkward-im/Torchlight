@@ -710,7 +710,7 @@ msgid "Unkn4_1"
 msgstr ""
 
 #: tfmchar.lblunkn4_2.caption
-msgid "Unkn4_2"
+msgid "Is_boss?"
 msgstr ""
 
 #: tfmchar.lblunkn7_0.caption
@@ -868,7 +868,6 @@ msgid "Statistic"
 msgstr "Статистика"
 
 #: tfmchar.tstechinfo.caption
-#, fuzzy
 msgctxt "tfmchar.tstechinfo.caption"
 msgid "Technical"
 msgstr "Техническое"
@@ -951,8 +950,6 @@ msgid "Unit Theme"
 msgstr "Тема юнита"
 
 #: tfmeffects.lblunknown.caption
-#, fuzzy
-#| msgid "Elapsed"
 msgctxt "tfmeffects.lblelapsed.caption"
 msgid "Time of"
 msgstr "Прошло"
@@ -1094,7 +1091,7 @@ msgstr "Состояние"
 
 #: tfmitem.lblquestid.caption
 msgid "Quest ID"
-msgstr ""
+msgstr "ID квеста"
 
 #: tfmitem.lblsockets.caption
 msgid "Sockets"
@@ -1457,21 +1454,16 @@ msgid "Learn just actual"
 msgstr "Учить актуальное"
 
 #: tfmrecipes.sgrecipes.columns[0].title.caption
-#, fuzzy
-#| msgid "Title"
 msgctxt "tfmrecipes.sgrecipes.columns[0].title.caption"
 msgid "Icon"
-msgstr "Название"
+msgstr "Иконка"
 
 #: tfmrecipes.sgrecipes.columns[1].title.caption
-#, fuzzy
-#| msgid "Mod"
 msgctxt "tfmrecipes.sgrecipes.columns[1].title.caption"
 msgid "Title"
-msgstr "Мод"
+msgstr "Название"
 
 #: tfmrecipes.sgrecipes.columns[2].title.caption
-#, fuzzy
 msgctxt "tfmrecipes.sgrecipes.columns[2].title.caption"
 msgid "Mod"
 msgstr "Мод"
@@ -1580,6 +1572,10 @@ msgstr ""
 msgctxt "tfmsettings.lbltl2icon.caption"
 msgid "TL2"
 msgstr ""
+
+#: tfmsettings.lbltranslation.caption
+msgid "Translation file"
+msgstr "Файл перевода"
 
 #: tfmskills.bbupdate.caption
 msgid "Update"
@@ -2019,4 +2015,3 @@ msgstr "Осмотрено тайников"
 #: tlsgstatistic.rsunknownstat
 msgid "Unknown Stat"
 msgstr "Неизвестная статистика"
-

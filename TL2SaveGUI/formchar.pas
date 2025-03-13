@@ -280,6 +280,7 @@ uses
   INIFiles,
   addons,
   formSettings,
+  rgtrans,
   unitGlobal;
 
 resourcestring
@@ -767,13 +768,14 @@ begin
   begin
     ls:=FClasses[i].title;
     if ls='' then continue;
+    ls:=GetTranslation(fmSettings.Translation,ls);
 
     if FSGame.GameVersion=verTL2 then
     begin
       if (rbMale  .Checked and (FClasses[i].gender='M')) or
          (rbFemale.Checked and (FClasses[i].gender='F')) then
       begin
-        lfeNewClass.Items.AddObject(FClasses[i].title,TObject(IntPtr(i)));
+        lfeNewClass.Items.AddObject(ls,TObject(IntPtr(i)));
       end
       else if rbUnisex.Checked then
       begin
@@ -783,7 +785,7 @@ begin
       end;
     end
     else
-      lfeNewClass.Items.AddObject(FClasses[i].title,TObject(IntPtr(i)));
+      lfeNewClass.Items.AddObject(ls,TObject(IntPtr(i)));
   end;
   lfeNewClass.Items.EndUpdate;
   lfeNewClass.ForceFilter(' ');
@@ -1009,7 +1011,7 @@ begin
   lfeNewClass.Items.Capacity:=Length(FPets);
   for i:=0 to High(FPets) do
   begin
-    ls:=FPets[i].title;
+    ls:=GetTranslation(fmSettings.Translation,FPets[i].title);
     if ls='' then ls:=FPets[i].name
     else ls:=ls+ ' ('+FPets[i].name+')';
     lfeNewClass.Items.AddObject(ls,TObject(IntPtr(i)));

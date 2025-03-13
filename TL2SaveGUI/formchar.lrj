@@ -79,7 +79,7 @@
 {"hash":142925812,"name":"tfmchar.lblunkn2.caption","sourcebytes":[112,114,101,45,119,97,114,100],"value":"pre-ward"},
 {"hash":6050323,"name":"tfmchar.lblunkn3.caption","sourcebytes":[85,110,107,110,51],"value":"Unkn3"},
 {"hash":206707313,"name":"tfmchar.lblunkn4_1.caption","sourcebytes":[85,110,107,110,52,95,49],"value":"Unkn4_1"},
-{"hash":206707314,"name":"tfmchar.lblunkn4_2.caption","sourcebytes":[85,110,107,110,52,95,50],"value":"Unkn4_2"},
+{"hash":156856175,"name":"tfmchar.lblunkn4_2.caption","sourcebytes":[73,115,95,98,111,115,115,63],"value":"Is_boss?"},
 {"hash":206708080,"name":"tfmchar.lblunkn7_0.caption","sourcebytes":[85,110,107,110,55,95,48],"value":"Unkn7_0"},
 {"hash":206708081,"name":"tfmchar.lblunkn7_1.caption","sourcebytes":[85,110,107,110,55,95,49],"value":"Unkn7_1"},
 {"hash":206708082,"name":"tfmchar.lblunkn7_2.caption","sourcebytes":[85,110,107,110,55,95,50],"value":"Unkn7_2"},

@@ -689,7 +689,7 @@ msgid "Unkn4_1"
 msgstr ""
 
 #: tfmchar.lblunkn4_2.caption
-msgid "Unkn4_2"
+msgid "Is_boss?"
 msgstr ""
 
 #: tfmchar.lblunkn7_0.caption
@@ -1550,6 +1550,10 @@ msgstr ""
 #: tfmsettings.lbltl2icon.caption
 msgctxt "tfmsettings.lbltl2icon.caption"
 msgid "TL2"
+msgstr ""
+
+#: tfmsettings.lbltranslation.caption
+msgid "Translation file"
 msgstr ""
 
 #: tfmskills.bbupdate.caption

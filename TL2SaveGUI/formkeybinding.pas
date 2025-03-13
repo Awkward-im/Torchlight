@@ -28,6 +28,8 @@ implementation
 
 uses
   rgglobal,
+  formsettings,
+  rgtrans,
   rgdb;
 
 resourcestring
@@ -57,13 +59,13 @@ begin
         case datatype of
           0: begin
             sgKeyBinding.Cells[1,j]:=rsItem;
-            sgKeyBinding.Cells[2,j]:=RGDBGetItem(id,lmod);
+            sgKeyBinding.Cells[2,j]:=GetTranslation(fmSettings.Translation,RGDBGetItem(id,lmod));
             sgKeyBinding.Cells[3,j]:=RGDBGetMod(lmod);
           end;
 
           2: begin
             sgKeyBinding.Cells[1,j]:=rsSkill;
-            sgKeyBinding.Cells[2,j]:=RGDBGetSkill(id,lmod);
+            sgKeyBinding.Cells[2,j]:=GetTranslation(fmSettings.Translation,RGDBGetSkill(id,lmod));
             sgKeyBinding.Cells[3,j]:=RGDBGetMod(lmod);
           end;
 

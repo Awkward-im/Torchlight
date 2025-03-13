@@ -25,11 +25,14 @@ type
     cbBackup  : TCheckBox;
     cbSaveScan: TCheckBox;
     edDBFileTL1: TFileNameEdit;
+    edTransTL2: TFileNameEdit;
+    edTransTL1: TFileNameEdit;
     edIconDirTL1: TDirectoryEdit;
     edSaveDir: TDirectoryEdit;
     edModsDir: TDirectoryEdit;
     edIconDirTL2 : TDirectoryEdit;
     gbModsScan: TGroupBox;
+    lblTranslation: TLabel;
     lblTL1Icon: TLabel;
     lblTL2DB: TLabel;
     lblTL1DB: TLabel;
@@ -58,6 +61,7 @@ type
 
   public
     ModListChanged:boolean;
+    Translation:pointer;
 
     property IconDir:string read GetIconDir;
     property DBState:integer read FDBState write FDBState;
@@ -98,6 +102,8 @@ const
   sDBFileTL1  = 'dbfile_tl1';
   sIconDirTL2 = 'icondir';
   sIconDirTL1 = 'icondir_tl1';
+  sTransTL2   = 'transfile';
+  sTransTL1   = 'transfile_tl1';
   sSaveDir    = 'savedir';
   sModsDir    = 'modsdir';
   sSaveScan   = 'savescan';
@@ -141,7 +147,9 @@ begin
   config.WriteString (sSettings,sDBFileTL1 ,edDBFileTL1 .Text);
   config.WriteString (sSettings,sIconDirTL2,edIconDirTL2.Text);
   config.WriteString (sSettings,sIconDirTL1,edIconDirTL1.Text);
-  config.WriteString (sSettings,sSaveDir   ,edSaveDir .Text);
+  config.WriteString (sSettings,sSaveDir   ,edSaveDir   .Text);
+  config.WriteString (sSettings,sTransTL2  ,edTransTL2  .Text);
+  config.WriteString (sSettings,sTransTL1  ,edTransTL1  .Text);
   config.WriteBool   (sSettings,sBackup    ,cbBackup  .Checked);
 
   config.WriteBool   (sSettings,sShowAll   ,cbShowAll .Checked);
@@ -170,6 +178,8 @@ begin
   edIconDirTL2.Text   :=config.ReadString(sSettings,sIconDirTL2,'icons');
   edIconDirTL1.Text   :=config.ReadString(sSettings,sIconDirTL1,'iconstl1');
   edSaveDir   .Text   :=config.ReadString(sSettings,sSaveDir   ,SavePath);
+  edTransTL2  .Text   :=config.ReadString(sSettings,sTransTL2  ,'');
+  edTransTL1  .Text   :=config.ReadString(sSettings,sTransTL1  ,'');
   cbBackup    .Checked:=config.ReadBool  (sSettings,sBackup    ,true);
 
   cbShowAll   .Checked:=config.ReadBool  (sSettings,sShowAll ,false);
@@ -259,6 +269,7 @@ begin
   end;
 
   //  FDBState:=LoadBases(edDBFileTL2.Text);
+  Translation:=nil;
   FDBState:=-1;
 end;
 

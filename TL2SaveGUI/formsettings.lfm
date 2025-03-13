@@ -2,11 +2,10 @@ object fmSettings: TfmSettings
   Left = 516
   Height = 472
   Top = 203
-  Width = 701
+  Width = 782
   BorderStyle = bsNone
   ClientHeight = 472
-  ClientWidth = 701
-  LCLVersion = '4.99.0.0'
+  ClientWidth = 782
   OnCreate = FormCreate
   object bbSave: TBitBtn
     Left = 8
@@ -159,7 +158,7 @@ object fmSettings: TfmSettings
     Left = 385
     Height = 112
     Top = 316
-    Width = 305
+    Width = 386
     Anchors = [akTop, akLeft, akRight]
     ReadOnly = True
     ScrollBars = ssAutoVertical
@@ -244,5 +243,38 @@ object fmSettings: TfmSettings
     Caption = 'TL1'
     Font.Style = [fsBold]
     ParentFont = False
+  end
+  object edTransTL2: TFileNameEdit
+    Left = 408
+    Height = 23
+    Top = 24
+    Width = 366
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 10
+  end
+  object edTransTL1: TFileNameEdit
+    Left = 408
+    Height = 23
+    Top = 55
+    Width = 366
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 11
+  end
+  object lblTranslation: TLabel
+    Left = 412
+    Height = 15
+    Top = 6
+    Width = 78
+    Caption = 'Translation file'
   end
 end

@@ -98,6 +98,7 @@ uses
   INIFiles,
   LCLType,
   addons,
+  rgtrans,
   formsettings;
 
 const
@@ -235,8 +236,8 @@ begin
   begin
     idx:=IntPtr(sgSkills.Objects[0,aRow]);
 
-    lblName.Caption:=FSkills[idx].title;
-    memDesc.Text   :=RGDBGetSkillInfo(FSkills[idx].id,ltier,licon);
+    lblName.Caption:=GetTranslation(fmSettings.Translation,FSkills[idx].title);
+    memDesc.Text   :=GetTranslation(fmSettings.Translation,RGDBGetSkillInfo(FSkills[idx].id,ltier,licon));
   end;
 end;
 
@@ -415,7 +416,7 @@ begin
       begin
         sgSkills.Objects[0,j]:=TObject(IntPtr(i));
 
-        sgSkills.Cells[colName   ,j]:=FSkills[i].title;
+        sgSkills.Cells[colName   ,j]:=GetTranslation(fmSettings.Translation,FSkills[i].title);
         sgSkills.Cells[colPassive,j]:=FSkills[i].passive;
         sgSkills.Cells[colLevel  ,j]:=IntToStr(FSkills[i].learn);
         inc(j);

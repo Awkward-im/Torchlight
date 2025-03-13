@@ -90,6 +90,7 @@ uses
   LCLIntf,
   rgglobal,
   rgdb,
+  rgtrans,
   unitGlobal,
   TLSGBase;
 
@@ -242,6 +243,7 @@ begin
 //  if FSettings.DBState=SQLITE_OK then FreeBases;
   ClearGameGlobals;
   SGame.Free;
+  FreeTranslation(FSettings.Translation);
 end;
 
 procedure TfmSaveFile.FormCreate(Sender: TObject);
@@ -347,9 +349,15 @@ begin
 
     fmButtons.SGame:=SGame;
     if SGame.GameVersion=verTL1 then
-      FSettings.DBState:=RGDBLoadBase(FSettings.edDBFileTL1.Text)
+    begin
+      FSettings.DBState:=RGDBLoadBase(FSettings.edDBFileTL1.Text);
+      LoadTranslation(FSettings.Translation,FSettings.edTransTL1.Text);
+    end
     else
+    begin
       FSettings.DBState:=RGDBLoadBase(FSettings.edDBFileTL2.Text);
+      LoadTranslation(FSettings.Translation,FSettings.edTransTL2.Text);
+    end;
 
     FSettings.ModListChanged:=true;
     RGDBSetFilter(SGame.BoundMods);
