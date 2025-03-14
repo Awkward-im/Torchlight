@@ -388,6 +388,19 @@ msgstr ""
 msgid "Unknown and unsupported format"
 msgstr ""
 
+#: tfmlogform.bbclear.caption
+msgid "&Clear"
+msgstr ""
+
+#: tfmlogform.bbsave.caption
+msgctxt "tfmlogform.bbsave.caption"
+msgid "Save"
+msgstr ""
+
+#: tfmlogform.bbsave.hint
+msgid "Save log to file"
+msgstr ""
+
 #: tformlayoutedit.acttreedeletenode.caption
 msgid "Delete Object"
 msgstr ""
@@ -867,5 +880,9 @@ msgstr ""
 
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
+msgstr ""
+
+#: unitlogform.rscantsave
+msgid "Can't save log file"
 msgstr ""
 

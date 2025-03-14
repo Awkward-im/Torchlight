@@ -1,4 +1,9 @@
-﻿unit RGTrans;
+﻿{TODO: use sorted hash array to avoid string sort}
+{TODO: Manual load of translation (no loaded StringList). Check RGDictLayout}
+{TODO: Add support of packed translations}
+{TODO: Add support of translation stream}
+{TODO: Add support of UTF8 translations (what is for?)}
+unit RGTrans;
 
 interface
 

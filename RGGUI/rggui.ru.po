@@ -400,6 +400,19 @@ msgstr ""
 msgid "Unknown and unsupported format"
 msgstr ""
 
+#: tfmlogform.bbclear.caption
+msgid "&Clear"
+msgstr "Очистить"
+
+#: tfmlogform.bbsave.caption
+msgctxt "tfmlogform.bbsave.caption"
+msgid "Save"
+msgstr "Сохранить"
+
+#: tfmlogform.bbsave.hint
+msgid "Save log to file"
+msgstr "Сохранить лог в файл"
+
 #: tformlayoutedit.acttreedeletenode.caption
 msgid "Delete Object"
 msgstr "Удалить объект"
@@ -447,7 +460,7 @@ msgstr "Шрифт"
 
 #: trgguiform.actedfontedit.hint
 msgid "Change source code font"
-msgstr "изменить шрифт для исходного кода"
+msgstr "Изменить шрифт исходного кода"
 
 #: trgguiform.actedimport.caption
 msgctxt "trgguiform.actedimport.caption"
@@ -882,3 +895,7 @@ msgstr "Показать/скрыть столбец: Распакованный
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
 msgstr "Информация о моде"
+
+#: unitlogform.rscantsave
+msgid "Can't save log file"
+msgstr "Не могу сохранить файл лога"

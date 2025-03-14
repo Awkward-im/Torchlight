@@ -258,7 +258,7 @@ begin
   end;
 end;
 
-function TRGController.Rebuild(): integer;
+function TRGController.Rebuild():integer;
 var
   ldir,ldirs:integer;
   lidx,lfile:integer;
@@ -336,18 +336,16 @@ procedure TRGController.GetFullInfo(idx:integer; var info:TRGFullInfo);
 var
   p:PRGCtrlInfo;
 begin
-  if idx<0 then
-  begin
-    FillChar(info,SizeOf(info),0);
-    exit;
-  end;
+  FillChar(info,SizeOf(info),0);
+  if idx<0 then exit;
+
   p:=PRGCtrlInfo(Files[idx]);
 
   info.name    :=p^.Name;
   info.path    :=PathOfFile(idx);
   info.checksum:=p^.checksum;
 
-  if (p^.action in [act_data, act_file]) or (p^.source=0) then
+  if (p^.action in [act_data, act_file]) or (p^.source<0) then
   begin
     info.size_u:=p^.size_u;
     info.size_c:=p^.size_c;
@@ -375,8 +373,8 @@ begin
   case info.action of
     act_mark  : info.state:=stateRemove;
     act_delete: info.state:=stateDelete;
-    act_data  : if p^.source=0 then info.state:=stateNew else info.state:=stateChanged;
-    act_file  : if p^.source=0 then
+    act_data  : if p^.source<0 then info.state:=stateNew else info.state:=stateChanged;
+    act_file  : if p^.source<0 then
       info.state:=stateNew+stateLink
     else
       info.state:=stateChanged+stateLink;
@@ -393,8 +391,8 @@ begin
     case action of
       act_mark  : result:=stateRemove;
       act_delete: result:=stateDelete;
-      act_data  : if source=0 then result:=stateNew else result:=stateChanged;
-      act_file  : if source=0 then
+      act_data  : if source<0 then result:=stateNew else result:=stateChanged;
+      act_file  : if source<0 then
         result:=stateNew+stateLink
       else
         result:=stateChanged+stateLink;
@@ -689,7 +687,7 @@ begin
   if idx>=0 then
   begin
     ClearElement(idx);
-    if PRGCtrlInfo(Files[idx])^.source=0 then
+    if PRGCtrlInfo(Files[idx])^.source<0 then
     begin
       if isDir(idx) then
         DeletePath(AsDir(idx))
@@ -739,6 +737,7 @@ begin
     lfile:=AddFile(ldir,apath+lslash);
     with PRGCtrlInfo(Files[lfile])^ do
     begin
+      source:=-1;
       ftype :=typeDirectory;
       action:=act_dir;
 // not used for dirs
@@ -751,11 +750,15 @@ begin
 end;
 
 function TRGController.UseData(adata:PByte; asize:cardinal; apath:PWideChar):integer;
+var
+  lcnt:integer;
 begin
+  lcnt:=FileCount;
   result:=AddFile(apath);
   ClearElement(result);
   with PRGCtrlInfo(Files[result])^ do
   begin
+    if FileCount<>lcnt then source:=-1;
     data  :=adata;
     size  :=asize;
     action:=act_data;
@@ -795,7 +798,7 @@ var
 begin
   result:=idx;
   p:=PRGCtrlInfo(Files[idx]);
-  if p^.source=0 then exit;
+  if p^.source<0 then exit;
 
   //ClearElement(idx);
   FreeMem(p^.data);
@@ -816,14 +819,16 @@ var
   lptr:PByte;
   f:file of byte;
   sr:TUnicodeSearchRec;
-  lsize:integer;
+  lsize,lcnt:integer;
 begin
   if not acontent then
   begin
+    lcnt:=FileCount;
     result:=AddFile(apath);
     ClearElement(result);
     with PRGCtrlInfo(Files[result])^ do
     begin
+      if FileCount<>lcnt then source:=-1;
       ftype :=RGTypeOfExt(apath);
       data  :=PByte(CopyWide(afile));
       action:=act_file;
@@ -890,7 +895,8 @@ begin
     if GetFirstFile(j,i) then
       repeat
         if achanges then
-          if UpdateState(j)<>stateChanged then
+          if not (UpdateState(j) in
+             [stateNew,stateChanged,stateNew+stateLink,stateChanged+stateLink]) then
             Continue;
 
         p:=PRGCtrlInfo(Files[j]);
