@@ -1587,6 +1587,7 @@ begin
 
 //!!    pnlEditButtons.Visible:=true;
   SynEdit.Highlighter:=SynTSyn;
+  SynEdit.Visible:=true;
 
   lsize:=FUSize;
   case GetSourceEncoding(FUData) of
@@ -1616,7 +1617,7 @@ begin
   end;
 
   SynEdit.Modified:=false;
-  SynEdit.Visible:=true;
+//  SynEdit.Visible:=true;
   actEdSearch.Enabled:=true;
 end;
 
@@ -1662,8 +1663,8 @@ begin
     SynEdit.Highlighter:=SynOgreSyn
   else
     SynEdit.Highlighter:=SynXMLSyn;
-  SynEdit.Text:=ltext;
   SynEdit.Visible:=true;
+  SynEdit.Text:=ltext;
   actEdSearch.Enabled:=true;
 end;
 
@@ -1718,7 +1719,7 @@ begin
     RGLog.Reserve('Processing '+ldir+lname);
 
     ctrl.GetFullInfo(lfile,lrec);
-    if (lrec.offset=0) or (lrec.size_s=0) then exit;
+    //if (lrec.offset=0) or (lrec.size_s=0) then exit;
 
     lblInfo1.Caption:=rsSize+': '+IntToStr(lrec.size_s)+'; '+
                       rsOffset+': '+'0x'+HexStr(lrec.offset,8);
