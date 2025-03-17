@@ -5,7 +5,7 @@
 //  * Unit Name : FWHexView.MappedView.pas
 //  * Purpose   : Implementation of advanced HexView editor with data map support
 //  * Author    : Alexander (Rouse_) Bagel
-//  * Copyright : © Fangorn Wizards Lab 1998 - 2024.
+//  * Copyright : © Fangorn Wizards Lab 1998 - 2025.
 //  * Version   : 2.0.15
 //  * Home Page : http://rouse.drkb.ru
 //  * Home Blog : http://alexander-bagel.blogspot.ru
@@ -30,7 +30,7 @@ Licence:
     >5 developers = $199 + $25 per developer from the 6th onwards
     site licence = $499 (unlimited number of developers affiliated with the owner of the licence, i.e. employees, co-workers, interns and contractors)
 
-  Please send an e-mail to rouse79@yandex.ru to request an invoice before or after payment is made. Payment may be
+  Please send an e-mail to hexview_sale@rousehome.ru to request an invoice before or after payment is made. Payment may be
   made via bank transfer. Bank details will be provided on the invoice.
 
   Support (via e-mail) is available for users with a commercial licence. Enhancement requests submitted by users with a
@@ -39,11 +39,8 @@ Licence:
 
 unit FWHexView.MappedView;
 
-{$UNDEF EXTENDED_RTL}
 {$IFDEF FPC}
   {$I FWHexViewConfig.inc}
-{$ELSE}
-  {$DEFINE EXTENDED_RTL}
 {$ENDIF}
 
 interface
@@ -55,7 +52,6 @@ uses
   Windows,
   Messages,
   UITypes,
-  Actions,
   {$ENDIF}
   SysUtils,
   Classes,
@@ -66,8 +62,6 @@ uses
   Generics.Collections,
   Themes,
   Types,
-  ActnList,
-  Menus,
   {$IFDEF USE_PROFILER}
   uni_profiler,
   {$ENDIF}
@@ -211,7 +205,7 @@ type
     FCurrentAddr, FSavedCurrentAddr: Int64;
     function AddMapLine(Value: TMapRow): Integer;
     procedure DataChange(Sender: TObject;
-      {$IFDEF EXTENDED_RTL}const{$ELSE}constref{$ENDIF} {%H-}Item: TMapRow;
+      {$IFDEF USE_CONSTREF}constref{$ELSE}const{$ENDIF} {%H-}Item: TMapRow;
       {%H-}Action: TCollectionNotification);
     procedure RebuildDataMap;
   protected
@@ -347,8 +341,8 @@ type
     procedure DrawDataPart(ACanvas: TCanvas; var ARect: TRect); override;
     function FormatRowColumn(AColumn: TColumnType;
       const Value: string): string; override;
-    procedure GetHitInfo(var AMouseHitInfo: TMouseHitInfo;
-      XPos, YPos: Int64); override;
+    procedure GetHitInfo(var AHitInfo: TMouseHitInfo); override;
+    function GetLinkBoundaries(out ABounds: TBoundaries): Boolean;
     function GetTextMetricClass: TAbstractTextMetricClass; override;
     function RawData: TMappedRawData; {$ifndef fpc} inline; {$endif}
     function TextMetric: TAbstractTextMetric; override;
@@ -361,8 +355,7 @@ type
   TRowMask = class(TRowWithExDescription)
   protected
     procedure DrawHexPart(ACanvas: TCanvas; var ARect: TRect); override;
-    procedure GetHitInfo(var AMouseHitInfo: TMouseHitInfo;
-      XPos, YPos: Int64); override;
+    procedure GetHitInfo(var AHitInfo: TMouseHitInfo); override;
   end;
 
   TRowAssembler = class(TRowWithExDescription)
@@ -491,101 +484,43 @@ type
     property Items[Index: Integer]: TVirtualPage read GetItem; default;
   end;
 
-  TViewShortCut = class(TPersistent)
-  private
-    FDefault: TShortCut;
-    FSecondaryShortCut: TShortCutList;
-    FShortCut: TShortCut;
-    function IsSecondaryStored: Boolean;
-    function IsShortSutStored: Boolean;
-    procedure SetSecondaryShortCut(const Value: TShortCutList);
-    function GetSecondaryShortCut: TShortCutList;
-  protected
-    procedure AssignTo(Dest: TPersistent); override;
-    function IsCustomViewShortCutStored: Boolean;
-  public
-    constructor Create(ADefault: TShortCut);
-    destructor Destroy; override;
-    function IsShortCut(Key: Word; Shift: TShiftState): Boolean;
-  published
-    property ShortCut: TShortCut read FShortCut write FShortCut stored IsShortSutStored;
-    property SecondaryShortCut: TShortCutList read GetSecondaryShortCut write SetSecondaryShortCut stored IsSecondaryStored;
-  end;
-
-  TViewShortCuts = class(TPersistent)
-  private
-    FJmpBack: TViewShortCut;
-    FJmpTo: TViewShortCut;
-    procedure SetJmpBack(const Value: TViewShortCut);
-    procedure SetJmpTo(const Value: TViewShortCut);
-    function IsJmpBackStored: Boolean;
-    function IsJmpToStored: Boolean;
-  protected
-    procedure AssignTo(Dest: TPersistent); override;
-    function IsShortCutsStored: Boolean; virtual;
-  public
-    constructor Create;
-    destructor Destroy; override;
-  published
-    property JmpBack: TViewShortCut read FJmpBack write SetJmpBack stored IsJmpBackStored;
-    property JmpTo: TViewShortCut read FJmpTo write SetJmpTo stored IsJmpToStored;
-  end;
-
-  TViewShortCutsClass = class of TViewShortCuts;
-
   TJmpData = record
     JmpFrom, JmpTo: Int64;
   end;
 
   TAddressToRowIndexMode = (armFindFirstRaw, armFindFirstAny);
-  TJmpState = (jsPushToUndo, jsPopFromUndo, jsRestorePopFromUndo, jsJmpDone);
-  TJmpToEvent = procedure(Sender: TObject; const AJmpAddr: Int64;
-    AJmpState: TJmpState; var Handled: Boolean) of object;
 
   { TCustomMappedHexView }
 
   TCustomMappedHexView = class(TFWCustomHexView)
   strict private
     FAddressToRowIndexMode: TAddressToRowIndexMode;
-    FCursorOnJmpMark: Boolean;
     FDataMap: TDataMap;
     FDrawIncomingJmp: Boolean;
     FJmpInitList: TList<Int64>;
     FJmpData: TObjectDictionary<Int64, TList<Int64>>;
     FPages: TVirtualPages;
-    FPreviosJmp: TList<Int64>;
-    FPreviosJmpIdx: Integer;
-    FShortCuts: TViewShortCuts;
-    FJmpToEvent: TJmpToEvent;
+    FLastInvalidAddrRect: TRect;
     function GetColorMap: TMapViewColors;
     procedure SetColorMap(const Value: TMapViewColors);
     procedure SetDrawIncomingJmp(const Value: Boolean);
-    procedure SetShortCuts(const Value: TViewShortCuts);
     procedure UpdateJumpList;
   protected
     function CalculateJmpToRow(JmpFromRow: Int64): Int64; virtual;
     procedure DoCaretKeyDown(var Key: Word; Shift: TShiftState); override;
+    procedure DoGetHint(var AHintParam: THintParam; var AHint: string); override;
     procedure DoInvalidateRange(AStartRow, AEndRow: Int64); override;
-    procedure DoJmpTo(ARowIndex: Int64; AJmpState: TJmpState);
-    function DoLButtonDown(Shift: TShiftState): Boolean; override;
+    function DoLButtonDown(const AHitInfo: TMouseHitInfo): Boolean; override;
     function GetColorMapClass: THexViewColorMapClass; override;
     function GetDefaultPainterClass: TPrimaryRowPainterClass; override;
     function GetRawDataClass: TRawDataClass; override;
-    function GetShortCutsClass: TViewShortCutsClass; virtual;
+    procedure HandleUserInputJump(ARowIndex: Int64);
     procedure InitPainters; override;
+    function IsJumpValid(AJmpToAddr: Int64): Boolean; virtual;
     function InternalGetRowPainter(ARowIndex: Int64): TAbstractPrimaryRowPainter; override;
-    function IsShortCutsStored: Boolean;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
-      X, Y: Integer); override;
-    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     function RawData: TMappedRawData; {$ifndef fpc} inline; {$endif}
-    procedure UpdateCursor(const HitTest: TMouseHitInfo); override;
     procedure UpdateDataMap; override;
-    {$IFNDEF FPC}
-    procedure WMXButtonDown(var Msg: TWMMouse); message WM_XBUTTONDOWN;
-    {$ENDIF}
   protected
-    property CursorOnJmpMark: Boolean read FCursorOnJmpMark write FCursorOnJmpMark;
     property JmpData: TObjectDictionary<Int64, TList<Int64>> read FJmpData;
     property JmpInitList: TList<Int64> read FJmpInitList;
   public
@@ -600,8 +535,6 @@ type
     property AddressToRowIndexMode: TAddressToRowIndexMode read FAddressToRowIndexMode write FAddressToRowIndexMode default armFindFirstRaw;
     property ColorMap: TMapViewColors read GetColorMap write SetColorMap stored IsColorMapStored;
     property DrawIncomingJmp: Boolean read FDrawIncomingJmp write SetDrawIncomingJmp default False;
-    property ShortCuts: TViewShortCuts read FShortCuts write SetShortCuts stored IsShortCutsStored;
-    property OnJmpTo: TJmpToEvent read FJmpToEvent write FJmpToEvent;
   end;
 
   TMappedHexView = class(TCustomMappedHexView)
@@ -671,6 +604,7 @@ type
     property OnEnter;
     property OnExit;
     property OnJmpTo;
+    property OnHint;
     property OnKeyDown;
     property OnKeyPress;
     property OnKeyUp;
@@ -1727,7 +1661,7 @@ begin
   end;
 end;
 
-function DefaultMapRowComparer({$IFDEF EXTENDED_RTL}const{$ELSE}constref{$ENDIF} A, B: TMapRow): Integer;
+function DefaultMapRowComparer({$IFDEF USE_CONSTREF}constref{$ELSE}const{$ENDIF} A, B: TMapRow): Integer;
 var
   LongResult: Int64;
 begin
@@ -1802,7 +1736,7 @@ begin
 end;
 
 procedure TDataMap.DataChange(Sender: TObject;
-  {$IFDEF EXTENDED_RTL}const{$ELSE}constref{$ENDIF} Item: TMapRow;
+  {$IFDEF USE_CONSTREF}constref{$ELSE}const{$ENDIF} Item: TMapRow;
   Action: TCollectionNotification);
 begin
   RebuildDataMap;
@@ -2107,22 +2041,18 @@ begin
     Result := inherited;
 end;
 
-procedure TRowWithExDescription.GetHitInfo(var AMouseHitInfo: TMouseHitInfo;
-  XPos, YPos: Int64);
+procedure TRowWithExDescription.GetHitInfo(var AHitInfo: TMouseHitInfo);
 var
-  LeftOffset: Integer;
+  ABounds: TBoundaries;
 begin
-  if AMouseHitInfo.SelectPoint.Column = ctDescription then
+  if AHitInfo.SelectPoint.Column = ctDescription then
   begin
-    if RawData[AMouseHitInfo.SelectPoint.RowIndex].LinkLength > 0 then
+    if GetLinkBoundaries(ABounds) then
     begin
-      LeftOffset := AMouseHitInfo.ColumnStart;
-      if XPos > LeftOffset + AMouseHitInfo.ColumnWidth - TextMargin then Exit;
-      Inc(LeftOffset, RawData[AMouseHitInfo.SelectPoint.RowIndex].LinkStart * CharWidth);
-      Inc(LeftOffset, TextMargin);
-      if XPos >= LeftOffset then
-        TCustomMappedHexView(Owner).CursorOnJmpMark := XPos < (LeftOffset +
-          RawData[AMouseHitInfo.SelectPoint.RowIndex].LinkLength * CharWidth);
+      Inc(ABounds.LeftOffset, AHitInfo.ColumnStart + TextMargin);
+      if AHitInfo.ScrolledCursorPos.X >= ABounds.LeftOffset then
+        if AHitInfo.ScrolledCursorPos.X < (ABounds.LeftOffset + ABounds.Width) then
+          AHitInfo.Cursor := crHandPoint;
     end;
   end
   else
@@ -2131,13 +2061,21 @@ end;
 
 function TRowWithExDescription.GetLineJmpMarkRect(const ARect: TRect): TRect;
 var
-  LeftOffset, MarkWidth: Integer;
+  ABounds: TBoundaries;
 begin
-  LeftOffset := RawData[RowIndex].LinkStart * CharWidth;
-  MarkWidth := RawData[RowIndex].LinkLength * CharWidth;
-  if LeftOffset + MarkWidth + DblSize(TextMargin) > ColumnWidth[ctDescription] then
-    MarkWidth := ColumnWidth[ctDescription] - DblSize(TextMargin) - LeftOffset;
-  Result := MakeSelectRect(ARect.Left + LeftOffset, ARect.Top, MarkWidth);
+  if GetLinkBoundaries(ABounds) then
+    Result := MakeSelectRect(ARect.Left + ABounds.LeftOffset, ARect.Top, ABounds.Width)
+  else
+    Result := TRect.Empty;
+end;
+
+function TRowWithExDescription.GetLinkBoundaries(out ABounds: TBoundaries): Boolean;
+begin
+  ABounds.LeftOffset := RawData[RowIndex].LinkStart * CharWidth;
+  ABounds.Width := RawData[RowIndex].LinkLength * CharWidth;
+  if ABounds.LeftOffset + ABounds.Width + DblSize(TextMargin) > ColumnWidth[ctDescription] then
+    ABounds.Width := ColumnWidth[ctDescription] - DblSize(TextMargin) - ABounds.LeftOffset;
+  Result := ABounds.Width > 0;
 end;
 
 function TRowWithExDescription.GetTextMetricClass: TAbstractTextMetricClass;
@@ -2194,18 +2132,18 @@ begin
   end;
 end;
 
-procedure TRowMask.GetHitInfo(var AMouseHitInfo: TMouseHitInfo; XPos,
-  YPos: Int64);
+procedure TRowMask.GetHitInfo(var AHitInfo: TMouseHitInfo);
 var
   AWidth, LeftOffset: Integer;
 begin
-  if AMouseHitInfo.SelectPoint.Column = ctOpcode then
+  if AHitInfo.SelectPoint.Column = ctOpcode then
   begin
     AWidth := ToDpi(3);
-    LeftOffset := AMouseHitInfo.ColumnStart +
+    LeftOffset := AHitInfo.ColumnStart +
       TextMetric.SelectionLength(ctOpcode, 1, RawData[RowIndex].RawLength) + AWidth;
-    TCustomMappedHexView(Owner).CursorOnJmpMark :=
-      (XPos >= LeftOffset) and (XPos <= LeftOffset + RowHeight + AWidth)
+    if (AHitInfo.ScrolledCursorPos.X >= LeftOffset) and
+      (AHitInfo.ScrolledCursorPos.X <= LeftOffset + RowHeight + AWidth) then
+      AHitInfo.Cursor := crHandPoint;
   end
   else
     inherited;
@@ -2309,11 +2247,11 @@ begin
   ACanvas.Font.Style := [];
   ACanvas.Font.Color := TMapViewColors(ColorMap).TextCommentColor;
   ADescription := RawData[RowIndex].Description;
-  DrawText(ACanvas, PChar(ADescription),
+  DrawText(ACanvas, ADescription,
     Length(ADescription), ARect, DT_CALCRECT);
   ACanvas.FillRect(ARect);
   CorrectCanvasFont(ACanvas, AColumn);
-  DrawText(ACanvas, PChar(ADescription),
+  DrawText(ACanvas, ADescription,
     Length(ADescription), ARect, DT_LEFT);
   ACanvas.Font.Style := [];
   {$IFDEF USE_PROFILER}if NeedProfile then uprof.Stop;{$ENDIF}
@@ -2526,7 +2464,7 @@ procedure TJumpLinesPostPainter.PostPaint(ACanvas: TCanvas;
   procedure Process(DrawOnlySelectedArrow: Boolean;
     JmpData: TObjectDictionary<Int64, TList<Int64>>);
   var
-    I, JmpLine: Int64;
+    I, JmpLine, JmpToAddr: Int64;
     A: Integer;
     Param: TDrawLineParam;
     IncomingJmps: TList<Int64>;
@@ -2539,7 +2477,8 @@ procedure TJumpLinesPostPainter.PostPaint(ACanvas: TCanvas;
     Param.LineColor := clDefault;
     Param.DrawOnlySelectedArrow := DrawOnlySelectedArrow;
     Param.Offset := Offset;
-    for I := StartRow to EndRow do
+    I := StartRow;
+    while I <= EndRow do
     begin
 
       // последняя строка может быть невидимой (часть затерта скролом)
@@ -2549,10 +2488,12 @@ procedure TJumpLinesPostPainter.PostPaint(ACanvas: TCanvas;
       if (I = EndRow) and not RowVisible(I) then Exit;
 
       if RawData[I].Style in [rsRawWithExDescription, rsAsm] then
-        if RawData[I].JmpToAddr <> 0 then
+      begin
+        JmpToAddr := RawData[I].JmpToAddr;
+        if JmpToAddr <> 0 then
         begin
           JmpLine := Owner.CalculateJmpToRow(I);
-          if JmpLine >= 0 then
+          if (JmpLine >= 0) or Owner.IsJumpValid(JmpToAddr) then
           begin
             Param.DirectionDown := JmpLine > I;
             Param.RowFrom := I;
@@ -2562,9 +2503,13 @@ procedure TJumpLinesPostPainter.PostPaint(ACanvas: TCanvas;
             Inc(PaintedLinesCount);
           end;
         end;
+      end;
 
       if not Owner.DrawIncomingJmp then
+      begin
+        Inc(I);
         Continue;
+      end;
 
       if RawData[I].Linked and JmpData.TryGetValue(I, IncomingJmps) then
         for A := 0 to IncomingJmps.Count - 1 do
@@ -2577,6 +2522,8 @@ procedure TJumpLinesPostPainter.PostPaint(ACanvas: TCanvas;
           DrawLine(ACanvas, Param);
           Inc(PaintedLinesCount);
         end;
+
+      Inc(I);
     end;
   end;
 
@@ -2821,7 +2768,7 @@ begin
   Result := FPages.Count;
 end;
 
-function VirtualPagesComparer({$IFDEF EXTENDED_RTL}const{$ELSE}constref{$ENDIF} A, B: TVirtualPage): Integer;
+function VirtualPagesComparer({$IFDEF USE_CONSTREF}constref{$ELSE}const{$ENDIF} A, B: TVirtualPage): Integer;
 begin
   if Int64(A.VirtualAddress) < Int64(B.VirtualAddress) then
     Result := -1
@@ -2901,129 +2848,6 @@ begin
   end;
 end;
 
-{ TViewShortCut }
-
-procedure TViewShortCut.AssignTo(Dest: TPersistent);
-begin
-  if Dest is TViewShortCut then
-  begin
-    if Assigned(TViewShortCut(Dest).SecondaryShortCut) then
-    begin
-      if Assigned(FSecondaryShortCut) then
-        TViewShortCut(Dest).SecondaryShortCut := SecondaryShortCut
-      else
-        TViewShortCut(Dest).SecondaryShortCut.Clear;
-    end;
-    TViewShortCut(Dest).FShortCut := FShortCut;
-  end
-  else
-    inherited;
-end;
-
-constructor TViewShortCut.Create(ADefault: TShortCut);
-begin
-  FDefault := ADefault;
-  FShortCut := ADefault;
-end;
-
-destructor TViewShortCut.Destroy;
-begin
-  FSecondaryShortCut.Free;
-  inherited;
-end;
-
-function TViewShortCut.GetSecondaryShortCut: TShortCutList;
-begin
-  if FSecondaryShortCut = nil then
-    FSecondaryShortCut := TShortCutList.Create;
-  Result := FSecondaryShortCut;
-end;
-
-function TViewShortCut.IsCustomViewShortCutStored: Boolean;
-begin
-  Result := IsSecondaryStored or IsShortSutStored;
-end;
-
-function TViewShortCut.IsSecondaryStored: Boolean;
-begin
-  Result := Assigned(FSecondaryShortCut) and (FSecondaryShortCut.Count > 0);
-end;
-
-function TViewShortCut.IsShortCut(Key: Word; Shift: TShiftState): Boolean;
-var
-  AShortCut: TShortCut;
-  I: Integer;
-begin
-  Result := False;
-  AShortCut := Menus.ShortCut(Key, Shift);
-  if ShortCut = AShortCut then Exit(True);
-  if FSecondaryShortCut = nil then Exit;
-  for I := 0 to FSecondaryShortCut.Count - 1 do
-    if FSecondaryShortCut.ShortCuts[I] = AShortCut then
-      Exit(True);
-end;
-
-function TViewShortCut.IsShortSutStored: Boolean;
-begin
-  Result := ShortCut <> FDefault;
-end;
-
-procedure TViewShortCut.SetSecondaryShortCut(const Value: TShortCutList);
-begin
-  SecondaryShortCut.Assign(Value);
-end;
-
-{ TViewShortCuts }
-
-procedure TViewShortCuts.AssignTo(Dest: TPersistent);
-begin
-  if Dest is TViewShortCuts then
-  begin
-    TViewShortCuts(Dest).JmpBack := JmpBack;
-    TViewShortCuts(Dest).JmpTo := JmpTo;
-  end
-  else
-    inherited;
-end;
-
-constructor TViewShortCuts.Create;
-begin
-  FJmpBack := TViewShortCut.Create(VK_BACK);
-  FJmpTo := TViewShortCut.Create(VK_RETURN);
-end;
-
-destructor TViewShortCuts.Destroy;
-begin
-  FJmpBack.Free;
-  FJmpTo.Free;
-  inherited;
-end;
-
-function TViewShortCuts.IsJmpBackStored: Boolean;
-begin
-  Result := JmpBack.IsCustomViewShortCutStored
-end;
-
-function TViewShortCuts.IsJmpToStored: Boolean;
-begin
-  Result := JmpTo.IsCustomViewShortCutStored;
-end;
-
-function TViewShortCuts.IsShortCutsStored: Boolean;
-begin
-  Result := IsJmpBackStored or IsJmpToStored;
-end;
-
-procedure TViewShortCuts.SetJmpBack(const Value: TViewShortCut);
-begin
-  FJmpBack.Assign(Value);
-end;
-
-procedure TViewShortCuts.SetJmpTo(const Value: TViewShortCut);
-begin
-  FJmpTo.Assign(Value);
-end;
-
 { TCustomMappedHexView }
 
 function TCustomMappedHexView.CalculateJmpToRow(JmpFromRow: Int64): Int64;
@@ -3043,12 +2867,44 @@ begin
   if ShortCuts.JmpTo.IsShortCut(Key, Shift) then
   begin
     RowIndex := SelectedRowIndex;
-    if RowIndex < 0 then Exit;
-    if RawData[RowIndex].JmpToAddr = 0 then Exit;
-    DoJmpTo(RowIndex, jsPushToUndo);
+    if (RowIndex >= 0) and (RawData[RowIndex].JmpToAddr > 0) then
+    begin
+      HandleUserInputJump(RowIndex);
+      Exit;
+    end;
   end;
-  if ShortCuts.JmpBack.IsShortCut(Key, Shift) then
-    DoJmpTo(0, jsPopFromUndo);
+  inherited;
+end;
+
+procedure TCustomMappedHexView.DoGetHint(var AHintParam: THintParam;
+  var AHint: string);
+var
+  AddrVA: Int64;
+  Painter: TAbstractPrimaryRowPainter;
+  ABounds: TBoundaries;
+begin
+  if AHintParam.MouseHitInfo.SelectPoint.Column <> ctDescription then Exit;
+  if PtInRect(FLastInvalidAddrRect, AHintParam.MouseHitInfo.CursorPos) then Exit;
+  AddrVA := RawData[AHintParam.MouseHitInfo.SelectPoint.RowIndex].JmpToAddr;
+  if AddrVA = 0 then
+  begin
+    FLastInvalidAddrRect := AHintParam.HintInfo.CursorRect;
+    Exit;
+  end;
+  Painter := GetRowPainter(AHintParam.MouseHitInfo.SelectPoint.RowIndex);
+  if Assigned(Painter) and (Painter is TRowWithExDescription) then
+  begin
+    AHintParam.AddrVA := AddrVA;
+    if TRowWithExDescription(Painter).GetLinkBoundaries(ABounds) then
+    begin
+      AHintParam.HintInfo.CursorRect.Left :=
+        AHintParam.MouseHitInfo.ColumnStart + TextMargin + ABounds.LeftOffset;
+      AHintParam.HintInfo.CursorRect.Width := ABounds.Width;
+      if not PtInRect(AHintParam.HintInfo.CursorRect, AHintParam.MouseHitInfo.CursorPos) then Exit;
+      FLastInvalidAddrRect := TRect.Empty;
+      inherited;
+    end;
+  end;
 end;
 
 procedure TCustomMappedHexView.ClearDataMap;
@@ -3062,18 +2918,14 @@ begin
   inherited;
   FDataMap := TDataMap.Create(Self);
   FPages := TVirtualPages.Create(Self);
-  FPreviosJmp := TList<Int64>.Create;
   FJmpInitList := TList<Int64>.Create;
   FJmpData := TObjectDictionary<Int64, TList<Int64>>.Create([doOwnsValues]);
-  FShortCuts := GetShortCutsClass.Create;
 end;
 
 destructor TCustomMappedHexView.Destroy;
 begin
-  FShortCuts.Free;
   FJmpData.Free;
   FJmpInitList.Free;
-  FPreviosJmp.Free;
   FPages.Free;
   FDataMap.Free;
   inherited;
@@ -3091,86 +2943,28 @@ begin
   // into the selection, you need to redraw the entire view.
 
   if ctJmpLine in Header.Columns then
-    for I := AStartRow to AEndRow do
+  begin
+    I := AStartRow;
+    while I <= AEndRow do
+    begin
       with RawData[I] do
         if (JmpToAddr <> 0) or Linked then
         begin
           Invalidate;
           Exit;
         end;
+      Inc(I);
+    end;
+  end;
 
   inherited;
 end;
 
-procedure TCustomMappedHexView.DoJmpTo(ARowIndex: Int64; AJmpState: TJmpState);
-var
-  Handled: Boolean;
-  JmpAddr: Int64;
-  NewRowIndex: Int64;
+function TCustomMappedHexView.DoLButtonDown(const AHitInfo: TMouseHitInfo): Boolean;
 begin
-  Handled := False;
-
-  if RawData[ARowIndex].Style = rsMask then
-  begin
-    DataMap.Data.List[RawData.MapRowIndex].Expanded := not RawData.Expanded;
-    ClearSelection;
-    UpdateDataMap;
-    UpdateTextBoundary;
-    UpdateScrollPos;
-    Invalidate;
-    Exit;
-  end;
-
-  if AJmpState = jsPushToUndo then
-    JmpAddr := RawData[ARowIndex].JmpToAddr
-  else
-    JmpAddr := -1;
-  if Assigned(FJmpToEvent) then
-    FJmpToEvent(Self, JmpAddr, AJmpState, Handled);
-  if Handled then Exit;
-
-  case AJmpState of
-    jsPushToUndo:
-    begin
-      // прыжки делются в два шага для восстановления
-      // состояния экрана на откате
-
-      // jumps are divided in two steps to restore the screen state on rollback
-
-      FPreviosJmp.Count := FPreviosJmpIdx;
-      FPreviosJmp.Add(ARowIndex);
-      FPreviosJmp.Add(CurrentVisibleRow);
-      Inc(FPreviosJmpIdx, 2);
-      FocusOnAddress(RawData[ARowIndex].JmpToAddr, ccmSelectRow);
-    end;
-    jsPopFromUndo:
-    begin
-      if FPreviosJmpIdx = 0 then Exit;
-      NewRowIndex := FPreviosJmp[FPreviosJmpIdx - 1];
-      FocusOnAddress(RawData[NewRowIndex].Address, ccmNone);
-      NewRowIndex := FPreviosJmp[FPreviosJmpIdx - 2];
-      Dec(FPreviosJmpIdx, 2);
-      FocusOnAddress(RawData[NewRowIndex].Address, ccmSelectRow);
-    end;
-    jsRestorePopFromUndo:
-    begin
-      if FPreviosJmpIdx >= FPreviosJmp.Count then Exit;
-      Inc(FPreviosJmpIdx, 2);
-      NewRowIndex := FPreviosJmp[FPreviosJmpIdx - 2];
-      JmpAddr := RawData[NewRowIndex].JmpToAddr;
-      FocusOnAddress(JmpAddr, ccmSelectRow);
-    end;
-  end;
-
-  if Assigned(FJmpToEvent) then
-    FJmpToEvent(Self, JmpAddr, jsJmpDone, Handled);
-end;
-
-function TCustomMappedHexView.DoLButtonDown(Shift: TShiftState): Boolean;
-begin
-  Result := CursorOnJmpMark;
+  Result := AHitInfo.Cursor = crHandPoint;
   if Result then
-    DoJmpTo(MousePressedHitInfo.SelectPoint.RowIndex, jsPushToUndo);
+    HandleUserInputJump(MousePressedHitInfo.SelectPoint.RowIndex);
 end;
 
 procedure TCustomMappedHexView.FitColumnToBestSize(Value: TColumnType);
@@ -3206,9 +3000,19 @@ begin
   Result := TMappedRawData;
 end;
 
-function TCustomMappedHexView.GetShortCutsClass: TViewShortCutsClass;
+procedure TCustomMappedHexView.HandleUserInputJump(ARowIndex: Int64);
 begin
-  Result := TViewShortCuts;
+  if RawData[ARowIndex].Style = rsMask then
+  begin
+    DataMap.Data.List[RawData.MapRowIndex].Expanded := not RawData.Expanded;
+    ClearSelection;
+    UpdateDataMap;
+    UpdateTextBoundary;
+    UpdateScrollPos;
+    Invalidate;
+  end
+  else
+    JumpToAddress(RawData[ARowIndex].JmpToAddr);
 end;
 
 procedure TCustomMappedHexView.InitPainters;
@@ -3245,27 +3049,9 @@ begin
   end;
 end;
 
-function TCustomMappedHexView.IsShortCutsStored: Boolean;
+function TCustomMappedHexView.IsJumpValid(AJmpToAddr: Int64): Boolean;
 begin
-  Result := ShortCuts.IsShortCutsStored;
-end;
-
-procedure TCustomMappedHexView.MouseDown(Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  inherited;
-  {$IFDEF FPC}
-  case Button of
-    mbExtra1: DoJmpTo(0, jsPopFromUndo);
-    mbExtra2: DoJmpTo(0, jsRestorePopFromUndo);
-  end;
-  {$ENDIF}
-end;
-
-procedure TCustomMappedHexView.MouseMove(Shift: TShiftState; X, Y: Integer);
-begin
-  inherited;
-  CursorOnJmpMark := False;
+  Result := AddressToRowIndex(AJmpToAddr) >= 0;
 end;
 
 function TCustomMappedHexView.RawData: TMappedRawData;
@@ -3291,19 +3077,6 @@ begin
     UpdateJumpList;
     Invalidate;
   end;
-end;
-
-procedure TCustomMappedHexView.SetShortCuts(const Value: TViewShortCuts);
-begin
-  FShortCuts.Assign(Value);
-end;
-
-procedure TCustomMappedHexView.UpdateCursor(const HitTest: TMouseHitInfo);
-begin
-  if CursorOnJmpMark then
-    Cursor := crHandPoint
-  else
-    inherited;
 end;
 
 procedure TCustomMappedHexView.UpdateDataMap;
@@ -3343,18 +3116,5 @@ begin
     end;
   end;
 end;
-
-{$IFNDEF FPC}
-procedure TCustomMappedHexView.WMXButtonDown(var Msg: TWMMouse);
-const
-  MK_XBUTTON1 = $20;
-  MK_XBUTTON2 = $40;
-begin
-  case Word(Msg.Keys) of
-    MK_XBUTTON1: DoJmpTo(0, jsPopFromUndo);
-    MK_XBUTTON2: DoJmpTo(0, jsRestorePopFromUndo);
-  end;
-end;
-{$ENDIF}
 
 end.

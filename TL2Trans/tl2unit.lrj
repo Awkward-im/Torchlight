@@ -28,6 +28,9 @@
 {"hash":4710148,"name":"tmaintl2transform.fileexit.caption","sourcebytes":[69,38,120,105,116],"value":"E&xit"},
 {"hash":56290829,"name":"tmaintl2transform.fileexit.hint","sourcebytes":[69,120,105,116,32,112,114,111,103,114,97,109],"value":"Exit program"},
 {"hash":90505615,"name":"tmaintl2transform.actmodinfo.caption","sourcebytes":[77,111,100,32,73,110,102,111],"value":"Mod Info"},
+{"hash":210793407,"name":"tmaintl2transform.actmodinfo.hint","sourcebytes":[83,104,111,119,32,109,111,100,32,105,110,102,111],"value":"Show mod info"},
+{"hash":258570439,"name":"tmaintl2transform.actshowlog.caption","sourcebytes":[83,104,111,119,32,108,111,103],"value":"Show log"},
+{"hash":21612295,"name":"tmaintl2transform.actshowlog.hint","sourcebytes":[83,104,111,119,32,108,111,103,32,119,105,110,100,111,119],"value":"Show log window"},
 {"hash":2805797,"name":"tmaintl2transform.mifile.caption","sourcebytes":[38,70,105,108,101],"value":"&File"},
 {"hash":2812976,"name":"tmaintl2transform.mihelp.caption","sourcebytes":[38,72,101,108,112],"value":"&Help"},
 {"hash":158450869,"name":"tmaintl2transform.mnuclosepage.caption","sourcebytes":[67,108,111,115,101,32,80,97,103,101],"value":"Close Page"}

@@ -9,7 +9,6 @@ object MainTL2TransForm: TMainTL2TransForm
   KeyPreview = True
   Menu = TL2MainMenu
   ShowHint = True
-  LCLVersion = '3.99.0.0'
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
@@ -144,44 +143,44 @@ object MainTL2TransForm: TMainTL2TransForm
       Action = FileOpen
     end
     object tbFileSave: TToolButton
-      Left = 73
+      Left = 96
       Top = 2
       Action = FileSave
     end
     object tbModInfo: TToolButton
-      Left = 96
+      Left = 119
       Top = 2
       Action = actModInfo
     end
     object tbSeparator1: TToolButton
-      Left = 142
-      Height = 8
+      Left = 165
+      Height = 22
       Top = 2
       Style = tbsSeparator
     end
     object tbFontEdit: TToolButton
-      Left = 150
+      Left = 173
       Top = 2
       Action = FontEdit
     end
     object tbSeparator2: TToolButton
-      Left = 173
-      Height = 8
+      Left = 196
+      Height = 22
       Top = 2
       Style = tbsSeparator
     end
     object tbHelpAbout: TToolButton
-      Left = 181
+      Left = 204
       Top = 2
       Action = HelpAbout
     end
     object tbHelpNotes: TToolButton
-      Left = 204
+      Left = 227
       Top = 2
       Action = HelpNotes
     end
     object tbBuild: TToolButton
-      Left = 119
+      Left = 142
       Top = 2
       Action = FileBuild
     end
@@ -189,6 +188,11 @@ object MainTL2TransForm: TMainTL2TransForm
       Left = 27
       Top = 2
       Action = FileScan
+    end
+    object tbShowLog: TToolButton
+      Left = 73
+      Top = 2
+      Action = actShowLog
     end
   end
   object TL2ActionList: TActionList
@@ -287,8 +291,15 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object actModInfo: TAction
       Caption = 'Mod Info'
+      Hint = 'Show mod info'
       ImageIndex = 16
       OnExecute = actModInfoExecute
+    end
+    object actShowLog: TAction
+      Caption = 'Show log'
+      Hint = 'Show log window'
+      ImageIndex = 20
+      OnExecute = actShowLogExecute
     end
   end
   object TL2MainMenu: TMainMenu
@@ -332,6 +343,9 @@ object MainTL2TransForm: TMainTL2TransForm
       Caption = '&Help'
       object MenuItem1: TMenuItem
         Action = HelpNotes
+      end
+      object MenuItem2: TMenuItem
+        Action = actShowLog
       end
       object miHelpAbout: TMenuItem
         Action = HelpAbout

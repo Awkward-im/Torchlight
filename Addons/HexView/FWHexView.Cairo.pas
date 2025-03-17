@@ -5,7 +5,7 @@
 //  * Unit Name : FWHexView.Cairo.pas
 //  * Purpose   : Speeding up text output with the Cairo library
 //  * Author    : Alexander (Rouse_) Bagel
-//  * Copyright : © Fangorn Wizards Lab 1998 - 2024.
+//  * Copyright : © Fangorn Wizards Lab 1998 - 2025.
 //  * Version   : 2.0.14
 //  * Home Page : http://rouse.drkb.ru
 //  * Home Blog : http://alexander-bagel.blogspot.ru
@@ -30,7 +30,7 @@ Licence:
     >5 developers = $199 + $25 per developer from the 6th onwards
     site licence = $499 (unlimited number of developers affiliated with the owner of the licence, i.e. employees, co-workers, interns and contractors)
 
-  Please send an e-mail to rouse79@yandex.ru to request an invoice before or after payment is made. Payment may be
+  Please send an e-mail to hexview_sale@rousehome.ru to request an invoice before or after payment is made. Payment may be
   made via bank transfer. Bank details will be provided on the invoice.
 
   Support (via e-mail) is available for users with a commercial licence. Enhancement requests submitted by users with a
@@ -170,6 +170,12 @@ begin
       cairo_clip(ct);
     end;
     cairo_text_extents(ct, PChar(Str), @textents);
+    if Flags and DT_CALCRECT <> 0 then
+    begin
+      ARect.Width := Ceil(textents.width);
+      ARect.Height := Ceil(textents.height);
+      Exit;
+    end;
     awidth := Ceil(textents.width);
     if Flags and DT_CENTER <> 0 then
       x := ARect.Left + (ARect.Width - awidth) div 2;
@@ -227,10 +233,7 @@ begin
     begin
       cairo_rectangle(ct, ARect^.Left, ARect^.Top, ARect^.Width + 1, ARect^.Height);
       if ACanvas.Brush.Style = bsSolid then
-      begin
-        ARect^.Right := X + 2;
         ACanvas.FillRect(ARect^);
-      end;
       if Options and ETO_CLIPPED <> 0 then
         cairo_clip(ct);
     end;

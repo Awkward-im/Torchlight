@@ -169,6 +169,46 @@ msgctxt "tl2projectform.rsnowarnings"
 msgid "No any warnings"
 msgstr "Никаких предупреждений нет"
 
+#: tl2projectform.rsprojectstat
+msgid "Project statistic"
+msgstr "Статистика проекта"
+
+#: tl2projectform.rssbtext
+#, object-pascal-format
+msgctxt "tl2projectform.rssbtext"
+msgid "Project files: %d; tags: %d; lines: %d | Translated: %d; partially: %d | Doubles: %d"
+msgstr "Файлов проекта: %d; тегов: %d; строк: %d | Переведено: %d; частично: %d | Дублей: %d"
+
+#: tl2projectform.rsstattext
+#, object-pascal-format
+msgctxt "tl2projectform.rsstattext"
+msgid ""
+"Project files: %d\n"
+" tags: %d\n"
+" lines: %d\n"
+"Translated: %d\n"
+" partially: %d\n"
+"Doubles: %d"
+msgstr ""
+"Файлов проекта: %d\n"
+" тегов: %d\n"
+" строк: %d\n"
+"Переведено: %d\n"
+" частично: %d\n"
+"Дублей: %d"
+
+#: tl2projectform.rsstattextnoref
+#, object-pascal-format
+msgctxt "tl2projectform.rsstattextnoref"
+msgid ""
+"Lines: %d\n"
+"Translated: %d\n"
+"Partially: %d"
+msgstr ""
+"Строк: %d\n"
+"Переведено: %d\n"
+"Частично: %d"
+
 #: tl2projectform.saffected
 msgid " line(s) affected"
 msgstr " строк(а/и) исправлено"
@@ -212,12 +252,6 @@ msgstr "Всего замен"
 #: tl2projectform.sroot
 msgid "-- Root --"
 msgstr "-- Корень  --"
-
-#: tl2projectform.ssbtext
-#, object-pascal-format
-msgctxt "tl2projectform.ssbtext"
-msgid "Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
-msgstr "Файлов проекта: %d; тэгов: %d; строк: %d | Переведено: %d; частично: %d | Дублей: %d"
 
 #: tl2projectform.sstopscan
 msgid "Do you want to break scan? It clear full scan process."
@@ -344,6 +378,18 @@ msgstr "Выбранная папка не выглядит как мод (не�
 #: tmaintl2transform.actmodinfo.caption
 msgid "Mod Info"
 msgstr "Информация о моде"
+
+#: tmaintl2transform.actmodinfo.hint
+msgid "Show mod info"
+msgstr "Показать информацию о моде"
+
+#: tmaintl2transform.actshowlog.caption
+msgid "Show log"
+msgstr "Показать лог"
+
+#: tmaintl2transform.actshowlog.hint
+msgid "Show log window"
+msgstr "Показать окно лога"
 
 #: tmaintl2transform.caption
 msgctxt "tmaintl2transform.caption"

@@ -5,7 +5,7 @@
 //  * Unit Name : FWHexView.Common.pas
 //  * Purpose   : Common auxiliary code for all classes
 //  * Author    : Alexander (Rouse_) Bagel
-//  * Copyright : © Fangorn Wizards Lab 1998 - 2024.
+//  * Copyright : © Fangorn Wizards Lab 1998 - 2025.
 //  * Version   : 2.0.14
 //  * Home Page : http://rouse.drkb.ru
 //  * Home Blog : http://alexander-bagel.blogspot.ru
@@ -30,7 +30,7 @@ Licence:
     >5 developers = $199 + $25 per developer from the 6th onwards
     site licence = $499 (unlimited number of developers affiliated with the owner of the licence, i.e. employees, co-workers, interns and contractors)
 
-  Please send an e-mail to rouse79@yandex.ru to request an invoice before or after payment is made. Payment may be
+  Please send an e-mail to hexview_sale@rousehome.ru to request an invoice before or after payment is made. Payment may be
   made via bank transfer. Bank details will be provided on the invoice.
 
   Support (via e-mail) is available for users with a commercial licence. Enhancement requests submitted by users with a
@@ -52,6 +52,7 @@ uses
   {$IFDEF FPC}
   LCLType,
   LCLIntf,
+  LazUTF8,
   {$ELSE}
   Classes,
   UITypes,
@@ -71,6 +72,13 @@ uses
 {$IFDEF FPC}
 type
   TArithmeticExceptionMask = TFPUExceptionMask;
+
+  { TLazUTF8Encoding }
+
+  TLazUTF8Encoding = class(TUTF8Encoding)
+  protected
+    function GetCharCount(Bytes: PByte; ByteCount: Integer): Integer; overload; override;
+  end;
 
 const
   exAllArithmeticExceptions = [
@@ -92,7 +100,10 @@ type
   {$ENDIF}
   end;
 
-type
+  TBoundaries = record
+    LeftOffset, Width: Integer;
+  end;
+
   ///<summary> TAddressMode - 8/16/32/64 bit address display mode. </summary>
   TAddressMode = (am8bit, am16bit, am32bit, am64bit);
   ///<summary> TAddressView - HEX/Decimal address display mode. </summary>
@@ -172,6 +183,7 @@ type
     Align: Boolean;
     Inverted: Boolean;
     Divide: Boolean;
+    Divider: Char;
   end;
 
 const
@@ -179,6 +191,7 @@ const
     Align: True;        // aligning the result to the metric value
     Inverted: False;    // parts of the result are inverted
     Divide: False;      // separators have been added between parts
+    Divider: ' ';
   );
 
   RegFormatMode: TFormatMode = (
@@ -189,6 +202,7 @@ const
     Inverted: True;
     {$ENDIF}
     Divide: True;
+    Divider: ' ';
   );
 
   RegFormatModeNoAlign: TFormatMode = (
@@ -199,6 +213,7 @@ const
     Inverted: True;
     {$ENDIF}
     Divide: False;
+    Divider: ' ';
   );
 
   // HexView Change Codes
@@ -230,6 +245,9 @@ const
   function RawBufToPasArray(Value: PByte; nSize: Integer): string;
   procedure PatBlt(ACanvas: TCanvas; ALeft, ATop, AWidth, AHeight, ARop: Integer);{$IFNDEF FPC}inline;{$ENDIF}
   function IsColorRefDark(Value: LongInt): Boolean;
+  function UTF8ByteCount(p: PChar; CharCount: Integer): Integer; inline;
+  function UTF8Copy(const s: string; StartCharIndex, CharCount: Integer): string; inline;
+  function UTF8StringLength(const Value: string): Integer; inline;
 
 type
   TScrollDirection = (sdLeft, sdRight, sdUp, sdDown);
@@ -314,7 +332,11 @@ function DrawText(ACanvas: TCanvas; Str: string; Count: Integer;
   var ARect: TRect; Flags: Cardinal): Integer;
 begin
   {$IFDEF MSWINDOWS}
-  Result := Windows.DrawText(ACanvas.Handle, PChar(Str), Count, ARect, Flags);
+    {$IFDEF FPC}
+    Result := Windows.DrawTextW(ACanvas.Handle, PWideChar(UnicodeString(Str)), -1, ARect, Flags);
+    {$ELSE}
+    Result := Windows.DrawText(ACanvas.Handle, PChar(Str), Count, ARect, Flags);
+    {$ENDIF}
   {$ENDIF}
   {$IFDEF LINUX}
     {$IFDEF USE_CAIRO}
@@ -554,7 +576,7 @@ begin
       Buff := 0;
       Move(Value[I], Buff, Metric.ByteCount);
       if (I > 0) and FormatMode.Divide then
-        Builder.Append(' ');
+        Builder.Append(FormatMode.Divider);
       Builder.Append(ValueString(Buff));
       Inc(I, Metric.ByteCount);
     end;
@@ -579,6 +601,7 @@ function RawBufToSingle(Value: PByte; nSize: Integer;
       Result := '0'
     else
       Result := FloatToStr(Value);
+    Result := StringReplace(Result, ',', '.', [rfReplaceAll]);
     if FormatMode.Align then
       Result := StringOfChar(' ', Metric.CharCount - Length(Result)) + Result;
   end;
@@ -597,7 +620,7 @@ begin
       Buff := 0;
       Move(Value[I], Buff, Metric.ByteCount);
       if (I > 0) and FormatMode.Divide then
-        Builder.Append(' ');
+        Builder.Append(FormatMode.Divider);
       Builder.Append(ValueString(Buff));
       Inc(I, Metric.ByteCount);
     end;
@@ -640,7 +663,7 @@ begin
       Buff := 0;
       Move(Value[I], Buff, Metric.ByteCount);
       if (I > 0) and FormatMode.Divide then
-        Builder.Append(' ');
+        Builder.Append(FormatMode.Divider);
       Builder.Append(ValueString(Buff));
       Inc(I, Metric.ByteCount);
     end;
@@ -680,7 +703,7 @@ begin
       FillChar(Buff{%H-}, SizeOf(TExtended80Support), 0);
       Move(Value[I], Buff, Metric.ByteCount);
       if (I > 0) and FormatMode.Divide then
-        Builder.Append(' ');
+        Builder.Append(FormatMode.Divider);
       Builder.Append(ValueString(Buff));
       Inc(I, Metric.ByteCount);
     end;
@@ -857,6 +880,43 @@ begin
     GetBValue(Value) * 11)  div 100 <= 130;
 end;
 
+function UTF8ByteCount(p: PChar; CharCount: Integer): Integer;
+{$IFDEF FPC}
+var
+  I, CharLen: LongInt;
+begin
+  Result := 0;
+  for I := 0 to CharCount - 1 do
+  begin
+    CharLen := UTF8CodepointSize(p);
+    Inc(p, CharLen);
+    Inc(Result, CharLen);
+  end;
+end;
+{$ELSE}
+begin
+  Result := CharCount
+end;
+{$ENDIF}
+
+function UTF8Copy(const s: string; StartCharIndex, CharCount: Integer): string;
+begin
+  {$IFDEF FPC}
+  Result := LazUTF8.UTF8Copy(s, StartCharIndex, CharCount);
+  {$ELSE}
+  Result := Copy(s, StartCharIndex, CharCount);
+  {$ENDIF}
+end;
+
+function UTF8StringLength(const Value: string): Integer;
+begin
+  {$IFDEF FPC}
+  Result := UTF8Length(Value);
+  {$ELSE}
+  Result := Length(Value);
+  {$ENDIF}
+end;
+
 procedure DrawArrow(ACanvas: TCanvas; Direction: TScrollDirection;
   Location: TPoint; Size: Integer);
 const
@@ -886,6 +946,36 @@ begin
     Brush.Color := OldColor;
   end;
 end;
+
+{$IFDEF FPC}
+
+{ TLazUTF8Encoding }
+
+function TLazUTF8Encoding.GetCharCount(Bytes: PByte; ByteCount: Integer): Integer;
+{$IFDEF MSWINDOWS}
+const
+  MB_ERR_INVALID_CHARS = 8;
+begin
+  // See: https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar
+  // For UTF-8 or code page 54936 (GB18030, starting with Windows Vista),
+  // dwFlags must be set to either 0 or MB_ERR_INVALID_CHARS. Otherwise, the function fails with ERROR_INVALID_FLAGS.
+
+  // But, if MB_ERR_INVALID_CHARS is not set, MultiByteToWideChar will return
+  // ONE (!!!) on Russian characters (e.g. "Р") when ByteCount = 1, which is not correct.
+
+  Result := MultiByteToWideChar(CodePage, MB_ERR_INVALID_CHARS, PChar(Bytes), ByteCount, nil, 0);
+{$ELSE}
+var
+  uBuff: UnicodeString;
+begin
+  widestringmanager.Ansi2UnicodeMoveProc(PAnsiChar(Bytes), CodePage, uBuff, ByteCount);
+  Result := Length(uBuff);
+  if (Result > 0) and (uBuff[1] = '?') and (Bytes^ <> Byte('?')) then
+    Result := 0;
+{$ENDIF}
+end;
+
+{$ENDIF}
 
 { TSimplyStringBuilder }
 

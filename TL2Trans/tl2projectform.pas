@@ -102,7 +102,7 @@ type
     procedure PasteFromClipBrd();
     procedure FillProjectGrid(const afilter: AnsiString);
     function  FillProjectSGRow(aRow, idx: integer; const afilter: AnsiString): boolean;
-    function  GetStatusText:AnsiString;
+    procedure ShowStatistic();
     procedure ReBoundEditor;
     procedure Search(const atext: AnsiString; aRow: integer);
     procedure SetCellText(arow: integer; const atext: AnsiString);
@@ -121,7 +121,6 @@ type
     procedure MoveToIndex(idx: integer);
     procedure UpdateGrid(idx: integer);
 
-    property StatusBarText:AnsiString read GetStatusText;
     property OnSBUpdate:TSBUpdateEvent read FSBUpdate write FSBUpdate;
   end;
 
@@ -152,8 +151,14 @@ resourcestring
 //  sBuildWrite     = 'Build translation in file.';
   sReplaces       = 'Total replaces';
   sTransFileError = 'Error %d in translation file %s, line %d:'#13#10'%s';
-  sSBText         = 'Project files: %d; tags: %d; lines: %d | ' +
-                    'Translated: %d; patially: %d | Doubles: %d';
+
+  rsProjectStat   = 'Project statistic';
+  rsSBText        = 'Project files: %d; tags: %d; lines: %d | ' +
+                    'Translated: %d; partially: %d | Doubles: %d';
+  rsStatText      = 'Project files: %d'#13#10' tags: %d'#13#10' lines: %d'#13#10 +
+                    'Translated: %d'#13#10' partially: %d'#13#10'Doubles: %d';
+  rsStatTextNoRef = 'Lines: %d'#13#10'Translated: %d'#13#10'Partially: %d';
+
   sImporting      = 'Importing';
   sCheckLine      = 'Check importing translations';
   sDoDelete       = 'Are you sure to delete selected line(s)?'#13#10+
@@ -195,24 +200,28 @@ begin
     doStopScan:=MessageDlg(sStopScan,mtWarning,mbYesNo,0,mbNo)=mrYes;
 end;
 
-function TTL2Project.GetStatusText:AnsiString;
+procedure TTL2Project.ShowStatistic();
 var
   ltyp:tTextStatus;
-  i,lcnt,lc:integer;
+  i,lpart,lready:integer;
 begin
-  lcnt:=0;
-  lc  :=0;
+  lpart :=0;
+  lready:=0;
   for i:=0 to data.LineCount-1 do
   begin
     ltyp:=data.State[i];
-    if      (ltyp=stPartial) then inc(lcnt)
-    else if (ltyp=stReady  ) then inc(lc);
+    if      (ltyp=stPartial) then inc(lpart)
+    else if (ltyp=stReady  ) then inc(lready);
   end;
 
-  result:=Format(sSBText,
-    [data.refs.FileCount,data.refs.TagCount,
-     data.LineCount,lc,lcnt,
-     data.Refs.RefCount-data.LineCount]);
+  if data.Refs.RefCount=0 then
+    MessageDlg(rsProjectStat,Format(rsStatTextNoRef,
+      [data.LineCount,lready,lpart]),mtInformation,[mbOk],'')
+  else
+    MessageDlg(rsProjectStat,Format(rsStatText,
+      [data.refs.FileCount,data.refs.TagCount,
+       data.LineCount,lready,lpart,
+       data.Refs.RefCount-data.LineCount]),mtInformation,[mbOk],'');
 end;
 
 procedure TTL2Project.Search(const atext:AnsiString; aRow:integer);
@@ -803,10 +812,11 @@ begin
     DoImport(TL2Settings.edDefaultFile.Text,BaseTranslation);
 
     Modified:=true;
-    OnSBUpdate(Self);
+//    OnSBUpdate(Self);
     pnlFolders.Visible:=true;
     FillFoldersCombo(true); // calls   FillProjectGrid('') through changes
 //    FillProjectGrid('');
+    ShowStatistic();
   end;
 end;
 
@@ -1012,7 +1022,7 @@ begin
   result:=true;
   FileName:=fname;
 
-  OnSBUpdate(Self);
+//  OnSBUpdate(Self);
 
   if data.refs.RefCount=0 then
   begin
@@ -1036,6 +1046,8 @@ begin
     end;
   end;
 
+  if not silent then
+    ShowStatistic();
 end;
 
 procedure TTL2Project.Save();
@@ -1474,7 +1486,8 @@ begin
   if ls='' then exit;
 
   i:=Length(ls);
-  while ls[i] in [#10,#13] do dec(i);
+  while (i>0) and (ls[i] in [#10,#13]) do dec(i);
+  if i=0 then exit;
   if i<Length(ls) then SetLength(ls,i);
 
   sl:=TStringList.Create;
@@ -1663,10 +1676,11 @@ begin
   data.Mode:=tmDefault;
 
   Modified:=true;
-  OnSBUpdate(Self);
+//  OnSBUpdate(Self);
   pnlFolders.Visible:=true;
   FillFoldersCombo(true); // calls   FillProjectGrid('') through changes
 //  FillProjectGrid('');
+  ShowStatistic();
 end;
 
 end.

@@ -14,6 +14,7 @@ type
   { TMainTL2TransForm }
 
   TMainTL2TransForm = class(TForm)
+    actShowLog: TAction;
     actModInfo: TAction;
     FileScan: TAction;
     FileBuild: TAction;
@@ -30,6 +31,7 @@ type
     gbScanObjects: TGroupBox;
     HelpAbout: TAction;
     MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     miFileBuild: TMenuItem;
     miFileScanMod: TMenuItem;
     mnuClosePage: TMenuItem;
@@ -67,7 +69,9 @@ type
     tbHelpNotes: TToolButton;
     tbBuild: TToolButton;
     tbScanMod: TToolButton;
+    tbShowLog: TToolButton;
     procedure actModInfoExecute(Sender: TObject);
+    procedure actShowLogExecute(Sender: TObject);
     procedure FileScanExecute(Sender: TObject);
     procedure HelpNotesExecute(Sender: TObject);
     procedure bbCloseTreeClick(Sender: TObject);
@@ -114,6 +118,7 @@ implementation
 uses
   rgglobal,
   fmmodinfo,
+  unitLogForm,
   TL2DataModule,
   TL2ProjectForm,
   TL2SettingsForm,
@@ -134,15 +139,6 @@ resourcestring
   sSaving         = '(saving)';
   sWrongDir       = 'Choosed directory don''t looks like mod directory (have no MEDIA folder)';
 
-function ExtractJustName(const fname:AnsiString):AnsiString;
-var
-  i:integer;
-begin
-  i:=Length(fname);
-  while (i>1) and (fname[i]<>'.') do dec(i);
-  if i>1 then result:=Copy(fname,1,i-1)
-  else result:=fname;
-end;
 
 //----- Page control -----
 
@@ -251,14 +247,9 @@ begin
 
   if prj=nil then exit;
 
-  if anAction='' then
-  begin
-    if prj.Modified then ls:='* '+prj.ProjectName
-    else ls:=prj.ProjectName
-  end
-  else ls:=anAction+' '+prj.ProjectName;
+  if (anAction='') and (prj.Modified) then ls:='*' else ls:=anAction;
 
-  TL2PageControl.ActivePage.Caption:=ls;
+  TL2PageControl.ActivePage.Caption:=ls+' '+prj.ProjectName;
 
   Application.ProcessMessages;
 end;
@@ -278,7 +269,6 @@ begin
   else
   begin
     Self.Caption:=sDefaultCaption+' - '+TTL2Project(Sender).ProjectName;
-    TL2StatusBar.SimpleText:=TTL2Project(Sender).StatusBarText;
     SetTabCaption('');
   end;
 end;
@@ -290,6 +280,7 @@ var
 begin
   CreateSettingsTab;
   Self.Font.Assign(TL2DM.TL2Font);
+  fmLogForm:=nil;
 
   if ParamCount()>0 then
   begin
@@ -516,9 +507,11 @@ procedure TMainTL2TransForm.actModInfoExecute(Sender: TObject);
 var
   prj:TTL2Project;
 begin
+  prj:=ActiveProject;
+  if prj=nil then exit;
+
   with TMODInfoForm.Create(Self,nil,true) do
   begin
-    prj:=ActiveProject;
     Title :=prj.data.ModTitle;
     Author:=prj.data.ModAuthor;
     Descr :=prj.data.ModDescr;
@@ -526,6 +519,16 @@ begin
     ShowModal;
     Free;
   end;
+end;
+
+procedure TMainTL2TransForm.actShowLogExecute(Sender: TObject);
+begin
+  if fmLogForm=nil then
+  begin
+    fmLogForm:=TfmLogForm.Create(Self);
+    fmLogForm.memLog.Text:=RGLog.Text;
+  end;
+  fmLogForm.ShowOnTop;
 end;
 
 procedure TMainTL2TransForm.FileNewExecute(Sender: TObject);
@@ -576,7 +579,7 @@ var
 begin
   if not FileExists(fname) then exit;
 
-  lname:=ExtractJustName(ExtractName(fname));
+  lname:=ExtractNameOnly(fname);
 
   NewTab(lname);
   SetTABCaption(sLoading);
@@ -633,11 +636,11 @@ begin
     SaveDialog.Options   :=SaveDialog.Options+[ofOverwritePrompt,ofNoChangeDir];
     if (SaveDialog.Execute) then
     begin
-      ls:=ExtractName(SaveDialog.Filename);
+      ls:=ExtractNameOnly(SaveDialog.Filename);
       if (ls<>'') then
       begin
         prj.FileName   :=SaveDialog.Filename;
-        prj.ProjectName:=ExtractJustName(ls);
+        prj.ProjectName:=ls;
 
         FileSaveExecute(Sender);
       end;

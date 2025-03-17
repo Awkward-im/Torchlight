@@ -5,7 +5,7 @@
 //  * Unit Name : FWHexView.pas
 //  * Purpose   : Implementation of a basic HexView editor
 //  * Author    : Alexander (Rouse_) Bagel
-//  * Copyright : © Fangorn Wizards Lab 1998 - 2024.
+//  * Copyright : © Fangorn Wizards Lab 1998 - 2025.
 //  * Version   : 2.0.15
 //  * Home Page : http://rouse.drkb.ru
 //  * Home Blog : http://alexander-bagel.blogspot.ru
@@ -30,7 +30,7 @@ Licence:
     >5 developers = $199 + $25 per developer from the 6th onwards
     site licence = $499 (unlimited number of developers affiliated with the owner of the licence, i.e. employees, co-workers, interns and contractors)
 
-  Please send an e-mail to rouse79@yandex.ru to request an invoice before or after payment is made. Payment may be
+  Please send an e-mail to hexview_sale@rousehome.ru to request an invoice before or after payment is made. Payment may be
   made via bank transfer. Bank details will be provided on the invoice.
 
   Support (via e-mail) is available for users with a commercial licence. Enhancement requests submitted by users with a
@@ -39,11 +39,8 @@ Licence:
 
 unit FWHexView;
 
-{$UNDEF EXTENDED_RTL}
 {$IFDEF FPC}
   {$I FWHexViewConfig.inc}
-{$ELSE}
-  {$DEFINE EXTENDED_RTL}
 {$ENDIF}
 
 interface
@@ -64,14 +61,15 @@ uses
   Windows,
   UITypes,
   UxTheme,
+  Actions,
   {$ENDIF}
   Messages,
   Classes,
+  Forms,
   Controls,
   Graphics,
   ClipBrd,
   SysUtils,
-  Forms,
   Themes,
   Types,
   Math,
@@ -80,6 +78,8 @@ uses
   {$endif}
   Generics.Collections,
   Generics.Defaults,
+  ActnList,
+  Menus,
   {$IFDEF USE_PROFILER}
   uni_profiler,
   {$ENDIF}
@@ -100,6 +100,7 @@ type
 {$IFDEF FPC}
   TWMTimer = TLMTimer;
 {$ELSE}
+  TUnicodeCharArray = TCharArray;
   TLayoutAdjustmentPolicy = (lapNone);
 {$ENDIF}
 
@@ -193,7 +194,7 @@ type
     procedure DoChange;
     function GetItem(Index: Integer): TSelection;
     procedure ListNotification(Sender: TObject;
-      {$IFDEF EXTENDED_RTL}const{$ELSE}constref{$ENDIF} Item: TSelection;
+      {$IFDEF USE_CONSTREF}constref{$ELSE}const{$ENDIF} Item: TSelection;
       Action: TCollectionNotification);
   protected
     procedure UpdateVisibleSelections;
@@ -213,13 +214,18 @@ type
     property Item[Index: Integer]: TSelection read GetItem; default;
   end;
 
+  TKnownElement = (keHeader, keSplitter, keSelection);
+  TKnownElements = set of TKnownElement;
+
   TMouseHitInfo = record
-    XPos, YPos: Integer;
+    CursorPos: TPoint;
+    ScrolledCursorPos: TPoint;
+    Shift: TShiftState;
     SelectPoint: TSelectPoint;
-    OnHeader: Boolean;
-    OnSplitter: Boolean;
+    Elements: TKnownElements;
     ColumnStart: Integer;
     ColumnWidth: Integer;
+    Cursor: TCursor;
     procedure Erase; inline;
   end;
 
@@ -228,6 +234,7 @@ type
     ccmSetNewSelection,
     ccmContinueSelection,
     ccmSelectRow,
+    ccmSelectPointer,
     ccmReset);
 
   TCaretPosData = record
@@ -325,6 +332,8 @@ type
     cetUTF7, cetUTF8, cetCodePage, cetEncodingName
   );
 
+  { TCharEncoder }
+
   TCharEncoder = class(TPersistent)
   strict private
     FOwner: TFWCustomHexView;
@@ -335,9 +344,13 @@ type
     {$IFDEF UNIX}
     FAnsiEncoding: TEncoding;
     {$ENDIF}
+    {$IFDEF FPC}
+    FLazUTF8Encoding: TEncoding;
+    {$ENDIF}
     function CheckCodePage(Value: Integer): Boolean;
     function CheckEncodingName(const Value: string): Boolean;
     function GetEncoding: TEncoding;
+    function GetUTF8Encoding: TEncoding;
     procedure SetEncodeType(const Value: TCharEncoderType);
     procedure SetCodePage(const Value: Integer);
     procedure SetEncodingName(const Value: string);
@@ -499,6 +512,7 @@ type
     function Encoder: TCharEncoder; inline;
     function Focused: Boolean; inline;
     function GetLeftNCWidth: Integer; inline;
+    procedure GetRawBuff(ARowIndex: Int64; var Data: TBytes); inline;
     function GetRowOffset(ARowIndex: Int64): Int64; inline;
     function GetSelectData(ARowIndex: Int64): TSelectData; inline;
     function GetSelectDataWithSelection(ARowIndex: Int64; ASelStart, ASelEnd: TSelectPoint): TSelectData; inline;
@@ -567,6 +581,7 @@ type
     ///  Specifies which header columns the painter can draw independently
     /// </summary>
     function ColumnsDrawSupport: TFWHexViewColumnTypes; virtual;
+    function ColumnRect(const Offset: TPoint; AColumn: TColumnType): TRect;
     procedure CorrectCanvasFont({%H-}ACanvas: TCanvas; {%H-}AColumn: TColumnType); virtual;
     /// <summary>
     ///  Форматирует текущую строку для копирования в буфер
@@ -606,8 +621,7 @@ type
     function FormatRowColumn(AColumn: TColumnType;
       const Value: string): string; virtual;
     function GetHeaderColumnCaption(AColumn: TColumnType): string; virtual;
-    procedure GetHitInfo(var AMouseHitInfo: TMouseHitInfo;
-      XPos, YPos: Int64); virtual;
+    procedure GetHitInfo(var AMouseHitInfo: TMouseHitInfo); virtual;
     function GetTextMetricClass: TAbstractTextMetricClass; virtual; abstract;
   protected
     property RowIndex: Int64 read FRowIndex write SetRowIndex;
@@ -671,8 +685,7 @@ type
       var ARect: TRect; ASelData: TSelectData);
     function GetTextMetricClass: TAbstractTextMetricClass; override;
     function GetHeaderColumnCaption(AColumn: TColumnType): string; override;
-    procedure GetHitInfo(var AMouseHitInfo: TMouseHitInfo;
-      XPos, YPos: Int64); override;
+    procedure GetHitInfo(var AHitInfo: TMouseHitInfo); override;
   end;
 
   TSecondaryRowPainter = class(TAbstractPrimaryRowPainter)
@@ -735,23 +748,34 @@ type
       var Offset: TPoint); override;
   end;
 
+  THeaderColumn = record
+    Caption: string;
+    MaxWidth,
+    MinWidth,
+    Width: Integer;
+  end;
+
   TCustomHexViewHeader = class(TPersistent)
   strict private
     FOwner: TFWCustomHexView;
-    FVisible: Boolean;
     FColumns: TFWHexViewColumnTypes;
-    FColumnCaption: array [TColumnType] of string;
-    FColumnWidth: array [TColumnType] of Integer;
+    FColumnsData: array [TColumnType] of THeaderColumn;
     FDrawColumnSeparator: Boolean;
+    FVisible: Boolean;
     FWidth: Integer;
     procedure DoChange;
+    procedure DoWidthChange(AType: TColumnType);
     procedure DrawHeaderColumn(ACanvas: TCanvas; AColumn: TColumnType;
       var ARect: TRect);
-    function GetColCaption(Value: TColumnType): string;
-    function GetColWidth(Value: TColumnType): Integer;
-    procedure SetColCaption(Value: TColumnType; const NewCaption: string);
+    function GetColCaption(AType: TColumnType): string;
+    function GetColMaxWidth(AType: TColumnType): Integer;
+    function GetColMinWidth(AType: TColumnType): Integer;
+    function GetColWidth(AType: TColumnType): Integer;
+    procedure SetColCaption(AType: TColumnType; const NewCaption: string);
     procedure SetColumns(const Value: TFWHexViewColumnTypes);
-    procedure SetColWidth(Value: TColumnType; AWidth: Integer);
+    procedure SetColWidth(AType: TColumnType; AWidth: Integer);
+    procedure SetColMaxWidth(AType: TColumnType; AWidth: Integer);
+    procedure SetColMinWidth(AType: TColumnType; AWidth: Integer);
     procedure SetDrawColumnSeparator(const Value: Boolean);
     procedure SetVisible(const Value: Boolean);
     procedure UpdateWidth;
@@ -760,8 +784,10 @@ type
     procedure Paint(ACanvas: TCanvas; AScrollXOffset: Integer);
   public
     constructor Create(AOwner: TFWCustomHexView);
-    property ColumnCaption[Value: TColumnType]: string read GetColCaption write SetColCaption;
-    property ColumnWidth[Value: TColumnType]: Integer read GetColWidth write SetColWidth;
+    property ColumnCaption[AType: TColumnType]: string read GetColCaption write SetColCaption;
+    property ColumnMaxWidth[AType: TColumnType]: Integer read GetColMaxWidth write SetColMaxWidth;
+    property ColumnMinWidth[AType: TColumnType]: Integer read GetColMinWidth write SetColMinWidth;
+    property ColumnWidth[AType: TColumnType]: Integer read GetColWidth write SetColWidth;
     property Width: Integer read FWidth;
   published
     property Columns: TFWHexViewColumnTypes read FColumns write SetColumns default [ctAddress, ctOpcode, ctDescription];
@@ -778,7 +804,7 @@ type
     property Visible;
   end;
 
-  TQueryStringEvent = procedure(Sender: TObject; AddrVA: UInt64; AColumn: TColumnType; var AComment: string) of object;
+  TQueryStringEvent = procedure(Sender: TObject; AddrVA: Int64; AColumn: TColumnType; var AComment: string) of object;
   TDrawColumnBackgroundEvent = procedure(Sender: TObject; ACanvas: TCanvas;
     ARowParam: TDrawParam; const ARect: TRect; var Handled: Boolean) of object;
   TDrawTokenEvent = procedure(Sender: TObject; ACanvas: TCanvas;
@@ -792,6 +818,88 @@ type
 
   TEditEvent = procedure(Sender: TObject; ACursor: TDrawParam;
     AData: TEditParam; var Handled: Boolean) of object;
+
+  TViewShortCut = class(TPersistent)
+  private
+    FDefault: TShortCut;
+    FSecondaryShortCuts: TShortCutList;
+    FShortCut: TShortCut;
+    function IsSecondaryStored: Boolean;
+    function IsShortSutStored: Boolean;
+    procedure SetSecondaryShortCuts(const Value: TShortCutList);
+    function GetSecondaryShortCuts: TShortCutList;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+    function IsCustomViewShortCutStored: Boolean;
+  public
+    constructor Create(ADefault: TShortCut);
+    destructor Destroy; override;
+    function IsShortCut(Key: Word; Shift: TShiftState): Boolean;
+  published
+    property ShortCut: TShortCut read FShortCut write FShortCut stored IsShortSutStored;
+    property SecondaryShortCuts: TShortCutList read GetSecondaryShortCuts write SetSecondaryShortCuts stored IsSecondaryStored;
+  end;
+
+  TViewShortCuts = class(TPersistent)
+  private
+    FJmpBack: TViewShortCut;
+    FJmpTo: TViewShortCut;
+    procedure SetJmpBack(const Value: TViewShortCut);
+    procedure SetJmpTo(const Value: TViewShortCut);
+    function IsJmpBackStored: Boolean;
+    function IsJmpToStored: Boolean;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+    function IsShortCutsStored: Boolean; virtual;
+  public
+    constructor Create;
+    destructor Destroy; override;
+  published
+    property JmpBack: TViewShortCut read FJmpBack write SetJmpBack stored IsJmpBackStored;
+    property JmpTo: TViewShortCut read FJmpTo write SetJmpTo stored IsJmpToStored;
+  end;
+
+  TViewShortCutsClass = class of TViewShortCuts;
+
+  TJmpState = (jsQueryJump, jsJmpPushToStack, jsJmpUndo, jsJmpRedo, jsJmpDone);
+  TJmpToEvent = procedure(Sender: TObject; const AJmpAddr: Int64;
+    AJmpState: TJmpState; var Handled: Boolean) of object;
+
+  { TJmpItem }
+
+  TJmpItem = record
+    JmpAddr: Int64;
+    SelLength: Integer;
+    JmpFrom: Int64;
+    SelStart, SelEnd: TSelectPoint;
+  end;
+
+  TJumpStack = class
+  strict private
+    FCurrent: TJmpItem;
+    FStack: TList<TJmpItem>;
+    FUndoIndex: Integer;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function Add(const AValue: TJmpItem): Integer;
+    function CanRedo: Boolean;
+    function CanUndo: Boolean;
+    procedure Clear;
+    function Redo: Boolean;
+    function Undo: Boolean;
+    property Current: TJmpItem read FCurrent;
+    property UndoIndex: Integer read FUndoIndex;
+  end;
+
+  THintParam = record
+    AddrVA: Int64;
+    MouseHitInfo: TMouseHitInfo;
+    HintInfo: PHintInfo;
+  end;
+
+  TGetHintEvent = procedure(Sender: TObject; const Param: THintParam;
+    var Hint: string) of object;
 
   { TFWCustomHexView }
 
@@ -820,7 +928,10 @@ type
     FEncoder: TCharEncoder;
     FHeader: TCustomHexViewHeader;
     FHideSelection: Boolean;
+    FHintHideTimeout, FHintShowPause: Integer;
+    FJumpStack: TJumpStack;
     FRowHeight: Integer;
+    FShortCuts: TViewShortCuts;
     FLastDiapasone: TVisibleRowDiapason;
     FMeasureCanvas: TBitmap;
     FMinColumnWidth: Integer;
@@ -831,6 +942,7 @@ type
     FPainters: TObjectList<TAbstractPrimaryRowPainter>;
     FPostPainters: TObjectList<TAbstractPostPainter>;
     FPreviosCharWidth: Integer;
+    FProcessMenu: Boolean;
     FQueryStringEvent: TQueryStringEvent;
     FRawData: TRawData;
     FReadOnly: Boolean;
@@ -855,6 +967,8 @@ type
     FOnDrawColBack: TDrawColumnBackgroundEvent;
     FOnDrawToken: TDrawTokenEvent;
     FOnEdit: TEditEvent;
+    FOnGetHint: TGetHintEvent;
+    FOnJmpTo: TJmpToEvent;
     FOldOnFontChange: TNotifyEvent;
     FSelectionChange: TNotifyEvent;
     procedure DoChangeScale(BeforeScaleStep: Boolean);
@@ -867,6 +981,7 @@ type
     procedure InvalidateCaretPosData(NewState: Boolean);
     procedure InvalidateSelections;
     function IsFontStored: Boolean;
+    function IsShortCutsStored: Boolean;
     procedure ReleaseDataStream;
     procedure SetAddressMode(const Value: TAddressMode);
     procedure SetAddressView(const Value: TAddressView);
@@ -888,9 +1003,12 @@ type
     procedure SetSelEnd(const Value: Int64);
     procedure SetSelStart(const Value: Int64);
     procedure SetSeparateGroupByColor(const Value: Boolean);
+    procedure SetShortCuts(const Value: TViewShortCuts);
     function Scroll32To64(Value: Integer): Int64;
     function Scroll64To32(Value: Int64): Integer;
     procedure OnSelectionsChange(Sender: TObject);
+    procedure UpdateCursor(var AHitInfo: TMouseHitInfo);
+    procedure UpdateSavedShift(Shift: TShiftState);
     procedure UpdateTextDarknessColor;
     procedure UpdateTextExtent;
     procedure UpdateTextMetrics;
@@ -899,6 +1017,8 @@ type
     FCurrentPPI: Integer;
     {$ENDIF}
     procedure ChangeScale(M, D: Integer{$IFNDEF FPC}; isDpiChange: Boolean{$ENDIF}); override;
+    procedure CMHintShow(var Message: TCMHintShow); message CM_HINTSHOW;
+    procedure CMHintShowPause(var Message: TCMHintShowPause); message CM_HINTSHOWPAUSE;
     procedure CreateParams(var Params: TCreateParams); override;
     procedure CreateWnd; override;
     procedure DblClick; override;
@@ -922,6 +1042,9 @@ type
     procedure WMSetFocus(var Msg: TWMSetFocus); message WM_SETFOCUS;
     procedure WMTimer(var Msg: TWMTimer); message WM_TIMER;
     procedure WMVScroll(var Msg: TWMVScroll); message WM_VSCROLL;
+    {$IFNDEF FPC}
+    procedure WMXButtonDown(var Msg: TWMMouse); message WM_XBUTTONDOWN;
+    {$ENDIF}
   protected
     // IHexViewCopyAction
     function CopyCommandEnabled(Value: TCopyStyle): Boolean; virtual;
@@ -947,15 +1070,19 @@ type
     procedure DoCaretEdit(AKey: TNativeChar);
     procedure DoCaretEnd(Shift: TShiftState);
     procedure DoCaretKeyDown(var Key: Word; Shift: TShiftState); virtual;
+    procedure DoInvalidateRange(AStartRow, AEndRow: Int64); virtual;
     function GetCaretChangeMode(APainter: TAbstractPrimaryRowPainter;
       AColumn: TColumnType; Shift: TShiftState): TCaretChangeMode; virtual;
     function GetCaretNextRowIndex(FromIndex: Int64; AColumn: TColumnType = ctNone): Int64; virtual;
     function GetCaretPreviosRowIndex(FromIndex: Int64; AColumn: TColumnType = ctNone): Int64; virtual;
-    procedure DoInvalidateRange(AStartRow, AEndRow: Int64); virtual;
+    function GetSelectedRawBuff(ASelStartRow, ASelEndRow: Int64): TBytes;
+    function GetSelectedRow(out ASelStartRow, ASelEndRow: Int64): Boolean;
+    function IgnoreSelectionWhenCopyAddress: Boolean; virtual;
     procedure UpdateCaretColumn(AColumn: TColumnType);
     procedure UpdateCaretPosData(Value: TSelectPoint; AChangeMode: TCaretChangeMode);
     procedure UpdateCaretTimer;
-    procedure UpdateSelection(ANewStart, ANewEnd: TSelectPoint);
+    procedure UpdateSelection(ANewStart, ANewEnd: TSelectPoint; AUpdateSelAddr: Boolean = True);
+    procedure UpdateSelectionAddr(ANewStart, ANewEnd: Int64);
 
     // внутренние события
 
@@ -970,9 +1097,11 @@ type
     procedure DoEncodingChange;
     procedure DoFontChange(Sender: TObject);
     procedure DoFontResize(Value: Integer);
+    procedure DoGetHint(var AHintParam: THintParam; var AHint: string); virtual;
+    procedure DoJmpTo(AAddrVA: Int64; AJmpState: TJmpState; var Handled: Boolean);
     procedure DoQueryString(AddrVA: Int64; AColumn: TColumnType; var AComment: string);
     procedure DoSelectionChage(AStartAddr, AEndAddr: Int64); virtual;
-    function DoLButtonDown(Shift: TShiftState): Boolean; virtual;
+    function DoLButtonDown(const AHitInfo: TMouseHitInfo): Boolean; virtual;
 
     // функции получения текстовых данных для отрисовки и для копирования в буфер
 
@@ -988,12 +1117,12 @@ type
     function GetLeftNCWidth: Integer;
     function GetPageHeight: Integer;
     function GetRowOffset(ARowIndex: Int64): Int64;
-    function CheckSelected(Value: TSelectPoint): Boolean;
     function GetSelectData(ARowIndex: Int64): TSelectData;
     function GetSelectDataWithSelection(ARowIndex: Int64; ASelStart, ASelEnd: TSelectPoint): TSelectData;
     function MeasureCanvas: TCanvas;
     function RowVisible(ARowIndex: Int64): Boolean;
     procedure RestoreViewParam; virtual;
+    function SelectPointInSelection(const Value: TSelectPoint): Boolean;
     procedure SetScrollOffset(X, Y: Int64); virtual;
     procedure SetTopRow(ARowIndex: Int64);
     procedure SaveViewParam;
@@ -1002,12 +1131,14 @@ type
 
     // redefinition of internal classes
 
+    function GetDefaultCaretChangeMode: TCaretChangeMode; virtual;
     function GetColorMapClass: THexViewColorMapClass; virtual;
     function GetDefaultFontName: string; virtual;
     function GetDefaultFontHeight: Integer; virtual;
     function GetDefaultPainterClass: TPrimaryRowPainterClass; virtual;
     function GetHeaderClass: THeaderClass; virtual;
     function GetRawDataClass: TRawDataClass; virtual;
+    function GetShortCutsClass: TViewShortCutsClass; virtual;
     function GetOverloadPainterClass(Value: TPrimaryRowPainterClass): TPrimaryRowPainterClass; virtual;
 
     // непосредственно отрисовка
@@ -1030,8 +1161,10 @@ type
 
     // utilitarian methods for childs and painters
 
-    function GetHitInfo(XPos, YPos: Int64): TMouseHitInfo;
+    function GetHitInfo(XPos, YPos: Int64; AShift: TShiftState): TMouseHitInfo;
     function IsColorMapStored: Boolean; virtual;
+    function LeftSelPoint: TSelectPoint;
+    function RightSelPoint: TSelectPoint;
     procedure RebuildData;
     procedure RegisterTextMetric(Value: TAbstractTextMetric);
 
@@ -1039,7 +1172,6 @@ type
 
     // validators
 
-    procedure UpdateCursor(const HitTest: TMouseHitInfo); virtual;
     procedure UpdateDataMap; virtual;
     procedure UpdateTextBoundary;
     procedure UpdateScrollPos;
@@ -1058,12 +1190,14 @@ type
     procedure ClearSelection(ResetCaretPos: Boolean = True);
     function ColumnAsString(ARowIndex: Int64; AColumn: TColumnType): string;
     procedure CopySelected(CopyStyle: TCopyStyle); virtual;
+    procedure CopySelectedToStream(AStream: TStream);
     function CurrentVisibleRow: Int64;
     procedure EndUpdate;
     function IsAddrVisible(AAddrVA: Int64): Boolean;
     function IsRowVisible(ARowIndex: Int64): Boolean;
     procedure FitColumnToBestSize(Value: TColumnType); virtual;
     procedure FitColumnsToBestSize;
+    function Focused: Boolean; override;
     /// <summary>
     ///  Перемещает скролл делая чтобы адрес (если строка с ним не видима)
     ///  находился вверху текущего окна отображения
@@ -1086,6 +1220,13 @@ type
     ///  it will appear at the top. If it is lower, it will appear at the bottom.
     /// </summary>
     procedure FocusOnRow(ARowIndex: Int64; ACaretChangeMode: TCaretChangeMode);
+
+    procedure JumpClear;
+    function JumpToAddress(AJmpAddr: Int64; ASelLength: Integer = 0): Boolean;
+    function JumpToBookmark(ABookmark: TBookMark): Boolean;
+    function JumpRedo: Boolean;
+    function JumpUndo: Boolean;
+
     /// <summary>
     ///  Общий метод чтения данных с начала выделения вьювера
     /// </summary>
@@ -1107,12 +1248,14 @@ type
     function SelectedColumnAsString(AColumn: TColumnType): string;
     function SelectedRawLength: Integer;
     function SelectedRowIndex: Int64;
+    function SelectPointToAddress(const AValue: TSelectPoint): Int64;
     procedure SetDataStream(Value: TStream; StartAddress: Int64;
       AOwnerShip: TStreamOwnership = soReference);
     procedure SetCaretPos(AColumn: TColumnType; ARowIndex: Int64; ACharIndex: Integer);
     function ToDpi(Value: Integer): Integer;
     function VisibleRowDiapason: TVisibleRowDiapason;
     function VisibleRowCount: Integer;
+    procedure WndProc(var AMsg: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); override;
   public
     property AddressViewOffsetBase: Int64 read FAddressViewOffsetBase write SetAddressViewOffsetBase;
     property Bookmark[AIndex: TBookMark]: Int64 read GetBookMark write SetBookMark;
@@ -1141,6 +1284,7 @@ type
     property Painters: TObjectList<TAbstractPrimaryRowPainter> read FPainters;
     property PostPainters: TObjectList<TAbstractPostPainter> read FPostPainters;
     property RawData: TRawData read FRawData;
+    property SavedShift: TShiftState read FSavedShift;
     property TextMetric: TAbstractTextMetric read FTextMetric;
   protected
     /// <summary>
@@ -1175,18 +1319,23 @@ type
     property Font stored IsFontStored;
     property Header: TCustomHexViewHeader read FHeader write SetHeader;
     property HideSelection: Boolean read FHideSelection write SetHideSelection default False;
+    property HintHideTimeout: Integer read FHintHideTimeout write FHintHideTimeout default 7000;
+    property HintShowPause: Integer read FHintShowPause write FHintShowPause default 300;
     property NoDataText: string read FNoDataText write SetNoDataText;
     property ParentFont default False;
     property ReadOnly: Boolean read FReadOnly write SetReadOnly default True;
     property ScrollBars: TScrollStyle read FScrollBars write SetScrollBars default TScrollStyle.ssBoth;
     property SelectOnMouseDown: Boolean read FSelectOnMouseDown write FSelectOnMouseDown default True;
     property SeparateGroupByColor: Boolean read FSeparateGroupByColor write SetSeparateGroupByColor default True;
+    property ShortCuts: TViewShortCuts read FShortCuts write SetShortCuts stored IsShortCutsStored;
     property TabStop default True;
     property WheelMultiplyer: Integer read FWheelMultiplyer write FWheelMultiplyer default 3;
     property OnCaretPosChange: TNotifyEvent read FOnCaretPosChange write FOnCaretPosChange;
     property OnDrawColumnBackground: TDrawColumnBackgroundEvent read FOnDrawColBack write FOnDrawColBack;
     property OnDrawToken: TDrawTokenEvent read FOnDrawToken write FOnDrawToken;
     property OnEdit: TEditEvent read FOnEdit write FOnEdit;
+    property OnHint: TGetHintEvent read FOnGetHint write FOnGetHint;
+    property OnJmpTo: TJmpToEvent read FOnJmpTo write FOnJmpTo;
     property OnQueryComment: TQueryStringEvent read FQueryStringEvent write FQueryStringEvent;
     property OnSelectionChange: TNotifyEvent read FSelectionChange write FSelectionChange;
   end;
@@ -1220,6 +1369,7 @@ type
     property Font;
     property Header;
     property HideSelection;
+    property HintShowPause;
     property NoDataText;
     property ParentFont;
     property ParentShowHint;
@@ -1228,6 +1378,7 @@ type
     property ScrollBars;
     property SelectOnMouseDown;
     property SeparateGroupByColor;
+    property ShortCuts;
     property ShowHint;
     property TabOrder;
     property TabStop;
@@ -1266,9 +1417,6 @@ type
   function DblSize(Value: Integer): Integer; inline;
   function DblSizeDec(Value: Integer): Integer; inline;
   function CheckNegative(Value: Int64): Int64; inline;
-  function UTF8ByteCount(p: PChar; CharCount: Integer): Integer; inline;
-  function UTF8Copy(const s: string; StartCharIndex, CharCount: Integer): string; inline;
-  function UTF8StringLength(const Value: string): Integer; inline;
 
 {$IFDEF USE_PROFILER}
 var
@@ -1304,43 +1452,6 @@ begin
     Result := 0
   else
     Result := Value;
-end;
-
-function UTF8ByteCount(p: PChar; CharCount: Integer): Integer;
-{$IFDEF FPC}
-var
-  I, CharLen: LongInt;
-begin
-  Result := 0;
-  for I := 0 to CharCount - 1 do
-  begin
-    CharLen := UTF8CodepointSize(p);
-    Inc(p, CharLen);
-    Inc(Result, CharLen);
-  end;
-end;
-{$ELSE}
-begin
-  Result := CharCount
-end;
-{$ENDIF}
-
-function UTF8Copy(const s: string; StartCharIndex, CharCount: Integer): string;
-begin
-  {$IFDEF FPC}
-  Result := LazUTF8.UTF8Copy(s, StartCharIndex, CharCount);
-  {$ELSE}
-  Result := Copy(s, StartCharIndex, CharCount);
-  {$ENDIF}
-end;
-
-function UTF8StringLength(const Value: string): Integer;
-begin
-  {$IFDEF FPC}
-  Result := UTF8Length(Value);
-  {$ELSE}
-  Result := Length(Value);
-  {$ENDIF}
 end;
 
 { TRawData }
@@ -1610,7 +1721,7 @@ begin
 end;
 
 procedure TSelections.ListNotification(Sender: TObject;
-  {$IFDEF EXTENDED_RTL}const{$ELSE}constref{$ENDIF} Item: TSelection;
+  {$IFDEF USE_CONSTREF}constref{$ELSE}const{$ENDIF} Item: TSelection;
   Action: TCollectionNotification);
 begin
   if Action in [cnAdded, cnExtracted, cnRemoved] then
@@ -1640,12 +1751,13 @@ end;
 
 procedure TMouseHitInfo.Erase;
 begin
-  XPos := 0;
-  YPos := 0;
+  CursorPos := TPoint.Zero;
+  ScrolledCursorPos := TPoint.Zero;
   SelectPoint.Erase;
-  OnHeader := False;
-  OnSplitter := False;
+  Shift := [];
+  Elements := [];
   ColumnWidth := 0;
+  Cursor := crDefault;
 end;
 
 { TAbstractTextMetric }
@@ -1892,6 +2004,9 @@ begin
   {$IFDEF UNIX}
   FAnsiEncoding.Free;
   {$ENDIF}
+  {$IFDEF FPC}
+  FLazUTF8Encoding.Free;
+  {$ENDIF}
   inherited;
 end;
 
@@ -1917,14 +2032,7 @@ var
   E: TEncoding;
   BuffLen, ByteIndex, GlyphLen, MaxLen: Integer;
   EncodedString: UnicodeString;
-  {$IFDEF FPC}
-  ResIndex, I, InitialBuffLen, StringLen, CmpIdx: Integer;
-  EncodedBuf: UnicodeString;
-  CharBytes: TBytes;
-  CharPosFound: Boolean;
-  {$ELSE}
-  EncodedChar: string;
-  {$ENDIF}
+  EncodedChar: TUnicodeCharArray;
 begin
   E := GetEncoding;
   if E = nil then
@@ -1941,50 +2049,8 @@ begin
     Exit;
   end;
 
-  {$IFDEF FPC}
-
-  EncodedBuf := E.GetString(Buff, 0, BuffLen);
-  StringLen := Length(EncodedBuf);
-  InitialBuffLen := BuffLen;
-  ByteIndex := 1;
-  ResIndex := 1;
   EncodedString := GetEmpty;
-  MaxLen := E.GetMaxByteCount(1);
-  while BuffLen > 0 do
-  begin
-    CharBytes := E.GetBytes(EncodedBuf[ByteIndex]);
-    GlyphLen := Min(Length(CharBytes), BuffLen);
-
-    CharPosFound := False;
-    for I := 0 to MaxLen - 1 do
-    begin
-      CmpIdx := ResIndex - 1 + I;
-      if CmpIdx > InitialBuffLen - GlyphLen then Break;
-      if CompareMem(@CharBytes[0], @Buff[CmpIdx], GlyphLen) then
-      begin
-        Inc(ResIndex, I);
-        CharPosFound := True;
-        Break;
-      end;
-    end;
-
-    if CharPosFound and CharVisible(EncodedBuf[ByteIndex]) then
-      EncodedString[ResIndex] := EncodedBuf[ByteIndex]
-    else
-      GlyphLen := 1;
-
-    Inc(ByteIndex);
-    if ByteIndex > StringLen then
-      Break;
-    Inc(ResIndex, GlyphLen);
-    Dec(BuffLen, GlyphLen);
-  end;
-  Result := string(EncodedString);
-
-  {$ELSE}
-
-  EncodedString := GetEmpty;
-  MaxLen := E.GetMaxByteCount(0);
+  MaxLen := E.GetMaxByteCount({$IFDEF FPC}1{$ELSE}0{$ENDIF});
   ByteIndex := 0;
   repeat
     GlyphLen := 1;
@@ -1999,18 +2065,16 @@ begin
       end;
       if ByteIndex + GlyphLen > BuffLen then
       begin
-        Result := EncodedString;
+        Result := string(EncodedString);
         Exit;
       end;
     end;
-    EncodedChar := E.GetString(Buff, ByteIndex, GlyphLen);
-    if CharVisible(EncodedChar[1]) then
-      EncodedString[ByteIndex + 1] :=  EncodedChar[1];
+    EncodedChar := E.GetChars(Buff, ByteIndex, GlyphLen);
+    if CharVisible(EncodedChar[0]) then
+      EncodedString[ByteIndex + 1] := EncodedChar[0];
     Inc(ByteIndex, GlyphLen);
   until ByteIndex >= BuffLen;
-  Result := EncodedString;
-
-  {$ENDIF}
+  Result := string(EncodedString);
 end;
 
 function TCharEncoder.EncodeChar(AChar: TNativeChar): TBytes;
@@ -2039,12 +2103,27 @@ begin
     cetUnicode: Result := TEncoding.Unicode;
     cetBigEndianUnicode: Result := TEncoding.BigEndianUnicode;
     cetUTF7: Result := TEncoding.UTF7;
-    cetUTF8: Result := TEncoding.UTF8;
+    cetUTF8: Result := GetUTF8Encoding;
     cetCodePage: Result := FCPEncoding;
     cetEncodingName: Result := FNameEncoding;
   else
+    {$IFDEF FPC}
+    Result := GetUTF8Encoding;
+    {$ELSE}
     Result := TEncoding.Default;
+    {$ENDIF}
   end;
+end;
+
+function TCharEncoder.GetUTF8Encoding: TEncoding;
+begin
+  {$IFDEF FPC}
+  if FLazUTF8Encoding = nil then
+    FLazUTF8Encoding := TLazUTF8Encoding.Create;
+  Result := FLazUTF8Encoding;
+  {$ELSE}
+  Result := TEncoding.UTF8;
+  {$ENDIF}
 end;
 
 procedure TCharEncoder.SetCodePage(const Value: Integer);
@@ -2575,6 +2654,11 @@ begin
   Result := FOwner.DefaultPainter.CalcLeftNCWidth;;
 end;
 
+procedure TBasePainter.GetRawBuff(ARowIndex: Int64; var Data: TBytes);
+begin
+  FOwner.GetRawBuff(ARowIndex, Data);
+end;
+
 function TBasePainter.GetRowOffset(ARowIndex: Int64): Int64;
 begin
   Result := FOwner.GetRowOffset(ARowIndex);
@@ -2856,6 +2940,20 @@ begin
   DoQueryComment(RawData[RowIndex].Address, AColumn, Result);
 end;
 
+function TAbstractPrimaryRowPainter.ColumnRect(const Offset: TPoint;
+  AColumn: TColumnType): TRect;
+var
+  Col: TColumnType;
+begin
+  Result := Bounds(Offset.X, Offset.Y, ColumnWidth[AColumn], RowHeight);
+  for Col := ctWorkSpace to High(TColumnType) do
+    if Col in Columns then
+    begin
+      if Col = AColumn then Break;
+      OffsetRect(Result, ColumnWidth[Col], 0);
+    end;
+end;
+
 function TAbstractPrimaryRowPainter.ColumnsDrawSupport: TFWHexViewColumnTypes;
 begin
   Result := [];
@@ -2940,7 +3038,7 @@ begin
     begin
       ARect := Bounds(LeftOffset, ARect.Top, ColumnWidth[I], ARect.Height);
       DrawColumnBackground(ACanvas, I, ARect,
-        MousePressed and AHitInfo.OnSplitter and (AHitInfo.SelectPoint.Column = I));
+        MousePressed and (keSplitter in AHitInfo.Elements) and (AHitInfo.SelectPoint.Column = I));
       Inc(LeftOffset, ColumnWidth[I]);
     end;
 
@@ -3122,7 +3220,7 @@ begin
   ACanvas.Brush.Style := bsClear;
   ACanvas.Font.Color := ColorMap.WorkSpaceTextColor;
   CorrectCanvasFont(ACanvas, ctWorkSpace);
-  Dec(ARect.Left, TextMargin);
+  Dec(ARect.Left, TextMargin - ToDpi(2));
   DrawText(ACanvas, PChar(ColumnAsString(ctWorkSpace)), -1, ARect, 0);
 end;
 
@@ -3184,7 +3282,7 @@ begin
 end;
 
 procedure TAbstractPrimaryRowPainter.GetHitInfo(
-  var AMouseHitInfo: TMouseHitInfo; XPos, YPos: Int64);
+  var AMouseHitInfo: TMouseHitInfo);
 begin
 end;
 
@@ -3815,8 +3913,7 @@ begin
   end;
 end;
 
-procedure TRowHexPainter.GetHitInfo(var AMouseHitInfo: TMouseHitInfo;
-  XPos, YPos: Int64);
+procedure TRowHexPainter.GetHitInfo(var AHitInfo: TMouseHitInfo);
 var
   LeftOffset, I, RawLength: Integer;
 begin
@@ -3824,12 +3921,12 @@ begin
 
   // only data in columns with opcodes and description can be selected for modification
 
-  if not (AMouseHitInfo.SelectPoint.Column in [ctOpcode, ctDescription]) then Exit;
+  if not (AHitInfo.SelectPoint.Column in [ctOpcode, ctDescription]) then Exit;
 
-  AMouseHitInfo.SelectPoint.ValueOffset := -1;
-  AMouseHitInfo.SelectPoint.CharIndex := -1;
+  AHitInfo.SelectPoint.ValueOffset := -1;
+  AHitInfo.SelectPoint.CharIndex := -1;
 
-  LeftOffset := AMouseHitInfo.ColumnStart;
+  LeftOffset := AHitInfo.ColumnStart;
   Inc(LeftOffset, TextMargin);
 
   // если курсор находится левее начала текста в колонке,
@@ -3838,12 +3935,12 @@ begin
   // if the cursor is to the left of the beginning of the text in the column,
   // select the first character and exit.
 
-  if LeftOffset > XPos then
+  if LeftOffset > AHitInfo.ScrolledCursorPos.X then
     Exit;
 
-  RawLength := RawData[AMouseHitInfo.SelectPoint.RowIndex].RawLength;
+  RawLength := RawData[AHitInfo.SelectPoint.RowIndex].RawLength;
 
-  if AMouseHitInfo.SelectPoint.Column = ctOpcode then
+  if AHitInfo.SelectPoint.Column = ctOpcode then
   begin
 
     // в колонке с опкодами каждое значение представлено ввиде нескольких
@@ -3857,13 +3954,13 @@ begin
     for I := 0 to TextMetric.CharCount(ctOpcode, RawLength) - 1 do
     begin
       Inc(LeftOffset, TextMetric.CharWidth(ctOpcode, I));
-      if LeftOffset > XPos then
+      if LeftOffset > AHitInfo.ScrolledCursorPos.X then
       begin
-        AMouseHitInfo.SelectPoint.ValueOffset := CharIndexToValueOffset(ctOpcode, I);
-        if AMouseHitInfo.SelectPoint.ValueOffset < RawLength then
-          AMouseHitInfo.SelectPoint.CharIndex := I
+        AHitInfo.SelectPoint.ValueOffset := CharIndexToValueOffset(ctOpcode, I);
+        if AHitInfo.SelectPoint.ValueOffset < RawLength then
+          AHitInfo.SelectPoint.CharIndex := I
         else
-          AMouseHitInfo.SelectPoint.ValueOffset := -1;
+          AHitInfo.SelectPoint.ValueOffset := -1;
         Exit;
       end;
     end;
@@ -3878,10 +3975,10 @@ begin
   for I := 0 to RawLength - 1 do
   begin
     Inc(LeftOffset, TextMetric.CharWidth(ctDescription, I));
-    if LeftOffset > XPos then
+    if LeftOffset > AHitInfo.ScrolledCursorPos.X then
     begin
-      AMouseHitInfo.SelectPoint.ValueOffset := CharIndexToValueOffset(ctDescription, I);
-      AMouseHitInfo.SelectPoint.CharIndex := I;
+      AHitInfo.SelectPoint.ValueOffset := CharIndexToValueOffset(ctDescription, I);
+      AHitInfo.SelectPoint.CharIndex := I;
       Exit;
     end;
   end;
@@ -4216,6 +4313,23 @@ begin
   FOwner.DoChange(cmHeader);
 end;
 
+procedure TCustomHexViewHeader.DoWidthChange(AType: TColumnType);
+var
+  AMinWidth, AMaxWidth, AWidth: Integer;
+begin
+  AWidth := ColumnWidth[AType];
+  AMinWidth := FOwner.ToDpi(ColumnMinWidth[AType]);
+  if AMinWidth = 0 then
+    AMinWidth := FOwner.MinColumnWidth;
+  if AWidth < AMinWidth then
+    AWidth := AMinWidth;
+  AMaxWidth := FOwner.ToDpi(ColumnMaxWidth[AType]);
+  if (AMaxWidth > 0) and (AWidth > AMaxWidth) then
+    AWidth := AMaxWidth;
+  FColumnsData[AType].Width := AWidth;
+  UpdateWidth;
+end;
+
 procedure TCustomHexViewHeader.DrawHeaderColumn(ACanvas: TCanvas;
   AColumn: TColumnType; var ARect: TRect);
 var
@@ -4249,14 +4363,24 @@ begin
   Painter.DefaultDrawHeaderColumn(ACanvas, ARect, ColumnCaption[AColumn], Flags);
 end;
 
-function TCustomHexViewHeader.GetColCaption(Value: TColumnType): string;
+function TCustomHexViewHeader.GetColCaption(AType: TColumnType): string;
 begin
-  Result := FColumnCaption[Value];
+  Result := FColumnsData[AType].Caption;
 end;
 
-function TCustomHexViewHeader.GetColWidth(Value: TColumnType): Integer;
+function TCustomHexViewHeader.GetColMaxWidth(AType: TColumnType): Integer;
 begin
-  Result := FColumnWidth[Value];
+  Result := FColumnsData[AType].MaxWidth;
+end;
+
+function TCustomHexViewHeader.GetColMinWidth(AType: TColumnType): Integer;
+begin
+  Result := FColumnsData[AType].MinWidth;
+end;
+
+function TCustomHexViewHeader.GetColWidth(AType: TColumnType): Integer;
+begin
+  Result := FColumnsData[AType].Width;
 end;
 
 procedure TCustomHexViewHeader.InitDefault;
@@ -4264,10 +4388,10 @@ begin
   FDrawColumnSeparator := True;
   FVisible := True;
   FColumns := [ctAddress, ctOpcode, ctDescription];
-  FColumnCaption[ctJmpLine] := 'Jumps';
-  FColumnCaption[ctAddress] := 'Address';
-  FColumnCaption[ctDescription] := 'Description';
-  FColumnCaption[ctComment] := 'Comment';
+  FColumnsData[ctJmpLine].Caption := 'Jumps';
+  FColumnsData[ctAddress].Caption := 'Address';
+  FColumnsData[ctDescription].Caption := 'Description';
+  FColumnsData[ctComment].Caption := 'Comment';
 end;
 
 procedure TCustomHexViewHeader.Paint(ACanvas: TCanvas; AScrollXOffset: Integer);
@@ -4288,13 +4412,37 @@ begin
     end;
 end;
 
-procedure TCustomHexViewHeader.SetColCaption(Value: TColumnType;
+procedure TCustomHexViewHeader.SetColCaption(AType: TColumnType;
   const NewCaption: string);
 begin
-  if ColumnCaption[Value] <> NewCaption then
+  if ColumnCaption[AType] <> NewCaption then
   begin
-    FColumnCaption[Value] := NewCaption;
+    FColumnsData[AType].Caption := NewCaption;
     DoChange;
+  end;
+end;
+
+procedure TCustomHexViewHeader.SetColMaxWidth(AType: TColumnType; AWidth: Integer);
+begin
+  if AWidth < ColumnMinWidth[AType] then
+    AWidth := ColumnMinWidth[AType];
+  if ColumnMaxWidth[AType] <> AWidth then
+  begin
+    FColumnsData[AType].MaxWidth := AWidth;
+    DoWidthChange(AType);
+  end;
+end;
+
+procedure TCustomHexViewHeader.SetColMinWidth(AType: TColumnType; AWidth: Integer);
+begin
+  if AWidth < 0 then
+    AWidth := 0;
+  if (ColumnMaxWidth[AType] > 0) and (AWidth > ColumnMaxWidth[AType]) then
+    AWidth := ColumnMaxWidth[AType];
+  if ColumnMinWidth[AType] <> AWidth then
+  begin
+    FColumnsData[AType].MinWidth := AWidth;
+    DoWidthChange(AType);
   end;
 end;
 
@@ -4307,16 +4455,13 @@ begin
   end;
 end;
 
-procedure TCustomHexViewHeader.SetColWidth(Value: TColumnType; AWidth: Integer);
+procedure TCustomHexViewHeader.SetColWidth(AType: TColumnType; AWidth: Integer);
 begin
-  if AWidth < FOwner.MinColumnWidth then
-    AWidth := FOwner.MinColumnWidth;
-  if Value = ctNone then AWidth := 0;
-  if ColumnWidth[Value] <> AWidth then
+  if AType = ctNone then AWidth := 0;
+  if ColumnWidth[AType] <> AWidth then
   begin
-    FColumnWidth[Value] := AWidth;
-    DoChange;
-    UpdateWidth;
+    FColumnsData[AType].Width := AWidth;
+    DoWidthChange(AType);
   end;
 end;
 
@@ -4345,6 +4490,189 @@ begin
   FWidth := 0;
   for I in Columns do
     Inc(FWidth, ColumnWidth[I]);
+  DoChange;
+end;
+
+{ TViewShortCut }
+
+procedure TViewShortCut.AssignTo(Dest: TPersistent);
+begin
+  if Dest is TViewShortCut then
+  begin
+    if Assigned(TViewShortCut(Dest).SecondaryShortCuts) then
+    begin
+      if Assigned(FSecondaryShortCuts) then
+        TViewShortCut(Dest).SecondaryShortCuts := SecondaryShortCuts
+      else
+        TViewShortCut(Dest).SecondaryShortCuts.Clear;
+    end;
+    TViewShortCut(Dest).FShortCut := FShortCut;
+  end
+  else
+    inherited;
+end;
+
+constructor TViewShortCut.Create(ADefault: TShortCut);
+begin
+  FDefault := ADefault;
+  FShortCut := ADefault;
+end;
+
+destructor TViewShortCut.Destroy;
+begin
+  FSecondaryShortCuts.Free;
+  inherited;
+end;
+
+function TViewShortCut.GetSecondaryShortCuts: TShortCutList;
+begin
+  if FSecondaryShortCuts = nil then
+    FSecondaryShortCuts := TShortCutList.Create;
+  Result := FSecondaryShortCuts;
+end;
+
+function TViewShortCut.IsCustomViewShortCutStored: Boolean;
+begin
+  Result := IsSecondaryStored or IsShortSutStored;
+end;
+
+function TViewShortCut.IsSecondaryStored: Boolean;
+begin
+  Result := Assigned(FSecondaryShortCuts) and (FSecondaryShortCuts.Count > 0);
+end;
+
+function TViewShortCut.IsShortCut(Key: Word; Shift: TShiftState): Boolean;
+var
+  AShortCut: TShortCut;
+  I: Integer;
+begin
+  Result := False;
+  AShortCut := Menus.ShortCut(Key, Shift);
+  if ShortCut = AShortCut then Exit(True);
+  if FSecondaryShortCuts = nil then Exit;
+  for I := 0 to FSecondaryShortCuts.Count - 1 do
+    if FSecondaryShortCuts.ShortCuts[I] = AShortCut then
+      Exit(True);
+end;
+
+function TViewShortCut.IsShortSutStored: Boolean;
+begin
+  Result := ShortCut <> FDefault;
+end;
+
+procedure TViewShortCut.SetSecondaryShortCuts(const Value: TShortCutList);
+begin
+  SecondaryShortCuts.Assign(Value);
+end;
+
+{ TViewShortCuts }
+
+procedure TViewShortCuts.AssignTo(Dest: TPersistent);
+begin
+  if Dest is TViewShortCuts then
+  begin
+    TViewShortCuts(Dest).JmpBack := JmpBack;
+    TViewShortCuts(Dest).JmpTo := JmpTo;
+  end
+  else
+    inherited;
+end;
+
+constructor TViewShortCuts.Create;
+begin
+  FJmpBack := TViewShortCut.Create(VK_BACK);
+  FJmpTo := TViewShortCut.Create(VK_RETURN);
+end;
+
+destructor TViewShortCuts.Destroy;
+begin
+  FJmpBack.Free;
+  FJmpTo.Free;
+  inherited;
+end;
+
+function TViewShortCuts.IsJmpBackStored: Boolean;
+begin
+  Result := JmpBack.IsCustomViewShortCutStored
+end;
+
+function TViewShortCuts.IsJmpToStored: Boolean;
+begin
+  Result := JmpTo.IsCustomViewShortCutStored;
+end;
+
+function TViewShortCuts.IsShortCutsStored: Boolean;
+begin
+  Result := IsJmpBackStored or IsJmpToStored;
+end;
+
+procedure TViewShortCuts.SetJmpBack(const Value: TViewShortCut);
+begin
+  FJmpBack.Assign(Value);
+end;
+
+procedure TViewShortCuts.SetJmpTo(const Value: TViewShortCut);
+begin
+  FJmpTo.Assign(Value);
+end;
+
+{ TJumpStack }
+
+function TJumpStack.Add(const AValue: TJmpItem): Integer;
+begin
+  FStack.Count := FUndoIndex;
+  FStack.Add(AValue);
+  FUndoIndex := FStack.Count;
+  Result := FUndoIndex;
+  FCurrent := AValue;
+end;
+
+function TJumpStack.CanRedo: Boolean;
+begin
+  Result := FUndoIndex < FStack.Count;
+end;
+
+function TJumpStack.CanUndo: Boolean;
+begin
+  Result := FUndoIndex > 0;
+end;
+
+procedure TJumpStack.Clear;
+begin
+  FCurrent := Default(TJmpItem);
+  FStack.Clear;
+  FUndoIndex := 0;
+end;
+
+constructor TJumpStack.Create;
+begin
+  FStack := TList<TJmpItem>.Create;
+end;
+
+destructor TJumpStack.Destroy;
+begin
+  FStack.Free;
+  inherited;
+end;
+
+function TJumpStack.Redo: Boolean;
+begin
+  Result := CanRedo;
+  if Result then
+  begin
+    Inc(FUndoIndex);
+    FCurrent := FStack[FUndoIndex - 1];
+  end;
+end;
+
+function TJumpStack.Undo: Boolean;
+begin
+  Result := CanUndo;
+  if Result then
+  begin
+    FCurrent := FStack[FUndoIndex - 1];
+    Dec(FUndoIndex);
+  end;
 end;
 
 { TFWCustomHexView }
@@ -4440,30 +4768,6 @@ begin
   DoChangeScale(False);
 end;
 
-function TFWCustomHexView.CheckSelected(Value: TSelectPoint): Boolean;
-var
-  LeftSel, RightSel: TSelectPoint;
-begin
-  Result := False;
-
-  if FSelStart.InvalidRow then Exit;
-  if FSelEnd.InvalidRow then Exit;
-  if Value.InvalidRow then Exit;
-
-  if FSelEnd < FSelStart then
-  begin
-    LeftSel := FSelEnd;
-    RightSel := FSelStart;
-  end
-  else
-  begin
-    LeftSel := FSelStart;
-    RightSel := FSelEnd;
-  end;
-
-  Result := (Value >= LeftSel) and (Value <= RightSel);
-end;
-
 procedure TFWCustomHexView.ClearSelection(ResetCaretPos: Boolean);
 begin
   FSelStart.Erase;
@@ -4478,6 +4782,38 @@ begin
     else
       FCaretPosData.RowIndex := -1;
   end;
+end;
+
+procedure TFWCustomHexView.CMHintShow(var Message: TCMHintShow);
+var
+  HintParam: THintParam;
+  Painter: TAbstractPrimaryRowPainter;
+  Offset: TPoint;
+begin
+  HintParam := Default(THintParam);
+  HintParam.MouseHitInfo := GetHitInfo(
+    Message.HintInfo.CursorPos.X, Message.HintInfo.CursorPos.Y, SavedShift);
+  Painter := GetRowPainter(HintParam.MouseHitInfo.SelectPoint.RowIndex);
+  if Painter = nil then Exit;
+  HintParam.AddrVA := Painter.RowToAddress(
+    HintParam.MouseHitInfo.SelectPoint.RowIndex,
+    HintParam.MouseHitInfo.SelectPoint.ValueOffset);
+  Offset.X := FScrollOffset.X;
+  Offset.Y := Painter.RowIndex * FRowHeight + FScrollOffset.Y;
+  if Header.Visible then
+    Inc(Offset.Y, FRowHeight);
+  Message.HintInfo.CursorRect := Painter.ColumnRect(Offset, HintParam.MouseHitInfo.SelectPoint.Column);
+  Message.HintInfo.HideTimeout := HintHideTimeout;
+  HintParam.HintInfo := Message.HintInfo;
+  DoGetHint(HintParam, Message.HintInfo.HintStr);
+end;
+
+procedure TFWCustomHexView.CMHintShowPause(var Message: TCMHintShowPause);
+begin
+  if Message.WasActive = 1 then
+    inherited
+  else
+    Message.Pause^ := HintShowPause;
 end;
 
 function TFWCustomHexView.ColumnAsString(ARowIndex: Int64; AColumn: TColumnType
@@ -4505,37 +4841,22 @@ end;
 
 procedure TFWCustomHexView.CopySelected(CopyStyle: TCopyStyle);
 var
-  RawBuff, Data: TBytes;
-  CurPos, Len: Integer;
-  I, StartRow, EndRow: Integer;
-  SelData: TSelectData;
+  RawBuff: TBytes;
+  I, StartRow, EndRow: Int64;
   Builder: TSimplyStringBuilder;
   Painter: TAbstractPrimaryRowPainter;
-
-  procedure CheckCapacity(NeedSize: Integer);
-  begin
-    if CurPos + NeedSize > Length(RawBuff) then
-      SetLength(RawBuff, CurPos + NeedSize + 16);
-  end;
-
 begin
-  if FSelStart.InvalidRow then Exit;
-  if FSelEnd.InvalidRow then Exit;
-  if FSelStart.RowIndex > FSelEnd.RowIndex then
-  begin
-    StartRow := FSelEnd.RowIndex;
-    EndRow := FSelStart.RowIndex;
-  end
-  else
-  begin
-    StartRow := FSelStart.RowIndex;
-    EndRow := FSelEnd.RowIndex;
-  end;
+  if not GetSelectedRow(StartRow, EndRow) then Exit;
 
   if CopyStyle = csAddress then
   begin
-    Painter := GetRowPainter(SelectedRowIndex);
-    Clipboard.AsText := Painter.ColumnAsString(ctAddress);
+    if IgnoreSelectionWhenCopyAddress or not (LeftSelPoint.Column in [ctOpcode, ctDescription]) then
+    begin
+      Painter := GetRowPainter(SelectedRowIndex);
+      Clipboard.AsText := Painter.ColumnAsString(ctAddress);
+    end
+    else
+      Clipboard.AsText := IntToHex(SelectPointToAddress(LeftSelPoint));
     Exit;
   end;
 
@@ -4558,51 +4879,27 @@ begin
     Exit;
   end;
 
-  CurPos := 0;
-  for I := StartRow to EndRow do
-  begin
-    GetRawBuff(I, Data);
-    if Length(Data) = 0 then Continue;
-    SelData := GetSelectData(I);
-    case SelData.SelectStyle of
-      ssAllSelected:
-      begin
-        Len := Length(Data);
-        CheckCapacity(Len);
-        Move(Data[0], RawBuff[CurPos], Len);
-        Inc(CurPos, Len);
-      end;
-      ssLeftSelected:
-      begin
-        Len := SelData.FirstSelectIndex + 1;
-        CheckCapacity(Len);
-        Move(Data[0], RawBuff[CurPos], Len);
-        Inc(CurPos, Len);
-      end;
-      ssCenterSelected:
-      begin
-        Len := SelData.SecondSelectIndex - SelData.FirstSelectIndex + 1;
-        CheckCapacity(Len);
-        Move(Data[SelData.FirstSelectIndex], RawBuff[CurPos], Len);
-        Inc(CurPos, Len);
-      end;
-      ssRightSelected:
-      begin
-        Len := Length(Data) - SelData.FirstSelectIndex;
-        CheckCapacity(Len);
-        Move(Data[SelData.FirstSelectIndex], RawBuff[CurPos], Len);
-        Inc(CurPos, Len);
-      end;
-    end;
-  end;
-
-  if CurPos = 0 then Exit;
+  RawBuff := GetSelectedRawBuff(StartRow, EndRow);
+  if RawBuff = nil then Exit;
 
   case CopyStyle of
-    csBytes: Clipboard.AsText := RawBufToHex(@RawBuff[0], CurPos);
-    csPascal: Clipboard.AsText := RawBufToPasArray(@RawBuff[0], CurPos);
-    csCpp: Clipboard.AsText := RawBufToCPPArray(@RawBuff[0], CurPos);
-    csAsmOpcodes: Clipboard.AsText := RawBufToAsmDB(@RawBuff[0], CurPos);
+    csBytes: Clipboard.AsText := RawBufToHex(@RawBuff[0], Length(RawBuff));
+    csPascal: Clipboard.AsText := RawBufToPasArray(@RawBuff[0], Length(RawBuff));
+    csCpp: Clipboard.AsText := RawBufToCPPArray(@RawBuff[0], Length(RawBuff));
+    csAsmOpcodes: Clipboard.AsText := RawBufToAsmDB(@RawBuff[0], Length(RawBuff));
+  end;
+end;
+
+procedure TFWCustomHexView.CopySelectedToStream(AStream: TStream);
+var
+  RawBuff: TBytes;
+  StartRow, EndRow: Int64;
+begin
+  if GetSelectedRow(StartRow, EndRow) then
+  begin
+    RawBuff := GetSelectedRawBuff(StartRow, EndRow);
+    if RawBuff <> nil then
+      AStream.WriteBuffer(RawBuff[0], Length(RawBuff));
   end;
 end;
 
@@ -4630,11 +4927,15 @@ begin
   FBytesInColorGroup := 4;
   FBytesInRow := 16;
   FEncoder := TCharEncoder.Create(Self);
+  FHintHideTimeout := 7000;
+  FHintShowPause := 300;
+  FJumpStack := TJumpStack.Create;
   FScrollBars := TScrollStyle.ssBoth;
   FSeparateGroupByColor := True;
   FTextMargin := ToDpi(NoDpiTextMargin);
   FSelectOnMouseDown := True;
   FSplitMargin := ToDpi(NoDpiSplitMargin);
+  FShortCuts := GetShortCutsClass.Create;
   FMeasureCanvas := TBitmap.Create;
   FMeasureCanvas.SetSize(1, 1);
   FMinColumnWidth := FTextMargin shl 2;
@@ -4721,11 +5022,17 @@ begin
       AddressViewOffsetBase := NewAddressViewOffsetBase;
     end;
   end;
-  inherited;
+  try
+    inherited;
+  finally
+    FMousePressed := False;
+  end;
 end;
 
 destructor TFWCustomHexView.Destroy;
 begin
+  FShortCuts.Free;
+  FJumpStack.Free;
   FPostPainters.Free;
   FPainters.Free;
   FSelections.OnChange := nil;
@@ -4915,8 +5222,24 @@ begin
 end;
 
 procedure TFWCustomHexView.DoCaretKeyDown(var Key: Word; Shift: TShiftState);
+var
+  Handled: Boolean;
 begin
-  // Method for inheritors...
+  // Базовый редактор не знает как обрабатывать ShortCuts.JmpTo,
+  // эта задача должна быть решена в наследниках или во внешнем обработчике события.
+
+  // The base editor does not know how to handle ShortCuts.JmpTo,
+  // this task should be solved in the successors or in an external event handler.
+
+  if ShortCuts.JmpTo.IsShortCut(Key, Shift) then
+  begin
+    Handled := False;
+    DoJmpTo(SelectPointToAddress(LeftSelPoint), jsQueryJump, Handled);
+    Exit;
+  end;
+
+  if ShortCuts.JmpBack.IsShortCut(Key, Shift) then
+    JumpUndo;
 end;
 
 procedure TFWCustomHexView.DoCaretHome(Shift: TShiftState);
@@ -5113,6 +5436,13 @@ begin
   RestoreViewParam;
 end;
 
+procedure TFWCustomHexView.DoGetHint(var AHintParam: THintParam;
+  var AHint: string);
+begin
+  if Assigned(FOnGetHint) then
+    FOnGetHint(Self, AHintParam, AHint);
+end;
+
 procedure TFWCustomHexView.DoInvalidateRange(AStartRow, AEndRow: Int64);
 var
   R: TRect;
@@ -5128,9 +5458,16 @@ begin
   InvalidateRect(Handle, @R, False);
 end;
 
-function TFWCustomHexView.DoLButtonDown(Shift: TShiftState): Boolean;
+procedure TFWCustomHexView.DoJmpTo(AAddrVA: Int64; AJmpState: TJmpState;
+  var Handled: Boolean);
 begin
-  Result := ssDouble in Shift;
+  if Assigned(FOnJmpTo) then
+    FOnJmpTo(Self, AAddrVA, AJmpState, Handled);
+end;
+
+function TFWCustomHexView.DoLButtonDown(const AHitInfo: TMouseHitInfo): Boolean;
+begin
+  Result := ssDouble in AHitInfo.Shift;
 end;
 
 function TFWCustomHexView.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
@@ -5198,7 +5535,8 @@ var
   {$endif}
 begin
   if FRawData.Count = 0 then Exit;
-  for I := StartRow to EndRow do
+  I := StartRow;
+  while I <= EndRow do
   begin
     Painter := GetRowPainter(I, False);
     if Assigned(Painter) then
@@ -5210,8 +5548,10 @@ begin
 
     {$ifdef show_dbg_lines}
     R := Bounds(0, Offset.Y - FRowHeight, FHeader.ColumnWidth[ctWorkSpace], 20);
-    DrawText(Canvas.Handle, PChar(IntToStr(I)), - 1, R, DT_CENTER);
+    DrawText(Canvas, IntToStr(I), -1, R, DT_CENTER);
     {$endif}
+
+    Inc(I);
   end;
 end;
 
@@ -5244,6 +5584,14 @@ begin
   for I := ctWorkSpace to High(TColumnType) do
     if I in Header.Columns then
       FitColumnToBestSize(I);
+end;
+
+function TFWCustomHexView.Focused: Boolean;
+begin
+  if FProcessMenu then
+    Result := True
+  else
+    Result := inherited Focused;
 end;
 
 procedure TFWCustomHexView.FitColumnToBestSize(Value: TColumnType);
@@ -5329,6 +5677,11 @@ begin
     NewVerticalOffset := (ARowIndex - (Diapason.EndRow - Diapason.StartRow)) * FRowHeight;
   UpdateScrollY(-NewVerticalOffset);
   UpdateCaretPosData(SelectPoint(ARowIndex, 0, ctOpcode), ACaretChangeMode);
+end;
+
+procedure TFWCustomHexView.JumpClear;
+begin
+  FJumpStack.Clear;
 end;
 
 function TFWCustomHexView.GetBookMark(AIndex: TBookMark): Int64;
@@ -5449,6 +5802,85 @@ begin
   end;
 end;
 
+function TFWCustomHexView.GetSelectedRawBuff(ASelStartRow, ASelEndRow: Int64): TBytes;
+var
+  RawBuff, Data: TBytes;
+  CurPos, Len: Integer;
+  I: Int64;
+  SelData: TSelectData;
+
+  procedure CheckCapacity(NeedSize: Integer);
+  begin
+    if CurPos + NeedSize > Length(RawBuff) then
+      SetLength(RawBuff, CurPos + NeedSize + 16);
+  end;
+
+begin
+  CurPos := 0;
+  for I := ASelStartRow to ASelEndRow do
+  begin
+    GetRawBuff(I, Data);
+    if Length(Data) = 0 then Continue;
+    SelData := GetSelectData(I);
+    case SelData.SelectStyle of
+      ssAllSelected:
+      begin
+        Len := Length(Data);
+        CheckCapacity(Len);
+        Move(Data[0], RawBuff[CurPos], Len);
+        Inc(CurPos, Len);
+      end;
+      ssLeftSelected:
+      begin
+        Len := SelData.FirstSelectIndex + 1;
+        CheckCapacity(Len);
+        Move(Data[0], RawBuff[CurPos], Len);
+        Inc(CurPos, Len);
+      end;
+      ssCenterSelected:
+      begin
+        Len := SelData.SecondSelectIndex - SelData.FirstSelectIndex + 1;
+        CheckCapacity(Len);
+        Move(Data[SelData.FirstSelectIndex], RawBuff[CurPos], Len);
+        Inc(CurPos, Len);
+      end;
+      ssRightSelected:
+      begin
+        Len := Length(Data) - SelData.FirstSelectIndex;
+        CheckCapacity(Len);
+        Move(Data[SelData.FirstSelectIndex], RawBuff[CurPos], Len);
+        Inc(CurPos, Len);
+      end;
+    end;
+  end;
+
+  Result := RawBuff;
+  SetLength(Result, CurPos);
+end;
+
+function TFWCustomHexView.GetSelectedRow(out ASelStartRow, ASelEndRow: Int64): Boolean;
+begin
+  Result := False;
+  if FSelStart.InvalidRow then Exit;
+  if FSelEnd.InvalidRow then Exit;
+  if FSelStart.RowIndex > FSelEnd.RowIndex then
+  begin
+    ASelStartRow := FSelEnd.RowIndex;
+    ASelEndRow := FSelStart.RowIndex;
+  end
+  else
+  begin
+    ASelStartRow := FSelStart.RowIndex;
+    ASelEndRow := FSelEnd.RowIndex;
+  end;
+  Result := True;
+end;
+
+function TFWCustomHexView.IgnoreSelectionWhenCopyAddress: Boolean;
+begin
+  Result := False;
+end;
+
 function TFWCustomHexView.GetColorMapClass: THexViewColorMapClass;
 begin
   Result := THexViewColorMap;
@@ -5486,15 +5918,15 @@ begin
   Result := THexViewHeader;
 end;
 
-function TFWCustomHexView.GetHitInfo(XPos, YPos: Int64): TMouseHitInfo;
+function TFWCustomHexView.GetHitInfo(XPos, YPos: Int64; AShift: TShiftState): TMouseHitInfo;
 var
   I: TColumnType;
   LeftOffset: Integer;
   Painter: TAbstractPrimaryRowPainter;
 begin
   Result.Erase;
-  Result.XPos := XPos;
-  Result.YPos := YPos;
+  Result.CursorPos := Point(XPos, YPos);
+  Result.Shift := AShift;
 
   Dec(XPos, FScrollOffset.X);
 
@@ -5510,7 +5942,8 @@ begin
 
       if Header.DrawColumnSeparator then
       begin
-        Result.OnSplitter := LeftOffset - SplitMargin < XPos;
+        if LeftOffset - SplitMargin < XPos then
+          Include(Result.Elements, keSplitter);
 
         // если правая граница колонки за экраном,
         // позволяем быстро изменить ее размеры без скролирования по горизонтали
@@ -5518,10 +5951,11 @@ begin
         // if the right border of a column is off the screen,
         // we allow you to quickly resize it without scrolling horizontally
 
-        if not Result.OnSplitter and (XPos + FScrollOffset.X >= ClientWidth - DblSize(SplitMargin)) then
+        if not (keSplitter in Result.Elements) and (XPos + FScrollOffset.X >= ClientWidth - DblSize(SplitMargin)) then
         begin
           Result.ColumnWidth := FHeader.ColumnWidth[I] - (LeftOffset - XPos - FScrollOffset.X);
-          Result.OnSplitter := Result.ColumnWidth >= MinColumnWidth;
+          if Result.ColumnWidth >= MinColumnWidth then
+            Include(Result.Elements, keSplitter);
         end;
       end;
 
@@ -5531,17 +5965,20 @@ begin
 
   if Header.Visible then
   begin
-    Result.OnHeader := (YPos >= 0) and (YPos <= FRowHeight);
+    if (YPos >= 0) and (YPos <= FRowHeight) then
+      Include(Result.Elements, keHeader);
     Dec(YPos, FRowHeight);
   end;
-  if Result.OnHeader then Exit;
+  if keHeader in Result.Elements then Exit;
   Dec(YPos, FScrollOffset.Y);
 
   Result.SelectPoint.RowIndex := YPos div FRowHeight;
   if Result.SelectPoint.RowIndex >= FRawData.Count then
     Result.SelectPoint.RowIndex := -1;
 
-  if Result.OnSplitter then Exit;
+  Result.ScrolledCursorPos := Point(XPos, YPos);
+
+  if keSplitter in Result.Elements then Exit;
 
   if Result.SelectPoint.RowIndex < 0 then Exit;
 
@@ -5550,8 +5987,10 @@ begin
 
   Painter := GetRowPainter(Result.SelectPoint.RowIndex);
   if Assigned(Painter) then
-    Painter.GetHitInfo(Result, XPos, YPos);
+    Painter.GetHitInfo(Result);
 
+  if SelectPointInSelection(Result.SelectPoint) then
+    Include(Result.Elements, keSelection);
 end;
 
 function TFWCustomHexView.GetLeftNCWidth: Integer;
@@ -5687,6 +6126,11 @@ begin
   end;
 end;
 
+function TFWCustomHexView.GetShortCutsClass: TViewShortCutsClass;
+begin
+  Result := TViewShortCuts;
+end;
+
 function TFWCustomHexView.GetTextExtent: TSize;
 begin
   Result := MeasureCanvas.TextExtent(CHAR_STRING);
@@ -5773,15 +6217,7 @@ var
   TopRow, BottomRow: Int64;
   Diapason: TVisibleRowDiapason;
 begin
-  if FSelStart.InvalidRow then Exit;
-  if FSelEnd.InvalidRow then Exit;
-  TopRow := FSelStart.RowIndex;
-  BottomRow := FSelEnd.RowIndex;
-  if TopRow > BottomRow then
-  begin
-    TopRow := FSelEnd.RowIndex;
-    BottomRow := FSelStart.RowIndex;
-  end;
+  if not GetSelectedRow(TopRow, BottomRow) then Exit;
   Diapason := VisibleRowDiapason;
   if (TopRow > Diapason.EndRow) or
     (BottomRow < Diapason.StartRow) then Exit;
@@ -5805,6 +6241,22 @@ begin
   Result := FColorMap.IsColorStored;
 end;
 
+function TFWCustomHexView.LeftSelPoint: TSelectPoint;
+begin
+  if SelStart <= SelEnd then
+    Result := FSelStart
+  else
+    Result := FSelEnd;
+end;
+
+function TFWCustomHexView.RightSelPoint: TSelectPoint;
+begin
+  if SelStart >= SelEnd then
+    Result := FSelStart
+  else
+    Result := FSelEnd;
+end;
+
 function TFWCustomHexView.IsFontStored: Boolean;
 begin
   Result :=
@@ -5822,11 +6274,112 @@ begin
   Result := (ARowIndex >= Diapason.StartRow) and (ARowIndex <= Diapason.EndRow);
 end;
 
+function TFWCustomHexView.IsShortCutsStored: Boolean;
+begin
+  Result := ShortCuts.IsShortCutsStored;
+end;
+
+function TFWCustomHexView.JumpRedo: Boolean;
+var
+  Handled: Boolean;
+begin
+  Result := FJumpStack.Redo;
+  Handled := False;
+  DoJmpTo(FJumpStack.Current.JmpAddr, jsJmpRedo, Handled);
+  if Handled then Exit(True);
+  if Result then
+  begin
+    if FJumpStack.Current.SelLength > 0 then
+    begin
+      FocusOnAddress(FJumpStack.Current.JmpAddr, ccmSetNewSelection);
+      UpdateSelectionAddr(FJumpStack.Current.JmpAddr,
+        FJumpStack.Current.JmpAddr + FJumpStack.Current.SelLength - 1);
+    end
+    else
+      FocusOnAddress(FJumpStack.Current.JmpAddr, GetDefaultCaretChangeMode);
+    DoJmpTo(FJumpStack.Current.JmpAddr, jsJmpDone, Result);
+  end;
+end;
+
+function TFWCustomHexView.JumpToAddress(AJmpAddr: Int64; ASelLength: Integer): Boolean;
+var
+  Handled: Boolean;
+  JmpItem: TJmpItem;
+begin
+  if RawData.Count = 0 then Exit(False);
+
+  Result := (FJumpStack.Current.JmpAddr <> AJmpAddr) or
+    (FJumpStack.Current.SelLength <> ASelLength);
+
+  if Result then
+  begin
+    //Вьювер снаружи может быть перестроен, поэтому сначала запоминаем его актуальное состояние.
+
+    // The viewer outside can be rebuilt, so we first memorize its current state.
+
+    JmpItem.JmpAddr := AJmpAddr;
+    JmpItem.SelLength := ASelLength;
+    JmpItem.JmpFrom := RawData[CurrentVisibleRow].Address;
+    JmpItem.SelStart := FSelStart;
+    JmpItem.SelEnd := FSelEnd;
+
+    Handled := False;
+    DoJmpTo(AJmpAddr, jsJmpPushToStack, Handled);
+    if Handled then Exit;
+    FJumpStack.Add(JmpItem);
+  end
+  else
+  begin
+    Handled := False;
+    DoJmpTo(AJmpAddr, jsJmpPushToStack, Handled);
+    if Handled then Exit;
+    Result := FJumpStack.Redo;
+  end;
+
+  if ASelLength > 0 then
+  begin
+    FocusOnAddress(AJmpAddr, ccmSetNewSelection);
+    UpdateSelectionAddr(AJmpAddr, AJmpAddr + ASelLength - 1);
+  end
+  else
+    FocusOnAddress(AJmpAddr, GetDefaultCaretChangeMode);
+
+  DoJmpTo(AJmpAddr, jsJmpDone, Handled);
+end;
+
+function TFWCustomHexView.JumpToBookmark(ABookmark: TBookMark): Boolean;
+begin
+  Result := JumpToAddress(Bookmark[ABookmark]);
+end;
+
+function TFWCustomHexView.JumpUndo: Boolean;
+var
+  Handled: Boolean;
+begin
+  Result := FJumpStack.Undo;
+  Handled := False;
+  DoJmpTo(FJumpStack.Current.JmpFrom, jsJmpUndo, Handled);
+  if Handled then Exit(True);
+  if Result then
+  begin
+    FocusOnAddress(FJumpStack.Current.JmpFrom, ccmNone);
+    UpdateSelection(FJumpStack.Current.SelStart, FJumpStack.Current.SelEnd);
+
+    // редактор уже восстановлен в то состояние, которое было перед прыжком,
+    // поэтому адрес для последующей коррекции извне не передается
+
+    // the editor is already restored to the state it was in before the jump,
+    // so the address for further external correction is not transmitted
+
+    DoJmpTo(-1, jsJmpDone, Handled);
+  end;
+end;
+
 procedure TFWCustomHexView.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   inherited;
   UpdateCaretTimer;
-  FSavedShift := Shift;
+  UpdateSavedShift(Shift);
   DoCaretKeyDown(Key, Shift);
   case Key of
     VK_SHIFT: FShiftSelectionInit := True;
@@ -5857,6 +6410,7 @@ end;
 procedure TFWCustomHexView.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited;
+  UpdateSavedShift(Shift);
   if Key = VK_SHIFT then
     FShiftSelectionInit := False;
 end;
@@ -5885,14 +6439,22 @@ var
 begin
   try
     SetFocus;
+
+    {$IFDEF FPC}
+    case Button of
+      mbExtra1: JumpUndo;
+      mbExtra2: JumpRedo;
+    end;
+    {$ENDIF}
+
     if Button <> TMouseButton.mbLeft then Exit;
 
     FMousePressed := True;
-    FMousePressedHitInfo := GetHitInfo(X, Y);
+    FMousePressedHitInfo := GetHitInfo(X, Y, Shift);
 
-    if DoLButtonDown(Shift) then Exit;
+    if DoLButtonDown(FMousePressedHitInfo) then Exit;
 
-    if FMousePressedHitInfo.OnSplitter  then
+    if keSplitter in FMousePressedHitInfo.Elements then
     begin
       FHeader.ColumnWidth[FMousePressedHitInfo.SelectPoint.Column] :=
         FMousePressedHitInfo.ColumnWidth;
@@ -5903,7 +6465,7 @@ begin
       if RawData.Count = 0 then Exit;
       if FMousePressedHitInfo.SelectPoint.RowIndex < 0 then Exit;
 
-      if FMousePressedHitInfo.OnHeader then
+      if keHeader in FMousePressedHitInfo.Elements then
         CaretChangeMode := ccmNone
       else if FMousePressedHitInfo.SelectPoint.Column in [ctNone, ctWorkSpace, ctJmpLine] then
         CaretChangeMode := ccmReset
@@ -5933,7 +6495,7 @@ var
   Painter: TAbstractPrimaryRowPainter;
 begin
   try
-    HitTest := GetHitInfo(X, Y);
+    HitTest := GetHitInfo(X, Y, Shift);
 
     if not FMousePressed then
     begin
@@ -5941,16 +6503,16 @@ begin
       Exit;
     end;
 
-    if FMousePressed and FMousePressedHitInfo.OnSplitter then
+    if FMousePressed and (keSplitter in FMousePressedHitInfo.Elements) then
     begin
       FHeader.ColumnWidth[FMousePressedHitInfo.SelectPoint.Column] :=
-        FMousePressedHitInfo.ColumnWidth + X - FMousePressedHitInfo.XPos;
+        FMousePressedHitInfo.ColumnWidth + X - FMousePressedHitInfo.CursorPos.X;
 
       if FHeader.ColumnWidth[FMousePressedHitInfo.SelectPoint.Column] < MinColumnWidth then
         FHeader.ColumnWidth[FMousePressedHitInfo.SelectPoint.Column] := MinColumnWidth;
 
       UpdateTextBoundary;
-      if X > FMousePressedHitInfo.XPos then
+      if X > FMousePressedHitInfo.CursorPos.X then
         UpdateScrollPos;
       Invalidate;
       Exit;
@@ -5986,7 +6548,7 @@ begin
       begin
         SelPoint.Column := HitTest.SelectPoint.Column;
         SelPoint.RowIndex := HitTest.SelectPoint.RowIndex;
-        if FMousePressedHitInfo.XPos < X then
+        if FMousePressedHitInfo.CursorPos.X < X then
           SelPoint.CharIndex :=
             Painter.CharCount(HitTest.SelectPoint.Column) - 1
         else
@@ -6009,7 +6571,7 @@ procedure TFWCustomHexView.MouseUp(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
   FMousePressed := False;
-  if FMousePressedHitInfo.OnSplitter then
+  if keSplitter in FMousePressedHitInfo.Elements then
   begin
     UpdateTextBoundary;
     UpdateScrollPos;
@@ -6307,6 +6869,31 @@ begin
   end;
 end;
 
+function TFWCustomHexView.SelectPointInSelection(const Value: TSelectPoint
+  ): Boolean;
+var
+  LeftSel, RightSel: TSelectPoint;
+begin
+  Result := False;
+
+  if FSelStart.InvalidRow then Exit;
+  if FSelEnd.InvalidRow then Exit;
+  if Value.InvalidRow then Exit;
+
+  if FSelEnd < FSelStart then
+  begin
+    LeftSel := FSelEnd;
+    RightSel := FSelStart;
+  end
+  else
+  begin
+    LeftSel := FSelStart;
+    RightSel := FSelEnd;
+  end;
+
+  Result := (Value >= LeftSel) and (Value <= RightSel);
+end;
+
 function TFWCustomHexView.RowToAddress(ARowIndex: Int64;
   ValueOffset: Integer): Int64;
 begin
@@ -6325,7 +6912,13 @@ end;
 
 function TFWCustomHexView.SelectedRowIndex: Int64;
 begin
-  Result := RawData.AddressToRowIndex(Min(SelStart, SelEnd));
+  Result := LeftSelPoint.RowIndex;
+end;
+
+function TFWCustomHexView.SelectPointToAddress(const AValue: TSelectPoint
+  ): Int64;
+begin
+  Result := RowToAddress(AValue.RowIndex, AValue.ValueOffset);
 end;
 
 function TFWCustomHexView.RowVisible(ARowIndex: Int64): Boolean;
@@ -6340,6 +6933,11 @@ end;
 procedure TFWCustomHexView.SaveViewParam;
 begin
   FPreviosCharWidth := FCharWidth;
+end;
+
+function TFWCustomHexView.GetDefaultCaretChangeMode: TCaretChangeMode;
+begin
+  Result := ccmSelectPointer;
 end;
 
 function TFWCustomHexView.Scroll32To64(Value: Integer): Int64;
@@ -6597,12 +7195,12 @@ end;
 
 procedure TFWCustomHexView.SetSelEnd(const Value: Int64);
 begin
-  UpdateSelection(FSelStart, AddressToSelectPoint(Value));
+  UpdateSelection(FSelStart, AddressToSelectPoint(Value), False);
 end;
 
 procedure TFWCustomHexView.SetSelStart(const Value: Int64);
 begin
-  UpdateSelection(AddressToSelectPoint(Value), FSelEnd);
+  UpdateSelection(AddressToSelectPoint(Value), FSelEnd, False);
 end;
 
 procedure TFWCustomHexView.SetSeparateGroupByColor(const Value: Boolean);
@@ -6612,6 +7210,11 @@ begin
     FSeparateGroupByColor := Value;
     Invalidate;
   end;
+end;
+
+procedure TFWCustomHexView.SetShortCuts(const Value: TViewShortCuts);
+begin
+  FShortCuts.Assign(Value);
 end;
 
 procedure TFWCustomHexView.SetTopRow(ARowIndex: Int64);
@@ -6686,6 +7289,19 @@ begin
   UpdateScrollY(NewVerticalOffset);
 end;
 
+{$IFNDEF FPC}
+procedure TFWCustomHexView.WMXButtonDown(var Msg: TWMMouse);
+const
+  MK_XBUTTON1 = $20;
+  MK_XBUTTON2 = $40;
+begin
+  case Word(Msg.Keys) of
+    MK_XBUTTON1: JumpUndo;
+    MK_XBUTTON2: JumpRedo;
+  end;
+end;
+{$ENDIF}
+
 procedure TFWCustomHexView.UpdateCaretColumn(AColumn: TColumnType);
 begin
   FCaretPosData.Column := AColumn;
@@ -6695,6 +7311,7 @@ procedure TFWCustomHexView.UpdateCaretPosData(Value: TSelectPoint;
   AChangeMode: TCaretChangeMode);
 var
   Painter: TAbstractPrimaryRowPainter;
+  ASelStartAddrVA, APointerSize: Int64;
 begin
   DestroyCaretTimer;
 
@@ -6716,6 +7333,18 @@ begin
     ccmSelectRow:
       UpdateSelection(SelectPoint(Value.RowIndex, 0, Value.Column),
         SelectPoint(Value.RowIndex, -1, Value.Column));
+    ccmSelectPointer:
+    begin
+      ASelStartAddrVA := RawData.RowToAddress(Value.RowIndex, Max(0, Value.ValueOffset));
+      case AddressMode of
+        am8bit: APointerSize := 1;
+        am16bit: APointerSize := 2;
+        am32bit: APointerSize := 4;
+      else
+        APointerSize := 8;
+      end;
+      UpdateSelectionAddr(ASelStartAddrVA, ASelStartAddrVA + APointerSize - 1);
+    end;
     ccmReset:
     begin
       Value.Erase;
@@ -6762,12 +7391,11 @@ begin
   end;
 end;
 
-procedure TFWCustomHexView.UpdateCursor(const HitTest: TMouseHitInfo);
+procedure TFWCustomHexView.UpdateCursor(var AHitInfo: TMouseHitInfo);
 begin
-  if HitTest.OnSplitter then
-    Cursor := crHSplit
-  else
-    Cursor := crDefault;
+  if (keSplitter in AHitInfo.Elements) and (AHitInfo.Cursor = crDefault) then
+    AHitInfo.Cursor := crHSplit;
+  Cursor := AHitInfo.Cursor;
 end;
 
 procedure TFWCustomHexView.UpdateDataMap;
@@ -6788,6 +7416,24 @@ begin
   Stopwatch.Stop;
   OutputDebugString(PChar(IntToStr(Stopwatch.ElapsedMilliseconds)));
   {$endif}
+end;
+
+procedure TFWCustomHexView.UpdateSavedShift(Shift: TShiftState);
+var
+  P: TPoint;
+  HitTest: TMouseHitInfo;
+begin
+  if FSavedShift <> Shift then
+  begin
+    FSavedShift := Shift;
+    if not FMousePressed then
+    begin
+      GetCursorPos(P{%H-});
+      P := ScreenToClient(P);
+      HitTest := GetHitInfo(P.X, P.Y, Shift);
+      UpdateCursor(HitTest);
+    end;
+  end;
 end;
 
 procedure TFWCustomHexView.UpdateScrollPos;
@@ -6835,7 +7481,8 @@ begin
   UpdateVerticalScrollPos;
 end;
 
-procedure TFWCustomHexView.UpdateSelection(ANewStart, ANewEnd: TSelectPoint);
+procedure TFWCustomHexView.UpdateSelection(ANewStart, ANewEnd: TSelectPoint;
+  AUpdateSelAddr: Boolean);
 var
   Painter: TAbstractPrimaryRowPainter;
 begin
@@ -6854,23 +7501,31 @@ begin
     begin
       FSelStartAddr := RawData.RowToAddress(ANewStart.RowIndex, Max(0, ANewStart.ValueOffset));
       FSelEndAddr := RawData.RowToAddress(ANewEnd.RowIndex, ANewEnd.ValueOffset);
-      if FSelStartAddr <= FSelEndAddr then
+      if AUpdateSelAddr then
       begin
-        Painter := GetRowPainter(FSelEnd.RowIndex);
-        if Assigned(Painter) then
-          Inc(FSelEndAddr, Painter.TextMetric.ValueMetric.ByteCount - 1);
-      end
-      else
-      begin
-        Painter := GetRowPainter(FSelStart.RowIndex);
-        if Assigned(Painter) then
-          Inc(FSelStartAddr, Painter.TextMetric.ValueMetric.ByteCount - 1);
+        if FSelStartAddr <= FSelEndAddr then
+        begin
+          Painter := GetRowPainter(FSelEnd.RowIndex);
+          if Assigned(Painter) and (ANewEnd.ValueOffset >= 0) then
+            Inc(FSelEndAddr, Painter.TextMetric.ValueMetric.ByteCount - 1);
+        end
+        else
+        begin
+          Painter := GetRowPainter(FSelStart.RowIndex);
+          if Assigned(Painter) and (ANewStart.ValueOffset >= 0) then
+            Inc(FSelStartAddr, Painter.TextMetric.ValueMetric.ByteCount - 1);
+        end;
       end;
     end;
 
     DoSelectionChage(FSelStartAddr, FSelEndAddr);
     InvalidateSelections;
   end;
+end;
+
+procedure TFWCustomHexView.UpdateSelectionAddr(ANewStart, ANewEnd: Int64);
+begin
+  UpdateSelection(AddressToSelectPoint(ANewStart), AddressToSelectPoint(ANewEnd), False);
 end;
 
 procedure TFWCustomHexView.DoBeforePaint(const ADiapason: TVisibleRowDiapason);
@@ -6973,6 +7628,21 @@ end;
 function TFWCustomHexView.VisibleRowCount: Integer;
 begin
   Result := GetPageHeight div FRowHeight;
+end;
+
+procedure TFWCustomHexView.WndProc(var AMsg: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+begin
+  if AMsg.Msg = {$IFDEF FPC}LM_CONTEXTMENU{$ELSE}WM_CONTEXTMENU{$ENDIF} then
+  begin
+    FProcessMenu := True;
+    try
+      inherited WndProc(AMsg);
+    finally
+      FProcessMenu := False;
+    end;
+    Exit;
+  end;
+  inherited WndProc(AMsg);
 end;
 
 function TFWCustomHexView.VisibleRowDiapason: TVisibleRowDiapason;

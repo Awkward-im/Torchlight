@@ -102,8 +102,13 @@ msgstr "Editar texto"
 msgid "Tag:"
 msgstr ""
 
-#: tl2datamodule.sseveralrefs
+#: tl2datamodule.rsnoref
+msgid "Text don't have any references"
+msgstr ""
+
+#: tl2datamodule.rsseveralrefs
 #, object-pascal-format
+msgctxt "tl2datamodule.rsseveralrefs"
 msgid "This text presents in several (about %d) places."
 msgstr ""
 
@@ -165,6 +170,37 @@ msgctxt "tl2projectform.rsnowarnings"
 msgid "No any warnings"
 msgstr "Sin advertencias"
 
+#: tl2projectform.rsprojectstat
+msgid "Project statistic"
+msgstr ""
+
+#: tl2projectform.rssbtext
+#, object-pascal-format
+msgctxt "tl2projectform.rssbtext"
+msgid "Project files: %d; tags: %d; lines: %d | Translated: %d; partially: %d | Doubles: %d"
+msgstr ""
+
+#: tl2projectform.rsstattext
+#, object-pascal-format
+msgctxt "tl2projectform.rsstattext"
+msgid ""
+"Project files: %d\n"
+" tags: %d\n"
+" lines: %d\n"
+"Translated: %d\n"
+" partially: %d\n"
+"Doubles: %d"
+msgstr ""
+
+#: tl2projectform.rsstattextnoref
+#, object-pascal-format
+msgctxt "tl2projectform.rsstattextnoref"
+msgid ""
+"Lines: %d\n"
+"Translated: %d\n"
+"Partially: %d"
+msgstr ""
+
 #: tl2projectform.saffected
 msgid " line(s) affected"
 msgstr " linea(s) afectadas"
@@ -209,12 +245,6 @@ msgstr "Reemplazos totales"
 msgid "-- Root --"
 msgstr "-- arraigar --"
 
-#: tl2projectform.ssbtext
-#, object-pascal-format, fuzzy, badformat
-#| msgid "Preload files: %d; lines: base = %d, mods = %d | Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
-msgid "Project files: %d; tags: %d; lines: %d | Translated: %d; patially: %d | Doubles: %d"
-msgstr "Precargar archivos: %d; lineas: base = %d, mods = %d | Archivos de Proyecto: %d; Etiquetas: %d; líneas: %d | Traducido: %d; Parcialmente: %d | Dobles: %d"
-
 #: tl2projectform.sstopscan
 msgid "Do you want to break scan? It clear full scan process."
 msgstr "¿Desea terminar el escaneo? Esto limpiara el proceso del escaneado."
@@ -253,8 +283,32 @@ msgstr "Configuracion"
 msgid "Target have sign at the end"
 msgstr ""
 
+#: tl2text.rsdstcolend
+msgid "Source have less |u than target"
+msgstr ""
+
+#: tl2text.rsdstcolor
+msgid "Source have less colors than target"
+msgstr ""
+
+#: tl2text.rsdstline
+msgid "Source have less lines than target"
+msgstr ""
+
 #: tl2text.rsdstspace
 msgid "Target have space(s) at the end"
+msgstr ""
+
+#: tl2text.rssrccolend
+msgid "Source have more |u than target"
+msgstr ""
+
+#: tl2text.rssrccolor
+msgid "Source have more colors than target"
+msgstr ""
+
+#: tl2text.rssrcline
+msgid "Source have more lines than target"
 msgstr ""
 
 #: tl2text.rssrcsign
@@ -314,6 +368,18 @@ msgstr ""
 
 #: tmaintl2transform.actmodinfo.caption
 msgid "Mod Info"
+msgstr ""
+
+#: tmaintl2transform.actmodinfo.hint
+msgid "Show mod info"
+msgstr ""
+
+#: tmaintl2transform.actshowlog.caption
+msgid "Show log"
+msgstr ""
+
+#: tmaintl2transform.actshowlog.hint
+msgid "Show log window"
 msgstr ""
 
 #: tmaintl2transform.caption
