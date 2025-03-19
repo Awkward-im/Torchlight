@@ -1,5 +1,4 @@
 {TODO: calc stDelete. if exists, rebuild Templates, save them 1st, then idxs?}
-{TODO: save translation language in info}
 {TODO: DeleteString (mark for delete). Delete Refs or not?}
 {TODO: ReadSrc, not StringList use but manual CRLF scan and "Copy" to string?}
 {TODO: "Changed" flag (when to clear)}
@@ -139,6 +138,7 @@ type
 
   public
     FModList: array of AnsiString;
+    lang    : string;
 
     procedure Init;
     procedure Free;
@@ -1232,6 +1232,10 @@ begin
             FRefilter:=ls<>GetFilterWords();
           end;
 
+          5: begin
+            lang:=lstrm.ReadAnsiString();
+          end;
+
         // unknown block
         else
           if lver>0 then
@@ -1332,6 +1336,13 @@ begin
 
       lstrm.WriteDWordAt(lstrm.Position-lpos-SizeOf(DWord),lpos);
     end;
+
+    // 5 - translation language
+    lstrm.WriteByte(5);
+    lpos:=lstrm.Position;
+    lstrm.WriteDWord(0);
+    lstrm.WriteAnsiString(lang);
+    lstrm.WriteDWordAt(lstrm.Position-lpos-SizeOf(DWord),lpos);
 
     if not FPackInfo then
       lstrm.SaveToFile(ChangeFileExt(fname,cnstInfoExt));
@@ -1563,6 +1574,7 @@ end;
 
 procedure TTL2Translation.Free;
 begin
+  lang      :='';
   FErrFile  :='';
   FErrText  :='';
   FModTitle :='';

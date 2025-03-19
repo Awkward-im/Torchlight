@@ -138,6 +138,7 @@ uses
   TL2SimForm,
   TL2DupeForm,
   TL2Text,
+  iso639,
   LCLType,
   LazUtf8,
   lclintf,
@@ -788,6 +789,7 @@ function TTL2Project.MakeNew(const adir:AnsiString; aFile:boolean;
 var
   ls:string;
 begin
+  data.lang:=iso639.GetLang(TL2Settings.edTransLang.Text);
   data.Filter:=flFiltered;
   actStopScan.Enabled:=true;
   doStopScan:=false;
