@@ -132,7 +132,7 @@ begin
   begin
     Str(alist[i].id,lSQL);
     lSQL:='SELECT id FROM '+dbItemTable+
-          ' WHERE modid LIKE '' '+lSQL+' '' AND unittype='''+lunittype+''' LIMIT 1';
+          ' WHERE (modid GLOB ''* '+lSQL+' *'') AND (unittype='''+lunittype+''') LIMIT 1';
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then

@@ -282,10 +282,10 @@ begin
         begin
           TSynTSyn(SynEdit.Highlighter).OnPropCheck:=nil;
           if (PDword(pc)^ and $00FFFFFF)=SIGN_UTF8 then lpc:=pc+3 else lpc:=pc;
+          SynEdit.Visible:=true;
           SynEdit.Text:=lpc;
           FreeMem(pc);
           SynEdit.Modified:=false;
-          SynEdit.Visible:=true;
         end;
       end;
 
@@ -424,10 +424,10 @@ begin
     if NodeToUtf8(anode,pc,false) then
     begin
       if (PDword(pc)^ and $00FFFFFF)=SIGN_UTF8 then lpc:=pc+3 else lpc:=pc;
+      SynEdit.Visible:=true;
       SynEdit.Text:=lpc;
       FreeMem(pc);
       SynEdit.Modified:=false;
-      SynEdit.Visible:=true;
 
       memHelp.Text:=rsTextPreview;
       if lptr=nil then

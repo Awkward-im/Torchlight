@@ -1,6 +1,7 @@
 {
   !! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 }
+{TODO ParseFromMemory: don't call UseImageFile directly}
 unit RGImageset;
 
 {$mode ObjFPC}{$H+}
@@ -68,7 +69,7 @@ type
     function Extract:integer;
 
 //    property Image:TImageData read FImage write FImage;
-    property ImageFile:string  read FImageName;
+    property ImageFile:string  read FImageName write FImageName;
     property Count:integer read GetCount;
     property Name  [idx:integer ]:string  read NameByIndex;
     property Index [aname:string]:integer read IndexByName;

@@ -43,7 +43,8 @@ type
     FOnImagesetInfo:TOnImagesetInfo;
 
   public
-    procedure FillList(const actrl: TRGController; adata: PByte; asize: integer);
+    procedure FillList(const actrl: TRGController;
+        adata: PByte; asize: integer; adir:string='');
     procedure FillList(const fname:string);
 
     property OnImagesetInfo:TOnImagesetInfo read FOnImagesetInfo write FOnImagesetInfo;
@@ -164,9 +165,12 @@ begin
   imgTexture.Repaint;
 end;
 
-procedure TFormImageset.FillList(const actrl:TRGController; adata:PByte; asize:integer);
+procedure TFormImageset.FillList(const actrl:TRGController;
+    adata:PByte; asize:integer; adir:string='');
 var
+  ls,ls1:string;
   i:integer;
+  lres:boolean;
 begin
 
   lbImages.Items.Clear;
@@ -179,7 +183,19 @@ begin
       lbImages.Items.Add(FImageset.Name[i]);
     end;
 
-    if not FImageset.UseController(actrl) then ;
+    if adir<>'' then
+    begin
+      ls:=FImageset.ImageFile;
+      FImageset.ImageFile:=StringReplace(UpCase(ls),'MEDIA/',adir,[]);
+      lres:=FImageset.UseController(actrl);
+      if not lres then
+        FImageset.ImageFile:=ls;
+    end
+    else
+      lres:=false;
+
+    if not lres then
+      if not FImageset.UseController(actrl) then ;
     FImageset.GetImage(imgTexture.Picture);
   end;
 

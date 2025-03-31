@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="sqlcp.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="21" Y="19"/>
+        <UsageCount Value="38"/>
+      </Unit>
+      <Unit>
+        <Filename Value="fmsqlcp.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormSQLCP"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmSQLCP"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="166"/>
+        <CursorPos X="39" Y="181"/>
+        <UsageCount Value="38"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="537"/>
+        <CursorPos X="14" Y="558"/>
+        <UsageCount Value="38"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Logging"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="38"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\RGDB\rgdb.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="38"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tltrsql.pas"/>
+        <UnitName Value="TLTrSQL"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="23"/>
+        <CursorPos Y="36"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2dataunit.pas"/>
+        <UnitName Value="TL2DataUnit"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1058"/>
+        <CursorPos X="37" Y="1067"/>
+        <UsageCount Value="17"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\RGDB\db_common.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="108"/>
+        <CursorPos X="37" Y="130"/>
+        <UsageCount Value="15"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customlistbox.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="627"/>
+        <CursorPos Y="653"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\interfaces\win32\win32listsl.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="135"/>
+        <CursorPos Y="151"/>
+        <UsageCount Value="10"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="195" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="197" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="198" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="200" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="201" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="203" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="205" Column="21" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="192" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="195" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="197" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="198" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="200" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="201" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="203" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="205" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="206" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="195" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="183" Column="28" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="56" Column="25" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="tltrsql.pas"/>
+        <Caret Line="461" TopLine="431"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="179" TopLine="162"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="89" Column="23" TopLine="63"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="122" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="123" TopLine="110"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="122" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="121" TopLine="108"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="179" Column="66" TopLine="164"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="180" Column="20" TopLine="163"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="63" Column="34" TopLine="46"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

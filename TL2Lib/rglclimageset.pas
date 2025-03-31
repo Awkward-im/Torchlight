@@ -34,7 +34,12 @@ uses
 
 procedure TRGImageset.GetImage(apic:TPicture);
 begin
-//  if UseImageset then
+  if Image.Format=IFUnknown then
+  begin
+    apic.Clear;
+    exit;
+  end;
+  //  if UseImageset then
     ConvertDataToBitmap(Image,apic.Bitmap);
 end;
 
@@ -50,6 +55,8 @@ var
   lsprite:TImageData;
   lrc:TRect;
 begin
+  if Image.Format=IFUnknown then exit(false);
+
   if (idx>=0) and (idx<Count) then
   begin
     lrc:=Bounds[idx];

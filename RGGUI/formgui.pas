@@ -2,7 +2,6 @@
 {TODO: make dump text/bytes search}
 {TODO: change dump text area encoding}
 {TODO: preview as dump by choice?}
-{TODO: check preview for offset=0 (mark as deleted)}
 {TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
 {TODO: show layout game version at least for changed/added files}
 {TODO: Save pak or file: check setData binary files version, repack if needs}
@@ -277,7 +276,7 @@ type
     procedure OpenPAK(const aname: string);
     procedure PrepareSound;
     procedure PreviewDump();
-    procedure PreviewImageset();
+    procedure PreviewImageset(const adir: string);
     procedure PreviewSound;
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure PreviewImage(const aext: string);
@@ -1562,7 +1561,10 @@ begin
   lblInfo2.Caption:=Format(rsSprite,[arect.Left,arect.Top,arect.Right,arect.Bottom]);
 end;
 
-procedure TRGGUIForm.PreviewImageset();
+procedure TRGGUIForm.PreviewImageset(const adir:string);
+var
+  ldir:string;
+  i:integer;
 begin
   if fmImgSet=nil then
   begin
@@ -1572,7 +1574,9 @@ begin
     TFormImageset(fmImgSet).OnImagesetInfo:=@ShowImagesetInfo;
   end;
 
-  TFormImageset(fmImgSet).FillList(ctrl,FUData,FUSize);
+  i:=Pos('/UI/',adir);
+  if i>7 then ldir:=Copy(adir,1,i) else ldir:='';
+  TFormImageset(fmImgSet).FillList(ctrl,FUData,FUSize,ldir);
   fmImgSet.Visible:=true;
 end;
 
@@ -1759,7 +1763,7 @@ begin
       begin
         if ltype=typeImageset then
         begin
-          PreviewImageset();
+          PreviewImageset(ldir);
         end
 
         // Text

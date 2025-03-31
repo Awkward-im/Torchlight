@@ -1169,9 +1169,10 @@ procedure ReleaseSqlite; //needed as TLibraryUnLoadFunction
 function InitialiseSQLite: Integer; deprecated;
 function InitialiseSQLite(const LibraryName: UnicodeString): Integer; deprecated;
 
+const
+  SQLiteDefaultLibrary{: String }= Sqlite3Lib;
 var
   SQLiteLibraryHandle: TLibHandle;
-  SQLiteDefaultLibrary: String = Sqlite3Lib;
   SQLiteLoadedLibrary: UnicodeString;
 {$ENDIF LOAD_DYNAMICALLY}
 

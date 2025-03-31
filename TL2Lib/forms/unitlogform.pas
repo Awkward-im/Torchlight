@@ -1,3 +1,4 @@
+{TODO: respore old RGLog OnAdd processing in FormDestroy}
 unit unitLogForm;
 
 {$mode ObjFPC}{$H+}

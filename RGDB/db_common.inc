@@ -4,7 +4,11 @@ function IsTableExists (db:PSQLite3; const aTable:AnsiString):boolean;
 function IsColumnExists(db:PSQLite3; const aTable,aColumn:AnsiString):boolean;
 
 function ExecSQLQuery (db:PSQLite3; const aSQL:AnsiString):boolean;
-function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString):boolean;
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString                               ):boolean;
+function ExecuteDirect(db:PSQLite3; const aSQL,                   aparam :AnsiString    ):boolean;
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString;        aparam :PUnicodeChar  ):boolean;
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; aparam,aparam2:PUnicodeChar  ):boolean;
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; const  aparams:array of const):boolean;
 
 function GetLastId(db:PSQLite3):integer; overload;
 function GetLastId(db:PSQLite3; const atable,anid:AnsiString):integer; overload;
@@ -20,10 +24,44 @@ function EndTransaction  (db:PSQLite3):boolean;
 
 function GetTextValue(db:PSQLite3; const atable, afield, acond:string):string;
 function ReturnText  (db:PSQLite3; const aSQL:AnsiString):string;
-function GetIntValue (db:PSQLite3; const atable, afield, acond:string):integer;
-function ReturnInt   (db:PSQLite3; const aSQL:AnsiString):integer;
+
+function GetIntValue(db:PSQLite3; const atable, afield, acond:string):integer;
+function ReturnInt  (db:PSQLite3; const aSQL:AnsiString                               ):integer;
+function ReturnInt  (db:PSQLite3; const aSQL,                   aparam :AnsiString    ):integer;
+function ReturnInt  (db:PSQLite3; const aSQL:AnsiString;        aparam :PUnicodeChar  ):integer;
+function ReturnInt  (db:PSQLite3; const aSQL:AnsiString; aparam,aparam2:PUnicodeChar  ):integer;
+function ReturnInt  (db:PSQLite3; const aSQL:AnsiString; const  aparams:array of const):integer;
 
 {$ELSE}
+
+function ProcessParameters(vm:pointer; const aparams:array of const):boolean;
+var
+  i,res:integer;
+begin
+  res:=SQLITE_OK;
+  for i:=0 to High(aparams) do
+  begin
+    case aparams[i].VType of
+      vtInteger      : res:=sqlite3_bind_int   (vm,i+1,aparams[i].VInteger);
+      vtBoolean      : res:=sqlite3_bind_int   (vm,i+1,ORD(aparams[i].VBoolean));
+      vtChar         : res:=sqlite3_bind_text  (vm,i+1,@aparams[i].VChar        , 1,SQLITE_STATIC);
+      vtWideChar     : res:=sqlite3_bind_text16(vm,i+1,@aparams[i].VWideChar    , 2,SQLITE_STATIC);
+      vtInt64,
+      vtQWord        : res:=sqlite3_bind_int64 (vm,i+1,aparams[i].VInt64^);
+      vtExtended     : res:=sqlite3_bind_double(vm,i+1,aparams[i].VExtended^);
+
+      vtString       : res:=sqlite3_bind_text  (vm,i+1,PChar(aparams[i].VString)+1,
+                                                Length(aparams[i].VString^)        ,SQLITE_STATIC);
+      vtAnsiString   : res:=sqlite3_bind_text  (vm,i+1,aparams[i].VAnsiString   ,-1,SQLITE_STATIC);
+      vtPChar        : res:=sqlite3_bind_text  (vm,i+1,aparams[i].VPChar        ,-1,SQLITE_STATIC);
+      vtWideString   : res:=sqlite3_bind_text16(vm,i+1,aparams[i].VWideString   ,-1,SQLITE_STATIC);
+      vtUnicodeString: res:=sqlite3_bind_text16(vm,i+1,aparams[i].VUnicodeString,-1,SQLITE_STATIC);
+      vtPWideChar    : res:=sqlite3_bind_text16(vm,i+1,aparams[i].VPWideChar    ,-1,SQLITE_STATIC);
+    end;
+    if res<>SQLITE_OK then break;
+  end;
+  result:=res=SQLITE_OK;
+end;
 
 function GetTextValue(db:PSQLite3; const atable, afield, acond:string):string;
 var
@@ -58,6 +96,7 @@ begin
   end;
 end;
 
+
 function GetIntValue(db:PSQLite3; const atable, afield, acond:string):integer;
 var
   lSQL:string;
@@ -88,6 +127,71 @@ begin
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
       result:=sqlite3_column_int(vm,0);
+    sqlite3_finalize(vm);
+  end;
+end;
+
+function ReturnInt(db:PSQLite3; const aSQL, aparam:AnsiString):integer;
+var
+  vm:pointer;
+begin
+  result:=-1;
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_bind_text(vm,1,PAnsiChar(aparam),-1,SQLITE_STATIC)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+        result:=sqlite3_column_int(vm,0);
+    end;
+    sqlite3_finalize(vm);
+  end;
+end;
+
+function ReturnInt(db:PSQLite3; const aSQL:AnsiString; aparam:PUnicodeChar):integer;
+var
+  vm:pointer;
+begin
+  result:=-1;
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_bind_text16(vm,1,aparam,-1,SQLITE_STATIC)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+        result:=sqlite3_column_int(vm,0);
+    end;
+    sqlite3_finalize(vm);
+  end;
+end;
+
+function ReturnInt(db:PSQLite3; const aSQL:AnsiString; aparam, aparam2:PUnicodeChar):integer;
+var
+  vm:pointer;
+begin
+  result:=-1;
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if (sqlite3_bind_text16(vm,1,aparam ,-1,SQLITE_STATIC)=SQLITE_OK) and
+       (sqlite3_bind_text16(vm,1,aparam2,-1,SQLITE_STATIC)=SQLITE_OK) then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+        result:=sqlite3_column_int(vm,0);
+    end;
+    sqlite3_finalize(vm);
+  end;
+end;
+
+function ReturnInt(db:PSQLite3; const aSQL:AnsiString; const aparams:array of const):integer;
+var
+  vm:pointer;
+begin
+  result:=-1;
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL), -1, @vm, nil)=SQLITE_OK then
+  begin
+    if ProcessParameters(vm, aparams) then
+    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+        result:=sqlite3_column_int(vm,0);
+    end;
     sqlite3_finalize(vm);
   end;
 end;
@@ -135,6 +239,59 @@ begin
   end
   else
     result:=false;
+end;
+
+function ExecuteDirect(db:PSQLite3; const aSQL,aparam:AnsiString):boolean;
+var
+  vm: Pointer;
+begin
+  result:=false;
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL), -1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_bind_text(vm,1,PAnsiChar(aparam),-1,SQLITE_STATIC)=SQLITE_OK then
+      result:=sqlite3_step(vm)=SQLITE_DONE;
+    sqlite3_finalize(vm);
+  end;
+end;
+
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; aparam:PUnicodeChar):boolean;
+var
+  vm: Pointer;
+begin
+  result:=false;
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL), -1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_bind_text16(vm,1,aparam,-1,SQLITE_STATIC)=SQLITE_OK then
+      result:=sqlite3_step(vm)=SQLITE_DONE;
+    sqlite3_finalize(vm);
+  end;
+end;
+
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; aparam,aparam2:PUnicodeChar):boolean;
+var
+  vm: Pointer;
+begin
+  result:=false;
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL), -1, @vm, nil)=SQLITE_OK then
+  begin
+    if (sqlite3_bind_text16(vm,1,aparam ,-1,SQLITE_STATIC)=SQLITE_OK) and
+       (sqlite3_bind_text16(vm,1,aparam2,-1,SQLITE_STATIC)=SQLITE_OK) then
+      result:=sqlite3_step(vm)=SQLITE_DONE;
+    sqlite3_finalize(vm);
+  end;
+end;
+
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; const aparams:array of const):boolean;
+var
+  vm: Pointer;
+begin
+  result:=false;
+  if sqlite3_prepare_v2(db, PAnsiChar(aSQL), -1, @vm, nil)=SQLITE_OK then
+  begin
+    if ProcessParameters(vm,aparams) then
+      result:=sqlite3_step(vm)=SQLITE_DONE;
+    sqlite3_finalize(vm);
+  end;
 end;
 
 //----- Transaction -----
