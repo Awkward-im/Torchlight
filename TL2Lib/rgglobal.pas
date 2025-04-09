@@ -98,6 +98,9 @@ const
   FloatPrec :integer = 6;
   DoublePrec:integer = 8;
 
+const
+  BoolNumber:array [boolean] of string = ('0','1');
+
 //--- Functions
 
 {$i rg_split.inc}
@@ -124,6 +127,8 @@ function  CompareWideI (s1,s2:PWideChar; alen:integer=0):integer;
 function  ConcatWide   (s1,s2:PWideChar):PWideChar;
 function  CharPosWide  (c:WideChar; asrc:PWideChar):PWideChar;
 function  PosWide      (asubstr,asrc:PWideChar):PWideChar;
+function  GetLine    (var aptr:PByte):PAnsiChar;
+function  GetLineWide(var aptr:PByte):PWideChar;
 function  GetLineWide(var aptr:PByte; var buf:pointer; var asize:integer):PWideChar;
 //procedure WriteWide(var buf:PByte; var idx:cardinal; atext:PWideChar);
 function  BufLen(abuf:PAnsiChar; asize:cardinal):integer;
@@ -550,13 +555,31 @@ end;
 function WideToStr(src:PWideChar;asize:integer=-1):string;
 var
   ws:UnicodeString;
+  pc:PWideChar;
+  lsize:integer;
+  b:boolean;
 begin
-  if asize<0 then asize:=Length(src);
-  if asize=0 then exit('');
+  if (src=nil) or (src^=#0) or (asize=0) then exit('');
 
-  SetLength(ws,asize);
-  move(src^,ws[1],asize*SizeOf(WideChar));
-  result:=UTF8Encode(ws);
+  pc:=src;
+  lsize:=0;
+  b:=false;
+  while (pc^<>#0) and (lsize<>asize) do
+  begin
+    if ORD(pc^)>127 then b:=true;
+    inc(pc);
+    inc(lsize);
+  end;
+  if lsize=0 then exit('');
+
+  if not b then
+    result:=FastWideToStr(src,lsize)
+  else
+  begin
+    SetLength(ws,lsize);
+    move(src^,ws[1],lsize*SizeOf(WideChar));
+    result:=UTF8Encode(ws);
+  end;
 end;
 
 function ConcatWide(s1,s2:PWideChar):PWideChar;
@@ -671,6 +694,37 @@ begin
     if (asrc^=asubstr^) and (CompareWide(asrc,asubstr,lstr2)=0) then Exit(asrc);
     inc(asrc);
   end;
+end;
+
+function GetLine(var aptr:PByte):PAnsiChar;
+begin
+  result:=PAnsiChar(aptr);
+
+  while not (aptr^ in [0, 10, 13]) do inc(aptr);
+  if aptr^<>0 then
+  begin
+    aptr^:=0;
+    inc(aptr);
+    while aptr^ in [10, 13] do inc(aptr);
+  end;
+end;
+
+function GetLineWide(var aptr:PByte):PWideChar;
+var
+  lend:PWideChar;
+begin
+  result:=PWideChar(aptr);
+  lend:=pointer(aptr);
+
+  while not (ord(lend^) in [0, 10, 13]) do inc(lend);
+  if ord(lend^)<>0 then
+  begin
+    lend^:=#0;
+    inc(lend);
+    while ord(lend^) in [10, 13] do inc(lend);
+  end;
+
+  aptr:=pointer(lend);
 end;
 
 function GetLineWide(var aptr:PByte; var buf:pointer; var asize:integer):PWideChar;

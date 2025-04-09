@@ -1,4 +1,5 @@
 {NOTE: don't do it (node extract harder, global structure needs) separate node -> array of nodes like rgfs. pointer -> index}
+{TODO: Add UTF8 encoding as double type or flag-modifier. How to return?}
 {TODO: Add "invisible" node type. no cycle, no output, advanced only}
 {TODO: Add line numbers support}
 {TODO: change Add*** to AddNode+As***}

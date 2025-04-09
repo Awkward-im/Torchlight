@@ -1023,6 +1023,8 @@ begin
   end;
   result:=true;
   FileName:=fname;
+  if data.lang='' then
+    data.lang:=iso639.GetLang(TL2Settings.edTransLang.Text);
 
 //  OnSBUpdate(Self);
 

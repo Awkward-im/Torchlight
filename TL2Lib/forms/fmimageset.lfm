@@ -1,43 +1,45 @@
 object FormImageset: TFormImageset
   Left = 350
-  Height = 447
+  Height = 473
   Top = 250
   Width = 667
   BorderStyle = bsNone
-  ClientHeight = 447
+  ClientHeight = 473
   ClientWidth = 667
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object Splitter1: TSplitter
     Left = 170
-    Height = 447
+    Height = 450
     Top = 0
     Width = 5
   end
   object imgTexture: TImage
     Left = 175
-    Height = 447
+    Height = 450
     Top = 0
     Width = 492
     Align = alClient
     Proportional = True
     Stretch = True
     Transparent = True
+    OnMouseDown = imgTextureMouseDown
   end
   object pnlLeft: TPanel
     Left = 0
-    Height = 447
+    Height = 450
     Top = 0
     Width = 170
     Align = alLeft
-    ClientHeight = 447
+    ClientHeight = 450
     ClientWidth = 170
     ParentBackground = False
     ParentColor = False
     TabOrder = 1
     object lbImages: TListBox
       Left = 1
-      Height = 253
+      Height = 256
       Top = 1
       Width = 168
       Align = alClient
@@ -52,7 +54,7 @@ object FormImageset: TFormImageset
       Cursor = crVSplit
       Left = 1
       Height = 5
-      Top = 254
+      Top = 257
       Width = 168
       Align = alBottom
       ResizeAnchor = akBottom
@@ -60,7 +62,7 @@ object FormImageset: TFormImageset
     object pnlSprite: TPanel
       Left = 1
       Height = 187
-      Top = 259
+      Top = 262
       Width = 168
       Align = alBottom
       ClientHeight = 187
@@ -88,6 +90,21 @@ object FormImageset: TFormImageset
         Transparent = True
       end
     end
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 450
+    Width = 667
+    Panels = <    
+      item
+        Width = 120
+      end    
+      item
+        Text = 'Ctrl-A to select all items in list, Ctrl-E to extract selected items'
+        Width = 50
+      end>
+    SimplePanel = False
   end
   object mnuImgSet: TPopupMenu
     Left = 71

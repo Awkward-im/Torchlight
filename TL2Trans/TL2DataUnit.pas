@@ -1,3 +1,5 @@
+{TODO: Used sl.SaveToStream(TBufferedFileStream,TEncoding) to speedup}
+{TODO: save not mod names only but modids too}
 {TODO: calc stDelete. if exists, rebuild Templates, save them 1st, then idxs?}
 {TODO: DeleteString (mark for delete). Delete Refs or not?}
 {TODO: ReadSrc, not StringList use but manual CRLF scan and "Copy" to string?}
@@ -112,7 +114,6 @@ type
       -----
       ?? = found in base
     }
-    function AddStringOnImport(const aorig,atrans,atmpl:AnsiString; apart:boolean):integer;
     function AddStringOnLoad  (const aorig,atrans:AnsiString):integer;
     function AddStringOnScan  (const aorig:AnsiString):integer;
 
@@ -161,6 +162,7 @@ type
     // unrealized
     function  ExportToFile  (const fname:AnsiString):boolean;
     function  ExportToText  ():AnsiString;
+    function  AddString(const aorig,atrans,atmpl:AnsiString; apart:boolean):integer;
 
     // s`can a dir, known or all unicode text files (not UTF8 atm), with or without subdirs
     function  Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
@@ -606,7 +608,7 @@ begin
   end;
 end;
 
-function TTL2Translation.AddStringOnImport(const aorig,atrans,atmpl:AnsiString; apart:boolean):integer;
+function TTL2Translation.AddString(const aorig,atrans,atmpl:AnsiString; apart:boolean):integer;
 var
   ltrans,ltmpl:AnsiString;
   ltype:tTextStatus;
@@ -810,7 +812,7 @@ begin
   begin
     if src.State[i]<>stDeleted then
     begin
-      j:=AddStringOnImport(src.Line[i],src.Trans[i],src.Template[i],src.State[i]=stPartial);
+      j:=AddString(src.Line[i],src.Trans[i],src.Template[i],src.State[i]=stPartial);
       if j>0 then inc(result);
       if j=0 then continue;
       Refs.CopyLink(ABS(j)-1,src.Refs,i);
@@ -898,6 +900,9 @@ var
   s,lsrc,ldst:AnsiString;
   loldcnt,lcnt,lline:integer;
   i,stage:integer;
+
+  st:TFileStream;
+  pcw:PWideChar;
 begin
   FErrCode:=0;
   FErrLine:=0;
@@ -907,13 +912,33 @@ begin
   result:=0;
   if fname='' then exit;
 
+  pcw:=nil;
+  st:=nil;
+  try
+    st:=TFileStream.Create(fname,fmOpenRead);
+    GetMem(pcw,st.size+2);
+    st.Read(pcw^,st.size);
+    PByte(pcw)[st.size  ]:=0;
+    PByte(pcw)[st.size+1]:=0;
+  except
+    if pcw<>nil then FreeMem(pcw);
+    st.Free;
+    exit;
+  end;
+  st.Free;
+
   slin:=TStringList.Create;
   try
-    slin.LoadFromFile(fname,TEncoding.Unicode);
+    if (ord(pcw^)=SIGN_UNICODE) or (pcw^='[') then
+      slin.Text:=WideToStr(pcw)
+    else
+      slin.Text:=PAnsiChar(pcw);
+//    slin.LoadFromFile(fname{,TEncoding.Unicode});
   except
     slin.Free;
     exit;
   end;
+  FreeMem(pcw);
 
   LoadInfo(fname);
 

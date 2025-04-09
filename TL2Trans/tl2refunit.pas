@@ -36,14 +36,14 @@ type
       PRefData = ^tRefData;
       tRefData = packed record
         // constant part (fills on scan)
-        _dir : integer;
-        _file: integer;
-        _tag : integer;
-        _line: integer;
+        _dir  : integer;
+        _file : integer;
+        _tag  : integer;
+        _line : integer;
         // runtime part
-        _root: integer;
-        _flag: integer;
-        _dup : integer; // index of next ref.
+        _root : integer;
+        _flags: integer;
+        _dup  : integer; // index of next ref.
                         // positive - index of next ref element, negative (-1) is the end
       end;
 
@@ -83,12 +83,12 @@ type
         var arr:tRefTextArr; var acnt:integer; aincr:integer):integer;
     function NewRefInt(adir,afile,atag,aline,aflag:integer):integer;
 
-    function  GetOpt (aidx,aflag:integer):boolean;
-    procedure SetOpt (aidx,aflag:integer; aval:boolean);
-    function  GetFlag(aidx:integer):integer;
-    procedure SetFlag(aidx:integer; aval:integer);
-    function  GetDup (aidx:integer):integer;
-    procedure SetDup (aidx:integer; aval:integer);
+    function  GetOpt  (aidx,aflag:integer):boolean;
+    procedure SetOpt  (aidx,aflag:integer; aval:boolean);
+    function  GetFlags(aidx:integer):integer;
+    procedure SetFlags(aidx:integer; aval:integer);
+    function  GetDup  (aidx:integer):integer;
+    procedure SetDup  (aidx:integer; aval:integer);
 
     function GetRootByIdx(aidx:integer):AnsiString;
     function GetDirByIdx (aidx:integer):AnsiString;
@@ -134,10 +134,10 @@ type
     property  Root [aidx:integer]:AnsiString read GetRootByIdx;
 
     // index of next place of line
-    property  Dupe       [aidx:integer]:integer         read GetDup  write SetDup;
-    property  Flag       [aidx:integer]:integer         read GetFlag write SetFlag;
-    property  IsSkill    [aidx:integer]:boolean index 1 read GetOpt  write SetOpt;
-    property  IsTranslate[aidx:integer]:boolean index 2 read GetOpt  write SetOpt;
+    property  Dupe       [aidx:integer]:integer         read GetDup   write SetDup;
+    property  Flags      [aidx:integer]:integer         read GetFlags write SetFlags;
+    property  IsSkill    [aidx:integer]:boolean index 1 read GetOpt   write SetOpt;
+    property  IsTranslate[aidx:integer]:boolean index 2 read GetOpt   write SetOpt;
 
     // idx is text line index
     property  Ref  [idx:integer]:integer read GetRef; default;
@@ -166,6 +166,10 @@ const
   rfIsSkill     = 1;
   rfIsTranslate = 2;
   rfIsDeleted   = 4;
+//  rfIsItem      =
+//  rfIsMob       =
+//  rfIsProp      =
+//  rfIsClass     =
   rfIsDummy     = 8;
 
 const
@@ -203,7 +207,7 @@ begin
   dec(arDirs [arRefs[aidx]._dir ].cnt);
   dec(arFiles[arRefs[aidx]._file].cnt);
   dec(arTags [arRefs[aidx]._tag ].cnt);
-  arRefs[aidx]._flag:=arRefs[aidx]._flag or rfIsDeleted;
+  arRefs[aidx]._flags:=arRefs[aidx]._flags or rfIsDeleted;
   //!! check if it was a chain start
 end;
 
@@ -434,7 +438,7 @@ begin
 
     if not lfound then
     begin
-      AddRef(dst,NewRefInt(ldir,lfile,ltag,aref.GetLine(aidx),aref.GetFlag(aidx)));
+      AddRef(dst,NewRefInt(ldir,lfile,ltag,aref.GetLine(aidx),aref.GetFlags(aidx)));
     end;
 
     aidx:=aref.Dupe[aidx];
@@ -450,13 +454,13 @@ begin
 
   with arRefs[cntRefs] do
   begin
-    _dir :=adir;
-    _file:=afile;
-    _tag :=atag;
-    _line:=ABS(aline);
-    _dup :=-1;
-    _root:=lastRoot;
-    _flag:=aflag;
+    _dir  :=adir;
+    _file :=afile;
+    _tag  :=atag;
+    _line :=ABS(aline);
+    _dup  :=-1;
+    _root :=lastRoot;
+    _flags:=aflag;
   end;
   result:=cntRefs;
   inc(cntRefs);
@@ -622,18 +626,18 @@ end;
 
 //--- Option flag ---
 
-function TTL2Reference.GetFlag(aidx:integer):integer;
+function TTL2Reference.GetFlags(aidx:integer):integer;
 begin
   if (aidx>=0) and (aidx<cntRefs) then
-    result:=arRefs[aidx]._flag
+    result:=arRefs[aidx]._flags
   else
     result:=0;
 end;
 
-procedure TTL2Reference.SetFlag(aidx:integer; aval:integer);
+procedure TTL2Reference.SetFlags(aidx:integer; aval:integer);
 begin
   if (aidx>=0) and (aidx<cntRefs) then
-    arRefs[aidx]._flag:=aval;
+    arRefs[aidx]._flags:=aval;
 end;
 
 //--- Separate option ---
@@ -641,7 +645,7 @@ end;
 function TTL2Reference.GetOpt(aidx,aflag:integer):boolean;
 begin
   if (aidx>=0) and (aidx<cntRefs) then
-    result:=(arRefs[aidx]._flag and aflag)<>0
+    result:=(arRefs[aidx]._flags and aflag)<>0
   else
     result:=false;
 end;
@@ -652,10 +656,10 @@ var
 begin
   if (aidx>=0) and (aidx<cntRefs) then
   begin
-    f:=(arRefs[aidx]._flag and not aflag);
+    f:=(arRefs[aidx]._flags and not aflag);
     if aval then
       f:=f or aflag;
-    arRefs[aidx]._flag:=f;
+    arRefs[aidx]._flags:=f;
   end;
 end;
 
@@ -721,11 +725,11 @@ var
       exit(true);
     end;
 
-    result:=(aref^._flag and rfIsDeleted)=0;
+    result:=(aref^._flags and rfIsDeleted)=0;
     if result then
     begin
-      astrm.WriteDWord((aref^._flag or aflag) or
-                       (aref^._root shl 16));
+      astrm.WriteDWord((aref^._flags or aflag) or
+                       (aref^._root  shl 16));
       astrm.WriteDWord(ld[aref^._dir ]);
       astrm.WriteDWord(lf[aref^._file]);
       astrm.WriteDWord(lt[aref^._tag ]);
@@ -857,14 +861,14 @@ procedure TTL2Reference.LoadFromStream(astrm:TStream);
 type
   tOldRefData = packed record
     // constant part (fills on scan)
-    _file: integer;
-    _tag : integer;
-    _line: integer;
+    _file : integer;
+    _tag  : integer;
+    _line : integer;
     // runtime part
-    _dup : integer; // =0 = dupe in preloads
-                    // >0 = ref # +1
-                    // <0 - base, count of doubles
-    _flag: integer;
+    _dup  : integer; // =0 = dupe in preloads
+                     // >0 = ref # +1
+                     // <0 - base, count of doubles
+    _flags: integer;
   end;
 
 var
@@ -951,13 +955,13 @@ begin
           begin
             _root:=(lflag shr 16);
             if _root>0 then _root:=laiRoots[_root-1];
-            _flag:=(lflag and $FFFF) and (not rfIsNewChain or rfIsNoRef);
+            _flags:=(lflag and $FFFF) and (not rfIsNewChain or rfIsNoRef);
 
-            _dir :=laiDirs [astrm.ReadDWord()];
-            _file:=laiFiles[astrm.ReadDWord()];
-            _tag :=laiTags [astrm.ReadDWord()];
-            _line:=astrm.ReadDWord();
-            _dup:=-1;
+            _dir  :=laiDirs [astrm.ReadDWord()];
+            _file :=laiFiles[astrm.ReadDWord()];
+            _tag  :=laiTags [astrm.ReadDWord()];
+            _line :=astrm.ReadDWord();
+            _dup  :=-1;
           end;
           inc(i);
         end;
@@ -1004,13 +1008,13 @@ begin
         ls:=larFiles[oldref._file];
         with arRefs[i] do
         begin
-          _dir :=AddDir (ExtractPath(ls));
-          _file:=AddFile(ExtractName(ls));
-          _tag :=AddTag (larTags[oldref._tag]);
-          _line:=oldref._line;
-          _root:=0;
-          _flag:=oldref._flag;
-          _dup :=-1;
+          _dir  :=AddDir (ExtractPath(ls));
+          _file :=AddFile(ExtractName(ls));
+          _tag  :=AddTag (larTags[oldref._tag]);
+          _line :=oldref._line;
+          _root :=0;
+          _flags:=oldref._flags;
+          _dup  :=-1;
         end;
         // pre-old saves, didn't has flag field
         // "Translate" flag can't be detected
@@ -1018,7 +1022,7 @@ begin
         begin
           lflag:=0;
           if Pos('SKILLS',ls)=7 then lflag:=lflag or rfIsSkill;
-          arRefs[i]._flag:=lflag;
+          arRefs[i]._flags:=lflag;
         end;
       end;
 

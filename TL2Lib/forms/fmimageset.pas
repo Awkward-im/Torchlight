@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, rglclimageset, rgctrl;
+  Menus, ComCtrls, rglclimageset, rgctrl;
 
 //!! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 type
@@ -29,15 +29,19 @@ type
     mnuImgSet: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
+    StatusBar: TStatusBar;
     procedure cbDarkBgClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
+    procedure imgTextureMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure lbImagesClick(Sender: TObject);
     procedure lbImagesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure miExtractClick(Sender: TObject);
     procedure miSelectAllClick(Sender: TObject);
   private
+    rectBorder:TRect;
     FImageset:TRGImageset;
     FSprite:integer;
     FOnImagesetInfo:TOnImagesetInfo;
@@ -65,15 +69,69 @@ resourcestring
   rsSaveSprite   = 'Save sprite';
   rsLoadImageset = 'Load imageset';
 
+
+procedure TFormImageset.FormDestroy(Sender: TObject);
+begin
+  FImageset.Free;
+end;
+
+procedure TFormImageset.FormCreate(Sender: TObject);
+begin
+  FImageset.Init;
+  imgTexture.Canvas.Pen.Mode   :=pmNotXor;
+  imgTexture.Canvas.Pen.Width  :=6;
+  imgTexture.Canvas.Brush.Style:=bsClear;
+  rectBorder.Left :=0;
+  rectBorder.Right:=0;
+end;
+
+procedure TFormImageset.imgTextureMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  lrect:TRect;
+  i:integer;
+  kw,kh:single;
+begin
+  kw:=imgTexture.Picture.Width /imgTexture.Width;
+  kh:=imgTexture.Picture.Height/imgTexture.Height;
+  if kw<kh then kw:=kh;
+  X := Round(X*kw);
+  Y := Round(Y*kw);
+
+  for i:=0 to FImageset.Count-1 do
+  begin
+    with FImageset.Bounds[i] do
+      lrect:=Rect(Left,Top,Left+Right,Top+Bottom);
+
+    if (X>=lrect.Left) and (X<lrect.Right ) and
+       (Y>=lrect.Top ) and (Y<lrect.Bottom) then
+    begin
+      lbImages.ItemIndex:=i;
+      lbImagesClick(lbImages);
+      break;
+    end;
+  end;
+end;
+
 procedure TFormImageset.lbImagesClick(Sender: TObject);
 begin
   if lbImages.ItemIndex>=0 then
   begin
+    if rectBorder.Left<>rectBorder.Right then
+      imgTexture.Canvas.Rectangle(rectBorder);
+
     FSprite:=lbImages.ItemIndex;
 
     if FOnImagesetInfo<>nil then FOnImagesetInfo(FImageset.ImageFile,FImageset.Bounds[FSprite]);
 
     FImageset.GetSprite(FSprite,imgSprite.Picture);
+
+    with FImageset.Bounds[FSprite] do
+    begin
+      StatusBar.Panels[0].Text:=Format('%d, %d; %d x %d',[Left,Top,Right,Bottom]);
+      rectBorder:=Rect(Left,Top,Left+Right,Top+Bottom);
+    end;
+    imgTexture.Canvas.Rectangle(rectBorder);
   end;
 end;
 
@@ -131,16 +189,6 @@ end;
 procedure TFormImageset.miSelectAllClick(Sender: TObject);
 begin
   lbImages.SelectAll;
-end;
-
-procedure TFormImageset.FormDestroy(Sender: TObject);
-begin
-  FImageset.Free;
-end;
-
-procedure TFormImageset.FormCreate(Sender: TObject);
-begin
-  FImageset.Init;
 end;
 
 procedure TFormImageset.DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);

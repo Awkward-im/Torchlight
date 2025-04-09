@@ -5,7 +5,7 @@ function IsColumnExists(db:PSQLite3; const aTable,aColumn:AnsiString):boolean;
 
 function ExecSQLQuery (db:PSQLite3; const aSQL:AnsiString):boolean;
 function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString                               ):boolean;
-function ExecuteDirect(db:PSQLite3; const aSQL,                   aparam :AnsiString    ):boolean;
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString;        aparam :PAnsiChar     ):boolean;
 function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString;        aparam :PUnicodeChar  ):boolean;
 function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; aparam,aparam2:PUnicodeChar  ):boolean;
 function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; const  aparams:array of const):boolean;
@@ -13,8 +13,8 @@ function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; const  aparams:array 
 function GetLastId(db:PSQLite3):integer; overload;
 function GetLastId(db:PSQLite3; const atable,anid:AnsiString):integer; overload;
 
-function CopyToFile  (db:PSQLite3; afname:PChar):integer;
-function CopyFromFile(db:PSQLite3; afname:PChar):integer;
+function CopyToFile  (db:PSQLite3; afname:PAnsiChar):integer;
+function CopyFromFile(db:PSQLite3; afname:PAnsiChar):integer;
 
 function  OpenDatabase(var db:PSQLite3; const aname:AnsiString):boolean;
 procedure CloseDatabase(db:PSQLite3);
@@ -27,7 +27,7 @@ function ReturnText  (db:PSQLite3; const aSQL:AnsiString):string;
 
 function GetIntValue(db:PSQLite3; const atable, afield, acond:string):integer;
 function ReturnInt  (db:PSQLite3; const aSQL:AnsiString                               ):integer;
-function ReturnInt  (db:PSQLite3; const aSQL,                   aparam :AnsiString    ):integer;
+function ReturnInt  (db:PSQLite3; const aSQL:AnsiString;        aparam :PAnsiChar     ):integer;
 function ReturnInt  (db:PSQLite3; const aSQL:AnsiString;        aparam :PUnicodeChar  ):integer;
 function ReturnInt  (db:PSQLite3; const aSQL:AnsiString; aparam,aparam2:PUnicodeChar  ):integer;
 function ReturnInt  (db:PSQLite3; const aSQL:AnsiString; const  aparams:array of const):integer;
@@ -50,7 +50,7 @@ begin
       vtQWord        : res:=sqlite3_bind_int64 (vm,i+1,aparams[i].VInt64^);
       vtExtended     : res:=sqlite3_bind_double(vm,i+1,aparams[i].VExtended^);
 
-      vtString       : res:=sqlite3_bind_text  (vm,i+1,PChar(aparams[i].VString)+1,
+      vtString       : res:=sqlite3_bind_text  (vm,i+1,PAnsiChar(aparams[i].VString)+1,
                                                 Length(aparams[i].VString^)        ,SQLITE_STATIC);
       vtAnsiString   : res:=sqlite3_bind_text  (vm,i+1,aparams[i].VAnsiString   ,-1,SQLITE_STATIC);
       vtPChar        : res:=sqlite3_bind_text  (vm,i+1,aparams[i].VPChar        ,-1,SQLITE_STATIC);
@@ -131,14 +131,14 @@ begin
   end;
 end;
 
-function ReturnInt(db:PSQLite3; const aSQL, aparam:AnsiString):integer;
+function ReturnInt(db:PSQLite3; const aSQL:AnsiString; aparam:PAnsiChar):integer;
 var
   vm:pointer;
 begin
   result:=-1;
   if sqlite3_prepare_v2(db, PAnsiChar(aSQL),-1, @vm, nil)=SQLITE_OK then
   begin
-    if sqlite3_bind_text(vm,1,PAnsiChar(aparam),-1,SQLITE_STATIC)=SQLITE_OK then
+    if sqlite3_bind_text(vm,1,aparam,-1,SQLITE_STATIC)=SQLITE_OK then
     begin
       if sqlite3_step(vm)=SQLITE_ROW then
         result:=sqlite3_column_int(vm,0);
@@ -225,7 +225,7 @@ end;
 
 function ExecSQLQuery(db:PSQLite3; const aSQL:AnsiString):boolean;
 begin
-  result:=sqlite3_exec(db,PChar(aSQL),nil,nil,nil)=SQLITE_OK;
+  result:=sqlite3_exec(db,PAnsiChar(aSQL),nil,nil,nil)=SQLITE_OK;
 end;
 
 function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString):boolean;
@@ -241,14 +241,14 @@ begin
     result:=false;
 end;
 
-function ExecuteDirect(db:PSQLite3; const aSQL,aparam:AnsiString):boolean;
+function ExecuteDirect(db:PSQLite3; const aSQL:AnsiString; aparam:PAnsiChar):boolean;
 var
   vm: Pointer;
 begin
   result:=false;
   if sqlite3_prepare_v2(db, PAnsiChar(aSQL), -1, @vm, nil)=SQLITE_OK then
   begin
-    if sqlite3_bind_text(vm,1,PAnsiChar(aparam),-1,SQLITE_STATIC)=SQLITE_OK then
+    if sqlite3_bind_text(vm,1,aparam,-1,SQLITE_STATIC)=SQLITE_OK then
       result:=sqlite3_step(vm)=SQLITE_DONE;
     sqlite3_finalize(vm);
   end;
@@ -308,7 +308,7 @@ end;
 
 //----- Backup (copy) -----
 
-function CopyToFile(db:PSQLite3; afname:PChar):integer;
+function CopyToFile(db:PSQLite3; afname:PAnsiChar):integer;
 var
   pFile  :PSQLite3;        // Database connection opened on zFilename
   pBackup:PSQLite3Backup;  // Backup object used to copy data
@@ -327,7 +327,7 @@ begin
   sqlite3_close(pFile);
 end;
 
-function CopyFromFile(db:PSQLite3; afname:PChar):integer;
+function CopyFromFile(db:PSQLite3; afname:PAnsiChar):integer;
 var
   pFile  :PSQLite3;        // Database connection opened on zFilename
   pBackup:PSQLite3Backup;  // Backup object used to copy data

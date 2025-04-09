@@ -1,100 +1,200 @@
 object FormSQLCP: TFormSQLCP
   Left = 315
-  Height = 509
+  Height = 560
   Top = 250
-  Width = 540
-  ClientHeight = 509
-  ClientWidth = 540
+  Width = 552
+  ClientHeight = 560
+  ClientWidth = 552
+  Constraints.MinHeight = 560
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  object lbLanguages: TListBox
-    Left = 288
-    Height = 200
-    Top = 32
-    Width = 240
-    ItemHeight = 0
-    TabOrder = 0
-  end
   object bbScanMod: TBitBtn
     Left = 8
     Height = 26
-    Top = 3
+    Top = 298
     Width = 99
+    Anchors = [akLeft, akBottom]
     AutoSize = True
     Caption = 'Scan Mod'
     Kind = bkRetry
-    TabOrder = 1
+    TabOrder = 0
     OnClick = bbScanModClick
   end
   object bbAddTrans: TBitBtn
-    Left = 288
+    Left = 287
     Height = 25
-    Top = 241
+    Top = 269
     Width = 110
+    Anchors = [akTop, akRight]
     AutoSize = True
     Caption = 'Add Translation'
-    TabOrder = 2
+    TabOrder = 1
     OnClick = bbAddTransClick
   end
   object bbSaveDB: TBitBtn
-    AnchorSideRight.Control = memModInfo
     AnchorSideRight.Side = asrBottom
-    Left = 440
+    Left = 452
     Height = 26
-    Top = 300
+    Top = 298
     Width = 88
+    Anchors = [akRight, akBottom]
     AutoSize = True
     Caption = 'Save DB'
     Default = True
     Kind = bkOK
-    TabOrder = 3
+    TabOrder = 2
     OnClick = bbSaveDBClick
   end
   object lbMods: TListBox
     Left = 8
-    Height = 259
+    Height = 262
     Top = 32
-    Width = 248
+    Width = 269
+    Anchors = [akTop, akLeft, akRight, akBottom]
     ItemHeight = 0
-    TabOrder = 4
+    TabOrder = 3
     OnSelectionChange = lbModsSelectionChange
   end
   object lblCurLang: TLabel
-    Left = 288
+    Left = 287
     Height = 15
     Top = 13
     Width = 97
+    Anchors = [akTop, akRight]
     Caption = 'Current languages'
   end
-  object lblModInfo: TLabel
-    Left = 8
-    Height = 15
-    Top = 310
-    Width = 96
-    Caption = 'Selected Mod Info'
-  end
-  object memModInfo: TMemo
-    Left = 8
-    Height = 144
-    Top = 330
-    Width = 520
-    ReadOnly = True
-    ScrollBars = ssAutoBoth
-    TabOrder = 5
-  end
   object cbWithRef: TCheckBox
-    Left = 288
+    Left = 287
     Height = 19
-    Top = 272
+    Top = 298
     Width = 65
+    Anchors = [akTop, akRight]
     Caption = 'With refs'
-    TabOrder = 6
+    TabOrder = 4
+    Visible = False
   end
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 486
-    Width = 540
+    Top = 537
+    Width = 552
     Panels = <>
+  end
+  object lfeMods: TListFilterEdit
+    Left = 8
+    Height = 23
+    Top = 5
+    Width = 269
+    ButtonWidth = 23
+    Anchors = [akTop, akLeft, akRight]
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 6
+    FilteredListbox = lbMods
+  end
+  object bbLog: TBitBtn
+    AnchorSideRight.Control = bbSaveDB
+    Left = 378
+    Height = 26
+    Top = 298
+    Width = 66
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    BorderSpacing.Right = 8
+    Caption = 'Log'
+    Kind = bkHelp
+    TabOrder = 7
+    OnClick = bbLogClick
+  end
+  object gdLanguages: TStringGrid
+    Left = 287
+    Height = 232
+    Top = 32
+    Width = 256
+    Anchors = [akTop, akRight]
+    AutoFillColumns = True
+    ColCount = 3
+    ColumnClickSorts = True
+    Columns = <    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Count'
+        Width = 60
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Lang'
+        Width = 48
+      end    
+      item
+        ReadOnly = True
+        Title.Caption = 'Name'
+        Width = 148
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
+    RowCount = 1
+    ScrollBars = ssAutoVertical
+    TabOrder = 8
+    ColWidths = (
+      60
+      48
+      148
+    )
+  end
+  object edModStat: TEdit
+    Left = 8
+    Height = 23
+    Top = 329
+    Width = 532
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 9
+  end
+  object gdModStat: TStringGrid
+    Left = 8
+    Height = 176
+    Top = 356
+    Width = 532
+    Anchors = [akLeft, akRight, akBottom]
+    AutoFillColumns = True
+    ColCount = 4
+    ColumnClickSorts = True
+    Columns = <    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Count'
+        Width = 60
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Partial'
+        Width = 60
+      end    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Lang'
+        Width = 48
+      end    
+      item
+        Title.Caption = 'Name'
+        Width = 364
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
+    RowCount = 1
+    ScrollBars = ssAutoVertical
+    TabOrder = 10
+    ColWidths = (
+      60
+      60
+      48
+      364
+    )
   end
 end

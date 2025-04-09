@@ -6,6 +6,9 @@ unit RGDictLayout;
 
 interface
 
+uses
+  rgglobal;
+
 type
   TRGObject = object
   private
@@ -52,16 +55,13 @@ type
     property Version:integer read FVersion write SetVersion;
   end;
 
-
+function DictsAreLoaded(aver:integer=verUnk):boolean;
 function LoadLayoutDict(abuf:PWideChar; aver:integer; aUseThis:boolean):boolean;
 function LoadLayoutDict(const resname:string; restype:PChar; aver:integer):boolean;
 function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
 
 
 implementation
-
-uses
-  rgglobal;
 
 {.$include objicons.inc}
 
@@ -957,6 +957,22 @@ begin
   if not result then FreeMem(buf);
 end;
 
+function DictsAreLoaded(aver:integer=verUnk):boolean;
+begin
+  if aver=verUnk then
+    result:=
+      (DictObjTL1.buf=nil) and
+      (DictObjTL2.buf=nil) and
+      (DictObjHob.buf=nil) and
+      (DictObjRG .buf=nil) and
+      (DictObjRGO.buf=nil)
+  else if aver=verTL1 then result:=DictObjTL1.buf=nil
+  else if aver=verTL2 then result:=DictObjTL2.buf=nil
+  else if aver=verHob then result:=DictObjHob.buf=nil
+  else if aver=verRG  then result:=DictObjRG .buf=nil
+  else if aver=verRGO then result:=DictObjRGO.buf=nil
+  else result:=false;
+end;
 
 initialization
 

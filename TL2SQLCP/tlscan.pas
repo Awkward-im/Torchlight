@@ -10,19 +10,23 @@ type
   // 0 - process; 1 - skip; 2 - stop
   TOnFileScan   = function  (const fname:AnsiString; idx, atotal:integer):integer of object;
 
+  TDoAddText    = function  (const astr,atrans:PAnsiChar):integer of object;
   TDoAddModInfo = procedure (const mi:TTL2ModInfo) of object;
-  TDoAddString  = function  (const astr:PWideChar;
-      const afile, atag:AnsiString; aline:integer):integer of object;
+  TDoAddString  = function  (const astr, afile, atag:AnsiString; aline:integer):integer of object;
 
 const
   OnFileScan  :TOnFileScan   = nil;
 
   DoAddModInfo:TDoAddModInfo = nil;
   DoAddString :TDoAddString  = nil;
+  DoAddText   :TDoAddText    = nil;
 
 
-function Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
-function Scan(const afile:AnsiString):boolean;
+function Scan(const adir :AnsiString; allText:boolean; withChild:boolean):integer;
+function Scan(const afile:AnsiString):integer;
+
+function LoadAsText(const fname:AnsiString):integer;
+function LoadAsNode(const fname:AnsiString):integer;
 
 
 implementation
@@ -105,23 +109,26 @@ const
   sComplete    = 'COMPLETE';
   sComplRet    = 'COMPLETE RETURN';
 
-{
-procedure ReadSrcFile(const fname:AnsiString; atype:integer; arootlen:integer);
+
+function ProcessSource(astr:PWideChar; const fname:AnsiString; atype:integer):integer;
 var
   slin:TStringList;
-  s,ls,ltag,lfile:AnsiString;
+  s,ls,ltag:AnsiString;
   lfline,lline:integer;
   i,j:integer;
 begin
+  result:=0;
+
   slin:=TStringList.Create;
   try
-    slin.LoadFromFile(fname,TEncoding.Unicode);
+    if (ord(astr^)=SIGN_UNICODE) or (astr^='[') then
+      slin.Text:=WideToStr(astr)
+    else
+      slin.Text:=PAnsiChar(astr);
   except
     slin.Free;
     exit;
   end;
-
-  lfile:=Copy(fname,arootlen);
 
   for lline:=0 to slin.Count-1 do
   begin
@@ -133,7 +140,7 @@ begin
     if j>0 then
     begin
       inc(j,Length(sTranslate));  // points to tag for text
-      i:=Pos(':',s);
+      i:=Pos(':',s,j);
       if i>0 then
       begin
         ltag:=Copy(s,j,i-j);
@@ -152,32 +159,32 @@ begin
       j:=pos(sString,s);
       if j>0 then
       begin
+        inc(j,Length(sString)); // points to tag for text
         lfline:=lline+1;
         // <STRING>DESCRIPTION: case (old GUTS?)
-        if pos(sString+sDescription+':',s)>0 then
+        //better to use text compare with length
+        if pos(sDescription+':',s,j)=j then
         begin
-          inc(j,Length(sString)); // points to tag for text
-          i:=Pos(':',s);
-          ltag:=Copy(s,j,i-j);
-          inc(i);                 // points to text
+          ltag:=sDescription;
+          i:=j+Length(sDescription+':'){11+1};            // points to text
         end
-        else if atype=1 then // layout
+        else if atype=1 then    // layout
         begin
-          if (pos(sString+sText_       ,s)>0) or
-             (pos(sString+sDialog_     ,s)>0) or
-             (pos(sString+sText    +':',s)>0) or
-             (pos(sString+sToolTip +':',s)>0) or
-             (pos(sString+sTitle   +':',s)>0) or
-             (pos(sString+sGreet   +':',s)>0) or
-             (pos(sString+sFailed  +':',s)>0) or
-             (pos(sString+sReturn  +':',s)>0) or
-             (pos(sString+sComplete+':',s)>0) or
-             (pos(sString+sComplRet+':',s)>0) then
+          if
+             (pos(sText    +':',s,j)=j) or
+             (pos(sToolTip +':',s,j)=j) or
+             (pos(sTitle   +':',s,j)=j) or
+             (pos(sGreet   +':',s,j)=j) or
+             (pos(sComplete+':',s,j)=j) or
+             (pos(sText_       ,s,j)=j) or
+             (pos(sDialog_     ,s,j)=j) or
+             (pos(sFailed  +':',s,j)=j) or
+             (pos(sReturn  +':',s,j)=j) or
+             (pos(sComplRet+':',s,j)=j) then
           begin
-            inc(j,Length(sString)); // points to tag for text
-            i:=Pos(':',s);
+            i:=Pos(':',s,j);
             ltag:=Copy(s,j,i-j);
-            inc(i);                 // points to text
+            inc(i);             // points to text
           end;
         end;
       end;
@@ -190,8 +197,8 @@ begin
       begin
         if Assigned(DoAddString) then
         begin
-          i:=DoAddString(ls,lfile,ltag,lfline);
-//        if i<>0 then Refs.AddRef(ABS(i)-1,Refs.NewRef(lfile,ltag,lfline));
+          i:=DoAddString(ls,fname,ltag,lfline);
+          if i>0 then inc(result);
         end;
       end;
     end;
@@ -200,12 +207,13 @@ begin
 
   slin.Free;
 end;
-}
-{%REGION Read Binary}
 
-function ProcessNode(anode:pointer; const afile:string; atype:integer; var FScanLine:integer):integer;
+function ProcessNode(anode:pointer; const afile:AnsiString; atype:integer; var FScanLine:integer):integer;
 var
   ptag,pc:PWideChar;
+//  ltag:array [0..63] of AnsiChar;
+//  lpc:PAnsiChar;
+//  ls:AnsiString;
   i,lline:integer;
 begin
   result:=0;
@@ -243,15 +251,15 @@ begin
       if CompareWide(ptag,sDescription)=0 then
         pc:=AsString(anode)
       else if (atype=1) and (  // layout
-         (CompareWide(ptag,sText_  ,5)=0) or
-         (CompareWide(ptag,sDialog_,7)=0) or
          (CompareWide(ptag,sText     )=0) or
          (CompareWide(ptag,sToolTip  )=0) or
          (CompareWide(ptag,sTitle    )=0) or
          (CompareWide(ptag,sGreet    )=0) or
+         (CompareWide(ptag,sComplete )=0) or
+         (CompareWide(ptag,sText_  ,5)=0) or
+         (CompareWide(ptag,sDialog_,7)=0) or
          (CompareWide(ptag,sFailed   )=0) or
          (CompareWide(ptag,sReturn   )=0) or
-         (CompareWide(ptag,sComplete )=0) or
          (CompareWide(ptag,sComplRet )=0)) then
         pc:=AsString(anode);
 
@@ -266,8 +274,20 @@ begin
     result:=1;
     if Assigned(DoAddString) then
     begin
-      i:=DoAddString(pc,afile,FastWideToStr(ptag),lline);
-//    if i<>0 then Refs.AddRef(ABS(i)-1,Refs.NewRef(afile,ltag,lline));
+{
+      // fast Wide to Ansi convert
+      lpc:=@ltag;
+      if ptag<>nil then
+        while ptag^<>#0 do
+        begin
+          lpc^:=CHR(ORD(ptag^));
+          inc(lpc);
+          inc(ptag);
+        end;
+      lpc^:=#0;
+}
+      i:=DoAddString(WideToStr(pc),afile,FastWideToStr(ptag),lline);
+      if i>0 then inc(result);
     end;
   end;
 end;
@@ -340,15 +360,18 @@ begin
   end;
 end;
 
-function Scan(const adir:AnsiString; allText:boolean; withChild:boolean):boolean;
+function Scan(const adir:AnsiString; allText:boolean; withChild:boolean):integer;
 var
   lmodinfo:TTL2ModInfo;
-  p:pointer;
+  st:TFileStream;
+//  p:pointer;
+//  FScanLine:integer;
   sl:TStringList;
+  pcw:PWideChar;
   lRootScanDir:AnsiString;
-  i{,llen},FScanLine:integer;
+  i,llen,lsize:integer;
 begin
-  result:=true;
+  result:=0;
 
   if adir[Length(adir)] in ['\','/'] then
     lRootScanDir:=Copy(adir,1,Length(adir)-1)
@@ -360,18 +383,17 @@ begin
 
   if sl.Count>0 then
   begin
-//    FRefs.AddRoot(lRootScanDir+'/');
-//    llen:=Length(lRootScanDir)+2; // to get relative filepath+name later
-    for i:=0 to sl.Count-1 do
+    RGLog.Add('Check '+IntToStr(sl.Count)+' files');
+    pcw:=nil;
+    llen:=Length(lRootScanDir)+2; // to get relative filepath+name later
+    i:=0;
+    while i<sl.Count do
     begin
       if Assigned(OnFileScan) then
         case OnFileScan(sl[i],i+1,sl.Count) of
           0: ;
-          1: continue;
-          2: begin
-            result:=false;
-            break;
-          end;
+          1: begin inc(i); continue; end;
+          2: break;
         end;
 
       if UpCase(ExtractName(sl[i]))=TL2ModData then
@@ -379,29 +401,64 @@ begin
         if Assigned(DoAddModInfo) then
         begin
           MakeModInfo(lmodinfo);
-          LoadModConfig(PChar(sl[i]),lmodinfo);
+          LoadModConfig(PAnsiChar(sl[i]),lmodinfo);
           DoAddModInfo(lmodinfo);
           ClearModInfo(lmodinfo);
         end;
       end
       else
       begin
-        p:=ParseTextFile(PChar(sl[i]));
+{
+        p:=ParseTextFile(PAnsiChar(sl[i]));
         FScanLine:=0;
-        ProcessNode(p,sl[i],IntPtr(sl.Objects[i]),FScanLine);
+        ProcessNode(p,PAnsiChar(sl[i])+llen,IntPtr(sl.Objects[i]),FScanLine);
         DeleteNode(p);
-//        ReadSrcFile(sl[i],IntPtr(sl.Objects[i]),llen);
-      end;
-    end;
+}
 
-  end;
+        st:=nil;
+        lsize:=0;
+        try
+          st:=TFileStream.Create(sl[i],fmOpenRead);
+          lsize:=st.size;
+          if (pcw=nil) or (MemSize(pcw)<(lsize+2)) then
+          begin
+            FreeMem(pcw);
+            GetMem (pcw,Align(lsize+2,16000));
+          end;
+          st.Read(pcw^,lsize);
+        finally
+          st.Free;
+        end;
+
+        if lsize>0 then
+        begin
+          PByte(pcw)[lsize  ]:=0;
+          PByte(pcw)[lsize+1]:=0;
+          inc(result,ProcessSource(pcw,Copy(sl[i],llen),IntPtr(sl.Objects[i])));
+        end;
+      end;
+      inc(i);
+    end;
+    RGLog.Add('Total: '+IntToStr(result)+' lines in '+IntToStr(i)+' files');
+
+    FreeMem(pcw);
+  end
+  else
+    RGLog.Add('No files to check');
 
   sl.Free;
 end;
 
+type
+  PCounter = ^TCounter;
+  TCounter = record
+    count:integer;
+    total:integer;
+  end;
+
 function myactproc(
           abuf:PByte; asize:integer;
-          const adir,aname:string;
+          const adir,aname:AnsiString;
           aparam:pointer):cardinal;
 var
   lnode:pointer;
@@ -410,9 +467,9 @@ var
 begin
   result:=0;
 
-  inc(PInteger(aparam)^);
+  inc(PCounter(aparam)^.count);
   if Assigned(OnFileScan) then
-    case OnFileScan(adir+'/'+aname,PInteger(aparam)^,0) of
+    case OnFileScan(adir+'/'+aname,PCounter(aparam)^.count,PCounter(aparam)^.total) of
       0: ;
       1: exit;
       2: exit(sres_fail);
@@ -438,23 +495,27 @@ begin
   DeleteNode(lnode);
 end;
 
-function Scan(const afile:AnsiString):boolean;
+function Scan(const afile:AnsiString):integer;
 var
   lmodinfo:TTL2ModInfo;
-  lScanIdx:integer;
+  lScanIdx:TCounter;
 begin
 
-  RGTags.Import('RGDICT','TEXT');
+  if RGTags.Count=0 then
+    RGTags.Import('RGDICT','TEXT');
 
-  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+  if not DictsAreLoaded() then
+  begin
+    LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
+    LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
+    LoadLayoutDict('LAYRG' , 'TEXT', verRG);
+    LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
+    LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+  end;
 
-  lScanIdx:=0;
+  lScanIdx.count:=1;
+  lScanIdx.total:=0;
 
-//  FRefs.AddRoot(afile);
   // call it before mod content to be sure what mod record is ready
   if Assigned(DoAddModInfo) then
   begin
@@ -465,7 +526,201 @@ begin
     end;
   end;
 
-  result:=MakeRGScan(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@lScanIdx,nil)>0;
+  result:=MakeRGScan(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@lScanIdx,nil);
+end;
+
+
+function LoadAsNode(const fname:AnsiString):integer;
+var
+  p,pt,ps:pointer;
+  i,j:integer;
+  src,dst:PWideChar;
+begin
+  result:=0;
+  p:=ParseTextFile(PChar(fname));
+  if p=nil then exit;
+  if CompareWide(GetNodeName(p),'TRANSLATIONS')<>0 then
+  begin
+    DeleteNode(p);
+    exit;
+  end;
+
+  for i:=0 to GetChildCount(p)-1 do
+  begin
+    pt:=GetChild(p,i);
+    if (GetNodeType(pt)=rgGroup) and (CompareWide(GetNodeName(pt),'TRANSLATION')=0) then
+    begin
+      src:=nil;
+      dst:=nil;
+      for j:=0 to GetChildCount(pt)-1 do
+      begin
+        ps:=GetChild(pt,j);
+        if GetNodeType(ps)=rgString then
+        begin
+          if      CompareWide(GetNodeName(ps),'ORIGINAL'   )=0 then src:=AsString(ps)
+          else if CompareWide(GetNodeName(ps),'TRANSLATION')=0 then dst:=AsString(ps);
+          if (src<>nil) and (dst<>nil) then break;
+        end;
+      end;
+      if (src<>'') {and (ldst<>'')} then
+      begin
+        if CompareWide(src,dst)=0 then dst:=nil;
+        if Assigned(DoAddText) then
+          DoAddText(PAnsiChar(WideToStr(src)),PAnsiChar(WideToStr(dst)));
+        inc(result);
+      end
+    end;
+  end;
+  RGLog.Add('Total: '+IntToStr(result)+' lines');
+
+  DeleteNode(p);
+end;
+
+function LoadAsText(const fname:AnsiString):integer;
+var
+  slin:TStringList;
+  s,lsrc,ldst:AnsiString;
+  lcnt,lline:integer;
+  i,stage:integer;
+
+  st:TFileStream;
+  pcw:PWideChar;
+begin
+  result:=0;
+  if fname='' then exit;
+
+  pcw:=nil;
+  st:=nil;
+  try
+    st:=TFileStream.Create(fname,fmOpenRead);
+    GetMem(pcw,st.size+2);
+    st.Read(pcw^,st.size);
+    PByte(pcw)[st.size  ]:=0;
+    PByte(pcw)[st.size+1]:=0;
+  except
+    if pcw<>nil then FreeMem(pcw);
+    st.Free;
+    exit;
+  end;
+  st.Free;
+
+  slin:=TStringList.Create;
+  try
+    if (ord(pcw^)=SIGN_UNICODE) or (pcw^='[') then
+      slin.Text:=WideToStr(pcw)
+    else
+      slin.Text:=PAnsiChar(pcw);
+  except
+    slin.Free;
+    exit;
+  end;
+  FreeMem(pcw);
+
+  lline:=0;
+  lcnt:=0;
+  lsrc:='';
+  ldst:='';
+
+  stage:=1;
+
+  while lline<slin.Count do
+  begin
+    s:=slin[lline];
+    if s<>'' then
+    begin
+      case stage of
+        // <STRING>ORIGINAL:
+        // <STRING>TRANSLATION:
+        // [/TRANSLATION]
+        3: begin
+          i:=0;
+          if (lsrc='') then
+          begin
+            i:=Pos(sOriginal,s);
+            if i<>0 then lsrc:=Copy(s,i+Length(sOriginal));
+          end;
+
+          if (i=0) and (ldst='') then
+          begin
+            i:=Pos(sTranslated,s);
+            if i<>0 then ldst:=Copy(s,i+Length(sTranslated));
+            if ldst=lsrc then ldst:='';
+          end;
+
+          if (i=0) then
+          begin
+            if Pos(sEndBlock,s)<>0 then
+            begin
+              stage:=2;
+
+              if (lsrc<>'') {and (ldst<>'')} then
+              begin
+                if Assigned(DoAddText) then
+                  if DoAddText(PAnsiChar(lsrc),PAnsiChar(ldst))>0 then
+                    inc(lcnt);
+              end
+              else if lsrc='' then
+              begin
+                result:=-3;
+//                Error(result,fname,lline); // no original text
+//!!                break;
+{
+              end
+              else if ldst='' then
+              begin
+                result:=-4;
+                Error(result,fname,lline); // no translated text
+//!!                break;
+}
+              end;
+
+            end
+            else
+            begin
+              result:=-5;
+//              Error(result,fname,lline); // no end of block
+//??            break;
+            end;
+          end;
+
+        end;
+
+        // [TRANSLATION] and [/TRANSLATIONS]
+        2: begin
+          if Pos(sBeginBlock,s)<>0 then
+          begin
+            stage:=3;
+            lsrc:='';
+            ldst:='';
+          end
+          else if Pos(sEndFile,s)<>0 then break // end of file
+          else
+          begin
+            result:=-2;
+//            Error(result,fname,lline); // no block start
+//??            break;
+          end;
+        end;
+
+        // [TRANSLATIONS]
+        1: begin
+          if Pos(sBeginFile,s)<>0 then
+            stage:=2
+          else
+          begin
+            result:=-1;
+//            Error(result,fname,lline); // no file starting tag
+            break;
+          end;
+        end;
+      end;
+    end;
+    inc(lline);
+  end;
+
+  slin.Free;
+  result:=lcnt;
+  RGLog.Add('Total: '+IntToStr(result)+' lines');
 end;
 
 
