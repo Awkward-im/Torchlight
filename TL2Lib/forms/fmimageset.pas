@@ -1,4 +1,3 @@
-{TODO: paint border for sprite on image (need to recalc coords)}
 unit fmImageset;
 
 {$mode ObjFPC}{$H+}
@@ -216,7 +215,7 @@ end;
 procedure TFormImageset.FillList(const actrl:TRGController;
     adata:PByte; asize:integer; adir:string='');
 var
-  ls,ls1:string;
+  ls:string;
   i:integer;
   lres:boolean;
 begin

@@ -9,15 +9,16 @@ uses
 function ParseImageSetMem   (abuf:pByte; asize:integer):pointer;
 function ParseImageSetStream(astream:TStream; fname:PUnicodeChar=nil):pointer;
 function ParseImageSetFile  (const afname:string ):pointer;
-{
-function BuildImageSetMem   (data:pointer; out   bin    :pByte     ; aver:integer=verTL2; dictidx:integer=-1):integer;
-function BuildImageSetStream(data:pointer;       astream:TStream   ; aver:integer=verTL2; dictidx:integer=-1):integer;
-function BuildImageSetFile  (data:pointer; const fname  :AnsiString; aver:integer=verTL2; dictidx:integer=-1):integer;
-}
+
+function BuildImageSetMem   (data:pointer; out   bin    :pByte     ; aver:integer=verTL2):integer;
+function BuildImageSetStream(data:pointer;       astream:TStream   ; aver:integer=verTL2):integer;
+function BuildImageSetFile  (data:pointer; const fname  :AnsiString; aver:integer=verTL2):integer;
+
 
 implementation
 
 uses
+  SysUtils,
   dom,xmlread,
   rwmemory,
 
@@ -196,69 +197,93 @@ begin
     Close(f);
   end;
 end;
-{
-function BuildImageSetMem(data:pointer; out bin:pByte; aver:integer=verTL2; dictidx:integer=-1):integer;
+
+function BuildImageSetMem(data:pointer; out bin:pByte; aver:integer=verTL2):integer;
 var
-  ls:TMemoryStream;
+  pp,p:pointer;
+  ldata,ltmp:string;
+  pc:PWideChar;
+  i,j,x,y,w,h:integer;
 begin
   if ABS(aver) in [verTL1,verTL2] then
   begin
-    '<?xml version="1.0" encoding="UTF-8"?>'
-    '<Imageset'+
-    ' Name="'+
-    '" Imagefile="'+
-    '" NativeHorzRez="'+
-    '" NativeVertRez="'+
-    '" AutoScaled="true">' //??
-    for i:=0 to  do
+    pp:=FindNode(data,'FILE'); ldata:=WideToStr(AsString(pp));
+    pp:=FindNode(data,'SIZE'); ltmp :=IntToStr(AsInteger(pp));
+    
+    ldata:=
+      '<?xml version="1.0" encoding="UTF-8"?>'+
+      '<Imageset'+
+      ' Name="'          +WideToStr(GetNodeName(data))+
+      '" Imagefile="'    +ldata+
+      '" NativeHorzRez="'+ltmp+
+      '" NativeVertRez="'+ltmp+
+      '" AutoScaled="true">'#13#10; //??
+
+    for i:=0 to GetChildCount(data)-1 do
     begin
-      '	<Image Name="'+
-      '" XPos="'+
-      '" YPos="'+
-      '" Width="'+
-      '" Height="'+
-      '" /?>'
+      pp:=GetChild(data,i);
+      if GetNodeType(pp)=rgGroup then
+      begin
+        x:=0;
+        y:=0;
+        w:=0;
+        h:=0;
+        ltmp:='';
+        for j:=0 to GetChildCount(pp)-1 do
+        begin
+          p :=GetChild(pp,j);
+          pc:=GetNodeName(p);
+          if      CompareWide(pc,'NAME'  )=0 then ltmp:=WideToStr(AsString(p))
+          else if CompareWide(pc,'X'     )=0 then x:=AsInteger(p)
+          else if CompareWide(pc,'Y'     )=0 then y:=AsInteger(p)
+          else if CompareWide(pc,'WIDTH' )=0 then w:=AsInteger(p)
+          else if CompareWide(pc,'HEIGHT')=0 then h:=AsInteger(p);
+        end;
+
+        ldata:=ldata+
+          '	<Image Name="'+ltmp+
+          '" XPos="'  +IntToStr(x)+
+          '" YPos="'  +IntToStr(y)+
+          '" Width="' +IntToStr(w)+
+          '" Height="'+IntToStr(h)+
+          '" /?>'#13#10;
+      end;
     end;
-    '</Imageset>'
+    ldata:=ldata+'</Imageset>'#13#10;
+    result:=Length(ldata)+1;
+    GetMem(bin,result);
+    move(PAnsiChar(ldata)^,bin^,result);
   end
   else
   begin
     bin:=nil;
-    NodeToWide(data,bin,aver)
+    NodeToWide(data,PWideChar(bin));
+    result:=(Length(PWideChar(bin))+1)*SizeOf(WideChar);
   end;
-  
-  result:=0;
-  ls:=TMemoryStream.Create;
-  try
-    result:=BuildImageSetStream(data,ls,aver,dictidx);
-    GetMem(bin,result);
-    move(ls.Memory^,bin^,result);
-  finally
-    ls.Free;
-  end;
+
 end;
 
-function BuildImageSetStream(data:pointer; astream:TStream; aver:integer=verTL2; dictidx:integer=-1):integer;
+function BuildImageSetStream(data:pointer; astream:TStream; aver:integer=verTL2):integer;
 var
-  lrgd:TRGDATFile;
+  lp:PByte;
 begin
-  lrgd.Init;
-  lrgd.FVer:=ABS(aver);
-//  result:=lrgd.BuildStream(astream,data);
-  lrgd.Free;
+  lp:=nil;
+  result:=BuildImageSetMem(data,lp,aver);
+  if result>0 then astream.Write(lp,result);
+  FreeMem(lp);
 end;
 
-function BuildImageSetFile(data:pointer; const fname:AnsiString; aver:integer=verTL2; dictidx:integer=-1):integer;
+function BuildImageSetFile(data:pointer; const fname:AnsiString; aver:integer=verTL2):integer;
 var
   ls:TMemoryStream;
 begin
   ls:=TMemoryStream.Create;
   try
-    result:=BuildImageSetStream(data,ls,aver,dictidx);
+    result:=BuildImageSetStream(data,ls,aver);
     ls.SaveToFile(fname);
   finally
     ls.Free;
   end;
 end;
-}
+
 end.
