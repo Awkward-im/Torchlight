@@ -101,7 +101,7 @@ object FormImageset: TFormImageset
         Width = 120
       end    
       item
-        Text = 'Ctrl-A to select all items in list, Ctrl-E to extract selected items'
+        Text = 'Ctrl-A to select all items in list, Ctrl-S to extract selected items'
         Width = 50
       end>
     SimplePanel = False

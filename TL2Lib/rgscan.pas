@@ -7,6 +7,8 @@
 
 }
 {TODO: Create "Pause" and "Continue" functions. Scan dir to list first required}
+{NOTE: create dir/files list: skip dir requires next lines check}
+{NOTE: As variant: check dir runtime, create file list, then process it}
 unit RGScan;
 
 interface

@@ -30,6 +30,7 @@ uses
 type
   TTL2Stream = class helper for TStream
   public
+    function  Eof():boolean;
     // read
     function  ReadBytes(asize:cardinal):pointer;
     function  ReadByteStringWide ():PUnicodeChar;
@@ -104,6 +105,12 @@ begin
 //  FCapacity:=MemSize(buf);
 //  FMemory:=Ptr;
 //  FSize:=ASize;
+end;
+
+
+function TTL2Stream.Eof():boolean; inline;
+begin
+  result:=Position>=Size;
 end;
 
 //----- Read data -----

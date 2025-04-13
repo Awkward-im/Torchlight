@@ -350,15 +350,32 @@ function TRGImageset.UseImageFile(const aname:string):boolean;
 var
   f:file of byte;
   lbuf:PByte;
+  lext,lname:string;
   lsize:integer;
 begin
   result:=false;
   AssignFile(f,aname);
   Reset(f);
+  lname:='';
   if IOResult<>0 then
   begin
-    AssignFile(f,ExtractName(aname));
+    lname:=ExtractName(aname);
+    AssignFile(f,lname);
     Reset(f);
+    if IOResult<>0 then
+    begin
+      lext:=ExtractExt(aname);
+           if lext='.DDS' then lext:='.PNG'
+      else if lext='.PNG' then lext:='.DDS'
+      else exit;
+      AssignFile(f,ChangeFileExt(aname,lext));
+      Reset(f);
+      if IOResult<>0 then
+      begin
+        AssignFile(f,ChangeFileExt(lname,lext));
+        Reset(f);
+      end;
+    end;
   end;
   if IOResult=0 then
   begin

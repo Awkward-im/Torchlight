@@ -181,39 +181,51 @@ type
 
   TFormatMode = record
     Align: Boolean;
+    AlignChar: Char;
     Inverted: Boolean;
     Divide: Boolean;
-    Divider: Char;
+    DivideChar: Char;
+  end;
+
+  TDrawMetrics = record
+    CharWidth: Integer;
+    MinColumnWidth: Integer;
+    RowHeight: Integer;
+    SplitMargin: Integer;
+    TextMargin: Integer;
   end;
 
 const
   DefFormatMode: TFormatMode = (
     Align: True;        // aligning the result to the metric value
+    AlignChar: #0;
     Inverted: False;    // parts of the result are inverted
     Divide: False;      // separators have been added between parts
-    Divider: ' ';
+    DivideChar: ' ';
   );
 
   RegFormatMode: TFormatMode = (
     Align: True;
+    AlignChar: #0;
     {$IF DEFINED (FPC) AND DEFINED (FPC_BIG_ENDIAN)}
     Inverted: False;
     {$ELSE}
     Inverted: True;
     {$ENDIF}
     Divide: True;
-    Divider: ' ';
+    DivideChar: ' ';
   );
 
   RegFormatModeNoAlign: TFormatMode = (
     Align: False;
+    AlignChar: #0;
     {$IF DEFINED (FPC) AND DEFINED (FPC_BIG_ENDIAN)}
     Inverted: False;
     {$ELSE}
     Inverted: True;
     {$ENDIF}
     Divide: False;
-    Divider: ' ';
+    DivideChar: ' ';
   );
 
   // HexView Change Codes
@@ -266,6 +278,7 @@ type
   function Extended80Mantissa(const Value: TExtended80Support): UInt64;
   function Extended80Sign(const Value: TExtended80Support): Byte;
   function Extended80ToDouble(const Value: TExtended80Support): Double;
+  function DoubleToExtended80(const Value: Double): TExtended80Support;
 
 type
   TFloatType = (
@@ -317,7 +330,7 @@ begin
     ftNegInfinity: Exit('Neg Infinity');
     ftSNaN: Exit('SNaN');
     ftQNaN: Exit('QNaN');
-    ftZero: Exit('0');
+    ftZero: Exit('0.0');
     ftInvalid: Exit('Invalid');
   else
     {$IF SizeOf(Extended) = 8}
@@ -407,6 +420,18 @@ begin
     if Sign = 1 then
       Result := -Result;
   end;
+end;
+
+function DoubleToExtended80(const Value: Double): TExtended80Support;
+var
+  UIntRes: UInt64;
+begin
+  UIntRes := PUInt64(@Value)^;
+  Result.Exp := (UIntRes shr 52) and $7FF + 15360;
+  if (UIntRes shr 52) and $800 <> 0 then
+    Result.Exp := Result.Exp + $8000;
+  Result.Frac := (UIntRes and $FFFFFFFFFFFFF) shl 11;
+  Result.Frac := Result.Frac or $8000000000000000;
 end;
 
 type
@@ -539,18 +564,21 @@ function RawBufToInt(Value: PByte; nSize: Integer;
   var
     AChar: Char;
   begin
-    case ViewMode of
-      bvmHex8..bvmHex64, bvmAddress: AChar := '0';
+    if FormatMode.AlignChar <> #0 then
+      AChar := FormatMode.AlignChar
     else
-      AChar := ' ';
-    end;
+      case ViewMode of
+        bvmHex8..bvmHex64, bvmAddress: AChar := '0';
+      else
+        AChar := ' ';
+      end;
     Result := StringOfChar(AChar, Metric.CharCount - Length(Value)) + Value;
   end;
 
   function ValueString(const Value: UInt64): string;
   begin
     case ViewMode of
-      bvmHex8..bvmHex64, bvmAddress: Result := IntToHex(Value, 1);
+      bvmHex8..bvmHex64, bvmAddress: Result := IntToHex(Value, Metric.ByteCount shl 1);
       bvmInt8:  Result := IntToStr(ShortInt(Value));
       bvmInt16:  Result := IntToStr(SmallInt(Value));
       bvmInt32:  Result := IntToStr(Integer(Value));
@@ -576,7 +604,7 @@ begin
       Buff := 0;
       Move(Value[I], Buff, Metric.ByteCount);
       if (I > 0) and FormatMode.Divide then
-        Builder.Append(FormatMode.Divider);
+        Builder.Append(FormatMode.DivideChar);
       Builder.Append(ValueString(Buff));
       Inc(I, Metric.ByteCount);
     end;
@@ -592,16 +620,51 @@ begin
   end;
 end;
 
+function TrimFloatToMetric(const Value: string; const Metric: TValueMetric): string;
+var
+  EPos, ELen, RLen, ACharCount: Integer;
+begin
+  RLen := Length(Value);
+  ACharCount := Metric.CharCount;
+  // There should always be a reserve for "+" or "-" signs.
+  if (RLen > 0) and not CharInSet(Value[1], ['+', '-']) then
+    Dec(ACharCount);
+  if RLen > ACharCount then
+  begin
+    EPos := Pos('E', Value);
+    if EPos = 0 then
+      Result := Copy(Value, 1, ACharCount)
+    else
+    begin
+      ELen := RLen - EPos + 1;
+      if ELen < ACharCount then
+      begin
+        RLen := ACharCount - ELen;
+        while Value[RLen] = '0' do Dec(RLen);
+      end
+      else
+      begin
+        RLen := ACharCount;
+        ELen := 0;
+      end;
+      Result := Copy(Value, 1, RLen) + Copy(Value, EPos, ELen);
+    end;
+  end
+  else
+    Result := Value;
+  Result := StringReplace(Result, ',', '.', [rfReplaceAll]);
+end;
+
 function RawBufToSingle(Value: PByte; nSize: Integer;
   const Metric: TValueMetric; const FormatMode: TFormatMode): string;
 
   function ValueString(const Value: Single): string;
   begin
     if Value = 0 then
-      Result := '0'
+      Result := '0.0'
     else
       Result := FloatToStr(Value);
-    Result := StringReplace(Result, ',', '.', [rfReplaceAll]);
+    Result := TrimFloatToMetric(Result, Metric);
     if FormatMode.Align then
       Result := StringOfChar(' ', Metric.CharCount - Length(Result)) + Result;
   end;
@@ -620,7 +683,7 @@ begin
       Buff := 0;
       Move(Value[I], Buff, Metric.ByteCount);
       if (I > 0) and FormatMode.Divide then
-        Builder.Append(FormatMode.Divider);
+        Builder.Append(FormatMode.DivideChar);
       Builder.Append(ValueString(Buff));
       Inc(I, Metric.ByteCount);
     end;
@@ -642,9 +705,10 @@ function RawBufToDouble(Value: PByte; nSize: Integer;
   function ValueString(const Value: Double): string;
   begin
     if Value = 0 then
-      Result := '0'
+      Result := '0.0'
     else
       Result := FloatToStr(Value);
+    Result := TrimFloatToMetric(Result, Metric);
     if FormatMode.Align then
       Result := StringOfChar(' ', Metric.CharCount - Length(Result)) + Result;
   end;
@@ -663,7 +727,7 @@ begin
       Buff := 0;
       Move(Value[I], Buff, Metric.ByteCount);
       if (I > 0) and FormatMode.Divide then
-        Builder.Append(FormatMode.Divider);
+        Builder.Append(FormatMode.DivideChar);
       Builder.Append(ValueString(Buff));
       Inc(I, Metric.ByteCount);
     end;
@@ -685,6 +749,7 @@ function RawBufToExtended(Value: PByte; nSize: Integer;
   function ValueString(const Value: TExtended80Support): string;
   begin
     Result := ExtractExtended80Fmt(Value);
+    Result := TrimFloatToMetric(Result, Metric);
     if FormatMode.Align then
       Result := StringOfChar(' ', Metric.CharCount - Length(Result)) + Result;
   end;
@@ -703,7 +768,7 @@ begin
       FillChar(Buff{%H-}, SizeOf(TExtended80Support), 0);
       Move(Value[I], Buff, Metric.ByteCount);
       if (I > 0) and FormatMode.Divide then
-        Builder.Append(FormatMode.Divider);
+        Builder.Append(FormatMode.DivideChar);
       Builder.Append(ValueString(Buff));
       Inc(I, Metric.ByteCount);
     end;
@@ -728,7 +793,7 @@ begin
   OldMask := SetExceptionMask(exAllArithmeticExceptions);
   try
     case ViewMode of
-      bvmHex8: Result := RawBufToHex(Value, nSize);
+      bvmHex8: Result := RawBufToHex(Value, nSize, FormatMode.Inverted);
       bvmFloat32: Result := RawBufToSingle(Value, nSize, Metric, FormatMode);
       bvmFloat64: Result := RawBufToDouble(Value, nSize, Metric, FormatMode);
       bvmFloat80: Result := RawBufToExtended(Value, nSize, Metric, FormatMode);

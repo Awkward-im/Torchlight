@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="test.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos Y="5"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgstream.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="21"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="21"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgmesh.pas"/>
+        <UnitName Value="RGMesh"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1024"/>
+        <CursorPos X="3" Y="1037"/>
+        <FoldState Value=" T4904 TMI511121218]72161]F PiV.H]UCkdN32 T3.80c5 PZiX0a"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="10"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="434" TopLine="428"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="435" TopLine="428"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="436" TopLine="428"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="437" TopLine="428"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="438" TopLine="428"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="439" TopLine="428"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="440" TopLine="428"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="441" TopLine="440"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="443" TopLine="437"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="446" TopLine="437"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="450" TopLine="435"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="443" TopLine="435"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="450" TopLine="435"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="463" TopLine="452"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="465" TopLine="452"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="467" TopLine="455"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="470" TopLine="455"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="489" TopLine="473"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="491" TopLine="473"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="463" TopLine="453"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="465" TopLine="453"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="451" TopLine="457"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="485" TopLine="465"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="486" TopLine="465"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="433" TopLine="416"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="493" TopLine="478"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="433" TopLine="416"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="493" TopLine="478"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="1035" TopLine="1024"/>
+      </Position>
+      <Position>
+        <Filename Value="rgmesh.pas"/>
+        <Caret Line="1036" TopLine="1024"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default">
+        <Mode Name="default">
+          <local>
+            <CommandLineParams Value="TL1-Alch_Imp.MESH"/>
+          </local>
+        </Mode>
+      </Modes>
+    </RunParams>
+    <HistoryLists>
+      <List Name="WorkingDirectory" Type="File" Count="1"/>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+      <List Name="CommandLineParameters" Count="3">
+        <Item1 Value="TL1-Alch_Imp.MESH"/>
+        <Item2 Value="PU_LIGHT.MESH"/>
+        <Item3 Value="TL2-FROG.MESH"/>
+      </List>
+    </HistoryLists>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="rgmesh.pas"/>
+        <Line Value="979"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="rgmesh.pas"/>
+        <Line Value="975"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="rgmesh.pas"/>
+        <Line Value="450"/>
+      </Item>
+    </BreakPoints>
+    <Watches>
+      <Item>
+        <Expression Value="achunk"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+      <Item>
+        <Expression Value="lchunk"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+      <Item>
+        <Expression Value="lpos"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+      <Item>
+        <Expression Value="lchunk._len+lpos"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

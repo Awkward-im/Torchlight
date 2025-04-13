@@ -5,7 +5,7 @@ unit Logging;
 interface
 
 type
-  TLogOnAdd       = function (var adata:AnsiString                 ):integer of object;
+  TLogOnAdd       = function (var adata:AnsiString             ):integer of object;
   TLogOnAddWide   = function (var adata:UnicodeString          ):integer of object;
   TLogOnAddBinary = function (var abuf:PByte; var asize:integer):integer of object;
 
@@ -19,6 +19,7 @@ type
     FSign:longword;
     FSignSize:integer;
 
+    FLast:PByte;       // last write pointer
     FSize:cardinal;    // Log content size
     FBufSize:cardinal; // FLog memory size. Can be replaced by MemSize()
 
@@ -33,8 +34,9 @@ type
 
     procedure SaveToFile(const afile:AnsiString='rglog.txt');
 
-    property Log :PByte  read FLog;
-    property size:cardinal read FSize;
+    property Log :PByte    read FLog;
+    property Last:PByte    read FLast;
+    property Size:cardinal read FSize;
 
     property OnAddBinary:TLogOnAddBinary read FOnAddBin write FOnAddBin;
   end;
@@ -140,6 +142,8 @@ end;
 
 procedure TBaseLog.AddData(adata:pointer; asize:integer);
 begin
+  if asize<=0 then exit;
+
   if Assigned(FOnAddBin) then
     if FOnAddBin(adata,asize)<=0 then
       exit;
@@ -147,6 +151,7 @@ begin
   CheckBuffer(asize);
 
   System.Move(PByte(adata)^,FLog[FSize],asize);
+  FLast:=@FLog[FSize];
   inc(FSize,asize);
 end;
 
@@ -201,6 +206,8 @@ begin
   lsize:=Length(atext);
   CheckBuffer(lsize+3);
 
+  FLast:=@FLog[FSize];
+
   if lsize>0 then
   begin
     System.Move(atext^,FLog[FSize],lsize);
@@ -210,12 +217,13 @@ begin
   FLog[FSize+0]:=13;
   FLog[FSize+1]:=10;
   FLog[FSize+2]:=0;
+
   Inc(FSize,2);
 end;
 
 procedure TLog.Continue(const astr:AnsiString);
 begin
-  if FSize>0 then dec(FSize,2);
+  if FSize>1 then dec(FSize,2);
   AddText(PAnsiChar(astr));
 end;
 
@@ -301,10 +309,15 @@ Var
   lsize:integer;
 begin
   lsize:=Length(atext)*SizeOf(WideChar);
-  CheckBuffer(lsize+3*SizeOf(WideChar));
+  CheckBuffer(lsize +3*SizeOf(WideChar));
 
-  System.Move(PByte(atext)^,FLog[FSize],lsize);
-  inc(FSize,lsize);
+  FLast:=@FLog[FSize];
+
+  if lsize>0 then
+  begin
+    System.Move(PByte(atext)^,FLog[FSize],lsize);
+    inc(FSize,lsize);
+  end;
 
   FLog[FSize+0]:=13;
   FLog[FSize+1]:=0;
@@ -312,12 +325,13 @@ begin
   FLog[FSize+3]:=0;
   FLog[FSize+4]:=0;
   FLog[FSize+5]:=0;
+
   Inc(FSize,4);
 end;
 
 procedure TLogWide.Continue(const astr:UnicodeString);
 begin
-  if FSize>0 then dec(FSize,4);
+  if FSize>3 then dec(FSize,4);
   AddText(PUnicodeChar(astr));
 end;
 

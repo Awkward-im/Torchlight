@@ -215,8 +215,8 @@ begin
       '<Imageset'+
       ' Name="'          +WideToStr(GetNodeName(data))+
       '" Imagefile="'    +ldata+
-      '" NativeHorzRez="'+ltmp+
-      '" NativeVertRez="'+ltmp+
+      '" NativeHorzRez="'+ltmp+ // 1024 even for 512
+      '" NativeVertRez="'+ltmp+ // 768 even for 512
       '" AutoScaled="true">'#13#10; //??
 
     for i:=0 to GetChildCount(data)-1 do
