@@ -2,16 +2,11 @@ unit RGMesh;
 
 interface
 
+uses
+  Classes;
+
 procedure Trace(const fname:AnsiString);
 
-
-implementation
-
-uses
-  Classes,
-  SysUtils,
-  rgglobal,
-  rgstream;
 
 const
   M_HEADER = $1000;
@@ -215,8 +210,9 @@ const
     (ver: 20; sign:'[MeshSerializer_v1.20]' ), // deprecated
     (ver: 30; sign:'[MeshSerializer_v1.30]' ),
     (ver: 40; sign:'[MeshSerializer_v1.40]' ), // TL1 / TL2
-    (ver: 41; sign:'[MeshSerializer_v1.41]' ),
+    (ver: 41; sign:'[MeshSerializer_v1.41]' ), // TL2
     (ver: 80; sign:'[MeshSerializer_v1.8]'  ),
+    (ver: 90; sign:'[MeshSerializer_v1.9]'  ), // Hob
     (ver: 91; sign:'[MeshSerializer_v1.9_o]'), // Hob
     (ver: 99; sign:'[MeshSerializer_Runic]' ), // RG/RGO
     (ver:100; sign:'[MeshSerializer_v1.100]')
@@ -230,7 +226,7 @@ type
 
 type
   TRGMesh = object
-  private
+  public
     FStream:TStream;
     FVertexCount:integer;
     FVersion:integer;
@@ -256,12 +252,29 @@ type
     procedure ReadMesh;
     function  ReadMeshFile:boolean;
 
-  public
     procedure Init;
     procedure Free;
     procedure Clear;
     procedure LoadFromFile(fname:PAnsiChar);
   end;
+
+
+procedure Log(const astr:string; const aval:string);
+procedure Log(const astr:string; aval:single);
+procedure Log(const astr:string; aval:boolean);
+procedure Log(const astr:string; aval:int64);
+function GetChunkName(aid:word):string;
+function TranslateVersion(const sign:AnsiString):integer;
+function ReadText(astream:TStream):string;
+function ReadChunk(astream:TStream; var achunk:TOgreChunk):word;
+
+implementation
+
+uses
+  SysUtils,
+  rgglobal,
+  rgstream;
+
 
 {%REGION Support}
 procedure Log(const astr:string; const aval:string);
@@ -1043,7 +1056,8 @@ end;
 function TRGMesh.ReadMeshFile:boolean;
 var
   lchunk:TOgreChunk;
-  pc:AnsiString;
+  ls:AnsiString;
+  i,lcnt,ltype:integer;
 begin
   result:=false;
 
@@ -1051,27 +1065,90 @@ begin
   lchunk._type:=FStream.ReadWord();
   if lchunk._type=M_HEADER then
   begin
-    pc:=ReadText(FStream);
-    FVersion:=TranslateVersion(pc);
-    if FVersion<40 then
+    ls:=ReadText(FStream);
+    FVersion:=TranslateVersion(ls);
+    if (FVersion<40) or (FVersion=99) then
     begin
-      Log('version',pc+' not supprted');
+      Log('version',ls+' not supported');
       exit;
     end
     else
-      Log('version',pc);
+      Log('version',ls);
   end
   else
     exit;
 
-  while not FStream.Eof() do
+  //===== Hob =====
+
+  if FVersion in [90,91] then
+  begin
+    if FStream.ReadWord()=0002 then
+    begin
+      lcnt:=FStream.ReadWord();
+      if lcnt<>0009 then
+        Log('First block is not len=9 but',lcnt);
+      Log('word_1',FStream.ReadWord());
+      Log('byte_1',FStream.ReadByte());
+      Log('word_2',FStream.ReadWord()); // 0001
+    end;
+
+    // base
+    lcnt:=FStream.ReadWord();
+    for i:=0 to lcnt-1 do
+    begin
+      ls:=ReadText(FStream);
+      Log(ls,ReadText(FStream));
+    end;
+
+    FStream.ReadWord(); //0001
+    Log('checksum?',HexStr(FStream.ReadDWord(),8));
+
+    ls:=ReadText(FStream);
+    Log(ls+' (size of next data, mat+consts)',HexStr(FStream.ReadDWord(),8));
+
+    ls:=ReadText(FStream);
+    Log(ls,FStream.ReadDWord());
+
+    lcnt:=FStream.ReadDWord();
+
+    for i:=0 to lcnt-1 do
+    begin
+      ltype:=FStream.ReadDWord();
+      case ltype of
+        1: begin
+          ls:=ReadText(FStream);
+          Log('{'+IntToStr(i)+'} '+ls,FStream.ReadDWord());
+        end;
+        2: begin
+          ls:=ReadText(FStream);
+          Log('{'+IntToStr(i)+'} '+ls,FStream.ReadFloat());
+        end;
+        3: begin
+          Log('{'+IntToStr(i)+'} '+ReadText(FStream),'4x float');
+          Log('  [0]',FStream.ReadFloat());
+          Log('  [1]',FStream.ReadFloat());
+          Log('  [2]',FStream.ReadFloat());
+          Log('  [3]',FStream.ReadFloat());
+        end;
+        4: Log('{'+IntToStr(i)+'} type',ltype);
+      else
+        Log('{'+IntToStr(i)+'} Unknown const type',ltype);
+      end;
+    end;
+  end;
+
+{
+  Source gives cycle
+  documentation gives single mesh
+}
+//  while not FStream.Eof() do
   begin
 
     // chunk size can be wrong
     case ReadChunk(FStream,lchunk) of
       M_MESH: ReadMesh;
     else
-      break;
+//      break;
     end;
 
   end;
