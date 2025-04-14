@@ -410,8 +410,8 @@ var
   lpos:int64;
   lcnt:integer;
 begin
-  lcnt:=FStream.ReadDWord();
-  Log('vertextCount',lcnt);
+  FVertexCount:=FStream.ReadDWord();
+  Log('vertextCount',FVertexCount);
 
   while not FStream.Eof() do
   begin
