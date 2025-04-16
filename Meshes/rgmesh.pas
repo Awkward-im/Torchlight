@@ -384,8 +384,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -433,8 +435,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -503,8 +507,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -643,8 +649,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -746,8 +754,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -793,8 +803,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -818,8 +830,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -847,8 +861,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -908,8 +924,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -963,8 +981,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -1048,8 +1068,10 @@ begin
     end;
 
     if (FStream.Position)<>(lpos+lchunk._len) then
-       Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
-//    FStream.Position:=lpos+lchunk._len;
+    begin
+      Log('!!!Warning',HexStr(FStream.Position,8)+' is not '+HexStr(lpos+lchunk._len,8));
+//      FStream.Position:=lpos+lchunk._len;
+    end;
   end;
 end;
 
@@ -1082,7 +1104,8 @@ begin
 
   if FVersion in [90,91] then
   begin
-    if FStream.ReadWord()=0002 then
+//    if FStream.ReadWord()=0002 then
+    Log('first block code (usually 2)',FStream.ReadWord());
     begin
       lcnt:=FStream.ReadWord();
       if lcnt<>0009 then
