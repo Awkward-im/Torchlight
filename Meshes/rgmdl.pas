@@ -19,33 +19,25 @@ type
   public
     FStream:TStream;
     FVertexCount:integer;
+    FSubMeshes:integer;   // sure, if Meshes=1 only
     FVersion:integer;
-{
-    procedure ReadGeometryVertexElement;
-    procedure ReadGeometryVertexDeclaration;
-    procedure ReadGeometryVertexBuffer;
-    procedure ReadGeometry;
-    procedure ReadSubMesh;
-    procedure ReadMeshLodLevel;
-    procedure ReadSubmeshNameTable;
-    procedure ReadEdgeGroup;
-    procedure readEdgeListLodInfo;
-    procedure ReadEdgeListLod;
-    procedure ReadEdgeLists;
-    procedure ReadPose;
-    procedure ReadPoses;
-    procedure ReadAnimationPoseKeyFrame;
-    procedure ReadAnimationMorphKeyFrame;
-    procedure ReadAnimationTrack;
-    procedure ReadAnimation;
-    procedure ReadAnimations;
-    procedure ReadMesh;
-}
+    FMeshVersion:integer;
+
     procedure ReadTextures;
-    procedure ReadBlock5;
-    procedure ReadBlock17(acnt:integer);
-    procedure ReadBlock1B(acnt:integer);
-    procedure ReadBlock1D(acnt:integer);
+    procedure ReadBlockX5;
+
+    procedure ReadMeshInfo();
+{
+    procedure ReadMeshInfo01();
+    procedure ReadMeshInfo02();
+    procedure ReadMeshInfo03();
+    procedure ReadMeshInfo07();
+    procedure ReadMeshInfo08();
+    procedure ReadMeshInfo09();
+    procedure ReadMeshInfo0E();
+}
+    procedure ReadModelDataType0();
+    procedure ReadModelDataType1();
 
     function  ReadMDLFile:boolean;
 
@@ -72,7 +64,7 @@ var
   i,j,lcnt:integer;
 begin
   lcnt:=FStream.ReadDWord();
-  Log('Textures',lcnt);
+  Log(#13#10'Textures',lcnt);
   SetLength(FTextures,lcnt);
   for i:=0 to lcnt-1 do
   begin
@@ -86,122 +78,181 @@ begin
   end;
 end;
 
-procedure TRGMDL.ReadBlock5;
+procedure TRGMDL.ReadBlockX5;
 var
   i,lcnt:integer;
 begin
-  lcnt:=FStream.ReadWord();
-  if lcnt<>5 then Log('!!!group count<>5',lcnt);
+  Log('>groups (always same values, 5 [default] or 6 times)','');
 
+  lcnt:=FStream.ReadWord();
   for i:=0 to lcnt-1 do
   begin
     Log('group #',i);
-    Log('  [0]',FStream.ReadWord());
-    Log('  [1]',FStream.ReadWord());
-    Log('  [2]',FStream.ReadWord());
-    Log('  [3] (offset?)',FStream.ReadDWord());
+    Log('  w[0]',FStream.ReadWord());
+    Log('  w[1]',FStream.ReadWord());
+    Log('  w[2]',FStream.ReadWord());
+    Log('  w[3]',FStream.ReadWord());
+    Log('  w[4]',FStream.ReadWord());
   end;
 end;
 
 
-procedure TRGMDL.ReadBlock1D(acnt:integer);
+procedure TRGMDL.ReadModelDataType0();
+var
+  FIndexCount:integer;
+  i,lcnt,lcnt1:integer;
+begin
+  //=======
+  FStream.ReadWord();            // 0001
+
+  Log('float x',FStream.ReadFloat());
+  Log('float y',FStream.ReadFloat());
+  Log('float z',FStream.ReadFloat());
+
+  // ?? Faces integer TStrip
+  FIndexCount:=FStream.ReadDword(); // >= VertextCount
+  Log(#13#10'indexCount',FIndexCount);
+  Log(HexStr(FStream.Position,8),'first index');
+  for i:=0 to FIndexCount-1 do
+    FStream.ReadDWord();
+
+  // Vertices
+  FVertexCount:=FStream.ReadDword();
+  Log(HexStr(FStream.Position,8),IntToStr(FVertexCount)+' vertices');
+  for i:=0 to FVertexCount-1 do
+  begin
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+  end;
+
+  if FMeshVersion=$0E then
+  begin
+    lcnt:=FStream.ReadDword(); // save as FVertextCount
+    Log(HexStr(FStream.Position,8),IntToStr(lcnt)+' 6x floats');
+    for i:=0 to lcnt-1 do
+    begin
+      FStream.ReadFloat();
+      FStream.ReadFloat();
+      FStream.ReadFloat();
+      FStream.ReadFloat();
+      FStream.ReadFloat();
+      FStream.ReadFloat();
+    end;
+  end;
+
+  //=======
+  FStream.ReadWord();            // 0001
+
+  Log(HexStr(FStream.Position,8),#13#10'UV index');
+  // UV indices integer TStrip
+  for i:=0 to FIndexCount-1 do
+    FStream.ReadDWord();
+
+  // UV?
+  lcnt:=FStream.ReadDword();
+  Log(HexStr(FStream.Position,8),IntToStr(lcnt)+' UVs');
+  for i:=0 to lcnt-1 do
+  begin
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+  end;
+
+  //!!!!! CHEAT
+  if (FMeshVersion=$0E) and (FSubMeshes>1) then
+  begin
+    Log(HexStr(FStream.Position,8),#13#10'UV-2 index');
+    for i:=0 to FIndexCount-1 do
+      FStream.ReadDWord();
+
+    // UV?
+    lcnt:=FStream.ReadDword();
+    Log(HexStr(FStream.Position,8),IntToStr(lcnt)+' 2nd UVs');
+    for i:=0 to lcnt-1 do
+    begin
+      FStream.ReadFloat();
+      FStream.ReadFloat();
+    end;
+  end;
+
+  //=======
+  FStream.ReadWord();            // 0001
+  
+  Log(HexStr(FStream.Position,8),#13#10'3x float index');
+  for i:=0 to FIndexCount-1 do
+    FStream.ReadDWord();
+
+  lcnt:=FStream.ReadDWord();
+  Log(HexStr(FStream.Position,8),IntToStr(lcnt)+' 3x floats');
+  for i:=0 to lcnt-1 do
+  begin
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+  end;
+
+  Log('dword (0)',FStream.ReadDWord());
+  Log('dword (0)',FStream.ReadDWord());
+
+  // Last group
+  i:=FStream.ReadDWord();        // total items
+  lcnt:=FStream.ReadDWord();     // total submeshes
+  Log('#13#10last group, '+IntToStr(i)+' items in '+IntToStr(lcnt)+' mesh[es]','');
+
+  // values from 0 to FIndexCount-1. can be problematic if FIndexCount > FVertexCount
+  // faces for 0E type
+  for i:=0 to lcnt-1 do
+  begin
+    FStream.ReadWord();          // submesh #
+    lcnt1:=FStream.ReadDWord();  // submesh items count
+    Log('  last['+IntToStr(i)+']='+IntToStr(lcnt1),HexStr(FStream.Position,8));
+    FStream.Seek(lcnt1*3*SizeOf(DWord),soFromCurrent);
+  end;
+end;
+
+procedure TRGMDL.ReadModelDataType1();
 var
   i,j,lcnt,lcnt1:integer;
 begin
-  lcnt1:=118;// 13+16+5+10
-  Log('size',lcnt1);
-
-  for i:=0 to acnt-1 do
-  begin
-    Log('name',ReadText(FStream));
-    Log('{00} w mesh #' ,FStream.ReadWord());
-    Log('{01} w' ,FStream.ReadWord());
-    Log('{02} w' ,FStream.ReadWord());
-    Log('{03} w' ,FStream.ReadWord());
-    Log('{04} w' ,FStream.ReadWord());
-    Log('{05} w' ,FStream.ReadWord());
-    Log('{06} w' ,FStream.ReadWord());
-    Log('{07} w' ,FStream.ReadWord());
-    Log('{08} w' ,FStream.ReadWord());
-    Log('{09} w' ,FStream.ReadWord());
-    Log('{10} w' ,FStream.ReadWord());
-    Log('{11} w' ,FStream.ReadWord());
-    Log('{12} w' ,FStream.ReadWord());
-
-    Log('{00} w' ,FStream.ReadWord());
-    Log('{01} w' ,FStream.ReadWord());
-    Log('{02} w' ,FStream.ReadWord());
-    Log('{03} w' ,FStream.ReadWord());
-    Log('{04} w' ,FStream.ReadWord());
-    Log('{05} w' ,FStream.ReadWord());
-    Log('{06} w' ,FStream.ReadWord());
-    Log('{07} w' ,FStream.ReadWord());
-    Log('{08} w' ,FStream.ReadWord());
-    Log('{09} w' ,FStream.ReadWord());
-    Log('{10} w' ,FStream.ReadWord());
-    Log('{11} w' ,FStream.ReadWord());
-    Log('{12} w' ,FStream.ReadWord());
-    Log('{13} w' ,FStream.ReadWord());
-    Log('{14} w' ,FStream.ReadWord());
-    Log('{15} w' ,FStream.ReadWord());
-
-    Log('{00} f' ,FStream.ReadFloat());
-    Log('{01} f' ,FStream.ReadFloat());
-    Log('{02} f' ,FStream.ReadFloat());
-    Log('{03} f' ,FStream.ReadFloat());
-    Log('{04} f' ,FStream.ReadFloat());
-
-    Log('>textures','');
-    LogTexture(0,Integer(FStream.ReadDWord())); // base/diffuse
-    LogTexture(1,Integer(FStream.ReadDWord()));
-    LogTexture(2,Integer(FStream.ReadDWord())); // dark
-    LogTexture(3,Integer(FStream.ReadDWord())); // pref
-    LogTexture(4,Integer(FStream.ReadDWord())); // glow
-    LogTexture(5,Integer(FStream.ReadDWord())); // normal
-    LogTexture(6,Integer(FStream.ReadDWord()));
-    LogTexture(7,Integer(FStream.ReadDWord()));
-    LogTexture(8,Integer(FStream.ReadDWord())); // spec
-    LogTexture(9,Integer(FStream.ReadDWord()));
-  end;
-
   // M_GEOMETRY
   lcnt:=FStream.ReadWord(); // count of geometries?
   if lcnt<>1 then Log('!!!Before vertices is not 1',lcnt);
-  // Vertices?
-  lcnt:=FStream.ReadDWord(); // x*60 bytes (15 FLoat)
-  for i:=0 to lcnt-1 do
+
+  FVertexCount:=FStream.ReadDWord(); // Vertices, x*60 bytes (15 FLoat)
+  Log('Vertices '+IntToStr(FVertexCount)+'x60 offset',HexStr(FStream.Position,8));
+  for i:=0 to FVertexCount-1 do
   begin
-    FStream.ReadFloat(); // X  18f
-    FStream.ReadFloat(); // Y  193
-    FStream.ReadFloat(); // Z  197
+    FStream.ReadFloat();         // X
+    FStream.ReadFloat();         // Y
+    FStream.ReadFloat();         // Z
 
-    FStream.ReadFloat(); // 19b
-    FStream.ReadFloat(); // 19f
-    FStream.ReadFloat(); // 1a3
-    FStream.ReadFloat(); // 1a7
-    FStream.ReadFloat(); // 1ab
-    FStream.ReadFloat(); // 1af
-    FStream.ReadFloat(); // 1b3
-    FStream.ReadFloat(); // 1b7
-    FStream.ReadFloat(); // 1bb
-    FStream.ReadFloat(); // 1bf
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
+    FStream.ReadFloat();
 
-    FStream.ReadFloat(); // U
-    FStream.ReadFloat(); // V
+    FStream.ReadFloat();         // U
+    FStream.ReadFloat();         // V
   end;
 
-  // M_SUBMESH?
-  lcnt :=FStream.ReadDWord();
+  // M_SUBMESH
+  lcnt :=FStream.ReadDWord();    // submeshes
   for i:=0 to lcnt-1 do
   begin
-    // Faces
-    lcnt1:=FStream.ReadDWord();
-    FStream.ReadDWord(); // mesh number
+    lcnt1:=FStream.ReadDWord();  // Faces
+    FStream.ReadDWord();         // submesh number
+    Log('Submesh '+IntToStr(i)+' faces '+IntToStr(lcnt1)+' offset',HexStr(FStream.Position,8));
     for j:=0 to lcnt1-1 do
     begin
-      FStream.ReadWord(); // X
-      FStream.ReadWord(); // Y
-      FStream.ReadWord(); // Z
+      FStream.ReadWord();        // X
+      FStream.ReadWord();        // Y
+      FStream.ReadWord();        // Z
     end;
   end;
 
@@ -220,7 +271,8 @@ begin
   lcnt:=FStream.ReadDWord();
   if lcnt>0 then
   begin
-    FStream.ReadDWord(); //??
+    Log('Bones offset',HexStr(FStream.Position,8));
+    FStream.ReadDWord();         //?? Bones? (limit for boneIndex)
     for i:=0 to lcnt-1 do
     begin
       FStream.ReadDword();
@@ -235,260 +287,120 @@ begin
   end;
 end;
 
-// Differs from 1D just in mesh info size
-procedure TRGMDL.ReadBlock1B(acnt:integer);
+
+procedure TRGMDL.ReadMeshInfo();
 var
-  i,j,lcnt,lcnt1:integer;
+  i:integer;
 begin
-  lcnt1:=104;// 10+14+5+9
-  Log('size',lcnt1);
-
-  for i:=0 to acnt-1 do
+  for i:=0 to FSubMeshes-1 do
   begin
-    Log('name',ReadText(FStream));
-    Log('{00} w mesh #' ,FStream.ReadWord());
-    Log('{01} w' ,FStream.ReadWord());
-    Log('{02} w' ,FStream.ReadWord());
+    Log(#13#10'name',ReadText(FStream));
+
+    Log('{00} w mesh #'      ,FStream.ReadWord());
+    Log('{01} w (part of #?)',FStream.ReadWord());
+    Log('{02} w can be >1'   ,FStream.ReadWord());
     Log('{03} w' ,FStream.ReadWord());
     Log('{04} w' ,FStream.ReadWord());
     Log('{05} w' ,FStream.ReadWord());
     Log('{06} w' ,FStream.ReadWord());
-    Log('{07} w' ,FStream.ReadWord());
-    Log('{08} w' ,FStream.ReadWord());
-    Log('{09} w' ,FStream.ReadWord());
+    if FMeshVersion>=3 then
+      Log('{07} w' ,FStream.ReadWord());
+    if FMeshVersion>=7 then
+    begin
+      Log('{08} w' ,FStream.ReadWord());
+      Log('{09} w' ,FStream.ReadWord());
+    end;
+    if FMeshVersion>=9 then
+    begin
+      Log('{10} w' ,FStream.ReadWord());
+      Log('{11} w' ,FStream.ReadWord());
+    end;
+    if FMeshVersion>=14 then
+    begin
+      Log('{12} w' ,FStream.ReadWord());
+      Log('{13} w' ,FStream.ReadWord());
+      Log('{14} w' ,FStream.ReadWord());
+    end;
+    //--------------------------------
+    Log('>number groups','');
+    Log('{00} w' ,Int16(FStream.ReadWord()));
 
-    Log('{00} w' ,FStream.ReadWord());
-    Log('{01} w' ,FStream.ReadWord());
-    Log('{02} w' ,FStream.ReadWord());
-    Log('{03} w' ,FStream.ReadWord());
-    Log('{04} w' ,FStream.ReadWord());
-    Log('{05} w' ,FStream.ReadWord());
-    Log('{06} w' ,FStream.ReadWord());
-    Log('{07} w' ,FStream.ReadWord());
-    Log('{08} w' ,FStream.ReadWord());
-    Log('{09} w' ,FStream.ReadWord());
-    Log('{10} w' ,FStream.ReadWord());
-    Log('{11} w' ,FStream.ReadWord());
-    Log('{12} w' ,FStream.ReadWord());
-    Log('{13} w' ,FStream.ReadWord());
+    if FMeshVersion>=7 then
+      Log('{7+ 1} w' ,Int16(FStream.ReadWord()));
 
+    if FMeshVersion>=14 then
+    begin
+      Log('{14+ 1} w' ,Int16(FStream.ReadWord()));
+      Log('{14+ 2} w' ,Int16(FStream.ReadWord()));
+    end;
+
+    Log('{02} w' ,Int16(FStream.ReadWord()));
+    Log('{03} w' ,Int16(FStream.ReadWord()));
+    Log('{04} w' ,Int16(FStream.ReadWord()));
+
+    Log('{05} w' ,Int16(FStream.ReadWord()));
+    Log('{06} w' ,Int16(FStream.ReadWord()));
+    Log('{07} w' ,Int16(FStream.ReadWord()));
+
+    Log('{08} w' ,Int16(FStream.ReadWord()));
+    Log('{09} w' ,Int16(FStream.ReadWord()));
+    Log('{10} w' ,Int16(FStream.ReadWord()));
+
+    Log('{11} w' ,Int16(FStream.ReadWord()));
+    Log('{12} w' ,Int16(FStream.ReadWord()));
+    Log('{13} w' ,Int16(FStream.ReadWord()));
+
+    if FMeshVersion>=8 then
+    begin
+      Log('{14+ 14} w' ,FStream.ReadWord());
+      Log('{14+ 15} w' ,FStream.ReadWord());
+      Log('{14+ 16} w' ,FStream.ReadWord());
+    end;
+    //--------------------------------
     Log('{00} f' ,FStream.ReadFloat());
     Log('{01} f' ,FStream.ReadFloat());
-    Log('{02} f' ,FStream.ReadFloat());
-    Log('{03} f' ,FStream.ReadFloat());
-    Log('{04} f' ,FStream.ReadFloat());
-
-    Log('>textures','');
-    LogTexture(0,Integer(FStream.ReadDWord())); // base/diffuse
-    LogTexture(1,Integer(FStream.ReadDWord()));
-    LogTexture(2,Integer(FStream.ReadDWord()));
-    LogTexture(3,Integer(FStream.ReadDWord()));
-    LogTexture(4,Integer(FStream.ReadDWord())); // normal
-    LogTexture(5,Integer(FStream.ReadDWord()));
-    LogTexture(6,Integer(FStream.ReadDWord()));
-    LogTexture(7,Integer(FStream.ReadDWord()));
-    LogTexture(8,Integer(FStream.ReadDWord()));
-  end;
-
-  // M_GEOMETRY
-  lcnt:=FStream.ReadWord(); // count of geometries?
-  if lcnt<>1 then Log('!!!Before vertices is not 1',lcnt);
-  // Vertices?
-  lcnt:=FStream.ReadDWord(); // x*60 bytes (15 FLoat)
-  for i:=0 to lcnt-1 do
-  begin
-    FStream.ReadFloat(); // X  18f
-    FStream.ReadFloat(); // Y  193
-    FStream.ReadFloat(); // Z  197
-
-    FStream.ReadFloat(); // 19b
-    FStream.ReadFloat(); // 19f
-    FStream.ReadFloat(); // 1a3
-    FStream.ReadFloat(); // 1a7
-    FStream.ReadFloat(); // 1ab
-    FStream.ReadFloat(); // 1af
-    FStream.ReadFloat(); // 1b3
-    FStream.ReadFloat(); // 1b7
-    FStream.ReadFloat(); // 1bb
-    FStream.ReadFloat(); // 1bf
-
-    FStream.ReadFloat(); // U
-    FStream.ReadFloat(); // V
-  end;
-
-  // M_SUBMESH?
-  lcnt :=FStream.ReadDWord();
-  for i:=0 to lcnt-1 do
-  begin
-    // Faces
-    lcnt1:=FStream.ReadDWord();
-    FStream.ReadDWord(); // mesh number
-    for j:=0 to lcnt1-1 do
+    if FMeshVersion>=2 then
     begin
-      FStream.ReadWord(); // X
-      FStream.ReadWord(); // Y
-      FStream.ReadWord(); // Z
+      Log('{02} f' ,FStream.ReadFloat());
+      Log('{03} f' ,FStream.ReadFloat());
+      Log('{04} f' ,FStream.ReadFloat());
     end;
-  end;
-
-  // M_MESH_BOUNDS?
-  Log('minx',FStream.ReadFloat());
-  Log('miny',FStream.ReadFloat());
-  Log('minz',FStream.ReadFloat());
-  Log('maxx',FStream.ReadFloat());
-  Log('maxy',FStream.ReadFloat());
-  Log('maxz',FStream.ReadFloat());
-
-  // M_MESH_SKELETON_LINK
-  Log('skeletonName',ReadText(FStream));
-
-//?? M_MESH_BONE_ASSIGNMENT
-  lcnt:=FStream.ReadDWord();
-  if lcnt>0 then
-  begin
-    FStream.ReadDWord(); //??
-    for i:=0 to lcnt-1 do
+    if FMeshVersion>=14 then
+      Log('{05} f' ,FStream.ReadFloat());
+    //--------------------------------
+    Log('>textures','');
+    if FMeshVersion>=14 then
     begin
-      FStream.ReadDword();
-      FStream.ReadDWord();
-      FStream.ReadFloat();
-{
-      Log('vertextIndex',FStream.ReadDword());
-      Log('boneIndex'   ,FStream.ReadDWord());
-      Log('weight'      ,FStream.ReadFloat());
-}
+      LogTexture(1400,Int32(FStream.ReadDWord())); // 10 14+ normals
+      LogTexture(1401,Int32(FStream.ReadDWord())); // 11 14+
+      LogTexture(1402,Int32(FStream.ReadDWord())); // 12 14+
+      LogTexture(1403,Int32(FStream.ReadDWord())); // 13 14+
+      LogTexture(1404,Int32(FStream.ReadDWord())); // 14 14+
+    end;
+    LogTexture(0,Int32(FStream.ReadDWord()));      // 00 base/diffuse
+    LogTexture(1,Int32(FStream.ReadDWord()));      // 01 ??
+    if FMeshVersion>=8 then
+      LogTexture(802,Int32(FStream.ReadDWord()));  // 09 8+ environment dark (ambient)
+    LogTexture(2,Int32(FStream.ReadDWord()));      // 02 environment "ref"
+    LogTexture(3,Int32(FStream.ReadDWord()));      // 03 glow
+    LogTexture(4,Int32(FStream.ReadDWord()));      // 04 normal
+    LogTexture(5,Int32(FStream.ReadDWord()));      // 05
+    LogTexture(6,Int32(FStream.ReadDWord()));      // 06
+    LogTexture(7,Int32(FStream.ReadDWord()));      // 07 specular / surface?
+    if FMeshVersion>=7 then
+      LogTexture(708,Int32(FStream.ReadDWord()));  // 08 7+
+    if FMeshVersion>=14 then
+    begin
+      LogTexture(14015,Int32(FStream.ReadDWord())); // 15 14+ paint
+      LogTexture(14016,Int32(FStream.ReadDWord())); // 16 14+ paint surface
     end;
   end;
 end;
-
-// Differs from 1D just in mesh info size
-procedure TRGMDL.ReadBlock17(acnt:integer);
-var
-  i,j,lcnt,lcnt1:integer;
-begin
-  lcnt1:=94;// 8+13+5+8
-  Log('size',lcnt1);
-
-  for i:=0 to acnt-1 do
-  begin
-    Log('name',ReadText(FStream));
-    Log('{00} w mesh #' ,FStream.ReadWord());
-    Log('{01} w' ,FStream.ReadWord());
-    Log('{02} w' ,FStream.ReadWord());
-    Log('{03} w' ,FStream.ReadWord());
-    Log('{04} w' ,FStream.ReadWord());
-    Log('{05} w' ,FStream.ReadWord());
-    Log('{06} w' ,FStream.ReadWord());
-    Log('{07} w' ,FStream.ReadWord());
-
-    Log('{00} w' ,FStream.ReadWord());
-    Log('{01} w' ,FStream.ReadWord());
-    Log('{02} w' ,FStream.ReadWord());
-    Log('{03} w' ,FStream.ReadWord());
-    Log('{04} w' ,FStream.ReadWord());
-    Log('{05} w' ,FStream.ReadWord());
-    Log('{06} w' ,FStream.ReadWord());
-    Log('{07} w' ,FStream.ReadWord());
-    Log('{08} w' ,FStream.ReadWord());
-    Log('{09} w' ,FStream.ReadWord());
-    Log('{10} w' ,FStream.ReadWord());
-    Log('{11} w' ,FStream.ReadWord());
-    Log('{12} w' ,FStream.ReadWord());
-
-    Log('{00} f' ,FStream.ReadFloat());
-    Log('{01} f' ,FStream.ReadFloat());
-    Log('{02} f' ,FStream.ReadFloat());
-    Log('{03} f' ,FStream.ReadFloat());
-    Log('{04} f' ,FStream.ReadFloat());
-
-    Log('>textures','');
-    LogTexture(0,Integer(FStream.ReadDWord())); // base/diffuse
-    LogTexture(1,Integer(FStream.ReadDWord()));
-    LogTexture(2,Integer(FStream.ReadDWord()));
-    LogTexture(3,Integer(FStream.ReadDWord()));
-    LogTexture(4,Integer(FStream.ReadDWord())); // normal
-    LogTexture(5,Integer(FStream.ReadDWord()));
-    LogTexture(6,Integer(FStream.ReadDWord()));
-    LogTexture(7,Integer(FStream.ReadDWord()));
-  end;
-
-  // M_GEOMETRY
-  lcnt:=FStream.ReadWord(); // count of geometries?
-  if lcnt<>1 then Log('!!!Before vertices is not 1',lcnt);
-  // Vertices?
-  lcnt:=FStream.ReadDWord(); // x*60 bytes (15 FLoat)
-  for i:=0 to lcnt-1 do
-  begin
-    FStream.ReadFloat(); // X  18f
-    FStream.ReadFloat(); // Y  193
-    FStream.ReadFloat(); // Z  197
-
-    FStream.ReadFloat(); // 19b
-    FStream.ReadFloat(); // 19f
-    FStream.ReadFloat(); // 1a3
-    FStream.ReadFloat(); // 1a7
-    FStream.ReadFloat(); // 1ab
-    FStream.ReadFloat(); // 1af
-    FStream.ReadFloat(); // 1b3
-    FStream.ReadFloat(); // 1b7
-    FStream.ReadFloat(); // 1bb
-    FStream.ReadFloat(); // 1bf
-
-    FStream.ReadFloat(); // U
-    FStream.ReadFloat(); // V
-  end;
-
-  // M_SUBMESH?
-  lcnt :=FStream.ReadDWord();
-  for i:=0 to lcnt-1 do
-  begin
-    // Faces
-    lcnt1:=FStream.ReadDWord();
-    FStream.ReadDWord(); // mesh number
-    for j:=0 to lcnt1-1 do
-    begin
-      FStream.ReadWord(); // X
-      FStream.ReadWord(); // Y
-      FStream.ReadWord(); // Z
-    end;
-  end;
-
-  // M_MESH_BOUNDS?
-  Log('minx',FStream.ReadFloat());
-  Log('miny',FStream.ReadFloat());
-  Log('minz',FStream.ReadFloat());
-  Log('maxx',FStream.ReadFloat());
-  Log('maxy',FStream.ReadFloat());
-  Log('maxz',FStream.ReadFloat());
-
-  // M_MESH_SKELETON_LINK
-  Log('skeletonName',ReadText(FStream));
-
-//?? M_MESH_BONE_ASSIGNMENT
-  lcnt:=FStream.ReadDWord();
-  if lcnt>0 then
-  begin
-    FStream.ReadDWord(); //??
-    for i:=0 to lcnt-1 do
-    begin
-      FStream.ReadDword();
-      FStream.ReadDWord();
-      FStream.ReadFloat();
-{
-      Log('vertextIndex',FStream.ReadDword());
-      Log('boneIndex'   ,FStream.ReadDWord());
-      Log('weight'      ,FStream.ReadFloat());
-}
-    end;
-  end;
-end;
-
 
 function TRGMDL.ReadMDLFile:boolean;
 var
   lchunk:TOgreChunk;
   ls:AnsiString;
-  i,lcnt,lcnt1,ltype:integer;
 begin
   result:=false;
 
@@ -513,15 +425,15 @@ begin
 
   if FVersion=99 then
   begin
-    ltype:=FStream.ReadWord();
-    Log('type (models=29)',ltype);
+    FMeshVersion:=FStream.ReadWord();
+    Log('type ',FMeshVersion);
 
     Log('first' ,FStream.ReadWord());
     Log('second',FStream.ReadWord());
-    if ltype=14 then
-      Log('add' ,FStream.ReadWord());
+    if FMeshVersion=14 then // type=$0E - RGO
+      Log('v.0E add' ,FStream.ReadWord());
 
-    ReadBlock5();
+    ReadBlockX5();
   
     Log('float (scale?)',FStream.ReadFloat());
     Log('dd (1)',FStream.ReadDWord());
@@ -529,143 +441,43 @@ begin
     Log('dd (0)',FStream.ReadDWord());
     Log('dd (0)',FStream.ReadDWord());
 
-    lcnt :=FStream.ReadDWord();
+    FSubMeshes:=FStream.ReadDWord();
+
     ReadTextures();
 
-    Log('Meshes',lcnt);
-    case ltype of
-      $01: lcnt1:=80 ;//  7+13+2+8
-      $02: lcnt1:=92 ;//  7+13+5+8
-      $03: lcnt1:=94 ;//  8+13+5+8
-      $08: lcnt1:=114;// 10+17+5+10
-      $09: lcnt1:=118;// 12+17+5+10
-      $0E: lcnt1:=160;// 15+19+6+17
-      $17:  begin
-        ReadBlock17(lcnt);
+    Log(#13#10'SubMeshes',FSubMeshes);
 
-        Log('offset',HexStr(FStream.Position,8));
-        result:=true;
-        exit;
-      end;
-
-      $1B:  begin
-        ReadBlock1D(lcnt);
-
-        Log('offset',HexStr(FStream.Position,8));
-        result:=true;
-        exit;
-      end;
-
-      $1D: begin
-        ReadBlock1D(lcnt);
-
-        Log('offset',HexStr(FStream.Position,8));
-        result:=true;
-        exit;
-      end;
-
+    // can make one function with IFs when will understand fields
+    case (FMeshVersion mod 20) of
+      $01: ReadMeshInfo();
+      $02: ReadMeshInfo();
+      $03: ReadMeshInfo();
+      $07: ReadMeshInfo();
+      $08: ReadMeshInfo();
+      $09: ReadMeshInfo();
+      $0E: ReadMeshInfo();
+{
+      $01: ReadMeshInfo01();
+      $02: ReadMeshInfo02();
+      $03: ReadMeshInfo03();
+      $07: ReadMeshInfo07();
+      $08: ReadMeshInfo08();
+      $09: ReadMeshInfo09();
+      $0E: ReadMeshInfo0E();
+}
     else
-      lcnt1:=0;
+      Log('!!!unknown type',FMeshVersion);
+      exit;
     end;
 
-    Log('size',lcnt1);
-    for i:=0 to lcnt-1 do
-    begin
-      Log('name',ReadText(FStream));
-      Log('{00} w mesh #' ,FStream.ReadWord());
-      Log('{01} w' ,FStream.ReadWord());
-      Log('{02} w' ,FStream.ReadWord());
-      Log('{03} w' ,FStream.ReadWord());
-      Log('{04} w' ,FStream.ReadWord());
-      Log('{05} w' ,FStream.ReadWord());
-      Log('{06} w' ,FStream.ReadWord());
-if not (ltype in [1,2]) then
-      Log('{07} w' ,FStream.ReadWord());
-if ltype in [8,9,14] then
-begin
-      Log('{08} w' ,FStream.ReadWord());
-      Log('{09} w' ,FStream.ReadWord());
-if not (ltype in [8]) then
-begin
-      Log('{10} w' ,FStream.ReadWord());
-      Log('{11} w' ,FStream.ReadWord());
-if ltype<>9 then
-      Log('{12} w' ,FStream.ReadWord());
-end;
-if ltype=14 then
-begin
-      Log('{13} w' ,FStream.ReadWord());
-      Log('{14} w' ,FStream.ReadWord());
-end;
-end;
-      Log('{00} w' ,FStream.ReadWord());
-      Log('{01} w' ,FStream.ReadWord());
-      Log('{02} w' ,FStream.ReadWord());
-      Log('{03} w' ,FStream.ReadWord());
-      Log('{04} w' ,FStream.ReadWord());
-      Log('{05} w' ,FStream.ReadWord());
-      Log('{06} w' ,FStream.ReadWord());
-      Log('{07} w' ,FStream.ReadWord());
-      Log('{08} w' ,FStream.ReadWord());
-      Log('{09} w' ,FStream.ReadWord());
-      Log('{10} w' ,FStream.ReadWord());
-      Log('{11} w' ,FStream.ReadWord());
-      Log('{12} w' ,FStream.ReadWord());
-if ltype in [8,9,14] then
-begin
-      Log('{13} w' ,FStream.ReadWord());
-      Log('{14} w' ,FStream.ReadWord());
-      Log('{15} w' ,FStream.ReadWord());
-if (ltype in [8,9]) then
-      Log('{16} w' ,FStream.ReadWord());
-if ltype=14 then
-begin
-      Log('{16} w' ,FStream.ReadWord());
-      Log('{17} w' ,FStream.ReadWord());
-      Log('{18} w' ,FStream.ReadWord());
-end;
-end;
-      Log('{00} f' ,FStream.ReadFloat());
-      Log('{01} f' ,FStream.ReadFloat());
-if ltype<>1 then
-begin
-      Log('{02} f' ,FStream.ReadFloat());
-      Log('{03} f' ,FStream.ReadFloat());
-      Log('{04} f' ,FStream.ReadFloat());
-end;
-if ltype=14 then
-begin
-      Log('{05} f' ,FStream.ReadFloat());
-end;
-      Log('>textures','');
-      LogTexture(0,Integer(FStream.ReadDWord())); // base/diffuse
-      LogTexture(1,Integer(FStream.ReadDWord()));
-      LogTexture(2,Integer(FStream.ReadDWord())); // 1D - dark
-      LogTexture(3,Integer(FStream.ReadDWord())); // 1D - pref, 1,2 - glow?
-      LogTexture(4,Integer(FStream.ReadDWord())); // 17,1B - normal, 1D - glow
-      LogTexture(5,Integer(FStream.ReadDWord())); // 1D - normal
-      LogTexture(6,Integer(FStream.ReadDWord()));
-      LogTexture(7,Integer(FStream.ReadDWord()));
-if ltype in [8,9,14] then
-begin
-      LogTexture(8,Integer(FStream.ReadDWord())); // 1D - spec
-      LogTexture(9,Integer(FStream.ReadDWord()));
-if ltype=14 then
-begin
-      LogTexture(10,Integer(FStream.ReadDWord()));
-      LogTexture(11,Integer(FStream.ReadDWord()));
-      LogTexture(12,Integer(FStream.ReadDWord()));
-      LogTexture(13,Integer(FStream.ReadDWord()));
-      LogTexture(14,Integer(FStream.ReadDWord()));
-      LogTexture(15,Integer(FStream.ReadDWord()));
-      LogTexture(16,Integer(FStream.ReadDWord()));
-end;
-end;
-    end;
+    if FMeshVersion>20 then
+      ReadModelDataType1()
+    else
+      ReadModelDataType0();
+
   end;
 
   Log('offset',HexStr(FStream.Position,8));
-  result:=true;
 end;
 
 
