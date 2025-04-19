@@ -26,16 +26,7 @@ type
     procedure ReadTextures;
     procedure ReadBlockX5;
 
-    procedure ReadMeshInfo();
-{
-    procedure ReadMeshInfo01();
-    procedure ReadMeshInfo02();
-    procedure ReadMeshInfo03();
-    procedure ReadMeshInfo07();
-    procedure ReadMeshInfo08();
-    procedure ReadMeshInfo09();
-    procedure ReadMeshInfo0E();
-}
+    function  ReadMeshInfo(aver:integer):boolean;
     procedure ReadModelDataType0();
     procedure ReadModelDataType1();
 
@@ -82,9 +73,8 @@ procedure TRGMDL.ReadBlockX5;
 var
   i,lcnt:integer;
 begin
-  Log('>groups (always same values, 5 [default] or 6 times)','');
-
   lcnt:=FStream.ReadWord();
+  Log('>groups (always same values, 5 [default] or 6 times)',lcnt);
   for i:=0 to lcnt-1 do
   begin
     Log('group #',i);
@@ -96,21 +86,26 @@ begin
   end;
 end;
 
-
+{
+  Check: index arrays are "expanded" arrays of structures,
+    next data is just unique combo which can be repeated in normal case?
+  So, index must be ALWAYS same or GREATER than ANY sizes of them
+}
 procedure TRGMDL.ReadModelDataType0();
 var
   FIndexCount:integer;
   i,lcnt,lcnt1:integer;
 begin
+
   //=======
+
   FStream.ReadWord();            // 0001
 
   Log('float x',FStream.ReadFloat());
   Log('float y',FStream.ReadFloat());
   Log('float z',FStream.ReadFloat());
 
-  // ?? Faces integer TStrip
-  FIndexCount:=FStream.ReadDword(); // >= VertextCount
+  FIndexCount:=FStream.ReadDword();
   Log(#13#10'indexCount',FIndexCount);
   Log(HexStr(FStream.Position,8),'first index');
   for i:=0 to FIndexCount-1 do
@@ -142,9 +137,10 @@ begin
   end;
 
   //=======
+
   FStream.ReadWord();            // 0001
 
-  Log(HexStr(FStream.Position,8),#13#10'UV index');
+  Log(#13#10+HexStr(FStream.Position,8),'UV index');
   // UV indices integer TStrip
   for i:=0 to FIndexCount-1 do
     FStream.ReadDWord();
@@ -158,10 +154,10 @@ begin
     FStream.ReadFloat();
   end;
 
-  //!!!!! CHEAT
+  //!!!!! CHEAT Maybe BlockX5 with 6 groups?
   if (FMeshVersion=$0E) and (FSubMeshes>1) then
   begin
-    Log(HexStr(FStream.Position,8),#13#10'UV-2 index');
+    Log(#13#10+HexStr(FStream.Position,8),'UV-2 index');
     for i:=0 to FIndexCount-1 do
       FStream.ReadDWord();
 
@@ -176,11 +172,14 @@ begin
   end;
 
   //=======
+
   FStream.ReadWord();            // 0001
   
-  Log(HexStr(FStream.Position,8),#13#10'3x float index');
+  Log(#13#10+HexStr(FStream.Position,8),'3x float index');
   for i:=0 to FIndexCount-1 do
     FStream.ReadDWord();
+
+  // normals?
 
   lcnt:=FStream.ReadDWord();
   Log(HexStr(FStream.Position,8),IntToStr(lcnt)+' 3x floats');
@@ -194,13 +193,12 @@ begin
   Log('dword (0)',FStream.ReadDWord());
   Log('dword (0)',FStream.ReadDWord());
 
-  // Last group
+  // Last group (faces)
+
   i:=FStream.ReadDWord();        // total items
   lcnt:=FStream.ReadDWord();     // total submeshes
-  Log('#13#10last group, '+IntToStr(i)+' items in '+IntToStr(lcnt)+' mesh[es]','');
+  Log(#13#10'last group, '+IntToStr(i)+' items in '+IntToStr(lcnt)+' mesh[es]','');
 
-  // values from 0 to FIndexCount-1. can be problematic if FIndexCount > FVertexCount
-  // faces for 0E type
   for i:=0 to lcnt-1 do
   begin
     FStream.ReadWord();          // submesh #
@@ -271,8 +269,8 @@ begin
   lcnt:=FStream.ReadDWord();
   if lcnt>0 then
   begin
-    Log('Bones offset',HexStr(FStream.Position,8));
-    FStream.ReadDWord();         //?? Bones? (limit for boneIndex)
+    Log(IntToStr(lcnt)+' (Bones vertices ?) offset',HexStr(FStream.Position,8));
+    Log('(bones ?) count',FStream.ReadDWord()); //?? Bones? (limit for boneIndex)
     for i:=0 to lcnt-1 do
     begin
       FStream.ReadDword();
@@ -288,10 +286,11 @@ begin
 end;
 
 
-procedure TRGMDL.ReadMeshInfo();
+function TRGMDL.ReadMeshInfo(aver:integer):boolean;
 var
   i:integer;
 begin
+  if not (aver in [$01,$02,$03, $07,$08,$09, $0E]) then exit(false);
   for i:=0 to FSubMeshes-1 do
   begin
     Log(#13#10'name',ReadText(FStream));
@@ -303,19 +302,19 @@ begin
     Log('{04} w' ,FStream.ReadWord());
     Log('{05} w' ,FStream.ReadWord());
     Log('{06} w' ,FStream.ReadWord());
-    if FMeshVersion>=3 then
+    if aver>=3 then
       Log('{07} w' ,FStream.ReadWord());
-    if FMeshVersion>=7 then
+    if aver>=7 then
     begin
       Log('{08} w' ,FStream.ReadWord());
       Log('{09} w' ,FStream.ReadWord());
     end;
-    if FMeshVersion>=9 then
+    if aver>=9 then
     begin
       Log('{10} w' ,FStream.ReadWord());
       Log('{11} w' ,FStream.ReadWord());
     end;
-    if FMeshVersion>=14 then
+    if aver>=14 then
     begin
       Log('{12} w' ,FStream.ReadWord());
       Log('{13} w' ,FStream.ReadWord());
@@ -325,10 +324,10 @@ begin
     Log('>number groups','');
     Log('{00} w' ,Int16(FStream.ReadWord()));
 
-    if FMeshVersion>=7 then
+    if aver>=7 then
       Log('{7+ 1} w' ,Int16(FStream.ReadWord()));
 
-    if FMeshVersion>=14 then
+    if aver>=14 then
     begin
       Log('{14+ 1} w' ,Int16(FStream.ReadWord()));
       Log('{14+ 2} w' ,Int16(FStream.ReadWord()));
@@ -350,26 +349,26 @@ begin
     Log('{12} w' ,Int16(FStream.ReadWord()));
     Log('{13} w' ,Int16(FStream.ReadWord()));
 
-    if FMeshVersion>=8 then
+    if aver>=8 then
     begin
-      Log('{14+ 14} w' ,FStream.ReadWord());
-      Log('{14+ 15} w' ,FStream.ReadWord());
-      Log('{14+ 16} w' ,FStream.ReadWord());
+      Log('{8+ 14} w' ,FStream.ReadWord());
+      Log('{8+ 15} w' ,FStream.ReadWord());
+      Log('{8+ 16} w' ,FStream.ReadWord());
     end;
     //--------------------------------
     Log('{00} f' ,FStream.ReadFloat());
     Log('{01} f' ,FStream.ReadFloat());
-    if FMeshVersion>=2 then
+    if aver>=2 then
     begin
       Log('{02} f' ,FStream.ReadFloat());
       Log('{03} f' ,FStream.ReadFloat());
       Log('{04} f' ,FStream.ReadFloat());
     end;
-    if FMeshVersion>=14 then
+    if aver>=14 then
       Log('{05} f' ,FStream.ReadFloat());
     //--------------------------------
     Log('>textures','');
-    if FMeshVersion>=14 then
+    if aver>=14 then
     begin
       LogTexture(1400,Int32(FStream.ReadDWord())); // 10 14+ normals
       LogTexture(1401,Int32(FStream.ReadDWord())); // 11 14+
@@ -379,7 +378,7 @@ begin
     end;
     LogTexture(0,Int32(FStream.ReadDWord()));      // 00 base/diffuse
     LogTexture(1,Int32(FStream.ReadDWord()));      // 01 ??
-    if FMeshVersion>=8 then
+    if aver>=8 then
       LogTexture(802,Int32(FStream.ReadDWord()));  // 09 8+ environment dark (ambient)
     LogTexture(2,Int32(FStream.ReadDWord()));      // 02 environment "ref"
     LogTexture(3,Int32(FStream.ReadDWord()));      // 03 glow
@@ -387,14 +386,16 @@ begin
     LogTexture(5,Int32(FStream.ReadDWord()));      // 05
     LogTexture(6,Int32(FStream.ReadDWord()));      // 06
     LogTexture(7,Int32(FStream.ReadDWord()));      // 07 specular / surface?
-    if FMeshVersion>=7 then
+    if aver>=7 then
       LogTexture(708,Int32(FStream.ReadDWord()));  // 08 7+
-    if FMeshVersion>=14 then
+    if aver>=14 then
     begin
       LogTexture(14015,Int32(FStream.ReadDWord())); // 15 14+ paint
       LogTexture(14016,Int32(FStream.ReadDWord())); // 16 14+ paint surface
     end;
   end;
+
+  result:=true;
 end;
 
 function TRGMDL.ReadMDLFile:boolean;
@@ -448,24 +449,8 @@ begin
     Log(#13#10'SubMeshes',FSubMeshes);
 
     // can make one function with IFs when will understand fields
-    case (FMeshVersion mod 20) of
-      $01: ReadMeshInfo();
-      $02: ReadMeshInfo();
-      $03: ReadMeshInfo();
-      $07: ReadMeshInfo();
-      $08: ReadMeshInfo();
-      $09: ReadMeshInfo();
-      $0E: ReadMeshInfo();
-{
-      $01: ReadMeshInfo01();
-      $02: ReadMeshInfo02();
-      $03: ReadMeshInfo03();
-      $07: ReadMeshInfo07();
-      $08: ReadMeshInfo08();
-      $09: ReadMeshInfo09();
-      $0E: ReadMeshInfo0E();
-}
-    else
+    if not ReadMeshInfo(FMeshVersion mod 20) then
+    begin
       Log('!!!unknown type',FMeshVersion);
       exit;
     end;
