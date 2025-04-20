@@ -3,10 +3,13 @@ unit RGMesh;
 interface
 
 uses
+  typinfo,
   Classes;
 
-procedure Trace(const fname:AnsiString);
+// procedure Trace(const fname:AnsiString);
 
+
+//----- Chunk types -----
 
 const
   M_HEADER = $1000;
@@ -201,6 +204,149 @@ const
     (id:$E000; name:'M_TABLE_EXTREMES')
   );
 
+(**
+ * Vertex element type, used to identify the base types of the vertex contents
+ *
+ * @note VET_SHORT1, VET_SHORT3, VET_USHORT1 and VET_USHORT3 should never be used
+ * because they aren't supported on any known hardware - they are unaligned as their size
+ * is not a multiple of 4 bytes. Therefore drivers usually must add padding on upload.
+ *)
+type
+  TVertexElementType = (
+    VET_FLOAT1       =  0,
+    VET_FLOAT2       =  1,
+    VET_FLOAT3       =  2,
+    VET_FLOAT4       =  3,
+    /// alias to more specific colour type - use the current rendersystem's colour packing
+    VET_COLOUR       =  4,  ///< @deprecated use VET_UBYTE4_NORM
+    VET_SHORT1       =  5,  ///< @deprecated not supported on D3D9
+    VET_SHORT2       =  6,
+    VET_SHORT3       =  7,  ///< @deprecated not supported on D3D9 and D3D11
+    VET_SHORT4       =  8,
+    VET_UBYTE4       =  9,
+
+    VET_COLOUR_ARGB  = 10,  /// < @deprecated use VET_UBYTE4_NORM. D3D style compact colour
+    VET_COLOUR_ABGR  = 11,  /// < @deprecated use VET_UBYTE4_NORM. GL  style compact colour
+
+    // the following are not universally supported on all hardware:
+    VET_DOUBLE1      = 12,
+    VET_DOUBLE2      = 13,
+    VET_DOUBLE3      = 14,
+    VET_DOUBLE4      = 15,
+    VET_USHORT1      = 16,  ///< @deprecated not supported on D3D9
+    VET_USHORT2      = 17,
+    VET_USHORT3      = 18,  ///< @deprecated not supported on D3D9 and D3D11
+    VET_USHORT4      = 19,
+    VET_INT1         = 20,
+    VET_INT2         = 21,
+    VET_INT3         = 22,
+    VET_INT4         = 23,
+    VET_UINT1        = 24,
+    VET_UINT2        = 25,
+    VET_UINT3        = 26,
+    VET_UINT4        = 27,
+    VET_BYTE4        = 28,  /// signed bytes
+    VET_BYTE4_NORM   = 29,  /// signed bytes    (normalized to -1..1)
+    VET_UBYTE4_NORM  = 30,  /// unsigned bytes  (normalized to 0..1)
+    VET_SHORT2_NORM  = 31,  /// signed shorts   (normalized to -1..1)
+    VET_SHORT4_NORM  = 32,
+    VET_USHORT2_NORM = 33,  /// unsigned shorts (normalized to 0..1)
+    VET_USHORT4_NORM = 34,
+    VET_INT_10_10_10_2_NORM = 35, ///< signed int (normalized to 0..1)
+    VET_HALF1        = 36,  ///< not supported on D3D9
+    VET_HALF2        = 37,
+    VET_HALF3        = 38,  ///< not supported on D3D9 and D3D11
+    VET_HALF4        = 39
+  );
+
+type
+  /// Vertex element semantics, used to identify the meaning of vertex buffer contents
+  /// (note - the first value VES_POSITION is 1)
+  TVertexElementSemantic = (
+    VES_DUMMY,
+    VES_POSITION            = 1,  /// Position, 3 reals per vertex VET_FLOAT3
+    VES_BLEND_WEIGHTS       = 2,  /// Blending weights
+    VES_BLEND_INDICES       = 3,  /// Blending indices
+    VES_NORMAL              = 4,  /// Normal, 3 reals per vertex VET_FLOAT3
+    VES_DIFFUSE             = 5,  /// Diffuse colours VET_UBYTE4
+    VES_SPECULAR            = 6,  /// Specular colours
+    VES_TEXTURE_COORDINATES = 7,  /// Texture coordinates
+    VES_BINORMAL            = 8,  /// Binormal (Y axis if normal is Z)
+    VES_TANGENT             = 9   /// Tangent  (X axis if normal is Z)
+  );
+const
+  VES_COLOUR  = VES_DIFFUSE;
+  VES_COLOUR2 = VES_SPECULAR;
+  /// The  number of VertexElementSemantic elements  
+  VES_COUNT = 9;
+
+type
+/// The rendering operation type to perform
+  TOperationType = (
+    OT_DUMMY,
+    /// A list of points, 1 vertex per point
+    OT_POINT_LIST = 1,
+    /// A list of lines, 2 vertices per line
+    OT_LINE_LIST = 2,
+    /// A strip of connected lines, 1 vertex per line plus 1 start vertex
+    OT_LINE_STRIP = 3,
+    /// A list of triangles, 3 vertices per triangle
+    OT_TRIANGLE_LIST = 4,
+    /// A strip of triangles, 3 vertices for the first triangle, and 1 per triangle after that
+    OT_TRIANGLE_STRIP = 5,
+    /// A fan of triangles, 3 vertices for the first triangle, and 1 per triangle after that
+    OT_TRIANGLE_FAN = 6
+  );
+{
+    /// Patch control point operations, used with tessellation stages
+    OT_PATCH_1_CONTROL_POINT    = 7,
+    OT_PATCH_2_CONTROL_POINT    = 8,
+    OT_PATCH_3_CONTROL_POINT    = 9,
+    OT_PATCH_4_CONTROL_POINT    = 10,
+    OT_PATCH_5_CONTROL_POINT    = 11,
+    OT_PATCH_6_CONTROL_POINT    = 12,
+    OT_PATCH_7_CONTROL_POINT    = 13,
+    OT_PATCH_8_CONTROL_POINT    = 14,
+    OT_PATCH_9_CONTROL_POINT    = 15,
+    OT_PATCH_10_CONTROL_POINT   = 16,
+    OT_PATCH_11_CONTROL_POINT   = 17,
+    OT_PATCH_12_CONTROL_POINT   = 18,
+    OT_PATCH_13_CONTROL_POINT   = 19,
+    OT_PATCH_14_CONTROL_POINT   = 20,
+    OT_PATCH_15_CONTROL_POINT   = 21,
+    OT_PATCH_16_CONTROL_POINT   = 22,
+    OT_PATCH_17_CONTROL_POINT   = 23,
+    OT_PATCH_18_CONTROL_POINT   = 24,
+    OT_PATCH_19_CONTROL_POINT   = 25,
+    OT_PATCH_20_CONTROL_POINT   = 26,
+    OT_PATCH_21_CONTROL_POINT   = 27,
+    OT_PATCH_22_CONTROL_POINT   = 28,
+    OT_PATCH_23_CONTROL_POINT   = 29,
+    OT_PATCH_24_CONTROL_POINT   = 30,
+    OT_PATCH_25_CONTROL_POINT   = 31,
+    OT_PATCH_26_CONTROL_POINT   = 32,
+    OT_PATCH_27_CONTROL_POINT   = 33,
+    OT_PATCH_28_CONTROL_POINT   = 34,
+    OT_PATCH_29_CONTROL_POINT   = 35,
+    OT_PATCH_30_CONTROL_POINT   = 36,
+    OT_PATCH_31_CONTROL_POINT   = 37,
+    OT_PATCH_32_CONTROL_POINT   = 38
+}
+
+const
+  // max valid base OT_ = (1 << 6) - 1
+  /// Mark that the index buffer contains adjacency information
+  OT_DETAIL_ADJACENCY_BIT = 1 shl 6;
+  /// like OT_POINT_LIST but with adjacency information for the geometry shader
+  OT_LINE_LIST_ADJ        = ORD(OT_LINE_LIST) or OT_DETAIL_ADJACENCY_BIT;
+  /// like OT_LINE_STRIP but with adjacency information for the geometry shader
+  OT_LINE_STRIP_ADJ       = ORD(OT_LINE_STRIP) or OT_DETAIL_ADJACENCY_BIT;
+  /// like OT_TRIANGLE_LIST but with adjacency information for the geometry shader
+  OT_TRIANGLE_LIST_ADJ    = ORD(OT_TRIANGLE_LIST) or OT_DETAIL_ADJACENCY_BIT;
+  /// like OT_TRIANGLE_STRIP but with adjacency information for the geometry shader
+  OT_TRIANGLE_STRIP_ADJ   = ORD(OT_TRIANGLE_STRIP) or OT_DETAIL_ADJACENCY_BIT;
+
+
 const
   FileVersions : array of record
     ver : integer;
@@ -344,22 +490,30 @@ begin
 end;
 
 function ReadChunk(astream:TStream; var achunk:TOgreChunk):word;
+var
+  ls:string;
 begin
   achunk._type:=astream.ReadWord ();
   achunk._len :=astream.ReadDWord();
   result:=achunk._type;
 
-  RGLog.Add('Chunk type: 0x'+HexStr(achunk._type,4)+' '+GetChunkName(achunk._type)+
-            '; length=0x'   +HexStr(achunk._len ,4)+' ('+IntToStr(achunk._len)+
-            '); offset=0x'  +HexStr(astream.Position-SizeOf(achunk),8));
+  ls:='Chunk type: 0x'+HexStr(achunk._type,4)+' '+GetChunkName(achunk._type)+
+          '; length=0x'   +HexStr(achunk._len ,4)+' ('+IntToStr(achunk._len)+
+          '); offset=0x'  +HexStr(astream.Position-SizeOf(achunk),8);
+  if StrLComp(PAnsiChar(RGLog.Last),PAnsiChar(ls),Length(ls))<>0 then
+    RGLog.Add(ls);
 end;
 {%ENDREGION Support}
 
 procedure TRGMesh.ReadGeometryVertexElement;
+var
+  lvalue:integer;
 begin
   Log('source'  ,FStream.ReadWord());
-  Log('type'    ,FStream.ReadWord());
-  Log('semantic',FStream.ReadWord());
+  lvalue:=FStream.ReadWord();
+  Log('type'    ,{lvalue); //} GetEnumName(TypeInfo(TVertexElementType    ),lvalue));
+  lvalue:=FStream.ReadWord();
+  Log('semantic',{lvalue); //} GetEnumName(TypeInfo(TVertexElementSemantic),lvalue));
   Log('offset'  ,FStream.ReadWord());
   Log('index'   ,FStream.ReadWord());
 end;
@@ -413,7 +567,7 @@ var
   lcnt:integer;
 begin
   FVertexCount:=FStream.ReadDWord();
-  Log('vertextCount',FVertexCount);
+  Log('vertexCount',FVertexCount);
 
   while not FStream.Eof() do
   begin
@@ -487,7 +641,9 @@ begin
     case ReadChunk(FStream,lchunk) of
 
       M_SUBMESH_OPERATION: begin
-        Log('operationType',FStream.ReadWord());
+        i:=FStream.ReadWord();
+//        Log('operationType',WriteStr(TOperationType(i)));
+        Log('operationType',GetEnumName(TypeInfo(TOperationType),i));
       end;
 
       M_SUBMESH_BONE_ASSIGNMENT: begin
@@ -1215,7 +1371,7 @@ procedure TRGMesh.Clear;
 begin
 end;
 
-
+{
 procedure Trace(const fname:AnsiString);
 var
   lmesh:TRGMesh;
@@ -1226,5 +1382,5 @@ begin
 
   RGLog.SaveToFile(ParamStr(1)+'.log');
 end;
-
+}
 end.
