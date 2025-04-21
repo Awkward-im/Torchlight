@@ -398,6 +398,7 @@ type
     procedure ReadMesh;
     function  ReadMeshFile:boolean;
 
+  public
     procedure Init;
     procedure Free;
     procedure Clear;
@@ -405,14 +406,19 @@ type
   end;
 
 
+procedure LogLn;
 procedure Log(const astr:string; const aval:string);
 procedure Log(const astr:string; aval:single);
 procedure Log(const astr:string; aval:boolean);
 procedure Log(const astr:string; aval:int64);
-function GetChunkName(aid:word):string;
+
 function TranslateVersion(const sign:AnsiString):integer;
+
 function ReadText(astream:TStream):string;
+
 function ReadChunk(astream:TStream; var achunk:TOgreChunk):word;
+function GetChunkName(aid:word):string;
+
 
 implementation
 
@@ -423,6 +429,11 @@ uses
 
 
 {%REGION Support}
+procedure LogLn;
+begin
+  RGLog.Add('');
+end;
+
 procedure Log(const astr:string; const aval:string);
 begin
   RGLog.Add(astr+': '+aval);
