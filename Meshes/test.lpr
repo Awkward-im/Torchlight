@@ -13,12 +13,13 @@ begin
     lmesh.Free;
   end
   // RG / RGO
-  else if ExtractExt(ParamStr(1))='.MDL' then
+  else if ExtractExt(ls)='.MDL' then
   begin
     lmdl.Init;
     if lmdl.LoadFromFile(PAnsiChar(ls)) then
     begin
-//      lmdl.SaveToXML(ExtractNameOnly(ls)+'.xml');
+      lmdl.SaveToXML(ExtractNameOnly(ls)+'.mesh.xml');
+      lmdl.SaveMaterial(ExtractNameOnly(ls)+'.material');
       lmdl.Free;
     end
     // trying Hob

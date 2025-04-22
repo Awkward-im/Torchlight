@@ -6,9 +6,6 @@ uses
   typinfo,
   Classes;
 
-// procedure Trace(const fname:AnsiString);
-
-
 //----- Chunk types -----
 
 const
@@ -511,7 +508,14 @@ begin
   ls:='Chunk type: 0x'+HexStr(achunk._type,4)+' '+GetChunkName(achunk._type)+
           '; length=0x'   +HexStr(achunk._len ,4)+' ('+IntToStr(achunk._len)+
           '); offset=0x'  +HexStr(astream.Position-SizeOf(achunk),8);
-  if StrLComp(PAnsiChar(RGLog.Last),PAnsiChar(ls),Length(ls))<>0 then
+
+  if (achunk._type=M_MESH_BONE_ASSIGNMENT) or
+     (achunk._type=M_SUBMESH_BONE_ASSIGNMENT) then
+  begin
+    if StrLComp(PAnsiChar(RGLog.Last),PAnsiChar(ls),18)<>0 then
+      RGLog.Add(ls);
+  end
+  else if StrLComp(PAnsiChar(RGLog.Last),PAnsiChar(ls),Length(ls))<>0 then
     RGLog.Add(ls);
 end;
 {%ENDREGION Support}
@@ -1182,9 +1186,12 @@ begin
       end;
 
       M_MESH_BONE_ASSIGNMENT: begin
+        FStream.Seek(10,soFromCurrent);
+{
         Log('vertextIndex',FStream.ReadDword());
         Log('boneIndex'   ,FStream.ReadWord ());
         Log('weight'      ,FStream.ReadFloat());
+}
       end;
 
       M_MESH_LOD_LEVEL: begin
@@ -1382,16 +1389,4 @@ procedure TRGMesh.Clear;
 begin
 end;
 
-{
-procedure Trace(const fname:AnsiString);
-var
-  lmesh:TRGMesh;
-begin
-  lmesh.Init;
-  lmesh.LoadFromFile(PAnsiChar(fname));
-  lmesh.Free;
-
-  RGLog.SaveToFile(ParamStr(1)+'.log');
-end;
-}
 end.
