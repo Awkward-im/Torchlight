@@ -202,15 +202,18 @@ const
   RGIdEmpty = TRGID(-1);
 
 type
+  PVector2 = ^TVector2;
   TVector2 = packed record
     X: Single;
     Y: Single;
   end;
+  PVector3 = ^TVector3;
   TVector3 = packed record
     X: Single;
     Y: Single;
     Z: Single;
   end;
+  PVector4 = ^TVector4;
   TVector4 = packed record // quaternion
     X: Single;
     Y: Single;

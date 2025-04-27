@@ -43,7 +43,7 @@ type
     bone  :DWord;
     weight:single;
   end;
-  TDataCatalog = packed record
+  TVertexElement = packed record
     _source:int16; // "source" 0 - shared buffer
     _size  :int16; // VET_* const: Vertex Element Type
     _type  :int16; // VES_* const: Vertex Element Semantic
@@ -81,9 +81,10 @@ type
     end;
 
     FNumBlock:integer;
+    FVertexElementList:array of TVertexElement;
 
     procedure ReadTextures;
-    function ReadDataCatalog:integer;
+    function  ReadVertexElementList:integer;
 
     function  ReadMaterialInfo(aver:integer):boolean;
     procedure ReadModelDataType0();
@@ -159,6 +160,7 @@ begin
       sl.Add('      specular '+RGBToFloat(FMaterials[i].specular)+' 0');
       sl.Add('      emissive '+RGBToFloat(FMaterials[i].emissive));
       // animation (duration requires)
+(*
       ls:='';
       for j:=0 to 4 do
         if FMaterials[i].textures[j]>=0 then
@@ -173,6 +175,7 @@ begin
         sl.Add('        anim_texture'+ls);
         sl.Add('      }');
       end;
+*)
       for j:=5 to 16 do
       begin
         if FMaterials[i].textures[j]>=0 then
@@ -185,6 +188,7 @@ begin
           case j of
             txtEnvDiffuse: begin
               sl.Add('        env_map spherical'); // "content_type shadow" ?
+              sl.Add('        colour_op modulate');
             end;
             txtEnvSpecular: begin
               sl.Add('        env_map spherical');
@@ -194,7 +198,8 @@ begin
               sl.Add('        colour_op add');
             end;
             txtNormal: begin
-              sl.Add('        colour_op modulate');
+              sl.Add('        colour_op replace');
+//              sl.Add('        colour_op modulate');
             end;
             txtSpecular: begin
               sl.Add('        colour_op add');
@@ -477,27 +482,14 @@ begin
 end;
 
 
-function TRGMDL.ReadDataCatalog:integer;
-var
-  i:integer;
-  ldata:TDataCatalog;
+function TRGMDL.ReadVertexElementList:integer;
 begin
   result:=FStream.ReadWord();
   LogLn();
-  Log('>Data Catalog, blocks',result);
+  Log('>VertexElementList',result);
 
-  for i:=0 to result-1 do
-  begin
-    FStream.Read(ldata,SizeOf(ldata));
-{
-    Log('block #',i);
-    Log('  w[0] (0)',ldata._source);  // [map / channel]
-    Log('  w[1] siz',ldata._size  );  // data size code
-    Log('  w[2] typ',ldata._type  );  // data type code
-    Log('  w[3] ofs',ldata._offset);  // data offset
-    Log('  w[4] ###',ldata._number);  // block #
-}
-  end;
+  SetLength   (FVertexElementList   ,result);
+  FStream.Read(FVertexElementList[0],result*SizeOf(TVertexElement));
 end;
 
 procedure TRGMDL.ReadModelDataType0();
@@ -533,7 +525,7 @@ begin
     lcnt:=FStream.ReadDword();
     Log(HexStr(FStream.Position,8),IntToStr(lcnt)+' unique vertices');
 
-    SetLength(lbuf,lcnt);
+    SetLength   (lbuf   ,lcnt);
     FStream.Read(lbuf[0],lcnt*SizeOf(TVector3));
 
     for i:=0 to FVertexCount-1 do
@@ -612,7 +604,7 @@ begin
     lcnt:=FStream.ReadDword();
     Log(HexStr(FStream.Position,8),IntToStr(lcnt)+' unique 3x floats (normals)');
 
-    if lcnt<>Length(lbuf) then
+    if lcnt>Length(lbuf) then
     begin
       SetLength(lbuf,0);
       SetLength(lbuf,lcnt);
@@ -944,8 +936,8 @@ begin
     if aver>=2 then
     begin
       Log('{02} f' ,FStream.ReadFloat()); // mid 30. usually
-      Log('{03} f' ,FStream.ReadFloat()); // low
-      Log('{04} f' ,FStream.ReadFloat()); // low
+      Log('{03} f' ,FStream.ReadFloat()); // low, can be a 0
+      Log('{04} f' ,FStream.ReadFloat()); // low, can be a negative
     end;
     if aver>=13 then
       Log('{05} f' ,FStream.ReadFloat()); // high brightness? shiness? anim duration?
@@ -1015,12 +1007,12 @@ begin
     FVersion:=FStream.ReadWord();
     Log('type ',FVersion);
 
-    Log('first  (1)' ,FStream.ReadWord());
+    Log('first  (1)',FStream.ReadWord());
     Log('second (0)',FStream.ReadWord());
     if FVersion in [13,14] then // type=$0D/$0E - RGO
       Log('v.0E add (1)' ,FStream.ReadWord());
 
-    FNumBlock:=ReadDataCatalog();
+    FNumBlock:=ReadVertexElementList();
   
     LogLn;
     Log('float (scale?)',FStream.ReadFloat());
@@ -1079,7 +1071,7 @@ begin
   FSubMeshes:=nil;
   FBones    :=nil;
   FSkeleton :='';
-
+  FVertexElementList:=nil;
 end;
 
 procedure TRGMDL.Free;
@@ -1100,6 +1092,7 @@ begin
   SetLength(FFaces    ,0);
   SetLength(FUVs      ,0);
   SetLength(FBones    ,0);
+  SetLength(FVertexElementList,0);
 end;
 
 end.

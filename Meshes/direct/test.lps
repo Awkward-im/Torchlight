@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="test.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos Y="4"/>
+        <UsageCount Value="39"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgstream.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="39"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="39"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgmesh.pas"/>
+        <UnitName Value="RGMesh"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="488"/>
+        <CursorPos Y="503"/>
+        <UsageCount Value="18"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rgmdl.pas"/>
+        <UnitName Value="RGMDL"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1065"/>
+        <CursorPos Y="564"/>
+        <FoldState Value=" T4505 TCEM46 PXiGGz"/>
+        <UsageCount Value="18"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\Castle\src\base\castleutils_struct_list.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos X="12" Y="27"/>
+        <UsageCount Value="10"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="-1"/>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default">
+        <Mode Name="default">
+          <local>
+            <CommandLineParams Value="MISSILE_FF.MDL"/>
+          </local>
+        </Mode>
+      </Modes>
+    </RunParams>
+    <HistoryLists>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+      <List Name="CommandLineParameters" Count="20">
+        <Item1 Value="MISSILE_FF.MDL"/>
+        <Item2 Value="CRATELARGE_HULL.MDL"/>
+        <Item3 Value="VIRIAX.MDL"/>
+        <Item4 Value="ALCHEMIST.MESH"/>
+        <Item5 Value="0E-PIRATE2_MEDIUMFIGHTER01E_LOD0.MDL"/>
+        <Item6 Value="1D-mult-FEMALE_MERC_ARMOR.MDL"/>
+        <Item7 Value="PIRATE5_FIGHTER01A_ULTRA.MDL"/>
+        <Item8 Value="PIRATE5_FIGHTER01A_ULTRA.MDL.log"/>
+        <Item9 Value="PIRATE2_MEDIUMFIGHTER01E_ULTRA.MDL"/>
+        <Item10 Value="0E-PLANET_ICE_01_ENVSKY.MDL"/>
+        <Item11 Value="15-ATMOSPHEREGLOW.MDL"/>
+        <Item12 Value="09-MINERALROCK_LOD01.MDL"/>
+        <Item13 Value="1D-HOLOGRAM.MDL"/>
+        <Item14 Value="RGO-PLANET_ICE_01_ENVSKY.MDL"/>
+        <Item15 Value="HOLOGRAM.MDL"/>
+        <Item16 Value="FORWARDCONE.MDL"/>
+        <Item17 Value="C_BATRABBIT.MDL"/>
+        <Item18 Value="TL1-Alch_Imp.MESH"/>
+        <Item19 Value="PU_LIGHT.MESH"/>
+        <Item20 Value="TL2-FROG.MESH"/>
+      </List>
+    </HistoryLists>
+  </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="achunk"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+      <Item>
+        <Expression Value="lchunk"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+      <Item>
+        <Expression Value="lpos"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+      <Item>
+        <Expression Value="lchunk._len+lpos"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+      <Item>
+        <Expression Value="TMemoryStream(FStream).FPosition"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

@@ -40,8 +40,8 @@ type
     function  ReadShortString():string;
     function  ReadDWordString():string;
     function  ReadShortStringUTF8():string;
-    function  ReadFloat:single;
-    function  ReadInt32:integer;
+    function  ReadFloat:single;  inline;
+    function  ReadInt32:integer; inline;
     function  ReadCoord:TVector3;
     function  ReadShortStringList:TL2StringList;
     function  ReadIdList:TL2IDList;
@@ -63,8 +63,8 @@ type
     procedure WriteShortString(const astr:PWideChar);
     procedure WriteDWordString(const astr:PWideChar);
     procedure WriteShortStringUTF8(const astr:UnicodeString);
-    procedure WriteFloat(aval:single);
-    procedure WriteInt32(aval:integer);
+    procedure WriteFloat(aval:single);  inline;
+    procedure WriteInt32(aval:integer); inline;
     procedure WriteCoord(aval:TVector3);
     procedure WriteShortStringList(alist:TL2StringList);
     procedure WriteIdList(alist:TL2IDList);

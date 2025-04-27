@@ -1,72 +1,65 @@
-﻿{$UNDEF DoExport}
-{.$DEFINE DoExport}
-{$IFDEF DoExport}
-  {$CALLING cdecl}
-{$ELSE}
-  {$DEFINE export;:=}
-{$ENDIF DoExport}  
-
-unit RWMemory;
+﻿unit RWMemory;
 
 interface
 
 //----- Read -----
 
-function  memReadByte     (var buf:PByte):Byte; export;
-function  memReadWord     (var buf:PByte):Word; export;
-function  memReadDWord    (var buf:PByte):DWord; export;
-function  memReadQWord    (var buf:PByte):QWord; export;
-function  memReadShort    (var buf:PByte):Int16; export;
+function  memReadByte     (var buf:PByte):Byte;
+function  memReadWord     (var buf:PByte):Word;
+function  memReadDWord    (var buf:PByte):DWord;
+function  memReadQWord    (var buf:PByte):QWord;
+function  memReadShort    (var buf:PByte):Int16;
 
-procedure memReadData     (var buf:PByte; out dst; alen:integer); export;
-//function  memReadCoord    (var buf:PByte):TVector3; export;
+procedure memReadData     (var buf:PByte; out dst; alen:integer);
+procedure memRead         (var buf:PByte; out dst; alen:integer);
+//function  memReadCoord    (var buf:PByte):TVector3;
 
-function  memReadBool     (var buf:PByte):ByteBool; export;
-function  memReadInteger  (var buf:PByte):Int32; export;
-function  memReadUnsigned (var buf:PByte):UInt32; export;
-function  memReadInteger64(var buf:PByte):Int64; export;
-function  memReadFloat    (var buf:PByte):Single; export;
-function  memReadDouble   (var buf:PByte):Double; export;
+function  memReadBool     (var buf:PByte):ByteBool;
+function  memReadInteger  (var buf:PByte):Int32;
+function  memReadUnsigned (var buf:PByte):UInt32;
+function  memReadInteger64(var buf:PByte):Int64;
+function  memReadFloat    (var buf:PByte):Single;
+function  memReadDouble   (var buf:PByte):Double;
 
-function  memReadByteString     (var buf:PByte):PWideChar; export;
-function  memReadShortString    (var buf:PByte):PWideChar; export;
-function  memReadDwordString    (var buf:PByte):PWideChar; export;
-function  memReadShortStringUTF8(var buf:PByte):PWideChar; export;
+function  memReadByteString     (var buf:PByte):PWideChar;
+function  memReadShortString    (var buf:PByte):PWideChar;
+function  memReadDwordString    (var buf:PByte):PWideChar;
+function  memReadShortStringUTF8(var buf:PByte):PWideChar;
 
-function  memReadByteStringBuf (var buf:PByte; astr:PByte; asize:integer):PWideChar; export;
-function  memReadShortStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar; export;
-function  memReadDwordStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar; export;
+function  memReadByteStringBuf (var buf:PByte; astr:PByte; asize:integer):PWideChar;
+function  memReadShortStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar;
+function  memReadDwordStringBuf(var buf:PByte; astr:PByte; asize:integer):PWideChar;
 
-//function  ReadShortStringList(var buf:PByte):TL2StringList; export;
-//function  memReadIdList   (var buf:PByte):TL2IdList; export;
-//function  memReadIdValList(var buf:PByte):TL2IdValList; export;
+//function  ReadShortStringList(var buf:PByte):TL2StringList;
+//function  memReadIdList   (var buf:PByte):TL2IdList;
+//function  memReadIdValList(var buf:PByte):TL2IdValList;
 
 //----- write -----
 
-procedure memWriteByte     (var buf:PByte; aval:Byte); export;
-procedure memWriteWord     (var buf:PByte; aval:Word); export;
-procedure memWriteDWord    (var buf:PByte; aval:DWord); export;
-procedure memWriteQWord    (var buf:PByte; aval:QWord); export;
-procedure memWriteShort    (var buf:PByte; aval:Int16); export;
+procedure memWriteByte     (var buf:PByte; aval:Byte);
+procedure memWriteWord     (var buf:PByte; aval:Word);
+procedure memWriteDWord    (var buf:PByte; aval:DWord);
+procedure memWriteQWord    (var buf:PByte; aval:QWord);
+procedure memWriteShort    (var buf:PByte; aval:Int16);
 
-procedure memWriteData     (var buf:PByte; aval:pointer; alen:integer); export;
-//procedure memWriteCoord    (var buf:PByte; const aval:TVector3); export;
+procedure memWriteData     (var buf:PByte; aval:pointer; alen:integer);
+//procedure memWriteCoord    (var buf:PByte; const aval:TVector3);
 
-procedure memWriteBool     (var buf:PByte; aval:ByteBool); export;
-procedure memWriteInteger  (var buf:PByte; aval:Int32); export;
-procedure memWriteUnsigned (var buf:PByte; aval:UInt32); export;
-procedure memWriteInteger64(var buf:PByte; aval:Int64); export;
-procedure memWriteFloat    (var buf:PByte; aval:Single); export;
-procedure memWriteDouble   (var buf:PByte; aval:Double); export;
+procedure memWriteBool     (var buf:PByte; aval:ByteBool);
+procedure memWriteInteger  (var buf:PByte; aval:Int32);
+procedure memWriteUnsigned (var buf:PByte; aval:UInt32);
+procedure memWriteInteger64(var buf:PByte; aval:Int64);
+procedure memWriteFloat    (var buf:PByte; aval:Single);
+procedure memWriteDouble   (var buf:PByte; aval:Double);
 
-procedure memWriteByteString (var buf:PByte; aval:PWideChar); export;
-procedure memWriteShortString(var buf:PByte; aval:PWideChar); export;
-procedure memWriteDWordString(var buf:PByte; aval:PWideChar); export;
+procedure memWriteByteString (var buf:PByte; aval:PWideChar);
+procedure memWriteShortString(var buf:PByte; aval:PWideChar);
+procedure memWriteDWordString(var buf:PByte; aval:PWideChar);
 
-//procedure memWriteIdList   (var buf:PByte; const alist:TL2IdList); export;
-//procedure memWriteIdValList(var buf:PByte; const alist:TL2IdValList); export;
+//procedure memWriteIdList   (var buf:PByte; const alist:TL2IdList);
+//procedure memWriteIdValList(var buf:PByte; const alist:TL2IdValList);
 
-//procedure WriteShortStringList(var buf:PByte; alist:TL2StringList); export;
+//procedure WriteShortStringList(var buf:PByte; alist:TL2StringList);
 //procedure WriteByteString (var buf:PByte; const astr:string);
 //procedure WriteShortString(var buf:PByte; const astr:string);
 
@@ -131,6 +124,11 @@ begin
 end;
 
 procedure memReadData(var buf:PByte; out dst; alen:integer);
+begin
+  move(buf^,pByte(@dst)^,alen); inc(buf,alen);
+end;
+
+procedure memRead(var buf:PByte; out dst; alen:integer);
 begin
   move(buf^,pByte(@dst)^,alen); inc(buf,alen);
 end;
@@ -473,47 +471,4 @@ begin
     memWriteData(buf,@alist[0],lcnt*SizeOf(TL2IdVal));
 end;
 }
-//===== Exports =====
-{$IFDEF DoExport}
-exports
-  memReadByte,
-  memReadWord,
-  memReadDWord,
-  memReadShort,
-  memReadBool,
-  memReadInteger,
-  memReadUnsigned,
-  memReadInteger64,
-  memReadFloat,
-  memReadData,
-  memReadByteString,
-  memReadShortString,
-  memReadShortStringUTF8,
-
-//  ReadShortStringList,
-//  memReadIdList,
-//  memReadIdValList,
-//  memReadCoord,
-
-  memWriteByte,
-  memWriteWord,
-  memWriteDWord,
-  memWriteBool,
-  memWriteInteger,
-  memWriteUnsigned,
-  memWriteInteger64,
-  memWriteFloat,
-  memWriteData,
-  memWriteByteString,
-  memWriteShortString,
-  memWriteDWordString
-
-//  WriteShortStringList,
-//  memWriteIdList,
-//  memWriteIdValList,
-//  memWriteCoord
-
-  ;
-{$ENDIF DoExport}  
-
 end.
