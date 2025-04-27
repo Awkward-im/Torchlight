@@ -320,34 +320,6 @@ begin
   end;
 end;
 
-procedure TRGMesh.ReadSubmeshNameTable(var aptr:PByte);
-var
-  lchunk:TOgreChunk;
-  lpos:PByte;
-begin
-  while aptr<(FBuffer+FDataSize) do
-  begin
-    lpos:=aptr;
-
-    if ReadChunk(aptr,lchunk)=M_SUBMESH_NAME_TABLE_ELEMENT then
-    begin
-      Log('index',memReadWord(aptr));
-      Log('name' ,memReadText(aptr));
-    end
-    else
-    begin
-      dec(aptr,SizeOf(TOgreChunk));
-      break;
-    end;
-
-    if aptr<>(lpos+lchunk._len) then
-    begin
-      Log('!!!Warning',HexStr(aptr-FBuffer,8)+' is not '+HexStr((lpos-FBuffer)+lchunk._len,8));
-      aptr:=lpos+lchunk._len;
-    end;
-  end;
-end;
-
 procedure TRGMesh.ReadEdgeGroup(var aptr:PByte);
 var
   i,lnum:integer;
@@ -414,7 +386,7 @@ begin
     end;
   end;
 end;
-
+*)
 procedure TRGMesh.ReadEdgeListLod(var aptr:PByte);
 var
   lmanual:boolean;
@@ -424,7 +396,7 @@ begin
   Log('isManual',lmanual);
   if not lmanual then
   begin
-    readEdgeListLodInfo();
+//    readEdgeListLodInfo(aptr);
   end;
 end;
 
@@ -438,7 +410,7 @@ begin
     lpos:=aptr;
 
     if ReadChunk(aptr,lchunk)=M_EDGE_LIST_LOD then
-      ReadEdgeListLod()
+      ReadEdgeListLod(aptr)
     else
     begin
       dec(aptr,SizeOf(TOgreChunk));
@@ -452,7 +424,7 @@ begin
     end;
   end;
 end;
-
+(*
 procedure TRGMesh.ReadPose(var aptr:PByte);
 var
   lchunk:TOgreChunk;
@@ -501,7 +473,7 @@ begin
     end;
   end;
 end;
-
+*)
 procedure TRGMesh.ReadPoses(var aptr:PByte);
 var
   lchunk:TOgreChunk;
@@ -513,7 +485,7 @@ begin
 
     if ReadChunk(aptr,lchunk)=M_POSE then
     begin
-      ReadPose();
+//      ReadPose(aptr);
     end
     else
     begin
@@ -529,6 +501,7 @@ begin
   end;
 end;
 
+(*
 procedure TRGMesh.ReadAnimationPoseKeyFrame(var aptr:PByte);
 var
   lchunk:TOgreChunk;
@@ -559,7 +532,8 @@ begin
     end;
   end;
 end;
-
+*)
+(*
 procedure TRGMesh.ReadAnimationMorphKeyFrame(var aptr:PByte);
 var
   lnormals:boolean;
@@ -589,6 +563,7 @@ begin
   end;
 
 end;
+*)
 
 procedure TRGMesh.ReadAnimationTrack(var aptr:PByte);
 var
@@ -605,10 +580,10 @@ begin
     case ReadChunk(aptr,lchunk) of
 
       M_ANIMATION_MORPH_KEYFRAME:
-        ReadAnimationMorphKeyFrame();
+;//        ReadAnimationMorphKeyFrame(aptr);
       
       M_ANIMATION_POSE_KEYFRAME:
-        ReadAnimationPoseKeyFrame();
+;//        ReadAnimationPoseKeyFrame(aptr);
     
     else
       dec(aptr,SizeOf(TOgreChunk));
@@ -642,11 +617,11 @@ begin
   begin
     if lchunk._type=M_ANIMATION_TRACK then
     begin
-      ReadAnimationTrack();
+      ReadAnimationTrack(aptr);
     end
     else
     begin
-      dec(aptr,SizeOf(TOgreChunk);
+      dec(aptr,SizeOf(TOgreChunk));
       break;
     end;
 
@@ -665,7 +640,7 @@ begin
     lpos:=aptr;
 
     if ReadChunk(aptr,lchunk)=M_ANIMATION then
-      ReadAnimation()
+      ReadAnimation(aptr)
     else
     begin
       dec(aptr,SizeOf(TOgreChunk));
@@ -679,7 +654,35 @@ begin
     end;
   end;
 end;
-*)
+
+procedure TRGMesh.ReadSubmeshNameTable(var aptr:PByte);
+var
+  lchunk:TOgreChunk;
+  lpos:PByte;
+begin
+  while aptr<(FBuffer+FDataSize) do
+  begin
+    lpos:=aptr;
+
+    if ReadChunk(aptr,lchunk)=M_SUBMESH_NAME_TABLE_ELEMENT then
+    begin
+      Log('index',memReadWord(aptr));
+      Log('name' ,memReadText(aptr));
+    end
+    else
+    begin
+      dec(aptr,SizeOf(TOgreChunk));
+      break;
+    end;
+
+    if aptr<>(lpos+lchunk._len) then
+    begin
+      Log('!!!Warning',HexStr(aptr-FBuffer,8)+' is not '+HexStr((lpos-FBuffer)+lchunk._len,8));
+      aptr:=lpos+lchunk._len;
+    end;
+  end;
+end;
+
 function TRGMesh.ReadMesh(var aptr:PByte):boolean;
 var
   lchunk:TOgreChunk;
@@ -737,19 +740,19 @@ begin
       end;
 
       M_SUBMESH_NAME_TABLE: begin
-//        ReadSubmeshNameTable(aptr);
+        ReadSubmeshNameTable(aptr);
       end;
 
       M_EDGE_LISTS: begin
-//        ReadEdgeLists(aptr);
+        ReadEdgeLists(aptr);
       end;
 
       M_POSES: begin
-//        ReadPoses(aptr);
+        ReadPoses(aptr);
       end;
 
       M_ANIMATIONS: begin
-//        ReadAnimations(aptr);
+        ReadAnimations(aptr);
       end;
 
       M_TABLE_EXTREMES: begin

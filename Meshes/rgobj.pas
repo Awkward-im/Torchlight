@@ -138,9 +138,18 @@ type
     function  ReadRGMaterial (var aptr:PByte; aver:integer):boolean;
     function  AddMaterial(const aname:string):integer;
 
+    // *.MDL of RG/RGO
     function ReadMDLType0(var aptr:PByte; aver:integer):boolean;
     function ReadMDLType1(var aptr:PByte; aver:integer):boolean;
 
+    // *.MESH
+    procedure ReadEdgeListLod      (var aptr:PByte);
+    procedure ReadEdgeLists        (var aptr:PByte);
+    procedure ReadPoses            (var aptr:PByte);
+    procedure ReadAnimationTrack   (var aptr:PByte);
+    procedure ReadAnimation        (var aptr:PByte);
+    procedure ReadAnimations       (var aptr:PByte);
+    procedure ReadSubmeshNameTable (var aptr:PByte);
     procedure ReadVertexDeclaration(asub:PRGSubMesh; var aptr:PByte);
     procedure ReadGeometry         (asub:PRGSubMesh; var aptr:PByte);
     procedure ReadSubMesh          (asub:PRGSubMesh; var aptr:PByte);

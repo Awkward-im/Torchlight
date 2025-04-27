@@ -173,11 +173,9 @@ begin
 
   LogLn();
   j:=memReadDWord(aptr);
-  if j<>0 then writeln('!!!!!!!!!!!!!!1111');
   Log('dword (0)',j);
   j:=memReadDWord(aptr);
   Log('dword (0)',j);
-  if j<>0 then writeln('!!!!!!!!!!!!!!2222');
 
 
   // ===== Faces =====
