@@ -6,13 +6,11 @@ begin
 end;
 
 procedure WriteLine(aStream:TStream; const aString:UTF8String);
-const
-  NewLine:array[0..1] of AnsiChar=(#13,#10);
 begin
   if length(aString)>0 then
     aStream.WriteBuffer(aString[1],length(aString));
 
-  aStream.WriteBuffer(NewLine[0],SizeOf(NewLine));
+  aStream.WriteBuffer(#13#10,2);
 end;
 
 procedure SaveGeometryToXML(const asub:TRGSubMesh; aStream:TStream);

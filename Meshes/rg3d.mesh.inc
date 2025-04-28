@@ -205,11 +205,11 @@ begin
   end;
   
 end;
-(*
+
 procedure TRGMesh.ReadMeshLodLevel(var aptr:PByte);
 var
   lchunk:TOgreChunk;
-  i,j,lidx,lcnt:integer;
+  i{,j},lidx,lcnt:integer;
   l32,lmanual:boolean;
 begin
   // NOT in 1.4
@@ -319,44 +319,22 @@ begin
     end;
   end;
 end;
-
-procedure TRGMesh.ReadEdgeGroup(var aptr:PByte);
-var
-  i,lnum:integer;
-begin
-  Log('vertexSet',memReadDWord(aptr));
-  // NOT 1.3 nvm, 1.3 is deprecated
-  Log('triStart' ,memReadDWord(aptr));
-  // NOT 1.3 nvm, 1.3 is deprecated
-  Log('triCount' ,memReadDWord(aptr));
-
-  lnum:=memReadDWord(aptr);
-  Log('numEdges' ,lnum);
-  for i:=0 to lnum-1 do
-  begin
-    memReadDWord(aptr); // triIndex[2]
-    memReadDWord(aptr);
-    memReadDWord(aptr); // vertIndex[2]
-    memReadDWord(aptr);
-    memReadDWord(aptr); // shareVertIndex[2]
-    memReadDWord(aptr);
-    memReadByte(aptr);  // degenerate
-  end;
-end;
-
+(*
 procedure TRGMesh.ReadEdgeListLodInfo(var aptr:PByte);
 var
   lchunk:TOgreChunk;
-  i,lnumt,lnume:integer;
+  i,j,lnumt,lnumeg,lnume:integer;
 begin
   // NOT 1.3 nvm, 1.3 is deprecated
   Log('isClosed',memReadByte(aptr)<>0);
 
-  lnumt:=memReadDWord(aptr);
-  Log('numTriangles',lnumt);
-  lnume:=memReadDWord(aptr);
-  Log('numEdgeGroups',lnume);
+  lnumt :=memReadDWord(aptr);
+  lnumeg:=memReadDWord(aptr);
+  Log('numTriangles' ,lnumt);
+  Log('numEdgeGroups',lnumeg);
 
+  inc(aptr,lnumt*12*4);
+{
   for i:=0 to lnumt-1 do
   begin
     memReadDWord(aptr); // indexSet
@@ -372,12 +350,32 @@ begin
     memReadFloat(aptr);
     memReadFloat(aptr);
   end;
-
-  for i:=0 to lnume-1 do
+}
+  for i:=0 to lnumeg-1 do
   begin
     if ReadChunk(aptr,lchunk)=M_EDGE_GROUP then
     begin
-      ReadEdgeGroup();
+      Log('vertexSet',memReadDWord(aptr));
+      // NOT 1.3 nvm, 1.3 is deprecated
+      Log('triStart' ,memReadDWord(aptr));
+      // NOT 1.3 nvm, 1.3 is deprecated
+      Log('triCount' ,memReadDWord(aptr));
+
+      lnume:=memReadDWord(aptr);
+      Log('numEdges' ,lnume);
+      inc(aptr,lnume*(6*4+1));
+    {
+      for i:=0 to lnume-1 do
+      begin
+        memReadDWord(aptr); // triIndex[2]
+        memReadDWord(aptr);
+        memReadDWord(aptr); // vertIndex[2]
+        memReadDWord(aptr);
+        memReadDWord(aptr); // shareVertIndex[2]
+        memReadDWord(aptr);
+        memReadByte (aptr); // degenerate
+      end;
+    }
     end
     else
     begin
@@ -736,7 +734,7 @@ begin
       end;
 
       M_MESH_LOD_LEVEL: begin
-//        ReadMeshLodLevel(aptr);
+        ReadMeshLodLevel(aptr);
       end;
 
       M_SUBMESH_NAME_TABLE: begin

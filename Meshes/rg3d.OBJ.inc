@@ -1,89 +1,103 @@
 ﻿{}
-procedure SaveToOBJ(const amesh:TRGMesh; const aStream:TStream);
 
-  procedure WriteLine(const aString:UTF8String);
-  const
-    NewLine:array[0..1] of AnsiChar=(#13,#10);
-  begin
-    if length(aString)>0 then
-      aStream.WriteBuffer(aString[1],length(aString));
-
-    aStream.WriteBuffer(NewLine[0],SizeOf(NewLine));
-  end;
-
-  function FloatToStr(const aValue:single):UTF8String;
-  begin
-    Str(aValue:0:12,result);
-  end;
-
+procedure SaveSubMeshToObj(const asub:TRGSubMesh; aStream:TStream);
 var
-  i,j,lofs:integer;
+  lptr:PByte;
+  ltype:string;
+  i,j:integer;
 begin
+  for i:=0 to asub.FVEList.Count-1 do
+  begin
+    lptr:=asub.FVEList.Buffer[i];
+    if lptr=nil then continue;
+
+    WriteLine(aStream,'');
+
+    case asub.FVEList.semantic[i] of
+      VES_POSITION: ltype:='v ';
+      VES_NORMAL  : ltype:='vn ';
+
+      VES_TEXTURE_COORDINATES: begin
+        for j:=0 to asub.FVertexCount-1 do
+        begin
+          with PVector2(lptr)[j] do
+            WriteLine(aStream,'vt '+
+              FloatToStr(x)+' '+
+              FloatToStr(y));
+        end;
+        continue;
+      end;
+
+    else
+      RGLog.Add('Export to OBJ: Ignore geometry '+GetVESName(asub.FVEList.semantic[i]));
+      continue;
+    end;
+
+    for j:=0 to asub.FVertexCount-1 do
+    begin
+      with PVector3(lptr)[j] do
+        WriteLine(aStream, ltype+
+          FloatToStr(x)+' '+
+          FloatToStr(y)+' '+
+          FloatToStr(z));
+    end;
+
+  end;
+end;
+
+procedure TRGMesh.SaveToOBJ(aStream:TStream);
+var
+  lsm:PRGSubMesh;
+  i,j:integer;
+begin
+{
   if Length(FTextures)>0 then
   begin
-    WriteLine('mtllib '+FName+'.mtl');
+    WriteLine(aStream,'mtllib '+FName+'.mtl');
     for i:=0 to High(FTextures) do
     begin
     end;
   end;
+}
+  WriteLine(aStream,'o Mesh');
 
-  WriteLine('o Mesh');
-  for i:=0 to FVertexCount-1 do
+  if SubMesh[0]^.VertexCount>0 then
+    SaveSubMeshToObj(SubMesh[0]^, aStream);
+
+  for i:=1 to SubMeshCount do
   begin
-    WriteLine('v '+
-      FloatToStr(FVertices[i].x)+' '+
-      FloatToStr(FVertices[i].y)+' '+
-      FloatToStr(FVertices[i].z));
-  end;
+    lsm:=SubMesh[i];
 
-  WriteLine('');
+    WriteLine(aStream,'');
+    WriteLine(aStream,'g '+FMaterials[lsm^.FMaterial].name);
 
-  for i:=0 to FVertexCount-1 do
-  begin
-    WriteLine('vn '+
-      FloatToStr(FNormals[i].x)+' '+
-      FloatToStr(FNormals[i].y)+' '+
-      FloatToStr(FNormals[i].z));
-  end;
+    if not lsm^.FUseSharedVertices then
+      SaveSubMeshToObj(lsm^, aStream);
 
-  WriteLine('');
-
-  for i:=0 to FVertexCount-1 do
-  begin
-    WriteLine('vt '+
-      FloatToStr(FUVs[i].x)+' '+
-      FloatToStr(FUVs[i].y));
-  end;
-
-  for i:=0 to High(FSubMeshes) do
-  begin
-    WriteLine('');
-    WriteLine('g '+FMaterials[FSubMeshes[i].material].name);
-
-    if FSubMeshes[i].numface>0 then
+    if lsm^.FFaceCount>0 then
     begin
-      WriteLine('usemtl '+FMaterials[FSubMeshes[i].material].name);
+      WriteLine(aStream,'usemtl '+FMaterials[lsm^.FMaterial].name);
 
-      lofs:=FSubMeshes[i].ofsface;
-      for j:=0 to FSubMeshes[i].numface-1 do
+      for j:=0 to lsm^.FFaceCount-1 do
       begin
-      WriteLine('f '+
-        (IntToStr(FFaces[lofs+j].X+1))+' '+
-        (IntToStr(FFaces[lofs+j].Y+1))+' '+
-        (IntToStr(FFaces[lofs+j].Z+1)));
+        with PIntVector3(lsm^.FFaces)[j] do
+          WriteLine(aStream,'f '+
+            (IntToStr(X+1))+' '+
+            (IntToStr(Y+1))+' '+
+            (IntToStr(Z+1)));
       end;
     end;
   end;
   
 end;
 
-procedure SaveToOBJ(const amesh:TRGMesh; const aFileName:String);
+procedure TRGMesh.SaveToOBJ(const aFileName:String);
 var
   lStream:TFileStream;
 begin
   lStream:=TFileStream.Create(aFileName,fmCreate);
   try
-    SaveToOBJ(amesh, lStream);
+    SaveToOBJ(lStream);
   finally
     FreeAndNil(lStream);
   end;

@@ -81,24 +81,23 @@ end;
 function TRGMesh.ImportFromMemory(aptr:PByte; asize:integer):boolean;
 var
   lchunk:TOgreChunk;
-  lversion:integer;
 begin
   result:=false;
 
   FBuffer:=aptr;
   FDataSize:=asize;
 
-  lversion:=GetFileVersion(aptr);
-  if lversion=99 then
+  FVersion:=GetFileVersion(aptr);
+  if FVersion=99 then
   begin
     result:=ReadMDL(aptr);
     exit;
   end
-  else if (lversion=90) or (lversion=91) then
+  else if (FVersion=90) or (FVersion=91) then
   begin
-    result:=ReadHob(aptr,lversion=90);
+    result:=ReadHob(aptr,FVersion=90);
   end
-  else if lversion<0 then exit;
+  else if FVersion<0 then exit;
 
   if ReadChunk(aptr,lchunk)=M_MESH then
     result:=ReadMesh(aptr);

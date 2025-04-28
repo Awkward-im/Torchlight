@@ -77,12 +77,13 @@ type
 //    function GetBlockElementType(atype:integer; aidx:integer=0):integer;
     function GetVertexCount:integer;
 
-    procedure SetIndex(atype:integer; aptr:pointer);
-    procedure SetIndex(atype:integer; aidx:integer; aptr:pointer);
-    function  GetIndex(atype:integer):pointer;
-    function  GetIndex(atype:integer; aidx:integer):Pointer;
+    procedure SetBuffer(atype:integer; aptr:pointer);
+    procedure SetBuffer(atype:integer; aidx:integer; aptr:pointer);
+    function  GetBuffer(atype:integer):pointer;
+    function  GetBuffer(atype:integer; aidx:integer):Pointer;
 
     function GetData(atype:integer; idx:integer):TVector4;
+{
     function GetUV(idx:integer; num:integer):TVector2;
     function GetUV(idx:integer             ):TVector2;
 
@@ -91,28 +92,29 @@ type
 
     function GetBonePoint(idx:integer):PBoneVertex;
     function GetBonePoint:pointer;
+}
   public
     Is32bit    :boolean;
 
     procedure Init;
     procedure Free;
 
-    function IndexedToDirect():boolean;
+//    function IndexedToDirect():boolean;
     procedure AddBone(avertexIndex, aboneIndex:integer; aweight:single);
 
     property VertexCount:integer read GetVertexCount write FVertexCount;
  
-    property Buffer[atype:integer; idx:integer]:pointer read GetIndex write SetIndex;
+    property Buffer[atype:integer; idx:integer]:pointer read GetBuffer write SetBuffer;
 
     property Vertex  [idx:integer]:TVector4 index VES_POSITION read GetData;
     property Normal  [idx:integer]:TVector4 index VES_NORMAL   read GetData;
     property BiNormal[idx:integer]:TVector4 index VES_BINORMAL read GetData;
     property Tangent [idx:integer]:TVector4 index VES_TANGENT  read GetData;
 
-    property Texture [idx:integer; num:integer]:TVector2 read GetUV;
-    property Face    [idx:integer]:TIntVector3 read GetFace;
+//    property Texture [idx:integer; num:integer]:TVector2 read GetUV;
+//    property Face    [idx:integer]:TIntVector3 read GetFace;
 
-    property BonePoints[idx:integer]:PBoneVertex read GetBonePoint;
+//    property BonePoints[idx:integer]:PBoneVertex read GetBonePoint;
   end;
 
   TRGMesh = object
@@ -121,9 +123,10 @@ type
     FSubMeshes:array of PRGSubMesh;
     FSubMeshCount:integer;
 
-    // source (Mesh/MDL) file buffer. used just while import
+    // Mesh version and source (Mesh/MDL) file buffer. used just while import
     FBuffer  :PByte;
     FDataSize:integer;
+    FVersion :integer;
 
     FTextures : array of string;
     FMaterials: array of TMaterial;
@@ -143,6 +146,7 @@ type
     function ReadMDLType1(var aptr:PByte; aver:integer):boolean;
 
     // *.MESH
+    procedure ReadMeshLodLevel     (var aptr:PByte);
     procedure ReadEdgeListLod      (var aptr:PByte);
     procedure ReadEdgeLists        (var aptr:PByte);
     procedure ReadPoses            (var aptr:PByte);
@@ -179,6 +183,8 @@ type
     function ImportFromFile  (const aFileName:string):boolean;
     procedure SaveToXML(aStream:TStream);
     procedure SaveToXML(const aFileName:String);
+    procedure SaveToOBJ(aStream:TStream);
+    procedure SaveToOBJ(const aFileName:String);
 
     property SubMeshCount:integer read GetSubMeshCount write SetSubMeshCount;
     property SubMesh[idx:integer]:PRGSubMesh read GetSubMesh write SetSubMesh;
@@ -260,7 +266,7 @@ end;
 {$I rg3d.VElist.inc}
 
 {$I rg3d.XML.inc}
-{.$I rg3d.OBJ.inc}
+{$I rg3d.OBJ.inc}
 {$I rg3d.import.inc}
 {$I rg3d.Material.inc}
 
@@ -387,12 +393,12 @@ begin
   result:=lsm^.FVertexCount;
 end;
 
-procedure TRGSubMesh.SetIndex(atype:integer; aptr:pointer);
+procedure TRGSubMesh.SetBuffer(atype:integer; aptr:pointer);
 begin
-  SetIndex(atype, 0, aptr);
+  SetBuffer(atype, 0, aptr);
 end;
 
-procedure TRGSubMesh.SetIndex(atype:integer; aidx:integer; aptr:pointer);
+procedure TRGSubMesh.SetBuffer(atype:integer; aidx:integer; aptr:pointer);
 var
   i:integer;
 begin
@@ -404,12 +410,12 @@ begin
     FVEList.FBuffers[i]:=aptr;
 end;
 
-function TRGSubMesh.GetIndex(atype:integer):pointer;
+function TRGSubMesh.GetBuffer(atype:integer):pointer;
 begin
-  result:=GetIndex(atype, 0);
+  result:=GetBuffer(atype, 0);
 end;
 
-function TRGSubMesh.GetIndex(atype:integer; aidx:integer):pointer;
+function TRGSubMesh.GetBuffer(atype:integer; aidx:integer):pointer;
 var
   lsm:PRGSubMesh;
   i:integer;
@@ -425,7 +431,7 @@ begin
     result:=lsm^.FVEList.FBuffers[i];
 
     if (result=nil) and (atype<>VES_POSITION) then
-      result:=GetIndex(VES_POSITION,0);
+      result:=GetBuffer(VES_POSITION,0);
   end
   else
     result:=nil;
@@ -449,13 +455,13 @@ begin
   begin
     pb  :=lsm^.FVEList.FBuffers[ltmp];
     ltmp:=lsm^.FVEList.FVEList [ltmp]._type;
-    // required element address: buffer+offset+idx*blocksize
     
-    if      ltmp=VET_FLOAT3 then move(pb^,result,SizeOf(TVector3))
-    else if ltmp=VET_FLOAT4 then move(pb^,result,SizeOf(TVector4));
+    if      ltmp=VET_FLOAT3 then move(PVector3(pb)[idx],result,SizeOf(TVector3))
+    else if ltmp=VET_FLOAT2 then move(PVector2(pb)[idx],result,SizeOf(TVector2))
+    else if ltmp=VET_FLOAT4 then move(PVector4(pb)[idx],result,SizeOf(TVector4));
   end;
 end;
-
+{
 function TRGSubMesh.GetUV(idx,num:integer):TVector2;
 begin
   FillChar(result,sizeOf(result),0);
@@ -485,7 +491,7 @@ function TRGSubMesh.GetBonePoint:pointer;
 begin
   result:=nil;
 end;
-
+}
 procedure TRGSubMesh.AddBone(avertexIndex, aboneIndex:integer; aweight:single);
 begin
   if FBoneAssignCount=FBonesLen then
@@ -503,12 +509,12 @@ begin
   
   inc(FBoneAssignCount);
 end;
-
+{
 function TRGSubMesh.IndexedToDirect():boolean;
 begin
   result:=false;
 end;
-
+}
 {%ENDREGION RGSubMesh}
 
 end.
