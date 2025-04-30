@@ -1,4 +1,5 @@
 ﻿{}
+{NOTE: GetMaterial replaces texture extensions to DDS}
 
 const
   // texture indexes
@@ -23,6 +24,38 @@ begin
   if aval.G=0 then lg:='0' else if aval.G=255 then lg:='1' else Str(aval.G/255:0:6,lg);
   if aval.B=0 then lb:='0' else if aval.B=255 then lb:='1' else Str(aval.B/255:0:6,lb);
   result:=lr+' '+lg+' '+lb;
+end;
+
+function TRGMesh.GetMTL():string;
+var
+  sl:TStringList;
+//  ls:string;
+  i,j:integer;
+begin
+  result:='';
+  sl:=TStringList.Create;
+  try
+
+    for i:=0 to High(FMaterials) do
+    begin
+      sl.Add('newmtl '+FMaterials[i].name);
+      sl.Add('Ka '+RGBToFloat(FMaterials[i].ambient));
+      sl.Add('Kd '+RGBToFloat(FMaterials[i].diffuse));
+      sl.Add('Ks '+RGBToFloat(FMaterials[i].specular));
+      sl.Add('');
+
+      for j:=5 to 16 do
+      begin
+        if (FTextures<>nil) and (FMaterials[i].textures[j]>=0) then
+        begin
+        end;
+      end;
+    end;
+
+    result:=sl.Text;
+  finally
+    FreeAndNil(sl);
+  end;
 end;
 
 function TRGMesh.GetMaterial():string;
@@ -71,7 +104,9 @@ begin
           sl.Add('');
           sl.Add('      texture_unit');
           sl.Add('      {');
-          sl.Add('        texture '+FTextures[FMaterials[i].textures[j]]);
+          //!!!!
+          sl.Add('        texture '+ChangeFileExt(FTextures[FMaterials[i].textures[j]],'.dds'));
+//          sl.Add('        texture '+FTextures[FMaterials[i].textures[j]]);
 
           case j of
             txtEnvDiffuse: begin
@@ -142,6 +177,7 @@ begin
   begin
     ls:=memReadText(aptr);
     j:=memReadDWord(aptr);
+    
     FTextures[i]:=ls;
 
     Log('['+IntToStr(i)+'] '+ls,j);

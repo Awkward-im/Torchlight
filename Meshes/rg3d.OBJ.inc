@@ -14,10 +14,11 @@ begin
     WriteLine(aStream,'');
 
     case asub.FVEList.semantic[i] of
-      VES_POSITION: ltype:='v ';
-      VES_NORMAL  : ltype:='vn ';
+      VES_POSITION: begin ltype:='v ' ; {lptr:=asub.Vertex;} end;
+      VES_NORMAL  : begin ltype:='vn '; {lptr:=asub.Normal;} end;
 
       VES_TEXTURE_COORDINATES: begin
+//        lptr:=asub.Texture;
         for j:=0 to asub.FVertexCount-1 do
         begin
           with PVector2(lptr)[j] do
@@ -53,7 +54,7 @@ begin
 {
   if Length(FTextures)>0 then
   begin
-    WriteLine(aStream,'mtllib '+FName+'.mtl');
+    WriteLine(aStream,'mtllib master.mtl');
     for i:=0 to High(FTextures) do
     begin
     end;

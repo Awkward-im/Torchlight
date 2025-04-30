@@ -82,14 +82,18 @@ type
     function  GetBuffer(atype:integer):pointer;
     function  GetBuffer(atype:integer; aidx:integer):Pointer;
 
-    function GetData(atype:integer; idx:integer):TVector4;
-{
-    function GetUV(idx:integer; num:integer):TVector2;
-    function GetUV(idx:integer             ):TVector2;
+    procedure GetVector(aidx:integer; num:integer; atype:integer; var aresult:TVector4);
+//    function  GetData  (aidx:integer; num:integer; atype:integer):TVector4;
+    function  GetData  (aidx:integer;              atype:integer):TVector4;
+    function  GetData  (                           atype:integer):pointer;
 
+    function GetTexture(     num:integer):pointer;
+    function GetTexture(aidx,num:integer):TVector4;
+    function GetTextureCount:integer;
+    
     function GetFace(idx:integer):TIntVector3;
     function GetFace():pointer;
-
+{
     function GetBonePoint(idx:integer):PBoneVertex;
     function GetBonePoint:pointer;
 }
@@ -106,13 +110,16 @@ type
  
     property Buffer[atype:integer; idx:integer]:pointer read GetBuffer write SetBuffer;
 
-    property Vertex  [idx:integer]:TVector4 index VES_POSITION read GetData;
-    property Normal  [idx:integer]:TVector4 index VES_NORMAL   read GetData;
-    property BiNormal[idx:integer]:TVector4 index VES_BINORMAL read GetData;
-    property Tangent [idx:integer]:TVector4 index VES_TANGENT  read GetData;
+    property Vertex  [i:integer]:TVector4 index VES_POSITION read GetData;
+    property Normal  [i:integer]:TVector4 index VES_NORMAL   read GetData;
+    property BiNormal[i:integer]:TVector4 index VES_BINORMAL read GetData;
+    property Tangent [i:integer]:TVector4 index VES_TANGENT  read GetData;
 
-//    property Texture [idx:integer; num:integer]:TVector2 read GetUV;
-//    property Face    [idx:integer]:TIntVector3 read GetFace;
+    property Texture [idx:integer; num:integer]:TVector4 read GetTexture;
+    property TextureCount:integer read GetTextureCount;
+
+    property Face    [idx:integer]:TIntVector3 read GetFace;
+    property FaceCount:integer read FFaceCount;
 
 //    property BonePoints[idx:integer]:PBoneVertex read GetBonePoint;
   end;
@@ -176,6 +183,7 @@ type
     function AddSubMesh():PRGSubMesh;
     function AddSubMesh(amesh:PRGSubMesh):integer;
 
+    function  GetMTL():string;
     function  GetMaterial ():string;
     procedure SaveMaterial(const aFileName:String);
     
@@ -437,51 +445,85 @@ begin
     result:=nil;
 end;
 
-function TRGSubMesh.GetData(atype:integer; idx:integer):TVector4;
+procedure TRGSubMesh.GetVector(aidx:integer; num:integer; atype:integer; var aresult:TVector4);
 var
   lsm:PRGSubMesh;
   pb:PByte;
   ltmp:integer;
 begin
-  FillChar(result,SizeOf(result),0);
+  FillChar(aresult,SizeOf(aresult),0);
 
   if FUseSharedVertices then
     lsm:=FMesh^.SubMesh[0]
   else
     lsm:=@self;
 
-  ltmp:=lsm^.FVEList.FindType(atype,0);
+  ltmp:=lsm^.FVEList.FindType(atype,num);
   if ltmp>=0 then
   begin
     pb  :=lsm^.FVEList.FBuffers[ltmp];
     ltmp:=lsm^.FVEList.FVEList [ltmp]._type;
     
-    if      ltmp=VET_FLOAT3 then move(PVector3(pb)[idx],result,SizeOf(TVector3))
-    else if ltmp=VET_FLOAT2 then move(PVector2(pb)[idx],result,SizeOf(TVector2))
-    else if ltmp=VET_FLOAT4 then move(PVector4(pb)[idx],result,SizeOf(TVector4));
+    if      ltmp=VET_FLOAT3 then move(PVector3(pb)[aidx],aresult,SizeOf(TVector3))
+    else if ltmp=VET_FLOAT2 then move(PVector2(pb)[aidx],aresult,SizeOf(TVector2))
+    else if ltmp=VET_FLOAT4 then move(PVector4(pb)[aidx],aresult,SizeOf(TVector4));
   end;
 end;
-{
-function TRGSubMesh.GetUV(idx,num:integer):TVector2;
+
+function TRGSubMesh.GetData(aidx:integer; atype:integer):TVector4;
 begin
-  FillChar(result,sizeOf(result),0);
+  GetVector(aidx, 0, atype, result);
+end;
+{
+function TRGSubMesh.GetData(aidx:integer; num:integer; atype:integer):TVector4;
+begin
+  GetVector(aidx, num, atype, result);
+end;
+}
+function TRGSubMesh.GetData(atype:integer):pointer;
+begin
+  result:=GetBuffer(atype,0);
 end;
 
-function TRGSubMesh.GetUV(idx:integer):TVector2;
+function TRGSubMesh.GetTexture(num:integer):pointer;
 begin
-  result:=GetUV(idx,0);
+  result:=GetBuffer(VES_TEXTURE_COORDINATES,num);
+end;
+
+function TRGSubMesh.GetTexture(aidx,num:integer):TVector4;
+begin
+  GetVector(aidx,num,VES_TEXTURE_COORDINATES,result);
+end;
+
+function TRGSubMesh.GetTextureCount():integer;
+var
+  lsm:PRGSubMesh;
+  i:integer;
+begin
+  if FUseSharedVertices then
+    lsm:=FMesh^.SubMesh[0]
+  else
+    lsm:=@self;
+
+  result:=0;
+  for i:=0 to lsm^.FVEList.Count-1 do
+    if lsm^.FVEList.semantic[i]=VES_TEXTURE_COORDINATES then inc(result);
 end;
 
 function TRGSubMesh.GetFace(idx:integer):TIntVector3;
 begin
   FillChar(result,sizeOf(result),0);
+  if (idx>=0) and (idx<FFaceCount) then
+    result:=FFaces[idx]
+  else
+    FillChar(result,sizeOf(result),0);
 end;
 
 function TRGSubMesh.GetFace():pointer;
 begin
-  result:=nil;
+  result:=FFaces;
 end;
-
+{
 function TRGSubMesh.GetBonePoint(idx:integer):PBoneVertex;
 begin
   result:=nil;
