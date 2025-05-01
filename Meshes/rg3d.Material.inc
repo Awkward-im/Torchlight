@@ -389,58 +389,69 @@ function TRGMesh.ReadHobMaterial(var aptr:PByte; aver:integer):boolean;
 var
   mtl:PMaterial;
   ls:string;
-  i,lcnt,ltype:integer;
+  i,j,lcnt1,lcnt,ltype:integer;
 begin
   result:=false;
 
   SetLength(FMaterials,1);
   mtl:=@FMaterials[0];
 
-  Log('w (1)',memReadWord(aptr)); // 0001
+  lcnt1:=memReadWord(aptr);
+  Log('>material textures',lcnt1);
 
-  // base textures
-  lcnt:=memReadWord(aptr);
-  for i:=0 to lcnt-1 do
+  for j:=0 to lcnt1-1 do
   begin
-    ls:=memReadText(aptr);
-    Log(ls,memReadText(aptr));
-  end;
-
-  Log('w (1)',memReadWord(aptr)); //0001
-  Log('checksum?',HexStr(memReadDWord(aptr),8));
-
-  ls:=memReadText(aptr);
-  Log(ls+' (size of next data, mat+consts)',HexStr(memReadDWord(aptr),8));
-
-  mtl^.name:=memReadText(aptr);       // material/pass name
-  Log(ls,memReadDWord(aptr)); // number?
-
-  lcnt:=memReadDWord(aptr);
-
-  for i:=0 to lcnt-1 do
-  begin
-    ltype:=memReadDWord(aptr);
-    case ltype of
-      1: begin
-        ls:=memReadText(aptr);
-        Log('{'+IntToStr(i)+'} '+ls,memReadDWord(aptr));
-      end;
-      2: begin
-        ls:=memReadText(aptr);
-        Log('{'+IntToStr(i)+'} '+ls,memReadFloat(aptr));
-      end;
-      3: begin
-        Log('{'+IntToStr(i)+'} '+memReadText(aptr),'4x float');
-        Log('  [0]',memReadFloat(aptr));
-        Log('  [1]',memReadFloat(aptr));
-        Log('  [2]',memReadFloat(aptr));
-        Log('  [3]',memReadFloat(aptr));
-      end;
-      4: Log('{'+IntToStr(i)+'} type',ltype);
-    else
-      Log('{'+IntToStr(i)+'} Unknown const type',ltype);
+    Log('  Material',j);
+    // base textures
+    lcnt:=memReadWord(aptr);
+    for i:=0 to lcnt-1 do
+    begin
+      ls:=memReadText(aptr);
+      Log('    '+ls,memReadText(aptr));
     end;
   end;
+
+  lcnt1:=memReadWord(aptr);
+  Log('materials',lcnt1);
+
+  for j:=0 to lcnt1-1 do
+  begin
+    Log('  Material',j);
+    Log('checksum?',HexStr(memReadDWord(aptr),8));
+
+    ls:=memReadText(aptr);
+    Log(ls+' (size of next data, mat+consts)',HexStr(memReadDWord(aptr),8));
+
+    mtl^.name:=memReadText(aptr);       // material/pass name
+    Log(ls,memReadDWord(aptr));         // number?
+
+    lcnt:=memReadDWord(aptr);
+    for i:=0 to lcnt-1 do
+    begin
+      ltype:=memReadDWord(aptr);
+      case ltype of
+        1: begin
+          ls:=memReadText(aptr);
+          Log('{'+IntToStr(i)+'} '+ls,memReadDWord(aptr));
+        end;
+        2: begin
+          ls:=memReadText(aptr);
+          Log('{'+IntToStr(i)+'} '+ls,memReadFloat(aptr));
+        end;
+        3: begin
+          Log('{'+IntToStr(i)+'} '+memReadText(aptr),'4x float');
+          Log('  [0]',memReadFloat(aptr));
+          Log('  [1]',memReadFloat(aptr));
+          Log('  [2]',memReadFloat(aptr));
+          Log('  [3]',memReadFloat(aptr));
+        end;
+        4: Log('{'+IntToStr(i)+'} type',ltype);
+      else
+        Log('{'+IntToStr(i)+'} Unknown const type',ltype);
+      end;
+    end;
+  end;
+
 end;
 
 function TRGMesh.AddMaterial(const aname:string):integer;

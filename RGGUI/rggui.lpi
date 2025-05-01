@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -74,7 +74,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -111,7 +111,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -159,7 +159,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -198,6 +198,9 @@
       <FormatVersion Value="2"/>
     </RunParams>
     <RequiredPackages>
+      <Item>
+        <PackageName Value="LazOpenGLContext"/>
+      </Item>
       <Item>
         <PackageName Value="ImagesForLazarus"/>
       </Item>
@@ -267,6 +270,19 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="FPC.Dynamic_Bass"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmLogForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="unitLogForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Meshes\rgobj.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGObj"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -277,7 +293,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
     </SearchPaths>
     <Linking>

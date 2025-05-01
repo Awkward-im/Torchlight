@@ -166,9 +166,9 @@ object RGGUIForm: TRGGUIForm
     Height = 465
     Top = 26
     Width = 683
-    ActivePage = Setings
+    ActivePage = Grid
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 4
     object Setings: TTabSheet
       Caption = 'Setings'
@@ -558,6 +558,7 @@ object RGGUIForm: TRGGUIForm
           Font.Name = 'Courier New'
           Font.Pitch = fpFixed
           Font.Quality = fqNonAntialiased
+          Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
           PopupMenu = SynPopupMenu
@@ -995,24 +996,21 @@ object RGGUIForm: TRGGUIForm
           Options = [eoAutoIndent, eoBracketHighlight, eoGroupUndo, eoScrollPastEol, eoSmartTabs, eoTabsToSpaces]
           MouseOptions = [emCtrlWheelZoom]
           VisibleSpecialChars = [vscSpace, vscTabAtLast]
-          SelectedColor.BackPriority = 50
           SelectedColor.ForePriority = 50
+          SelectedColor.BackPriority = 50
           SelectedColor.FramePriority = 50
-          SelectedColor.BoldPriority = 50
-          SelectedColor.ItalicPriority = 50
-          SelectedColor.UnderlinePriority = 50
-          SelectedColor.StrikeOutPriority = 50
+          SelectedColor.Features = [lafPastEOL]
           BracketHighlightStyle = sbhsBoth
-          BracketMatchColor.Background = clNone
           BracketMatchColor.Foreground = clNone
+          BracketMatchColor.Background = clNone
           BracketMatchColor.Style = [fsBold]
-          FoldedCodeColor.Background = clNone
           FoldedCodeColor.Foreground = clGray
+          FoldedCodeColor.Background = clNone
           FoldedCodeColor.FrameColor = clGray
-          MouseLinkColor.Background = clNone
           MouseLinkColor.Foreground = clBlue
-          LineHighlightColor.Background = clNone
+          MouseLinkColor.Background = clNone
           LineHighlightColor.Foreground = clNone
+          LineHighlightColor.Background = clNone
           TabWidth = 2
           OnStatusChange = SynEditStatusChange
           inline SynLeftGutterPartList1: TSynGutterPartList
@@ -1025,8 +1023,8 @@ object RGGUIForm: TRGGUIForm
             object SynGutterLineNumber1: TSynGutterLineNumber
               Width = 17
               MouseActions = <>
-              MarkupInfo.Background = clBtnFace
               MarkupInfo.Foreground = clNone
+              MarkupInfo.Background = clBtnFace
               DigitCount = 2
               ShowOnlyLineNumbersMultiplesOf = 1
               ZeroStart = False
@@ -1041,13 +1039,13 @@ object RGGUIForm: TRGGUIForm
             object SynGutterSeparator1: TSynGutterSeparator
               Width = 2
               MouseActions = <>
-              MarkupInfo.Background = clWhite
               MarkupInfo.Foreground = clGray
+              MarkupInfo.Background = clWhite
             end
             object SynGutterCodeFolding1: TSynGutterCodeFolding
               MouseActions = <>
-              MarkupInfo.Background = clNone
               MarkupInfo.Foreground = clGray
+              MarkupInfo.Background = clNone
               MouseActionsExpanded = <>
               MouseActionsCollapsed = <>
             end

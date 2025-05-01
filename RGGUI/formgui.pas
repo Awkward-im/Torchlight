@@ -25,7 +25,7 @@ uses
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit, SynEdit,
   SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
   rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset,
-  SynHighlighterOgre, FWHexView{, FWHexView.MappedView};
+  SynHighlighterOgre, OpenGLContext, RGObj, FWHexView{, FWHexView.MappedView};
 
 type
 
@@ -247,6 +247,13 @@ type
     fmImgset:TForm;
     hview:TFWHexView;
     ctrl:TRGController;
+
+    GLBox:TOpenGLControl;
+    FMeshList:integer;
+    FMesh:TRGMesh;
+    tx,ty,tz:single;
+    rx,ry,rz:single;
+
     LastExt:string;
     LastFilter:integer;
     FLastIndex:integer;
@@ -265,18 +272,27 @@ type
 
     procedure AddNewDir(anode: TTreeNode; const apath: string);
     procedure ClearInfo();
+    procedure CreateMeshList;
     function FileClose: boolean;
     procedure FillGrid(idx:integer=-1);
     function  FillGridLine(arow: integer; const adir: string; afile: integer): boolean;
     procedure FillTree();
     procedure AddBranch(aroot: TTreeNode; const aname: string);
     function  GetPathFromNode(aNode: TTreeNode): string;
+    procedure GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure GLBoxMouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure GLBoxMouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure GLBoxPaint(Sender: TObject);
     procedure MarkTree(adir: integer; aEnable: boolean);
     procedure NewPAK;
+    procedure OnGLIdle(Sender: TObject; var Done: Boolean);
     procedure OpenPAK(const aname: string);
     procedure PrepareSound;
     procedure PreviewDump();
     procedure PreviewImageset(const adir: string);
+    procedure PreviewModel();
     procedure PreviewSound;
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure PreviewImage(const aext: string);
@@ -309,6 +325,7 @@ uses
   LCLIntf,
   LCLType,
   IntfGraphics,
+  GL,
   inifiles,
   fpimage,
   fpwritebmp,
@@ -1360,6 +1377,7 @@ var
   lstr:TStream;
   bNoTree,bRoot,bEmpty,bParent:boolean;
 begin
+  Self.ActiveControl:=SGMain;
   lblInfo1.Caption:='';
   lblInfo2.Caption:='';
 
@@ -1368,6 +1386,16 @@ begin
 
   if fmLEdit <>nil then fmLEdit .Visible:=false;
   if fmImgSet<>nil then fmImgSet.Visible:=false;
+  if GLBox   <>nil then
+  begin
+    if GLBox.Visible then
+    begin
+      Application.RemoveOnIdleHandler(@OnGLIdle);
+      GLBox.Visible:=false;
+      glDeleteLists(FMeshList,1);
+      FMesh.Free;
+    end;
+  end;
 
   SynEdit.Clear;
   SynEdit.Visible:=false;
@@ -1538,6 +1566,175 @@ end;
       IntToStr(imgPreview.Picture.Height);
   actScaleImage.Visible:=true;
 end;
+
+{%REGION Model}
+const
+   DiffuseLight: array[0..3] of GLfloat = (0.8, 0.8, 0.8, 1);
+
+procedure TRGGUIForm.GLBoxMouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  tz:=tz-0.1;
+  GLBox.Invalidate;
+end;
+
+procedure TRGGUIForm.GLBoxMouseWheelUp(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  tz:=tz+0.1;
+  GLBox.Invalidate;
+end;
+
+procedure TRGGUIForm.GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  case Key of
+    VK_UP:    ty:=ty+0.1;
+    VK_DOWN:  ty:=ty-0.1;
+    VK_LEFT:  tx:=tx-0.1;
+    VK_RIGHT: tx:=tx+0.1;
+  end;
+end;
+
+procedure TRGGUIForm.OnGLIdle(Sender: TObject; var Done: Boolean);
+begin
+  Done:=false;
+  GLBox.Invalidate;
+end;
+
+procedure TRGGUIForm.CreateMeshList;
+var
+  lsm:PRGSubMesh;
+  i,j:integer;
+  v4:TVector3;
+begin
+  FMeshList:=glGenLists(1);
+  glNewList(FMeshList,GL_COMPILE);
+  glBegin(GL_TRIANGLES);
+
+  for j:=1 to FMesh.SubMeshCount do
+  begin
+    lsm:=FMesh.SubMesh[j];
+    for i:=0 to lsm^.FaceCount-1 do
+    begin
+      v4:=lsm^.Normal[lsm^.Face[i].X]; glNormal3fv(@v4);
+      v4:=lsm^.Vertex[lsm^.Face[i].X]; glVertex3fv(@v4);
+      v4:=lsm^.Normal[lsm^.Face[i].Y]; glNormal3fv(@v4);
+      v4:=lsm^.Vertex[lsm^.Face[i].Y]; glVertex3fv(@v4);
+      v4:=lsm^.Normal[lsm^.Face[i].Z]; glNormal3fv(@v4);
+      v4:=lsm^.Vertex[lsm^.Face[i].Z]; glVertex3fv(@v4);
+    end;
+  end;
+
+  glEnd;
+
+  glEndList;
+end;
+
+procedure TRGGUIForm.GLBoxPaint(Sender: TObject);
+var
+  i:integer;
+  lsm:PRGSubMesh;
+  Speed: Double;
+begin
+  glClearColor(0.27, 0.53, 0.71, 1.0); // Задаем синий фон
+
+  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+
+{
+  for i:=1 to FMesh.SubMeshCount do
+  begin
+    lsm:=FMesh.SubMesh[i];
+//    glNormalPointer(3, GL_FLOAT , 0, FMesh.SubMesh[i]^.Normal);
+    glVertexPointer(3, GL_FLOAT , 0, FMesh.SubMesh[i]^.Vertex);
+//    glDrawArrays   (GL_TRIANGLES, 0, FMesh.SubMesh[i]^.VertexCount);
+    glDrawBuffer(GL_TRIANGLES);
+  end;
+}
+
+  if FMeshList=0 then
+  begin
+    CreateMeshList;
+
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_LIGHTING);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
+    glEnable(GL_LIGHT0);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity;
+    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0); { transformation }
+  end;
+
+  if FMeshList<>0 then
+  begin
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity;
+
+    glTranslatef(tx, ty, tz);
+
+//    glRotatef(rx,1.0,0.0,0.0);
+    glRotatef(ry,0.0,1.0,0.0);
+//    glRotatef(rz,0.0,0.0,1.0);
+
+    glCallList(FMeshList);
+
+//    glPopMatrix;
+  end;
+
+  Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
+
+  rx += 5.15 * Speed;
+  ry += 5.15 * Speed;
+  rz += 20.0 * Speed;
+
+  GLbox.SwapBuffers;
+end;
+
+procedure TRGGUIForm.PreviewModel();
+begin
+  if GLBox=nil then
+  begin
+    GLBox:=TOpenGLControl.Create(Self);
+    with GLBox do
+    begin
+      Name  :='GLBox';
+      Parent:=pnlAdd;
+      Align :=alClient;
+      AutoResizeViewport:=true;
+
+      OnPaint         :=@GLBoxPaint;
+      OnKeyDown       :=@GLBoxKeyDown;
+      OnMouseWheelUp  :=@GLBoxMouseWheelUp;
+      OnMouseWheelDown:=@GLBoxMouseWheelDown;
+    end;
+  end;
+
+  FMesh.Init;
+  FMesh.ImportFromMemory(FUData,FUSize);
+
+  CreateMeshList();
+
+  tz:=-6.0;
+
+  GLBox.Visible:=true;
+
+  glEnable(GL_DEPTH_TEST);
+
+  glEnable(GL_LIGHTING);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
+  glEnable(GL_LIGHT0);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity;
+  glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+
+  Application.AddOnIdleHandler(@OnGLIdle);
+
+  Self.ActiveControl:=GLBox;
+end;
+{%ENDREGION Model}
 
 procedure TRGGUIForm.PreviewLayout();
 begin
@@ -1739,7 +1936,7 @@ begin
 
     if not actShowPreview.Checked then exit;
 
-    if (ltype and $FF) in [typeUnknown,typeFont,typeModel,typeOther] then
+    if (ltype and $FF) in [typeUnknown,typeFont,typeOther] then
     begin
       FUSize:=ctrl.GetBinary(lfile,FUData);
       if RGTypeExtIsText(lext) then
@@ -1781,6 +1978,9 @@ begin
 
         // Image
         else if ltype=typeImage then PreviewImage(lext)
+
+        // Models
+        else if ltype=typeModel then PreviewModel
 
         // Sound
         else if ltype=typeSound then PreviewSound
