@@ -65,6 +65,12 @@ type
     FVertexCount:integer;
     FVEList:TVertexElementList;
 
+    FVertex  :PVector3;
+    FNormal  :PVector3;
+    FBiNormal:PVector3;
+// not used, coz pointer getter is fast, and indexed value can be different size
+//    FTangent :pointer;
+
     FFaces      :PIntVector3;
     FFaceCount  :integer;
     FMaterial   :integer;
@@ -109,10 +115,22 @@ type
     property VertexCount:integer read GetVertexCount write FVertexCount;
  
     property Buffer[atype:integer; idx:integer]:pointer read GetBuffer write SetBuffer;
-
+{
+  Vertex   - geometry, single  , Vector3
+  Normal   - geometry, single  , Vector3
+  Binormal - geometry, single  , Vector3
+  Tangent  - geometry, single  , Vector3 OR Vector4
+  Texture  - geometry, multiply, Vector2 (Vector3, Vector4)
+  Face     - submesh , single  , Vector3 (check OT_*)
+}
+{
     property Vertex  [i:integer]:TVector4 index VES_POSITION read GetData;
     property Normal  [i:integer]:TVector4 index VES_NORMAL   read GetData;
     property BiNormal[i:integer]:TVector4 index VES_BINORMAL read GetData;
+}
+    property Vertex  :PVector3 read FVertex;
+    property Normal  :PVector3 read FNormal;
+    property BiNormal:PVector3 read FBiNormal;
     property Tangent [i:integer]:TVector4 index VES_TANGENT  read GetData;
 
     property Texture [idx:integer; num:integer]:TVector4 read GetTexture;
@@ -165,7 +183,9 @@ type
     procedure ReadGeometry         (asub:PRGSubMesh; var aptr:PByte);
     procedure ReadSubMesh          (asub:PRGSubMesh; var aptr:PByte);
 
-    
+    //set direct pointers to Vertex etc after import;
+    procedure FixPointers;
+
     function ReadMDL (var aptr:PByte):boolean;
     function ReadHob (var aptr:PByte; asMesh:boolean):boolean;
     function ReadMesh(var aptr:PByte):boolean;

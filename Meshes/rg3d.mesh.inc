@@ -15,6 +15,8 @@ begin
       i:=asub^.FVEList.Add(aptr);
       if i>=0 then
       begin
+        if rgDebugLevel=dlDetailed then LogVE(i,asub^.FVEList[i]^);
+{
         with asub^.FVEList[i]^ do
         begin
           Log('source  ',source);
@@ -23,6 +25,7 @@ begin
           Log('offset  ',offset);
           Log('index   ',index);
         end;
+}
       end;
     end
     else

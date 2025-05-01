@@ -12,6 +12,7 @@ begin
     mesh.Init;
     if mesh.ImportFromFile(ls) then
     begin
+      mesh.SaveToOBJ   (ExtractNameOnly(ls)+'.mesh.obj');
       mesh.SaveToXML   (ExtractNameOnly(ls)+'.mesh.xml');
       mesh.SaveMaterial(ExtractNameOnly(ls)+'.material');
     end;

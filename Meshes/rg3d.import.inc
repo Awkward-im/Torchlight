@@ -78,6 +78,22 @@ end;
 {$I rg3d.Hob.inc}
 {$I rg3d.Mesh.inc}
 
+procedure TRGMesh.FixPointers;
+var
+  lsm:PRGSubMesh;
+  i:integer;
+begin
+  for i:=0 to FSubMeshCount-1 do
+  begin
+    lsm:=FSubMeshes[i];
+    lsm^.FVertex  :=lsm^.GetBuffer(VES_POSITION,0);
+    lsm^.FNormal  :=lsm^.GetBuffer(VES_NORMAL  ,0);
+    lsm^.FBiNormal:=lsm^.GetBuffer(VES_BINORMAL,0);
+// not used, coz pointer getter is fast, and indexed value can be different size
+//    lsm^.FTangent :=lsm^.GetBuffer(VES_TANGENT ,0);
+  end;
+end;
+
 function TRGMesh.ImportFromMemory(aptr:PByte; asize:integer):boolean;
 var
   lchunk:TOgreChunk;
@@ -88,19 +104,19 @@ begin
   FDataSize:=asize;
 
   FVersion:=GetFileVersion(aptr);
-  if FVersion=99 then
-  begin
-    result:=ReadMDL(aptr);
-    exit;
-  end
-  else if (FVersion=90) or (FVersion=91) then
-  begin
-    result:=ReadHob(aptr,FVersion=90);
-  end
-  else if FVersion<0 then exit;
+  if FVersion<0 then exit;
 
-  if ReadChunk(aptr,lchunk)=M_MESH then
-    result:=ReadMesh(aptr);
+  if FVersion=99 then
+    result:=ReadMDL(aptr)
+  else
+  begin
+    if (FVersion=90) or (FVersion=91) then
+      result:=ReadHob(aptr,FVersion=90);
+
+    if ReadChunk(aptr,lchunk)=M_MESH then
+      result:=ReadMesh(aptr);
+  end;
+  FixPointers();
 
   Log('offset',HexStr(aptr-FBuffer,8));
 end;

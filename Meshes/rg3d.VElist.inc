@@ -52,6 +52,15 @@ type
 
 {$ELSE}
 
+procedure LogVE(num:integer; const VE:TVertexElement);
+begin
+  Log('Vertex Element',num);
+  Log('  source  ',VE.source);
+  Log('  type    ',GetVETName(VE._type));
+  Log('  semantic',GetVESName(VE.semantic));
+  Log('  offset  ',VE.offset);
+  Log('  index   ',VE.index);
+end;
 
 function TVertexElementList.Add(asource,atype,asemantic,aoffset,aindex:Word):integer;
 begin
@@ -79,6 +88,8 @@ begin
     memRead(aptr,FVEList[FCount],SizeOf(TVertexElement));
     FBuffers[FCount]:=nil;
     result:=FCount;
+    if rgDebugLevel=dlDetailed then LogVE(FCount,FVEList[FCount]);
+    
     inc(FCount);
   end
   else
@@ -86,6 +97,8 @@ begin
 end;
 
 function TVertexElementList.Read(var aptr:PByte):integer;
+var
+  i:integer;
 begin
   FillChar(self,SizeOf(TVertexElementList),0);
 
@@ -102,6 +115,10 @@ begin
   memRead(aptr,FVEList[0],FCount*SizeOf(TVertexElement));
   if result<>FCount then
     inc(aptr,(result-FCount)*(SizeOf(TVertexElement)));
+
+  if rgDebugLevel=dlDetailed then
+    for i:=0 to FCount-1 do
+      LogVE(i,FVEList[i]);
 end;
 
 function TVertexElementList.GetCount:integer;

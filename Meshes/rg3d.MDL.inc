@@ -380,7 +380,7 @@ begin
   SubMesh[0]^.FVEList.Read(aptr);
 
   LogLn;
-  Log('(scale?)',memReadFloat(aptr));
+  Log('scale?',memReadFloat(aptr));
   Log('dd (1)',memReadDWord(aptr));
   Log('dd (0)',memReadDWord(aptr));
   Log('dd (0)',memReadDWord(aptr)); // 4 for VIRAX 
@@ -396,7 +396,5 @@ begin
     result:=ReadMDLType1(aptr,lver)
   else
     result:=ReadMDLType0(aptr,lver);
-
-  Log('offset',HexStr(aptr-FBuffer,8));
 end;
 

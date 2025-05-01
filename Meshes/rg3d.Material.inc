@@ -3,7 +3,7 @@
 
 const
   // texture indexes
-  txtBase         = 5;
+  txtDiffuse      = 5;
   //
   txtEnvDiffuse   = 7;
   txtEnvSpecular  = 8;
@@ -20,16 +20,16 @@ function RGBToFloat(const aval:TRGB):string;
 var
   lr,lg,lb:string;
 begin
-  if aval.R=0 then lr:='0' else if aval.R=255 then lr:='1' else Str(aval.R/255:0:6,lr);
-  if aval.G=0 then lg:='0' else if aval.G=255 then lg:='1' else Str(aval.G/255:0:6,lg);
-  if aval.B=0 then lb:='0' else if aval.B=255 then lb:='1' else Str(aval.B/255:0:6,lb);
+  if aval.R=0 then lr:='0' else if aval.R=255 then lr:='1' else Str(aval.R/255:0:6,lr); FixFloatStr(lr);
+  if aval.G=0 then lg:='0' else if aval.G=255 then lg:='1' else Str(aval.G/255:0:6,lg); FixFloatStr(lg);
+  if aval.B=0 then lb:='0' else if aval.B=255 then lb:='1' else Str(aval.B/255:0:6,lb); FixFloatStr(lb);
   result:=lr+' '+lg+' '+lb;
 end;
 
 function TRGMesh.GetMTL():string;
 var
   sl:TStringList;
-//  ls:string;
+  ls:string;
   i,j:integer;
 begin
   result:='';
@@ -48,6 +48,26 @@ begin
       begin
         if (FTextures<>nil) and (FMaterials[i].textures[j]>=0) then
         begin
+          ls:=ChangeFileExt(FTextures[FMaterials[i].textures[j]],'.dds');
+          case j of
+            txtDiffuse: begin
+              sl.Add('map_Kd '+ls);
+            end;
+            txtEnvDiffuse: begin
+            end;
+            txtEnvSpecular: begin
+            end;
+            txtGlow: begin
+              //??
+              sl.Add('map_Ka '+ls);
+            end;
+            txtNormal: begin
+            end;
+            txtSpecular: begin
+              sl.Add('map_Ks '+ls);
+            end;
+          end;
+
         end;
       end;
     end;
