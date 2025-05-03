@@ -1,5 +1,41 @@
 ﻿{}
 {NOTE: GetMaterial replaces texture extensions to DDS}
+{$IFDEF Interface}
+
+type
+  PMaterial = ^TMaterial;
+  TMaterial = record
+    name    :string;
+    ambient :TVector3;
+    diffuse :TVector3;
+    specular:TVector3;
+    emissive:TVector3;
+    add     :TVector3;
+    textures:array [0..16] of integer;
+
+    // material
+    shadows     :boolean;
+    cast_shadows:boolean;
+    // pass
+    depth_write:boolean;
+    depth_check:boolean;
+  end;
+
+{$ELSE}
+
+type
+  THobTexture = record
+    _type:string;
+    _file:string;
+    _material:integer;
+  end;
+
+type
+  TRGB = packed record // byte used, word is in file
+    R:Word;
+    G:Word;
+    B:Word;
+  end;
 
 const
   // texture indexes
@@ -16,13 +52,22 @@ const
   txtPaint        = 15;
   txtPaintSurface = 16;
 
-function RGBToFloat(const aval:TRGB):string;
+procedure RGBToFloat(const aval:TRGB; var acolor:TVector3);
+begin
+  if aval.R=0 then acolor.X:=0 else if aval.R=255 then acolor.X:=1.0 else acolor.X:=aval.R/255;
+  if aval.G=0 then acolor.Y:=0 else if aval.G=255 then acolor.Y:=1.0 else acolor.Y:=aval.G/255;
+  if aval.G=0 then acolor.Z:=0 else if aval.B=255 then acolor.Z:=1.0 else acolor.Z:=aval.B/255;
+end;
+
+function RGBToStr(const aval:TVector3):string;
 var
   lr,lg,lb:string;
 begin
-  if aval.R=0 then lr:='0' else if aval.R=255 then lr:='1' else Str(aval.R/255:0:6,lr); FixFloatStr(lr);
-  if aval.G=0 then lg:='0' else if aval.G=255 then lg:='1' else Str(aval.G/255:0:6,lg); FixFloatStr(lg);
-  if aval.B=0 then lb:='0' else if aval.B=255 then lb:='1' else Str(aval.B/255:0:6,lb); FixFloatStr(lb);
+//  if (aval.X=0) and (aval.Y=0) and (aval.Z=0) then exit('');
+
+  Str(aval.X:0:6,lr); FixFloatStr(lr);
+  Str(aval.Y:0:6,lg); FixFloatStr(lg);
+  Str(aval.Z:0:6,lb); FixFloatStr(lb);
   result:=lr+' '+lg+' '+lb;
 end;
 
@@ -39,9 +84,9 @@ begin
     for i:=0 to High(FMaterials) do
     begin
       sl.Add('newmtl '+FMaterials[i].name);
-      sl.Add('Ka '+RGBToFloat(FMaterials[i].ambient));
-      sl.Add('Kd '+RGBToFloat(FMaterials[i].diffuse));
-      sl.Add('Ks '+RGBToFloat(FMaterials[i].specular));
+      ls:=RGBToStr(FMaterials[i].ambient ); if ls<>'' then sl.Add('Ka '+ls);
+      ls:=RGBToStr(FMaterials[i].diffuse ); if ls<>'' then sl.Add('Kd '+ls);
+      ls:=RGBToStr(FMaterials[i].specular); if ls<>'' then sl.Add('Ks '+ls);
       sl.Add('');
 
       for j:=5 to 16 do
@@ -81,7 +126,8 @@ end;
 function TRGMesh.GetMaterial():string;
 var
   sl:TStringList;
-//  ls:string;
+  mtl:PMaterial;
+  ls:string;
   i,j:integer;
 begin
   result:='';
@@ -90,71 +136,80 @@ begin
 
     for i:=0 to High(FMaterials) do
     begin
-      sl.Add('material '+FMaterials[i].name);
+      mtl:=@FMaterials[i];
+      sl.Add('material '+mtl^.name);
       sl.Add('{');
+//      if not mtl^.shadows then sl.Add('  receive_shadows off');
+//      if mtl^.castshadows then sl.Add('  transparency_cast_shadows on');
       sl.Add('  technique');
       sl.Add('  {');
       sl.Add('    pass');
       sl.Add('    {');
-      sl.Add('      ambient  '+RGBToFloat(FMaterials[i].ambient));
-      sl.Add('      diffuse ' +RGBToFloat(FMaterials[i].diffuse));
-      sl.Add('      specular '+RGBToFloat(FMaterials[i].specular)+' 0');
-      sl.Add('      emissive '+RGBToFloat(FMaterials[i].emissive));
+//      if not mtl^.depth_write then sl.Add('      depth_write off');
+//      if not mtl^.depth_check then sl.Add('      depth_check off');
+      ls:=RGBToStr(mtl^.ambient ); if ls<>'' then sl.Add('      ambient  '+ls);      // 1 1 1 1
+      ls:=RGBToStr(mtl^.diffuse ); if ls<>'' then sl.Add('      diffuse ' +ls);      // 1 1 1 1
+      ls:=RGBToStr(mtl^.specular); if ls<>'' then sl.Add('      specular '+ls+' 0'); // 0 0 0 0
+      ls:=RGBToStr(mtl^.emissive); if ls<>'' then sl.Add('      emissive '+ls);      // 0 0 0 0
+
+      if FTextures<>nil then
+      begin
       // animation (duration requires)
 (*
-      ls:='';
-      for j:=0 to 4 do
-        if FMaterials[i].textures[j]>=0 then
-          ls:=ls+' '+FTextures[FMaterials[i].textures[j]]
-        else
-          break;
-      if ls<>'' then
-      begin    
-        sl.Add('');
-        sl.Add('      texture_unit');
-        sl.Add('      {');
-        sl.Add('        anim_texture'+ls);
-        sl.Add('      }');
-      end;
-*)
-      for j:=5 to 16 do
-      begin
-        if (FTextures<>nil) and (FMaterials[i].textures[j]>=0) then
-        begin
+        ls:='';
+        for j:=0 to 4 do
+          if mtl^.textures[j]>=0 then
+            ls:=ls+' '+FTextures[mtl^.textures[j]]
+          else
+            break;
+        if ls<>'' then
+        begin    
           sl.Add('');
           sl.Add('      texture_unit');
           sl.Add('      {');
-          //!!!!
-          sl.Add('        texture '+ChangeFileExt(FTextures[FMaterials[i].textures[j]],'.dds'));
-//          sl.Add('        texture '+FTextures[FMaterials[i].textures[j]]);
-
-          case j of
-            txtEnvDiffuse: begin
-              sl.Add('        env_map spherical'); // "content_type shadow" ?
-              sl.Add('        colour_op modulate');
-            end;
-            txtEnvSpecular: begin
-              sl.Add('        env_map spherical');
-              sl.Add('        colour_op add');
-            end;
-            txtGlow: begin
-              sl.Add('        colour_op add');
-            end;
-            txtNormal: begin
-              sl.Add('        colour_op replace');
-//              sl.Add('        colour_op modulate');
-            end;
-            txtSpecular: begin
-              sl.Add('        colour_op add');
-//              sl.Add('        colour_op alpha_blend');
-            end;
-            txtPaint: begin
-            end;
-            txtPaintSurface: begin
-            end;
-          end;
-
+          sl.Add('        anim_texture'+ls);
           sl.Add('      }');
+        end;
+*)
+        for j:=5 to 16 do
+        begin
+          if mtl^.textures[j]>=0 then
+          begin
+            sl.Add('');
+            sl.Add('      texture_unit');
+            sl.Add('      {');
+            //!!!!
+            sl.Add('        texture '+ChangeFileExt(FTextures[mtl^.textures[j]],'.dds'));
+  //          sl.Add('        texture '+FTextures[FMaterials[i].textures[j]]);
+
+            case j of
+              txtEnvDiffuse: begin
+                sl.Add('        env_map spherical'); // "content_type shadow" ?
+                sl.Add('        colour_op modulate');
+              end;
+              txtEnvSpecular: begin
+                sl.Add('        env_map spherical');
+                sl.Add('        colour_op add');
+              end;
+              txtGlow: begin
+                sl.Add('        colour_op add');
+              end;
+              txtNormal: begin
+                sl.Add('        colour_op replace');
+  //              sl.Add('        colour_op modulate');
+              end;
+              txtSpecular: begin
+                sl.Add('        colour_op add');
+  //              sl.Add('        colour_op alpha_blend');
+              end;
+              txtPaint: begin
+              end;
+              txtPaintSurface: begin
+              end;
+            end;
+
+            sl.Add('      }');
+          end;
         end;
       end;
       sl.Add('    }');
@@ -231,6 +286,7 @@ function TRGMesh.ReadRGMaterial(var aptr:PByte; aver:integer):boolean;
 
 var
   mtl:PMaterial;
+  lrgb:TRGB;
   i,ltmp:integer;
 begin
   SetLength(FMaterials,memReadDWord(aptr));
@@ -300,42 +356,58 @@ begin
 
     if aver>=8 then
     begin
+      memRead(aptr,lrgb,3*2);
+      RGBtoFloat(lrgb,mtl^.add);
+      LogLn();
+      Log('unknown',
+        ' '+IntToStr(lrgb.R)+
+        ' '+IntToStr(lrgb.G)+
+        ' '+IntToStr(lrgb.B));
+{
       memRead(aptr,mtl^.add,3*2);
       Log('unknown',
         ' '+IntToStr(mtl^.add.R)+   // 0-1
         ' '+IntToStr(mtl^.add.G)+   // 0-1
         ' '+IntToStr(mtl^.add.B));  // 0-1
+}
     end;
 // ambient, diffuse, emissive, specular
 
     // ambient?
-    memRead(aptr,mtl^.ambient,3*2);
+    memRead(aptr,lrgb,3*2);
+    RGBtoFloat(lrgb,mtl^.ambient);
     LogLn();
     Log('ambient',
-      ' '+IntToStr(mtl^.ambient.R)+
-      ' '+IntToStr(mtl^.ambient.G)+
-      ' '+IntToStr(mtl^.ambient.B));
+      ' '+IntToStr(lrgb.R)+
+      ' '+IntToStr(lrgb.G)+
+      ' '+IntToStr(lrgb.B));
 
     // diffuse?
-    memRead(aptr,mtl^.diffuse,3*2);
+    memRead(aptr,lrgb,3*2);
+    RGBtoFloat(lrgb,mtl^.diffuse);
+    LogLn();
     Log('diffuse',
-      ' '+IntToStr(mtl^.diffuse.R)+
-      ' '+IntToStr(mtl^.diffuse.G)+
-      ' '+IntToStr(mtl^.diffuse.B));
+      ' '+IntToStr(lrgb.R)+
+      ' '+IntToStr(lrgb.G)+
+      ' '+IntToStr(lrgb.B));
 
     // emissive? specular?
-    memRead(aptr,mtl^.specular,3*2);
+    memRead(aptr,lrgb,3*2);
+    RGBtoFloat(lrgb,mtl^.specular);
+    LogLn();
     Log('specular',
-      ' '+IntToStr(mtl^.specular.R)+
-      ' '+IntToStr(mtl^.specular.G)+
-      ' '+IntToStr(mtl^.specular.B));
+      ' '+IntToStr(lrgb.R)+
+      ' '+IntToStr(lrgb.G)+
+      ' '+IntToStr(lrgb.B));
 
     // specular? emissive?
-    memRead(aptr,mtl^.emissive,3*2);
+    memRead(aptr,lrgb,3*2);
+    RGBtoFloat(lrgb,mtl^.emissive);
+    LogLn();
     Log('emissive',
-      ' '+IntToStr(mtl^.emissive.R)+
-      ' '+IntToStr(mtl^.emissive.G)+
-      ' '+IntToStr(mtl^.emissive.B));
+      ' '+IntToStr(lrgb.R)+
+      ' '+IntToStr(lrgb.G)+
+      ' '+IntToStr(lrgb.B));
 
     //--------------------------------
     Log('>values','');
@@ -386,15 +458,26 @@ end;
 
 
 function TRGMesh.ReadHobMaterial(var aptr:PByte; aver:integer):boolean;
+const
+  type_int    = 1;
+  type_float  = 2;
+  type_float4 = 3;
+  type_four   = 4;
+
 var
   mtl:PMaterial;
-  ls:string;
-  i,j,lcnt1,lcnt,ltype:integer;
+  lname,ls,lsv:string;
+  ltxt:array of THobTexture;
+  lr,lg,lb,lalpha:single;
+  lint,i,j,lcnt1,lcnt,ltype:integer;
+  //textures
+  lcount,ltxtcount:integer;
+  lidx,k,l:integer;
 begin
   result:=false;
 
-  SetLength(FMaterials,1);
-  mtl:=@FMaterials[0];
+  SetLength(ltxt,100);
+  ltxtcount:=0;
 
   lcnt1:=memReadWord(aptr);
   Log('>material textures',lcnt1);
@@ -406,16 +489,35 @@ begin
     lcnt:=memReadWord(aptr);
     for i:=0 to lcnt-1 do
     begin
-      ls:=memReadText(aptr);
-      Log('    '+ls,memReadText(aptr));
+      if ltxtcount=Length(ltxt) then SetLength(ltxt,Length(ltxt)+50);
+      ls :=memReadText(aptr);
+      lsv:=memReadText(aptr);
+      with ltxt[ltxtcount] do
+      begin
+        _material:=j;
+        _type    :=ls;
+        _file    :=lsv;
+      end;
+      inc(ltxtcount);
+      Log('    '+ls,lsv);
     end;
   end;
 
   lcnt1:=memReadWord(aptr);
+  SetLength(FMaterials,lcnt1);
   Log('materials',lcnt1);
+
+  SetLength(FTextures,ltxtcount);
+  lcount:=0;
 
   for j:=0 to lcnt1-1 do
   begin
+    mtl:=@FMaterials[j];
+    FillChar(mtl^,SizeOf(TMaterial),0);
+    for i:=0 to 16 do
+      mtl^.textures[i]:=-1;
+
+    LogLn;
     Log('  Material',j);
     Log('checksum?',HexStr(memReadDWord(aptr),8));
 
@@ -430,38 +532,125 @@ begin
     begin
       ltype:=memReadDWord(aptr);
       case ltype of
-        1: begin
-          ls:=memReadText(aptr);
-          Log('{'+IntToStr(i)+'} '+ls,memReadDWord(aptr));
+
+        type_int: begin
+          lname:=memReadText (aptr);
+          lint :=memReadDWord(aptr);
+
+          Log('/* '+IntToStr(i)+' */ param_named '+lname+' int '+IntToStr(lint));
+
+          if lint=1 then
+          begin
+          // flags
+               if lname='const_WriteDepth' then mtl^.depth_write:=true
+          else if lname='const_CheckDepth' then mtl^.depth_check:=true
+          ;
+
+          // textures
+{
+  1 - get block with material=i
+  2 - search texture with name
+  3 - add to Textures block (skip if exists)
+  4 - save number
+}
+            lidx:=-1;
+                 if lname='const_DiffuseTexture'        then begin lidx:=txtDiffuse ; ls:='DiffuseTexture2D' end
+            else if lname='const_SpecularTexture'       then begin lidx:=txtSpecular; ls:='SpecularMap2D' end
+            else if lname='const_OutlineTexture'        then begin lidx:=0; ls:='OutlineMap2D' end
+            else if lname='const_EmissiveTexture'       then begin lidx:=0; ls:='EmissiveMap2D' end
+            else if lname='const_NormalmapTexture'      then begin lidx:=txtNormal  ; ls:='NormalTexture2D' end
+            else if lname='const_DistortionMaskTexture' then begin lidx:=0; ls:='DistortionMask2D' end
+            ;
+            if lidx>0 then
+            begin
+              lint:=-1;
+              for k:=0 to ltxtcount-1 do
+              begin
+                if (ltxt[k]._material=j) and (ltxt[k]._type=ls) then
+                begin
+                  // search for existing texture
+                  for l:=0 to lcount-1 do
+                  begin
+                    if FTextures[l]=ltxt[k]._file then
+                    begin
+                      lint:=l;
+                      break;
+                    end;
+                  end;
+                  // add texture
+                  if lint<0 then
+                  begin
+                    FTextures[lcount]:=ltxt[k]._file;
+                    lint:=lcount;
+                    inc(lcount);
+                  end;
+                  FMaterials[j].textures[lidx]:=lint;
+                  break;
+                end;
+              end;
+            end;
+          end;
+
         end;
-        2: begin
-          ls:=memReadText(aptr);
-          Log('{'+IntToStr(i)+'} '+ls,memReadFloat(aptr));
+
+        type_float: begin
+          lname:=memReadText(aptr);
+          lsv:=FloatToStr(memReadFloat(aptr)); FixFloatStr(lsv);
+          Log('/* '+IntToStr(i)+' */ param_named '+lname+' float '+lsv);
         end;
-        3: begin
-          Log('{'+IntToStr(i)+'} '+memReadText(aptr),'4x float');
-          Log('  [0]',memReadFloat(aptr));
-          Log('  [1]',memReadFloat(aptr));
-          Log('  [2]',memReadFloat(aptr));
-          Log('  [3]',memReadFloat(aptr));
+
+        type_float4: begin
+          lname :=memReadText (aptr);
+          lr    :=memReadFloat(aptr);
+          lg    :=memReadFloat(aptr);
+          lb    :=memReadFloat(aptr);
+          lalpha:=memReadFloat(aptr);
+          if      lname='const_DiffuseColor'  then with mtl^.diffuse  do begin X:=lr; Y:=lg; Z:=lb; end
+          else if lname='const_SpecularColor' then with mtl^.specular do begin X:=lr; Y:=lg; Z:=lb; end
+          else if lname='const_EmissiveColor' then with mtl^.emissive do begin X:=lr; Y:=lg; Z:=lb; end
+          ;
+          ls:='/* '+IntToStr(i)+' */ param_named '+lname+' float4';
+          lsv:=FloatToStr(lr    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
+          lsv:=FloatToStr(lg    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
+          lsv:=FloatToStr(lb    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
+          lsv:=FloatToStr(lalpha); FixFloatStr(lsv); ls:=ls+' '+lsv;
+          Log(ls);
         end;
-        4: Log('{'+IntToStr(i)+'} type',ltype);
+
+        type_four: Log('/* '+IntToStr(i)+' type = 4 */');
+
       else
-        Log('{'+IntToStr(i)+'} Unknown const type',ltype);
+        Log('/* '+IntToStr(i)+' Unknown const type '+IntToStr(ltype)+' */');
       end;
     end;
   end;
-
+  LogLn;
+  SetLength(ltxt,0);
 end;
 
 function TRGMesh.AddMaterial(const aname:string):integer;
 var
+  ls:string;
   i:integer;
 begin
+  ls:=aname;
+
+  if FVersion in [90,91] then
+  begin
+    i:=Pos('_DELETEME',ls); if i>0 then SetLength(ls,i-1);
+    i:=Pos('Skinned'  ,ls); if i>0 then SetLength(ls,i-1);
+    if Pos('MEDIA/'   ,ls)=1 then ls:=ExtractName(ls);
+  end;
+
   for i:=0 to High(FMaterials) do
-    if FMaterials[i].name=aname then exit(i); 
+    if FMaterials[i].name=ls then exit(i); 
 
   result:=Length(FMaterials);
   SetLength(FMaterials,result+1);
-  FMaterials[result].name:=aname;
+  for i:=0 to 16 do
+    FMaterials[result].textures[i]:=-1;
+
+  FMaterials[result].name:=ls;
 end;
+
+{$ENDIF}

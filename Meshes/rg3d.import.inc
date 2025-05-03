@@ -117,6 +117,15 @@ begin
       result:=ReadMesh(aptr);
   end;
   FixPointers();
+  CalcBounds;
+
+  LogLn;
+  Log('minx',BoundMin.X);
+  Log('miny',BoundMin.Y);
+  Log('minz',BoundMin.Z);
+  Log('maxx',BoundMax.X);
+  Log('maxy',BoundMax.Y);
+  Log('maxz',BoundMax.Z);
 
   Log('offset',HexStr(aptr-FBuffer,8));
 end;

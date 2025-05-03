@@ -4,7 +4,6 @@ procedure TRGMesh.ReadVertexDeclaration(asub:PRGSubMesh; var aptr:PByte);
 var
   lchunk:TOgreChunk;
   lpos:PByte;
-  i:integer;
 begin
   while aptr<(FBuffer+FDataSize) do
   begin
@@ -12,21 +11,7 @@ begin
 
     if ReadChunk(aptr,lchunk)=M_GEOMETRY_VERTEX_ELEMENT then
     begin
-      i:=asub^.FVEList.Add(aptr);
-      if i>=0 then
-      begin
-        if rgDebugLevel=dlDetailed then LogVE(i,asub^.FVEList[i]^);
-{
-        with asub^.FVEList[i]^ do
-        begin
-          Log('source  ',source);
-          Log('type    ',GetVETName(_type));
-          Log('semantic',GetVESName(semantic));
-          Log('offset  ',offset);
-          Log('index   ',index);
-        end;
-}
-      end;
+      asub^.FVEList.Add(aptr);
     end
     else
     begin

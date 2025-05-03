@@ -314,13 +314,6 @@ begin
   memRead(aptr,BoundMin,SizeOf(TVector3));
   memRead(aptr,BoundMax,SizeOf(TVector3));
   BoundRadius:=0;
-  LogLn();
-  Log('minx',BoundMin.X);
-  Log('miny',BoundMin.Y);
-  Log('minz',BoundMin.Z);
-  Log('maxx',BoundMax.X);
-  Log('maxy',BoundMax.Y);
-  Log('maxz',BoundMax.Z);
 
   //===== M_MESH_SKELETON_LINK =====
 

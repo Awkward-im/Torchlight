@@ -9,7 +9,7 @@ uses
 {$DEFINE Interface}
 
 {$I rg3d.ogre.inc}
-
+{$I rg3d.material.inc}
 type
   PIntVector3 = ^TIntVector3;
   TIntVector3 = packed record
@@ -18,22 +18,6 @@ type
     Z: Int32;
   end;
 
-type
-  TRGB = packed record // byte used, word is in file
-    R:Word;
-    G:Word;
-    B:Word;
-  end;
-  PMaterial = ^TMaterial;
-  TMaterial = record
-    name   :string;
-    ambient :TRGB;
-    diffuse :TRGB;
-    specular:TRGB;
-    emissive:TRGB;
-    add     :TRGB;
-    textures:array [0..16] of integer;
-  end;
 type
   PVertexBoneAssignment = ^TVertexBoneAssignment;
   TVertexBoneAssignment = packed record
@@ -189,6 +173,8 @@ type
     function ReadMDL (var aptr:PByte):boolean;
     function ReadHob (var aptr:PByte; asMesh:boolean):boolean;
     function ReadMesh(var aptr:PByte):boolean;
+
+    procedure CalcBounds;
   
   public
     Skeleton : string;
@@ -250,9 +236,9 @@ begin
   RGLog.Add('');
 end;
 
-procedure Log(const astr:string; const aval:string);
+procedure Log(const astr:string; const aval:string='');
 begin
-  RGLog.Add(astr+': '+aval);
+  if aval<>'' then RGLog.Add(astr+': '+aval) else RGLog.Add(astr);
 end;
 
 procedure Log(const astr:string; aval:single);
@@ -384,6 +370,37 @@ begin
   if idx>FSubMeshCount then exit;
   if FSubMeshes[idx]<>nil then FSubMeshes[idx]^.Free;
   FSubMeshes[idx]:=amesh;
+end;
+
+procedure TRGMesh.CalcBounds;
+var
+  lsm:PRGSubMesh;
+  i,j:integer;
+begin
+  if (BoundMin.X=0) and (BoundMax.X=0) then
+  begin
+    BoundMin.X:=+10000;
+    BoundMin.Y:=+10000;
+    BoundMin.Z:=+10000;
+    BoundMax.X:=-10000;
+    BoundMax.Y:=-10000;
+    BoundMax.Z:=-10000;
+
+    for j:=0 to FSubMeshCount-1 do
+    begin
+      lsm:=FSubMeshes[j];
+  //    if lsm^.FVertexCount>0 then
+      for i:=0 to lsm^.FVertexCount-1 do
+      begin
+        if lsm^.Vertex[i].X>BoundMax.X then BoundMax.X:=lsm^.Vertex[i].X;
+        if lsm^.Vertex[i].Y>BoundMax.Y then BoundMax.Y:=lsm^.Vertex[i].Y;
+        if lsm^.Vertex[i].Z>BoundMax.Z then BoundMax.Z:=lsm^.Vertex[i].Z;
+        if lsm^.Vertex[i].X<BoundMin.X then BoundMin.X:=lsm^.Vertex[i].X;
+        if lsm^.Vertex[i].Y<BoundMin.Y then BoundMin.Y:=lsm^.Vertex[i].Y;
+        if lsm^.Vertex[i].Z<BoundMin.Z then BoundMin.Z:=lsm^.Vertex[i].Z;
+      end;
+    end;
+  end;
 end;
 
 {%ENDREGION RGMesh}
