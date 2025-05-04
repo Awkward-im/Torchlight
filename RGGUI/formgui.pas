@@ -249,6 +249,7 @@ type
     ctrl:TRGController;
 
     GLBox:TOpenGLControl;
+    FDoRotate:boolean;
     FMeshList:integer;
     FMesh:TRGMesh;
     tx,ty,tz:single;
@@ -279,6 +280,7 @@ type
     procedure FillTree();
     procedure AddBranch(aroot: TTreeNode; const aname: string);
     function  GetPathFromNode(aNode: TTreeNode): string;
+    procedure GLBoxClick(Sender: TObject);
     procedure GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GLBoxMouseWheelDown(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
@@ -1448,11 +1450,12 @@ var
   lsize:integer;
 }
 begin
-  if not Load_BASSDLL('bass.dll') then
+{$IFDEF Windows}
+  if not Load_BASSDLL(bassdll) then
   begin
     res:=TResourceStream.Create(hInstance,'BASS','RT_RCDATA');
     try
-      res.SaveToFile('bass.dll');
+      res.SaveToFile(bassdll);
     finally
       res.Free;
     end;
@@ -1481,9 +1484,14 @@ begin
     end;
 *)
   end;
-  if Load_BASSDLL('bass.dll') then
+{$ENDIF}
+  if Load_BASSDLL(bassdll) then
   begin
+    {$IFDEF MSWINDOWS}
     BASS_Init(-1, 44100, 0, hInstance, nil);
+    {$ELSE}
+    BASS_Init(-1, 44100, 0, nil, nil);
+    {$ENDIF}
   end;
   sstream:=0;
 end;
@@ -1574,15 +1582,20 @@ const
 procedure TRGGUIForm.GLBoxMouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
-  tz:=tz-0.1;
+  if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
   GLBox.Invalidate;
 end;
 
 procedure TRGGUIForm.GLBoxMouseWheelUp(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
-  tz:=tz+0.1;
+  if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
   GLBox.Invalidate;
+end;
+
+procedure TRGGUIForm.GLBoxClick(Sender: TObject);
+begin
+  FDoRotate:=not FDoRotate;
 end;
 
 procedure TRGGUIForm.GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1654,7 +1667,7 @@ begin
   if FMeshList=0 then
   begin
     CreateMeshList;
-
+{
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_LIGHTING);
@@ -1663,7 +1676,8 @@ begin
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity;
-    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0); { transformation }
+    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0); { transformation }
+}
   end;
 
   if FMeshList<>0 then
@@ -1677,17 +1691,19 @@ begin
 //    glRotatef(rx,1.0,0.0,0.0);
     glRotatef(ry,0.0,1.0,0.0);
 //    glRotatef(rz,0.0,0.0,1.0);
+    if FDoRotate then
+    begin
+      Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
+
+      rx += 5.15 * Speed;
+      ry += 5.15 * Speed;
+      rz += 20.0 * Speed;
+    end;
 
     glCallList(FMeshList);
 
 //    glPopMatrix;
   end;
-
-  Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
-
-  rx += 5.15 * Speed;
-  ry += 5.15 * Speed;
-  rz += 20.0 * Speed;
 
   GLbox.SwapBuffers;
 end;
@@ -1704,6 +1720,7 @@ begin
       Align :=alClient;
       AutoResizeViewport:=true;
 
+      OnClick         :=@GLBoxClick;
       OnPaint         :=@GLBoxPaint;
       OnKeyDown       :=@GLBoxKeyDown;
       OnMouseWheelUp  :=@GLBoxMouseWheelUp;
@@ -1716,7 +1733,10 @@ begin
 
   CreateMeshList();
 
-  tz:=-6.0;
+  if FMesh.BoundMin.Z<6.0 then
+    tz:=FMesh.BoundMin.Z
+  else
+    tz:=-6.0;
 
   GLBox.Visible:=true;
 
@@ -1728,7 +1748,7 @@ begin
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity;
-  glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+  glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
 
   Application.AddOnIdleHandler(@OnGLIdle);
 
@@ -2169,6 +2189,7 @@ end;
 
 procedure TRGGUIForm.actEdSaveExecute(Sender: TObject);
 var
+  ldlg:TSaveDialog;
   ldir,lname:string;
   pc:PWideChar;
   lbuf:PByte;
@@ -2177,6 +2198,29 @@ begin
   ldir :=sgMain.Cells[colDir ,sgMain.Row];
   lname:=sgMain.Cells[colName,sgMain.Row]+
          sgMain.Cells[colExt ,sgMain.Row];
+
+  if (GLBox<>nil) and GLBox.Visible then
+  begin
+    ldlg:=TSaveDialog.Create(self);
+    ldlg.FileName:=lname;
+    if ldlg.Execute then
+    begin
+{
+      if deOutDir.Text='' then deOutDir.Text:=ExtractFileDir(ParamStr(0));
+      loutdir:=deOutDir.Text;
+      if not (loutdir[Length(loutdir)] in ['\','/']) then loutdir:=loutdir+'\';
+
+      if cbUseFName.Checked   then loutdir:=loutdir+ctrl.PAK.Name+'\';
+      if cbUnpackTree.Checked then loutdir:=loutdir+adir;
+
+      if not ForceDirectories(loutdir) then exit;
+}
+      FMesh.SaveToXML(ChangeFileExt(ldlg.FileName,'.xml'));
+    end;
+    ldlg.Free;
+    exit;
+  end;
+
 //pc:=StrToWide(SynEdit.Text);
 //  lsize:=CompileFile(PByte(pc),lname,lbuf,ctrl.PAK.Version);
   lsize:=0;

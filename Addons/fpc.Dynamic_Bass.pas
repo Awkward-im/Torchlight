@@ -1429,7 +1429,7 @@ var
   arrPlugins:array [0..PluginsMax] of HPLUGIN;
 
 // Plugin functions
-function BASS_PluginLoad(filename:PAnsiChar;flags:DWORD):HPLUGIN; stdcall;
+function BASS_PluginLoad(filename:PAnsiChar;flags:DWORD):HPLUGIN; WinAPI;
 var
   i:cardinal;
 begin
@@ -1450,7 +1450,7 @@ begin
   end;
 end;
 
-function BASS_PluginFree(handle:HPLUGIN):BOOL; stdcall;
+function BASS_PluginFree(handle:HPLUGIN):BOOL; WinAPI;
 var
   i:cardinal;
 begin
@@ -1476,7 +1476,7 @@ begin
   end;
 end;
 
-function BASS_PluginGetInfo(handle:HPLUGIN):PBASS_PLUGININFO; stdcall;
+function BASS_PluginGetInfo(handle:HPLUGIN):PBASS_PLUGININFO; WinAPI;
 begin
   if handle=0 then
   begin
