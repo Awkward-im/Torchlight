@@ -8,9 +8,10 @@
 function TRGMesh.ReadMDLType0(var aptr:PByte; aver:integer):boolean;
 var
   lsm:PRGSubMesh;
+  ls:AnsiString;
   lidx:PDWord;
   lpbuf:PByte;
-  lvcnt, lblocks,lblock,i,j,lcnt:integer;
+  lvcnt, lblocks,lblock,i,j,lcnt,lcnt1:integer;
 begin
   result:=false;
 
@@ -174,12 +175,31 @@ begin
   LogLn();
   j:=memReadDWord(aptr);
   Log('dword (0)',j);
-  j:=memReadDWord(aptr);
-  Log('dword (0)',j);
 
+  // Bone names
+  lcnt:=memReadDWord(aptr);    // 95=5F
+  Log('bones? (0)',lcnt);
+  if lcnt>0 then
+  begin
+    for i:=0 to lcnt-1 do
+    begin
+      ls:=memReadText(aptr);
+      if rgDebugLevel=dlDetailed then
+        Log('Bone '+IntToStr(i),ls);
+    end;
+    // for all vertices
+    for i:=0 to lvcnt-1 do
+    begin
+      lcnt1:=memReadWord(aptr);
+      for j:=0 to lcnt1-1 do
+      begin
+        memReadDWord(aptr);
+        memReadFloat(aptr);
+      end;
+    end;
+  end;
 
   // ===== Faces =====
-
   i   :=memReadDWord(aptr);     // total faces
   lcnt:=memReadDWord(aptr);     // Submeshes
   SubMeshCount:=lcnt;
@@ -366,7 +386,7 @@ begin
     Log('type ',lver);
 
   Log('first  (1)',memReadWord(aptr));
-  Log('second (0)',memReadWord(aptr));
+  Log('second [have bone info?] (0)',memReadWord(aptr));
   if lver in [13,14] then // type=$0D/$0E - RGO
     Log('add (1)' ,memReadWord(aptr));
 

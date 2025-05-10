@@ -325,7 +325,9 @@ implementation
 
 {$R *.lfm}
 {$R ..\TL2Lib\dict.rc}
-{$R bass64.rc}
+{$IFDEF Windows}
+  {$R bass64.rc}
+{$ENDIF}
 
 uses
   LCLIntf,
@@ -1445,8 +1447,10 @@ begin
 end;
 
 procedure TRGGUIForm.PrepareSound;
+{$IFDEF Windows}
 var
   res:TResourceStream;
+{$ENDIF}
 {
   f:File Of Byte;
   res:TFPResourceHandle;
@@ -1650,8 +1654,8 @@ end;
 
 procedure TRGGUIForm.GLBoxPaint(Sender: TObject);
 var
-  i:integer;
-  lsm:PRGSubMesh;
+//  i:integer;
+//  lsm:PRGSubMesh;
   Speed: Double;
 begin
   glClearColor(0.27, 0.53, 0.71, 1.0); // Задаем синий фон
@@ -1681,7 +1685,7 @@ begin
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity;
-    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0); { transformation }
+    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
 }
   end;
 

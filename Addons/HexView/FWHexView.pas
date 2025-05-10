@@ -1037,10 +1037,12 @@ type
 
   TFWCustomHexView = class(TCustomControl, IHexViewCopyAction, IHexViewByteViewModeAction)
   private const
+    NoDpiMultipier = 42;
     NoDpiBorderMargin = 2;
     NoDpiTextMargin = 8;
     NoDpiSplitMargin = 3;
     CHAR_STRING = 'W';
+    WM_DELAYEDUPDATESCROLL = WM_USER;
   strict private
     FAcceptSelForced: Boolean;
     FAddressMode: TAddressMode;
@@ -1174,6 +1176,7 @@ type
     procedure Resize; override;
     procedure SetParent(AParent: TWinControl); override;
     procedure UTF8KeyPress(var UTF8Key: TNativeChar); {$IFDEF FPC}override;{$ENDIF}
+    procedure WMDelayedUpdateScroll(var Msg: TMessage); message WM_DELAYEDUPDATESCROLL;
     procedure WMGetDlgCode(var Msg: TWMGetDlgCode); message WM_GETDLGCODE;
     procedure WMHScroll(var Msg: TWMHScroll); message WM_HSCROLL;
     procedure WMKillFocus(var Msg: TWMKillFocus); message WM_KILLFOCUS;
@@ -6359,6 +6362,7 @@ end;
 procedure TFWCustomHexView.DblClick;
 var
   NewAddressViewOffsetBase: Int64;
+  Painter: TAbstractPrimaryRowPainter;
 begin
   if AddressViewAutoToggle then
   begin
@@ -6373,7 +6377,11 @@ begin
   try
     inherited;
     if not EditAtCaretPos then
-      UpdateCaretPosData(MousePressedHitInfo.SelectPoint, ccmSelectRow);
+    begin
+      Painter := GetRowPainter(MousePressedHitInfo.SelectPoint.RowIndex);
+      UpdateCaretPosData(MousePressedHitInfo.SelectPoint,
+        GetCaretChangeMode(Painter, FCaretPosData.Column, SavedShift + [ssDouble]));
+    end;
   finally
     FMousePressed := False;
   end;
@@ -7105,11 +7113,8 @@ function TFWCustomHexView.GetCaretChangeMode(
   Shift: TShiftState): TCaretChangeMode;
 begin
   Result := ccmNone;
-  if ssShift in Shift then
-  begin
-    Result := ccmContinueSelection;
-    Exit;
-  end;
+  if ssShift in Shift then Exit(ccmContinueSelection);
+  if ssDouble in Shift then Exit(ccmSelectRow);
   if APainter = nil then Exit;
   if ReadOnly then Exit(ccmSetNewSelection);
   case APainter.CaretEditMode(AColumn) of
@@ -8299,7 +8304,8 @@ begin
   if HandleAllocated and (FRowHeight > 0) then
   begin
     UpdateTextBoundary;
-    UpdateScrollPos;
+    // Lazarus bug fix. When resizing via splitter, resizing is blocked.
+    PostMessage(Handle, WM_DELAYEDUPDATESCROLL, 0, 0);
   end;
 end;
 
@@ -8349,21 +8355,18 @@ begin
 end;
 
 procedure TFWCustomHexView.RestoreViewParam;
-const
-  Multipier = 42;
 var
   I: TColumnType;
-  M, D: Integer;
+  M: Integer;
 begin
   // New proportions for columns resize
   BeginUpdate;
   try
-    M := CharWidth * Multipier;
-    D := FPreviosCharWidth * Multipier;
+    M := CharWidth * NoDpiMultipier;
     if not (csDesigning in ComponentState) then
     begin
       for I := ctWorkSpace to High(TColumnType) do
-        FHeader.ColumnWidth[I] := MulDiv(FHeader.ColumnWidth[I], M, D);
+        FHeader.ColumnWidth[I] := MulDiv(FHeader.ColumnWidth[I], M, FPreviosCharWidth);
     end;
     if InplaceEdit.Visible then
       InplaceEdit.CalcEditRect;
@@ -8435,7 +8438,7 @@ end;
 
 procedure TFWCustomHexView.SaveViewParam;
 begin
-  FPreviosCharWidth := FCharWidth;
+  FPreviosCharWidth := FCharWidth * NoDpiMultipier;
 end;
 
 function TFWCustomHexView.GetDefaultCaretChangeMode: TCaretChangeMode;
@@ -8756,7 +8759,8 @@ begin
   inherited;
   DestroyCaretTimer;
   InvalidateSelections;
-  InplaceEdit.Hide;
+  if not FProcessMenu then
+    InplaceEdit.Hide;
 end;
 
 procedure TFWCustomHexView.WMSetFocus(var Msg: TWMSetFocus);
@@ -8984,9 +8988,7 @@ begin
     ScrollInfo.nPos := -FScrollOffset.X;
     ScrollInfo.nPage := ClientWidth;
     ScrollInfo.nMax := FTextBoundary.X;
-    {$IFNDEF FPC}
     ShowScrollBar(Handle, SB_HORZ, True);
-    {$ENDIF}
     SetScrollInfo(Handle, SB_HORZ, ScrollInfo, True);
   end
   else
@@ -9133,9 +9135,7 @@ begin
     ScrollInfo.nPos := -Scroll64To32(FScrollOffset.Y);
     ScrollInfo.nPage := Scroll64To32(ClientHeight);
     ScrollInfo.nMax := Scroll64To32(FTextBoundary.Y);
-    {$IFNDEF FPC}
     ShowScrollBar(Handle, SB_VERT, True);
-    {$ENDIF}
     SetScrollInfo(Handle, SB_VERT, ScrollInfo, True);
 
     Invalidate;
@@ -9156,6 +9156,11 @@ procedure TFWCustomHexView.UTF8KeyPress(var UTF8Key: TNativeChar);
 begin
   inherited;
   DoCaretEdit(UTF8Key);
+end;
+
+procedure TFWCustomHexView.WMDelayedUpdateScroll(var Msg: TMessage);
+begin
+  UpdateScrollPos;
 end;
 
 function TFWCustomHexView.VisibleRowCount: Integer;

@@ -2,6 +2,23 @@
 {NOTE: GetMaterial replaces texture extensions to DDS}
 {$IFDEF Interface}
 
+const
+  // texture indexes
+  txtDiffuse      = 0;
+  txtUnknown1     = 1;
+  txtEnvDiffuse   = 2;
+  txtEnvSpecular  = 3;
+  txtGlow         = 4;
+  txtNormal       = 5;
+  txtUnknown2     = 6;
+  txtUnknown3     = 7;
+  txtSpecular     = 8;
+  txtUnknown4     = 9;
+  txtPaint        = 10;
+  txtPaintSurface = 11;
+
+  txtLast         = 11;
+
 type
   PMaterial = ^TMaterial;
   TMaterial = record
@@ -11,7 +28,7 @@ type
     specular:TVector3;
     emissive:TVector3;
     add     :TVector3;
-    textures:array [0..16] of integer;
+    textures:array [0..txtLast] of integer;
 
     // material
     shadows     :boolean;
@@ -36,21 +53,6 @@ type
     G:Word;
     B:Word;
   end;
-
-const
-  // texture indexes
-  txtDiffuse      = 5;
-  //
-  txtEnvDiffuse   = 7;
-  txtEnvSpecular  = 8;
-  txtGlow         = 9;
-  txtNormal       = 10;
-  //
-  //
-  txtSpecular     = 13;
-  //
-  txtPaint        = 15;
-  txtPaintSurface = 16;
 
 procedure RGBToFloat(const aval:TRGB; var acolor:TVector3);
 begin
@@ -89,7 +91,7 @@ begin
       ls:=RGBToStr(FMaterials[i].specular); if ls<>'' then sl.Add('Ks '+ls);
       sl.Add('');
 
-      for j:=5 to 16 do
+      for j:=0 to txtLast do
       begin
         if (FTextures<>nil) and (FMaterials[i].textures[j]>=0) then
         begin
@@ -154,24 +156,7 @@ begin
 
       if FTextures<>nil then
       begin
-      // animation (duration requires)
-(*
-        ls:='';
-        for j:=0 to 4 do
-          if mtl^.textures[j]>=0 then
-            ls:=ls+' '+FTextures[mtl^.textures[j]]
-          else
-            break;
-        if ls<>'' then
-        begin    
-          sl.Add('');
-          sl.Add('      texture_unit');
-          sl.Add('      {');
-          sl.Add('        anim_texture'+ls);
-          sl.Add('      }');
-        end;
-*)
-        for j:=5 to 16 do
+        for j:=0 to txtLast do
         begin
           if mtl^.textures[j]>=0 then
           begin
@@ -263,15 +248,15 @@ end;
 
 {
 typ siz  A B  C D
- 01 80   7+13+2+8  B:1+      3+3+3+3
- 02 92   7+13+5+8                          +3C
- 03 94   8+13+5+8                    +1A
- 07 104 10+14+5+9  B:1+1+    3+3+3+3 +2A+1B   +1D
- 08 114 10+17+5+10 B:1+1+  3+3+3+3+3    +3B   +1D
- 09 118 12+17+5+10                   +2A
+ 01 80   7+13+02+8  B:1+      3+3+3+3
+ 02 92   7+13+05+8                          +3C
+ 03 94   8+13+05+8                    +1A
+ 07 104 10+14+05+9  B:1+1+    3+3+3+3 +2A+1B   +1D
+ 08 114 10+17+05+10 B:1+1+  3+3+3+3+3    +3B   +1D
+ 09 118 12+17+05+10                   +2A
  -----------------
- 0D 140 15+19+6+12 B:1+1+2+3+3+3+3+3 +3A+2B+1C+2D
- 0E 160 15+19+6+17                            +5D
+ 0D 140 15+19+06+12 B:1+1+2+3+3+3+3+3 +3A+2B+1C+2D
+ 0E 160 15+19+11+12                         +5C
 }
 function TRGMesh.ReadRGMaterial(var aptr:PByte; aver:integer):boolean;
 
@@ -376,7 +361,6 @@ begin
     // ambient?
     memRead(aptr,lrgb,3*2);
     RGBtoFloat(lrgb,mtl^.ambient);
-    LogLn();
     Log('ambient',
       ' '+IntToStr(lrgb.R)+
       ' '+IntToStr(lrgb.G)+
@@ -385,7 +369,6 @@ begin
     // diffuse?
     memRead(aptr,lrgb,3*2);
     RGBtoFloat(lrgb,mtl^.diffuse);
-    LogLn();
     Log('diffuse',
       ' '+IntToStr(lrgb.R)+
       ' '+IntToStr(lrgb.G)+
@@ -394,7 +377,6 @@ begin
     // emissive? specular?
     memRead(aptr,lrgb,3*2);
     RGBtoFloat(lrgb,mtl^.specular);
-    LogLn();
     Log('specular',
       ' '+IntToStr(lrgb.R)+
       ' '+IntToStr(lrgb.G)+
@@ -403,7 +385,6 @@ begin
     // specular? emissive?
     memRead(aptr,lrgb,3*2);
     RGBtoFloat(lrgb,mtl^.emissive);
-    LogLn();
     Log('emissive',
       ' '+IntToStr(lrgb.R)+
       ' '+IntToStr(lrgb.G)+
@@ -421,35 +402,36 @@ begin
     end;
     if aver>=13 then
       Log('{05} f' ,memReadFloat(aptr)); // high brightness? shiness? anim duration?
+    if aver>=14 then
+    begin
+      Log('{E1} f' ,memReadFloat(aptr));
+      Log('{E2} f' ,memReadFloat(aptr));
+      Log('{E3} f' ,memReadFloat(aptr));
+      Log('{E4} f' ,memReadFloat(aptr));
+      Log('{E5} f' ,memReadFloat(aptr)); // need to check for non-zero
+    end;
     //--------------------------------
     Log('>textures','');
+    // initialize by -1
     FillChar(mtl^.textures,SizeOf(mtl^.textures),255);
     
     // order number like texture_unit name
-    if aver>=14 then // anim texture
-    begin
-      mtl^.textures[00]:=LogTexture('14 00',Int32(memReadDWord(aptr)));      // 10 14+ normals
-      mtl^.textures[01]:=LogTexture('14 01',Int32(memReadDWord(aptr)));      // 11 14+
-      mtl^.textures[02]:=LogTexture('14 02',Int32(memReadDWord(aptr)));      // 12 14+
-      mtl^.textures[03]:=LogTexture('14 03',Int32(memReadDWord(aptr)));      // 13 14+
-      mtl^.textures[04]:=LogTexture('14 04',Int32(memReadDWord(aptr)));      // 14 14+
-    end;
-    mtl^.textures[ 5]:=LogTexture('diff',Int32(memReadDWord(aptr)));         // 00 base/diffuse
-    mtl^.textures[ 6]:=LogTexture('??  ',Int32(memReadDWord(aptr)));         // 01 ??
+    mtl^.textures[txtDiffuse     ]:=LogTexture('diff',Int32(memReadDWord(aptr)));
+    mtl^.textures[txtUnknown1    ]:=LogTexture('??  ',Int32(memReadDWord(aptr)));
     if aver>=8 then
-      mtl^.textures[7]:=LogTexture('8 env dark',Int32(memReadDWord(aptr))); // 09 8+ environment dark (ambient)
-    mtl^.textures[ 8]:=LogTexture('env ',Int32(memReadDWord(aptr)));       // 02 environment "ref"
-    mtl^.textures[ 9]:=LogTexture('glow',Int32(memReadDWord(aptr)));       // 03 glow
-    mtl^.textures[10]:=LogTexture('norm',Int32(memReadDWord(aptr)));       // 04 normal
-    mtl^.textures[11]:=LogTexture('   5',Int32(memReadDWord(aptr)));       // 05
-    mtl^.textures[12]:=LogTexture('   6',Int32(memReadDWord(aptr)));       // 06
-    mtl^.textures[13]:=LogTexture('spec',Int32(memReadDWord(aptr)));       // 07 specular / surface?
+      mtl^.textures[txtEnvDiffuse]:=LogTexture('8 env dark',Int32(memReadDWord(aptr)));
+    mtl^.textures[txtEnvSpecular ]:=LogTexture('env ',Int32(memReadDWord(aptr)));
+    mtl^.textures[txtGlow        ]:=LogTexture('glow',Int32(memReadDWord(aptr)));
+    mtl^.textures[txtNormal      ]:=LogTexture('norm',Int32(memReadDWord(aptr)));
+    mtl^.textures[txtUnknown2    ]:=LogTexture('   5',Int32(memReadDWord(aptr)));
+    mtl^.textures[txtUnknown3    ]:=LogTexture('   6',Int32(memReadDWord(aptr)));
+    mtl^.textures[txtSpecular    ]:=LogTexture('spec',Int32(memReadDWord(aptr)));
     if aver>=7 then
-      mtl^.textures[14]:=LogTexture('??7+',Int32(memReadDWord(aptr)));       // 08 7+
+      mtl^.textures[txtUnknown4]:=LogTexture('??7+',Int32(memReadDWord(aptr)));
     if aver>=13 then
     begin
-      mtl^.textures[15]:=LogTexture('14 paint  ',Int32(memReadDWord(aptr))); // 15 14+ paint
-      mtl^.textures[16]:=LogTexture('14 surface',Int32(memReadDWord(aptr))); // 16 14+ paint surface
+      mtl^.textures[txtPaint       ]:=LogTexture('14 paint  ',Int32(memReadDWord(aptr)));
+      mtl^.textures[txtPaintSurface]:=LogTexture('14 surface',Int32(memReadDWord(aptr)));
     end;
   end;
 
@@ -514,7 +496,7 @@ begin
   begin
     mtl:=@FMaterials[j];
     FillChar(mtl^,SizeOf(TMaterial),0);
-    for i:=0 to 16 do
+    for i:=0 to txtLast do
       mtl^.textures[i]:=-1;
 
     LogLn;
@@ -556,10 +538,10 @@ begin
             lidx:=-1;
                  if lname='const_DiffuseTexture'        then begin lidx:=txtDiffuse ; ls:='DiffuseTexture2D' end
             else if lname='const_SpecularTexture'       then begin lidx:=txtSpecular; ls:='SpecularMap2D' end
-            else if lname='const_OutlineTexture'        then begin lidx:=0; ls:='OutlineMap2D' end
-            else if lname='const_EmissiveTexture'       then begin lidx:=0; ls:='EmissiveMap2D' end
+            else if lname='const_OutlineTexture'        then begin lidx:=0          ; ls:='OutlineMap2D' end
+            else if lname='const_EmissiveTexture'       then begin lidx:=0          ; ls:='EmissiveMap2D' end
             else if lname='const_NormalmapTexture'      then begin lidx:=txtNormal  ; ls:='NormalTexture2D' end
-            else if lname='const_DistortionMaskTexture' then begin lidx:=0; ls:='DistortionMask2D' end
+            else if lname='const_DistortionMaskTexture' then begin lidx:=0          ; ls:='DistortionMask2D' end
             ;
             if lidx>0 then
             begin
