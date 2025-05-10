@@ -624,12 +624,14 @@ begin
       if FFileCount=0 then
       begin
         SetFilesCapacity(incFBase);
+{
         FFileCount:=1;               // MUST BE before Files[] using
         lrec:=Files[0];
         FillChar(lrec^,FInfoSize,0); // if ReallocMem used, it clear memory already
         lrec^.Name  :='';
         lrec^.next  :=-1;
         lrec^.parent:=-1;
+}
       end
       else
         SetFilesCapacity(FFileCount+incFFile);

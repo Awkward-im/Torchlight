@@ -390,34 +390,42 @@ var
   lext:string;
   i:integer;
 begin
-  if (fname[Length(fname)]='/') then
+  if ABS(aver)=verTL2 then
+    result:=tl2Unknown
+  else
+    result:=hobUnknown;
+
+  i:=Length(fname);
+  if i=0 then exit;
+
+  if fname[i-1]='/' then
   begin
     if ABS(aver)=verTL2 then exit(tl2Directory) else exit(hobDirectory);
   end;
 
   lext:=ExtractExt(FastWideToStr(fname));
 
-  for i:=0 to High(TableExt) do
-    if lext=TableExt[i]._ext then
-    begin
-      if ABS(aver)=verTL2 then
-        exit(TableExt[i]._tl2)
-      else
+  if lext<>'' then
+    for i:=0 to High(TableExt) do
+      if lext=TableExt[i]._ext then
       begin
-        //!! cheat: Hob saves JPG as hobPicture, RGO saves as hobImage
-        if (lext='.JPG') then
-        begin
-          if aver=verHob then
-            exit(hobPicture) // default
-          else
-            exit(hobImage);
-        end
+        if ABS(aver)=verTL2 then
+          exit(TableExt[i]._tl2)
         else
-          exit(TableExt[i]._hob)
+        begin
+          //!! cheat: Hob saves JPG as hobPicture, RGO saves as hobImage
+          if (lext='.JPG') then
+          begin
+            if aver=verHob then
+              exit(hobPicture) // default
+            else
+              exit(hobImage);
+          end
+          else
+            exit(TableExt[i]._hob)
+        end;
       end;
-    end;
 
-  if ABS(aver)=verTL2 then exit(tl2Unknown) else exit(hobUnknown);
 end;
 
 function RGTypeExtInfo(const fname:string; aver:integer):PPAKExtInfo;

@@ -9,6 +9,7 @@ uses
 
 //===== Common things =====
 
+{$IF NOT DEFINED(TStringDynArray)}  type TStringDynArray  = array of String; {$ENDIF}
 {$IF NOT DEFINED(TIntegerDynArray)} type TIntegerDynArray = array of Integer; {$ENDIF}
 {$IF NOT DEFINED(TInt64DynArray)}   type TInt64DynArray   = array of Int64;   {$ENDIF}
 {$IF NOT DEFINED(TSingleDynArray)}  type TSingleDynArray  = array of Single;  {$ENDIF}

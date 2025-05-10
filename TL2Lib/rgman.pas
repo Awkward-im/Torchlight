@@ -156,6 +156,8 @@ var
   lbuf:array [0..bufsize-1] of byte;
   i,j:integer;
   lcnt,lentries,lentry,lfile:integer;
+
+  lname:UNicodeString;
 begin
   result:=0;
 
@@ -185,7 +187,11 @@ begin
 
   for i:=0 to lentries-1 do
   begin
-    lentry:=AddPath(memReadShortStringBuf(aptr,@lbuf,bufsize));
+    pc:=memReadShortStringBuf(aptr,@lbuf,bufsize);
+    lentry:=AddPath(pc);
+
+    lname:=pc;
+
     lcnt:=memReadDWord(aptr);
     for j:=0 to lcnt-1 do
     begin
@@ -194,7 +200,12 @@ begin
       begin
         checksum:=memReadDWord(aptr);
         ftype   :=RGTypeOfType(memReadByte(aptr),aver);
-        Name    :=memReadShortStringBuf(aptr,@lbuf,bufsize);
+        pc      :=memReadShortStringBuf(aptr,@lbuf,bufsize);
+        Name    :=pc;
+        // for case when dir is file-like only
+        if ftype=typeDirectory then
+          AddPath(PUnicodeChar(lname+UnicodeString(pc)));
+
         offset  :=memReadDWord(aptr);
         size_s  :=memReadDWord(aptr);
         if (aver=verTL2   ) or
@@ -205,6 +216,7 @@ begin
       end;
     end;
   end;
+
   {
     TL2 Mod Manifest starts from nameless dir with MEDIA/ child
     paks starts right from MEDIA/ folder
@@ -244,7 +256,8 @@ begin
     end;
 
     ltotalpos:=ast.Position;
-    ast.WriteDWord(total); //!! maybe beter to calculate at runtime
+    ast.WriteDWord(FileCount);
+
     ast.WriteDWord(DirCount);
 
     ltotal:=0;

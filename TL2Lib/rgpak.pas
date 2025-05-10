@@ -627,6 +627,7 @@ var
 begin
   result:=false;
 
+  if FName='' then exit; // new (empty) file
   ls:=MakeDataFileName();
   if ls=aname then exit;
 
@@ -634,22 +635,36 @@ begin
 
   ClosePAK();
 
-  lin :=TFileStream.Create(ls,fmOpenRead);
-  lout:=TFileStream.Create(aname,fmCreate);
-  lout.CopyFrom(lin,lin.Size);
-  lout.Free;
-  lin.Free;
-  if FVersion=verTL2 then
-  begin
-    ls:=MakeManFileName();
-
-    lin :=TMemoryStream.Create; TMemoryStream(lin).LoadFromFile(ls);
-    lout:=TFileStream.Create(aname+'.MAN',fmCreate);
-    lout.CopyFrom(lin,lin.Size);
+  lin:=nil;
+  lout:=nil;
+  try
+    try
+      lin :=TFileStream.Create(ls,fmOpenRead);
+      lout:=TFileStream.Create(aname,fmCreate);
+      result:=lout.CopyFrom(lin,lin.Size)>0;
+    except
+    end;
+  finally
     lout.Free;
     lin.Free;
   end;
-
+  if result and (FVersion=verTL2) then
+  begin
+    ls:=MakeManFileName();
+    lin:=nil;
+    lout:=nil;
+    try
+      try
+        lin :=TMemoryStream.Create; TMemoryStream(lin).LoadFromFile(ls);
+        lout:=TFileStream.Create(aname+'.MAN',fmCreate);
+        result:=lout.CopyFrom(lin,lin.Size)>0;
+      except
+      end;
+    finally
+      lout.Free;
+      lin.Free;
+    end;
+  end;
 end;
 
 function TRGPAK.Rename(const newname:string):boolean;

@@ -1,3 +1,5 @@
+{TODO: Save top-directory or open tree nodes list to file}
+{TODO: export mdl to xml: +.XML in dialog,check for existing}
 {TODO: preview bytes values as different types}
 {TODO: make dump text/bytes search}
 {TODO: change dump text area encoding}
@@ -38,6 +40,7 @@ type
     bbStop: TBitBtn;
     bbFontEdit: TBitBtn;
     cbSaveTL1ADM: TCheckBox;
+    miTreeList: TMenuItem;
     miCalcHash: TMenuItem;
     miSavePatch: TMenuItem;
     pnlGrid: TPanel;
@@ -219,6 +222,7 @@ type
     procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
     procedure miCalcHashClick(Sender: TObject);
     procedure miTreeDeleteClick(Sender: TObject);
+    procedure miTreeListClick(Sender: TObject);
     procedure miTreeNewClick(Sender: TObject);
     procedure miTreeRestoreClick(Sender: TObject);
     procedure ReplaceExecute(Sender: TObject);
@@ -329,6 +333,7 @@ uses
   IntfGraphics,
   GL,
   inifiles,
+  clipbrd,
   fpimage,
   fpwritebmp,
   lazTGA,
@@ -2202,7 +2207,10 @@ begin
   if (GLBox<>nil) and GLBox.Visible then
   begin
     ldlg:=TSaveDialog.Create(self);
-    ldlg.FileName:=lname;
+    ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
+    ldlg.DefaultExt:='.xml';
+    ldlg.Filter    :='XML files|*.xml|All files|*.*';
+    ldlg.FileName  :=ChangeFileExt(lname,'.xml');
     if ldlg.Execute then
     begin
 {
@@ -2216,6 +2224,8 @@ begin
       if not ForceDirectories(loutdir) then exit;
 }
       FMesh.SaveToXML(ChangeFileExt(ldlg.FileName,'.xml'));
+      if FMesh.MeshVersion in [90,91,99] then
+        FMesh.SaveMaterial(ChangeFileExt(ldlg.FileName,'.material'));
     end;
     ldlg.Free;
     exit;
@@ -2870,6 +2880,34 @@ begin
   ldir:=IntPtr(UIntPtr(PopupNode.Data));
   ctrl.MarkToRemove(ctrl.AsFile(ldir));
   MarkTree(ldir,false);
+end;
+
+procedure TRGGUIForm.miTreeListClick(Sender: TObject);
+var
+  sl:TStringList;
+  tn:TTreeNode;
+  i:integer;
+  b:boolean;
+begin
+  sl:=TStringList.Create;
+  for i:=0 to tvTree.Items.Count-1 do
+  begin
+    b:=true;
+    tn:=tvTree.Items[i].Parent;
+    while tn<>nil do
+    begin
+      if not tn.Expanded then
+      begin
+        b:=false;
+        break;
+      end;
+      tn:=tn.Parent;
+    end;
+    if b then
+      sl.Add(GetPathFromNode(tvTree.Items[i]));
+  end;
+  Clipboard.AsText:=sl.Text;
+  sl.Free;
 end;
 
 procedure TRGGUIForm.miTreeNewClick(Sender: TObject);

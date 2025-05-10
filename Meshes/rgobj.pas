@@ -202,6 +202,8 @@ type
 
     property SubMeshCount:integer read GetSubMeshCount write SetSubMeshCount;
     property SubMesh[idx:integer]:PRGSubMesh read GetSubMesh write SetSubMesh;
+
+    property MeshVersion:integer read FVersion;
   end;
 
 

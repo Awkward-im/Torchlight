@@ -737,7 +737,7 @@ msgid "&Help"
 msgstr "Помощь"
 
 #: trgguiform.mitreedelete.caption
-msgid "Delete Dir"
+msgid "Delete dir"
 msgstr "Удалить папку"
 
 #: trgguiform.mitreeextract.caption
@@ -755,12 +755,16 @@ msgctxt "trgguiform.mitreeextractvisible.caption"
 msgid "Extract visible"
 msgstr "Распаковать видимые"
 
+#: trgguiform.mitreelist.caption
+msgid "Copy dir list"
+msgstr "Копировать список папок"
+
 #: trgguiform.mitreenew.caption
 msgid "New directory"
 msgstr "Новая папка"
 
 #: trgguiform.mitreerestore.caption
-msgid "Restore Dir"
+msgid "Restore dir"
 msgstr "Восстановить папку"
 
 #: trgguiform.rbbinonly.caption

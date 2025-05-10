@@ -1,4 +1,5 @@
-﻿{TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
+﻿{NOTE: ignoring changes if empty dir added only}
+{TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
 {TODO: add act_file for PAK files. OR create new like act_link}
 {TODO: add PAK paths and import dirs catalogue}
 {TODO: Update = AddDirectory (like man.build)}
@@ -890,6 +891,9 @@ begin
   for i:=0 to DirCount-1 do
   begin
     if isDirDeleted(i) then continue;
+
+    // save empty dirs coz they are saved in parent list
+//    ldir:=apak.man.AddPath(Dirs[i].name);
     ldir:=-1;
 
     if GetFirstFile(j,i) then
@@ -903,6 +907,7 @@ begin
 
         if p^.action=act_delete then continue;
 
+        // Add dir ONLY with files/subdirs
         if ldir=-1 then ldir:=apak.man.AddPath(Dirs[i].name);
 
         // 1 - create MAN record
@@ -956,8 +961,7 @@ begin
   // just copy original (if only original is not directory)
   if (UpdatesCount=0) and (not FPAK.modinfo.modified) and (aver=FPAK.Version) then
   begin
-    FPAK.Clone(fname);
-    result:=true;
+    result:=FPAK.Clone(fname);
   end
   else
   begin

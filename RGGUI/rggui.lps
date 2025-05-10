@@ -3,13 +3,60 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Debug"/>
+    <BuildModes Active="Linux">
+      <Item Name="Linux">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="rggui"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
+            <Libraries Value="D:\Work\LazTrunk\cross\lib\x86_64-linux\"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <StripSymbols Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx5024="True" idx4055="True"/>
+            </CompilerMessages>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <SessionEnabledMatrixOptions Count="1">
+        <Item1 Mode="Linux" Option="216883793852"/>
+      </SessionEnabledMatrixOptions>
+    </BuildModes>
     <Units>
       <Unit>
         <Filename Value="rggui.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="25" Y="24"/>
+        <CursorPos Y="24"/>
         <UsageCount Value="207"/>
       </Unit>
       <Unit>
@@ -20,9 +67,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1653"/>
-        <CursorPos X="35" Y="1698"/>
-        <FoldState Value=" T8o921 TJwH1#V1 pkJv61{J02 p0z91_b]KogxZ1}H TMqN01021516]W5_60]xLxJ033 pF!b0811117 Pd-R0 T3re0D]Qj8jT0*5 pickf0J5]IEk20F4]IZjH03[a4Wk40{Q[b5lW0g016[L4mW05424]Bama0j1[M5XnT032]gdj50V1]I8k00L[*4Ajg04]=jKja0O1]aejP0^6]9al50G4 PiMiR0 T6t204J]OB/d02T]ON=e]O0t92vE]OcqQ62D[v4kF434 pj6ig873]IgM879[}e5J23436611C pkOv0461211A]jWlK4YB]bbk365A]9YiX42C]9fkb69B]a5kV465 piXiW5]aPi9lW2 TK%d0N p0:Z0F1"/>
+        <TopLine Value="2913"/>
+        <CursorPos X="29" Y="2952"/>
+        <FoldState Value=" T4O051 PSo40 TLxQ035 pY?C0811217 Pi5+f]R7ZG~U T8mV2=1 TMqU010215162 p5#A0]L3s40D3 pj8jT0*]\ickf0J5]IEk20F4]IZjH03[a4Wk40{Q[b5lW0g2[J4]k67]IXjG08[!6O0j[t5k50j[a4al1[{}5jAjS03[I4PjY0V1[j4k00L3[R5g04[a4Kja0O1]+ejP0^31215 PkInH0 T6t904R]SX&apos;701H]91-G0]XT0tG2vE]HcqQ62D]9akF434 pj6ig873]IgM879[}w5J23B[*4ld287 piekb4BA]9YkT6[r4ifig465 pibiO269]/Ijd4Y[+4ajX66B]I2j38AD[94lG42A[}$5F2A6 picib86636 PiYmZ2 TK(40N p0,c0FY"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -60,7 +107,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="13" Y="9"/>
-        <UsageCount Value="180"/>
+        <UsageCount Value="189"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\fmlayoutedit.pas"/>
@@ -72,7 +119,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="767"/>
         <CursorPos X="27" Y="788"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="96"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\HexView\FWHexView.pas"/>
@@ -81,7 +128,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="92"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\Imaging\Imaging.pas"/>
@@ -89,17 +136,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="852"/>
         <CursorPos Y="868"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="92"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\fpc.Dynamic_Bass.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FPC.Dynamic_Bass"/>
         <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="83"/>
+        <TopLine Value="1460"/>
+        <CursorPos X="69" Y="1479"/>
+        <UsageCount Value="92"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
@@ -109,7 +155,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitLogForm"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="50"/>
       </Unit>
       <Unit>
         <Filename Value="..\Meshes\rgobj.pas"/>
@@ -119,7 +165,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="33"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
@@ -623,7 +669,63 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory HistoryIndex="13">
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="2006" Column="29" TopLine="1986"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1490" Column="32" TopLine="1475"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1596" Column="26" TopLine="1580"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1597" Column="11" TopLine="1562"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="253" Column="23" TopLine="239"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1740" Column="3" TopLine="1729"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="2219" TopLine="2191"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="2250" Column="48" TopLine="2236"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="2223" Column="20" TopLine="2210"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="2225" Column="20" TopLine="2212"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="2889" Column="3" TopLine="2873"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="2893" Column="34" TopLine="2876"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="2906" Column="14" TopLine="2876"/>
+      </Position>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>

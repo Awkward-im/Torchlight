@@ -9,6 +9,7 @@ object RGGUIForm: TRGGUIForm
   ClientWidth = 944
   Menu = MainMenu
   ShowHint = True
+  LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles
@@ -49,7 +50,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 70
-      Height = 22
+      Height = 5
       Top = 2
       Style = tbsDivider
     end
@@ -353,7 +354,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep1: TToolButton
           Left = 47
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -378,7 +379,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep2: TToolButton
           Left = 180
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -397,7 +398,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep3: TToolButton
           Left = 372
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -410,7 +411,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep4: TToolButton
           Left = 426
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -1622,16 +1623,21 @@ object RGGUIForm: TRGGUIForm
       ShortCut = 65
     end
     object miTreeDelete: TMenuItem
-      Caption = 'Delete Dir'
+      Caption = 'Delete dir'
       ImageIndex = 3
       ShortCut = 68
       OnClick = miTreeDeleteClick
     end
     object miTreeRestore: TMenuItem
-      Caption = 'Restore Dir'
+      Caption = 'Restore dir'
       ImageIndex = 14
       ShortCut = 82
       OnClick = miTreeRestoreClick
+    end
+    object miTreeList: TMenuItem
+      Caption = 'Copy dir list'
+      ShortCut = 76
+      OnClick = miTreeListClick
     end
   end
   object SynXMLSyn: TSynXMLSyn

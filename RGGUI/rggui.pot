@@ -723,7 +723,7 @@ msgid "&Help"
 msgstr ""
 
 #: trgguiform.mitreedelete.caption
-msgid "Delete Dir"
+msgid "Delete dir"
 msgstr ""
 
 #: trgguiform.mitreeextract.caption
@@ -741,12 +741,16 @@ msgctxt "trgguiform.mitreeextractvisible.caption"
 msgid "Extract visible"
 msgstr ""
 
+#: trgguiform.mitreelist.caption
+msgid "Copy dir list"
+msgstr ""
+
 #: trgguiform.mitreenew.caption
 msgid "New directory"
 msgstr ""
 
 #: trgguiform.mitreerestore.caption
-msgid "Restore Dir"
+msgid "Restore dir"
 msgstr ""
 
 #: trgguiform.rbbinonly.caption

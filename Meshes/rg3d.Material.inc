@@ -608,6 +608,8 @@ begin
           if      lname='const_DiffuseColor'  then with mtl^.diffuse  do begin X:=lr; Y:=lg; Z:=lb; end
           else if lname='const_SpecularColor' then with mtl^.specular do begin X:=lr; Y:=lg; Z:=lb; end
           else if lname='const_EmissiveColor' then with mtl^.emissive do begin X:=lr; Y:=lg; Z:=lb; end
+//          else if lname='const_AmbientHemisphereTop'    then with mtl^.ambient do begin X:=lr; Y:=lg; Z:=lb; end
+//          else if lname='const_AmbientHemisphereBottom' then with mtl^.add     do begin X:=lr; Y:=lg; Z:=lb; end
           ;
           ls:='/* '+IntToStr(i)+' */ param_named '+lname+' float4';
           lsv:=FloatToStr(lr    ); FixFloatStr(lsv); ls:=ls+' '+lsv;

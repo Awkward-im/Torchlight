@@ -83,7 +83,9 @@ implementation
 
 uses
   IniFiles,
+{$IFDEF Windows}
   Windirs,
+{$ENDIF}
   rgdb,
   UnitScan,
   logging,
@@ -169,8 +171,6 @@ var
   config:TIniFile;
   lprof:string;
 begin
-  lprof:=GetWindowsSpecialDir(CSIDL_PROFILE);
-
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   edDBFileTL2 .Text   :=config.ReadString(sSettings,sDBFileTL2 ,TL2DataBase);
@@ -188,12 +188,13 @@ begin
 
   edModsDir   .Text   :=config.ReadString(sSettings,sModsDir ,ModsPath);
   cbSaveScan  .Checked:=config.ReadBool  (sSettings,sSaveScan,true);
-
+{$IFDEF Windows}
+  lprof:=GetWindowsSpecialDir(CSIDL_PROFILE);
   if (edSaveDir.Text=SavePath) or (edSaveDir.Text='') then
       edSaveDir.Text:=StringReplace(SavePath,'%USERPROFILE%',lprof,[]);
   if (edModsDir.Text=ModsPath) or (edModsDir.Text='') then
       edModsDir.Text:=StringReplace(ModsPath,'%USERPROFILE%',lprof,[]);
-
+{$ENDIF}
   config.Free;
 end;
 
