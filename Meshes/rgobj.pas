@@ -327,7 +327,7 @@ begin
   llen:=Length(FSubMeshes);
   if aval>=llen then
   begin
-    SetLength(FSubMeshes,Align(llen+7,8));
+    SetLength(FSubMeshes,Align(aval+7,8));
     for i:=llen to High(FSubMeshes) do
       FSubMeshes[i]:=nil;
   end;
@@ -381,6 +381,8 @@ var
 begin
   if (BoundMin.X=0) and (BoundMax.X=0) then
   begin
+    Log('Calculate bounds');
+
     BoundMin.X:=+10000;
     BoundMin.Y:=+10000;
     BoundMin.Z:=+10000;

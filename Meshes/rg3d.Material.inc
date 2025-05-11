@@ -249,14 +249,14 @@ end;
 {
 typ siz  A B  C D
  01 80   7+13+02+8  B:1+      3+3+3+3
- 02 92   7+13+05+8                          +3C
- 03 94   8+13+05+8                    +1A
- 07 104 10+14+05+9  B:1+1+    3+3+3+3 +2A+1B   +1D
- 08 114 10+17+05+10 B:1+1+  3+3+3+3+3    +3B   +1D
- 09 118 12+17+05+10                   +2A
+ 02 92   7+13+05+8                           +3C
+ 03 94   8+13+05+8                     +1A
+ 07 104 10+14+05+9  B:1+1+    3+3+3+3  +2A+1B   +1D
+ 08 114 10+17+05+10 B:1+1+  3+3+3+3+3     +3B   +1D
+ 09 118 12+17+05+10                    +2A
  -----------------
- 0D 140 15+19+06+12 B:1+1+2+3+3+3+3+3 +3A+2B+1C+2D
- 0E 160 15+19+11+12                         +5C
+ 0D 140 15+19+06+12 B:1+1+2+3+3+3+3+3  +3A+2B+1C+2D
+ 0E 160 15+19+11+12                          +5C
 }
 function TRGMesh.ReadRGMaterial(var aptr:PByte; aver:integer):boolean;
 
@@ -289,11 +289,10 @@ begin
 
     ltmp:=memReadWord(aptr);
     if ltmp<>i then Log('!!!! number is not like order',ltmp);
-    Log('{00} w material #?'      ,ltmp);          // pass # ?
-    Log('{01} w (part of #?)',memReadWord(aptr));
-    Log('{02} w can be >1'   ,memReadWord(aptr)); // LayerBlendOperation?
-                                                   // can be 14, so not alpha_rejection
-    Log('{03} w' ,memReadWord(aptr));
+    Log('{00} w material #'   ,ltmp);
+    Log('{01} w (part of 00?)',memReadWord(aptr));
+    Log('{02} w can be >1'    ,memReadWord(aptr));
+    Log('{03} w (part of 02?)',memReadWord(aptr));
     Log('{04} w' ,memReadWord(aptr));
     Log('{05} w' ,memReadWord(aptr));
     Log('{06} w' ,memReadWord(aptr));
@@ -315,14 +314,18 @@ begin
       Log('{13} w' ,memReadWord(aptr));
       Log('{14} w' ,memReadWord(aptr));
     end;
+
     //--------------------------------
-    Log('>colors?','');
+
+    LogLn();
+    Log('>alpha?','');
+
     Log('{00} w' ,Int16(memReadWord(aptr))); // alpha_rejection value?
 {
     enum CompareFunction : uint8
-      0  CMPF_ALWAYS_FAIL,  //!< Never writes a pixel to the render target
+      0  CMPF_ALWAYS_FAIL,  //!< Never  writes a pixel to the render target
       1  CMPF_ALWAYS_PASS,  //!< Always writes a pixel to the render target
-      2  CMPF_LESS,         //!< Write if (new_Z < existing_Z)
+      2  CMPF_LESS,         //!< Write if (new_Z <  existing_Z)
       3  CMPF_LESS_EQUAL,   //!< Write if (new_Z <= existing_Z)
       4  CMPF_EQUAL,        //!< Write if (new_Z == existing_Z)
       5  CMPF_NOT_EQUAL,    //!< Write if (new_Z != existing_Z)
@@ -339,24 +342,18 @@ begin
       Log('{13+ 2} w' ,Int16(memReadWord(aptr))); // 1
     end;
 
+    LogLn();
+    Log('>colors?','');
+
     if aver>=8 then
     begin
       memRead(aptr,lrgb,3*2);
       RGBtoFloat(lrgb,mtl^.add);
-      LogLn();
       Log('unknown',
         ' '+IntToStr(lrgb.R)+
         ' '+IntToStr(lrgb.G)+
         ' '+IntToStr(lrgb.B));
-{
-      memRead(aptr,mtl^.add,3*2);
-      Log('unknown',
-        ' '+IntToStr(mtl^.add.R)+   // 0-1
-        ' '+IntToStr(mtl^.add.G)+   // 0-1
-        ' '+IntToStr(mtl^.add.B));  // 0-1
-}
     end;
-// ambient, diffuse, emissive, specular
 
     // ambient?
     memRead(aptr,lrgb,3*2);
@@ -391,7 +388,10 @@ begin
       ' '+IntToStr(lrgb.B));
 
     //--------------------------------
+
+    LogLn();
     Log('>values','');
+
     Log('{00} f' ,memReadFloat(aptr)); // low and mid
     Log('{01} f' ,memReadFloat(aptr)); // low
     if aver>=2 then
@@ -410,7 +410,10 @@ begin
       Log('{E4} f' ,memReadFloat(aptr));
       Log('{E5} f' ,memReadFloat(aptr)); // need to check for non-zero
     end;
+
     //--------------------------------
+
+    LogLn();
     Log('>textures','');
     // initialize by -1
     FillChar(mtl^.textures,SizeOf(mtl^.textures),255);
@@ -419,8 +422,8 @@ begin
     mtl^.textures[txtDiffuse     ]:=LogTexture('diff',Int32(memReadDWord(aptr)));
     mtl^.textures[txtUnknown1    ]:=LogTexture('??  ',Int32(memReadDWord(aptr)));
     if aver>=8 then
-      mtl^.textures[txtEnvDiffuse]:=LogTexture('8 env dark',Int32(memReadDWord(aptr)));
-    mtl^.textures[txtEnvSpecular ]:=LogTexture('env ',Int32(memReadDWord(aptr)));
+      mtl^.textures[txtEnvDiffuse]:=LogTexture('8 env',Int32(memReadDWord(aptr)));
+    mtl^.textures[txtEnvSpecular ]:=LogTexture('env spec',Int32(memReadDWord(aptr)));
     mtl^.textures[txtGlow        ]:=LogTexture('glow',Int32(memReadDWord(aptr)));
     mtl^.textures[txtNormal      ]:=LogTexture('norm',Int32(memReadDWord(aptr)));
     mtl^.textures[txtUnknown2    ]:=LogTexture('   5',Int32(memReadDWord(aptr)));
@@ -631,7 +634,8 @@ begin
 
   result:=Length(FMaterials);
   SetLength(FMaterials,result+1);
-  for i:=0 to 16 do
+//  FillChar(FMaterials[result].textures,SizeOf(FMaterials[result].textures),255);
+  for i:=0 to txtLast do
     FMaterials[result].textures[i]:=-1;
 
   FMaterials[result].name:=ls;

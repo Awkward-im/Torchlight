@@ -1,3 +1,4 @@
+{TODO: Show model stats: meshes (vertices,faces), skeleton, x,y,z position}
 {TODO: Save top-directory or open tree nodes list to file}
 {TODO: export mdl to xml: +.XML in dialog,check for existing}
 {TODO: preview bytes values as different types}
@@ -333,7 +334,7 @@ uses
   LCLIntf,
   LCLType,
   IntfGraphics,
-  GL,
+  GL, GLU,
   inifiles,
   clipbrd,
   fpimage,
@@ -1692,6 +1693,11 @@ begin
   if FMeshList<>0 then
   begin
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity;
+    gluPerspective(45.0, double(GLBox.width) / GLBox.height, 0.1, 200.0);
+    //    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity;
 
@@ -2009,7 +2015,13 @@ begin
         else if ltype=typeImage then PreviewImage(lext)
 
         // Models
-        else if ltype=typeModel then PreviewModel
+        else if ltype=typeModel then
+        begin
+          if lext='.SKELETON' then
+            PreviewDump()
+          else
+            PreviewModel();
+        end
 
         // Sound
         else if ltype=typeSound then PreviewSound

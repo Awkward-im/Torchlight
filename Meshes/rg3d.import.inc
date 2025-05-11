@@ -117,9 +117,9 @@ begin
       result:=ReadMesh(aptr);
   end;
   FixPointers();
-  CalcBounds;
 
   LogLn;
+  CalcBounds;
   Log('minx',BoundMin.X);
   Log('miny',BoundMin.Y);
   Log('minz',BoundMin.Z);

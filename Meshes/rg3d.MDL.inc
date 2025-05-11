@@ -176,11 +176,13 @@ begin
   j:=memReadDWord(aptr);
   Log('dword (0)',j);
 
-  // Bone names
-  lcnt:=memReadDWord(aptr);    // 95=5F
+  //===== Skeleton =====
+
+  lcnt:=memReadDWord(aptr);
   Log('bones? (0)',lcnt);
   if lcnt>0 then
   begin
+    // names
     for i:=0 to lcnt-1 do
     begin
       ls:=memReadText(aptr);
@@ -193,13 +195,14 @@ begin
       lcnt1:=memReadWord(aptr);
       for j:=0 to lcnt1-1 do
       begin
-        memReadDWord(aptr);
-        memReadFloat(aptr);
+        memReadDWord(aptr); // boneIndex
+        memReadFloat(aptr); // weight
       end;
     end;
   end;
 
-  // ===== Faces =====
+  //===== Faces =====
+
   i   :=memReadDWord(aptr);     // total faces
   lcnt:=memReadDWord(aptr);     // Submeshes
   SubMeshCount:=lcnt;
@@ -214,29 +217,53 @@ begin
       Is32bit   :=true;
       FMaterial :=memReadWord (aptr);
       FFaceCount:=memReadDWord(aptr);
-      GetMem(FFaces,FFaceCount*SizeOf(TIntVector3)); // VETData[VET_UINT3].size
-
-      Log('Submesh ' +IntToStr(i)+
-        ', material '+FMaterials[FMaterial].name+
-        ', faces '   +IntToStr(FFaceCount)+
-         ' offset'   ,HexStr(aptr-FBuffer,8));
-
-//      move(aptr^,FFaces^,FFaceCount*SizeOf(TIntVector3));
-      // !!! reversed order
-      for j:=0 to FFaceCount-1 do
+      if FFaceCount=0 then
       begin
-        with PIntVector3(FFaces)[j] do
-        begin
-          Z:=PDword(aptr)[j*3  ]; // PIntVector3(aptr)[j].Z;
-          Y:=PDword(aptr)[j*3+1]; // PIntVector3(aptr)[j].Y;
-          X:=PDword(aptr)[j*3+2]; // PIntVector3(aptr)[j].X;
-        end;
-      end;
+        FFaces:=nil;
+        Log('Submesh ' +IntToStr(i)+' is empty');
+      end
+      else
+      begin
+        GetMem(FFaces,FFaceCount*SizeOf(TIntVector3)); // VETData[VET_UINT3].size
 
-      inc(aptr,FFaceCount*3*SizeOf(DWord)); // SizeOf(TIntVector3)
+        Log('Submesh ' +IntToStr(i)+
+          ', material '+FMaterials[FMaterial].name+
+          ', faces '   +IntToStr(FFaceCount)+
+           ' offset'   ,HexStr(aptr-FBuffer,8));
+
+  //      move(aptr^,FFaces^,FFaceCount*SizeOf(TIntVector3));
+        // !!! reversed order
+        for j:=0 to FFaceCount-1 do
+        begin
+          with PIntVector3(FFaces)[j] do
+          begin
+            Z:=PDword(aptr)[j*3  ]; // PIntVector3(aptr)[j].Z;
+            Y:=PDword(aptr)[j*3+1]; // PIntVector3(aptr)[j].Y;
+            X:=PDword(aptr)[j*3+2]; // PIntVector3(aptr)[j].X;
+          end;
+        end;
+
+        inc(aptr,FFaceCount*3*SizeOf(DWord)); // SizeOf(TIntVector3)
+      end;
 
     end;
   end;
+
+  //===== Addition =====
+
+  if (aptr-FBuffer)<FDataSize then
+  begin
+    LogLn;
+    Log('>Pose? at',HexStr(aptr-FBuffer,8));
+    // was 7 times, from Root to zz_attach_free
+    while (aptr-FBuffer)<FDataSize do
+    begin
+      Log(memReadText(aptr));
+      inc(aptr,12*4);         // floats
+      memReadWord(aptr);      // 00 00
+    end;
+  end;
+
   result:=true;
 end;
 
@@ -388,7 +415,7 @@ begin
   Log('first  (1)',memReadWord(aptr));
   Log('second [have bone info?] (0)',memReadWord(aptr));
   if lver in [13,14] then // type=$0D/$0E - RGO
-    Log('add (1)' ,memReadWord(aptr));
+    Log('add (1)' ,memReadWord(aptr)); // tangent and binormal block? but we have VE list
 
   SubMesh[0]^.FVEList.Read(aptr);
 
