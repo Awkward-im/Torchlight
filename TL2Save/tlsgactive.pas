@@ -35,9 +35,9 @@ type
 
     FDBMods  :string;
     FModIds  :TL2IdList;               // TL2
-    FModNames:TL2StringList;           // TL1
+    FModNames:TStringDynArray;         // TL1
     FEffects :array [0..2] of TTLEffectList;
-    FAugments:TL2StringList;
+    FAugments:TStringDynArray;
     FStats   :TL2IdValList;
 
     function  GetDBMods():string; virtual;
@@ -60,11 +60,11 @@ type
     property Enabled:Boolean    read FEnabled write FEnabled;
     property Coord  :TVector3   read FOrientation.FPosition;
 
-    property ModIds  :TL2IdList      read FModIds   write FModIds;
-    property ModNames:TL2StringList  read FModNames write FModNames;
+    property ModIds  :TL2IdList       read FModIds   write FModIds;
+    property ModNames:TStringDynArray read FModNames write FModNames;
     property Effects[idx:integer]:TTLEffectList read GetEffects write SetEffects;
-    property Augments:TL2StringList  read FAugments;
-    property Stats   :TL2IdValList   read FStats;
+    property Augments:TStringDynArray read FAugments;
+    property Stats   :TL2IdValList    read FStats;
     property Stat[iname:string]:TRGInteger read GetStat  write SetStat;
   end;
 

@@ -962,8 +962,9 @@ begin
   if (UpdatesCount=0) and (not FPAK.modinfo.modified) and (aver=FPAK.Version) then
   begin
     result:=FPAK.Clone(fname);
-  end
-  else
+  end;
+
+  if not result then
   begin
     lpak:=TRGPAK.Create;
 

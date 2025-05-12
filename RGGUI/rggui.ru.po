@@ -115,9 +115,19 @@ msgstr " файлов импортировано"
 msgid "These files still on disk and not built-in until PAK/MOD saved."
 msgstr "Эти файлы всё ещё на диске и не будут встроены до созранения PAK/MOD."
 
+#: formgui.rsmdlcoords
+#, object-pascal-format
+msgid "Offset: X: %f; Y: %f; Z: %f"
+msgstr "Смещение: X: %f; Y: %f; Z: %f"
+
+#: formgui.rsmdlmeshes
+#, object-pascal-format
+msgid "Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d"
+msgstr "Пределы: Min:(%f, %f, %f); Max(%f, %f, %f); Частей: %d"
+
 #: formgui.rsnothingimported
 msgid "Nothing was imported."
-msgstr "Ничего не импортировано."
+msgstr "Ничто не импортировано."
 
 #: formgui.rsoffset
 msgid "Offset"
@@ -903,3 +913,4 @@ msgstr "Информация о моде"
 #: unitlogform.rscantsave
 msgid "Can't save log file"
 msgstr "Не могу сохранить файл лога"
+

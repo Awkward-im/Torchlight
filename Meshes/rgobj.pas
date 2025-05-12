@@ -94,6 +94,7 @@ type
     procedure Free;
 
 //    function IndexedToDirect():boolean;
+    procedure SetBonesCapacity(avalue:integer);
     procedure AddBone(avertexIndex, aboneIndex:integer; aweight:single);
 
     property VertexCount:integer read GetVertexCount write FVertexCount;
@@ -123,6 +124,7 @@ type
     property Face    [idx:integer]:TIntVector3 read GetFace;
     property FaceCount:integer read FFaceCount;
 
+    property BoneCount:integer read FBoneCount;
 //    property BonePoints[idx:integer]:PBoneVertex read GetBonePoint;
   end;
 
@@ -575,10 +577,21 @@ begin
   result:=nil;
 end;
 }
+procedure TRGSubMesh.SetBonesCapacity(avalue:integer);
+begin
+  if FBonesLen<avalue then
+  begin
+    FBonesLen:=Align(avalue+63,64);
+    ReallocMem(FBones,FBonesLen*SizeOf(TBoneVertex));
+  end;
+end;
+
 procedure TRGSubMesh.AddBone(avertexIndex, aboneIndex:integer; aweight:single);
 begin
   if FBoneAssignCount=FBonesLen then
   begin
+    // let's minimum 2 vertex per bone
+    if FBonesLen=0 then FBonesLen:=FVertexCount*2;
     FBonesLen:=Align(FBonesLen+63,64);
     ReallocMem(FBones,FBonesLen*SizeOf(TBoneVertex));
   end;

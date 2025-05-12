@@ -43,7 +43,7 @@ type
     function  ReadFloat:single;  inline;
     function  ReadInt32:integer; inline;
     function  ReadCoord:TVector3;
-    function  ReadShortStringList:TL2StringList;
+    function  ReadShortStringList:TStringDynArray;
     function  ReadIdList:TL2IDList;
     function  ReadIdValList:TL2IDValList;
 
@@ -66,7 +66,7 @@ type
     procedure WriteFloat(aval:single);  inline;
     procedure WriteInt32(aval:integer); inline;
     procedure WriteCoord(aval:TVector3);
-    procedure WriteShortStringList(alist:TL2StringList);
+    procedure WriteShortStringList(alist:TStringDynArray);
     procedure WriteIdList(alist:TL2IDList);
     procedure WriteIdValList(alist:TL2IDValList);
     procedure WriteFiller(alen:integer);
@@ -273,7 +273,7 @@ begin
   Read(result,sizeOf(result));
 end;
 
-function TTL2Stream.ReadShortStringList:TL2StringList;
+function TTL2Stream.ReadShortStringList:TStringDynArray;
 var
   lcnt:cardinal;
   i:integer;
@@ -514,7 +514,7 @@ begin
   Write(aval,SizeOf(aval));
 end;
 
-procedure TTL2Stream.WriteShortStringList(alist:TL2StringList);
+procedure TTL2Stream.WriteShortStringList(alist:TStringDynArray);
 var
   i:integer;
   lcnt:cardinal;

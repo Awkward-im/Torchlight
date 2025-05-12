@@ -9,10 +9,16 @@ uses
 
 //===== Common things =====
 
-{$IF NOT DEFINED(TStringDynArray)}  type TStringDynArray  = array of String; {$ENDIF}
+{$IF NOT DEFINED(TStringDynArray)}  type TStringDynArray  = array of String;  {$ENDIF}
 {$IF NOT DEFINED(TIntegerDynArray)} type TIntegerDynArray = array of Integer; {$ENDIF}
 {$IF NOT DEFINED(TInt64DynArray)}   type TInt64DynArray   = array of Int64;   {$ENDIF}
 {$IF NOT DEFINED(TSingleDynArray)}  type TSingleDynArray  = array of Single;  {$ENDIF}
+type
+  TDictElement = record
+    id   :integer;
+    value:string;
+  end;
+  TDictDynArray = array of TDictElement;
 
 type
   TRGDebugLevel = (dlNone, dlNormal, dlDetailed);
@@ -145,8 +151,8 @@ function ExtractName(const apath:string):string;
 const
   RGExtExts : array [0..4] of string = ('.TXT', '.BINDAT', '.BINLAYOUT', '.ADM', '.CMP');
 
-function IsExtFile(var srcname:string       ):boolean;
-function IsExtFile(var srcname:UnicodeString):boolean;
+function IsExtFile (var   srcname:UnicodeString):boolean;
+function IsExtFile (var   srcname:string       ):boolean;
 function FixFileExt(const srcname:string):string;
 
 

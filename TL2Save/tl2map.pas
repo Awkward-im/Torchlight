@@ -61,7 +61,7 @@ type
     UnknF:TRGFloat;
 
     FUnknList  : TL2IdList;
-    FLayoutList: TL2StringList;
+    FLayoutList: TStringDynArray;
     FTriggers  : TTL2TriggerList;
     FPropList  : TTLItemList;
     FQuestItems: TTLItemList;
@@ -84,7 +84,7 @@ type
 
     property MobInfos  : TTLCharArray    read FMobInfos;
     property UnknList  : TL2IdList       read FUnknList;
-    property LayoutList: TL2StringList   read FLayoutList;
+    property LayoutList: TStringDynArray read FLayoutList;
     property Triggers  : TTL2TriggerList read FTriggers;
     property PropList  : TTLItemList     read FPropList;
     property QuestItems: TTLItemList     read FQuestItems;

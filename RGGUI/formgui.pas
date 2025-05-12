@@ -310,6 +310,7 @@ type
     procedure SaveSettings;
     procedure SetupView;
     procedure ShowImagesetInfo(const afile: string; arect: TRect);
+    procedure ShowModelInfo;
     function  UnpackSingleFile(const adir, aname: string; var buf:PByte): boolean;
     procedure ExtractSingleDir(adir: integer; var buf:PByte);
     procedure UpdateStatistic;
@@ -471,6 +472,8 @@ resourcestring
   rsSprite          = 'X: %d; Y: %d; Width: %d; Height: %d';
 //  rsChooseVer       = 'Choose game';
 //  rsGameVer         = 'Game';
+  rsMdlMeshes       = 'Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d';
+  rsMdlCoords       = 'Offset: X: %f; Y: %f; Z: %f';
 
 {%ENDREGION Constants}
 
@@ -1594,6 +1597,7 @@ procedure TRGGUIForm.GLBoxMouseWheelDown(Sender: TObject; Shift: TShiftState;
 begin
   if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
   GLBox.Invalidate;
+  ShowModelInfo();
 end;
 
 procedure TRGGUIForm.GLBoxMouseWheelUp(Sender: TObject; Shift: TShiftState;
@@ -1601,6 +1605,7 @@ procedure TRGGUIForm.GLBoxMouseWheelUp(Sender: TObject; Shift: TShiftState;
 begin
   if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
   GLBox.Invalidate;
+  ShowModelInfo();
 end;
 
 procedure TRGGUIForm.GLBoxClick(Sender: TObject);
@@ -1615,7 +1620,10 @@ begin
     VK_DOWN:  ty:=ty-0.1;
     VK_LEFT:  tx:=tx-0.1;
     VK_RIGHT: tx:=tx+0.1;
+  else
+    exit;
   end;
+  ShowModelInfo();
 end;
 
 procedure TRGGUIForm.OnGLIdle(Sender: TObject; var Done: Boolean);
@@ -1653,11 +1661,28 @@ begin
   glEndList;
 end;
 
+procedure TRGGUIForm.ShowModelInfo;
+var
+  ls: AnsiString;
+begin
+  // #meshes, have skeleton
+  if FMesh.SubMesh[0]^.BoneCount>0 then
+    ls:='+bones'
+  else
+    ls:='-bones';
+  lblInfo1.Caption:=Format(rsMdlMeshes,
+    [FMesh.BoundMin.X,FMesh.BoundMin.Y,FMesh.BoundMin.Z,
+     FMesh.BoundMax.X,FMesh.BoundMax.Y,FMesh.BoundMax.Z,
+     FMesh.SubMeshCount])+' '+ls;
+  lblInfo2.Caption:=Format(rsMdlCoords,[tx,ty,tz]);
+end;
+
 procedure TRGGUIForm.GLBoxPaint(Sender: TObject);
 var
 //  i:integer;
 //  lsm:PRGSubMesh;
   Speed: Double;
+  wx,wy,wz:single;
 begin
   glClearColor(0.27, 0.53, 0.71, 1.0); // Задаем синий фон
 
@@ -1697,10 +1722,14 @@ begin
     glLoadIdentity;
     gluPerspective(45.0, double(GLBox.width) / GLBox.height, 0.1, 200.0);
     //    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
+    wx:=  FMesh.BoundMax.X-FMesh.BoundMin.X;
+    wy:=  FMesh.BoundMax.Y-FMesh.BoundMin.Y;
+    wz:=  FMesh.BoundMax.Z-FMesh.BoundMin.Z;
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity;
 
+//    if (wx>200) or (wy>200) or (wz>200) then glScalef(0.1, 0.1, 0.1);
     glTranslatef(tx, ty, tz);
 
 //    glRotatef(rx,1.0,0.0,0.0);
@@ -1724,6 +1753,8 @@ begin
 end;
 
 procedure TRGGUIForm.PreviewModel();
+var
+  wx,wy,wz:single;
 begin
   if GLBox=nil then
   begin
@@ -1746,12 +1777,22 @@ begin
   FMesh.Init;
   FMesh.ImportFromMemory(FUData,FUSize);
 
+  FDoRotate:=false;
   CreateMeshList();
 
   if FMesh.BoundMin.Z<6.0 then
     tz:=FMesh.BoundMin.Z
   else
     tz:=-6.0;
+
+  tx:=-(FMesh.BoundMax.X+FMesh.BoundMin.X)/2;
+  ty:=-(FMesh.BoundMax.Y+FMesh.BoundMin.Y)/2;
+  wx:=  FMesh.BoundMax.X-FMesh.BoundMin.X;
+  wy:=  FMesh.BoundMax.Y-FMesh.BoundMin.Y;
+  wz:=  FMesh.BoundMax.Z-FMesh.BoundMin.Z;
+  if wy<wx then wy:=wx;
+  tz:=-(wz+wy);
+  if tz<-200 then tz:=-200;
 
   GLBox.Visible:=true;
 
@@ -1768,6 +1809,8 @@ begin
   Application.AddOnIdleHandler(@OnGLIdle);
 
   Self.ActiveControl:=GLBox;
+
+  ShowModelInfo();
 end;
 {%ENDREGION Model}
 

@@ -12,6 +12,8 @@ var
   lidx:PDWord;
   lpbuf:PByte;
   lvcnt, lblocks,lblock,i,j,lcnt,lcnt1:integer;
+  lbone:dword;
+  lweight:single;
 begin
   result:=false;
 
@@ -178,25 +180,28 @@ begin
 
   //===== Skeleton =====
 
-  lcnt:=memReadDWord(aptr);
-  Log('bones? (0)',lcnt);
-  if lcnt>0 then
+  lsm^.FBoneCount:=memReadDWord(aptr);
+  Log('bones? (0)',lsm^.FBoneCount);
+  if lsm^.FBoneCount>0 then
   begin
     // names
-    for i:=0 to lcnt-1 do
+    for i:=0 to lsm^.FBoneCount-1 do
     begin
       ls:=memReadText(aptr);
       if rgDebugLevel=dlDetailed then
         Log('Bone '+IntToStr(i),ls);
     end;
+
+    lsm^.SetBonesCapacity(lvcnt*2);    // reserve initially
     // for all vertices
     for i:=0 to lvcnt-1 do
     begin
-      lcnt1:=memReadWord(aptr);
+      lcnt1:=memReadWord(aptr);        // bones per vertex
       for j:=0 to lcnt1-1 do
       begin
-        memReadDWord(aptr); // boneIndex
-        memReadFloat(aptr); // weight
+        lbone  :=memReadDWord(aptr);   // boneIndex
+        lweight:=memReadFloat(aptr);   // weight
+        lsm^.AddBone(i,lbone,lweight); // expand array if needs
       end;
     end;
   end;
@@ -382,6 +387,7 @@ begin
     Log('bones count',lsm^.FBoneCount); //?? Bones? (limit for boneIndex)
 
     GetMem(lsm^.FBones,lsm^.FBoneAssignCount*SizeOf(TBoneVertex));
+//    lsm^.SetBonesCapacity(lsm^.FBoneAssignCount); // plus reserve and set FBonesLen
 
     move(aptr^,lsm^.FBones^,lsm^.FBoneAssignCount*SizeOf(TBoneVertex));
 {
@@ -390,6 +396,7 @@ begin
       lsm^.FBones[i].vertex:=memReadDword(aptr); // vertextIndex
       lsm^.FBones[i].bone  :=memReadDWord(aptr); // boneIndex
       lsm^.FBones[i].weight:=memReadFloat(aptr); // weight
+      // AddBone uses FBoneAssignmentCount as incrementing index
     end;
 }
     inc(aptr,lsm^.FBoneAssignCount*SizeOf(TBoneVertex));

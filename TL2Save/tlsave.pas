@@ -71,7 +71,7 @@ type
 
     FQuests:TTLQuest;
 
-    FCinematics:TL2StringList;
+    FCinematics:TStringDynArray;
     FMovies    :TL2IdValList;
     FRecipes   :TL2IdList;
     FHistory   :TL2IdList;
@@ -134,7 +134,7 @@ type
     property History:TL2IdList read FHistory write FHistory;
     property Recipes:TL2IdList read FRecipes write FRecipes;
 
-    property Cinematics:TL2StringList         read FCinematics;
+    property Cinematics:TStringDynArray       read FCinematics;
     property Movies    :TL2IdValList          read FMovies;
     property Movie     [idx:integer]:TL2IdVal read GetMovie;
 

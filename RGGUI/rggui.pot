@@ -103,6 +103,16 @@ msgstr ""
 msgid "These files still on disk and not built-in until PAK/MOD saved."
 msgstr ""
 
+#: formgui.rsmdlcoords
+#, object-pascal-format
+msgid "Offset: X: %f; Y: %f; Z: %f"
+msgstr ""
+
+#: formgui.rsmdlmeshes
+#, object-pascal-format
+msgid "Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d"
+msgstr ""
+
 #: formgui.rsnothingimported
 msgid "Nothing was imported."
 msgstr ""
