@@ -1,6 +1,3 @@
-{
-  Utility unit with mod text processing for translation
-}
 unit TL2Text;
 
 interface

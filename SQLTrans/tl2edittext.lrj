@@ -1,0 +1,12 @@
+{"version":1,"strings":[
+{"hash":6809412,"name":"tedittextform.caption","sourcebytes":[69,100,105,116,32,116,101,120,116],"value":"Edit text"},
+{"hash":370602,"name":"tedittextform.lbltag.caption","sourcebytes":[84,97,103,58],"value":"Tag:"},
+{"hash":198967413,"name":"tedittextform.actprevline.hint","sourcebytes":[80,114,101,118,105,111,117,115,32,108,105,110,101],"value":"Previous line"},
+{"hash":258440325,"name":"tedittextform.actnextline.hint","sourcebytes":[78,101,120,116,32,108,105,110,101],"value":"Next line"},
+{"hash":251070724,"name":"tedittextform.actprevuntranslated.hint","sourcebytes":[80,114,101,118,105,111,117,115,32,117,110,116,114,97,110,115,108,97,116,101,100],"value":"Previous untranslated"},
+{"hash":41155988,"name":"tedittextform.actnextuntranslated.hint","sourcebytes":[78,101,120,116,32,117,110,116,114,97,110,115,108,97,116,101,100],"value":"Next untranslated"},
+{"hash":241138092,"name":"tedittextform.actmarkaspartial.hint","sourcebytes":[77,97,114,107,32,97,115,32,80,97,114,116,105,97,108],"value":"Mark as Partial"},
+{"hash":97497525,"name":"tedittextform.actshowsample.hint","sourcebytes":[83,104,111,119,32,83,97,109,112,108,101],"value":"Show Sample"},
+{"hash":140145445,"name":"tedittextform.acttranslate.hint","sourcebytes":[84,114,97,110,115,108,97,116,101],"value":"Translate"},
+{"hash":16055219,"name":"tedittextform.actshowdupe.hint","sourcebytes":[83,104,111,119,32,100,111,117,98,108,101,115],"value":"Show doubles"}
+]}

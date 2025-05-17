@@ -293,9 +293,6 @@ type
   TTL2KeyMappingList = array of TTL2KeyMapping;
 
 type
-  TL2StringList = array of string;
-
-type
   TL2Difficulty = (Casual, Normal, Veteran, Expert);
 type
   TL2Sex = (male, female, unisex);
@@ -873,7 +870,7 @@ begin
 
   if (i>0) and (aFileName[i]='.') then
   begin
-    if (i>1) and not (aFileName[i-1] in ['/','\']) then
+    if (i=1) or ((i>1) and not (aFileName[i-1] in ['/','\'])) then
     begin
 //      Result:=Copy(aFileName,i);
 

@@ -204,6 +204,7 @@ begin
         lsm^.AddBone(i,lbone,lweight); // expand array if needs
       end;
     end;
+    Log('Bone Assign elements',lsm^.FBoneAssignCount);
   end;
 
   //===== Faces =====

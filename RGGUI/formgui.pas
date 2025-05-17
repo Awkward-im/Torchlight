@@ -1,6 +1,3 @@
-{TODO: Show model stats: meshes (vertices,faces), skeleton, x,y,z position}
-{TODO: Save top-directory or open tree nodes list to file}
-{TODO: export mdl to xml: +.XML in dialog,check for existing}
 {TODO: preview bytes values as different types}
 {TODO: make dump text/bytes search}
 {TODO: change dump text area encoding}
@@ -16,7 +13,6 @@
 {TODO: StatusBar: path changes on dir with files only}
 {TODO: option: ask unpack path}
 {TODO: replace bitbutton by speed button (scale problem)}
-{TODO: change grid/preview border moving}
 unit formGUI;
 
 {$mode objfpc}{$H+}
@@ -2017,10 +2013,13 @@ begin
     if (ltype and $FF) in [typeUnknown,typeFont,typeOther] then
     begin
       FUSize:=ctrl.GetBinary(lfile,FUData);
-      if RGTypeExtIsText(lext) then
-        PreviewText()
-      else
-        PreviewDump();
+      if FUSize>0 then
+      begin
+        if RGTypeExtIsText(lext) then
+          PreviewText()
+        else
+          PreviewDump();
+      end;
     end
     else if ltype=typeLayout then
     begin

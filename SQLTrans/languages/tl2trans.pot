@@ -1,0 +1,746 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: taboutform.caption
+msgid "About"
+msgstr ""
+
+#: taboutform.lblidea.caption
+msgid ""
+"Based on idea of Torch2Translate progam\n"
+"by Alexey Abramoff"
+msgstr ""
+
+#: taboutform.lblinfo.caption
+msgid ""
+"This program is for translation help.\n"
+"Used for Torchligh 2 game."
+msgstr ""
+
+#: taboutform.lblused.caption
+msgid ""
+"Used standard FreePascal modules,\n"
+"line by line text files processing,\n"
+"except online Translation\n"
+"and JSON processing"
+msgstr ""
+
+#: tdupeform.caption
+msgid "Dupe List"
+msgstr ""
+
+#: tdupeform.sgdupes.columns[0].title.caption
+msgctxt "tdupeform.sgdupes.columns[0].title.caption"
+msgid "File"
+msgstr ""
+
+#: tdupeform.sgdupes.columns[1].title.caption
+msgid "Line"
+msgstr ""
+
+#: tdupeform.sgdupes.columns[2].title.caption
+msgid "Tag"
+msgstr ""
+
+#: tedittextform.actmarkaspartial.hint
+msgid "Mark as Partial"
+msgstr ""
+
+#: tedittextform.actnextline.hint
+msgid "Next line"
+msgstr ""
+
+#: tedittextform.actnextuntranslated.hint
+msgid "Next untranslated"
+msgstr ""
+
+#: tedittextform.actprevline.hint
+msgid "Previous line"
+msgstr ""
+
+#: tedittextform.actprevuntranslated.hint
+msgid "Previous untranslated"
+msgstr ""
+
+#: tedittextform.actshowdupe.hint
+msgid "Show doubles"
+msgstr ""
+
+#: tedittextform.actshowsample.hint
+msgid "Show Sample"
+msgstr ""
+
+#: tedittextform.acttranslate.hint
+msgctxt "tedittextform.acttranslate.hint"
+msgid "Translate"
+msgstr ""
+
+#: tedittextform.caption
+msgid "Edit text"
+msgstr ""
+
+#: tedittextform.lbltag.caption
+msgid "Tag:"
+msgstr ""
+
+#: tl2datamodule.rsnoref
+msgid "Text don't have any references"
+msgstr ""
+
+#: tl2datamodule.rsseveralrefs
+#, object-pascal-format
+msgctxt "tl2datamodule.rsseveralrefs"
+msgid "This text presents in several (about %d) places."
+msgstr ""
+
+#: tl2dataunit.sbasetranslation
+msgid "Base translation"
+msgstr ""
+
+#: tl2dataunit.snoblockstart
+msgid "No block start"
+msgstr ""
+
+#: tl2dataunit.snoendblock
+msgid "No end of block"
+msgstr ""
+
+#: tl2dataunit.snofilestart
+msgid "No file starting tag"
+msgstr ""
+
+#: tl2dataunit.snoorigntext
+msgid "No original text"
+msgstr ""
+
+#: tl2dataunit.snotranstext
+msgid "No translated text"
+msgstr ""
+
+#: tl2dataunit.swronglineamount
+msgid "Wrong line amount in text and info files"
+msgstr ""
+
+#: tl2edittext.sshow
+msgid "Click on \"Show Doubles\" button to show"
+msgstr ""
+
+#: tl2notesform.stitle
+msgid "Notes"
+msgstr ""
+
+#: tl2projectform.rsfixall
+msgid "Fix all"
+msgstr ""
+
+#: tl2projectform.rsfixone
+msgid "Fix this"
+msgstr ""
+
+#: tl2projectform.rsnext
+msgid "Next note"
+msgstr ""
+
+#: tl2projectform.rsnotes
+msgid "Punctuation note"
+msgstr ""
+
+#: tl2projectform.rsnowarnings
+msgctxt "tl2projectform.rsnowarnings"
+msgid "No any warnings"
+msgstr ""
+
+#: tl2projectform.rsprojectstat
+msgid "Project statistic"
+msgstr ""
+
+#: tl2projectform.rssbtext
+#, object-pascal-format
+msgctxt "tl2projectform.rssbtext"
+msgid "Project files: %d; tags: %d; lines: %d | Translated: %d; partially: %d | Doubles: %d"
+msgstr ""
+
+#: tl2projectform.rsstattext
+#, object-pascal-format
+msgctxt "tl2projectform.rsstattext"
+msgid ""
+"Project files: %d\n"
+" tags: %d\n"
+" lines: %d\n"
+"Translated: %d\n"
+" partially: %d\n"
+"Doubles: %d"
+msgstr ""
+
+#: tl2projectform.rsstattextnoref
+#, object-pascal-format
+msgctxt "tl2projectform.rsstattextnoref"
+msgid ""
+"Lines: %d\n"
+"Translated: %d\n"
+"Partially: %d"
+msgstr ""
+
+#: tl2projectform.saffected
+msgid " line(s) affected"
+msgstr ""
+
+#: tl2projectform.scheckline
+msgid "Check importing translations"
+msgstr ""
+
+#: tl2projectform.sdodelete
+msgid ""
+"Are you sure to delete selected line(s)?\n"
+"This text will be just hidden until you save and reload project."
+msgstr ""
+
+#: tl2projectform.sdupes
+msgid "Check doubles info."
+msgstr ""
+
+#: tl2projectform.sesccancel
+msgid "ESC to cancel"
+msgstr ""
+
+#: tl2projectform.sfolderall
+msgid "- All -"
+msgstr ""
+
+#: tl2projectform.simporting
+msgid "Importing"
+msgstr ""
+
+#: tl2projectform.snodoubles
+msgid "No doubles for this text"
+msgstr ""
+
+#: tl2projectform.sreplaces
+msgid "Total replaces"
+msgstr ""
+
+#: tl2projectform.sroot
+msgid "-- Root --"
+msgstr ""
+
+#: tl2projectform.sstopscan
+msgid "Do you want to break scan? It clear full scan process."
+msgstr ""
+
+#: tl2projectform.stransfileerror
+#, object-pascal-format
+msgid ""
+"Error %d in translation file %s, line %d:\n"
+"%s"
+msgstr ""
+
+#: tl2projectform.swarning
+msgid "Warning"
+msgstr ""
+
+#: tl2settingsform.rsusefreekey
+msgid "Paid or Free Key (free)"
+msgstr ""
+
+#: tl2settingsform.rsusepaidkey
+msgid "Paid or Free Key (paid)"
+msgstr ""
+
+#: tl2settingsform.snotrealized
+msgid "Not realized yet"
+msgstr ""
+
+#: tl2settingsform.ssettings
+msgctxt "tl2settingsform.ssettings"
+msgid "Settings"
+msgstr ""
+
+#: tl2text.rsdssign
+msgid "Target have sign at the end"
+msgstr ""
+
+#: tl2text.rsdstcolend
+msgid "Source have less |u than target"
+msgstr ""
+
+#: tl2text.rsdstcolor
+msgid "Source have less colors than target"
+msgstr ""
+
+#: tl2text.rsdstline
+msgid "Source have less lines than target"
+msgstr ""
+
+#: tl2text.rsdstspace
+msgid "Target have space(s) at the end"
+msgstr ""
+
+#: tl2text.rssrccolend
+msgid "Source have more |u than target"
+msgstr ""
+
+#: tl2text.rssrccolor
+msgid "Source have more colors than target"
+msgstr ""
+
+#: tl2text.rssrcline
+msgid "Source have more lines than target"
+msgstr ""
+
+#: tl2text.rssrcsign
+msgid "Source have sign at the end"
+msgstr ""
+
+#: tl2text.rssrcspace
+msgid "Source have space(s) at the end"
+msgstr ""
+
+#: tl2text.rssrctags
+msgid "Source have tags or parameters"
+msgstr ""
+
+#: tl2unit.sdefaultcaption
+msgctxt "tl2unit.sdefaultcaption"
+msgid "Torchlight 2 Translation"
+msgstr ""
+
+#: tl2unit.sdoprocessscan
+msgid "Do you want to scan this directory?"
+msgstr ""
+
+#: tl2unit.sdothescan
+msgid "Do tree scan?"
+msgstr ""
+
+#: tl2unit.sloading
+msgid "(loading)"
+msgstr ""
+
+#: tl2unit.snotsaved
+msgid "Project modified. Do you want to save it?"
+msgstr ""
+
+#: tl2unit.sopenproject
+msgctxt "tl2unit.sopenproject"
+msgid "Open project"
+msgstr ""
+
+#: tl2unit.ssaveproject
+msgctxt "tl2unit.ssaveproject"
+msgid "Save project"
+msgstr ""
+
+#: tl2unit.ssaving
+msgid "(saving)"
+msgstr ""
+
+#: tl2unit.sscanning
+msgid "(scanning)"
+msgstr ""
+
+#: tl2unit.swrongdir
+msgid "Choosed directory don't looks like mod directory (have no MEDIA folder)"
+msgstr ""
+
+#: tmaintl2transform.actmodinfo.caption
+msgid "Mod Info"
+msgstr ""
+
+#: tmaintl2transform.actmodinfo.hint
+msgid "Show mod info"
+msgstr ""
+
+#: tmaintl2transform.actshowlog.caption
+msgid "Show log"
+msgstr ""
+
+#: tmaintl2transform.actshowlog.hint
+msgid "Show log window"
+msgstr ""
+
+#: tmaintl2transform.caption
+msgctxt "tmaintl2transform.caption"
+msgid "Torchlight 2 Translation"
+msgstr ""
+
+#: tmaintl2transform.cbscancurdir.caption
+msgid "Scan selected dir only"
+msgstr ""
+
+#: tmaintl2transform.closepage.caption
+msgctxt "tmaintl2transform.closepage.caption"
+msgid "Close Page"
+msgstr ""
+
+#: tmaintl2transform.filebuild.caption
+msgid "&Build"
+msgstr ""
+
+#: tmaintl2transform.filebuild.hint
+msgid "Build translation"
+msgstr ""
+
+#: tmaintl2transform.fileexit.caption
+msgid "E&xit"
+msgstr ""
+
+#: tmaintl2transform.fileexit.hint
+msgid "Exit program"
+msgstr ""
+
+#: tmaintl2transform.filenew.caption
+msgid "Scan &dir"
+msgstr ""
+
+#: tmaintl2transform.filenew.hint
+msgid "Scan unpacked mod (directory)"
+msgstr ""
+
+#: tmaintl2transform.fileopen.caption
+msgid "&Open"
+msgstr ""
+
+#: tmaintl2transform.fileopen.hint
+msgctxt "tmaintl2transform.fileopen.hint"
+msgid "Open project"
+msgstr ""
+
+#: tmaintl2transform.filesave.caption
+msgctxt "tmaintl2transform.filesave.caption"
+msgid "&Save"
+msgstr ""
+
+#: tmaintl2transform.filesave.hint
+msgctxt "tmaintl2transform.filesave.hint"
+msgid "Save project"
+msgstr ""
+
+#: tmaintl2transform.filesaveas.caption
+msgid "Save &As..."
+msgstr ""
+
+#: tmaintl2transform.filesaveas.hint
+msgid "Save project as..."
+msgstr ""
+
+#: tmaintl2transform.filescan.caption
+msgid "Scan &mod"
+msgstr ""
+
+#: tmaintl2transform.filescan.hint
+msgid "Scan compiled mod"
+msgstr ""
+
+#: tmaintl2transform.fontedit.caption
+msgctxt "tmaintl2transform.fontedit.caption"
+msgid "&Font"
+msgstr ""
+
+#: tmaintl2transform.fontedit.hint
+msgid "Font changing"
+msgstr ""
+
+#: tmaintl2transform.gbscanobjects.caption
+msgid "Objects to scan"
+msgstr ""
+
+#: tmaintl2transform.helpabout.caption
+msgid "&About"
+msgstr ""
+
+#: tmaintl2transform.helpabout.hint
+msgid "About program"
+msgstr ""
+
+#: tmaintl2transform.helpnotes.caption
+msgctxt "tmaintl2transform.helpnotes.caption"
+msgid "Show Notes"
+msgstr ""
+
+#: tmaintl2transform.helpnotes.hint
+msgctxt "tmaintl2transform.helpnotes.hint"
+msgid "Show Notes"
+msgstr ""
+
+#: tmaintl2transform.lbltreenotes.caption
+msgid "Doubleclick to scan"
+msgstr ""
+
+#: tmaintl2transform.mifile.caption
+msgid "&File"
+msgstr ""
+
+#: tmaintl2transform.mihelp.caption
+msgid "&Help"
+msgstr ""
+
+#: tmaintl2transform.mnuclosepage.caption
+msgctxt "tmaintl2transform.mnuclosepage.caption"
+msgid "Close Page"
+msgstr ""
+
+#: tmaintl2transform.rbscanknown.caption
+msgid "Scan just known files"
+msgstr ""
+
+#: tmaintl2transform.rbscanknown.hint
+msgid "*.DAT,  *.LAYOUT and *.TEMPLATE files"
+msgstr ""
+
+#: tmaintl2transform.rbscantext.caption
+msgid "Scan all text files"
+msgstr ""
+
+#: trclass.rscanttranslate
+msgctxt "trclass.rscanttranslate"
+msgid "Text can't be translated"
+msgstr ""
+
+#: trclass.rskeyblocked
+msgctxt "trclass.rskeyblocked"
+msgid "API key blocked"
+msgstr ""
+
+#: trclass.rsnohost
+msgctxt "trclass.rsnohost"
+msgid "No host address defined"
+msgstr ""
+
+#: trclass.rssessionisinvalid
+msgctxt "trclass.rssessionisinvalid"
+msgid "Session is invalid"
+msgstr ""
+
+#: trclass.rstoolongtext
+msgctxt "trclass.rstoolongtext"
+msgid "Text length too large"
+msgstr ""
+
+#: trclass.rstoomanyrequest
+msgctxt "trclass.rstoomanyrequest"
+msgid "Too many requests. Please wait and resend your request."
+msgstr ""
+
+#: trclass.rstoomuchtext
+msgctxt "trclass.rstoomuchtext"
+msgid "Day text potion out of limit"
+msgstr ""
+
+#: trclass.rsunknownerror
+msgctxt "trclass.rsunknownerror"
+msgid "Unknown Error"
+msgstr ""
+
+#: trclass.rswrongapikey
+msgctxt "trclass.rswrongapikey"
+msgid "Wrong API key"
+msgstr ""
+
+#: trclass.rswronglanguage
+msgctxt "trclass.rswronglanguage"
+msgid "Choosen language is unsupported"
+msgstr ""
+
+#: tsimilarform.btndupes.caption
+msgid "Doubles"
+msgstr ""
+
+#: tsimilarform.caption
+msgid "Similars List"
+msgstr ""
+
+#: tsimilarform.lblpartial.caption
+msgid "(Partial translation)"
+msgstr ""
+
+#: ttl2notes.bbcancel.caption
+msgctxt "ttl2notes.bbcancel.caption"
+msgid "Cancel"
+msgstr ""
+
+#: ttl2notes.bbsave.caption
+msgctxt "ttl2notes.bbsave.caption"
+msgid "&Save"
+msgstr ""
+
+#: ttl2notes.sbadd.hint
+msgid "Add note"
+msgstr ""
+
+#: ttl2notes.sbdelete.hint
+msgid "Delete note"
+msgstr ""
+
+#: ttl2notes.sbreload.hint
+msgid "Try to reload notes"
+msgstr ""
+
+#: ttl2notes.sbsave.hint
+msgid "Save notes"
+msgstr ""
+
+#: ttl2notes.sbtranslate.hint
+msgctxt "ttl2notes.sbtranslate.hint"
+msgid "Translate"
+msgstr ""
+
+#: ttl2notes.sgnotes.columns[0].title.caption
+msgid "Note"
+msgstr ""
+
+#: ttl2notes.sgnotes.columns[1].title.caption
+msgctxt "ttl2notes.sgnotes.columns[1].title.caption"
+msgid "Value"
+msgstr ""
+
+#: ttl2project.actchecktranslation.hint
+msgid "Check for notes of translation"
+msgstr ""
+
+#: ttl2project.actexportclipbrd.hint
+msgid "Copy selected source text to clipboard"
+msgstr ""
+
+#: ttl2project.actexportfile.hint
+msgid "Save selected source text"
+msgstr ""
+
+#: ttl2project.actfilter.hint
+msgid "Filter"
+msgstr ""
+
+#: ttl2project.actfindnext.hint
+msgid "Search next"
+msgstr ""
+
+#: ttl2project.acthideready.hint
+msgid "Hide translated lines"
+msgstr ""
+
+#: ttl2project.actimportclipbrd.hint
+msgid "Inset text with translation from clipboard"
+msgstr ""
+
+#: ttl2project.actimportfile.hint
+msgid "Add translation from file"
+msgstr ""
+
+#: ttl2project.actpartasready.hint
+msgid "Mark partially translated text as translated"
+msgstr ""
+
+#: ttl2project.actreplace.hint
+msgid "Replace translation text"
+msgstr ""
+
+#: ttl2project.actshowdoubles.hint
+msgid "Show Doubling lines"
+msgstr ""
+
+#: ttl2project.actshowsimilar.hint
+msgid "Show lines with \"almost the same\" text"
+msgstr ""
+
+#: ttl2project.acttranslate.hint
+msgid "Use online translate service"
+msgstr ""
+
+#: ttl2project.cbfolder.hint
+msgid "Top-level folder filter"
+msgstr ""
+
+#: ttl2project.tl2grid.columns[0].title.caption
+msgctxt "ttl2project.tl2grid.columns[0].title.caption"
+msgid "Value"
+msgstr ""
+
+#: ttl2project.tl2grid.columns[1].title.caption
+msgctxt "ttl2project.tl2grid.columns[1].title.caption"
+msgid "Part"
+msgstr ""
+
+#: ttl2project.tl2grid.columns[2].title.caption
+msgctxt "ttl2project.tl2grid.columns[2].title.caption"
+msgid "Translation"
+msgstr ""
+
+#: ttl2settings.bbfontedit.caption
+msgctxt "ttl2settings.bbfontedit.caption"
+msgid "&Font"
+msgstr ""
+
+#: ttl2settings.bbsavesettings.caption
+msgctxt "ttl2settings.bbsavesettings.caption"
+msgid "&Save"
+msgstr ""
+
+#: ttl2settings.cbautoaspartial.caption
+msgid "Mark Autocorrected as partial"
+msgstr ""
+
+#: ttl2settings.cbhidepartial.caption
+msgid "Hide Partial with Translated"
+msgstr ""
+
+#: ttl2settings.cbhidepartial.hint
+msgid "Hide partially translated with translated by \"Hide ready\" button"
+msgstr ""
+
+#: ttl2settings.cbimportparts.caption
+msgid "Mark imported lines as partial"
+msgstr ""
+
+#: ttl2settings.cbremovetags.caption
+msgid "Remove tags on translation"
+msgstr ""
+
+#: ttl2settings.cbreopenprojects.caption
+msgid "Reopen projects at start"
+msgstr ""
+
+#: ttl2settings.gbtranslation.caption
+msgctxt "ttl2settings.gbtranslation.caption"
+msgid "Translation details"
+msgstr ""
+
+#: ttl2settings.lbldefaultfile.caption
+msgid "Default translation file"
+msgstr ""
+
+#: ttl2settings.lbldeffiledescr.caption
+msgid "This file used as basic translation file for new projects and final build"
+msgstr ""
+
+#: ttl2settings.lblfilter.caption
+msgid "Words to exclude from comparing"
+msgstr ""
+
+#: ttl2settings.lblfilternote.caption
+msgid "Reopen project to apply new list"
+msgstr ""
+
+#: ttl2settings.lblgetapikey.caption
+msgctxt "ttl2settings.lblgetapikey.caption"
+msgid "Get your own API key"
+msgstr ""
+
+#: ttl2settings.lbllang.caption
+msgid "Translation language"
+msgstr ""
+
+#: ttl2settings.lblprogramlanguage.caption
+msgid "Program Language"
+msgstr ""
+
+#: ttl2settings.lblrootdirectory.caption
+msgid "Root directory for mods"
+msgstr ""
+
+#: ttl2settings.lbltranslators.caption
+msgid "Translators"
+msgstr ""
+
+#: ttl2settings.lblworkdirectory.caption
+msgid "Working directory"
+msgstr ""
+

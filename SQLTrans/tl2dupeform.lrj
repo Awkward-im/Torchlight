@@ -1,0 +1,6 @@
+{"version":1,"strings":[
+{"hash":108362596,"name":"tdupeform.caption","sourcebytes":[68,117,112,101,32,76,105,115,116],"value":"Dupe List"},
+{"hash":315429,"name":"tdupeform.sgdupes.columns[0].title.caption","sourcebytes":[70,105,108,101],"value":"File"},
+{"hash":340037,"name":"tdupeform.sgdupes.columns[1].title.caption","sourcebytes":[76,105,110,101],"value":"Line"},
+{"hash":23159,"name":"tdupeform.sgdupes.columns[2].title.caption","sourcebytes":[84,97,103],"value":"Tag"}
+]}

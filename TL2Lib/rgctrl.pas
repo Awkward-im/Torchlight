@@ -126,15 +126,15 @@ type
     {
       Amount of all updates
     }
-    function  UpdatesCount(): integer;
+    function UpdatesCount(): integer;
     {
       Amount of changes required repack ("data" and "file")
     }
-    function  UpdateChanges():integer;
+    function UpdateChanges():integer;
     {
       state* const for update element
     }
-    function  UpdateState (idx:integer):integer;
+    function UpdateState(idx:integer):integer;
     {
       Delete update
     }
@@ -147,7 +147,7 @@ type
       add new dir to both Dir and Files lists. negative result points to existing already
       MUST ends by slash
     }
-    function  NewDir(apath:PWideChar):integer;
+    function NewDir(apath:PWideChar):integer;
     {
       import dir with files and subdirs. apply different actions if files exists
     }
@@ -159,20 +159,20 @@ type
     {
       use adata as buffer, no allocate
     }
-    function  UseData  (adata:PByte; asize:cardinal; apath:PWideChar):integer;
+    function UseData(adata:PByte; asize:cardinal; apath:PWideChar):integer;
     {
       allocate buffer, copy adata content
     }
-    function  AddUpdate(adata:PByte; asize:cardinal; apath:PWideChar):integer;
+    function AddUpdate(adata:PByte; asize:cardinal; apath:PWideChar):integer;
     {
       allocate buffer, copy unpacked source data
     }
-    function  AddCopy  (idx:integer):integer;
+    function AddCopy(idx:integer):integer;
 //    function  AddCopy  (adata:PByte; asize:cardinal; apath:PWideChar):integer;
     {
       keep filename or allocate buffer and load file content
     }
-    function  AddFileData(afile:PWideChar; apath:PWideChar; acontent:boolean=false):integer;
+    function AddFileData(afile:PWideChar; apath:PWideChar; acontent:boolean=false):integer;
   end;
 
 

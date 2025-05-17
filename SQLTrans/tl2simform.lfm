@@ -1,0 +1,96 @@
+object SimilarForm: TSimilarForm
+  Left = 590
+  Height = 502
+  Top = 184
+  Width = 663
+  Caption = 'Similars List'
+  ClientHeight = 502
+  ClientWidth = 663
+  KeyPreview = True
+  ParentFont = True
+  LCLVersion = '4.99.0.0'
+  OnKeyDown = FormKeyDown
+  object lbSimList: TListBox
+    Left = 8
+    Height = 194
+    Top = 40
+    Width = 648
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ExtendedSelect = False
+    ItemHeight = 0
+    TabOrder = 0
+    OnSelectionChange = lbSelectionChange
+  end
+  object lblTextLine: TLabel
+    Left = 8
+    Height = 23
+    Top = 241
+    Width = 60
+    Anchors = [akLeft, akBottom]
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblTextFile: TLabel
+    Left = 8
+    Height = 23
+    Top = 265
+    Width = 648
+    Anchors = [akLeft, akRight, akBottom]
+    AutoSize = False
+    ParentColor = False
+  end
+  object memText: TMemo
+    Left = 8
+    Height = 91
+    Top = 297
+    Width = 648
+    Anchors = [akLeft, akRight, akBottom]
+    ReadOnly = True
+    TabOrder = 1
+  end
+  object memTrans: TMemo
+    Left = 8
+    Height = 91
+    Top = 403
+    Width = 648
+    Anchors = [akLeft, akRight, akBottom]
+    ReadOnly = True
+    TabOrder = 2
+  end
+  object lblTextTag: TLabel
+    Left = 80
+    Height = 22
+    Top = 241
+    Width = 328
+    Anchors = [akLeft, akBottom]
+    AutoSize = False
+    ParentColor = False
+  end
+  object edTmpl: TEdit
+    Left = 8
+    Height = 23
+    Top = 8
+    Width = 648
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 3
+  end
+  object lblPartial: TLabel
+    Left = 556
+    Height = 15
+    Top = 245
+    Width = 100
+    Alignment = taRightJustify
+    Anchors = [akRight, akBottom]
+    Caption = '(Partial translation)'
+  end
+  object btnDupes: TButton
+    Left = 8
+    Height = 25
+    Top = 264
+    Width = 69
+    AutoSize = True
+    Caption = 'Doubles'
+    TabOrder = 4
+    OnClick = btnDupesClick
+  end
+end

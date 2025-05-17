@@ -1,0 +1,637 @@
+object MainTL2TransForm: TMainTL2TransForm
+  Left = 426
+  Height = 655
+  Top = 152
+  Width = 1007
+  Caption = 'Torchlight 2 Translation'
+  ClientHeight = 655
+  ClientWidth = 1007
+  KeyPreview = True
+  Menu = TL2MainMenu
+  ShowHint = True
+  LCLVersion = '4.99.0.0'
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  object TL2StatusBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 632
+    Width = 1007
+    Panels = <>
+  end
+  object TL2Toolbar: TToolBar
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 1007
+    Images = TL2DataModule.TL2ImageList
+    Indent = 4
+    TabOrder = 0
+    object tbFileNew: TToolButton
+      Left = 4
+      Top = 2
+      Action = FileNew
+    end
+    object tbFileSave: TToolButton
+      Left = 50
+      Top = 2
+      Action = FileSave
+    end
+    object tbModInfo: TToolButton
+      Left = 204
+      Top = 2
+      Action = actModInfo
+    end
+    object tbSeparator1: TToolButton
+      Left = 96
+      Height = 8
+      Top = 2
+      Style = tbsSeparator
+    end
+    object tbFontEdit: TToolButton
+      Left = 127
+      Top = 2
+      Action = FontEdit
+    end
+    object tbSeparator2: TToolButton
+      Left = 150
+      Height = 8
+      Top = 2
+      Style = tbsSeparator
+    end
+    object tbHelpAbout: TToolButton
+      Left = 158
+      Top = 2
+      Action = HelpAbout
+    end
+    object tbHelpNotes: TToolButton
+      Left = 232
+      Top = 2
+      Action = HelpNotes
+    end
+    object tbBuild: TToolButton
+      Left = 73
+      Top = 2
+      Action = FileBuild
+    end
+    object tbScanMod: TToolButton
+      Left = 27
+      Top = 2
+      Action = FileScan
+    end
+    object tbShowLog: TToolButton
+      Left = 181
+      Top = 2
+      Action = actShowLog
+    end
+    object tbSeparator3: TToolButton
+      Left = 227
+      Height = 5
+      Top = 2
+      Style = tbsDivider
+    end
+    object tbSettings: TToolButton
+      Left = 104
+      Top = 2
+      Action = actSettings
+    end
+    object tbCheckTranslation: TToolButton
+      Left = 255
+      Top = 2
+      Action = actCheckTranslation
+    end
+    object tbTranslate: TToolButton
+      Left = 278
+      Top = 2
+      Action = actTranslate
+    end
+    object tbReplace: TToolButton
+      Left = 301
+      Top = 2
+      Action = actReplace
+    end
+    object tbSimilar: TToolButton
+      Left = 324
+      Top = 2
+      Action = actShowSimilar
+    end
+    object tbDouble: TToolButton
+      Left = 347
+      Top = 2
+      Action = actShowDoubles
+    end
+    object tbSeparator4: TToolButton
+      Left = 370
+      Height = 8
+      Top = 2
+      Style = tbsSeparator
+    end
+    object ToolButton3: TToolButton
+      Left = 378
+      Top = 2
+      Caption = 'ToolButton3'
+    end
+    object ToolButton4: TToolButton
+      Left = 401
+      Top = 2
+      Caption = 'ToolButton4'
+    end
+  end
+  object pnlTop: TPanel
+    Left = 0
+    Height = 40
+    Top = 26
+    Width = 1007
+    Align = alTop
+    ClientHeight = 40
+    ClientWidth = 1007
+    TabOrder = 2
+    object TL2ProjectFilterPanel: TPanel
+      Left = 348
+      Height = 38
+      Top = 1
+      Width = 658
+      Align = alClient
+      ClientHeight = 38
+      ClientWidth = 658
+      TabOrder = 0
+      object sbProjectFilter: TSpeedButton
+        Left = 395
+        Height = 22
+        Top = 8
+        Width = 23
+        Action = actFilter
+        AllowAllUp = True
+        Anchors = [akTop, akRight]
+        GroupIndex = 1
+        Images = TL2DataModule.TL2ImageList
+        ImageIndex = 10
+        ShowCaption = False
+      end
+      object edProjectFilter: TEdit
+        Left = 427
+        Height = 23
+        Top = 6
+        Width = 197
+        Anchors = [akTop, akRight]
+        CharCase = ecLowerCase
+        TabOrder = 0
+        OnChange = edProjectFilterChange
+      end
+      object sbFindNext: TSpeedButton
+        Left = 630
+        Height = 22
+        Top = 8
+        Width = 23
+        Action = actFindNext
+        Anchors = [akTop, akRight]
+        Images = TL2DataModule.TL2ImageList
+        ImageIndex = 15
+        ShowCaption = False
+      end
+      object sbChooseMod: TSpeedButton
+        Left = 8
+        Height = 22
+        Top = 6
+        Width = 23
+      end
+      object cbLanguage: TComboBox
+        Left = 40
+        Height = 23
+        Hint = 'Choose translation language'
+        Top = 6
+        Width = 124
+        ItemHeight = 15
+        Sorted = True
+        Style = csDropDownList
+        TabOrder = 1
+      end
+      object cbDisplayMode: TComboBox
+        Left = 192
+        Height = 23
+        Top = 6
+        Width = 152
+        ItemHeight = 15
+        Style = csDropDownList
+        TabOrder = 2
+        OnChange = edProjectFilterChange
+      end
+    end
+    object pnlFolders: TPanel
+      Left = 1
+      Height = 38
+      Top = 1
+      Width = 167
+      Align = alLeft
+      ClientHeight = 38
+      ClientWidth = 167
+      TabOrder = 1
+      object cbFolder: TComboBox
+        Left = 6
+        Height = 23
+        Hint = 'Top-level folder filter'
+        Top = 6
+        Width = 154
+        Anchors = [akTop, akLeft, akRight]
+        ItemHeight = 15
+        ReadOnly = True
+        TabOrder = 0
+        OnChange = cbFolderChange
+      end
+    end
+    object splFolder: TSplitter
+      Left = 168
+      Height = 38
+      Top = 1
+      Width = 5
+    end
+    object pnlSkills: TPanel
+      Left = 173
+      Height = 38
+      Top = 1
+      Width = 170
+      Align = alLeft
+      ClientHeight = 38
+      ClientWidth = 170
+      TabOrder = 2
+      Visible = False
+      object cbSkills: TComboBox
+        Left = 8
+        Height = 23
+        Top = 6
+        Width = 153
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ItemHeight = 15
+        ReadOnly = True
+        TabOrder = 0
+        OnChange = cbSkillsChange
+      end
+    end
+    object splSkills: TSplitter
+      Left = 343
+      Height = 38
+      Top = 1
+      Width = 5
+      Visible = False
+    end
+  end
+  object TL2Grid: TStringGrid
+    Left = 0
+    Height = 566
+    Top = 66
+    Width = 1007
+    Align = alClient
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 4
+    ColumnClickSorts = True
+    Columns = <    
+      item
+        ReadOnly = True
+        SizePriority = 0
+        Title.Caption = 'Value'
+        Width = 269
+      end    
+      item
+        Alignment = taCenter
+        ButtonStyle = cbsCheckboxColumn
+        SizePriority = 0
+        Title.Caption = 'Part'
+        Width = 28
+      end    
+      item
+        Title.Caption = 'Translation'
+        Width = 662
+      end>
+    DefaultColWidth = 48
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
+    RangeSelectMode = rsmMulti
+    RowCount = 1
+    TabOrder = 3
+    OnClick = TL2GridClick
+    OnDblClick = TL2GridDblClick
+    OnDrawCell = TL2GridDrawCell
+    OnGetEditText = TL2GridGetEditText
+    OnHeaderSized = TL2GridHeaderSized
+    OnKeyDown = TL2GridKeyDown
+    OnSelectEditor = TL2GridSelectEditor
+    OnSelectCell = TL2GridSelectCell
+    OnSetCheckboxState = TL2GridSetCheckboxState
+    ColWidths = (
+      48
+      269
+      28
+      662
+    )
+  end
+  object memEdit: TMemo
+    Left = 736
+    Height = 93
+    Top = 72
+    Width = 150
+    BorderStyle = bsNone
+    TabOrder = 4
+    Visible = False
+    WantReturns = False
+    OnExit = memEditExit
+    OnKeyDown = memEditKeyDown
+  end
+  object TL2ActionList: TActionList
+    Images = TL2DataModule.TL2ImageList
+    Left = 384
+    Top = 128
+    object FontEdit: TFontEdit
+      Category = 'Dialog'
+      Caption = '&Font'
+      Dialog.MinFontSize = 0
+      Dialog.MaxFontSize = 0
+      Hint = 'Font changing'
+      ImageIndex = 4
+      ShortCut = 32838
+      BeforeExecute = FontEditBeforeExecute
+      OnAccept = FontEditAccept
+    end
+    object FileNew: TAction
+      Category = 'File'
+      Caption = 'Scan &dir'
+      Hint = 'Scan unpacked mod (directory)'
+      ImageIndex = 0
+      ShortCut = 16462
+      OnExecute = FileNewExecute
+    end
+    object HelpAbout: TAction
+      Category = 'Help'
+      Caption = '&About'
+      Hint = 'About program'
+      ImageIndex = 9
+      OnExecute = HelpAboutExecute
+    end
+    object HelpNotes: TAction
+      Category = 'Help'
+      Caption = 'Show Notes'
+      Hint = 'Show Notes'
+      ImageIndex = 8
+      ShortCut = 32840
+      OnExecute = HelpNotesExecute
+    end
+    object FileScan: TAction
+      Category = 'File'
+      Caption = 'Scan &mod'
+      Hint = 'Scan compiled mod'
+      ImageIndex = 26
+      ShortCut = 16461
+      OnExecute = FileScanExecute
+    end
+    object FileOpen: TAction
+      Category = 'File'
+      Caption = '&Open'
+      Hint = 'Open project'
+      ImageIndex = 1
+      ShortCut = 16463
+    end
+    object FileSave: TAction
+      Category = 'File'
+      Caption = '&Save'
+      Enabled = False
+      Hint = 'Save project'
+      ImageIndex = 2
+      ShortCut = 16467
+      OnExecute = FileSaveExecute
+    end
+    object FileSaveAs: TAction
+      Category = 'File'
+      Caption = 'Save &As...'
+      Enabled = False
+      Hint = 'Save project as...'
+      ImageIndex = 5
+      ShortCut = 24659
+      OnExecute = FileSaveAsExecute
+    end
+    object FileBuild: TAction
+      Category = 'File'
+      Caption = '&Build'
+      Hint = 'Build translation'
+      ImageIndex = 24
+      ShortCut = 16450
+      OnExecute = FileBuildExecute
+    end
+    object FileExit: TAction
+      Category = 'File'
+      Caption = 'E&xit'
+      Hint = 'Exit program'
+      ImageIndex = 18
+      ShortCut = 32883
+      OnExecute = FileExitExecute
+    end
+    object actModInfo: TAction
+      Category = 'Help'
+      Caption = 'Mod Info'
+      Hint = 'Show mod info'
+      ImageIndex = 16
+      OnExecute = actModInfoExecute
+    end
+    object actShowLog: TAction
+      Category = 'View'
+      Caption = 'Show log'
+      Hint = 'Show log window'
+      ImageIndex = 20
+      OnExecute = actShowLogExecute
+    end
+    object actHideReady: TAction
+      Category = 'View'
+      AutoCheck = True
+      Caption = 'actHideReady'
+      GroupIndex = 3
+      Hint = 'Hide translated lines'
+      ImageIndex = 24
+      ShortCut = 32850
+    end
+    object actExportFile: TAction
+      Category = 'Edit'
+      Caption = 'actExportFile'
+      Hint = 'Save selected source text'
+      ImageIndex = 3
+    end
+    object actExportClipBrd: TAction
+      Category = 'Edit'
+      Caption = 'actExportClipBrd'
+      Hint = 'Copy selected source text to clipboard'
+      ImageIndex = 16
+    end
+    object actImportFile: TAction
+      Category = 'Edit'
+      Caption = 'actImportFile'
+      Hint = 'Add translation from file'
+      ImageIndex = 6
+      ShortCut = 32841
+    end
+    object actImportClipBrd: TAction
+      Category = 'Edit'
+      Caption = 'actImportClipBrd'
+      Hint = 'Inset text with translation from clipboard'
+      ImageIndex = 19
+      ShortCut = 16457
+    end
+    object actShowSimilar: TAction
+      Category = 'View'
+      Caption = 'Show Similar'
+      Hint = 'Show lines with "almost the same" text'
+      ImageIndex = 17
+      OnExecute = actShowSimilarExecute
+    end
+    object actShowDoubles: TAction
+      Category = 'View'
+      Caption = 'Show Doubles'
+      Hint = 'Show Doubling lines'
+      ImageIndex = 7
+      OnExecute = actShowDoublesExecute
+    end
+    object actFilter: TAction
+      Category = 'View'
+      AutoCheck = True
+      Caption = 'actFilter'
+      GroupIndex = 1
+      Hint = 'Filter'
+      ImageIndex = 10
+      ShortCut = 32838
+      OnExecute = edProjectFilterChange
+    end
+    object actReplace: TAction
+      Category = 'Edit'
+      Caption = 'Replace'
+      Hint = 'Replace translation text'
+      ImageIndex = 20
+      ShortCut = 16466
+      OnExecute = actReplaceExecute
+    end
+    object actFindNext: TAction
+      Category = 'Edit'
+      Caption = 'actFindNext'
+      Hint = 'Search next'
+      ImageIndex = 15
+      ShortCut = 32807
+      OnExecute = actFindNextExecute
+    end
+    object actTranslate: TAction
+      Category = 'Edit'
+      Caption = 'Translate'
+      Hint = 'Use online translate service'
+      ImageIndex = 8
+      ShortCut = 16468
+      OnExecute = actTranslateExecute
+    end
+    object actPartAsReady: TAction
+      Category = 'Edit'
+      Caption = 'actPartAsReady'
+      Hint = 'Mark partially translated text as translated'
+      ImageIndex = 24
+    end
+    object actOpenSource: TAction
+      Category = 'View'
+      Caption = 'actOpenSource'
+      ShortCut = 32851
+    end
+    object actStopScan: TAction
+      Category = 'File'
+      Caption = 'actStopScan'
+      Enabled = False
+    end
+    object actCheckTranslation: TAction
+      Category = 'Edit'
+      Caption = 'actCheckTranslation'
+      Hint = 'Check for notes of translation'
+      ImageIndex = 25
+      ShortCut = 32848
+      OnExecute = actCheckTranslationExecute
+    end
+    object actSettings: TAction
+      Category = 'View'
+      AutoCheck = True
+      Caption = 'Settings'
+      Hint = 'Show/hide settings'
+      OnExecute = actSettingsExecute
+    end
+  end
+  object TL2MainMenu: TMainMenu
+    Images = TL2DataModule.TL2ImageList
+    Left = 264
+    Top = 128
+    object miFile: TMenuItem
+      Caption = '&File'
+      object miFileNew: TMenuItem
+        Action = FileNew
+      end
+      object miFileScanMod: TMenuItem
+        Action = FileScan
+      end
+      object miFileOpen: TMenuItem
+        Action = FileOpen
+      end
+      object miFileSave: TMenuItem
+        Action = FileSave
+      end
+      object miFileSaveAs: TMenuItem
+        Action = FileSaveAs
+      end
+      object miFileBuild: TMenuItem
+        Action = FileBuild
+      end
+      object miFileSep1: TMenuItem
+        Caption = '-'
+      end
+      object miClosePage: TMenuItem
+        Caption = 'Close Page'
+        ImageIndex = 21
+        ShortCut = 16499
+      end
+      object miFileSep2: TMenuItem
+        Caption = '-'
+      end
+      object miFileExit: TMenuItem
+        Action = FileExit
+      end
+    end
+    object miEdit: TMenuItem
+      Caption = '&Edit'
+      object miEditReplace: TMenuItem
+        Action = actReplace
+      end
+      object miEditTranslate: TMenuItem
+        Action = actTranslate
+      end
+      object miEditCheckTranslation: TMenuItem
+        Action = actCheckTranslation
+        Caption = 'Check Translation'
+      end
+      object Separator1: TMenuItem
+        Caption = '-'
+      end
+      object miEditSettings: TMenuItem
+        Action = actSettings
+        AutoCheck = True
+      end
+    end
+    object miView: TMenuItem
+      Caption = '&View'
+      object miViewSimilar: TMenuItem
+        Action = actShowSimilar
+      end
+      object miViewDoubles: TMenuItem
+        Action = actShowDoubles
+      end
+      object miViewNotes: TMenuItem
+        Action = HelpNotes
+      end
+      object miViewLog: TMenuItem
+        Action = actShowLog
+      end
+    end
+    object miHelp: TMenuItem
+      Caption = '&Help'
+      object miHelpAbout: TMenuItem
+        Action = HelpAbout
+      end
+    end
+  end
+end

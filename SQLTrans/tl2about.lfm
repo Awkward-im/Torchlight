@@ -1,0 +1,77 @@
+object AboutForm: TAboutForm
+  Left = 540
+  Height = 357
+  Top = 228
+  Width = 465
+  Caption = 'About'
+  ClientHeight = 357
+  ClientWidth = 465
+  OnCreate = FormCreate
+  LCLVersion = '2.1.0.0'
+  object bbOK: TBitBtn
+    Left = 195
+    Height = 30
+    Top = 308
+    Width = 75
+    Default = True
+    DefaultCaption = True
+    Kind = bkOK
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object lblCompiled: TLabel
+    Left = 8
+    Height = 30
+    Top = 265
+    Width = 448
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    ParentColor = False
+  end
+  object lblIdea: TLabel
+    Left = 8
+    Height = 30
+    Top = 168
+    Width = 448
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'Based on idea of Torch2Translate progam'#13#10'by Alexey Abramoff'
+    ParentColor = False
+    WordWrap = True
+  end
+  object lblUsed: TLabel
+    Left = 8
+    Height = 64
+    Top = 201
+    Width = 448
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'Used standard FreePascal modules,'#13#10'line by line text files processing,'#13#10'except online Translation'#13#10'and JSON processing'
+    ParentColor = False
+  end
+  object lblInfo: TLabel
+    Left = 8
+    Height = 56
+    Top = 8
+    Width = 448
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'This program is for translation help.'#13#10'Used for Torchligh 2 game.'
+    Layout = tlCenter
+    ParentColor = False
+  end
+  object lblVersion: TLabel
+    Left = 8
+    Height = 15
+    Top = 63
+    Width = 448
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    ParentColor = False
+  end
+end

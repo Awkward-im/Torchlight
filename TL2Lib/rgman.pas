@@ -162,8 +162,8 @@ begin
   result:=0;
 
   case aver of
-    verTL2Mod,
-    verTL2:begin
+   verTL2Mod,
+   verTL2: begin
       i:=memReadWord(aptr);                   // 0002 version/signature
       if i>=2 then                            // 0000 - no "checksum" field??
         memReadDWord(aptr);                   // checksum?
@@ -173,7 +173,7 @@ begin
 
     verHob,
     verRGO,
-    verRG :begin
+    verRG : begin
     end;
 
   else

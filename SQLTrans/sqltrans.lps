@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="x64 Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="sqltrans.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="12"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2unit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainTL2TransForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2Unit"/>
+        <IsVisibleTab Value="True"/>
+        <FoldState Value=" T7FM{=}"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2edittext.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditTextForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2EditText"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="52"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="8" Y="50"/>
+        <FoldState Value=" T46011 T7DFC T8L2[D43d07)"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2datamodule.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2DataModule"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="TL2DataModule"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="338"/>
+        <CursorPos X="2" Y="358"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2settingsform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2Settings"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2SettingsForm"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="350"/>
+        <CursorPos X="3" Y="373"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2simform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SimilarForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2SimForm"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="31"/>
+        <CursorPos X="22" Y="57"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2notesform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2Notes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2NotesForm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="182"/>
+        <CursorPos Y="207"/>
+        <UsageCount Value="204"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2text.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Text"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="469"/>
+        <CursorPos Y="489"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="200"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgmod.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGMod"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="204"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2dupeform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DupeForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2DupeForm"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="57"/>
+        <CursorPos X="24" Y="88"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmmodinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MODInfoForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmModInfo"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="118"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Logging"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="97"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\trclass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TRClass"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="97"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2SQLCP\tltrsql.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLTrSQL"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1138"/>
+        <CursorPos X="43" Y="1169"/>
+        <UsageCount Value="31"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\RGDB\rgdb.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="31"/>
+      </Unit>
+    </Units>
+    <OtherDefines Count="1">
+      <Define0 Value="DEBUG"/>
+    </OtherDefines>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="D:\Work\LazTrunk\fpcsrc\packages\fcl-web\src\base\fphttpclient.pp"/>
+        <Line Value="1633"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="trclass.pas"/>
+        <Line Value="742"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="trclass.pas"/>
+        <Line Value="714"/>
+      </Item>
+    </BreakPoints>
+    <Watches>
+      <Item>
+        <Expression Value="artext"/>
+        <DisplayFormat ArrayNavBarInherit="False"/>
+      </Item>
+      <Item>
+        <Expression Value="refs"/>
+      </Item>
+      <Item>
+        <Expression Value="TRCache[i]"/>
+      </Item>
+      <Item>
+        <Expression Value="TRCache[i].flags"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
+      </Item>
+      <Item>
+        <Expression Value="TRCache"/>
+        <DisplayFormat ENumInherit="False" EnumBase="vdfBaseHex" BoolInherit="False" BoolBase="vdfBaseHex" CharInherit="False" CharBase="vdfBaseHex" ArrayNavBarInherit="False"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

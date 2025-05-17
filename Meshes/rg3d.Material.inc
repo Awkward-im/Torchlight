@@ -291,8 +291,11 @@ begin
     if ltmp<>i then Log('!!!! number is not like order',ltmp);
     Log('{00} w material #'   ,ltmp);
     Log('{01} w (part of 00?)',memReadWord(aptr));
+    // maybe version addons can be not at the end only
     Log('{02} w can be >1'    ,memReadWord(aptr));
-    Log('{03} w (part of 02?)',memReadWord(aptr));
+    // #0D
+    // ?? maybe #9 insert here
+    Log('{03} w ',memReadWord(aptr)); // RG(1C/1D), Pirate human male, pirate bald = 1
     Log('{04} w' ,memReadWord(aptr));
     Log('{05} w' ,memReadWord(aptr));
     Log('{06} w' ,memReadWord(aptr));

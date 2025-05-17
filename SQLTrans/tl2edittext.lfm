@@ -1,0 +1,275 @@
+object EditTextForm: TEditTextForm
+  Left = 696
+  Height = 407
+  Top = 278
+  Width = 533
+  Caption = 'Edit text'
+  ClientHeight = 407
+  ClientWidth = 533
+  ParentFont = True
+  ShowHint = True
+  LCLVersion = '3.99.0.0'
+  OnClose = FormClose
+  object pnl_1_File: TPanel
+    Left = 0
+    Height = 49
+    Top = 0
+    Width = 533
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 49
+    ClientWidth = 533
+    TabOrder = 0
+    object lblFile: TLabel
+      Left = 6
+      Height = 15
+      Top = 5
+      Width = 519
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      ParentColor = False
+    end
+    object lblTag: TLabel
+      Left = 6
+      Height = 15
+      Top = 30
+      Width = 23
+      Caption = 'Tag:'
+    end
+    object lblTagValue: TLabel
+      AnchorSideLeft.Control = lblTag
+      AnchorSideLeft.Side = asrBottom
+      Left = 35
+      Height = 15
+      Top = 30
+      Width = 490
+      AutoSize = False
+      BorderSpacing.Left = 6
+    end
+  end
+  object pnl_3_Original: TPanel
+    Left = 0
+    Height = 155
+    Top = 49
+    Width = 533
+    Align = alClient
+    ClientHeight = 155
+    ClientWidth = 533
+    TabOrder = 1
+    object memOriginal: TMemo
+      Left = 6
+      Height = 147
+      Top = 4
+      Width = 519
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ScrollBars = ssAutoVertical
+      TabOrder = 0
+    end
+  end
+  object pnl_4_Toolbar: TPanel
+    Left = 0
+    Height = 30
+    Top = 204
+    Width = 533
+    Align = alBottom
+    ClientHeight = 30
+    ClientWidth = 533
+    TabOrder = 2
+    object sbPrev: TSpeedButton
+      Left = 37
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actPrevLine
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 12
+      ShowCaption = False
+    end
+    object sbNext: TSpeedButton
+      Left = 66
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actNextLine
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 13
+      ShowCaption = False
+    end
+    object sbPartial: TSpeedButton
+      Left = 144
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actMarkAsPartial
+      AllowAllUp = True
+      GroupIndex = 1
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 11
+      ShowCaption = False
+    end
+    object sbTranslate: TSpeedButton
+      Left = 502
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actTranslate
+      Anchors = [akTop, akRight]
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 8
+      ShowCaption = False
+    end
+    object sbShowSample: TSpeedButton
+      Left = 212
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actShowSample
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 17
+      ShowCaption = False
+    end
+    object sbPrevUntranslated: TSpeedButton
+      Left = 8
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actPrevUntranslated
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 14
+      ShowCaption = False
+    end
+    object sbNextUntranslated: TSpeedButton
+      Left = 95
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actNextUntranslated
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 15
+      ShowCaption = False
+    end
+    object sbShowDupe: TSpeedButton
+      Left = 240
+      Height = 22
+      Top = 4
+      Width = 23
+      Action = actShowDupe
+      Images = TL2DataModule.TL2ImageList
+      ImageIndex = 7
+    end
+  end
+  object pnl_5_Translation: TPanel
+    Left = 0
+    Height = 136
+    Top = 234
+    Width = 533
+    Align = alBottom
+    ClientHeight = 136
+    ClientWidth = 533
+    TabOrder = 3
+    object memTrans: TMemo
+      Left = 8
+      Height = 126
+      Top = 4
+      Width = 517
+      Anchors = [akTop, akLeft, akRight]
+      ScrollBars = ssAutoVertical
+      TabOrder = 0
+      OnKeyDown = memTransKeyDown
+    end
+  end
+  object pnl_6_Bottom: TPanel
+    Left = 0
+    Height = 37
+    Top = 370
+    Width = 533
+    Align = alBottom
+    ClientHeight = 37
+    ClientWidth = 533
+    TabOrder = 4
+    object lblNumber: TLabel
+      Left = 8
+      Height = 1
+      Top = 10
+      Width = 1
+      ParentColor = False
+    end
+    object bbCancel: TBitBtn
+      Left = 368
+      Height = 30
+      Top = 3
+      Width = 75
+      Anchors = [akRight, akBottom]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 0
+    end
+    object bbOK: TBitBtn
+      Left = 450
+      Height = 30
+      Top = 3
+      Width = 75
+      Anchors = [akRight, akBottom]
+      DefaultCaption = True
+      Kind = bkOK
+      ModalResult = 1
+      TabOrder = 1
+      OnClick = bbOKClick
+    end
+  end
+  object ActionList: TActionList
+    Images = TL2DataModule.TL2ImageList
+    Left = 104
+    Top = 320
+    object actPrevLine: TAction
+      Hint = 'Previous line'
+      ImageIndex = 12
+      ShortCut = 32805
+      OnExecute = actPrevLineExecute
+    end
+    object actNextLine: TAction
+      Hint = 'Next line'
+      ImageIndex = 13
+      ShortCut = 32807
+      OnExecute = actNextLineExecute
+    end
+    object actPrevUntranslated: TAction
+      Hint = 'Previous untranslated'
+      ImageIndex = 14
+      ShortCut = 32806
+      OnExecute = actPrevUntranslatedExecute
+    end
+    object actNextUntranslated: TAction
+      Hint = 'Next untranslated'
+      ImageIndex = 15
+      ShortCut = 32808
+      OnExecute = actNextUntranslatedExecute
+    end
+    object actMarkAsPartial: TAction
+      GroupIndex = 1
+      Hint = 'Mark as Partial'
+      ImageIndex = 11
+      ShortCut = 32848
+      OnExecute = actMarkAsPartialExecute
+    end
+    object actShowSample: TAction
+      Hint = 'Show Sample'
+      ImageIndex = 17
+      ShortCut = 32851
+      OnExecute = actShowSampleExecute
+    end
+    object actTranslate: TAction
+      Hint = 'Translate'
+      ImageIndex = 8
+      ShortCut = 32852
+      OnExecute = actTranslateExecute
+    end
+    object actShowDupe: TAction
+      Hint = 'Show doubles'
+      ImageIndex = 7
+      OnExecute = actShowDupeExecute
+    end
+  end
+end

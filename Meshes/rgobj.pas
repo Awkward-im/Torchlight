@@ -590,9 +590,9 @@ procedure TRGSubMesh.AddBone(avertexIndex, aboneIndex:integer; aweight:single);
 begin
   if FBoneAssignCount=FBonesLen then
   begin
-    // let's minimum 2 vertex per bone
-    if FBonesLen=0 then FBonesLen:=FVertexCount*2;
-    FBonesLen:=Align(FBonesLen+63,64);
+    // let's minimum 2.5 vertex per bone
+    if FBonesLen=0 then FBonesLen:=FVertexCount*2+(FVertexCount div 2);
+    FBonesLen:=Align(FBonesLen+(FVertexCount div 2),64);
     ReallocMem(FBones,FBonesLen*SizeOf(TBoneVertex));
   end;
 
