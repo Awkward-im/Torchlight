@@ -24,8 +24,7 @@ type
     procedure FillList(const adata:TTL2Translation; aline:integer);
 
   public
-    constructor Create(AOwner:TComponent; const adata:TTL2Translation;
-        aline:integer); overload;
+    constructor Create(AOwner:TComponent; const adata:TTL2Translation; aline:integer); overload;
   end;
 
 
@@ -76,9 +75,9 @@ begin
     lRef:=adata.Ref[aline,i];
     sgDupes.Objects[0,i+1]:=TObject(@adata);
     sgDupes.Objects[1,i+1]:=TObject(IntPtr(lref));
-    sgDupes.Cells[1,i+1]:=adata.Refs.GetFile(lRef);
-    sgDupes.Cells[2,i+1]:=IntToStr(adata.Refs.GetLine(lRef));
-    sgDupes.Cells[3,i+1]:=adata.Refs.GetTag(lRef);
+    sgDupes.Cells  [1,i+1]:=adata.Refs.GetFile(lRef);
+    sgDupes.Cells  [2,i+1]:=IntToStr(adata.Refs.GetLine(lRef));
+    sgDupes.Cells  [3,i+1]:=adata.Refs.GetTag(lRef);
   end;
 
   sgDupes.Row:=1;

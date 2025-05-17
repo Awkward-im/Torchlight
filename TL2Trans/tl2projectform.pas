@@ -118,7 +118,7 @@ type
     function Load(const fname:AnsiString; silent:boolean=false):boolean;
     procedure Save();
     procedure Build();
-    procedure MoveToIndex(idx: integer);
+    function  MoveToIndex(idx: integer):integer;
     procedure UpdateGrid(idx: integer);
 
     property OnSBUpdate:TSBUpdateEvent read FSBUpdate write FSBUpdate;
@@ -730,56 +730,36 @@ begin
   memEdit.Text:=Value;
 end;
 
-procedure TTL2Project.MoveToIndex(idx:integer);
+function TTL2Project.MoveToIndex(idx:integer):integer;
 var
-  lrow,i:integer;
+  lrow:integer;
 begin
   lrow:=TL2Grid.Row;
   if (lrow<(TL2Grid.RowCount-1)) and (idx=IntPtr(TL2Grid.Objects[0,lrow+1])) then TL2Grid.Row:=lrow+1
   else if (lrow>1)               and (idx=IntPtr(TL2Grid.Objects[0,lrow-1])) then TL2Grid.Row:=lrow-1
   else if (idx<>IntPtr(TL2Grid.Objects[0,lrow])) then
-    for i:=1 to TL2Grid.RowCount-1 do
+    for lrow:=1 to TL2Grid.RowCount-1 do
     begin
-      if idx=IntPtr(TL2Grid.Objects[0,i]) then
+      if idx=IntPtr(TL2Grid.Objects[0,lrow]) then
       begin
-        TL2Grid.Row   :=i;
-        TL2Grid.TopRow:=i;
-        exit;
+        TL2Grid.Row:=lrow;
+        if not TL2Grid.IsCellVisible(0,lrow) then
+          TL2Grid.TopRow:=lrow;
+        break;
       end;
     end;
+
+  result:=lrow;
 end;
 
 procedure TTL2Project.UpdateGrid(idx:integer);
 var
-  lrow,i:integer;
+  lrow:integer;
 begin
-  lrow:=TL2Grid.Row;
-  if (lrow<(TL2Grid.RowCount-1)) and (idx=IntPtr(TL2Grid.Objects[0,lrow+1])) then inc(lrow)
-  else if (lrow>1)               and (idx=IntPtr(TL2Grid.Objects[0,lrow-1])) then dec(lrow)
-  else if (idx<>IntPtr(TL2Grid.Objects[0,lrow])) then
-  begin
-    lrow:=0;
-    for i:=1 to TL2Grid.RowCount-1 do
-    begin
-      if idx=IntPtr(TL2Grid.Objects[0,i]) then
-      begin
-        lrow:=i;
-        break;
-      end;
-    end;
-  end;
+  lrow:=MoveToIndex(idx);
 
-  if lrow<>0 then
-  begin
-    TL2Grid.Cells[colTrans,lrow]:=data.Trans[idx];
-    if data.State[idx]=stPartial then
-      TL2Grid.Cells[colPartial,lrow]:='1'
-    else
-      TL2Grid.Cells[colPartial,lrow]:='0';
-
-    TL2Grid.Row   :=lrow;
-    TL2Grid.TopRow:=lrow;
-  end;
+  TL2Grid.Cells[colTrans  ,lrow]:=data.Trans[idx];
+  TL2Grid.Cells[colPartial,lrow]:=BoolNumber[data.State[idx]=stPartial];
 end;
 
 //----- Load -----
