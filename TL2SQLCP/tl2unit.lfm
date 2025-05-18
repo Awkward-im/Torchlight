@@ -10,9 +10,8 @@ object MainTL2TransForm: TMainTL2TransForm
   Menu = TL2MainMenu
   ShowHint = True
   LCLVersion = '4.99.0.0'
-  OnCloseQuery = FormCloseQuery
+  OnClose = FormClose
   OnCreate = FormCreate
-  OnKeyDown = FormKeyDown
   object TL2StatusBar: TStatusBar
     Left = 0
     Height = 23
@@ -30,8 +29,10 @@ object MainTL2TransForm: TMainTL2TransForm
     TabOrder = 0
     object tbFileNew: TToolButton
       Left = 4
+      Hint = 'Scan unpacked mod (directory)'
       Top = 2
-      Action = FileNew
+      Caption = 'Scan &dir'
+      ImageIndex = 0
     end
     object tbFileSave: TToolButton
       Left = 50
@@ -72,13 +73,17 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object tbBuild: TToolButton
       Left = 73
+      Hint = 'Build translation'
       Top = 2
-      Action = FileBuild
+      Caption = '&Build'
+      ImageIndex = 24
     end
     object tbScanMod: TToolButton
       Left = 27
+      Hint = 'Scan compiled mod'
       Top = 2
-      Action = FileScan
+      Caption = 'Scan &mod'
+      ImageIndex = 26
     end
     object tbShowLog: TToolButton
       Left = 181
@@ -190,14 +195,8 @@ object MainTL2TransForm: TMainTL2TransForm
         ImageIndex = 15
         ShowCaption = False
       end
-      object sbChooseMod: TSpeedButton
-        Left = 8
-        Height = 22
-        Top = 6
-        Width = 23
-      end
       object cbLanguage: TComboBox
-        Left = 40
+        Left = 8
         Height = 23
         Hint = 'Choose translation language'
         Top = 6
@@ -206,9 +205,10 @@ object MainTL2TransForm: TMainTL2TransForm
         Sorted = True
         Style = csDropDownList
         TabOrder = 1
+        OnChange = cbLanguageChange
       end
       object cbDisplayMode: TComboBox
-        Left = 192
+        Left = 152
         Height = 23
         Top = 6
         Width = 152
@@ -352,14 +352,6 @@ object MainTL2TransForm: TMainTL2TransForm
       BeforeExecute = FontEditBeforeExecute
       OnAccept = FontEditAccept
     end
-    object FileNew: TAction
-      Category = 'File'
-      Caption = 'Scan &dir'
-      Hint = 'Scan unpacked mod (directory)'
-      ImageIndex = 0
-      ShortCut = 16462
-      OnExecute = FileNewExecute
-    end
     object HelpAbout: TAction
       Category = 'Help'
       Caption = '&About'
@@ -375,21 +367,6 @@ object MainTL2TransForm: TMainTL2TransForm
       ShortCut = 32840
       OnExecute = HelpNotesExecute
     end
-    object FileScan: TAction
-      Category = 'File'
-      Caption = 'Scan &mod'
-      Hint = 'Scan compiled mod'
-      ImageIndex = 26
-      ShortCut = 16461
-      OnExecute = FileScanExecute
-    end
-    object FileOpen: TAction
-      Category = 'File'
-      Caption = '&Open'
-      Hint = 'Open project'
-      ImageIndex = 1
-      ShortCut = 16463
-    end
     object FileSave: TAction
       Category = 'File'
       Caption = '&Save'
@@ -398,23 +375,6 @@ object MainTL2TransForm: TMainTL2TransForm
       ImageIndex = 2
       ShortCut = 16467
       OnExecute = FileSaveExecute
-    end
-    object FileSaveAs: TAction
-      Category = 'File'
-      Caption = 'Save &As...'
-      Enabled = False
-      Hint = 'Save project as...'
-      ImageIndex = 5
-      ShortCut = 24659
-      OnExecute = FileSaveAsExecute
-    end
-    object FileBuild: TAction
-      Category = 'File'
-      Caption = '&Build'
-      Hint = 'Build translation'
-      ImageIndex = 24
-      ShortCut = 16450
-      OnExecute = FileBuildExecute
     end
     object FileExit: TAction
       Category = 'File'
@@ -532,11 +492,6 @@ object MainTL2TransForm: TMainTL2TransForm
       Caption = 'actOpenSource'
       ShortCut = 32851
     end
-    object actStopScan: TAction
-      Category = 'File'
-      Caption = 'actStopScan'
-      Enabled = False
-    end
     object actCheckTranslation: TAction
       Category = 'Edit'
       Caption = 'actCheckTranslation'
@@ -559,31 +514,8 @@ object MainTL2TransForm: TMainTL2TransForm
     Top = 128
     object miFile: TMenuItem
       Caption = '&File'
-      object miFileNew: TMenuItem
-        Action = FileNew
-      end
-      object miFileScanMod: TMenuItem
-        Action = FileScan
-      end
-      object miFileOpen: TMenuItem
-        Action = FileOpen
-      end
       object miFileSave: TMenuItem
         Action = FileSave
-      end
-      object miFileSaveAs: TMenuItem
-        Action = FileSaveAs
-      end
-      object miFileBuild: TMenuItem
-        Action = FileBuild
-      end
-      object miFileSep1: TMenuItem
-        Caption = '-'
-      end
-      object miClosePage: TMenuItem
-        Caption = 'Close Page'
-        ImageIndex = 21
-        ShortCut = 16499
       end
       object miFileSep2: TMenuItem
         Caption = '-'

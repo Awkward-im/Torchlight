@@ -24,7 +24,7 @@ type
   TMemoryIORec = record
     Data: ImagingUtility.PByteArray;
     Position: LongInt;
-    Size: LongInt;
+    Size: Int64;
   end;
   PMemoryIORec = ^TMemoryIORec;
 
@@ -38,7 +38,7 @@ var
   represented by Handle (and opened and operated on by members of IOFunctions).}
 function GetInputSize(const IOFunctions: TIOFunctions; Handle: TImagingHandle): Int64;
 { Helper function that initializes TMemoryIORec with given params.}
-function PrepareMemIO(Data: Pointer; Size: LongInt): TMemoryIORec;
+function PrepareMemIO(Data: Pointer; const Size: Int64): TMemoryIORec;
 { Reads one text line from input (CR+LF, CR, or LF as line delimiter).}
 function ReadLine(const IOFunctions: TIOFunctions; Handle: TImagingHandle;
   out Line: AnsiString; FailOnControlChars: Boolean = False): Boolean;
@@ -53,18 +53,43 @@ type
     class function CreateFromIOHandle(const IOFunctions: TIOFunctions; Handle: TImagingHandle): TReadMemoryStream;
   end;
 
+  { A TStream descendant that wraps an existing TIOFunctions record and TImagingHandle.
+    It translates TStream methods (Read, Write, Seek) into calls to the
+    corresponding functions in the TIOFunctions record.
+    Note: This stream does not own or manage the lifetime of the TImagingHandle.
+          Closing the handle must be done externally using the appropriate TCloseProc.
+    Note: Resizing the stream is not supported. }
   TImagingIOStream = class(TStream)
   private
     FIO: TIOFunctions;
     FHandle: TImagingHandle;
+    FSize: Int64;
+  protected
+    function GetSize: Int64; override;
+    procedure SetSize(const NewSize: Int64); override;
   public
-    constructor Create(const IOFunctions: TIOFunctions; Handle: TImagingHandle);
+    { Creates a stream wrapper around existing IO functions and handle.
+      The handle must already be opened. The stream does NOT close the handle
+      when destroyed. }
+    constructor Create(const AIOFunctions: TIOFunctions; AHandle: TImagingHandle);
+
+    function Read(var Buffer; Count: TIOReadWriteCount): TIOReadWriteCount; override;
+    function Write(const Buffer; Count: TIOReadWriteCount): TIOReadWriteCount; override;
+    function Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
+
+{$IFNDEF FPC}
+    function ReadByte: Byte; {$IFDEF USE_INLINE}inline;{$ENDIF}
+    procedure WriteByte(Value: Byte); {$IFDEF USE_INLINE}inline;{$ENDIF}
+{$ENDIF}
+
+    property Handle: TImagingHandle read FHandle;
+    property IOFunctions: TIOFunctions read FIO;
   end;
 
 implementation
 
 const
-  DefaultBufferSize = 16 * 1024;
+  DefaultBufferSize = 32 * 1024;
 
 type
   { Based on TaaBufferedStream
@@ -73,27 +98,27 @@ type
   private
     FBuffer: PByteArray;
     FBufSize: Integer;
-    FBufStart: Integer;
+    FBufStart: Int64;
     FBufPos: Integer;
     FBytesInBuf: Integer;
-    FSize: Integer;
+    FSize: Int64;
     FDirty: Boolean;
     FStream: TStream;
-    function GetPosition: Integer;
-    function GetSize: Integer;
+    function GetPosition: Int64;
+    function GetSize: Int64;
     procedure ReadBuffer;
     procedure WriteBuffer;
-    procedure SetPosition(const Value: Integer);
+    procedure SetPosition(const Value: Int64);
   public
     constructor Create(AStream: TStream);
     destructor Destroy; override;
-    function Read(var Buffer; Count: Integer): Integer;
-    function Write(const Buffer; Count: Integer): Integer;
-    function Seek(Offset: Integer; Origin: Word): Integer;
+    function Read(var Buffer; Count: NativeInt): NativeInt;
+    function Write(const Buffer; Count: NativeInt): NativeInt;
+    function Seek(Offset: Int64; Origin: Word): Int64;
     procedure Commit;
     property Stream: TStream read FStream;
-    property Position: Integer read GetPosition write SetPosition;
-    property Size: Integer read GetSize;
+    property Position: Int64 read GetPosition write SetPosition;
+    property Size: Int64 read GetSize;
   end;
 
 constructor TBufferedStream.Create(AStream: TStream);
@@ -120,17 +145,17 @@ begin
   inherited Destroy;
 end;
 
-function TBufferedStream.GetPosition: Integer;
+function TBufferedStream.GetPosition: Int64;
 begin
   Result := FBufStart + FBufPos;
 end;
 
-procedure TBufferedStream.SetPosition(const Value: Integer);
+procedure TBufferedStream.SetPosition(const Value: Int64);
 begin
   Seek(Value, soFromCurrent);
 end;
 
-function TBufferedStream.GetSize: Integer;
+function TBufferedStream.GetSize: Int64;
 begin
   Result := FSize;
 end;
@@ -169,10 +194,10 @@ begin
   end;
 end;
 
-function TBufferedStream.Read(var Buffer; Count: Integer): Integer;
+function TBufferedStream.Read(var Buffer; Count: NativeInt): NativeInt;
 var
   BufAsBytes: TByteArray absolute Buffer;
-  BufIdx, BytesToGo, BytesToRead: Integer;
+  BufIdx, BytesToGo, BytesToRead: NativeInt;
 begin
   // Calculate the actual number of bytes we can read - this depends on
   // the current position and size of the stream as well as the number
@@ -234,9 +259,9 @@ begin
   end;
 end;
 
-function TBufferedStream.Seek(Offset: Integer; Origin: Word): Integer;
+function TBufferedStream.Seek(Offset: Int64; Origin: Word): Int64;
 var
-  NewBufStart, NewPos: Integer;
+  NewBufStart, NewPos: Int64;
 begin
   // Calculate the new position
   case Origin of
@@ -270,10 +295,10 @@ begin
   Result := NewPos;
 end;
 
-function TBufferedStream.Write(const Buffer; Count: Integer): Integer;
+function TBufferedStream.Write(const Buffer; Count: NativeInt): NativeInt;
 var
   BufAsBytes: TByteArray absolute Buffer;
-  BufIdx, BytesToGo, BytesToWrite: Integer;
+  BufIdx, BytesToGo, BytesToWrite: NativeInt;
 begin
   // When we write to this stream we always assume that we can write the
   // requested number of bytes: if we can't (eg, the disk is full) we'll
@@ -340,6 +365,70 @@ begin
   end;
 end;
 
+{ TImagingIOStream }
+
+constructor TImagingIOStream.Create(const AIOFunctions: TIOFunctions; AHandle: TImagingHandle);
+begin
+  inherited Create;
+  if (AHandle = nil) or
+    not Assigned(AIOFunctions.Read) or
+    not Assigned(AIOFunctions.Write) or
+    not Assigned(AIOFunctions.Seek) or
+    not Assigned(AIOFunctions.Tell) then
+  begin
+    raise EStreamError.Create('Invalid TIOFunctions or TImagingHandle provided');
+  end;
+
+  FIO := AIOFunctions;
+  FHandle := AHandle;
+  FSize := GetInputSize(FIO, FHandle);
+end;
+
+function TImagingIOStream.GetSize: Int64;
+begin
+  Result := FSize;
+end;
+
+procedure TImagingIOStream.SetSize(const NewSize: Int64);
+begin
+  raise EStreamError.CreateFmt('%s does not support SetSize', [ClassName]);
+end;
+
+function TImagingIOStream.Read(var Buffer; Count: TIOReadWriteCount): TIOReadWriteCount;
+begin
+  Result := 0;
+  if Count < 0 then raise EStreamError.Create('Read count cannot be negative');
+  if Count = 0 then Exit;
+
+  Result := FIO.Read(FHandle, @Buffer, Count);
+end;
+
+function TImagingIOStream.Write(const Buffer; Count: TIOReadWriteCount): TIOReadWriteCount;
+begin
+  Result := 0;
+  if Count < 0 then raise EStreamError.Create('Write count cannot be negative');
+  if Count = 0 then Exit;
+
+  Result := FIO.Write(FHandle, @Buffer, Count);
+end;
+
+function TImagingIOStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
+begin
+  Result := FIO.Seek(FHandle, Offset, TSeekMode(Origin));
+end;
+
+{$IFNDEF FPC}
+function TImagingIOStream.ReadByte: Byte;
+begin
+  ReadBuffer(Result, 1);
+end;
+
+procedure TImagingIOStream.WriteByte(Value: Byte);
+begin
+  WriteBuffer(Value, 1);
+end;
+{$ENDIF}
+
 { File IO functions }
 
 function FileOpen(FileName: PChar; Mode: TOpenMode): TImagingHandle; cdecl;
@@ -388,12 +477,12 @@ begin
   Result := TBufferedStream(Handle).Position;
 end;
 
-function FileRead(Handle: TImagingHandle; Buffer: Pointer; Count: LongInt): LongInt; cdecl;
+function FileRead(Handle: TImagingHandle; Buffer: Pointer; Count: TIOReadWriteCount): TIOReadWriteCount; cdecl;
 begin
   Result := TBufferedStream(Handle).Read(Buffer^, Count);
 end;
 
-function FileWrite(Handle: TImagingHandle; Buffer: Pointer; Count: LongInt): LongInt; cdecl;
+function FileWrite(Handle: TImagingHandle; Buffer: Pointer; Count: TIOReadWriteCount): TIOReadWriteCount; cdecl;
 begin
   Result := TBufferedStream(Handle).Write(Buffer^, Count);
 end;
@@ -424,13 +513,14 @@ begin
   Result := TStream(Handle).Position;
 end;
 
-function StreamRead(Handle: TImagingHandle; Buffer: Pointer; Count: LongInt):
-  LongInt; cdecl;
+function StreamRead(Handle: TImagingHandle; Buffer: Pointer; Count: TIOReadWriteCount):
+  TIOReadWriteCount; cdecl;
 begin
   Result := TStream(Handle).Read(Buffer^, Count);
 end;
 
-function StreamWrite(Handle: TImagingHandle; Buffer: Pointer; Count: LongInt): LongInt; cdecl;
+function StreamWrite(Handle: TImagingHandle; Buffer: Pointer; Count: TIOReadWriteCount):
+  TIOReadWriteCount; cdecl;
 begin
   Result := TStream(Handle).Write(Buffer^, Count);
 end;
@@ -468,8 +558,8 @@ begin
   Result := PMemoryIORec(Handle).Position;
 end;
 
-function MemoryRead(Handle: TImagingHandle; Buffer: Pointer; Count: LongInt):
-  LongInt; cdecl;
+function MemoryRead(Handle: TImagingHandle; Buffer: Pointer; Count: TIOReadWriteCount):
+  TIOReadWriteCount; cdecl;
 var
   Rec: PMemoryIORec;
 begin
@@ -481,7 +571,8 @@ begin
   Rec.Position := Rec.Position + Result;
 end;
 
-function MemoryWrite(Handle: TImagingHandle; Buffer: Pointer; Count: LongInt): LongInt; cdecl;
+function MemoryWrite(Handle: TImagingHandle; Buffer: Pointer; Count: TIOReadWriteCount):
+  TIOReadWriteCount; cdecl;
 var
   Rec: PMemoryIORec;
 begin
@@ -505,7 +596,7 @@ begin
   IOFunctions.Seek(Handle, OldPos, smFromBeginning);
 end;
 
-function PrepareMemIO(Data: Pointer; Size: LongInt): TMemoryIORec;
+function PrepareMemIO(Data: Pointer; const Size: Int64): TMemoryIORec;
 begin
   Result.Data := Data;
   Result.Position := 0;
@@ -595,13 +686,6 @@ begin
   Result := TReadMemoryStream.Create(Data, Size);
 end;
 
-{ TImagingIOStream }
-
-constructor TImagingIOStream.Create(const IOFunctions: TIOFunctions;
-  Handle: TImagingHandle);
-begin
-
-end;
 
 initialization
   OriginalFileIO.Open := FileOpen;

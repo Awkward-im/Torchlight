@@ -18,6 +18,7 @@ const
 var
   tldb:pointer;
 var
+  // 0 must be Vanilla + unreferred; -1 mean all; -2 mean unreferred
   CurMod :Int64;
   CurLang:AnsiString;
 
@@ -52,14 +53,13 @@ const
 
 
 function CheckForDirectory(const afilter:string):integer;
-function GetModDirList (amodid:Int64  ; var alist:TDictDynArray):integer;
-function GetLineDirList(aid   :integer; var alist:TStringDynArray):integer;
+function GetModDirList (amodid:Int64; var alist:TStringDynArray):integer;
 function GetSimilars(aid:integer; var arr:TIntegerDynArray):integer;
 function GetDoubles (aid:integer; var arr:TIntegerDynArray):integer;
 function RemakeFilter():boolean;
 
 function CreateLangTable(const lng:AnsiString):boolean;
-function TLOpenBase ():boolean;
+function TLOpenBase (inmemory:boolean=false):boolean;
 function TLSaveBase ():integer;
 function TLCloseBase(dosave:boolean):boolean;
 {
@@ -116,7 +116,8 @@ uses
   tlscan,
   rgdb;
 
-//var  tldb:pointer;
+var
+  BaseInMemory:boolean;
 
 {REGION Mod}
 function AddToModList(aid:Int64; const atitle:AnsiString):integer;
@@ -179,7 +180,10 @@ end;
 function GetUnrefLines():integer;
 begin
   result:=ReturnInt(tldb,
-    'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT DISTINCT srcid FROM ref))');
+//    'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT DISTINCT srcid FROM ref))');
+    'SELECT count(strings.id) FROM strings'+
+          ' LEFT JOIN ref ON ref.srcid=strings.id WHERE ref.srcid IS NULL');
+
 end;
 
 function GetLineCount(amod:Int64):integer;
@@ -193,8 +197,7 @@ begin
     Str(amod,lsrc);
     result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM ref WHERE modid='+lsrc);
     if amod=0 then
-      result:=result+GetUnrefLines();//ReturnInt(tldb,
-//        'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT srcid FROM ref))');
+      result:=result+GetUnrefLines();
   end;
 end;
 
@@ -222,9 +225,11 @@ begin
   result:=ReturnInt(tldb,'SELECT count(1) FROM sqlite_master'+
     ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
   SetLength(stat.langs,result);
+  if result=0 then exit;
+
   i:=0;
   ls:='SELECT name FROM sqlite_master'+
-    ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')';
+    ' WHERE (type = ''table'') AND (name GLOB ''trans_*'') ORDER BY name';
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
   begin
     while sqlite3_step(vm)=SQLITE_ROW do
@@ -608,76 +613,35 @@ begin
   end;
 end;
 
-function GetDirList(var alist:TDictDynArray; const cond:AnsiString):integer;
+function GetModDirList(amodid:Int64; var alist:TStringDynArray):integer;
 var
   vm:pointer;
-  ls:string;
+  ls,lmod:string;
   lcnt:integer;
 begin
   result:=0;
-  alist:=nil;
 
-  lcnt:=ReturnInt(tldb,'SELECT count(DISTINCT dir) FROM ref WHERE '+cond);
-//  lcnt:=ReturnInt(tldb,'SELECT count(dir) FROM ref WHERE '+cond);
+  Str(amodid,lmod);
+  lcnt:=ReturnInt(tldb,'SELECT count(DISTINCT dir) FROM ref WHERE modid='+lmod);
   if lcnt>0 then
   begin
     SetLength(alist,lcnt);
-    ls:='SELECT id, value FROM dicdir WHERE id IN (SELECT DISTINCT dir FROM ref WHERE '+cond+')';
-//    ls:='SELECT value FROM dicdir WHERE id IN (SELECT dir FROM ref WHERE '+cond+')';
+
+//    ls:='SELECT value FROM dicdir WHERE id IN (SELECT DISTINCT dir FROM ref WHERE modid='+ls+')';
+    ls:='SELECT DISTINCT value FROM dicdir INNER JOIN ref ON ref.dir=dicdir.id WHERE ref.modid='+lmod;
+//    ls:='SELECT DISTINCT value FROM dicdir WHERE id IN (SELECT dir FROM ref WHERE modid='+lmod+')';
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
-        alist[result].id   :=sqlite3_column_int (vm,0);
-        alist[result].value:=sqlite3_column_text(vm,1);
+        alist[result]:=sqlite3_column_text(vm,0);
         inc(result);
       end;
       sqlite3_finalize(vm);
     end;
-//    if i<lcnt then SetLength(alist,i);
   end;
 end;
 
-function GetDirList(var alist:TStringDynArray; const cond:AnsiString):integer;
-var
-  vm:pointer;
-  ls:string;
-begin
-  result:=0;
-
-//  ls:='SELECT DISTINCT dir FROM ref WHERE '+cond;
-  ls:='SELECT value FROM dicdir WHERE id IN (SELECT DISTINCT dir FROM ref WHERE '+cond+')';
-//    ls:='SELECT value FROM dicdir WHERE id IN (SELECT dir FROM ref WHERE '+cond+')';
-  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
-  begin
-    while sqlite3_step(vm)=SQLITE_ROW do
-    begin
-      if result>=Length(alist) then
-        SetLength(alist,result+64);
-//      alist[result]:=sqlite3_column_text(vm,0);
-      inc(result);
-    end;
-    sqlite3_finalize(vm);
-  end;
-
-end;
-
-function GetModDirList(amodid:Int64; var alist:TDictDynArray):integer;
-var
-  ls:AnsiString;
-begin
-  Str(amodid,ls);
-  //!! if amodid=-1 then '1=1'/ no WHERE
-  result:=GetDirList(alist,'modid='+ls);
-end;
-
-function GetLineDirList(aid:integer; var alist:TStringDynArray):integer;
-var
-  ls:AnsiString;
-begin
-  Str(aid,ls);
-  result:=GetDirList(alist,'srcid='+ls);
-end;
 {
 function GetLineRef(aid:integer):integer;
 var
@@ -709,9 +673,9 @@ begin
 
   lSQL:='SELECT r.srcid, d.value, f.value, t.value, r.line, r.flags'+
         ' FROM ref r'+
-        ' LEFT JOIN dicdir  d ON d.id=r.dir'+
-        ' LEFT JOIN dicfile f ON f.id=r.file'+
-        ' LEFT JOIN dictag  t ON t.id=r.tag'+
+        ' INNER JOIN dicdir  d ON d.id=r.dir'+
+        ' INNER JOIN dicfile f ON f.id=r.file'+
+        ' INNER JOIN dictag  t ON t.id=r.tag'+
         ' WHERE r.id='+lref;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
@@ -980,37 +944,55 @@ begin
       '  flags  INTEGER );');
 end;
 
-function TLOpenBase():boolean;
+function TLOpenBase(inmemory:boolean=false):boolean;
 begin
+  if tldb<>nil then exit(true);
+
+  result:=false;
+
   try
     InitializeSQLite();
   except
-    exit(false);
+    exit;
   end;
-{
-  result:=sqlite3_open(':memory:',@tldb)=SQLITE_OK;
-  if result then
+
+  BaseInMemory:=false;
+  if inmemory then
   begin
-    if CopyFromFile(tldb,TLTRBase)<>SQLITE_OK then
+    result:=sqlite3_open(':memory:',@tldb)=SQLITE_OK;
+    if result then
+    begin
+      if CopyFromFile(tldb,TLTRBase)<>SQLITE_OK then
+        result:=CreateTables();
+    end;
+    if tldb<>nil then
+      BaseInMemory:=true;
+  end;
+  if tldb=nil then
+  begin
+    result:=OpenDatabase(tldb,TLTRBase);
+    if result then
       result:=CreateTables();
   end;
-}
-  result:=OpenDatabase(tldb,TLTRBase);
-  if result then
-    result:=CreateTables();
 end;
 
 function TLSaveBase():integer;
 begin
-//  result:=CopyToFile(tldb,TLTRBase);
+  if BaseInMemory then
+    result:=CopyToFile(tldb,TLTRBase)
+  else
+    result:=SQLITE_OK;
 end;
 
 function TLCloseBase(dosave:boolean):boolean;
 begin
-{
+  if tldb=nil then exit(not dosave);
+
   if dosave then
-    result:=TLSaveBase()=SQLITE_OK;
-}
+    result:=TLSaveBase()=SQLITE_OK
+  else
+    result:=true;
+
   result:=result and (sqlite3_close(tldb)=SQLITE_OK);
   tldb:=nil;
   ReleaseSQLite();
@@ -1085,8 +1067,10 @@ begin
     else
     begin
       Str(CurMod,lmod);
-      lSQL:='SELECT id, src FROM strings WHERE '+
-            'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
+//      lSQL:='SELECT id, src FROM strings WHERE '+
+//            'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
+      lSQL:='SELECT DISTINCT strings.id, strings.src FROM strings'+
+            ' INNER JOIN ref ON ref.srcid=strings.id WHERE ref.modid='+lmod;
     end;
 
     result:=0;
@@ -1108,8 +1092,10 @@ begin
   // Add unreferred to vanilla
   if (CurMod=0) or (CurMod=-2) then
   begin
-    lSQL:='SELECT id, src FROM strings WHERE '+
-          'NOT (id IN (SELECT DISTINCT srcid FROM ref))';
+//    lSQL:='SELECT id, src FROM strings WHERE '+
+//          'NOT (id IN (SELECT DISTINCT srcid FROM ref))';
+    lSQL:='SELECT strings.id, strings.src FROM strings'+
+          ' LEFT JOIN ref ON ref.srcid=strings.id WHERE ref.srcid IS NULL';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -1148,6 +1134,11 @@ begin
         begin
           TRCache[i].dst :=sqlite3_column_text(vm,0);
           TRCache[i].part:=sqlite3_column_int (vm,1)<>0;
+        end
+        else
+        begin
+          TRCache[i].dst :='';
+          TRCache[i].part:=false;
         end;
       end;
     end;

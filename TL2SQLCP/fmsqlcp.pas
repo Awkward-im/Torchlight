@@ -31,7 +31,9 @@ type
     procedure bbScanModClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure DoStartEdit(Sender: TObject);
     procedure lbModsSelectionChange(Sender: TObject; User: boolean);
+    procedure lfeModsAfterFilter(Sender: TObject);
   private
     function OnFileScan(const fname: AnsiString; idx, atotal: integer): integer;
     procedure FillModList();
@@ -53,7 +55,7 @@ uses
   tltrsql,
   iso639,
   unitlogform,
-//  tl2dataunit,
+  tl2unit,
   tlscan,
   rgdb,
   sqlite3dyn,
@@ -69,6 +71,8 @@ resourcestring
   rsStatus          = 'Total lines: %d | Unreferred lines: %d';
   rsStat            = 'Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d';
 
+const
+  sOriginalGame = '- Original game -';
 
 { TFormSQLCP }
 
@@ -182,8 +186,11 @@ var
   i:integer;
 begin
   if lbMods.ItemIndex<0 then exit;
+  if lbMods.ItemIndex=0 then
+    lstat.modid:=0
+  else
+    lstat.modid:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
 
-  lstat.modid:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
   GetModStatistic(lstat);
   edModSTat.Text:=Format(rsStat,
     [lstat.total,lstat.dupes,lstat.total-lstat.dupes,lstat.files,lstat.tags]);
@@ -197,6 +204,13 @@ begin
         [IntToStr(trans),IntToStr(part),lang,GetLangName(lang)]);
   end;
   gdModStat.EndUpdate();
+  if Length(lstat.langs)>0 then
+    gdModStat.Row:=1;
+end;
+
+procedure TFormSQLCP.lfeModsAfterFilter(Sender: TObject);
+begin
+  if lbMods.Items.Count>0 then lbMods.ItemIndex:=0;
 end;
 
 procedure TFormSQLCP.FillModList();
@@ -208,6 +222,7 @@ begin
   lfeMods.FilteredListBox:=nil;
   lfeMods.Clear;
   lbMods.Clear;
+  lbMods.Items.Add(sOriginalGame);
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
   begin
     while sqlite3_step(vm)=SQLITE_ROW do
@@ -228,7 +243,9 @@ var
   ls:string;
   i,lcnt:integer;
 begin
-  ls:='SELECT name FROM sqlite_master WHERE (type = ''table'') AND (name GLOB ''trans_*'')';
+  ls:='SELECT name FROM sqlite_master'+
+      ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')'+
+      ' ORDER BY name';
 
   gdLanguages.BeginUpdate;
   gdLanguages.Clear;
@@ -259,7 +276,7 @@ end;
 procedure TFormSQLCP.FormCreate(Sender: TObject);
 begin
   fmLogForm:=nil;
-  TLOpenBase();
+  TLOpenBase(true);
   FillLangList();
   FillModList();
   UpdateStatus();
@@ -268,6 +285,25 @@ end;
 procedure TFormSQLCP.FormDestroy(Sender: TObject);
 begin
   TLCloseBase(false);
+end;
+
+procedure TFormSQLCP.DoStartEdit(Sender: TObject);
+begin
+  if (MainTL2TransForm=nil) and (lbMods.ItemIndex>=0) and (gdModStat.Row>0) then
+  begin
+    // to avoid multiply dblclicks
+    MainTL2TransForm:=TMainTL2TransForm(1);
+
+    if lbMods.ItemIndex=0 then
+      CurMod:=0
+    else
+      CurMod:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
+    CurLang:=gdModStat.Cells[2,gdModStat.Row];
+
+    MainTL2TransForm:=TMainTL2TransForm.Create(Self);
+    Hide;
+    MainTL2TransForm.Show;
+  end;
 end;
 
 end.

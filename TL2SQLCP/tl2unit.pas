@@ -30,16 +30,10 @@ type
     actShowLog: TAction;
     actModInfo: TAction;
     actShowSimilar: TAction;
-    actStopScan: TAction;
     actTranslate: TAction;
-    FileScan: TAction;
-    FileBuild: TAction;
     HelpNotes: TAction;
     FileExit: TAction;
-    FileNew: TAction;
-    FileOpen: TAction;
     FileSave: TAction;
-    FileSaveAs: TAction;
     HelpAbout: TAction;
 
     FontEdit: TFontEdit;
@@ -60,15 +54,12 @@ type
     miEditCheckTranslation: TMenuItem;
     miEditSettings: TMenuItem;
     miEdit: TMenuItem;
-    miFileBuild: TMenuItem;
-    miFileScanMod: TMenuItem;
 
     pnlFolders: TPanel;
     pnlSkills: TPanel;
     pnlTop: TPanel;
     sbFindNext: TSpeedButton;
     sbProjectFilter: TSpeedButton;
-    sbChooseMod: TSpeedButton;
     Separator1: TMenuItem;
     splFolder: TSplitter;
     splSkills: TSplitter;
@@ -87,13 +78,8 @@ type
     miFile: TMenuItem;
     miHelp: TMenuItem;
     miFileExit: TMenuItem;
-    miFileNew: TMenuItem;
-    miFileOpen: TMenuItem;
     miFileSave: TMenuItem;
-    miFileSaveAs: TMenuItem;
-    miFileSep1: TMenuItem;
     miFileSep2: TMenuItem;
-    miClosePage: TMenuItem;
     TL2MainMenu: TMainMenu;
     TL2StatusBar: TStatusBar;
     tbHelpNotes: TToolButton;
@@ -120,20 +106,16 @@ type
     procedure actShowSimilarExecute(Sender: TObject);
     procedure actTranslateExecute(Sender: TObject);
     procedure cbFolderChange(Sender: TObject);
+    procedure cbLanguageChange(Sender: TObject);
     procedure cbSkillsChange(Sender: TObject);
     procedure edProjectFilterChange(Sender: TObject);
-    procedure FileScanExecute(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure HelpNotesExecute(Sender: TObject);
-    procedure FileBuildExecute(Sender: TObject);
     procedure FileExitExecute(Sender: TObject);
-    procedure FileNewExecute(Sender: TObject);
-    procedure FileSaveAsExecute(Sender: TObject);
     procedure FileSaveExecute(Sender: TObject);
     procedure FontEditAccept(Sender: TObject);
     procedure FontEditBeforeExecute(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure HelpAboutExecute(Sender: TObject);
     procedure memEditExit(Sender: TObject);
     procedure memEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -151,9 +133,9 @@ type
     FModName:String;
     FTable:string;
 
-    function  CanClosePage(idx: integer;out s:String): boolean;
     procedure dlgOnReplace(Sender: TObject);
     procedure FillFoldersCombo(asetidx: boolean);
+    procedure FillLangCombo();
     procedure FillProjectGrid(const afilter: AnsiString);
     function  FillProjectSGRow(aRow, idx: integer; const afilter: AnsiString): boolean;
     function  MoveToIndex(idx: integer):integer;
@@ -182,6 +164,7 @@ uses
   TL2SimForm,
   TL2About,
   tltrsql,
+  iso639,
   TL2Text;
 
 { TMainTL2TransForm }
@@ -265,180 +248,41 @@ begin
   cbDisplayMode.AddItem(rsNotReady    ,TObject(5));
   cbDisplayMode.ItemIndex:=0;
 
-  TLOpenBase();
-  CurMod:=2110504075;
-  CurLang:='ru';
+//  TLOpenBase();
+//  CurMod:=2110504075;
+//  CurLang:='ru';
   LoadModData();
-  LoadTranslation();
   FillFoldersCombo(true);
+  FillLangCombo();
+
+  LoadTranslation();
+  uprof.Stop;
+  FileSave.Enabled:=false;
+
   FillProjectGrid('');
 end;
 
-procedure TMainTL2TransForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-var
-//  lprj:TTL2Project;
-  i:integer;
+procedure TMainTL2TransForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  i:=-1;
-
-  if Key=VK_ESCAPE then
+  if FileSave.Enabled then
   begin
-//    lprj:=ActiveProject;
-//    if lprj<>nil then
-//      lprj.actStopScanExecute(Sender);
-  end;
-
-  inherited;
-end;
-
-function TMainTL2TransForm.CanClosePage(idx:integer; out s:string):boolean;
-var
-  ltab:TTabSheet;
-//  lprj:TTL2Project;
-begin
-  result:=false;
-  s:='';
-
-//  lprj:=ActiveProject;
-//  if lprj<>nil then
-  begin
-{
-    while lprj.Modified do
-      case MessageDlg(rsNotSaved,mtWarning,mbYesNoCancel,0,mbCancel) of
-        mrOk: begin
-          if lprj.FileName='' then
-            FileSaveAsExecute(self)
-          else
-            FileSaveExecute(self);
-        end;
-        mrCancel: exit;
-      else
-        break;
+    case MessageDlg(rsNotSaved,mtWarning,mbYesNoCancel,0,mbCancel) of
+      mrOk: FileSaveExecute(self);
+      mrCancel: begin
+        CloseAction:=caNone;
+        exit;
       end;
-    s:=lprj.FileName;
-}
+    else
+    end;
   end;
-  result:=true;
-
+  CloseAction:=caFree;
+  MainTL2TransForm:=nil;
+  (Owner as TForm).Show;
 end;
 
-procedure TMainTL2TransForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-var
-  lsl:TStringList;
-  ls:String;
-  i:integer;
-begin
-//  CanClose:=CanClosePage(i,ls);
-end;
-
-{%REGION File Operations}
 procedure TMainTL2TransForm.FileExitExecute(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TMainTL2TransForm.FileBuildExecute(Sender: TObject);
-begin
-//  ActiveProject.Build;
-end;
-
-procedure TMainTL2TransForm.FileScanExecute(Sender: TObject);
-var
-  OpenDialog: TOpenDialog;
-  ls:AnsiString;
-begin
-  OpenDialog:=TOpenDialog.Create(nil);
-  try
-    OpenDialog.DefaultExt:='.MOD';
-    OpenDialog.Filter    :='MOD files|*.MOD|PAK files|*.PAK|All supported|*.MOD;*.PAK|All files|*.*';
-    OpenDialog.Options   :=[ofEnableSizing,ofFileMustExist];
-    if OpenDialog.Execute then
-    begin
-//      if not ActiveProject.NewFromFile(OpenDialog.FileName) then
-//        CanClosePage(TL2PageControl.ActivePageIndex,ls);
-    end;
-  finally
-    OpenDialog.Free;
-  end;
-end;
-
-procedure TMainTL2TransForm.FileNewExecute(Sender: TObject);
-var
-  ldlg:TSelectDirectoryDialog;
-  ls:AnsiString;
-begin
-{
-  try
-    TL2ShellTreeView.Root:=TL2Settings.edRootDir.Text;
-  except
-    TL2ShellTreeView.Root:='';
-  end;
-  TL2ShellTreeView.Refresh(nil);
-  TL2TreePanel.Visible:=true;
-  TL2ShellTreeView.SetFocus;
-}
-  ldlg:=TSelectDirectoryDialog.Create(nil);
-  try
-    ldlg.InitialDir:=TL2Settings.edRootDir.Text;
-    ldlg.FileName  :='';
-    ldlg.Options   :=[ofEnableSizing,ofPathMustExist];
-    if ldlg.Execute then
-    begin
-      if Pos('\MEDIA',UpCase(ldlg.FileName))=(Length(ldlg.FileName)-6+1) then
-        ls:=Copy(ldlg.FileName,Length(ldlg.FileName)-6)
-      else if DirectoryExists(ldlg.FileName+'\MEDIA') then
-        ls:=ldlg.FileName
-      else
-      begin
-        ShowMessage(rsWrongDir);
-        exit;
-      end;
-
-//      if not ActiveProject.NewFromDir(ls,false,true) then
-//        CanClosePage(TL2PageControl.ActivePageIndex,ls);
-    end;
-  finally
-    ldlg.Free;
-  end;
-end;
-
-procedure TMainTL2TransForm.FileSaveAsExecute(Sender: TObject);
-var
-  SaveDialog: TSaveDialog;
-//  prj:TTL2Project;
-  ls:AnsiString;
-begin
-  SaveDialog:=TSaveDialog.Create(nil);
-  try
-//    prj:=ActiveProject;
-    SaveDialog.InitialDir:=TL2Settings.edWorkDir.Text;
-
-    ls:=TL2Settings.edTransLang.Text;
-{
-    if (ls<>'') and (Pos('.'+ls,prj.ProjectName)=0) then
-      ls:=prj.ProjectName+'.'+ls
-    else
-      ls:=prj.ProjectName;
-}
-    SaveDialog.FileName  :=ls;
-    SaveDialog.DefaultExt:=DefaultExt;
-    SaveDialog.Filter    :=DefaultFilter;
-    SaveDialog.Title     :=rsSaveProject;
-    SaveDialog.Options   :=SaveDialog.Options+[ofOverwritePrompt,ofNoChangeDir];
-    if (SaveDialog.Execute) then
-    begin
-      ls:=ExtractNameOnly(SaveDialog.Filename);
-      if (ls<>'') then
-      begin
-//        prj.FileName   :=SaveDialog.Filename;
-//        prj.ProjectName:=ls;
-
-        FileSaveExecute(Sender);
-      end;
-    end;
-  finally
-    SaveDialog.Free;
-  end;
 end;
 
 procedure TMainTL2TransForm.FileSaveExecute(Sender: TObject);
@@ -466,6 +310,9 @@ begin
 
     if not TL2Grid.IsCellVisible(0,arow) then
       TL2Grid.TopRow:=arow;
+    TL2Grid.Col:=colTrans;
+
+    UpdateStatusBar(Self);
   end;
 end;
 
@@ -720,35 +567,36 @@ end;
 
 procedure TMainTL2TransForm.memEditExit(Sender: TObject);
 var
+  ls:AnsiString;
   lr,lidx:integer;
 begin
   memEdit.Visible:=false;
-  lr:=TL2Grid.Row;
-  lidx:=IntPtr(TL2Grid.Objects[0,lr]);
 
-  if (memEdit.Tag=0) and (TL2Grid.Cells[colTrans,lr]<>memEdit.Text) then
+  if memEdit.Tag=0 then
   begin
-    TL2Grid.Cells[colTrans,lr]:=memEdit.Text;
-    if memEdit.Text='' then
+    ls:=memEdit.Text;
+    lr:=TL2Grid.Row;
+    lidx:=IntPtr(TL2Grid.Objects[0,lr]);
+    if TRCache[lidx].dst<>ls then
     begin
-      TL2Grid.Cells[colPartial,lr]:='0';
-    end
-    else
-    begin
-      if TL2Grid.Cells[colPartial,lr]='1' then
+      TRCache[lidx].dst  :=ls;
+      TRCache[lidx].part :=TRCache[lidx].part and (ls<>'');
+      TRCache[lidx].flags:=TRCache[lidx].flags or rfIsModified;
+      FileSave.Enabled:=true;
+
+      TL2Grid.Cells[colTrans  ,lr]:=ls;
+      TL2Grid.Cells[colPartial,lr]:=BoolNumber[TRCache[lidx].part];
 
 //      data.CheckTheSame(lidx,TL2Settings.cbAutoAsPartial.Checked);
 
       TL2Grid.Row:=lr;
       TL2Grid.Col:=colTrans;
+
+      UpdateStatusBar(Self);
     end;
-//    Modified:=true;
-    UpdateStatusBar(Self);
   end;
 
-  // when we close/change tab with active editor
-  if Parent.Visible then
-    TL2Grid.SetFocus;
+  if Visible then TL2Grid.SetFocus;
 end;
 
 procedure TMainTL2TransForm.memEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1291,12 +1139,37 @@ end;
 {%ENDREGION Grid}
 
 {%REGION Filter}
+procedure TMainTL2TransForm.FillLangCombo();
+var
+  lstat:TModStatistic;
+  i,lcnt:integer;
+begin
+  lstat.modid:=CurMod;
+  lcnt:=GetModStatistic(lstat);
+
+  cbLanguage.Clear;
+  if lcnt>0 then
+  begin
+    cbLanguage.Sorted:=true;
+    cbLanguage.Items.BeginUpdate;
+
+    for i:=0 to lcnt-1 do
+      with lstat.langs[i] do
+        cbLanguage.Items.Add(lang+' '+GetLangName(lang));
+
+    cbLanguage.Items.EndUpdate;
+    cbLanguage.Text:=CurLang+' '+GetLangName(CurLang);
+  end
+  else
+    cbLanguage.ItemIndex:=-1;
+end;
+
 procedure TMainTL2TransForm.FillFoldersCombo(asetidx:boolean);
 var
   ls:string;
   i,j,lcnt:integer;
   lskill,lroot,litems,lmonsters,lplayers,lprops:boolean;
-  lfolders:TDictDynArray;
+  lfolders:TStringDynArray;
 begin
   lroot    :=false;
   litems   :=false;
@@ -1315,12 +1188,11 @@ begin
   cbFolder.Items.BeginUpdate;
   cbFolder.Items.Add(rsFolderAll);
 
-  SetLength(lfolders,0);
   lcnt:=GetModDirList(CurMod,lfolders);
 
   for i:=0 to lcnt-1 do
   begin
-    ls:=lfolders[i].value;
+    ls:=lfolders[i];
     for j:=1 to Length(ls) do
       if ls[j]='\' then ls[j]:='/'
       else ls[j]:=UpCase(ls[j]);
@@ -1405,6 +1277,7 @@ begin
       end;
     end;
   end;
+  SetLength(lfolders,0);
 
   cbSkills.Items.EndUpdate;
   cbSkills.ItemIndex:=0;
@@ -1528,6 +1401,24 @@ begin
   end;
 end;
 {%ENDREGION Filter}
+
+procedure TMainTL2TransForm.cbLanguageChange(Sender: TObject);
+var
+  i:integer;
+begin
+  // ask for saving
+
+  // clear modified flag (auto clear if saved)
+  for i:=0 to High(TRCache) do
+    TRCache[i].flags:=TRCache[i].flags and not rfIsModified;
+
+  CurLang:=cbLanguage.Text;
+  SetLength(CurLang,Pos(' ',CurLang)-1);
+  LoadTRanslation();
+  FileSave.Enabled:=false;
+  edProjectFilterChange(Self);
+end;
+
 
 end.
 

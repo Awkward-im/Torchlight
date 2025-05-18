@@ -141,6 +141,73 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitLogForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="tl2about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2datamodule.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2DataModule"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="TL2DataModule"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2dupeform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DupeForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2DupeForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2edittext.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditTextForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2EditText"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2notesform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2Notes"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2NotesForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2settingsform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TL2Settings"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2SettingsForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2simform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SimilarForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2SimForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2text.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TL2Text"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2unit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainTL2TransForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2Unit"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tlscan.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TLScan"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -52,6 +52,7 @@ object FormSQLCP: TFormSQLCP
     Top = 32
     Width = 269
     Anchors = [akTop, akLeft, akRight, akBottom]
+    ExtendedSelect = False
     ItemHeight = 0
     TabOrder = 3
     OnSelectionChange = lbModsSelectionChange
@@ -86,6 +87,7 @@ object FormSQLCP: TFormSQLCP
     Height = 23
     Top = 5
     Width = 269
+    OnAfterFilter = lfeModsAfterFilter
     ButtonWidth = 23
     Anchors = [akTop, akLeft, akRight]
     NumGlyphs = 1
@@ -159,6 +161,7 @@ object FormSQLCP: TFormSQLCP
     Top = 356
     Width = 532
     Anchors = [akLeft, akRight, akBottom]
+    AutoEdit = False
     AutoFillColumns = True
     ColCount = 4
     ColumnClickSorts = True
@@ -186,10 +189,11 @@ object FormSQLCP: TFormSQLCP
         Width = 364
       end>
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
     RowCount = 1
     ScrollBars = ssAutoVertical
     TabOrder = 10
+    OnDblClick = DoStartEdit
     ColWidths = (
       60
       60

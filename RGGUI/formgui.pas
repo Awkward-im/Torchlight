@@ -438,6 +438,7 @@ resourcestring
   rsBuildTree       = ' Build tree';
   rsBuildGrid       = ' Build file list. Please, wait...';
   rsBuildPreview    = ' Build preview';
+  rsNothingToShow   = 'Nothing to show with current filter';
   rsUnpackSucc      = 'unpacked succesfully.';
   rsFilesUnpackSucc = ' files unpacked succesfully.';
 //  rsTotal           = 'Total: ';
@@ -1633,6 +1634,8 @@ var
   lsm:PRGSubMesh;
   i,j:integer;
   v4:TVector3;
+  lp:PIntVector3;
+  ln,lv:PVector3;
 begin
   FMeshList:=glGenLists(1);
   glNewList(FMeshList,GL_COMPILE);
@@ -1641,14 +1644,32 @@ begin
   for j:=1 to FMesh.SubMeshCount do
   begin
     lsm:=FMesh.SubMesh[j];
+    lp:=lsm^.Face;
+    lv:=lsm^.Vertex;
+    ln:=lsm^.Normal;
     for i:=0 to lsm^.FaceCount-1 do
     begin
+      glNormal3fv(@ln[lp[i].X]);
+      glVertex3fv(@lv[lp[i].X]);
+      glNormal3fv(@ln[lp[i].Y]);
+      glVertex3fv(@lv[lp[i].Y]);
+      glNormal3fv(@ln[lp[i].Z]);
+      glVertex3fv(@lv[lp[i].Z]);
+{
+      v4:=lsm^.Normal[lp[i].X]; glNormal3fv(@v4);
+      v4:=lsm^.Vertex[lp[i].X]; glVertex3fv(@v4);
+      v4:=lsm^.Normal[lp[i].Y]; glNormal3fv(@v4);
+      v4:=lsm^.Vertex[lp[i].Y]; glVertex3fv(@v4);
+      v4:=lsm^.Normal[lp[i].Z]; glNormal3fv(@v4);
+      v4:=lsm^.Vertex[lp[i].Z]; glVertex3fv(@v4);
+}{
       v4:=lsm^.Normal[lsm^.Face[i].X]; glNormal3fv(@v4);
       v4:=lsm^.Vertex[lsm^.Face[i].X]; glVertex3fv(@v4);
       v4:=lsm^.Normal[lsm^.Face[i].Y]; glNormal3fv(@v4);
       v4:=lsm^.Vertex[lsm^.Face[i].Y]; glVertex3fv(@v4);
       v4:=lsm^.Normal[lsm^.Face[i].Z]; glNormal3fv(@v4);
       v4:=lsm^.Vertex[lsm^.Face[i].Z]; glVertex3fv(@v4);
+}
     end;
   end;
 
@@ -1684,20 +1705,9 @@ begin
 
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
-{
-  for i:=1 to FMesh.SubMeshCount do
-  begin
-    lsm:=FMesh.SubMesh[i];
-//    glNormalPointer(3, GL_FLOAT , 0, FMesh.SubMesh[i]^.Normal);
-    glVertexPointer(3, GL_FLOAT , 0, FMesh.SubMesh[i]^.Vertex);
-//    glDrawArrays   (GL_TRIANGLES, 0, FMesh.SubMesh[i]^.VertexCount);
-    glDrawBuffer(GL_TRIANGLES);
-  end;
-}
-
   if FMeshList=0 then
   begin
-    CreateMeshList;
+    CreateMeshList();
 {
     glEnable(GL_DEPTH_TEST);
 
@@ -1741,8 +1751,20 @@ begin
     end;
 
     glCallList(FMeshList);
+{
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    for i:=1 to FMesh.SubMeshCount do
+    begin
+      lsm:=FMesh.SubMesh[i];
+      glVertexPointer(3, GL_FLOAT , 0, lsm^.Vertex);
+      glNormalPointer(   GL_FLOAT , 0, lsm^.Normal);
+      glDrawElements (GL_TRIANGLES, lsm^.FaceCount*3, GL_UNSIGNED_INT, lsm^.Face);
+    end;
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+}
 
-//    glPopMatrix;
   end;
 
   GLbox.SwapBuffers;
@@ -2872,7 +2894,10 @@ begin
   actEdExport.Enabled:=(lcnt-lbase)>0;
 
   if lcnt=1 then
-    ClearInfo
+  begin
+    ClearInfo;
+    StatusBar.Panels[1].Text:=rsNothingToShow;
+  end
   else
   begin
     sgMain.Row:=1;
