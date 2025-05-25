@@ -200,7 +200,7 @@ object MainTL2TransForm: TMainTL2TransForm
         Height = 23
         Hint = 'Choose translation language'
         Top = 6
-        Width = 124
+        Width = 152
         ItemHeight = 15
         Sorted = True
         Style = csDropDownList
@@ -208,7 +208,7 @@ object MainTL2TransForm: TMainTL2TransForm
         OnChange = cbLanguageChange
       end
       object cbDisplayMode: TComboBox
-        Left = 152
+        Left = 174
         Height = 23
         Top = 6
         Width = 152
@@ -342,7 +342,7 @@ object MainTL2TransForm: TMainTL2TransForm
     Left = 384
     Top = 128
     object FontEdit: TFontEdit
-      Category = 'Dialog'
+      Category = 'Edit'
       Caption = '&Font'
       Dialog.MinFontSize = 0
       Dialog.MaxFontSize = 0
@@ -418,6 +418,7 @@ object MainTL2TransForm: TMainTL2TransForm
       Caption = 'actExportClipBrd'
       Hint = 'Copy selected source text to clipboard'
       ImageIndex = 16
+      OnExecute = actExportClipBrdExecute
     end
     object actImportFile: TAction
       Category = 'Edit'
@@ -432,6 +433,7 @@ object MainTL2TransForm: TMainTL2TransForm
       Hint = 'Inset text with translation from clipboard'
       ImageIndex = 19
       ShortCut = 16457
+      OnExecute = actImportClipBrdExecute
     end
     object actShowSimilar: TAction
       Category = 'View'
@@ -501,7 +503,7 @@ object MainTL2TransForm: TMainTL2TransForm
       OnExecute = actCheckTranslationExecute
     end
     object actSettings: TAction
-      Category = 'View'
+      Category = 'Edit'
       AutoCheck = True
       Caption = 'Settings'
       Hint = 'Show/hide settings'

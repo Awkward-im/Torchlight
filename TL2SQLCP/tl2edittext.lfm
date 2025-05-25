@@ -8,7 +8,6 @@ object EditTextForm: TEditTextForm
   ClientWidth = 533
   ParentFont = True
   ShowHint = True
-  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   object pnl_1_File: TPanel
     Left = 0
@@ -22,7 +21,7 @@ object EditTextForm: TEditTextForm
     TabOrder = 0
     object lblFile: TLabel
       Left = 6
-      Height = 15
+      Height = 20
       Top = 5
       Width = 519
       Anchors = [akTop, akLeft, akRight]
@@ -32,16 +31,18 @@ object EditTextForm: TEditTextForm
     object lblTag: TLabel
       Left = 6
       Height = 15
-      Top = 30
+      Top = 33
       Width = 23
       Caption = 'Tag:'
     end
     object lblTagValue: TLabel
       AnchorSideLeft.Control = lblTag
       AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lblTag
+      AnchorSideTop.Side = asrCenter
       Left = 35
       Height = 15
-      Top = 30
+      Top = 33
       Width = 490
       AutoSize = False
       BorderSpacing.Left = 6

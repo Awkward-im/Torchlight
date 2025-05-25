@@ -117,6 +117,10 @@ msgstr ""
 msgid "Nothing was imported."
 msgstr ""
 
+#: formgui.rsnothingtoshow
+msgid "Nothing to show with current filter"
+msgstr ""
+
 #: formgui.rsoffset
 msgid "Offset"
 msgstr ""

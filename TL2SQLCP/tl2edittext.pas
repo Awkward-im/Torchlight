@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ComCtrls, ActnList, ExtCtrls, Menus,
-  TL2DataUnit, TL2Unit;
+  TL2Unit;
 
 type
 
@@ -56,8 +56,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure memTransKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
-    prj:TTL2Project;
-    fIdx:integer;
+    FIdx:integer;
 
   public
     constructor Create(AOwner:TComponent); override;
@@ -77,7 +76,8 @@ uses
   TL2SettingsForm,
   TL2DupeForm,
   TL2SimForm,
-  TL2Text;
+  TL2Text,
+  TLTrSQL;
 
 resourcestring
   sShow  = 'Click on "Show Doubles" button to show';
@@ -120,24 +120,37 @@ end;
 
 procedure TEditTextForm.SelectLine(idx:integer);
 var
+  ls:AnsiString;
+  ldir,lfile,ltag:AnsiString;
+  lline,lflags:integer;
   i:integer;
+  b:boolean;
 begin
   //--- Save previous
-  if fIdx>=0 then
+  if FIdx>=0 then
   begin
     if memTrans.Modified then
-      prj.data.Trans[fidx]:=CRLFtoSlashN(memTrans.Text);
+    begin
+      ls:=CRLFtoSlashN(memTrans.Text);
+      if TRCache[FIdx].dst<>ls then
+      begin
+        TRCache[FIdx].dst:=ls;
+        TRCache[FIdx].flags:=TRCache[FIdx].flags or rfIsModified;
+      end;
+    end;
 
-    if sbPartial.Down then
-      prj.data.State[fidx]:=stPartial;
+    if sbPartial.Down<>TRCache[FIdx].part then
+    begin
+      TRCache[FIdx].part :=sbPartial.Down;
+      TRCache[FIdx].flags:=TRCache[FIdx].flags or rfIsModified;
+    end;
 
-    prj.Modified:=true;
-    prj.UpdateGrid(fidx);
-    prj.MoveToIndex(fidx);
-    prj.data.CheckTheSame(fidx,TL2Settings.cbAutoAsPartial.Checked);
+//    prj.UpdateGrid(FIdx);
+//    prj.MoveToIndex(FIdx);
+//    prj.data.CheckTheSame(FIdx,TL2Settings.cbAutoAsPartial.Checked);
   end;
 
-  fIdx:=idx;
+  FIdx:=idx;
 
   if idx<0 then exit;
 
@@ -146,68 +159,68 @@ begin
   i:=idx-1;
   while i>=0 do
   begin
-    if prj.data.State[i]<>stReady then
-    begin
-      actPrevUntranslated.Tag:=i;
-      break;
-    end;
+    with TRCache[i] do
+      if part or (dst='') or (src=dst) then
+      begin
+        actPrevUntranslated.Tag:=i;
+        break;
+      end;
     dec(i);
   end;
   actPrevUntranslated.Enabled:=actPrevUntranslated.Tag>0;
 
   actNextUntranslated.Tag:=0;
   i:=idx+1;
-  while i<prj.data.LineCount do
+  while i<Length(TRCache) do
   begin
-    if prj.data.State[i]<>stReady then
-    begin
-      actNextUntranslated.Tag:=i;
-      break;
-    end;
+    with TRCache[i] do
+      if part or (dst='') or (src=dst) then
+      begin
+        actNextUntranslated.Tag:=i;
+        break;
+      end;
     inc(i);
   end;
   actNextUntranslated.Enabled:=actNextUntranslated.Tag>0;
 
-  actPrevLine.Enabled:=fIdx>0;
-  actNextLine.Enabled:=fIdx<(prj.data.LineCount-1);
+  actPrevLine.Enabled:=FIdx>0;
+  actNextLine.Enabled:=FIdx<High(TRCache);
 
   //--- Addition
-  i:=prj.data.RefCount[idx];
-  if i=1 then
-  begin
-{
-    lblFile    .Caption:=prj.data.SrcFile[idx];
-		lblTagValue.Caption:=prj.data.SrcTag [idx];
-}
-    i:=prj.data.Ref[idx];
-    lblFile    .Caption:=prj.data.Refs.GetFile(i);
-		lblTagValue.Caption:=prj.data.Refs.GetTag (i);
-    lblTag.Visible:=true;
-    actShowDupe.Visible:=false;
-  end
-  else if i=0 then
+  if (TRCache[idx].flags and rfIsNoRef)<>0 then
   begin
     lblFile    .Caption:=rsNoRef;
     lblTagValue.Caption:='';
-    lblTag.Visible:=false;
+    lblTag     .Visible:=false;
     actShowDupe.Visible:=false;
+  end
+  else if (TRCache[idx].flags and rfIsManyRefs)<>0 then
+  begin
+	  lblFile.Caption:=StringReplace(rsSeveralRefs,'%d',
+	      IntToStr(GetLineRefCount(TRCache[idx].id)),[]);
+		lblTagValue.Caption:=sShow;
+    lblTag     .Visible:=false;
+    actShowDupe.Visible:=true;
   end
   else
   begin
-	  lblFile    .Caption:=StringReplace(rsSeveralRefs,'%d',IntToStr(i),[]);
-		lblTagValue.Caption:=sShow;
-    lblTag.Visible:=false;
-    actShowDupe.Visible:=true;
+    i:=GetLineRef(TRCache[idx].id);
+    GetRef(i, ldir,lfile,ltag,lline,lflags);
+    lblFile    .Caption:=ldir+lfile;
+		lblTagValue.Caption:=ltag;
+    lblTag     .Visible:=true;
+    actShowDupe.Visible:=false;
   end;
-  lblNumber.Caption:=IntToStr(idx+1)+' / '+IntToStr(prj.data.LineCount);
 
-  sbPartial.Down:=prj.data.State[idx]=stPartial;
+  lblNumber.Caption:=IntToStr(idx+1)+' / '+IntToStr(Length(TRCache));
 
-  actShowSample.visible:=prj.data.Similars[idx];
+  sbPartial.Down:=TRCache[idx].part;
+
+  actShowSample.Visible:=GetSimilarCount(TRCache[idx].id)>0;
 
   //--- Text
-  memOriginal.Text:=SlashNtoCRLF(prj.data.Line [idx]);
-  memTrans   .Text:=SlashNtoCRLF(prj.data.Trans[idx]);
+  memOriginal.Text:=SlashNtoCRLF(TRCache[idx].src);
+  memTrans   .Text:=SlashNtoCRLF(TRCache[idx].dst);
   memTrans.Modified:=false;
 end;
 
@@ -215,17 +228,17 @@ end;
 
 procedure TEditTextForm.actMarkAsPartialExecute(Sender: TObject);
 begin
-  if sbPartial.Down=true then
-    prj.data.State[fIdx]:=stPartial
-  else if memTrans.Text='' then
-    prj.data.State[fIdx]:=stOriginal
-  else
-    prj.data.State[fIdx]:=stReady;
+  TRCache[FIdx].part:=sbPartial.Down;
+{
+  TRCache[FIdx].part:=(sbPartial.Down) and
+      (TRCache[FIdx].dst<>'') and
+      (TRCache[FIdx].dst<>TRCache[FIdx].org);
+}
 end;
 
 procedure TEditTextForm.actNextLineExecute(Sender: TObject);
 begin
-  SelectLine(fIdx+1);
+  SelectLine(FIdx+1);
 end;
 
 procedure TEditTextForm.actNextUntranslatedExecute(Sender: TObject);
@@ -235,7 +248,7 @@ end;
 
 procedure TEditTextForm.actPrevLineExecute(Sender: TObject);
 begin
-  SelectLine(fIdx-1);
+  SelectLine(FIdx-1);
 end;
 
 procedure TEditTextForm.actPrevUntranslatedExecute(Sender: TObject);
@@ -245,7 +258,7 @@ end;
 
 procedure TEditTextForm.actShowDupeExecute(Sender: TObject);
 begin
-  with TDupeForm.Create(Self,prj.data,fidx) do
+  with TDupeForm.Create(Self,FIdx) do
   begin
     ShowModal;
     Free;
@@ -254,7 +267,7 @@ end;
 
 procedure TEditTextForm.actShowSampleExecute(Sender: TObject);
 begin
-  with TSimilarForm.Create(Self,prj.data,fidx) do
+  with TSimilarForm.Create(Self,FIdx) do
   begin
     ShowModal;
     Free;
@@ -331,8 +344,8 @@ procedure TEditTextForm.FormClose(Sender: TObject; var CloseAction: TCloseAction
 begin
   if CloseAction=caFree then
   begin
-    if prj.Modified then ModalResult:=mrOk
-    else ModalResult:=mrCancel;
+//    if prj.Modified then ModalResult:=mrOk else
+      ModalResult:=mrCancel;
   end;
 end;
 
@@ -340,8 +353,7 @@ constructor TEditTextForm.Create(AOwner:TComponent);
 begin
   inherited;
 
-  prj:=(AOwner as TTL2Project);
-  fIdx:=-1;
+  FIdx:=-1;
 
   Font.Assign(TL2DM.TL2Font);
 end;

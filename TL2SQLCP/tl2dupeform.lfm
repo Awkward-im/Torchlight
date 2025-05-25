@@ -8,6 +8,7 @@ object DupeForm: TDupeForm
   ClientWidth = 663
   KeyPreview = True
   ParentFont = True
+  LCLVersion = '4.99.0.0'
   OnKeyDown = FormKeyDown
   object memText: TMemo
     Left = 8
@@ -41,7 +42,7 @@ object DupeForm: TDupeForm
       item
         ReadOnly = True
         Title.Caption = 'File'
-        Width = 404
+        Width = 408
       end    
       item
         ReadOnly = True
@@ -62,7 +63,7 @@ object DupeForm: TDupeForm
     OnDblClick = sgDupesDblClick
     ColWidths = (
       48
-      404
+      408
       64
       128
     )

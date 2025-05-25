@@ -8,7 +8,6 @@ object SimilarForm: TSimilarForm
   ClientWidth = 663
   KeyPreview = True
   ParentFont = True
-  LCLVersion = '4.99.0.0'
   OnKeyDown = FormKeyDown
   object lbSimList: TListBox
     Left = 8

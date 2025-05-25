@@ -1,0 +1,468 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
+"X-Generator: Poedit 2.3\n"
+
+#: fmsqlcp.rschooselang
+msgid "Choose translation language"
+msgstr ""
+
+#: fmsqlcp.rsdblclick
+msgctxt "fmsqlcp.rsdblclick"
+msgid "Double-Click to edit translation"
+msgstr ""
+
+#: fmsqlcp.rslanguage
+msgid "Language:"
+msgstr ""
+
+#: fmsqlcp.rsopenmod
+msgid "Open mod (pak) file"
+msgstr ""
+
+#: fmsqlcp.rsopentranslation
+msgid "Open translation file"
+msgstr ""
+
+#: fmsqlcp.rsstat
+#, object-pascal-format
+msgid "Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d"
+msgstr ""
+
+#: fmsqlcp.rsstatus
+#, object-pascal-format
+msgid "Total lines: %d | Unreferred lines: %d"
+msgstr ""
+
+#: rgdb.rsbasegame
+msgid "Base game"
+msgstr ""
+
+#: rgdb.rshp
+msgid "Best Health Potion"
+msgstr ""
+
+#: rgdb.rslmb
+msgid "Left mouse button"
+msgstr ""
+
+#: rgdb.rsmp
+msgid "Best Mana Potion"
+msgstr ""
+
+#: rgdb.rspethp
+msgid "Best Pet Health Potion"
+msgstr ""
+
+#: rgdb.rspetmp
+msgid "Best Pet Mana Potion"
+msgstr ""
+
+#: rgdb.rspetspell1
+msgid "Pet spell 1"
+msgstr ""
+
+#: rgdb.rspetspell2
+msgid "Pet spell 2"
+msgstr ""
+
+#: rgdb.rspetspell3
+msgid "Pet spell 3"
+msgstr ""
+
+#: rgdb.rspetspell4
+msgid "Pet spell 4"
+msgstr ""
+
+#: rgdb.rsqk0
+msgid "Quckslot 0"
+msgstr ""
+
+#: rgdb.rsqk1
+msgid "Quckslot 1"
+msgstr ""
+
+#: rgdb.rsqk2
+msgid "Quckslot 2"
+msgstr ""
+
+#: rgdb.rsqk3
+msgid "Quckslot 3"
+msgstr ""
+
+#: rgdb.rsqk4
+msgid "Quckslot 4"
+msgstr ""
+
+#: rgdb.rsqk5
+msgid "Quckslot 5"
+msgstr ""
+
+#: rgdb.rsqk6
+msgid "Quckslot 6"
+msgstr ""
+
+#: rgdb.rsqk7
+msgid "Quckslot 7"
+msgstr ""
+
+#: rgdb.rsqk8
+msgid "Quckslot 8"
+msgstr ""
+
+#: rgdb.rsqk9
+msgid "Quckslot 9"
+msgstr ""
+
+#: rgdb.rsrmb
+msgid "Right mouse button"
+msgstr ""
+
+#: rgdb.rsrmbalt
+msgid "Right mouse button (alternative)"
+msgstr ""
+
+#: rgdb.rsset
+msgid "Set"
+msgstr ""
+
+#: rgdb.rsspell1
+msgid "Spell 1"
+msgstr ""
+
+#: rgdb.rsspell2
+msgid "Spell 2"
+msgstr ""
+
+#: rgdb.rsspell3
+msgid "Spell 3"
+msgstr ""
+
+#: rgdb.rsspell4
+msgid "Spell 4"
+msgstr ""
+
+#: tedittextform.actmarkaspartial.hint
+msgid "Mark as Partial"
+msgstr ""
+
+#: tedittextform.actnextline.hint
+msgid "Next line"
+msgstr ""
+
+#: tedittextform.actnextuntranslated.hint
+msgid "Next untranslated"
+msgstr ""
+
+#: tedittextform.actprevline.hint
+msgid "Previous line"
+msgstr ""
+
+#: tedittextform.actprevuntranslated.hint
+msgid "Previous untranslated"
+msgstr ""
+
+#: tedittextform.actshowdupe.hint
+msgid "Show doubles"
+msgstr ""
+
+#: tedittextform.actshowsample.hint
+msgid "Show Sample"
+msgstr ""
+
+#: tedittextform.acttranslate.hint
+msgid "Translate"
+msgstr ""
+
+#: tedittextform.caption
+msgid "Edit text"
+msgstr ""
+
+#: tedittextform.lbltag.caption
+msgid "Tag:"
+msgstr ""
+
+#: tfmlogform.bbclear.caption
+msgid "&Clear"
+msgstr ""
+
+#: tfmlogform.bbsave.caption
+msgid "Save"
+msgstr ""
+
+#: tfmlogform.bbsave.hint
+msgid "Save log to file"
+msgstr ""
+
+#: tformsqlcp.bbaddtrans.caption
+msgid "Add Translation"
+msgstr ""
+
+#: tformsqlcp.bblog.caption
+msgid "Log"
+msgstr ""
+
+#: tformsqlcp.bbsavedb.caption
+msgid "Save DB"
+msgstr ""
+
+#: tformsqlcp.bbscanmod.caption
+msgid "Scan Mod"
+msgstr ""
+
+#: tformsqlcp.cbwithref.caption
+msgid "With refs"
+msgstr ""
+
+#: tformsqlcp.gdlanguages.columns[0].title.caption
+msgctxt "tformsqlcp.gdlanguages.columns[0].title.caption"
+msgid "Count"
+msgstr ""
+
+#: tformsqlcp.gdlanguages.columns[1].title.caption
+msgctxt "tformsqlcp.gdlanguages.columns[1].title.caption"
+msgid "Lang"
+msgstr ""
+
+#: tformsqlcp.gdlanguages.columns[2].title.caption
+msgctxt "tformsqlcp.gdlanguages.columns[2].title.caption"
+msgid "Name"
+msgstr ""
+
+#: tformsqlcp.gdmodstat.columns[0].title.caption
+msgctxt "tformsqlcp.gdmodstat.columns[0].title.caption"
+msgid "Count"
+msgstr ""
+
+#: tformsqlcp.gdmodstat.columns[1].title.caption
+msgctxt "tformsqlcp.gdmodstat.columns[1].title.caption"
+msgid "Partial"
+msgstr ""
+
+#: tformsqlcp.gdmodstat.columns[2].title.caption
+msgctxt "tformsqlcp.gdmodstat.columns[2].title.caption"
+msgid "Lang"
+msgstr ""
+
+#: tformsqlcp.gdmodstat.columns[3].title.caption
+msgctxt "tformsqlcp.gdmodstat.columns[3].title.caption"
+msgid "Name"
+msgstr ""
+
+#: tformsqlcp.lblcurlang.caption
+msgid "Current languages"
+msgstr ""
+
+#: tl2datamodule.rsnoref
+msgid "Text don't have any references"
+msgstr ""
+
+#: tl2datamodule.rsseveralrefs
+#, object-pascal-format
+msgctxt "tl2datamodule.rsseveralrefs"
+msgid "This text presents in several (about %d) places."
+msgstr ""
+
+#: tl2edittext.sshow
+msgid "Click on \"Show Doubles\" button to show"
+msgstr ""
+
+#: tl2notesform.stitle
+msgid "Notes"
+msgstr "Notas"
+
+#: tl2settingsform.rsusefreekey
+msgid "Paid or Free Key (free)"
+msgstr ""
+
+#: tl2settingsform.rsusepaidkey
+msgid "Paid or Free Key (paid)"
+msgstr ""
+
+#: tl2settingsform.snotrealized
+msgid "Not realized yet"
+msgstr "Todavia sin realizar"
+
+#: tl2settingsform.ssettings
+msgctxt "tl2settingsform.ssettings"
+msgid "Settings"
+msgstr "Configuracion"
+
+#: tl2simform.rsnoref
+msgid "No reference for this text"
+msgstr ""
+
+#: tl2text.rsdssign
+msgid "Target have sign at the end"
+msgstr ""
+
+#: tl2text.rsdstcolend
+msgid "Source have less |u than target"
+msgstr ""
+
+#: tl2text.rsdstcolor
+msgid "Source have less colors than target"
+msgstr ""
+
+#: tl2text.rsdstline
+msgid "Source have less lines than target"
+msgstr ""
+
+#: tl2text.rsdstspace
+msgid "Target have space(s) at the end"
+msgstr ""
+
+#: tl2text.rssrccolend
+msgid "Source have more |u than target"
+msgstr ""
+
+#: tl2text.rssrccolor
+msgid "Source have more colors than target"
+msgstr ""
+
+#: tl2text.rssrcline
+msgid "Source have more lines than target"
+msgstr ""
+
+#: tl2text.rssrcsign
+msgid "Source have sign at the end"
+msgstr ""
+
+#: tl2text.rssrcspace
+msgid "Source have space(s) at the end"
+msgstr ""
+
+#: tl2text.rssrctags
+msgid "Source have tags or parameters"
+msgstr ""
+
+#: tl2unit.rsaffected
+#, fuzzy
+msgctxt "tl2unit.rsaffected"
+msgid " line(s) affected"
+msgstr " linea(s) afectadas"
+
+#: tl2unit.rsdefaultcaption
+#, fuzzy
+msgctxt "tl2unit.rsdefaultcaption"
+msgid "Torchlight 2 Translation"
+msgstr "Traduccion Torchlight 2"
+
+#: tl2unit.rsdodelete
+#, fuzzy
+msgctxt "tl2unit.rsdodelete"
+msgid ""
+"Are you sure to delete selected line(s)?\n"
+"This text will be just hidden until you save and reload project."
+msgstr ""
+"¿Esta seguro de eliminar la(s) linea(s) seleccionada(s)?\n"
+"Este texto solo permanecera oculto hasta que guarde y reabra el proyecto."
+
+#: tl2unit.rsdupes
+msgctxt "tl2unit.rsdupes"
+msgid "Check doubles info."
+msgstr ""
+
+#: tl2unit.rsfixall
+msgctxt "tl2unit.rsfixall"
+msgid "Fix all"
+msgstr ""
+
+#: tl2unit.rsfixone
+msgctxt "tl2unit.rsfixone"
+msgid "Fix this"
+msgstr ""
+
+#: tl2unit.rsfolderall
+#, fuzzy
+msgctxt "tl2unit.rsfolderall"
+msgid "- All -"
+msgstr "- Todo -"
+
+#: tl2unit.rsmodeall
+msgid "All"
+msgstr ""
+
+#: tl2unit.rsmodeoriginal
+msgid "Original"
+msgstr ""
+
+#: tl2unit.rsmodepartial
+msgctxt "tl2unit.rsmodepartial"
+msgid "Partial"
+msgstr ""
+
+#: tl2unit.rsmodeready
+msgid "Ready"
+msgstr ""
+
+#: tl2unit.rsnext
+msgctxt "tl2unit.rsnext"
+msgid "Next note"
+msgstr ""
+
+#: tl2unit.rsnodoubles
+msgctxt "tl2unit.rsnodoubles"
+msgid "No doubles for this text"
+msgstr ""
+
+#: tl2unit.rsnotes
+msgctxt "tl2unit.rsnotes"
+msgid "Punctuation note"
+msgstr ""
+
+#: tl2unit.rsnotready
+msgid "Not translated"
+msgstr ""
+
+#: tl2unit.rsnotsaved
+#, fuzzy
+msgctxt "tl2unit.rsnotsaved"
+msgid "Project modified. Do you want to save it?"
+msgstr "Proyecto modificado ¿Desea guardarlo?"
+
+#: tl2unit.rsnowarnings
+msgctxt "tl2unit.rsnowarnings"
+msgid "No any warnings"
+msgstr ""
+
+#: tl2unit.rsreadyplus
+msgid "Translated"
+msgstr ""
+
+#: tl2unit.rsreplaces
+#, fuzzy
+msgctxt "tl2unit.rsreplaces"
+msgid "Total replaces"
+msgstr "Reemplazos totales"
+
+#: tl2unit.rsroot
+#, fuzzy
+msgctxt "tl2unit.rsroot"
+msgid "-- Root --"
+msgstr "-- arraigar --"
+
+#: tsimilarform.btndupes.caption
+msgid "Doubles"
+msgstr ""
+
+#: tsimilarform.caption
+msgid "Similars List"
+msgstr ""
+
+#: tsimilarform.lblpartial.caption
+msgid "(Partial translation)"
+msgstr ""
+
+#: unitlogform.rscantsave
+msgid "Can't save log file"
+msgstr ""
+

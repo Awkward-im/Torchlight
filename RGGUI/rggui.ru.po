@@ -129,6 +129,10 @@ msgstr "Пределы: Min:(%f, %f, %f); Max(%f, %f, %f); Частей: %d"
 msgid "Nothing was imported."
 msgstr "Ничто не импортировано."
 
+#: formgui.rsnothingtoshow
+msgid "Nothing to show with current filter"
+msgstr "Нечего показывать по текущим ксловиям"
+
 #: formgui.rsoffset
 msgid "Offset"
 msgstr "Смещение"

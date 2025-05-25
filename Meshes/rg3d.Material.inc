@@ -246,6 +246,24 @@ begin
   end;
 end;
 
+function GetTextureUsage(code:integer):AnsiString;
+begin
+  if      (code and TU_STATIC_WRITE_ONLY )=TU_STATIC_WRITE_ONLY  then result:='TU_STATIC_WRITE_ONLY'
+  else if (code and TU_DYNAMIC_WRITE_ONLY)=TU_DYNAMIC_WRITE_ONLY then result:='TU_DYNAMIC_WRITE_ONLY'
+  else if (code and TU_STATIC )<>0 then result:='TU_STATIC'
+  else if (code and TU_DYNAMIC)<>0 then result:='TU_DYNAMIC'
+  else result:='';
+
+  if (code and TU_AUTOMIPMAP)<>0 then
+    if result='' then result:='TU_AUTOMIPMAP'       else result:=result+' or TU_AUTOMIPMAP';
+  if (code and TU_RENDERTARGET)<>0 then
+    if result='' then result:='TU_RENDERTARGET'     else result:=result+' or TU_RENDERTARGET';
+  if (code and TU_NOT_SAMPLED)<>0 then
+    if result='' then result:='TU_NOT_SAMPLED'      else result:=result+' or TU_NOT_SAMPLED';
+  if (code and TU_UNORDERED_ACCESS)<>0 then
+    if result='' then result:='TU_UNORDERED_ACCESS' else result:=result+' or TU_UNORDERED_ACCESS';
+end;
+
 {
 typ siz  A B  C D
  01 80   7+13+02+8  B:1+      3+3+3+3
@@ -295,7 +313,7 @@ begin
     Log('{02} w can be >1'    ,memReadWord(aptr));
     // #0D
     // ?? maybe #9 insert here
-    Log('{03} w ',memReadWord(aptr)); // RG(1C/1D), Pirate human male, pirate bald = 1
+    Log('{03} w' ,memReadWord(aptr)); // RG(1C/1D), Pirate human male, pirate bald = 1
     Log('{04} w' ,memReadWord(aptr));
     Log('{05} w' ,memReadWord(aptr));
     Log('{06} w' ,memReadWord(aptr));
@@ -323,7 +341,9 @@ begin
     LogLn();
     Log('>alpha?','');
 
-    Log('{00} w' ,Int16(memReadWord(aptr))); // alpha_rejection value?
+    ltmp:=Int16(memReadWord(aptr));
+    Log('{00} w' ,ltmp); // alpha_rejection value?
+    Log('Looks like TextureUsage',GetTextureUsage(ltmp));
 {
     enum CompareFunction : uint8
       0  CMPF_ALWAYS_FAIL,  //!< Never  writes a pixel to the render target

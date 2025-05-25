@@ -189,22 +189,24 @@ begin
   begin
     pc:=memReadShortStringBuf(aptr,@lbuf,bufsize);
     lentry:=AddPath(pc);
-
     lname:=pc;
-
     lcnt:=memReadDWord(aptr);
     for j:=0 to lcnt-1 do
     begin
       lfile:=AppendFile(lentry,nil);
+
       with PManFileInfo(Files[lfile])^ do
       begin
         checksum:=memReadDWord(aptr);
         ftype   :=RGTypeOfType(memReadByte(aptr),aver);
         pc      :=memReadShortStringBuf(aptr,@lbuf,bufsize);
         Name    :=pc;
+
         // for case when dir is file-like only
         if ftype=typeDirectory then
+        begin
           AddPath(PUnicodeChar(lname+UnicodeString(pc)));
+        end;
 
         offset  :=memReadDWord(aptr);
         size_s  :=memReadDWord(aptr);
@@ -216,7 +218,6 @@ begin
       end;
     end;
   end;
-
   {
     TL2 Mod Manifest starts from nameless dir with MEDIA/ child
     paks starts right from MEDIA/ folder

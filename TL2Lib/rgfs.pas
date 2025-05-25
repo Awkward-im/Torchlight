@@ -186,6 +186,8 @@ uses
   TextCache,
   rgglobal;
 
+const
+  MidFNameLen = 48; // middle file name length for buffer reserve
 var
   Names:TTextCache;
 
@@ -422,6 +424,11 @@ procedure TRGDirList.SetFilesCapacity(acnt:integer);
 begin
   if acnt>FCapacity then
   begin
+    if Names.Count<acnt then
+    begin
+      Names.Count:=acnt;
+      Names.Capacity:=acnt*MidFNameLen;
+    end;
     FCapacity:=acnt;
     ReallocMem(FFiles,FCapacity*FInfoSize);
   end;
@@ -435,7 +442,10 @@ end;
 procedure TRGDirList.SetDirsCapacity(acnt:integer);
 begin
   if acnt>Length(Dirs) then
+  begin
+    if Names.Count<acnt then Names.Count:=acnt;
     SetLength(Dirs,acnt);
+  end;
 end;
 {%ENDREGION Getters/Setters}
 

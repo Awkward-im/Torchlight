@@ -441,3 +441,18 @@ type
     _type:word;
     _len :dword;
   end;
+
+// TextureUsage
+const
+  TU_STATIC             = 1; // HBU_GPU_TO_CPU
+  TU_DYNAMIC            = 2; // HBU_CPU_ONLY
+  TU_WRITE_ONLY         = 4; // HBU_DETAIL_WRITE_ONLY
+  TU_STATIC_WRITE_ONLY  = TU_STATIC  or TU_WRITE_ONLY; // HBU_GPU_ONLY
+  TU_DYNAMIC_WRITE_ONLY = TU_DYNAMIC or TU_WRITE_ONLY; // HBU_CPU_TO_GPU
+
+  TU_AUTOMIPMAP         = $0010;
+  TU_RENDERTARGET       = $0020; // combine with TU_AUTOMIPMAP, TU_UNORDERED_ACCESS, TU_NOT_SAMPLED
+  TU_NOT_SAMPLED        = $0040;
+  TU_UNORDERED_ACCESS   = $0080;
+  TU_DEFAULT = TU_AUTOMIPMAP or TU_STATIC_WRITE_ONLY;
+

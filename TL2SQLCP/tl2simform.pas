@@ -39,8 +39,14 @@ implementation
 
 uses
   LCLType,
-//  TL2DupeForm,
+  TL2DupeForm,
+  rgglobal,
+  TL2Text,
   TLTrSQL;
+
+resourcestring
+  rsNoRef = 'No reference for this text';
+
 
 { TSimilarForm }
 
@@ -50,12 +56,14 @@ begin
 
   Font.Assign(Application.MainForm.Font);
 
+  edTmpl.Text:=FilteredString(TRCache[aline].src);
   FillList(aline);
 end;
 
 procedure TSimilarForm.lbSelectionChange(Sender: TObject; User: boolean);
 var
-  i:integer;
+  ldir,lfile,ltag:AnsiString;
+  i,lline,lflags:integer;
 begin
   i:=IntPtr(lbSimList.Items.Objects[lbSimList.ItemIndex]);
 
@@ -64,43 +72,44 @@ begin
   memText .Text:=TRCache[i].src;
   memTrans.Text:=TRCache[i].dst;
 
-(*
-  if fdata^.RefCount[i]=1 then
+  if (TRCache[i].flags and rfIsNoRef)<>0 then
   begin
     btnDupes   .Visible:=false;
-    lblTextLine.Visible:=true;
+    lblTextLine.Visible:=false;
     lblTextFile.Visible:=true;
-    lblTextTag .Visible:=true;
-{
-    lblTextLine.Caption:=IntToStr(fdata^.SrcLine[i]);
-    lblTextFile.Caption:=fdata^.SrcFile[i];
-    lblTextTag .Caption:=fdata^.SrcTag [i];
-}
-    i:=fdata^.Ref[i];
-    lblTextLine.Caption:=IntToStr(fdata^.Refs.GetLine(i));
-    lblTextFile.Caption:=fdata^.Refs.GetFile(i);
-    lblTextTag .Caption:=fdata^.Refs.GetTag(i);
+    lblTextTag .Visible:=false;
+    lblTextFile.Caption:=rsNoRef;
   end
-  else
+  else if (TRCache[i].flags and rfIsManyRefs)<>0 then
   begin
     btnDupes   .Visible:=true;
     lblTextLine.Visible:=false;
     lblTextFile.Visible:=false;
     lblTextTag .Visible:=false;
+  end
+  else
+  begin
+    btnDupes   .Visible:=false;
+    lblTextLine.Visible:=true;
+    lblTextFile.Visible:=true;
+    lblTextTag .Visible:=true;
+
+    GetRef(GetLineRef(TRCache[i].id),ldir,lfile,ltag,lline,lflags);
+
+    lblTextLine.Caption:=IntToStr(lline);
+    lblTextFile.Caption:=ldir+lfile;
+    lblTextTag .Caption:=ltag;
   end;
-*)
+
 end;
 
 procedure TSimilarForm.btnDupesClick(Sender: TObject);
 begin
-{
-  with TDupeForm.Create(Self,fdata^,
-      IntPtr(lbSimList.Items.Objects[lbSimList.ItemIndex])) do
+  with TDupeForm.Create(Self,IntPtr(lbSimList.Items.Objects[lbSimList.ItemIndex])) do
   begin
     ShowModal;
     Free;
   end;
-}
 end;
 
 procedure TSimilarForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -110,32 +119,25 @@ end;
 
 procedure TSimilarForm.FillList(aline:integer);
 var
+  larr:TIntegerDynArray;
   ltmpl:AnsiString;
-  i:integer;
+  i,j,lcnt:integer;
 begin
   lbSimList.Clear;
 
   lbSimList.AddItem(TRCache[aline].src,TObject(IntPtr(aline)));
-//  GetSimilars(TRCache[aline].id,larr);
-{
-  ltmpl:=adata.Template[aline];
-  edTmpl.Text:=ltmpl;
-  i:=0;
-  // better to select by some way
-  lbSimList.AddItem(adata.Line[aline],TObject(IntPtr(aline)));
-  while i<adata.LineCount do
-  begin
-    if i<>aline then
-    begin
-      if adata.Template[i]=ltmpl then
-        lbSimList.AddItem(adata.Line[i],TObject(IntPtr(i)))
-    end;
-    inc(i);
-  end;
-}
+  lcnt:=GetSimilars(TRCache[aline].id,larr);
+  for i:=0 to lcnt-1 do
+    for j:=0 to High(TRCache) do
+      if TRCache[j].id=larr[i] then
+      begin
+        lbSimList.AddItem(TRCache[j].src,TObject(IntPtr(j)));
+        break;
+      end;
+
   lbSimList.ItemIndex:=0;
+  SetLength(larr,0);
 end;
 
 
 end.
-

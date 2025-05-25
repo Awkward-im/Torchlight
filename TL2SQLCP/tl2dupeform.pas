@@ -5,8 +5,7 @@ unit TL2DupeForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
-  TL2DataUnit;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids;
 
 type
 
@@ -21,11 +20,10 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sgDupesDblClick(Sender: TObject);
   private
-    procedure FillList(const adata:TTL2Translation; aline:integer);
+    procedure FillList(asrcid:integer);
 
   public
-    constructor Create(AOwner:TComponent; const adata:TTL2Translation;
-        aline:integer); overload;
+    constructor Create(AOwner:TComponent; aidx:integer); overload;
   end;
 
 
@@ -35,6 +33,8 @@ implementation
 
 uses
   TL2DataModule,
+  TLTrSQL,
+  rgglobal,
   LCLType;
 
 const
@@ -51,11 +51,11 @@ end;
 
 procedure TDupeForm.sgDupesDblClick(Sender: TObject);
 begin
-  CreateFileTab(PTL2Translation(sgDupes.Objects[0,sgDupes.Row])^,
-                IntPtr         (sgDupes.Objects[1,sgDupes.Row]),nil);
+//  CreateFileTab(PTL2Translation(sgDupes.Objects[0,sgDupes.Row])^,
+//                IntPtr         (sgDupes.Objects[1,sgDupes.Row]),nil);
 end;
 
-constructor TDupeForm.Create(AOwner:TComponent; asrcid:integer);
+constructor TDupeForm.Create(AOwner:TComponent; aidx:integer);
 var
   lsrc,ldst:AnsiString;
 begin
@@ -63,11 +63,10 @@ begin
 
   Font.Assign(Application.MainForm.Font);
 
-//!!  GetText(asrcid,,lsrc,ldst);
-  memText .Text:=lsrc;
-  memTrans.Text:=ldst;
+  memText .Text:=TRCache[aidx].src;
+  memTrans.Text:=TRCache[aidx].dst;
 
-  FillList(asrcid);
+  FillList(TRCache[aidx].id);
 end;
 
 procedure TDupeForm.FillList(asrcid:integer);
@@ -79,7 +78,7 @@ var
 begin
   sgDupes.Clear;
 
-  lcnt:=GetDoubles(arr);
+  lcnt:=GetDoubles(asrcid,larr);
   sgDupes.RowCount:=1+lcnt;
   for i:=0 to lcnt-1 do
   begin
@@ -91,7 +90,7 @@ begin
   end;
 
   sgDupes.Row:=1;
+  SetLength(larr,0);
 end;
 
 end.
-

@@ -1,6 +1,7 @@
-﻿{TODO: GetLineCount and LoadModData: -1 - all; vanilla - (mod=0) and noref}
+{TODO: Check AddOriginal logic (when not unique especially)}
+{TODO: GetLineCount and LoadModData: -1 - all; vanilla - (mod=0) and noref}
 {TODO: variant CopyToBase just for translation (not src or refs)}
-{TODO: AddTRanslation: overwrite all, overwrite partial by full, skip. Or use SetTRanslation?}
+{TODO: AddTranslation: overwrite all, overwrite partial by full, skip. Or use SetTRanslation?}
 
 {$DEFINE UseUniqueText}
 unit TLTrSQL;
@@ -8,6 +9,7 @@ unit TLTrSQL;
 interface
 
 uses
+  logging,
   rgglobal,
 //  tl2dataunit,
   sqlite3dyn;
@@ -21,6 +23,8 @@ var
   // 0 must be Vanilla + unreferred; -1 mean all; -2 mean unreferred
   CurMod :Int64;
   CurLang:AnsiString;
+var
+  SQLog:Logging.TLog;
 
 type
   TTLCacheElement = record
@@ -48,14 +52,16 @@ const
   rfIsPlayer    = $0040;
   rfIsFiltered  = $0100; // runtime, folder filter flag
   rfIsManyRefs  = $0200; // runtime, mod-limited flag
-  rfIsModified  = $0400; // runtime, dst or part changed
+  rfIsNoRef     = $0400; // runtime, no refs for line
+  rfIsModified  = $0800; // runtime, dst or part changed
   rfIsReferred  = $8000;
 
 
 function CheckForDirectory(const afilter:string):integer;
 function GetModDirList (amodid:Int64; var alist:TStringDynArray):integer;
-function GetSimilars(aid:integer; var arr:TIntegerDynArray):integer;
-function GetDoubles (aid:integer; var arr:TIntegerDynArray):integer;
+function GetSimilarCount(aid:integer):integer;
+function GetSimilars    (aid:integer; var arr:TIntegerDynArray):integer;
+function GetDoubles     (aid:integer; var arr:TIntegerDynArray):integer;
 function RemakeFilter():boolean;
 
 function CreateLangTable(const lng:AnsiString):boolean;
@@ -77,6 +83,9 @@ function GetTranslation(aid:integer; const atable:AnsiString; var      adst:Ansi
 function SetTranslation(aid:integer; const atable:AnsiString;
    const adst:Ansistring; apart:boolean):integer;
 function GetLineFlags  (aid:integer; const amodid:AnsiString):cardinal;
+
+function GetLineRef     (aid:integer):integer;
+function GetLineRefCount(aid:integer):integer;
 // get reference info. aid is ref index, result is source index
 function GetRef(aid:integer;
      var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
@@ -122,24 +131,44 @@ var
 {REGION Mod}
 function AddToModList(aid:Int64; const atitle:AnsiString):integer;
 var
+  vm:pointer;
   ls:AnsiString;
+  pc:PAnsiChar;
 begin
-  if (aid=-1) or (atitle='') then exit(-1);
+  result:=-1;
+  if (aid=-1) or (atitle='') then exit;
 
   Str(aid,ls);
   result:=ReturnInt(tldb,'SELECT 1 FROM dicmods WHERE id='+ls);
 
-  if result<0 then
+  if result<1 then
   begin
-    ExecuteDirect(tldb,
-      'INSERT INTO dicmods (id, title) VALUES ('+ls+', ?1)',PAnsiChar(atitle));
+    ls:='INSERT INTO dicmods (id, title) VALUES ('+ls+', ?1)';
+
+    if sqlite3_prepare_v2(tldb, PAnsiChar(ls), -1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_bind_text(vm,1,PAnsiChar(atitle),-1,SQLITE_STATIC)=SQLITE_OK then
+      begin
+        if sqlite3_step(vm)=SQLITE_DONE then
+        begin
+          pc:=sqlite3_expanded_sql(vm);
+          SQLog.Add(pc);
+          sqlite3_free(pc);
+         result:=0;
+        end;
+      end;
+      sqlite3_finalize(vm);
+    end;
+    
     result:=0;
   end;
 end;
 
 function AddToModList(aid:Int64; atitle:PUnicodeChar):integer;
 var
+  vm:pointer;
   ls:AnsiString;
+  pc:PAnsiChar;
 begin
   if (aid=-1) or (atitle=nil) then exit(-1);
 
@@ -148,8 +177,22 @@ begin
 
   if result<0 then
   begin
-    ExecuteDirect(tldb,
-      'INSERT INTO dicmods (id, title) VALUES ('+ls+', ?1)',atitle);
+    ls:='INSERT INTO dicmods (id, title) VALUES ('+ls+', ?1)';
+
+    if sqlite3_prepare_v2(tldb, PAnsiChar(ls), -1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_bind_text16(vm,1,atitle,-1,SQLITE_STATIC)=SQLITE_OK then
+      begin
+        if sqlite3_step(vm)=SQLITE_DONE then
+        begin
+          pc:=sqlite3_expanded_sql(vm);
+          SQLog.Add(pc);
+          sqlite3_free(pc);
+        end;
+      end;
+      sqlite3_finalize(vm);
+    end;
+    
     result:=0;
   end;
 end;
@@ -257,88 +300,6 @@ end;
 {%ENDREGION Mod}
 
 {%REGION Additional}
-function GetDoubles(aid:integer; var arr:TIntegerDynArray):integer;
-var
-  vm:pointer;
-  lSQL,lid,lmod:AnsiString;
-  lcnt:integer;
-begin
-  result:=0;
-  Str(aid,lid);
-  Str(CurMod,lmod);
-
-  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM ref WHERE (srcid='+lid+') AND (modid='+lmod+')');
-  if lcnt>0 then
-  begin
-    SetLength(arr,lcnt);
-    lSQL:='SELECT id FROM ref WHERE (srcid='+lid+') AND (modid='+lmod+')';
-    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      while sqlite3_step(vm)=SQLITE_ROW do
-      begin
-        arr[result]:=sqlite3_column_int(vm,0);
-        inc(result);
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end
-  else
-    SetLength(arr,0);
-end;
-
-// Mod limited must be
-function GetSimilars(aid:integer; var arr:TIntegerDynArray):integer;
-var
-  vm:pointer;
-  lSQL,lid,lf:AnsiString;
-  i:integer;
-begin
-  result:=0;
-  Str(aid,lid);
-
-  lSQL:='SELECT filter FROM strings WHERE id='+lid;
-  if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-  begin
-    if sqlite3_step(vm)=SQLITE_ROW then
-      result:=sqlite3_column_int(vm,0)
-    else
-    begin
-      RemakeFilter();
-      if sqlite3_step(vm)=SQLITE_ROW then
-        result:=sqlite3_column_int(vm,0);
-    end;
-    sqlite3_finalize(vm);
-  end;
-{
-  result:=ReturnInt(tldb,'SELECT filter FROM strings WHERE id='+lid);
-  if result<0 then
-  begin
-    RemakeFilter();
-    result:=ReturnInt(tldb,'SELECT filter FROM strings WHERE id='+lid);
-  end;
-}
-  if result>0 then
-  begin
-    Str(result,lf);
-    result:=ReturnInt(tldb,'SELECT count(id) FROM strings WHERE filter='+lf)-1;
-    if result>0 then
-    begin
-      SetLength(arr,result);
-      lSQL:='SELECT id FROM strings WHERE filter='+lf+' AND id<>'+lid;
-      if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-      begin
-        i:=0;
-        while sqlite3_step(vm)=SQLITE_ROW do
-        begin
-          arr[i]:=sqlite3_column_int(vm,0);
-          inc(i);
-        end;
-        sqlite3_finalize(vm);
-      end;
-    end;
-  end;
-end;
-
 function RemakeFilter():boolean;
 var
   vm: Pointer;
@@ -389,6 +350,115 @@ begin
     sqlite3_finalize(vm);
   end;
 end;
+
+function GetFilterId(aid:integer):integer;
+var
+  vm:pointer;
+  lSQL,lid:AnsiString;
+begin
+  result:=0;
+  Str(aid,lid);
+
+  lSQL:='SELECT filter FROM strings WHERE id='+lid;
+  if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+      result:=sqlite3_column_int(vm,0)
+    else
+    begin
+      RemakeFilter();
+      sqlite3_reset(vm);
+      if sqlite3_step(vm)=SQLITE_ROW then
+        result:=sqlite3_column_int(vm,0);
+    end;
+    sqlite3_finalize(vm);
+  end;
+{
+  result:=ReturnInt(tldb,'SELECT filter FROM strings WHERE id='+lid);
+  if result<0 then
+  begin
+    RemakeFilter();
+    result:=ReturnInt(tldb,'SELECT filter FROM strings WHERE id='+lid);
+  end;
+}
+end;
+
+// Mod limited must be
+function GetSimilarCount(aid:integer):integer;
+var
+  lf:AnsiString;
+begin
+  result:=GetFilterId(aid);
+
+  if result>0 then
+  begin
+    Str(result,lf);
+    result:=ReturnInt(tldb,'SELECT count(id) FROM strings WHERE filter='+lf)-1;
+  end;
+
+  if result<0 then
+    result:=0
+end;
+
+// Mod limited must be
+function GetSimilars(aid:integer; var arr:TIntegerDynArray):integer;
+var
+  vm:pointer;
+  lSQL,lid,lf:AnsiString;
+  i:integer;
+begin
+  result:=GetFilterId(aid);
+  if result>0 then
+  begin
+    Str(result,lf);
+    result:=ReturnInt(tldb,'SELECT count(id) FROM strings WHERE filter='+lf)-1;
+    if result>0 then
+    begin
+      Str(aid,lid);
+      SetLength(arr,result);
+      lSQL:='SELECT id FROM strings WHERE filter='+lf+' AND id<>'+lid;
+      if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+      begin
+        i:=0;
+        while sqlite3_step(vm)=SQLITE_ROW do
+        begin
+          arr[i]:=sqlite3_column_int(vm,0);
+          inc(i);
+        end;
+        sqlite3_finalize(vm);
+      end;
+    end;
+  end;
+end;
+
+function GetDoubles(aid:integer; var arr:TIntegerDynArray):integer;
+var
+  vm:pointer;
+  lSQL,lid,lmod:AnsiString;
+  lcnt:integer;
+begin
+  result:=0;
+  Str(aid,lid);
+  Str(CurMod,lmod);
+
+  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM ref WHERE (srcid='+lid+') AND (modid='+lmod+')');
+  if lcnt>0 then
+  begin
+    SetLength(arr,lcnt);
+    lSQL:='SELECT id FROM ref WHERE (srcid='+lid+') AND (modid='+lmod+')';
+    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      while sqlite3_step(vm)=SQLITE_ROW do
+      begin
+        arr[result]:=sqlite3_column_int(vm,0);
+        inc(result);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end
+  else
+    SetLength(arr,0);
+end;
 {%ENDREGION Additional}
 
 {%REGION Basic}
@@ -402,7 +472,13 @@ begin
   result:=ReturnInt(tldb,'SELECT id FROM strings WHERE (src=?1)',PAnsiChar(asrc));
 end;
 
-function AddOriginal(const asrc:AnsiString{; withcheck:boolean=false}):integer;
+function AddOriginal(const asrc:AnsiString; withcheck:boolean=false):integer;
+{$IFDEF UseUniqueText}
+var
+  vm:pointer;
+  pc:PAnsiChar;
+  lSQL:AnsiString;
+{$ENDIF}
 begin
 {$IFNDEF UseUniqueText}
   if withcheck then
@@ -412,26 +488,28 @@ begin
 
   if result<0 then
 {$ELSE}
-  result:=ReturnInt(tldb,'INSERT INTO strings (src) VALUES (?1) RETURNING id;',PAnsiChar(asrc));
-{$ENDIF}
-end;
-
-(*
-function AddOriginal(asrc:PWideChar{; withcheck:boolean=false}):integer;
-begin
-{$IFNDEF UseUniqueText}
-  // for non-UNIQUE src field
-  if withcheck then
-    result:=ReturnInt(tldb,'SELECT id FROM strings WHERE (src=?1)',asrc)
-  else
+  begin
     result:=-1;
+    lSQL:='INSERT INTO strings (src) VALUES (?1) RETURNING id;';
+    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_bind_text(vm,1,PAnsiChar(asrc),-1,SQLITE_STATIC)=SQLITE_OK then
+      begin
+        if sqlite3_step(vm)=SQLITE_ROW then
+        begin
+          result:=sqlite3_column_int(vm,0);
 
-  if result<0 then
-{$ELSE}
-  result:=ReturnInt(tldb,'INSERT INTO strings (src) VALUES (?1) RETURNING id;',asrc);
+          pc:=sqlite3_expanded_sql(vm);
+          SQLog.Add(pc);
+          sqlite3_free(pc);
+        end;
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+
 {$ENDIF}
 end;
-*)
 
 function CheckName(const atable:AnsiString):AnsiString;
 begin
@@ -472,7 +550,9 @@ end;
 function SetTranslation(aid:integer; const atable:AnsiString;
     const adst:Ansistring; apart:boolean):integer;
 var
-  lsrc,ltable:AnsiString;
+  vm: Pointer;
+  lSQL,lsrc,ltable:AnsiString;
+  pc:PAnsiChar;
   lstat:integer;
 begin
   result:=aid;
@@ -482,22 +562,39 @@ begin
 
   if adst='' then
   begin
-    ExecuteDirect(tldb,'DELETE FROM '+ltable+' WHERE srcid='+lsrc);
+    lSQL:='DELETE FROM '+ltable+' WHERE srcid='+lsrc;
+    ExecuteDirect(tldb,lSQL);
+    SQLog.Add(lSQL);
     exit;
   end;
 
   lstat:=ReturnInt(tldb,'SELECT part FROM '+ltable+' WHERE srcid='+lsrc);
   if lstat<0 then
   begin
-    ExecuteDirect(tldb,
-      'INSERT INTO '+ltable+' (srcid, dst, part) VALUES ('+
-      lsrc+', ?1, '+BoolNumber[apart]+');',PAnsiChar(adst));
+    lSQL:='INSERT INTO '+ltable+' (srcid, dst, part) VALUES ('+
+           lsrc+', ?1, '+BoolNumber[apart]+');';
   end
   else
-    ExecuteDirect(tldb,
-      'UPDATE '+ltable+
-      ' SET dst=?1, part='+BoolNumber[apart]+
-      ' WHERE srcid='+lsrc,PAnsiChar(adst));
+    lSQL:='UPDATE '+ltable+
+          ' SET dst=?1, part='+BoolNumber[apart]+
+          ' WHERE srcid='+lsrc;
+
+  if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL), -1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_bind_text(vm,1,PAnsiChar(adst),-1,SQLITE_STATIC)=SQLITE_OK then
+    begin
+      if sqlite3_step(vm)=SQLITE_DONE then
+      begin
+        pc:=sqlite3_expanded_sql(vm);
+        SQLog.Add(pc);
+        sqlite3_free(pc);
+      end
+      else
+        result:=-1;
+    end;
+    sqlite3_finalize(vm);
+  end;
+
 end;
 
 function AddTranslation(aid:integer; const atable:AnsiString;
@@ -531,41 +628,40 @@ end;
 {%ENDREGION Basic}
 
 function AddToList(const atable,avalue:AnsiString):integer;
+var
+  vm:pointer;
+  pc:PAnsiChar;
+  lSQL:AnsiString;
 begin
   // not sure about root dir
   if avalue='' then exit(0);
 {$IFNDEF UseUniqueText}
-  result:=ReturnInt(tldb,'SELECT id FROM '+atable+' WHERE (value=?1)',avalue);
+  result:=ReturnInt(tldb,'SELECT id FROM '+atable+' WHERE (value=?1)',PAnsiChar(avalue));
   if result<0 then
-    result:=ReturnInt(tldb,
-      'INSERT INTO '+atable+' (value) VALUES (?1) RETURNING id;',avalue);
-{$ELSE}
-  result:=ReturnInt(tldb,
-    'INSERT INTO '+atable+' (value) VALUES (?1) RETURNING id;',PAnsiChar(avalue));
+{$ENDIF}
+  begin
+    result:=-1;
+    lSQL:='INSERT INTO '+atable+' (value) VALUES (?1) RETURNING id;';
+    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL), -1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_bind_text(vm,1,PAnsiChar(avalue),-1,SQLITE_STATIC)=SQLITE_OK then
+      begin
+        if sqlite3_step(vm)=SQLITE_ROW then
+        begin
+          result:=sqlite3_column_int(vm,0);
+
+          pc:=sqlite3_expanded_sql(vm);
+          SQLog.Add(pc);
+          sqlite3_free(pc);
+        end;
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+{$IFDEF UseUniqueText}
   if result<0 then
     result:=ReturnInt(tldb,'SELECT id FROM '+atable+' WHERE (value=?1)',PAnsiChar(avalue));
 {$ENDIF}
-end;
-
-function GetLineFlags(aid:integer; const amodid:AnsiString):cardinal;
-var
-  vm:pointer;
-  lSQL:AnsiString;
-begin
-  result:=0;
-  if amodid<>'' then
-    lSQL:=' AND modid='+amodid
-  else
-    lSQL:='';
-  lSQL:='SELECT flags FROM ref WHERE srcid='+IntToStr(aid)+lSQL;
-
-  if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-  begin
-    while sqlite3_step(vm)=SQLITE_ROW do
-      result:=result or rfIsReferred or sqlite3_column_int(vm,0);
-
-    sqlite3_finalize(vm);
-  end;
 end;
 
 function CheckForDirectory(const afilter:string):integer;
@@ -642,25 +738,30 @@ begin
   end;
 end;
 
-{
 function GetLineRef(aid:integer):integer;
 var
   lid,lmod:AnsiString;
 begin
+//  if (TRCache[aidx].flags and (rfIsManyRefs or rfIsNoRef))<>0 then exit(0);
+
   Str(aid,lid);
   Str(CurMod,lmod);
-  result:=ReturnInt('SELECT count(srcid) FROM ref WHERE modid='+lmod+' AND srcid='+lid);
-  if result=1 then
-  begin
-    lSQL:='SELECT d.value, f.value, t.value, r.line, r.flags'+
-          ' FROM ref r'+
-          ' LEFT JOIN dicdir  d ON d.id=r.dir'+
-          ' LEFT JOIN dicfile f ON f.id=r.file'+
-          ' LEFT JOIN dictag  t ON t.id=r.tag'+
-          ' WHERE r.modid='+lmod+' AND r.srcid='+lid;
-  end;
+
+  result:=ReturnInt(tldb,'SELECT id FROM ref WHERE modid='+lmod+' AND srcid='+lid);
 end;
-}
+
+function GetLineRefCount(aid:integer):integer;
+var
+  lid,lmod:AnsiString;
+begin
+//  if (TRCache[aidx].flags and (rfIsNoRef))<>0 then exit(0);
+
+  Str(aid,lid);
+  Str(CurMod,lmod);
+
+  result:=ReturnInt(tldb,'SELECT count(1) FROM ref WHERE modid='+lmod+' AND srcid='+lid);
+end;
+
 function GetRef(aid:integer;
     var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
 var
@@ -697,7 +798,7 @@ end;
 function AddRef(asrc:integer; amod:int64;
     const afile,atag:AnsiString; aline:integer):integer;
 var
-  lline,lmod,lsrc,ldir,lfile,ltag:AnsiString;
+  lSQL,lline,lmod,lsrc,ldir,lfile,ltag:AnsiString;
   lflag:integer;
 begin
   result:=0;
@@ -724,10 +825,10 @@ begin
     if Pos('MEDIA/UNITS/PROPS/'   ,lfile)=1 then lflag:=lflag or rfIsProp;
     if aline<0                              then lflag:=lflag or rfIsTranslate;
 
-    ExecuteDirect(tldb,
-      'INSERT INTO ref (srcid, modid, dir, file, tag, line, flags) VALUES ('+
-        lsrc+', '+lmod+', '+ldir+', '+lfile+', '+ltag+
-        ', '+lline+', '+IntToStr(lflag)+');');
+    lSQL:='INSERT INTO ref (srcid, modid, dir, file, tag, line, flags) VALUES ('+
+        lsrc+', '+lmod+', '+ldir+', '+lfile+', '+ltag+', '+lline+', '+IntToStr(lflag)+');';
+    if ExecuteDirect(tldb,lSQL) then
+      SQLog.Add(lSQL);
   end;
 end;
 
@@ -868,17 +969,22 @@ end;
 {%REGION Admin}
 function CreateLangTable(const lng:AnsiString):boolean;
 var
-  ltable:AnsiString;
+  ls:AnsiString;
 begin
-  ltable:=iso639.GetLang(lng);
-  if ltable='' then ltable:=lng;
+  ls:=iso639.GetLang(lng);
+  if ls='' then ls:=lng;
 
-  if not IsTableExists(tldb,'trans_'+ltable) then
-    result:=ExecuteDirect(tldb,
-        'CREATE TABLE trans_'+lng+' ('+
+  if not IsTableExists(tldb,'trans_'+ls) then
+  begin
+    ls:='CREATE TABLE trans_'+lng+' ('+
         '  srcid  INTEGER PRIMARY KEY,'+
         '  dst    TEXT ,'+
-        '  part   BOOLEAN );')
+        '  part   BOOLEAN );';
+
+    result:=ExecuteDirect(tldb,ls);
+    if result then
+      SQLog.Add(ls);
+  end
   else
     result:=false;
 end;
@@ -942,6 +1048,8 @@ begin
       '  tag    INTEGER,'+
       '  line   INTEGER,'+
       '  flags  INTEGER );');
+  result:=ExecuteDirect(tldb,
+      'CREATE INDEX refsrc ON ref (srcid, modid)');
 end;
 
 function TLOpenBase(inmemory:boolean=false):boolean;
@@ -1043,6 +1151,33 @@ begin
 end;
 {%ENDREGION Scan and Load}
 
+function GetLineFlags(aid:integer; const amodid:AnsiString):cardinal;
+var
+  vm:pointer;
+  lSQL:AnsiString;
+  i:integer;
+begin
+  result:=0;
+  if amodid<>'' then
+    lSQL:=' AND modid='+amodid
+  else
+    lSQL:='';
+  lSQL:='SELECT flags FROM ref WHERE srcid='+IntToStr(aid)+lSQL;
+
+  if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    i:=0;
+    while sqlite3_step(vm)=SQLITE_ROW do
+    begin
+      result:=result or rfIsReferred or sqlite3_column_int(vm,0);
+      inc(i);
+    end;
+    if i>1 then result:=result or rfIsManyRefs;
+
+    sqlite3_finalize(vm);
+  end;
+end;
+
 function LoadModData():integer;
 var
   vm:pointer;
@@ -1104,7 +1239,7 @@ begin
         begin
           id   :=sqlite3_column_int (vm,0);
           src  :=sqlite3_column_text(vm,1);
-          flags:=GetLineFlags(id,'');
+          flags:=rfIsNoRef;
         end;
         inc(result);
       end;
@@ -1162,6 +1297,12 @@ begin
   end;
 end;
 
+
 initialization
 
+  SQLog.Init;
+
+finalization
+
+  SQLog.Free;
 end.

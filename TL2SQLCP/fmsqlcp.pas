@@ -17,6 +17,7 @@ type
     bbAddTrans: TBitBtn;
     bbSaveDB: TBitBtn;
     bbLog: TBitBtn;
+    bbSQLog: TBitBtn;
     cbWithRef: TCheckBox;
     edModStat: TEdit;
     gdLanguages: TStringGrid;
@@ -29,6 +30,7 @@ type
     procedure bbLogClick(Sender: TObject);
     procedure bbSaveDBClick(Sender: TObject);
     procedure bbScanModClick(Sender: TObject);
+    procedure bbSQLogClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DoStartEdit(Sender: TObject);
@@ -70,6 +72,7 @@ resourcestring
   rsLanguage        = 'Language:';
   rsStatus          = 'Total lines: %d | Unreferred lines: %d';
   rsStat            = 'Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d';
+  rsDblClick        = 'Double-Click to edit translation';
 
 const
   sOriginalGame = '- Original game -';
@@ -165,6 +168,30 @@ begin
   end;
 end;
 
+procedure TFormSQLCP.bbSQLogClick(Sender: TObject);
+var
+  dlg:TSaveDialog;
+begin
+  if SQLog.Size=0 then exit;
+
+  dlg:=TSaveDialog.Create(nil);
+  try
+    dlg.FileName  :=Self.Name+'.sql';
+    dlg.DefaultExt:='.sql';
+    dlg.Filter    :='';
+    dlg.Title     :='';
+    dlg.Options   :=dlg.Options+[ofOverwritePrompt];
+
+    if (dlg.Execute) then
+    begin
+      SQLog.SaveToFile(dlg.Filename);
+//      SQLog.Clear;
+    end;
+  finally
+    dlg.Free;
+  end;
+end;
+
 procedure TFormSQLCP.bbLogClick(Sender: TObject);
 begin
   if fmLogForm=nil then
@@ -192,6 +219,7 @@ begin
     lstat.modid:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
 
   GetModStatistic(lstat);
+  edModSTat.Tag:=lstat.total;
   edModSTat.Text:=Format(rsStat,
     [lstat.total,lstat.dupes,lstat.total-lstat.dupes,lstat.files,lstat.tags]);
   gdModStat.BeginUpdate;
@@ -289,7 +317,10 @@ end;
 
 procedure TFormSQLCP.DoStartEdit(Sender: TObject);
 begin
-  if (MainTL2TransForm=nil) and (lbMods.ItemIndex>=0) and (gdModStat.Row>0) then
+  if (MainTL2TransForm=nil) and
+     (lbMods.ItemIndex>=0) and
+     (gdModStat.Row>0) and
+     (edModSTat.Tag>0) then
   begin
     // to avoid multiply dblclicks
     MainTL2TransForm:=TMainTL2TransForm(1);
@@ -301,8 +332,7 @@ begin
     CurLang:=gdModStat.Cells[2,gdModStat.Row];
 
     MainTL2TransForm:=TMainTL2TransForm.Create(Self);
-    Hide;
-    MainTL2TransForm.Show;
+    MainTL2TransForm.ShowModal;
   end;
 end;
 

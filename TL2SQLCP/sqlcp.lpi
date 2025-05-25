@@ -14,6 +14,10 @@
       </XPManifest>
       <Icon Value="0"/>
     </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="languages"/>
+    </i18n>
     <BuildModes>
       <Item Name="Default" Default="True"/>
       <Item Name="Debug">
@@ -159,6 +163,7 @@
         <Filename Value="tl2dupeform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DupeForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2DupeForm"/>
       </Unit>
@@ -166,6 +171,7 @@
         <Filename Value="tl2edittext.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditTextForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2EditText"/>
       </Unit>
@@ -187,6 +193,7 @@
         <Filename Value="tl2simform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SimilarForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SimForm"/>
       </Unit>

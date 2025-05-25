@@ -169,8 +169,10 @@ end;
 // anyway, will be used (if only) in very rare cases
 procedure tTextCache.PutText(idx:cardinal; astr:pointer);
 var
+  lbuf:array [0..511] of AnsiChar;
+  lbufptr:PAnsiChar;
   lptr:PAnsiChar;
-  newlen,dlen,i:integer;
+  llen,newlen,dlen,i:integer;
   lsame:boolean;
 begin
   if idx<Length(fptrs) then
@@ -196,10 +198,29 @@ begin
 
     dlen:=(newlen-fptrs[idx].len)*fcharsize;
 
+    lbufptr:=nil;
     // expand
     if dlen>0 then
     begin
+      // special case, adding text inside buffer already
+      if (astr>fbuffer) and (astr<(fbuffer+fcapacity)) then
+      begin
+        llen:=(newlen+1)*fcharsize;
+        if llen<=512 then
+        begin
+          move(astr^,lbuf,llen);
+          astr:=@lbuf;
+        end
+        else
+        begin
+          GetMem(lbufptr,llen);
+          move(astr^,lbufptr^,llen);
+          astr:=lbufptr;
+        end;
+      end;
+
       Capacity:=fcursize+dlen;
+
       lptr:=fbuffer+fptrs[idx].offset; // buffer can be changed
       move(lptr^,(lptr+dlen)^,fcursize-fptrs[idx].offset);
       inc(fcursize,dlen);
@@ -217,14 +238,15 @@ begin
     end;
 
     // fix indexes
-    for i:=(idx+1) to (fcount-1) do
-      if fptrs[i].offset<>0 then
-        fptrs[i].offset:=fptrs[i].offset+dlen;
+    if dlen<>0 then
+      for i:=(idx+1) to (fcount-1) do
+        if fptrs[i].offset<>0 then
+          fptrs[i].offset:=fptrs[i].offset+dlen;
 
     // set text
     if newlen>0 then
     begin
-      move(astr^,lptr^,newlen*fcharsize+1); //!! maybe +2 for wide?
+      move(astr^,lptr^,(newlen+1)*fcharsize);
 
       fptrs[idx].hash:=CalcHash(PByte(astr),(newlen+1)*fcharsize);
       fptrs[idx].len :=newlen;
@@ -235,6 +257,8 @@ begin
       fptrs[idx].hash  :=0;
       fptrs[idx].len   :=0;
     end;
+
+    if lbufptr<>nil then FreeMem(lbufptr);
   end;
 end;
 
@@ -282,13 +306,13 @@ begin
   begin
     if PAnsiChar(astr)^=#0 then exit(0);
 
-    llen:=Length(PAnsiChar(astr))+1;
-    lhash:=CalcHash(PByte(astr),llen);
+    llen:=Length(PAnsiChar(astr));
+    lhash:=CalcHash(PByte(astr),llen+1);
     for i:=1 to fcount-1 do
     begin
-      if fptrs[i].hash=lhash then
+      if (fptrs[i].hash=lhash) and (fptrs[i].len=llen) then
 //        if CompareChar0(data[i],astr,llen)=0 then
-        if CompareChar0(data[i]^,PByte(astr)^,llen)=0 then
+        if CompareChar0(data[i]^,PByte(astr)^,llen+1)=0 then
           exit(i);
     end;
   end
@@ -296,13 +320,13 @@ begin
   begin
     if PWideChar(astr)^=#0 then exit(0);
 
-    llen:=Length(PWideChar(astr))+1;
-    lhash:=CalcHash(PByte(astr),llen*SizeOf(WideChar));
+    llen:=Length(PWideChar(astr));
+    lhash:=CalcHash(PByte(astr),(llen+1)*SizeOf(WideChar));
     for i:=1 to fcount-1 do
     begin
-      if fptrs[i].hash=lhash then
+      if (fptrs[i].hash=lhash) and (fptrs[i].len=llen) then
       begin
-        lcnt:=llen;
+        lcnt:=llen+1;
         p :=data[i];
         lp:=astr;
         repeat
@@ -322,8 +346,9 @@ end;
 
 function tTextCache.Append(astr:pointer):integer;
 var
-//  lp:pointer;
-  llen,lsize:integer;
+  lbuf:array [0..511] of AnsiChar;
+  lbufptr:pointer;
+  llen,newlen,lsize:integer;
   lhash:longword;
   ltmp:boolean;
 begin
@@ -342,13 +367,13 @@ begin
     SetLength(fptrs,Length(fptrs)+delta_arr);
 
   if fcharsize=1 then
-    llen:=Length(PAnsiChar(astr))
+    newlen:=Length(PAnsiChar(astr))
   else
-    llen:=Length(PWideChar(astr));
+    newlen:=Length(PWideChar(astr));
 
-  if llen>0 then
+  if newlen>0 then
   begin
-    lsize:=(llen+1)*fcharsize;
+    lsize:=(newlen+1)*fcharsize;
     lhash:=CalcHash(PByte(astr),lsize);
 
     ltmp:=false;
@@ -363,25 +388,51 @@ begin
       begin
         fptrs[fcount].offset:=fptrs[fcount-1].offset;
         fptrs[fcount].hash  :=fptrs[fcount-1].hash;
+        fptrs[fcount].len   :=newlen;
         ltmp:=true;
       end;
     end;
 
     if not ltmp then
     begin
+      // special case, adding text inside buffer already
+      lbufptr:=nil;
+      if (astr>fbuffer) and (astr<(fbuffer+fcapacity)) then
+      begin
+        llen:=(newlen+1)*fcharsize;
+        if llen<=512 then
+        begin
+          move(astr^,lbuf,llen);
+          astr:=@lbuf;
+        end
+        else
+        begin
+          GetMem(lbufptr,llen);
+          move(astr^,lbufptr^,llen);
+          astr:=lbufptr;
+        end;
+      end;
+
       Capacity:=fcursize+lsize;
       move(astr^,(fbuffer+fcursize)^,lsize);
-      fptrs[fcount].offset:=fcursize;
-      fptrs[fcount].hash  :=lhash;
-      fptrs[fcount].len   :=llen;
-      inc(fcursize,lsize);
+      with fptrs[fcount] do
+      begin
+        offset:=fcursize;
+        hash  :=lhash;
+        len   :=newlen;
+        inc(fcursize,lsize);
+      end;
+      if lbufptr<>nil then FreeMem(lbufptr);
     end;
   end
   else
   begin
-    fptrs[fcount].offset:=0;
-    fptrs[fcount].hash  :=0;
-    fptrs[fcount].len   :=0;
+    with fptrs[fcount] do
+    begin
+      offset:=0;
+      hash  :=0;
+      len   :=0;
+    end;
   end;
 
   result:=fcount;

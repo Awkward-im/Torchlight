@@ -1,0 +1,463 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.4\n"
+
+#: fmsqlcp.rschooselang
+msgid "Choose translation language"
+msgstr "Выберите язык перевода"
+
+#: fmsqlcp.rsdblclick
+msgctxt "fmsqlcp.rsdblclick"
+msgid "Double-Click to edit translation"
+msgstr "Двойной клик для редактирования перевода"
+
+#: fmsqlcp.rslanguage
+msgid "Language:"
+msgstr "Язык:"
+
+#: fmsqlcp.rsopenmod
+msgid "Open mod (pak) file"
+msgstr "Открыть Mod (pak) "
+
+#: fmsqlcp.rsopentranslation
+msgid "Open translation file"
+msgstr "Открыть файл перевода"
+
+#: fmsqlcp.rsstat
+#, object-pascal-format
+msgid "Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d"
+msgstr "Всего строк: %d | Дублей: %d | Уникальных: %d | Файлов: %d | Тэгов: %d"
+
+#: fmsqlcp.rsstatus
+#, object-pascal-format
+msgid "Total lines: %d | Unreferred lines: %d"
+msgstr "Всего строк: %d | Строк без ссылок: %d"
+
+#: rgdb.rsbasegame
+msgid "Base game"
+msgstr "Основная игра"
+
+#: rgdb.rshp
+msgid "Best Health Potion"
+msgstr "Лучшее зелье здоровья"
+
+#: rgdb.rslmb
+msgid "Left mouse button"
+msgstr "Левая кнопка мыши"
+
+#: rgdb.rsmp
+msgid "Best Mana Potion"
+msgstr "Лучшее зелье маны"
+
+#: rgdb.rspethp
+msgid "Best Pet Health Potion"
+msgstr "Лучшее зелье лечения питомца"
+
+#: rgdb.rspetmp
+msgid "Best Pet Mana Potion"
+msgstr "Лучшее зелье маны питомца"
+
+#: rgdb.rspetspell1
+msgid "Pet spell 1"
+msgstr "Навык питомца 1"
+
+#: rgdb.rspetspell2
+msgid "Pet spell 2"
+msgstr "Навык питомца 2"
+
+#: rgdb.rspetspell3
+msgid "Pet spell 3"
+msgstr "Навык питомца 3"
+
+#: rgdb.rspetspell4
+msgid "Pet spell 4"
+msgstr "Навык питомца 4"
+
+#: rgdb.rsqk0
+msgid "Quckslot 0"
+msgstr ""
+
+#: rgdb.rsqk1
+msgid "Quckslot 1"
+msgstr ""
+
+#: rgdb.rsqk2
+msgid "Quckslot 2"
+msgstr ""
+
+#: rgdb.rsqk3
+msgid "Quckslot 3"
+msgstr ""
+
+#: rgdb.rsqk4
+msgid "Quckslot 4"
+msgstr ""
+
+#: rgdb.rsqk5
+msgid "Quckslot 5"
+msgstr ""
+
+#: rgdb.rsqk6
+msgid "Quckslot 6"
+msgstr ""
+
+#: rgdb.rsqk7
+msgid "Quckslot 7"
+msgstr ""
+
+#: rgdb.rsqk8
+msgid "Quckslot 8"
+msgstr ""
+
+#: rgdb.rsqk9
+msgid "Quckslot 9"
+msgstr ""
+
+#: rgdb.rsrmb
+msgid "Right mouse button"
+msgstr "Правая кнопка мыши"
+
+#: rgdb.rsrmbalt
+msgid "Right mouse button (alternative)"
+msgstr "Правая кнопка мыши (альтернативная)"
+
+#: rgdb.rsset
+msgid "Set"
+msgstr "Набор"
+
+#: rgdb.rsspell1
+msgid "Spell 1"
+msgstr "Навык 1"
+
+#: rgdb.rsspell2
+msgid "Spell 2"
+msgstr "Навык 2"
+
+#: rgdb.rsspell3
+msgid "Spell 3"
+msgstr "Навык 3"
+
+#: rgdb.rsspell4
+msgid "Spell 4"
+msgstr "Навык 4"
+
+#: tedittextform.actmarkaspartial.hint
+msgid "Mark as Partial"
+msgstr ""
+
+#: tedittextform.actnextline.hint
+msgid "Next line"
+msgstr ""
+
+#: tedittextform.actnextuntranslated.hint
+msgid "Next untranslated"
+msgstr ""
+
+#: tedittextform.actprevline.hint
+msgid "Previous line"
+msgstr ""
+
+#: tedittextform.actprevuntranslated.hint
+msgid "Previous untranslated"
+msgstr ""
+
+#: tedittextform.actshowdupe.hint
+msgid "Show doubles"
+msgstr ""
+
+#: tedittextform.actshowsample.hint
+msgid "Show Sample"
+msgstr ""
+
+#: tedittextform.acttranslate.hint
+msgid "Translate"
+msgstr ""
+
+#: tedittextform.caption
+msgid "Edit text"
+msgstr ""
+
+#: tedittextform.lbltag.caption
+msgid "Tag:"
+msgstr ""
+
+#: tfmlogform.bbclear.caption
+msgid "&Clear"
+msgstr "Очистить"
+
+#: tfmlogform.bbsave.caption
+msgid "Save"
+msgstr "Сохранить"
+
+#: tfmlogform.bbsave.hint
+msgid "Save log to file"
+msgstr "Сохранить лог в файл"
+
+#: tformsqlcp.bbaddtrans.caption
+msgid "Add Translation"
+msgstr ""
+
+#: tformsqlcp.bblog.caption
+msgid "Log"
+msgstr ""
+
+#: tformsqlcp.bbsavedb.caption
+msgid "Save DB"
+msgstr ""
+
+#: tformsqlcp.bbscanmod.caption
+msgid "Scan Mod"
+msgstr ""
+
+#: tformsqlcp.cbwithref.caption
+msgid "With refs"
+msgstr ""
+
+#: tformsqlcp.gdlanguages.columns[0].title.caption
+msgctxt "tformsqlcp.gdlanguages.columns[0].title.caption"
+msgid "Count"
+msgstr ""
+
+#: tformsqlcp.gdlanguages.columns[1].title.caption
+msgctxt "tformsqlcp.gdlanguages.columns[1].title.caption"
+msgid "Lang"
+msgstr ""
+
+#: tformsqlcp.gdlanguages.columns[2].title.caption
+msgctxt "tformsqlcp.gdlanguages.columns[2].title.caption"
+msgid "Name"
+msgstr ""
+
+#: tformsqlcp.gdmodstat.columns[0].title.caption
+msgctxt "tformsqlcp.gdmodstat.columns[0].title.caption"
+msgid "Count"
+msgstr ""
+
+#: tformsqlcp.gdmodstat.columns[1].title.caption
+#, fuzzy
+msgctxt "tformsqlcp.gdmodstat.columns[1].title.caption"
+msgid "Partial"
+msgstr "Частичные"
+
+#: tformsqlcp.gdmodstat.columns[2].title.caption
+msgctxt "tformsqlcp.gdmodstat.columns[2].title.caption"
+msgid "Lang"
+msgstr ""
+
+#: tformsqlcp.gdmodstat.columns[3].title.caption
+msgctxt "tformsqlcp.gdmodstat.columns[3].title.caption"
+msgid "Name"
+msgstr ""
+
+#: tformsqlcp.lblcurlang.caption
+msgid "Current languages"
+msgstr ""
+
+#: tl2datamodule.rsnoref
+msgid "Text don't have any references"
+msgstr "Ссылки на текст неизвестны"
+
+#: tl2datamodule.rsseveralrefs
+#, object-pascal-format
+msgctxt "tl2datamodule.rsseveralrefs"
+msgid "This text presents in several (about %d) places."
+msgstr "Этот текст есть в нескольких (примерно %d) местах."
+
+#: tl2edittext.sshow
+msgid "Click on \"Show Doubles\" button to show"
+msgstr ""
+
+#: tl2notesform.stitle
+msgctxt "tl2notesform.stitle"
+msgid "Notes"
+msgstr "Заметки"
+
+#: tl2settingsform.rsusefreekey
+msgid "Paid or Free Key (free)"
+msgstr "Платный или нет ключ ( бесплатно)"
+
+#: tl2settingsform.rsusepaidkey
+msgid "Paid or Free Key (paid)"
+msgstr "Платный или нет ключ ( платно)"
+
+#: tl2settingsform.snotrealized
+msgid "Not realized yet"
+msgstr "Не реализовано"
+
+#: tl2settingsform.ssettings
+msgctxt "tl2settingsform.ssettings"
+msgid "Settings"
+msgstr "Настройки"
+
+#: tl2simform.rsnoref
+msgid "No reference for this text"
+msgstr "Нет отсылок к этому тексту"
+
+#: tl2text.rsdssign
+msgid "Target have sign at the end"
+msgstr "Перевод со знаком в конце"
+
+#: tl2text.rsdstcolend
+msgid "Source have less |u than target"
+msgstr "В исходнике меньше |u чем в переводе"
+
+#: tl2text.rsdstcolor
+msgid "Source have less colors than target"
+msgstr "В исходнике меньше цветов чем в переводе"
+
+#: tl2text.rsdstline
+msgid "Source have less lines than target"
+msgstr "В исходнике меньше строк чем в переводе"
+
+#: tl2text.rsdstspace
+msgid "Target have space(s) at the end"
+msgstr "Перевод с пробелом в конце"
+
+#: tl2text.rssrccolend
+msgid "Source have more |u than target"
+msgstr "В исходнике больше |u чем в переводе"
+
+#: tl2text.rssrccolor
+msgid "Source have more colors than target"
+msgstr "В исходнике больше цветов чем в переводе"
+
+#: tl2text.rssrcline
+msgid "Source have more lines than target"
+msgstr "В исходнике больше строк чем в переводе"
+
+#: tl2text.rssrcsign
+msgid "Source have sign at the end"
+msgstr "Исходник со знаком в конце"
+
+#: tl2text.rssrcspace
+msgid "Source have space(s) at the end"
+msgstr "Исходник с пробелом в конце"
+
+#: tl2text.rssrctags
+msgid "Source have tags or parameters"
+msgstr "Исходник с тегами или параметрами"
+
+#: tl2unit.rsaffected
+msgctxt "tl2unit.rsaffected"
+msgid " line(s) affected"
+msgstr " строк(а/и) исправлено"
+
+#: tl2unit.rsdefaultcaption
+msgctxt "tl2unit.rsdefaultcaption"
+msgid "Torchlight 2 Translation"
+msgstr "Перевод Torchlight 2"
+
+#: tl2unit.rsdodelete
+msgctxt "tl2unit.rsdodelete"
+msgid ""
+"Are you sure to delete selected line(s)?\n"
+"This text will be just hidden until you save and reload project."
+msgstr ""
+"Вы уверены, что хотите удалить выбранную строку (строки)?\n"
+"Этот текст будет лишь скрытым, пока Вы не сохраните и не перезагрузите проект."
+
+#: tl2unit.rsdupes
+msgctxt "tl2unit.rsdupes"
+msgid "Check doubles info."
+msgstr "Проверьте информацию о дублях."
+
+#: tl2unit.rsfixall
+msgctxt "tl2unit.rsfixall"
+msgid "Fix all"
+msgstr "Исправить всё"
+
+#: tl2unit.rsfixone
+msgctxt "tl2unit.rsfixone"
+msgid "Fix this"
+msgstr "Исправить"
+
+#: tl2unit.rsfolderall
+msgctxt "tl2unit.rsfolderall"
+msgid "- All -"
+msgstr "- Все -"
+
+#: tl2unit.rsmodeall
+msgid "All"
+msgstr "Все"
+
+#: tl2unit.rsmodeoriginal
+msgid "Original"
+msgstr "Исходные"
+
+#: tl2unit.rsmodepartial
+msgctxt "tl2unit.rsmodepartial"
+msgid "Partial"
+msgstr "Частичные"
+
+#: tl2unit.rsmodeready
+msgid "Ready"
+msgstr "Готовые"
+
+#: tl2unit.rsnext
+msgctxt "tl2unit.rsnext"
+msgid "Next note"
+msgstr "Далее"
+
+#: tl2unit.rsnodoubles
+msgctxt "tl2unit.rsnodoubles"
+msgid "No doubles for this text"
+msgstr "Нет дублей для этого текста"
+
+#: tl2unit.rsnotes
+msgctxt "tl2unit.rsnotes"
+msgid "Punctuation note"
+msgstr "Пунктутация"
+
+#: tl2unit.rsnotready
+msgid "Not translated"
+msgstr "Не переведено"
+
+#: tl2unit.rsnotsaved
+msgctxt "tl2unit.rsnotsaved"
+msgid "Project modified. Do you want to save it?"
+msgstr "Проект изменён. Хотите сохранить его?"
+
+#: tl2unit.rsnowarnings
+msgctxt "tl2unit.rsnowarnings"
+msgid "No any warnings"
+msgstr "Никаких предупреждений нет"
+
+#: tl2unit.rsreadyplus
+msgid "Translated"
+msgstr "Переведено"
+
+#: tl2unit.rsreplaces
+msgctxt "tl2unit.rsreplaces"
+msgid "Total replaces"
+msgstr "Всего замен"
+
+#: tl2unit.rsroot
+msgctxt "tl2unit.rsroot"
+msgid "-- Root --"
+msgstr "-- Корень  --"
+
+#: tsimilarform.btndupes.caption
+msgid "Doubles"
+msgstr ""
+
+#: tsimilarform.caption
+msgid "Similars List"
+msgstr ""
+
+#: tsimilarform.lblpartial.caption
+msgid "(Partial translation)"
+msgstr ""
+
+#: unitlogform.rscantsave
+msgid "Can't save log file"
+msgstr "Не могу сохранить лог"
+

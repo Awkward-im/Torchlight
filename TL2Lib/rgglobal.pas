@@ -123,10 +123,10 @@ procedure FixFloatStr(var astr:UnicodeString);
 function  ReverseWords(aval:QWord):QWord;
 
 function  FastUpCase   (c:UnicodeChar):UnicodeChar;
-function  StrToWide    (const src:string):PWideChar;
-function  FastStrToWide(const src:string):PWideChar;
-function  WideToStr    (src:PWideChar;asize:integer=-1):string;
-function  FastWideToStr(src:PWideChar;asize:integer=-1):string;
+function  StrToWide    (const src:AnsiString):PWideChar;
+function  FastStrToWide(const src:AnsiString):PWideChar;
+function  WideToStr    (src:PWideChar;asize:integer=-1):AnsiString;
+function  FastWideToStr(src:PWideChar;asize:integer=-1):AnsiString;
 procedure CopyWide     (var adst:PWideChar; asrc:PWideChar; alen:integer=0);
 function  CopyWide     (asrc:PWideChar; alen:integer=0):PWideChar;
 function  CompareWide  (s1,s2:PWideChar; alen:integer=0):integer;
@@ -144,15 +144,15 @@ function  BufLen(abuf:PWideChar; asize:cardinal):integer;
 function ExtractNameOnly(const aFilename: string):string;
 function ExtractExt     (const aFileName: string):string;
 function ExtractPath(const apath:UnicodeString):UnicodeString;
-function ExtractPath(const apath:string):string;
+function ExtractPath(const apath:AnsiString   ):AnsiString;
 function ExtractName(const apath:UnicodeString):UnicodeString;
-function ExtractName(const apath:string):string;
+function ExtractName(const apath:AnsiString   ):AnsiString;
 
 const
   RGExtExts : array [0..4] of string = ('.TXT', '.BINDAT', '.BINLAYOUT', '.ADM', '.CMP');
 
 function IsExtFile (var   srcname:UnicodeString):boolean;
-function IsExtFile (var   srcname:string       ):boolean;
+function IsExtFile (var   srcname:AnsiString   ):boolean;
 function FixFileExt(const srcname:string):string;
 
 
@@ -511,7 +511,7 @@ begin
     result:=UnicodeChar(ORD(c)-32);
 end;
 
-function FastStrToWide(const src:string):PWideChar;
+function FastStrToWide(const src:AnsiString):PWideChar;
 var
   i:integer;
 begin
@@ -523,22 +523,41 @@ begin
   result[length(src)]:=#0;
 end;
 
-function StrToWide(const src:string):PWideChar;
+function StrToWide(const src:AnsiString):PWideChar;
 var
+  pc:PAnsiChar;
   i:integer;
+  b:boolean;
 //  ws:UnicodeString;
 begin
   if src='' then exit(nil);
 
-  i:=Utf8ToUnicode(nil,0,pchar(src),length(src));
-  if i>0 then
+  pc:=PAnsiChar(src);
+  b:=false;
+  while (pc^<>#0) do
   begin
-    GetMem(result,(i+1)*SizeOf(WideChar));
-    i:=Utf8ToUnicode(result,(i+1)*SizeOf(WideChar),pchar(src),length(src));
-    result[i-1]:=#0;
-  end
+    if ORD(pc^)>127 then
+    begin
+      b:=true;
+      break;
+    end;
+    inc(pc);
+  end;
+  
+  if not b then
+    result:=FastStrToWide(src)
   else
-    result:=nil;
+  begin
+    i:=Utf8ToUnicode(nil,0,PAnsiChar(src),Length(src));
+    if i>0 then
+    begin
+      GetMem(result,(i+1)*SizeOf(WideChar));
+      i:=Utf8ToUnicode(result,(i+1)*SizeOf(WideChar),PAnsiChar(src),Length(src));
+      result[i-1]:=#0;
+    end
+    else
+      result:=nil;
+  end;
 {
   ws:=UTF8Decode(src);
   GetMem(result,(Length(ws)+1)*SizeOf(WideChar));
@@ -547,7 +566,7 @@ begin
 }
 end;
 
-function FastWideToStr(src:PWideChar;asize:integer=-1):string;
+function FastWideToStr(src:PWideChar;asize:integer=-1):AnsiString;
 var
   i:integer;
 begin
@@ -556,10 +575,10 @@ begin
 
   SetLength(result,asize);
   for i:=1 to asize do
-    result[i]:=char(ord(src[i-1]));
+    result[i]:=AnsiChar(ord(src[i-1]));
 end;
 
-function WideToStr(src:PWideChar;asize:integer=-1):string;
+function WideToStr(src:PWideChar;asize:integer=-1):AnsiString;
 var
   ws:UnicodeString;
   pc:PWideChar;
@@ -571,13 +590,28 @@ begin
   pc:=src;
   lsize:=0;
   b:=false;
-  while (pc^<>#0) and (lsize<>asize) do
+  if asize>0 then
   begin
-    if ORD(pc^)>127 then b:=true;
-    inc(pc);
-    inc(lsize);
+    lsize:=asize;
+    while pc^<>#0 do
+    begin
+      if ORD(pc^)>127 then
+      begin
+        b:=true;
+        break;
+      end;
+      inc(pc);
+    end;
+  end
+  else
+  begin
+    while pc^<>#0 do
+    begin
+      if ORD(pc^)>127 then b:=true;
+      inc(pc);
+      inc(lsize);
+    end;
   end;
-  if lsize=0 then exit('');
 
   if not b then
     result:=FastWideToStr(src,lsize)
@@ -819,11 +853,11 @@ begin
   i:=Length(apath);
   if i=0 then exit;
   dec(i);
-  while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
-  if i>0 then result:=copy(apath,1,i);
+  while (i>0) and (apath[i]<>'/') and (apath[i]<>'\') do Dec(i);
+  if i>0 then result:=Copy(apath,1,i);
 end;
 
-function ExtractPath(const apath:string):string;
+function ExtractPath(const apath:AnsiString):AnsiString;
 var
   i:integer;
 begin
@@ -831,8 +865,8 @@ begin
   i:=Length(apath);
   if i=0 then exit;
   dec(i);
-  while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
-  if i>0 then result:=copy(apath,1,i);
+  while (i>0) and (apath[i]<>'/') and (apath[i]<>'\') do Dec(i);
+  if i>0 then result:=Copy(apath,1,i);
 end;
 
 function ExtractName(const apath:UnicodeString):UnicodeString;
@@ -843,11 +877,11 @@ begin
   i:=Length(apath);
   if i=0 then exit;
   dec(i);
-  while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
+  while (i>0) and (apath[i]<>'/') and (apath[i]<>'\') do Dec(i);
   if i>0 then result:=copy(apath,i+1) else result:=apath;
 end;
 
-function ExtractName(const apath:string):string;
+function ExtractName(const apath:AnsiString):AnsiString;
 var
   i:integer;
 begin
@@ -855,7 +889,7 @@ begin
   i:=Length(apath);
   if i=0 then exit;
   dec(i);
-  while (i>0) and not (apath[i] in ['/','\']) do Dec(i);
+  while (i>0) and (apath[i]<>'/') and (apath[i]<>'\') do Dec(i);
   if i>0 then result:=copy(apath,i+1) else result:=apath;
 end;
 
@@ -914,7 +948,7 @@ begin
   result:=false;
 end;
 
-function IsExtFile(var srcname:string):boolean;
+function IsExtFile(var srcname:AnsiString):boolean;
 var
   i,j,elen,slen:integer;
 begin
