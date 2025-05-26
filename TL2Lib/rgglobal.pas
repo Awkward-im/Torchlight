@@ -116,10 +116,14 @@ function MakeMethod(Data, Code:Pointer):TMethod;
 
 function  FileTimeToDateTime(const FileTime: Int64): TDateTime;
 function  DateTimeToFileTime(adate: TDateTime): Int64;
+
+function  IsNumber(astr:PWideChar):boolean;
+function  RGStrToInt(src:PWideChar; var aval:QWord):boolean;
 function  RGStrToInt(src:PWideChar):QWord;
 function  RGIntToStr(dst:PWideChar; value:QWord):PWideChar;
 procedure FixFloatStr(var astr:AnsiString);
 procedure FixFloatStr(var astr:UnicodeString);
+
 function  ReverseWords(aval:QWord):QWord;
 
 function  FastUpCase   (c:UnicodeChar):UnicodeChar;
@@ -383,6 +387,36 @@ begin
     qword(tTL2VerRec(aval).arr[2]) shl 16+
     qword(tTL2VerRec(aval).arr[1]) shl 32+
     qword(tTL2VerRec(aval).arr[0]) shl 48;
+end;
+
+function IsNumber(astr:PWideChar):boolean;
+begin
+  result:=false;
+  if (astr=nil) or (astr^=#0) then exit;
+  if astr^='-' then inc(astr);
+  repeat
+    if not (ord(astr^) in [ORD('0')..ORD('9')]) then exit;
+    inc(astr);
+  until astr^=#0;
+  result:=true;
+end;
+
+function RGStrToInt(src:PWideChar; var aval:QWord):boolean;
+var
+  isminus:boolean;
+begin
+  result:=false;
+  aval:=0;
+  if (src=nil) or (src^=#0) then exit;
+  isminus:=src^='-';
+  if isminus then inc(src);
+  repeat
+    if not (ord(src^) in [ORD('0')..ORD('9')]) then exit;
+    aval:=aval*10+ORD(src^)-ORD('0');
+    inc(src);
+  until src^=#0;
+  if isminus then aval:=QWord(-Int64(aval));
+  result:=true;
 end;
 
 function RGStrToInt(src:PWideChar):QWord;

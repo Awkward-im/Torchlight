@@ -185,18 +185,6 @@ type
   TARGNode = array [0..MAXINT div SizeOf(pointer)-1] of PRGNode;
 
 
-function IsNumber(astr:PWideChar):boolean;
-begin
-  result:=false;
-  if (astr=nil) or (astr^=#0) then exit;
-  if astr^='-' then inc(astr);
-  repeat
-    if not (ord(astr^) in [ord('0')..ord('9')]) then exit;
-    inc(astr);
-  until astr^=#0;
-  result:=true;
-end;
-
 {%REGION Name}
 function IsNodeName(anode:pointer; aname:PWideChar):boolean;
 var
@@ -204,6 +192,7 @@ var
 begin
   if anode<>nil then
   begin
+//    if not RGStrToInt(aname,lhash) then
     if IsNumber(aname) then
       Val(aname,lhash)
     else
@@ -256,7 +245,8 @@ begin
 
     if (aname<>nil) and (aname^<>#0) then
     begin
-      if IsNumber(aname) then
+//      if not RGStrToInt(aname,PRGNode(anode)^.hash) then
+     if IsNumber(aname) then
         Val(aname,PRGNode(anode)^.hash)
       else
         PRGNode(anode)^.hash:=RGHash(aname);
@@ -416,7 +406,7 @@ end;
 
 procedure SetFloatValue(var aval:PWideChar; var adst:Single);
 var
-  lval:array [0..47] of WideChar;
+  lval:string[31];
   lidx:integer;
 begin
   if aval^=#0 then
@@ -425,14 +415,14 @@ begin
     exit;
   end;
 
-  lidx:=0;
+  lidx:=1;
   repeat
     while not (AnsiChar(ORD(aval^)) in ['+','-','.','0'..'9']) do inc(aval);
-    lval[lidx]:=aval^;
+    lval[lidx]:=AnsiChar(aval^);
     inc(lidx);
     inc(aval);
   until (aval^=',') or (aval^=#0);
-  lval[lidx]:=#0;
+  lval[0]:=AnsiChar(lidx-1);
   Val(lval, adst);
 end;
 
@@ -442,6 +432,7 @@ var
   lval:array [0..47] of WideChar;
   i,ltype:integer;
   res:word;
+  lres:boolean;
 begin
   result:=true;
 
@@ -489,12 +480,13 @@ begin
         lp:=aval;
 
       res:=0;
+      lres:=true;
       case ltype of
-        rgInteger  : Val(lp,PRGNode(anode)^.asInteger,res);
+        rgInteger  : {lres:=RGStrToInt(lp,PRGNode(anode)^.asInteger);//}Val(lp,PRGNode(anode)^.asInteger,res);
         rgFloat    : Val(lp,PRGNode(anode)^.asFloat,res);
         rgDouble   : Val(lp,PRGNode(anode)^.asDouble,res);
-        rgInteger64: Val(lp,PRGNode(anode)^.asInteger64,res);
-        rgUnsigned : Val(lp,PRGNode(anode)^.asUnsigned,res);
+        rgInteger64: {lres:=RGStrToInt(lp,PRGNode(anode)^.asInteger64);//}Val(lp,PRGNode(anode)^.asInteger64,res);
+        rgUnsigned : {lres:=RGStrToInt(lp,PRGNode(anode)^.asUnsigned);//}Val(lp,PRGNode(anode)^.asUnsigned,res);
         rgBool     : begin
          if  (lp<>nil) and (
              ((lp[0]='1') and (lp[1]=#0 )) or
@@ -507,10 +499,10 @@ begin
             else   PRGNode(anode)^.asBoolean:=false;
         end;
         // user
-        rgByte     : Val(lp,PRGNode(anode)^.asByte,res);
-        rgWord     : Val(lp,PRGNode(anode)^.asWord,res);
-        rgQWord    : Val(lp,PRGNode(anode)^.asQWord,res);
-        rgBinary   : Val(lp,PRGNode(anode)^.len,res);
+        rgByte     : {lres:=RGStrToInt(lp,PRGNode(anode)^.asByte);//}Val(lp,PRGNode(anode)^.asByte,res);
+        rgWord     : {lres:=RGStrToInt(lp,PRGNode(anode)^.asWord);//}Val(lp,PRGNode(anode)^.asWord,res);
+        rgQWord    : {lres:=RGStrToInt(lp,PRGNode(anode)^.asQWord);//}Val(lp,PRGNode(anode)^.asQWord,res);
+        rgBinary   : {lres:=RGStrToInt(lp,PRGNode(anode)^.len);//}Val(lp,PRGNode(anode)^.len,res);
       else
         result:=false;
       end;

@@ -4,6 +4,7 @@
   one list with file/dir records
   global text cache
 }
+{TODO: make Names text cache NOT global. But FileInfo is not part of DirList}
 {TODO: remove "total" changes/saving coz total = DirCount+FileCount (except deleted)}
 {TODO: implement Files.data=Dir index for dirs}
 {TODO: check all variant of AddPath/AddFile what we uses (i.e. PUnicodeChar, string...}

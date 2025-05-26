@@ -136,7 +136,7 @@ var
   lbuf:PByte;
   lsize:integer;
 begin
-  Assign(lfile,aFileName);
+  AssignFile(lfile,aFileName);
   Reset(lfile);
   if IOResult=0 then
   begin
@@ -145,13 +145,34 @@ begin
     begin
       GetMem(lbuf,lsize);
       BlockRead(lfile,lbuf^,lsize);
-      Close(lfile);
+      CloseFile(lfile);
 
       result:=ImportFromMemory(lbuf,lsize);
       FreeMem(lbuf);
+
+      if result then
+      begin
+        if MeshVersion<>99 then
+        begin
+          AssignFile(lfile,ChangeFileExt(aFileName,'.MATERIAL'));
+          Reset(lfile);
+          if IOResult=0 then
+          begin
+            lsize:=FileSize(lfile);
+            GetMem(lbuf,lsize+1);
+            BlockRead(lfile,lbuf^,lsize);
+            lbuf[lsize]:=0;
+            CloseFile(lfile);
+
+            ReadMaterialSimple(lbuf,lsize);
+            FreeMem(lbuf);
+          end;
+        end;
+      end;
+
       exit;
     end;
-    Close(lfile);
+    CloseFile(lfile);
   end;
   result:=false;
 end;

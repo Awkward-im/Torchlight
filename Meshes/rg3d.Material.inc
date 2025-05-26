@@ -4,16 +4,16 @@
 
 const
   // texture indexes
-  txtDiffuse      = 0;
-  txtUnknown1     = 1;
-  txtEnvDiffuse   = 2;
-  txtEnvSpecular  = 3;
-  txtGlow         = 4;
-  txtNormal       = 5;
-  txtUnknown2     = 6;
-  txtUnknown3     = 7;
-  txtSpecular     = 8;
-  txtUnknown4     = 9;
+  txtDiffuse      =  0;
+  txtUnknown1     =  1;
+  txtEnvDiffuse   =  2;
+  txtEnvSpecular  =  3;
+  txtGlow         =  4;
+  txtNormal       =  5;
+  txtUnknown2     =  6;
+  txtUnknown3     =  7;
+  txtSpecular     =  8;
+  txtUnknown4     =  9;
   txtPaint        = 10;
   txtPaintSurface = 11;
 
@@ -662,6 +662,170 @@ begin
     FMaterials[result].textures[i]:=-1;
 
   FMaterials[result].name:=ls;
+end;
+
+//===== *.MATERIAL processing =====
+
+procedure GetFloatValue(var aval:PAnsiChar; var adst:Single);
+var
+  lval:string[31];
+  lidx:integer;
+begin
+  if aval^=#0 then
+  begin
+    adst:=0;
+    exit;
+  end;
+
+  lidx:=1;
+  repeat
+    while not (aval^ in ['+','-','.','0'..'9']) do inc(aval);
+    lval[lidx]:=aval^;
+    inc(lidx);
+    inc(aval);
+  until aval^ in [#0,#9,' ',','];
+  lval[0]:=Char(lidx-1);
+  Val(lval, adst);
+end;
+
+function SplitColor(pc:PAnsiChar; var color:TVector3):boolean;
+begin
+  result:=false;
+  while (pc^=' ') or (pc^=#9) do inc(pc);
+  if pc^<>#0 then
+  begin
+    if strlcomp(pc,'vertexcolour',12)=0 then exit;
+
+    GetFloatValue(pc,color.X);
+    GetFloatValue(pc,color.Y);
+    GetFloatValue(pc,color.Z);
+    result:=true;
+  end;
+end;
+
+procedure TRGMesh.ReadMaterialSimple(abuf:PByte; asize:integer);
+var
+  lptr:PByte;
+  lmat:PMaterial;
+  pc:PAnsiChar;
+  ls:AnsiString;
+  i,idx,stage:integer;
+  isMaterial,isTech,isPass,isTexture:boolean;
+begin
+  stage:=0;
+
+  isMaterial:=false;
+  isTech    :=false;
+  isPass    :=false;
+  isTexture :=false;
+
+  lptr:=abuf;
+  while lptr<(abuf+asize) do
+  begin
+    pc:=GetLine(lptr);
+    while (pc^=' ') or (pc^=#9) do inc(pc);
+    if pc^<>#0 then
+    begin
+      if pc^='{' then inc(stage)
+      else if pc^='}' then
+      begin
+        if stage=0 then break // error
+        else if stage=1 then
+        begin
+          isMaterial:=false;
+        end
+        else if stage=2 then
+        begin
+          isTech:=false;
+        end
+        else if stage=3 then
+        begin
+          isPass:=false;
+        end
+        else if stage=4 then
+        begin
+          if isTexture then
+          begin
+            // place to choose texture type by additional properties
+            isTexture:=false;
+          end;
+        end;
+        dec(stage);
+      end
+      else
+      begin
+        if stage=0 then
+        begin
+          if strlcomp(pc,'material',8)=0 then
+          begin
+            isMaterial:=true;
+            inc(pc,9);
+            while (pc^=' ') or (pc^=#9) do inc(pc);
+
+            lmat:=@FMaterials[AddMaterial(pc)];
+          end;
+        end
+        else if stage=1 then
+        begin
+          if isMaterial then
+          begin
+            if strlcomp(pc,'technique',9)=0 then
+              isTech:=true;
+          end;
+        end
+        else if stage=2 then
+        begin
+          if isTech then
+          begin
+            if strlcomp(pc,'pass',4)=0 then
+              isPass:=true;
+          end;
+        end
+        else if stage=3 then
+        begin
+          if isPass then
+          begin
+            if strlcomp(pc,'texture_unit',12)=0 then
+              isTexture:=true
+            else if strlcomp(pc,'ambient' ,7)=0 then SplitColor(pc+8,lmat^.ambient)
+            else if strlcomp(pc,'diffuse' ,7)=0 then SplitColor(pc+8,lmat^.diffuse)
+            else if strlcomp(pc,'specular',8)=0 then SplitColor(pc+9,lmat^.specular)
+            else if strlcomp(pc,'emissive',8)=0 then SplitColor(pc+9,lmat^.emissive)
+          end;
+        end
+        else if stage=4 then
+        begin
+          if isTexture then
+          begin
+            if strlcomp(pc,'texture',7)=0 then
+            begin
+              inc(pc,8);
+              while (pc^=' ') or (pc^=#9) do inc(pc);
+              ls:=pc;
+              idx:=-1;
+              for i:=0 to High(FTextures) do
+              begin
+                if FTextures[i]=ls then
+                begin
+                  idx:=i;
+                  break;
+                end;
+              end;
+              if idx<0 then
+              begin
+                idx:=Length(FTextures);
+                SetLength(FTextures,idx+1);
+                FTextures[idx]:=ls;
+              end;
+              //!! Keep just first texture
+              if lmat^.Textures[0]<0 then
+                lmat^.Textures[0]:=idx;
+            end;
+          end;
+        end
+      end;
+    end;
+  end;
 end;
 
 {$ENDIF}

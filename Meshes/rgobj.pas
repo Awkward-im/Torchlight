@@ -124,6 +124,7 @@ type
     property Face    [idx:integer]:TIntVector3 read GetFace;
     property FaceCount:integer read FFaceCount;
 
+    property Material:integer read FMaterial;
     property BoneCount:integer read FBoneCount;
 //    property BonePoints[idx:integer]:PBoneVertex read GetBonePoint;
   end;
@@ -139,9 +140,6 @@ type
     FDataSize:integer;
     FVersion :integer;
 
-    FTextures : array of string;
-    FMaterials: array of TMaterial;
-
     function  GetSubMesh(idx:integer):PRGSubMesh;
     procedure SetSubMesh(idx:integer; amesh:PRGSubMesh);
     function  GetSubMeshCount:integer; inline;
@@ -151,6 +149,7 @@ type
     function  ReadHobMaterial(var aptr:PByte; aver:integer):boolean;
     function  ReadRGMaterial (var aptr:PByte; aver:integer):boolean;
     function  AddMaterial(const aname:string):integer;
+    procedure ReadMaterialSimple(abuf:PByte; asize:integer);
 
     // *.MDL of RG/RGO
     function ReadMDLType0(var aptr:PByte; aver:integer):boolean;
@@ -179,6 +178,8 @@ type
     procedure CalcBounds;
   
   public
+    FTextures : array of string;
+    FMaterials: array of TMaterial;
     Skeleton : string;
     // Bounds
     BoundMin   :TVector3;

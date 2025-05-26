@@ -1613,10 +1613,13 @@ end;
 procedure TRGGUIForm.GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_UP:    ty:=ty+0.1;
-    VK_DOWN:  ty:=ty-0.1;
-    VK_LEFT:  tx:=tx-0.1;
+    VK_SPACE: FDoRotate:=not FDoRotate;
+    VK_UP   : ty:=ty+0.1;
+    VK_DOWN : ty:=ty-0.1;
+    VK_LEFT : tx:=tx-0.1;
     VK_RIGHT: tx:=tx+0.1;
+    VK_PRIOR: if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
+    VK_NEXT : if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
   else
     exit;
   end;

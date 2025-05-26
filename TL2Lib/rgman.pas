@@ -201,7 +201,6 @@ begin
         ftype   :=RGTypeOfType(memReadByte(aptr),aver);
         pc      :=memReadShortStringBuf(aptr,@lbuf,bufsize);
         Name    :=pc;
-
         // for case when dir is file-like only
         if ftype=typeDirectory then
         begin

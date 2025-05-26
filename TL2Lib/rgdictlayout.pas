@@ -509,7 +509,7 @@ end;
 // code from RGNode
 procedure SetFloatValue(var aval:PWideChar; var adst:Single);
 var
-  lval:array [0..47] of WideChar;
+  lval:string[31];
   lidx:integer;
 begin
   if aval^=#0 then
@@ -518,14 +518,14 @@ begin
     exit;
   end;
 
-  lidx:=0;
+  lidx:=1;
   repeat
     while not (AnsiChar(ORD(aval^)) in ['+','-','.','0'..'9']) do inc(aval);
-    lval[lidx]:=aval^;
+    lval[lidx]:=AnsiChar(aval^);
     inc(lidx);
     inc(aval);
   until (aval^=',') or (aval^=#0);
-  lval[lidx]:=#0;
+  lval[0]:=AnsiChar(lidx-1);
   Val(lval, adst);
 end;
 
