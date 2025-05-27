@@ -141,6 +141,9 @@
         <PackageName Value="LazOpenGLContext"/>
       </Item>
       <Item>
+        <PackageName Value="ImagesForLazarus"/>
+      </Item>
+      <Item>
         <PackageName Value="LCL"/>
       </Item>
     </RequiredPackages>

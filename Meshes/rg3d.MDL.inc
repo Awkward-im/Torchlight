@@ -133,7 +133,7 @@ begin
         with PVector2(lpbuf)[i] do
         begin
           X:=PVector2(aptr)[lidx[i]].X;
-          Y:=PVector2(aptr)[lidx[i]].Y;
+          Y:=1-PVector2(aptr)[lidx[i]].Y;
         end;
       end;
       

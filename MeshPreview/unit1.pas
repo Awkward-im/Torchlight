@@ -48,6 +48,7 @@ implementation
 {$R *.lfm}
 
 uses
+  lazTGA,
   Imaging,
   ImagingTypes,
   ImagingComponents,
@@ -364,5 +365,9 @@ begin
   FMesh.Free;
 end;
 
-end.
+initialization
+  LazTGA.Register;
 
+finalization
+  LazTGA.UnRegister;
+end.
