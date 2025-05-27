@@ -52,6 +52,7 @@ uses
   ImagingTypes,
   ImagingComponents,
   ImagingDds,
+  ImagingNetworkGraphics,
   ImagingOpenGL;
 
 { TForm1 }
@@ -184,7 +185,7 @@ end;
 procedure TForm1.CreateMeshList;
 var
   lsm:PRGSubMesh;
-  i,j:integer;
+  i,j,ltex:integer;
   v4:TVector3;
   lp:PIntVector3;
   ln,lv:PVector3;
@@ -192,7 +193,7 @@ var
 begin
   PrepareTextures();
 
-  if ParamCount>=2 then
+  if (FMesh.MeshVersion<>99) and (ParamCount>=2) then
   begin
     Tex1:=LoadGLTextureFromFile(ParamStr(2));
 //    glBindTexture(GL_TEXTURE_2D, Tex1);
@@ -208,9 +209,12 @@ begin
   begin
     lsm:=FMesh.SubMesh[j];
 
-//    if FMesh.MeshVersion=99 then
-    if ParamCount<2 then
+    ltex:=0;
+    if (FMesh.MeshVersion=99) or (ParamCount<2) then
     begin
+      if (ParamCount>=2) and (lsm^.TextureCount>1) then
+        ltex:=1;
+
       for i:=0 to txtLast do
       begin
         if FMesh.FMaterials[lsm^.Material].textures[i]>=0 then
@@ -231,7 +235,7 @@ begin
     lp:=lsm^.Face;
     lv:=lsm^.Vertex;
     ln:=lsm^.Normal;
-    lt:=lsm^.Buffer[VES_TEXTURE_COORDINATES,0];
+    lt:=lsm^.Buffer[VES_TEXTURE_COORDINATES,ltex];
     for i:=0 to lsm^.FaceCount-1 do
     begin
       glTexCoord2fv(@lt[lp[i].X]);
@@ -273,9 +277,9 @@ begin
     if not FileExists(lname) then exit(0);
     lDDS:=true;
   end;
-  if lDDS then
+//  if lDDS then
     result:=LoadGLTextureFromFile(lname)
-  else
+{  else
   begin
     lpic:=TPicture.Create;
     lpic.LoadFromFile(lname);
@@ -283,7 +287,7 @@ begin
     result:=CreateGLTextureFromImage(limage);
     lpic.Free;
   end;
-end;
+}end;
 
 procedure TForm1.PrepareTextures;
 var

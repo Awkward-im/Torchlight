@@ -563,13 +563,13 @@ begin
 }
             lidx:=-1;
                  if lname='const_DiffuseTexture'        then begin lidx:=txtDiffuse ; ls:='DiffuseTexture2D' end
-            else if lname='const_SpecularTexture'       then begin lidx:=txtSpecular; ls:='SpecularMap2D' end
-            else if lname='const_OutlineTexture'        then begin lidx:=0          ; ls:='OutlineMap2D' end
-            else if lname='const_EmissiveTexture'       then begin lidx:=0          ; ls:='EmissiveMap2D' end
-            else if lname='const_NormalmapTexture'      then begin lidx:=txtNormal  ; ls:='NormalTexture2D' end
-            else if lname='const_DistortionMaskTexture' then begin lidx:=0          ; ls:='DistortionMask2D' end
+            else if lname='const_SpecularTexture'       then begin lidx:=txtSpecular; ls:='SpecularMap2D'    end
+            else if lname='const_OutlineTexture'        then begin lidx:=txtGlow    ; ls:='OutlineMap2D'     end //!!
+            else if lname='const_EmissiveTexture'       then begin lidx:=txtUnknown1; ls:='EmissiveMap2D'    end //!!
+            else if lname='const_NormalmapTexture'      then begin lidx:=txtNormal  ; ls:='NormalTexture2D'  end
+            else if lname='const_DistortionMaskTexture' then begin lidx:=txtUnknown2; ls:='DistortionMask2D' end //!!
             ;
-            if lidx>0 then
+            if lidx>=0 then
             begin
               lint:=-1;
               for k:=0 to ltxtcount-1 do
@@ -650,6 +650,7 @@ begin
     i:=Pos('_DELETEME',ls); if i>0 then SetLength(ls,i-1);
     i:=Pos('Skinned'  ,ls); if i>0 then SetLength(ls,i-1);
     if Pos('MEDIA/'   ,ls)=1 then ls:=ExtractName(ls);
+    if ls[1]='_' then Delete(ls,1,1);
   end;
 
   for i:=0 to High(FMaterials) do
@@ -678,13 +679,13 @@ begin
   end;
 
   lidx:=1;
+  while not (aval^ in ['+','-','.','0'..'9']) do inc(aval);
   repeat
-    while not (aval^ in ['+','-','.','0'..'9']) do inc(aval);
     lval[lidx]:=aval^;
     inc(lidx);
     inc(aval);
   until aval^ in [#0,#9,' ',','];
-  lval[0]:=Char(lidx-1);
+  lval[0]:=AnsiChar(lidx-1);
   Val(lval, adst);
 end;
 
@@ -699,6 +700,7 @@ begin
     GetFloatValue(pc,color.X);
     GetFloatValue(pc,color.Y);
     GetFloatValue(pc,color.Z);
+
     result:=true;
   end;
 end;
@@ -761,8 +763,9 @@ begin
             isMaterial:=true;
             inc(pc,9);
             while (pc^=' ') or (pc^=#9) do inc(pc);
-
-            lmat:=@FMaterials[AddMaterial(pc)];
+            // split to 2 strings coz FMaterials can be reassigned inside AddMaterial
+            idx:=AddMaterial(pc);
+            lmat:=@FMaterials[idx];
           end;
         end
         else if stage=1 then

@@ -129,7 +129,7 @@ begin
 
   Log('offset',HexStr(aptr-FBuffer,8));
 end;
-
+{$I-}
 function TRGMesh.ImportFromFile(const aFileName:string):boolean;
 var
   lfile:File of byte;

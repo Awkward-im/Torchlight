@@ -149,7 +149,6 @@ type
     function  ReadHobMaterial(var aptr:PByte; aver:integer):boolean;
     function  ReadRGMaterial (var aptr:PByte; aver:integer):boolean;
     function  AddMaterial(const aname:string):integer;
-    procedure ReadMaterialSimple(abuf:PByte; asize:integer);
 
     // *.MDL of RG/RGO
     function ReadMDLType0(var aptr:PByte; aver:integer):boolean;
@@ -196,8 +195,9 @@ type
     function  GetMaterial ():string;
     procedure SaveMaterial(const aFileName:String);
     
-    function ImportFromMemory(aptr:PByte; asize:integer):boolean;
-    function ImportFromFile  (const aFileName:string):boolean;
+    procedure ReadMaterialSimple(abuf:PByte; asize:integer);
+    function  ImportFromMemory  (aptr:PByte; asize:integer):boolean;
+    function  ImportFromFile  (const aFileName:string):boolean;
     procedure SaveToXML(aStream:TStream);
     procedure SaveToXML(const aFileName:String);
     procedure SaveToOBJ(aStream:TStream);
@@ -316,6 +316,8 @@ begin
   end;
 
   SetLength(FSubMeshes,0);
+  SetLength(FTextures,0);
+  SetLength(FMaterials,0);
 end;
 
 function TRGMesh.GetSubMeshCount():integer;

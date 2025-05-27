@@ -253,6 +253,7 @@ type
     FDoRotate:boolean;
     FMeshList:integer;
     FMesh:TRGMesh;
+    FGLTextures:TIntegerDynArray;
     tx,ty,tz:single;
     rx,ry,rz:single;
 
@@ -273,6 +274,7 @@ type
     PopupNode: TTreeNode;
 
     procedure AddNewDir(anode: TTreeNode; const apath: string);
+    function CheckTexture(const adir, aname: AnsiString): integer;
     procedure ClearInfo();
     procedure CreateMeshList;
     function FileClose: boolean;
@@ -293,9 +295,10 @@ type
     procedure OnGLIdle(Sender: TObject; var Done: Boolean);
     procedure OpenPAK(const aname: string);
     procedure PrepareSound;
+    procedure PrepareTextures();
     procedure PreviewDump();
     procedure PreviewImageset(const adir: string);
-    procedure PreviewModel();
+    procedure PreviewModel(const adir,aname:string);
     procedure PreviewSound;
     function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
     procedure PreviewImage(const aext: string);
@@ -337,7 +340,7 @@ uses
   fpimage,
   fpwritebmp,
   lazTGA,
-  Imaging, ImagingDds, ImagingTypes, ImagingComponents,
+  Imaging, ImagingDds, ImagingTypes, ImagingComponents, ImagingOpenGL,
   fpc.Dynamic_Bass,
 
   unitLogForm,
@@ -1385,6 +1388,7 @@ end;
 procedure TRGGUIForm.ClearInfo();
 var
   lstr:TStream;
+  i:integer;
   bNoTree,bRoot,bEmpty,bParent:boolean;
 begin
   Self.ActiveControl:=SGMain;
@@ -1403,6 +1407,12 @@ begin
       Application.RemoveOnIdleHandler(@OnGLIdle);
       GLBox.Visible:=false;
       glDeleteLists(FMeshList,1);
+
+      for i:=0 to High(FGLTextures) do
+        if FGLTextures[i]>0 then
+          glDeleteTextures(1,@FGLTextures[i]);
+      SetLength(FGLTextures,0);
+
       FMesh.Free;
     end;
   end;
@@ -1447,6 +1457,7 @@ begin
   actEdImport.Enabled:=not bNoTree;
 end;
 
+{%REGION Sound}
 procedure TRGGUIForm.PrepareSound;
 {$IFDEF Windows}
 var
@@ -1532,6 +1543,7 @@ begin
 
   pnlAudio.Visible:=true;
 end;
+{%ENDREGION Sound}
 
 procedure TRGGUIForm.actScaleImageExecute(Sender: TObject);
 begin
@@ -1586,6 +1598,22 @@ end;
 end;
 
 {%REGION Model}
+procedure TRGGUIForm.ShowModelInfo;
+var
+  ls: AnsiString;
+begin
+  // #meshes, have skeleton
+  if FMesh.SubMesh[0]^.BoneCount>0 then
+    ls:='+bones'
+  else
+    ls:='-bones';
+  lblInfo1.Caption:=Format(rsMdlMeshes,
+    [FMesh.BoundMin.X,FMesh.BoundMin.Y,FMesh.BoundMin.Z,
+     FMesh.BoundMax.X,FMesh.BoundMax.Y,FMesh.BoundMax.Z,
+     FMesh.SubMeshCount])+' '+ls;
+  lblInfo2.Caption:=Format(rsMdlCoords,[tx,ty,tz]);
+end;
+
 const
    DiffuseLight: array[0..3] of GLfloat = (0.8, 0.8, 0.8, 1);
 
@@ -1632,69 +1660,150 @@ begin
   GLBox.Invalidate;
 end;
 
+function TRGGUIForm.CheckTexture(const adir,aname:AnsiString):integer;
+var
+  lname:AnsiString;
+  limage:TImageData;
+  lpic:TPicture;
+  lstr:TMemoryStream;
+  lbuf:PByte;
+  lsize,lfile:integer;
+  lDDS:boolean;
+begin
+  result:=0;
+  
+  lDDS:=ExtractExt(aname)='.DDS';
+
+  lfile:=ctrl.SearchFile(adir+aname);
+  if lfile<0 then
+  begin
+    if lDDS then exit(0);
+
+    lfile:=ctrl.SearchFile(adir+ChangeFileExt(aname,'.DDS'));
+    if lfile<0 then exit(0);
+    lDDS:=true;
+  end;
+  lbuf:=nil;
+  lsize:=ctrl.GetBinary(lfile,lbuf);
+  if lsize>0 then
+  begin
+    if lDDS or
+      ((lbuf[0]=ORD('D')) and
+       (lbuf[1]=ORD('D')) and
+       (lbuf[2]=ORD('S'))) then
+    begin
+      result:=LoadGLTextureFromMemory(lbuf,lsize)
+    end
+    else
+    begin
+      lstr:=TMemoryStream.Create();
+      lpic:=TPicture.Create;
+      try
+        // PUData cleared in ClearInfo() and/or FormClose;
+        lstr.SetBuffer(lbuf);
+        lpic.LoadFromStream(lstr);
+        ConvertBitmapToData(lpic.Bitmap,limage);
+      finally
+        lstr.Free;
+        lpic.Free;
+      end;
+      result:=CreateGLTextureFromImage(limage);
+      FreeImage(limage);
+    end;
+
+  end;
+  FreeMem(lbuf);
+end;
+
+procedure TRGGUIForm.PrepareTextures();
+var
+  lsm:PRGSubMesh;
+  lmat:PMaterial;
+  ldir:AnsiString;
+  i,j,k:integer;
+  ltxt:integer;
+begin
+  i:=Length(FMesh.FTextures);
+  SetLength(FGLTextures,i);
+//  FillChar(FGLTextures,FGLTextures[0],SizeOf(FGLTextures[0])*i);
+
+  ldir:=sgMain.Cells[colDir,sgMain.Row];
+
+  for i:=1 to FMesh.SubMeshCount do
+  begin
+    lsm:=FMesh.SubMesh[i];
+    lmat:=@FMesh.FMaterials[lsm^.Material];
+
+    for k:=0 to txtLast do
+    begin
+      ltxt:=lmat^.Textures[k];
+      if (ltxt>=0) and (FGLTextures[ltxt]=0) then
+      begin
+        FGLTextures[ltxt]:=CheckTexture(ldir,FMesh.FTextures[ltxt]);
+      end;
+    end;
+
+  end;
+end;
+
 procedure TRGGUIForm.CreateMeshList;
 var
   lsm:PRGSubMesh;
-  i,j:integer;
+  i,j,ltex:integer;
   v4:TVector3;
   lp:PIntVector3;
   ln,lv:PVector3;
+  lt:PVector2;
 begin
+  PrepareTextures();
+
+  glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
+  glEnable(GL_TEXTURE_2D);
+
   FMeshList:=glGenLists(1);
   glNewList(FMeshList,GL_COMPILE);
-  glBegin(GL_TRIANGLES);
 
   for j:=1 to FMesh.SubMeshCount do
   begin
     lsm:=FMesh.SubMesh[j];
+
+    for i:=0 to txtLast do
+    begin
+      ltex:=FMesh.FMaterials[lsm^.Material].textures[i];
+      if ltex>=0 then
+      begin
+        ltex:=FGLTextures[ltex];
+        break;
+      end;
+    end;
+    if ltex<0 then ltex:=0;
+    glBindTexture(GL_TEXTURE_2D, ltex);
+
+    glBegin(GL_TRIANGLES);
+
     lp:=lsm^.Face;
     lv:=lsm^.Vertex;
     ln:=lsm^.Normal;
+    lt:=lsm^.Buffer[VES_TEXTURE_COORDINATES,0];
     for i:=0 to lsm^.FaceCount-1 do
     begin
-      glNormal3fv(@ln[lp[i].X]);
-      glVertex3fv(@lv[lp[i].X]);
-      glNormal3fv(@ln[lp[i].Y]);
-      glVertex3fv(@lv[lp[i].Y]);
-      glNormal3fv(@ln[lp[i].Z]);
-      glVertex3fv(@lv[lp[i].Z]);
-{
-      v4:=lsm^.Normal[lp[i].X]; glNormal3fv(@v4);
-      v4:=lsm^.Vertex[lp[i].X]; glVertex3fv(@v4);
-      v4:=lsm^.Normal[lp[i].Y]; glNormal3fv(@v4);
-      v4:=lsm^.Vertex[lp[i].Y]; glVertex3fv(@v4);
-      v4:=lsm^.Normal[lp[i].Z]; glNormal3fv(@v4);
-      v4:=lsm^.Vertex[lp[i].Z]; glVertex3fv(@v4);
-}{
-      v4:=lsm^.Normal[lsm^.Face[i].X]; glNormal3fv(@v4);
-      v4:=lsm^.Vertex[lsm^.Face[i].X]; glVertex3fv(@v4);
-      v4:=lsm^.Normal[lsm^.Face[i].Y]; glNormal3fv(@v4);
-      v4:=lsm^.Vertex[lsm^.Face[i].Y]; glVertex3fv(@v4);
-      v4:=lsm^.Normal[lsm^.Face[i].Z]; glNormal3fv(@v4);
-      v4:=lsm^.Vertex[lsm^.Face[i].Z]; glVertex3fv(@v4);
-}
+      glTexCoord2fv(@lt[lp[i].X]);
+      glNormal3fv  (@ln[lp[i].X]);
+      glVertex3fv  (@lv[lp[i].X]);
+
+      glTexCoord2fv(@lt[lp[i].Y]);
+      glNormal3fv  (@ln[lp[i].Y]);
+      glVertex3fv  (@lv[lp[i].Y]);
+
+      glTexCoord2fv(@lt[lp[i].Z]);
+      glNormal3fv  (@ln[lp[i].Z]);
+      glVertex3fv  (@lv[lp[i].Z]);
     end;
+
+    glEnd;
   end;
 
-  glEnd;
-
   glEndList;
-end;
-
-procedure TRGGUIForm.ShowModelInfo;
-var
-  ls: AnsiString;
-begin
-  // #meshes, have skeleton
-  if FMesh.SubMesh[0]^.BoneCount>0 then
-    ls:='+bones'
-  else
-    ls:='-bones';
-  lblInfo1.Caption:=Format(rsMdlMeshes,
-    [FMesh.BoundMin.X,FMesh.BoundMin.Y,FMesh.BoundMin.Z,
-     FMesh.BoundMax.X,FMesh.BoundMax.Y,FMesh.BoundMax.Z,
-     FMesh.SubMeshCount])+' '+ls;
-  lblInfo2.Caption:=Format(rsMdlCoords,[tx,ty,tz]);
 end;
 
 procedure TRGGUIForm.GLBoxPaint(Sender: TObject);
@@ -1708,6 +1817,7 @@ begin
 
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
+(*
   if FMeshList=0 then
   begin
     CreateMeshList();
@@ -1723,7 +1833,7 @@ begin
     glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
 }
   end;
-
+*)
   if FMeshList<>0 then
   begin
 
@@ -1773,9 +1883,11 @@ begin
   GLbox.SwapBuffers;
 end;
 
-procedure TRGGUIForm.PreviewModel();
+procedure TRGGUIForm.PreviewModel(const adir,aname:string);
 var
+  lbuf:PByte;
   wx,wy,wz:single;
+  lfile,lsize:integer;
 begin
   if GLBox=nil then
   begin
@@ -1797,6 +1909,18 @@ begin
 
   FMesh.Init;
   FMesh.ImportFromMemory(FUData,FUSize);
+  if FMesh.MeshVersion<>99 then
+  begin
+    lbuf:=nil;
+    lfile:=ctrl.SearchFile(adir+ChangeFileExt(aname,'.MATERIAL'));
+    if lfile>=0 then
+    begin
+      lsize:=ctrl.GetSource(lfile,lbuf);
+      if lsize>0 then
+        FMesh.ReadMaterialSimple(lbuf,lsize);
+      FreeMem(lbuf);
+    end;
+  end;
 
   FDoRotate:=false;
   CreateMeshList();
@@ -2087,7 +2211,7 @@ begin
           if lext='.SKELETON' then
             PreviewDump()
           else
-            PreviewModel();
+            PreviewModel(ldir,lname);
         end
 
         // Sound
