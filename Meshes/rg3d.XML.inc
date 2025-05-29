@@ -108,12 +108,13 @@ begin
               '" w="'+FloatToStr(w)+'" />');
       end
       else
+      begin
         with PVector3(lptr)[j] do
           WriteLine(aStream,'        <'+lnode+
                ' x="'+FloatToStr(x)+
               '" y="'+FloatToStr(y)+
               '" z="'+FloatToStr(z)+'" />');
-
+      end;
       WriteLine(aStream,'      </vertex>');
     end;
     WriteLine(aStream,'    </vertexbuffer>');

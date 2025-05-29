@@ -13,10 +13,24 @@ var
   lpbuf:PByte;
   lvcnt, lblocks,lblock,i,j,lcnt,lcnt1:integer;
   lbone:dword;
-  lweight:single;
+  xmul,ymul,zmul,lweight:single;
+  ltmp:array [0..11] of single;
 begin
   result:=false;
 
+  if aver in [$0D,$0E] then
+  begin
+    xmul:=-1/10;
+    ymul:=1/10;
+    zmul:=-1/10;
+  end
+  else
+  begin
+    xmul:=1;
+    ymul:=1;
+    zmul:=1;
+  end;
+  
   lsm:=SubMesh[0];
 
   lblocks:=memReadWord(aptr);  // 0001
@@ -52,9 +66,9 @@ begin
     begin
       with PVector3(lpbuf)[i] do
       begin
-        X:=PVector3(aptr)[lidx[i]].X;
-        Y:=PVector3(aptr)[lidx[i]].Y;
-        Z:=PVector3(aptr)[lidx[i]].Z;
+        X:=PVector3(aptr)[lidx[i]].X*xmul;
+        Y:=PVector3(aptr)[lidx[i]].Y*ymul;
+        Z:=PVector3(aptr)[lidx[i]].Z*zmul;
       end;
     end;
     inc(aptr,lcnt*SizeOf(TVector3));
@@ -78,9 +92,9 @@ begin
       begin
         with PVector3(lpbuf)[i] do
         begin
-          X:=PVector3(aptr)[lidx[i]*2].X;
-          Y:=PVector3(aptr)[lidx[i]*2].Y;
-          Z:=PVector3(aptr)[lidx[i]*2].Z;
+          X:=PVector3(aptr)[lidx[i]*2].X*xmul;
+          Y:=PVector3(aptr)[lidx[i]*2].Y*ymul;
+          Z:=PVector3(aptr)[lidx[i]*2].Z*zmul;
         end;
       end;
 
@@ -93,9 +107,9 @@ begin
       begin
         with PVector3(lpbuf)[i] do
         begin
-          X:=PVector3(aptr)[lidx[i]*2+SizeOf(TVector3)].X;
-          Y:=PVector3(aptr)[lidx[i]*2+SizeOf(TVector3)].Y;
-          Z:=PVector3(aptr)[lidx[i]*2+SizeOf(TVector3)].Z;
+          X:=PVector3(aptr)[lidx[i]*2+SizeOf(TVector3)].X*xmul;
+          Y:=PVector3(aptr)[lidx[i]*2+SizeOf(TVector3)].Y*ymul;
+          Z:=PVector3(aptr)[lidx[i]*2+SizeOf(TVector3)].Z*zmul;
         end;
       end;
 }      
@@ -164,9 +178,9 @@ begin
     begin
       with PVector3(lpbuf)[i] do
       begin
-        X:=PVector3(aptr)[lidx[i]].X;
-        Y:=PVector3(aptr)[lidx[i]].Y;
-        Z:=PVector3(aptr)[lidx[i]].Z;
+        X:=PVector3(aptr)[lidx[i]].X*xmul;
+        Y:=PVector3(aptr)[lidx[i]].Y*ymul;
+        Z:=PVector3(aptr)[lidx[i]].Z*zmul;
       end;
     end;
     inc(aptr,lcnt*SizeOf(TVector3));
@@ -257,7 +271,7 @@ begin
 
   //===== Addition =====
 
-  if (aptr-FBuffer)<FDataSize then
+  if (lsm^.FBoneCount>0) and ((aptr-FBuffer)<FDataSize) then
   begin
     LogLn;
     Log('>Pose? at',HexStr(aptr-FBuffer,8));
@@ -265,8 +279,18 @@ begin
     while (aptr-FBuffer)<FDataSize do
     begin
       Log(memReadText(aptr));
-      inc(aptr,12*4);         // floats
-      memReadWord(aptr);      // 00 00
+                    // bool includesNormals [1.8+]
+      memReadData(aptr,ltmp,12*4);
+      Log('offset: x='+FloatToStr(ltmp[0])+' y='+FloatToStr(ltmp[ 1])+' z='+FloatToStr(ltmp[ 2]));
+      Log('|' +FloatToStr(ltmp[3])+' '+FloatToStr(ltmp[ 4])+' '+FloatToStr(ltmp[ 5])+' |');
+      Log('|' +FloatToStr(ltmp[6])+' '+FloatToStr(ltmp[ 7])+' '+FloatToStr(ltmp[ 8])+' |');
+      Log('|' +FloatToStr(ltmp[9])+' '+FloatToStr(ltmp[10])+' '+FloatToStr(ltmp[11])+' |');
+//      inc(aptr,12*4);         // floats
+                        // float xoffset, yoffset, zoffset
+                        // float xnormal, ynormal, znormal (optional, 1.8+)
+      Log('submesh',memReadWord(aptr));      // 00 00
+                    // unsigned short target    // 0 for shared geometry, 
+                                                // 1+ for submesh index + 1
     end;
   end;
 

@@ -1,4 +1,9 @@
-﻿unit RGObj;
+﻿{TODO: keep name to use in save files and skeleton}
+{TODO: differentiate skeleton name with and without path}
+{NOTE: RG's/RGO's <name>_compiled.skeleton is ver 1/8}
+{NOTE: RGO don't have skeleton name.}
+{NOTE: RGO's skeleton have wrong control points}
+unit RGObj;
 
 interface
 
@@ -158,6 +163,7 @@ type
     procedure ReadMeshLodLevel     (var aptr:PByte);
     procedure ReadEdgeListLod      (var aptr:PByte);
     procedure ReadEdgeLists        (var aptr:PByte);
+    procedure ReadPose             (var aptr:PByte);
     procedure ReadPoses            (var aptr:PByte);
     procedure ReadAnimationTrack   (var aptr:PByte);
     procedure ReadAnimation        (var aptr:PByte);

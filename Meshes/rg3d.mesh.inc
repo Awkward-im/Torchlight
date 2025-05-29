@@ -410,7 +410,7 @@ begin
     end;
   end;
 end;
-(*
+
 procedure TRGMesh.ReadPose(var aptr:PByte);
 var
   lchunk:TOgreChunk;
@@ -459,7 +459,7 @@ begin
     end;
   end;
 end;
-*)
+
 procedure TRGMesh.ReadPoses(var aptr:PByte);
 var
   lchunk:TOgreChunk;
@@ -471,7 +471,7 @@ begin
 
     if ReadChunk(aptr,lchunk)=M_POSE then
     begin
-//      ReadPose(aptr);
+      ReadPose(aptr);
     end
     else
     begin

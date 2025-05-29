@@ -1,5 +1,6 @@
 ﻿{}
 {NOTE: GetMaterial replaces texture extensions to DDS}
+{TODO: Save and check Uppercase texture names}
 {$IFDEF Interface}
 
 const
@@ -169,12 +170,13 @@ begin
 
             case j of
               txtEnvDiffuse: begin
-                sl.Add('        env_map spherical'); // "content_type shadow" ?
-                sl.Add('        colour_op modulate');
+//                sl.Add('        env_map spherical'); // "content_type shadow" ?
+//                sl.Add('        colour_op modulate'); // scene_blend modulate
+                // alpha_blend + scene_blend alpha_blend
               end;
               txtEnvSpecular: begin
-                sl.Add('        env_map spherical');
-                sl.Add('        colour_op add');
+//                sl.Add('        env_map spherical');
+//                sl.Add('        colour_op add');
               end;
               txtGlow: begin
                 sl.Add('        colour_op add');
@@ -185,7 +187,7 @@ begin
               end;
               txtSpecular: begin
                 sl.Add('        colour_op add');
-  //              sl.Add('        colour_op alpha_blend');
+//                sl.Add('        colour_op alpha_blend'); // scene_blend alpha_blend
               end;
               txtPaint: begin
               end;
@@ -821,8 +823,8 @@ begin
                 FTextures[idx]:=ls;
               end;
               //!! Keep just first texture
-              if lmat^.Textures[0]<0 then
-                lmat^.Textures[0]:=idx;
+              if lmat^.Textures[txtDiffuse]<0 then
+                 lmat^.Textures[txtDiffuse]:=idx;
             end;
           end;
         end
