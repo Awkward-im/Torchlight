@@ -1,4 +1,5 @@
-﻿{TODO: keep name to use in save files and skeleton}
+﻿{TODO: save all materials as is for export/import}
+{TODO: keep name to use in save files and skeleton}
 {TODO: differentiate skeleton name with and without path}
 {NOTE: RG's/RGO's <name>_compiled.skeleton is ver 1/8}
 {NOTE: RGO don't have skeleton name.}
@@ -15,22 +16,8 @@ uses
 
 {$I rg3d.ogre.inc}
 {$I rg3d.material.inc}
-type
-  PIntVector3 = ^TIntVector3;
-  TIntVector3 = packed record
-    X: Int32;
-    Y: Int32;
-    Z: Int32;
-  end;
 
 type
-  PVertexBoneAssignment = ^TVertexBoneAssignment;
-  TVertexBoneAssignment = packed record
-    vertexIndex:DWord;
-    boneIndex  :Word;  // Ogre
-    weight     :single;
-  end;
-
   PBoneVertex = ^TBoneVertex;
   TBoneVertex = packed record
     vertexIndex:DWord;
@@ -47,7 +34,7 @@ type
   TRGSubMesh = object
   private
     FMesh:PRGMesh;
-    FUseSharedVertices:boolean;
+    Name:string;
     FOperationType:integer;
 
     //=== Geometry, can be shared ===
@@ -56,7 +43,7 @@ type
 
     FVertex  :PVector3;
     FNormal  :PVector3;
-    FBiNormal:PVector3;
+    FBiNormal:PVector3; // not necessary, can be ignored
 // not used, coz pointer getter is fast, and indexed value can be different size
 //    FTangent :pointer;
 
@@ -93,8 +80,6 @@ type
     function GetBonePoint:pointer;
 }
   public
-    Is32bit    :boolean;
-
     procedure Init;
     procedure Free;
 
@@ -120,6 +105,7 @@ type
 }
     property Vertex  :PVector3 read FVertex;
     property Normal  :PVector3 read FNormal;
+    // next two are not necessary
     property BiNormal:PVector3 read FBiNormal;
     property Tangent [i:integer]:TVector4 index VES_TANGENT  read GetData;
 
@@ -140,47 +126,34 @@ type
     FSubMeshes:array of PRGSubMesh;
     FSubMeshCount:integer;
 
+    Name:string;
     // Mesh version and source (Mesh/MDL) file buffer. used just while import
     FBuffer  :PByte;
     FDataSize:integer;
     FVersion :integer;
+
+    FMaterialDump:PByte;
+    FDumpSize:integer;
 
     function  GetSubMesh(idx:integer):PRGSubMesh;
     procedure SetSubMesh(idx:integer; amesh:PRGSubMesh);
     function  GetSubMeshCount:integer; inline;
     procedure SetSubMeshCount(aval:integer);
 
-    procedure ReadTextures   (var aptr:PByte);
-    function  ReadHobMaterial(var aptr:PByte; aver:integer):boolean;
-    function  ReadRGMaterial (var aptr:PByte; aver:integer):boolean;
+{$I rg3d.import.inc}
+{$I rg3d.export.inc}
+
+    procedure ReadTextures    (var aptr:PByte);
+    function  ReadRGMaterial  (var aptr:PByte; aver:integer):boolean;
+    function  ReadHobMaterials(var aptr:PByte; aver:integer):boolean;
+
     function  AddMaterial(const aname:string):integer;
+    function  GetMaterial(aid:integer):PMaterial;
 
-    // *.MDL of RG/RGO
-    function ReadMDLType0(var aptr:PByte; aver:integer):boolean;
-    function ReadMDLType1(var aptr:PByte; aver:integer):boolean;
+    procedure WriteRGMaterial (astream:TStream; aver:integer);
+    procedure WriteHobMaterial(astream:TStream);
 
-    // *.MESH
-    procedure ReadMeshLodLevel     (var aptr:PByte);
-    procedure ReadEdgeListLod      (var aptr:PByte);
-    procedure ReadEdgeLists        (var aptr:PByte);
-    procedure ReadPose             (var aptr:PByte);
-    procedure ReadPoses            (var aptr:PByte);
-    procedure ReadAnimationTrack   (var aptr:PByte);
-    procedure ReadAnimation        (var aptr:PByte);
-    procedure ReadAnimations       (var aptr:PByte);
-    procedure ReadSubmeshNameTable (var aptr:PByte);
-    procedure ReadVertexDeclaration(asub:PRGSubMesh; var aptr:PByte);
-    procedure ReadGeometry         (asub:PRGSubMesh; var aptr:PByte);
-    procedure ReadSubMesh          (asub:PRGSubMesh; var aptr:PByte);
-
-    //set direct pointers to Vertex etc after import;
-    procedure FixPointers;
-
-    function ReadMDL (var aptr:PByte):boolean;
-    function ReadHob (var aptr:PByte; asMesh:boolean):boolean;
-    function ReadMesh(var aptr:PByte):boolean;
-
-    procedure CalcBounds;
+    function CalcBounds(force:boolean=false):boolean;
   
   public
     FTextures : array of string;
@@ -208,6 +181,7 @@ type
     procedure SaveToXML(const aFileName:String);
     procedure SaveToOBJ(aStream:TStream);
     procedure SaveToOBJ(const aFileName:String);
+    procedure WriteMDL(astream:TStream; aver:integer);
 
     property SubMeshCount:integer read GetSubMeshCount write SetSubMeshCount;
     property SubMesh[idx:integer]:PRGSubMesh read GetSubMesh write SetSubMesh;
@@ -220,6 +194,7 @@ implementation
 
 uses
   sysutils,
+  rgstream,
   rwmemory;
 
 {$UNDEF Interface}
@@ -293,6 +268,7 @@ end;
 {$I rg3d.XML.inc}
 {$I rg3d.OBJ.inc}
 {$I rg3d.import.inc}
+{$I rg3d.export.inc}
 {$I rg3d.Material.inc}
 
 {%REGION RGMesh}
@@ -315,6 +291,8 @@ procedure TRGMesh.Free;
 var
   i:integer;
 begin
+  FreeMem(FMaterialDump);
+
   for i:=0 to FSubMeshCount-1 do
   begin
     FSubMeshes[i]^.Free;
@@ -385,37 +363,38 @@ begin
   FSubMeshes[idx]:=amesh;
 end;
 
-procedure TRGMesh.CalcBounds;
+function TRGMesh.CalcBounds(force:boolean=false):boolean;
 var
   lsm:PRGSubMesh;
   i,j:integer;
 begin
-  if (BoundMin.X=0) and (BoundMax.X=0) then
+  if (not force) and (BoundMin.X<>0) and (BoundMax.X<>0) then exit(false);
+
+  Log('Calculate bounds');
+
+  BoundMin.X:=+10000;
+  BoundMin.Y:=+10000;
+  BoundMin.Z:=+10000;
+  BoundMax.X:=-10000;
+  BoundMax.Y:=-10000;
+  BoundMax.Z:=-10000;
+
+  for j:=0 to FSubMeshCount-1 do
   begin
-    Log('Calculate bounds');
-
-    BoundMin.X:=+10000;
-    BoundMin.Y:=+10000;
-    BoundMin.Z:=+10000;
-    BoundMax.X:=-10000;
-    BoundMax.Y:=-10000;
-    BoundMax.Z:=-10000;
-
-    for j:=0 to FSubMeshCount-1 do
+    lsm:=FSubMeshes[j];
+//    if lsm^.FVertexCount>0 then
+    for i:=0 to lsm^.FVertexCount-1 do
     begin
-      lsm:=FSubMeshes[j];
-  //    if lsm^.FVertexCount>0 then
-      for i:=0 to lsm^.FVertexCount-1 do
-      begin
-        if lsm^.Vertex[i].X>BoundMax.X then BoundMax.X:=lsm^.Vertex[i].X;
-        if lsm^.Vertex[i].Y>BoundMax.Y then BoundMax.Y:=lsm^.Vertex[i].Y;
-        if lsm^.Vertex[i].Z>BoundMax.Z then BoundMax.Z:=lsm^.Vertex[i].Z;
-        if lsm^.Vertex[i].X<BoundMin.X then BoundMin.X:=lsm^.Vertex[i].X;
-        if lsm^.Vertex[i].Y<BoundMin.Y then BoundMin.Y:=lsm^.Vertex[i].Y;
-        if lsm^.Vertex[i].Z<BoundMin.Z then BoundMin.Z:=lsm^.Vertex[i].Z;
-      end;
+      if lsm^.Vertex[i].X>BoundMax.X then BoundMax.X:=lsm^.Vertex[i].X;
+      if lsm^.Vertex[i].Y>BoundMax.Y then BoundMax.Y:=lsm^.Vertex[i].Y;
+      if lsm^.Vertex[i].Z>BoundMax.Z then BoundMax.Z:=lsm^.Vertex[i].Z;
+      if lsm^.Vertex[i].X<BoundMin.X then BoundMin.X:=lsm^.Vertex[i].X;
+      if lsm^.Vertex[i].Y<BoundMin.Y then BoundMin.Y:=lsm^.Vertex[i].Y;
+      if lsm^.Vertex[i].Z<BoundMin.Z then BoundMin.Z:=lsm^.Vertex[i].Z;
     end;
   end;
+
+  result:=true;
 end;
 
 {%ENDREGION RGMesh}
@@ -441,16 +420,9 @@ begin
 end;
 
 function TRGSubMesh.GetVertexCount:integer;
-var
-  lsm:PRGSubMesh;
 begin
-  // Use actual submesh
-  if FUseSharedVertices then
-    lsm:=FMesh^.SubMesh[0]
-  else
-    lsm:=@self;
-
-  result:=lsm^.FVertexCount;
+  result:=FVertexCount;
+  if result=0 then result:=FMesh^.SubMesh[0]^.FVertexCount;
 end;
 
 procedure TRGSubMesh.SetBuffer(atype:integer; aptr:pointer);
@@ -463,7 +435,7 @@ var
   i:integer;
 begin
   // ignoring indexes if shared data using
-  if FUseSharedVertices then exit;
+  if FVertexCount=0 then exit;
 
   i:=FVEList.FindType(atype,aidx);
   if i>=0 then
@@ -480,7 +452,7 @@ var
   lsm:PRGSubMesh;
   i:integer;
 begin
-  if FUseSharedVertices then
+  if FVertexCount=0 then
     lsm:=FMesh^.SubMesh[0]
   else
     lsm:=@self;
@@ -505,7 +477,7 @@ var
 begin
   FillChar(aresult,SizeOf(aresult),0);
 
-  if FUseSharedVertices then
+  if FVertexCount=0 then
     lsm:=FMesh^.SubMesh[0]
   else
     lsm:=@self;
@@ -552,7 +524,7 @@ var
   lsm:PRGSubMesh;
   i:integer;
 begin
-  if FUseSharedVertices then
+  if FVertexCount=0 then
     lsm:=FMesh^.SubMesh[0]
   else
     lsm:=@self;

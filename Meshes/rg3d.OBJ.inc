@@ -70,9 +70,12 @@ begin
     lsm:=SubMesh[i];
 
     WriteLine(aStream,'');
-    WriteLine(aStream,'g '+FMaterials[lsm^.FMaterial].name);
+    if lsm^.Name<>'' then
+      WriteLine(aStream,'g '+lsm^.Name)
+    else
+      WriteLine(aStream,'g '+FMaterials[lsm^.FMaterial].name);
 
-    if not lsm^.FUseSharedVertices then
+    if lsm^.FVertexCount>0 then
       SaveSubMeshToObj(lsm^, aStream);
 
     if lsm^.FFaceCount>0 then

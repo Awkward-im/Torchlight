@@ -1,4 +1,25 @@
 ﻿{}
+{
+	<submeshnames>
+		<submeshname name="Basic_LEye" index="0" />
+		<submeshname name="head" index="3" />
+		<submeshname name="glasses" index="1" />
+		<submeshname name="Upper_teeth" index="4" />
+		<submeshname name="frame" index="2" />
+	</submeshnames>
+
+	<poses>
+		<pose target="submesh" index="3" name="Expression_neutral">
+			<poseoffset index="140" x="0.000158971" y="0.251799" z="-0.00430926" />
+
+	<animations>
+		<animation name="Speak" length="6.96552">
+			<tracks>
+				<track target="submesh" index="3" type="pose">
+					<keyframes>
+						<keyframe time="0">
+							<poseref poseindex="3" influence="1" />  <!--repeated or absent-->
+}
 function FloatToStr(const aValue:single):UTF8String;
 begin
   Str(aValue:0:6,result);
@@ -146,8 +167,8 @@ begin
     if lsm^.FFaceCount=0 then continue;
 
     // type 20+ have 16 bit indexes
-    if lsm^.Is32bit            then ls :='true' else ls :='false';
-    if lsm^.FUseSharedVertices then ls1:='true' else ls1:='false';
+    if lsm^.FFaceCount>=65526 then ls :='true' else ls :='false';
+    if lsm^.FVertexCount=0    then ls1:='true' else ls1:='false';
 
     WriteLine(aStream,'    <submesh material="'+FMaterials[lsm^.FMaterial].name+
         '" usesharedvertices="'+ls1+'" use32bitindexes="'+ls+'" operationtype="triangle_list">');
@@ -165,10 +186,9 @@ begin
     
     WriteLine(aStream,'      </faces>');
 
-    j:=lsm^.VertexCount;
-    if (not lsm^.FUseSharedVertices) and (j>0) then
+    if lsm^.FVertexCount>0 then
     begin
-      WriteLine(aStream,'      <geometry vertexcount="'+IntToStr(j)+'">');
+      WriteLine(aStream,'      <geometry vertexcount="'+IntToStr(lsm^.FVertexCount)+'">');
       SaveGeometryToXML(lsm^, aStream);
       WriteLine(aStream,'      </geometry>');
     end;

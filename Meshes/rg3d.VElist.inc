@@ -1,4 +1,7 @@
 ﻿{}
+{TODO: Write Elements: keep 0 for separate buffers, summarize in RGType1}
+{$DEFINE KeepAllBlocks} // Keep Binormal, Tangent and color blocks or skip them
+
 {$IFDEF Interface}
 type
   PVertexElement = ^TVertexElement;
@@ -35,8 +38,14 @@ type
     function  FindType(atype:integer; aidx:integer=0):integer; // index of element by type (aidx for multi)
     function  GetSize(idx:integer):integer;                    // get blocks size with source like in this
 
+    procedure Write(astream:TStream);
+    procedure Write(astream:TStream; idx:integer);
+    
+    procedure Delete(idx:integer);
     function  Read(var aptr:PByte):integer;                    // read count + block of descriptions
+    // used by Read
     function  Add (var aptr:PByte):integer;                    // read single description
+    // used by MESH reading
     function  Add (asource,atype,asemantic,aoffset,aindex:Word):integer;
     // index = source; asize - size of buffer block=GetSize(0); acount - VertexCount
     procedure BindBuffer(var aptr:PByte; aindex,asize,acount:integer);
@@ -62,10 +71,31 @@ begin
   Log('  index   ',VE.index);
 end;
 
+procedure TVertexElementList.Delete(idx:integer);
+var
+  i:integer;
+begin
+  if idx=(FCount-1) then
+    dec(FCount)
+  else if idx<FCount then
+  begin
+    FreeMem(FBuffers[idx]);
+    move(FBuffers[idx+1],FBuffers[idx],(FCount-idx-1)*SizeOf(PByte));
+    move(FVEList [idx+1],FVEList [idx],(FCount-idx-1)*SizeOf(TVertexElement));
+    dec(FCount);
+
+    for i:=0 to FCount-1 do
+      FVEList[i].source:=i;
+  end;
+end;
+
 function TVertexElementList.Add(asource,atype,asemantic,aoffset,aindex:Word):integer;
 begin
   if FCount<MaxBlockCount then
   begin
+    {$IFNDEF KeepAllBlocks}
+    if not (asemantic in [VES_POSITION, VES_NORMAL, VES_TEXTURE_COORDINATES]) then exit(-1);
+    {$ENDIF}
     with FVEList[FCount] do
     begin
       source  :=asource;
@@ -86,14 +116,19 @@ begin
   if FCount<MaxBlockCount then
   begin
     memRead(aptr,FVEList[FCount],SizeOf(TVertexElement));
+    {$IFNDEF KeepAllBlocks}
+    if not (FVEList[FCount].semantic in [VES_POSITION, VES_NORMAL, VES_TEXTURE_COORDINATES]) then exit(-1);
+    {$ENDIF}
     FBuffers[FCount]:=nil;
     result:=FCount;
     if rgDebugLevel=dlDetailed then LogVE(FCount,FVEList[FCount]);
-    
     inc(FCount);
   end
   else
+  begin
+    inc(aptr,SizeOf(TVertexElement));
     result:=-1;
+  end;
 end;
 
 function TVertexElementList.Read(var aptr:PByte):integer;
@@ -103,13 +138,16 @@ begin
   FillChar(self,SizeOf(TVertexElementList),0);
 
   result:=memReadWord(aptr);
+
+  LogLn();
+  Log('>VertexElementList',result);
+
+  for i:=0 to result-1 do Add(aptr);
+{
   if result>MaxBlockCount then // low change but
     FCount:=MaxBlockCount
   else
     FCount:=result;
-
-  LogLn();
-  Log('>VertexElementList',result);
 
   // read all 
   memRead(aptr,FVEList[0],FCount*SizeOf(TVertexElement));
@@ -119,6 +157,7 @@ begin
   if rgDebugLevel=dlDetailed then
     for i:=0 to FCount-1 do
       LogVE(i,FVEList[i]);
+}
 end;
 
 function TVertexElementList.GetCount:integer;
@@ -154,10 +193,11 @@ function TVertexElementList.FindType(atype:integer; aidx:integer=0):integer;
 var
   i:integer;
 begin
+  {$IFNDEF KeepAllBlocks}
   if (aidx>0) and not
-     (atype in [VES_DIFFUSE, VES_SPECULAR, VES_TEXTURE_COORDINATES]) then
+     (atype in [VES_POSITION, VES_NORMAL, VES_TEXTURE_COORDINATES]) then
     exit(-1);
-
+  {$ENDIF}
   for i:=0 to FCount-1 do
   begin
     if FVEList[i].semantic=atype then
@@ -215,36 +255,78 @@ end;
 procedure TVertexElementList.SetBuffer(idx:integer; abuf:PByte);
 begin
   if (idx>=0) and (idx<FCount) then
+  begin
+//    FVEList [idx].source:=idx;
+//    FVEList [idx].offset:=0;
+//    FVEList [idx].index :=0;
     FBuffers[idx]:=abuf;
+  end;
 end;
 
 procedure TVertexElementList.BindBuffer(var aptr:PByte; aindex,asize,acount:integer);
 var
-  lptr:PByte;
+  lptr,lptr1:PByte;
   i,j,llsize:integer;
 begin
   for i:=0 to FCount-1 do
   begin
-    // just skip unneded atm block
+    {$IFNDEF KeepAllBlocks}
     if not (FVEList[i].semantic in [VES_POSITION, VES_NORMAL, VES_TEXTURE_COORDINATES]) then continue;
+    {$ENDIF}
 
     if FVEList[i].source=aindex then
     begin
       llsize:=Size[i];
       GetMem(lptr,acount*llsize);
-      Buffer[i]:=lptr;
 
-      lptr:=aptr;
+      lptr1:=aptr;
       for j:=0 to acount-1 do
       begin
-        move((lptr+FVEList [i].offset)^,
-             PByte(FBuffers[i]+j*llsize)^,
+        move((lptr1+FVEList [i].offset)^,
+             PByte(lptr+j*llsize)^,
              llsize);
-        inc(lptr,asize);
+        inc(lptr1,asize);
       end;
+      Buffer[i]:=lptr;
     end;
   end;
   inc(aptr,acount*asize); // if one texture block only
+end;
+
+procedure TVertexElementList.Write(astream:TStream);
+var
+  i,lcnt,loffset,lsrc:integer;
+begin
+  lcnt   :=0;
+  loffset:=0;
+  lsrc   :=0;
+  for i:=0 to FCount-1 do
+  begin
+    if Buffer[i]<>nil then
+    begin
+      inc(lcnt);
+      with FVEList[i] do
+      begin
+        //!!!!
+        offset:=loffset;
+        source:=lsrc;
+      end;
+      inc(loffset,VETData[FVEList[i]._type].size);
+      inc(lsrc);
+    end;
+  end;
+
+  astream.WriteWord(lcnt);
+
+  for i:=0 to FCount-1 do
+  begin
+    if Buffer[i]<>nil then Write(astream,i);
+  end;
+end;
+
+procedure TVertexElementList.Write(astream:TStream; idx:integer);
+begin
+  astream.Write(FVEList[idx],SizeOf(TVertexElement));
 end;
 
 {$ENDIF}

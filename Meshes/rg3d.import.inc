@@ -1,4 +1,13 @@
 ﻿{}
+{$IFDEF Interface}
+
+{$I rg3d.MDL.inc}
+{$I rg3d.Hob.inc}
+{$I rg3d.Mesh.inc}
+
+    //set direct pointers to Vertex etc after import;
+    procedure FixPointers;
+{$ELSE}
 
 function memReadText(var abuf:PByte):string;
 var
@@ -14,35 +23,6 @@ begin
   else
     SetString(result,PAnsiChar(lptr),lsize);
   inc(abuf);
-end;
-
-function ReadChunk(var abuf:PByte; var achunk:TOgreChunk):word;
-var
-  ls:string;
-  llen:integer;
-  lshow:boolean;
-begin
-  achunk._type:=memReadWord (abuf);
-  achunk._len :=memReadDWord(abuf);
-  result:=achunk._type;
-
-//  if RGDebugLevel=dlDetailed then
-  begin
-    ls:='Chunk type: 0x'+HexStr(achunk._type,4)+' '+GetChunkName(achunk._type)+
-           '; length=0x'+HexStr(achunk._len ,4)+' ('+IntToStr(achunk._len)+
-            ')';
-//            '); offset=0x'  +HexStr(abuf-FBuffer-SizeOf(achunk),8);
-
-    if (achunk._type=M_MESH_BONE_ASSIGNMENT) or
-       (achunk._type=M_SUBMESH_BONE_ASSIGNMENT) then
-      llen:=18
-    else
-      llen:=Length(ls);
-    lshow:=StrLComp(PAnsiChar(RGLog.Last),PAnsiChar(ls),llen)<>0;
-
-    if lshow then RGLog.Add(ls);
-  end
-//  else if lshow then RGLog.Reserve('Chunk '+GetChunkName(achunk._type));
 end;
 
 function TranslateVersion(const sign:AnsiString):integer;
@@ -96,7 +76,7 @@ end;
 
 function TRGMesh.ImportFromMemory(aptr:PByte; asize:integer):boolean;
 var
-  lchunk:TOgreChunk;
+  b:boolean;
 begin
   result:=false;
 
@@ -113,19 +93,28 @@ begin
     if (FVersion=90) or (FVersion=91) then
       result:=ReadHob(aptr,FVersion=90);
 
-    if ReadChunk(aptr,lchunk)=M_MESH then
-      result:=ReadMesh(aptr);
+    result:=ReadMesh(aptr);
   end;
   FixPointers();
 
   LogLn;
-  CalcBounds;
+  b:=CalcBounds;
   Log('minx',BoundMin.X);
   Log('miny',BoundMin.Y);
   Log('minz',BoundMin.Z);
   Log('maxx',BoundMax.X);
   Log('maxy',BoundMax.Y);
   Log('maxz',BoundMax.Z);
+  if not b then
+  begin
+    CalcBounds(true);
+    Log('minx',BoundMin.X);
+    Log('miny',BoundMin.Y);
+    Log('minz',BoundMin.Z);
+    Log('maxx',BoundMax.X);
+    Log('maxy',BoundMax.Y);
+    Log('maxz',BoundMax.Z);
+  end;
 
   Log('offset',HexStr(aptr-FBuffer,8));
 end;
@@ -152,6 +141,8 @@ begin
 
       if result then
       begin
+        Name:=ExtractNameOnly(aFileName);
+        
         if MeshVersion<>99 then
         begin
           AssignFile(lfile,ChangeFileExt(aFileName,'.MATERIAL'));
@@ -176,3 +167,5 @@ begin
   end;
   result:=false;
 end;
+
+{$ENDIF}

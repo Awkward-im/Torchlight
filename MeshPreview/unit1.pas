@@ -100,7 +100,7 @@ var
   i:integer;
   lsm:PRGSubMesh;
   Speed: Double;
-  xmin,xmax,ymin,ymax:GLDouble;
+  ldist:single;
   lp:PByte;
 begin
   glClearColor(0.27, 0.53, 0.71, 1.0); // Задаем синий фон
@@ -109,47 +109,55 @@ begin
 
   if FMeshList=0 then
   begin
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+{
+Load_GL_version_1_4();
+glEnable(GL_BLEND);
+glBlendEquation(GL_FUNC_ADD);
+glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+}
     CreateMeshList;
 
-    if FMesh.BoundMin.Z<6.0 then
-      tz:=FMesh.BoundMin.Z
-    else
-      tz:=-6.0;
+    wx:=FMesh.BoundMax.X-FMesh.BoundMin.X;
+    wy:=FMesh.BoundMax.Y-FMesh.BoundMin.Y;
+    wz:=FMesh.BoundMax.Z-FMesh.BoundMin.Z;
+    if wx<wy then wx:=wy;
 
     tx:=-(FMesh.BoundMax.X+FMesh.BoundMin.X)/2;
     ty:=-(FMesh.BoundMax.Y+FMesh.BoundMin.Y)/2;
-    wx:=  FMesh.BoundMax.X-FMesh.BoundMin.X;
-    wy:=  FMesh.BoundMax.Y-FMesh.BoundMin.Y;
-    wz:=  FMesh.BoundMax.Z-FMesh.BoundMin.Z;
-    if wy<wx then wy:=wx;
-    tz:=-(wz+wy);
-    if tz<-200 then tz:=-200;
+    tz:=-(wz+wx);
+//    if wz<wx then tz:=-wx else tz:=-wz;
+//    if tz<-200 then tz:=-200;
 
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_LIGHTING);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
     glEnable(GL_LIGHT0);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity;
-    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
   end;
 
   if FMeshList<>0 then
   begin
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity;
-    gluPerspective(45.0, double(GLBox.width) / GLBox.height, 0.1, 200.0);
+
+    ldist:=(wz+wx)*2;
+    if ldist<200 then ldist:=200;
+
+    gluPerspective(45.0, double(GLBox.width) / GLBox.height, 0.1, ldist);
     //    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
-    wx:=  FMesh.BoundMax.X-FMesh.BoundMin.X;
-    wy:=  FMesh.BoundMax.Y-FMesh.BoundMin.Y;
-    wz:=  FMesh.BoundMax.Z-FMesh.BoundMin.Z;
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity;
-
-//    if (wx>200) or (wy>200) or (wz>200) then glScalef(0.1, 0.1, 0.1);
+{
+    wx:=FMesh.BoundMax.X-FMesh.BoundMin.X;
+    wy:=FMesh.BoundMax.Y-FMesh.BoundMin.Y;
+    wz:=FMesh.BoundMax.Z-FMesh.BoundMin.Z;
+    if (wx>200) or (wy>200) or (wz>200) then glScalef(0.1, 0.1, 0.1);
+}
     glTranslatef(tx, ty, tz);
 
 //    glRotatef(rx,1.0,0.0,0.0);
@@ -165,19 +173,6 @@ begin
 
 //    glBindTexture(GL_TEXTURE_2D, Tex1);
     glCallList(FMeshList);
-{
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    for i:=1 to FMesh.SubMeshCount do
-    begin
-      lsm:=FMesh.SubMesh[i];
-      glVertexPointer(3, GL_FLOAT , 0, lsm^.Vertex);
-      glNormalPointer(   GL_FLOAT , 0, lsm^.Normal);
-      glDrawElements (GL_TRIANGLES, lsm^.FaceCount*3, GL_UNSIGNED_INT, lsm^.Face);
-    end;
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-}
   end;
 
   GLbox.SwapBuffers;
@@ -200,9 +195,9 @@ begin
 //    glBindTexture(GL_TEXTURE_2D, Tex1);
   end;
 
-  glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
+  glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,{GL_MODULATE}GL_DECAL);
   glEnable(GL_TEXTURE_2D);
-  
+
   FMeshList:=glGenLists(1);
   glNewList(FMeshList,GL_COMPILE);
 
@@ -210,26 +205,26 @@ begin
   begin
     lsm:=FMesh.SubMesh[j];
 
-    ltex:=0;
-    if (FMesh.MeshVersion=99) or (ParamCount<2) then
+    if FGLTextures<>nil then
     begin
-      if (ParamCount>=2) and (lsm^.TextureCount>1) then
-        ltex:=1;
-
-      for i:=0 to txtLast do
+      ltex:=0;
+      if (FMesh.MeshVersion=99) or (ParamCount<2) then
       begin
-        if FMesh.FMaterials[lsm^.Material].textures[i]>=0 then
+        if (ParamCount>=2) and (lsm^.TextureCount>1) then
+          ltex:=1;
+
+        for i:=0 to txtLast do
         begin
-          Tex1:=FGLTextures[FMesh.FMaterials[lsm^.Material].textures[i]];
-          glBindTexture(GL_TEXTURE_2D, Tex1);
-          break;
+          if FMesh.FMaterials[lsm^.Material].textures[i]>=0 then
+          begin
+            Tex1:=FGLTextures[FMesh.FMaterials[lsm^.Material].textures[i]];
+            break;
+          end;
         end;
       end;
-    end
-    else
-    begin
-      glBindTexture(GL_TEXTURE_2D, Tex1);
     end;
+
+    glBindTexture(GL_TEXTURE_2D, Tex1);
 
     glBegin(GL_TRIANGLES);
 
@@ -239,17 +234,17 @@ begin
     lt:=lsm^.Buffer[VES_TEXTURE_COORDINATES,ltex];
     for i:=0 to lsm^.FaceCount-1 do
     begin
-      glTexCoord2fv(@lt[lp[i].X]);
-      glNormal3fv  (@ln[lp[i].X]);
-      glVertex3fv  (@lv[lp[i].X]);
+      if lt<>nil then glTexCoord2fv(@lt[lp[i].X]);
+      glNormal3fv(@ln[lp[i].X]);
+      glVertex3fv(@lv[lp[i].X]);
 
-      glTexCoord2fv(@lt[lp[i].Y]);
-      glNormal3fv  (@ln[lp[i].Y]);
-      glVertex3fv  (@lv[lp[i].Y]);
+      if lt<>nil then glTexCoord2fv(@lt[lp[i].Y]);
+      glNormal3fv(@ln[lp[i].Y]);
+      glVertex3fv(@lv[lp[i].Y]);
 
-      glTexCoord2fv(@lt[lp[i].Z]);
-      glNormal3fv  (@ln[lp[i].Z]);
-      glVertex3fv  (@lv[lp[i].Z]);
+      if lt<>nil then glTexCoord2fv(@lt[lp[i].Z]);
+      glNormal3fv(@ln[lp[i].Z]);
+      glVertex3fv(@lv[lp[i].Z]);
     end;
 
     glEnd;

@@ -430,7 +430,12 @@ const
     (ver: 90; sign:'[MeshSerializer_v1.9]'  ), // Hob
     (ver: 91; sign:'[MeshSerializer_v1.9_o]'), // Hob
     (ver: 99; sign:'[MeshSerializer_Runic]' ), // RG/RGO
-    (ver:100; sign:'[MeshSerializer_v1.100]')
+    (ver:100; sign:'[MeshSerializer_v1.100]'),
+
+    (ver: 21; sign:'[MeshSerializer_v2.1 R0 LEGACYV1]'),
+    (ver:212; sign:'[MeshSerializer_v2.1 R2]'         ), // MESH_VERSION_2_1
+    (ver:211; sign:'[MeshSerializer_v2.1 R1]'         ), // MESH_VERSION_LEGACY
+    (ver:210; sign:'[MeshSerializer_v2.1]'            )  // MESH_VERSION_LEGACY R0
   );
 
 const    
@@ -440,6 +445,14 @@ type
   TOgreChunk = packed record
     _type:word;
     _len :dword;
+  end;
+
+type
+  PVertexBoneAssignment = ^TVertexBoneAssignment;
+  TVertexBoneAssignment = packed record
+    vertexIndex:DWord;
+    boneIndex  :Word;  // Ogre
+    weight     :single;
   end;
 
 // TextureUsage
@@ -455,4 +468,3 @@ const
   TU_NOT_SAMPLED        = $0040;
   TU_UNORDERED_ACCESS   = $0080;
   TU_DEFAULT = TU_AUTOMIPMAP or TU_STATIC_WRITE_ONLY;
-
