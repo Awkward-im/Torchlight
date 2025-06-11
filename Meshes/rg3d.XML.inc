@@ -1,13 +1,5 @@
 ﻿{}
 {
-	<submeshnames>
-		<submeshname name="Basic_LEye" index="0" />
-		<submeshname name="head" index="3" />
-		<submeshname name="glasses" index="1" />
-		<submeshname name="Upper_teeth" index="4" />
-		<submeshname name="frame" index="2" />
-	</submeshnames>
-
 	<poses>
 		<pose target="submesh" index="3" name="Expression_neutral">
 			<poseoffset index="140" x="0.000158971" y="0.251799" z="-0.00430926" />
@@ -148,6 +140,7 @@ var
   lsm:PRGSubMesh;
   ls,ls1:string;
   i,j:integer;
+  b:boolean;
 begin
   WriteLine(aStream,'<mesh>');
 
@@ -173,6 +166,8 @@ begin
     WriteLine(aStream,'    <submesh material="'+FMaterials[lsm^.FMaterial].name+
         '" usesharedvertices="'+ls1+'" use32bitindexes="'+ls+'" operationtype="triangle_list">');
 
+    // Faces
+
     WriteLine(aStream,'      <faces count="'+IntToStr(lsm^.FFaceCount)+'">');
 
     for j:=0 to lsm^.FFaceCount-1 do
@@ -193,6 +188,8 @@ begin
       WriteLine(aStream,'      </geometry>');
     end;
 
+    // submesh Bone assignment
+
     if lsm^.FBoneAssignCount>0 then
     begin
       WriteLine(aStream,'      <boneassignments>');
@@ -211,6 +208,30 @@ begin
   end;
   WriteLine(aStream,'  </submeshes>');
 
+  // Submesh name table
+
+  b:=false;
+  for i:=1 to SubMeshCount do
+  begin
+    if SubMesh[i]^.Name<>'' then
+    begin
+      b:=true;
+      break;
+    end;
+  end;
+  if b then
+  begin
+  	WriteLine(aStream,'  <submeshnames>');
+    for i:=1 to SubMeshCount do
+    begin
+      if SubMesh[i]^.Name<>'' then
+        WriteLine(aStream,'    <submeshname name="'+SubMesh[i]^.Name+'" index="'+IntToStr(i-1)+'" />');
+    end;
+  	WriteLine(aStream,'  </submeshnames>');
+  end;
+
+  // shared Bone assignment
+
   lsm:=SubMesh[0];
   if lsm^.FBoneAssignCount>0 then
   begin
@@ -227,7 +248,11 @@ begin
   end;
 
   if Skeleton<>'' then
-    WriteLine(aStream,'  <skeletonlink name="'+Skeleton+'" />');
+    ls:=Skeleton
+  else
+    ls:=Name+'.skeleton';
+  if ls<>'' then
+    WriteLine(aStream,'  <skeletonlink name="'+ls+'" />');
 
   WriteLine(aStream,'</mesh>');
 end;

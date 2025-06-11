@@ -32,12 +32,21 @@ type
     textures:array [0..txtLast] of integer;
 
     id      :integer; // usually, is order number
+    rendertype :integer;   // l_01
     // material
-    shadows     :boolean;
-    cast_shadows:boolean;
+    sceneblend :boolean;   // l_02
+    culling    :boolean;   // l_03
+    renderqueue:integer;   // l_15
+//    shadows     :boolean;
+//    cast_shadows:boolean;
     // pass
-    depth_write:boolean;
-    depth_check:boolean;
+    depth_write:boolean;   // l_05
+    depth_check:boolean;   // l_07
+    usealpha   :boolean;   // l_13
+    alphareject:integer;   // l_14
+    shininess  :single;    // lf_01
+    brightness :single;    // lf_02 multiplier for Specular color
+    intensity  :single;    // lf_06 as named constant
   end;
 
 {$ELSE}
@@ -79,6 +88,7 @@ var
 begin
   FillChar(amtl^,SizeOf(TMaterial),0);
   for i:=0 to txtLast do amtl^.textures[i]:=-1;
+  amtl^.intensity:=-1.0; // lf_06
 {
   lf_03:=30.0;
   lf_04:=1.0;
@@ -372,7 +382,7 @@ function TRGMesh.ReadRGMaterial(var aptr:PByte; aver:integer):boolean;
 var
   mtl:PMaterial;
   lrgb:TRGB;
-  i,ltmp:integer;
+  i:integer;
 begin
   SetLength(FMaterials,memReadDWord(aptr));
   LogLn();
@@ -413,13 +423,20 @@ goggles = 1
 lashes = 1
 }
     if aver>=10 then
-      Log('{01} ',memReadWord(aptr));
+    begin
+      mtl^.rendertype:=memReadWord(aptr);
+      Log('{01} rendertype',mtl^.rendertype);
+    end;
     if aver>=9 then
-      Log('{02} SceneBlendAdd',memReadWord(aptr));  // 1: SceneBlend=SBT_ADD else SBT_REPLACE (default)
+    begin
+      mtl^.sceneblend:=memReadWord(aptr)<>0;        // 1: SceneBlend=SBT_ADD else SBT_REPLACE (default);
+      Log('{02} SceneBlendAdd',ORD(mtl^.sceneblend));
+    end;
     
     if aver>=12 then
     begin
-      Log('{03}',memReadWord(aptr));                // NotCulling
+      mtl^.culling:=memReadWord(aptr)<>0;           // NotCulling?? RGO l_01 or l_03 -> SetCullingMode(1)
+      Log('{03} Culling',ORD(mtl^.culling));
       Log('{04}',memReadWord(aptr));                // signed, 0 for lower version
     end;
 {
@@ -436,21 +453,22 @@ lashes = 1
     if aver>=5 then Log('{11}',memReadWord(aptr));
     if aver>=6 then Log('{12}',memReadWord(aptr));  // distort
 
-    Log('{13} UseAlphaReject',memReadWord(aptr));   // use alpha reject
+    mtl^.usealpha   :=memReadWord(aptr)<>0;         // use alpha reject
+    mtl^.alphareject:=memReadWord(aptr);            // AlphaRejectValue function=6 CMPF_GREATER_EQUAL
+    Log('{13} UseAlphaReject'  ,ORD(mtl^.usealpha));
+    Log('{14} AlphaRejectValue',mtl^.alphareject);
 {
     if l_13 > 0
       Ogre::Pass::setAlphaRejectFunction(Pass, 6);
       Ogre::Pass::setAlphaRejectValue(Pass, l_14);
       Ogre::Material::setSceneBlending(0);
 }
-
-    //??
-    Log('{14} AlphaRejectValue',memReadWord(aptr)); // AlphaRejectValue function=6 CMPF_GREATER_EQUAL
     if aver>=4 then
-      ltmp:=memReadWord(aptr);                      // -1 ogreTechnique
-//    else ltmp:=-1;
+      mtl^.renderqueue:=Int16(memReadWord(aptr))
+    else
+      mtl^.renderqueue:=-1;
 //  l_technique:=Technique.<method>( fmax(-1,fmin(99,ltmp)) )
-    Log('{15} Technique',Int16(ltmp));
+    Log('{15} RenderQueue',mtl^.renderqueue);       // Ogre::Material::setRenderQueue
 
     if aver>=8 then
     begin
@@ -465,7 +483,7 @@ lashes = 1
     end;
 
     memRead(aptr,lrgb,3*2);
-    RGBtoFloat(lrgb,mtl^.ambient);
+    RGBtoFloat(lrgb,mtl^.diffuse);
     Log('diffuse',
       ' '+IntToStr(lrgb.R)+
       ' '+IntToStr(lrgb.G)+
@@ -473,7 +491,7 @@ lashes = 1
 
     // ?? unused
     memRead(aptr,lrgb,3*2);
-    RGBtoFloat(lrgb,mtl^.diffuse);
+    RGBtoFloat(lrgb,mtl^.ambient);
     Log('ambient',
       ' '+IntToStr(lrgb.R)+
       ' '+IntToStr(lrgb.G)+
@@ -495,8 +513,10 @@ lashes = 1
       ' '+IntToStr(lrgb.G)+
       ' '+IntToStr(lrgb.B));
 
-    Log('{01} f' ,memReadFloat(aptr));  // shiness Hob - ignore
-    Log('{02} f' ,memReadFloat(aptr));  // Hob - ignore
+    mtl^.shininess :=memReadFloat(aptr);  // shiness (Hob - ignore)
+    mtl^.brightness:=memReadFloat(aptr);  // Specular brightness (Hob - ignore)
+    Log('{01} shininess'  ,mtl^.shininess);
+    Log('{02} brightness' ,mtl^.brightness);
 {
     lf_03 = 30.0;
     lf_04 = 1.0;
@@ -509,14 +529,24 @@ lashes = 1
 }
     if aver>=2 then
     begin
-      Log('{03} f' ,memReadFloat(aptr)); // brightness of specular (RGB specular*lf_03)
+      Log('{03} f' ,memReadFloat(aptr)); //
       Log('{04} f' ,memReadFloat(aptr)); // 
       Log('{05} f' ,memReadFloat(aptr)); // 
+    end
+    else
+    begin
+//      lf_03:=30.0;
+//      lf_04:=1.0;
+//      lf_05:=1.0;
     end;
     if aver>=13 then
     begin
-      Log('{06} f' ,memReadFloat(aptr)); // Intensity
-    end;
+      mtl^.intensity:=memReadFloat(aptr); // Intensity
+      Log('{06} f' ,mtl^.intensity);
+    end
+    else
+      mtl^.intensity:=-1.0;
+    // named constants
     if aver>=14 then
     begin
       Log('{07} f' ,memReadFloat(aptr)); // SpecularMultiplier
@@ -914,10 +944,106 @@ end;
 
 //===== *.MATERIAL processing =====
 
-procedure TRGMesh.WriteRGMaterial(astream:TStream; aver:integer);
+procedure WriteColor(astream:TStream; const acolor:TVector3);
+var
+  lRGB:TRGB;
 begin
+  FloatToRGB(acolor,lRGB);
+  astream.WriteWord(lRGB.R);
+  astream.WriteWord(lRGB.G);
+  astream.WriteWord(lRGB.B);
+end;
+
+procedure TRGMesh.WriteRGMaterial(astream:TStream; aver:integer);
+var
+  mtl:PMaterial;
+  i:integer;
+begin
+  astream.WriteDWord(Length(FMaterials));
+
   // write texture list
+  astream.WriteDWord(Length(FTextures));
+  for i:=0 to High(FTextures) do
+  begin
+    WriteText(astream,FTextures[i]);
+    astream.WriteDWord(i);
+  end;
+
   // write materials
+  for i:=0 to High(FMaterials) do
+  begin
+    mtl:=@FMaterials[i];
+    WriteText(astream,mtl^.Name);
+    astream.WriteDWord(mtl^.id);
+    if aver>=10 then astream.WriteWord(mtl^.rendertype);   // l_01
+    if aver>= 9 then astream.WriteWord(ORD(mtl^.sceneblend));   // l_02
+    if aver>=12 then
+    begin
+      astream.WriteWord(ORD(mtl^.culling));                     // l_03
+      astream.WriteWord(0);                                // l_04
+    end;
+    astream.WriteWord(ORD(mtl^.depth_write));                   // l_05
+    if aver>=9 then astream.WriteWord(0);                  // l_06
+    astream.WriteWord(ORD(mtl^.depth_check));                   // l_07
+    astream.WriteWord(0);                                  // l_08
+    astream.WriteWord(0);                                  // l_09
+    if aver>=3 then astream.WriteWord(0);                  // l_10
+    if aver>=5 then astream.WriteWord(0);                  // l_11
+    if aver>=6 then astream.WriteWord(0);                  // l_12
+    astream.WriteWord(ORD(mtl^.usealpha));                      // l_13
+    astream.WriteWord(mtl^.alphareject);                   // l_14
+    if aver>=4 then astream.WriteWord(Word(mtl^.renderqueue));   // l_15
+    if aver>=8 then
+    begin
+      astream.WriteWord(0);                                // l_16
+      astream.WriteWord(0);                                // l_17
+      if aver>=10 then
+      begin
+        astream.WriteWord(0);                              // l_18
+        astream.WriteWord(0);                              // l_19
+      end;
+      astream.WriteWord(0);                                // l_20
+    end;
+
+    WriteColor(astream, mtl^.diffuse);
+    WriteColor(astream, mtl^.ambient);
+    WriteColor(astream, mtl^.specular);
+    WriteColor(astream, mtl^.emissive);
+
+    astream.WriteFloat(mtl^.shininess);      // lf_01
+    astream.WriteFloat(mtl^.brightness);     // lf_02
+    if aver>=2 then
+    begin
+      astream.WriteFloat(30.0);                  // lf_03
+      astream.WriteFloat(1.0);                  // lf_04
+      astream.WriteFloat(1.0);                  // lf_05
+    end;
+    if aver>=13 then astream.WriteFloat(mtl^.intensity);   // lf_06
+    if aver>=14 then
+    begin
+      astream.WriteFloat(0.0);                  // lf_07
+      astream.WriteFloat(0.0);                  // lf_08
+      astream.WriteFloat(0.0);                  // lf_09
+      astream.WriteFloat(0.0);                  // lf_10
+      astream.WriteFloat(0.0);                  // lf_11
+    end;
+
+    astream.WriteDWord(DWord(mtl^.Textures[txtDiffuse   ]));
+    astream.WriteDWord(DWord(mtl^.Textures[txtUnknown1  ]));
+    astream.WriteDWord(DWord(mtl^.Textures[txtEnvDiffuse]));
+    if aver>=8 then astream.WriteDWord(DWord(mtl^.Textures[txtEnvSpecular]));
+    astream.WriteDWord(DWord(mtl^.Textures[txtGlow      ]));
+    astream.WriteDWord(DWord(mtl^.Textures[txtNormal    ]));
+    astream.WriteDWord(DWord(mtl^.Textures[txtOutline   ]));
+    astream.WriteDWord(DWord(mtl^.Textures[txtUnknown3  ]));
+    astream.WriteDWord(DWord(mtl^.Textures[txtSpecular  ]));
+    if aver>=7 then astream.WriteDWord(DWord(mtl^.Textures[txtUnknown4]));
+    if aver>=13 then
+    begin
+      astream.WriteDWord(DWord(mtl^.Textures[txtPaint       ]));
+      astream.WriteDWord(DWord(mtl^.Textures[txtPaintSurface]));
+    end;
+  end;
 end;
 
 procedure TRGMesh.WriteHobMaterial(astream:TStream);

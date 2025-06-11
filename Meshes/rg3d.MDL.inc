@@ -37,6 +37,7 @@ var
   lidx:PDWord;
   lpbuf:PByte;
   ofs:TVector3;
+  lv:PVector3;
   lvcnt, lblock,i,j,k,lcnt,lcnt1:integer;
   lbone:dword;
   lweight:single;
@@ -55,7 +56,8 @@ begin
     ofs.Z:=memReadFloat(aptr)*opt.FScale;
     LogLn();
     Log('offset: x='+FloatToStr(ofs.X)+' y='+FloatToStr(ofs.Y)+' z='+FloatToStr(ofs.Z));
-    if not opt.FUseOffset then
+// Offset break skeleton position
+//    if not opt.FUseOffset then
     begin
       ofs.X:=0.0;
       ofs.Y:=0.0;
@@ -83,11 +85,12 @@ begin
     for i:=0 to lvcnt-1 do
     begin
       j:=lidx[i];
+      lv:=@PVector3(aptr)[j];
       with PVector3(lpbuf)[i] do
       begin
-        X:=-PVector3(aptr)[j].X*opt.FScale;
-        Y:= PVector3(aptr)[j].Y*opt.FScale;
-        Z:=-PVector3(aptr)[j].Z*opt.FScale;
+        X:=-({PVector3(aptr)[j]}lv^.X+ofs.X)*opt.FScale;
+        Y:= ({PVector3(aptr)[j]}lv^.Y+ofs.Y)*opt.FScale;
+        Z:=-({PVector3(aptr)[j]}lv^.Z+ofs.Z)*opt.FScale;
       end;
     end;
     inc(aptr,lcnt*SizeOf(TVector3));
@@ -110,11 +113,12 @@ begin
         for i:=0 to lvcnt-1 do
         begin
           j:=lidx[i];
+          lv:=@PVector3(aptr)[j];
           with PVector3(lpbuf)[i] do
           begin
-            X:=PVector3(aptr)[j].X;
-            Y:=PVector3(aptr)[j].Y;
-            Z:=PVector3(aptr)[j].Z;
+            X:={PVector3(aptr)[j]}lv^.X;
+            Y:={PVector3(aptr)[j]}lv^.Y;
+            Z:={PVector3(aptr)[j]}lv^.Z;
           end;
         end;
       end;
@@ -131,11 +135,12 @@ begin
         for i:=0 to lvcnt-1 do
         begin
           j:=lidx[i];
+          lv:=@PVector3(aptr)[j];
           with PVector3(lpbuf)[i] do
           begin
-            X:=PVector3(aptr)[j].X;
-            Y:=PVector3(aptr)[j].Y;
-            Z:=PVector3(aptr)[j].Z;
+            X:={PVector3(aptr)[j]}lv^.X;
+            Y:={PVector3(aptr)[j]}lv^.Y;
+            Z:={PVector3(aptr)[j]}lv^.Z;
           end;
         end;
       end;
@@ -169,8 +174,8 @@ begin
           k:=lidx[i];
           with PVector2(lpbuf)[i] do
           begin
-            X:=  PVector2(aptr)[k].X; //  X in Hob
-            Y:={1}-PVector2(aptr)[k].Y; // -Y in Hob
+            X:= PVector2(aptr)[k].X;
+            Y:=-PVector2(aptr)[k].Y;
           end;
         end;
         
@@ -199,11 +204,12 @@ begin
         for i:=0 to lvcnt-1 do
         begin
           j:=lidx[i];
+          lv:=@PVector3(aptr)[j];
           with PVector3(lpbuf)[i] do
           begin
-            X:=-PVector3(aptr)[j].X;
-            Y:= PVector3(aptr)[j].Y;
-            Z:=-PVector3(aptr)[j].Z;
+            X:=-{PVector3(aptr)[j]}lv^.X;
+            Y:= {PVector3(aptr)[j]}lv^.Y;
+            Z:=-{PVector3(aptr)[j]}lv^.Z;
           end;
         end;
       end;
