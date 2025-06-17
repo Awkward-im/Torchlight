@@ -75,14 +75,14 @@ procedure TVertexElementList.Delete(idx:integer);
 var
   i:integer;
 begin
-  if idx=(FCount-1) then
-    dec(FCount)
-  else if idx<FCount then
+  if idx>=FCount then exit;
+
+  dec(FCount);
+  FreeMem(FBuffers[idx]);
+  if idx<FCount then
   begin
-    FreeMem(FBuffers[idx]);
-    move(FBuffers[idx+1],FBuffers[idx],(FCount-idx-1)*SizeOf(PByte));
-    move(FVEList [idx+1],FVEList [idx],(FCount-idx-1)*SizeOf(TVertexElement));
-    dec(FCount);
+    move(FBuffers[idx+1],FBuffers[idx],(FCount-idx)*SizeOf(PByte));
+    move(FVEList [idx+1],FVEList [idx],(FCount-idx)*SizeOf(TVertexElement));
 
     for i:=0 to FCount-1 do
       FVEList[i].source:=i;

@@ -253,12 +253,12 @@ begin
 
     //===== Skeleton =====
 
-    lsm^.FBoneCount:=memReadDWord(aptr);
-    if lsm^.FBoneCount>0 then
+    FBoneCount:=memReadDWord(aptr);
+    if FBoneCount>0 then
     begin
-      Log('bones',lsm^.FBoneCount);
-      // names
-      for i:=0 to lsm^.FBoneCount-1 do
+      Log('bones',FBoneCount);
+      // names, used for Pose below
+      for i:=0 to FBoneCount-1 do
       begin
         ls:=memReadText(aptr);
         if rgDebugLevel=dlDetailed then
@@ -370,8 +370,12 @@ begin
     end;
   end;
 
+  // Unused in RGO
+{
+  Bone name and offset(?) used (scale and sign) but not rotation matrix(ignored)
+}
   if opt.FPoseParts>0 then
-//  if (lsm^.FBoneCount>0) and ((aptr-FBuffer)<FDataSize) then
+//  if (FBoneCount>0) and ((aptr-FBuffer)<FDataSize) then
   begin
     LogLn;
     Log(IntToStr(opt.FPoseParts)+' Pose parts at',HexStr(aptr-FBuffer,8));
@@ -385,7 +389,7 @@ begin
       ltmp[0]:= ltmp[0]*opt.FScale;
       ltmp[1]:= ltmp[1]*opt.FScale;
       ltmp[2]:=-ltmp[2]*opt.FScale;
-{
+{Looks like unused
       Log('|' +FloatToStr(ltmp[3])+' '+FloatToStr(ltmp[ 4])+' '+FloatToStr(ltmp[ 5])+' |');
       Log('|' +FloatToStr(ltmp[6])+' '+FloatToStr(ltmp[ 7])+' '+FloatToStr(ltmp[ 8])+' |');
       Log('|' +FloatToStr(ltmp[9])+' '+FloatToStr(ltmp[10])+' '+FloatToStr(ltmp[11])+' |');
@@ -499,8 +503,8 @@ begin
   begin
     Log(IntToStr(lsm^.FBoneAssignCount)+' Bones vertices, offset',HexStr(aptr-FBuffer,8));
 
-    lsm^.FBoneCount:=memReadDWord(aptr);
-    Log('bones count',lsm^.FBoneCount); //?? Bones? (limit for boneIndex)
+    FBoneCount:=memReadDWord(aptr);
+    Log('bones count',FBoneCount); //?? Bones? (limit for boneIndex)
 
     GetMem(lsm^.FBones,lsm^.FBoneAssignCount*SizeOf(TBoneVertex));
     lsm^.FBonesLen:=lsm^.FBoneAssignCount;

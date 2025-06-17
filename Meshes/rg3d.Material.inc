@@ -336,7 +336,8 @@ begin
   if IOResult=0 then
   begin
     ls:=GetMaterial();
-    BlockWrite(f,ls[1],Length(ls));
+    if ls<>'' then
+      BlockWrite(f,ls[1],Length(ls));
     CloseFile(f);
   end;
 end;
@@ -473,7 +474,7 @@ lashes = 1
     if aver>=8 then
     begin
       Log('{16}',memReadWord(aptr));                // cast to dword
-      Log('{17}',memReadWord(aptr));
+      Log('{17}',memReadWord(aptr));                // 16 and 17: if <0 - cubic texture (BLACKCUBE)
       if aver>=10 then
       begin
         Log('ver 10+ unused',memReadWord(aptr));    //?? unused
@@ -580,13 +581,13 @@ end;
 
 //===== Hob =====
 
-function {TRGMesh.}ReadHobMaterial(var aptr:PByte; amtl:PMaterial; const ahtl:THobTextureList):boolean;
 const
   type_int    = 1;
   type_float  = 2;
   type_float4 = 3;
   type_four   = 4;
 
+function {TRGMesh.}ReadHobMaterial(var aptr:PByte; amtl:PMaterial; const ahtl:THobTextureList):boolean;
 var
   lname,ls,lsv:string;
   lr,lg,lb,lalpha:single;
@@ -1047,9 +1048,49 @@ begin
 end;
 
 procedure TRGMesh.WriteHobMaterial(astream:TStream);
+var
+  mtl:PMaterial;
+  i,j:integer;
+  lcntpos,lpos:integer;
 begin
   // build THobTextureList
+  lpos:=astream.Position;
+  astream.WriteWord(Length(FMaterials));
+  for j:=0 to High(FMaterials) do
+  begin
+{
+    mtl:=@FMaterials[j];
+   // calc count
+   //write
+   if mtl^.textures[]>=0 then
+   begin
+     astream.WriteText(); // alias
+     astream.WriteText(FTextures[mtl^.textures[]]); // texture
+   end;
+}
+  end;
+
   // write materials
+  for j:=0 to High(FMaterials) do
+  begin
+    mtl:=@FMaterials[j];
+    astream.WriteDWord(0); // hash
+    WriteText(astream,mtl^.Name);
+    lpos:=astream.Position;
+    astream.WriteDword(0);
+    // write material
+    WriteText(astream,mtl^.Name);
+    astream.WriteDword(mtl^.id);
+    // really, we must know count
+    lcntpos:=astream.Position;
+    astream.WriteDword(0);
+{
+    astream.WriteDWord();
+    astream.WriteText();
+    // write value here
+}
+    astream.WriteDWordAt(astream.Position-lpos-SizeOf(DWord),lpos);
+  end;
 end;
 
 {$ENDIF}

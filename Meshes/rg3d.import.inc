@@ -5,35 +5,10 @@
 {$I rg3d.Hob.inc}
 {$I rg3d.Mesh.inc}
 
-    //set direct pointers to Vertex etc after import;
-    procedure FixPointers;
+    // setup some empty fields and blocks for proper values
+    procedure PostProcess;
+
 {$ELSE}
-
-function memReadText(var abuf:PByte):string;
-var
-  lptr:PByte;
-  lsize:integer;
-begin
-  lptr:=abuf;
-  while abuf^<>10 do inc(abuf);
-
-  lsize:=abuf-lptr;
-  if lsize=0 then
-    result:=''
-  else
-    SetString(result,PAnsiChar(lptr),lsize);
-  inc(abuf);
-end;
-
-function TranslateVersion(const sign:AnsiString):integer;
-var
-  i:integer;
-begin
-  for i:=0 to High(FileVersions) do
-    if FileVersions[i].sign=sign then exit(FileVersions[i].ver);
-
-  result:=-1;
-end;
 
 function GetFileVersion(var abuf:PByte):integer;
 var
@@ -58,20 +33,63 @@ end;
 {$I rg3d.Hob.inc}
 {$I rg3d.Mesh.inc}
 
-procedure TRGMesh.FixPointers;
+procedure TRGMesh.PostProcess;
 var
-  lsm:PRGSubMesh;
-  i:integer;
+  i,j:integer;
 begin
+
+  //--- Set FBoneCount if not set ---
+
+  if FBoneCount=0 then
+  begin
+    for i:=0 to FSubMeshCount-1 do
+    begin
+      with FSubMeshes[i]^ do
+        for j:=0 to FBoneAssignCount-1 do
+          if FBoneCount<FBones[j].boneIndex then
+            FBoneCount:=FBones[j].boneIndex;
+    end;
+  end;
+
+  //--- Set Skeleton name if need ---
+
+  if (Skeleton='') and (FBoneCount>0) and (Name<>'') then Skeleton:=Name+'.skeleton';
+
+  // better to convert local vertices to shared
+  // and remove VE blocks
+  // shared geometry - no submesh blocks
+
+  //--- Set proper VEList fields ---
+  //--- Set fast access pointers ---
+
   for i:=0 to FSubMeshCount-1 do
   begin
-    lsm:=FSubMeshes[i];
-    lsm^.FVertex  :=lsm^.GetBuffer(VES_POSITION,0);
-    lsm^.FNormal  :=lsm^.GetBuffer(VES_NORMAL  ,0);
-    lsm^.FBiNormal:=lsm^.GetBuffer(VES_BINORMAL,0);
+    with FSubMeshes[i]^ do
+    begin
+      for j:=0 to FVEList.Count-1 do
+      begin
+        with FVElist[j]^ do
+        begin
+          source:=j;
+          offset:=0;
+          index :=0;
+          case semantic of
+            VES_POSITION: FVertex  :=Buffer[j];
+            VES_NORMAL  : FNormal  :=Buffer[j];
+            VES_BINORMAL: FBiNormal:=Buffer[j];
+          end;
+        end;
+      end;
+    end;
+  end;
+
 // not used, coz pointer getter is fast, and indexed value can be different size
 //    lsm^.FTangent :=lsm^.GetBuffer(VES_TANGENT ,0);
-  end;
+
+  //--- Remove empty (no faces) submeshes ---
+
+  for i:=FSubMeshCount-1 downto 1 do
+    if FSubMeshes[i]^.FFaceCount=0 then DeleteSubMesh(i);
 end;
 
 function TRGMesh.ImportFromMemory(aptr:PByte; asize:integer):boolean;
@@ -95,7 +113,7 @@ begin
 
     result:=ReadMesh(aptr);
   end;
-  FixPointers();
+  PostProcess();
 
   LogLn;
   b:=CalcBounds;
@@ -136,13 +154,12 @@ begin
       BlockRead(lfile,lbuf^,lsize);
       CloseFile(lfile);
 
+      Name:=ExtractNameOnly(aFileName);
       result:=ImportFromMemory(lbuf,lsize);
       FreeMem(lbuf);
 
       if result then
       begin
-        Name:=ExtractNameOnly(aFileName);
-        
         if MeshVersion<>99 then
         begin
           AssignFile(lfile,ChangeFileExt(aFileName,'.MATERIAL'));

@@ -35,7 +35,6 @@ type
   private
     FMesh:PRGMesh;
     Name:string;
-    FOperationType:integer;
 
     //=== Geometry, can be shared ===
     FVertexCount:integer;
@@ -51,7 +50,6 @@ type
     FFaceCount  :integer;
     FMaterial   :integer;
 
-    FBoneCount      :integer;      // count of bones, idk for what
     FBoneAssignCount:integer;      // count of assignments, count of used FBones elements
     FBonesLen       :integer;      // count of FBones elements
     FBones          :PBoneVertex;
@@ -116,7 +114,6 @@ type
     property FaceCount:integer read FFaceCount;
 
     property Material:integer read FMaterial;
-    property BoneCount:integer read FBoneCount;
 //    property BonePoints[idx:integer]:PBoneVertex read GetBonePoint;
   end;
 
@@ -127,6 +124,7 @@ type
     FSubMeshCount:integer;
 
     Name:string;
+    FBoneCount:integer; // count of skeleton bones
     // Mesh version and source (Mesh/MDL) file buffer. used just while import
     FBuffer  :PByte;
     FDataSize:integer;
@@ -167,8 +165,9 @@ type
     procedure Init;
     procedure Free;
 
-    function AddSubMesh():PRGSubMesh;
-    function AddSubMesh(amesh:PRGSubMesh):integer;
+    function  AddSubMesh():PRGSubMesh;
+    function  AddSubMesh(amesh:PRGSubMesh):integer;
+    procedure DeleteSubMesh(idx:integer);
 
     function  GetMTL():string;
     function  GetMaterial ():string;
@@ -181,12 +180,14 @@ type
     procedure SaveToXML(const aFileName:String);
     procedure SaveToOBJ(aStream:TStream);
     procedure SaveToOBJ(const aFileName:String);
-    procedure WriteMDL(astream:TStream; aver:integer);
+    procedure WriteMDL (astream:TStream; aver:integer);
+    procedure WriteMesh(astream:TStream; aver:integer);
 
     property SubMeshCount:integer read GetSubMeshCount write SetSubMeshCount;
     property SubMesh[idx:integer]:PRGSubMesh read GetSubMesh write SetSubMesh;
 
     property MeshVersion:integer read FVersion;
+    property BoneCount  :integer read FBoneCount;
   end;
 
 
@@ -200,6 +201,48 @@ uses
 {$UNDEF Interface}
 
 {%REGION Support}
+
+procedure WriteText(astream:TStream; const atext:AnsiString);
+begin
+  if atext<>'' then astream.Write(atext[1],Length(atext));
+  astream.WriteByte($0A);
+end;
+
+function memReadText(var abuf:PByte):string;
+var
+  lptr:PByte;
+  lsize:integer;
+begin
+  lptr:=abuf;
+  while abuf^<>10 do inc(abuf);
+
+  lsize:=abuf-lptr;
+  if lsize=0 then
+    result:=''
+  else
+    SetString(result,PAnsiChar(lptr),lsize);
+  inc(abuf);
+end;
+
+function GetVersionText(aver:integer):AnsiString;
+var
+  i:integer;
+begin
+  for i:=0 to High(FileVersions) do
+    if FileVersions[i].ver=aver then exit(FileVersions[i].sign);
+
+  result:='';
+end;
+
+function TranslateVersion(const sign:AnsiString):integer;
+var
+  i:integer;
+begin
+  for i:=0 to High(FileVersions) do
+    if FileVersions[i].sign=sign then exit(FileVersions[i].ver);
+
+  result:=-1;
+end;
 
 function GetVESName(asemantic:integer):string;
 begin
@@ -350,6 +393,21 @@ begin
   inc(FSubMeshCount);
 end;
 
+procedure TRGMesh.DeleteSubMesh(idx:integer);
+var
+  i:integer;
+begin
+  if (idx<0) or (idx>=FSubMeshCount) then exit;
+
+  FSubMeshes[idx]^.Free;
+  FreeMem(FSubMeshes[idx]);
+  dec(FSubMeshCount);
+  if idx<>FSubMeshCount then
+    for i:=idx to FSubMeshCount-1 do FSubMeshes[i]:=FSubMeshes[i+1];
+//    move(FSubMeshes[idx+1],FSubMeshes[idx],(FSubMeshCount-idx)*SizeOf(PRGSubMesh));
+
+end;
+
 function TRGMesh.GetSubMesh(idx:integer):PRGSubMesh;
 begin
   if idx>FSubMeshCount then exit(nil);
@@ -382,16 +440,17 @@ begin
   for j:=0 to FSubMeshCount-1 do
   begin
     lsm:=FSubMeshes[j];
-//    if lsm^.FVertexCount>0 then
-    for i:=0 to lsm^.FVertexCount-1 do
-    begin
-      if lsm^.Vertex[i].X>BoundMax.X then BoundMax.X:=lsm^.Vertex[i].X;
-      if lsm^.Vertex[i].Y>BoundMax.Y then BoundMax.Y:=lsm^.Vertex[i].Y;
-      if lsm^.Vertex[i].Z>BoundMax.Z then BoundMax.Z:=lsm^.Vertex[i].Z;
-      if lsm^.Vertex[i].X<BoundMin.X then BoundMin.X:=lsm^.Vertex[i].X;
-      if lsm^.Vertex[i].Y<BoundMin.Y then BoundMin.Y:=lsm^.Vertex[i].Y;
-      if lsm^.Vertex[i].Z<BoundMin.Z then BoundMin.Z:=lsm^.Vertex[i].Z;
-    end;
+    if lsm^.Vertex<>nil then
+  //    if lsm^.FVertexCount>0 then
+      for i:=0 to lsm^.FVertexCount-1 do
+      begin
+        if lsm^.Vertex[i].X>BoundMax.X then BoundMax.X:=lsm^.Vertex[i].X;
+        if lsm^.Vertex[i].Y>BoundMax.Y then BoundMax.Y:=lsm^.Vertex[i].Y;
+        if lsm^.Vertex[i].Z>BoundMax.Z then BoundMax.Z:=lsm^.Vertex[i].Z;
+        if lsm^.Vertex[i].X<BoundMin.X then BoundMin.X:=lsm^.Vertex[i].X;
+        if lsm^.Vertex[i].Y<BoundMin.Y then BoundMin.Y:=lsm^.Vertex[i].Y;
+        if lsm^.Vertex[i].Z<BoundMin.Z then BoundMin.Z:=lsm^.Vertex[i].Z;
+      end;
   end;
 
   result:=true;
@@ -404,14 +463,14 @@ end;
 procedure TRGSubMesh.Init;
 begin
   FillChar(self,SizeOf(TRGSubMesh),0);
-
-  FOperationType:=OT_TRIANGLE_LIST;
 end;
 
 procedure TRGSubMesh.Free;
 var
   i:integer;
 begin
+  Name:='';
+
   FreeMem(FFaces);
   FreeMem(FBones);
 

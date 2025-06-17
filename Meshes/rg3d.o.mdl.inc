@@ -87,7 +87,7 @@ begin
   astream.WriteDWord(lsm^.FBoneAssignCount);
   if lsm^.FBoneAssignCount>0 then
   begin
-    astream.WriteDWord(lsm^.FBoneCount);
+    astream.WriteDWord(FBoneCount);
     astream.Write(lsm^.FBones^,lsm^.FBoneAssignCount*SizeOf(TBoneVertex));
 {
     for i:=0 to lsm^.FBoneAssignCount-1 do
@@ -112,7 +112,7 @@ begin
   astream.WriteWord(aver);
 
   astream.WriteWord(0{ORD(opt.FUseOffset)});
-  if SubMesh[0]^.FBoneCount>0 then
+  if FBoneCount>0 then
     astream.WriteWord(1{ORD(opt.FUseBones)})
   else
     astream.WriteWord(0);
@@ -199,7 +199,7 @@ begin
   if aver>=20 then
     WriteMDLType1(astream)
   else
-    WriteMDLType0(astream)
+    WriteMDLType0(astream);
 end;
 
 procedure TRGMesh.WriteMDLType0(astream:TStream);
@@ -313,10 +313,10 @@ begin
 
 //  astream.WriteDWord(0);
 
-  astream.WriteDWord(lsm^.FBoneCount);
-  if lsm^.FBoneCount>0 then
+  astream.WriteDWord(FBoneCount);
+  if FBoneCount>0 then
   begin
-    for i:=0 to lsm^.FBoneCount-1 do
+    for i:=0 to FBoneCount-1 do
       WriteText(astream,'');
 
     for i:=0 to lsm^.VertexCount-1 do
@@ -370,7 +370,7 @@ begin
 
   //===== Addition =====
 {
-  if (lsm^.FBoneCount>0) then
+  if (FBoneCount>0) then
   begin
     WriteText(astream,);
   end;

@@ -132,11 +132,13 @@ var
   lchunk:TOgreChunk;
   lpos,lFacePtr:PByte;
   ls:string;
-  i:integer;
+  i,loptype:integer;
   lbone,lvertex:integer;
   lweight:single;
   lshared,lIs32bit:boolean;
 begin
+  loptype:=OT_TRIANGLE_LIST;
+
   ls:=memReadText(aptr);
   asub^.FMaterial:=AddMaterial(ls);
   Log('materialName',ls);
@@ -178,8 +180,8 @@ begin
     case ReadChunk(aptr,lchunk) of
 
       M_SUBMESH_OPERATION: begin
-        asub^.FOperationType:=memReadWord(aptr);
-        Log('operationType',OTData[asub^.FOperationType].name);
+        loptype:=memReadWord(aptr);
+        Log('operationType',OTData[loptype].name);
       end;
 
       M_SUBMESH_BONE_ASSIGNMENT: begin
@@ -213,7 +215,7 @@ begin
 
   // Process Faces here
 
-  if asub^.FOperationType=OT_TRIANGLE_LIST then
+  if loptype=OT_TRIANGLE_LIST then
   begin
     asub^.FFaceCount:=asub^.FFaceCount div 3;
 
@@ -761,6 +763,7 @@ var
   i,lcnt:integer;
   lbone,lvertex:integer;
   lweight:single;
+//  vba:TVertexBoneAssignment;
 begin
   result:=false;
 
@@ -790,6 +793,7 @@ begin
       end;
 
       M_MESH_BONE_ASSIGNMENT: begin
+//        memReadData(aptr,vba,SizeOf(TVertexBoneAssignment));
         lvertex:=memReadDWord(aptr);
         lbone  :=memReadWord (aptr);
         lweight:=memReadFloat(aptr);
@@ -798,7 +802,7 @@ begin
         Log('boneIndex'   ,lbone);  
         Log('weight'      ,lweight);
         }
-
+//        SubMesh[0]^.AddBone(vba.vertexIndex,vba.boneIndex,vba.weight);
         SubMesh[0]^.AddBone(lvertex, lbone, lweight);
       end;
 

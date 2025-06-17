@@ -248,11 +248,7 @@ begin
   end;
 
   if Skeleton<>'' then
-    ls:=Skeleton
-  else
-    ls:=Name+'.skeleton';
-  if ls<>'' then
-    WriteLine(aStream,'  <skeletonlink name="'+ls+'" />');
+    WriteLine(aStream,'  <skeletonlink name="'+Skeleton+'" />');
 
   WriteLine(aStream,'</mesh>');
 end;
