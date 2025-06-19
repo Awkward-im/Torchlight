@@ -161,7 +161,7 @@ begin
   lp:=WriteChunk(astream,M_MESH_BOUNDS,2*SizeOf(TVector3)+SizeOf(single));
   astream.Write(BoundMin,SizeOf(TVector3));
   astream.Write(BoundMax,SizeOf(TVector3));
-  astream.WriteFloat(0); //!! radius
+  astream.WriteFloat(BoundRadius);
 
   b:=false;
   for i:=1 to SubMeshCount do

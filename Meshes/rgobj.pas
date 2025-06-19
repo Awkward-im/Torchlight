@@ -428,7 +428,7 @@ var
   lsm:PRGSubMesh;
   i,j:integer;
 begin
-  if (not force) and (BoundMin.X<>0) and (BoundMax.X<>0) then exit(false);
+  if (not force) and (BoundMin.X<>0) and (BoundMax.X<>0) and (BoundRadius<>0) then exit(false);
 
   Log('Calculate bounds');
 
@@ -454,6 +454,9 @@ begin
         if lsm^.Vertex[i].Z<BoundMin.Z then BoundMin.Z:=lsm^.Vertex[i].Z;
       end;
   end;
+
+  BoundRadius:=ABS(BoundMin.Y);
+  if BoundRadius<BoundMax.Y then BoundRadius:=BoundMax.Y;
 
   result:=true;
 end;
