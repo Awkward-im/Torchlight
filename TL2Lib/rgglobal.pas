@@ -158,6 +158,8 @@ const
 function IsExtFile (var   srcname:UnicodeString):boolean;
 function IsExtFile (var   srcname:AnsiString   ):boolean;
 function FixFileExt(const srcname:string):string;
+// don't touch abuf if can't open or size=0
+function LoadFile(const aname:AnsiString; var abuf:PByte):integer;
 
 
 {%REGION Data types}
@@ -211,6 +213,14 @@ type
 
 const
   RGIdEmpty = TRGID(-1);
+
+type
+  PIntVector3 = ^TIntVector3;
+  TIntVector3 = packed record
+    X: Int32;
+    Y: Int32;
+    Z: Int32;
+  end;
 
 type
   PVector2 = ^TVector2;
@@ -1007,6 +1017,30 @@ begin
   end;
   result:=false;
 end;
+
+{$PUSH}
+{$I-}
+function LoadFile(const aname:AnsiString; var abuf:PByte):integer;
+var
+  f:file of byte;
+begin
+  Assign(f,aname);
+  Reset(f);
+  if IOResult=0 then
+  begin
+    result:=FileSize(f);
+    if result>0 then
+    begin
+      GetMem(abuf,result+2);
+      BlockRead(f,abuf^,result);
+      Close(f);
+      abuf[result  ]:=0;
+      abuf[result+1]:=0;
+    end;
+  end;
+  result:=0;
+end;
+{$POP}
 
 function GetGameName(aver:integer):string;
 var

@@ -48,6 +48,7 @@ type
     function  ReadIdValList:TL2IDValList;
 
     // write
+    procedure WriteSizeAt (apos:cardinal); // without size itself
     procedure WriteByteAt (adata:Byte ; apos:cardinal);
     procedure WriteWordAt (adata:Word ; apos:cardinal);
     procedure WriteDWordAt(adata:DWord; apos:cardinal);
@@ -315,6 +316,16 @@ begin
 end;
 
 //----- Write data -----
+
+procedure TTL2Stream.WriteSizeAt(apos:cardinal);
+var
+  lpos:cardinal;
+begin
+  lpos:=Position;
+  Position:=apos;
+  WriteDWord(lpos-apos-SizeOf(DWord));
+  Position:=lpos;
+end;
 
 procedure TTL2Stream.WriteByteAt(adata:Byte; apos:cardinal);
 var

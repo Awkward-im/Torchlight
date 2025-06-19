@@ -55,13 +55,12 @@ begin
 
   if (Skeleton='') and (FBoneCount>0) and (Name<>'') then Skeleton:=Name+'.skeleton';
 
-  // better to convert local vertices to shared
-  // and remove VE blocks
-  // shared geometry - no submesh blocks
+  ConvertToShared();
 
   //--- Set proper VEList fields ---
   //--- Set fast access pointers ---
 
+  // really, shared geometry - no submesh blocks
   for i:=0 to FSubMeshCount-1 do
   begin
     with FSubMeshes[i]^ do
@@ -73,10 +72,10 @@ begin
           source:=j;
           offset:=0;
           index :=0;
-          case semantic of
-            VES_POSITION: FVertex  :=Buffer[j];
-            VES_NORMAL  : FNormal  :=Buffer[j];
-            VES_BINORMAL: FBiNormal:=Buffer[j];
+          case FVElist[j]^.semantic of
+            VES_POSITION: FVertex  :=PVector3(FVElist.Buffer[j]);
+            VES_NORMAL  : FNormal  :=PVector3(FVElist.Buffer[j]);
+            VES_BINORMAL: FBiNormal:=PVector3(FVElist.Buffer[j]);
           end;
         end;
       end;
@@ -90,6 +89,8 @@ begin
 
   for i:=FSubMeshCount-1 downto 1 do
     if FSubMeshes[i]^.FFaceCount=0 then DeleteSubMesh(i);
+
+  //--- ??Remove unused materials?? ---
 end;
 
 function TRGMesh.ImportFromMemory(aptr:PByte; asize:integer):boolean;

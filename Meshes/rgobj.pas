@@ -56,10 +56,11 @@ type
 
 //    function GetBlockElementType(atype:integer; aidx:integer=0):integer;
     function GetVertexCount:integer;
-
+{
     procedure SetBuffer(atype:integer; aptr:pointer);
     procedure SetBuffer(atype:integer; aidx:integer; aptr:pointer);
     function  GetBuffer(atype:integer):pointer;
+}
     function  GetBuffer(atype:integer; aidx:integer):Pointer;
 
     procedure GetVector(aidx:integer; num:integer; atype:integer; var aresult:TVector4);
@@ -87,7 +88,7 @@ type
 
     property VertexCount:integer read GetVertexCount write FVertexCount;
  
-    property Buffer[atype:integer; idx:integer]:pointer read GetBuffer write SetBuffer;
+ //   property Buffer[atype:integer; idx:integer]:pointer read GetBuffer write SetBuffer;
 {
   Vertex   - geometry, single  , Vector3
   Normal   - geometry, single  , Vector3
@@ -152,6 +153,7 @@ type
     procedure WriteHobMaterial(astream:TStream);
 
     function CalcBounds(force:boolean=false):boolean;
+    procedure ConvertToShared();
   
   public
     FTextures : array of string;
@@ -456,6 +458,129 @@ begin
   result:=true;
 end;
 
+procedure TRGMesh.ConvertToShared();
+var
+  lshared,lsm:PRGSubMesh;
+  lptr:PByte;
+  lvoffset,lvcnt,lcnt:integer;
+  lsize,i,j,k:integer;
+begin
+  //--- Get amount of adding vertices
+  lvcnt:=0;
+  lcnt:=0;
+  for i:=1 to FSubMeshCount-1 do
+  begin
+    inc(lvcnt,FSubMeshes[i]^.FVertexCount);
+    inc(lcnt ,FSubMeshes[i]^.FBoneAssignCount);
+  end;
+  if lvcnt=0 then exit;
+
+  //--- expand shared buffers
+  lshared:=FSubMeshes[0];
+
+  if lcnt>0 then
+    lshared^.SetBonesCapacity(lshared^.FBoneAssignCount+lcnt);
+
+  for i:=0 to lshared^.FVEList.Count-1 do
+  begin
+    // best way is delete/don't assign unused blocks
+    lptr:=lshared^.FVEList.Buffer[i];
+    ReallocMem(lptr,
+              (lshared^.FVertexCount+lvcnt)*
+               lshared^.FVEList.Size[i]);
+    lshared^.FVEList.Buffer[i]:=lptr;
+  end;
+
+  //-- every submesh
+  lvoffset:=lshared^.FVertexCount;
+  for i:=1 to FSubMeshCount-1 do
+  begin
+    lsm:=SubMesh[i];
+    if lsm^.FVertexCount=0 then continue;
+
+    lcnt:=-1; // texture block counter
+    //--- every block
+    for j:=0 to lsm^.FVEList.Count-1 do
+    begin
+      if lsm^.FVEList.Buffer[j]=nil then continue;
+
+      //--- Check for multiply texture blocks (ignore multiply colors atm)
+      if lsm^.FVEList.FVEList[j].semantic=VES_TEXTURE_COORDINATES then
+      begin
+        inc(lcnt);
+        k:=lshared^.FVEList.FindType(lsm^.FVEList.FVEList[j].semantic,lcnt);
+      end
+      else
+        k:=lshared^.FVEList.FindType(lsm^.FVEList.FVEList[j].semantic);
+
+      //--- No shared block for this type, need to add
+      if k<0 then
+      begin
+        // Add block
+        k:=lshared^.FVEList.Add(
+           lshared^.FVEList.Count,
+           lsm^.FVEList.FVEList[j]._type,
+           lsm^.FVEList.FVEList[j].semantic,
+           0,0);
+        // Allocate buffer
+        GetMem(lptr,
+           (lshared^.FVertexCount+lvcnt)*
+            lshared^.FVEList.Size[j]);
+        lshared^.FVEList.Buffer[k]:=lptr;
+        // Set pointers
+        case lshared^.FVElist[k]^.semantic of
+          VES_POSITION: lshared^.FVertex  :=PVector3(lshared^.FVElist.Buffer[k]);
+          VES_NORMAL  : lshared^.FNormal  :=PVector3(lshared^.FVElist.Buffer[k]);
+          VES_BINORMAL: lshared^.FBiNormal:=PVector3(lshared^.FVElist.Buffer[k]);
+        end;
+      end;
+
+      //--- Copy submesh data to shared (if data type the same)
+      if k>=0 then
+      begin
+        lsize  :=    lsm^.FVEList.Size[j];
+        if lsize>lshared^.FVEList.Size[k] then
+          lsize:=lshared^.FVEList.Size[k];
+
+        move( lsm^.FVEList.Buffer[j]^,
+          lshared^.FVEList.Buffer[k][
+          lvoffset*lshared^.FVEList.Size[k]],
+              lsm^.FVertexCount*lsize);
+      end;
+    end;
+
+    //--- move bones to shared
+    for j:=0 to lsm^.FBoneAssignCount-1 do
+    begin
+      // let's think what vertexIndex is submesh local
+      with lsm^.FBones[j] do
+        lshared^.AddBone(vertexIndex+lvoffset,boneIndex,weight);
+    end;
+    FreeMem(lsm^.FBones);
+    lsm^.FBonesLen:=0;
+    lsm^.FBones:=nil;
+    lsm^.FBoneAssignCount:=0;
+
+    //--- Set new faces vertex index (add offset in shared buffer)
+    for k:=0 to lsm^.FaceCount-1 do
+    begin
+      with lsm^.FFaces[k] do
+      begin
+        inc(X,lvoffset);
+        inc(Y,lvoffset);
+        inc(Z,lvoffset);
+      end;
+    end;
+
+    inc(lvoffset,lsm^.FVertexCount);
+
+    //--- Delete unused blocks
+    for j:=lsm^.FVEList.Count-1 downto 0 do
+      lsm^.FVEList.Delete(j);
+    lsm^.FVertexCount:=0;
+  end;
+  inc(lshared^.FVertexCount,lvcnt);
+end;
 {%ENDREGION RGMesh}
 
 {%REGION RGSubMesh}
@@ -483,7 +608,7 @@ begin
   result:=FVertexCount;
   if result=0 then result:=FMesh^.SubMesh[0]^.FVertexCount;
 end;
-
+{
 procedure TRGSubMesh.SetBuffer(atype:integer; aptr:pointer);
 begin
   SetBuffer(atype, 0, aptr);
@@ -505,7 +630,7 @@ function TRGSubMesh.GetBuffer(atype:integer):pointer;
 begin
   result:=GetBuffer(atype, 0);
 end;
-
+}
 function TRGSubMesh.GetBuffer(atype:integer; aidx:integer):pointer;
 var
   lsm:PRGSubMesh;

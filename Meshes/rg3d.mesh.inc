@@ -819,7 +819,8 @@ begin
       end;
 
       M_SUBMESH_NAME_TABLE: begin
-        ReadSubmeshNameTable(aptr,lSubMeshNames);
+        if lchunk._len>6 then
+          ReadSubmeshNameTable(aptr,lSubMeshNames);
       end;
 
       //----- Not necessary -----
