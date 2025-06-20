@@ -29,7 +29,7 @@ type
     FGLTextures:TIntegerDynArray;
 
     Tex1:longword;
-    FDoRotate:boolean;
+    FDoRotateX,FDoRotateY:boolean;
     wx,wy,wz:single;
     tx,ty,tz:single;
     rx,ry,rz:single;
@@ -76,19 +76,27 @@ end;
 
 procedure TForm1.GLBoxClick(Sender: TObject);
 begin
-  FDoRotate:=not FDoRotate;
+  FDoRotateY:=not FDoRotateY;
 end;
 
 procedure TForm1.GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_SPACE: FDoRotate:=not FDoRotate;
-    VK_UP   : ty:=ty+0.1;
-    VK_DOWN : ty:=ty-0.1;
-    VK_LEFT : tx:=tx-0.1;
-    VK_RIGHT: tx:=tx+0.1;
-    VK_PRIOR: if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
-    VK_NEXT : if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
+    VK_ESCAPE: begin
+      FDoRotateX:=false;
+      FDoRotateY:=false;
+      rx:=0;
+      ry:=0;
+      rz:=0;
+    end;
+    VK_SPACE : FDoRotateY:=not FDoRotateY;
+    VK_RETURN: FDoRotateX:=not FDoRotateX;
+    VK_UP    : ty:=ty+0.1;
+    VK_DOWN  : ty:=ty-0.1;
+    VK_LEFT  : tx:=tx-0.1;
+    VK_RIGHT : tx:=tx+0.1;
+    VK_PRIOR : if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
+    VK_NEXT  : if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
   end;
 end;
 
@@ -160,16 +168,14 @@ glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_S
 }
     glTranslatef(tx, ty, tz);
 
-//    glRotatef(rx,1.0,0.0,0.0);
+    glRotatef(rx,1.0,0.0,0.0);
     glRotatef(ry,0.0,1.0,0.0);
 //    glRotatef(rz,0.0,0.0,1.0);
-    if FDoRotate then
-    begin
-      Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
-      rx += 5.15 * Speed;
-      ry += 5.15 * Speed;
-      rz += 20.0 * Speed;
-    end;
+
+    Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
+    if FDoRotateX then rx:=rx+5.15*Speed;
+    if FDoRotateY then ry:=ry+5.15*Speed;
+//      rz += 20.0 * Speed;
 
 //    glBindTexture(GL_TEXTURE_2D, Tex1);
     glCallList(FMeshList);
@@ -326,7 +332,8 @@ var
   OpenDialog:TOpenDialog;
   lname:AnsiString;
 begin
-  FDoRotate:=true;
+  FDoRotateX:=false;
+  FDoRotateY:=true;
   Tex1:=0;
 
   FMeshList:=0;
