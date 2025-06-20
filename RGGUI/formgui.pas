@@ -254,6 +254,7 @@ type
     FMeshList:integer;
     FMesh:TRGMesh;
     FGLTextures:TIntegerDynArray;
+    fdist   :single;
     tx,ty,tz:single;
     rx,ry,rz:single;
 
@@ -333,6 +334,7 @@ implementation
 uses
   LCLIntf,
   LCLType,
+//  SynEditHighlighterFoldBase,
   IntfGraphics,
   GL, GLU,
   inifiles,
@@ -1603,7 +1605,7 @@ var
   ls: AnsiString;
 begin
   // #meshes, have skeleton
-  if FMesh.SubMesh[0]^.BoneCount>0 then
+  if FMesh.BoneCount>0 then
     ls:='+bones'
   else
     ls:='-bones';
@@ -1782,22 +1784,22 @@ begin
     glBegin(GL_TRIANGLES);
 
     lp:=lsm^.Face;
-    lv:=lsm^.Vertex;
-    ln:=lsm^.Normal;
-    lt:=lsm^.Buffer[VES_TEXTURE_COORDINATES,0];
+    lv:=lsm^.Vertices[VES_POSITION];
+    ln:=lsm^.Vertices[VES_NORMAL];
+    lt:=lsm^.Vertices[VES_TEXTURE_COORDINATES,0];
     for i:=0 to lsm^.FaceCount-1 do
     begin
-      glTexCoord2fv(@lt[lp[i].X]);
-      glNormal3fv  (@ln[lp[i].X]);
-      glVertex3fv  (@lv[lp[i].X]);
+      if lt<>nil then glTexCoord2fv(@lt[lp[i].X]);
+      glNormal3fv(@ln[lp[i].X]);
+      glVertex3fv(@lv[lp[i].X]);
 
-      glTexCoord2fv(@lt[lp[i].Y]);
-      glNormal3fv  (@ln[lp[i].Y]);
-      glVertex3fv  (@lv[lp[i].Y]);
+      if lt<>nil then glTexCoord2fv(@lt[lp[i].Y]);
+      glNormal3fv(@ln[lp[i].Y]);
+      glVertex3fv(@lv[lp[i].Y]);
 
-      glTexCoord2fv(@lt[lp[i].Z]);
-      glNormal3fv  (@ln[lp[i].Z]);
-      glVertex3fv  (@lv[lp[i].Z]);
+      if lt<>nil then glTexCoord2fv(@lt[lp[i].Z]);
+      glNormal3fv(@ln[lp[i].Z]);
+      glVertex3fv(@lv[lp[i].Z]);
     end;
 
     glEnd;
@@ -1811,39 +1813,19 @@ var
 //  i:integer;
 //  lsm:PRGSubMesh;
   Speed: Double;
-  wx,wy,wz:single;
+//  wx,wy,wz:single;
 begin
   glClearColor(0.27, 0.53, 0.71, 1.0); // Задаем синий фон
 
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
-(*
-  if FMeshList=0 then
-  begin
-    CreateMeshList();
-{
-    glEnable(GL_DEPTH_TEST);
-
-    glEnable(GL_LIGHTING);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
-    glEnable(GL_LIGHT0);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity;
-    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
-}
-  end;
-*)
   if FMeshList<>0 then
   begin
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity;
-    gluPerspective(45.0, double(GLBox.width) / GLBox.height, 0.1, 200.0);
+    gluPerspective(45.0, double(GLBox.width) / GLBox.height, 0.1, fdist);
     //    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
-    wx:=  FMesh.BoundMax.X-FMesh.BoundMin.X;
-    wy:=  FMesh.BoundMax.Y-FMesh.BoundMin.Y;
-    wz:=  FMesh.BoundMax.Z-FMesh.BoundMin.Z;
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity;
@@ -1858,26 +1840,12 @@ begin
     begin
       Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
 
-      rx += 5.15 * Speed;
-      ry += 5.15 * Speed;
-      rz += 20.0 * Speed;
+      rx:=rx+5.15*Speed;
+      ry:=ry+5.15*Speed;
+      rz:=rz+20.0*Speed;
     end;
 
     glCallList(FMeshList);
-{
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    for i:=1 to FMesh.SubMeshCount do
-    begin
-      lsm:=FMesh.SubMesh[i];
-      glVertexPointer(3, GL_FLOAT , 0, lsm^.Vertex);
-      glNormalPointer(   GL_FLOAT , 0, lsm^.Normal);
-      glDrawElements (GL_TRIANGLES, lsm^.FaceCount*3, GL_UNSIGNED_INT, lsm^.Face);
-    end;
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-}
-
   end;
 
   GLbox.SwapBuffers;
@@ -1922,22 +1890,25 @@ begin
     end;
   end;
 
-  FDoRotate:=false;
   CreateMeshList();
 
-  if FMesh.BoundMin.Z<6.0 then
-    tz:=FMesh.BoundMin.Z
-  else
-    tz:=-6.0;
+  FDoRotate:=false;
+  rx:=0;
+  ry:=0;
+  rz:=0;
+
+  wx:=FMesh.BoundMax.X-FMesh.BoundMin.X;
+  wy:=FMesh.BoundMax.Y-FMesh.BoundMin.Y;
+  wz:=FMesh.BoundMax.Z-FMesh.BoundMin.Z;
+  if wx<wy then wx:=wy;
 
   tx:=-(FMesh.BoundMax.X+FMesh.BoundMin.X)/2;
   ty:=-(FMesh.BoundMax.Y+FMesh.BoundMin.Y)/2;
-  wx:=  FMesh.BoundMax.X-FMesh.BoundMin.X;
-  wy:=  FMesh.BoundMax.Y-FMesh.BoundMin.Y;
-  wz:=  FMesh.BoundMax.Z-FMesh.BoundMin.Z;
-  if wy<wx then wy:=wx;
-  tz:=-(wz+wy);
+  tz:=-(wz+wx);
   if tz<-200 then tz:=-200;
+
+  fdist:=-(wz+wx)*2;
+  if fdist<200 then fdist:=200;
 
   GLBox.Visible:=true;
 
@@ -1946,10 +1917,6 @@ begin
   glEnable(GL_LIGHTING);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
   glEnable(GL_LIGHT0);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity;
-  glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
 
   Application.AddOnIdleHandler(@OnGLIdle);
 
@@ -2005,12 +1972,17 @@ var
   pc :PWideChar;
   lpc:PAnsiChar;
   ltext:string;
-  lsize:integer;
+  lsize,i:integer;
 begin
   if FUData=nil then exit;
 
 //!!    pnlEditButtons.Visible:=true;
   SynEdit.Highlighter:=SynTSyn;
+{
+  for i:=0 to SynTSyn.FoldConfigCount-1 do
+    SynTSyn.FoldConfig[i].Modes:=SynTSyn.FoldConfig[i].Modes+[fmOutline];
+ }
+
   SynEdit.Visible:=true;
 
   lsize:=FUSize;

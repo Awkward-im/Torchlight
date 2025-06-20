@@ -54,13 +54,12 @@ type
     FBonesLen       :integer;      // count of FBones elements
     FBones          :PBoneVertex;
 
-//    function GetBlockElementType(atype:integer; aidx:integer=0):integer;
     function GetVertexCount:integer;
-{
+
     procedure SetBuffer(atype:integer; aptr:pointer);
     procedure SetBuffer(atype:integer; aidx:integer; aptr:pointer);
     function  GetBuffer(atype:integer):pointer;
-}
+
     function  GetBuffer(atype:integer; aidx:integer):Pointer;
 
     procedure GetVector(aidx:integer; num:integer; atype:integer; var aresult:TVector4);
@@ -88,7 +87,7 @@ type
 
     property VertexCount:integer read GetVertexCount write FVertexCount;
  
- //   property Buffer[atype:integer; idx:integer]:pointer read GetBuffer write SetBuffer;
+    property Vertices[atype:integer; idx:integer]:pointer read GetBuffer write SetBuffer;
 {
   Vertex   - geometry, single  , Vector3
   Normal   - geometry, single  , Vector3
@@ -102,10 +101,10 @@ type
     property Normal  [i:integer]:TVector4 index VES_NORMAL   read GetData;
     property BiNormal[i:integer]:TVector4 index VES_BINORMAL read GetData;
 }
-    property Vertex  :PVector3 read FVertex;
-    property Normal  :PVector3 read FNormal;
+//    property Vertex  :PVector3 read FVertex;
+//    property Normal  :PVector3 read FNormal;
     // next two are not necessary
-    property BiNormal:PVector3 read FBiNormal;
+//    property BiNormal:PVector3 read FBiNormal;
     property Tangent [i:integer]:TVector4 index VES_TANGENT  read GetData;
 
     property Texture [idx:integer; num:integer]:TVector4 read GetTexture;
@@ -426,6 +425,7 @@ end;
 function TRGMesh.CalcBounds(force:boolean=false):boolean;
 var
   lsm:PRGSubMesh;
+  vp:PVector3;
   i,j:integer;
 begin
   if (not force) and (BoundMin.X<>0) and (BoundMax.X<>0) and (BoundRadius<>0) then exit(false);
@@ -442,17 +442,22 @@ begin
   for j:=0 to FSubMeshCount-1 do
   begin
     lsm:=FSubMeshes[j];
-    if lsm^.Vertex<>nil then
-  //    if lsm^.FVertexCount>0 then
+    if lsm^.FVertexCount>0 then
+    begin
+      vp:=lsm^.Vertices[VES_POSITION];
       for i:=0 to lsm^.FVertexCount-1 do
       begin
-        if lsm^.Vertex[i].X>BoundMax.X then BoundMax.X:=lsm^.Vertex[i].X;
-        if lsm^.Vertex[i].Y>BoundMax.Y then BoundMax.Y:=lsm^.Vertex[i].Y;
-        if lsm^.Vertex[i].Z>BoundMax.Z then BoundMax.Z:=lsm^.Vertex[i].Z;
-        if lsm^.Vertex[i].X<BoundMin.X then BoundMin.X:=lsm^.Vertex[i].X;
-        if lsm^.Vertex[i].Y<BoundMin.Y then BoundMin.Y:=lsm^.Vertex[i].Y;
-        if lsm^.Vertex[i].Z<BoundMin.Z then BoundMin.Z:=lsm^.Vertex[i].Z;
+        with vp[i] do
+        begin
+          if X>BoundMax.X then BoundMax.X:=X;
+          if Y>BoundMax.Y then BoundMax.Y:=Y;
+          if Z>BoundMax.Z then BoundMax.Z:=Z;
+          if X<BoundMin.X then BoundMin.X:=X;
+          if Y<BoundMin.Y then BoundMin.Y:=Y;
+          if Z<BoundMin.Z then BoundMin.Z:=Z;
+        end;
       end;
+    end;
   end;
 
   BoundRadius:=ABS(BoundMin.Y);
@@ -609,9 +614,9 @@ end;
 function TRGSubMesh.GetVertexCount:integer;
 begin
   result:=FVertexCount;
-  if result=0 then result:=FMesh^.SubMesh[0]^.FVertexCount;
+//  if result=0 then result:=FMesh^.SubMesh[0]^.FVertexCount;
 end;
-{
+
 procedure TRGSubMesh.SetBuffer(atype:integer; aptr:pointer);
 begin
   SetBuffer(atype, 0, aptr);
@@ -626,14 +631,17 @@ begin
 
   i:=FVEList.FindType(atype,aidx);
   if i>=0 then
+  begin
+    FreeMem(FVEList.FBuffers[i]);
     FVEList.FBuffers[i]:=aptr;
+  end;
 end;
 
 function TRGSubMesh.GetBuffer(atype:integer):pointer;
 begin
   result:=GetBuffer(atype, 0);
 end;
-}
+
 function TRGSubMesh.GetBuffer(atype:integer; aidx:integer):pointer;
 var
   lsm:PRGSubMesh;
@@ -648,9 +656,7 @@ begin
   if i>=0 then
   begin
     result:=lsm^.FVEList.FBuffers[i];
-
-    if (result=nil) and (atype<>VES_POSITION) then
-      result:=GetBuffer(VES_POSITION,0);
+//    if (result=nil) and (atype<>VES_POSITION) then result:=GetBuffer(VES_POSITION,0);
   end
   else
     result:=nil;
@@ -734,17 +740,7 @@ function TRGSubMesh.GetFace():pointer;
 begin
   result:=FFaces;
 end;
-{
-function TRGSubMesh.GetBonePoint(idx:integer):PBoneVertex;
-begin
-  result:=nil;
-end;
 
-function TRGSubMesh.GetBonePoint:pointer;
-begin
-  result:=nil;
-end;
-}
 procedure TRGSubMesh.SetBonesCapacity(avalue:integer);
 begin
   if FBonesLen<avalue then
@@ -773,6 +769,17 @@ begin
   
   inc(FBoneAssignCount);
 end;
+{
+function TRGSubMesh.GetBonePoint(idx:integer):PBoneVertex;
+begin
+  result:=nil;
+end;
+
+function TRGSubMesh.GetBonePoint:pointer;
+begin
+  result:=nil;
+end;
+}
 {
 function TRGSubMesh.IndexedToDirect():boolean;
 begin

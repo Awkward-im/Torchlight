@@ -229,9 +229,9 @@ begin
     glBegin(GL_TRIANGLES);
 
     lp:=lsm^.Face;
-    lv:=lsm^.Vertex;
-    ln:=lsm^.Normal;
-    lt:=lsm^.Buffer[VES_TEXTURE_COORDINATES,ltex];
+    lv:=lsm^.Vertices[VES_POSITION];//lsm^.Vertex;
+    ln:=lsm^.Vertices[VES_NORMAL];  //lsm^.Normal;
+    lt:=lsm^.Vertices[VES_TEXTURE_COORDINATES,ltex];
     for i:=0 to lsm^.FaceCount-1 do
     begin
       if lt<>nil then glTexCoord2fv(@lt[lp[i].X]);

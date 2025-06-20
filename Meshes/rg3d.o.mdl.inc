@@ -227,7 +227,7 @@ begin
   // vertices
   astream.WriteDWord(lsm^.VertexCount);
 
-  lv:=lsm^.Vertex;
+  lv:=lsm^.Vertices[VES_POSITION];
   for i:=0 to lsm^.VertexCount-1 do
   begin
     astream.WriteFloat(-lv^.X);
@@ -296,7 +296,7 @@ begin
   // vertices
   astream.WriteDWord(lsm^.VertexCount);
 
-  lv:=lsm^.Normal;
+  lv:=lsm^.Vertices[VES_NORMAL];
   for i:=0 to lsm^.VertexCount-1 do
   begin
     astream.WriteFloat(-lv^.X);
