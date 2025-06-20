@@ -250,7 +250,7 @@ type
     ctrl:TRGController;
 
     GLBox:TOpenGLControl;
-    FDoRotate:boolean;
+    FDoRotateX,FDoRotateY:boolean;
     FMeshList:integer;
     FMesh:TRGMesh;
     FGLTextures:TIntegerDynArray;
@@ -1637,19 +1637,27 @@ end;
 
 procedure TRGGUIForm.GLBoxClick(Sender: TObject);
 begin
-  FDoRotate:=not FDoRotate;
+  FDoRotateY:=not FDoRotateY;
 end;
 
 procedure TRGGUIForm.GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_SPACE: FDoRotate:=not FDoRotate;
-    VK_UP   : ty:=ty+0.1;
-    VK_DOWN : ty:=ty-0.1;
-    VK_LEFT : tx:=tx-0.1;
-    VK_RIGHT: tx:=tx+0.1;
-    VK_PRIOR: if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
-    VK_NEXT : if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
+    VK_ESCAPE: begin
+      FDoRotateX:=false;
+      FDoRotateY:=false;
+      rx:=0;
+      ry:=0;
+      rz:=0;
+    end;
+    VK_SPACE : FDoRotateY:=not FDoRotateY;
+    VK_RETURN: FDoRotateX:=not FDoRotateX;
+    VK_UP    : ty:=ty+0.1;
+    VK_DOWN  : ty:=ty-0.1;
+    VK_LEFT  : tx:=tx-0.1;
+    VK_RIGHT : tx:=tx+0.1;
+    VK_PRIOR : if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
+    VK_NEXT  : if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
   else
     exit;
   end;
@@ -1833,17 +1841,13 @@ begin
 //    if (wx>200) or (wy>200) or (wz>200) then glScalef(0.1, 0.1, 0.1);
     glTranslatef(tx, ty, tz);
 
-//    glRotatef(rx,1.0,0.0,0.0);
+    glRotatef(rx,1.0,0.0,0.0);
     glRotatef(ry,0.0,1.0,0.0);
 //    glRotatef(rz,0.0,0.0,1.0);
-    if FDoRotate then
-    begin
-      Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
-
-      rx:=rx+5.15*Speed;
-      ry:=ry+5.15*Speed;
-      rz:=rz+20.0*Speed;
-    end;
+    Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
+    if FDoRotateX then rx:=rx+5.15*Speed;
+    if FDoRotateY then ry:=ry+5.15*Speed;
+//      rz:=rz+20.0*Speed;
 
     glCallList(FMeshList);
   end;
@@ -1892,7 +1896,8 @@ begin
 
   CreateMeshList();
 
-  FDoRotate:=false;
+  FDoRotateX:=false;
+  FDoRotateY:=false;
   rx:=0;
   ry:=0;
   rz:=0;
