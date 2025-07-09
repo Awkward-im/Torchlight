@@ -1,4 +1,5 @@
 {TODO: Check AddOriginal logic (when not unique especially)}
+{TODO: GetSimilar as mod depended}
 {TODO: GetLineCount and LoadModData: -1 - all; vanilla - (mod=0) and noref}
 {TODO: variant CopyToBase just for translation (not src or refs)}
 {TODO: AddTranslation: overwrite all, overwrite partial by full, skip. Or use SetTRanslation?}
@@ -11,7 +12,6 @@ interface
 uses
   logging,
   rgglobal,
-//  tl2dataunit,
   sqlite3dyn;
 
 const
@@ -20,7 +20,7 @@ const
 var
   tldb:pointer;
 var
-  // 0 must be Vanilla + unreferred; -1 mean all; -2 mean unreferred
+  // 0 = Vanilla + unreferred; -1 = all; -2 = unreferred; -3 = deleted
   CurMod :Int64;
   CurLang:AnsiString;
 var
@@ -77,6 +77,7 @@ function LoadFromBase(var   data:TTL2Translation;
 function GetUnrefLines():integer;
 
 // aid is source index
+function DeleteOriginal(aid:integer):boolean;
 function GetOriginal   (aid:integer):AnsiString;
 function GetText       (aid:integer; const atable:AnsiString; var asrc,adst:AnsiString):boolean;
 function GetTranslation(aid:integer; const atable:AnsiString; var      adst:Ansistring):boolean;
@@ -120,7 +121,6 @@ implementation
 uses
   SysUtils,
   iso639,
-//  tl2refunit,
   tl2text,
   tlscan,
   rgdb;
@@ -128,7 +128,7 @@ uses
 var
   BaseInMemory:boolean;
 
-{REGION Mod}
+{%REGION Mod}
 function AddToModList(aid:Int64; const atitle:AnsiString):integer;
 var
   vm:pointer;
@@ -234,6 +234,7 @@ var
   lsrc:AnsiString;
 begin
        if amod=-2 then result:=GetUnrefLines()
+  else if amod=-3 then result:=ReturnInt(tldb,'SELECT count(1) FROM strings WHERE deleted=1')
   else if amod=-1 then result:=ReturnInt(tldb,'SELECT count(1) FROM strings')
   else
   begin
@@ -304,6 +305,7 @@ function RemakeFilter():boolean;
 var
   vm: Pointer;
   lSQL,lsrc,lid,ls,lsold:AnsiString;
+  ldate:double;
   i,flid,lsrcid:integer;
 begin
   result:=true;
@@ -349,6 +351,16 @@ begin
     end;
     sqlite3_finalize(vm);
   end;
+
+  ldate:=Now();
+  lsold:=ReturnText(tldb,'SELECT value FROM settings WHERE setting=''filter''');
+  ls   :=GetFilterWords();
+  if ls<>lsold then
+  begin
+    ExecuteDirect(tldb,'UPDATE settings SET value=?1 WHERE setting=''filter'''      ,[ls]);
+    ExecuteDirect(tldb,'UPDATE settings SET value=?1 WHERE setting=''filterchange''',[ldate]);
+  end;
+  ExecuteDirect(tldb,'UPDATE settings SET value=?1 WHERE setting=''filtertime'''  ,[ldate]);
 end;
 
 function GetFilterId(aid:integer):integer;
@@ -439,13 +451,19 @@ var
 begin
   result:=0;
   Str(aid,lid);
-  Str(CurMod,lmod);
+  if CurMod>=0 then
+  begin
+    Str(CurMod,lmod);
+    lmod:=' AND modid='+lmod;
+  end
+  else
+    lmod:='';
 
-  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM ref WHERE (srcid='+lid+') AND (modid='+lmod+')');
+  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM ref WHERE srcid='+lid+lmod);
   if lcnt>0 then
   begin
     SetLength(arr,lcnt);
-    lSQL:='SELECT id FROM ref WHERE (srcid='+lid+') AND (modid='+lmod+')';
+    lSQL:='SELECT id FROM ref WHERE srcid='+lid+lmod;
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -473,23 +491,20 @@ begin
 end;
 
 function AddOriginal(const asrc:AnsiString; withcheck:boolean=false):integer;
-{$IFDEF UseUniqueText}
 var
   vm:pointer;
   pc:PAnsiChar;
   lSQL:AnsiString;
-{$ENDIF}
 begin
+  result:=-1;
 {$IFNDEF UseUniqueText}
   if withcheck then
-    result:=FindOriginal(asrc) // ReturnInt(tldb,'SELECT id FROM strings WHERE (src=?1)',asrc)
-  else
-    result:=-1;
+    result:=FindOriginal(asrc);
+//    result:=ReturnInt(tldb,'SELECT id FROM strings WHERE (src=?1)',asrc);
 
   if result<0 then
-{$ELSE}
+{$ENDIF}
   begin
-    result:=-1;
     lSQL:='INSERT INTO strings (src) VALUES (?1) RETURNING id;';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
@@ -507,8 +522,16 @@ begin
       sqlite3_finalize(vm);
     end;
   end;
+end;
 
-{$ENDIF}
+function DeleteOriginal(aid:integer):boolean;
+var
+  lSQL:AnsiString;
+begin
+  lSQL:='UPDATE strings SET deleted=1 WHERE id='+IntToStr(aid);
+  result:=ExecuteDirect(tldb,lSQL);
+  if result then
+    SQLog.Add(lSQL);
 end;
 
 function CheckName(const atable:AnsiString):AnsiString;
@@ -717,15 +740,22 @@ var
 begin
   result:=0;
 
-  Str(amodid,lmod);
-  lcnt:=ReturnInt(tldb,'SELECT count(DISTINCT dir) FROM ref WHERE modid='+lmod);
+  if amodid>=0 then
+  begin
+    Str(amodid,lmod);
+    lmod:=' WHERE ref.modid='+lmod;
+  end
+  else
+    lmod:='';
+
+  lcnt:=ReturnInt(tldb,'SELECT count(DISTINCT dir) FROM ref'+lmod);
   if lcnt>0 then
   begin
     SetLength(alist,lcnt);
 
 //    ls:='SELECT value FROM dicdir WHERE id IN (SELECT DISTINCT dir FROM ref WHERE modid='+ls+')';
-    ls:='SELECT DISTINCT value FROM dicdir INNER JOIN ref ON ref.dir=dicdir.id WHERE ref.modid='+lmod;
 //    ls:='SELECT DISTINCT value FROM dicdir WHERE id IN (SELECT dir FROM ref WHERE modid='+lmod+')';
+    ls:='SELECT DISTINCT value FROM dicdir INNER JOIN ref ON ref.dir=dicdir.id'+lmod;
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -745,9 +775,15 @@ begin
 //  if (TRCache[aidx].flags and (rfIsManyRefs or rfIsNoRef))<>0 then exit(0);
 
   Str(aid,lid);
-  Str(CurMod,lmod);
+  if CurMod>=0 then
+  begin
+    Str(CurMod,lmod);
+    lmod:=' AND modid='+lmod
+  end
+  else
+    lmod:='';
 
-  result:=ReturnInt(tldb,'SELECT id FROM ref WHERE modid='+lmod+' AND srcid='+lid);
+  result:=ReturnInt(tldb,'SELECT id FROM ref WHERE srcid='+lid+lmod);
 end;
 
 function GetLineRefCount(aid:integer):integer;
@@ -757,9 +793,15 @@ begin
 //  if (TRCache[aidx].flags and (rfIsNoRef))<>0 then exit(0);
 
   Str(aid,lid);
-  Str(CurMod,lmod);
+  if CurMod>=0 then
+  begin
+    Str(CurMod,lmod);
+    lmod:=' AND modid='+lmod;
+  end
+  else
+    lmod:='';
 
-  result:=ReturnInt(tldb,'SELECT count(1) FROM ref WHERE modid='+lmod+' AND srcid='+lid);
+  result:=ReturnInt(tldb,'SELECT count(1) FROM ref WHERE srcid='+lid+lmod);
 end;
 
 function GetRef(aid:integer;
@@ -991,14 +1033,32 @@ end;
 
 function CreateTables():boolean;
 begin
+{
+  filter       text
+  filtertime   date of last recalc
+  filterchange date of text change
+  lang_*       text language full name
+}
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE settings ('+
+      '  setting TEXT,'+
+      '  value   TEXT);');
+  if result then
+  begin
+    ExecuteDirect(tldb,'insert into settings (setting,value) Values (''filter'',?1)',[GetFilterWords()]);
+    ExecuteDirect(tldb,'insert into settings (setting) Values (''filterchange'',?1)',[Now()]);
+    ExecuteDirect(tldb,'insert into settings (setting) Values (''filtertime'')');
+  end;
+
   result:=ExecuteDirect(tldb,
       'CREATE TABLE strings ('+
-      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
-      '  filter INTEGER,'+
+      '  id      INTEGER PRIMARY KEY AUTOINCREMENT,'+
+      '  filter  INTEGER,'+
+      '  deleted BOOLEAN,'+
 {$IFNDEF UseUniqueText}
-      '  src    TEXT);');
+      '  src     TEXT);');
 {$ELSE}
-      '  src    TEXT UNIQUE);');
+      '  src     TEXT UNIQUE);');
 {$ENDIF}
 
   result:=ExecuteDirect(tldb,

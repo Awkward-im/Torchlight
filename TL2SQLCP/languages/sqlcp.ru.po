@@ -12,6 +12,7 @@ msgstr ""
 "X-Generator: Poedit 3.4.4\n"
 
 #: fmsqlcp.rschooselang
+msgctxt "fmsqlcp.rschooselang"
 msgid "Choose translation language"
 msgstr "Выберите язык перевода"
 
@@ -179,6 +180,7 @@ msgid "Show Sample"
 msgstr ""
 
 #: tedittextform.acttranslate.hint
+msgctxt "tedittextform.acttranslate.hint"
 msgid "Translate"
 msgstr ""
 
@@ -216,6 +218,10 @@ msgstr ""
 
 #: tformsqlcp.bbscanmod.caption
 msgid "Scan Mod"
+msgstr ""
+
+#: tformsqlcp.bbsqlog.caption
+msgid "Save SQL log"
 msgstr ""
 
 #: tformsqlcp.cbwithref.caption
@@ -444,6 +450,263 @@ msgstr "Всего замен"
 msgctxt "tl2unit.rsroot"
 msgid "-- Root --"
 msgstr "-- Корень  --"
+
+#: tmaintl2transform.actchecktranslation.caption
+msgid "actCheckTranslation"
+msgstr ""
+
+#: tmaintl2transform.actchecktranslation.hint
+msgid "Check for notes of translation"
+msgstr ""
+
+#: tmaintl2transform.actexportclipbrd.caption
+msgid "actExportClipBrd"
+msgstr ""
+
+#: tmaintl2transform.actexportclipbrd.hint
+msgid "Copy selected source text to clipboard"
+msgstr ""
+
+#: tmaintl2transform.actexportfile.caption
+msgid "actExportFile"
+msgstr ""
+
+#: tmaintl2transform.actexportfile.hint
+msgid "Save selected source text"
+msgstr ""
+
+#: tmaintl2transform.actfilter.caption
+msgid "actFilter"
+msgstr ""
+
+#: tmaintl2transform.actfilter.hint
+msgid "Filter"
+msgstr ""
+
+#: tmaintl2transform.actfindnext.caption
+msgid "actFindNext"
+msgstr ""
+
+#: tmaintl2transform.actfindnext.hint
+msgid "Search next"
+msgstr ""
+
+#: tmaintl2transform.acthideready.caption
+msgid "actHideReady"
+msgstr ""
+
+#: tmaintl2transform.acthideready.hint
+msgid "Hide translated lines"
+msgstr ""
+
+#: tmaintl2transform.actimportclipbrd.caption
+msgid "actImportClipBrd"
+msgstr ""
+
+#: tmaintl2transform.actimportclipbrd.hint
+msgid "Inset text with translation from clipboard"
+msgstr ""
+
+#: tmaintl2transform.actimportfile.caption
+msgid "actImportFile"
+msgstr ""
+
+#: tmaintl2transform.actimportfile.hint
+msgid "Add translation from file"
+msgstr ""
+
+#: tmaintl2transform.actmodinfo.caption
+msgid "Mod Info"
+msgstr ""
+
+#: tmaintl2transform.actmodinfo.hint
+msgid "Show mod info"
+msgstr ""
+
+#: tmaintl2transform.actopensource.caption
+msgid "actOpenSource"
+msgstr ""
+
+#: tmaintl2transform.actpartasready.caption
+msgid "actPartAsReady"
+msgstr ""
+
+#: tmaintl2transform.actpartasready.hint
+msgid "Mark partially translated text as translated"
+msgstr ""
+
+#: tmaintl2transform.actreplace.caption
+msgid "Replace"
+msgstr ""
+
+#: tmaintl2transform.actreplace.hint
+msgid "Replace translation text"
+msgstr ""
+
+#: tmaintl2transform.actsettings.caption
+#, fuzzy
+msgctxt "tmaintl2transform.actsettings.caption"
+msgid "Settings"
+msgstr "Настройки"
+
+#: tmaintl2transform.actsettings.hint
+msgid "Show/hide settings"
+msgstr ""
+
+#: tmaintl2transform.actshowdoubles.caption
+msgid "Show Doubles"
+msgstr ""
+
+#: tmaintl2transform.actshowdoubles.hint
+msgid "Show Doubling lines"
+msgstr ""
+
+#: tmaintl2transform.actshowlog.caption
+msgid "Show log"
+msgstr ""
+
+#: tmaintl2transform.actshowlog.hint
+msgid "Show log window"
+msgstr ""
+
+#: tmaintl2transform.actshowsimilar.caption
+msgid "Show Similar"
+msgstr ""
+
+#: tmaintl2transform.actshowsimilar.hint
+msgid "Show lines with \"almost the same\" text"
+msgstr ""
+
+#: tmaintl2transform.acttranslate.caption
+msgctxt "tmaintl2transform.acttranslate.caption"
+msgid "Translate"
+msgstr ""
+
+#: tmaintl2transform.acttranslate.hint
+msgid "Use online translate service"
+msgstr ""
+
+#: tmaintl2transform.caption
+#, fuzzy
+msgctxt "tmaintl2transform.caption"
+msgid "Torchlight 2 Translation"
+msgstr "Перевод Torchlight 2"
+
+#: tmaintl2transform.cbfolder.hint
+msgid "Top-level folder filter"
+msgstr ""
+
+#: tmaintl2transform.cblanguage.hint
+#, fuzzy
+msgctxt "tmaintl2transform.cblanguage.hint"
+msgid "Choose translation language"
+msgstr "Выберите язык перевода"
+
+#: tmaintl2transform.fileexit.caption
+msgid "E&xit"
+msgstr ""
+
+#: tmaintl2transform.fileexit.hint
+msgid "Exit program"
+msgstr ""
+
+#: tmaintl2transform.filesave.caption
+msgid "&Save"
+msgstr ""
+
+#: tmaintl2transform.filesave.hint
+msgid "Save project"
+msgstr ""
+
+#: tmaintl2transform.fontedit.caption
+msgid "&Font"
+msgstr ""
+
+#: tmaintl2transform.fontedit.hint
+msgid "Font changing"
+msgstr ""
+
+#: tmaintl2transform.helpabout.caption
+msgid "&About"
+msgstr ""
+
+#: tmaintl2transform.helpabout.hint
+msgid "About program"
+msgstr ""
+
+#: tmaintl2transform.helpnotes.caption
+msgctxt "tmaintl2transform.helpnotes.caption"
+msgid "Show Notes"
+msgstr ""
+
+#: tmaintl2transform.helpnotes.hint
+msgctxt "tmaintl2transform.helpnotes.hint"
+msgid "Show Notes"
+msgstr ""
+
+#: tmaintl2transform.miedit.caption
+msgid "&Edit"
+msgstr ""
+
+#: tmaintl2transform.mieditchecktranslation.caption
+msgid "Check Translation"
+msgstr ""
+
+#: tmaintl2transform.mifile.caption
+msgid "&File"
+msgstr ""
+
+#: tmaintl2transform.mihelp.caption
+msgid "&Help"
+msgstr ""
+
+#: tmaintl2transform.miview.caption
+msgid "&View"
+msgstr ""
+
+#: tmaintl2transform.tbbuild.caption
+msgid "&Build"
+msgstr ""
+
+#: tmaintl2transform.tbbuild.hint
+msgid "Build translation"
+msgstr ""
+
+#: tmaintl2transform.tbfilenew.caption
+msgid "Scan &dir"
+msgstr ""
+
+#: tmaintl2transform.tbfilenew.hint
+msgid "Scan unpacked mod (directory)"
+msgstr ""
+
+#: tmaintl2transform.tbscanmod.caption
+msgid "Scan &mod"
+msgstr ""
+
+#: tmaintl2transform.tbscanmod.hint
+msgid "Scan compiled mod"
+msgstr ""
+
+#: tmaintl2transform.tl2grid.columns[0].title.caption
+msgid "Value"
+msgstr ""
+
+#: tmaintl2transform.tl2grid.columns[1].title.caption
+msgid "Part"
+msgstr ""
+
+#: tmaintl2transform.tl2grid.columns[2].title.caption
+msgid "Translation"
+msgstr ""
+
+#: tmaintl2transform.toolbutton3.caption
+msgid "ToolButton3"
+msgstr ""
+
+#: tmaintl2transform.toolbutton4.caption
+msgid "ToolButton4"
+msgstr ""
 
 #: tsimilarform.btndupes.caption
 msgid "Doubles"
