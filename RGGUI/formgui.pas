@@ -1,3 +1,6 @@
+{TODO: 3d view, change texture by choosing file}
+{TODO: preview image: change background color like for imageset}
+{TODO: preview image: show image width and height (if decoded right)}
 {TODO: preview bytes values as different types}
 {TODO: make dump text/bytes search}
 {TODO: change dump text area encoding}
@@ -37,6 +40,7 @@ type
     bbStop: TBitBtn;
     bbFontEdit: TBitBtn;
     cbSaveTL1ADM: TCheckBox;
+    cbSaveDateTime: TCheckBox;
     miTreeList: TMenuItem;
     miCalcHash: TMenuItem;
     miSavePatch: TMenuItem;
@@ -301,7 +305,8 @@ type
     procedure PreviewImageset(const adir: string);
     procedure PreviewModel(const adir,aname:string);
     procedure PreviewSound;
-    function  SaveFile(const adir, aname: string; adata: PByte; asize:integer): boolean;
+    function SaveFile(const adir, aname: string; adata: PByte; asize: integer;
+      idx: integer): boolean;
     procedure PreviewImage(const aext: string);
     procedure PreviewSource();
     procedure PreviewLayout();
@@ -398,6 +403,7 @@ const
   sExt          = 'ext';
   sFilter       = 'filter';
   sSaveSettings = 'savesettings';
+  sSaveDateTime = 'savedatetime';
   sShowDir      = 'showdir';
   sShowExt      = 'showext';
   sShowCategory = 'showcategory';
@@ -549,6 +555,7 @@ begin
     config.WriteBool   (sSectSettings,sMODDAT      ,cbMODDAT.Checked);
     config.WriteBool   (sSectSettings,sFastScan    ,cbFastScan.Checked);
     config.WriteBool   (sSectSettings,sSaveSettings,cbSaveSettings.Checked);
+    config.WriteBool   (sSectSettings,sSaveDateTime,cbSaveDateTime.Checked);
 
     config.WriteBool(sSectSettings,sShowDir     ,bShowDir     );
     config.WriteBool(sSectSettings,sShowExt     ,bShowExt     );
@@ -613,6 +620,7 @@ begin
   cbMODDAT.Checked      :=config.ReadBool   (sSectSettings,sMODDAT      ,true);
   cbFastScan.Checked    :=config.ReadBool   (sSectSettings,sFastScan    ,false);
   cbSaveSettings.Checked:=config.ReadBool   (sSectSettings,sSaveSettings,false);
+  cbSaveDateTime.Checked:=config.ReadBool   (sSectSettings,sSaveDateTime,true);
   deOutDir.Text         :=config.ReadString (sSectSettings,sOutDir      ,'');
   if deOutDir.Text='' then deOutDir.Text:=ExtractFileDir(ParamStr(0));
 
@@ -671,9 +679,6 @@ begin
 end;
 
 {%ENDREGION Settings}
-
-{%REGION Filter}
-{%ENDREGION Filter}
 
 {%REGION Form}
 
@@ -1135,11 +1140,14 @@ end;
 
 {%REGION Save}
 
-function TRGGUIForm.SaveFile(const adir,aname:string; adata:PByte; asize:integer):boolean;
+function TRGGUIForm.SaveFile(const adir,aname:string;
+      adata:PByte; asize:integer; idx:integer):boolean;
 var
   f:file of byte;
   pc:PUnicodeChar;
-  loutdir,lext:string;
+  ls,loutdir,lext:string;
+  lfi:TRGFullInfo;
+  ltime:TDateTime;
   ltype,lsize:integer;
   ldecompiled:boolean;
 begin
@@ -1160,6 +1168,14 @@ begin
 //  ltype:=GetExtInfo(aname,rgpi.ver)^._type;
   ltype:=RGTypeOfExt(aname);
 
+  if cbSaveDateTime.Checked then
+  begin
+    ctrl.GetFullInfo(idx,lfi);
+    ltime:=FileTimeToDateTime(lfi.ftime);
+  end
+  else
+    ltime:=0;
+
   ldecompiled:=false;
   // save decoded file
   if (not rbBinOnly.Checked) and ((ltype and $FF)=typeData) then
@@ -1177,7 +1193,8 @@ begin
         else
           lext:='';
 
-        AssignFile(f,loutdir+aname+lext);
+        ls:=loutdir+aname+lext;
+        AssignFile(f,ls);
         Rewrite(f);
         if IOResult=0 then
         begin
@@ -1187,6 +1204,7 @@ begin
             lsize:=Length(pc)*SizeOf(WideChar);
           BlockWrite(f,pc^,lsize);
           CloseFile(f);
+          if ltime>0 then FileSetDate(ls,ltime);
         end;
       end;
       FreeMem(pc);
@@ -1231,12 +1249,14 @@ begin
     // save binary file
     if not (rbTextOnly.Checked and ((ltype and $FF)=typeData)) then
     begin
-      AssignFile(f,loutdir+aname+lext);
+      ls:=loutdir+aname+lext;
+      AssignFile(f,ls);
       Rewrite(f);
       if IOResult=0 then
       begin
         BlockWrite(f,adata^,asize);
         CloseFile(f);
+        if ltime>0 then FileSetDate(ls,ltime);
       end;
     end;
   end;
@@ -1248,7 +1268,7 @@ procedure TRGGUIForm.actEdExportExecute(Sender: TObject);
 var
   ldir, lname:string;
   lptr:pointer;
-  lsize,i,lcnt:integer;
+  lidx,lsize,i,lcnt:integer;
 begin
   lcnt:=0;
   lptr:=nil;
@@ -1257,16 +1277,16 @@ begin
   begin
     if sgMain.IsCellSelected[colDir,i] then
     begin
-      lsize:=IntPtr(sgMain.Objects[colName,i]);
-      if lsize>=0 then
+      lidx:=IntPtr(sgMain.Objects[colName,i]);
+      if lidx>=0 then
       begin
   //      lsize:=ctrl.GetBinary(ctrl.SearchFile(ldir+lname),lptr);
-        lsize:=ctrl.GetBinary(lsize,lptr);
+        lsize:=ctrl.GetBinary(lidx,lptr);
         if lsize>0 then
         begin
           ldir :=sgMain.Cells[colDir ,i];
           lname:=sgMain.Cells[colName,i]+sgMain.Cells[colExt,i];
-          if SaveFile(ldir, lname, lptr, lsize) then
+          if SaveFile(ldir, lname, lptr, lsize, lidx) then
             inc(lcnt);
         end;
       end;
@@ -1287,10 +1307,11 @@ end;
 
 function TRGGUIForm.UnpackSingleFile(const adir,aname:string; var buf:PByte):boolean;
 var
-  lsize:integer;
+  lsize,lidx:integer;
 begin
-  lsize:=ctrl.GetBinary(ctrl.SearchFile(adir+aname),buf);
-  result:=SaveFile(adir,aname,buf,lsize);
+  lidx:=ctrl.SearchFile(adir+aname);
+  lsize:=ctrl.GetBinary(lidx,buf);
+  result:=SaveFile(adir,aname,buf,lsize,lidx);
 end;
 
 procedure TRGGUIForm.DoExtractGrid(Sender: TObject);
@@ -1587,7 +1608,10 @@ end;
     try
       // PUData cleared in ClearInfo() and/or FormClose;
       lstr.SetBuffer(FUData);
-      imgPreview.Picture.LoadFromStream(lstr);
+      try
+        imgPreview.Picture.LoadFromStream(lstr);
+      except
+      end;
     finally
       lstr.Free;
     end;

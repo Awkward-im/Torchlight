@@ -9,7 +9,6 @@ object RGGUIForm: TRGGUIForm
   ClientWidth = 944
   Menu = MainMenu
   ShowHint = True
-  LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles
@@ -50,7 +49,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 70
-      Height = 5
+      Height = 22
       Top = 2
       Style = tbsDivider
     end
@@ -167,9 +166,9 @@ object RGGUIForm: TRGGUIForm
     Height = 465
     Top = 26
     Width = 683
-    ActivePage = Grid
+    ActivePage = Setings
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 4
     object Setings: TTabSheet
       Caption = 'Setings'
@@ -303,24 +302,32 @@ object RGGUIForm: TRGGUIForm
         TabOrder = 8
       end
       object cbSaveTL1ADM: TCheckBox
-        Left = 298
+        Left = 276
         Height = 19
-        Top = 84
+        Top = 131
         Width = 142
         Caption = 'TL1: Save ADM files too'
         TabOrder = 9
         Visible = False
       end
       object bbFontEdit: TBitBtn
-        Left = 298
+        Left = 276
         Height = 26
-        Top = 112
+        Top = 157
         Width = 70
         Action = actEdFontEdit
         AutoSize = True
         Images = ilMain
         ImageIndex = 20
         TabOrder = 10
+      end
+      object cbSaveDateTime: TCheckBox
+        Left = 276
+        Height = 19
+        Top = 112
+        Width = 148
+        Caption = 'Extract with original date'
+        TabOrder = 11
       end
     end
     object Grid: TTabSheet
@@ -354,7 +361,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep1: TToolButton
           Left = 47
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -379,7 +386,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep2: TToolButton
           Left = 180
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -398,7 +405,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep3: TToolButton
           Left = 372
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -411,7 +418,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep4: TToolButton
           Left = 426
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -1000,10 +1007,6 @@ object RGGUIForm: TRGGUIForm
           SelectedColor.ForePriority = 50
           SelectedColor.BackPriority = 50
           SelectedColor.FramePriority = 50
-          SelectedColor.BoldPriority = 0
-          SelectedColor.ItalicPriority = 0
-          SelectedColor.UnderlinePriority = 0
-          SelectedColor.StrikeOutPriority = 0
           SelectedColor.Features = [lafPastEOL]
           BracketHighlightStyle = sbhsBoth
           BracketMatchColor.Foreground = clNone

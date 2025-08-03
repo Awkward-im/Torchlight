@@ -664,6 +664,10 @@ msgstr ""
 msgid "Make MOD.DAT for TL2 mod unpack"
 msgstr ""
 
+#: trgguiform.cbsavedatetime.caption
+msgid "Extract with original date"
+msgstr ""
+
 #: trgguiform.cbsavesettings.caption
 msgid "Save Settings on exit"
 msgstr ""

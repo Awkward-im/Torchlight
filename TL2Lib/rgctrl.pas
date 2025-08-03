@@ -1,4 +1,5 @@
 ﻿{NOTE: ignoring changes if empty dir added only}
+{TODO: ImportDir with or without childs}
 {TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
 {TODO: add act_file for PAK files. OR create new like act_link}
 {TODO: add PAK paths and import dirs catalogue}

@@ -678,6 +678,10 @@ msgstr "Быстрое сканирование (без размера)"
 msgid "Make MOD.DAT for TL2 mod unpack"
 msgstr "Создать MOD.DAT при распаковке мода ТЛ2"
 
+#: trgguiform.cbsavedatetime.caption
+msgid "Extract with original date"
+msgstr "Распаковать с исходной датой"
+
 #: trgguiform.cbsavesettings.caption
 msgid "Save Settings on exit"
 msgstr "Сохранять настройки при выходе"
@@ -917,4 +921,3 @@ msgstr "Информация о моде"
 #: unitlogform.rscantsave
 msgid "Can't save log file"
 msgstr "Не могу сохранить файл лога"
-
