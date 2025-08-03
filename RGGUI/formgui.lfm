@@ -166,9 +166,9 @@ object RGGUIForm: TRGGUIForm
     Height = 465
     Top = 26
     Width = 683
-    ActivePage = Setings
+    ActivePage = Grid
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 4
     object Setings: TTabSheet
       Caption = 'Setings'
@@ -360,71 +360,71 @@ object RGGUIForm: TRGGUIForm
           Style = tbsCheck
         end
         object tbEdSep1: TToolButton
-          Left = 47
+          Left = 70
           Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbEdReset: TToolButton
-          Left = 434
+          Left = 457
           Top = 2
           Action = actEdReset
           ShowCaption = False
         end
         object tbEdUndo: TToolButton
-          Left = 457
+          Left = 480
           Top = 2
           Action = actEdUndo
           ShowCaption = False
         end
         object tbEdSave: TToolButton
-          Left = 480
+          Left = 503
           Top = 2
           Action = actEdSave
           ShowCaption = False
         end
         object tbEdSep2: TToolButton
-          Left = 180
+          Left = 203
           Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbEdImport: TToolButton
-          Left = 380
+          Left = 403
           Top = 2
           Action = actEdImport
           ShowCaption = False
         end
         object tbEdExport: TToolButton
-          Left = 403
+          Left = 426
           Top = 2
           Action = actEdExport
           ShowCaption = False
         end
         object tbEdSep3: TToolButton
-          Left = 372
+          Left = 395
           Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbEdSearch: TToolButton
-          Left = 503
+          Left = 526
           Top = 2
           Action = actEdSearch
           ShowCaption = False
         end
         object tbEdSep4: TToolButton
-          Left = 426
+          Left = 449
           Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbColDir: TToolButton
-          Left = 211
+          Left = 234
           Hint = 'Show/hide column: Directory'
           Top = 2
           AllowAllUp = True
@@ -433,7 +433,7 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColExt: TToolButton
-          Left = 257
+          Left = 280
           Hint = 'Show/hide column: Extension'
           Top = 2
           AllowAllUp = True
@@ -442,7 +442,7 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColCategory: TToolButton
-          Left = 234
+          Left = 257
           Hint = 'Show/hide column: Category'
           Top = 2
           AllowAllUp = True
@@ -451,7 +451,7 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColTime: TToolButton
-          Left = 280
+          Left = 303
           Hint = 'Show/hide column: Time'
           Top = 2
           AllowAllUp = True
@@ -460,7 +460,7 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColPacked: TToolButton
-          Left = 326
+          Left = 349
           Hint = 'Show/hide column: Packed size'
           Top = 2
           AllowAllUp = True
@@ -469,7 +469,7 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColUnpacked: TToolButton
-          Left = 303
+          Left = 326
           Hint = 'Show/hide column: Unpacked size'
           Top = 2
           AllowAllUp = True
@@ -478,7 +478,7 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbColSource: TToolButton
-          Left = 349
+          Left = 372
           Hint = 'Show/hide column: Source size'
           Top = 2
           AllowAllUp = True
@@ -487,13 +487,13 @@ object RGGUIForm: TRGGUIForm
           OnClick = tbColumnClick
         end
         object tbFilter: TToolButton
-          Left = 188
+          Left = 211
           Top = 2
           Action = actShowFilter
           ShowCaption = False
         end
         object edGridFilter: TEdit
-          Left = 55
+          Left = 78
           Height = 23
           Top = 2
           Width = 125
@@ -501,6 +501,14 @@ object RGGUIForm: TRGGUIForm
           TabOrder = 0
           TextHint = 'Grid filter'
           OnChange = edGridFilterChange
+        end
+        object tbEdDarkBack: TToolButton
+          Left = 47
+          Top = 2
+          Action = actDarkBg
+          AllowAllUp = True
+          ShowCaption = False
+          Style = tbsCheck
         end
       end
       object Splitter2: TSplitter
@@ -1007,6 +1015,10 @@ object RGGUIForm: TRGGUIForm
           SelectedColor.ForePriority = 50
           SelectedColor.BackPriority = 50
           SelectedColor.FramePriority = 50
+          SelectedColor.BoldPriority = 0
+          SelectedColor.ItalicPriority = 0
+          SelectedColor.UnderlinePriority = 0
+          SelectedColor.StrikeOutPriority = 0
           SelectedColor.Features = [lafPastEOL]
           BracketHighlightStyle = sbhsBoth
           BracketMatchColor.Foreground = clNone
@@ -1396,13 +1408,6 @@ object RGGUIForm: TRGGUIForm
       ImageIndex = 14
       OnExecute = actChangeVersionExecute
     end
-    object actOpenDir: TAction
-      Category = 'View'
-      Caption = 'Open unpack dir'
-      Hint = 'Open directory for unpack files'
-      ImageIndex = 0
-      OnExecute = actOpenDirExecute
-    end
     object actFileSavePatch: TAction
       Category = 'File'
       Caption = 'Save &Patch'
@@ -1432,6 +1437,21 @@ object RGGUIForm: TRGGUIForm
       Hint = 'Change source code font'
       ImageIndex = 20
       OnExecute = actEdFontEditExecute
+    end
+    object actDarkBg: TAction
+      Category = 'View'
+      AutoCheck = True
+      Caption = 'Dark Background'
+      Hint = 'Switch dark image background'
+      ImageIndex = 15
+      OnExecute = actDarkBgExecute
+    end
+    object actOpenDir: TAction
+      Category = 'View'
+      Caption = 'Open unpack dir'
+      Hint = 'Open directory for unpack files'
+      ImageIndex = 0
+      OnExecute = actOpenDirExecute
     end
   end
   object ilMain: TImageList

@@ -1,6 +1,4 @@
 {TODO: 3d view, change texture by choosing file}
-{TODO: preview image: change background color like for imageset}
-{TODO: preview image: show image width and height (if decoded right)}
 {TODO: preview bytes values as different types}
 {TODO: make dump text/bytes search}
 {TODO: change dump text area encoding}
@@ -36,6 +34,7 @@ type
    TRGGUIForm = class(TForm)
     actFileSavePatch: TAction;
     actEdFontEdit: TAction;
+    actDarkBg: TAction;
     bbPlay: TBitBtn;
     bbStop: TBitBtn;
     bbFontEdit: TBitBtn;
@@ -76,6 +75,7 @@ type
     bbCollapse   : TBitBtn;
     tbOpenDir: TToolButton;
     ToolButton1: TToolButton;
+    tbEdDarkBack: TToolButton;
     tvTree       : TTreeView;
 
     Grid   : TTabSheet;
@@ -192,6 +192,7 @@ type
     tbColUnpacked: TToolButton;
 
     procedure actChangeVersionExecute(Sender: TObject);
+    procedure actDarkBgExecute(Sender: TObject);
     procedure actEdDeleteExecute(Sender: TObject);
     procedure actEdExportExecute(Sender: TObject);
     procedure actEdImportDirExecute(Sender: TObject);
@@ -282,6 +283,7 @@ type
     function CheckTexture(const adir, aname: AnsiString): integer;
     procedure ClearInfo();
     procedure CreateMeshList;
+    procedure DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
     function FileClose: boolean;
     procedure FillGrid(idx:integer=-1);
     function  FillGridLine(arow: integer; const adir: string; afile: integer): boolean;
@@ -1450,9 +1452,11 @@ begin
     lstr.Free;
     hview.SetDataStream(nil,0);
   end;
+
   imgPreview.Picture.Clear;
   imgPreview.Visible:=false;
   actScaleImage.Visible:=false;
+  actDarkBg.Visible:=false;
 
   actEdSearch.Enabled:=false;
 
@@ -1480,7 +1484,7 @@ begin
   actEdImport.Enabled:=not bNoTree;
 end;
 
-{%REGION Sound}
+  {%REGION Sound}
 procedure TRGGUIForm.PrepareSound;
 {$IFDEF Windows}
 var
@@ -1566,64 +1570,9 @@ begin
 
   pnlAudio.Visible:=true;
 end;
-{%ENDREGION Sound}
+  {%ENDREGION Sound}
 
-procedure TRGGUIForm.actScaleImageExecute(Sender: TObject);
-begin
-  PreviewImage(sgMain.Cells[colExt,sgMain.Row]);
-end;
-
-procedure TRGGUIForm.PreviewImage(const aext:string);
-var
-  lstr:TMemoryStream;
-  limg:TImageData;
-begin
-  if FUSize=0 then exit;
-
-  if actScaleImage.Checked then
-  begin
-    imgPreview.Stretch:=true;
-  end
-  else
-  begin
-    imgPreview.Stretch:=false;
-  end;
-
-  if (aext='.DDS') or
-    ((PByte(FUData)[0]=ORD('D')) and
-     (PByte(FUData)[1]=ORD('D')) and
-     (PByte(FUData)[2]=ORD('S'))) then
-  begin
-    InitImage(limg);
-    LoadImageFromMemory(FUData,FUsize,limg);
-try
-    ConvertDataToBitmap(limg,imgPreview.Picture.Bitmap);
-except
-end;
-    FreeImage(limg);
-  end
-  else
-  begin
-    lstr:=TMemoryStream.Create();
-    try
-      // PUData cleared in ClearInfo() and/or FormClose;
-      lstr.SetBuffer(FUData);
-      try
-        imgPreview.Picture.LoadFromStream(lstr);
-      except
-      end;
-    finally
-      lstr.Free;
-    end;
-  end;
-  imgPreview.Visible:=true;
-  imgPreview.Hint:='Size: '+
-      IntToStr(imgPreview.Picture.Width)+' x '+
-      IntToStr(imgPreview.Picture.Height);
-  actScaleImage.Visible:=true;
-end;
-
-{%REGION Model}
+  {%REGION Model}
 procedure TRGGUIForm.ShowModelInfo;
 var
   ls: AnsiString;
@@ -1953,22 +1902,81 @@ begin
 
   ShowModelInfo();
 end;
-{%ENDREGION Model}
+  {%ENDREGION Model}
 
-procedure TRGGUIForm.PreviewLayout();
+  {%REGION Images}
+procedure TRGGUIForm.DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
 begin
-  if fmLedit=nil then
-  begin
-    fmLEdit:=TFormLayoutEdit.Create(Self);
-    fmLEdit.Parent:=pnlAdd;
-    fmLEdit.Align:=alClient;
-    fmLedit.SynEdit.PopupMenu:=SynPopupMenu;
-  end;
-  fmLedit.SynEdit.Font.Assign(SrcFont);
-  //  if FUData=nil then exit;
+  ACanvas.Brush.Color := clGray;
+  ACanvas.FillRect(ARect);
+end;
 
-  TFormLayoutEdit(fmLEdit).BuildTree(FUData,ctrl.PAK.Version);
-  fmLEdit.Visible:=true;
+procedure TRGGUIForm.actDarkBgExecute(Sender: TObject);
+begin
+  if actDarkBg.Checked then
+    imgPreview.OnPaintBackground:=@DrawDarkBg
+  else
+    imgPreview.OnPaintBackground:=nil;
+
+  imgPreview.Repaint;
+end;
+
+procedure TRGGUIForm.actScaleImageExecute(Sender: TObject);
+begin
+  imgPreview.Stretch:=actScaleImage.Checked;
+  imgPreview.Repaint;
+ // PreviewImage(sgMain.Cells[colExt,sgMain.Row]);
+end;
+
+procedure TRGGUIForm.PreviewImage(const aext:string);
+var
+  lstr:TMemoryStream;
+  limg:TImageData;
+begin
+  if FUSize=0 then exit;
+
+  if actScaleImage.Checked then
+  begin
+    imgPreview.Stretch:=true;
+  end
+  else
+  begin
+    imgPreview.Stretch:=false;
+  end;
+
+  if (aext='.DDS') or
+    ((PByte(FUData)[0]=ORD('D')) and
+     (PByte(FUData)[1]=ORD('D')) and
+     (PByte(FUData)[2]=ORD('S'))) then
+  begin
+    InitImage(limg);
+    LoadImageFromMemory(FUData,FUsize,limg);
+try
+    ConvertDataToBitmap(limg,imgPreview.Picture.Bitmap);
+except
+end;
+    FreeImage(limg);
+  end
+  else
+  begin
+    lstr:=TMemoryStream.Create();
+    try
+      // PUData cleared in ClearInfo() and/or FormClose;
+      lstr.SetBuffer(FUData);
+      try
+        imgPreview.Picture.LoadFromStream(lstr);
+      except
+      end;
+    finally
+      lstr.Free;
+    end;
+  end;
+  imgPreview.Visible:=true;
+  imgPreview.Hint:='Size: '+
+      IntToStr(imgPreview.Picture.Width)+' x '+
+      IntToStr(imgPreview.Picture.Height);
+  actScaleImage.Visible:=true;
+  actDarkBg.Visible:=true;
 end;
 
 procedure TRGGUIForm.ShowImagesetInfo(const afile:string; arect:TRect);
@@ -1994,6 +2002,23 @@ begin
   if i>7 then ldir:=Copy(adir,1,i) else ldir:='';
   TFormImageset(fmImgSet).FillList(ctrl,FUData,FUSize,ldir);
   fmImgSet.Visible:=true;
+end;
+  {%ENDREGION Images}
+
+procedure TRGGUIForm.PreviewLayout();
+begin
+  if fmLedit=nil then
+  begin
+    fmLEdit:=TFormLayoutEdit.Create(Self);
+    fmLEdit.Parent:=pnlAdd;
+    fmLEdit.Align:=alClient;
+    fmLedit.SynEdit.PopupMenu:=SynPopupMenu;
+  end;
+  fmLedit.SynEdit.Font.Assign(SrcFont);
+  //  if FUData=nil then exit;
+
+  TFormLayoutEdit(fmLEdit).BuildTree(FUData,ctrl.PAK.Version);
+  fmLEdit.Visible:=true;
 end;
 
 procedure TRGGUIForm.PreviewSource();
@@ -2253,6 +2278,9 @@ begin
   end;
 end;
 
+{%ENDREGION Preview}
+
+{%REGION Actions}
 procedure TRGGUIForm.ReplaceExecute(Sender: TObject);
 var
   lopt:TSynSearchOptions;
@@ -2282,9 +2310,6 @@ begin
   ReplaceDialog.Execute();
 end;
 
-{%ENDREGION Preview}
-
-{%REGION Actions}
 procedure TRGGUIForm.actEdDeleteExecute(Sender: TObject);
 var
   i,lidx,lcnt,ldircnt:integer;

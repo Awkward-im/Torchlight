@@ -439,6 +439,14 @@ msgstr ""
 msgid "Change game target without rebuild files"
 msgstr ""
 
+#: trgguiform.actdarkbg.caption
+msgid "Dark Background"
+msgstr ""
+
+#: trgguiform.actdarkbg.hint
+msgid "Switch dark image background"
+msgstr ""
+
 #: trgguiform.acteddelete.caption
 msgctxt "trgguiform.acteddelete.caption"
 msgid "Delete"

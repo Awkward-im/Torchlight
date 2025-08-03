@@ -451,6 +451,14 @@ msgstr "Выбор версии PAK"
 msgid "Change game target without rebuild files"
 msgstr "Выбор версии игры без пересбора"
 
+#: trgguiform.actdarkbg.caption
+msgid "Dark Background"
+msgstr "Тёмный фон"
+
+#: trgguiform.actdarkbg.hint
+msgid "Switch dark image background"
+msgstr "Переключить тёмный фон"
+
 #: trgguiform.acteddelete.caption
 msgctxt "trgguiform.acteddelete.caption"
 msgid "Delete"

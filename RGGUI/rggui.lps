@@ -67,9 +67,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formGUI"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="489"/>
-        <CursorPos X="42" Y="1141"/>
-        <FoldState Value=" T7aG~b T8mX2$1 T4oc0T TMqg010215162 p5$e]EN p0uc0]bJwc1#V02]Hx]ArL1 pj0m21~(]JwG1_,]Ip2yO1}j TLxe033 pF\Z030321]vWwg036 PLs20 T3sJ0D3]=9jU0/5 pickd0J5]IEk20F4]IZjH03[a4Wk40{f[b4dm50g2]Jfl806[I4b]b6[t42jK0T[R49k10![;4ekc0j]Ik2lA03[a4AjS03[a4PjY0V1 pj8k00L3[R5g04[a4Kja0O1[+4jP0{2]JiglC076 Pj8j80 T6tO049 pOz402N]WY*K05J PcxQ]V0uE44D[N4pg62[94akF43161B238 pk9sU2C];jPlR477]XZkR25B[g5H[~m5j2iE494]94P82A]QbkJ433]9Yc828[84kA2J[q5iIA3C[}05E42A[&apos;5F2A6]9cib86[a4XlT2]&apos;PJi92 TK)[#i86*Z0F:"/>
+        <CursorPos X="20" Y="1011"/>
+        <FoldState Value=" T4M051 PToH0 TLxf033 pF!F0303212 pWwg036 PLs2]Y7XG~f T8mX2%1 TMr001021516]h5?U]EP p0wS0]U3sK0D]&apos;j9jU0/5 pickd0J5]IEk20F4]IZjH03[a4Wk40{f[b4dm50g01[U5ld0E6]U8jd0T2[$4k10![I41l50E[I47jR0K1]9Pk603]:jAjS032[I4jY0V1[+4k00L3[R5g04[a4Kja0O]RiejP0{2]JiglC076 Pj8j80 T6tP04N]Oa!00301V PiU$U]Q0tW2wE]QcqP62D[Z4kF434 pidj16J3]9eV6C8]8YjI26816 pk0pA4E7]Kbjb2M44A pjWng634]97ig49[944P82A[b4kJ433[,4c82[?5kA2JB]9aiIA3C[}A5E4[i5ZkF2A6]9cib86[a4XlT2]&apos;PJi92 TK)40N p0/D0F?"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -87,11 +86,10 @@
         <Filename Value="..\TL2Lib\rgpak.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGPAK"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="512"/>
         <CursorPos Y="548"/>
         <UsageCount Value="207"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\synhighlightert.pas"/>
@@ -119,7 +117,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="767"/>
         <CursorPos X="27" Y="788"/>
-        <UsageCount Value="130"/>
+        <UsageCount Value="132"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\HexView\FWHexView.pas"/>
@@ -128,7 +126,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="128"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\Imaging\Imaging.pas"/>
@@ -136,7 +134,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="3393"/>
         <CursorPos Y="3409"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="128"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\fpc.Dynamic_Bass.pas"/>
@@ -145,7 +143,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1460"/>
         <CursorPos X="69" Y="1479"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="128"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
@@ -155,7 +153,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitLogForm"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="84"/>
+        <UsageCount Value="86"/>
       </Unit>
       <Unit>
         <Filename Value="..\Meshes\rgobj.pas"/>
@@ -165,7 +163,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="69"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
@@ -290,10 +288,9 @@
       <Unit>
         <Filename Value="..\TL2Lib\rgman.pas"/>
         <UnitName Value="RGMan"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <CursorPos Y="10"/>
         <UsageCount Value="100"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
@@ -671,12 +668,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmModInfo"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="550"/>
         <CursorPos Y="562"/>
         <UsageCount Value="22"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\Imaging\ImagingFormats.pas"/>
@@ -709,70 +704,20 @@
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\fpcsrc\rtl\objpas\sysutils\filutilh.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="237"/>
         <CursorPos X="10" Y="252"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\fpcsrc\rtl\objpas\sysutils\filutil.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="335"/>
         <CursorPos Y="338"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1164" TopLine="1151"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1166" TopLine="1151"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1167" TopLine="1151"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1170" TopLine="1151"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1172" TopLine="1151"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1174" TopLine="1160"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1175" TopLine="1160"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1180" TopLine="1180"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1182" TopLine="1177"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1184" TopLine="1188"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1187" TopLine="1172"/>
-      </Position>
-      <Position>
-        <Filename Value="formgui.pas"/>
-        <Caret Line="1189" TopLine="1172"/>
-      </Position>
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="1190" TopLine="1187"/>
@@ -834,16 +779,64 @@
         <Caret Line="1211" TopLine="1193"/>
       </Position>
       <Position>
-        <Filename Value="D:\Work\LazTrunk\fpcsrc\rtl\objpas\sysutils\filutilh.inc"/>
-        <Caret Line="252" Column="10" TopLine="237"/>
-      </Position>
-      <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="1211" TopLine="1193"/>
       </Position>
       <Position>
         <Filename Value="formgui.pas"/>
         <Caret Line="1208" TopLine="1193"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1915" TopLine="1618"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="542" Column="3" TopLine="540"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1909" TopLine="1590"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1911" TopLine="1593"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1910" TopLine="1591"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1912" TopLine="1594"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1916" TopLine="1905"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1919" TopLine="1905"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1916" TopLine="1905"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1918" TopLine="1618"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1921" TopLine="1618"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1918" TopLine="1618"/>
+      </Position>
+      <Position>
+        <Filename Value="formgui.pas"/>
+        <Caret Line="1423" Column="14" TopLine="1410"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -873,13 +866,6 @@
         <WatchKind Value="wpkWrite"/>
         <Source Value="Imaging.pas"/>
         <Line Value="1229"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="D:\Work\LazTrunk\fpcsrc\rtl\objpas\sysutils\filutil.inc"/>
-        <Line Value="338"/>
       </Item>
     </BreakPoints>
     <Watches>
