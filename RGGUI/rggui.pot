@@ -51,12 +51,20 @@ msgstr ""
 msgid "Can't save file"
 msgstr ""
 
+#: formgui.rschangedfile
+msgid "Changed file"
+msgstr ""
+
 #: formgui.rscreatedir
 msgid "Create directory"
 msgstr ""
 
 #: formgui.rscreatefile
 msgid "Create file"
+msgstr ""
+
+#: formgui.rsdeletefile
+msgid "Deleted file"
 msgstr ""
 
 #: formgui.rsdirname
@@ -99,8 +107,16 @@ msgstr ""
 msgid " files imported"
 msgstr ""
 
+#: formgui.rslinkchangedfile
+msgid "Link to changed file"
+msgstr ""
+
 #: formgui.rslinkingnote
 msgid "These files still on disk and not built-in until PAK/MOD saved."
+msgstr ""
+
+#: formgui.rslinknewfile
+msgid "Link to new file"
 msgstr ""
 
 #: formgui.rsmdlcoords
@@ -111,6 +127,10 @@ msgstr ""
 #: formgui.rsmdlmeshes
 #, object-pascal-format
 msgid "Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d"
+msgstr ""
+
+#: formgui.rsnewfile
+msgid "New file"
 msgstr ""
 
 #: formgui.rsnothingimported

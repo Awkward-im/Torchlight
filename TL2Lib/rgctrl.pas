@@ -76,6 +76,7 @@ type
 
   { TRGController }
 
+  PRGController = ^TRGController;
   TRGController = object(TRGDirList)
   private
     FPAK:TRGPAK;
@@ -152,7 +153,7 @@ type
     {
       import dir with files and subdirs. apply different actions if files exists
     }
-    function ImportDir(const adst, adir: string): integer;
+    function ImportDir(const adst, adir: string; nochild:boolean=false): integer;
     {
       import PAK content
     }
@@ -173,7 +174,8 @@ type
     {
       keep filename or allocate buffer and load file content
     }
-    function AddFileData(afile:PWideChar; apath:PWideChar; acontent:boolean=false):integer;
+    function AddFileData(afdata: PWideChar; afname: PWideChar; acontent: boolean=
+      false): integer;
   end;
 
 
@@ -816,7 +818,7 @@ begin
   p^.ftype :=RGTypeOfExt(lman^.Name);
 end;
 
-function TRGController.AddFileData(afile:PWideChar; apath:PWideChar; acontent:boolean=false):integer;
+function TRGController.AddFileData(afdata:PWideChar; afname:PWideChar; acontent:boolean=false):integer;
 var
   lptr:PByte;
   f:file of byte;
@@ -826,13 +828,13 @@ begin
   if not acontent then
   begin
     lcnt:=FileCount;
-    result:=AddFile(apath);
+    result:=AddFile(afname);
     ClearElement(result);
     with PRGCtrlInfo(Files[result])^ do
     begin
       if FileCount<>lcnt then source:=-1;
-      ftype :=RGTypeOfExt(apath);
-      data  :=PByte(CopyWide(afile));
+      ftype :=RGTypeOfExt(afname);
+      data  :=PByte(CopyWide(afdata));
       action:=act_file;
       ftime :=0;
       size_s:=0;
@@ -842,7 +844,7 @@ begin
   end
   else
   begin
-    system.Assign(f,afile);
+    system.Assign(f,afdata);
     system.Reset(f);
     if IOResult=0 then
     begin
@@ -856,9 +858,9 @@ begin
         lptr:=nil;
       system.Close(f);
 
-      result:=UseData(lptr,lsize,apath);
+      result:=UseData(lptr,lsize,afname);
 
-      if FindFirst(afile,faAnyFile,sr)=0 then
+      if FindFirst(afdata,faAnyFile,sr)=0 then
       begin
         Files[result]^.ftime:=sr.Time;
         FindClose(sr);
@@ -866,7 +868,7 @@ begin
 
     end
     else
-      result:=SearchFile(apath);
+      result:=SearchFile(afname);
   end;
 end;
 
@@ -1083,7 +1085,7 @@ end;
   aentry - current manifest directory
 }
 function CycleDir(const adir:UnicodeString; var actrl:TRGController; aentry:integer;
-   aact:TRGDoubleAction):TRGDoubleAction;
+   aact:TRGDoubleAction; nochild:boolean):TRGDoubleAction;
 var
   sr:TUnicodeSearchRec;
   ldir,lname,ltmp:UnicodeString;
@@ -1099,10 +1101,10 @@ begin
     repeat
       if (sr.Attr and faDirectory)=faDirectory then
       begin
-        if (sr.Name<>'.') and (sr.Name<>'..') then
+        if (sr.Name<>'.') and (sr.Name<>'..') and (not nochild) then
         begin
           i:=actrl.NewDir(PUnicodeChar(ldir+sr.Name+'/'));
-          case CycleDir(adir+sr.Name+'/', actrl, ABS(i), aact) of
+          case CycleDir(adir+sr.Name+'/', actrl, ABS(i), aact, false) of
             da_skipall     : aact:=da_skipall;
             da_overwriteall: aact:=da_overwriteall;
             da_stop:begin
@@ -1203,7 +1205,7 @@ begin
     result:=da_ask;
 end;
 
-function TRGController.ImportDir(const adst, adir:string):integer;
+function TRGController.ImportDir(const adst, adir:string; nochild:boolean=false):integer;
 var
   ls:UnicodeString;
   ldir:integer;
@@ -1216,7 +1218,7 @@ begin
   if DirCount=0 then AddPath(nil);
   ldir:=SearchPath(adst);
   if ldir<0 then ldir:=0;
-  CycleDir(ls,self,ldir,da_ask);
+  CycleDir(ls,self,ldir,da_ask,nochild);
 
   // new records only
   // but skip starting empty file

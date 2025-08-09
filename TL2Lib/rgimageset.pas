@@ -213,14 +213,18 @@ begin
       i:=0;
       while Assigned(Child) do
       begin
-        FItems[i].Name:=AnsiString(Child.Attributes.Item[0].NodeValue);
-        Val(Child.Attributes.Item[1].NodeValue,FItems[i].XPos);
-        Val(Child.Attributes.Item[2].NodeValue,FItems[i].YPos);
-        Val(Child.Attributes.Item[3].NodeValue,FItems[i].Width);
-        Val(Child.Attributes.Item[4].NodeValue,FItems[i].Height);
+        if CompareWideI(PWideChar(Child.NodeName),'Image')=0 then
+        begin
+          FItems[i].Name:=AnsiString(Child.Attributes.Item[0].NodeValue);
+          Val(Child.Attributes.Item[1].NodeValue,FItems[i].XPos);
+          Val(Child.Attributes.Item[2].NodeValue,FItems[i].YPos);
+          Val(Child.Attributes.Item[3].NodeValue,FItems[i].Width);
+          Val(Child.Attributes.Item[4].NodeValue,FItems[i].Height);
+          inc(i);
+        end;
         Child:=Child.NextSibling;
-        inc(i);
       end;
+      SetLength(FItems,i);
     end;
 
   finally

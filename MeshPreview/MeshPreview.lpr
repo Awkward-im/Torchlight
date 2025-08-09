@@ -10,7 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, RGObj, Unit1, ImagingOpenGL, lazopenglcontext
+  Forms, RGObj, Unit1, ImagingOpenGL, lazopenglcontext, fm3DView
   { you can add units after this };
 
 {$R *.res}

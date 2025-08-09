@@ -286,6 +286,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGObj"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form3DView"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fm3DView"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

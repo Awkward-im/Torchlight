@@ -9,8 +9,8 @@
         <Filename Value="MeshPreview.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="27"/>
-        <UsageCount Value="38"/>
+        <CursorPos Y="19"/>
+        <UsageCount Value="51"/>
       </Unit>
       <Unit>
         <Filename Value="unit1.pas"/>
@@ -19,10 +19,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <TopLine Value="223"/>
-        <CursorPos Y="229"/>
-        <FoldState Value=" T4602 T3iF0634111 PSne0x"/>
-        <UsageCount Value="38"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="45"/>
+        <CursorPos X="3" Y="68"/>
+        <UsageCount Value="51"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -30,10 +30,10 @@
         <Filename Value="..\Meshes\rgobj.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGObj"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="136"/>
-        <CursorPos X="15" Y="152"/>
-        <UsageCount Value="38"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="448"/>
+        <CursorPos Y="465"/>
+        <UsageCount Value="51"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -41,8 +41,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="3" Y="8"/>
-        <UsageCount Value="38"/>
+        <TopLine Value="759"/>
+        <CursorPos Y="775"/>
+        <UsageCount Value="51"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\logging.pas"/>
@@ -52,7 +53,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="51"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\Imaging\ImagingOpenGL.pas"/>
@@ -60,15 +61,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="545"/>
         <CursorPos Y="509"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="45"/>
       </Unit>
       <Unit>
         <Filename Value="..\Meshes\rg3d.import.inc"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="144"/>
-        <CursorPos Y="171"/>
-        <UsageCount Value="15"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="83"/>
+        <CursorPos Y="98"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -79,9 +79,9 @@
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\picture.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="541"/>
-        <CursorPos Y="547"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="795"/>
+        <CursorPos Y="812"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\components\lazutils\lazutilities.pas"/>
@@ -93,141 +93,186 @@
       </Unit>
       <Unit>
         <Filename Value="..\Meshes\rg3d.Material.inc"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="800"/>
-        <CursorPos Y="821"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="76"/>
+        <CursorPos Y="318"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\Meshes\rg3d.mesh.inc"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="84"/>
-        <CursorPos Y="90"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="90"/>
+        <CursorPos Y="122"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\fpimagebitmap.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="123"/>
+        <CursorPos Y="155"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Meshes\rg3d.hob.inc"/>
+        <EditorIndex Value="4"/>
+        <CursorPos Y="18"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Meshes\rg3d.MDL.inc"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="413"/>
+        <CursorPos Y="433"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Meshes\rg3d.VElist.inc"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="279"/>
+        <CursorPos Y="294"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form3DView"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fm3DView"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="342"/>
+        <CursorPos X="4" Y="395"/>
+        <FoldState Value=" T46021 TLi3443 PEpG0 T7EGi T8P2H1]JI2 T3id056 pjdkH0&apos;414 PlEmR]i6k1017 PPoe]E0kB2M]eiajW2I9]nLl64S5]90i86O]uaT2b"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="312" TopLine="298"/>
+        <Caret Line="229" TopLine="218"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="264" TopLine="248"/>
+        <Caret Line="231" TopLine="218"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="265" TopLine="248"/>
+        <Caret Line="232" TopLine="218"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="267" TopLine="261"/>
+        <Caret Line="233" TopLine="218"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="271" TopLine="261"/>
+        <Caret Line="234" TopLine="218"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="273" TopLine="261"/>
+        <Caret Line="233" Column="35" TopLine="218"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="274" TopLine="261"/>
+        <Caret Line="224" Column="11"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="275" TopLine="261"/>
+        <Caret Line="223" Column="11" TopLine="193"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="277" TopLine="261"/>
+        <Caret Line="53" Column="19" TopLine="30"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="278" TopLine="261"/>
+        <Caret Line="32" Column="9"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="264" TopLine="257"/>
+        <Caret Line="42" Column="54" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="18" Column="19"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="287" TopLine="280"/>
+        <Caret Line="63" Column="12" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="475" TopLine="463"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="476" TopLine="463"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="477" TopLine="469"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="479" TopLine="476"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="515" TopLine="500"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="517" TopLine="500"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="518" TopLine="500"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="519" TopLine="500"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="176" TopLine="166"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="177" TopLine="166"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="179" TopLine="173"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="180" TopLine="173"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="182" TopLine="173"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="264" TopLine="248"/>
+        <Caret Line="64" Column="12" TopLine="33"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="287" TopLine="281"/>
+        <Caret Line="69" TopLine="38"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="317" TopLine="301"/>
+        <Caret Line="68" Column="3" TopLine="45"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="195" TopLine="189"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="227" TopLine="200"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="193" TopLine="184"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="201" TopLine="197"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="202" TopLine="196"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="204" TopLine="196"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="205" TopLine="196"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="207" TopLine="196"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="209" TopLine="196"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="212" TopLine="196"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="214" TopLine="208"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="216" TopLine="208"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="218" TopLine="208"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="219" TopLine="208"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="220" TopLine="208"/>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Caret Line="395" Column="9" TopLine="341"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -235,24 +280,36 @@
       <Modes ActiveMode="default">
         <Mode Name="default">
           <local>
-            <CommandLineParams Value="DISCIPLE.MESH"/>
+            <CommandLineParams Value="D:\Dropbox\src\Data\Meshes\RG\SHARKY\SHARKY.MDL"/>
           </local>
         </Mode>
       </Modes>
     </RunParams>
     <HistoryLists>
-      <List Name="WorkingDirectory" Type="File" Count="1"/>
       <List Name="LaunchingApplication" Type="File" Count="1">
         <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
       </List>
-      <List Name="CommandLineParameters" Count="6">
-        <Item1 Value="DISCIPLE.MESH"/>
-        <Item2 Value="FERRET.MESH"/>
-        <Item3 Value="FERRET.MESH WEASEL_PET.DDS"/>
-        <Item4 Value="1D-mult-FEMALE_MERC_ARMOR.MDL"/>
-        <Item5 Value="1D-multi-PIRATE_BALD.MDL SPACEPIRATE_DIFF.DDS"/>
-        <Item6 Value="1D-multi-PIRATE_BALD.MDL"/>
+      <List Name="CommandLineParameters" Count="18">
+        <Item1 Value="D:\Dropbox\src\Data\Meshes\RG\SHARKY\SHARKY.MDL"/>
+        <Item2 Value="SHARKY.MDL"/>
+        <Item3 Value="GREEL.MDL"/>
+        <Item4 Value="WHALECOW.MDL"/>
+        <Item5 Value="athene.mesh"/>
+        <Item6 Value="BLACKSMITH.MESH"/>
+        <Item7 Value="PIRATE2.MDL"/>
+        <Item8 Value="MINE_HUMAN_HULL.MDL"/>
+        <Item9 Value="FISH_A1.MDL"/>
+        <Item10 Value="C_SNAIL.MDL"/>
+        <Item11 Value="HUM_WANDERER_01.MESH"/>
+        <Item12 Value="HUF_WANDERER_01.MESH"/>
+        <Item13 Value="DISCIPLE.MESH"/>
+        <Item14 Value="FERRET.MESH"/>
+        <Item15 Value="FERRET.MESH WEASEL_PET.DDS"/>
+        <Item16 Value="1D-mult-FEMALE_MERC_ARMOR.MDL"/>
+        <Item17 Value="1D-multi-PIRATE_BALD.MDL SPACEPIRATE_DIFF.DDS"/>
+        <Item18 Value="1D-multi-PIRATE_BALD.MDL"/>
       </List>
+      <List Name="WorkingDirectory" Type="File" Count="1"/>
     </HistoryLists>
   </ProjectSession>
   <Debugging>
@@ -265,6 +322,17 @@
       </Item>
       <Item>
         <Expression Value="FMesh.FTextures[ltxt]"/>
+      </Item>
+      <Item>
+        <Expression Value="fmesh.fmaterials"/>
+        <DisplayFormat ArrayNavBarInherit="False"/>
+      </Item>
+      <Item>
+        <Expression Value="lsm"/>
+      </Item>
+      <Item>
+        <Expression Value="aptr-FBuffer"/>
+        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
       </Item>
     </Watches>
   </Debugging>

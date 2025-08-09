@@ -24,7 +24,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\Meshes;..\TL2Lib;..\Addons;..\Addons\Imaging"/>
+            <OtherUnitFiles Value="..\Meshes;..\TL2Lib;..\Addons;..\Addons\Imaging;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -65,7 +65,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\Meshes;..\TL2Lib;..\Addons;..\Addons\Imaging"/>
+            <OtherUnitFiles Value="..\Meshes;..\TL2Lib;..\Addons;..\Addons\Imaging;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -100,7 +100,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\Meshes;..\TL2Lib;..\Addons;..\Addons\Imaging"/>
+            <OtherUnitFiles Value="..\Meshes;..\TL2Lib;..\Addons;..\Addons\Imaging;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -179,6 +179,14 @@
         <Filename Value="..\Addons\Imaging\ImagingOpenGL.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form3DView"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fm3DView"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -189,7 +197,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\Meshes;..\TL2Lib;..\Addons;..\Addons\Imaging"/>
+      <OtherUnitFiles Value="..\Meshes;..\TL2Lib;..\Addons;..\Addons\Imaging;..\TL2Lib\forms"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

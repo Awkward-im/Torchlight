@@ -1,5 +1,4 @@
 ﻿{}
-{TODO: combine submesh geometries to global one}
 {TODO: options:compact (no binormal and tangent)/generic (as read)}
 {$IFDEF Interface}
 

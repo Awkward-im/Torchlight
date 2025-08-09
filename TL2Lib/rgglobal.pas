@@ -126,6 +126,7 @@ procedure FixFloatStr(var astr:UnicodeString);
 
 function  ReverseWords(aval:QWord):QWord;
 
+function  ChooseEncoding(abuf:PByte):integer;
 function  FastUpCase   (c:UnicodeChar):UnicodeChar;
 function  StrToWide    (const src:AnsiString):PWideChar;
 function  FastStrToWide(const src:AnsiString):PWideChar;
@@ -531,6 +532,13 @@ begin
     j:=1;
   end;
   if j<l then SetLength(astr,j);
+end;
+
+function ChooseEncoding(abuf:PByte):integer;
+begin
+  if (PWord(abuf)^=SIGN_UNICODE) or (PWord(abuf)^<256) then exit(2);
+  if (PDword(abuf)^ and $00FFFFFF)=SIGN_UTF8 then exit(1);
+  result:=0; // ANSI or UTF8
 end;
 
 function BufLen(abuf:PAnsiChar; asize:cardinal):integer;
@@ -984,6 +992,20 @@ begin
       end;
       if elen=0 then
       begin
+        if i=0 then
+        begin
+          slen:=j-1;
+          while slen>1 do
+          begin
+            if AnsiChar(ord(srcname[slen]))='.' then
+            begin
+              SetLength(srcname,j);
+              break;
+            end;
+            dec(slen);
+          end;
+          exit(true);
+        end;
         SetLength(srcname,j);
         exit(true);
       end;
@@ -1010,6 +1032,20 @@ begin
       end;
       if elen=0 then
       begin
+        if i=0 then
+        begin
+          slen:=j-1;
+          while slen>1 do
+          begin
+            if srcname[slen]='.' then
+            begin
+              SetLength(srcname,j);
+              break;
+            end;
+            dec(slen);
+          end;
+          exit(true);
+        end;
         SetLength(srcname,j);
         exit(true);
       end;

@@ -63,6 +63,10 @@ msgstr " Построение дерева"
 msgid "Can't save file"
 msgstr "Не могу сохранить файл"
 
+#: formgui.rschangedfile
+msgid "Changed file"
+msgstr "Изменённый файл"
+
 #: formgui.rscreatedir
 msgid "Create directory"
 msgstr "Создать папку"
@@ -70,6 +74,10 @@ msgstr "Создать папку"
 #: formgui.rscreatefile
 msgid "Create file"
 msgstr "Создать файл"
+
+#: formgui.rsdeletefile
+msgid "Deleted file"
+msgstr "Удалённый файл"
 
 #: formgui.rsdirname
 msgid "Enter dir name"
@@ -111,9 +119,17 @@ msgstr "Файл текстуры"
 msgid " files imported"
 msgstr " файлов импортировано"
 
+#: formgui.rslinkchangedfile
+msgid "Link to changed file"
+msgstr "Ссылка на изменённый файл"
+
 #: formgui.rslinkingnote
 msgid "These files still on disk and not built-in until PAK/MOD saved."
 msgstr "Эти файлы всё ещё на диске и не будут встроены до созранения PAK/MOD."
+
+#: formgui.rslinknewfile
+msgid "Link to new file"
+msgstr "Ссылка на новый файл"
 
 #: formgui.rsmdlcoords
 #, object-pascal-format
@@ -124,6 +140,10 @@ msgstr "Смещение: X: %f; Y: %f; Z: %f"
 #, object-pascal-format
 msgid "Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d"
 msgstr "Пределы: Min:(%f, %f, %f); Max(%f, %f, %f); Частей: %d"
+
+#: formgui.rsnewfile
+msgid "New file"
+msgstr "Новый файл"
 
 #: formgui.rsnothingimported
 msgid "Nothing was imported."

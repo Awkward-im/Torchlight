@@ -9,6 +9,7 @@ object RGGUIForm: TRGGUIForm
   ClientWidth = 944
   Menu = MainMenu
   ShowHint = True
+  LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles
@@ -49,7 +50,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 70
-      Height = 22
+      Height = 5
       Top = 2
       Style = tbsDivider
     end
@@ -361,7 +362,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep1: TToolButton
           Left = 70
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -386,7 +387,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep2: TToolButton
           Left = 203
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -405,7 +406,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep3: TToolButton
           Left = 395
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -418,7 +419,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep4: TToolButton
           Left = 449
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -1015,10 +1016,6 @@ object RGGUIForm: TRGGUIForm
           SelectedColor.ForePriority = 50
           SelectedColor.BackPriority = 50
           SelectedColor.FramePriority = 50
-          SelectedColor.BoldPriority = 0
-          SelectedColor.ItalicPriority = 0
-          SelectedColor.UnderlinePriority = 0
-          SelectedColor.StrikeOutPriority = 0
           SelectedColor.Features = [lafPastEOL]
           BracketHighlightStyle = sbhsBoth
           BracketMatchColor.Foreground = clNone

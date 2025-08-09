@@ -24,8 +24,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit, SynEdit,
   SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
-  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset,
-  SynHighlighterOgre, OpenGLContext, RGObj, FWHexView{, FWHexView.MappedView};
+  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset, fm3dview,
+  SynHighlighterOgre, RGObj, FWHexView{, FWHexView.MappedView};
 
 type
 
@@ -253,15 +253,9 @@ type
     fmImgset:TForm;
     hview:TFWHexView;
     ctrl:TRGController;
+    Form3DView:TForm3dView;
 
-    GLBox:TOpenGLControl;
-    FDoRotateX,FDoRotateY:boolean;
-    FMeshList:integer;
     FMesh:TRGMesh;
-    FGLTextures:TIntegerDynArray;
-    fdist   :single;
-    tx,ty,tz:single;
-    rx,ry,rz:single;
 
     LastExt:string;
     LastFilter:integer;
@@ -280,9 +274,7 @@ type
     PopupNode: TTreeNode;
 
     procedure AddNewDir(anode: TTreeNode; const apath: string);
-    function CheckTexture(const adir, aname: AnsiString): integer;
     procedure ClearInfo();
-    procedure CreateMeshList;
     procedure DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
     function FileClose: boolean;
     procedure FillGrid(idx:integer=-1);
@@ -290,25 +282,15 @@ type
     procedure FillTree();
     procedure AddBranch(aroot: TTreeNode; const aname: string);
     function  GetPathFromNode(aNode: TTreeNode): string;
-    procedure GLBoxClick(Sender: TObject);
-    procedure GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure GLBoxMouseWheelDown(Sender: TObject; Shift: TShiftState;
-      MousePos: TPoint; var Handled: Boolean);
-    procedure GLBoxMouseWheelUp(Sender: TObject; Shift: TShiftState;
-      MousePos: TPoint; var Handled: Boolean);
-    procedure GLBoxPaint(Sender: TObject);
     procedure MarkTree(adir: integer; aEnable: boolean);
     procedure NewPAK;
-    procedure OnGLIdle(Sender: TObject; var Done: Boolean);
     procedure OpenPAK(const aname: string);
     procedure PrepareSound;
-    procedure PrepareTextures();
     procedure PreviewDump();
     procedure PreviewImageset(const adir: string);
     procedure PreviewModel(const adir,aname:string);
     procedure PreviewSound;
-    function SaveFile(const adir, aname: string; adata: PByte; asize: integer;
-      idx: integer): boolean;
+    function  SaveFile(const adir, aname: string; adata: PByte; asize: integer; idx: integer): boolean;
     procedure PreviewImage(const aext: string);
     procedure PreviewSource();
     procedure PreviewLayout();
@@ -484,6 +466,12 @@ resourcestring
 //  rsGameVer         = 'Game';
   rsMdlMeshes       = 'Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d';
   rsMdlCoords       = 'Offset: X: %f; Y: %f; Z: %f';
+
+  rsNewFile         = 'New file';
+  rsChangedFile     = 'Changed file';
+  rsDeleteFile      = 'Deleted file';
+  rsLinkNewFile     = 'Link to new file';
+  rsLinkChangedFile = 'Link to changed file';
 
 {%ENDREGION Constants}
 
@@ -1249,7 +1237,8 @@ begin
     end;
 
     // save binary file
-    if not (rbTextOnly.Checked and ((ltype and $FF)=typeData)) then
+    if not (rbTextOnly.Checked and ((ltype and $FF)=typeData)) or
+       (ltype>$100) then
     begin
       ls:=loutdir+aname+lext;
       AssignFile(f,ls);
@@ -1416,7 +1405,7 @@ var
   i:integer;
   bNoTree,bRoot,bEmpty,bParent:boolean;
 begin
-  Self.ActiveControl:=SGMain;
+  if PageControl.ActivePage=Grid then Self.ActiveControl:=SGMain;
   lblInfo1.Caption:='';
   lblInfo2.Caption:='';
 
@@ -1425,22 +1414,7 @@ begin
 
   if fmLEdit <>nil then fmLEdit .Visible:=false;
   if fmImgSet<>nil then fmImgSet.Visible:=false;
-  if GLBox   <>nil then
-  begin
-    if GLBox.Visible then
-    begin
-      Application.RemoveOnIdleHandler(@OnGLIdle);
-      GLBox.Visible:=false;
-      glDeleteLists(FMeshList,1);
-
-      for i:=0 to High(FGLTextures) do
-        if FGLTextures[i]>0 then
-          glDeleteTextures(1,@FGLTextures[i]);
-      SetLength(FGLTextures,0);
-
-      FMesh.Free;
-    end;
-  end;
+  if Form3dView<>nil then Form3dView.Visible:=false;
 
   SynEdit.Clear;
   SynEdit.Visible:=false;
@@ -1586,319 +1560,21 @@ begin
     [FMesh.BoundMin.X,FMesh.BoundMin.Y,FMesh.BoundMin.Z,
      FMesh.BoundMax.X,FMesh.BoundMax.Y,FMesh.BoundMax.Z,
      FMesh.SubMeshCount])+' '+ls;
-  lblInfo2.Caption:=Format(rsMdlCoords,[tx,ty,tz]);
-end;
-
-const
-   DiffuseLight: array[0..3] of GLfloat = (0.8, 0.8, 0.8, 1);
-
-procedure TRGGUIForm.GLBoxMouseWheelDown(Sender: TObject; Shift: TShiftState;
-  MousePos: TPoint; var Handled: Boolean);
-begin
-  if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
-  GLBox.Invalidate;
-  ShowModelInfo();
-end;
-
-procedure TRGGUIForm.GLBoxMouseWheelUp(Sender: TObject; Shift: TShiftState;
-  MousePos: TPoint; var Handled: Boolean);
-begin
-  if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
-  GLBox.Invalidate;
-  ShowModelInfo();
-end;
-
-procedure TRGGUIForm.GLBoxClick(Sender: TObject);
-begin
-  FDoRotateY:=not FDoRotateY;
-end;
-
-procedure TRGGUIForm.GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  case Key of
-    VK_ESCAPE: begin
-      FDoRotateX:=false;
-      FDoRotateY:=false;
-      rx:=0;
-      ry:=0;
-      rz:=0;
-    end;
-    VK_SPACE : FDoRotateY:=not FDoRotateY;
-    VK_RETURN: FDoRotateX:=not FDoRotateX;
-    VK_UP    : ty:=ty+0.1;
-    VK_DOWN  : ty:=ty-0.1;
-    VK_LEFT  : tx:=tx-0.1;
-    VK_RIGHT : tx:=tx+0.1;
-    VK_PRIOR : if ssShift in Shift then tz:=tz+0.4 else tz:=tz+0.1;
-    VK_NEXT  : if ssShift in Shift then tz:=tz-0.4 else tz:=tz-0.1;
-  else
-    exit;
-  end;
-  ShowModelInfo();
-end;
-
-procedure TRGGUIForm.OnGLIdle(Sender: TObject; var Done: Boolean);
-begin
-  Done:=false;
-  GLBox.Invalidate;
-end;
-
-function TRGGUIForm.CheckTexture(const adir,aname:AnsiString):integer;
-var
-  lname:AnsiString;
-  limage:TImageData;
-  lpic:TPicture;
-  lstr:TMemoryStream;
-  lbuf:PByte;
-  lsize,lfile:integer;
-  lDDS:boolean;
-begin
-  result:=0;
-  
-  lDDS:=ExtractExt(aname)='.DDS';
-
-  lfile:=ctrl.SearchFile(adir+aname);
-  if lfile<0 then
-  begin
-    if lDDS then exit(0);
-
-    lfile:=ctrl.SearchFile(adir+ChangeFileExt(aname,'.DDS'));
-    if lfile<0 then exit(0);
-    lDDS:=true;
-  end;
-  lbuf:=nil;
-  lsize:=ctrl.GetBinary(lfile,lbuf);
-  if lsize>0 then
-  begin
-    if lDDS or
-      ((lbuf[0]=ORD('D')) and
-       (lbuf[1]=ORD('D')) and
-       (lbuf[2]=ORD('S'))) then
-    begin
-      result:=LoadGLTextureFromMemory(lbuf,lsize)
-    end
-    else
-    begin
-      lstr:=TMemoryStream.Create();
-      lpic:=TPicture.Create;
-      try
-        // PUData cleared in ClearInfo() and/or FormClose;
-        lstr.SetBuffer(lbuf);
-        lpic.LoadFromStream(lstr);
-        ConvertBitmapToData(lpic.Bitmap,limage);
-      finally
-        lstr.Free;
-        lpic.Free;
-      end;
-      result:=CreateGLTextureFromImage(limage);
-      FreeImage(limage);
-    end;
-
-  end;
-  FreeMem(lbuf);
-end;
-
-procedure TRGGUIForm.PrepareTextures();
-var
-  lsm:PRGSubMesh;
-  lmat:PMaterial;
-  ldir:AnsiString;
-  i,j,k:integer;
-  ltxt:integer;
-begin
-  i:=Length(FMesh.FTextures);
-  SetLength(FGLTextures,i);
-//  FillChar(FGLTextures,FGLTextures[0],SizeOf(FGLTextures[0])*i);
-
-  ldir:=sgMain.Cells[colDir,sgMain.Row];
-
-  for i:=1 to FMesh.SubMeshCount do
-  begin
-    lsm:=FMesh.SubMesh[i];
-    lmat:=@FMesh.FMaterials[lsm^.Material];
-
-    for k:=0 to txtLast do
-    begin
-      ltxt:=lmat^.Textures[k];
-      if (ltxt>=0) and (FGLTextures[ltxt]=0) then
-      begin
-        FGLTextures[ltxt]:=CheckTexture(ldir,FMesh.FTextures[ltxt]);
-      end;
-    end;
-
-  end;
-end;
-
-procedure TRGGUIForm.CreateMeshList;
-var
-  lsm:PRGSubMesh;
-  i,j,ltex:integer;
-  v4:TVector3;
-  lp:PIntVector3;
-  ln,lv:PVector3;
-  lt:PVector2;
-begin
-  PrepareTextures();
-
-  glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
-  glEnable(GL_TEXTURE_2D);
-
-  FMeshList:=glGenLists(1);
-  glNewList(FMeshList,GL_COMPILE);
-
-  for j:=1 to FMesh.SubMeshCount do
-  begin
-    lsm:=FMesh.SubMesh[j];
-
-    for i:=0 to txtLast do
-    begin
-      ltex:=FMesh.FMaterials[lsm^.Material].textures[i];
-      if ltex>=0 then
-      begin
-        ltex:=FGLTextures[ltex];
-        break;
-      end;
-    end;
-    if ltex<0 then ltex:=0;
-    glBindTexture(GL_TEXTURE_2D, ltex);
-
-    glBegin(GL_TRIANGLES);
-
-    lp:=lsm^.Face;
-    lv:=lsm^.Vertices[VES_POSITION];
-    ln:=lsm^.Vertices[VES_NORMAL];
-    lt:=lsm^.Vertices[VES_TEXTURE_COORDINATES,0];
-    for i:=0 to lsm^.FaceCount-1 do
-    begin
-      if lt<>nil then glTexCoord2fv(@lt[lp[i].X]);
-      glNormal3fv(@ln[lp[i].X]);
-      glVertex3fv(@lv[lp[i].X]);
-
-      if lt<>nil then glTexCoord2fv(@lt[lp[i].Y]);
-      glNormal3fv(@ln[lp[i].Y]);
-      glVertex3fv(@lv[lp[i].Y]);
-
-      if lt<>nil then glTexCoord2fv(@lt[lp[i].Z]);
-      glNormal3fv(@ln[lp[i].Z]);
-      glVertex3fv(@lv[lp[i].Z]);
-    end;
-
-    glEnd;
-  end;
-
-  glEndList;
-end;
-
-procedure TRGGUIForm.GLBoxPaint(Sender: TObject);
-var
-//  i:integer;
-//  lsm:PRGSubMesh;
-  Speed: Double;
-//  wx,wy,wz:single;
-begin
-  glClearColor(0.27, 0.53, 0.71, 1.0); // Задаем синий фон
-
-  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-
-  if FMeshList<>0 then
-  begin
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity;
-    gluPerspective(45.0, double(GLBox.width) / GLBox.height, 0.1, fdist);
-    //    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 200.0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity;
-
-//    if (wx>200) or (wy>200) or (wz>200) then glScalef(0.1, 0.1, 0.1);
-    glTranslatef(tx, ty, tz);
-
-    glRotatef(rx,1.0,0.0,0.0);
-    glRotatef(ry,0.0,1.0,0.0);
-//    glRotatef(rz,0.0,0.0,1.0);
-    Speed := double(GLBox.FrameDiffTimeInMSecs)/100;
-    if FDoRotateX then rx:=rx+5.15*Speed;
-    if FDoRotateY then ry:=ry+5.15*Speed;
-//      rz:=rz+20.0*Speed;
-
-    glCallList(FMeshList);
-  end;
-
-  GLbox.SwapBuffers;
+//  lblInfo2.Caption:=Format(rsMdlCoords,[tx,ty,tz]);
 end;
 
 procedure TRGGUIForm.PreviewModel(const adir,aname:string);
-var
-  lbuf:PByte;
-  wx,wy,wz:single;
-  lfile,lsize:integer;
 begin
-  if GLBox=nil then
+  if Form3DView=nil then
   begin
-    GLBox:=TOpenGLControl.Create(Self);
-    with GLBox do
-    begin
-      Name  :='GLBox';
-      Parent:=pnlAdd;
-      Align :=alClient;
-      AutoResizeViewport:=true;
-
-      OnClick         :=@GLBoxClick;
-      OnPaint         :=@GLBoxPaint;
-      OnKeyDown       :=@GLBoxKeyDown;
-      OnMouseWheelUp  :=@GLBoxMouseWheelUp;
-      OnMouseWheelDown:=@GLBoxMouseWheelDown;
-    end;
+    Form3DView:=TForm3dView.Create(Self);
+    Form3DView.Parent:=pnlAdd;
+    Form3DView.Align :=alClient;
+    Form3DView.SetContainer(@ctrl);
   end;
 
-  FMesh.Init;
-  FMesh.ImportFromMemory(FUData,FUSize);
-  if FMesh.MeshVersion<>99 then
-  begin
-    lbuf:=nil;
-    lfile:=ctrl.SearchFile(adir+ChangeFileExt(aname,'.MATERIAL'));
-    if lfile>=0 then
-    begin
-      lsize:=ctrl.GetSource(lfile,lbuf);
-      if lsize>0 then
-        FMesh.ReadMaterialSimple(lbuf,lsize);
-      FreeMem(lbuf);
-    end;
-  end;
-
-  CreateMeshList();
-
-  FDoRotateX:=false;
-  FDoRotateY:=false;
-  rx:=0;
-  ry:=0;
-  rz:=0;
-
-  wx:=FMesh.BoundMax.X-FMesh.BoundMin.X;
-  wy:=FMesh.BoundMax.Y-FMesh.BoundMin.Y;
-  wz:=FMesh.BoundMax.Z-FMesh.BoundMin.Z;
-  if wx<wy then wx:=wy;
-
-  tx:=-(FMesh.BoundMax.X+FMesh.BoundMin.X)/2;
-  ty:=-(FMesh.BoundMax.Y+FMesh.BoundMin.Y)/2;
-  tz:=-(wz+wx);
-  if tz<-200 then tz:=-200;
-
-  fdist:=-(wz+wx)*2;
-  if fdist<200 then fdist:=200;
-
-  GLBox.Visible:=true;
-
-  glEnable(GL_DEPTH_TEST);
-
-  glEnable(GL_LIGHTING);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
-  glEnable(GL_LIGHT0);
-
-  Application.AddOnIdleHandler(@OnGLIdle);
-
-  Self.ActiveControl:=GLBox;
+  Form3DView.LoadFromMemory(FUData,FUSize,adir+aname);
+  Form3DView.Visible:=true;
 
   ShowModelInfo();
 end;
@@ -2093,7 +1769,7 @@ begin
         inc(pc);
         dec(lsize,2);
       end;
-      if ((lsize and 1)=0) and (ORD(pc^)<256) then
+      if (pc<>PWideChar(FUData)) or (((lsize and 1)=0) and (ORD(pc^)<256)) then
         ltext:=WideToStr(pc,lsize div 2);
     end;
     // Check for Ansi/UTF8
@@ -2430,6 +2106,7 @@ var
   ldlg:TSaveDialog;
   ldir,lname:string;
   pc:PWideChar;
+  lpc:PAnsiChar;
   lbuf:PByte;
   lsize,i:integer;
 begin
@@ -2437,7 +2114,7 @@ begin
   lname:=sgMain.Cells[colName,sgMain.Row]+
          sgMain.Cells[colExt ,sgMain.Row];
 
-  if (GLBox<>nil) and GLBox.Visible then
+  if (Form3dView<>nil) and Form3dView.Visible then
   begin
     ldlg:=TSaveDialog.Create(self);
     ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
@@ -2473,7 +2150,33 @@ begin
     lsize:=TFormLayoutEdit(fmLEdit).GetFile(lbuf,ctrl.PAK.Version);
 
   if SynEdit.Visible then
-    lsize:=CompileFile(PByte(PChar(SynEdit.Text)),lname,lbuf,ctrl.PAK.Version);
+  begin
+    if SynEdit.Highlighter=SynTSyn then
+      lsize:=CompileFile(PByte(PChar(SynEdit.Text)),lname,lbuf,ctrl.PAK.Version)
+    else
+    begin
+      if ChooseEncoding(FUData)=2 then
+      begin
+        lsize:=2+Length(SynEdit.Text)*2;
+        GetMem(lbuf,lsize+2);
+        PWord(lbuf)^:=SIGN_UNICODE;
+        pc:=StrToWide(SynEdit.Text);
+        move(pc^,(lbuf+2)^,lsize-2);
+        FreeMem(pc);
+        lbuf[lsize  ]:=0;
+        lbuf[lsize+1]:=0;
+      end
+      else // skip UTF8 check
+      begin
+        lsize:=3+Length(SynEdit.Text);
+        GetMem(lbuf,lsize+1);
+        PDword(lbuf)^:=SIGN_UTF8;
+        lpc:=PAnsiChar(SynEdit.Text);
+        move(lpc^,(lbuf+3)^,lsize-3);
+        lbuf[lsize]:=0;
+      end;
+    end;
+  end;
 
   if lsize>0 then
   begin
@@ -2806,17 +2509,30 @@ end;
 
 procedure TRGGUIForm.sgMainGetCellHint(Sender: TObject; ACol, ARow: Integer; var HintText: String);
 var
+  ls:string;
   i:integer;
 begin
-  if (ACol=colName) and (ARow>0) and (ARow<=sgMain.RowCount) and
+  if (ARow>0) and (ARow<=sgMain.RowCount) and
      (tvTree.Selected<>nil) and
      (IntPtr(UIntPtr(tvTree.Selected.Data))>=0) and
      (IntPtr(UIntPtr(sgMain.Objects[colName,ARow]))>=0) then
   begin
     i:=IntPtr(sgMain.Objects[colName,ARow]);
-     HintText:=
+    if (ACol=colName) then
+    begin
+		  HintText:=
          WideToStr(ctrl.PathOfFile(i))+
-         WideToStr(ctrl.Files[i]^.Name);
+         WideToStr(ctrl.Files[i]^.Name)
+    end
+    else if (ACol=colState) then
+    begin
+      ls:=sgMain.Cells[colState,ARow];
+           if ls=stlblNew     then HintText:=rsNewFile
+      else if ls=stlblChanged then HintText:=rsChangedFile
+      else if ls=stlblDelete  then HintText:=rsDeleteFile
+      else if ls=stlblLinkNew then HintText:=rsLinkNewFile
+      else if ls=stlblLinkEd  then HintText:=rsLinkChangedFile
+    end;
   end;
 
 {

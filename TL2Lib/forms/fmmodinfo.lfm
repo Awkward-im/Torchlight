@@ -6,7 +6,7 @@ object MODInfoForm: TMODInfoForm
   Caption = 'MOD Info'
   ClientHeight = 320
   ClientWidth = 751
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   object seVersion: TSpinEditEx
     Left = 7
     Height = 23
