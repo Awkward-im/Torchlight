@@ -255,8 +255,6 @@ type
     ctrl:TRGController;
     Form3DView:TForm3dView;
 
-    FMesh:TRGMesh;
-
     LastExt:string;
     LastFilter:integer;
     FLastIndex:integer;
@@ -465,7 +463,7 @@ resourcestring
 //  rsChooseVer       = 'Choose game';
 //  rsGameVer         = 'Game';
   rsMdlMeshes       = 'Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d';
-  rsMdlCoords       = 'Offset: X: %f; Y: %f; Z: %f';
+//  rsMdlCoords       = 'Offset: X: %f; Y: %f; Z: %f';
 
   rsNewFile         = 'New file';
   rsChangedFile     = 'Changed file';
@@ -1402,7 +1400,6 @@ end;
 procedure TRGGUIForm.ClearInfo();
 var
   lstr:TStream;
-  i:integer;
   bNoTree,bRoot,bEmpty,bParent:boolean;
 begin
   if PageControl.ActivePage=Grid then Self.ActiveControl:=SGMain;
@@ -1552,14 +1549,14 @@ var
   ls: AnsiString;
 begin
   // #meshes, have skeleton
-  if FMesh.BoneCount>0 then
+  if Form3DView.Mesh.BoneCount>0 then
     ls:='+bones'
   else
     ls:='-bones';
   lblInfo1.Caption:=Format(rsMdlMeshes,
-    [FMesh.BoundMin.X,FMesh.BoundMin.Y,FMesh.BoundMin.Z,
-     FMesh.BoundMax.X,FMesh.BoundMax.Y,FMesh.BoundMax.Z,
-     FMesh.SubMeshCount])+' '+ls;
+    [Form3DView.Mesh.BoundMin.X,Form3DView.Mesh.BoundMin.Y,Form3DView.Mesh.BoundMin.Z,
+     Form3DView.Mesh.BoundMax.X,Form3DView.Mesh.BoundMax.Y,Form3DView.Mesh.BoundMax.Z,
+     Form3DView.Mesh.SubMeshCount])+' '+ls;
 //  lblInfo2.Caption:=Format(rsMdlCoords,[tx,ty,tz]);
 end;
 
@@ -2133,9 +2130,9 @@ begin
 
       if not ForceDirectories(loutdir) then exit;
 }
-      FMesh.SaveToXML(ChangeFileExt(ldlg.FileName,'.xml'));
-      if FMesh.MeshVersion in [90,91,99] then
-        FMesh.SaveMaterial(ChangeFileExt(ldlg.FileName,'.material'));
+      Form3DView.Mesh.SaveToXML(ChangeFileExt(ldlg.FileName,'.xml'));
+      if Form3DView.Mesh.MeshVersion in [90,91,99] then
+        Form3DView.Mesh.SaveMaterial(ChangeFileExt(ldlg.FileName,'.material'));
     end;
     ldlg.Free;
     exit;

@@ -1,4 +1,6 @@
-{NOTE: single-use form maybe ok for rggui but not for viewer/mesh browser}
+{TODO: ui for choosing texture for mesh/submesh}
+{TODO: ui for choosing submesh for show}
+{TODO: statusbar with? offset? corner? visible submesh count?}
 {TODO: list of alt textures for mesh/submesh}
 {TODO: list of submeshes to show/hide}
 {TODO: recreate form every time}
@@ -12,7 +14,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, OpenGLContext, GL, glu,
-  rgglobal, rgctrl, rgobj, lcltype, Types;
+  rgglobal, rgctrl, rgobj, lcltype, ExtCtrls, Types;
 
 type
 
@@ -20,6 +22,10 @@ type
 
   TForm3dView = class(TForm)
     GLBox: TOpenGLControl;
+    pnlLeft: TPanel;
+    pnlStatus: TPanel;
+    pnlOptions: TPanel;
+    splLeft: TSplitter;
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -35,6 +41,7 @@ type
     fname:AnsiString;
     FMeshList:integer;
     FGLTextures:TIntegerDynArray;
+    FSubOpt:pointer;
 
     FDoRotateX,FDoRotateY,FDoRotateZ:boolean;
     tx,ty,tz:single; // transition
@@ -45,6 +52,7 @@ type
     procedure ResetPosition;
     procedure PrepareTextures(const adir:string);
     procedure CreateMeshList;
+    procedure SetSubMeshOpts();
 
   public
     Mesh:TRGMesh;
@@ -82,6 +90,12 @@ uses
   ImagingDds,
   ImagingNetworkGraphics,
   ImagingOpenGL;
+
+type
+  TSubMeshOption = record
+    show:boolean;
+  end;
+  TSubMeshOptions = array of TSubMeshOption;
 
 const
    DiffuseLight: array[0..3] of GLfloat = (0.8, 0.8, 0.8, 1);
@@ -192,6 +206,8 @@ begin
 
   for j:=1 to Mesh.SubMeshCount do
   begin
+    if not TSubMeshOptions(FSubOpt)[j-1].show then continue;
+
     lsm:=Mesh.SubMesh[j];
 
     for i:=0 to txtLast do
@@ -388,6 +404,18 @@ end;
 {%ENDREGION Model}
 
 {%REGION Load}
+procedure TForm3dView.SetSubMeshOpts();
+var
+  i:integer;
+begin
+  SetLength(TSubMeshOptions(FSubOpt),0);
+  SetLength(TSubMeshOptions(FSubOpt),Mesh.SubMeshCount);
+  for i:=0 to Mesh.SubMeshCount-1 do
+  begin
+    TSubMeshOptions(FSubOpt)[i].show:=true;
+  end;
+end;
+
 procedure TForm3dView.SetContainer(actrl:PRGController);
 begin
   ctrl:=actrl;
@@ -521,6 +549,7 @@ procedure TForm3dView.FormDestroy(Sender: TObject);
 begin
   Visible:=false;
   Mesh.Free;
+  SetLength(TSubMeshOptions(FSubOpt),0);
 end;
 {%ENDREGION Form}
 

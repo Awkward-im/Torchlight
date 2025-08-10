@@ -7,15 +7,14 @@ object Form3DView: TForm3DView
   BorderStyle = bsNone
   ClientHeight = 468
   ClientWidth = 811
-  LCLVersion = '4.99.0.0'
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
   object GLBox: TOpenGLControl
-    Left = 0
-    Height = 468
-    Top = 0
-    Width = 811
+    Left = 229
+    Height = 408
+    Top = 30
+    Width = 582
     Align = alClient
     AutoResizeViewport = True
     OnClick = GLBoxClick
@@ -23,5 +22,39 @@ object Form3DView: TForm3DView
     OnMouseWheelDown = FormMouseWheelDown
     OnMouseWheelUp = FormMouseWheelUp
     OnPaint = GLBoxPaint
+  end
+  object pnlOptions: TPanel
+    Left = 0
+    Height = 30
+    Top = 0
+    Width = 811
+    Align = alTop
+    TabOrder = 1
+    Visible = False
+  end
+  object pnlStatus: TPanel
+    Left = 0
+    Height = 30
+    Top = 438
+    Width = 811
+    Align = alBottom
+    TabOrder = 2
+    Visible = False
+  end
+  object pnlLeft: TPanel
+    Left = 0
+    Height = 408
+    Top = 30
+    Width = 224
+    Align = alLeft
+    TabOrder = 3
+    Visible = False
+  end
+  object splLeft: TSplitter
+    Left = 224
+    Height = 408
+    Top = 30
+    Width = 5
+    Visible = False
   end
 end
