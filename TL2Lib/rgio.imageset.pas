@@ -20,23 +20,18 @@ implementation
 uses
   SysUtils,
   dom,xmlread,
-  rwmemory,
 
-  dict,
-  logging,
-  rgdict,
-
-  rgstream,
   rgio.dat,
   rgio.text,
   rgnode;
 
 
-procedure ReadXMLText(out ADoc: TXMLDocument; const astr:AnsiString);
+function ReadXMLText(out ADoc: TXMLDocument; const astr:AnsiString):boolean;
 var
   lin:TXMLInputSource;
   adom:TDOMParser;
 begin
+  result:=false;
   lin  := TXMLInputSource.Create(astr);
   adom := TDOMParser.Create;
   try
@@ -45,6 +40,7 @@ begin
     adom.Free;
     lin.Free;
   end;
+  result:=true;
 end;
 
 {
@@ -103,15 +99,18 @@ begin
       buf:='IMAGE';
       while Assigned(Child) do
       begin
-        RGIntToStr(@buf[5],i);
-        limage:=AddGroup(result,@buf);
-        AddString (limage,'NAME'  ,           PWideChar(Child.Attributes.Item[0].NodeValue));
-        AddInteger(limage,'X'     ,RGStrToInt(PWideChar(Child.Attributes.Item[1].NodeValue)));
-        AddInteger(limage,'Y'     ,RGStrToInt(PWideChar(Child.Attributes.Item[2].NodeValue)));
-        AddInteger(limage,'WIDTH' ,RGStrToInt(PWideChar(Child.Attributes.Item[3].NodeValue)));
-        AddInteger(limage,'HEIGHT',RGStrToInt(PWideChar(Child.Attributes.Item[4].NodeValue)));
+        if CompareWideI(PWideChar(Child.NodeName),'Image')=0 then
+        begin
+          RGIntToStr(@buf[5],i);
+          limage:=AddGroup(result,@buf);
+          AddString (limage,'NAME'  ,           PWideChar(Child.Attributes.Item[0].NodeValue));
+          AddInteger(limage,'X'     ,RGStrToInt(PWideChar(Child.Attributes.Item[1].NodeValue)));
+          AddInteger(limage,'Y'     ,RGStrToInt(PWideChar(Child.Attributes.Item[2].NodeValue)));
+          AddInteger(limage,'WIDTH' ,RGStrToInt(PWideChar(Child.Attributes.Item[3].NodeValue)));
+          AddInteger(limage,'HEIGHT',RGStrToInt(PWideChar(Child.Attributes.Item[4].NodeValue)));
+          inc(i);
+        end;
         Child:=Child.NextSibling;
-        inc(i);
       end;
       if i>0 then AsInteger(lcount,i);
     end;

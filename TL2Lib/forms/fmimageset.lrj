@@ -1,0 +1,6 @@
+{"version":1,"strings":[
+{"hash":155035492,"name":"tformimageset.cbdarkbg.caption","sourcebytes":[68,97,114,107,32,66,97,99,107,103,114,111,117,110,100],"value":"Dark Background"},
+{"hash":236724675,"name":"tformimageset.statusbar.panels[1].text","sourcebytes":[67,116,114,108,45,65,32,116,111,32,115,101,108,101,99,116,32,97,108,108,32,105,116,101,109,115,32,105,110,32,108,105,115,116,44,32,67,116,114,108,45,83,32,116,111,32,101,120,116,114,97,99,116,32,115,101,108,101,99,116,101,100,32,105,116,101,109,115],"value":"Ctrl-A to select all items in list, Ctrl-S to extract selected items"},
+{"hash":195296268,"name":"tformimageset.miselectall.caption","sourcebytes":[83,101,108,101,99,116,32,97,108,108],"value":"Select all"},
+{"hash":217810916,"name":"tformimageset.miextract.caption","sourcebytes":[69,120,116,114,97,99,116],"value":"Extract"}
+]}

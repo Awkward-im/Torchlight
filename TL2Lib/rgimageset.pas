@@ -1,7 +1,11 @@
 {
   !! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 }
-{TODO ParseFromMemory: don't call UseImageFile directly}
+{NOTE: texture file have path, but imageset is not}
+{TODO: load all imagesets in dir}
+{TODO: save imageset dirs too}
+{TODO: ParseFromMemory: don't call UseImageFile directly}
+{TODO: Save as DAT/XML}
 unit RGImageset;
 
 {$mode ObjFPC}{$H+}
@@ -15,24 +19,40 @@ uses
 
 
 type
+  TImagesetFile = record
+    Name :string;
+    Sheet:string;
+    Image:TImageData;
+  end;
+
+  TImagesetItem = record
+    Name  :string;
+    XPos,
+    YPos,
+    Width,
+    Height: integer;
+    ISFile: integer;
+  end;
+
+type
+
+  { TRGImageset }
+
   TRGImageset = object
   private
     FOutputPath  :string;
-    FImagesetName:string;
-    FImageName   :string;
-    FItems:array of record
-      Name  :string;
-      XPos,
-      YPos,
-      Width,
-      Height: integer;
-    end;
 
-    procedure FillListDAT(astr: PWideChar);
-    procedure FillListXML(const astr: AnsiString);
+    procedure SetOutputPath(const apath:string);
+    procedure CheckImageset();
+    procedure CheckItem(alen: integer);
+    function FillListDAT(astr: PWideChar): boolean;
+    function FillListXML(const astr: AnsiString): boolean;
 
   public
-    Image:TImageData;
+    Imagesets:array of TImagesetFile;
+    Items    :array of TImagesetItem;
+    ItemCount    :integer;
+    ImagesetCount:integer;
 
     procedure Init;
     procedure Free;
@@ -40,40 +60,31 @@ type
     function ParseFromFile  (const aname:string       ):boolean;      // disk file
     function ParseFromMemory(abuf:PByte; asize:integer):boolean;      // memory buffer
     // input picture
-    function UseImageset                         :boolean;            // file from imageset info
-    function UseImageFile   (const aname:string ):boolean;            // disk file
-    function UseImageData   (adata:TImageData   ):boolean;            // from Imaging library
-    function UseController  (actrl:TRGController):boolean;            // game archive/PAK
-    function UseImageMemory (abuf:PByte; asize:integer):boolean;      // memory buffer
-    // output path
-    procedure OutputPath(const apath:string);
-    // info
-    function GetCount():integer;
-    function NameByIndex(aidx:integer):string;
-    function IndexByName(const aname:string):integer;
-    function GetBounds(idx:integer):TRect;
+    function UseImageset   (                           ais: integer=-1): boolean;  // file from imageset info
+    function UseImageFile  (const aname:string       ; ais: integer=-1): boolean;  // disk file
+    function UseImageData  (adata:TImageData         ; ais: integer=-1): boolean;  // from Imaging library
+    function UseController (actrl:TRGController      ; ais: integer=-1): boolean;  // game archive/PAK
+    function UseImageMemory(abuf:PByte; asize:integer; ais: integer=-1): boolean;  // memory buffer
+    // sprite info
+    function ItemByName(const aname:string):integer;
+    function ItemBounds(idx:integer):TRect;
 
     // single sprite
-    function GetSprite(      idx  :integer; var asprite:TImageData):boolean;
     function GetSprite(const aname:string ; var asprite:TImageData):boolean;
-    function GetSprite(const aname:string ; astrm:TStream):integer;   // by name , to stream
-    function GetSprite(      idx  :integer; astrm:TStream):integer;   // by index, to stream
-    function GetSprite(const aname:string ; var buf:PByte):integer;   // by name , to memory buffer
-    function GetSprite(      idx  :integer; var buf:PByte):integer;   // by index, to memory buffer
+    function GetSprite(      idx  :integer; var asprite:TImageData):boolean;
+    function GetSprite(const aname:string ; astrm:TStream):integer;
+    function GetSprite(      idx  :integer; astrm:TStream):integer;
+    function GetSprite(const aname:string ; var buf:PByte):integer;
+    function GetSprite(      idx  :integer; var buf:PByte):integer;
     // extract to disk
-    function ExtractSprite(const aname :string             ):boolean; // by name , to disk file
-    function ExtractSprite(      idx   :integer            ):boolean; // by index, to disk file
-    function ExtractSprite(const anames:array of string    ):integer; // array of names
-    function ExtractSprite(      anames:TStrings           ):integer; // StringList of names
-    function ExtractRect  (const aname :string ;arect:TRect):boolean;
-    function Extract:integer;
+    function ExtractSprite(const aname :string         ):boolean;
+    function ExtractSprite(      idx   :integer        ):boolean;
+    function ExtractSprite(const anames:array of string):integer;
+    function ExtractSprite(      anames:TStrings       ):integer;
 
-//    property Image:TImageData read FImage write FImage;
-    property ImageFile:string  read FImageName write FImageName;
-    property Count:integer read GetCount;
-    property Name  [idx:integer ]:string  read NameByIndex;
-    property Index [aname:string]:integer read IndexByName;
-    property Bounds[idx:integer ]:TRect   read GetBounds;
+    function ExtractAll(aimgset: integer=-1): integer;
+
+    property OutputPath:string read FOutputPath write SetOutputPath;
   end;
 
 
@@ -84,6 +95,7 @@ uses
   rgglobal, rgio.Text, rgstream, rgNode;
 
 {%REGION Extract}
+{
 function TRGImageset.ExtractRect(const aname:string; arect:TRect):boolean;
 var
   lsprite:TImageData;
@@ -104,35 +116,65 @@ begin
   SaveImageToFile(ls+'\'+aname+'.png',lsprite);
   FreeImage(lsprite);
 end;
-
-function TRGImageset.Extract:integer;
+}
+function TRGImageset.ExtractAll(aimgset:integer=-1):integer;
 var
-  i:integer;
+  i,j,llow,lhi:integer;
 begin
   result:=0;
 
-  ForceDirectories(FOutputPath+FImagesetName);
-
-  for i:=0 to High(FItems) do
+  if aimgset<0 then
   begin
-    if ExtractRect(Fitems[i].Name, Rect(
-        FItems[i].XPos ,FItems[i].YPos,
-        FItems[i].Width,FItems[i].Height)) then inc(result);
+    llow:=0;
+    lhi :=ImagesetCount-1;
+  end
+  else
+  begin
+    llow:=aimgset;
+    lhi :=aimgset;
+  end;
+  for i:=llow to lhi do
+  begin
+    ForceDirectories(FOutputPath+Imagesets[i].Name);
+
+    for j:=0 to ItemCount-1 do
+    begin
+      with Items[j] do
+        if ISFile=i then
+        begin
+          if ExtractSprite(j) then inc(result);
+//          if ExtractRect(Name, Rect(XPos, YPos, Width, Height)) then inc(result);
+        end;
+    end;
   end;
 end;
 
 function TRGImageset.ExtractSprite(idx:integer):boolean;
+var
+  lsprite:TImageData;
+  ls:string;
 begin
-  if (idx<0) or (idx>=Length(FItems)) then exit(false);
+  if (idx<0) or (idx>=ItemCount) then exit(false);
 
-  result:=ExtractRect(Fitems[idx].Name, Rect(
-     FItems[idx].XPos ,FItems[idx].YPos,
-     FItems[idx].Width,FItems[idx].Height))
+  with Items[idx] do
+  begin
+    NewImage(Width,Height,
+             Imagesets[ISFile].Image.Format,lsprite);
+    CopyRect(Imagesets[ISFile].Image,
+      XPos, YPos, Width, Height,
+      lsprite,0,0);
+
+    ls:=FOutputPath+Imagesets[ISFile].Name;
+    if not DirectoryExists(ls) then
+      ForceDirectories(ls);
+    SaveImageToFile(ls+'\'+Name+'.png',lsprite);
+  end;
+  FreeImage(lsprite);
 end;
 
 function TRGImageset.ExtractSprite(const aname:string):boolean;
 begin
-  result:=ExtractSprite(IndexByName(aname));
+  result:=ExtractSprite(ItemByName(aname));
 end;
 
 function TRGImageset.ExtractSprite(const anames:array of string):integer;
@@ -160,11 +202,18 @@ begin
 end;
 
 procedure TRGImageset.Free;
+var
+  i:integer;
 begin
-  FreeImage(Image);
+  for i:=0 to ImagesetCount-1 do
+    FreeImage(Imagesets[i].Image);
+  SetLength(Imagesets,0);
+  SetLength(Items    ,0);
+  ImagesetCount:=0;
+  ItemCount    :=0;
 end;
 
-procedure TRGImageset.OutputPath(const apath:string);
+procedure TRGImageset.SetOutputPath(const apath:string);
 begin
   FOutputPath:=apath;
   if not (apath[Length(apath)] in ['\','/']) then
@@ -172,11 +221,25 @@ begin
 end;
 
 {%REGION Imageset}
-procedure ReadXMLText(out ADoc: TXMLDocument; const astr:AnsiString);
+procedure TRGImageset.CheckImageset();
+begin
+  inc(ImagesetCount);
+  if ImagesetCount>=Length(Imagesets) then
+    SetLength(Imagesets,Length(Imagesets)+8);
+end;
+
+procedure TRGImageset.CheckItem(alen:integer);
+begin
+  if (ItemCount+alen)>=Length(Items) then
+    SetLength(Items,Align(Length(Items)+alen,16));
+end;
+
+function ReadXMLText(out ADoc: TXMLDocument; const astr:AnsiString):boolean;
 var
   lin:TXMLInputSource;
   adom:TDOMParser;
 begin
+  result:=false;
   lin  := TXMLInputSource.Create(astr);
   adom := TDOMParser.Create;
   try
@@ -185,72 +248,78 @@ begin
     adom.Free;
     lin.Free;
   end;
+  result:=true;
 end;
 
 //  Name, XPos, YPos, Width, Height
-procedure TRGImageset.FillListXML(const astr:AnsiString);
+function TRGImageset.FillListXML(const astr:AnsiString):boolean;
 var
   lpic:TDomNode;
   Doc: TXMLDocument;
   Child: TDOMNode;
-  i:integer;
 begin
-  ReadXMLText(Doc,astr);
-  try
-    lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Name');
-    if lpic<>nil then FImagesetName:=AnsiString(lpic.NodeValue);
+  result:=ReadXMLText(Doc,astr);
+  if result then
+  begin
+    CheckImageset();
+    try
+      lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Name');
+      if lpic<>nil then Imagesets[ImagesetCount-1].Name:=AnsiString(lpic.NodeValue);
 
-    lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Imagefile');
-    if lpic=nil then exit;
+      lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Imagefile');
+      if lpic=nil then exit;
 
-    FImageName:=AnsiString(lpic.NodeValue);
-    if Doc.DocumentElement.ChildNodes.Count>0 then
-    begin
-      Child:=Doc.DocumentElement.FirstChild;
-      if Child=nil then exit;
-
-      SetLength(FItems,Doc.DocumentElement.ChildNodes.Count);
-      i:=0;
-      while Assigned(Child) do
+      Imagesets[ImagesetCount-1].Sheet:=AnsiString(lpic.NodeValue);
+      if Doc.DocumentElement.ChildNodes.Count>0 then
       begin
-        if CompareWideI(PWideChar(Child.NodeName),'Image')=0 then
-        begin
-          FItems[i].Name:=AnsiString(Child.Attributes.Item[0].NodeValue);
-          Val(Child.Attributes.Item[1].NodeValue,FItems[i].XPos);
-          Val(Child.Attributes.Item[2].NodeValue,FItems[i].YPos);
-          Val(Child.Attributes.Item[3].NodeValue,FItems[i].Width);
-          Val(Child.Attributes.Item[4].NodeValue,FItems[i].Height);
-          inc(i);
-        end;
-        Child:=Child.NextSibling;
-      end;
-      SetLength(FItems,i);
-    end;
+        Child:=Doc.DocumentElement.FirstChild;
+        if Child=nil then exit;
 
-  finally
-    Doc.Free;
+        CheckItem(Doc.DocumentElement.ChildNodes.Count);
+
+        while Assigned(Child) do
+        begin
+          if CompareWideI(PWideChar(Child.NodeName),'Image')=0 then
+          begin
+            Items[ItemCount].Name:=AnsiString(Child.Attributes.Item[0].NodeValue);
+            Items[ItemCount].ISFile:=ImagesetCount-1;
+            Val(Child.Attributes.Item[1].NodeValue,Items[ItemCount].XPos);
+            Val(Child.Attributes.Item[2].NodeValue,Items[ItemCount].YPos);
+            Val(Child.Attributes.Item[3].NodeValue,Items[ItemCount].Width);
+            Val(Child.Attributes.Item[4].NodeValue,Items[ItemCount].Height);
+            inc(ItemCount);
+          end;
+          Child:=Child.NextSibling;
+        end;
+      end;
+
+    finally
+      Doc.Free;
+    end;
   end;
 end;
 
-procedure TRGImageset.FillListDAT(astr:PWideChar);
+function TRGImageset.FillListDAT(astr:PWideChar):boolean;
 var
   lnode,lchild,larg:pointer;
   lname,pc:PWideChar;
-  lcnt,i,j:integer;
+  i,j:integer;
   lx,ly,lwidth,lheight:integer;
 begin
-  if WideToNode(astr,0,lnode)=0 then
+  result:=WideToNode(astr,0,lnode)=0;
+  if result then
   begin
-    FImagesetName:=WideToStr(GetNodeName(lnode));
+    CheckImageset();
+    Imagesets[ImagesetCount-1].Name:=WideToStr(GetNodeName(lnode));
     // more than needs really
-    SetLength(FItems,GetChildCount(lnode));
-    lcnt:=0;
+    CheckItem(GetChildCount(lnode));
+
     for i:=0 to GetChildCount(lnode)-1 do
     begin
       lchild:=GetChild(lnode,i);
       case GetNodeType(lchild) of
         rgString: if CompareWide(GetNodeName(lchild),'FILE')=0 then
-          FImageName:=WideToStr(AsString(lchild));
+          Imagesets[ImagesetCount-1].Sheet:=WideToStr(AsString(lchild));
         rgGroup: begin
           lname  :=nil;
           lx     :=0;
@@ -269,12 +338,13 @@ begin
           end;
           if (lname<>nil) and (lwidth>0) and (lheight>0) then
           begin
-            FItems[lcnt].Name  :=FastWideToStr(lname);
-            FItems[lcnt].XPos  :=lx;
-            FItems[lcnt].YPos  :=ly;
-            FItems[lcnt].Width :=lwidth;
-            FItems[lcnt].Height:=lheight;
-            inc(lcnt)
+            Items[ItemCount].Name  :=FastWideToStr(lname);
+            Items[ItemCount].ISFile:=ImagesetCount-1;
+            Items[ItemCount].XPos  :=lx;
+            Items[ItemCount].YPos  :=ly;
+            Items[ItemCount].Width :=lwidth;
+            Items[ItemCount].Height:=lheight;
+            inc(ItemCount);
           end;
         end;
       else
@@ -291,19 +361,18 @@ var
   ls:string;
 begin
   result:=false;
-
+{
   FImageName   :='';
   FImagesetName:='';
 
   FreeImage(Image);
-
+}
   lpc:=PAnsiChar(abuf);
   if (PDword(abuf)^ and $00FFFFFF)=SIGN_UTF8 then inc(lpc,3);
   if lpc^='<' then
   begin
     SetString(ls,lpc,asize);
-    FillListXML(ls);
-    result:=true;
+    result:=FillListXML(ls);
   end
   else
   begin
@@ -311,14 +380,17 @@ begin
     if ORD(pc^)=SIGN_UNICODE then inc(pc);
     if pc^='[' then
     begin
-      FillListDAT(pc);
-      result:=true;
+      result:=FillListDAT(pc);
     end;
   end;
 
-  if FImagesetName='' then FImagesetName:='imagesets';
+  if result then
+  begin
+    if Imagesets[ImagesetCount-1].Name='' then
+       Imagesets[ImagesetCount-1].Name:='imagesets';
 
-  UseImageFile(FImageName);
+    UseImageFile(Imagesets[ImagesetCount-1].Sheet);
+  end;
 end;
 
 function TRGImageset.ParseFromFile(const aname:string):boolean;
@@ -350,7 +422,7 @@ end;
 
 {%REGION Image}
 {$I-}
-function TRGImageset.UseImageFile(const aname:string):boolean;
+function TRGImageset.UseImageFile(const aname:string; ais:integer=-1):boolean;
 var
   f:file of byte;
   lbuf:PByte;
@@ -387,107 +459,69 @@ begin
     GetMem(lbuf,lsize);
     BlockRead(f,lbuf^,lsize);
     CloseFile(f);
-    result:=UseImageMemory(lbuf,lsize);
+    result:=UseImageMemory(lbuf,lsize,ais);
     FreeMem(lbuf);
   end;
 end;
 
-function TRGImageset.UseImageMemory(abuf:PByte; asize:integer):boolean;
-{
-var
-  lstr:TMemoryStream;
-  lpic:TPicture;
-}
+function TRGImageset.UseImageMemory(abuf:PByte; asize:integer; ais:integer=-1):boolean;
 begin
-  FreeImage(Image);
-  LoadImageFromMemory(abuf,asize,Image);
-(*
-  if (abuf[0]=ORD('D')) and
-     (abuf[1]=ORD('D')) and
-     (abuf[2]=ORD('S')) then
-  begin
-    FreeImage(Image);
-    LoadImageFromMemory(abuf,asize,Image);
-  end
-  // Use LCL code to load non-DDS formats
-  else
-  begin
-    lstr:=TMemoryStream.Create();
-    lpic:=TPicture.Create;
-    try
-      // PUData cleared in ClearInfo() and/or FormClose;
-      lstr.SetBuffer(abuf);
-      lpic.LoadFromStream(lstr);
-      FreeImage(Image);
-      ConvertBitmapToData(lpic.Bitmap,Image);
-    finally
-      lstr.Free;
-      lpic.Free;
-    end;
-  end;
-*)
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  FreeImage(Imagesets[ais].Image);
+  LoadImageFromMemory(abuf,asize,Imagesets[ais].Image);
   result:=UseImageset();
 end;
 
-function TRGImageset.UseImageset:boolean;
+function TRGImageset.UseImageset(ais:integer=-1):boolean;
 begin
-  result:=(Image.Width>0) and (Image.Height>0) and (Image.Bits<>nil);
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  with Imagesets[ais].Image do
+    result:=(Width>0) and (Height>0) and (Bits<>nil);
 end;
 
-function TRGImageset.UseImageData(adata:TImageData):boolean;
+function TRGImageset.UseImageData(adata:TImageData; ais:integer=-1):boolean;
 begin
-  FreeImage(Image);
-  result:=CloneImage(adata, Image);
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  FreeImage(Imagesets[ais].Image);
+  result:=CloneImage(adata, Imagesets[ais].Image);
 end;
 
-function TRGImageset.UseController(actrl:TRGController):boolean;
+function TRGImageset.UseController(actrl:TRGController; ais:integer=-1):boolean;
 var
   lbuf:PByte;
   lfile,lsize:integer;
 begin
   result:=false;
-  lfile:=actrl.SearchFile(FImageName);
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  lfile:=actrl.SearchFile(Imagesets[ais].Sheet);
   if lfile>=0 then
   begin
     lbuf:=nil;
     lsize:=actrl.GetSource(lfile,lbuf);
-    result:=UseImageMemory(lbuf,lsize);
+    result:=UseImageMemory(lbuf,lsize,ais);
     FreeMem(lbuf);
   end
 end;
 {%ENDREGION Image}
 
 {%REGION Info}
-function TRGImageset.GetCount():integer;
-begin
-  result:=Length(FItems);
-end;
-
-function TRGImageset.NameByIndex(aidx:integer):string;
-begin
-  if (aidx>=0) and (aidx<Length(FItems)) then
-    result:=FItems[aidx].Name
-  else
-    result:='';
-end;
-
-function TRGImageset.IndexByName(const aname:string):integer;
+function TRGImageset.ItemByName(const aname:string):integer;
 var
   i:integer;
 begin
   if aname<>'' then
-    for i:=0 to High(FItems) do
-      if FItems[i].Name=aname then exit(i);
+    for i:=0 to ItemCount-1 do
+      if Items[i].Name=aname then exit(i);
 
   result:=-1;
 end;
 
-function TRGImageset.GetBounds(idx:integer):TRect;
+function TRGImageset.ItemBounds(idx:integer):TRect;
 begin
-  if (idx>=0) and (idx<Length(FItems)) then
+  if (idx>=0) and (idx<ItemCount) then
     result:=Rect(
-        FItems[idx].XPos ,FItems[idx].YPos,
-        FItems[idx].Width,FItems[idx].Height)
+        Items[idx].XPos ,Items[idx].YPos,
+        Items[idx].Width,Items[idx].Height)
   else
     result:=Rect(0,0,0,0);
 end;
@@ -496,23 +530,26 @@ end;
 {%REGION Sprite}
 function TRGImageset.GetSprite(idx:integer; var asprite:TImageData):boolean;
 begin
-  if (idx>=0) and (idx<Length(FItems)) then
+  if (idx>=0) and (idx<ItemCount) then
   begin
-    NewImage(FItems[idx].Width,FItems[idx].Height,
-            Image.Format,asprite);
-    CopyRect(Image,
-      FItems[idx].XPos ,FItems[idx].YPos,
-      FItems[idx].Width,FItems[idx].Height,
-      asprite,0,0);
+    with Items[idx] do
+    begin
+      NewImage(Width,Height,
+               Imagesets[ISFile].Image.Format,asprite);
+      CopyRect(Imagesets[ISFile].Image,
+        XPos, YPos, Width, Height,
+        asprite,0,0);
+    end;
 
-    exit(true);
-  end;
-  result:=false;
+    result:=true;
+  end
+  else
+    result:=false;
 end;
 
 function TRGImageset.GetSprite(const aname:string; var asprite:TImageData):boolean;
 begin
-  result:=GetSprite(IndexByName(aname),asprite);
+  result:=GetSprite(ItemByName(aname),asprite);
 end;
 
 function TRGImageset.GetSprite(idx:integer; astrm:TStream):integer;
@@ -534,7 +571,7 @@ end;
 
 function TRGImageset.GetSprite(const aname:string; astrm:TStream):integer;
 begin
-  result:=GetSprite(IndexByName(aname),astrm);
+  result:=GetSprite(ItemByName(aname),astrm);
 end;
 
 function TRGImageset.GetSprite(idx:integer; var buf:PByte):integer;
@@ -553,7 +590,7 @@ end;
 
 function TRGImageset.GetSprite(const aname:string; var buf:PByte):integer;
 begin
-  result:=GetSprite(IndexByName(aname),buf);
+  result:=GetSprite(ItemByName(aname),buf);
 end;
 
 {%ENDREGION Sprite}

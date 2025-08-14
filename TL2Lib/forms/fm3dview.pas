@@ -1,9 +1,6 @@
 {TODO: ui for choosing texture for mesh/submesh}
-{TODO: ui for choosing submesh for show}
 {TODO: statusbar with? offset? corner? visible submesh count?}
 {TODO: list of alt textures for mesh/submesh}
-{TODO: list of submeshes to show/hide}
-{TODO: recreate form every time}
 {TODO: if recreate set ctrl at constructor}
 {TODO: set parent at constructor}
 unit fm3DView;
@@ -14,18 +11,22 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, OpenGLContext, GL, glu,
-  rgglobal, rgctrl, rgobj, lcltype, ExtCtrls, Types;
+  rgglobal, rgctrl, rgobj, lcltype, ExtCtrls, CheckLst, Buttons, Types;
 
 type
 
   { TForm3dView }
 
   TForm3dView = class(TForm)
+    bbCbSubMesh: TBitBtn;
+    clbSubMesh: TCheckListBox;
     GLBox: TOpenGLControl;
     pnlLeft: TPanel;
     pnlStatus: TPanel;
     pnlOptions: TPanel;
     splLeft: TSplitter;
+    procedure bbCbSubMeshClick(Sender: TObject);
+    procedure clbSubMeshClickCheck(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -49,6 +50,7 @@ type
     fdist   :single;
 
     function CheckTexture(const adir, aname: AnsiString): integer;
+    procedure FreeTextures;
     procedure ResetPosition;
     procedure PrepareTextures(const adir:string);
     procedure CreateMeshList;
@@ -118,6 +120,7 @@ end;
 procedure TForm3dView.GLBoxClick(Sender: TObject);
 begin
   FDoRotateY:=not FDoRotateY;
+  (Owner as TForm).ActiveControl:=GLBox;
 end;
 
 procedure TForm3dView.GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -196,7 +199,7 @@ var
 begin
   if FMeshList<>0 then exit;
 
-  PrepareTextures(ExtractPath(fname));
+//  PrepareTextures(ExtractPath(fname));
 
   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
   glEnable(GL_TEXTURE_2D);
@@ -206,7 +209,7 @@ begin
 
   for j:=1 to Mesh.SubMeshCount do
   begin
-    if not TSubMeshOptions(FSubOpt)[j-1].show then continue;
+    if (FSubOpt<>nil) and (not TSubMeshOptions(FSubOpt)[j-1].show) then continue;
 
     lsm:=Mesh.SubMesh[j];
 
@@ -387,32 +390,45 @@ begin
   if fdist<200 then fdist:=200;
 end;
 
-procedure TForm3dView.FreeModel;
+procedure TForm3dView.FreeTextures;
 var
   i:integer;
+begin
+  for i:=0 to High(FGLTextures) do
+    if FGLTextures[i]>0 then
+      glDeleteTextures(1,@FGLTextures[i]);
+  SetLength(FGLTextures,0);
+end;
+
+procedure TForm3dView.FreeModel;
 begin
   if FMeshList=0 then exit;
 
   glDeleteLists(FMeshList,1);
   FMeshList:=0;
-
-  for i:=0 to High(FGLTextures) do
-    if FGLTextures[i]>0 then
-      glDeleteTextures(1,@FGLTextures[i]);
-  SetLength(FGLTextures,0);
 end;
 {%ENDREGION Model}
 
 {%REGION Load}
 procedure TForm3dView.SetSubMeshOpts();
 var
+  ls:string;
   i:integer;
 begin
   SetLength(TSubMeshOptions(FSubOpt),0);
+  clbSubMesh.Clear;
+  if Mesh.SubMeshCount=1 then exit;
+
   SetLength(TSubMeshOptions(FSubOpt),Mesh.SubMeshCount);
+  clbSubMesh.Items.Capacity:=Mesh.SubMeshCount;
   for i:=0 to Mesh.SubMeshCount-1 do
   begin
     TSubMeshOptions(FSubOpt)[i].show:=true;
+    ls:=Mesh.SubMesh[i+1]^.Name;
+    if ls='' then ls:='Mesh '+IntToStr(i+1)+
+       ' ('+Mesh.FMaterials[Mesh.SubMesh[i+1]^.Material].name+')';
+    clbSubMesh.Items.Add(ls);
+    clbSubMesh.Checked[i]:=true;//All(cbChecked);
   end;
 end;
 
@@ -434,6 +450,8 @@ begin
   begin
     fname:=afname;
     ResetPosition();
+    SetSubMeshOpts();
+
     if (afname<>'') and (Mesh.MeshVersion<>99) then
     begin
       AssignFile(f,ChangeFileExt(afname,'.MATERIAL'));
@@ -495,6 +513,7 @@ begin
         begin
           fname:=afname;
           ResetPosition();
+          SetSubMeshOpts();
 
           if Mesh.MeshVersion<>99 then
           begin
@@ -508,7 +527,7 @@ begin
               FreeMem(lbuf);
             end;
           end;
-          CreateMeshList();
+//          CreateMeshList();
         end;
         exit;
       end;
@@ -519,6 +538,7 @@ begin
   begin
     fname:=afname;
     ResetPosition();
+    SetSubMeshOpts();
 //    CreateMeshList();
   end;
 end;
@@ -533,6 +553,7 @@ begin
   glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
   glEnable(GL_LIGHT0);
 
+  PrepareTextures(ExtractPath(fname));
   CreateMeshList();
 
   Application.AddOnIdleHandler(@On3DViewIdle);
@@ -542,6 +563,7 @@ end;
 procedure TForm3dView.FormHide(Sender: TObject);
 begin
   Application.RemoveOnIdleHandler(@On3DViewIdle);
+  FreeTextures();
   FreeModel();
 end;
 
@@ -551,6 +573,27 @@ begin
   Mesh.Free;
   SetLength(TSubMeshOptions(FSubOpt),0);
 end;
+
+procedure TForm3dView.clbSubMeshClickCheck(Sender: TObject);
+var
+  i:integer;
+begin
+  if Mesh.SubMeshCount=1 then exit;
+
+  for i:=0 to Mesh.SubMeshCount-1 do
+  begin
+    TSubMeshOptions(FSubOpt)[i].show:=clbSubMesh.Checked[i];
+  end;
+   FreeModel();
+   CreateMeshList();
+end;
+
+procedure TForm3dView.bbCbSubMeshClick(Sender: TObject);
+begin
+  pnlLeft.Visible:=not pnlLeft.Visible;
+  splLeft.Visible:=not splLeft.Visible;
+end;
+
 {%ENDREGION Form}
 
 initialization

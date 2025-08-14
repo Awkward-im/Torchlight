@@ -1,3 +1,4 @@
+{TODO: keep column sort on dir change}
 {TODO: 3d view, change texture by choosing file}
 {TODO: preview bytes values as different types}
 {TODO: make dump text/bytes search}
@@ -1236,7 +1237,7 @@ begin
 
     // save binary file
     if not (rbTextOnly.Checked and ((ltype and $FF)=typeData)) or
-       (ltype>$100) then
+       ((ltype=typeImageset) and (not ldecompiled)) then
     begin
       ls:=loutdir+aname+lext;
       AssignFile(f,ls);
@@ -1410,8 +1411,13 @@ begin
   pnlAudio.Visible:=false;
 
   if fmLEdit <>nil then fmLEdit .Visible:=false;
-  if fmImgSet<>nil then fmImgSet.Visible:=false;
   if Form3dView<>nil then Form3dView.Visible:=false;
+
+  if fmImgSet<>nil then
+  begin
+    fmImgSet.Visible:=false;
+    TFormImageset(fmImgSet).FImageset.Free;
+  end;
 
   SynEdit.Clear;
   SynEdit.Visible:=false;
@@ -2758,6 +2764,16 @@ begin
 
   sgMain.RowCount:=lcnt;
   actEdExport.Enabled:=(lcnt-lbase)>0;
+
+  if sgSortColumn>=0 then
+  begin
+    if (tvTree.Items.Count>0) and (tvTree.Selected<>tvTree.Items[0]) then
+      lbase:=1
+    else
+      lbase:=0;
+    sgMain.SortColRow(True, sgSortColumn, sgMain.FixedRows+lbase, sgMain.RowCount-1);
+  end;
+
 
   if lcnt=1 then
   begin

@@ -19,8 +19,8 @@ uses
 type
   TRGImageset = object(rgimageset.TRGImageset)
   public
-    function  UseImagePicture(apic:TPicture):boolean;                 // TPicture class
-    procedure GetImage(apic:TPicture);
+    function UseImagePicture(apic: TPicture; ais: integer=-1): boolean;                 // TPicture class
+    procedure GetImage(apic: TPicture; ais: integer=-1);
     function  GetSprite(const aname:string ; apic:TPicture):boolean;  // by name , to TPicture
     function  GetSprite(      idx  :integer; apic:TPicture):boolean;  // by index, to TPicture
   end;
@@ -32,21 +32,23 @@ uses
   Classes,
   Imaging, ImagingTypes, ImagingComponents;
 
-procedure TRGImageset.GetImage(apic:TPicture);
+procedure TRGImageset.GetImage(apic:TPicture; ais:integer=-1);
 begin
-  if Image.Format=IFUnknown then
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  if Imagesets[ais].Image.Format=IFUnknown then
   begin
     apic.Clear;
     exit;
   end;
   //  if UseImageset then
-    ConvertDataToBitmap(Image,apic.Bitmap);
+    ConvertDataToBitmap(Imagesets[ais].Image,apic.Bitmap);
 end;
 
-function TRGImageset.UseImagePicture(apic:TPicture):boolean;
+function TRGImageset.UseImagePicture(apic:TPicture; ais:integer=-1):boolean;
 begin
-  FreeImage(Image);
-  ConvertBitmapToData(apic.Bitmap,Image);
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  FreeImage(Imagesets[ais].Image);
+  ConvertBitmapToData(apic.Bitmap,Imagesets[ais].Image);
   result:=UseImageSet();
 end;
 
@@ -55,28 +57,31 @@ var
   lsprite:TImageData;
   lrc:TRect;
 begin
-  if Image.Format=IFUnknown then exit(false);
+  result:=false;
 
-  if (idx>=0) and (idx<Count) then
+  if (idx>=0) and (idx<ItemCount) then
   begin
-    lrc:=Bounds[idx];
-    NewImage(lrc.Right,lrc.Bottom,
-            Image.Format,lsprite);
-    CopyRect(Image,
-      lrc.Left ,lrc.Top,
-      lrc.Right,lrc.Bottom,
-      lsprite,0,0);
+    with Items[idx] do
+    begin
+      if Imagesets[ISFile].Image.Format=IFUnknown then exit;
+      lrc:=ItemBounds(idx);
+      NewImage(lrc.Right,lrc.Bottom,
+               Imagesets[ISFile].Image.Format,lsprite);
+      CopyRect(Imagesets[ISFile].Image,
+        lrc.Left ,lrc.Top,
+        lrc.Right,lrc.Bottom,
+        lsprite,0,0);
+    end;
     ConvertDataToBitmap(lsprite,apic.Bitmap);
     FreeImage(lsprite);
 
-    exit(true);
+    result:=true;
   end;
-  result:=false;
 end;
 
 function TRGImageset.GetSprite(const aname:string; apic:TPicture):boolean;
 begin
-  result:=GetSprite(IndexByName(aname),apic);
+  result:=GetSprite(ItemByName(aname),apic);
 end;
 
 

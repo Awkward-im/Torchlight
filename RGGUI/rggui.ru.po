@@ -11,6 +11,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.4\n"
 
+#: fmimageset.rsallimagesets
+msgid "All imagesets"
+msgstr ""
+
+#: fmimageset.rsloadimageset
+msgid "Load imageset"
+msgstr "Загрузить imageset"
+
+#: fmimageset.rssavesprite
+msgid "Save sprite"
+msgstr "Сохранить спрайт"
+
 #: fmlayoutedit.rsalter
 msgid "If property name marked as unsupported but have space or underscore, try to switch them."
 msgstr "Если свойство помечено неподдерживаемым но содержит пробел или почёркивание, попробуйте поменять одно на другое."
@@ -131,11 +143,6 @@ msgstr "Эти файлы всё ещё на диске и не будут вс�
 msgid "Link to new file"
 msgstr "Ссылка на новый файл"
 
-#: formgui.rsmdlcoords
-#, object-pascal-format
-msgid "Offset: X: %f; Y: %f; Z: %f"
-msgstr "Смещение: X: %f; Y: %f; Z: %f"
-
 #: formgui.rsmdlmeshes
 #, object-pascal-format
 msgid "Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d"
@@ -218,7 +225,7 @@ msgstr "Внимание!"
 
 #: imaging.sallfilter
 msgid "All Images"
-msgstr ""
+msgstr "Все картинки"
 
 #: imaging.serrorbadimage
 msgid "Bad image detected."
@@ -447,6 +454,27 @@ msgstr "Сохранить"
 msgid "Save log to file"
 msgstr "Сохранить лог в файл"
 
+#: tform3dview.bbcbsubmesh.hint
+msgid "Show list of submeshes to switch show on/off"
+msgstr "Показать список сабмешей для отображения"
+
+#: tformimageset.cbdarkbg.caption
+msgctxt "tformimageset.cbdarkbg.caption"
+msgid "Dark Background"
+msgstr "Тёмный фон"
+
+#: tformimageset.miextract.caption
+msgid "Extract"
+msgstr "Извлечь"
+
+#: tformimageset.miselectall.caption
+msgid "Select all"
+msgstr "Выбрать всё"
+
+#: tformimageset.statusbar.panels[1].text
+msgid "Ctrl-A to select all items in list, Ctrl-S to extract selected items"
+msgstr "Ctrl-A для выбора всех элементов, Ctrl-S сохранить выбранные"
+
 #: tformlayoutedit.acttreedeletenode.caption
 msgid "Delete Object"
 msgstr "Удалить объект"
@@ -472,6 +500,7 @@ msgid "Change game target without rebuild files"
 msgstr "Выбор версии игры без пересбора"
 
 #: trgguiform.actdarkbg.caption
+msgctxt "trgguiform.actdarkbg.caption"
 msgid "Dark Background"
 msgstr "Тёмный фон"
 

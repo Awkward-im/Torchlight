@@ -6,7 +6,6 @@ object FormImageset: TFormImageset
   BorderStyle = bsNone
   ClientHeight = 473
   ClientWidth = 667
-  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object Splitter1: TSplitter
@@ -37,19 +36,6 @@ object FormImageset: TFormImageset
     ParentBackground = False
     ParentColor = False
     TabOrder = 1
-    object lbImages: TListBox
-      Left = 1
-      Height = 256
-      Top = 1
-      Width = 168
-      Align = alClient
-      ItemHeight = 0
-      MultiSelect = True
-      PopupMenu = mnuImgSet
-      TabOrder = 0
-      OnClick = lbImagesClick
-      OnKeyDown = lbImagesKeyDown
-    end
     object Splitter2: TSplitter
       Cursor = crVSplit
       Left = 1
@@ -67,7 +53,7 @@ object FormImageset: TFormImageset
       Align = alBottom
       ClientHeight = 187
       ClientWidth = 168
-      TabOrder = 2
+      TabOrder = 1
       object cbDarkBg: TCheckBox
         Left = 1
         Height = 19
@@ -88,6 +74,61 @@ object FormImageset: TFormImageset
         Proportional = True
         Stretch = True
         Transparent = True
+      end
+    end
+    object lbImagesets: TListBox
+      Left = 1
+      Height = 104
+      Top = 1
+      Width = 168
+      Align = alTop
+      ItemHeight = 0
+      TabOrder = 2
+      OnSelectionChange = lbImagesetsSelectionChange
+    end
+    object Splitter3: TSplitter
+      Cursor = crVSplit
+      Left = 1
+      Height = 5
+      Top = 105
+      Width = 168
+      Align = alTop
+      ResizeAnchor = akTop
+    end
+    object pnlImages: TPanel
+      Left = 1
+      Height = 147
+      Top = 110
+      Width = 168
+      Align = alClient
+      ClientHeight = 147
+      ClientWidth = 168
+      TabOrder = 4
+      object lbImages: TListBox
+        Left = 1
+        Height = 122
+        Top = 24
+        Width = 166
+        Align = alClient
+        ItemHeight = 0
+        MultiSelect = True
+        PopupMenu = mnuImgSet
+        TabOrder = 0
+        OnKeyDown = lbImagesKeyDown
+        OnSelectionChange = lbImagesSelectionChange
+      end
+      object lfeImages: TListFilterEdit
+        Left = 1
+        Height = 23
+        Top = 1
+        Width = 166
+        OnAfterFilter = lfeImagesAfterFilter
+        ButtonWidth = 23
+        Align = alTop
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 1
+        FilteredListbox = lbImages
       end
     end
   end
