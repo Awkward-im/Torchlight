@@ -19,10 +19,10 @@ uses
 type
   TRGImageset = object(rgimageset.TRGImageset)
   public
-    function UseImagePicture(apic: TPicture; ais: integer=-1): boolean;                 // TPicture class
-    procedure GetImage(apic: TPicture; ais: integer=-1);
-    function  GetSprite(const aname:string ; apic:TPicture):boolean;  // by name , to TPicture
-    function  GetSprite(      idx  :integer; apic:TPicture):boolean;  // by index, to TPicture
+    function  UseImagePicture(apic: TPicture; ais:integer=-1):boolean;
+    procedure GetImage       (apic: TPicture; ais:integer=-1);
+    function  GetSprite(const aname:string ; apic:TPicture):boolean;
+    function  GetSprite(      idx  :integer; apic:TPicture):boolean;
   end;
 
 

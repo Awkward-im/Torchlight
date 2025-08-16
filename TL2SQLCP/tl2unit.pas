@@ -124,10 +124,10 @@ type
     procedure memEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure TL2GridClick(Sender: TObject);
     procedure TL2GridDblClick(Sender: TObject);
-    procedure TL2GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
-    procedure TL2GridGetEditText(Sender: TObject; ACol, ARow: Integer; var Value: string);
     procedure TL2GridHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
     procedure TL2GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure TL2GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
+    procedure TL2GridGetEditText(Sender: TObject; ACol, ARow: Integer; var Value: string);
     procedure TL2GridSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
     procedure TL2GridSelectEditor(Sender: TObject; aCol, aRow: Integer; var Editor: TWinControl);
     procedure TL2GridSetCheckboxState(Sender: TObject; ACol, ARow: Integer; const Value: TCheckboxState);
@@ -954,6 +954,10 @@ begin
   begin
 //    actOpenSourceExecute(Sender);
     Key:=0;
+    inherited;
+
+    TL2GridDblClick(Sender);
+    exit;
   end;
 
   if (Key=VK_RETURN) and
@@ -1056,6 +1060,7 @@ function TMainTL2TransForm.FillProjectSGRow(aRow, idx:integer;
 begin
   result:=false;
 
+  if (TRCache[idx].flags and rfIsDeleted)<>0 then exit;
   if (TRCache[idx].flags and rfIsFiltered)=0 then exit;
 
   // Display Mode

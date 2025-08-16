@@ -1,4 +1,4 @@
-{TODO: Preview Imageset as text}
+{TODO: Preview Imageset as text (memo), select text line of sprite}
 {TODO: edit imageset (name, sprite, text) and save}
 unit fmImageset;
 
@@ -136,7 +136,7 @@ begin
   if Shift=[ssCtrl] then
   begin
     if (Key=VK_A) then lbImages.SelectAll;
-    if (Key=VK_S) then miExtractClick(Sender);
+    if (Key=VK_S) or (Key=VK_E) then miExtractClick(Sender);
     Key:=0;
   end;
 end;
@@ -158,8 +158,15 @@ begin
     begin
       if ExtractExt(ldlg.FileName)='' then
         ldlg.FileName:=ldlg.FileName+'.png';
+
+{
+      FImageset.ExtractSprite(
+        IntPtr(lbImages.Items.Objects[lbImages.ItemIndex]),
+        ldlg.FileName);
+}
+      imgSprite.Picture.PNG.SaveToFile(ldlg.FileName);
       //!!!! check why saves as BMP !!!!
-      imgSprite.Picture.SaveToFile(ldlg.FileName,'.png');
+//      imgSprite.Picture.SaveToFile(ldlg.FileName,'png');
     end;
     ldlg.Free;
   end
@@ -210,15 +217,6 @@ begin
   imgTexture.Repaint;
 end;
 
-procedure TFormImageset.lfeImagesAfterFilter(Sender: TObject);
-begin
-  if lbImages.Items.Count>0 then
-  begin
-    lbImages.ItemIndex:=0;
-//    lbImagesClick(Sender);
-  end;
-end;
-
 procedure TFormImageset.lbImagesSelectionChange(Sender: TObject; User: boolean);
 begin
   if lbImages.ItemIndex>=0 then
@@ -260,22 +258,62 @@ begin
   FillSpriteList(IntPtr(lbImagesets.Items.Objects[lbImagesets.ItemIndex]));
 end;
 
+procedure TFormImageset.lfeImagesAfterFilter(Sender: TObject);
+begin
+  if lbImages.Items.Count>0 then
+  begin
+    lbImages.ItemIndex:=0;
+//    lbImagesClick(Sender);
+  end;
+end;
+
 procedure TFormImageset.FillSpriteList(ais:integer);
 var
   i:integer;
 begin
+  rectBorder:=Rect(0,0,0,0);
+{
+  lfeImages.Items.Clear;
+  lfeImages.Text:='';
+  for i:=0 to FImageset.ItemCount-1 do
+    if (ais<0) or (ais=FImageset.Items[i].ISFile) then
+      lfeImages.Items.AddObject(FImageset.Items[i].Name,TObject(IntPtr(i)));
+  lfeImages.InvalidateFilter;
+  // lbImages still empty here
+}
+  lfeImages.Items.Clear;
+  lfeImages.Text:='';
+
+  for i:=0 to FImageset.ItemCount-1 do
+    if (ais<0) or (ais=FImageset.Items[i].ISFile) then
+      lfeImages.Items.AddObject(FImageset.Items[i].Name,TObject(IntPtr(i)));
+
+  if lfeImages.Items.Count>0 then
+  begin
+    lfeImages.ForceFilter(' ');
+    lfeImages.ForceFilter('');
+
+    lbImages.Selected[0]:=true;
+    lbImages.ItemIndex:=0;
+    lbImagesSelectionChange(lbImages, true);
+  end;
+{
   lfeImages.FilteredListBox:=nil;
-  lfeImages.Clear;
-  lbImages.Clear;
+  lfeImages.Text:='';
+  lbImages.items.Clear;
 
   for i:=0 to FImageset.ItemCount-1 do
     if (ais<0) or (ais=FImageset.Items[i].ISFile) then
       lbImages.Items.AddObject(FImageset.Items[i].Name,TObject(IntPtr(i)));
 
+  if lbImages.Items.Count>0 then
+  begin
+    lbImages.Selected[0]:=true;
+    lbImages.ItemIndex:=0;
+    lbImagesSelectionChange(lbImages, true);
+  end;
   lfeImages.FilteredListBox:=lbImages;
-  lfeImages.SortData:=true;
-  lbImages.ItemIndex:=0; //!!!! why don't call evet below?
-  lbImagesSelectionChange(lbImages, true);
+}
 end;
 
 procedure TFormImageset.FillImagesetList();
@@ -362,8 +400,9 @@ begin
 
   if FImageset.ParseFromFile(lfname) then
   begin
-    FImageset.GetImage(imgTexture.Picture);
     FActiveImageset:=FImageset.ImagesetCount-1;
+    FImageset.UseImageFile(FImageset.Imagesets[FActiveImageset].Sheet);
+    FImageset.GetImage(imgTexture.Picture);
   end;
   FillImagesetList();
 

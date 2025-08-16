@@ -8,8 +8,9 @@
       <Unit>
         <Filename Value="test1.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos Y="15"/>
-        <UsageCount Value="68"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="3" Y="19"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -19,16 +20,16 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgglobal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGGlobal"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="780"/>
-        <CursorPos Y="807"/>
-        <UsageCount Value="49"/>
+        <TopLine Value="868"/>
+        <CursorPos Y="889"/>
+        <UsageCount Value="60"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgstream.pas"/>
@@ -36,7 +37,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="36"/>
       </Unit>
       <Unit>
         <Filename Value="rgmesh.pas"/>
@@ -44,7 +45,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="488"/>
         <CursorPos Y="503"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="15"/>
       </Unit>
       <Unit>
         <Filename Value="rgmdl.pas"/>
@@ -53,39 +54,38 @@
         <TopLine Value="1065"/>
         <CursorPos Y="564"/>
         <FoldState Value=" T4505 TCEM46 PXiGGz"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="15"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\Castle\src\base\castleutils_struct_list.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="11"/>
         <CursorPos X="12" Y="27"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="rg3d.import.inc"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="78"/>
-        <CursorPos Y="86"/>
-        <UsageCount Value="23"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="45"/>
+        <CursorPos Y="58"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="rgobj.pas"/>
         <UnitName Value="RGObj"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="321"/>
-        <CursorPos Y="327"/>
-        <UsageCount Value="22"/>
+        <TopLine Value="550"/>
+        <CursorPos X="29" Y="576"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="rg3d.MDL.inc"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="163"/>
-        <CursorPos Y="175"/>
-        <UsageCount Value="22"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="181"/>
+        <CursorPos Y="226"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -94,45 +94,45 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="66"/>
         <CursorPos Y="84"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="rg3d.VElist.inc"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="123"/>
-        <CursorPos Y="146"/>
-        <UsageCount Value="16"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="182"/>
+        <CursorPos Y="203"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="rg3d.Material.inc"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="331"/>
-        <CursorPos X="27" Y="391"/>
-        <UsageCount Value="14"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="283"/>
+        <CursorPos Y="299"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="rg3d.XML.inc"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="171"/>
-        <CursorPos X="12" Y="179"/>
-        <UsageCount Value="14"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="221"/>
+        <CursorPos X="21" Y="241"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="rg3d.hob.inc"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="8"/>
         <CursorPos Y="18"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="rg3d.mesh.inc"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="25"/>
-        <CursorPos X="19" Y="87"/>
-        <UsageCount Value="17"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="180"/>
+        <CursorPos Y="196"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -141,137 +141,153 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="216"/>
         <CursorPos Y="231"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="rg3d.OBJ.inc"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="16"/>
-        <CursorPos X="16" Y="34"/>
-        <UsageCount Value="13"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="13"/>
+        <CursorPos Y="65"/>
+        <UsageCount Value="19"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rg3d.o.mdl.inc"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="207"/>
+        <CursorPos Y="233"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="65"/>
+        <CursorPos Y="82"/>
+        <UsageCount Value="14"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="202" TopLine="186"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="169" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="192" TopLine="186"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="167" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="193" TopLine="186"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="169" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="195" Column="28" TopLine="186"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="167" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="14" Column="39" TopLine="2"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="169" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="180" TopLine="169"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="167" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="183" TopLine="169"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="169" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="182" TopLine="169"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="167" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="192" TopLine="180"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="175" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="180" TopLine="173"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="192" TopLine="165"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="192" Column="19" TopLine="180"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="13"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="175" TopLine="166"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="176" TopLine="166"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="177" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="181" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="182" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="193" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="195" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="206" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="193" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="206" TopLine="179"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="207" TopLine="201"/>
-      </Position>
-      <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="208" TopLine="201"/>
+        <Filename Value="rg3d.o.mesh.inc"/>
+        <Caret Line="82" TopLine="65"/>
       </Position>
       <Position>
         <Filename Value="rgobj.pas"/>
-        <Caret Line="327" TopLine="321"/>
+        <Caret Line="748" TopLine="731"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="175" TopLine="159"/>
+        <Filename Value="rg3d.mesh.inc"/>
+        <Caret Line="787" TopLine="771"/>
       </Position>
       <Position>
-        <Filename Value="rg3d.MDL.inc"/>
-        <Caret Line="206" TopLine="190"/>
-      </Position>
-      <Position>
-        <Filename Value="rgobj.pas"/>
-        <Caret Line="327" TopLine="321"/>
+        <Filename Value="rg3d.mesh.inc"/>
+        <Caret Line="196" TopLine="180"/>
       </Position>
       <Position>
         <Filename Value="rgobj.pas"/>
-        <Caret Line="328" TopLine="321"/>
+        <Caret Line="737" TopLine="731"/>
       </Position>
       <Position>
         <Filename Value="rgobj.pas"/>
-        <Caret Line="330" TopLine="321"/>
+        <Caret Line="738" TopLine="731"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="575" TopLine="545"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="557" Column="25" TopLine="538"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="558" Column="44" TopLine="546"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="554" TopLine="546"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="557" TopLine="546"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="554" TopLine="546"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="561" Column="23" TopLine="546"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="476" TopLine="455"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="479" TopLine="455"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="476" TopLine="471"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="479" TopLine="471"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="576" Column="17" TopLine="549"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="476" TopLine="459"/>
+      </Position>
+      <Position>
+        <Filename Value="rgobj.pas"/>
+        <Caret Line="568" Column="47" TopLine="547"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -279,7 +295,7 @@
       <Modes ActiveMode="default">
         <Mode Name="default">
           <local>
-            <CommandLineParams Value="MARLA.MDL"/>
+            <CommandLineParams Value="HUM_F.MESH"/>
           </local>
         </Mode>
       </Modes>
@@ -289,59 +305,54 @@
         <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
       </List>
       <List Name="CommandLineParameters" Count="20">
-        <Item1 Value="MARLA.MDL"/>
-        <Item2 Value="TATIYANA.MDL"/>
-        <Item3 Value="BOX.MDL"/>
-        <Item4 Value="TITAN_CHEST_CHUNKS_01.MDL"/>
-        <Item5 Value="03-BIGARROW.MDL"/>
-        <Item6 Value="17-BULLETHOLE.MDL"/>
-        <Item7 Value="1D-mult-FEMALE_MERC_ARMOR.MDL"/>
-        <Item8 Value="ALCHEMIST.MESH"/>
-        <Item9 Value="1C-multi-PIRATE_HUMAN_MALE.MDL"/>
-        <Item10 Value="0E-PIRATE2_MEDIUMFIGHTER01E_LOD0.MDL"/>
-        <Item11 Value="0E-PIRATE2_MEDIUMFIGHTER01E_LOD0.MDL-1.log"/>
-        <Item12 Value="MISSILE_FF.MDL"/>
-        <Item13 Value="CRATELARGE_HULL.MDL"/>
-        <Item14 Value="VIRIAX.MDL"/>
-        <Item15 Value="PIRATE5_FIGHTER01A_ULTRA.MDL"/>
-        <Item16 Value="PIRATE5_FIGHTER01A_ULTRA.MDL.log"/>
-        <Item17 Value="PIRATE2_MEDIUMFIGHTER01E_ULTRA.MDL"/>
-        <Item18 Value="0E-PLANET_ICE_01_ENVSKY.MDL"/>
-        <Item19 Value="15-ATMOSPHEREGLOW.MDL"/>
-        <Item20 Value="09-MINERALROCK_LOD01.MDL"/>
+        <Item1 Value="HUM_F.MESH"/>
+        <Item2 Value="output1.mesh"/>
+        <Item3 Value="BLACKSMITH.MESH"/>
+        <Item4 Value="SHARKY.MDL"/>
+        <Item5 Value="_output.mesh"/>
+        <Item6 Value="output1.mdl"/>
+        <Item7 Value="_output.mdl"/>
+        <Item8 Value="07-MESON.MDL"/>
+        <Item9 Value="facial.mesh"/>
+        <Item10 Value="MARLA.MDL"/>
+        <Item11 Value="TATIYANA.MDL"/>
+        <Item12 Value="BOX.MDL"/>
+        <Item13 Value="TITAN_CHEST_CHUNKS_01.MDL"/>
+        <Item14 Value="03-BIGARROW.MDL"/>
+        <Item15 Value="17-BULLETHOLE.MDL"/>
+        <Item16 Value="1D-mult-FEMALE_MERC_ARMOR.MDL"/>
+        <Item17 Value="ALCHEMIST.MESH"/>
+        <Item18 Value="1C-multi-PIRATE_HUMAN_MALE.MDL"/>
+        <Item19 Value="0E-PIRATE2_MEDIUMFIGHTER01E_LOD0.MDL"/>
+        <Item20 Value="0E-PIRATE2_MEDIUMFIGHTER01E_LOD0.MDL-1.log"/>
       </List>
       <List Name="WorkingDirectory" Type="File" Count="1"/>
     </HistoryLists>
   </ProjectSession>
   <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="rg3d.o.mdl.inc"/>
+        <Line Value="56"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="rg3d.XML.inc"/>
+        <Line Value="195"/>
+      </Item>
+    </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="asub"/>
+        <Expression Value="FSubMeshes"/>
+        <DisplayFormat ArrayNavBarInherit="False"/>
       </Item>
       <Item>
-        <Expression Value="achunk"/>
-        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
-      </Item>
-      <Item>
-        <Expression Value="lchunk"/>
-        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
-      </Item>
-      <Item>
-        <Expression Value="aptr-FBuffer"/>
-        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
-      </Item>
-      <Item>
-        <Expression Value="(lpos+lchunk._len)-FBuffer"/>
-        <DisplayFormat NumInherit="False" Num="vdfBaseHex"/>
-      </Item>
-      <Item>
-        <Expression Value="lsm^.FMaterial"/>
-      </Item>
-      <Item>
-        <Expression Value="lsm^"/>
-      </Item>
-      <Item>
-        <Expression Value="ls"/>
+        <Expression Value="fsubmeshes[i]^.FVEList"/>
       </Item>
     </Watches>
   </Debugging>

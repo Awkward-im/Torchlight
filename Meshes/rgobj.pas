@@ -34,7 +34,7 @@ type
   TRGSubMesh = object
   private
     FMesh:PRGMesh;
-    Name:string;
+    FName:AnsiString;
 
     //=== Geometry, can be shared ===
     FVertexCount:integer;
@@ -85,6 +85,7 @@ type
     procedure SetBonesCapacity(avalue:integer);
     procedure AddBone(avertexIndex, aboneIndex:integer; aweight:single);
 
+    property Name:AnsiString read FName;
     property VertexCount:integer read GetVertexCount write FVertexCount;
  
     property Vertices[atype:integer; idx:integer]:pointer read GetBuffer write SetBuffer;
@@ -123,7 +124,7 @@ type
     FSubMeshes:array of PRGSubMesh;
     FSubMeshCount:integer;
 
-    Name:string;
+    FName:AnsiString;
     FBoneCount:integer; // count of skeleton bones
     // Mesh version and source (Mesh/MDL) file buffer. used just while import
     FBuffer  :PByte;
@@ -184,6 +185,7 @@ type
     procedure WriteMDL (astream:TStream; aver:integer);
     procedure WriteMesh(astream:TStream; aver:integer);
 
+    property Name:AnsiString read FName;
     property SubMeshCount:integer read GetSubMeshCount write SetSubMeshCount;
     property SubMesh[idx:integer]:PRGSubMesh read GetSubMesh write SetSubMesh;
 
@@ -602,7 +604,7 @@ procedure TRGSubMesh.Free;
 var
   i:integer;
 begin
-  Name:='';
+  FName:='';
 
   FreeMem(FFaces);
   FreeMem(FBones);

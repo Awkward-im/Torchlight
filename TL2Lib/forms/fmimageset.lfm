@@ -6,6 +6,7 @@ object FormImageset: TFormImageset
   BorderStyle = bsNone
   ClientHeight = 473
   ClientWidth = 667
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object Splitter1: TSplitter
@@ -113,6 +114,7 @@ object FormImageset: TFormImageset
         ItemHeight = 0
         MultiSelect = True
         PopupMenu = mnuImgSet
+        Sorted = True
         TabOrder = 0
         OnKeyDown = lbImagesKeyDown
         OnSelectionChange = lbImagesSelectionChange

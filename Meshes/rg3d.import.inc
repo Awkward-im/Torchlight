@@ -155,7 +155,7 @@ begin
       BlockRead(lfile,lbuf^,lsize);
       CloseFile(lfile);
 
-      Name:=ExtractNameOnly(aFileName);
+      FName:=ExtractNameOnly(aFileName);
       result:=ImportFromMemory(lbuf,lsize);
       FreeMem(lbuf);
 

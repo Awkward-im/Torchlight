@@ -75,7 +75,8 @@ resourcestring
   rsDblClick        = 'Double-Click to edit translation';
 
 const
-  sOriginalGame = '- Original game -';
+  sAllStrings   = '- All strings -';
+  sOriginalGame = '-- Original game --';
 
 { TFormSQLCP }
 
@@ -213,8 +214,8 @@ var
   i:integer;
 begin
   if lbMods.ItemIndex<0 then exit;
-  if lbMods.ItemIndex=0 then
-    lstat.modid:=0
+       if lbMods.ItemIndex=0 then lstat.modid:=-1
+  else if lbMods.ItemIndex=1 then lstat.modid:=0
   else
     lstat.modid:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
 
@@ -250,6 +251,7 @@ begin
   lfeMods.FilteredListBox:=nil;
   lfeMods.Clear;
   lbMods.Clear;
+  lbMods.Items.Add(sAllStrings);
   lbMods.Items.Add(sOriginalGame);
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
   begin
@@ -298,7 +300,7 @@ end;
 
 procedure TFormSQLCP.UpdateStatus();
 begin
-  StatusBar.SimpleText:=Format(rsStatus,[GetLineCount(0),GetUnrefLines()]);
+  StatusBar.SimpleText:=Format(rsStatus,[GetLineCount(0),GetUnrefLineCount()]);
 end;
 
 procedure TFormSQLCP.FormCreate(Sender: TObject);
@@ -325,8 +327,8 @@ begin
     // to avoid multiply dblclicks
     MainTL2TransForm:=TMainTL2TransForm(1);
 
-    if lbMods.ItemIndex=0 then
-      CurMod:=0
+         if lbMods.ItemIndex=0 then CurMod:=-1
+    else if lbMods.ItemIndex=1 then CurMod:=0
     else
       CurMod:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
     CurLang:=gdModStat.Cells[2,gdModStat.Row];

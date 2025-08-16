@@ -245,7 +245,7 @@ begin
           '" YPos="'  +IntToStr(y)+
           '" Width="' +IntToStr(w)+
           '" Height="'+IntToStr(h)+
-          '" /?>'#13#10;
+          '" />'#13#10;
       end;
     end;
     ldata:=ldata+'</Imageset>'#13#10;

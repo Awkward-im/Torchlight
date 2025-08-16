@@ -1,6 +1,4 @@
-{TODO: Check AddOriginal logic (when not unique especially)}
 {TODO: GetSimilar as mod depended}
-{TODO: GetLineCount and LoadModData: -1 - all; vanilla - (mod=0) and noref}
 {TODO: variant CopyToBase just for translation (not src or refs)}
 {TODO: AddTranslation: overwrite all, overwrite partial by full, skip. Or use SetTRanslation?}
 
@@ -74,7 +72,7 @@ function LoadFromBase(var   data:TTL2Translation;
     amod:Int64; const lang:AnsiString):integer;
 }
 
-function GetUnrefLines():integer;
+function GetUnrefLineCount():integer;
 
 // aid is source index
 function DeleteOriginal(aid:integer):boolean;
@@ -220,7 +218,7 @@ begin
   end;
 end;
 
-function GetUnrefLines():integer;
+function GetUnrefLineCount():integer;
 begin
   result:=ReturnInt(tldb,
 //    'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT DISTINCT srcid FROM ref))');
@@ -233,7 +231,7 @@ function GetLineCount(amod:Int64):integer;
 var
   lsrc:AnsiString;
 begin
-       if amod=-2 then result:=GetUnrefLines()
+       if amod=-2 then result:=GetUnrefLineCount()
   else if amod=-3 then result:=ReturnInt(tldb,'SELECT count(1) FROM strings WHERE deleted=1')
   else if amod=-1 then result:=ReturnInt(tldb,'SELECT count(1) FROM strings')
   else
@@ -241,7 +239,7 @@ begin
     Str(amod,lsrc);
     result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM ref WHERE modid='+lsrc);
     if amod=0 then
-      result:=result+GetUnrefLines();
+      result:=result+GetUnrefLineCount();
   end;
 end;
 
@@ -251,9 +249,16 @@ var
   lmod,ls,ltab:AnsiString;
   i:integer;
 begin
-  Str(stat.modid,lmod);
+  if stat.modid>=0 then
+  begin
+    Str(stat.modid,lmod);
+    lmod:=' WHERE modid='+lmod;
+  end
+  else
+    lmd:='';
+
   ls:='SELECT count(srcid), count(DISTINCT srcid), count(DISTINCT file), '+
-      ' count(DISTINCT tag) FROM ref WHERE modid='+lmod;
+      ' count(DISTINCT tag) FROM ref'+lmod;
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
@@ -280,7 +285,7 @@ begin
     begin
       ltab:=sqlite3_column_text(vm,0);
       ls:='SELECT count(srcid), sum(part) FROM '+ltab+
-        ' WHERE srcid IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
+        ' WHERE srcid IN (SELECT DISTINCT srcid FROM ref'+lmod+')';
       if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vml, nil)=SQLITE_OK then
       begin
         if sqlite3_step(vml)=SQLITE_ROW then
@@ -1255,17 +1260,18 @@ begin
   SetLength(TRCache,0);
   lcnt:=GetLineCount(CurMod);
   SetLength(TRCache,lcnt);
-  if CurMod<>-2 then
+  if CurMod>-2 then
   begin
     if CurMod=-1 then
-      lSQL:='SELECT id, src FROM strings'
+      lSQL:='SELECT id, src FROM strings WHERE deleted<>1'
     else
     begin
       Str(CurMod,lmod);
 //      lSQL:='SELECT id, src FROM strings WHERE '+
 //            'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
       lSQL:='SELECT DISTINCT strings.id, strings.src FROM strings'+
-            ' INNER JOIN ref ON ref.srcid=strings.id WHERE ref.modid='+lmod;
+            ' INNER JOIN ref ON ref.srcid=strings.id'+
+            ' WHERE strings.deleted<>1 AND ref.modid='+lmod;
     end;
 
     result:=0;
@@ -1349,11 +1355,14 @@ begin
   for i:=0 to High(TRCache) do
   begin
     with TRCache[i] do
-      if (flags and rfIsModified)<>0 then
+    begin
+           if (flags and rfIsDeleted )<>0 then DeleteOriginal(id)
+      else if (flags and rfIsModified)<>0 then
       begin
         SetTranslation(id, CurLang, dst, part);
         flags:=flags and not rfIsModified;
       end;
+    end;
   end;
 end;
 

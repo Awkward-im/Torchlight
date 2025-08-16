@@ -1,4 +1,5 @@
 ﻿{}
+{TODO: export position and normals in one block}
 {
 	<poses>
 		<pose target="submesh" index="3" name="Expression_neutral">

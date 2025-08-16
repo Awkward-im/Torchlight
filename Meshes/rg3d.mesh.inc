@@ -865,7 +865,7 @@ begin
   begin
     with lSubMeshNames[i] do
       if id<(FSubMeshCount-1) then // minus global
-        FSubMeshes[id+1]^.Name:=value;
+        FSubMeshes[id+1]^.FName:=value;
   end;
   SetLength(lSubMeshNames,0);
 

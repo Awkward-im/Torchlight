@@ -1,3 +1,4 @@
+{TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
 {TODO: keep column sort on dir change}
 {TODO: 3d view, change texture by choosing file}
 {TODO: preview bytes values as different types}
