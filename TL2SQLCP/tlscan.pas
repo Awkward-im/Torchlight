@@ -1,4 +1,5 @@
-﻿unit TLScan;
+﻿{TODO: Add sFile and sProperty processing (AddText -> AddString)}
+unit TLScan;
 
 
 interface
@@ -38,6 +39,7 @@ uses
   rgdict,
   rgdictlayout,
   rgnode,
+  rgpak,
   rgio.Text,
   rgio.dat,
   rgio.layout,
@@ -91,6 +93,7 @@ const
   sEndBlock    = '[/TRANSLATION]';
   sOriginal    = '<STRING>ORIGINAL:';
   sTranslated  = '<STRING>TRANSLATION:';
+  // additional tags. not used usually
   sFile        = '<STRING>FILE:';
   sProperty    = '<STRING>PROPERTY:';
   // Translation
@@ -372,7 +375,20 @@ var
   i,llen,lsize:integer;
 begin
   result:=0;
+{
+  if RGTags.Count=0 then
+    RGTags.Import('RGDICT','TEXT');
 
+  if not DictsAreLoaded() then
+  begin
+    LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
+    LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
+    LoadLayoutDict('LAYRG' , 'TEXT', verRG);
+    LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
+    LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+    RGLog.Reserve('');
+  end;
+}
   if adir[Length(adir)] in ['\','/'] then
     lRootScanDir:=Copy(adir,1,Length(adir)-1)
   else
@@ -499,6 +515,7 @@ function Scan(const afile:AnsiString):integer;
 var
   lmodinfo:TTL2ModInfo;
   lScanIdx:TCounter;
+  lpak:TRGPAK;
 begin
 
   if RGTags.Count=0 then
@@ -511,10 +528,8 @@ begin
     LoadLayoutDict('LAYRG' , 'TEXT', verRG);
     LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
     LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+    RGLog.Reserve('');
   end;
-
-  lScanIdx.count:=1;
-  lScanIdx.total:=0;
 
   // call it before mod content to be sure what mod record is ready
   if Assigned(DoAddModInfo) then
@@ -526,6 +541,13 @@ begin
     end;
   end;
 
+  lScanIdx.count:=0;
+
+  lpak:=TRGPAK.Create;
+  lpak.GetInfo(afile,piNoParse);
+  lScanIdx.total:=lpak.GetFilesInfo(afile);
+  lpak.Free;
+  
   result:=MakeRGScan(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@lScanIdx,nil);
 end;
 
@@ -534,7 +556,8 @@ function LoadAsNode(const fname:AnsiString):integer;
 var
   p,pt,ps:pointer;
   i,j:integer;
-  src,dst:PWideChar;
+  src,dst,lfile,ltag:PWideChar;
+  ls:AnsiString;
 begin
   result:=0;
   p:=ParseTextFile(PChar(fname));
@@ -550,23 +573,36 @@ begin
     pt:=GetChild(p,i);
     if (GetNodeType(pt)=rgGroup) and (CompareWide(GetNodeName(pt),'TRANSLATION')=0) then
     begin
-      src:=nil;
-      dst:=nil;
+      src  :=nil;
+      dst  :=nil;
+      lfile:=nil;
+      ltag :=nil;
       for j:=0 to GetChildCount(pt)-1 do
       begin
         ps:=GetChild(pt,j);
         if GetNodeType(ps)=rgString then
         begin
-          if      CompareWide(GetNodeName(ps),'ORIGINAL'   )=0 then src:=AsString(ps)
-          else if CompareWide(GetNodeName(ps),'TRANSLATION')=0 then dst:=AsString(ps);
+          if      CompareWide(GetNodeName(ps),'ORIGINAL'   )=0 then src  :=AsString(ps)
+          else if CompareWide(GetNodeName(ps),'TRANSLATION')=0 then dst  :=AsString(ps)
+          else if CompareWide(GetNodeName(ps),'FILE'       )=0 then lfile:=AsString(ps)
+          else if CompareWide(GetNodeName(ps),'PROPERTY'   )=0 then ltag :=AsString(ps);
           if (src<>nil) and (dst<>nil) then break;
         end;
       end;
       if (src<>'') {and (ldst<>'')} then
       begin
         if CompareWide(src,dst)=0 then dst:=nil;
+        ls:=WideToStr(src);
+        if Assigned(DoAddString) and (lfile<>nil) then
+        begin
+          DoAddString(
+            ls,
+            WideToStr(lfile),
+            WideToStr(ltag),
+            0);
+        end;
         if Assigned(DoAddText) then
-          DoAddText(PAnsiChar(WideToStr(src)),PAnsiChar(WideToStr(dst)));
+          DoAddText(PAnsiChar(ls),PAnsiChar(WideToStr(dst)));
         inc(result);
       end
     end;
@@ -579,7 +615,7 @@ end;
 function LoadAsText(const fname:AnsiString):integer;
 var
   slin:TStringList;
-  s,lsrc,ldst:AnsiString;
+  s,lsrc,ldst,lfile,ltag:AnsiString;
   lcnt,lline:integer;
   i,stage:integer;
 
@@ -617,9 +653,11 @@ begin
   FreeMem(pcw);
 
   lline:=0;
-  lcnt:=0;
-  lsrc:='';
-  ldst:='';
+  lcnt :=0;
+  lsrc :='';
+  ldst :='';
+  lfile:='';
+  ltag :='';
 
   stage:=1;
 
@@ -647,6 +685,18 @@ begin
             if ldst=lsrc then ldst:='';
           end;
 
+          if (i=0) and (lfile='') then
+          begin
+            i:=Pos(sFile,s);
+            if i<>0 then lfile:=Copy(s,i+Length(sFile));
+          end;
+
+          if (i=0) and (ltag='') then
+          begin
+            i:=Pos(sProperty,s);
+            if i<>0 then ltag:=Copy(s,i+Length(sProperty));
+          end;
+
           if (i=0) then
           begin
             if Pos(sEndBlock,s)<>0 then
@@ -655,6 +705,14 @@ begin
 
               if (lsrc<>'') {and (ldst<>'')} then
               begin
+                if Assigned(DoAddString) and (lfile<>'') then
+                begin
+                  DoAddString(
+                    lsrc,
+                    lfile,
+                    ltag,
+                    0);
+                end;
                 if Assigned(DoAddText) then
                   if DoAddText(PAnsiChar(lsrc),PAnsiChar(ldst))>0 then
                     inc(lcnt);
@@ -690,8 +748,10 @@ begin
           if Pos(sBeginBlock,s)<>0 then
           begin
             stage:=3;
-            lsrc:='';
-            ldst:='';
+            lsrc :='';
+            ldst :='';
+            lfile:='';
+            ltag :='';
           end
           else if Pos(sEndFile,s)<>0 then break // end of file
           else

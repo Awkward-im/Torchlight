@@ -321,6 +321,7 @@ begin
       '    skills      TEXT,'+
       '    gender      CHAR,'+
       '    icon        TEXT,'+
+      '    rating      INTEGER DEFAULT 0,'+
       '    graph_hp    TEXT,'+
       '    graph_mp    TEXT,'+
       '    graph_stat  TEXT,'+

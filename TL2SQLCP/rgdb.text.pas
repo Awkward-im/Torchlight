@@ -1,34 +1,36 @@
+{TODO: addtranslation: TRGDoubleAction (da_skip/da_skipall, da_compare, da_overwrite/da_overwriteall}
+{TODO: AddTranslation: overwrite all, overwrite partial by full, skip. Or use SetTRanslation?}
 {TODO: GetSimilar as mod depended}
 {TODO: variant CopyToBase just for translation (not src or refs)}
-{TODO: AddTranslation: overwrite all, overwrite partial by full, skip. Or use SetTRanslation?}
 
 {$DEFINE UseUniqueText}
-unit TLTrSQL;
+unit rgdb.text;
 
 interface
 
 uses
+  Classes,
   logging,
-  rgglobal,
-  sqlite3dyn;
+  rgglobal;
 
 const
-  TLTRBase = 'trans.db';
-
+  modVanilla =  0;
+  modAll     = -1;
+  modUnref   = -2;
+  modDeleted = -3;
 var
-  tldb:pointer;
-var
-  // 0 = Vanilla + unreferred; -1 = all; -2 = unreferred; -3 = deleted
   CurMod :Int64;
   CurLang:AnsiString;
 var
   SQLog:Logging.TLog;
 
 type
+  PTLCacheElement = ^TTLCacheElement;
   TTLCacheElement = record
     src  :string;   // src text
     dst  :string;   // current trans text
     id   :integer;  // src id
+    tmpl :integer;  // filter
     flags:cardinal; // ref flags (combo from all)
     part :boolean;  // current trans state
   end;
@@ -36,9 +38,25 @@ type
 var
   TRCache:TTLCache;
 
-function LoadModData():integer;
+function  LoadModData():integer;
 procedure LoadTranslation();
-procedure SaveTranslation();
+procedure SaveTranslation(checkthesame:boolean=false);
+function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
+    aall:boolean=false; amod:Int64=modAll):boolean;
+
+function RemakeFilter():boolean;
+function PrepareScanSQL():boolean;
+function PrepareLoadSQL(const alang:AnsiString):boolean;
+
+function CreateLangTable(const lng:AnsiString):boolean;
+function TLOpenBase (inmemory:boolean=false):boolean;
+function TLSaveBase ():boolean;
+function TLCloseBase(dosave:boolean):boolean;
+{
+function CopyToBase  (const data:TTL2Translation; withRef:boolean):integer;
+function LoadFromBase(var   data:TTL2Translation;
+    amod:Int64; const lang:AnsiString):integer;
+}
 
 const
   rfIsSkill     = $0001;
@@ -54,43 +72,32 @@ const
   rfIsModified  = $0800; // runtime, dst or part changed
   rfIsReferred  = $8000;
 
-
-function CheckForDirectory(const afilter:string):integer;
-function GetModDirList (amodid:Int64; var alist:TStringDynArray):integer;
+{set rfIsFiltered flag for cached elements placed in "afilter" and child directory}
+function CheckForDirectory(const afilter:string):integer;                
+function FillSimilars   (const adst:AnsiString; fltid:integer; apart:boolean):integer;
 function GetSimilarCount(aid:integer):integer;
 function GetSimilars    (aid:integer; var arr:TIntegerDynArray):integer;
 function GetDoubles     (aid:integer; var arr:TIntegerDynArray):integer;
-function RemakeFilter():boolean;
-
-function CreateLangTable(const lng:AnsiString):boolean;
-function TLOpenBase (inmemory:boolean=false):boolean;
-function TLSaveBase ():integer;
-function TLCloseBase(dosave:boolean):boolean;
-{
-function CopyToBase  (const data:TTL2Translation; withRef:boolean):integer;
-function LoadFromBase(var   data:TTL2Translation;
-    amod:Int64; const lang:AnsiString):integer;
-}
-
 function GetUnrefLineCount():integer;
 
 // aid is source index
-function DeleteOriginal(aid:integer):boolean;
-function GetOriginal   (aid:integer):AnsiString;
-function GetText       (aid:integer; const atable:AnsiString; var asrc,adst:AnsiString):boolean;
-function GetTranslation(aid:integer; const atable:AnsiString; var      adst:Ansistring):boolean;
-function SetTranslation(aid:integer; const atable:AnsiString;
-   const adst:Ansistring; apart:boolean):integer;
-function GetLineFlags  (aid:integer; const amodid:AnsiString):cardinal;
+function FindOriginal(const asrc:AnsiString):integer;
+function AddOriginal (const asrc:AnsiString; withcheck:boolean=false):integer;
+function GetOriginal    (aid:integer):AnsiString;
+function ChangeOriginal (const asrc,anew:AnsiString):boolean;
+function ChangeOriginal (aid:integer; const anew:AnsiString):boolean;
+function DeleteOriginal (aid:integer):boolean;
 
+function AddText(const asrc,alang,adst:AnsiString; apart:boolean):integer;
+function GetText        (aid:integer; const atable:AnsiString; var asrc,adst:AnsiString):boolean;
+function GetTranslation (aid:integer; const atable:AnsiString; var      adst:Ansistring):boolean;
+function SetTranslation (aid:integer; const atable:AnsiString;
+   const adst:Ansistring; apart:boolean):integer;
+function GetLineFlags   (aid:integer; const amodid:AnsiString):cardinal;
 function GetLineRef     (aid:integer):integer;
 function GetLineRefCount(aid:integer):integer;
 // get reference info. aid is ref index, result is source index
-function GetRef(aid:integer;
-     var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
-
-function PrepareScanSQL():boolean;
-function PrepareLoadSQL(const alang:AnsiString):boolean;
+function GetRef(arefid:integer; var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
 
 type
   TModStatistic = record
@@ -106,12 +113,18 @@ type
     end;
   end;
 
-function GetModStatistic(var stat:TModStatistic):integer;
+//modid field must be set before call
+function  GetModStatistic(var stat:TModStatistic):integer;
+procedure GetModList (    asl:TStrings       ; all:boolean=true);
+procedure GetModList (var asl:TDict64DynArray; all:boolean=true);
+function  GetLangList(var asl:TDictDynArray):integer;
 
-function AddToModList(aid:Int64; const atitle:AnsiString):integer;
-function AddToModList(aid:Int64; atitle:PUnicodeChar):integer;
+{get mod's directory list}
+function GetModDirList(amodid:Int64; var alist:TStringDynArray):integer;
+function GetLineCount (amodid:Int64; withdeleted:boolean=false):integer;
+function AddMod       (amodid:Int64; const atitle:AnsiString  ):integer;
+function AddMod       (amodid:Int64;       atitle:PUnicodeChar):integer;
 function GetModByName(const atitle:AnsiString):Int64;
-function GetLineCount(amod:Int64):integer;
 
 
 implementation
@@ -119,24 +132,52 @@ implementation
 uses
   SysUtils,
   iso639,
+  sqlite3dyn,
+  sqlitedb,
   tl2text,
-  tlscan,
-  rgdb;
+  tlscan;
+
+// same as tlscan
+const
+  sBeginFile   = '[TRANSLATIONS]';
+  sEndFile     = '[/TRANSLATIONS]';
+  sBeginBlock  = '[TRANSLATION]';
+  sEndBlock    = '[/TRANSLATION]';
+  sOriginal    = '<STRING>ORIGINAL:';
+  sTranslated  = '<STRING>TRANSLATION:';
 
 var
-  BaseInMemory:boolean;
+  tldb:pointer;
+
+resourcestring
+  rsAllStrings   = '- All strings -';
+  rsOriginalGame = '-- Original game --';
+
+function CheckName(const atable:AnsiString):AnsiString;
+begin
+  if (Length(atable)>6) and (
+     (atable[1] in ['T','t']) and
+     (atable[2] in ['R','r']) and
+     (atable[3] in ['A','a']) and
+     (atable[4] in ['N','n']) and
+     (atable[5] in ['S','s']) and
+     (atable[6] = '_') ) then
+    result:=atable
+  else
+    result:='trans_'+atable;
+end;
 
 {%REGION Mod}
-function AddToModList(aid:Int64; const atitle:AnsiString):integer;
+function AddModInternal(amodid:Int64; atitle:PAnsiChar):integer;
 var
   vm:pointer;
   ls:AnsiString;
   pc:PAnsiChar;
 begin
   result:=-1;
-  if (aid=-1) or (atitle='') then exit;
+  if (amodid=-1) or (atitle=nil) or (atitle^=#0) then exit;
 
-  Str(aid,ls);
+  Str(amodid,ls);
   result:=ReturnInt(tldb,'SELECT 1 FROM dicmods WHERE id='+ls);
 
   if result<1 then
@@ -145,7 +186,7 @@ begin
 
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls), -1, @vm, nil)=SQLITE_OK then
     begin
-      if sqlite3_bind_text(vm,1,PAnsiChar(atitle),-1,SQLITE_STATIC)=SQLITE_OK then
+      if sqlite3_bind_text(vm,1,atitle,-1,SQLITE_STATIC)=SQLITE_OK then
       begin
         if sqlite3_step(vm)=SQLITE_DONE then
         begin
@@ -157,42 +198,19 @@ begin
       end;
       sqlite3_finalize(vm);
     end;
-    
+
     result:=0;
   end;
 end;
 
-function AddToModList(aid:Int64; atitle:PUnicodeChar):integer;
-var
-  vm:pointer;
-  ls:AnsiString;
-  pc:PAnsiChar;
+function AddMod(amodid:Int64; const atitle:AnsiString):integer;
 begin
-  if (aid=-1) or (atitle=nil) then exit(-1);
+  result:=AddModInternal(amodid,PAnsiChar(atitle));
+end;
 
-  Str(aid,ls);
-  result:=ReturnInt(tldb,'SELECT 1 FROM dicmods WHERE id='+ls);
-
-  if result<0 then
-  begin
-    ls:='INSERT INTO dicmods (id, title) VALUES ('+ls+', ?1)';
-
-    if sqlite3_prepare_v2(tldb, PAnsiChar(ls), -1, @vm, nil)=SQLITE_OK then
-    begin
-      if sqlite3_bind_text16(vm,1,atitle,-1,SQLITE_STATIC)=SQLITE_OK then
-      begin
-        if sqlite3_step(vm)=SQLITE_DONE then
-        begin
-          pc:=sqlite3_expanded_sql(vm);
-          SQLog.Add(pc);
-          sqlite3_free(pc);
-        end;
-      end;
-      sqlite3_finalize(vm);
-    end;
-    
-    result:=0;
-  end;
+function AddMod(amodid:Int64; atitle:PUnicodeChar):integer;
+begin
+  result:=AddModInternal(amodid,PAnsiChar(WideToStr(atitle)));
 end;
 
 function GetModByName(const atitle:AnsiString):Int64;
@@ -218,6 +236,113 @@ begin
   end;
 end;
 
+procedure GetModList(asl:TStrings; all:boolean=true);
+var
+  vm:pointer;
+  i:integer;
+begin
+  asl.Clear;
+  if ReturnInt(tldb,'SELECT count(1) FROM strings')>0 then
+  begin
+    if all then
+    begin
+      asl.Add(rsAllStrings);
+      asl.Add(rsOriginalGame);
+  //    asl.Capacity:=i+2;
+  //    i:=2;
+  //    asl[0]:=rsAllStrings;
+  //    asl[1]:=rsOriginalGame;
+    end
+    else
+    begin
+  //    asl.Capacity:=i;
+  //    i:=0;
+    end;
+
+    i:=ReturnInt(tldb,'SELECT count(1) FROM dicmods');
+    if i>0 then
+    begin
+      if sqlite3_prepare_v2(tldb,'SELECT id,title FROM dicmods',-1, @vm, nil)=SQLITE_OK then
+      begin
+        while sqlite3_step(vm)=SQLITE_ROW do
+        begin
+          asl.Add(sqlite3_column_text(vm,1));
+  //        asl[i]:=sqlite3_column_text(vm,1);
+  //        inc(i);
+        end;
+        sqlite3_finalize(vm);
+      end;
+    end;
+  end;
+end;
+
+procedure GetModList(var asl:TDict64DynArray; all:boolean=true);
+var
+  vm:pointer;
+  i:integer;
+begin
+  i:=ReturnInt(tldb,'SELECT count(1) FROM dicmods');
+  if i>0 then
+  begin
+    if all then
+    begin
+      SetLength(asl,i+2);
+      i:=2;
+      asl[0].id   :=-1;
+      asl[0].value:=rsAllStrings;
+      asl[1].id   :=0;
+      asl[1].value:=rsOriginalGame;
+    end
+    else
+    begin
+      SetLength(asl,i);
+      i:=0;
+    end;
+
+    if sqlite3_prepare_v2(tldb,'SELECT id,title FROM dicmods',-1, @vm, nil)=SQLITE_OK then
+    begin
+      while sqlite3_step(vm)=SQLITE_ROW do
+      begin
+        asl[i].id   :=sqlite3_column_int (vm,0);
+        asl[i].value:=sqlite3_column_text(vm,1);
+        inc(i);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
+function GetLangList(var asl:TDictDynArray):integer;
+var
+  vm:pointer;
+  ls:string;
+  i:integer;
+begin
+  asl:=nil;
+  result:=ReturnInt(tldb,'SELECT count(1) FROM sqlite_master'+
+      ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
+  if result>0 then
+  begin
+    SetLength(asl,result);
+    ls:='SELECT name FROM sqlite_master'+
+        ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')'+
+        ' ORDER BY name';
+
+    if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+    begin
+      i:=0;
+      while sqlite3_step(vm)=SQLITE_ROW do
+      begin
+        ls:=sqlite3_column_text(vm,0);
+        asl[i].id   :=ReturnInt(tldb,'SELECT count(1) FROM '+ls);
+        asl[i].value:=Copy(ls,7);
+        inc(i);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+end;
+
 function GetUnrefLineCount():integer;
 begin
   result:=ReturnInt(tldb,
@@ -227,18 +352,22 @@ begin
 
 end;
 
-function GetLineCount(amod:Int64):integer;
+function GetLineCount(amodid:Int64; withdeleted:boolean=false):integer;
 var
   lsrc:AnsiString;
 begin
-       if amod=-2 then result:=GetUnrefLineCount()
-  else if amod=-3 then result:=ReturnInt(tldb,'SELECT count(1) FROM strings WHERE deleted=1')
-  else if amod=-1 then result:=ReturnInt(tldb,'SELECT count(1) FROM strings')
+       if amodid=modUnref   then result:=GetUnrefLineCount()
+  else if amodid=modDeleted then result:=ReturnInt(tldb,'SELECT count(1) FROM strings WHERE deleted=1')
+  else if amodid=modAll     then
+  begin
+    if withdeleted then result:=ReturnInt(tldb,'SELECT count(1) FROM strings')
+    else                result:=ReturnInt(tldb,'SELECT count(1) FROM strings WHERE deleted=0');
+  end
   else
   begin
-    Str(amod,lsrc);
+    Str(amodid,lsrc);
     result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM ref WHERE modid='+lsrc);
-    if amod=0 then
+    if amodid=modVanilla then
       result:=result+GetUnrefLineCount();
   end;
 end;
@@ -255,7 +384,7 @@ begin
     lmod:=' WHERE modid='+lmod;
   end
   else
-    lmd:='';
+    lmod:='';
 
   ls:='SELECT count(srcid), count(DISTINCT srcid), count(DISTINCT file), '+
       ' count(DISTINCT tag) FROM ref'+lmod;
@@ -400,6 +529,42 @@ begin
 }
 end;
 
+function FillSimilars(const adst:AnsiString; fltid:integer; apart:boolean):integer;
+var
+  vm:pointer;
+  lsrc,ls:AnsiString;
+  lid,i:integer;
+begin
+  result:=0;
+  if adst='' then exit;
+
+  ls:='SELECT s.id, s.src FROM strings s'+
+      ' LEFT JOIN '+CheckName(CurLang)+' t ON s.id=t.srcid'+
+      ' WHERE t.srcid IS NULL AND s.filter='+IntToStr(fltid);
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    while sqlite3_step(vm)=SQLITE_ROW do
+    begin
+      lid :=sqlite3_column_int (vm,0);
+      // avoid check cached (what if we want to keep empty or manual?)
+      for i:=0 to High(TRCache) do
+      begin
+        if TRCache[i].id=lid then
+        begin
+          lid:=-1;
+          break;
+        end;
+      end;
+      if lid<0 then continue;
+
+      lsrc:=sqlite3_column_text(vm,1);
+      ls:=ReplaceTranslation(adst,lsrc);
+      SetTranslation(lid,CurLang,ls,apart);
+      inc(result);
+    end;
+  end;
+end;
+
 // Mod limited must be
 function GetSimilarCount(aid:integer):integer;
 var
@@ -495,6 +660,22 @@ begin
   result:=ReturnInt(tldb,'SELECT id FROM strings WHERE (src=?1)',PAnsiChar(asrc));
 end;
 
+function ChangeOriginal(const asrc,anew:AnsiString):boolean;
+begin
+  result:=ChangeOriginal(FindOriginal(asrc),anew);
+end;
+
+function ChangeOriginal(aid:integer; const anew:AnsiString):boolean;
+begin
+  if (aid>0) and (anew<>'') then
+  begin
+    result:=ExecuteDirect(tldb,'UPDATE strings SET src=?1 WHERE id='+IntToStr(aid),
+        PAnsiChar(anew));
+  end
+  else
+    result:=false;
+end;
+
 function AddOriginal(const asrc:AnsiString; withcheck:boolean=false):integer;
 var
   vm:pointer;
@@ -537,20 +718,6 @@ begin
   result:=ExecuteDirect(tldb,lSQL);
   if result then
     SQLog.Add(lSQL);
-end;
-
-function CheckName(const atable:AnsiString):AnsiString;
-begin
-  if (Length(atable)>6) and (
-     (atable[1] in ['T','t']) and
-     (atable[2] in ['R','r']) and
-     (atable[3] in ['A','a']) and
-     (atable[4] in ['N','n']) and
-     (atable[5] in ['S','s']) and
-     (atable[6] = '_') ) then
-    result:=atable
-  else
-    result:='trans_'+atable;
 end;
 
 function GetTranslation(aid:integer; const atable:AnsiString; var adst:Ansistring):boolean;
@@ -624,7 +791,7 @@ begin
   end;
 
 end;
-
+{
 function AddTranslation(aid:integer; const atable:AnsiString;
     const adst:Ansistring; apart:boolean):integer;
 begin
@@ -633,7 +800,7 @@ begin
 
   result:=SetTranslation(aid, atable, adst, apart);
 end;
-
+}
 function AddText(const asrc,alang,adst:AnsiString; apart:boolean):integer;
 begin
   result:=AddOriginal(asrc);
@@ -643,15 +810,18 @@ begin
   if result<0 then
     result:=FindOriginal(asrc);
 
-  if (result>0) and (adst<>'') then
-    AddTranslation(result,alang, adst, apart);
+  if (result>0) and (adst<>'') and (adst<>asrc) then
+    SetTranslation(result, alang, adst, apart);
+//    AddTranslation(result, alang, adst, apart);
 end;
 
 function GetText(aid:integer; const atable:AnsiString; var asrc,adst:AnsiString):boolean;
 begin
   asrc:=GetOriginal(aid);
   if asrc<>'' then
-    result:=GetTranslation(aid,atable,adst);
+    result:=GetTranslation(aid,atable,adst)
+  else
+    result:=false;
 end;
 {%ENDREGION Basic}
 
@@ -710,13 +880,20 @@ begin
     for i:=0 to High(TRCache) do
       TRCache[i].flags:=TRCache[i].flags and not rfIsFiltered;
 
-    Str(CurMod,lSQL);
+    if CurMod>=0 then
+    begin
+      Str(CurMod,lSQL);
+      lSQL:=' modid='+lSQL+' AND';
+    end
+    else
+      lSQL:='';
+
          if afilter='MEDIA/'        then lcond:='=''MEDIA/'''
     else if afilter='MEDIA/SKILLS/' then lcond:='=''MEDIA/SKILLS/'''
     else                                 lcond:=' GLOB '''+afilter+'*''';
 
-    lSQL:='SELECT DISTINCT srcid FROM ref WHERE modid='+lSQL+
-          ' AND dir IN (SELECT id FROM dicdir WHERE value'+lcond+')';
+    lSQL:='SELECT DISTINCT srcid FROM ref WHERE'+lSQL+
+          ' dir IN (SELECT id FROM dicdir WHERE value'+lcond+')';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -809,7 +986,7 @@ begin
   result:=ReturnInt(tldb,'SELECT count(1) FROM ref WHERE srcid='+lid+lmod);
 end;
 
-function GetRef(aid:integer;
+function GetRef(arefid:integer;
     var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
 var
   vm:pointer;
@@ -817,7 +994,7 @@ var
 begin
   result:=-1;
 
-  Str(aid,lref);
+  Str(arefid,lref);
 
   lSQL:='SELECT r.srcid, d.value, f.value, t.value, r.line, r.flags'+
         ' FROM ref r'+
@@ -845,17 +1022,17 @@ end;
 function AddRef(asrc:integer; amod:int64;
     const afile,atag:AnsiString; aline:integer):integer;
 var
-  lSQL,lline,lmod,lsrc,ldir,lfile,ltag:AnsiString;
+  lsource,lSQL,lline,lmod,lsrc,ldir,lfile,ltag:AnsiString;
   lflag:integer;
 begin
   result:=0;
 
-  lfile:=UpCase(afile);
+  lsource:=UpCase(afile);
 
   Str(asrc,lsrc);
-  Str(AddToList('dicdir' ,ExtractPath(lfile)), ldir);
-  Str(AddToList('dicfile',ExtractName(lfile)), lfile);
-  Str(AddToList('dictag' ,atag              ), ltag);
+  Str(AddToList('dicdir' ,ExtractPath(lsource)), ldir);
+  Str(AddToList('dicfile',ExtractName(lsource)), lfile);
+  Str(AddToList('dictag' ,atag                ), ltag);
   Str(amod,lmod);
   Str(ABS(aline),lline);
 
@@ -865,12 +1042,12 @@ begin
       ') AND (line='+lline+')')<>1 then
   begin
     lflag:=0;
-    if Pos('MEDIA/SKILLS/'        ,lfile)=1 then lflag:=lflag or rfIsSkill;
-    if Pos('MEDIA/UNITS/ITEMS/'   ,lfile)=1 then lflag:=lflag or rfIsItem;
-    if Pos('MEDIA/UNITS/MONSTERS/',lfile)=1 then lflag:=lflag or rfIsMob;
-    if Pos('MEDIA/UNITS/PLAYERS/' ,lfile)=1 then lflag:=lflag or rfIsPlayer;
-    if Pos('MEDIA/UNITS/PROPS/'   ,lfile)=1 then lflag:=lflag or rfIsProp;
-    if aline<0                              then lflag:=lflag or rfIsTranslate;
+    if Pos('MEDIA/SKILLS/'        ,lsource)=1 then lflag:=lflag or rfIsSkill;
+    if Pos('MEDIA/UNITS/ITEMS/'   ,lsource)=1 then lflag:=lflag or rfIsItem;
+    if Pos('MEDIA/UNITS/MONSTERS/',lsource)=1 then lflag:=lflag or rfIsMob;
+    if Pos('MEDIA/UNITS/PLAYERS/' ,lsource)=1 then lflag:=lflag or rfIsPlayer;
+    if Pos('MEDIA/UNITS/PROPS/'   ,lsource)=1 then lflag:=lflag or rfIsProp;
+    if aline<0                                then lflag:=lflag or rfIsTranslate;
 
     lSQL:='INSERT INTO ref (srcid, modid, dir, file, tag, line, flags) VALUES ('+
         lsrc+', '+lmod+', '+ldir+', '+lfile+', '+ltag+', '+lline+', '+IntToStr(lflag)+');';
@@ -1013,170 +1190,11 @@ begin
 end;
 }
 
-{%REGION Admin}
-function CreateLangTable(const lng:AnsiString):boolean;
-var
-  ls:AnsiString;
-begin
-  ls:=iso639.GetLang(lng);
-  if ls='' then ls:=lng;
-
-  if not IsTableExists(tldb,'trans_'+ls) then
-  begin
-    ls:='CREATE TABLE trans_'+lng+' ('+
-        '  srcid  INTEGER PRIMARY KEY,'+
-        '  dst    TEXT ,'+
-        '  part   BOOLEAN );';
-
-    result:=ExecuteDirect(tldb,ls);
-    if result then
-      SQLog.Add(ls);
-  end
-  else
-    result:=false;
-end;
-
-function CreateTables():boolean;
-begin
-{
-  filter       text
-  filtertime   date of last recalc
-  filterchange date of text change
-  lang_*       text language full name
-}
-  result:=ExecuteDirect(tldb,
-      'CREATE TABLE settings ('+
-      '  setting TEXT,'+
-      '  value   TEXT);');
-  if result then
-  begin
-    ExecuteDirect(tldb,'insert into settings (setting,value) Values (''filter'',?1)',[GetFilterWords()]);
-    ExecuteDirect(tldb,'insert into settings (setting) Values (''filterchange'',?1)',[Now()]);
-    ExecuteDirect(tldb,'insert into settings (setting) Values (''filtertime'')');
-  end;
-
-  result:=ExecuteDirect(tldb,
-      'CREATE TABLE strings ('+
-      '  id      INTEGER PRIMARY KEY AUTOINCREMENT,'+
-      '  filter  INTEGER,'+
-      '  deleted BOOLEAN,'+
-{$IFNDEF UseUniqueText}
-      '  src     TEXT);');
-{$ELSE}
-      '  src     TEXT UNIQUE);');
-{$ENDIF}
-
-  result:=ExecuteDirect(tldb,
-      'CREATE TABLE filter ('+
-      '  id     INTEGER PRIMARY KEY,'+ // AUTOINCREMENT,'+
-      '  value  TEXT UNIQUE);');
-
-  result:=ExecuteDirect(tldb,
-      'CREATE TABLE dictag ('+
-      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
-{$IFNDEF UseUniqueText}
-      '  value  TEXT);');
-{$ELSE}
-      '  value  TEXT UNIQUE);');
-{$ENDIF}
-
-  result:=ExecuteDirect(tldb,
-      'CREATE TABLE dicdir ('+
-      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
-{$IFNDEF UseUniqueText}
-      '  value  TEXT);');
-{$ELSE}
-      '  value  TEXT UNIQUE);');
-{$ENDIF}
-
-  result:=ExecuteDirect(tldb,
-      'CREATE TABLE dicfile ('+
-      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
-{$IFNDEF UseUniqueText}
-      '  value  TEXT);');
-{$ELSE}
-      '  value  TEXT UNIQUE);');
-{$ENDIF}
-
-  result:=ExecuteDirect(tldb,
-      'CREATE TABLE dicmods ('+
-      '  id     INTEGER PRIMARY KEY,'+
-      '  title  TEXT );');
-
-  result:=ExecuteDirect(tldb,
-      'CREATE TABLE ref ('+
-      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
-      '  srcid  INTEGER,'+
-      '  modid  INTEGER,'+
-      '  dir    INTEGER,'+
-      '  file   INTEGER,'+
-      '  tag    INTEGER,'+
-      '  line   INTEGER,'+
-      '  flags  INTEGER );');
-  result:=ExecuteDirect(tldb,
-      'CREATE INDEX refsrc ON ref (srcid, modid)');
-end;
-
-function TLOpenBase(inmemory:boolean=false):boolean;
-begin
-  if tldb<>nil then exit(true);
-
-  result:=false;
-
-  try
-    InitializeSQLite();
-  except
-    exit;
-  end;
-
-  BaseInMemory:=false;
-  if inmemory then
-  begin
-    result:=sqlite3_open(':memory:',@tldb)=SQLITE_OK;
-    if result then
-    begin
-      if CopyFromFile(tldb,TLTRBase)<>SQLITE_OK then
-        result:=CreateTables();
-    end;
-    if tldb<>nil then
-      BaseInMemory:=true;
-  end;
-  if tldb=nil then
-  begin
-    result:=OpenDatabase(tldb,TLTRBase);
-    if result then
-      result:=CreateTables();
-  end;
-end;
-
-function TLSaveBase():integer;
-begin
-  if BaseInMemory then
-    result:=CopyToFile(tldb,TLTRBase)
-  else
-    result:=SQLITE_OK;
-end;
-
-function TLCloseBase(dosave:boolean):boolean;
-begin
-  if tldb=nil then exit(not dosave);
-
-  if dosave then
-    result:=TLSaveBase()=SQLITE_OK
-  else
-    result:=true;
-
-  result:=result and (sqlite3_close(tldb)=SQLITE_OK);
-  tldb:=nil;
-  ReleaseSQLite();
-end;
-{%ENDREGION Admin}
-
 {%REGION Scan and Load}
 procedure AddScanMod(dummy:pointer; const mi:TTL2ModInfo);
 begin
   CurMod:=mi.modid;
-  AddToModList(mi.modid,WideToStr(mi.title));
+  AddMod(mi.modid,WideToStr(mi.title));
 end;
 
 function AddScanString(dummy:pointer; const astr, afile, atag:AnsiString; aline:integer):integer;
@@ -1211,7 +1229,8 @@ begin
   if result then
   begin
     CreateLangTable(CurLang);
-    TLScan.DoAddText:=TDoAddText(MakeMethod(nil,@AddLoadText));
+    TLScan.DoAddString:=TDoAddString(MakeMethod(nil,@AddScanString));
+    TLScan.DoAddText  :=TDoAddText  (MakeMethod(nil,@AddLoadText));
   end;
 end;
 {%ENDREGION Scan and Load}
@@ -1249,6 +1268,8 @@ var
   i,lcnt:integer;
   lmod,lSQL:AnsiString;
 begin
+  result:=0;
+
   for i:=0 to High(TRCache) do
   begin
     with TRCache[i] do
@@ -1258,23 +1279,22 @@ begin
     end;
   end;
   SetLength(TRCache,0);
-  lcnt:=GetLineCount(CurMod);
+  lcnt:=GetLineCount(CurMod,false);
   SetLength(TRCache,lcnt);
-  if CurMod>-2 then
+  if (CurMod<>modUnref) and (CurMod<>modDeleted) then
   begin
-    if CurMod=-1 then
-      lSQL:='SELECT id, src FROM strings WHERE deleted<>1'
+    if CurMod=modAll then
+      lSQL:='SELECT id, src, filter FROM strings WHERE deleted<>1'
     else
     begin
       Str(CurMod,lmod);
-//      lSQL:='SELECT id, src FROM strings WHERE '+
+//      lSQL:='SELECT id, src, filter FROM strings WHERE '+
 //            'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
-      lSQL:='SELECT DISTINCT strings.id, strings.src FROM strings'+
+      lSQL:='SELECT DISTINCT strings.id, strings.src, strings.filter FROM strings'+
             ' INNER JOIN ref ON ref.srcid=strings.id'+
             ' WHERE strings.deleted<>1 AND ref.modid='+lmod;
     end;
 
-    result:=0;
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -1283,6 +1303,7 @@ begin
         begin
           id   :=sqlite3_column_int (vm,0);
           src  :=sqlite3_column_text(vm,1);
+          tmpl :=sqlite3_column_int (vm,2);
           flags:=GetLineFlags(id,lmod);
         end;
         inc(result);
@@ -1291,11 +1312,11 @@ begin
   end;
 
   // Add unreferred to vanilla
-  if (CurMod=0) or (CurMod=-2) then
+  if (CurMod=modVanilla) or (CurMod=modUnref) then
   begin
 //    lSQL:='SELECT id, src FROM strings WHERE '+
 //          'NOT (id IN (SELECT DISTINCT srcid FROM ref))';
-    lSQL:='SELECT strings.id, strings.src FROM strings'+
+    lSQL:='SELECT strings.id, strings.src, strings.filter FROM strings'+
           ' LEFT JOIN ref ON ref.srcid=strings.id WHERE ref.srcid IS NULL';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
@@ -1305,6 +1326,7 @@ begin
         begin
           id   :=sqlite3_column_int (vm,0);
           src  :=sqlite3_column_text(vm,1);
+          tmpl :=sqlite3_column_int (vm,2);
           flags:=rfIsNoRef;
         end;
         inc(result);
@@ -1348,7 +1370,7 @@ begin
 
 end;
 
-procedure SaveTranslation();
+procedure SaveTranslation(checkthesame:boolean=false);
 var
   i:integer;
 begin
@@ -1359,13 +1381,221 @@ begin
            if (flags and rfIsDeleted )<>0 then DeleteOriginal(id)
       else if (flags and rfIsModified)<>0 then
       begin
+//        if dst=src then dst:='';
         SetTranslation(id, CurLang, dst, part);
         flags:=flags and not rfIsModified;
+        if checkthesame and (dst<>'') then
+          FillSimilars(dst,tmpl,true);
       end;
     end;
   end;
 end;
 
+function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
+    aall:boolean=false; amod:Int64=modAll):boolean;
+var
+  vm:pointer;
+  sl:TStringList;
+  ls,lt:AnsiString;
+begin
+  result:=false;
+  if alang='' then lt:=CurLang else lt:=alang;
+  if lt='' then exit;
+
+  // affect on source: CurMod=0+unref; CurMod=-1; CurMod=###
+  lt:=' LEFT OUTER JOIN '+CheckName(lt)+' t ON strings.id=t.srcid';
+  if amod=modAll then
+  begin
+    ls:='SELECT strings.src, t.dst FROM strings'+
+        lt+' WHERE strings.deleted<>1';
+  end
+  else if amod=modVanilla then
+  begin
+//      ls:='SELECT id, src FROM strings WHERE '+
+//          'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
+    ls:='SELECT strings.src, t.dst FROM strings'+
+        ' LEFT JOIN ref ON ref.srcid=strings.id'+lt+
+        ' WHERE strings.deleted<>1 AND ref.modid=0 OR ref.srcid IS NULL';
+  end
+  else
+  begin
+//      ls:='SELECT id, src, dst FROM strings WHERE '+
+//          'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
+    ls:='SELECT strings.src, t.dst FROM strings'+
+        ' INNER JOIN ref ON ref.srcid=strings.id'+lt+
+        ' WHERE strings.deleted<>1 AND ref.modid='+IntToStr(amod);
+  end;
+
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    result:=true;
+
+    sl:=TStringList.Create;
+    sl.WriteBOM:=true;
+
+    sl.Add(sBeginFile);
+
+    while sqlite3_step(vm)=SQLITE_ROW do
+    begin
+      lt:=sqlite3_column_text(vm,1);
+      if (lt<>'') or aall then
+      begin
+        sl.Add(#9+sBeginBlock);
+        ls:=sqlite3_column_text(vm,0);
+        sl.Add(#9#9+sOriginal+ls);
+        if lt<>'' then
+          sl.Add(#9#9+sTranslated+lt)
+        else
+          sl.Add(#9#9+sTranslated+ls);
+        sl.Add(#9+sEndBlock);
+      end;
+    end;
+
+    sl.Add(sEndFile);
+
+    sl.SaveToFile(afname{'TRANSLATION.DAT'},TEncoding.Unicode);
+    sl.Free;
+  end;
+end;
+
+{%REGION Admin}
+function CreateLangTable(const lng:AnsiString):boolean;
+var
+  ls,lSQL:AnsiString;
+begin
+  ls:=iso639.GetLang(lng);
+  if ls='' then ls:=lng;
+
+  if not IsTableExists(tldb,'trans_'+ls) then
+  begin
+    lSQL:='CREATE TABLE trans_'+ls+' ('+
+        '  srcid  INTEGER PRIMARY KEY,'+
+        '  dst    TEXT,'+
+        '  part   BOOLEAN);';
+
+    result:=ExecuteDirect(tldb,lSQL);
+    if result then
+    begin
+      SQLog.Add(lSQL);
+//      ExecuteDirect(tldb,'insert into settings (setting,value) Values (''trans_'''+ls+',?1)',[lng]);
+    end;
+  end
+  else
+    result:=false;
+end;
+
+function CreateTables():boolean;
+begin
+{
+  filter       text
+  filtertime   date of last recalc
+  filterchange date of text change
+//  trans_*      text language full name
+}
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE settings ('+
+      '  setting TEXT,'+
+      '  value   TEXT);');
+  if result then
+  begin
+    ExecuteDirect(tldb,'insert into settings (setting,value) Values (''filter'',?1)',[GetFilterWords()]);
+    ExecuteDirect(tldb,'insert into settings (setting) Values (''filterchange'',?1)',[Now()]);
+    ExecuteDirect(tldb,'insert into settings (setting) Values (''filtertime'')');
+  end;
+
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE strings ('+
+      '  id      INTEGER PRIMARY KEY AUTOINCREMENT,'+
+      '  filter  INTEGER,'+
+      '  deleted BOOLEAN DEFAULT (0),'+
+{$IFNDEF UseUniqueText}
+      '  src     TEXT);');
+{$ELSE}
+      '  src     TEXT UNIQUE);');
+{$ENDIF}
+
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE filter ('+
+      '  id     INTEGER PRIMARY KEY,'+ // AUTOINCREMENT,'+
+      '  value  TEXT UNIQUE);');
+
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE dictag ('+
+      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
+{$IFNDEF UseUniqueText}
+      '  value  TEXT);');
+{$ELSE}
+      '  value  TEXT UNIQUE);');
+{$ENDIF}
+
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE dicdir ('+
+      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
+{$IFNDEF UseUniqueText}
+      '  value  TEXT);');
+{$ELSE}
+      '  value  TEXT UNIQUE);');
+{$ENDIF}
+
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE dicfile ('+
+      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
+{$IFNDEF UseUniqueText}
+      '  value  TEXT);');
+{$ELSE}
+      '  value  TEXT UNIQUE);');
+{$ENDIF}
+
+  // theorectically, can use data db for this but this way much simpler
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE dicmods ('+
+      '  id     INTEGER PRIMARY KEY,'+
+      '  title  TEXT);');
+
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE ref ('+
+      '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
+      '  srcid  INTEGER,'+
+      '  modid  INTEGER,'+
+      '  dir    INTEGER,'+
+      '  file   INTEGER,'+
+      '  tag    INTEGER,'+
+      '  line   INTEGER,'+
+      '  flags  INTEGER);');
+  result:=ExecuteDirect(tldb,
+      'CREATE INDEX refsrc ON ref (srcid, modid)');
+end;
+
+function TLOpenBase(inmemory:boolean=false):boolean;
+begin
+  if tldb<>nil then exit(true);
+
+  result:=LoadBase(tldb,TL2TextBase,inmemory)=SQLITE_OK;
+
+  if (not result) and (tldb<>nil) then
+    result:=CreateTables();
+end;
+
+function TLSaveBase():boolean;
+begin
+  if tldb=nil then exit(false);
+
+  result:=SaveBase(tldb,TL2TextBase)=SQLITE_OK;
+end;
+
+function TLCloseBase(dosave:boolean):boolean;
+begin
+  if tldb=nil then exit(not dosave);
+
+  if dosave then
+    result:=SaveBase(tldb,TL2TextBase)=SQLITE_OK
+  else
+    result:=true;
+
+  if result then
+    FreeBase(tldb);
+end;
+{%ENDREGION Admin}
 
 initialization
 

@@ -1,9 +1,9 @@
 {%REGION Recipes}
 
 function AddRecipeToBase(ams:pointer; var aname:string; aId:int64;
-          const atitle, aicon, fname:string):integer;
+          atitle, aicon:PUnicodeChar; const fname:string):integer;
 var
-  lmodid,lSQL,sid:string;
+  lmodid,sid:string;
 begin
   if aId=-1 then
   begin
@@ -24,10 +24,9 @@ begin
   end;
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO recipes (id, name, title, icon, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+aicon+', '+lmodid+')';
-
-    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    if ExecuteDirect(PModScanner(ams)^.db,
+      'REPLACE INTO recipes (id, name, title, icon, modid) VALUES ('+
+        sid+', ?1, ?2, ?3, '+lmodid+')',[aname, atitle, aicon]) then
       result:=1
     else
       result:=0;
@@ -40,13 +39,14 @@ function AddRecipeNode(ams:pointer; anode:pointer; const fname:string):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
-  name,title,licon:string;
+  name:string;
+  ltitle,licon:PUnicodeChar;
   lid:int64;
   i:integer;
 begin
-  title:='';
-  licon:='';
-  lid:=-1;
+  ltitle:=nil;
+  licon :=nil;
+  lid   :=-1;
 
   for i:=0 to GetChildCount(anode)-1 do
   begin
@@ -57,16 +57,16 @@ begin
       pcw:=GetNodeName(lnode);
       if CompareWide(pcw,'NAME'  )=0 then name :=AsString(lnode)
       // TL2 only
-      else if CompareWide(pcw,'GUID'  )=0 then lid  :=AsInteger64(lnode)
-      else if CompareWide(pcw,'ICON'  )=0 then licon:=AsString   (lnode)
-      else if CompareWide(pcw,'RESULT')=0 then title:=AsString   (lnode)
+      else if CompareWide(pcw,'GUID'  )=0 then lid   :=AsInteger64(lnode)
+      else if CompareWide(pcw,'ICON'  )=0 then licon :=AsString   (lnode)
+      else if CompareWide(pcw,'RESULT')=0 then ltitle:=AsString   (lnode);
     end;
   end;
 {
   if PModScanner(ams)^.gamever=verTL1 then
     title:=name;
 }
-  result:=AddRecipeToBase(ams,name,lid,title,licon,fname);
+  result:=AddRecipeToBase(ams,name,lid,ltitle,licon,fname);
 end;
 
 function ProcessRecipes(

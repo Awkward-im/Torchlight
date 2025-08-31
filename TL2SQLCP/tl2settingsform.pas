@@ -20,20 +20,13 @@ type
   TTL2Settings = class(TForm)
     bbFontEdit: TBitBtn;
     bbSaveSettings: TBitBtn;
-    cbImportParts: TCheckBox;
-    cbAutoAsPartial: TCheckBox;
+    cbAsPartial: TCheckBox;
     cbRemoveTags: TCheckBox;
-    cbHidePartial: TCheckBox;
-    cbReopenProjects: TCheckBox;
     edFilterWords: TEdit;
-    edDefaultFile: TFileNameEdit;
-    edRootDir: TDirectoryEdit;
     edTransLang: TEdit;
-    edWorkDir: TDirectoryEdit;
     gbTranslation: TGroupBox;
     cbAPIKey: TCheckBox;
     lblTitle: TLabel;
-    lblDefFileDescr: TLabel;
     lblFilter: TLabel;
     lblFilterNote: TLabel;
     lblGetAPIKey: TLabel;
@@ -41,9 +34,6 @@ type
     lblTranslators: TLabel;
     lblProgramLanguage: TLabel;
     lblLang: TLabel;
-    lblDefaultFile: TLabel;
-    lblRootDirectory: TLabel;
-    lblWorkDirectory: TLabel;
     lbLanguage: TListBox;
     lblNote: TLabel;
     lbTranslators: TListBox;
@@ -71,6 +61,7 @@ type
 var
   TL2Settings:TTL2Settings;
 
+procedure SetProgramLanguage;
 function Translate(const src:AnsiString):AnsiString;
 
 implementation
@@ -160,6 +151,15 @@ const
 
 //----- Settings -----
 
+procedure SetProgramLanguage;
+var
+  config:TIniFile;
+begin
+  config:=TIniFile.Create(ChangeFileExt(ParamStr(0),'.ini'),[ifoEscapeLineFeeds,ifoStripQuotes]);
+  SetDefaultLang(config.ReadString(sNSBase+':'+sTranslation,sPrgTransLang,'en'));
+  config.Free;
+end;
+
 procedure TTL2Settings.SaveSettings();
 var
   ltr:TTranslateBase;
@@ -170,16 +170,8 @@ var
 begin
   config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  //--- Main
-  config.WriteString(sNSBase+':'+sSectSettings,sDefFile  ,edDefaultFile.Text);
-  config.WriteString(sNSBase+':'+sSectSettings,sRootDir  ,edRootDir    .Text);
-  config.WriteString(sNSBase+':'+sSectSettings,sWorkDir  ,edWorkDir    .Text);
-
   //--- Options
-  config.WriteBool(sNSBase+':'+sSectSettings,sImportParts,cbImportParts   .Checked);
-  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAutoAsPartial .Checked);
-  config.WriteBool(sNSBase+':'+sSectSettings,sReopenFiles,cbReopenProjects.Checked);
-  config.WriteBool(sNSBase+':'+sSectSettings,sHidePartial,cbHidePartial   .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAsPartial .Checked);
 
   //--- Font
   config.WriteString (sNSBase+':'+sSectFont,sFontName   ,TL2DM.TL2Font.Name);
@@ -232,16 +224,8 @@ var
 begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
-  //--- Main
-  edDefaultFile.Text:=config.ReadString(sNSBase+':'+sSectSettings,sDefFile  ,DefDATFile);
-  edRootDir    .Text:=config.ReadString(sNSBase+':'+sSectSettings,sRootDir  ,'');
-  edWorkDir    .Text:=config.ReadString(sNSBase+':'+sSectSettings,sWorkDir  ,GetCurrentDir());
-
   //--- Options
-  cbImportParts   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sImportParts,false);
-  cbAutoAsPartial .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
-  cbReopenProjects.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sReopenFiles,false);
-  cbHidePartial   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sHidePartial,false);
+  cbAsPartial .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
 
 //--- Font
   TL2DM.TL2Font.Name   :=config.ReadString (sNSBase+':'+sSectFont,sFontName   ,DefFontName);
@@ -517,9 +501,6 @@ end;
 procedure TTL2Settings.FormCreate(Sender: TObject);
 begin
   TL2Settings:=Self;
-
-  edDefaultFile.Filter:=DefaultFilter;
-  edDefaultFile.DefaultExt:=DefaultExt;
 
   INIFileName:=ChangeFileExt(ParamStr(0),'.ini');
 

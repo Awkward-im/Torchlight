@@ -16,10 +16,15 @@ uses
 type
   TDictElement = record
     id   :integer;
-    value:string;
+    value:AnsiString;
   end;
   TDictDynArray = array of TDictElement;
-
+type
+ TDict64Element = record
+   id   :Int64;
+   value:AnsiString;
+ end;
+  TDict64DynArray = array of TDict64Element;
 type
   TRGDebugLevel = (dlNone, dlNormal, dlDetailed);
 var
@@ -50,6 +55,7 @@ type
 const
   TL1DataBase = 'tl1db.db';
   TL2DataBase = 'tl2db.db';
+  TL2TextBase = 'tl2text.db';
   HobDataBase = 'hobdb.db';
   RGDataBase  = 'rgdb.db';
   RGODataBase = 'rgodb.db';

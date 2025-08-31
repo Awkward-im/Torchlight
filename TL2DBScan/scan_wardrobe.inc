@@ -6,23 +6,22 @@
 type
   twardrobeinfo = record
     id    :string;
-    name  :string;
-    atype :string;
+    name  :PUnicodeChar;
+    atype :PUnicodeChar;
     gender:string;
   end;
 
 function AddWardrobeToBase(ams:pointer; var adata:twardrobeinfo):integer;
 var
-  lmodid,lSQL:string;
+  lmodid:string;
 begin
   lmodid:=CheckIdForMod(ams,'wardrobe', adata.id);
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO wardrobe (id, name, type, gender, modid) VALUES ('+
-        adata.id+', '+FixedText(adata.name)+', '+FixedText(adata.atype)+', '''+adata.gender+
-        ''', '+lmodid+')';
-
-    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    if ExecuteDirect(PModScanner(ams)^.db,
+        'REPLACE INTO wardrobe (id, name, type, gender, modid) VALUES ('+
+        adata.id+', ?1, ?2, '''+adata.gender+''', '+lmodid+')',
+        [adata.name,adata.atype]) then
       result:=1
     else
       result:=0;
@@ -69,7 +68,7 @@ begin
            if i>0 then inc(result)
       else if i<0 then inc(lcnt)
       else if RGDebugLevel=dlDetailed then
-        RGLog.Add('can''t update '+ldata.name);
+        RGLog.Add('can''t update '+AnsiString(ldata.name));
     end;
   end;
   if (result=0) and (lcnt>0) then result:=-lcnt;

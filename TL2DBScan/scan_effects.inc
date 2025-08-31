@@ -2,32 +2,26 @@
 
 type
   TEffectInfo = record
-    name     : string;
-    gooddes  : string;
-    gooddesot: string;
-    baddes   : string;
-    baddesot : string;
-    precision: integer;              // display precision for values
-    values: array [1..5] of string;  // affix parameter names
+    name     : PUnicodeChar;
+    gooddes  : PUnicodeChar;
+    gooddesot: PUnicodeChar;
+    baddes   : PUnicodeChar;
+    baddesot : PUnicodeChar;
+    precision: integer;                    // display precision for values
+    values: array [1..5] of PUnicodeChar;  // affix parameter names
   end;
 
 {TODO: add modid field?}
 function AddEffectToBase(ams:pointer; aid:integer; const aefi:TEffectInfo):boolean;
-var
-  lSQL:string;
 begin
   result:=false;
 
-  lSQL:='INSERT OR FAIL INTO effects (id, name, gooddes, gooddesot, baddes, baddesot, precision,'+
+  result:=ExecuteDirect(PModScanner(ams)^.db,
+    'INSERT OR FAIL INTO effects (id, name, gooddes, gooddesot, baddes, baddesot, precision,'+
         ' value1, value2, value3, value4, value5) VALUES ('+
-      IntToStr(aid)+', '+FixedText(aefi.name)+
-      ', '+FixedText(aefi.gooddes  )+', '+FixedText(aefi.gooddesot)+
-      ', '+FixedText(aefi.baddes   )+', '+FixedText(aefi.baddesot )+
-      ', '+IntToStr (aefi.precision)+', '''  +aefi.values[1]+
-      ''', '''+aefi.values[2]+''', '''+aefi.values[3]+
-      ''', '''+aefi.values[4]+''', '''+aefi.values[5]+''')';
-
-  result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
+      IntToStr(aid)+', ?1, ?2, ?3, ?4, ?5, '+IntToStr (aefi.precision)+', ?6, ?7, ?8, ?9, ?10)',
+      [aefi.name,aefi.gooddes,aefi.gooddesot,aefi.baddes,aefi.baddesot,
+       aefi.values[1],aefi.values[2],aefi.values[3],aefi.values[4],aefi.values[5]]);
 end;
 
 function AddEffectNode(ams:pointer; anode:pointer):integer;
@@ -43,17 +37,17 @@ begin
   begin
     lnode:=GetChild(anode,i); // 'EFFECT'
     lmask     :=0;
-    lefi.name     :='';
-    lefi.gooddes  :='';
-    lefi.gooddesot:='';
-    lefi.baddes   :='';
-    lefi.baddesot :='';
+    lefi.name     :=nil;
+    lefi.gooddes  :=nil;
+    lefi.gooddesot:=nil;
+    lefi.baddes   :=nil;
+    lefi.baddesot :=nil;
     lefi.precision:= 0;
-    lefi.values[1]:='';
-    lefi.values[2]:='';
-    lefi.values[3]:='';
-    lefi.values[4]:='';
-    lefi.values[5]:='';
+    lefi.values[1]:=nil;
+    lefi.values[2]:=nil;
+    lefi.values[3]:=nil;
+    lefi.values[4]:=nil;
+    lefi.values[5]:=nil;
 
     for j:=0 to GetChildCount(lnode)-1 do
     begin

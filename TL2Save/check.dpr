@@ -1,10 +1,10 @@
-uses tl2save,rgdb;
+uses tlsave,rgdb;
 
 var
-  tr:TTL2SaveFile;
+  tr:TTLSaveFile;
 begin
   RGDBLoadBase;
-  tr:=TTL2SaveFile.Create;
+  tr:=TTLSaveFile.Create;
   tr.LoadFromFile(ParamStr(1));
   tr.parse;
   tr.FixModdedItems;

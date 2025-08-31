@@ -1,5 +1,4 @@
 {"version":1,"strings":[
-{"hash":6809412,"name":"tedittextform.caption","sourcebytes":[69,100,105,116,32,116,101,120,116],"value":"Edit text"},
 {"hash":370602,"name":"tedittextform.lbltag.caption","sourcebytes":[84,97,103,58],"value":"Tag:"},
 {"hash":198967413,"name":"tedittextform.actprevline.hint","sourcebytes":[80,114,101,118,105,111,117,115,32,108,105,110,101],"value":"Previous line"},
 {"hash":258440325,"name":"tedittextform.actnextline.hint","sourcebytes":[78,101,120,116,32,108,105,110,101],"value":"Next line"},

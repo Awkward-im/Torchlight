@@ -1,4 +1,3 @@
-{TODO: make reaction on string delete}
 unit TL2Unit;
 
 {$mode objfpc}{$H+}
@@ -8,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus,
   ShellCtrls, ExtCtrls, StdCtrls, Buttons, ActnList,
-  LCLType,StdActns, Grids, Types, rgglobal;
+  LCLType,StdActns, Grids, Types;
 
 type
 
@@ -17,15 +16,10 @@ type
   TMainTL2TransForm = class(TForm)
     actCheckTranslation: TAction;
     actExportClipBrd: TAction;
-    actExportFile: TAction;
     actFilter: TAction;
     actFindNext: TAction;
-    actHideReady: TAction;
     actImportClipBrd: TAction;
-    actImportFile: TAction;
     actSettings: TAction;
-    actOpenSource: TAction;
-    actPartAsReady: TAction;
     actReplace: TAction;
     actShowDoubles: TAction;
     actShowLog: TAction;
@@ -68,7 +62,6 @@ type
     TL2Grid: TStringGrid;
     TL2ProjectFilterPanel: TPanel;
     TL2Toolbar: TToolBar;
-    tbFileNew: TToolButton;
     tbFileSave: TToolButton;
     tbSeparator1: TToolButton;
     tbModInfo: TToolButton;
@@ -84,8 +77,6 @@ type
     TL2MainMenu: TMainMenu;
     TL2StatusBar: TStatusBar;
     tbHelpNotes: TToolButton;
-    tbBuild: TToolButton;
-    tbScanMod: TToolButton;
     tbShowLog: TToolButton;
     tbSeparator3: TToolButton;
     tbSettings: TToolButton;
@@ -148,6 +139,7 @@ type
     procedure UpdateGrid(idx: integer);
     procedure UpdateStatusBar(Sender:TObject; const SBText:AnsiString='');
     function  UpdateCache(arow:integer; const astr:AnsiString):boolean;
+    function  CheckTheSame(idx:integer; markAsPart:boolean):integer;
     function  NextNoticed(acheckonly:boolean; var idx:integer):integer;
   public
 
@@ -164,6 +156,7 @@ uses
   LCLIntf,
   ClipBrd,
   iso639,
+  rgglobal,
   fmmodinfo,
   unitLogForm,
   TL2DataModule,
@@ -173,7 +166,7 @@ uses
   TL2DupeForm,
   TL2SimForm,
   TL2About,
-  tltrsql,
+  rgdb.text,
   TL2Text;
 
 { TMainTL2TransForm }
@@ -185,6 +178,7 @@ resourcestring
   rsReplaces       = 'Total replaces';
   rsDoDelete       = 'Are you sure to delete selected line(s)?'#13#10+
                      'This text will be just hidden until you save and reload project.';
+  rsAutoFill       = 'Try to autofill similar text in database?';
 
   rsNoDoubles      = 'No doubles for this text';
   rsDupes          = 'Check doubles info.';
@@ -204,10 +198,11 @@ resourcestring
   // show mode combobox
   rsModeAll        = 'All';
   rsModeReady      = 'Ready';
-  rsReadyPlus      = 'Translated';
+  rsModeReadyPlus  = 'Translated';
   rsModePartial    = 'Partial';
   rsModeOriginal   = 'Original';
-  rsNotReady       = 'Not translated';
+  rsModeNotReady   = 'Not translated';
+  rsModeModified   = 'Modified';
 
 const
   colOrigin  = 1;
@@ -217,6 +212,8 @@ const
 //----- Form -----
 
 procedure TMainTL2TransForm.UpdateStatusBar(Sender:TObject; const SBText:AnsiString='');
+var
+  lrect:TRect;
 begin
   if Sender=nil then
   begin
@@ -226,7 +223,10 @@ begin
   else if SBText<>'' then
   begin
     TL2StatusBar.SimpleText:=SBText;
-    Application.ProcessMessages;
+    lrect:=TL2StatusBar.ClientRect;
+    InvalidateRect(TL2StatusBar.Handle,@lrect,false);
+    UpdateWindow  (TL2StatusBar.Handle);
+//    Application.ProcessMessages;
   end
   else
   begin
@@ -244,12 +244,13 @@ begin
 
   Self.Font.Assign(TL2DM.TL2Font);
 
-  cbDisplayMode.AddItem(rsModeAll     ,TObject(0));
-  cbDisplayMode.AddItem(rsModeReady   ,TObject(1));
-  cbDisplayMode.AddItem(rsReadyPlus   ,TObject(2));
-  cbDisplayMode.AddItem(rsModePartial ,TObject(3));
-  cbDisplayMode.AddItem(rsModeOriginal,TObject(4));
-  cbDisplayMode.AddItem(rsNotReady    ,TObject(5));
+  cbDisplayMode.AddItem(rsModeAll      ,TObject(0));
+  cbDisplayMode.AddItem(rsModeReady    ,TObject(1));
+  cbDisplayMode.AddItem(rsModeReadyPlus,TObject(2));
+  cbDisplayMode.AddItem(rsModePartial  ,TObject(3));
+  cbDisplayMode.AddItem(rsModeOriginal ,TObject(4));
+  cbDisplayMode.AddItem(rsModeNotReady ,TObject(5));
+  cbDisplayMode.AddItem(rsModeModified ,TObject(6));
   cbDisplayMode.ItemIndex:=0;
 
   LoadModData();
@@ -268,6 +269,7 @@ begin
   if FileSave.Enabled then
   begin
     case MessageDlg(rsNotSaved,mtWarning,mbYesNoCancel,0,mbCancel) of
+      mrYes,
       mrOk: FileSaveExecute(self);
       mrCancel: begin
         CloseAction:=caNone;
@@ -280,17 +282,57 @@ begin
   MainTL2TransForm:=nil;
 end;
 
+{%REGION File Operations}
 procedure TMainTL2TransForm.FileExitExecute(Sender: TObject);
 begin
   Close;
 end;
 
 procedure TMainTL2TransForm.FileSaveExecute(Sender: TObject);
+var
+  lcheck:boolean;
 begin
   FileSave.Enabled:=false;
-  SaveTranslation();
+  lcheck:=false;
+  if CurMod<>modAll then
+  begin
+    lcheck:=MessageDlg(rsAutoFill,MtConfirmation,mbYesNo,0,mbYes)=mrYes;
+  end;
+  SaveTranslation(lcheck);
 end;
 {%ENDREGION File Operations}
+
+function TMainTL2TransForm.CheckTheSame(idx:integer; markAsPart:boolean):integer;
+var
+  ltrans:AnsiString;
+  litem:PTLCacheElement;
+  i,ltmpl:integer;
+begin
+  result:=0;
+
+  ltrans:=TRCache[idx].dst;
+  if ltrans='' then exit;
+
+  ltmpl:=TRCache[idx].tmpl;
+  for i:=0 to High(TRCache) do
+  begin
+    if i<>idx then // not necessary, dst<>'' anyway
+    begin
+      litem:=@TRCache[i];
+
+      if (litem^.dst =''   ) and
+         (litem^.tmpl=ltmpl) then
+      begin
+        inc(result);
+        litem^.dst :=ReplaceTranslation(ltrans,litem^.src);
+        litem^.part:=markAsPart;
+        litem^.flags:=litem^.flags or rfIsModified;
+
+        UpdateGrid(i);
+      end;
+    end;
+  end;
+end;
 
 function TMainTL2TransForm.UpdateCache(arow:integer; const astr:AnsiString):boolean;
 var
@@ -462,7 +504,7 @@ begin
       dec(idx);
       NextNoticed(false,idx); // yes, yes, check it again but with fix at same time
       inc(lcnt);
-      TRCache[idx].part :=TL2Settings.cbAutoAsPartial.Checked;
+      TRCache[idx].part :=TL2Settings.cbAsPartial.Checked;
       TRCache[idx].flags:=TRCache[idx].flags or rfIsModified;
       FileSave.Enabled  :=true;
 
@@ -593,15 +635,17 @@ begin
     lidx:=IntPtr(TL2Grid.Objects[0,lr]);
     if TRCache[lidx].dst<>ls then
     begin
+      if ls=TRCache[lidx].src then ls:='';
+
       TRCache[lidx].dst  :=ls;
-      TRCache[lidx].part :=(TRCache[lidx].part or TL2Settings.cbAutoAsPartial.Checked) and (ls<>'');
+      TRCache[lidx].part :=(TRCache[lidx].part or TL2Settings.cbAsPartial.Checked) and (ls<>'');
       TRCache[lidx].flags:=TRCache[lidx].flags or rfIsModified;
       FileSave.Enabled:=true;
 
       TL2Grid.Cells[colTrans  ,lr]:=ls;
       TL2Grid.Cells[colPartial,lr]:=BoolNumber[TRCache[lidx].part];
 
-//      data.CheckTheSame(lidx,TL2Settings.cbAutoAsPartial.Checked);
+      CheckTheSame(lidx,TL2Settings.cbAsPartial.Checked);
 
       TL2Grid.Row:=lr;
       TL2Grid.Col:=colTrans;
@@ -778,7 +822,7 @@ begin
         Canvas.FillRect(aRect);
 
         ls:=Cells[aCol,aRow];
-        if (ACol=colOrigin) and (ls[Length(ls)]=' ') then
+        if (ACol=colOrigin) and (ls<>'') and (ls[Length(ls)]=' ') then
           ls[Length(ls)]:='~';
         Canvas.TextRect(aRect,
           aRect.Left+constCellPadding,aRect.Top+constCellPadding,ls);
@@ -825,7 +869,6 @@ begin
 end;
 
 procedure TMainTL2TransForm.TL2GridDblClick(Sender: TObject);
-//var  lrow:integer;
 var
   i:integer;
 begin
@@ -835,14 +878,18 @@ begin
     SelectLine(i);
     if ShowModal=mrOk then
     begin
-//      data.CheckTheSame(i,TL2Settings.cbAutoAsPartial.Checked);
+      for i:=0 to High(TRCache) do
+      begin
+        if (TRCache[i].flags and rfIsModified)<>0 then
+        begin
+          FileSave.Enabled:=true;
+          break;
+        end;
+      end;
 
+      MoveToIndex(EditIndex);
+      edProjectFilterChange(Self);
       UpdateStatusBar(Self);
-{
-      lrow:=TL2Grid.Row;
-      FillProjectGrid('');
-      TL2Grid.Row:=lrow;
-}
     end;
     Free;
   end;
@@ -937,7 +984,7 @@ begin
           if TL2Grid.Objects[1,i]<>nil then
           begin
             idx:=IntPtr(TL2Grid.Objects[0,i]);
-            TRCache[idx].flags:=TRCache[idx].flags or rfIsDeleted;
+            TRCache[idx].flags:=TRCache[idx].flags or rfIsDeleted{ or rfIsModified};
 
             TL2Grid.DeleteRow(i);
           end;
@@ -1042,7 +1089,7 @@ begin
       end;
     end;
 
-  result:=lrow;
+  result:=TL2Grid.Row;
 end;
 
 procedure TMainTL2TransForm.UpdateGrid(idx:integer);
@@ -1071,6 +1118,7 @@ begin
     3: if not TRCache[idx].part  then exit;
     4: if (TRCache[idx].dst<>'') then exit;
     5: if (TRCache[idx].dst<>'') and (not TRCache[idx].part) then exit;
+    6: if (TRCache[idx].flags and rfIsModified)=0 then exit;
   end;
 
   // Filter
@@ -1499,11 +1547,11 @@ begin
   if atext=TRCache[lidx].src then exit; // or treat as ''
 
   TRCache[lidx].dst  :=atext;
-  TRCache[lidx].part :=TL2Settings.cbImportParts.Checked{ and (atext<>'')};
+  TRCache[lidx].part :=TL2Settings.cbAsPartial.Checked{ and (atext<>'')};
   TRCache[lidx].flags:=TRCache[lidx].flags or rfIsModified;
   FileSave.Enabled:=true;
   TL2Grid.Cells[colTrans  ,arow]:=atext;
-  TL2Grid.Cells[colPartial,arow]:=BoolNumber[TL2Settings.cbImportParts.Checked];
+  TL2Grid.Cells[colPartial,arow]:=BoolNumber[TL2Settings.cbAsPartial.Checked];
 end;
 
 //at current place or fill selected, pure translation

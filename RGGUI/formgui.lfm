@@ -50,7 +50,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 70
-      Height = 5
+      Height = 22
       Top = 2
       Style = tbsDivider
     end
@@ -362,7 +362,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep1: TToolButton
           Left = 70
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -387,7 +387,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep2: TToolButton
           Left = 203
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -406,7 +406,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep3: TToolButton
           Left = 395
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -419,7 +419,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep4: TToolButton
           Left = 449
-          Height = 8
+          Height = 22
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -565,6 +565,39 @@ object RGGUIForm: TRGGUIForm
           Stretch = True
           Transparent = True
         end
+        object pnlAudio: TPanel
+          Left = 1
+          Height = 48
+          Top = 41
+          Width = 340
+          Align = alTop
+          ClientHeight = 48
+          ClientWidth = 340
+          TabOrder = 1
+          object bbPlay: TBitBtn
+            Left = 8
+            Height = 26
+            Top = 8
+            Width = 72
+            Caption = 'Play'
+            Images = ilMain
+            ImageIndex = 18
+            TabOrder = 0
+            OnClick = bbPlayClick
+          end
+          object bbStop: TBitBtn
+            Left = 8
+            Height = 26
+            Top = 8
+            Width = 72
+            Caption = 'Stop'
+            Images = ilMain
+            ImageIndex = 19
+            TabOrder = 1
+            Visible = False
+            OnClick = bbStopClick
+          end
+        end
         inline SynEdit: TSynEdit
           Left = 1
           Height = 321
@@ -579,7 +612,7 @@ object RGGUIForm: TRGGUIForm
           ParentColor = False
           ParentFont = False
           PopupMenu = SynPopupMenu
-          TabOrder = 1
+          TabOrder = 2
           BookMarkOptions.BookmarkImages = ilBookmarks
           Gutter.Width = 57
           Gutter.MouseActions = <>
@@ -761,7 +794,7 @@ object RGGUIForm: TRGGUIForm
             end          
             item
               Command = ecBlockIndent
-              ShortCut = 24649
+              ShortCut = 16457
             end          
             item
               Command = ecLineBreak
@@ -777,7 +810,7 @@ object RGGUIForm: TRGGUIForm
             end          
             item
               Command = ecBlockUnindent
-              ShortCut = 24661
+              ShortCut = 16469
             end          
             item
               Command = ecPaste
@@ -1010,7 +1043,9 @@ object RGGUIForm: TRGGUIForm
           MouseActions = <>
           MouseTextActions = <>
           MouseSelActions = <>
-          Options = [eoAutoIndent, eoBracketHighlight, eoGroupUndo, eoScrollPastEol, eoSmartTabs, eoTabsToSpaces]
+          Lines.Strings = (
+            'SynEdit'
+          )
           MouseOptions = [emCtrlWheelZoom]
           VisibleSpecialChars = [vscSpace, vscTabAtLast]
           SelectedColor.ForePriority = 50
@@ -1020,7 +1055,8 @@ object RGGUIForm: TRGGUIForm
           SelectedColor.ItalicPriority = 0
           SelectedColor.UnderlinePriority = 0
           SelectedColor.StrikeOutPriority = 0
-          SelectedColor.Features = [lafPastEOL]
+          SelectedColor.ExtendPastEol = True
+          IncrementColor.ExtendPastEol = False
           BracketHighlightStyle = sbhsBoth
           BracketMatchColor.Foreground = clNone
           BracketMatchColor.Background = clNone
@@ -1040,12 +1076,16 @@ object RGGUIForm: TRGGUIForm
               MouseActions = <>
               MaxExtraMarksColums = 0
               Options = [sgmoDeDuplicateMarksOnOverflow]
+              MarkupInfo.Background = clBtnFace
+              MarkupInfoCurrentLine.Foreground = clNone
+              MarkupInfoCurrentLine.Background = clNone
             end
             object SynGutterLineNumber1: TSynGutterLineNumber
               Width = 17
               MouseActions = <>
-              MarkupInfo.Foreground = clNone
               MarkupInfo.Background = clBtnFace
+              MarkupInfoCurrentLine.Foreground = clNone
+              MarkupInfoCurrentLine.Background = clNone
               DigitCount = 2
               ShowOnlyLineNumbersMultiplesOf = 1
               ZeroStart = False
@@ -1056,53 +1096,27 @@ object RGGUIForm: TRGGUIForm
               MouseActions = <>
               ModifiedColor = 59900
               SavedColor = clGreen
+              MarkupInfo.Foreground = clGreen
+              MarkupInfo.FrameColor = 59900
+              MarkupInfoCurrentLine.Foreground = clNone
+              MarkupInfoCurrentLine.Background = clNone
             end
             object SynGutterSeparator1: TSynGutterSeparator
               Width = 2
               MouseActions = <>
               MarkupInfo.Foreground = clGray
               MarkupInfo.Background = clWhite
+              MarkupInfoCurrentLine.Foreground = clNone
+              MarkupInfoCurrentLine.Background = clNone
             end
             object SynGutterCodeFolding1: TSynGutterCodeFolding
               MouseActions = <>
               MarkupInfo.Foreground = clGray
-              MarkupInfo.Background = clNone
+              MarkupInfoCurrentLine.Foreground = clNone
+              MarkupInfoCurrentLine.Background = clNone
               MouseActionsExpanded = <>
               MouseActionsCollapsed = <>
             end
-          end
-        end
-        object pnlAudio: TPanel
-          Left = 1
-          Height = 48
-          Top = 41
-          Width = 340
-          Align = alTop
-          ClientHeight = 48
-          ClientWidth = 340
-          TabOrder = 2
-          object bbPlay: TBitBtn
-            Left = 8
-            Height = 26
-            Top = 8
-            Width = 72
-            Caption = 'Play'
-            Images = ilMain
-            ImageIndex = 18
-            TabOrder = 0
-            OnClick = bbPlayClick
-          end
-          object bbStop: TBitBtn
-            Left = 8
-            Height = 26
-            Top = 8
-            Width = 72
-            Caption = 'Stop'
-            Images = ilMain
-            ImageIndex = 19
-            TabOrder = 1
-            Visible = False
-            OnClick = bbStopClick
           end
         end
       end

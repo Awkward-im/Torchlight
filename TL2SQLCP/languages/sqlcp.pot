@@ -1,14 +1,21 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: fmsqlcp.rsbuilddone
+msgid "Translation file generated"
+msgstr ""
+
+#: fmsqlcp.rsbuildfailed
+msgid "Translation file is NOT generated"
+msgstr ""
+
+#: fmsqlcp.rscantsave
+msgid "Can't save database"
+msgstr ""
+
 #: fmsqlcp.rschooselang
 msgctxt "fmsqlcp.rschooselang"
 msgid "Choose translation language"
-msgstr ""
-
-#: fmsqlcp.rsdblclick
-msgctxt "fmsqlcp.rsdblclick"
-msgid "Double-Click to edit translation"
 msgstr ""
 
 #: fmsqlcp.rslanguage
@@ -23,6 +30,10 @@ msgstr ""
 msgid "Open translation file"
 msgstr ""
 
+#: fmsqlcp.rssavedone
+msgid "Database saved"
+msgstr ""
+
 #: fmsqlcp.rsstat
 #, object-pascal-format
 msgid "Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d"
@@ -33,112 +44,24 @@ msgstr ""
 msgid "Total lines: %d | Unreferred lines: %d"
 msgstr ""
 
-#: rgdb.rsbasegame
-msgid "Base game"
+#: fmsqlcp.rsstopscan
+msgid "Do you want to break scan?"
 msgstr ""
 
-#: rgdb.rshp
-msgid "Best Health Potion"
+#: tdupeform.caption
+msgid "Dupe List"
 msgstr ""
 
-#: rgdb.rslmb
-msgid "Left mouse button"
+#: tdupeform.sgdupes.columns[0].title.caption
+msgid "File"
 msgstr ""
 
-#: rgdb.rsmp
-msgid "Best Mana Potion"
+#: tdupeform.sgdupes.columns[1].title.caption
+msgid "Line"
 msgstr ""
 
-#: rgdb.rspethp
-msgid "Best Pet Health Potion"
-msgstr ""
-
-#: rgdb.rspetmp
-msgid "Best Pet Mana Potion"
-msgstr ""
-
-#: rgdb.rspetspell1
-msgid "Pet spell 1"
-msgstr ""
-
-#: rgdb.rspetspell2
-msgid "Pet spell 2"
-msgstr ""
-
-#: rgdb.rspetspell3
-msgid "Pet spell 3"
-msgstr ""
-
-#: rgdb.rspetspell4
-msgid "Pet spell 4"
-msgstr ""
-
-#: rgdb.rsqk0
-msgid "Quckslot 0"
-msgstr ""
-
-#: rgdb.rsqk1
-msgid "Quckslot 1"
-msgstr ""
-
-#: rgdb.rsqk2
-msgid "Quckslot 2"
-msgstr ""
-
-#: rgdb.rsqk3
-msgid "Quckslot 3"
-msgstr ""
-
-#: rgdb.rsqk4
-msgid "Quckslot 4"
-msgstr ""
-
-#: rgdb.rsqk5
-msgid "Quckslot 5"
-msgstr ""
-
-#: rgdb.rsqk6
-msgid "Quckslot 6"
-msgstr ""
-
-#: rgdb.rsqk7
-msgid "Quckslot 7"
-msgstr ""
-
-#: rgdb.rsqk8
-msgid "Quckslot 8"
-msgstr ""
-
-#: rgdb.rsqk9
-msgid "Quckslot 9"
-msgstr ""
-
-#: rgdb.rsrmb
-msgid "Right mouse button"
-msgstr ""
-
-#: rgdb.rsrmbalt
-msgid "Right mouse button (alternative)"
-msgstr ""
-
-#: rgdb.rsset
-msgid "Set"
-msgstr ""
-
-#: rgdb.rsspell1
-msgid "Spell 1"
-msgstr ""
-
-#: rgdb.rsspell2
-msgid "Spell 2"
-msgstr ""
-
-#: rgdb.rsspell3
-msgid "Spell 3"
-msgstr ""
-
-#: rgdb.rsspell4
-msgid "Spell 4"
+#: tdupeform.sgdupes.columns[2].title.caption
+msgid "Tag"
 msgstr ""
 
 #: tedittextform.actmarkaspartial.hint
@@ -174,10 +97,6 @@ msgctxt "tedittextform.acttranslate.hint"
 msgid "Translate"
 msgstr ""
 
-#: tedittextform.caption
-msgid "Edit text"
-msgstr ""
-
 #: tedittextform.lbltag.caption
 msgid "Tag:"
 msgstr ""
@@ -195,15 +114,44 @@ msgid "Save log to file"
 msgstr ""
 
 #: tformsqlcp.bbaddtrans.caption
-msgid "Add Translation"
+msgid "Load"
+msgstr ""
+
+#: tformsqlcp.bbaddtrans.hint
+msgid "Load translation file"
+msgstr ""
+
+#: tformsqlcp.bbgenerate.caption
+msgid "Generate"
+msgstr ""
+
+#: tformsqlcp.bbgenerate.hint
+msgid "Generate translation file for mod"
 msgstr ""
 
 #: tformsqlcp.bblog.caption
 msgid "Log"
 msgstr ""
 
+#: tformsqlcp.bblog.hint
+msgid "Show log file"
+msgstr ""
+
+#: tformsqlcp.bbnewtrans.caption
+msgctxt "tformsqlcp.bbnewtrans.caption"
+msgid "New"
+msgstr ""
+
+#: tformsqlcp.bbnewtrans.hint
+msgid "Add new translation language"
+msgstr ""
+
 #: tformsqlcp.bbsavedb.caption
 msgid "Save DB"
+msgstr ""
+
+#: tformsqlcp.bbsavedb.hint
+msgid "Save DB changes (memory DB related)"
 msgstr ""
 
 #: tformsqlcp.bbscanmod.caption
@@ -211,11 +159,11 @@ msgid "Scan Mod"
 msgstr ""
 
 #: tformsqlcp.bbsqlog.caption
-msgid "Save SQL log"
+msgid "SQL log"
 msgstr ""
 
-#: tformsqlcp.cbwithref.caption
-msgid "With refs"
+#: tformsqlcp.bbsqlog.hint
+msgid "Show session SQL requiests of DB modify"
 msgstr ""
 
 #: tformsqlcp.gdlanguages.columns[0].title.caption
@@ -253,8 +201,13 @@ msgctxt "tformsqlcp.gdmodstat.columns[3].title.caption"
 msgid "Name"
 msgstr ""
 
+#: tformsqlcp.gdmodstat.hint
+msgctxt "tformsqlcp.gdmodstat.hint"
+msgid "Double-Click to edit translation"
+msgstr ""
+
 #: tformsqlcp.lblcurlang.caption
-msgid "Current languages"
+msgid "Current translations"
 msgstr ""
 
 #: tl2datamodule.rsnoref
@@ -266,7 +219,13 @@ msgstr ""
 msgid "This text presents in several (about %d) places."
 msgstr ""
 
-#: tl2edittext.sshow
+#: tl2edittext.rslanguage
+msgctxt "tl2edittext.rslanguage"
+msgid "Translation language"
+msgstr ""
+
+#: tl2edittext.rsshow
+msgctxt "tl2edittext.rsshow"
 msgid "Click on \"Show Doubles\" button to show"
 msgstr ""
 
@@ -344,6 +303,10 @@ msgctxt "tl2unit.rsaffected"
 msgid " line(s) affected"
 msgstr ""
 
+#: tl2unit.rsautofill
+msgid "Try to autofill similar text in database?"
+msgstr ""
+
 #: tl2unit.rsdefaultcaption
 msgctxt "tl2unit.rsdefaultcaption"
 msgid "Torchlight 2 Translation"
@@ -380,6 +343,15 @@ msgstr ""
 msgid "All"
 msgstr ""
 
+#: tl2unit.rsmodemodified
+msgid "Modified"
+msgstr ""
+
+#: tl2unit.rsmodenotready
+msgctxt "tl2unit.rsmodenotready"
+msgid "Not translated"
+msgstr ""
+
 #: tl2unit.rsmodeoriginal
 msgid "Original"
 msgstr ""
@@ -391,6 +363,11 @@ msgstr ""
 
 #: tl2unit.rsmodeready
 msgid "Ready"
+msgstr ""
+
+#: tl2unit.rsmodereadyplus
+msgctxt "tl2unit.rsmodereadyplus"
+msgid "Translated"
 msgstr ""
 
 #: tl2unit.rsnext
@@ -408,10 +385,6 @@ msgctxt "tl2unit.rsnotes"
 msgid "Punctuation note"
 msgstr ""
 
-#: tl2unit.rsnotready
-msgid "Not translated"
-msgstr ""
-
 #: tl2unit.rsnotsaved
 msgctxt "tl2unit.rsnotsaved"
 msgid "Project modified. Do you want to save it?"
@@ -420,10 +393,6 @@ msgstr ""
 #: tl2unit.rsnowarnings
 msgctxt "tl2unit.rsnowarnings"
 msgid "No any warnings"
-msgstr ""
-
-#: tl2unit.rsreadyplus
-msgid "Translated"
 msgstr ""
 
 #: tl2unit.rsreplaces
@@ -437,7 +406,8 @@ msgid "-- Root --"
 msgstr ""
 
 #: tmaintl2transform.actchecktranslation.caption
-msgid "actCheckTranslation"
+msgctxt "tmaintl2transform.actchecktranslation.caption"
+msgid "Check Translation"
 msgstr ""
 
 #: tmaintl2transform.actchecktranslation.hint
@@ -445,59 +415,37 @@ msgid "Check for notes of translation"
 msgstr ""
 
 #: tmaintl2transform.actexportclipbrd.caption
-msgid "actExportClipBrd"
+msgid "Export Clipboard"
 msgstr ""
 
 #: tmaintl2transform.actexportclipbrd.hint
 msgid "Copy selected source text to clipboard"
 msgstr ""
 
-#: tmaintl2transform.actexportfile.caption
-msgid "actExportFile"
-msgstr ""
-
-#: tmaintl2transform.actexportfile.hint
-msgid "Save selected source text"
-msgstr ""
-
 #: tmaintl2transform.actfilter.caption
-msgid "actFilter"
+msgctxt "tmaintl2transform.actfilter.caption"
+msgid "Filter"
 msgstr ""
 
 #: tmaintl2transform.actfilter.hint
+msgctxt "tmaintl2transform.actfilter.hint"
 msgid "Filter"
 msgstr ""
 
 #: tmaintl2transform.actfindnext.caption
-msgid "actFindNext"
+msgid "Find Next"
 msgstr ""
 
 #: tmaintl2transform.actfindnext.hint
 msgid "Search next"
 msgstr ""
 
-#: tmaintl2transform.acthideready.caption
-msgid "actHideReady"
-msgstr ""
-
-#: tmaintl2transform.acthideready.hint
-msgid "Hide translated lines"
-msgstr ""
-
 #: tmaintl2transform.actimportclipbrd.caption
-msgid "actImportClipBrd"
+msgid "Import Clipboard"
 msgstr ""
 
 #: tmaintl2transform.actimportclipbrd.hint
 msgid "Inset text with translation from clipboard"
-msgstr ""
-
-#: tmaintl2transform.actimportfile.caption
-msgid "actImportFile"
-msgstr ""
-
-#: tmaintl2transform.actimportfile.hint
-msgid "Add translation from file"
 msgstr ""
 
 #: tmaintl2transform.actmodinfo.caption
@@ -506,18 +454,6 @@ msgstr ""
 
 #: tmaintl2transform.actmodinfo.hint
 msgid "Show mod info"
-msgstr ""
-
-#: tmaintl2transform.actopensource.caption
-msgid "actOpenSource"
-msgstr ""
-
-#: tmaintl2transform.actpartasready.caption
-msgid "actPartAsReady"
-msgstr ""
-
-#: tmaintl2transform.actpartasready.hint
-msgid "Mark partially translated text as translated"
 msgstr ""
 
 #: tmaintl2transform.actreplace.caption
@@ -593,6 +529,7 @@ msgid "Exit program"
 msgstr ""
 
 #: tmaintl2transform.filesave.caption
+msgctxt "tmaintl2transform.filesave.caption"
 msgid "&Save"
 msgstr ""
 
@@ -601,6 +538,7 @@ msgid "Save project"
 msgstr ""
 
 #: tmaintl2transform.fontedit.caption
+msgctxt "tmaintl2transform.fontedit.caption"
 msgid "&Font"
 msgstr ""
 
@@ -630,10 +568,6 @@ msgstr ""
 msgid "&Edit"
 msgstr ""
 
-#: tmaintl2transform.mieditchecktranslation.caption
-msgid "Check Translation"
-msgstr ""
-
 #: tmaintl2transform.mifile.caption
 msgid "&File"
 msgstr ""
@@ -646,31 +580,8 @@ msgstr ""
 msgid "&View"
 msgstr ""
 
-#: tmaintl2transform.tbbuild.caption
-msgid "&Build"
-msgstr ""
-
-#: tmaintl2transform.tbbuild.hint
-msgid "Build translation"
-msgstr ""
-
-#: tmaintl2transform.tbfilenew.caption
-msgid "Scan &dir"
-msgstr ""
-
-#: tmaintl2transform.tbfilenew.hint
-msgid "Scan unpacked mod (directory)"
-msgstr ""
-
-#: tmaintl2transform.tbscanmod.caption
-msgid "Scan &mod"
-msgstr ""
-
-#: tmaintl2transform.tbscanmod.hint
-msgid "Scan compiled mod"
-msgstr ""
-
 #: tmaintl2transform.tl2grid.columns[0].title.caption
+msgctxt "tmaintl2transform.tl2grid.columns[0].title.caption"
 msgid "Value"
 msgstr ""
 
@@ -700,6 +611,92 @@ msgstr ""
 
 #: tsimilarform.lblpartial.caption
 msgid "(Partial translation)"
+msgstr ""
+
+#: ttl2notes.bbcancel.caption
+msgid "Cancel"
+msgstr ""
+
+#: ttl2notes.bbsave.caption
+msgctxt "ttl2notes.bbsave.caption"
+msgid "&Save"
+msgstr ""
+
+#: ttl2notes.sbadd.hint
+msgid "Add note"
+msgstr ""
+
+#: ttl2notes.sbdelete.hint
+msgid "Delete note"
+msgstr ""
+
+#: ttl2notes.sbreload.hint
+msgid "Try to reload notes"
+msgstr ""
+
+#: ttl2notes.sbsave.hint
+msgid "Save notes"
+msgstr ""
+
+#: ttl2notes.sbtranslate.hint
+msgctxt "ttl2notes.sbtranslate.hint"
+msgid "Translate"
+msgstr ""
+
+#: ttl2notes.sgnotes.columns[0].title.caption
+msgid "Note"
+msgstr ""
+
+#: ttl2notes.sgnotes.columns[1].title.caption
+msgctxt "ttl2notes.sgnotes.columns[1].title.caption"
+msgid "Value"
+msgstr ""
+
+#: ttl2settings.bbfontedit.caption
+msgctxt "ttl2settings.bbfontedit.caption"
+msgid "&Font"
+msgstr ""
+
+#: ttl2settings.bbsavesettings.caption
+msgctxt "ttl2settings.bbsavesettings.caption"
+msgid "&Save"
+msgstr ""
+
+#: ttl2settings.cbaspartial.caption
+msgid "Mark new text as partial"
+msgstr ""
+
+#: ttl2settings.cbremovetags.caption
+msgid "Remove tags on translation"
+msgstr ""
+
+#: ttl2settings.gbtranslation.caption
+msgid "Translation details"
+msgstr ""
+
+#: ttl2settings.lblfilter.caption
+msgid "Words to exclude from comparing"
+msgstr ""
+
+#: ttl2settings.lblfilternote.caption
+msgid "Reopen project to apply new list"
+msgstr ""
+
+#: ttl2settings.lblgetapikey.caption
+msgid "Get your own API key"
+msgstr ""
+
+#: ttl2settings.lbllang.caption
+msgctxt "ttl2settings.lbllang.caption"
+msgid "Translation language"
+msgstr ""
+
+#: ttl2settings.lblprogramlanguage.caption
+msgid "Program Language"
+msgstr ""
+
+#: ttl2settings.lbltranslators.caption
+msgid "Translators"
 msgstr ""
 
 #: unitlogform.rscantsave

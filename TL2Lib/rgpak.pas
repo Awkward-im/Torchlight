@@ -28,9 +28,10 @@ uses
 //===== Container =====
 
 const
-  piNoParse   = 0; // just PAK version and MAN offset
-  piParse     = 1; // TL2 MOD info, MAN content
-  piFullParse = 2; // with packed/unpacked file size
+  piNoParse    = 0; // just PAK version and MAN offset
+  piParse      = 1; // TL2 MOD info, MAN content
+  piFullParse  = 2; // with packed/unpacked file size
+  piEntryParse = 3; // manifest/zip entries amount
 
 type
 
@@ -79,6 +80,7 @@ type
 
     function  OpenPAK(force:boolean=false):boolean;
     procedure ClosePAK;
+    function  GetFilesInfo(const aname:string):integer;
     function  GetInfo(const aname:string; aparse:integer=piNoParse):boolean;
     function  Clone(const aname:string):boolean;
     function  Rename(const newname:string):boolean;
@@ -490,6 +492,45 @@ begin
         pointer(UnicodeString(ExtractNameOnly(aname))));
     end;
   end;
+end;
+
+function TRGPAK.GetFilesInfo(const aname:string):integer;
+var
+  f:file of byte;
+  ltmp:PByte;
+  lsize:integer;
+begin
+  result:=0;
+
+  if FVersion=verUnk then exit;
+
+  if ABS(FVersion)=verTL1 then
+  begin
+    FUnZipper:=TUnZipper.Create;
+
+    FUnZipper.FileName:=aname;
+    FUnZipper.UseUTF8:=True;
+    FUnZipper.Examine;
+    result:=FUnZipper.Entries.Count;
+  end;
+
+  if (FVersion=verTL2) and (Pos('.MAN',aname)<6) then
+    Assign(f,aname+'.MAN')
+  else
+    Assign(f,aname);
+  Reset(f);
+  if IOResult<>0 then exit;
+  
+  lsize:=FileSize(f)-modinfo.offMan;
+  if lsize>0 then
+  begin
+    GetMem(ltmp,lsize);
+    Seek(f,modinfo.offMan);
+    BlockRead(f,ltmp^,lsize);
+    result:=man.CheckCapacity(ltmp,FVersion);
+    FreeMem(ltmp);
+  end;
+  Close(f);
 end;
 
 {$PUSH}

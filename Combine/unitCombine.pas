@@ -231,7 +231,7 @@ begin
 end;
 
 initialization
-
+{
   RGTags.Import('RGDICT','TEXT');
 
   LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
@@ -239,5 +239,5 @@ initialization
   LoadLayoutDict('LAYRG' , 'TEXT', verRG);
   LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
   LoadLayoutDict('LAYHOB', 'TEXT', verHob);
-
+}
 end.

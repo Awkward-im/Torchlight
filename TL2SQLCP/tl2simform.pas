@@ -42,7 +42,7 @@ uses
   TL2DupeForm,
   rgglobal,
   TL2Text,
-  TLTrSQL;
+  rgdb.text;
 
 resourcestring
   rsNoRef = 'No reference for this text';

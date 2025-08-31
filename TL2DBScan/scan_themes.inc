@@ -187,18 +187,17 @@ begin
 end;
 
 
-function AddUThemeToBase(ams:pointer; const aname:string; aId:int64):integer;
+function AddUThemeToBase(ams:pointer; aname:PUnicodeChar; aId:int64):integer;
 var
-  lmodid,lSQL,sid:string;
+  lmodid,sid:string;
 begin
   Str(aid,sid);
   lmodid:=CheckIdForMod(ams,'dicuthemes', sid);
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO dicuthemes (id, name, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+lmodid+')';
-
-    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    if ExecuteDirect(PModScanner(ams)^.db,
+      'REPLACE INTO dicuthemes (id, name, modid) VALUES ('+
+        sid+', ?1, '+lmodid+')',aname) then
       result:=1
     else
       result:=0;
@@ -211,7 +210,7 @@ function AddUThemeNode(ams:pointer; anode:pointer):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
-  lname:string;
+  lname:PUnicodeChar;
   lid:int64;
   i:integer;
 begin

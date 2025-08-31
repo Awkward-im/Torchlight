@@ -1,8 +1,8 @@
 {%REGION Adds}
 
-function AddFileToBase(ams:pointer; const afile:string):integer;
+function AddFileToBase(ams:pointer; const afile:AnsiString):integer;
 var
-  lfile:string;
+  lfile:AnsiString;
   i:integer;
 begin
   if afile='' then exit(-1);
@@ -10,10 +10,10 @@ begin
   lfile:=LowerCase(afile);
   for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
   result:=ReturnInt(PModScanner(ams)^.db,
-    'SELECT id FROM dicfiles WHERE (file='''+lfile+''')');
+    'SELECT id FROM dicfiles WHERE (file=?1)',PAnsiChar(lfile));
   if result<0 then
     result:=ReturnInt(PModScanner(ams)^.db,
-      'REPLACE INTO dicfiles (file) VALUES ('''+lfile+''') RETURNING id;');
+      'INSERT INTO dicfiles (file) VALUES (?1) RETURNING id;',PAnsiChar(lfile));
 end;
 
 function CreateFilesTable(adb:PSQLite3; aver:integer):boolean;
@@ -75,6 +75,7 @@ begin
 
   lfile:=LowerCase(aunit^.fname);
   for i:=1 to Length(lfile) do if lfile[i]='\' then lfile[i]:='/';
+
   if aunit^.base<>'' then
   begin
     i:=AddFileToBase(ams,aunit^.base);

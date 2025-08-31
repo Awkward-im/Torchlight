@@ -1,6 +1,8 @@
 ﻿{}
 {NOTE: GetMaterial replaces texture extensions to DDS}
 {TODO: Save and check Uppercase texture names}
+{TODO: parse several texture_unit blocks}
+{TODO: parse "colour_op add" for txtGlow}
 {$IFDEF Interface}
 
 const
@@ -781,7 +783,7 @@ end;
 
 //===== TL =====
 
-procedure TRGMesh.ReadMaterialSimple(abuf:PByte; asize:integer);
+function TRGMesh.ReadMaterialSimple(abuf:PByte; asize:integer):integer;
 var
   lptr:PByte;
   lmat:PMaterial;
@@ -790,6 +792,7 @@ var
   i,idx,stage:integer;
   isMaterial,isTech,isPass,isTexture:boolean;
 begin
+  result:=0;
   stage:=0;
 
   isMaterial:=false;
@@ -837,6 +840,7 @@ begin
           if strlcomp(pc,'material',8)=0 then
           begin
             isMaterial:=true;
+            inc(result);
             inc(pc,9);
             while (pc^=' ') or (pc^=#9) do inc(pc);
             // split to 2 strings coz FMaterials can be reassigned inside AddMaterial
@@ -870,6 +874,7 @@ begin
             else if strlcomp(pc,'ambient' ,7)=0 then SplitColor(pc+8,lmat^.ambient)
             else if strlcomp(pc,'specular',8)=0 then SplitColor(pc+9,lmat^.specular)
             else if strlcomp(pc,'emissive',8)=0 then SplitColor(pc+9,lmat^.emissive)
+            else if strlcomp(pc,'scene_blend',11)=0 then lmat^.sceneblend:=true// alpha_blend
           end;
         end
         else if stage=4 then
@@ -899,7 +904,8 @@ begin
               //!! Keep just first texture
               if lmat^.Textures[txtDiffuse]<0 then
                  lmat^.Textures[txtDiffuse]:=idx;
-            end;
+            end
+            else if strlcomp(pc,'colour_op add',13)=0 then ;
           end;
         end
       end;

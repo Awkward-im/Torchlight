@@ -51,6 +51,7 @@ type
       Parse Manifest from memory block addressed by aptr
     }
     function Parse(aptr:PByte; aver:integer):integer;
+    function CheckCapacity(aptr:PByte; aver:integer):integer;
     {
       Build manifest for files in dir
       PNG ignored if DDS with same name presents
@@ -148,6 +149,36 @@ end;
 {%ENDREGION}
 
 {%REGION I/O}
+function TRGManifest.CheckCapacity(aptr:PByte; aver:integer):integer;
+var
+  pc:PWideChar;
+  i:integer;
+begin
+  result:=0;
+  case aver of
+   verTL2Mod,
+   verTL2: begin
+      i:=memReadWord(aptr);                   // 0002 version/signature
+      if i>=2 then                            // 0000 - no "checksum" field??
+        memReadDWord(aptr);                   // checksum?
+      pc:=memReadShortString(aptr);           // root directory !!
+      FreeMem(pc);
+    end;
+
+    verHob,
+    verRGO,
+    verRG : begin
+    end;
+
+  else
+    exit;
+  end;
+
+  result      :=memReadDWord(aptr);           // total directory records
+  FileCapacity:=result;
+  DirCapacity :=memReadDWord(aptr);           // entries
+end;
+
 function TRGManifest.Parse(aptr:PByte; aver:integer):integer;
 const
   bufsize = 1024;
@@ -156,6 +187,8 @@ var
   lbuf:array [0..bufsize-1] of byte;
   i,j:integer;
   lcnt,lentries,lentry,lfile:integer;
+  lchecksum:dword;
+  ltype:integer;
 
   lname:UNicodeString;
 begin
@@ -193,26 +226,42 @@ begin
     lcnt:=memReadDWord(aptr);
     for j:=0 to lcnt-1 do
     begin
-      lfile:=AppendFile(lentry,nil);
-
-      with PManFileInfo(Files[lfile])^ do
+      lchecksum:=memReadDWord(aptr);
+      ltype   :=RGTypeOfType(memReadByte(aptr),aver);
+      pc      :=memReadShortStringBuf(aptr,@lbuf,bufsize);
+      if ((pc=nil) or (pc^=#0)) {and (ltype=typeUnknown)} then
       begin
-        checksum:=memReadDWord(aptr);
-        ftype   :=RGTypeOfType(memReadByte(aptr),aver);
-        pc      :=memReadShortStringBuf(aptr,@lbuf,bufsize);
-        Name    :=pc;
-        // for case when dir is file-like only
-        if ftype=typeDirectory then
-        begin
-          AddPath(PUnicodeChar(lname+UnicodeString(pc)));
-        end;
-
-        offset  :=memReadDWord(aptr);
-        size_s  :=memReadDWord(aptr);
+        {offset  :=}memReadDWord(aptr);
+        {size_s  :=}memReadDWord(aptr);
         if (aver=verTL2   ) or
            (aver=verTL2Mod) then
         begin
-          ftime:=QWord(memReadInteger64(aptr));
+          {ftime:=QWord}(memReadInteger64(aptr));
+        end;
+      end
+      else
+      begin
+        lfile:=AppendFile(lentry,nil);
+
+        with PManFileInfo(Files[lfile])^ do
+        begin
+          checksum:=lchecksum;
+          ftype   :=ltype;
+  //        pc      :=memReadShortStringBuf(aptr,@lbuf,bufsize);
+          Name    :=pc;
+          // for case when dir is file-like only
+          if ftype=typeDirectory then
+          begin
+            AddPath(PUnicodeChar(lname+UnicodeString(pc)));
+          end;
+
+          offset  :=memReadDWord(aptr);
+          size_s  :=memReadDWord(aptr);
+          if (aver=verTL2   ) or
+             (aver=verTL2Mod) then
+          begin
+            ftime:=QWord(memReadInteger64(aptr));
+          end;
         end;
       end;
     end;

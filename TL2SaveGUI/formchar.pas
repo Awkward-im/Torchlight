@@ -900,6 +900,7 @@ end;
 procedure TfmChar.UpdatePlayerInfo();
 var
   lid:TRGID;
+  ls:string;
   i,idx:integer;
 begin
   //--- Stats ---
@@ -930,7 +931,8 @@ begin
 
   Val(edClassId.Text,lid);
   FChar.ID:=lid;
-  FSGame.ClassString:=edClass.Text;
+
+  FSGame.ClassString:=RGDBGetClassName(lid);
 
   if FSkillForm.bbUpdate.Enabled then
     FSkillForm.bbUpdateClick(Self)

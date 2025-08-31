@@ -3,11 +3,14 @@
 type
   tSkillInfo = record
     id     :string;
-    name   :string;
-    title  :string;
-    descr  :string;
+    name   :PUnicodeChar;
+    title  :PUnicodeChar;
+    descr  :PUnicodeChar;
+    tier1  :PUnicodeChar;
+    tier2  :PUnicodeChar;
+    tier3  :PUnicodeChar;
+    icon   :PUnicodeChar;
     graph  :string;
-    icon   :string;
 //    fname  :string;
     minlvl :string;
     maxlvl :string;
@@ -17,18 +20,23 @@ type
 
 function AddSkillToBase(ams:pointer; const askill:tSkillInfo):integer;
 var
-  lmodid,lSQL:string;
+  lmodid:string;
 begin
   lmodid:=CheckIdForMod(ams,'skills', askill.id);
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO skills (id, name, title, descr, tier, icon,'+
-          ' minlevel, maxlevel, passive, shared, modid) VALUES ('+
-        askill.id+', '+FixedText(askill.name)+', '+FixedText(askill.title)+', '+FixedText(askill.descr)+
-        ', '''+askill.graph+''', '+FixedText(askill.icon)+', '+
-        askill.minlvl+', '+askill.maxlvl+', '+askill.passive+', '+askill.shared+', '+lmodid+')';
-
-    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    if ExecuteDirect(PModScanner(ams)^.db,
+        'REPLACE INTO skills (id, name, title, descr, graph, icon,'+
+        ' minlevel, maxlevel, passive, shared, modid'+
+        ', tier1, tier2, tier3'+
+        ') VALUES ('+
+        askill.id+', ?1, ?2, ?3, '''+askill.graph+''', ?4, '+
+        askill.minlvl+', '+askill.maxlvl+', '+askill.passive+', '+askill.shared+', '+lmodid+
+        ', ?5, ?6, ?7'+
+        ')',
+        [askill.name , askill.title, askill.descr, askill.icon
+        ,askill.tier1, askill.tier2, askill.tier3
+        ]) then
       result:=1
     else
       result:=0;
@@ -87,6 +95,9 @@ begin
     else if CompareWide(pcw,'NAME'             )=0 then lskill.name :=AsString(pp)
     else if CompareWide(pcw,'DISPLAYNAME'      )=0 then lskill.title:=AsString(pp)
     else if CompareWide(pcw,'DESCRIPTION'      )=0 then lskill.descr:=AsString(pp)
+    else if CompareWide(pcw,'TIER1'            )=0 then lskill.tier1:=AsString(pp)
+    else if CompareWide(pcw,'TIER2'            )=0 then lskill.tier2:=AsString(pp)
+    else if CompareWide(pcw,'TIER3'            )=0 then lskill.tier3:=AsString(pp)
     else if CompareWide(pcw,'BASE_DESCRIPTION' )=0 then lskill.descr:=AsString(pp)
     else if CompareWide(pcw,'REQUIREMENT_GRAPH')=0 then lskill.graph:=AsString(pp)
     else if CompareWide(pcw,'SKILL_ICON'       )=0 then lskill.icon :=AsString(pp)
@@ -182,8 +193,11 @@ begin
       '    descr    TEXT,'+
       '    minlevel INTEGER,'+
       '    maxlevel INTEGER,'+
-      '    tier     TEXT,'+
+      '    graph    TEXT,'+
       '    icon     TEXT,'+
+      '    tier1    TEXT,'+
+      '    tier2    TEXT,'+
+      '    tier3    TEXT,'+
 //      '    file     TEXT,'+
       '    passive  INTEGER (1),'+
       '    shared   INTEGER (1) );')

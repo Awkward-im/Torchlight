@@ -58,7 +58,7 @@ implementation
 uses
   sysutils
   ,Logging
-  ,rgdb
+  ,sqlitedb
   ,RGScan
   ,rgPAK
   ,rgio.DAT
@@ -66,8 +66,6 @@ uses
   ,RGDict
   ,RGNode
   ;
-
-{$R ..\TL2Lib\dicttag.rc}
 
 type
   PModScanner = ^TModScanner;
@@ -439,6 +437,6 @@ end;
 {%ENDREGION Base}
 
 initialization
-  RGTags.Import('RGDICT','TEXT');
+//  RGTags.Import('RGDICT','TEXT');
 
 end.

@@ -1,17 +1,16 @@
 {%REGION Quests}
 
-function AddQuestToBase(ams:pointer; const aname:string; aId:int64; const atitle:string):integer;
+function AddQuestToBase(ams:pointer; aId:int64; aname,atitle:PUnicodeChar):integer;
 var
-  lmodid,lSQL,sid:string;
+  lmodid,sid:string;
 begin
   Str(aid,sid);
   lmodid:=CheckIdForMod(ams,'quests', sid);
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO quests (id, name, title, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+lmodid+')';
-
-    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    if ExecuteDirect(PModScanner(ams)^.db,
+      'REPLACE INTO quests (id, name, title, modid) VALUES ('+
+          sid+', ?1, ?2, '+lmodid+')',[aname,atitle]) then
       result:=1
     else
       result:=0;
@@ -24,7 +23,7 @@ function AddQuestNode(ams:pointer; anode:pointer):int64;
 var
   lnode:pointer;
   pcw:PWideChar;
-  name,title:string;
+  name,title:PUnicodeChar;
   lid:int64;
   i:integer;
 begin
@@ -45,7 +44,7 @@ begin
   end;
 
   if lid<>-1 then
-    lid:=AddQuestToBase(ams,name,lid,title);
+    lid:=AddQuestToBase(ams,lid,name,title);
 
   result:=lid;
 end;

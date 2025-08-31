@@ -649,7 +649,6 @@ begin
         if ISFile=i then
         begin
           if ExtractSprite(j) then inc(result);
-//          if ExtractRect(Name, Rect(XPos, YPos, Width, Height)) then inc(result);
         end;
     end;
   end;
@@ -658,29 +657,21 @@ end;
 function TRGImageset.ExtractSprite(idx:integer; const aoutname:string=''):boolean;
 var
   lsprite:TImageData;
-  ls:string;
 begin
-  if (idx<0) or (idx>=ItemCount) then exit(false);
-
-  with Items[idx] do
+  result:=GetSprite(idx,lsprite);
+  if result then
   begin
-    NewImage(Width,Height,
-             Imagesets[ISFile].Image.Format,lsprite);
-    CopyRect(Imagesets[ISFile].Image,
-      XPos, YPos, Width, Height,
-      lsprite,0,0);
-
     if aoutname='' then
     begin
-      ls:=FOutputPath+Imagesets[ISFile].Name;
-      if not DirectoryExists(ls) then ForceDirectories(ls);
-
-      SaveImageToFile(ls+'\'+Name+'.png',lsprite)
+      if (FOutputPath<>'') and (not DirectoryExists(FOutputPath)) then
+        ForceDirectories(FOutputPath);
+      SaveImageToFile(FOutputPath+Items[idx].Name+'.png',lsprite)
     end
     else
       SaveImageToFile(aoutname,lsprite);
+
+    FreeImage(lsprite);
   end;
-  FreeImage(lsprite);
 end;
 
 function TRGImageset.ExtractSprite(const aname:string; const aoutname:string=''):boolean;

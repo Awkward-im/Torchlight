@@ -42,16 +42,9 @@ implementation
 uses
   TL2Text,
   rgglobal,
-  rgpak,
-  rgfile;
+  rgpak;
 
 {$R *.lfm}
-
-function MakeMethod(Data, Code:Pointer):TMethod;
-begin
-  Result.Data:=Data;
-  Result.Code:=Code;
-end;
 
 {
   Application.QueueAsyncCall
@@ -249,12 +242,12 @@ end;
 
 
 //  TCloseEvent = procedure(Sender: TObject; var CloseAction: TCloseAction) of object;
-
+{
 procedure TabClose(dummy:pointer; Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction:=caFree;
 end;
-{
+
 function CreateFileTab(const adata:TTL2Translation; aRef:integer; aOwner:TWinControl):TForm;
 var
   lform:TForm;
@@ -316,7 +309,8 @@ begin
     if i<lline then inc(lstart,Length(sl[i])+2); // text+crlf
   end;
 
-  lform:=TForm.Create(aOwner{(Self.Parent.Parent as TPageControl).AddTabSheet});
+  lform:=TForm.Create(aOwner);
+//  lform:=TForm.Create((Self.Parent.Parent as TPageControl).AddTabSheet);
   lform.Parent:=aOwner;
   if aOwner<>nil then
   begin

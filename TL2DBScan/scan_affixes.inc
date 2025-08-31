@@ -11,7 +11,7 @@ begin
   lmodid:=CheckNamePlusForMod(ams,'affixes', aname,'category='+ls2);
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO affixes (name, modid, category) VALUES ('+
+    lSQL:='INSERT INTO affixes (name, modid, category) VALUES ('+
         ls1+', '+lmodid+', '+ls2+') RETURNING id;';
 
     result:=ReturnInt(PModScanner(ams)^.db,lSQL);
@@ -25,7 +25,7 @@ end;
 
 type
   TAffixEffectInfo = record
-    name    :string;
+    name    :PUnicodeChar;
     dmgtype :string;
     effect  :integer;
     affix   :integer;
@@ -39,13 +39,13 @@ var
 begin
   lSQL:='REPLACE INTO aeffects (affix, effect, name, dmgtype, duration, '+
         'value, value1, value2, value3, value4 ,value5) VALUES ('+
-        IntToStr(aei.affix)+', '+IntToStr(aei.effect)+', '+
-        FixedText(aei.name)+', '''+aei.dmgtype+''', '+IntToStr(aei.duration)+', '+
+        IntToStr(aei.affix)+', '+IntToStr(aei.effect)+', ?1, '''+
+        aei.dmgtype+''', '+IntToStr(aei.duration)+', '+
         FloatToStr(aei.values[0])+', '+FloatToStr(aei.values[1])+', '+
         FloatToStr(aei.values[2])+', '+FloatToStr(aei.values[3])+', '+
         FloatToStr(aei.values[4])+', '+FloatToStr(aei.values[5])+')';
 
-  result:=ExecuteDirect(PModScanner(ams)^.db,lSQL);
+  result:=ExecuteDirect(PModScanner(ams)^.db,lSQL,aei.name);
 end;
 
 function AddAffixEffectNode(ams:pointer; anode:pointer; aid:integer):boolean;
@@ -102,14 +102,15 @@ begin
           // effect name in EFFECTLIST.DAT
           else if CompareWide(pcw,'TYPE')=0 then
           begin
-            ls:=AsString(llnode);
+            pcw:=AsString(llnode);
 
             // search in list
             ls:='SELECT id, value1, value2, value3, value4, value5 '+
-            'FROM effects WHERE name='+FixedText(ls);
+            'FROM effects WHERE name=?1';
             if sqlite3_prepare_v2(PModScanner(ams)^.db,
                 PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
             begin
+              sqlite3_bind_text16(vm,1,pcw,-1,SQLITE_STATIC);
               if sqlite3_step(vm)=SQLITE_ROW then
               begin
                laei.effect:=sqlite3_column_int(vm,0);

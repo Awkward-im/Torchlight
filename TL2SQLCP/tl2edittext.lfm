@@ -3,11 +3,11 @@ object EditTextForm: TEditTextForm
   Height = 407
   Top = 278
   Width = 533
-  Caption = 'Edit text'
   ClientHeight = 407
   ClientWidth = 533
   ParentFont = True
   ShowHint = True
+  LCLVersion = '4.99.0.0'
   OnClose = FormClose
   object pnl_1_File: TPanel
     Left = 0

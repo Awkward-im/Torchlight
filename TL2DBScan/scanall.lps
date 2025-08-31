@@ -54,7 +54,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="13"/>
-        <UsageCount Value="168"/>
+        <UsageCount Value="176"/>
       </Unit>
       <Unit>
         <Filename Value="formscanall.pas"/>
@@ -63,10 +63,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formScanAll"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="184"/>
+        <TopLine Value="178"/>
         <CursorPos Y="190"/>
-        <UsageCount Value="168"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -74,18 +73,18 @@
         <Filename Value="unitscan.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="45"/>
-        <CursorPos X="4" Y="61"/>
-        <UsageCount Value="168"/>
+        <TopLine Value="177"/>
+        <CursorPos X="20" Y="190"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="scan_adds.inc"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="9"/>
         <TopLine Value="106"/>
         <CursorPos X="7" Y="71"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -94,23 +93,24 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="154"/>
         <CursorPos X="51" Y="109"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="scan_inventory.inc"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="3"/>
         <CursorPos Y="16"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="scan_mod.inc"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
-        <CursorPos X="21" Y="21"/>
-        <UsageCount Value="165"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="24"/>
+        <CursorPos Y="48"/>
+        <UsageCount Value="173"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -119,15 +119,15 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="62"/>
         <CursorPos Y="94"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="scan_quest.inc"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="61"/>
         <CursorPos X="44" Y="48"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -136,15 +136,17 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="77"/>
         <CursorPos X="2" Y="94"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="scan_skills.inc"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="96"/>
-        <CursorPos X="16" Y="119"/>
-        <UsageCount Value="165"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="22"/>
+        <CursorPos Y="25"/>
+        <UsageCount Value="173"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="scan_stat.inc"/>
@@ -152,7 +154,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="82"/>
         <CursorPos X="11" Y="114"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="scan_wardrobe.inc"/>
@@ -160,7 +162,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="82"/>
         <CursorPos X="7" Y="87"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgdict.pas"/>
@@ -168,7 +170,7 @@
         <UnitName Value="RGDict"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="8"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgglobal.pas"/>
@@ -177,7 +179,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="676"/>
         <CursorPos Y="689"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.dat.pas"/>
@@ -186,7 +188,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="138"/>
         <CursorPos X="22" Y="141"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.text.pas"/>
@@ -195,7 +197,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="431"/>
         <CursorPos Y="438"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgnode.pas"/>
@@ -204,7 +206,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="193"/>
         <CursorPos Y="203"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgpak.pas"/>
@@ -214,7 +216,7 @@
         <TopLine Value="48"/>
         <CursorPos X="39" Y="74"/>
         <FoldState Value=" TL40B017 PHvC0 T4K051 TMig4]78d27215 PiVj82 TKjZ0A TClGP32 PBCP T3lb0771224 pnDrL0F2]D]UkZ-X0 T0nC2HD piZjX456]9YiOA3517 pjNlK287[T4ic679121]vjCyJ4 T6nf07Q PiO/80c"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgscan.pas"/>
@@ -223,7 +225,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="351"/>
         <CursorPos Y="380"/>
-        <UsageCount Value="165"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="scan_unittypes.inc"/>
@@ -231,15 +233,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="173"/>
         <CursorPos Y="70"/>
-        <UsageCount Value="55"/>
+        <UsageCount Value="63"/>
       </Unit>
       <Unit>
         <Filename Value="scan_u_classes.inc"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="251"/>
-        <CursorPos X="11" Y="280"/>
-        <UsageCount Value="40"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="301"/>
+        <CursorPos Y="312"/>
+        <UsageCount Value="48"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="scan_u_items.inc"/>
@@ -247,15 +250,15 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="61"/>
         <CursorPos X="25" Y="321"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="48"/>
       </Unit>
       <Unit>
         <Filename Value="scan_u_mobs.inc"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="32"/>
-        <CursorPos X="97" Y="50"/>
-        <UsageCount Value="40"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="80"/>
+        <CursorPos X="19" Y="96"/>
+        <UsageCount Value="48"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -264,14 +267,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="6"/>
         <CursorPos X="62" Y="22"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="48"/>
       </Unit>
       <Unit>
         <Filename Value="scan_u_props.inc"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="69" Y="14"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="48"/>
       </Unit>
       <Unit>
         <Filename Value="scan_effects.inc"/>
@@ -279,7 +282,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="16"/>
         <CursorPos X="24" Y="21"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="scan_affixes.inc"/>
@@ -287,7 +290,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="16"/>
         <CursorPos X="44" Y="45"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="41"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -296,7 +299,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="112"/>
         <CursorPos X="73" Y="132"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\fmgameversion.pas"/>
@@ -308,7 +311,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\logging.pas"/>
@@ -318,7 +321,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="..\RGDB\rgdb.pas"/>
@@ -327,7 +330,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\tl2db.pas"/>
@@ -335,7 +338,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\textcache.pas"/>
@@ -343,42 +346,42 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="163"/>
+        <UsageCount Value="162"/>
       </Unit>
       <Unit>
         <Filename Value="scan_classes.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="251"/>
         <CursorPos Y="276"/>
-        <UsageCount Value="144"/>
+        <UsageCount Value="143"/>
       </Unit>
       <Unit>
         <Filename Value="scan_items.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="37"/>
         <CursorPos Y="56"/>
-        <UsageCount Value="144"/>
+        <UsageCount Value="143"/>
       </Unit>
       <Unit>
         <Filename Value="scan_mobs.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="111"/>
         <CursorPos Y="112"/>
-        <UsageCount Value="144"/>
+        <UsageCount Value="143"/>
       </Unit>
       <Unit>
         <Filename Value="scan_pet.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="128"/>
         <CursorPos Y="158"/>
-        <UsageCount Value="144"/>
+        <UsageCount Value="143"/>
       </Unit>
       <Unit>
         <Filename Value="scan_props.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="63"/>
         <CursorPos Y="93"/>
-        <UsageCount Value="144"/>
+        <UsageCount Value="143"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\TL2Mod.pas"/>
@@ -386,7 +389,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="72"/>
+        <UsageCount Value="71"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\SQL\awkSQLite3.pas"/>
@@ -394,7 +397,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\TL2DatNode.pas"/>
@@ -402,14 +405,14 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\TL2ModInfo.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="117"/>
         <CursorPos Y="81"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgman.pas"/>
@@ -417,21 +420,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="73"/>
         <CursorPos Y="88"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="14"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\awkSQLite3.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="124"/>
         <CursorPos Y="141"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="3605"/>
         <CursorPos Y="3630"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgmod.pas"/>
@@ -439,14 +442,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="408"/>
         <CursorPos X="3" Y="426"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="callstack_mem_dump.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="105"/>
         <CursorPos Y="120"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\zipper.pp"/>
@@ -454,7 +457,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2854"/>
         <CursorPos X="16" Y="2883"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\fmgameversion.pas"/>
@@ -465,7 +468,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="51"/>
         <CursorPos X="27" Y="63"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgdictlayout.pas"/>
@@ -473,7 +476,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="753"/>
         <CursorPos X="27" Y="771"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\logging.pas"/>
@@ -481,129 +484,137 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="226"/>
         <CursorPos Y="249"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\sqlitedb.pas"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="291"/>
+        <CursorPos Y="308"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="scan_quest.inc"/>
-        <Caret Line="30" TopLine="27"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="31" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_quest.inc"/>
-        <Caret Line="47" TopLine="27"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_quest.inc"/>
-        <Caret Line="30" TopLine="23"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="33" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_quest.inc"/>
-        <Caret Line="51" TopLine="25"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_inventory.inc"/>
-        <Caret Line="10"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="33" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_inventory.inc"/>
-        <Caret Line="16" TopLine="3"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_inventory.inc"/>
-        <Caret Line="17" TopLine="3"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="33" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_inventory.inc"/>
-        <Caret Line="18" TopLine="3"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_inventory.inc"/>
-        <Caret Line="16" TopLine="3"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="33" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="unitscan.pas"/>
-        <Caret Line="236" Column="30" TopLine="221"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="281" Column="79" TopLine="265"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="34" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="185" Column="67" TopLine="184"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="66" Column="16" TopLine="52"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="34" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_affixes.inc"/>
-        <Caret Line="113" Column="69" TopLine="113"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_affixes.inc"/>
-        <Caret Line="116" Column="23" TopLine="116"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="34" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_affixes.inc"/>
-        <Caret Line="52" Column="30" TopLine="43"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_affixes.inc"/>
-        <Caret Line="81" Column="27" TopLine="68"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="34" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_affixes.inc"/>
-        <Caret Line="91" Column="44" TopLine="68"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_affixes.inc"/>
-        <Caret Line="125" Column="38" TopLine="98"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="34" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="scan_affixes.inc"/>
-        <Caret Line="140" TopLine="109"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="283" TopLine="271"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="34" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="277" Column="29" TopLine="262"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="190" TopLine="187"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="34" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="191" TopLine="184"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="192" TopLine="184"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="34" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="193" TopLine="184"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="194" TopLine="184"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="35" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="195" TopLine="184"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="201" TopLine="184"/>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="28" TopLine="22"/>
       </Position>
       <Position>
-        <Filename Value="formscanall.pas"/>
-        <Caret Line="210" TopLine="184"/>
+        <Filename Value="..\Addons\sqlitedb.pas"/>
+        <Caret Line="307" TopLine="291"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -612,6 +623,29 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="scan_u_classes.inc"/>
+        <Line Value="311"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="scan_u_mobs.inc"/>
+        <Line Value="53"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="scan_u_mobs.inc"/>
+        <Line Value="117"/>
+      </Item>
+    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="pcw"/>

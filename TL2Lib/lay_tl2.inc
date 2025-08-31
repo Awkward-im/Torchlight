@@ -148,7 +148,7 @@ begin
   //--- Chunk Header
 
   lChunkSize:=memReadInteger(FPos);
-//  if lChunkSize=0 then exit;
+  if lChunkSize=0 then exit;
   lChunkType:=memReadByte(FPos);
   if lChunkType>0 then
   begin

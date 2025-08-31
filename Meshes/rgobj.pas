@@ -175,7 +175,7 @@ type
     function  GetMaterial ():string;
     procedure SaveMaterial(const aFileName:String);
     
-    procedure ReadMaterialSimple(abuf:PByte; asize:integer);
+    function  ReadMaterialSimple(abuf:PByte; asize:integer):integer;
     function  ImportFromMemory  (aptr:PByte; asize:integer):boolean;
     function  ImportFromFile  (const aFileName:string):boolean;
     procedure SaveToXML(aStream:TStream);

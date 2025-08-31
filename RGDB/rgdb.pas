@@ -10,8 +10,6 @@ uses
 
 {$DEFINE Interface}
 
-{$Include db_common.inc}
-
 {$Include rgdb_skills.inc}
 
 {$Include rgdb_movies.inc}
@@ -64,7 +62,8 @@ var
 
 implementation
 
-{$Include db_common.inc}
+uses
+  sqlitedb;
 
 var
   db:PSQLite3=nil;
@@ -313,44 +312,9 @@ begin
 end;
 
 function RGDBLoadBase(const fname:string=''):integer;
-var
-  f:file of byte;
-  lfname:string;
 begin
-  result:=-1;
-  db:=nil;
-
-  try
-    InitializeSQlite();
-  except
-    exit;
-  end;
-
-  if fname='' then lfname:=TL2DataBase else lfname:=fname;
-
-{$I-}
-  AssignFile(f,lfname);
-  Reset(f);
-  if IOResult=0 then
-//  if FileExists(lfname) then
-  begin
-    CloseFile(f);
-    if sqlite3_open(':memory:',@db)=SQLITE_OK then
-    begin
-      try
-        result:=CopyFromFile(db,PChar(lfname));
-        SetupGameVer;
-      except
-        sqlite3_close(db);
-        db:=nil;
-        result:=errRGDBCantMapDB;
-      end;
-    end
-    else
-      result:=errRGDBCantMemDB;
-  end
-  else
-    result:=errRGDBNoDBFile;
+  if fname='' then result:=LoadBase(db,TL2DataBase) else result:=LoadBase(db,fname);
+  if result=SQLITE_OK then SetupGameVer;
 end;
 
 procedure RGDBUseBase(adb:pointer);
@@ -362,13 +326,8 @@ end;
 
 procedure RGDBFreeBase;
 begin
-  if db<>nil then
-  begin
-    sqlite3_close(db);
-    db:=nil;
-    ReleaseSqlite;
-    GameVersion:=verUnk;
-  end;
+  FreeBase(db);
+  GameVersion:=verUnk;
 end;
 
 

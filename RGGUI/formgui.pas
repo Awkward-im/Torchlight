@@ -1,5 +1,4 @@
 {TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
-{TODO: keep column sort on dir change}
 {TODO: 3d view, change texture by choosing file}
 {TODO: preview bytes values as different types}
 {TODO: make dump text/bytes search}
@@ -26,8 +25,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit, SynEdit,
   SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
-  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset, fm3dview,
-  SynHighlighterOgre, RGObj, FWHexView{, FWHexView.MappedView};
+  SynGutterCodeFolding,
+  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset,
+  fm3dview, SynHighlighterOgre, RGObj, FWHexView{, FWHexView.MappedView};
 
 type
 
@@ -75,6 +75,7 @@ type
     pnlTreeFilter: TPanel;
     edTreeFilter : TTreeFilterEdit;
     bbCollapse   : TBitBtn;
+    SynEdit: TSynEdit;
     tbOpenDir: TToolButton;
     ToolButton1: TToolButton;
     tbEdDarkBack: TToolButton;
@@ -91,7 +92,6 @@ type
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     StatusBar: TStatusBar;
-    SynEdit     : TSynEdit;
     SynPopupMenu: TSynPopupMenu;
     SynTSyn     : TSynTSyn;
     SynOgreSyn  : TSynOgreSyn;
@@ -315,7 +315,6 @@ var
 implementation
 
 {$R *.lfm}
-{$R ..\TL2Lib\dict.rc}
 {$IFDEF Windows}
   {$R bass64.rc}
 {$ENDIF}
@@ -730,7 +729,7 @@ begin
   LoadSettings();
   SetupColumns(Self);
   ClearInfo();
-
+{
   RGTags.Import('RGDICT','TEXT');
 
   LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
@@ -738,7 +737,7 @@ begin
   LoadLayoutDict('LAYRG' , 'TEXT', verRG);
   LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
   LoadLayoutDict('LAYHOB', 'TEXT', verHob);
-
+}
   if ParamCount>0 then
     OpenPAK(ParamStr(1))
   else

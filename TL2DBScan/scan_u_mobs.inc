@@ -43,8 +43,8 @@ begin
   ', icon, armor_graph, damage_graph, dmgtype, champion, armor, '+
   'arm_physical, arm_electric, arm_fire, arm_ice, arm_poison, '+
   'dmg_physical, dmg_electric, dmg_fire, dmg_ice, dmg_poison) VALUES ('+
-  FixedText(ami.icon)+', '+
-  GetDefUnitValues(ams,@ami)+', '''+ami.armor_graph+''', '''+ami.damage_graph+''', '''+ami.dmgtype+
+  GetDefUnitValues(ams,@ami)+', '+
+  FixedText(ami.icon)+', '''+ami.armor_graph+''', '''+ami.damage_graph+''', '''+ami.dmgtype+
   ''', '+IntToStr(ami.champion    )+', '+IntToStr(ami.armor       )+', '+IntToStr(ami.arm_physical)+
   ', '+IntToStr(ami.arm_electric)+', '+IntToStr(ami.arm_fire    )+', '+IntToStr(ami.arm_ice)+
   ', '+IntToStr(ami.arm_poison  )+', '+IntToStr(ami.dmg_physical)+', '+IntToStr(ami.dmg_electric)+

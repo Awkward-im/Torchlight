@@ -73,7 +73,6 @@ end;
 function AddTheMod(adb:PSQLite3; const amodinfo:TTL2ModInfo):boolean;
 var
   lwhere,lmodid,lSQL,ltitle:string;
-  vm:pointer;
   lver:integer;
 begin
   ltitle:=amodinfo.title;
@@ -81,35 +80,31 @@ begin
   begin
     lmodid:='-1';
     lwhere:='title='+FixedText(ltitle);
+//    lver:=ReturnInt(adb,'SELECT version FROM Mods WHERE title=?1',amodinfo.title);
   end
   else
   begin
     Str(amodinfo.modid,lmodid);
     lwhere:='id='+lmodid;
+//    lver:=ReturnInt(adb,'SELECT version FROM Mods WHERE id='+lmodid);
   end;
   lSQL:='SELECT version FROM Mods WHERE '+lwhere;
-  lver:=0;
-  if sqlite3_prepare_v2(adb,PChar(lSQL),-1,@vm,nil)=SQLITE_OK then
-  begin
-    if sqlite3_step(vm)=SQLITE_ROW then
-      lver:=sqlite3_column_int(vm,0);
-    sqlite3_finalize(vm);
-  end;
+  lver:=ReturnInt(adb,lSQL);
 
-  if lver<>0 then
+  if lver>0 then
   begin
     if amodinfo.modver<=lver then exit(true);
-    lSQL:='UPDATE Mods SET version='+IntToStr(amodinfo.modver)+' WHERE '+lwhere;
+    ExecuteDirect(adb,
+      'UPDATE Mods SET version='+IntToStr(amodinfo.modver)+' WHERE '+lwhere);
   end
   else
   begin
-    lSQL:='INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
-          ' VALUES ('+lmodid              +', '+FixedText(ltitle)+
-          ', '+IntToStr (amodinfo.modver )+', '+IntToStr (amodinfo.gamever)+
-          ', '+FixedText(amodinfo.author )+', '+FixedText(amodinfo.descr)+
-          ', '+FixedText(amodinfo.website)+', '+FixedText(amodinfo.download)+')';
+    ExecuteDirect(adb,
+      'INSERT INTO mods (id,title,version,gamever,author,descr,website,download) '+
+          ' VALUES ('+lmodid +', ?1, '+IntToStr(amodinfo.modver)+', '+
+          IntToStr(amodinfo.gamever)+', ?2, ?3, ?4, ?5)',
+          [amodinfo.title,amodinfo.author,amodinfo.descr,amodinfo.website,amodinfo.download]);
   end;
-  result:=ExecuteDirect(adb,lSQL);
 end;
 
 function CreateModTable(adb:PSQLite3; aver:integer):boolean;

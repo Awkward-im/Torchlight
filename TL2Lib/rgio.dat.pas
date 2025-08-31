@@ -266,9 +266,9 @@ begin
   lptr:=abuf;
 
   case lptr^ of
-    1: begin FVer:=verTL1; inc(lptr,4); end;
-    2: begin FVer:=verTL2; inc(lptr,4); end;
-    6: begin FVer:=verHob; inc(lptr  ); end;
+    1: begin FVer:=verTL1; if pdword(lptr)^<>1 then exit(-1); inc(lptr,4); end;
+    2: begin FVer:=verTL2; if pdword(lptr)^<>2 then exit(-1); inc(lptr,4); end;
+    6: begin FVer:=verHob; inc(lptr); end;
   else
     exit(-1);
   end;
@@ -277,6 +277,11 @@ begin
   if lcnt<0 then
   begin
     RGLog.Add('Dictionary size < 0');
+    exit(0);
+  end;
+  if lcnt>65520 then
+  begin
+    RGLog.Add('Dictionary size > 65520');
     exit(0);
   end;
 

@@ -35,8 +35,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure seFreePointsChange(Sender: TObject);
-    procedure sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer;
-      aRect: TRect; aState: TGridDrawState);
+    procedure sgSkillsDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
     procedure sgSkillsEditButtonClick(Sender: TObject);
     procedure sgSkillsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sgSkillsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
@@ -276,7 +275,7 @@ begin
   llevel:=FChar.Level;
   for i:=0 to High(FTiers) do
   begin
-    if FSkills[aidx].tier=FTiers[i].name then
+    if FSkills[aidx].graph=FTiers[i].name then
     begin
       if (aval<Length(FTiers[i].levels)) and
          (FTiers[i].levels[aval]>llevel) then
@@ -411,8 +410,8 @@ begin
     begin
       // skip TL2 without TIER
       if lshowall or (
-         (FSkills[i].tier<>'') and
-         (FSkills[i].tier[1]<>',')) then
+         (FSkills[i].graph<>'') and
+         (FSkills[i].graph[1]<>',')) then
       begin
         sgSkills.Objects[0,j]:=TObject(IntPtr(i));
 

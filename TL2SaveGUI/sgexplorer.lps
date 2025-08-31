@@ -102,7 +102,7 @@
         <Filename Value="sgexplorer.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="38" Y="22"/>
+        <CursorPos X="29" Y="24"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -112,8 +112,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
-        <TopLine Value="328"/>
-        <CursorPos X="8" Y="345"/>
+        <TopLine Value="337"/>
+        <CursorPos Y="358"/>
+        <FoldState Value=" T46041 TLmY03]87GG+ T8i72Q]EMn50]73kM0O3 pjBk204216]BYlQ0}y T6kN0]HT0kR2I4111D]TMpc658]90iKD55 pidZF9A]8aiE870"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -125,7 +126,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMovies"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="12"/>
         <TopLine Value="113"/>
         <CursorPos X="43" Y="138"/>
         <UsageCount Value="200"/>
@@ -153,8 +154,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formKeyBinding"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="74"/>
-        <CursorPos X="12" Y="87"/>
+        <TopLine Value="44"/>
+        <CursorPos X="76" Y="68"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -165,8 +166,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formRecipes"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="193"/>
-        <CursorPos X="25" Y="207"/>
+        <TopLine Value="202"/>
+        <CursorPos X="50" Y="217"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -178,7 +179,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formQuests"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="13"/>
         <TopLine Value="89"/>
         <CursorPos X="32" Y="111"/>
         <UsageCount Value="200"/>
@@ -193,8 +194,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSettings"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="47"/>
-        <CursorPos X="19" Y="60"/>
+        <TopLine Value="168"/>
+        <CursorPos X="8" Y="197"/>
         <UsageCount Value="206"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -206,11 +207,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formChar"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="11"/>
-        <TopLine Value="1625"/>
-        <CursorPos Y="1639"/>
-        <FoldState Value=" T46031 TL/a04]87GC~0 TMtR210X p0yS010L]Q8lP2;]83oA035 pjMjc0h4]9AkM067 piXjC0I2]IBjZ0{93]A4lI0Z2]Sdjb0W51]ml2oU09312 PjUmE0 T6oM01U PiA/C]F0oQ23C]qZjZ43D]9Yjg249]9XkQ6[I6mf23A[a4lA4F]9j8o44N212 PLlG4t"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="923"/>
+        <CursorPos X="41" Y="937"/>
+        <FoldState Value=" T4603 TL/e041 T7GC~0 TMtS210X p0yV010L]Q8lP2;]83oB035 pjMjc0h016 pifl90I6]KIk70q114 pl6oH0n[e47kS0P1]cZjQ0J4[94]wr3 pkHlf031 Pi350 T6oN01B pMwC01H PSu3]M0oR23C[s5Z43711292367]-FuY238]Qdk56B9]9eo14N5 POlG4 TJ:S1}F111 Plcr61f"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -222,7 +222,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formStat"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="6"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -234,7 +234,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMap"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="92"/>
         <CursorPos X="5" Y="124"/>
         <UsageCount Value="204"/>
@@ -248,7 +248,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formUnits"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="59"/>
         <CursorPos X="28" Y="64"/>
         <UsageCount Value="201"/>
@@ -262,9 +262,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSkills"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="401"/>
-        <CursorPos Y="417"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="346"/>
+        <CursorPos Y="483"/>
+        <FoldState Value=" T46031 T7FE! T8f2b]DMrXA105]A3jV0F5 piejO0D73122 PkJoa0 T6jW01D POrH]E0kJ28D pj2l54A223242]6]k0mA2C"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -276,7 +278,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItems"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="150"/>
         <CursorPos X="19" Y="170"/>
         <UsageCount Value="204"/>
@@ -290,7 +292,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formButtons"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="60"/>
         <CursorPos X="32" Y="83"/>
         <UsageCount Value="201"/>
@@ -304,7 +306,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formItem"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="207"/>
         <CursorPos Y="248"/>
         <UsageCount Value="200"/>
@@ -318,7 +320,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formEffects"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="40"/>
         <CursorPos Y="59"/>
         <UsageCount Value="200"/>
@@ -384,9 +386,9 @@
         <Filename Value="..\RGDB\rgdb.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="323"/>
-        <CursorPos X="44" Y="342"/>
-        <UsageCount Value="126"/>
+        <TopLine Value="275"/>
+        <CursorPos Y="292"/>
+        <UsageCount Value="134"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\logging.pas"/>
@@ -396,7 +398,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="125"/>
+        <UsageCount Value="133"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsave.pas"/>
@@ -405,13 +407,13 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="255"/>
         <CursorPos Y="271"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgprepare.inc"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgchar.pas"/>
@@ -420,7 +422,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="150"/>
         <CursorPos Y="181"/>
-        <UsageCount Value="120"/>
+        <UsageCount Value="128"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgbase.pas"/>
@@ -429,7 +431,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="94"/>
         <CursorPos Y="102"/>
-        <UsageCount Value="116"/>
+        <UsageCount Value="124"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgstatistic.pas"/>
@@ -439,7 +441,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgactive.pas"/>
@@ -449,7 +451,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgcommon.pas"/>
@@ -459,7 +461,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgeffects.pas"/>
@@ -469,7 +471,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgitem.pas"/>
@@ -478,7 +480,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="272"/>
         <CursorPos X="13" Y="301"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgparse.inc"/>
@@ -487,7 +489,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgquest.pas"/>
@@ -497,7 +499,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgtrigger.pas"/>
@@ -507,7 +509,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="115"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\tl2db.pas"/>
@@ -822,9 +824,9 @@
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="3603"/>
-        <CursorPos Y="3630"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="3625"/>
+        <CursorPos Y="3652"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DBScan\scan_u_mobs.inc"/>
@@ -878,11 +880,10 @@
       </Unit>
       <Unit>
         <Filename Value="..\RGDB\rgdb_skills.inc"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="166"/>
-        <CursorPos Y="182"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="218"/>
+        <CursorPos Y="224"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgstream.pas"/>
@@ -892,127 +893,91 @@
         <CursorPos Y="303"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgtrans.pas"/>
+        <UnitName Value="RGTrans"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="79"/>
+        <CursorPos X="57" Y="94"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DBScan\scan_adds.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="73" Y="16"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2DBScan\scan_sets.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="21"/>
+        <CursorPos X="46" Y="37"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\sqlitedb.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="411"/>
+        <CursorPos Y="428"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="13">
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1319" Column="13" TopLine="1204"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="351" TopLine="263"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1318" Column="13" TopLine="1204"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="398" TopLine="383"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1317" Column="13" TopLine="1204"/>
+        <Filename Value="formsettings.pas"/>
+        <Caret Line="197" Column="8" TopLine="168"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1316" Column="13" TopLine="1204"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="383" TopLine="364"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1638" Column="36" TopLine="1623"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="351" TopLine="263"/>
       </Position>
       <Position>
-        <Filename Value="formrecipes.pas"/>
-        <Caret Line="172" Column="6" TopLine="156"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="398" TopLine="383"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1328" TopLine="1313"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="383" TopLine="364"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1638" TopLine="1627"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="483" TopLine="443"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1639" TopLine="1627"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="383" TopLine="364"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1640" TopLine="1627"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="351" TopLine="263"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1641" TopLine="1627"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="398" TopLine="383"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1642" TopLine="1627"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="483" TopLine="443"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1643" TopLine="1627"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="398" TopLine="364"/>
       </Position>
       <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1644" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1645" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1646" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1647" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1648" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1649" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1650" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1651" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1652" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1653" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1654" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1638" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1648" TopLine="1629"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1647" TopLine="1628"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1654" Column="53" TopLine="1627"/>
-      </Position>
-      <Position>
-        <Filename Value="formchar.pas"/>
-        <Caret Line="1639" TopLine="1625"/>
-      </Position>
-      <Position>
-        <Filename Value="formsavegame.pas"/>
-        <Caret Line="345" Column="8" TopLine="328"/>
+        <Filename Value="formskills.pas"/>
+        <Caret Line="351" TopLine="263"/>
       </Position>
     </JumpHistory>
     <RunParams>

@@ -33,7 +33,7 @@ implementation
 
 uses
   TL2DataModule,
-  TLTrSQL,
+  rgdb.text,
   rgglobal,
   LCLType;
 

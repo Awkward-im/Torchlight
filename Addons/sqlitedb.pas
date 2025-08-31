@@ -1,4 +1,9 @@
-{$IFDEF Interface}
+unit sqlitedb;
+
+interface
+
+uses
+  sqlite3dyn;
 
 function IsTableExists (db:PSQLite3; const aTable:AnsiString):boolean;
 function IsColumnExists(db:PSQLite3; const aTable,aColumn:AnsiString):boolean;
@@ -32,7 +37,22 @@ function ReturnInt  (db:PSQLite3; const aSQL:AnsiString;        aparam :PUnicode
 function ReturnInt  (db:PSQLite3; const aSQL:AnsiString; aparam,aparam2:PUnicodeChar  ):integer;
 function ReturnInt  (db:PSQLite3; const aSQL:AnsiString; const  aparams:array of const):integer;
 
-{$ELSE}
+const
+  errNoDBFile  = -1000;
+  errCantMemDB = -1001;
+  errCantMapDB = -1002;
+
+{
+  if inmemory then trying to copy existing base to memory, or create new one
+}
+function LoadBase(var db:PSQLite3; const fname:AnsiString; inmemory:boolean=false):integer;
+function SaveBase(    db:PSQLite3; const fname:AnsiString):integer;
+function FreeBase(var db:PSQLite3):boolean;
+function BaseInMemory(db:PSQLite3):boolean;
+
+//======================================
+
+implementation
 
 function ProcessParameters(vm:pointer; const aparams:array of const):boolean;
 var
@@ -357,4 +377,84 @@ function OpenDatabase(var db:PSQLite3; const aname:AnsiString):boolean;
 begin
   result:=sqlite3_open(pointer(aname),@db)=SQLITE_OK;
 end;
-{$ENDIF}
+
+function LoadBase(var db:PSQLite3; const fname:AnsiString; inmemory:boolean=false):integer;
+var
+  f:file of byte;
+begin
+  result:=-1;
+  db:=nil;
+
+  try
+    InitializeSQlite();
+    // avoid FPC package bug
+    if pointer(sqlite3_db_filename)=nil then
+    begin
+      pointer(sqlite3_db_filename) := GetProcedureAddress(SQLiteLibraryHandle,'sqlite3_db_filename');
+      pointer(sqlite3_db_readonly) := GetProcedureAddress(SQLiteLibraryHandle,'sqlite3_db_readonly');
+    end;
+  except
+    exit;
+  end;
+
+  result:=SQLITE_OK;
+  if inmemory then
+  begin
+    if sqlite3_open(':memory:',@db)=SQLITE_OK then
+    begin
+      {$I-}
+      AssignFile(f,fname);
+      Reset(f);
+      if IOResult=0 then
+    //  if FileExists(fname) then
+      begin
+        CloseFile(f);
+        if db<>nil then
+        begin
+          try
+            result:=CopyFromFile(db,PAnsiChar(fname));
+          except
+            result:=errCantMapDB;
+          end;
+        end;
+      end
+      else
+        result:=errNoDBFile;
+    end
+    else
+      result:=errCantMemDB
+  end;
+
+  if db=nil then
+    sqlite3_open(PAnsiChar(fname),@db);
+end;
+
+function FreeBase(var db:PSQLite3):boolean;
+begin
+  if db<>nil then
+  begin
+    result:=sqlite3_close(db)=SQLITE_OK;
+    db:=nil;
+    ReleaseSqlite();
+  end
+  else
+    result:=true;
+end;
+
+function SaveBase(db:PSQLite3; const fname:AnsiString):integer;
+begin
+  if BaseInMemory(db) then
+    result:=CopyToFile(db,PAnsiChar(fname))
+  else
+    result:=SQLITE_OK;
+end;
+
+function BaseInMemory(db:PSQLite3):boolean; inline;
+var
+  pc:PAnsiChar;
+begin
+  pc:=sqlite3_db_filename(db,'main');
+  result:=(pc=nil) or (pc^=#0);
+end;
+
+end.

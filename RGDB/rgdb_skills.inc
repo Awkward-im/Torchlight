@@ -18,7 +18,7 @@ type
     id     : TRGID;
     name   : string;
     title  : string;
-    tier   : string;
+    graph  : string;
     icon   : string;
     level  : integer;
     learn  : integer;
@@ -70,7 +70,7 @@ begin
   if db<>nil then
   begin
     Str(aid,lSQL);
-    lSQL:='SELECT descr, tier, icon FROM skills WHERE id='''+lSQL+'''';
+    lSQL:='SELECT descr, graph, icon FROM skills WHERE id='''+lSQL+'''';
 
     if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
@@ -221,7 +221,7 @@ begin
           end;
 
           ',': begin
-            lSQL:='SELECT id, title, maxlevel, tier, icon, passive FROM skills'+
+            lSQL:='SELECT id, title, maxlevel, graph, icon, passive FROM skills'+
                   ' WHERE (name LIKE '''+ltmp+''')'+lwhere;
             if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
             begin
@@ -230,7 +230,7 @@ begin
                 askills[i].id     :=sqlite3_column_int64(vm,0);
                 askills[i].title  :=sqlite3_column_text (vm,1);
                 askills[i].level  :=sqlite3_column_int  (vm,2);
-                askills[i].tier   :=sqlite3_column_text (vm,3);
+                askills[i].graph  :=sqlite3_column_text (vm,3);
                 askills[i].icon   :=sqlite3_column_text (vm,4);
                 askills[i].passive:=CHR(sqlite3_column_int(vm,5)+ORD('0'));
                 askills[i].learn  :=lvl;

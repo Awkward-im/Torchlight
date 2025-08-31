@@ -1,21 +1,13 @@
 {"version":1,"strings":[
-{"hash":141047397,"name":"ttl2settings.lbldefaultfile.caption","sourcebytes":[68,101,102,97,117,108,116,32,116,114,97,110,115,108,97,116,105,111,110,32,102,105,108,101],"value":"Default translation file"},
-{"hash":136806051,"name":"ttl2settings.lblrootdirectory.caption","sourcebytes":[82,111,111,116,32,100,105,114,101,99,116,111,114,121,32,102,111,114,32,109,111,100,115],"value":"Root directory for mods"},
-{"hash":145601209,"name":"ttl2settings.lblworkdirectory.caption","sourcebytes":[87,111,114,107,105,110,103,32,100,105,114,101,99,116,111,114,121],"value":"Working directory"},
 {"hash":2857157,"name":"ttl2settings.bbsavesettings.caption","sourcebytes":[38,83,97,118,101],"value":"&Save"},
-{"hash":180741772,"name":"ttl2settings.cbimportparts.caption","sourcebytes":[77,97,114,107,32,105,109,112,111,114,116,101,100,32,108,105,110,101,115,32,97,115,32,112,97,114,116,105,97,108],"value":"Mark imported lines as partial"},
 {"hash":114234821,"name":"ttl2settings.lbllang.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110,32,108,97,110,103,117,97,103,101],"value":"Translation language"},
 {"hash":181156261,"name":"ttl2settings.lblprogramlanguage.caption","sourcebytes":[80,114,111,103,114,97,109,32,76,97,110,103,117,97,103,101],"value":"Program Language"},
 {"hash":175324867,"name":"ttl2settings.lbltranslators.caption","sourcebytes":[84,114,97,110,115,108,97,116,111,114,115],"value":"Translators"},
-{"hash":262712828,"name":"ttl2settings.cbautoaspartial.caption","sourcebytes":[77,97,114,107,32,65,117,116,111,99,111,114,114,101,99,116,101,100,32,97,115,32,112,97,114,116,105,97,108],"value":"Mark Autocorrected as partial"},
+{"hash":136240572,"name":"ttl2settings.cbaspartial.caption","sourcebytes":[77,97,114,107,32,110,101,119,32,116,101,120,116,32,97,115,32,112,97,114,116,105,97,108],"value":"Mark new text as partial"},
 {"hash":165832227,"name":"ttl2settings.gbtranslation.caption","sourcebytes":[84,114,97,110,115,108,97,116,105,111,110,32,100,101,116,97,105,108,115],"value":"Translation details"},
 {"hash":240489369,"name":"ttl2settings.lblgetapikey.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
-{"hash":242355710,"name":"ttl2settings.cbhidepartial.hint","sourcebytes":[72,105,100,101,32,112,97,114,116,105,97,108,108,121,32,116,114,97,110,115,108,97,116,101,100,32,119,105,116,104,32,116,114,97,110,115,108,97,116,101,100,32,98,121,32,34,72,105,100,101,32,114,101,97,100,121,34,32,98,117,116,116,111,110],"value":"Hide partially translated with translated by \"Hide ready\" button"},
-{"hash":120270388,"name":"ttl2settings.cbhidepartial.caption","sourcebytes":[72,105,100,101,32,80,97,114,116,105,97,108,32,119,105,116,104,32,84,114,97,110,115,108,97,116,101,100],"value":"Hide Partial with Translated"},
 {"hash":2807380,"name":"ttl2settings.bbfontedit.caption","sourcebytes":[38,70,111,110,116],"value":"&Font"},
 {"hash":7060910,"name":"ttl2settings.cbremovetags.caption","sourcebytes":[82,101,109,111,118,101,32,116,97,103,115,32,111,110,32,116,114,97,110,115,108,97,116,105,111,110],"value":"Remove tags on translation"},
 {"hash":200534807,"name":"ttl2settings.lblfilter.caption","sourcebytes":[87,111,114,100,115,32,116,111,32,101,120,99,108,117,100,101,32,102,114,111,109,32,99,111,109,112,97,114,105,110,103],"value":"Words to exclude from comparing"},
-{"hash":107700020,"name":"ttl2settings.lblfilternote.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,32,116,111,32,97,112,112,108,121,32,110,101,119,32,108,105,115,116],"value":"Reopen project to apply new list"},
-{"hash":136973012,"name":"ttl2settings.cbreopenprojects.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,115,32,97,116,32,115,116,97,114,116],"value":"Reopen projects at start"},
-{"hash":152969876,"name":"ttl2settings.lbldeffiledescr.caption","sourcebytes":[84,104,105,115,32,102,105,108,101,32,117,115,101,100,32,97,115,32,98,97,115,105,99,32,116,114,97,110,115,108,97,116,105,111,110,32,102,105,108,101,32,102,111,114,32,110,101,119,32,112,114,111,106,101,99,116,115,32,97,110,100,32,102,105,110,97,108,32,98,117,105,108,100],"value":"This file used as basic translation file for new projects and final build"}
+{"hash":107700020,"name":"ttl2settings.lblfilternote.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,32,116,111,32,97,112,112,108,121,32,110,101,119,32,108,105,115,116],"value":"Reopen project to apply new list"}
 ]}

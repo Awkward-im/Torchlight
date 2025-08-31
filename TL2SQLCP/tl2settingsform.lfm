@@ -10,76 +10,6 @@ object TL2Settings: TTL2Settings
   LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  object lblDefaultFile: TLabel
-    Left = 8
-    Height = 15
-    Top = 104
-    Width = 392
-    Alignment = taCenter
-    AutoSize = False
-    Caption = 'Default translation file'
-  end
-  object edDefaultFile: TFileNameEdit
-    Left = 8
-    Height = 23
-    Top = 124
-    Width = 392
-    OnAcceptFileName = edDefaultFileAcceptFileName
-    DialogTitle = 'Default translation filename'
-    FilterIndex = 0
-    HideDirectories = False
-    ButtonWidth = 23
-    NumGlyphs = 1
-    AutoSize = False
-    MaxLength = 0
-    TabOrder = 1
-  end
-  object lblRootDirectory: TLabel
-    Left = 8
-    Height = 15
-    Top = 54
-    Width = 392
-    Alignment = taCenter
-    AutoSize = False
-    Caption = 'Root directory for mods'
-  end
-  object edRootDir: TDirectoryEdit
-    Left = 8
-    Height = 23
-    Top = 72
-    Width = 392
-    DialogTitle = 'Root mod files directory'
-    ShowHidden = False
-    ButtonWidth = 23
-    DirectInput = False
-    NumGlyphs = 1
-    AutoSize = False
-    MaxLength = 0
-    TabOrder = 2
-  end
-  object edWorkDir: TDirectoryEdit
-    Left = 8
-    Height = 23
-    Top = 22
-    Width = 392
-    DialogTitle = 'Working directory'
-    ShowHidden = False
-    ButtonWidth = 23
-    DirectInput = False
-    NumGlyphs = 1
-    AutoSize = False
-    MaxLength = 0
-    TabOrder = 0
-  end
-  object lblWorkDirectory: TLabel
-    Left = 8
-    Height = 15
-    Top = 2
-    Width = 392
-    Alignment = taCenter
-    AutoSize = False
-    Caption = 'Working directory'
-  end
   object bbSaveSettings: TBitBtn
     Left = 797
     Height = 26
@@ -90,16 +20,8 @@ object TL2Settings: TTL2Settings
     Caption = '&Save'
     Default = True
     Kind = bkOK
-    TabOrder = 9
+    TabOrder = 4
     OnClick = bbSaveSettingsClick
-  end
-  object cbImportParts: TCheckBox
-    Left = 8
-    Height = 19
-    Top = 194
-    Width = 174
-    Caption = 'Mark imported lines as partial'
-    TabOrder = 3
   end
   object lblLang: TLabel
     Left = 536
@@ -113,7 +35,7 @@ object TL2Settings: TTL2Settings
     Height = 23
     Top = 4
     Width = 114
-    TabOrder = 6
+    TabOrder = 1
   end
   object lbLanguage: TListBox
     Left = 8
@@ -122,7 +44,7 @@ object TL2Settings: TTL2Settings
     Width = 184
     Anchors = [akLeft, akBottom]
     ItemHeight = 0
-    TabOrder = 7
+    TabOrder = 2
     OnSelectionChange = lbLanguageSelectionChange
   end
   object lblProgramLanguage: TLabel
@@ -141,7 +63,7 @@ object TL2Settings: TTL2Settings
     Top = 84
     Width = 167
     ItemHeight = 0
-    TabOrder = 8
+    TabOrder = 3
     OnSelectionChange = lbTranslatorsSelectionChange
   end
   object lblTranslators: TLabel
@@ -153,17 +75,17 @@ object TL2Settings: TTL2Settings
     AutoSize = False
     Caption = 'Translators'
   end
-  object cbAutoAsPartial: TCheckBox
+  object cbAsPartial: TCheckBox
     Left = 8
     Height = 19
-    Top = 217
-    Width = 174
-    Caption = 'Mark Autocorrected as partial'
-    TabOrder = 4
+    Top = 264
+    Width = 142
+    Caption = 'Mark new text as partial'
+    TabOrder = 0
   end
   object gbTranslation: TGroupBox
     Left = 408
-    Height = 200
+    Height = 120
     Top = 256
     Width = 456
     Anchors = [akTop, akLeft, akRight]
@@ -171,13 +93,13 @@ object TL2Settings: TTL2Settings
     Caption = 'Translation details'
     ChildSizing.LeftRightSpacing = 4
     ChildSizing.TopBottomSpacing = 4
-    ClientHeight = 180
+    ClientHeight = 100
     ClientWidth = 452
-    TabOrder = 10
+    TabOrder = 5
     object lblTitle: TLabel
       Left = 4
       Height = 17
-      Top = 0
+      Top = 4
       Width = 444
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
@@ -187,7 +109,7 @@ object TL2Settings: TTL2Settings
       AnchorSideTop.Side = asrBottom
       Left = 4
       Height = 1
-      Top = 21
+      Top = 25
       Width = 444
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
@@ -198,7 +120,7 @@ object TL2Settings: TTL2Settings
       AnchorSideTop.Side = asrBottom
       Left = 4
       Height = 17
-      Top = 26
+      Top = 30
       Width = 18
       BorderSpacing.Top = 4
       TabOrder = 1
@@ -212,7 +134,7 @@ object TL2Settings: TTL2Settings
       Cursor = crHandPoint
       Left = 327
       Height = 15
-      Top = 26
+      Top = 30
       Width = 113
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
@@ -229,7 +151,7 @@ object TL2Settings: TTL2Settings
       AnchorSideTop.Side = asrBottom
       Left = 4
       Height = 40
-      Top = 47
+      Top = 51
       Width = 444
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
@@ -240,23 +162,12 @@ object TL2Settings: TTL2Settings
       AnchorSideTop.Side = asrBottom
       Left = 4
       Height = 1
-      Top = 91
+      Top = 95
       Width = 444
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
       WordWrap = True
     end
-  end
-  object cbHidePartial: TCheckBox
-    Left = 8
-    Height = 19
-    Hint = 'Hide partially translated with translated by "Hide ready" button'
-    Top = 241
-    Width = 163
-    Caption = 'Hide Partial with Translated'
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 5
   end
   object bbFontEdit: TBitBtn
     Left = 200
@@ -268,7 +179,7 @@ object TL2Settings: TTL2Settings
     Caption = '&Font'
     Images = TL2DataModule.TL2ImageList
     ImageIndex = 4
-    TabOrder = 11
+    TabOrder = 6
     OnClick = btnFontEditClick
   end
   object cbRemoveTags: TCheckBox
@@ -277,7 +188,7 @@ object TL2Settings: TTL2Settings
     Top = 40
     Width = 162
     Caption = 'Remove tags on translation'
-    TabOrder = 12
+    TabOrder = 7
   end
   object lblFilter: TLabel
     Left = 8
@@ -292,7 +203,7 @@ object TL2Settings: TTL2Settings
     Height = 23
     Top = 317
     Width = 364
-    TabOrder = 13
+    TabOrder = 8
   end
   object lblFilterNote: TLabel
     Left = 8
@@ -301,24 +212,5 @@ object TL2Settings: TTL2Settings
     Width = 364
     AutoSize = False
     Caption = 'Reopen project to apply new list'
-  end
-  object cbReopenProjects: TCheckBox
-    AnchorSideLeft.Side = asrBottom
-    Left = 8
-    Height = 19
-    Top = 265
-    Width = 142
-    BorderSpacing.Left = 8
-    Caption = 'Reopen projects at start'
-    TabOrder = 14
-  end
-  object lblDefFileDescr: TLabel
-    Left = 8
-    Height = 40
-    Top = 152
-    Width = 392
-    AutoSize = False
-    Caption = 'This file used as basic translation file for new projects and final build'
-    WordWrap = True
   end
 end

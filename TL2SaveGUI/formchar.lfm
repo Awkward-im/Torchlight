@@ -6,15 +6,16 @@ object fmChar: TfmChar
   BorderStyle = bsNone
   ClientHeight = 502
   ClientWidth = 640
+  LCLVersion = '4.99.0.0'
   OnDestroy = FormDestroy
   object pcCharInfo: TPageControl
     Left = 0
     Height = 460
     Top = 42
     Width = 640
-    ActivePage = tsTechInfo
+    ActivePage = tsView
     Align = alClient
-    TabIndex = 6
+    TabIndex = 1
     TabOrder = 0
     object tsStat: TTabSheet
       Caption = 'Stats'
@@ -1347,7 +1348,7 @@ object fmChar: TfmChar
         Left = 9
         Height = 15
         Top = 149
-        Width = 45
+        Width = 42
         Caption = 'Is_boss?'
       end
       object edUnkn7_0: TEdit

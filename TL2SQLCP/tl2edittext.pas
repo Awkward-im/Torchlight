@@ -6,8 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ComCtrls, ActnList, ExtCtrls, Menus,
-  TL2Unit;
+  ComCtrls, ActnList, ExtCtrls, Menus;
 
 type
 
@@ -57,10 +56,14 @@ type
     procedure memTransKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FIdx:integer;
+    function CheckTheSame(idx: integer): integer;
+    procedure SearchUntranslated(aidx: integer; anext: boolean);
 
   public
     constructor Create(AOwner:TComponent); override;
     procedure SelectLine(idx: integer);
+
+    property EditIndex:integer read FIdx;
   end;
 
 var
@@ -77,10 +80,11 @@ uses
   TL2DupeForm,
   TL2SimForm,
   TL2Text,
-  TLTrSQL;
+  rgdb.text;
 
 resourcestring
-  sShow  = 'Click on "Show Doubles" button to show';
+  rsLanguage = 'Translation language';
+  rsShow     = 'Click on "Show Doubles" button to show';
 
 function CRLFtoSlashN(const atext:AnsiString):AnsiString;
 var
@@ -118,6 +122,74 @@ begin
   end;
 end;
 
+procedure TEditTextForm.SearchUntranslated(aidx:integer; anext:boolean);
+var
+  i:integer;
+begin
+  if not anext then
+  begin
+    actPrevUntranslated.Tag:=0;
+    i:=aidx-1;
+    while i>=0 do
+    begin
+      with TRCache[i] do
+        if part or (dst='') or (src=dst) then
+        begin
+          actPrevUntranslated.Tag:=i;
+          break;
+        end;
+      dec(i);
+    end;
+    actPrevUntranslated.Enabled:=actPrevUntranslated.Tag>0;
+  end
+  else
+  begin
+    actNextUntranslated.Tag:=0;
+    i:=aidx+1;
+    while i<Length(TRCache) do
+    begin
+      with TRCache[i] do
+        if part or (dst='') or (src=dst) then
+        begin
+          actNextUntranslated.Tag:=i;
+          break;
+        end;
+      inc(i);
+    end;
+    actNextUntranslated.Enabled:=actNextUntranslated.Tag>0;
+  end;
+end;
+
+function TEditTextForm.CheckTheSame(idx:integer):integer;
+var
+  ltrans:AnsiString;
+  litem:PTLCacheElement;
+  i,ltmpl:integer;
+begin
+  result:=0;
+
+  ltrans:=TRCache[idx].dst;
+  if ltrans='' then exit;
+
+  ltmpl:=TRCache[idx].tmpl;
+  for i:=0 to High(TRCache) do
+  begin
+    if i<>idx then // not necessary, dst<>'' anyway
+    begin
+      litem:=@TRCache[i];
+
+      if (litem^.dst =''   ) and
+         (litem^.tmpl=ltmpl) then
+      begin
+        inc(result);
+        litem^.dst  :=ReplaceTranslation(ltrans,litem^.src);
+        litem^.part :=TL2Settings.cbAsPartial.Checked;
+        litem^.flags:=litem^.flags or rfIsModified;
+      end;
+    end;
+  end;
+end;
+
 procedure TEditTextForm.SelectLine(idx:integer);
 var
   ls:AnsiString;
@@ -132,6 +204,9 @@ begin
     if memTrans.Modified then
     begin
       ls:=CRLFtoSlashN(memTrans.Text);
+
+      if ls=TRCache[FIdx].src then ls:='';
+
       if TRCache[FIdx].dst<>ls then
       begin
         TRCache[FIdx].dst:=ls;
@@ -145,6 +220,8 @@ begin
       TRCache[FIdx].flags:=TRCache[FIdx].flags or rfIsModified;
     end;
 
+    CheckTheSame(FIdx);
+
 //    prj.UpdateGrid(FIdx);
 //    prj.MoveToIndex(FIdx);
 //    prj.data.CheckTheSame(FIdx,TL2Settings.cbAutoAsPartial.Checked);
@@ -155,6 +232,9 @@ begin
   if idx<0 then exit;
 
   //--- Navigation
+  SearchUntranslated(idx,true);
+  SearchUntranslated(idx,false);
+{
   actPrevUntranslated.Tag:=0;
   i:=idx-1;
   while i>=0 do
@@ -182,7 +262,7 @@ begin
     inc(i);
   end;
   actNextUntranslated.Enabled:=actNextUntranslated.Tag>0;
-
+}
   actPrevLine.Enabled:=FIdx>0;
   actNextLine.Enabled:=FIdx<High(TRCache);
 
@@ -198,7 +278,7 @@ begin
   begin
 	  lblFile.Caption:=StringReplace(rsSeveralRefs,'%d',
 	      IntToStr(GetLineRefCount(TRCache[idx].id)),[]);
-		lblTagValue.Caption:=sShow;
+		lblTagValue.Caption:=rsShow;
     lblTag     .Visible:=false;
     actShowDupe.Visible:=true;
   end
@@ -354,6 +434,7 @@ begin
   inherited;
 
   FIdx:=-1;
+  Caption:=rsLanguage+': '+CurLang;
 
   Font.Assign(TL2DM.TL2Font);
 end;

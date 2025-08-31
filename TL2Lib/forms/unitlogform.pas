@@ -22,9 +22,9 @@ type
     procedure FormCreate(Sender: TObject);
   private
 
-     function AddToLog(var adata: string): integer;
+    function AddToLog(var adata: string): integer;
   public
-
+//    property Log:
   end;
 
 var
@@ -42,19 +42,6 @@ resourcestring
 
 
 { TfmLogForm }
-
-function TfmLogForm.AddToLog(var adata:string):integer;
-begin
-  memLog.Append(adata);
-  adata:='';
-  result:=0;
-end;
-
-procedure TfmLogForm.bbClearClick(Sender: TObject);
-begin
-  memLog.Clear;
-  RGLog.Clear;
-end;
 
 procedure TfmLogForm.bbSaveClick(Sender: TObject);
 var
@@ -81,14 +68,28 @@ begin
   end;
 end;
 
-procedure TfmLogForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure TfmLogForm.bbClearClick(Sender: TObject);
 begin
-  CloseAction:=caHide;
+  memLog.Clear;
+  if RGLog.OnAdd=@AddToLog then RGLog.Clear;
+end;
+
+function TfmLogForm.AddToLog(var adata:string):integer;
+begin
+  memLog.Append(adata);
+  adata:='';
+  result:=0;
 end;
 
 procedure TfmLogForm.FormCreate(Sender: TObject);
 begin
-  RGLog.OnAdd:=@AddToLog;
+  if RGLog.OnAdd=nil then
+    RGLog.OnAdd:=@AddToLog;
+end;
+
+procedure TfmLogForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  CloseAction:=caHide;
 end;
 
 end.

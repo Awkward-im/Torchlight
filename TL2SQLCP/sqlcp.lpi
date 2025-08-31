@@ -29,7 +29,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\RGDB;..\TL2Lib\forms"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -70,7 +70,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\RGDB;..\TL2Lib\forms"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -135,13 +135,10 @@
         <UnitName Value="Logging"/>
       </Unit>
       <Unit>
-        <Filename Value="..\RGDB\rgdb.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmLogForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitLogForm"/>
       </Unit>
@@ -186,6 +183,7 @@
         <Filename Value="tl2settingsform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TL2Settings"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
       </Unit>
@@ -225,7 +223,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\RGDB;..\TL2Lib\forms"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

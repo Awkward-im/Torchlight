@@ -17,10 +17,9 @@ function RGDBGetClass(const aid:TRGID; out amods:string):string; overload;
 function RGDBGetClass(const aid:TRGID                  ):string; overload;
 function RGDBGetClass(const aname:string; out aid:TRGID):string; overload;
 
+function RGDBGetClassName(const aid:TRGID):string;
 function RGDBGetClassMods(const aid:TRGID):string;
-
 function RGDBGetClassIcon(const aid:TRGID):string;
-
 function RGDBGetClassInfo(const aid:TRGID; out aicon:string; out astr, adex, aint, avit:integer):string;
 
 function RGDBGetClassWardrobe(const aid:TRGID):string;
@@ -80,6 +79,13 @@ const
      gender:'U'; str: 5; dex:10; int: 7; vit: 6)
   );
 
+function RGDBGetClassName(const aid:TRGID):string;
+var
+  lmod:string;
+begin
+  RGDBGetClass(aid,lmod,result);
+end;
+
 function RGDBGetClass(const aid:TRGID; out amods:string; out aname:string):string;
 var
   i:integer;
@@ -103,21 +109,11 @@ begin
     result:=GetById(aid,dbClassTable,'',amods,aname);
 end;
 
-function RGDBGetClassMods(const aid:TRGID):string;
-begin
-  result:=RGDBGetTextValue(aid,dbClassTable,'modid');
-end;
-
 function RGDBGetClass(const aid:TRGID; out amods:string):string;
 var
   lname:string;
 begin
   result:=RGDBGetClass(aid,amods,lname);
-end;
-
-function RGDBGetClassWardrobe(const aid:TRGID):string;
-begin
-  result:=RGDBGetTextValue(aid,dbClassTable,'wardrobe');
 end;
 
 function RGDBGetClass(const aid:TRGID):string;
@@ -147,6 +143,16 @@ begin
   end
   else
     result:=GetByName(aname,dbClassTable,aid);
+end;
+
+function RGDBGetClassMods(const aid:TRGID):string;
+begin
+  result:=RGDBGetTextValue(aid,dbClassTable,'modid');
+end;
+
+function RGDBGetClassWardrobe(const aid:TRGID):string;
+begin
+  result:=RGDBGetTextValue(aid,dbClassTable,'wardrobe');
 end;
 
 function RGDBGetClassIcon(const aid:TRGID):string;

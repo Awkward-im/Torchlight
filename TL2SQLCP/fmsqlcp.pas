@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Buttons, StdCtrls,
-  ComCtrls, Grids, ListFilterEdit;
+  ComCtrls, Grids, ListFilterEdit, unitlogform;
 
 type
 
@@ -18,7 +18,8 @@ type
     bbSaveDB: TBitBtn;
     bbLog: TBitBtn;
     bbSQLog: TBitBtn;
-    cbWithRef: TCheckBox;
+    bbNewTrans: TBitBtn;
+    bbGenerate: TBitBtn;
     edModStat: TEdit;
     gdLanguages: TStringGrid;
     lblCurLang: TLabel;
@@ -27,16 +28,25 @@ type
     gdModStat: TStringGrid;
     StatusBar: TStatusBar;
     procedure bbAddTransClick(Sender: TObject);
+    procedure bbGenerateClick(Sender: TObject);
     procedure bbLogClick(Sender: TObject);
+    procedure bbNewTransClick(Sender: TObject);
     procedure bbSaveDBClick(Sender: TObject);
     procedure bbScanModClick(Sender: TObject);
     procedure bbSQLogClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DoStartEdit(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lbModsSelectionChange(Sender: TObject; User: boolean);
     procedure lfeModsAfterFilter(Sender: TObject);
   private
+    FLogForm  :TfmLogForm;
+    FSQLogForm:TfmLogForm;
+    doBreak:boolean;
+
+    function AddLog(var adata: string): integer;
+    function AddSQLog(var adata: string): integer;
     function OnFileScan(const fname: AnsiString; idx, atotal: integer): integer;
     procedure FillModList();
     procedure FillLangList();
@@ -54,14 +64,14 @@ implementation
 {$R *.lfm}
 
 uses
-  tltrsql,
-  iso639,
-  unitlogform,
-  tl2unit,
-  tlscan,
-  rgdb,
+  LCLType,
+  TL2SettingsForm,
   sqlite3dyn,
-  rgglobal;
+  iso639,
+  rgglobal,
+  rgdb.text,
+  tl2unit,
+  tlscan;
 
 resourcestring
   rsOpenTranslation = 'Open translation file';
@@ -72,11 +82,14 @@ resourcestring
   rsLanguage        = 'Language:';
   rsStatus          = 'Total lines: %d | Unreferred lines: %d';
   rsStat            = 'Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d';
-  rsDblClick        = 'Double-Click to edit translation';
+//  rsDblClick        = 'Double-Click to edit translation';
+  rsStopScan        = 'Do you want to break scan?';
+  rsSaveDone        = 'Database saved';
+  rsCantSave        = 'Can''t save database';
+  rsBuildDone       = 'Translation file generated';
+  rsBuildFailed     = 'Translation file is NOT generated';
+//  rsNothingToSave   = 'Nothing to save';
 
-const
-  sAllStrings   = '- All strings -';
-  sOriginalGame = '-- Original game --';
 
 { TFormSQLCP }
 
@@ -97,6 +110,13 @@ begin
     begin
       if PrepareLoadSQL(InputBox(rsChooseLang,rsLanguage,'')) then
       begin
+{
+        case QuestionDlg(rsTranslation,rsTransOp,mtConfirmation,
+          [mrYesToAll,rsOverwriteAll,'IsDefault',
+           mrYes     ,rsOverwrite,
+           mrNo      ,rsFixAll,
+           mrCancel],0) of
+}
         i:=tlscan.LoadAsText(OpenDialog.FileName);
         RGLog.Add('Loaded '+IntToStr(i)+' lines');
         ShowMessage('Done!');
@@ -122,8 +142,33 @@ begin
   end;
 end;
 
+procedure TFormSQLCP.bbGenerateClick(Sender: TObject);
+begin
+  if BuildTranslation('TRANSLATION.DAT','',true) then
+    ShowMessage(rsBuildDone)
+  else
+    ShowMessage(rsBuildFailed);
+  // maybe build from cache if curmod=-1 or just build mod, not all
+  // well, it can be used in grid/editor, not CP
+end;
+
+procedure TFormSQLCP.bbNewTransClick(Sender: TObject);
+begin
+  CreateLangTable(InputBox(rsChooseLang,rsLanguage,''));
+  FillLangList();
+  lbModsSelectionChange(Self,true);
+end;
+
 function TFormSQLCP.OnFileScan(const fname:AnsiString; idx, atotal:integer):integer;
 begin
+  if doBreak then
+  begin
+    if MessageDlg(rsStopScan,mtWarning,mbYesNo,0,mbNo)=mrYes then
+      exit(-2)
+    else
+      doBreak:=false;
+  end;
+
   result:=0;
   if (idx mod 50)=0 then
   begin
@@ -148,6 +193,13 @@ begin
     begin
       if PrepareScanSQL() then
       begin
+        bbScanMod .Enabled:=false;
+        bbAddTrans.Enabled:=false;
+        bbNewTrans.Enabled:=false;
+        bbSQLog   .Enabled:=false;
+        bbSaveDB  .Enabled:=false;
+
+        doBreak:=false;
         tlscan.OnFileScan:=@OnFileScan;
         for i:=0 to OpenDialog.Files.Count-1 do
         begin
@@ -162,6 +214,12 @@ begin
         ShowMessage('Done!');
         FillModList();
         UpdateStatus();
+
+        bbScanMod .Enabled:=true;
+        bbAddTrans.Enabled:=true;
+        bbNewTrans.Enabled:=true;
+        bbSQLog   .Enabled:=true;
+        bbSaveDB  .Enabled:=true;
       end;
     end;
   finally
@@ -169,11 +227,30 @@ begin
   end;
 end;
 
+function TFormSQLCP.AddSQLog(var adata:string):integer;
+begin
+  FSQLogForm.memLog.Append(adata);
+  adata:='';
+  result:=0;
+end;
+
+function TFormSQLCP.AddLog(var adata:string):integer;
+begin
+  FLogForm.memLog.Append(adata);
+  adata:='';
+  result:=0;
+end;
+
 procedure TFormSQLCP.bbSQLogClick(Sender: TObject);
+{
 var
   dlg:TSaveDialog;
 begin
-  if SQLog.Size=0 then exit;
+  if SQLog.Size=0 then
+  begin
+    ShowMessage(rsNothingToSave);
+    exit;
+  end;
 
   dlg:=TSaveDialog.Create(nil);
   try
@@ -191,21 +268,36 @@ begin
   finally
     dlg.Free;
   end;
+}
+begin
+  if FSQLogForm=nil then
+  begin
+    FSQLogForm:=TfmLogForm.Create(Self);
+    FSQLogForm.Caption:='SQL log';
+    FSQLogForm.memLog.Text:=SQLog.Text;
+    SQLog.OnAdd:=@AddSQLog;
+  end;
+  FSQLogForm.ShowOnTop;
 end;
 
 procedure TFormSQLCP.bbLogClick(Sender: TObject);
 begin
-  if fmLogForm=nil then
+  if FLogForm=nil then
   begin
-    fmLogForm:=TfmLogForm.Create(Self);
-    fmLogForm.memLog.Text:=RGLog.Text;
+    FLogForm:=TfmLogForm.Create(Self);
+    FLogForm.Caption:='Program log';
+    FLogForm.memLog.Text:=RGLog.Text;
+    RGLog.OnAdd:=@AddLog;
   end;
-  fmLogForm.ShowOnTop;
+  FLogForm.ShowOnTop;
 end;
 
 procedure TFormSQLCP.bbSaveDBClick(Sender: TObject);
 begin
-  TLSaveBase();
+  if TLSaveBase() then
+    ShowMessage(rsSaveDone)
+  else
+    ShowMessage(rsCantSave);
 end;
 
 procedure TFormSQLCP.lbModsSelectionChange(Sender: TObject; User: boolean);
@@ -243,59 +335,37 @@ begin
 end;
 
 procedure TFormSQLCP.FillModList();
-var
-  vm:pointer;
-  ls:string;
 begin
-  ls:='SELECT title FROM dicmods';
   lfeMods.FilteredListBox:=nil;
   lfeMods.Clear;
-  lbMods.Clear;
-  lbMods.Items.Add(sAllStrings);
-  lbMods.Items.Add(sOriginalGame);
-  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
-  begin
-    while sqlite3_step(vm)=SQLITE_ROW do
-    begin
-      ls:=sqlite3_column_text(vm,0);
-      lbMods.Items.Add(ls);
-//      lfeMods.AddItem(ls);
-    end;
-    sqlite3_finalize(vm);
-  end;
+
+  GetModList(lbMods.Items,true);
+
   lfeMods.FilteredListBox:=lbMods;
   lfeMods.SortData:=true;
 end;
 
 procedure TFormSQLCP.FillLangList();
 var
-  vm:pointer;
+  llist:TDictDynArray;
   ls:string;
   i,lcnt:integer;
 begin
-  ls:='SELECT name FROM sqlite_master'+
-      ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')'+
-      ' ORDER BY name';
+  llist:=nil;
 
   gdLanguages.BeginUpdate;
   gdLanguages.Clear;
+  lcnt:=GetLangList(llist);
   gdLanguages.RowCount:=1;
-  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  for i:=0 to lcnt-1 do
   begin
-    i:=1;
-    while sqlite3_step(vm)=SQLITE_ROW do
-    begin
-      ls:=sqlite3_column_text(vm,0);
-      lcnt:=ReturnInt(tldb,'SELECT count(1) FROM '+ls);
-      ls:=Copy(ls,7);
-      gdLanguages.InsertRowWithValues(i,[IntToStr(lcnt),ls,GetLangName(ls)]);
-      inc(i);
-//      gdLanguages.Items.Add(ls+' ('+IntToStr(lcnt)+') - '+GetLangName(ls));
-    end;
-    sqlite3_finalize(vm);
+    ls:=llist[i].value;
+    gdLanguages.InsertRowWithValues(i+1,[IntToStr(llist[i].id),ls,GetLangName(ls)]);
   end;
+  SetLength(llist,0);
   gdLanguages.EndUpdate();
-
+  bbGenerate.Enabled:=lcnt>0;
+  if lcnt>0 then gdLanguages.Row:=1;
 end;
 
 procedure TFormSQLCP.UpdateStatus();
@@ -305,7 +375,10 @@ end;
 
 procedure TFormSQLCP.FormCreate(Sender: TObject);
 begin
-  fmLogForm:=nil;
+  FLogForm  :=nil;
+  FSQLogForm:=nil;
+
+  SetProgramLanguage();
   TLOpenBase(true);
   FillLangList();
   FillModList();
@@ -335,6 +408,15 @@ begin
 
     MainTL2TransForm:=TMainTL2TransForm.Create(Self);
     MainTL2TransForm.ShowModal;
+  end;
+end;
+
+procedure TFormSQLCP.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key=VK_ESCAPE then
+  begin
+    doBreak:=true;
+    Key:=0;
   end;
 end;
 

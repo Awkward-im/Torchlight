@@ -43,7 +43,7 @@ var
 
 implementation
 
-{.$R dicttag.rc}    // Less size and easier to edit
+{$R dicttag.rc}    // Less size and easier to edit
 {.$R dicttagbin.rc} // Faster load
 
 uses
@@ -62,6 +62,9 @@ const
 procedure TRGDict.Init(usecache:boolean=true);
 begin
   inherited Init(@RGHash,usecache);
+
+  if RGTags.Count=0 then
+    RGTags.Import('RGDICT','TEXT');
 end;
 
 

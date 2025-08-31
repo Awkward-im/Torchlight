@@ -11,15 +11,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.4\n"
 
+#: fmsqlcp.rsbuilddone
+msgid "Translation file generated"
+msgstr "Файл перевода создан"
+
+#: fmsqlcp.rsbuildfailed
+msgid "Translation file is NOT generated"
+msgstr "Файл перевода не создан"
+
+#: fmsqlcp.rscantsave
+msgid "Can't save database"
+msgstr "Не могу сохранить БД"
+
 #: fmsqlcp.rschooselang
 msgctxt "fmsqlcp.rschooselang"
 msgid "Choose translation language"
 msgstr "Выберите язык перевода"
-
-#: fmsqlcp.rsdblclick
-msgctxt "fmsqlcp.rsdblclick"
-msgid "Double-Click to edit translation"
-msgstr "Двойной клик для редактирования перевода"
 
 #: fmsqlcp.rslanguage
 msgid "Language:"
@@ -27,11 +34,15 @@ msgstr "Язык:"
 
 #: fmsqlcp.rsopenmod
 msgid "Open mod (pak) file"
-msgstr "Открыть Mod (pak) "
+msgstr "Открыть Mod (pak)"
 
 #: fmsqlcp.rsopentranslation
 msgid "Open translation file"
 msgstr "Открыть файл перевода"
+
+#: fmsqlcp.rssavedone
+msgid "Database saved"
+msgstr "БД сохранена"
 
 #: fmsqlcp.rsstat
 #, object-pascal-format
@@ -43,154 +54,62 @@ msgstr "Всего строк: %d | Дублей: %d | Уникальных: %d 
 msgid "Total lines: %d | Unreferred lines: %d"
 msgstr "Всего строк: %d | Строк без ссылок: %d"
 
-#: rgdb.rsbasegame
-msgid "Base game"
-msgstr "Основная игра"
+#: fmsqlcp.rsstopscan
+msgid "Do you want to break scan?"
+msgstr "Вы хотите прервать сканирование?"
 
-#: rgdb.rshp
-msgid "Best Health Potion"
-msgstr "Лучшее зелье здоровья"
+#: tdupeform.caption
+msgid "Dupe List"
+msgstr "Список дубликатов"
 
-#: rgdb.rslmb
-msgid "Left mouse button"
-msgstr "Левая кнопка мыши"
+#: tdupeform.sgdupes.columns[0].title.caption
+msgid "File"
+msgstr "Файл"
 
-#: rgdb.rsmp
-msgid "Best Mana Potion"
-msgstr "Лучшее зелье маны"
+#: tdupeform.sgdupes.columns[1].title.caption
+msgid "Line"
+msgstr "Строка"
 
-#: rgdb.rspethp
-msgid "Best Pet Health Potion"
-msgstr "Лучшее зелье лечения питомца"
-
-#: rgdb.rspetmp
-msgid "Best Pet Mana Potion"
-msgstr "Лучшее зелье маны питомца"
-
-#: rgdb.rspetspell1
-msgid "Pet spell 1"
-msgstr "Навык питомца 1"
-
-#: rgdb.rspetspell2
-msgid "Pet spell 2"
-msgstr "Навык питомца 2"
-
-#: rgdb.rspetspell3
-msgid "Pet spell 3"
-msgstr "Навык питомца 3"
-
-#: rgdb.rspetspell4
-msgid "Pet spell 4"
-msgstr "Навык питомца 4"
-
-#: rgdb.rsqk0
-msgid "Quckslot 0"
-msgstr ""
-
-#: rgdb.rsqk1
-msgid "Quckslot 1"
-msgstr ""
-
-#: rgdb.rsqk2
-msgid "Quckslot 2"
-msgstr ""
-
-#: rgdb.rsqk3
-msgid "Quckslot 3"
-msgstr ""
-
-#: rgdb.rsqk4
-msgid "Quckslot 4"
-msgstr ""
-
-#: rgdb.rsqk5
-msgid "Quckslot 5"
-msgstr ""
-
-#: rgdb.rsqk6
-msgid "Quckslot 6"
-msgstr ""
-
-#: rgdb.rsqk7
-msgid "Quckslot 7"
-msgstr ""
-
-#: rgdb.rsqk8
-msgid "Quckslot 8"
-msgstr ""
-
-#: rgdb.rsqk9
-msgid "Quckslot 9"
-msgstr ""
-
-#: rgdb.rsrmb
-msgid "Right mouse button"
-msgstr "Правая кнопка мыши"
-
-#: rgdb.rsrmbalt
-msgid "Right mouse button (alternative)"
-msgstr "Правая кнопка мыши (альтернативная)"
-
-#: rgdb.rsset
-msgid "Set"
-msgstr "Набор"
-
-#: rgdb.rsspell1
-msgid "Spell 1"
-msgstr "Навык 1"
-
-#: rgdb.rsspell2
-msgid "Spell 2"
-msgstr "Навык 2"
-
-#: rgdb.rsspell3
-msgid "Spell 3"
-msgstr "Навык 3"
-
-#: rgdb.rsspell4
-msgid "Spell 4"
-msgstr "Навык 4"
+#: tdupeform.sgdupes.columns[2].title.caption
+msgid "Tag"
+msgstr "Тэг"
 
 #: tedittextform.actmarkaspartial.hint
 msgid "Mark as Partial"
-msgstr ""
+msgstr "Пометить частичным"
 
 #: tedittextform.actnextline.hint
 msgid "Next line"
-msgstr ""
+msgstr "Следующая строка"
 
 #: tedittextform.actnextuntranslated.hint
 msgid "Next untranslated"
-msgstr ""
+msgstr "Следующая непереведёная"
 
 #: tedittextform.actprevline.hint
 msgid "Previous line"
-msgstr ""
+msgstr "Предыдущая строка"
 
 #: tedittextform.actprevuntranslated.hint
 msgid "Previous untranslated"
-msgstr ""
+msgstr "Предыдущая непереведёная"
 
 #: tedittextform.actshowdupe.hint
 msgid "Show doubles"
-msgstr ""
+msgstr "Показать дубли"
 
 #: tedittextform.actshowsample.hint
 msgid "Show Sample"
-msgstr ""
+msgstr "Показать пример"
 
 #: tedittextform.acttranslate.hint
 msgctxt "tedittextform.acttranslate.hint"
 msgid "Translate"
-msgstr ""
-
-#: tedittextform.caption
-msgid "Edit text"
-msgstr ""
+msgstr "Перевод"
 
 #: tedittextform.lbltag.caption
 msgid "Tag:"
-msgstr ""
+msgstr "Тэг:"
 
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
@@ -205,68 +124,101 @@ msgid "Save log to file"
 msgstr "Сохранить лог в файл"
 
 #: tformsqlcp.bbaddtrans.caption
-msgid "Add Translation"
-msgstr ""
+msgid "Load"
+msgstr "Загрузить"
+
+#: tformsqlcp.bbaddtrans.hint
+msgid "Load translation file"
+msgstr "Загрузить файл перевода"
+
+#: tformsqlcp.bbgenerate.caption
+msgid "Generate"
+msgstr "Создать"
+
+#: tformsqlcp.bbgenerate.hint
+msgid "Generate translation file for mod"
+msgstr "Создать файл перевода для мода"
 
 #: tformsqlcp.bblog.caption
 msgid "Log"
-msgstr ""
+msgstr "Лог"
+
+#: tformsqlcp.bblog.hint
+msgid "Show log file"
+msgstr "Показать лог"
+
+#: tformsqlcp.bbnewtrans.caption
+msgctxt "tformsqlcp.bbnewtrans.caption"
+msgid "New"
+msgstr "Новый"
+
+#: tformsqlcp.bbnewtrans.hint
+msgid "Add new translation language"
+msgstr "Добавить язык перевода"
 
 #: tformsqlcp.bbsavedb.caption
 msgid "Save DB"
-msgstr ""
+msgstr "Сохранить ДБ"
+
+#: tformsqlcp.bbsavedb.hint
+msgid "Save DB changes (memory DB related)"
+msgstr "Сохранить изменения в БД (для базы в памяти)"
 
 #: tformsqlcp.bbscanmod.caption
 msgid "Scan Mod"
-msgstr ""
+msgstr "Сканировать мод"
 
 #: tformsqlcp.bbsqlog.caption
-msgid "Save SQL log"
-msgstr ""
+msgid "SQL log"
+msgstr "Лог SQL"
 
-#: tformsqlcp.cbwithref.caption
-msgid "With refs"
-msgstr ""
+#: tformsqlcp.bbsqlog.hint
+msgid "Show session SQL requiests of DB modify"
+msgstr "Показать SQL запросы для изменения БД"
 
 #: tformsqlcp.gdlanguages.columns[0].title.caption
 msgctxt "tformsqlcp.gdlanguages.columns[0].title.caption"
 msgid "Count"
-msgstr ""
+msgstr "Количество"
 
 #: tformsqlcp.gdlanguages.columns[1].title.caption
 msgctxt "tformsqlcp.gdlanguages.columns[1].title.caption"
 msgid "Lang"
-msgstr ""
+msgstr "Язык"
 
 #: tformsqlcp.gdlanguages.columns[2].title.caption
 msgctxt "tformsqlcp.gdlanguages.columns[2].title.caption"
 msgid "Name"
-msgstr ""
+msgstr "Название"
 
 #: tformsqlcp.gdmodstat.columns[0].title.caption
 msgctxt "tformsqlcp.gdmodstat.columns[0].title.caption"
 msgid "Count"
-msgstr ""
+msgstr "Количество"
 
 #: tformsqlcp.gdmodstat.columns[1].title.caption
-#, fuzzy
 msgctxt "tformsqlcp.gdmodstat.columns[1].title.caption"
 msgid "Partial"
-msgstr "Частичные"
+msgstr "Частично"
 
 #: tformsqlcp.gdmodstat.columns[2].title.caption
 msgctxt "tformsqlcp.gdmodstat.columns[2].title.caption"
 msgid "Lang"
-msgstr ""
+msgstr "Язык"
 
 #: tformsqlcp.gdmodstat.columns[3].title.caption
 msgctxt "tformsqlcp.gdmodstat.columns[3].title.caption"
 msgid "Name"
-msgstr ""
+msgstr "Название"
+
+#: tformsqlcp.gdmodstat.hint
+msgctxt "tformsqlcp.gdmodstat.hint"
+msgid "Double-Click to edit translation"
+msgstr "Двойной клик для редактирования перевода"
 
 #: tformsqlcp.lblcurlang.caption
-msgid "Current languages"
-msgstr ""
+msgid "Current translations"
+msgstr "Текущий перевод"
 
 #: tl2datamodule.rsnoref
 msgid "Text don't have any references"
@@ -278,9 +230,15 @@ msgctxt "tl2datamodule.rsseveralrefs"
 msgid "This text presents in several (about %d) places."
 msgstr "Этот текст есть в нескольких (примерно %d) местах."
 
-#: tl2edittext.sshow
+#: tl2edittext.rslanguage
+msgctxt "tl2edittext.rslanguage"
+msgid "Translation language"
+msgstr "Язык перевода"
+
+#: tl2edittext.rsshow
+msgctxt "tl2edittext.rsshow"
 msgid "Click on \"Show Doubles\" button to show"
-msgstr ""
+msgstr "Нажмите на кнопку \"Показать дубли\" для показа"
 
 #: tl2notesform.stitle
 msgctxt "tl2notesform.stitle"
@@ -357,6 +315,10 @@ msgctxt "tl2unit.rsaffected"
 msgid " line(s) affected"
 msgstr " строк(а/и) исправлено"
 
+#: tl2unit.rsautofill
+msgid "Try to autofill similar text in database?"
+msgstr "Попытаться перевести похожие строки в базе?"
+
 #: tl2unit.rsdefaultcaption
 msgctxt "tl2unit.rsdefaultcaption"
 msgid "Torchlight 2 Translation"
@@ -395,6 +357,15 @@ msgstr "- Все -"
 msgid "All"
 msgstr "Все"
 
+#: tl2unit.rsmodemodified
+msgid "Modified"
+msgstr "Изменено"
+
+#: tl2unit.rsmodenotready
+msgctxt "tl2unit.rsmodenotready"
+msgid "Not translated"
+msgstr "Не переведено"
+
 #: tl2unit.rsmodeoriginal
 msgid "Original"
 msgstr "Исходные"
@@ -407,6 +378,11 @@ msgstr "Частичные"
 #: tl2unit.rsmodeready
 msgid "Ready"
 msgstr "Готовые"
+
+#: tl2unit.rsmodereadyplus
+msgctxt "tl2unit.rsmodereadyplus"
+msgid "Translated"
+msgstr "Переведено"
 
 #: tl2unit.rsnext
 msgctxt "tl2unit.rsnext"
@@ -423,10 +399,6 @@ msgctxt "tl2unit.rsnotes"
 msgid "Punctuation note"
 msgstr "Пунктутация"
 
-#: tl2unit.rsnotready
-msgid "Not translated"
-msgstr "Не переведено"
-
 #: tl2unit.rsnotsaved
 msgctxt "tl2unit.rsnotsaved"
 msgid "Project modified. Do you want to save it?"
@@ -436,10 +408,6 @@ msgstr "Проект изменён. Хотите сохранить его?"
 msgctxt "tl2unit.rsnowarnings"
 msgid "No any warnings"
 msgstr "Никаких предупреждений нет"
-
-#: tl2unit.rsreadyplus
-msgid "Translated"
-msgstr "Переведено"
 
 #: tl2unit.rsreplaces
 msgctxt "tl2unit.rsreplaces"
@@ -452,253 +420,194 @@ msgid "-- Root --"
 msgstr "-- Корень  --"
 
 #: tmaintl2transform.actchecktranslation.caption
-msgid "actCheckTranslation"
-msgstr ""
+#, fuzzy
+msgctxt "tmaintl2transform.actchecktranslation.caption"
+msgid "Check Translation"
+msgstr "Проверка перевода"
 
 #: tmaintl2transform.actchecktranslation.hint
 msgid "Check for notes of translation"
-msgstr ""
+msgstr "ЗАмечания по переводу"
 
 #: tmaintl2transform.actexportclipbrd.caption
-msgid "actExportClipBrd"
+msgid "Export Clipboard"
 msgstr ""
 
 #: tmaintl2transform.actexportclipbrd.hint
 msgid "Copy selected source text to clipboard"
-msgstr ""
-
-#: tmaintl2transform.actexportfile.caption
-msgid "actExportFile"
-msgstr ""
-
-#: tmaintl2transform.actexportfile.hint
-msgid "Save selected source text"
-msgstr ""
+msgstr "Копировать выделенное в буфер"
 
 #: tmaintl2transform.actfilter.caption
-msgid "actFilter"
-msgstr ""
+#, fuzzy
+msgctxt "tmaintl2transform.actfilter.caption"
+msgid "Filter"
+msgstr "Фильтр"
 
 #: tmaintl2transform.actfilter.hint
+msgctxt "tmaintl2transform.actfilter.hint"
 msgid "Filter"
-msgstr ""
+msgstr "Фильтр"
 
 #: tmaintl2transform.actfindnext.caption
-msgid "actFindNext"
+msgid "Find Next"
 msgstr ""
 
 #: tmaintl2transform.actfindnext.hint
 msgid "Search next"
-msgstr ""
-
-#: tmaintl2transform.acthideready.caption
-msgid "actHideReady"
-msgstr ""
-
-#: tmaintl2transform.acthideready.hint
-msgid "Hide translated lines"
-msgstr ""
+msgstr "Искать далее"
 
 #: tmaintl2transform.actimportclipbrd.caption
-msgid "actImportClipBrd"
+msgid "Import Clipboard"
 msgstr ""
 
 #: tmaintl2transform.actimportclipbrd.hint
 msgid "Inset text with translation from clipboard"
-msgstr ""
-
-#: tmaintl2transform.actimportfile.caption
-msgid "actImportFile"
-msgstr ""
-
-#: tmaintl2transform.actimportfile.hint
-msgid "Add translation from file"
-msgstr ""
+msgstr "Вставить текст с переводом из буфера"
 
 #: tmaintl2transform.actmodinfo.caption
 msgid "Mod Info"
-msgstr ""
+msgstr "О моде"
 
 #: tmaintl2transform.actmodinfo.hint
 msgid "Show mod info"
-msgstr ""
-
-#: tmaintl2transform.actopensource.caption
-msgid "actOpenSource"
-msgstr ""
-
-#: tmaintl2transform.actpartasready.caption
-msgid "actPartAsReady"
-msgstr ""
-
-#: tmaintl2transform.actpartasready.hint
-msgid "Mark partially translated text as translated"
-msgstr ""
+msgstr "Показать информацию о моде"
 
 #: tmaintl2transform.actreplace.caption
 msgid "Replace"
-msgstr ""
+msgstr "ЗАменить"
 
 #: tmaintl2transform.actreplace.hint
 msgid "Replace translation text"
-msgstr ""
+msgstr "Заменить текст перевода"
 
 #: tmaintl2transform.actsettings.caption
-#, fuzzy
 msgctxt "tmaintl2transform.actsettings.caption"
 msgid "Settings"
 msgstr "Настройки"
 
 #: tmaintl2transform.actsettings.hint
 msgid "Show/hide settings"
-msgstr ""
+msgstr "Показать/скрыть настройки"
 
 #: tmaintl2transform.actshowdoubles.caption
 msgid "Show Doubles"
-msgstr ""
+msgstr "Показать дубли"
 
 #: tmaintl2transform.actshowdoubles.hint
 msgid "Show Doubling lines"
-msgstr ""
+msgstr "Показать одинаковые строки"
 
 #: tmaintl2transform.actshowlog.caption
 msgid "Show log"
-msgstr ""
+msgstr "Показать лог"
 
 #: tmaintl2transform.actshowlog.hint
 msgid "Show log window"
-msgstr ""
+msgstr "Показать окно лога"
 
 #: tmaintl2transform.actshowsimilar.caption
 msgid "Show Similar"
-msgstr ""
+msgstr "Показать похожие"
 
 #: tmaintl2transform.actshowsimilar.hint
 msgid "Show lines with \"almost the same\" text"
-msgstr ""
+msgstr "Показать с троки с похожим текстом"
 
 #: tmaintl2transform.acttranslate.caption
 msgctxt "tmaintl2transform.acttranslate.caption"
 msgid "Translate"
-msgstr ""
+msgstr "Перевод"
 
 #: tmaintl2transform.acttranslate.hint
 msgid "Use online translate service"
-msgstr ""
+msgstr "Использовать онлайн-переводчик"
 
 #: tmaintl2transform.caption
-#, fuzzy
 msgctxt "tmaintl2transform.caption"
 msgid "Torchlight 2 Translation"
 msgstr "Перевод Torchlight 2"
 
 #: tmaintl2transform.cbfolder.hint
 msgid "Top-level folder filter"
-msgstr ""
+msgstr "Фильтр папок верхнего уровня"
 
 #: tmaintl2transform.cblanguage.hint
-#, fuzzy
 msgctxt "tmaintl2transform.cblanguage.hint"
 msgid "Choose translation language"
 msgstr "Выберите язык перевода"
 
 #: tmaintl2transform.fileexit.caption
 msgid "E&xit"
-msgstr ""
+msgstr "Выход"
 
 #: tmaintl2transform.fileexit.hint
 msgid "Exit program"
-msgstr ""
+msgstr "Выход из программы"
 
 #: tmaintl2transform.filesave.caption
+msgctxt "tmaintl2transform.filesave.caption"
 msgid "&Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: tmaintl2transform.filesave.hint
 msgid "Save project"
-msgstr ""
+msgstr "Сохранить проект"
 
 #: tmaintl2transform.fontedit.caption
+msgctxt "tmaintl2transform.fontedit.caption"
 msgid "&Font"
-msgstr ""
+msgstr "Шрифт"
 
 #: tmaintl2transform.fontedit.hint
 msgid "Font changing"
-msgstr ""
+msgstr "Изменение шрифта"
 
 #: tmaintl2transform.helpabout.caption
 msgid "&About"
-msgstr ""
+msgstr "О программе"
 
 #: tmaintl2transform.helpabout.hint
 msgid "About program"
-msgstr ""
+msgstr "О программе"
 
 #: tmaintl2transform.helpnotes.caption
 msgctxt "tmaintl2transform.helpnotes.caption"
 msgid "Show Notes"
-msgstr ""
+msgstr "Показать заметки"
 
 #: tmaintl2transform.helpnotes.hint
 msgctxt "tmaintl2transform.helpnotes.hint"
 msgid "Show Notes"
-msgstr ""
+msgstr "Показать заметки"
 
 #: tmaintl2transform.miedit.caption
 msgid "&Edit"
-msgstr ""
-
-#: tmaintl2transform.mieditchecktranslation.caption
-msgid "Check Translation"
-msgstr ""
+msgstr "Редактирование"
 
 #: tmaintl2transform.mifile.caption
 msgid "&File"
-msgstr ""
+msgstr "Файл"
 
 #: tmaintl2transform.mihelp.caption
 msgid "&Help"
-msgstr ""
+msgstr "Помощь"
 
 #: tmaintl2transform.miview.caption
 msgid "&View"
-msgstr ""
-
-#: tmaintl2transform.tbbuild.caption
-msgid "&Build"
-msgstr ""
-
-#: tmaintl2transform.tbbuild.hint
-msgid "Build translation"
-msgstr ""
-
-#: tmaintl2transform.tbfilenew.caption
-msgid "Scan &dir"
-msgstr ""
-
-#: tmaintl2transform.tbfilenew.hint
-msgid "Scan unpacked mod (directory)"
-msgstr ""
-
-#: tmaintl2transform.tbscanmod.caption
-msgid "Scan &mod"
-msgstr ""
-
-#: tmaintl2transform.tbscanmod.hint
-msgid "Scan compiled mod"
-msgstr ""
+msgstr "Просмотр"
 
 #: tmaintl2transform.tl2grid.columns[0].title.caption
+msgctxt "tmaintl2transform.tl2grid.columns[0].title.caption"
 msgid "Value"
-msgstr ""
+msgstr "Значение"
 
 #: tmaintl2transform.tl2grid.columns[1].title.caption
 msgid "Part"
-msgstr ""
+msgstr "Часть"
 
 #: tmaintl2transform.tl2grid.columns[2].title.caption
 msgid "Translation"
-msgstr ""
+msgstr "Перевод"
 
 #: tmaintl2transform.toolbutton3.caption
 msgid "ToolButton3"
@@ -710,15 +619,101 @@ msgstr ""
 
 #: tsimilarform.btndupes.caption
 msgid "Doubles"
-msgstr ""
+msgstr "Дубли"
 
 #: tsimilarform.caption
 msgid "Similars List"
-msgstr ""
+msgstr "Похожие"
 
 #: tsimilarform.lblpartial.caption
 msgid "(Partial translation)"
-msgstr ""
+msgstr "(Частичный перевод)"
+
+#: ttl2notes.bbcancel.caption
+msgid "Cancel"
+msgstr "Отмена"
+
+#: ttl2notes.bbsave.caption
+msgctxt "ttl2notes.bbsave.caption"
+msgid "&Save"
+msgstr "Сохранить"
+
+#: ttl2notes.sbadd.hint
+msgid "Add note"
+msgstr "Добавить заметку"
+
+#: ttl2notes.sbdelete.hint
+msgid "Delete note"
+msgstr "Удалить заметку"
+
+#: ttl2notes.sbreload.hint
+msgid "Try to reload notes"
+msgstr "Перезагрузить заметки"
+
+#: ttl2notes.sbsave.hint
+msgid "Save notes"
+msgstr "Сохранить заметки"
+
+#: ttl2notes.sbtranslate.hint
+msgctxt "ttl2notes.sbtranslate.hint"
+msgid "Translate"
+msgstr "Перевод"
+
+#: ttl2notes.sgnotes.columns[0].title.caption
+msgid "Note"
+msgstr "Заметка"
+
+#: ttl2notes.sgnotes.columns[1].title.caption
+msgctxt "ttl2notes.sgnotes.columns[1].title.caption"
+msgid "Value"
+msgstr "Значение"
+
+#: ttl2settings.bbfontedit.caption
+msgctxt "ttl2settings.bbfontedit.caption"
+msgid "&Font"
+msgstr "Шрифт"
+
+#: ttl2settings.bbsavesettings.caption
+msgctxt "ttl2settings.bbsavesettings.caption"
+msgid "&Save"
+msgstr "Сохранить"
+
+#: ttl2settings.cbaspartial.caption
+msgid "Mark new text as partial"
+msgstr "Пометить новый перевод как неточный"
+
+#: ttl2settings.cbremovetags.caption
+msgid "Remove tags on translation"
+msgstr "Удалить теги в переводе"
+
+#: ttl2settings.gbtranslation.caption
+msgid "Translation details"
+msgstr "Детали первода"
+
+#: ttl2settings.lblfilter.caption
+msgid "Words to exclude from comparing"
+msgstr "Слова, исключаемые для сравнения"
+
+#: ttl2settings.lblfilternote.caption
+msgid "Reopen project to apply new list"
+msgstr "Переокройте проект для применения нового списка"
+
+#: ttl2settings.lblgetapikey.caption
+msgid "Get your own API key"
+msgstr "Получите свой API ключ"
+
+#: ttl2settings.lbllang.caption
+msgctxt "ttl2settings.lbllang.caption"
+msgid "Translation language"
+msgstr "Язык перевода"
+
+#: ttl2settings.lblprogramlanguage.caption
+msgid "Program Language"
+msgstr "Язык программы"
+
+#: ttl2settings.lbltranslators.caption
+msgid "Translators"
+msgstr "Переводчики"
 
 #: unitlogform.rscantsave
 msgid "Can't save log file"

@@ -19,8 +19,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
-        <TopLine Value="101"/>
-        <CursorPos X="3" Y="116"/>
+        <CursorPos X="15" Y="121"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -29,11 +28,9 @@
         <Filename Value="tl2dataunit.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2DataUnit"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="1380"/>
-        <CursorPos X="35" Y="1356"/>
-        <FoldState Value=" T4E021 PDlg0 TCfF5 TLi604012 PCj74\"/>
+        <TopLine Value="907"/>
+        <CursorPos X="18" Y="932"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -80,10 +77,11 @@
         <ComponentName Value="TL2Project"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1569"/>
-        <CursorPos X="40" Y="1591"/>
-        <FoldState Value=" T46031 PCjd0 TL,a041 T8jM2F TMvR8102]H3l20A6 pj1jR0{;2]A5mR094]9dkF03213 pkXm10P]KiejZ0N5]T3je0M4[T4l4mU0K[w4Lk60d011 T6lL02W PiM!Y0 T0lS248[{L594I]\j8R4e7[84i26KB piXia43C]9ck9465 pjJi16c521]BbkX43[l43e83[k4Zjc238[95R42[t4YlC230[B5el065[k40iS853 PCjA4 TKu405?"/>
+        <TopLine Value="13"/>
+        <CursorPos Y="144"/>
+        <FoldState Value=" T7IG{PC"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -116,7 +114,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SimForm"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="61"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -126,7 +124,7 @@
         <Filename Value="tl2refunit.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2RefUnit"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="906"/>
         <CursorPos Y="922"/>
         <UsageCount Value="212"/>
@@ -148,9 +146,11 @@
         <Filename Value="tl2text.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Text"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="14" Y="74"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="469"/>
+        <CursorPos Y="489"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgglobal.pas"/>
@@ -177,9 +177,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2DupeForm"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="57"/>
-        <CursorPos X="24" Y="88"/>
+        <CursorPos X="24" Y="87"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -194,7 +194,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="77"/>
+        <UsageCount Value="91"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\logging.pas"/>
@@ -204,14 +204,14 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="70"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\trclass.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TRClass"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="70"/>
       </Unit>
     </Units>
     <OtherDefines Count="1">

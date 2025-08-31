@@ -3,19 +3,17 @@
 {NOTE: TL1 don't have it}
 
 function AddMovieToBase(ams:pointer;  aId:int64;
-     const aname, atitle, apath:string; aviews:integer):integer;
+      aname, atitle, apath:PUnicodeChar; aviews:integer):integer;
 var
-  lmodid,lSQL,sid:string;
+  lmodid,sid:string;
 begin
   Str(aid,sid);
   lmodid:=CheckIdForMod(ams,'movies', sid);
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO movies (id, name, title, path, views, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+FixedText(apath)+
-        ', '+IntToStr(aviews)+', '+lmodid+')';
-
-    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    if ExecuteDirect(PModScanner(ams)^.db,
+      'REPLACE INTO movies (id, name, title, path, views, modid) VALUES ('+
+          sid+', ?1, ?2, ?3, '+IntToStr(aviews)+', '+lmodid+')', [aname,atitle,apath]) then
       result:=1
     else
       result:=0;
@@ -28,7 +26,7 @@ function AddMovieNode(ams:pointer; anode:pointer):integer;
 var
   lnode, llnode:pointer;
   pcw:PWideChar;
-  lname,ltitle,lpath:string;
+  lname,ltitle,lpath:PUnicodeChar;
   lid:int64;
   lcnt,i,j,lviews:integer;
 begin

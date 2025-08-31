@@ -1,9 +1,9 @@
 {%REGION Stats}
 
-function AddStatToBase(ams:pointer; const aname:string; aId:int64;
-          const atitle:string; asaves:boolean):integer;
+function AddStatToBase(ams:pointer; aId:int64;
+          aname, atitle:PUnicodeChar; asaves:boolean):integer;
 var
-  lmodid,lSQL,sid,ssaves:string;
+  lmodid,sid,ssaves:string;
 begin
   Str(aid,sid);
   lmodid:=CheckIdForMod(ams,'stats', sid);
@@ -11,10 +11,9 @@ begin
   begin
     if asaves then ssaves:='1' else ssaves:='0';
 
-    lSQL:='REPLACE INTO stats (id, name, title, saves, modid) VALUES ('+
-        sid+', '+FixedText(aname)+', '+FixedText(atitle)+', '+ssaves+', '+lmodid+')';
-
-    if ExecuteDirect(PModScanner(ams)^.db,lSQL) then
+    if ExecuteDirect(PModScanner(ams)^.db,
+      'REPLACE INTO stats (id, name, title, saves, modid) VALUES ('+
+        sid+', ?1, ?2, '+ssaves+', '+lmodid+')',[aname,atitle]) then
       result:=1
     else
       result:=0;
@@ -27,25 +26,25 @@ function AddStatNode(ams:pointer; anode:pointer):integer;
 var
   lnode:pointer;
   pcw:PWideChar;
-  name,title:string;
+  lname,ltitle:PUnicodeChar;
   lid:int64;
   saves:boolean;
   i:integer;
 begin
-  title:='';
+  ltitle:='';
   saves:=false;
 
   for i:=0 to GetChildCount(anode)-1 do
   begin
     lnode:=GetChild(anode,i);
     pcw:=GetNodeName(lnode);
-    if      CompareWide(pcw,'NAME'       )=0 then name :=AsString   (lnode)
-    else if CompareWide(pcw,'UNIQUE_GUID')=0 then lid  :=AsInteger64(lnode)
-    else if CompareWide(pcw,'SAVES'      )=0 then saves:=AsBool     (lnode)
-    else if CompareWide(pcw,'DISPLAYNAME')=0 then title:=AsString   (lnode);
+    if      CompareWide(pcw,'NAME'       )=0 then lname :=AsString   (lnode)
+    else if CompareWide(pcw,'UNIQUE_GUID')=0 then lid   :=AsInteger64(lnode)
+    else if CompareWide(pcw,'SAVES'      )=0 then saves :=AsBool     (lnode)
+    else if CompareWide(pcw,'DISPLAYNAME')=0 then ltitle:=AsString   (lnode);
   end;
 
-  result:=AddStatToBase(ams,name,lid,title,saves);
+  result:=AddStatToBase(ams,lid,lname,ltitle,saves);
 end;
 
 function ProcessStats(

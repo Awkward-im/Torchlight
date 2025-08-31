@@ -63,6 +63,7 @@ function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
 
 implementation
 
+{$R dictlayout.rc}
 {.$include objicons.inc}
 
 type
@@ -151,6 +152,17 @@ begin
 
   FLastScene :=nil;
   FLastSceneName:=nil;
+
+  if not DictsAreLoaded() then
+  begin
+    LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
+    LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
+    LoadLayoutDict('LAYRG' , 'TEXT', verRG);
+    LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
+    LoadLayoutDict('LAYHOB', 'TEXT', verHob);
+    RGLog.Reserve('');
+  end;
+
 end;
 
 procedure TRGObject.Clear;
@@ -961,16 +973,16 @@ function DictsAreLoaded(aver:integer=verUnk):boolean;
 begin
   if aver=verUnk then
     result:=
-      (DictObjTL1.buf=nil) and
-      (DictObjTL2.buf=nil) and
-      (DictObjHob.buf=nil) and
-      (DictObjRG .buf=nil) and
-      (DictObjRGO.buf=nil)
-  else if aver=verTL1 then result:=DictObjTL1.buf=nil
-  else if aver=verTL2 then result:=DictObjTL2.buf=nil
-  else if aver=verHob then result:=DictObjHob.buf=nil
-  else if aver=verRG  then result:=DictObjRG .buf=nil
-  else if aver=verRGO then result:=DictObjRGO.buf=nil
+      (DictObjTL1.buf<>nil) or
+      (DictObjTL2.buf<>nil) or
+      (DictObjHob.buf<>nil) or
+      (DictObjRG .buf<>nil) or
+      (DictObjRGO.buf<>nil)
+  else if aver=verTL1 then result:=DictObjTL1.buf<>nil
+  else if aver=verTL2 then result:=DictObjTL2.buf<>nil
+  else if aver=verHob then result:=DictObjHob.buf<>nil
+  else if aver=verRG  then result:=DictObjRG .buf<>nil
+  else if aver=verRGO then result:=DictObjRGO.buf<>nil
   else result:=false;
 end;
 

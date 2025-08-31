@@ -6,6 +6,7 @@ object fmSettings: TfmSettings
   BorderStyle = bsNone
   ClientHeight = 472
   ClientWidth = 782
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object bbSave: TBitBtn
     Left = 8

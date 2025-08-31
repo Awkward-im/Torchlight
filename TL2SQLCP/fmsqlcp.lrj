@@ -1,16 +1,24 @@
 {"version":1,"strings":[
 {"hash":159406020,"name":"tformsqlcp.bbscanmod.caption","sourcebytes":[83,99,97,110,32,77,111,100],"value":"Scan Mod"},
-{"hash":7564894,"name":"tformsqlcp.bbaddtrans.caption","sourcebytes":[65,100,100,32,84,114,97,110,115,108,97,116,105,111,110],"value":"Add Translation"},
+{"hash":117682165,"name":"tformsqlcp.bbaddtrans.hint","sourcebytes":[76,111,97,100,32,116,114,97,110,115,108,97,116,105,111,110,32,102,105,108,101],"value":"Load translation file"},
+{"hash":341364,"name":"tformsqlcp.bbaddtrans.caption","sourcebytes":[76,111,97,100],"value":"Load"},
+{"hash":214747849,"name":"tformsqlcp.bbsavedb.hint","sourcebytes":[83,97,118,101,32,68,66,32,99,104,97,110,103,101,115,32,40,109,101,109,111,114,121,32,68,66,32,114,101,108,97,116,101,100,41],"value":"Save DB changes (memory DB related)"},
 {"hash":160199890,"name":"tformsqlcp.bbsavedb.caption","sourcebytes":[83,97,118,101,32,68,66],"value":"Save DB"},
-{"hash":150454723,"name":"tformsqlcp.lblcurlang.caption","sourcebytes":[67,117,114,114,101,110,116,32,108,97,110,103,117,97,103,101,115],"value":"Current languages"},
-{"hash":178771411,"name":"tformsqlcp.cbwithref.caption","sourcebytes":[87,105,116,104,32,114,101,102,115],"value":"With refs"},
+{"hash":162153011,"name":"tformsqlcp.lblcurlang.caption","sourcebytes":[67,117,114,114,101,110,116,32,116,114,97,110,115,108,97,116,105,111,110,115],"value":"Current translations"},
+{"hash":207640997,"name":"tformsqlcp.bblog.hint","sourcebytes":[83,104,111,119,32,108,111,103,32,102,105,108,101],"value":"Show log file"},
 {"hash":21335,"name":"tformsqlcp.bblog.caption","sourcebytes":[76,111,103],"value":"Log"},
 {"hash":4877396,"name":"tformsqlcp.gdlanguages.columns[0].title.caption","sourcebytes":[67,111,117,110,116],"value":"Count"},
 {"hash":337991,"name":"tformsqlcp.gdlanguages.columns[1].title.caption","sourcebytes":[76,97,110,103],"value":"Lang"},
 {"hash":346165,"name":"tformsqlcp.gdlanguages.columns[2].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
+{"hash":97725646,"name":"tformsqlcp.gdmodstat.hint","sourcebytes":[68,111,117,98,108,101,45,67,108,105,99,107,32,116,111,32,101,100,105,116,32,116,114,97,110,115,108,97,116,105,111,110],"value":"Double-Click to edit translation"},
 {"hash":4877396,"name":"tformsqlcp.gdmodstat.columns[0].title.caption","sourcebytes":[67,111,117,110,116],"value":"Count"},
 {"hash":109686572,"name":"tformsqlcp.gdmodstat.columns[1].title.caption","sourcebytes":[80,97,114,116,105,97,108],"value":"Partial"},
 {"hash":337991,"name":"tformsqlcp.gdmodstat.columns[2].title.caption","sourcebytes":[76,97,110,103],"value":"Lang"},
 {"hash":346165,"name":"tformsqlcp.gdmodstat.columns[3].title.caption","sourcebytes":[78,97,109,101],"value":"Name"},
-{"hash":231126535,"name":"tformsqlcp.bbsqlog.caption","sourcebytes":[83,97,118,101,32,83,81,76,32,108,111,103],"value":"Save SQL log"}
+{"hash":253034649,"name":"tformsqlcp.bbsqlog.hint","sourcebytes":[83,104,111,119,32,115,101,115,115,105,111,110,32,83,81,76,32,114,101,113,117,105,101,115,116,115,32,111,102,32,68,66,32,109,111,100,105,102,121],"value":"Show session SQL requiests of DB modify"},
+{"hash":140407559,"name":"tformsqlcp.bbsqlog.caption","sourcebytes":[83,81,76,32,108,111,103],"value":"SQL log"},
+{"hash":59194789,"name":"tformsqlcp.bbnewtrans.hint","sourcebytes":[65,100,100,32,110,101,119,32,116,114,97,110,115,108,97,116,105,111,110,32,108,97,110,103,117,97,103,101],"value":"Add new translation language"},
+{"hash":21703,"name":"tformsqlcp.bbnewtrans.caption","sourcebytes":[78,101,119],"value":"New"},
+{"hash":206707972,"name":"tformsqlcp.bbgenerate.hint","sourcebytes":[71,101,110,101,114,97,116,101,32,116,114,97,110,115,108,97,116,105,111,110,32,102,105,108,101,32,102,111,114,32,109,111,100],"value":"Generate translation file for mod"},
+{"hash":206343285,"name":"tformsqlcp.bbgenerate.caption","sourcebytes":[71,101,110,101,114,97,116,101],"value":"Generate"}
 ]}

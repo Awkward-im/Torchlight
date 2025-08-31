@@ -24,18 +24,17 @@ begin
   end;
 end;
 
-function AddSetToBase(ams:pointer; const aname,atitle:string):integer;
+function AddSetToBase(ams:pointer; const aname,atitle:AnsiString):integer;
 var
-  lmodid,lSQL,ls:string;
+  lmodid,ls:string;
 begin
   ls:=FixedText(aname);
   lmodid:=CheckNameForMod(ams,'dicsets', aname);
   if lmodid<>'' then
   begin
-    lSQL:='REPLACE INTO dicsets (name, title, modid) VALUES ('+
-        ls+', '+FixedText(atitle)+', '+lmodid+') RETURNING id;';
-
-    result:=ReturnInt(PModScanner(ams)^.db,lSQL);
+    result:=ReturnInt(PModScanner(ams)^.db,
+        'INSERT INTO dicsets (name, title, modid) VALUES ('+
+        ls+', ?1, '+lmodid+') RETURNING id;',PAnsiChar(atitle));
   end
   else
     result:=ReturnInt(PModScanner(ams)^.db,'SELECT id FROM dicsets WHERE name='+ls);
