@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="ClassData.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos Y="27"/>
+        <UsageCount Value="43"/>
+      </Unit>
+      <Unit>
+        <Filename Value="formclassdata.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmClassData"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="formClassData"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="113"/>
+        <CursorPos X="28" Y="332"/>
+        <UsageCount Value="43"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="43"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\RGDB\rgdb.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="43"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Logging"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="43"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\sqlitedb.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="373"/>
+        <CursorPos Y="389"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customcheckbox.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="155"/>
+        <CursorPos Y="173"/>
+        <UsageCount Value="10"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="240" Column="20" TopLine="222"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="121" TopLine="114"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="122" TopLine="114"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="123" TopLine="114"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="121" TopLine="107"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="122" Column="9" TopLine="107"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="91" Column="23" TopLine="71"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="81" Column="31" TopLine="55"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="88" Column="8" TopLine="85"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="76" TopLine="66"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="306" Column="49" TopLine="101"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="87" Column="7" TopLine="79"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="83" Column="20" TopLine="60"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="131" Column="22" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="132" Column="22" TopLine="86"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="292" Column="60" TopLine="234"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="92" Column="16" TopLine="76"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="306" Column="11" TopLine="287"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="311" TopLine="129"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="101" Column="3" TopLine="83"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="93" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="95" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="93" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="..\Addons\sqlitedb.pas"/>
+        <Caret Line="389" TopLine="373"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="75" TopLine="71"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="82" TopLine="72"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="94" TopLine="73"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="95" TopLine="74"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="94" TopLine="73"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="93" TopLine="72"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

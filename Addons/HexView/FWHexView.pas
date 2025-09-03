@@ -422,6 +422,7 @@ type
     FBookmarkTextColor: TColor;
     FCaretColor: TColor;
     FCaretTextColor: TColor;
+    FColumnsColor: array [ctAddress..ctDescription] of TColor;
     FGroupColor: TColor;
     FHeaderBackgroundColor: TColor;
     FHeaderBorder: TColor;
@@ -439,6 +440,7 @@ type
     FTextCommentColor: TColor;
     FWorkSpaceTextColor: TColor;
     procedure InternalDoChange;
+    function GetColumnColor(const Index: TColumnType): TColor;
     procedure SetBackgroundColor(const Value: TColor);
     procedure SetBookmarkBackgroundColor(const Value: TColor);
     procedure SetBookmarkBorderColor(const Value: TColor);
@@ -446,6 +448,7 @@ type
     procedure SetCaretColor(const Value: TColor);
     procedure SetCaretTextColor(const Value: TColor);
     procedure SetColorMode(const Value: TColorMode);
+    procedure SetColumnColor(const Index: TColumnType; const Value: TColor);
     procedure SetEditBackgroundColor(AValue: TColor);
     procedure SetEditBorderColor(AValue: TColor);
     procedure SetEditErrorBorderColor(AValue: TColor);
@@ -473,6 +476,7 @@ type
     procedure InitDefault;
     procedure InitLightMode; virtual;
     function IsColorStored: Boolean;
+    function IsColumnColorStored(const Index: TColumnType): Boolean;
   public
     constructor Create(AOwner: TFWCustomHexView); virtual;
     function IsDarkMode: Boolean;
@@ -484,10 +488,13 @@ type
     property CaretColor: TColor read FCaretColor write SetCaretColor stored IsColorStored;
     property CaretTextColor: TColor read FCaretTextColor write SetCaretTextColor stored IsColorStored;
     property ColorMode: TColorMode read FColorMode write SetColorMode default cmAuto;
-    property EditBackgroundColor: TColor read FEditBackgroundColor write SetEditBackgroundColor;
-    property EditBorderColor: TColor read FEditBorderColor write SetEditBorderColor;
-    property EditErrorBorderColor: TColor read FEditErrorBorderColor write SetEditErrorBorderColor;
-    property EditTextColor: TColor read FEditTextColor write SetEditTextColor;
+    property ColumnAddressColor: TColor index ctAddress read GetColumnColor write SetColumnColor stored IsColumnColorStored;
+    property ColumnOpcodeColor: TColor index ctOpcode read GetColumnColor write SetColumnColor stored IsColumnColorStored;
+    property ColumnDescriptionColor: TColor index ctDescription read GetColumnColor write SetColumnColor stored IsColumnColorStored;
+    property EditBackgroundColor: TColor read FEditBackgroundColor write SetEditBackgroundColor stored IsColorStored;
+    property EditBorderColor: TColor read FEditBorderColor write SetEditBorderColor stored IsColorStored;
+    property EditErrorBorderColor: TColor read FEditErrorBorderColor write SetEditErrorBorderColor stored IsColorStored;
+    property EditTextColor: TColor read FEditTextColor write SetEditTextColor stored IsColorStored;
     property GroupColor: TColor read FGroupColor write SetGroupColor stored IsColorStored;
     property InfoBackgroundColor: TColor read FInfoBackgroundColor write SetInfoBackgroundColor stored IsColorStored;
     property InfoBorderColor: TColor read FInfoBorderColor write SetInfoBorderColor stored IsColorStored;
@@ -2432,6 +2439,11 @@ begin
   InternalDoChange;
 end;
 
+function THexViewColorMap.GetColumnColor(const Index: TColumnType): TColor;
+begin
+  Result := FColumnsColor[Index];
+end;
+
 procedure THexViewColorMap.InitDarkMode;
 begin
   FBackgroundColor := $212121;
@@ -2467,6 +2479,9 @@ var
   DefColorMode: TColorMode;
 begin
   DefColorMode := cmLight;
+  FColumnsColor[ctAddress] := clDefault;
+  FColumnsColor[ctOpcode] := clDefault;
+  FColumnsColor[ctDescription] := clDefault;
   if IsDarkMode then
     DefColorMode := cmDark;
   case DefColorMode of
@@ -2514,6 +2529,11 @@ end;
 function THexViewColorMap.IsColorStored: Boolean;
 begin
   Result := ColorMode = cmCustom;
+end;
+
+function THexViewColorMap.IsColumnColorStored(const Index: TColumnType): Boolean;
+begin
+  Result := FColumnsColor[Index] <> clDefault;
 end;
 
 function THexViewColorMap.IsDarkMode: Boolean;
@@ -2592,6 +2612,16 @@ begin
       cmDark: InitDarkMode;
     end;
     InternalDoChange;
+  end;
+end;
+
+procedure THexViewColorMap.SetColumnColor(const Index: TColumnType;
+  const Value: TColor);
+begin
+  if FColumnsColor[Index] <> Value then
+  begin
+    FColumnsColor[Index] := Value;
+    DoChange;
   end;
 end;
 
@@ -3264,8 +3294,13 @@ begin
 end;
 
 procedure TAbstractPrimaryRowPainter.DrawAddress(ACanvas: TCanvas; var ARect: TRect);
+var
+  AColor: TColor;
 begin
-  ACanvas.Font.Color := ColorMap.TextColor;
+  AColor := ColorMap.ColumnAddressColor;
+  if AColor = clDefault then
+    AColor := ColorMap.TextColor;
+  ACanvas.Font.Color := AColor;
   if not DrawRowColumnBackground(ACanvas, ctAddress, ARect) then
   begin
     ACanvas.Brush.Style := bsSolid;
@@ -4057,6 +4092,7 @@ end;
 
 procedure TRowHexPainter.DrawDataPart(ACanvas: TCanvas; var ARect: TRect);
 var
+  AColor: TColor;
   SelectionCount, I: Integer;
   Selection: TSelection;
   ASelStart, ASelEnd: TSelectPoint;
@@ -4081,6 +4117,13 @@ begin
     else
       DrawSelectedBackround(ACanvas, ctDescription, ARect, SelData);
   end;
+
+  AColor := RawData[RowIndex].Color;
+  if AColor = clDefault then
+    AColor := ColorMap.ColumnDescriptionColor;
+  if AColor = clDefault then
+    AColor := ColorMap.TextColor;
+  ACanvas.Font.Color := AColor;
   ACanvas.Brush.Style := bsClear;
   DrawTextBlock(ACanvas, ctDescription, ARect, ColumnAsString(ctDescription),
     TextMetric.CharPointer(ctDescription, 0));
@@ -4089,6 +4132,11 @@ end;
 procedure TRowHexPainter.DrawHeaderColumn(ACanvas: TCanvas;
   AColumn: TColumnType; var ARect: TRect);
 begin
+  if (AColumn = ctOpcode) and (Owner.Header.ColumnCaption[AColumn] <> '') then
+  begin
+    DefaultDrawHeaderColumn(ACanvas, ARect, Owner.Header.ColumnCaption[AColumn], 0);
+    Exit;
+  end;
   case ByteViewMode of
     bvmText, bvmAddress:
       DefaultDrawHeaderColumn(ACanvas, ARect,
@@ -4131,6 +4179,8 @@ begin
   end;
 
   AColor := RawData[RowIndex].Color;
+  if AColor = clDefault then
+    AColor := ColorMap.ColumnOpcodeColor;
   if AColor = clDefault then
     AColor := ColorMap.TextColor;
   ACanvas.Font.Color := AColor;
@@ -6526,7 +6576,11 @@ begin
 
       if Length(AKey) > 1 then Exit;
       HexChar := AKey{$IFDEF FPC}[1]{$ENDIF};
-      if not CharInSet(HexChar, ['0'..'9', 'a'..'f', 'A'..'F']) then Exit;
+      if not CharInSet(HexChar, ['0'..'9', 'a'..'f', 'A'..'F']) then
+      begin
+        Beep;
+        Exit;
+      end;
 
       // чтобы не учитывать BE/LE просто работаем со строкой
       // а RTL возьмет на себя задачу преобразований
@@ -6544,7 +6598,11 @@ begin
       Inc(CaretIndex);
 
       AData.ValueSize := ValueMetric.ByteCount;
-      if not TryStrToInt64('0x' + ValueData, AData.OldValue) then Exit;
+      if not TryStrToInt64('0x' + ValueData, AData.OldValue) then
+      begin
+        Beep;
+        Exit;
+      end;
       if ValueData[CaretIndex] = HexChar then
       begin
         Handled := True;
@@ -6553,7 +6611,11 @@ begin
       else
       begin
         ValueData[CaretIndex] := HexChar;
-        if not TryStrToInt64('0x' + ValueData, AData.NewValue) then Exit;
+        if not TryStrToInt64('0x' + ValueData, AData.NewValue) then
+        begin
+          Beep;
+          Exit;
+        end;
       end;
     end;
     ctDescription:

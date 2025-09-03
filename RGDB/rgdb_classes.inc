@@ -17,6 +17,7 @@ function RGDBGetClass(const aid:TRGID; out amods:string):string; overload;
 function RGDBGetClass(const aid:TRGID                  ):string; overload;
 function RGDBGetClass(const aname:string; out aid:TRGID):string; overload;
 
+function RGDBGetClassFile(const aid:TRGID; abase:boolean=false):string;
 function RGDBGetClassName(const aid:TRGID):string;
 function RGDBGetClassMods(const aid:TRGID):string;
 function RGDBGetClassIcon(const aid:TRGID):string;
@@ -160,10 +161,25 @@ begin
   result:=RGDBGetTextValue(aid,dbClassTable,'icon');
 end;
 
+function RGDBGetClassFile(const aid:TRGID; abase:boolean=false):string;
+var
+  ls:string;
+begin
+  if not abase then
+    result:=RGDBGetTextValue(aid,dbClassTable,'file')
+  else
+  begin
+    Str(aid,ls);
+    result:=ReturnText(db,'SELECT f.file FROM dicfiles f'+
+      ' INNER JOIN classes c ON f.id=c.base WHERE c.id='+ls);
+  end;
+end;
+
 //----- Info -----
 
 function RGDBGetClassInfo(const aid:TRGID; out aicon:string; out astr, adex, aint, avit:integer):string;
 var
+  lid:TRGID;
   lSQL:string;
   vm:pointer;
   i:integer;
@@ -206,6 +222,11 @@ begin
         avit  :=sqlite3_column_int (vm,5);
       end;
       sqlite3_finalize(vm);
+    end;
+    if result='' then
+    begin
+      result:=RGDBGetTextValue(RGDBGetBase(aid,dbClassTable),dbClassTable,'title');
+      if result='BasePlayer' then result:='';
     end;
   end;
 end;

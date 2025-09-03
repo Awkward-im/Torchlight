@@ -5,7 +5,9 @@
 function splitCountW(      astr:PWideChar; asep:WideChar):integer;
 function splitCountA(      astr:PAnsiChar; asep:AnsiChar):integer;
 function splitInt   (      astr:PWideChar; asep:WideChar):TIntegerDynArray;
+function splitInt   (      astr:PAnsiChar; asep:char    ):TIntegerDynArray;
 function splitInt   (const astr:string   ; asep:char    ):TIntegerDynArray;
+function splitInt64 (      astr:PAnsiChar; asep:char    ):TInt64DynArray;
 function splitInt64 (const astr:string   ; asep:char    ):TInt64DynArray;
 function splitFloat (const astr:string   ; asep:char    ):TSingleDynArray;
 
@@ -88,6 +90,11 @@ begin
 end;
 
 function splitInt(const astr:string; asep:char):TIntegerDynArray;
+begin
+  result:=SplitInt(PAnsiChar(astr),asep);
+end;
+
+function splitInt(astr:PAnsiChar; asep:char):TIntegerDynArray;
 var
   p:PChar;
   i,lcnt:integer;
@@ -97,13 +104,13 @@ begin
 
   // get array length
 
-  lcnt:=splitCountA(pointer(astr),asep);
+  lcnt:=splitCountA(astr,asep);
   if lcnt=0 then exit;
   SetLength(result,lcnt);
 
   // fill array
 
-  p:=pointer(astr);
+  p:=astr;
   if p^=asep then inc(p);
 
   isminus:=false;
@@ -128,24 +135,27 @@ begin
 end;
 
 function splitInt64(const astr:string; asep:char):TInt64DynArray;
+begin
+  result:=splitInt64(PAnsiChar(astr),asep);
+end;
+
+function splitInt64(astr:PAnsiChar; asep:char):TInt64DynArray;
 var
   p:PChar;
   i,lcnt:integer;
   isminus:boolean;
 begin
   result:=nil;
-  if astr='' then
-    exit;
 
   // get array length
 
-  lcnt:=splitCountA(pointer(astr),asep);
+  lcnt:=splitCountA(astr,asep);
   if lcnt=0 then exit;
   SetLength(result,lcnt);
 
   // fill array
 
-  p:=pointer(astr);
+  p:=astr;
   if p^=asep then inc(p);
 
   isminus:=false;

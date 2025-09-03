@@ -1,0 +1,170 @@
+object fmClassData: TfmClassData
+  Left = 315
+  Height = 518
+  Top = 250
+  Width = 720
+  ClientHeight = 518
+  ClientWidth = 720
+  LCLVersion = '4.99.0.0'
+  OnClose = FormClose
+  OnCreate = FormCreate
+  object lfeMain: TListFilterEdit
+    Left = 12
+    Height = 23
+    Top = 99
+    Width = 192
+    OnAfterFilter = lfeMainAfterFilter
+    ButtonWidth = 23
+    Anchors = [akTop, akLeft, akRight]
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 0
+    FilteredListbox = lbMain
+  end
+  object lbMain: TListBox
+    Left = 12
+    Height = 362
+    Top = 128
+    Width = 192
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ItemHeight = 0
+    TabOrder = 1
+    OnSelectionChange = lbMainSelectionChange
+  end
+  object lbAlt: TListBox
+    Left = 212
+    Height = 263
+    Top = 128
+    Width = 216
+    Anchors = [akTop, akRight, akBottom]
+    ItemHeight = 0
+    TabOrder = 2
+    OnSelectionChange = lbAltSelectionChange
+  end
+  object memSecond: TMemo
+    Left = 212
+    Height = 96
+    Top = 394
+    Width = 494
+    Anchors = [akRight, akBottom]
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 3
+  end
+  object memDescr: TMemo
+    Left = 436
+    Height = 90
+    Top = 128
+    Width = 270
+    Anchors = [akTop, akRight]
+    ScrollBars = ssAutoVertical
+    TabOrder = 4
+  end
+  object gbGender: TGroupBox
+    Left = 212
+    Height = 83
+    Top = 2
+    Width = 185
+    Anchors = [akTop, akRight]
+    Caption = 'Gender'
+    ClientHeight = 63
+    ClientWidth = 181
+    TabOrder = 5
+    object rbNone: TRadioButton
+      Left = 8
+      Height = 19
+      Top = 0
+      Width = 69
+      Caption = 'Unknown'
+      TabOrder = 0
+      OnClick = GenderClick
+    end
+    object rbMale: TRadioButton
+      Left = 8
+      Height = 19
+      Top = 21
+      Width = 44
+      Caption = 'Male'
+      TabOrder = 1
+      OnClick = GenderClick
+    end
+    object rbFemale: TRadioButton
+      Left = 8
+      Height = 19
+      Top = 42
+      Width = 56
+      Caption = 'Female'
+      TabOrder = 2
+      OnClick = GenderClick
+    end
+  end
+  object imgIcon: TImage
+    Left = 436
+    Height = 128
+    Top = 229
+    Width = 128
+  end
+  object bbGetList: TBitBtn
+    Left = 12
+    Height = 26
+    Top = 68
+    Width = 82
+    AutoSize = True
+    Caption = 'Get list'
+    Default = True
+    Kind = bkOK
+    TabOrder = 6
+    OnClick = bbGetListClick
+  end
+  object lblDescr: TLabel
+    Left = 444
+    Height = 15
+    Top = 107
+    Width = 89
+    Caption = 'Class description'
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 495
+    Width = 720
+    Panels = <>
+  end
+  object lblAlt: TLabel
+    Left = 220
+    Height = 15
+    Top = 107
+    Width = 41
+    Caption = 'Alt type'
+  end
+  object gbMode: TGroupBox
+    Left = 12
+    Height = 64
+    Top = 2
+    Width = 192
+    Caption = 'Mode'
+    ClientHeight = 44
+    ClientWidth = 188
+    TabOrder = 8
+    object rbByClass: TRadioButton
+      Left = 12
+      Height = 19
+      Top = 0
+      Width = 89
+      Caption = 'List of classes'
+      Checked = True
+      TabOrder = 0
+      TabStop = True
+      OnClick = ListTypeClick
+    end
+    object rbByMod: TRadioButton
+      Left = 12
+      Height = 19
+      Top = 21
+      Width = 83
+      Caption = 'List of mods'
+      TabOrder = 1
+      OnClick = ListTypeClick
+    end
+  end
+end

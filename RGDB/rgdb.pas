@@ -10,6 +10,8 @@ uses
 
 {$DEFINE Interface}
 
+{$Include rgdb_fixes.inc}
+
 {$Include rgdb_skills.inc}
 
 {$Include rgdb_movies.inc}
@@ -37,6 +39,7 @@ uses
 function RGDBGetTextValue(const aid:TRGID; const atable, afield:string):string;
 function RGDBGetIntValue (const aid:TRGID; const atable, afield:string):integer;
 
+function RGDBGetBase(const aid:TRGID; const atable:string):TRGID;
 procedure RGDBSetFilter(amods:TTL2ModList);
 procedure RGDBSetFilter(amods:TL2IdList);
 procedure RGDBResetFilter;
@@ -71,6 +74,26 @@ var
 
 
 //----- Core functions -----
+
+function RGDBGetBase(const aid:TRGID; const atable:string):TRGID;
+var
+  vm:pointer;
+  ls:string;
+begin
+  result:=-1;
+
+  Str(aid,ls);
+  ls:='SELECT t.id FROM '+atable+' s'+
+           ' INNER JOIN '+atable+' t ON t.file=f.file'+
+           ' INNER JOIN   dicfiles f ON f.id  =s.base'+
+           ' WHERE s.id='+ls;
+  if sqlite3_prepare_v2(db, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+      result:=sqlite3_column_int64(vm,0);
+    sqlite3_finalize(vm);
+  end;
+end;
 
 function GetById(const id:TRGID; const atable:string; const awhere:string;
                  out amod:string; out aname:string):string;
@@ -145,6 +168,10 @@ begin
   Str(aid,ls);
   result:=GetIntValue(db,atable,afield,'id='+ls);
 end;
+
+//---- Database fixes ----
+
+{$Include rgdb_fixes.inc}
 
 //----- Movie Info -----
 
