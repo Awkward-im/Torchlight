@@ -18,12 +18,13 @@ type
     bbGetList: TBitBtn;
     gbGender: TGroupBox;
     gbMode: TGroupBox;
-    imgIcon: TImage;
+    lblBase: TLabel;
     lblAlt: TLabel;
     lblDescr: TLabel;
     lbMain: TListBox;
     lbAlt: TListBox;
     lfeMain: TListFilterEdit;
+    lbBase: TListBox;
     memSecond: TMemo;
     memDescr: TMemo;
     rbByClass: TRadioButton;
@@ -45,6 +46,7 @@ type
     FListMain:TDict64DynArray;
     FListAlt:TDict64DynArray;
 
+    procedure FillBaseInfo(aid:int64);
     procedure FillAltClassList(amodid: int64);
     procedure FillAltModList(aclassid: int64);
     procedure FillClassInfo(aid: int64);
@@ -71,6 +73,12 @@ uses
 
 { TfmClassData }
 
+{%REGION GUI}
+procedure TfmClassData.lfeMainAfterFilter(Sender: TObject);
+begin
+  if lbMain.Items.Count>0 then lbMain.ItemIndex:=0;
+end;
+
 procedure TfmClassData.lbMainSelectionChange(Sender: TObject; User: boolean);
 var
   lid:int64;
@@ -81,6 +89,8 @@ begin
   FillAltList(FListMain[lid].id);
 
   if rbByClass.Checked then FillClassInfo(FListMain[lid].id);
+
+  if rbByClass.Checked and rbNone.Checked then FillBaseInfo(FListMain[lid].id);
 end;
 
 procedure TfmClassData.lbAltSelectionChange(Sender: TObject; User: boolean);
@@ -89,17 +99,14 @@ var
 begin
   lid:=IntPtr(lbAlt.Items.Objects[lbAlt.ItemIndex]);
   if rbByMod.Checked then FillClassInfo(FListAlt[lid].id);
+
+  if rbByMod.Checked and rbNone.Checked then FillBaseInfo(FListAlt[lid].id);
 end;
 
 procedure TfmClassData.GenderClick(Sender: TObject);
 begin
   if rbByMod.Checked then lbMainSelectionChange(Sender, true)
   else FillMainList();
-end;
-
-procedure TfmClassData.lfeMainAfterFilter(Sender: TObject);
-begin
-  if lbMain.Items.Count>0 then lbMain.ItemIndex:=0;
 end;
 
 procedure TfmClassData.ListTypeClick(Sender: TObject);
@@ -110,6 +117,44 @@ begin
     lblAlt.Caption:='Mods with class'
   else
     lblAlt.Caption:='Classes in mod';
+end;
+
+procedure TfmClassData.bbGetListClick(Sender: TObject);
+begin
+  FillMainList();
+end;
+{%ENDREGION GUI}
+
+{%REGION Lists}
+procedure TfmClassData.FillBaseInfo(aid:int64);
+var
+  vm:pointer;
+  pc:PAnsiChar;
+  ls:string;
+begin
+  lbBase.Items.Clear;
+
+  ls:=RGDBGetClassFile(aid);
+  ls:='SELECT title, gender FROM classes c'+
+      ' LEFT JOIN dicfiles f ON c.base=f.id'+
+      ' WHERE f.file='''+ls+'''';
+
+  if sqlite3_prepare_v2(Fdb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    while sqlite3_step(vm)=SQLITE_ROW do
+    begin
+      pc:=sqlite3_column_text(vm,1);
+      if pc^='' then ls:=''
+      else ls:=' ('+pc+')';
+      lbBase.Items.Add(sqlite3_column_text(vm,0)+ls);
+    end;
+    sqlite3_finalize(vm);
+  end;
+  if lbBase.Items.Count>0 then
+  begin
+    lblBase.Visible:=true;
+    lbBase .Visible:=true;
+  end;
 end;
 
 procedure TfmClassData.FillClassInfo(aid:int64);
@@ -133,6 +178,9 @@ procedure TfmClassData.FillAltList(aid:int64);
 var
   i:integer;
 begin
+  lblBase.Visible:=false;
+  lbBase .Visible:=false;
+
   lbAlt.Items.Clear;
 
   SetLength(FListAlt,0);
@@ -291,6 +339,9 @@ procedure TfmClassData.FillMainList;
 var
   i:integer;
 begin
+  lblBase.Visible:=false;
+  lbBase .Visible:=false;
+
   lfeMain.FilteredListBox:=nil;
   lfeMain.Clear;
 
@@ -320,15 +371,11 @@ begin
   if lbMain.Items.Count>0 then
     lbMain.ItemIndex:=0;
 end;
+{%ENDREGION Lists}
 
 procedure TfmClassData.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   FreeBase(Fdb);
-end;
-
-procedure TfmClassData.bbGetListClick(Sender: TObject);
-begin
-  FillMainList();
 end;
 
 procedure TfmClassData.FormCreate(Sender: TObject);
