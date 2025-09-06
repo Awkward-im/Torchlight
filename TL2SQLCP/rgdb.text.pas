@@ -22,6 +22,7 @@ const
 var
   CurMod :Int64;
   CurLang:AnsiString;
+  TransOp:TRGDoubleAction;
 var
   SQLog:Logging.TLog;
 
@@ -859,24 +860,29 @@ begin
   Str(aid,lsrc);
   ltable:=CheckName(atable);
 
-  if adst='' then
-  begin
-    lSQL:='DELETE FROM '+ltable+' WHERE srcid='+lsrc;
-    ExecuteDirect(tldb,lSQL);
-    SQLog.Add(lSQL);
-    exit;
-  end;
-
   lstat:=ReturnInt(tldb,'SELECT part FROM '+ltable+' WHERE srcid='+lsrc);
-  if lstat<0 then
+  if lstat>=0 then
   begin
-    lSQL:='INSERT INTO '+ltable+' (srcid, dst, part, changed) VALUES ('+
-           lsrc+', ?1, '+BoolNumber[apart]+', unixepoch());';
-  end
-  else
+    if TransOp=da_skip then exit;
+    if (lstat=0) and (TransOp=da_compare) then exit;
+
+    if adst='' then
+    begin
+      lSQL:='DELETE FROM '+ltable+' WHERE srcid='+lsrc;
+      ExecuteDirect(tldb,lSQL);
+      SQLog.Add(lSQL);
+      exit;
+    end;
+
     lSQL:='UPDATE '+ltable+
           ' SET dst=?1, part='+BoolNumber[apart]+', changed=unixepoch()'+
           ' WHERE srcid='+lsrc;
+  end
+  else
+  begin
+    lSQL:='INSERT INTO '+ltable+' (srcid, dst, part, changed) VALUES ('+
+           lsrc+', ?1, '+BoolNumber[apart]+', unixepoch());';
+  end;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL), -1, @vm, nil)=SQLITE_OK then
   begin

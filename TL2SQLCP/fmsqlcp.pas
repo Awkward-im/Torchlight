@@ -89,6 +89,11 @@ resourcestring
   rsBuildDone       = 'Translation file generated';
   rsBuildFailed     = 'Translation file is NOT generated';
 //  rsNothingToSave   = 'Nothing to save';
+  rsTranslation     = 'Translation action';
+  rsTransOp         = 'When translation exists';
+  rsOverwrite       = 'Overwrite';
+  rsPartial         = 'Overwrite partial';
+  rsSkip            = 'Skip';
 
 
 { TFormSQLCP }
@@ -97,6 +102,7 @@ procedure TFormSQLCP.bbAddTransClick(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
 //  data:TTL2Translation;
+  ls:AnsiString;
   i:integer;
 begin
   OpenDialog:=TOpenDialog.Create(nil);
@@ -108,16 +114,30 @@ begin
 
     if OpenDialog.Execute then
     begin
-      if PrepareLoadSQL(InputBox(rsChooseLang,rsLanguage,'')) then
+      if gdLanguages.RowCount<2 then
+        ls:=InputBox(rsChooseLang,rsLanguage,'')
+      else
+        ls:=gdLanguages.Cells[1,gdLanguages.Row];
+
+      if ls='' then exit;
+      if PrepareLoadSQL(ls) then
       begin
-{
+
         case QuestionDlg(rsTranslation,rsTransOp,mtConfirmation,
-          [mrYesToAll,rsOverwriteAll,'IsDefault',
-           mrYes     ,rsOverwrite,
-           mrNo      ,rsFixAll,
+          [mrYesToAll,rsOverwrite,'IsDefault',
+           mrYes     ,rsPartial,
+           mrNo      ,rsSkip,
            mrCancel],0) of
-}
+
+           mrYesToAll: TransOp:=da_overwrite;
+           mrYes     : TransOp:=da_compare;
+           mrNo      : TransOp:=da_skip;
+           mrCancel  : exit;
+        end;
+
         i:=tlscan.LoadAsText(OpenDialog.FileName);
+
+        TransOp:=da_overwrite;
         RGLog.Add('Loaded '+IntToStr(i)+' lines');
         ShowMessage('Done!');
         FillLangList();
