@@ -164,7 +164,7 @@ begin
   if doBreak then
   begin
     if MessageDlg(rsStopScan,mtWarning,mbYesNo,0,mbNo)=mrYes then
-      exit(-2)
+      exit(2)
     else
       doBreak:=false;
   end;
@@ -204,13 +204,20 @@ begin
         for i:=0 to OpenDialog.Files.Count-1 do
         begin
           RGLog.Add('Scanning '+OpenDialog.Files[i]);
-          Self.Caption:='Scanning '+OpenDialog.Files[i];
+          Self.Caption:='Scanning ('+
+             IntToStr(i+1)+'/'+IntToStr(OpenDialog.Files.Count)+') '+
+             OpenDialog.Files[i];
           lres:=tlscan.Scan(OpenDialog.Files[i]);
+          if lres<0 then
+          begin
+            RGLog.Add('Scan break');
+            break;
+          end;
           RGLog.Add('Checked '+IntToStr(lres)+' files');
         end;
         Self.Caption:='';
         RGLog.Add('Remake Filter');
-        RemakeFilter();
+//        RemakeFilter();
         ShowMessage('Done!');
         FillModList();
         UpdateStatus();
@@ -242,33 +249,6 @@ begin
 end;
 
 procedure TFormSQLCP.bbSQLogClick(Sender: TObject);
-{
-var
-  dlg:TSaveDialog;
-begin
-  if SQLog.Size=0 then
-  begin
-    ShowMessage(rsNothingToSave);
-    exit;
-  end;
-
-  dlg:=TSaveDialog.Create(nil);
-  try
-    dlg.FileName  :=Self.Name+'.sql';
-    dlg.DefaultExt:='.sql';
-    dlg.Filter    :='';
-    dlg.Title     :='';
-    dlg.Options   :=dlg.Options+[ofOverwritePrompt];
-
-    if (dlg.Execute) then
-    begin
-      SQLog.SaveToFile(dlg.Filename);
-//      SQLog.Clear;
-    end;
-  finally
-    dlg.Free;
-  end;
-}
 begin
   if FSQLogForm=nil then
   begin

@@ -180,6 +180,7 @@ begin
         isTagsDat:=true;
       if (CompareWide(lname,'SKILL')=0) then
         isSkills:=true;
+
     end;
 {!moved to GetStr
     // check unknown root node with filename hash
@@ -483,6 +484,8 @@ begin
   isImageset:=false;
   isSkills  :=false;
   FDictIndex:=0;
+  cntImages :=100;
+  cntLevels :=100;
 
   llen:=0;
   if (fname<>nil) and (fname^<>#0) then
@@ -501,7 +504,9 @@ begin
         inc(llen);
       end;
       FFileName[llen]:=#0;
-      if CompareWide(FFileName,'.IMAGESET')=0 then IsImageset:=true;
+      if CompareWide(FFileName,'.IMAGESET')=0 then
+        IsImageset:=true;
+
       // cut the name
       spos:=ppos;
       while (spos>0) and not (ord(fname[spos]) in [ord('\'),ord('/')]) do dec(spos);

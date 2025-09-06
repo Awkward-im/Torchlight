@@ -106,15 +106,15 @@ object MainTL2TransForm: TMainTL2TransForm
       Action = actShowDoubles
     end
     object tbSeparator4: TToolButton
-      Left = 301
+      Left = 324
       Height = 22
       Top = 2
       Style = tbsSeparator
     end
     object ToolButton3: TToolButton
-      Left = 309
+      Left = 301
       Top = 2
-      Caption = 'ToolButton3'
+      Action = actShowAlts
     end
     object ToolButton4: TToolButton
       Left = 332
@@ -406,16 +406,6 @@ object MainTL2TransForm: TMainTL2TransForm
       ImageIndex = 7
       OnExecute = actShowDoublesExecute
     end
-    object actFilter: TAction
-      Category = 'View'
-      AutoCheck = True
-      Caption = 'Filter'
-      GroupIndex = 1
-      Hint = 'Filter'
-      ImageIndex = 10
-      ShortCut = 32838
-      OnExecute = edProjectFilterChange
-    end
     object actReplace: TAction
       Category = 'Edit'
       Caption = 'Replace'
@@ -455,6 +445,22 @@ object MainTL2TransForm: TMainTL2TransForm
       Hint = 'Show/hide settings'
       ImageIndex = 27
       OnExecute = actSettingsExecute
+    end
+    object actShowAlts: TAction
+      Category = 'View'
+      Caption = 'Show Alts'
+      ImageIndex = 24
+      OnExecute = actShowAltsExecute
+    end
+    object actFilter: TAction
+      Category = 'View'
+      AutoCheck = True
+      Caption = 'Filter'
+      GroupIndex = 1
+      Hint = 'Filter'
+      ImageIndex = 10
+      ShortCut = 32838
+      OnExecute = edProjectFilterChange
     end
   end
   object TL2MainMenu: TMainMenu

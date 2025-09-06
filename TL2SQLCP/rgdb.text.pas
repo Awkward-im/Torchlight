@@ -3,7 +3,8 @@
 {TODO: GetSimilar as mod depended}
 {TODO: variant CopyToBase just for translation (not src or refs)}
 
-{$DEFINE UseUniqueText}
+{$DEFINE UseUniqueText} // fast fill, increase size
+{.$DEFINE USeRefLine}    // Unused. keep line number in refs (check for double too)
 unit rgdb.text;
 
 interface
@@ -31,7 +32,7 @@ type
     dst  :string;   // current trans text
     id   :integer;  // src id
     tmpl :integer;  // filter
-    flags:cardinal; // ref flags (combo from all)
+    flags:cardinal; // refs flags (combo from all)
     part :boolean;  // current trans state
   end;
   TTLCache = array of TTLCacheElement;
@@ -76,8 +77,12 @@ const
 function CheckForDirectory(const afilter:string):integer;                
 function FillSimilars   (const adst:AnsiString; fltid:integer; apart:boolean):integer;
 function GetSimilarCount(aid:integer):integer;
+// refs ids of similar text
 function GetSimilars    (aid:integer; var arr:TIntegerDynArray):integer;
+// refs ids with same text
 function GetDoubles     (aid:integer; var arr:TIntegerDynArray):integer;
+// refs ids with same dir/file/tag
+function GetAlts        (aid:integer; var arr:TIntegerDynArray):integer;
 function GetUnrefLineCount():integer;
 
 // aid is source index
@@ -96,8 +101,10 @@ function SetTranslation (aid:integer; const atable:AnsiString;
 function GetLineFlags   (aid:integer; const amodid:AnsiString):cardinal;
 function GetLineRef     (aid:integer):integer;
 function GetLineRefCount(aid:integer):integer;
-// get reference info. aid is ref index, result is source index
-function GetRef(arefid:integer; var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
+// get reference info. aid is refs index, result is source index
+function GetRef   (arefid:integer; var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
+function GetRefMod(arefid:integer):int64;
+function GetRefSrc(arefid:integer):integer;
 
 type
   TModStatistic = record
@@ -124,6 +131,7 @@ function GetModDirList(amodid:Int64; var alist:TStringDynArray):integer;
 function GetLineCount (amodid:Int64; withdeleted:boolean=false):integer;
 function AddMod       (amodid:Int64; const atitle:AnsiString  ):integer;
 function AddMod       (amodid:Int64;       atitle:PUnicodeChar):integer;
+function GetModName   (amodid:int64):AnsiString;
 function GetModByName(const atitle:AnsiString):Int64;
 
 
@@ -165,6 +173,43 @@ begin
     result:=atable
   else
     result:='trans_'+atable;
+end;
+
+function AddToList(const atable,avalue:AnsiString):integer;
+var
+  vm:pointer;
+  pc:PAnsiChar;
+  lSQL:AnsiString;
+begin
+  // not sure about root dir
+  if avalue='' then exit(0);
+{$IFNDEF UseUniqueText}
+  result:=ReturnInt(tldb,'SELECT id FROM '+atable+' WHERE (value=?1)',PAnsiChar(avalue));
+  if result<0 then
+{$ENDIF}
+  begin
+    result:=-1;
+    lSQL:='INSERT INTO '+atable+' (value) VALUES (?1) RETURNING id;';
+    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL), -1, @vm, nil)=SQLITE_OK then
+    begin
+      if sqlite3_bind_text(vm,1,PAnsiChar(avalue),-1,SQLITE_STATIC)=SQLITE_OK then
+      begin
+        if sqlite3_step(vm)=SQLITE_ROW then
+        begin
+          result:=sqlite3_column_int(vm,0);
+
+          pc:=sqlite3_expanded_sql(vm);
+          SQLog.Add(pc);
+          sqlite3_free(pc);
+        end;
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end;
+{$IFDEF UseUniqueText}
+  if result<0 then
+    result:=ReturnInt(tldb,'SELECT id FROM '+atable+' WHERE (value=?1)',PAnsiChar(avalue));
+{$ENDIF}
 end;
 
 {%REGION Mod}
@@ -211,6 +256,14 @@ end;
 function AddMod(amodid:Int64; atitle:PUnicodeChar):integer;
 begin
   result:=AddModInternal(amodid,PAnsiChar(WideToStr(atitle)));
+end;
+
+function GetModName(amodid:int64):AnsiString;
+var
+  ls:string;
+begin
+  Str(amodid,ls);
+  result:=ReturnText(tldb,'SELECT title FROM dicmods WHERE id='+ls);
 end;
 
 function GetModByName(const atitle:AnsiString):Int64;
@@ -346,9 +399,9 @@ end;
 function GetUnrefLineCount():integer;
 begin
   result:=ReturnInt(tldb,
-//    'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT DISTINCT srcid FROM ref))');
+//    'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT DISTINCT srcid FROM refs))');
     'SELECT count(strings.id) FROM strings'+
-          ' LEFT JOIN ref ON ref.srcid=strings.id WHERE ref.srcid IS NULL');
+          ' LEFT JOIN refs ON refs.srcid=strings.id WHERE refs.srcid IS NULL');
 
 end;
 
@@ -366,7 +419,7 @@ begin
   else
   begin
     Str(amodid,lsrc);
-    result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM ref WHERE modid='+lsrc);
+    result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc);
     if amodid=modVanilla then
       result:=result+GetUnrefLineCount();
   end;
@@ -387,7 +440,7 @@ begin
     lmod:='';
 
   ls:='SELECT count(srcid), count(DISTINCT srcid), count(DISTINCT file), '+
-      ' count(DISTINCT tag) FROM ref'+lmod;
+      ' count(DISTINCT tag) FROM refs'+lmod;
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
   begin
     if sqlite3_step(vm)=SQLITE_ROW then
@@ -414,7 +467,7 @@ begin
     begin
       ltab:=sqlite3_column_text(vm,0);
       ls:='SELECT count(srcid), sum(part) FROM '+ltab+
-        ' WHERE srcid IN (SELECT DISTINCT srcid FROM ref'+lmod+')';
+        ' WHERE srcid IN (SELECT DISTINCT srcid FROM refs'+lmod+')';
       if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vml, nil)=SQLITE_OK then
       begin
         if sqlite3_step(vml)=SQLITE_ROW then
@@ -439,24 +492,23 @@ function RemakeFilter():boolean;
 var
   vm: Pointer;
   lSQL,lsrc,lid,ls,lsold:AnsiString;
-  ldate:double;
-  i,flid,lsrcid:integer;
+//  i,flid:integer;
+  lsrcid:integer;
 begin
   result:=true;
-  ExecuteDirect(tldb,'DELETE FROM filter');
-{
+
   ExecuteDirect(tldb,'DROP TABLE filter');
   result:=ExecuteDirect(tldb,
       'CREATE TABLE filter ('+
       '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
       '  value  TEXT UNIQUE);');
-}
 
   lSQL:='SELECT id, src FROM strings';
   lsold:='';
+  lid  :='0';
   if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
   begin
-    i:=1;
+//    i:=1;
     while sqlite3_step(vm)=SQLITE_ROW do
     begin
       lsrcid:=sqlite3_column_int (vm,0);
@@ -466,7 +518,7 @@ begin
       if lsold<>ls then
       begin
         lsold:=ls;
-
+{
         // variant without autoincrement key
         flid:=ReturnInt(tldb,'INSERT INTO filter (id,value) VALUES ('+
           IntToStr(i)+',?1) RETURNING id;',PAnsiChar(ls));
@@ -475,9 +527,9 @@ begin
         else
           inc(i);
         Str(flid,lid);
-
+}
         // variant with autoincrement key
-//        Str(AddToList('filter',ls),lid);
+        Str(AddToList('filter',ls),lid);
       end;
 
       ExecuteDirect(tldb,'UPDATE strings SET filter='+lid+
@@ -486,15 +538,14 @@ begin
     sqlite3_finalize(vm);
   end;
 
-  ldate:=Now();
   lsold:=ReturnText(tldb,'SELECT value FROM settings WHERE setting=''filter''');
   ls   :=GetFilterWords();
   if ls<>lsold then
   begin
-    ExecuteDirect(tldb,'UPDATE settings SET value=?1 WHERE setting=''filter'''      ,[ls]);
-    ExecuteDirect(tldb,'UPDATE settings SET value=?1 WHERE setting=''filterchange''',[ldate]);
+    ExecuteDirect(tldb,'UPDATE settings SET value=?1 WHERE setting=''filter''',PAnsiChar(ls));
+    ExecuteDirect(tldb,'UPDATE settings SET value=unixepoch() WHERE setting=''filterchange''');
   end;
-  ExecuteDirect(tldb,'UPDATE settings SET value=?1 WHERE setting=''filtertime'''  ,[ldate]);
+  ExecuteDirect(tldb,'UPDATE settings SET value=unixepoch() WHERE setting=''filtertime''');
 end;
 
 function GetFilterId(aid:integer):integer;
@@ -629,12 +680,59 @@ begin
   else
     lmod:='';
 
-  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM ref WHERE srcid='+lid+lmod);
+  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM refs WHERE srcid='+lid+lmod);
   if lcnt>0 then
   begin
     SetLength(arr,lcnt);
-    lSQL:='SELECT id FROM ref WHERE srcid='+lid+lmod;
+    lSQL:='SELECT id FROM refs WHERE srcid='+lid+lmod;
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      while sqlite3_step(vm)=SQLITE_ROW do
+      begin
+        arr[result]:=sqlite3_column_int(vm,0);
+        inc(result);
+      end;
+      sqlite3_finalize(vm);
+    end;
+  end
+  else
+    SetLength(arr,0);
+end;
+
+function GetAlts(aid:integer; var arr:TIntegerDynArray):integer;
+var
+  vm:pointer;
+  ls:AnsiString;
+  lcnt:integer;
+  lid,ldir,lfile,ltag:integer;
+begin
+  result:=0;
+  Str(aid,ls);
+
+  ldir :=0;
+  lfile:=0;
+  ltag :=0;
+  ls:='SELECT id, dir, file, tag FROM refs WHERE srcid='+ls;
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    while sqlite3_step(vm)=SQLITE_ROW do
+    begin
+      lid  :=sqlite3_column_int(vm,0);
+      ldir :=sqlite3_column_int(vm,1);
+      lfile:=sqlite3_column_int(vm,2);
+      ltag :=sqlite3_column_int(vm,3);
+    end;
+    sqlite3_finalize(vm);
+  end;
+
+  ls:=' dir='+IntToStr(ldir)+' AND file='+IntToStr(lfile)+' AND tag='+IntToStr(ltag)+
+      ' AND id<>'+IntToStr(lid);
+  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM refs WHERE'+ls);
+  if lcnt>0 then
+  begin
+    SetLength(arr,lcnt);
+    ls:='SELECT id FROM refs WHERE'+ls;
+    if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
@@ -680,9 +778,13 @@ function AddOriginal(const asrc:AnsiString; withcheck:boolean=false):integer;
 var
   vm:pointer;
   pc:PAnsiChar;
-  lSQL:AnsiString;
+  ls:AnsiString;
 begin
   result:=-1;
+
+  ls:=FilteredString(asrc);
+  if ls='' then exit;
+  
 {$IFNDEF UseUniqueText}
   if withcheck then
     result:=FindOriginal(asrc);
@@ -691,8 +793,10 @@ begin
   if result<0 then
 {$ENDIF}
   begin
-    lSQL:='INSERT INTO strings (src) VALUES (?1) RETURNING id;';
-    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    Str(AddToList('filter',ls),ls);
+
+    ls:='INSERT INTO strings (src,filter) VALUES (?1,'+ls+') RETURNING id;';
+    if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_bind_text(vm,1,PAnsiChar(asrc),-1,SQLITE_STATIC)=SQLITE_OK then
       begin
@@ -766,12 +870,12 @@ begin
   lstat:=ReturnInt(tldb,'SELECT part FROM '+ltable+' WHERE srcid='+lsrc);
   if lstat<0 then
   begin
-    lSQL:='INSERT INTO '+ltable+' (srcid, dst, part) VALUES ('+
-           lsrc+', ?1, '+BoolNumber[apart]+');';
+    lSQL:='INSERT INTO '+ltable+' (srcid, dst, part, changed) VALUES ('+
+           lsrc+', ?1, '+BoolNumber[apart]+', unixepoch());';
   end
   else
     lSQL:='UPDATE '+ltable+
-          ' SET dst=?1, part='+BoolNumber[apart]+
+          ' SET dst=?1, part='+BoolNumber[apart]+', changed=unixepoch()'+
           ' WHERE srcid='+lsrc;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL), -1, @vm, nil)=SQLITE_OK then
@@ -803,7 +907,7 @@ end;
 }
 function AddText(const asrc,alang,adst:AnsiString; apart:boolean):integer;
 begin
-  result:=AddOriginal(asrc);
+  result:=AddOriginal(asrc,true);
 
   if alang='' then exit;
 
@@ -824,43 +928,6 @@ begin
     result:=false;
 end;
 {%ENDREGION Basic}
-
-function AddToList(const atable,avalue:AnsiString):integer;
-var
-  vm:pointer;
-  pc:PAnsiChar;
-  lSQL:AnsiString;
-begin
-  // not sure about root dir
-  if avalue='' then exit(0);
-{$IFNDEF UseUniqueText}
-  result:=ReturnInt(tldb,'SELECT id FROM '+atable+' WHERE (value=?1)',PAnsiChar(avalue));
-  if result<0 then
-{$ENDIF}
-  begin
-    result:=-1;
-    lSQL:='INSERT INTO '+atable+' (value) VALUES (?1) RETURNING id;';
-    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL), -1, @vm, nil)=SQLITE_OK then
-    begin
-      if sqlite3_bind_text(vm,1,PAnsiChar(avalue),-1,SQLITE_STATIC)=SQLITE_OK then
-      begin
-        if sqlite3_step(vm)=SQLITE_ROW then
-        begin
-          result:=sqlite3_column_int(vm,0);
-
-          pc:=sqlite3_expanded_sql(vm);
-          SQLog.Add(pc);
-          sqlite3_free(pc);
-        end;
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end;
-{$IFDEF UseUniqueText}
-  if result<0 then
-    result:=ReturnInt(tldb,'SELECT id FROM '+atable+' WHERE (value=?1)',PAnsiChar(avalue));
-{$ENDIF}
-end;
 
 function CheckForDirectory(const afilter:string):integer;
 var
@@ -892,8 +959,8 @@ begin
     else if afilter='MEDIA/SKILLS/' then lcond:='=''MEDIA/SKILLS/'''
     else                                 lcond:=' GLOB '''+afilter+'*''';
 
-    lSQL:='SELECT DISTINCT srcid FROM ref WHERE'+lSQL+
-          ' dir IN (SELECT id FROM dicdir WHERE value'+lcond+')';
+    lSQL:='SELECT DISTINCT srcid FROM refs WHERE'+lSQL+
+          ' dir IN (SELECT id FROM dicdirs WHERE value'+lcond+')';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -925,19 +992,19 @@ begin
   if amodid>=0 then
   begin
     Str(amodid,lmod);
-    lmod:=' WHERE ref.modid='+lmod;
+    lmod:=' WHERE refs.modid='+lmod;
   end
   else
     lmod:='';
 
-  lcnt:=ReturnInt(tldb,'SELECT count(DISTINCT dir) FROM ref'+lmod);
+  lcnt:=ReturnInt(tldb,'SELECT count(DISTINCT dir) FROM refs'+lmod);
   if lcnt>0 then
   begin
     SetLength(alist,lcnt);
 
-//    ls:='SELECT value FROM dicdir WHERE id IN (SELECT DISTINCT dir FROM ref WHERE modid='+ls+')';
-//    ls:='SELECT DISTINCT value FROM dicdir WHERE id IN (SELECT dir FROM ref WHERE modid='+lmod+')';
-    ls:='SELECT DISTINCT value FROM dicdir INNER JOIN ref ON ref.dir=dicdir.id'+lmod;
+//    ls:='SELECT value FROM dicdirs WHERE id IN (SELECT DISTINCT dir FROM refs WHERE modid='+ls+')';
+//    ls:='SELECT DISTINCT value FROM dicdirs WHERE id IN (SELECT dir FROM refs WHERE modid='+lmod+')';
+    ls:='SELECT DISTINCT value FROM dicdirs INNER JOIN refs ON refs.dir=dicdirs.id'+lmod;
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -965,7 +1032,7 @@ begin
   else
     lmod:='';
 
-  result:=ReturnInt(tldb,'SELECT id FROM ref WHERE srcid='+lid+lmod);
+  result:=ReturnInt(tldb,'SELECT id FROM refs WHERE srcid='+lid+lmod);
 end;
 
 function GetLineRefCount(aid:integer):integer;
@@ -983,7 +1050,27 @@ begin
   else
     lmod:='';
 
-  result:=ReturnInt(tldb,'SELECT count(1) FROM ref WHERE srcid='+lid+lmod);
+  result:=ReturnInt(tldb,'SELECT count(1) FROM refs WHERE srcid='+lid+lmod);
+end;
+
+function GetRefSrc(arefid:integer):integer;
+begin
+  result:=ReturnInt(tldb,'SELECT srcid FROM refs WHERE id='+IntToStr(arefid));
+end;
+
+function GetRefMod(arefid:integer):int64;
+var
+  vm:pointer;
+  ls:string;
+begin
+  Str(arefid,ls);
+  ls:='SELECT modid FROM refs WHERE id='+ls;
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+      result :=sqlite3_column_int64(vm,0);
+    sqlite3_finalize(vm);
+  end;
 end;
 
 function GetRef(arefid:integer;
@@ -997,10 +1084,10 @@ begin
   Str(arefid,lref);
 
   lSQL:='SELECT r.srcid, d.value, f.value, t.value, r.line, r.flags'+
-        ' FROM ref r'+
-        ' INNER JOIN dicdir  d ON d.id=r.dir'+
-        ' INNER JOIN dicfile f ON f.id=r.file'+
-        ' INNER JOIN dictag  t ON t.id=r.tag'+
+        ' FROM refs r'+
+        ' INNER JOIN dicdirs  d ON d.id=r.dir'+
+        ' INNER JOIN dicfiles f ON f.id=r.file'+
+        ' INNER JOIN dictags  t ON t.id=r.tag'+
         ' WHERE r.id='+lref;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
@@ -1030,15 +1117,16 @@ begin
   lsource:=UpCase(afile);
 
   Str(asrc,lsrc);
-  Str(AddToList('dicdir' ,ExtractPath(lsource)), ldir);
-  Str(AddToList('dicfile',ExtractName(lsource)), lfile);
-  Str(AddToList('dictag' ,atag                ), ltag);
+  Str(AddToList('dicdirs' ,ExtractPath(lsource)), ldir);
+  Str(AddToList('dicfiles',ExtractName(lsource)), lfile);
+  Str(AddToList('dictags' ,atag                ), ltag);
   Str(amod,lmod);
   Str(ABS(aline),lline);
 
   if ReturnInt(tldb,
-      'SELECT 1 FROM ref WHERE (srcid='+lsrc +') AND (modid='+lmod+
+      'SELECT 1 FROM refs WHERE (srcid='+lsrc +') AND (modid='+lmod+
       ') AND (dir='+ldir+') AND (file='+lfile+') AND (tag='+ltag+
+//      ')')<>1 then
       ') AND (line='+lline+')')<>1 then
   begin
     lflag:=0;
@@ -1049,7 +1137,7 @@ begin
     if Pos('MEDIA/UNITS/PROPS/'   ,lsource)=1 then lflag:=lflag or rfIsProp;
     if aline<0                                then lflag:=lflag or rfIsTranslate;
 
-    lSQL:='INSERT INTO ref (srcid, modid, dir, file, tag, line, flags) VALUES ('+
+    lSQL:='INSERT INTO refs (srcid, modid, dir, file, tag, line, flags) VALUES ('+
         lsrc+', '+lmod+', '+ldir+', '+lfile+', '+ltag+', '+lline+', '+IntToStr(lflag)+');';
     if ExecuteDirect(tldb,lSQL) then
       SQLog.Add(lSQL);
@@ -1087,7 +1175,7 @@ begin
       if withRef then
         for j:=0 to data.RefCount[i]-1 do
         begin
-          lref:=data.Ref[i,j];
+          lref:=data.refs[i,j];
           lline:=data.Refs.GetLine(lref);
           if (data.Refs.Flags[lref] and rfIsTranslate)<>0 then
             lline:=-lline;
@@ -1119,18 +1207,18 @@ begin
   begin
     oldid:=0;
     Str(amod,lsrc);
-    lSQL:='SELECT srcid, dir+file, tag, line, flags FROM ref WHERE modid='+lsrc+' ORDER BY srcid';
+    lSQL:='SELECT srcid, dir+file, tag, line, flags FROM refs WHERE modid='+lsrc+' ORDER BY srcid';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
-        // 1 - get ref info (with source id)
+        // 1 - get refs info (with source id)
         lsrcid :=sqlite3_column_int (vm,0);
         lrfile :=sqlite3_column_text(vm,1);
         lrtag  :=sqlite3_column_text(vm,2);
         lrline :=sqlite3_column_int (vm,3);
         lrflags:=sqlite3_column_int (vm,4);
-        // prepare ref
+        // prepare refs
         lref:=data.Refs.NewRef(lrfile,lrtag,lrline);
         data.Refs.Flags[lref]:=lrflags;
 
@@ -1143,7 +1231,7 @@ begin
           lid:=data.AddString(lsrc,ldst,'',lpart);
         end;
 
-        // 3 - add ref (as double if needs)
+        // 3 - add refs (as double if needs)
         data.Refs.AddRef(lid,lref);
       end;
       sqlite3_finalize(vm);
@@ -1166,7 +1254,7 @@ begin
       lid:=data.AddString(lsrc,ldst,'',lpart);
       // 3 - get refs for every line [if needs] (lazy to read all and search then)
       Str(lsrcid,lsrc);
-      lSQL:='SELECT dir+file, tag, line, flags FROM ref WHERE srcid='+lsrc;
+      lSQL:='SELECT dir+file, tag, line, flags FROM refs WHERE srcid='+lsrc;
       if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vmref, nil)=SQLITE_OK then
       begin
         while sqlite3_step(vmref)=SQLITE_ROW do
@@ -1175,7 +1263,7 @@ begin
           lrtag  :=sqlite3_column_text(vm,1);
           lrline :=sqlite3_column_int (vm,2);
           lrflags:=sqlite3_column_int (vm,3);
-          // prepare ref
+          // prepare refs
           lref:=data.Refs.NewRef(lrfile,lrtag,lrline);
           data.Refs.Flags[lref]:=lrflags;
 
@@ -1199,7 +1287,9 @@ end;
 
 function AddScanString(dummy:pointer; const astr, afile, atag:AnsiString; aline:integer):integer;
 begin
-  result:=AddOriginal(astr);
+  if Length(astr)=1 then exit(-1);
+
+  result:=AddOriginal(astr,true);
   if result<0 then
     result:=FindOriginal(astr);
   if result>0 then
@@ -1246,7 +1336,7 @@ begin
     lSQL:=' AND modid='+amodid
   else
     lSQL:='';
-  lSQL:='SELECT flags FROM ref WHERE srcid='+IntToStr(aid)+lSQL;
+  lSQL:='SELECT flags FROM refs WHERE srcid='+IntToStr(aid)+lSQL;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
   begin
@@ -1289,10 +1379,10 @@ begin
     begin
       Str(CurMod,lmod);
 //      lSQL:='SELECT id, src, filter FROM strings WHERE '+
-//            'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
+//            'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
       lSQL:='SELECT DISTINCT strings.id, strings.src, strings.filter FROM strings'+
-            ' INNER JOIN ref ON ref.srcid=strings.id'+
-            ' WHERE strings.deleted<>1 AND ref.modid='+lmod;
+            ' INNER JOIN refs ON refs.srcid=strings.id'+
+            ' WHERE strings.deleted<>1 AND refs.modid='+lmod;
     end;
 
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
@@ -1315,9 +1405,9 @@ begin
   if (CurMod=modVanilla) or (CurMod=modUnref) then
   begin
 //    lSQL:='SELECT id, src FROM strings WHERE '+
-//          'NOT (id IN (SELECT DISTINCT srcid FROM ref))';
+//          'NOT (id IN (SELECT DISTINCT srcid FROM refs))';
     lSQL:='SELECT strings.id, strings.src, strings.filter FROM strings'+
-          ' LEFT JOIN ref ON ref.srcid=strings.id WHERE ref.srcid IS NULL';
+          ' LEFT JOIN refs ON refs.srcid=strings.id WHERE refs.srcid IS NULL';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -1412,18 +1502,18 @@ begin
   else if amod=modVanilla then
   begin
 //      ls:='SELECT id, src FROM strings WHERE '+
-//          'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
+//          'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
     ls:='SELECT strings.src, t.dst FROM strings'+
-        ' LEFT JOIN ref ON ref.srcid=strings.id'+lt+
-        ' WHERE strings.deleted<>1 AND ref.modid=0 OR ref.srcid IS NULL';
+        ' LEFT JOIN refs ON refs.srcid=strings.id'+lt+
+        ' WHERE strings.deleted<>1 AND refs.modid=0 OR refs.srcid IS NULL';
   end
   else
   begin
 //      ls:='SELECT id, src, dst FROM strings WHERE '+
-//          'id IN (SELECT DISTINCT srcid FROM ref WHERE modid='+lmod+')';
+//          'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
     ls:='SELECT strings.src, t.dst FROM strings'+
-        ' INNER JOIN ref ON ref.srcid=strings.id'+lt+
-        ' WHERE strings.deleted<>1 AND ref.modid='+IntToStr(amod);
+        ' INNER JOIN refs ON refs.srcid=strings.id'+lt+
+        ' WHERE strings.deleted<>1 AND refs.modid='+IntToStr(amod);
   end;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
@@ -1468,10 +1558,11 @@ begin
 
   if not IsTableExists(tldb,'trans_'+ls) then
   begin
-    lSQL:='CREATE TABLE trans_'+ls+' ('+
-        '  srcid  INTEGER PRIMARY KEY,'+
-        '  dst    TEXT,'+
-        '  part   BOOLEAN);';
+    lSQL:='CREATE  TABLE trans_'+ls+' ('+
+        '  srcid   INTEGER PRIMARY KEY,'+
+        '  dst     TEXT,'+
+        '  changed INTEGER,'+
+        '  part    BOOLEAN);';
 
     result:=ExecuteDirect(tldb,lSQL);
     if result then
@@ -1499,7 +1590,7 @@ begin
   if result then
   begin
     ExecuteDirect(tldb,'insert into settings (setting,value) Values (''filter'',?1)',[GetFilterWords()]);
-    ExecuteDirect(tldb,'insert into settings (setting) Values (''filterchange'',?1)',[Now()]);
+    ExecuteDirect(tldb,'insert into settings (setting,value) Values (''filterchange'',unixepoch())');
     ExecuteDirect(tldb,'insert into settings (setting) Values (''filtertime'')');
   end;
 
@@ -1516,11 +1607,11 @@ begin
 
   result:=ExecuteDirect(tldb,
       'CREATE TABLE filter ('+
-      '  id     INTEGER PRIMARY KEY,'+ // AUTOINCREMENT,'+
+      '  id     INTEGER PRIMARY KEY, AUTOINCREMENT,'+
       '  value  TEXT UNIQUE);');
 
   result:=ExecuteDirect(tldb,
-      'CREATE TABLE dictag ('+
+      'CREATE TABLE dictags ('+
       '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
 {$IFNDEF UseUniqueText}
       '  value  TEXT);');
@@ -1529,7 +1620,7 @@ begin
 {$ENDIF}
 
   result:=ExecuteDirect(tldb,
-      'CREATE TABLE dicdir ('+
+      'CREATE TABLE dicdirs ('+
       '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
 {$IFNDEF UseUniqueText}
       '  value  TEXT);');
@@ -1538,7 +1629,7 @@ begin
 {$ENDIF}
 
   result:=ExecuteDirect(tldb,
-      'CREATE TABLE dicfile ('+
+      'CREATE TABLE dicfiles ('+
       '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
 {$IFNDEF UseUniqueText}
       '  value  TEXT);');
@@ -1553,7 +1644,10 @@ begin
       '  title  TEXT);');
 
   result:=ExecuteDirect(tldb,
-      'CREATE TABLE ref ('+
+    'INSERT INTO dicmods (id,title) VALUES (0, ''Torchlight II'');');
+
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE refs ('+
       '  id     INTEGER PRIMARY KEY AUTOINCREMENT,'+
       '  srcid  INTEGER,'+
       '  modid  INTEGER,'+
@@ -1563,7 +1657,7 @@ begin
       '  line   INTEGER,'+
       '  flags  INTEGER);');
   result:=ExecuteDirect(tldb,
-      'CREATE INDEX refsrc ON ref (srcid, modid)');
+      'CREATE INDEX refsrc ON refs (srcid, modid)');
 end;
 
 function TLOpenBase(inmemory:boolean=false):boolean;

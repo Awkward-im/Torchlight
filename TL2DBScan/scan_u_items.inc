@@ -97,8 +97,8 @@ begin
     begin
       result:=AsString(lnode);
       break;
-    end;
-    if CompareWide(pcw,'BASEFILE')=0 then
+    end
+    else if CompareWide(pcw,'BASEFILE')=0 then
     begin
       lbase:=AsString(lnode);
     end;
@@ -142,14 +142,15 @@ begin
     begin
       result:=AsString(lnode);
       break;
-    end;
-    if (result='') and (CompareWide(pcw,'GAMBLER_ICON')=0) then
-    begin
-      result:=AsString(lnode);
-    end;
-    if CompareWide(pcw,'BASEFILE')=0 then
+    end
+    else if CompareWide(pcw,'BASEFILE')=0 then
     begin
       lbase:=AsString(lnode);
+    end
+    else if (result='') and (CompareWide(pcw,'GAMBLER_ICON')=0) then
+    begin
+      result:=AsString(lnode);
+      break;
     end;
   end;
 

@@ -1,5 +1,6 @@
 {"version":1,"strings":[
 {"hash":370602,"name":"tedittextform.lbltag.caption","sourcebytes":[84,97,103,58],"value":"Tag:"},
+{"hash":106241444,"name":"tedittextform.sbalt.hint","sourcebytes":[83,104,111,119,32,65,108,116,101,114,110,97,116,105,118,101,32,84,101,120,116],"value":"Show Alternative Text"},
 {"hash":198967413,"name":"tedittextform.actprevline.hint","sourcebytes":[80,114,101,118,105,111,117,115,32,108,105,110,101],"value":"Previous line"},
 {"hash":258440325,"name":"tedittextform.actnextline.hint","sourcebytes":[78,101,120,116,32,108,105,110,101],"value":"Next line"},
 {"hash":251070724,"name":"tedittextform.actprevuntranslated.hint","sourcebytes":[80,114,101,118,105,111,117,115,32,117,110,116,114,97,110,115,108,97,116,101,100],"value":"Previous untranslated"},

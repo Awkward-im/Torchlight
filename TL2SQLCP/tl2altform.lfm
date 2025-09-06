@@ -1,0 +1,73 @@
+object AltForm: TAltForm
+  Left = 315
+  Height = 500
+  Top = 250
+  Width = 603
+  Caption = 'Alternatives'
+  ClientHeight = 500
+  ClientWidth = 603
+  KeyPreview = True
+  LCLVersion = '4.99.0.0'
+  OnKeyDown = FormKeyDown
+  object memSrc: TMemo
+    Left = 8
+    Height = 120
+    Top = 8
+    Width = 588
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+  end
+  object memAlt: TMemo
+    Left = 8
+    Height = 120
+    Top = 370
+    Width = 588
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 1
+  end
+  object lblFile: TLabel
+    Left = 8
+    Height = 23
+    Top = 137
+    Width = 588
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+  end
+  object lblTag: TLabel
+    Left = 8
+    Height = 23
+    Top = 174
+    Width = 264
+    AutoSize = False
+  end
+  object sgAlts: TStringGrid
+    Left = 8
+    Height = 154
+    Top = 208
+    Width = 588
+    Anchors = [akTop, akLeft, akRight]
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 2
+    Columns = <    
+      item
+        SizePriority = 0
+        Title.Caption = 'Mod'
+        Width = 160
+      end    
+      item
+        Title.Caption = 'Text'
+        Width = 424
+      end>
+    FixedCols = 0
+    FixedRows = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowSelect, goDblClickAutoSize, goSmoothScroll]
+    RowCount = 0
+    TabOrder = 2
+    OnSelectCell = sgAltsSelectCell
+    ColWidths = (
+      160
+      424
+    )
+  end
+end

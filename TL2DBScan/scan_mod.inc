@@ -1,4 +1,4 @@
-{%REGION Props}
+{%REGION Mods}
 {
   Check if mod attached for data id already
   return ModMask if no data id yet
@@ -25,7 +25,7 @@ begin
       // have attached mods (must be always if 'anid' is presents)
       if lmodid<>'' then
       begin
-        lmodfound:=(lmodid=' 0 ') or (Pos(result,lmodid)>0);
+        lmodfound:={(lmodid=' 0 ') or} (Pos(result,lmodid)>0);
         if PModScanner(ams)^.FDoUpdate then
         begin
           // ID found, mod found, update all - return existing mod line

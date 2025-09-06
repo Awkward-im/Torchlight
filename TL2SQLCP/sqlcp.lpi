@@ -213,6 +213,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TLScan"/>
       </Unit>
+      <Unit>
+        <Filename Value="tl2altform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AltForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2AltForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

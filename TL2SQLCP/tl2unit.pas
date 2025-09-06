@@ -19,6 +19,7 @@ type
     actFilter: TAction;
     actFindNext: TAction;
     actImportClipBrd: TAction;
+    actShowAlts: TAction;
     actSettings: TAction;
     actReplace: TAction;
     actShowDoubles: TAction;
@@ -95,6 +96,7 @@ type
     procedure actModInfoExecute(Sender: TObject);
     procedure actReplaceExecute(Sender: TObject);
     procedure actSettingsExecute(Sender: TObject);
+    procedure actShowAltsExecute(Sender: TObject);
     procedure actShowDoublesExecute(Sender: TObject);
     procedure actShowLogExecute(Sender: TObject);
     procedure actShowSimilarExecute(Sender: TObject);
@@ -165,6 +167,7 @@ uses
   TL2NotesForm,
   TL2DupeForm,
   TL2SimForm,
+  TL2AltForm,
   TL2About,
   rgdb.text,
   TL2Text;
@@ -548,7 +551,15 @@ begin
     ShowModal;
     Free;
   end;
+end;
 
+procedure TMainTL2TransForm.actShowAltsExecute(Sender: TObject);
+begin
+  with TAltForm.Create(Self,IntPtr(TL2Grid.Objects[0,TL2Grid.Row])) do
+  begin
+    ShowModal;
+    Free;
+  end;
 end;
 
 procedure TMainTL2TransForm.actModInfoExecute(Sender: TObject);

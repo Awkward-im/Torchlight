@@ -58,6 +58,18 @@ msgstr "Всего строк: %d | Строк без ссылок: %d"
 msgid "Do you want to break scan?"
 msgstr "Вы хотите прервать сканирование?"
 
+#: taltform.caption
+msgid "Alternatives"
+msgstr "Альтернативы"
+
+#: taltform.sgalts.columns[0].title.caption
+msgid "Mod"
+msgstr "Мод"
+
+#: taltform.sgalts.columns[1].title.caption
+msgid "Text"
+msgstr "Текст"
+
 #: tdupeform.caption
 msgid "Dupe List"
 msgstr "Список дубликатов"
@@ -110,6 +122,10 @@ msgstr "Перевод"
 #: tedittextform.lbltag.caption
 msgid "Tag:"
 msgstr "Тэг:"
+
+#: tedittextform.sbalt.hint
+msgid "Show Alternative Text"
+msgstr "Показать альтернативные тексты"
 
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
@@ -420,7 +436,6 @@ msgid "-- Root --"
 msgstr "-- Корень  --"
 
 #: tmaintl2transform.actchecktranslation.caption
-#, fuzzy
 msgctxt "tmaintl2transform.actchecktranslation.caption"
 msgid "Check Translation"
 msgstr "Проверка перевода"
@@ -431,14 +446,13 @@ msgstr "ЗАмечания по переводу"
 
 #: tmaintl2transform.actexportclipbrd.caption
 msgid "Export Clipboard"
-msgstr ""
+msgstr "Экспорт буфера обмена"
 
 #: tmaintl2transform.actexportclipbrd.hint
 msgid "Copy selected source text to clipboard"
 msgstr "Копировать выделенное в буфер"
 
 #: tmaintl2transform.actfilter.caption
-#, fuzzy
 msgctxt "tmaintl2transform.actfilter.caption"
 msgid "Filter"
 msgstr "Фильтр"
@@ -450,7 +464,7 @@ msgstr "Фильтр"
 
 #: tmaintl2transform.actfindnext.caption
 msgid "Find Next"
-msgstr ""
+msgstr "Найти далее"
 
 #: tmaintl2transform.actfindnext.hint
 msgid "Search next"
@@ -458,7 +472,7 @@ msgstr "Искать далее"
 
 #: tmaintl2transform.actimportclipbrd.caption
 msgid "Import Clipboard"
-msgstr ""
+msgstr "Импорт буфера обмена"
 
 #: tmaintl2transform.actimportclipbrd.hint
 msgid "Inset text with translation from clipboard"
@@ -488,6 +502,10 @@ msgstr "Настройки"
 #: tmaintl2transform.actsettings.hint
 msgid "Show/hide settings"
 msgstr "Показать/скрыть настройки"
+
+#: tmaintl2transform.actshowalts.caption
+msgid "Show Alts"
+msgstr "Показать альтернативы"
 
 #: tmaintl2transform.actshowdoubles.caption
 msgid "Show Doubles"
@@ -609,10 +627,6 @@ msgstr "Часть"
 msgid "Translation"
 msgstr "Перевод"
 
-#: tmaintl2transform.toolbutton3.caption
-msgid "ToolButton3"
-msgstr ""
-
 #: tmaintl2transform.toolbutton4.caption
 msgid "ToolButton4"
 msgstr ""
@@ -718,4 +732,3 @@ msgstr "Переводчики"
 #: unitlogform.rscantsave
 msgid "Can't save log file"
 msgstr "Не могу сохранить лог"
-

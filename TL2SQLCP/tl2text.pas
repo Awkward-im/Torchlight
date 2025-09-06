@@ -799,16 +799,25 @@ begin
         wasletter:=false;
       end;
 
+      #128..#255: begin
+        result[ldi]:=astr[i];
+        inc(ldi);
+        wasletter:=true;
+      end
+
     else // any other symbols
       wasletter:=false;
     end;
     inc(i);
   end;
-  SetLength(result,ldi-1);
 
   for i:=1 to ldi-1 do
   begin
-    if result[i] in ['A'..'Z','a'..'z'] then exit;
+    if result[i] in ['A'..'Z','a'..'z',#128..#255] then
+    begin
+      SetLength(result,ldi-1);
+      exit;
+    end;
   end;
   result:='';
 end;

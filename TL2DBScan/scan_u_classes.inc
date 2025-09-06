@@ -103,6 +103,51 @@ begin
 
 end;
 
+function GetBaseTitle(ams:pointer; const fname:string):string;
+var
+  p,lnode:pointer;
+  pcw:PWideChar;
+  lbase:string;
+  i:integer;
+begin
+  result:=GetTextValue(PModScanner(ams)^.db,'classes','title','file='+FixedText(fname));
+  if result<>'' then exit;
+
+  lbase :='';
+
+  RGLog.Reserve('Check for title '+fname);
+  LoadFile(ams,fname,p);
+  if (p=nil) and (PModScanner(ams)^.gamever=verTL1) then
+    LoadFile(ams,fname+'.ADM',p);
+
+  if p=nil then
+  begin
+    if RGDebugLevel=dlDetailed then
+      RGLog.Add('can''t load: '+fname);
+    exit;
+  end;
+
+  for i:=0 to GetChildCount(p)-1 do
+  begin
+    lnode:=GetChild(p,i);
+    pcw:=GetNodeName(lnode);
+    if CompareWide(pcw,'DISPLAYNAME')=0 then
+    begin
+      result:=AsString(lnode);
+      break;
+    end
+    else if CompareWide(pcw,'BASEFILE')=0 then
+    begin
+      lbase:=AsString(lnode);
+    end;
+  end;
+
+  if (result='') and (lbase<>'') then
+    result:=GetBaseTitle(ams,lbase);
+
+  DeleteNode(p);
+end;
+
 function AddClassNode(ams:pointer; anode:pointer; const fname:string):integer;
 var
   pp,lnode:pointer;
@@ -239,6 +284,9 @@ begin
 
   end;
 
+  if lclass.title='' then
+    lclass.title:=GetBaseTitle(ams,lclass.base);
+  
   // no gender info in TL1
   if (PModScanner(ams)^.gamever=verTL1) then
     lclass.gender:='U'

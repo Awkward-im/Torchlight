@@ -58,6 +58,18 @@ msgstr ""
 msgid "Do you want to break scan?"
 msgstr ""
 
+#: taltform.caption
+msgid "Alternatives"
+msgstr ""
+
+#: taltform.sgalts.columns[0].title.caption
+msgid "Mod"
+msgstr ""
+
+#: taltform.sgalts.columns[1].title.caption
+msgid "Text"
+msgstr ""
+
 #: tdupeform.caption
 msgid "Dupe List"
 msgstr ""
@@ -109,6 +121,10 @@ msgstr ""
 
 #: tedittextform.lbltag.caption
 msgid "Tag:"
+msgstr ""
+
+#: tedittextform.sbalt.hint
+msgid "Show Alternative Text"
 msgstr ""
 
 #: tfmlogform.bbclear.caption
@@ -494,6 +510,10 @@ msgstr "Configuracion"
 msgid "Show/hide settings"
 msgstr ""
 
+#: tmaintl2transform.actshowalts.caption
+msgid "Show Alts"
+msgstr ""
+
 #: tmaintl2transform.actshowdoubles.caption
 msgid "Show Doubles"
 msgstr ""
@@ -612,10 +632,6 @@ msgstr ""
 
 #: tmaintl2transform.tl2grid.columns[2].title.caption
 msgid "Translation"
-msgstr ""
-
-#: tmaintl2transform.toolbutton3.caption
-msgid "ToolButton3"
 msgstr ""
 
 #: tmaintl2transform.toolbutton4.caption

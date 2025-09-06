@@ -13,6 +13,7 @@ type
   { TEditTextForm }
 
   TEditTextForm = class(TForm)
+    actShowAlt: TAction;
     actShowDupe: TAction;
     ActionList: TActionList;
     actPrevLine        : TAction;
@@ -43,11 +44,13 @@ type
     sbShowSample      : TSpeedButton;
     sbTranslate       : TSpeedButton;
     sbShowDupe: TSpeedButton;
+    sbAlt: TSpeedButton;
     procedure actMarkAsPartialExecute(Sender: TObject);
     procedure actNextLineExecute(Sender: TObject);
     procedure actNextUntranslatedExecute(Sender: TObject);
     procedure actPrevLineExecute(Sender: TObject);
     procedure actPrevUntranslatedExecute(Sender: TObject);
+    procedure actShowAltExecute(Sender: TObject);
     procedure actShowDupeExecute(Sender: TObject);
     procedure actShowSampleExecute(Sender: TObject);
     procedure actTranslateExecute(Sender: TObject);
@@ -79,6 +82,7 @@ uses
   TL2SettingsForm,
   TL2DupeForm,
   TL2SimForm,
+  TL2AltForm,
   TL2Text,
   rgdb.text;
 
@@ -334,6 +338,15 @@ end;
 procedure TEditTextForm.actPrevUntranslatedExecute(Sender: TObject);
 begin
   SelectLine(actPrevUntranslated.Tag);
+end;
+
+procedure TEditTextForm.actShowAltExecute(Sender: TObject);
+begin
+  with TAltForm.Create(Self,FIdx) do
+  begin
+    ShowModal;
+    Free;
+  end;
 end;
 
 procedure TEditTextForm.actShowDupeExecute(Sender: TObject);

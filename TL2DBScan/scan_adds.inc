@@ -1,5 +1,5 @@
 {%REGION Adds}
-
+{TODO: add "dontcreate" flag to common data}
 function AddFileToBase(ams:pointer; const afile:AnsiString):integer;
 var
   lfile:AnsiString;
@@ -99,7 +99,8 @@ var
 begin
   pcw:=GetNodeName(anode);
   if      CompareWide(pcw,'NAME'             )=0 then aunit^.name    :=AsString(anode)
-  else if CompareWide(pcw,'DISPLAYNAME'      )=0 then aunit^.title   :=AsString(anode)
+  // for case when it comes 2+ times
+  else if CompareWide(pcw,'DISPLAYNAME'      )=0 then begin if aunit^.title='' then aunit^.title:=AsString(anode) end
   else if CompareWide(pcw,'BASEFILE'         )=0 then aunit^.base    :=AsString(anode)
   else if CompareWide(pcw,'UNITTYPE'         )=0 then aunit^.unittype:=AsString(anode)
   else if CompareWide(pcw,'MESHFILE'         )=0 then aunit^.meshfile:=AsString(anode)
