@@ -1,5 +1,4 @@
-{TODO: addtranslation: TRGDoubleAction (da_skip/da_skipall, da_compare, da_overwrite/da_overwriteall}
-{TODO: AddTranslation: overwrite all, overwrite partial by full, skip. Or use SetTRanslation?}
+{TODO: AddOriginal: check for case when string is presents but deleted. Must not be added back?}
 {TODO: GetSimilar as mod depended}
 {TODO: variant CopyToBase just for translation (not src or refs)}
 
@@ -171,9 +170,9 @@ begin
      (atable[4] in ['N','n']) and
      (atable[5] in ['S','s']) and
      (atable[6] = '_') ) then
-    result:=atable
+    result:='['+atable+']'
   else
-    result:='trans_'+atable;
+    result:='[trans_'+atable+']';
 end;
 
 function AddToList(const atable,avalue:AnsiString):integer;
@@ -388,7 +387,7 @@ begin
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
         ls:=sqlite3_column_text(vm,0);
-        asl[i].id   :=ReturnInt(tldb,'SELECT count(1) FROM '+ls);
+        asl[i].id   :=ReturnInt(tldb,'SELECT count(1) FROM ['+ls+']');
         asl[i].value:=Copy(ls,7);
         inc(i);
       end;
@@ -467,8 +466,8 @@ begin
     while sqlite3_step(vm)=SQLITE_ROW do
     begin
       ltab:=sqlite3_column_text(vm,0);
-      ls:='SELECT count(srcid), sum(part) FROM '+ltab+
-        ' WHERE srcid IN (SELECT DISTINCT srcid FROM refs'+lmod+')';
+      ls:='SELECT count(srcid), sum(part) FROM ['+ltab+
+        '] WHERE srcid IN (SELECT DISTINCT srcid FROM refs'+lmod+')';
       if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vml, nil)=SQLITE_OK then
       begin
         if sqlite3_step(vml)=SQLITE_ROW then
@@ -1562,9 +1561,9 @@ begin
   ls:=iso639.GetLang(lng);
   if ls='' then ls:=lng;
 
-  if not IsTableExists(tldb,'trans_'+ls) then
+  if not IsTableExists(tldb,'[trans_'+ls+']') then
   begin
-    lSQL:='CREATE  TABLE trans_'+ls+' ('+
+    lSQL:='CREATE  TABLE [trans_'+ls+'] ('+
         '  srcid   INTEGER PRIMARY KEY,'+
         '  dst     TEXT,'+
         '  changed INTEGER,'+

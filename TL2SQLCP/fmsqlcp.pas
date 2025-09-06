@@ -20,6 +20,7 @@ type
     bbSQLog: TBitBtn;
     bbNewTrans: TBitBtn;
     bbGenerate: TBitBtn;
+    bEdit: TBitBtn;
     edModStat: TEdit;
     gdLanguages: TStringGrid;
     lblCurLang: TLabel;

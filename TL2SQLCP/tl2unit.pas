@@ -1312,7 +1312,7 @@ begin
       end;
 
     end
-    else if (Pos('UNITS',ls)=7) then
+    else if (Pos('UNITS',ls)=7) and (Length(ls)>12) then
     begin
       // second letter of folder
       case ls[14] of

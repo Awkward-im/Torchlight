@@ -19,8 +19,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmSQLCP"/>
-        <TopLine Value="304"/>
-        <CursorPos X="38" Y="70"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="19"/>
+        <CursorPos Y="38"/>
+        <FoldState Value=" T46021 TLkH0C T8i02B]FMib0104]A3jF0-4 pifkR05715 PjQkS0 T6jG043 T0jU4h5 pjGjN8C412 PWlK2p"/>
         <UsageCount Value="197"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -168,9 +170,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="1619"/>
-        <CursorPos X="14" Y="170"/>
-        <FoldState Value=" T4603 TLu905 T7FM{p T8kG21 TMzW8]73m10L415 pkJm8032 pidj50E029]BgkB0v]KjTl[T411]edlY04413]B1lG0{i2[C5LoN0l T6m201F pUx40]mC PRwF0 T0m62344B]%dn54I]E2C]DRnR444]9Fa6c244[J4k14i6 pidi34PA]9YiKC]&apos;7]TXmK43[943e838412D PjUnZ2 TKy905K"/>
+        <TopLine Value="1277"/>
+        <CursorPos X="51" Y="1315"/>
+        <FoldState Value=" T4603 TLu905 T7FM{p T8kG21 TMzW8]73m10L415 pkJm8032 pidj50E029]BgkB0v]KjTl[T411]edlY044131213 pnMsd0l T6m201F pUx40]eC PRwF0 T0m62344B]@dn54I]E2C]DRnR444]9Fa6c244[J4k14i6 pidi34PA]9YiKC]&apos;61719412D Pm3u92 TKy905g"/>
         <UsageCount Value="153"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -271,10 +273,9 @@
       </Unit>
       <Unit>
         <Filename Value="rgdb.text.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="1630"/>
-        <CursorPos X="27" Y="1646"/>
+        <TopLine Value="461"/>
+        <CursorPos X="11" Y="470"/>
         <UsageCount Value="57"/>
         <Loaded Value="True"/>
       </Unit>
@@ -349,90 +350,6 @@
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="75" TopLine="63"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="77" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="78" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="80" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="82" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="84" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="89" Column="18" TopLine="67"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="82" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="84" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="85" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="86" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="87" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="71" TopLine="64"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="72" TopLine="64"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="73" TopLine="64"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="74" TopLine="64"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="75" TopLine="64"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="751" TopLine="735"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="752" TopLine="735"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="751" TopLine="735"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="753" TopLine="735"/>
-      </Position>
-      <Position>
         <Filename Value="rgdb.text.pas"/>
         <Caret Line="751" TopLine="735"/>
       </Position>
@@ -467,6 +384,89 @@
       <Position>
         <Filename Value="rgdb.text.pas"/>
         <Caret Line="1062" Column="53" TopLine="1039"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="361" TopLine="302"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="127" Column="11" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="374" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="376" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="375" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="377" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="379" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="381" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="380" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="384" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="386" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="387" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="389" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="390" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="374" TopLine="368"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="395" Column="55" TopLine="367"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="470" Column="11" TopLine="461"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="361" TopLine="302"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="368" TopLine="302"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="285" TopLine="285"/>
       </Position>
     </JumpHistory>
     <RunParams>

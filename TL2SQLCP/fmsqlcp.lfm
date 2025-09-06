@@ -199,14 +199,14 @@ object FormSQLCP: TFormSQLCP
   object bbSQLog: TBitBtn
     AnchorSideLeft.Control = bbScanMod
     AnchorSideLeft.Side = asrBottom
-    Left = 112
+    Left = 113
     Height = 26
     Hint = 'Show session SQL requiests of DB modify'
     Top = 298
     Width = 87
     Anchors = [akLeft, akBottom]
     AutoSize = True
-    BorderSpacing.Left = 5
+    BorderSpacing.Left = 6
     Caption = 'SQL log'
     Kind = bkOK
     TabOrder = 10
@@ -237,5 +237,20 @@ object FormSQLCP: TFormSQLCP
     Caption = 'Generate'
     TabOrder = 12
     OnClick = bbGenerateClick
+  end
+  object bEdit: TBitBtn
+    AnchorSideLeft.Control = bbSQLog
+    AnchorSideLeft.Side = asrBottom
+    Left = 206
+    Height = 26
+    Top = 298
+    Width = 66
+    AutoSize = True
+    BorderSpacing.Left = 6
+    Caption = 'Edit'
+    Kind = bkYesToAll
+    ModalResult = 10
+    TabOrder = 13
+    OnClick = DoStartEdit
   end
 end
