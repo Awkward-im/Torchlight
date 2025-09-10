@@ -186,9 +186,9 @@ begin
          (litem^.tmpl=ltmpl) then
       begin
         inc(result);
-        litem^.dst  :=ReplaceTranslation(ltrans,litem^.src);
+        litem^.dst  :=ReplaceTranslation(PAnsiChar(ltrans),PAnsiChar(litem^.src));
         litem^.part :=TL2Settings.cbAsPartial.Checked;
-        litem^.flags:=litem^.flags or rfIsModified;
+        litem^.flags:=litem^.flags or rfIsModified or rfIsAutofill;
       end;
     end;
   end;

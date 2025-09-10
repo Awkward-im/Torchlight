@@ -1,3 +1,4 @@
+{TODO: show just for current mod. modAll shows many}
 unit TL2DupeForm;
 
 {$mode objfpc}{$H+}

@@ -1,3 +1,5 @@
+{TODO: GetModStatistic: add NoRef translations of every lang for count}
+{TODO: SaveTranslation: set rfIsAutofill for second+ filter occurs}
 {TODO: AddOriginal: check for case when string is presents but deleted. Must not be added back?}
 {TODO: GetSimilar as mod depended}
 {TODO: variant CopyToBase just for translation (not src or refs)}
@@ -41,7 +43,7 @@ var
 
 function  LoadModData():integer;
 procedure LoadTranslation();
-procedure SaveTranslation(checkthesame:boolean=false);
+procedure SaveTranslation();
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
     aall:boolean=false; amod:Int64=modAll):boolean;
 
@@ -71,11 +73,16 @@ const
   rfIsManyRefs  = $0200; // runtime, mod-limited flag
   rfIsNoRef     = $0400; // runtime, no refs for line
   rfIsModified  = $0800; // runtime, dst or part changed
+  rfIsAutofill  = $1000; // runtime, autofilled or filter used by similar search
   rfIsReferred  = $8000;
+  rfRuntime     = rfIsFiltered or rfIsManyRefs or rfIsNoRef or rfIsModified or rfIsAutofill;
+
 
 {set rfIsFiltered flag for cached elements placed in "afilter" and child directory}
 function CheckForDirectory(const afilter:string):integer;                
-function FillSimilars   (const adst:AnsiString; fltid:integer; apart:boolean):integer;
+
+function FillAllSimilars(const alang:AnsiString):integer;
+function FillSimilars   (const adst, alang:AnsiString; fltid:integer):integer;
 function GetSimilarCount(aid:integer):integer;
 // refs ids of similar text
 function GetSimilars    (aid:integer; var arr:TIntegerDynArray):integer;
@@ -87,7 +94,7 @@ function GetUnrefLineCount():integer;
 
 // aid is source index
 function FindOriginal(const asrc:AnsiString):integer;
-function AddOriginal (const asrc:AnsiString; withcheck:boolean=false):integer;
+function AddOriginal (const asrc:AnsiString; afilter:Pinteger=nil):integer;
 function GetOriginal    (aid:integer):AnsiString;
 function ChangeOriginal (const asrc,anew:AnsiString):boolean;
 function ChangeOriginal (aid:integer; const anew:AnsiString):boolean;
@@ -474,6 +481,11 @@ begin
         begin
           stat.langs[i].lang :=Copy(ltab,7);
           stat.langs[i].trans:=sqlite3_column_int(vml,0);
+{
+          stat.langs[i].trans := stat.langs[i].trans + ReturnInt(tldb,
+             'SELECT count(strings.id) FROM strings'+
+             ' LEFT JOIN refs ON refs.srcid=strings.id WHERE refs.srcid IS NULL');
+}
           stat.langs[i].part :=sqlite3_column_int(vml,1);
         end;
         sqlite3_finalize(vml);
@@ -580,14 +592,43 @@ begin
 }
 end;
 
-function FillSimilars(const adst:AnsiString; fltid:integer; apart:boolean):integer;
+function FillAllSimilars(const alang:AnsiString):integer;
 var
   vm:pointer;
-  lsrc,ls:AnsiString;
+  llang,ls:AnsiString;
+begin
+  result:=0;
+  if alang='' then llang:=CurLang else llang:=alang;
+
+  ls:=CheckName(CurLang);
+  ls:='SELECT s.id, s.src, tmp.dst FROM strings s,'+
+      ' (SELECT s.filter, t1.dst FROM strings s'+
+      '  JOIN '+ls+' t1 ON s.id=t1.srcid GROUP BY s.filter) tmp'+
+      ' LEFT JOIN '+ls+' t ON s.id=t.srcid'+
+      ' WHERE t.srcid IS NULL AND s.filter=tmp.filter';
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    while sqlite3_step(vm)=SQLITE_ROW do
+    begin
+      ls:=ReplaceTranslation(
+          sqlite3_column_text(vm,2),
+          sqlite3_column_text(vm,1));
+      SetTranslation(sqlite3_column_int(vm,0),llang,ls,true);
+      inc(result);
+    end;
+    sqlite3_finalize(vm);
+  end;
+end;
+
+function FillSimilars(const adst, alang:AnsiString; fltid:integer):integer;
+var
+  vm:pointer;
+  llang,ls:AnsiString;
   lid,i:integer;
 begin
   result:=0;
   if adst='' then exit;
+  if alang='' then llang:=CurLang else llang:=alang;
 
   ls:='SELECT s.id, s.src FROM strings s'+
       ' LEFT JOIN '+CheckName(CurLang)+' t ON s.id=t.srcid'+
@@ -608,11 +649,11 @@ begin
       end;
       if lid<0 then continue;
 
-      lsrc:=sqlite3_column_text(vm,1);
-      ls:=ReplaceTranslation(adst,lsrc);
-      SetTranslation(lid,CurLang,ls,apart);
+      ls:=ReplaceTranslation(PAnsiChar(adst),sqlite3_column_text(vm,1));
+      SetTranslation(lid,llang,ls,true);
       inc(result);
     end;
+    sqlite3_finalize(vm);
   end;
 end;
 
@@ -672,7 +713,7 @@ var
 begin
   result:=0;
   Str(aid,lid);
-  if CurMod>=0 then
+  if CurMod<>modAll then
   begin
     Str(CurMod,lmod);
     lmod:=' AND modid='+lmod;
@@ -680,11 +721,11 @@ begin
   else
     lmod:='';
 
-  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM refs WHERE srcid='+lid+lmod);
+  lcnt:=ReturnInt(tldb,'SELECT count(DISTINCT id) FROM refs WHERE srcid='+lid+lmod);
   if lcnt>0 then
   begin
     SetLength(arr,lcnt);
-    lSQL:='SELECT id FROM refs WHERE srcid='+lid+lmod;
+    lSQL:='SELECT DISTINCT id FROM refs WHERE srcid='+lid+lmod;
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -758,27 +799,12 @@ begin
   result:=ReturnInt(tldb,'SELECT id FROM strings WHERE (src=?1)',PAnsiChar(asrc));
 end;
 
-function ChangeOriginal(const asrc,anew:AnsiString):boolean;
-begin
-  result:=ChangeOriginal(FindOriginal(asrc),anew);
-end;
-
-function ChangeOriginal(aid:integer; const anew:AnsiString):boolean;
-begin
-  if (aid>0) and (anew<>'') then
-  begin
-    result:=ExecuteDirect(tldb,'UPDATE strings SET src=?1 WHERE id='+IntToStr(aid),
-        PAnsiChar(anew));
-  end
-  else
-    result:=false;
-end;
-
-function AddOriginal(const asrc:AnsiString; withcheck:boolean=false):integer;
+function AddOriginal(const asrc:AnsiString; afilter:Pinteger=nil):integer;
 var
   vm:pointer;
   pc:PAnsiChar;
   ls:AnsiString;
+  lfilter:integer;
 begin
   result:=-1;
 
@@ -786,14 +812,15 @@ begin
   if ls='' then exit;
   
 {$IFNDEF UseUniqueText}
-  if withcheck then
-    result:=FindOriginal(asrc);
+  result:=FindOriginal(asrc);
 //    result:=ReturnInt(tldb,'SELECT id FROM strings WHERE (src=?1)',asrc);
 
   if result<0 then
 {$ENDIF}
   begin
-    Str(AddToList('filter',ls),ls);
+    lfilter:=AddToList('filter',ls);
+    Str(lfilter,ls);
+    if afilter<>nil then afilter^:=lfilter;
 
     ls:='INSERT INTO strings (src,filter) VALUES (?1,'+ls+') RETURNING id;';
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
@@ -811,6 +838,11 @@ begin
       end;
       sqlite3_finalize(vm);
     end;
+
+{$IFDEF UseUniqueText}
+    if result<0 then
+      result:=FindOriginal(asrc);
+{$ENDIF}
   end;
 end;
 
@@ -822,6 +854,22 @@ begin
   result:=ExecuteDirect(tldb,lSQL);
   if result then
     SQLog.Add(lSQL);
+end;
+
+function ChangeOriginal(const asrc,anew:AnsiString):boolean;
+begin
+  result:=ChangeOriginal(FindOriginal(asrc),anew);
+end;
+
+function ChangeOriginal(aid:integer; const anew:AnsiString):boolean;
+begin
+  if (aid>0) and (anew<>'') then
+  begin
+    result:=ExecuteDirect(tldb,'UPDATE strings SET src=?1 WHERE id='+IntToStr(aid),
+        PAnsiChar(anew));
+  end
+  else
+    result:=false;
 end;
 
 function GetTranslation(aid:integer; const atable:AnsiString; var adst:Ansistring):boolean;
@@ -900,28 +948,19 @@ begin
   end;
 
 end;
-{
-function AddTranslation(aid:integer; const atable:AnsiString;
-    const adst:Ansistring; apart:boolean):integer;
-begin
-  result:=aid;
-  if adst='' then exit;
 
-  result:=SetTranslation(aid, atable, adst, apart);
-end;
-}
 function AddText(const asrc,alang,adst:AnsiString; apart:boolean):integer;
+var
+  lfilter:integer;
 begin
-  result:=AddOriginal(asrc,true);
+  result:=AddOriginal(asrc,@lfilter);
 
   if alang='' then exit;
 
-  if result<0 then
-    result:=FindOriginal(asrc);
-
   if (result>0) and (adst<>'') and (adst<>asrc) then
+  begin
     SetTranslation(result, alang, adst, apart);
-//    AddTranslation(result, alang, adst, apart);
+  end;
 end;
 
 function GetText(aid:integer; const atable:AnsiString; var asrc,adst:AnsiString):boolean;
@@ -952,7 +991,7 @@ begin
     for i:=0 to High(TRCache) do
       TRCache[i].flags:=TRCache[i].flags and not rfIsFiltered;
 
-    if CurMod>=0 then
+    if CurMod<>modAll then
     begin
       Str(CurMod,lSQL);
       lSQL:=' modid='+lSQL+' AND';
@@ -1029,7 +1068,7 @@ begin
 //  if (TRCache[aidx].flags and (rfIsManyRefs or rfIsNoRef))<>0 then exit(0);
 
   Str(aid,lid);
-  if CurMod>=0 then
+  if CurMod<>modAll then
   begin
     Str(CurMod,lmod);
     lmod:=' AND modid='+lmod
@@ -1047,7 +1086,7 @@ begin
 //  if (TRCache[aidx].flags and (rfIsNoRef))<>0 then exit(0);
 
   Str(aid,lid);
-  if CurMod>=0 then
+  if CurMod<>modAll then
   begin
     Str(CurMod,lmod);
     lmod:=' AND modid='+lmod;
@@ -1292,11 +1331,9 @@ end;
 
 function AddScanString(dummy:pointer; const astr, afile, atag:AnsiString; aline:integer):integer;
 begin
-  if Length(astr)=1 then exit(-1);
+  if Length(astr)<2 then exit(-1);
 
-  result:=AddOriginal(astr,true);
-  if result<0 then
-    result:=FindOriginal(astr);
+  result:=AddOriginal(astr);
   if result>0 then
     AddRef(result, CurMod, afile, atag, aline);
 end;
@@ -1304,7 +1341,7 @@ end;
 function PrepareScanSQL():boolean;
 begin
   result:=true;
-  CurMod:=0;
+  CurMod:=modVanilla;
   TLScan.DoAddModInfo:=TDoAddModInfo(MakeMethod(nil,@AddScanMod));
   TLScan.DoAddString :=TDoAddString (MakeMethod(nil,@AddScanString));
 end;
@@ -1379,15 +1416,15 @@ begin
   if (CurMod<>modUnref) and (CurMod<>modDeleted) then
   begin
     if CurMod=modAll then
-      lSQL:='SELECT id, src, filter FROM strings WHERE deleted<>1'
+      lSQL:='SELECT id, src, filter FROM strings WHERE deleted=0'
     else
     begin
       Str(CurMod,lmod);
 //      lSQL:='SELECT id, src, filter FROM strings WHERE '+
 //            'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
-      lSQL:='SELECT DISTINCT strings.id, strings.src, strings.filter FROM strings'+
-            ' INNER JOIN refs ON refs.srcid=strings.id'+
-            ' WHERE strings.deleted<>1 AND refs.modid='+lmod;
+      lSQL:='SELECT DISTINCT s.id, s.src, s.filter FROM strings s'+
+            ' INNER JOIN refs ON refs.srcid=s.id'+
+            ' WHERE s.deleted=0 AND refs.modid='+lmod;
     end;
 
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
@@ -1411,8 +1448,8 @@ begin
   begin
 //    lSQL:='SELECT id, src FROM strings WHERE '+
 //          'NOT (id IN (SELECT DISTINCT srcid FROM refs))';
-    lSQL:='SELECT strings.id, strings.src, strings.filter FROM strings'+
-          ' LEFT JOIN refs ON refs.srcid=strings.id WHERE refs.srcid IS NULL';
+    lSQL:='SELECT s.id, s.src, s.filter FROM strings s'+
+          ' LEFT JOIN refs ON refs.srcid=s.id WHERE refs.srcid IS NULL AND s.deleted=0';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -1465,7 +1502,7 @@ begin
 
 end;
 
-procedure SaveTranslation(checkthesame:boolean=false);
+procedure SaveTranslation();
 var
   i:integer;
 begin
@@ -1478,12 +1515,13 @@ begin
       begin
 //        if dst=src then dst:='';
         SetTranslation(id, CurLang, dst, part);
-        flags:=flags and not rfIsModified;
-        if checkthesame and (dst<>'') then
-          FillSimilars(dst,tmpl,true);
+//        if checkthesame and (dst<>'') and ((flags and rfIsAutofill)=0) then
+//          FillSimilars(dst, CurLang, tmpl,true);
+        flags:=flags and not rfRuntime;
       end;
     end;
   end;
+  if CurMod<>modAll then FillAllSimilars(CurLang);
 end;
 
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
@@ -1502,7 +1540,7 @@ begin
   if amod=modAll then
   begin
     ls:='SELECT strings.src, t.dst FROM strings'+
-        lt+' WHERE strings.deleted<>1';
+        lt+' WHERE strings.deleted=0';
   end
   else if amod=modVanilla then
   begin
@@ -1510,7 +1548,7 @@ begin
 //          'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
     ls:='SELECT strings.src, t.dst FROM strings'+
         ' LEFT JOIN refs ON refs.srcid=strings.id'+lt+
-        ' WHERE strings.deleted<>1 AND refs.modid=0 OR refs.srcid IS NULL';
+        ' WHERE strings.deleted=0 AND refs.modid=0 OR refs.srcid IS NULL';
   end
   else
   begin
@@ -1518,7 +1556,7 @@ begin
 //          'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
     ls:='SELECT strings.src, t.dst FROM strings'+
         ' INNER JOIN refs ON refs.srcid=strings.id'+lt+
-        ' WHERE strings.deleted<>1 AND refs.modid='+IntToStr(amod);
+        ' WHERE strings.deleted=0 AND refs.modid='+IntToStr(amod);
   end;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then

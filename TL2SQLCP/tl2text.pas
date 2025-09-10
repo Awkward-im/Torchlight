@@ -1,6 +1,7 @@
 {
   Utility unit with mod text processing for translation
 }
+{TODO: ReplaceTranslation: replace [] and <> by sign to differ from ordinal text}
 unit TL2Text;
 
 interface
@@ -10,7 +11,7 @@ function RemoveTags(const src:AnsiString):AnsiString;
 function RemoveColor(const textin:AnsiString; out textout:AnsiString):boolean;
 function InsertColor(const aselected, acolor:AnsiString):AnsiString;
 
-function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
+function ReplaceTranslation(srcText,srcData:PAnsiChar):AnsiString;
 
 // Punctuation
 const
@@ -139,7 +140,7 @@ begin
   result:=StringReplace(result,'\n',' ',[rfReplaceAll]);
 end;
 
-function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
+function ReplaceTranslation(srcText,srcData:PAnsiChar):AnsiString;
 const
   sWordSet = ['A'..'Z','a'..'z',#128..#255];
 var
@@ -160,7 +161,7 @@ begin
   lcntSR:=0;
   i:=0;
   j:=1;
-  pc:=pointer(srcText);
+  pc:=srcText;
   lsrc:='';
   SetLength(lsrc,Length(srcText)+16*10);
   while pc[i]<>#0 do
@@ -315,7 +316,7 @@ begin
   lcntDN:=0;
   lcntDR:=0;
   i:=0;
-  pc:=pointer(srcData);
+  pc:=srcData;
   while pc[i]<>#0 do
   begin
     //--- Color

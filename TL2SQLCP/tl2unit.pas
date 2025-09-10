@@ -141,7 +141,7 @@ type
     procedure UpdateGrid(idx: integer);
     procedure UpdateStatusBar(Sender:TObject; const SBText:AnsiString='');
     function  UpdateCache(arow:integer; const astr:AnsiString):boolean;
-    function  CheckTheSame(idx:integer; markAsPart:boolean):integer;
+    function  CheckTheSame(idx:integer):integer;
     function  NextNoticed(acheckonly:boolean; var idx:integer):integer;
   public
 
@@ -292,20 +292,13 @@ begin
 end;
 
 procedure TMainTL2TransForm.FileSaveExecute(Sender: TObject);
-var
-  lcheck:boolean;
 begin
   FileSave.Enabled:=false;
-  lcheck:=false;
-  if CurMod<>modAll then
-  begin
-    lcheck:=MessageDlg(rsAutoFill,MtConfirmation,mbYesNo,0,mbYes)=mrYes;
-  end;
-  SaveTranslation(lcheck);
+  SaveTranslation();
 end;
 {%ENDREGION File Operations}
 
-function TMainTL2TransForm.CheckTheSame(idx:integer; markAsPart:boolean):integer;
+function TMainTL2TransForm.CheckTheSame(idx:integer):integer;
 var
   ltrans:AnsiString;
   litem:PTLCacheElement;
@@ -327,9 +320,9 @@ begin
          (litem^.tmpl=ltmpl) then
       begin
         inc(result);
-        litem^.dst :=ReplaceTranslation(ltrans,litem^.src);
-        litem^.part:=markAsPart;
-        litem^.flags:=litem^.flags or rfIsModified;
+        litem^.dst  :=ReplaceTranslation(PAnsiChar(ltrans),PAnsiChar(litem^.src));
+        litem^.part :=TL2Settings.cbAsPartial.Checked;
+        litem^.flags:=litem^.flags or rfIsModified or rfIsAutofill;
 
         UpdateGrid(i);
       end;
@@ -656,7 +649,7 @@ begin
       TL2Grid.Cells[colTrans  ,lr]:=ls;
       TL2Grid.Cells[colPartial,lr]:=BoolNumber[TRCache[lidx].part];
 
-      CheckTheSame(lidx,TL2Settings.cbAsPartial.Checked);
+      CheckTheSame(lidx);
 
       TL2Grid.Row:=lr;
       TL2Grid.Col:=colTrans;

@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="27"/>
-        <UsageCount Value="197"/>
+        <UsageCount Value="201"/>
       </Unit>
       <Unit>
         <Filename Value="fmsqlcp.pas"/>
@@ -20,10 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmSQLCP"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="19"/>
-        <CursorPos Y="38"/>
-        <FoldState Value=" T46021 TLkH0C T8i02B]FMib0104]A3jF0-4 pifkR05715 PjQkS0 T6jG043 T0jU4h5 pjGjN8C412 PWlK2p"/>
-        <UsageCount Value="197"/>
+        <TopLine Value="154"/>
+        <CursorPos Y="182"/>
+        <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -34,7 +33,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="537"/>
         <CursorPos X="14" Y="558"/>
-        <UsageCount Value="197"/>
+        <UsageCount Value="201"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\logging.pas"/>
@@ -44,7 +43,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="197"/>
+        <UsageCount Value="201"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
@@ -56,7 +55,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="58"/>
         <CursorPos X="17" Y="74"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="181"/>
       </Unit>
       <Unit>
         <Filename Value="tl2about.pas"/>
@@ -67,7 +66,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
       </Unit>
       <Unit>
         <Filename Value="tl2datamodule.pas"/>
@@ -77,7 +76,7 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TL2DataModule"/>
         <EditorIndex Value="6"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -91,7 +90,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="13"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -106,7 +105,7 @@
         <TopLine Value="456"/>
         <CursorPos X="12" Y="345"/>
         <FoldState Value=" T4602 TLmP0S1 T7EIt T8iG24]E3j60G31535 Pl1p80 T6j701]FBnc]E0jD28A pibid4B569 Pifmg2 TMmD02b"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -120,7 +119,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
       </Unit>
       <Unit>
         <Filename Value="tl2settingsform.pas"/>
@@ -133,7 +132,7 @@
         <TopLine Value="521"/>
         <CursorPos X="11" Y="154"/>
         <FoldState Value=" T46021 PBiK0 TLo406 TMk]L0C12131 T3kX0q01325 pjRnN0D4 Pi8iP]n6kY0501B PIp5]G0lP26C]VPnO29"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -147,7 +146,7 @@
         <EditorIndex Value="9"/>
         <TopLine Value="109"/>
         <CursorPos Y="128"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -159,7 +158,7 @@
         <TopLine Value="833"/>
         <CursorPos Y="823"/>
         <FoldState Value=" T0vIG2112E221 PkZkMF/"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -170,10 +169,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="1277"/>
-        <CursorPos X="51" Y="1315"/>
-        <FoldState Value=" T4603 TLu905 T7FM{p T8kG21 TMzW8]73m10L415 pkJm8032 pidj50E029]BgkB0v]KjTl[T411]edlY044131213 pnMsd0l T6m201F pUx40]eC PRwF0 T0m62344B]@dn54I]E2C]DRnR444]9Fa6c244[J4k14i6 pidi34PA]9YiKC]&apos;61719412D Pm3u92 TKy905g"/>
-        <UsageCount Value="153"/>
+        <TopLine Value="1619"/>
+        <CursorPos Y="1245"/>
+        <FoldState Value=" T4603 TLu905 T7FM{p T8kG21 TMzW8]73m10L5 pj2jb0M6[95c0:B piakg0Y2]IUkT0u]alOn6045[R4j90d3 pkgm50o3]IdkC0a2 PiJiD0 T6m201F pUx40211C PRwF]O0m62344B pjdn54I]E2C]DRnR444]9Fa6c244[J4k14i6 pidi34PA]9YiKC]&apos;61719412D Pm3u92 TKy905V"/>
+        <UsageCount Value="158"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -182,10 +181,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TLScan"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="788"/>
-        <CursorPos Y="484"/>
+        <TopLine Value="755"/>
+        <CursorPos X="66" Y="773"/>
         <FoldState Value=" T46011 PCS0 TMkb811]FTLi5083 PUpY]O3jT0{F01]HkYmZ]I6jU044 PK[E50k72\5 pidX83568 pkRmM4o TCrdD3."/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="158"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -198,7 +197,7 @@
         <EditorIndex Value="10"/>
         <TopLine Value="64"/>
         <CursorPos Y="86"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -274,9 +273,8 @@
       <Unit>
         <Filename Value="rgdb.text.pas"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="461"/>
-        <CursorPos X="11" Y="470"/>
-        <UsageCount Value="57"/>
+        <TopLine Value="133"/>
+        <UsageCount Value="59"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -312,9 +310,9 @@
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="3618"/>
-        <CursorPos Y="3634"/>
-        <UsageCount Value="8"/>
+        <TopLine Value="2961"/>
+        <CursorPos Y="2978"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\rwmemory.pas"/>
@@ -347,126 +345,128 @@
         <CursorPos Y="10387"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\buttoncontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="6"/>
+        <CursorPos Y="22"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\buttons.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="154"/>
+        <CursorPos Y="170"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\bitbtn.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="53"/>
+        <CursorPos Y="68"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="24">
       <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="751" TopLine="735"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="753" TopLine="735"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="77" TopLine="58"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="109" TopLine="88"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="86" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="77" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="92" TopLine="68"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="78" TopLine="52"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="1062" Column="53" TopLine="1039"/>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="182" TopLine="180"/>
       </Position>
       <Position>
         <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="361" TopLine="302"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="127" Column="11" TopLine="111"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="374" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="376" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="375" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="377" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="379" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="381" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="380" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="384" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="386" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="387" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="389" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="390" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="374" TopLine="368"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="395" Column="55" TopLine="367"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="470" Column="11" TopLine="461"/>
+        <Caret Line="153" TopLine="146"/>
       </Position>
       <Position>
         <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="361" TopLine="302"/>
+        <Caret Line="154" TopLine="146"/>
       </Position>
       <Position>
         <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="368" TopLine="302"/>
+        <Caret Line="155" TopLine="146"/>
       </Position>
       <Position>
         <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="285" TopLine="285"/>
+        <Caret Line="156" TopLine="146"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="159" TopLine="146"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="160" TopLine="146"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="162" TopLine="146"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="153" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="165" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="163" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="165" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="167" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="169" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="163" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="165" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="167" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="172" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="179" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="159" Column="11" TopLine="152"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="182" TopLine="176"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="116" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="201" TopLine="186"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="114" TopLine="98"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="179" TopLine="174"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -500,6 +500,12 @@
       </Item>
       <Item>
         <Expression Value="result"/>
+      </Item>
+      <Item>
+        <Expression Value="curmod"/>
+      </Item>
+      <Item>
+        <Expression Value="TRCache"/>
       </Item>
     </Watches>
   </Debugging>

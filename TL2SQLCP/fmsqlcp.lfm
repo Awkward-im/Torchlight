@@ -128,7 +128,7 @@ object FormSQLCP: TFormSQLCP
       item
         ReadOnly = True
         Title.Caption = 'Name'
-        Width = 152
+        Width = 156
       end>
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
@@ -138,7 +138,7 @@ object FormSQLCP: TFormSQLCP
     ColWidths = (
       60
       48
-      152
+      156
     )
   end
   object edModStat: TEdit
@@ -181,7 +181,7 @@ object FormSQLCP: TFormSQLCP
       end    
       item
         Title.Caption = 'Name'
-        Width = 364
+        Width = 368
       end>
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
@@ -193,7 +193,7 @@ object FormSQLCP: TFormSQLCP
       60
       60
       48
-      364
+      368
     )
   end
   object bbSQLog: TBitBtn

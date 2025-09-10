@@ -72,6 +72,7 @@ uses
   rgglobal,
   rgdb.text,
   tl2unit,
+  tl2text,
   tlscan;
 
 resourcestring
@@ -105,6 +106,11 @@ var
 //  data:TTL2Translation;
   ls:AnsiString;
   i:integer;
+
+ltmpl,idx:integer;
+  ltrans:AnsiString;
+  litem:PTLCacheElement;
+
 begin
   OpenDialog:=TOpenDialog.Create(nil);
   try
@@ -135,13 +141,18 @@ begin
            mrNo      : TransOp:=da_skip;
            mrCancel  : exit;
         end;
-
+        Self.Caption:='Load translation';
         i:=tlscan.LoadAsText(OpenDialog.FileName);
 
         TransOp:=da_overwrite;
         RGLog.Add('Loaded '+IntToStr(i)+' lines');
-        ShowMessage('Done!');
         FillLangList();
+
+        Self.Caption:='Check for similars';
+        FillAllSimilars(ls);
+        ShowMessage('Done!');
+
+        Self.Caption:='';
         lbModsSelectionChange(Self,true);
       end;
 {
@@ -169,7 +180,7 @@ begin
     ShowMessage(rsBuildDone)
   else
     ShowMessage(rsBuildFailed);
-  // maybe build from cache if curmod=-1 or just build mod, not all
+  // maybe build from cache if curmod=modAll or just build mod, not all
   // well, it can be used in grid/editor, not CP
 end;
 
@@ -401,8 +412,8 @@ begin
     // to avoid multiply dblclicks
     MainTL2TransForm:=TMainTL2TransForm(1);
 
-         if lbMods.ItemIndex=0 then CurMod:=-1
-    else if lbMods.ItemIndex=1 then CurMod:=0
+         if lbMods.ItemIndex=0 then CurMod:=modAll
+    else if lbMods.ItemIndex=1 then CurMod:=modVanilla
     else
       CurMod:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
     CurLang:=gdModStat.Cells[2,gdModStat.Row];
