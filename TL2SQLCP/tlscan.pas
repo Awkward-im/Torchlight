@@ -1,5 +1,4 @@
-﻿{TODO: Add sFile and sProperty processing (AddText -> AddString)}
-unit TLScan;
+﻿unit TLScan;
 
 
 interface

@@ -1,5 +1,4 @@
 {TODO: GetModStatistic: add NoRef translations of every lang for count}
-{TODO: SaveTranslation: set rfIsAutofill for second+ filter occurs}
 {TODO: AddOriginal: check for case when string is presents but deleted. Must not be added back?}
 {TODO: GetSimilar as mod depended}
 {TODO: variant CopyToBase just for translation (not src or refs)}
@@ -45,7 +44,7 @@ function  LoadModData():integer;
 procedure LoadTranslation();
 procedure SaveTranslation();
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
-    aall:boolean=false; amod:Int64=modAll):boolean;
+    aall:boolean=false; const amod:Int64=modAll):boolean;
 
 function RemakeFilter():boolean;
 function PrepareScanSQL():boolean;
@@ -58,7 +57,7 @@ function TLCloseBase(dosave:boolean):boolean;
 {
 function CopyToBase  (const data:TTL2Translation; withRef:boolean):integer;
 function LoadFromBase(var   data:TTL2Translation;
-    amod:Int64; const lang:AnsiString):integer;
+    const amod:Int64; const lang:AnsiString):integer;
 }
 
 const
@@ -110,16 +109,17 @@ function GetLineRef     (aid:integer):integer;
 function GetLineRefCount(aid:integer):integer;
 // get reference info. aid is refs index, result is source index
 function GetRef   (arefid:integer; var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
-function GetRefMod(arefid:integer):int64;
+function GetRefMod(arefid:integer):Int64;
 function GetRefSrc(arefid:integer):integer;
 
 type
   TModStatistic = record
-    modid:int64;
-    total:integer;
-    dupes:integer;
-    files:integer;
-    tags :integer;
+    modid :Int64;
+    total :integer;
+    dupes :integer;
+    unique:integer;
+    files :integer;
+    tags  :integer;
     langs:array of record
       lang :AnsiString;
       trans:integer;
@@ -134,12 +134,13 @@ procedure GetModList (var asl:TDict64DynArray; all:boolean=true);
 function  GetLangList(var asl:TDictDynArray):integer;
 
 {get mod's directory list}
-function GetModDirList(amodid:Int64; var alist:TStringDynArray):integer;
-function GetLineCount (amodid:Int64; withdeleted:boolean=false):integer;
-function AddMod       (amodid:Int64; const atitle:AnsiString  ):integer;
-function AddMod       (amodid:Int64;       atitle:PUnicodeChar):integer;
-function GetModName   (amodid:int64):AnsiString;
-function GetModByName(const atitle:AnsiString):Int64;
+function GetModDirList(const amodid:Int64; var alist:TStringDynArray):integer;
+function AddMod       (const amodid:Int64; const atitle:AnsiString  ):integer;
+function AddMod       (const amodid:Int64;       atitle:PUnicodeChar):integer;
+function GetModName   (const amodid:Int64):AnsiString;
+function GetModByName (const atitle:AnsiString):Int64;
+function GetLineCount      (const amodid:Int64; withdeleted:boolean=false):integer;
+function GetUniqueLineCount(const amodid:Int64):integer;
 
 
 implementation
@@ -220,7 +221,7 @@ begin
 end;
 
 {%REGION Mod}
-function AddModInternal(amodid:Int64; atitle:PAnsiChar):integer;
+function AddModInternal(const amodid:Int64; atitle:PAnsiChar):integer;
 var
   vm:pointer;
   ls:AnsiString;
@@ -255,17 +256,17 @@ begin
   end;
 end;
 
-function AddMod(amodid:Int64; const atitle:AnsiString):integer;
+function AddMod(const amodid:Int64; const atitle:AnsiString):integer;
 begin
   result:=AddModInternal(amodid,PAnsiChar(atitle));
 end;
 
-function AddMod(amodid:Int64; atitle:PUnicodeChar):integer;
+function AddMod(const amodid:Int64; atitle:PUnicodeChar):integer;
 begin
   result:=AddModInternal(amodid,PAnsiChar(WideToStr(atitle)));
 end;
 
-function GetModName(amodid:int64):AnsiString;
+function GetModName(const amodid:Int64):AnsiString;
 var
   ls:string;
 begin
@@ -412,7 +413,7 @@ begin
 
 end;
 
-function GetLineCount(amodid:Int64; withdeleted:boolean=false):integer;
+function GetLineCount(const amodid:Int64; withdeleted:boolean=false):integer;
 var
   lsrc:AnsiString;
 begin
@@ -430,6 +431,20 @@ begin
     if amodid=modVanilla then
       result:=result+GetUnrefLineCount();
   end;
+end;
+
+function GetUniqueLineCount(const amodid:Int64):integer;
+var
+  ls:AnsiString;
+begin
+  if amodid=modAll then exit(0);
+
+  Str(amodid,ls);
+  ls:='SELECT count(DISTINCT r.srcid) FROM refs r'+
+      ' LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
+      ' ON r.srcid=r1.srcid'+
+      ' WHERE r.modid='+ls+' AND r1.srcid IS NULL';
+  result:=ReturnInt(tldb,ls);
 end;
 
 function GetModStatistic(var stat:TModStatistic):integer;
@@ -459,6 +474,7 @@ begin
     end;
     sqlite3_finalize(vm);
   end;
+  stat.unique:=GetUniqueLineCount(stat.modid);
 
   result:=ReturnInt(tldb,'SELECT count(1) FROM sqlite_master'+
     ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
@@ -1025,7 +1041,7 @@ begin
   end;
 end;
 
-function GetModDirList(amodid:Int64; var alist:TStringDynArray):integer;
+function GetModDirList(const amodid:Int64; var alist:TStringDynArray):integer;
 var
   vm:pointer;
   ls,lmod:string;
@@ -1102,7 +1118,7 @@ begin
   result:=ReturnInt(tldb,'SELECT srcid FROM refs WHERE id='+IntToStr(arefid));
 end;
 
-function GetRefMod(arefid:integer):int64;
+function GetRefMod(arefid:integer):Int64;
 var
   vm:pointer;
   ls:string;
@@ -1150,7 +1166,7 @@ begin
 
 end;
 
-function AddRef(asrc:integer; amod:int64;
+function AddRef(asrc:integer; const amod:Int64;
     const afile,atag:AnsiString; aline:integer):integer;
 var
   lsource,lSQL,lline,lmod,lsrc,ldir,lfile,ltag:AnsiString;
@@ -1192,7 +1208,7 @@ end;
 function CopyToBase(const data:TTL2Translation; withRef:boolean):integer;
 var
   lsrc,i,j,lref,lline:integer;
-  lmod:int64;
+  lmod:Int64;
 begin
   result:=0;
   if data.lang='' then exit;
@@ -1233,7 +1249,7 @@ begin
 end;
 
 function LoadFromBase(var data:TTL2Translation;
-    amod:Int64; const lang:AnsiString):integer;
+    const amod:Int64; const lang:AnsiString):integer;
 var
   vm,vmref:pointer;
   lrfile,lrtag:AnsiString;
@@ -1525,7 +1541,7 @@ begin
 end;
 
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
-    aall:boolean=false; amod:Int64=modAll):boolean;
+    aall:boolean=false; const amod:Int64=modAll):boolean;
 var
   vm:pointer;
   sl:TStringList;

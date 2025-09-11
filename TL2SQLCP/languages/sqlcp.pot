@@ -30,8 +30,20 @@ msgstr ""
 msgid "Open translation file"
 msgstr ""
 
+#: fmsqlcp.rsoverwrite
+msgid "Overwrite"
+msgstr ""
+
+#: fmsqlcp.rspartial
+msgid "Overwrite partial"
+msgstr ""
+
 #: fmsqlcp.rssavedone
 msgid "Database saved"
+msgstr ""
+
+#: fmsqlcp.rsskip
+msgid "Skip"
 msgstr ""
 
 #: fmsqlcp.rsstat
@@ -46,6 +58,14 @@ msgstr ""
 
 #: fmsqlcp.rsstopscan
 msgid "Do you want to break scan?"
+msgstr ""
+
+#: fmsqlcp.rstranslation
+msgid "Translation action"
+msgstr ""
+
+#: fmsqlcp.rstransop
+msgid "When translation exists"
 msgstr ""
 
 #: taltform.caption
@@ -180,6 +200,10 @@ msgstr ""
 
 #: tformsqlcp.bbsqlog.hint
 msgid "Show session SQL requiests of DB modify"
+msgstr ""
+
+#: tformsqlcp.bedit.caption
+msgid "Edit"
 msgstr ""
 
 #: tformsqlcp.gdlanguages.columns[0].title.caption

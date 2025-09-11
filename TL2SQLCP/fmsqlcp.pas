@@ -83,7 +83,7 @@ resourcestring
 //  rsYourLang        = 'Your lang title';
   rsLanguage        = 'Language:';
   rsStatus          = 'Total lines: %d | Unreferred lines: %d';
-  rsStat            = 'Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d';
+  rsStat            = 'Total lines: %d | Duplicates: %d | Different: %d | Unique: %d | Files: %d | Tags: %d';
 //  rsDblClick        = 'Double-Click to edit translation';
   rsStopScan        = 'Do you want to break scan?';
   rsSaveDone        = 'Database saved';
@@ -326,7 +326,7 @@ begin
   GetModStatistic(lstat);
   edModSTat.Tag:=lstat.total;
   edModSTat.Text:=Format(rsStat,
-    [lstat.total,lstat.dupes,lstat.total-lstat.dupes,lstat.files,lstat.tags]);
+    [lstat.total,lstat.dupes,lstat.total-lstat.dupes,lstat.unique,lstat.files,lstat.tags]);
   gdModStat.BeginUpdate;
   gdModStat.Clear;
   gdModStat.RowCount:=1;
@@ -382,7 +382,7 @@ end;
 
 procedure TFormSQLCP.UpdateStatus();
 begin
-  StatusBar.SimpleText:=Format(rsStatus,[GetLineCount(0),GetUnrefLineCount()]);
+  StatusBar.SimpleText:=Format(rsStatus,[GetLineCount(modAll),GetUnrefLineCount()]);
 end;
 
 procedure TFormSQLCP.FormCreate(Sender: TObject);

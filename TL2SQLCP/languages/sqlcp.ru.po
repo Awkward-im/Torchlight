@@ -40,9 +40,21 @@ msgstr "Открыть Mod (pak)"
 msgid "Open translation file"
 msgstr "Открыть файл перевода"
 
+#: fmsqlcp.rsoverwrite
+msgid "Overwrite"
+msgstr "Перезаписать"
+
+#: fmsqlcp.rspartial
+msgid "Overwrite partial"
+msgstr "Перезап. неполные"
+
 #: fmsqlcp.rssavedone
 msgid "Database saved"
 msgstr "БД сохранена"
+
+#: fmsqlcp.rsskip
+msgid "Skip"
+msgstr "Пропустить"
 
 #: fmsqlcp.rsstat
 #, object-pascal-format
@@ -57,6 +69,14 @@ msgstr "Всего строк: %d | Строк без ссылок: %d"
 #: fmsqlcp.rsstopscan
 msgid "Do you want to break scan?"
 msgstr "Вы хотите прервать сканирование?"
+
+#: fmsqlcp.rstranslation
+msgid "Translation action"
+msgstr "Действие с переводом"
+
+#: fmsqlcp.rstransop
+msgid "When translation exists"
+msgstr "Когда перевод существует"
 
 #: taltform.caption
 msgid "Alternatives"
@@ -191,6 +211,10 @@ msgstr "Лог SQL"
 #: tformsqlcp.bbsqlog.hint
 msgid "Show session SQL requiests of DB modify"
 msgstr "Показать SQL запросы для изменения БД"
+
+#: tformsqlcp.bedit.caption
+msgid "Edit"
+msgstr "Редакт"
 
 #: tformsqlcp.gdlanguages.columns[0].title.caption
 msgctxt "tformsqlcp.gdlanguages.columns[0].title.caption"
