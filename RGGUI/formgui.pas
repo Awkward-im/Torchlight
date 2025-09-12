@@ -1521,11 +1521,24 @@ begin
   sstream:=0;
 end;
 
+procedure EndOfSoundPlay(handle: HSYNC; channel, data: DWORD; user: Pointer); {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
+begin
+  with TRGGUIForm(user) do
+  begin
+    sstream:=0;
+    bbPlay.Visible:=true;
+    bbStop.Visible:=false;
+  end;
+end;
+
 procedure TRGGUIForm.bbPlayClick(Sender: TObject);
 begin
   bbPlay.Visible:=false;
   bbStop.Visible:=true;
   sstream:=BASS_StreamCreateFile(true,FUData,0,FUSize,BASS_STREAM_AUTOFREE);
+
+  BASS_ChannelSetSync(sstream,BASS_SYNC_END or BASS_SYNC_ONETIME,0,@EndOfSoundPlay,Self);
+
   BASS_ChannelPlay(sstream, false);
 end;
 

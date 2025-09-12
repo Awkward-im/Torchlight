@@ -30,6 +30,7 @@ object FormSQLCP: TFormSQLCP
     Hint = 'Load translation file'
     Top = 267
     Width = 52
+    Anchors = [akLeft, akTop]
     AutoSize = True
     Caption = 'Load'
     TabOrder = 1

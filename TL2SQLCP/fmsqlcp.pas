@@ -1,3 +1,4 @@
+{TODO: Add existing mod check at Scan procedure}
 unit fmSQLCP;
 
 {$mode objfpc}{$H+}
@@ -34,6 +35,7 @@ type
     procedure bbNewTransClick(Sender: TObject);
     procedure bbSaveDBClick(Sender: TObject);
     procedure bbScanModClick(Sender: TObject);
+    procedure bbRemoveModClick(Sender: TObject);
     procedure bbSQLogClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -96,6 +98,8 @@ resourcestring
   rsOverwrite       = 'Overwrite';
   rsPartial         = 'Overwrite partial';
   rsSkip            = 'Skip';
+  rsHaveUnique      = 'Mod have %d unique strings.'
+  rsDelete          = 'Are you sure to delete it?'
 
 
 { TFormSQLCP }
@@ -207,6 +211,23 @@ begin
     StatusBar.SimpleText:=IntToStr(idx)+' / '+IntToStr(atotal)+' | '+fname;
     Application.ProcessMessages;
   end;
+end;
+
+procedure TFormSQLCP.bbRemoveModClick(Sender: TObject);
+var
+  lmodid:Int64;
+  lcnt:integer;
+begin
+  if lbMods.ItemIndex<2 then exit;
+
+  lmodid:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
+  lcnt:=GetUniqueLineCount(lmodid);
+  if lcnt>0 then
+  begin
+    if MessageDlg(Format(rsHaveUnique,[lcnt])+#13#10+rsDelete,mtWarning,[mbOk,mbNo],0)<>mrOk then exit;
+  end
+  else
+    if MessageDlg(rsDelete,mtWarning,[mbOk,mbNo],0)<>mrOk then exit;
 end;
 
 procedure TFormSQLCP.bbScanModClick(Sender: TObject);
