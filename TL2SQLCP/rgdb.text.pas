@@ -1,3 +1,5 @@
+{TODO: Statistic for non-latin texts}
+{TODO: Keep filter param replace option in base}
 {TODO: GetModStatistic: add NoRef translations of every lang for count}
 {TODO: AddOriginal: check for case when string is presents but deleted. Must not be added back?}
 {TODO: GetSimilar as mod depended}
@@ -118,6 +120,7 @@ type
     total :integer;
     dupes :integer;
     unique:integer;
+    nation:integer;
     files :integer;
     tags  :integer;
     langs:array of record
@@ -137,10 +140,12 @@ function  GetLangList(var asl:TDictDynArray):integer;
 function GetModDirList(const amodid:Int64; var alist:TStringDynArray):integer;
 function AddMod       (const amodid:Int64; const atitle:AnsiString  ):integer;
 function AddMod       (const amodid:Int64;       atitle:PUnicodeChar):integer;
+function DeleteMod    (const amodid:Int64):boolean;
 function GetModName   (const amodid:Int64):AnsiString;
 function GetModByName (const atitle:AnsiString):Int64;
 function GetLineCount      (const amodid:Int64; withdeleted:boolean=false):integer;
 function GetUniqueLineCount(const amodid:Int64):integer;
+function GetNationLineCount(const amodid:Int64):integer;
 
 
 implementation
@@ -221,6 +226,19 @@ begin
 end;
 
 {%REGION Mod}
+function DeleteMod(const amodid:Int64):boolean;
+var
+  ls:AnsiString;
+begin
+  str(amodid,ls);
+  // delete mod record
+  result:=ExecuteDirect(tldb,'DELETE FROM dicmods WHERE id='+ls);
+  if not result then exit;
+  // mark unique strings (if any) as deleted (really need this?)
+  // delete all references
+  result:=ExecuteDirect(tldb,'DELETE FROM refs WHERE modid='+ls);
+end;
+
 function AddModInternal(const amodid:Int64; atitle:PAnsiChar):integer;
 var
   vm:pointer;
@@ -309,27 +327,16 @@ begin
     begin
       asl.Add(rsAllStrings);
       asl.Add(rsOriginalGame);
-  //    asl.Capacity:=i+2;
-  //    i:=2;
-  //    asl[0]:=rsAllStrings;
-  //    asl[1]:=rsOriginalGame;
-    end
-    else
-    begin
-  //    asl.Capacity:=i;
-  //    i:=0;
     end;
 
     i:=ReturnInt(tldb,'SELECT count(1) FROM dicmods');
     if i>0 then
     begin
-      if sqlite3_prepare_v2(tldb,'SELECT id,title FROM dicmods',-1, @vm, nil)=SQLITE_OK then
+      if sqlite3_prepare_v2(tldb,'SELECT title FROM dicmods',-1, @vm, nil)=SQLITE_OK then
       begin
         while sqlite3_step(vm)=SQLITE_ROW do
         begin
-          asl.Add(sqlite3_column_text(vm,1));
-  //        asl[i]:=sqlite3_column_text(vm,1);
-  //        inc(i);
+          asl.Add(sqlite3_column_text(vm,0));
         end;
         sqlite3_finalize(vm);
       end;
@@ -341,6 +348,7 @@ procedure GetModList(var asl:TDict64DynArray; all:boolean=true);
 var
   vm:pointer;
   i:integer;
+  pc:PAnsiChar;
 begin
   i:=ReturnInt(tldb,'SELECT count(1) FROM dicmods');
   if i>0 then
@@ -349,9 +357,9 @@ begin
     begin
       SetLength(asl,i+2);
       i:=2;
-      asl[0].id   :=-1;
+      asl[0].id   :=modAll;
       asl[0].value:=rsAllStrings;
-      asl[1].id   :=0;
+      asl[1].id   :=modVanilla;
       asl[1].value:=rsOriginalGame;
     end
     else
@@ -364,8 +372,8 @@ begin
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
-        asl[i].id   :=sqlite3_column_int (vm,0);
-        asl[i].value:=sqlite3_column_text(vm,1);
+        asl[i].id   :=sqlite3_column_int64(vm,0);
+        asl[i].value:=sqlite3_column_text (vm,1);
         inc(i);
       end;
       sqlite3_finalize(vm);
@@ -433,6 +441,44 @@ begin
   end;
 end;
 
+function GetNationLineCount(const amodid:Int64):integer;
+var
+  vm:pointer;
+  ls:AnsiString;
+  pc:PAnsiChar;
+begin
+  result:=0;
+
+  if amodid=modAll then
+    ls:='SELECT src FROM strings WHERE deleted=0'
+  else
+  begin
+    Str(amodid,ls);
+    ls:='SELECT DISTINCT s.src FROM strings s'+
+          ' INNER JOIN refs ON refs.srcid=s.id'+
+          ' WHERE s.deleted=0 AND refs.modid='+ls;
+  end;
+
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    while sqlite3_step(vm)=SQLITE_ROW do
+    begin
+      pc:=sqlite3_column_text(vm,0);
+
+      while pc^<>#0 do
+      begin
+        if pc^>#127 then
+        begin
+          inc(result);
+          break;
+        end;
+        inc(pc);
+      end;
+    end;
+  end;
+
+end;
+
 function GetUniqueLineCount(const amodid:Int64):integer;
 var
   ls:AnsiString;
@@ -453,7 +499,7 @@ var
   lmod,ls,ltab:AnsiString;
   i:integer;
 begin
-  if stat.modid>=0 then
+  if stat.modid<>modAll then
   begin
     Str(stat.modid,lmod);
     lmod:=' WHERE modid='+lmod;
@@ -475,6 +521,7 @@ begin
     sqlite3_finalize(vm);
   end;
   stat.unique:=GetUniqueLineCount(stat.modid);
+  stat.nation:=GetNationLineCount(stat.modid);
 
   result:=ReturnInt(tldb,'SELECT count(1) FROM sqlite_master'+
     ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
@@ -1049,7 +1096,7 @@ var
 begin
   result:=0;
 
-  if amodid>=0 then
+  if amodid<>modAll then
   begin
     Str(amodid,lmod);
     lmod:=' WHERE refs.modid='+lmod;

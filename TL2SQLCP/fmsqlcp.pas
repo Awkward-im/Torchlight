@@ -1,3 +1,4 @@
+{TODO: lbModsSelectionChange must work even with filtered list, not use ItemIndex=0 and 1}
 {TODO: Add existing mod check at Scan procedure}
 unit fmSQLCP;
 
@@ -7,36 +8,46 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Buttons, StdCtrls,
-  ComCtrls, Grids, ListFilterEdit, unitlogform;
+  ComCtrls, Grids, ExtCtrls, ListFilterEdit, unitlogform, rgglobal;
 
 type
 
   { TFormSQLCP }
 
   TFormSQLCP = class(TForm)
-    bbScanMod: TBitBtn;
-    bbAddTrans: TBitBtn;
-    bbSaveDB: TBitBtn;
-    bbLog: TBitBtn;
-    bbSQLog: TBitBtn;
-    bbNewTrans: TBitBtn;
-    bbGenerate: TBitBtn;
-    bEdit: TBitBtn;
     edModStat: TEdit;
     gdLanguages: TStringGrid;
+    gdModStat: TStringGrid;
+    ImageList: TImageList;
     lblCurLang: TLabel;
     lbMods: TListBox;
     lfeMods: TListFilterEdit;
-    gdModStat: TStringGrid;
+    pnlRight: TPanel;
+    pnlLeft: TPanel;
+    pnlLower: TPanel;
+    pnlUpper: TPanel;
+    HSplitter: TSplitter;
+    sbAdd: TSpeedButton;
+    sbRemove: TSpeedButton;
+    sbEdit: TSpeedButton;
+    sbLoad: TSpeedButton;
+    sbBuild: TSpeedButton;
+    sbNew: TSpeedButton;
+    sbSQL: TSpeedButton;
+    sbLog: TSpeedButton;
+    sbSave: TSpeedButton;
+    sbSettings: TSpeedButton;
+    VSplitter: TSplitter;
     StatusBar: TStatusBar;
-    procedure bbAddTransClick(Sender: TObject);
-    procedure bbGenerateClick(Sender: TObject);
-    procedure bbLogClick(Sender: TObject);
-    procedure bbNewTransClick(Sender: TObject);
-    procedure bbSaveDBClick(Sender: TObject);
-    procedure bbScanModClick(Sender: TObject);
-    procedure bbRemoveModClick(Sender: TObject);
-    procedure bbSQLogClick(Sender: TObject);
+    procedure AddTrans(Sender: TObject);
+    procedure Build(Sender: TObject);
+    procedure sbSettingsClick(Sender: TObject);
+    procedure ShowLog(Sender: TObject);
+    procedure NewTrans(Sender: TObject);
+    procedure SaveDB(Sender: TObject);
+    procedure AddMod(Sender: TObject);
+    procedure RemoveMod(Sender: TObject);
+    procedure ShowSQLog(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DoStartEdit(Sender: TObject);
@@ -46,6 +57,7 @@ type
   private
     FLogForm  :TfmLogForm;
     FSQLogForm:TfmLogForm;
+    FModList:TDict64DynArray;
     doBreak:boolean;
 
     function AddLog(var adata: string): integer;
@@ -71,7 +83,6 @@ uses
   TL2SettingsForm,
   sqlite3dyn,
   iso639,
-  rgglobal,
   rgdb.text,
   tl2unit,
   tl2text,
@@ -85,7 +96,8 @@ resourcestring
 //  rsYourLang        = 'Your lang title';
   rsLanguage        = 'Language:';
   rsStatus          = 'Total lines: %d | Unreferred lines: %d';
-  rsStat            = 'Total lines: %d | Duplicates: %d | Different: %d | Unique: %d | Files: %d | Tags: %d';
+  rsStat            = 'Total lines: %d | Duplicates: %d | Different: %d | Unique: %d | Non-latin: %d'+
+      ' | Files: %d | Tags: %d';
 //  rsDblClick        = 'Double-Click to edit translation';
   rsStopScan        = 'Do you want to break scan?';
   rsSaveDone        = 'Database saved';
@@ -98,13 +110,13 @@ resourcestring
   rsOverwrite       = 'Overwrite';
   rsPartial         = 'Overwrite partial';
   rsSkip            = 'Skip';
-  rsHaveUnique      = 'Mod have %d unique strings.'
-  rsDelete          = 'Are you sure to delete it?'
+  rsHaveUnique      = 'Mod have %d unique strings.';
+  rsDelete          = 'Are you sure to delete it?';
 
 
 { TFormSQLCP }
 
-procedure TFormSQLCP.bbAddTransClick(Sender: TObject);
+procedure TFormSQLCP.AddTrans(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
 //  data:TTL2Translation;
@@ -178,7 +190,7 @@ begin
   end;
 end;
 
-procedure TFormSQLCP.bbGenerateClick(Sender: TObject);
+procedure TFormSQLCP.Build(Sender: TObject);
 begin
   if BuildTranslation('TRANSLATION.DAT','',true) then
     ShowMessage(rsBuildDone)
@@ -188,7 +200,16 @@ begin
   // well, it can be used in grid/editor, not CP
 end;
 
-procedure TFormSQLCP.bbNewTransClick(Sender: TObject);
+procedure TFormSQLCP.sbSettingsClick(Sender: TObject);
+begin
+//  TL2Settings.Visible:=not TL2Settings.Visible;
+  TL2Settings.Parent     :=nil;
+  TL2Settings.Align      :=alNone;
+  TL2Settings.BorderStyle:=bsSizeable;
+  TL2Settings.ShowModal;
+end;
+
+procedure TFormSQLCP.NewTrans(Sender: TObject);
 begin
   CreateLangTable(InputBox(rsChooseLang,rsLanguage,''));
   FillLangList();
@@ -213,7 +234,7 @@ begin
   end;
 end;
 
-procedure TFormSQLCP.bbRemoveModClick(Sender: TObject);
+procedure TFormSQLCP.RemoveMod(Sender: TObject);
 var
   lmodid:Int64;
   lcnt:integer;
@@ -224,13 +245,15 @@ begin
   lcnt:=GetUniqueLineCount(lmodid);
   if lcnt>0 then
   begin
-    if MessageDlg(Format(rsHaveUnique,[lcnt])+#13#10+rsDelete,mtWarning,[mbOk,mbNo],0)<>mrOk then exit;
+    if MessageDlg(Format(rsHaveUnique,[lcnt])+#13#10+rsDelete,
+        mtWarning,[mbYes,mbNo],0)<>mrYes then exit;
   end
   else
-    if MessageDlg(rsDelete,mtWarning,[mbOk,mbNo],0)<>mrOk then exit;
+    if MessageDlg(rsDelete,mtWarning,[mbYes,mbNo],0)<>mrYes then exit;
+  lbMods.DeleteSelected;
 end;
 
-procedure TFormSQLCP.bbScanModClick(Sender: TObject);
+procedure TFormSQLCP.AddMod(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
   lres,i:integer;
@@ -246,11 +269,11 @@ begin
     begin
       if PrepareScanSQL() then
       begin
-        bbScanMod .Enabled:=false;
-        bbAddTrans.Enabled:=false;
-        bbNewTrans.Enabled:=false;
-        bbSQLog   .Enabled:=false;
-        bbSaveDB  .Enabled:=false;
+        sbAdd .Enabled:=false;
+        sbLoad.Enabled:=false;
+        sbNew .Enabled:=false;
+        sbSQL .Enabled:=false;
+        sbSave.Enabled:=false;
 
         doBreak:=false;
         tlscan.OnFileScan:=@OnFileScan;
@@ -269,17 +292,17 @@ begin
           RGLog.Add('Checked '+IntToStr(lres)+' files');
         end;
         Self.Caption:='';
-        RGLog.Add('Remake Filter');
+//        RGLog.Add('Remake Filter');
 //        RemakeFilter();
         ShowMessage('Done!');
         FillModList();
         UpdateStatus();
 
-        bbScanMod .Enabled:=true;
-        bbAddTrans.Enabled:=true;
-        bbNewTrans.Enabled:=true;
-        bbSQLog   .Enabled:=true;
-        bbSaveDB  .Enabled:=true;
+        sbAdd .Enabled:=true;
+        sbLoad.Enabled:=true;
+        sbNew .Enabled:=true;
+        sbSQL .Enabled:=true;
+        sbSave.Enabled:=true;
       end;
     end;
   finally
@@ -301,7 +324,7 @@ begin
   result:=0;
 end;
 
-procedure TFormSQLCP.bbSQLogClick(Sender: TObject);
+procedure TFormSQLCP.ShowSQLog(Sender: TObject);
 begin
   if FSQLogForm=nil then
   begin
@@ -313,7 +336,7 @@ begin
   FSQLogForm.ShowOnTop;
 end;
 
-procedure TFormSQLCP.bbLogClick(Sender: TObject);
+procedure TFormSQLCP.ShowLog(Sender: TObject);
 begin
   if FLogForm=nil then
   begin
@@ -325,7 +348,7 @@ begin
   FLogForm.ShowOnTop;
 end;
 
-procedure TFormSQLCP.bbSaveDBClick(Sender: TObject);
+procedure TFormSQLCP.SaveDB(Sender: TObject);
 begin
   if TLSaveBase() then
     ShowMessage(rsSaveDone)
@@ -339,15 +362,16 @@ var
   i:integer;
 begin
   if lbMods.ItemIndex<0 then exit;
-       if lbMods.ItemIndex=0 then lstat.modid:=-1
-  else if lbMods.ItemIndex=1 then lstat.modid:=0
-  else
-    lstat.modid:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
+
+  lstat.modid:=FModList[IntPtr(lbMods.Items.Objects[lbMods.ItemIndex])].id;
+
+  sbRemove.Enabled:=(lstat.modid<>modAll) and (lstat.modid<>modVanilla);
 
   GetModStatistic(lstat);
   edModSTat.Tag:=lstat.total;
   edModSTat.Text:=Format(rsStat,
-    [lstat.total,lstat.dupes,lstat.total-lstat.dupes,lstat.unique,lstat.files,lstat.tags]);
+    [lstat.total,lstat.dupes,lstat.total-lstat.dupes,lstat.unique,lstat.nation,
+     lstat.files,lstat.tags]);
   gdModStat.BeginUpdate;
   gdModStat.Clear;
   gdModStat.RowCount:=1;
@@ -368,11 +392,16 @@ begin
 end;
 
 procedure TFormSQLCP.FillModList();
+var
+  i:integer;
 begin
   lfeMods.FilteredListBox:=nil;
   lfeMods.Clear;
 
-  GetModList(lbMods.Items,true);
+  GetModList(FModList,true);
+  lbMods.Items.Clear;
+  for i:=0 to High(FModList) do
+    lbMods.Items.AddObject(FModList[i].value,TObject(IntPtr(i)));
 
   lfeMods.FilteredListBox:=lbMods;
   lfeMods.SortData:=true;
@@ -397,7 +426,7 @@ begin
   end;
   SetLength(llist,0);
   gdLanguages.EndUpdate();
-  bbGenerate.Enabled:=lcnt>0;
+  sbBuild.Enabled:=lcnt>0;
   if lcnt>0 then gdLanguages.Row:=1;
 end;
 
@@ -411,6 +440,8 @@ begin
   FLogForm  :=nil;
   FSQLogForm:=nil;
 
+  TL2Settings:=TTL2Settings.Create(Self);
+
   SetProgramLanguage();
   TLOpenBase(true);
   FillLangList();
@@ -421,6 +452,7 @@ end;
 procedure TFormSQLCP.FormDestroy(Sender: TObject);
 begin
   TLCloseBase(false);
+  SetLength(FModList,0);
 end;
 
 procedure TFormSQLCP.DoStartEdit(Sender: TObject);
@@ -433,10 +465,7 @@ begin
     // to avoid multiply dblclicks
     MainTL2TransForm:=TMainTL2TransForm(1);
 
-         if lbMods.ItemIndex=0 then CurMod:=modAll
-    else if lbMods.ItemIndex=1 then CurMod:=modVanilla
-    else
-      CurMod:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
+    CurMod:=FModList[IntPtr(lbMods.Items.Objects[lbMods.ItemIndex])].id;
     CurLang:=gdModStat.Cells[2,gdModStat.Row];
 
     MainTL2TransForm:=TMainTL2TransForm.Create(Self);

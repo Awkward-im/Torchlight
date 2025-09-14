@@ -130,7 +130,7 @@ const                  // hob flags: 1 - Add to pak?; 2 - binary reader?compile?
   hobWDat       = $20; //                           .WDAT (RGO)
   // Hob only
   hobCol        = $21; // 33 111(COLLISION)         .COL
-  HobRedirect   = $22; // 34 111(REDIRECT)
+  hobRedirect   = $22; // 34 111(REDIRECT)
   hobBank       = $23; // 35 111(FMOD BANK)         .BANK
   hobCache      = $24; // 36 000(CACHE)             .CACHE
 

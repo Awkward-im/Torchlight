@@ -8,11 +8,6 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
   Buttons,  trclass;
 
-const
-  DefDATFile    = 'TRANSLATION.DAT';
-  DefaultExt    = '.DAT';
-  DefaultFilter = 'DAT files|*.DAT';
-
 type
 
   { TTL2Settings }
@@ -22,13 +17,15 @@ type
     bbSaveSettings: TBitBtn;
     cbAsPartial: TCheckBox;
     cbRemoveTags: TCheckBox;
+    cbParamSign: TCheckBox;
     edFilterWords: TEdit;
     edTransLang: TEdit;
     gbTranslation: TGroupBox;
     cbAPIKey: TCheckBox;
-    lblTitle: TLabel;
+    gbTemplate: TGroupBox;
+    lblTmplDescr: TLabel;
     lblFilter: TLabel;
-    lblFilterNote: TLabel;
+    lblTitle: TLabel;
     lblGetAPIKey: TLabel;
     lblDescr: TLabel;
     lblTranslators: TLabel;
@@ -48,6 +45,9 @@ type
     procedure lblGetAPIKeyClick(Sender: TObject);
     procedure lbTranslatorsSelectionChange(Sender: TObject; User: boolean);
   private
+    OldFilter:AnsiString;
+    OldParam:boolean;
+
     procedure ApplyLoadedLang(const alang:AnsiString);
     procedure ApplyLoadedTrans(const alang: AnsiString);
     procedure FillLocalesList;
@@ -77,6 +77,7 @@ uses
   iso639,
 
   rgglobal,
+  rgdb.text,
   TL2Text,
   TL2DataModule;
 
@@ -86,6 +87,8 @@ resourcestring
 
   rsUseFreeKey    = 'Paid or Free Key (free)';
   rsUsePaidKey    = 'Paid or Free Key (paid)';
+
+  rsRemakeFilter  = 'Rebuild templates...';
 
 { TTL2Settings }
 
@@ -114,8 +117,8 @@ const
   sTransLang    = 'Language';
   sPrgTransLang = 'PrgLanguage';
   sFilter       = 'filter';
+  sParam        = 'keepparam';
   sAutoPartial  = 'autoaspartial';
-  sReopenFiles  = 'reopenfiles';
   sRemoveTags   = 'removetags';
   sHidePartial  = 'hidepartial';
   sFreeKey      = 'freekey';
@@ -207,7 +210,20 @@ begin
   config.WriteBool(sNSBase+':'+sSectSettings,sRemoveTags,cbRemoveTags.Checked);
 
   //--- Special
+  config.WriteBool  (sNSBase+':'+sSectSettings,sParam ,cbParamSign.Checked);
   config.WriteString(sNSBase+':'+sSectSettings,sFilter,edFilterWords.Caption);
+  if (OldFilter<>edFilterWords.Caption) or
+     (OldParam <>cbParamSign.Checked) then
+  begin
+    SetFilterWords(TL2Settings.edFilterWords.Caption,cbParamSign.Checked);
+
+    OldParam :=cbParamSign.Checked;
+    OldFilter:=edFilterWords.Caption;
+    ls:=Application.MainForm.Caption;
+    Application.MainForm.Caption:=rsRemakeFilter;
+    RemakeFilter();
+    Application.MainForm.Caption:=ls;
+  end;
 
   config.UpdateFile;
 
@@ -246,7 +262,10 @@ begin
   cbRemoveTags.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sRemoveTags,true);
 
   //--- Special
+  cbParamSign.Checked  :=config.ReadBool  (sNSBase+':'+sSectSettings,sParam ,false);
   edFilterWords.Caption:=config.ReadString(sNSBase+':'+sSectSettings,sFilter,defFilter);
+  OldFilter:=edFilterWords.Caption;
+  OldParam :=cbParamSign.Checked;
 
   //--- Translation
   for i:=0 to lbTranslators.Items.Count-1 do
@@ -269,7 +288,7 @@ begin
 
   config.Free;
 
-  SetFilterWords(TL2Settings.edFilterWords.Caption);
+  SetFilterWords(TL2Settings.edFilterWords.Caption,cbParamSign.Checked);
 
 //  ls:=edDefaultFile.Text;
 //  edDefaultFileAcceptFileName(Self, ls);

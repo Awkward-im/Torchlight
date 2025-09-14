@@ -42,8 +42,8 @@ var
 const
   defFilter = 'a an the of by to for his her their';
 
-function  FilteredString(const astr:AnsiString):AnsiString;
-procedure SetFilterWords(const astr:AnsiString);
+function  FilteredString(const astr:AnsiString{; keepparam:boolean=false}):AnsiString;
+procedure SetFilterWords(const astr:AnsiString; akeepparam:boolean=false);
 function  GetFilterWords:AnsiString;
 
 
@@ -71,6 +71,7 @@ const
 
 var
   curFilter:AnsiString='';
+  keepparam:Boolean=false;
   filter: TStringArray=nil;
 
 function InsertColor(const aselected, acolor:AnsiString):AnsiString;
@@ -579,8 +580,9 @@ begin
   result:=curFilter;
 end;
 
-procedure SetFilterWords(const astr:AnsiString);
+procedure SetFilterWords(const astr:AnsiString; akeepparam:boolean=false);
 begin
+  keepparam:=akeepparam;
   if (astr='') and (curFilter<>defFilter) then
   begin
     curFilter:=defFilter;
@@ -602,7 +604,7 @@ end;
   !! KEEP '_','+','%' as significat chars
   remove \n and other punctuation
 }
-function FilteredString(const astr:AnsiString):AnsiString;
+function FilteredString(const astr:AnsiString{; keepparam:boolean=false}):AnsiString;
 const
   sWord = ['A'..'Z','a'..'z'{'_','0'..'9'}];
 var
@@ -797,6 +799,12 @@ begin
         end
         else if j=2 then inc(i);
         
+        if (i<>k) and keepparam then
+        begin
+          result[ldi]:='*';
+          inc(ldi);
+        end;
+
         wasletter:=false;
       end;
 

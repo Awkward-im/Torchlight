@@ -12,63 +12,6 @@ object FormSQLCP: TFormSQLCP
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
-  object bbScanMod: TBitBtn
-    Left = 8
-    Height = 26
-    Top = 298
-    Width = 99
-    Anchors = [akLeft, akBottom]
-    AutoSize = True
-    Caption = 'Scan Mod'
-    Kind = bkRetry
-    TabOrder = 0
-    OnClick = bbScanModClick
-  end
-  object bbAddTrans: TBitBtn
-    Left = 281
-    Height = 25
-    Hint = 'Load translation file'
-    Top = 267
-    Width = 52
-    Anchors = [akLeft, akTop]
-    AutoSize = True
-    Caption = 'Load'
-    TabOrder = 1
-    OnClick = bbAddTransClick
-  end
-  object bbSaveDB: TBitBtn
-    AnchorSideRight.Side = asrBottom
-    Left = 456
-    Height = 26
-    Hint = 'Save DB changes (memory DB related)'
-    Top = 298
-    Width = 88
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Caption = 'Save DB'
-    Kind = bkOK
-    TabOrder = 2
-    OnClick = bbSaveDBClick
-  end
-  object lbMods: TListBox
-    Left = 8
-    Height = 262
-    Top = 32
-    Width = 269
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    ExtendedSelect = False
-    ItemHeight = 0
-    TabOrder = 3
-    OnSelectionChange = lbModsSelectionChange
-  end
-  object lblCurLang: TLabel
-    Left = 281
-    Height = 15
-    Top = 13
-    Width = 104
-    Anchors = [akTop, akRight]
-    Caption = 'Current translations'
-  end
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
@@ -76,182 +19,396 @@ object FormSQLCP: TFormSQLCP
     Width = 552
     Panels = <>
   end
-  object lfeMods: TListFilterEdit
-    Left = 8
-    Height = 23
-    Top = 5
-    Width = 269
-    OnAfterFilter = lfeModsAfterFilter
-    ButtonWidth = 23
-    Anchors = [akTop, akLeft, akRight]
-    NumGlyphs = 1
-    MaxLength = 0
-    TabOrder = 5
-    FilteredListbox = lbMods
+  object pnlUpper: TPanel
+    Left = 0
+    Height = 331
+    Top = 0
+    Width = 552
+    Align = alClient
+    ClientHeight = 331
+    ClientWidth = 552
+    TabOrder = 1
+    object pnlLeft: TPanel
+      Left = 1
+      Height = 329
+      Top = 1
+      Width = 282
+      Align = alClient
+      ClientHeight = 329
+      ClientWidth = 282
+      TabOrder = 0
+      object lfeMods: TListFilterEdit
+        Left = 4
+        Height = 23
+        Top = 5
+        Width = 235
+        OnAfterFilter = lfeModsAfterFilter
+        ButtonWidth = 23
+        Anchors = [akTop, akLeft, akRight]
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 0
+        FilteredListbox = lbMods
+      end
+      object lbMods: TListBox
+        Left = 4
+        Height = 291
+        Top = 32
+        Width = 235
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ExtendedSelect = False
+        ItemHeight = 0
+        TabOrder = 1
+        OnSelectionChange = lbModsSelectionChange
+      end
+      object sbAdd: TSpeedButton
+        Left = 244
+        Height = 32
+        Hint = 'Scan mod for text and add to list'
+        Top = 32
+        Width = 32
+        Anchors = [akTop, akRight]
+        Images = ImageList
+        ImageIndex = 0
+        OnClick = AddMod
+      end
+      object sbRemove: TSpeedButton
+        Left = 244
+        Height = 32
+        Hint = 'Remove mod from list'
+        Top = 80
+        Width = 32
+        Anchors = [akTop, akRight]
+        Images = ImageList
+        ImageIndex = 1
+        OnClick = RemoveMod
+      end
+      object sbEdit: TSpeedButton
+        Left = 244
+        Height = 32
+        Hint = 'Edit text for selected mod and language'#13#10'(or DblClick in list below)'
+        Top = 127
+        Width = 32
+        Anchors = [akTop, akRight]
+        Images = ImageList
+        ImageIndex = 2
+        OnClick = DoStartEdit
+      end
+    end
+    object pnlRight: TPanel
+      Left = 288
+      Height = 329
+      Top = 1
+      Width = 263
+      Align = alRight
+      ClientHeight = 329
+      ClientWidth = 263
+      TabOrder = 1
+      object lblCurLang: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 104
+        Caption = 'Current translations'
+      end
+      object gdLanguages: TStringGrid
+        Left = 2
+        Height = 247
+        Top = 32
+        Width = 255
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        AutoFillColumns = True
+        ColCount = 3
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            ReadOnly = True
+            SizePriority = 0
+            Title.Caption = 'Count'
+            Width = 60
+          end        
+          item
+            ReadOnly = True
+            SizePriority = 0
+            Title.Caption = 'Lang'
+            Width = 48
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Name'
+            Width = 147
+          end>
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
+        RowCount = 1
+        ScrollBars = ssAutoVertical
+        TabOrder = 0
+        ColWidths = (
+          60
+          48
+          147
+        )
+      end
+      object sbLoad: TSpeedButton
+        Left = 2
+        Height = 32
+        Hint = 'Load translation file'
+        Top = 291
+        Width = 32
+        Anchors = [akBottom]
+        Images = ImageList
+        ImageIndex = 3
+        OnClick = AddTrans
+      end
+      object sbNew: TSpeedButton
+        Left = 39
+        Height = 32
+        Hint = 'Add new translation language'
+        Top = 291
+        Width = 32
+        Anchors = [akLeft, akBottom]
+        Images = ImageList
+        ImageIndex = 4
+        OnClick = NewTrans
+      end
+      object sbBuild: TSpeedButton
+        Left = 187
+        Height = 32
+        Hint = 'Generate translation file for mod'
+        Top = 291
+        Width = 32
+        Anchors = [akRight, akBottom]
+        Images = ImageList
+        ImageIndex = 7
+        OnClick = Build
+      end
+      object sbSQL: TSpeedButton
+        Left = 113
+        Height = 32
+        Hint = 'Show session SQL requiests of DB modify'
+        Top = 291
+        Width = 32
+        Anchors = [akLeft, akBottom]
+        Images = ImageList
+        ImageIndex = 5
+        OnClick = ShowSQLog
+      end
+      object sbLog: TSpeedButton
+        Left = 150
+        Height = 32
+        Hint = 'Show log file'
+        Top = 291
+        Width = 32
+        Anchors = [akLeft, akBottom]
+        Images = ImageList
+        ImageIndex = 3
+        OnClick = ShowLog
+      end
+      object sbSave: TSpeedButton
+        Left = 224
+        Height = 32
+        Hint = 'Save DB changes (memory DB related)'
+        Top = 291
+        Width = 32
+        Anchors = [akRight, akBottom]
+        Images = ImageList
+        ImageIndex = 8
+        OnClick = SaveDB
+      end
+      object sbSettings: TSpeedButton
+        Left = 76
+        Height = 32
+        Hint = 'Open settings window'
+        Top = 291
+        Width = 32
+        Images = ImageList
+        ImageIndex = 9
+        OnClick = sbSettingsClick
+      end
+    end
+    object VSplitter: TSplitter
+      Left = 283
+      Height = 329
+      Top = 1
+      Width = 5
+      Align = alRight
+      ResizeAnchor = akRight
+    end
   end
-  object bbLog: TBitBtn
-    AnchorSideRight.Control = bbSaveDB
-    Left = 382
-    Height = 26
-    Hint = 'Show log file'
-    Top = 298
-    Width = 66
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    BorderSpacing.Right = 8
-    Caption = 'Log'
-    Kind = bkHelp
-    TabOrder = 6
-    OnClick = bbLogClick
+  object pnlLower: TPanel
+    Left = 0
+    Height = 201
+    Top = 336
+    Width = 552
+    Align = alBottom
+    ClientHeight = 201
+    ClientWidth = 552
+    TabOrder = 2
+    object edModStat: TEdit
+      Left = 4
+      Height = 23
+      Top = 2
+      Width = 542
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 0
+    end
+    object gdModStat: TStringGrid
+      Left = 4
+      Height = 166
+      Hint = 'Double-Click to edit translation'
+      Top = 28
+      Width = 542
+      Anchors = [akLeft, akRight, akBottom]
+      AutoEdit = False
+      AutoFillColumns = True
+      ColCount = 4
+      ColumnClickSorts = True
+      Columns = <      
+        item
+          ReadOnly = True
+          SizePriority = 0
+          Title.Caption = 'Count'
+          Width = 60
+        end      
+        item
+          ReadOnly = True
+          SizePriority = 0
+          Title.Caption = 'Partial'
+          Width = 60
+        end      
+        item
+          ReadOnly = True
+          SizePriority = 0
+          Title.Caption = 'Lang'
+          Width = 48
+        end      
+        item
+          Title.Caption = 'Name'
+          Width = 374
+        end>
+      FixedCols = 0
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
+      RowCount = 1
+      ScrollBars = ssAutoVertical
+      TabOrder = 1
+      OnDblClick = DoStartEdit
+      ColWidths = (
+        60
+        60
+        48
+        374
+      )
+    end
   end
-  object gdLanguages: TStringGrid
-    Left = 280
-    Height = 232
-    Top = 32
-    Width = 264
-    Anchors = [akTop, akRight]
-    AutoFillColumns = True
-    ColCount = 3
-    ColumnClickSorts = True
-    Columns = <    
-      item
-        ReadOnly = True
-        SizePriority = 0
-        Title.Caption = 'Count'
-        Width = 60
-      end    
-      item
-        ReadOnly = True
-        SizePriority = 0
-        Title.Caption = 'Lang'
-        Width = 48
-      end    
-      item
-        ReadOnly = True
-        Title.Caption = 'Name'
-        Width = 156
-      end>
-    FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
-    RowCount = 1
-    ScrollBars = ssAutoVertical
-    TabOrder = 7
-    ColWidths = (
-      60
-      48
-      156
-    )
+  object HSplitter: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 5
+    Top = 331
+    Width = 552
+    Align = alBottom
+    ResizeAnchor = akBottom
   end
-  object edModStat: TEdit
-    Left = 8
-    Height = 23
-    Top = 329
-    Width = 536
-    Anchors = [akLeft, akRight, akBottom]
-    TabOrder = 8
-  end
-  object gdModStat: TStringGrid
-    Left = 8
-    Height = 176
-    Hint = 'Double-Click to edit translation'
-    Top = 356
-    Width = 536
-    Anchors = [akLeft, akRight, akBottom]
-    AutoEdit = False
-    AutoFillColumns = True
-    ColCount = 4
-    ColumnClickSorts = True
-    Columns = <    
-      item
-        ReadOnly = True
-        SizePriority = 0
-        Title.Caption = 'Count'
-        Width = 60
-      end    
-      item
-        ReadOnly = True
-        SizePriority = 0
-        Title.Caption = 'Partial'
-        Width = 60
-      end    
-      item
-        ReadOnly = True
-        SizePriority = 0
-        Title.Caption = 'Lang'
-        Width = 48
-      end    
-      item
-        Title.Caption = 'Name'
-        Width = 368
-      end>
-    FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
-    RowCount = 1
-    ScrollBars = ssAutoVertical
-    TabOrder = 9
-    OnDblClick = DoStartEdit
-    ColWidths = (
-      60
-      60
-      48
-      368
-    )
-  end
-  object bbSQLog: TBitBtn
-    AnchorSideLeft.Control = bbScanMod
-    AnchorSideLeft.Side = asrBottom
-    Left = 113
-    Height = 26
-    Hint = 'Show session SQL requiests of DB modify'
-    Top = 298
-    Width = 87
-    Anchors = [akLeft, akBottom]
-    AutoSize = True
-    BorderSpacing.Left = 6
-    Caption = 'SQL log'
-    Kind = bkOK
-    TabOrder = 10
-    OnClick = bbSQLogClick
-  end
-  object bbNewTrans: TBitBtn
-    AnchorSideLeft.Control = bbAddTrans
-    AnchorSideLeft.Side = asrBottom
-    Left = 341
-    Height = 25
-    Hint = 'Add new translation language'
-    Top = 267
-    Width = 50
-    AutoSize = True
-    BorderSpacing.Left = 8
-    Caption = 'New'
-    TabOrder = 11
-    OnClick = bbNewTransClick
-  end
-  object bbGenerate: TBitBtn
-    Left = 471
-    Height = 25
-    Hint = 'Generate translation file for mod'
-    Top = 267
-    Width = 73
-    Anchors = [akTop, akRight]
-    AutoSize = True
-    Caption = 'Generate'
-    TabOrder = 12
-    OnClick = bbGenerateClick
-  end
-  object bEdit: TBitBtn
-    AnchorSideLeft.Control = bbSQLog
-    AnchorSideLeft.Side = asrBottom
-    Left = 206
-    Height = 26
-    Top = 298
-    Width = 66
-    AutoSize = True
-    BorderSpacing.Left = 6
-    Caption = 'Edit'
-    Kind = bkYesToAll
-    ModalResult = 10
-    TabOrder = 13
-    OnClick = DoStartEdit
+  object ImageList: TImageList
+    Height = 24
+    Scaled = True
+    Width = 24
+    Left = 250
+    Top = 423
+    Bitmap = {
+      4C7A0A0000001800000018000000780B00000000000078DAED5B797055D5193F
+      142C6D47C5E926DAA95DA65B1214AB0856E91FEDD485DADA3F5ADA992E33B68E
+      0215AB5594164D88D40514AB15992A6D91B284BCFB12284B580443D855148490
+      BC5088E814416513A30905F2BE7EBFF3BEF372DFCD7D777B3720F5BD996FEE7D
+      F79CF33BE77CDBF9EE77CF51AAF82BF45735EAF223736EBE2C6D273C8B0B1F78
+      D4FA3CD1AE0D443BD711ED584D78162BBEE052CB2AA2D473F1E30B2E35AF20DA
+      BE3C7E7CC1A5C62544DB16C78F2FB8F4CA42A22DFF8A84EFA627A0C4AD438F19
+      5CDA3C8FE8E52425465F79CCAD6ED5A82147C2F0C1894B9B12442FCE257A610E
+      D1C659441B6610AD9F4EB4F6EF446BA679CECB8D0F417169F553440D53FDF123
+      E252FD14A2E7FEE28F1F1197563E46F4ECA39EF8908D9BCCE68CE07E1DB889D1
+      57B8CB77E4902391F433041F22E187E043247CC1A5E50F132D9B183FBEE0D2D2
+      0789EAEE8F1F5F7069F104A24595B1E2578D1CDC7D7DE167C595B7F82BFE8ABF
+      D3394E0E4BC5F8E7348C7F42D0EC11833A8B9652FC157F27E74744055373B51A
+      C0975E716039A931A12AB75B8AF8FA44DC7D186CA6854CE938FBD89E5053F5B8
+      2D758FFE9F54BF8DAB0FC67C58C6BD97FF7E24DB670C7DD878B215D7264B6DCB
+      E923A16EE2E79D4C4F87ED238B9D50E5825525B2CDED23230FCAE855346C434D
+      D56AA6BD0FE6D1DDBA5E524D2C14DBC613338F37E55A195ABF454F3C64DE28E3
+      9E1AD7B86DD877E93124A1373D831D27BF0BC47E220876143D615BF989D8CCEB
+      3EE3BE27AC9E48BBF94D09D5217D6CF41A7753528D0F83CD7817309D800FE1EB
+      02E9E3C538B0C5462671DB7777CE56674B7F397D1482BDC1521FE7B6FB337E2F
+      674E7582F97A147E6771926AB26E5FABAE33CF5A16A8B3784EB7701F1D5DEB53
+      647FDE22BA76147D888E1E813C98E641AFA262A7AAD5D7C49FDB693FF4BAB956
+      7DA1D0752E354F7D8AF10ECBF853E0D5EE67D4C7E25CA7D107E6D113F1C5E94E
+      2D73D5F9DB33B6D4E690F131AC19ECD3AF2E288EC9601F615D7F0C3A934396DA
+      02D91B9B8E88DFC6FA3E398FCFB8C64577FDA8D5819FD7EEA1A75C36AEDBBCF2
+      91A5D6012F287ED4D8EB54E0AF5AA5FAF0FDEE08FCF6A25D06BFB1460D921823
+      1198DF0E62DFF257D6E945228BFF30A50C3EFBC83B700F7B289857951C275AEA
+      2062DCECF879EDC57C627937A8560305F797069FAF6FF1757A1CF8CC8BD13A7E
+      66FF2EF853651DFC752C7A041932FF8DFE6C874C326BF95762E18FA5DEE0B1CE
+      B2E9E736BEEE8BE55DB5467D55C67A7316DF52EFF0FFEA986CEC371AB35A95D8
+      F88378F3969878F30CD66FF3EE65F0D9BE2E8A09BF153187DD3FF0D83B601305
+      F3BE569D2778BFCFF13F881F126A6CA104FB115E0CB2E11F8BD9A7ED86AFFC7F
+      8C2520FB30BC603DD9CC7466087CD26B68B0B5167A823CC3DAA07D84592BA56E
+      42F4633DE2F91EC0AFE439FC38681F51F0254E0AD447687C4BADB0D9D66CC803
+      328F093FAFAEC5811F34FE29E217F18BF845FC227E4CF8B6352374FC86B6DEF8
+      AD31C46FAD1F94780B79CBA61A3584D7D4EBF16E867C36F3780CEE991F3FE4E7
+      8351273466528D60ACD53CD7E301F8719CFB69401BBFBE9AABD5255CFF35477B
+      E49D5EE0FEEA18672688FF2F61DAC4F4BE3376E6F28B3DE4BB43E2CAB7793C0F
+      80375EB136D7FB28D3508E17FFCCD777A46D8B077E2770A3E427115731F6E3C0
+      F0896FEB21BB9D4B54DF903981CB781E553EF8695BEC8DF92ED779114BDDA075
+      8879C132BABC39A1BE879C31F44964F2AA4D06690F7E36C4605FF579FD47953A
+      D7E40A22D282ADF3D467BDF413D76D96BA94E5FC88E427BD6C00659B51D7B4B5
+      BF3BBAF91F673974103927EEF34296FB7740B8C7339439EA0E862C7CF427CD75
+      1633FD9CA97F805C4F7F1EFF2FD0C6E88757AED585077B594F5EE6EB52E45C40
+      B897677B5DEAB7F97DD72A84B8FF3FE6C3D7F9DAA4FA81F896B0D89B787CD779
+      F9382EBFCD9E27625F3C92ED6B1ABE47337F37F0F5DF20B95F8832D4B1E7BDEC
+      B98D3CF6FB74E35CF5F9D06B2FB791B1A47DF487E4BB510353057C91B6074B5D
+      F0D222F50910EEF14CD6980AA97BC2EFFDABC97CA72A8C521EF8173B7C55E8B5
+      1DB9552F3E4287640F437DC0DCD031F1E93785F5E95A5FD95F4067E1A3B1B6EB
+      F51DF7FC0C6561314F090D57BDA9F2EBE753F9372ED5847B3C2B38CF5EF2FDCE
+      8AD2D9E98AD2434CE4A04328A38AD261A171CB4BBFC9EDD7E5E04DFA36A59FFC
+      5186260D75F6B586CACB0606C2AE28F959BAA2AC5DB79B7805D1B393895E7D9E
+      E8E06BB98467CB1FA1F443DF327DBCCFE3FAA93F76695AD74FDE49F466AA3BAE
+      93F6A5286DDD61FA4833BF86E7E74966DC7ACCDD709A299DB85D13EEBB95632E
+      BA8F9276375E71D95A5D5E33C67D9C2B1FCFF21BF76E75BAE651D6E0D4930CBF
+      AFCCCF936593BAF0F93E2FAF441E545976ADC1171D74E74B569E1B28FDE87735
+      E13E6F3DE1536745D94C633BFCFFB0C677D393B0D4BAD1CCF3A0CEC9B32D1AFD
+      F66C776037D1BAE919C2BD475DF0598F775CC97954396090C667BBF1C45FFF8F
+      2EFEF3BD273E6C10F5C49F04C14FD73DD065AF7CEF5977CAF522E3924B82F227
+      14BE9D3F19F91EF2936F607CE8995DBED0CFF1A5B3343EEB56C1F8463FC797FD
+      B3CBEF940ECBFAB37DA9E8F8F02159FB1A70B5C33FACD66DD9C623FB07F827D4
+      292F59D5DDBF950D848FCDCB273FFFB6CCF8B7D2F758272F74F7CFA5C3B3FE19
+      F3D817C43F37778D1BFEB9B2CC7B2F4FA60F3D0FF052CF856DDE4D4FF498BBD6
+      97F77CB1B3FE74C045F0B1396B20741A7609DB11FDB6513DDBD280D0EB7045D9
+      35F083D06597F5FDA0F6915C278EEFF5DA164D7CA2FD56E1DF2B7B84327B0BD2
+      5128C87E5BCB52BD256E5D8ABD2D41087575DC1F8067061FB985C0B90DD9DB17
+      055F723C79A9507CBFF8BF507CE6EF835EF461E18F33771B853F5E395CDBB7E5
+      4951F553F6A8AE737B0736B9F342F5DF99432FF07DD7EFFBBCC15E12C7FE8A1C
+      CAE47849F67DDE1DFB5E04BBCC3FC4F8AC67BFB2E77D9976C6899F9AABBEC87A
+      727F768F9DA56E38E9FCE941FDEC69FB2AEE410EB27FBEEF98A664EFF65CFEF5
+      A2A69A33BCF9ABCB7BD972C37DF633CF4BBBE1D7F4693F941A4BED7BFE96A5D4
+      FC33E940EA4FD47E60655E3A909AC0F5CECAB67963FDB0134DB5671C327BF7EC
+      BEBF7DCF34A2B63559D2CF0EAC203AB13F87DE6ABC4B97E18A72EDEB4DBB771B
+      68CFFA6B8F3727FBBCDD23F84CC071DBE37BB2F153F3CFD6FCF5E6FF7D5CAF5F
+      24FCC3A971BAAD97FEA0FC70CBB848F851E954E31F6EF983E67D183F86FAE067
+      10FC8C5CBDEDCADDCEFA05C2CFA7975E64D7D3227E11BF889F8B6F5F1F33EBE2
+      8490F67B5F769D040ED6F21CFCDABE77A28FA0EBBAD73A0F1CC40B1F84B8655B
+      ADFA326262ECE977DDE7CF65A813E5CC967CAFEF141E1CDD6AA92FE5F4CBCFA4
+      0C7B6E178739D7C2EF0C5749DC3E43CEDDE0BB7FD2A66F493CD3DF80B98EBCCF
+      5E15141FDF90B94D07F64D482C7FAFBC1F9B7C12FABE57CE4E621F4607DA847C
+      EFC15EB0ADD93D4DB9717CABF98E8F3AA8EBC76FCCCF3E066E3705EF553BAAD4
+      A7CD9CC07790D91F843279F79A629F3BB0ECF2689473A698A71E77523D29B25D
+      EAB57F49CE5C2DD575B98DCCB943E45167D30594CF105E6E35F93DFB3E267C3B
+      E736A3F4F7E51A3524E77BB7E4F7D056636464DE29D80F39CF4C6CB6D4674C2E
+      67CB7C758EEC4B2247FEA6EE254BF533394DDDC6F043CE7A019BEBDD28BADC06
+      9D70EEBF90F7B4A37AEF5B953A17FDF11C7E8767E60C50CE39DF8CAEB5499B1B
+      F11CB6233AADCF9C993EC007D95372ABCBD9C2B1F67333728678976024EDF668
+      B3F971F63366E035FE63CCF9CEBA987346AF58EA737EFB5B50863AA82B7A354A
+      30FAE739779B3D4B23E740B50D3AEBE6E50FEB4CBEF77B7E76BBF43DD88B3F7E
+      F2D5E70632B2BA8DB13EA97D5F669EFFC51E1A3FF9FAE92774507CA9F3DD7C66
+      F65CAA877E86B0AFC1E035E4693F6BE5675F3DED1F82FA378CD3F837532FA87F
+      0BE29FEDF95DF8EA30FEF964AF2FF6F551AF8179D647AD2711D647B7F5DD1E27
+      883D465EDFE38C4FFE079B3239D7
+    }
   end
 end

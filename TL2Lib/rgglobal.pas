@@ -20,10 +20,10 @@ type
   end;
   TDictDynArray = array of TDictElement;
 type
- TDict64Element = record
-   id   :Int64;
-   value:AnsiString;
- end;
+  TDict64Element = record
+    id   :Int64;
+    value:AnsiString;
+  end;
   TDict64DynArray = array of TDict64Element;
 type
   TRGDebugLevel = (dlNone, dlNormal, dlDetailed);

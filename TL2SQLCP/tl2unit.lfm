@@ -39,7 +39,7 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object tbSeparator1: TToolButton
       Left = 27
-      Height = 8
+      Height = 22
       Top = 2
       Style = tbsSeparator
     end
@@ -50,7 +50,7 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object tbSeparator2: TToolButton
       Left = 81
-      Height = 8
+      Height = 22
       Top = 2
       Style = tbsSeparator
     end
@@ -71,7 +71,7 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object tbSeparator3: TToolButton
       Left = 158
-      Height = 5
+      Height = 22
       Top = 2
       Style = tbsDivider
     end
@@ -107,7 +107,7 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object tbSeparator4: TToolButton
       Left = 324
-      Height = 8
+      Height = 22
       Top = 2
       Style = tbsSeparator
     end
@@ -281,7 +281,7 @@ object MainTL2TransForm: TMainTL2TransForm
       end    
       item
         Title.Caption = 'Translation'
-        Width = 662
+        Width = 658
       end>
     DefaultColWidth = 48
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
@@ -301,7 +301,7 @@ object MainTL2TransForm: TMainTL2TransForm
       48
       269
       28
-      662
+      658
     )
   end
   object memEdit: TMemo

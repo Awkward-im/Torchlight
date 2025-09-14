@@ -500,12 +500,13 @@ end;
 
 //----- Init/Clear -----
 
-procedure InitLayoutDict(var alay:TLayoutInfo);
+procedure InitLayoutDict(out alay:TLayoutInfo);
 begin
+  FillChar(alay,SizeOf(alay),0);
   alay.scenes[0].id:=dword(-1);
-  alay.objects:=nil;
-  alay.props  :=nil;
-  alay.buf    :=nil;
+//  alay.objects:=nil;
+//  alay.props  :=nil;
+//  alay.buf    :=nil;
 end;
 
 procedure ClearLayoutDict(var alay:TLayoutInfo);

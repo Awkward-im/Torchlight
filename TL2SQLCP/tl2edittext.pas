@@ -187,7 +187,7 @@ begin
       begin
         inc(result);
         litem^.dst  :=ReplaceTranslation(PAnsiChar(ltrans),PAnsiChar(litem^.src));
-        litem^.part :=TL2Settings.cbAsPartial.Checked;
+        litem^.part :=true;
         litem^.flags:=litem^.flags or rfIsModified or rfIsAutofill;
       end;
     end;

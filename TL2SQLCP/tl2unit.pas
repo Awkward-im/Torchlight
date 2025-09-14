@@ -1,3 +1,4 @@
+{TODO: implement (fix) actImportClipBrd}
 unit TL2Unit;
 
 {$mode objfpc}{$H+}
@@ -241,9 +242,9 @@ procedure TMainTL2TransForm.FormCreate(Sender: TObject);
 begin
   fmLogForm:=nil;
 
-  TL2Settings:=TTL2Settings.Create(Self);
-  TL2Settings.Parent:=Self;
-  TL2Settings.Align :=alClient;
+  TL2Settings.Parent     :=Self;
+  TL2Settings.BorderStyle:=bsNone;
+  TL2Settings.Align      :=alClient;
 
   Self.Font.Assign(TL2DM.TL2Font);
 
@@ -321,7 +322,7 @@ begin
       begin
         inc(result);
         litem^.dst  :=ReplaceTranslation(PAnsiChar(ltrans),PAnsiChar(litem^.src));
-        litem^.part :=TL2Settings.cbAsPartial.Checked;
+        litem^.part :=true;
         litem^.flags:=litem^.flags or rfIsModified or rfIsAutofill;
 
         UpdateGrid(i);
@@ -500,7 +501,7 @@ begin
       dec(idx);
       NextNoticed(false,idx); // yes, yes, check it again but with fix at same time
       inc(lcnt);
-      TRCache[idx].part :=TL2Settings.cbAsPartial.Checked;
+      TRCache[idx].part :=true;
       TRCache[idx].flags:=TRCache[idx].flags or rfIsModified;
       FileSave.Enabled  :=true;
 

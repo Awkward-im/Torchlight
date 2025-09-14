@@ -8,6 +8,8 @@
 {"hash":240489369,"name":"ttl2settings.lblgetapikey.caption","sourcebytes":[71,101,116,32,121,111,117,114,32,111,119,110,32,65,80,73,32,107,101,121],"value":"Get your own API key"},
 {"hash":2807380,"name":"ttl2settings.bbfontedit.caption","sourcebytes":[38,70,111,110,116],"value":"&Font"},
 {"hash":7060910,"name":"ttl2settings.cbremovetags.caption","sourcebytes":[82,101,109,111,118,101,32,116,97,103,115,32,111,110,32,116,114,97,110,115,108,97,116,105,111,110],"value":"Remove tags on translation"},
-{"hash":200534807,"name":"ttl2settings.lblfilter.caption","sourcebytes":[87,111,114,100,115,32,116,111,32,101,120,99,108,117,100,101,32,102,114,111,109,32,99,111,109,112,97,114,105,110,103],"value":"Words to exclude from comparing"},
-{"hash":107700020,"name":"ttl2settings.lblfilternote.caption","sourcebytes":[82,101,111,112,101,110,32,112,114,111,106,101,99,116,32,116,111,32,97,112,112,108,121,32,110,101,119,32,108,105,115,116],"value":"Reopen project to apply new list"}
+{"hash":74633219,"name":"ttl2settings.gbtemplate.caption","sourcebytes":[84,101,109,112,108,97,116,101,115],"value":"Templates"},
+{"hash":129788997,"name":"ttl2settings.lblfilter.caption","sourcebytes":[87,111,114,100,115,32,116,111,32,101,120,99,108,117,100,101],"value":"Words to exclude"},
+{"hash":118637582,"name":"ttl2settings.cbparamsign.caption","sourcebytes":[77,97,114,107,32,112,97,114,97,109,115,32,105,110,32,91,32,93,32,97,110,100,32,60,32,62],"value":"Mark params in [ ] and < >"},
+{"hash":165920435,"name":"ttl2settings.lbltmpldescr.caption","sourcebytes":[42,84,101,109,112,108,97,116,101,32,105,115,32,112,97,114,116,32,111,102,32,116,101,120,116,32,116,111,32,102,105,110,100,32,115,105,109,105,108,97,114,115],"value":"*Template is part of text to find similars"}
 ]}
