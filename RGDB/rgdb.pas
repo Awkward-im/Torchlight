@@ -224,7 +224,8 @@ var
   ls:string;
   i:integer;
 begin
-  ModFilter:='((modid='' 0 '')';
+//  ModFilter:='((modid='' 0 '')';
+  ModFilter:='((instr(modid,'' 0 '')>0)';
   if amods<>nil then
   begin
     for i:=0 to High(amods) do
@@ -241,7 +242,8 @@ var
   ls:string;
   i:integer;
 begin
-  ModFilter:='((modid='' 0 '')';
+//  ModFilter:='((modid='' 0 '')';
+  ModFilter:='((instr(modid,'' 0 '')>0)';
   if amods<>nil then
   begin
     for i:=0 to High(amods) do
