@@ -984,12 +984,29 @@ end;
 
 function DeleteOriginal(aid:integer):boolean;
 var
-  lSQL:AnsiString;
+  lSQL,lid:AnsiString;
+  llist:TDictDynArray;
+  i,lcnt:integer;
 begin
-  lSQL:='UPDATE strings SET deleted=1 WHERE id='+IntToStr(aid);
+  Str(aid,lid);
+  lSQL:='UPDATE strings SET deleted=1 WHERE id='+lid;
   result:=ExecuteDirect(tldb,lSQL);
   if result then
+  begin
     SQLog.Add(lSQL);
+
+    // Delete translation from all language files
+    llist:=nil;
+    lcnt:=GetLangList(llist);
+    for i:=0 to pred(lcnt) do
+    begin
+      lSQL:='DELETE FROM ['+llist[i].value+'] WHERE srcid='+lid;
+      result:=ExecuteDirect(tldb,lSQL);
+      if result then
+        SQLog.Add(lSQL);
+    end;
+    SetLength(llist,0);
+  end;
 end;
 
 function RestoreOriginal(aid:integer):boolean;

@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Debug"/>
+    <BuildModes Active="Release"/>
     <Units>
       <Unit>
         <Filename Value="sqlcp.lpr"/>
@@ -54,7 +54,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="58"/>
         <CursorPos X="17" Y="74"/>
-        <UsageCount Value="198"/>
+        <UsageCount Value="199"/>
       </Unit>
       <Unit>
         <Filename Value="tl2about.pas"/>
@@ -65,7 +65,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
       </Unit>
       <Unit>
         <Filename Value="tl2datamodule.pas"/>
@@ -75,7 +75,7 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TL2DataModule"/>
         <EditorIndex Value="7"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -89,7 +89,7 @@
         <EditorIndex Value="9"/>
         <TopLine Value="13"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -101,7 +101,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2EditText"/>
         <EditorIndex Value="3"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -115,7 +115,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
       </Unit>
       <Unit>
         <Filename Value="tl2settingsform.pas"/>
@@ -127,7 +127,7 @@
         <EditorIndex Value="6"/>
         <TopLine Value="32"/>
         <CursorPos X="22" Y="49"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -141,7 +141,7 @@
         <EditorIndex Value="10"/>
         <TopLine Value="109"/>
         <CursorPos Y="128"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -152,7 +152,7 @@
         <EditorIndex Value="5"/>
         <TopLine Value="571"/>
         <CursorPos X="3" Y="585"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -164,7 +164,7 @@
         <UnitName Value="TL2Unit"/>
         <EditorIndex Value="4"/>
         <CursorPos X="5" Y="19"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -174,8 +174,8 @@
         <UnitName Value="TLScan"/>
         <EditorIndex Value="2"/>
         <TopLine Value="755"/>
-        <CursorPos X="66" Y="773"/>
-        <UsageCount Value="175"/>
+        <CursorPos X="15" Y="773"/>
+        <UsageCount Value="176"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -186,7 +186,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2AltForm"/>
         <EditorIndex Value="11"/>
-        <UsageCount Value="46"/>
+        <UsageCount Value="47"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -201,7 +201,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="82"/>
         <CursorPos Y="125"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -279,7 +279,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="409"/>
         <CursorPos Y="444"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="69"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
