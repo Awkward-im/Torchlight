@@ -218,13 +218,13 @@ begin
   DirCapacity:=lentries;
   total:=0;
 
-  for i:=0 to lentries-1 do
+  for i:=0 to pred(lentries) do
   begin
     pc:=memReadShortStringBuf(aptr,@lbuf,bufsize);
     lentry:=AddPath(pc);
     lname:=pc;
     lcnt:=memReadDWord(aptr);
-    for j:=0 to lcnt-1 do
+    for j:=0 to pred(lcnt) do
     begin
       lchecksum:=memReadDWord(aptr);
       ltype   :=RGTypeOfType(memReadByte(aptr),aver);

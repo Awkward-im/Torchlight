@@ -560,7 +560,7 @@ procedure TTL2Stream.WriteFiller(alen:integer);
 var
   i:integer;
 begin
-  for i:=0 to alen-1 do
+  for i:=0 to pred(alen) do
     WriteByte($FF);
 end;
 

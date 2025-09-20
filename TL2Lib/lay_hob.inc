@@ -407,7 +407,7 @@ begin
   if lcnt>0 then
   begin
     lobj:=AddGroup(result,'WARPPOINTS');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lsub:=AddGroup(lobj,'WARP');
       pcw:=memReadShortStringUTF8(FPos);
@@ -424,7 +424,7 @@ begin
   lcnt:=memReadWord(FPos);   // ROOT object amoun
 
   lobj:=AddGroup(result,'OBJECTS');
-  for i:=0 to lcnt-1 do
+  for i:=0 to pred(lcnt) do
     DoParseBlockHob(lobj,-1);
 end;
 
@@ -482,7 +482,7 @@ begin
   AddUnsigned(result,'COUNT',lcnt);
 
   lobj:=AddGroup(result,'OBJECTS');
-  for i:=0 to lcnt-1 do
+  for i:=0 to pred(lcnt) do
     DoParseBlockHob(lobj,-1);
 end;
 

@@ -1,4 +1,3 @@
-{TODO: Statistic for non-latin texts}
 {TODO: Keep filter param replace option in base}
 {TODO: GetModStatistic: add NoRef translations of every lang for count}
 {TODO: AddOriginal: check for case when string is presents but deleted. Must not be added back?}
@@ -74,6 +73,8 @@ const
   rfIsManyRefs  = $0200; // runtime, mod-limited flag
   rfIsNoRef     = $0400; // runtime, no refs for line
   rfIsModified  = $0800; // runtime, dst or part changed
+
+  rfIsUnique    = $2000; // runtime, line is unique for mod
   rfIsAutofill  = $1000; // runtime, autofilled or filter used by similar search
   rfIsReferred  = $8000;
   rfRuntime     = rfIsFiltered or rfIsManyRefs or rfIsNoRef or rfIsModified or rfIsAutofill;
@@ -100,6 +101,7 @@ function GetOriginal    (aid:integer):AnsiString;
 function ChangeOriginal (const asrc,anew:AnsiString):boolean;
 function ChangeOriginal (aid:integer; const anew:AnsiString):boolean;
 function DeleteOriginal (aid:integer):boolean;
+function RestoreOriginal(aid:integer):boolean;
 
 function AddText(const asrc,alang,adst:AnsiString; apart:boolean):integer;
 function GetText        (aid:integer; const atable:AnsiString; var asrc,adst:AnsiString):boolean;
@@ -107,10 +109,12 @@ function GetTranslation (aid:integer; const atable:AnsiString; var      adst:Ans
 function SetTranslation (aid:integer; const atable:AnsiString;
    const adst:Ansistring; apart:boolean):integer;
 function GetLineFlags   (aid:integer; const amodid:AnsiString):cardinal;
+function IsLineUnique   (aid:integer):boolean;
 function GetLineRef     (aid:integer):integer;
 function GetLineRefCount(aid:integer):integer;
+function GetLineRefList (aid:integer; var arr:array of AnsiString; atype:integer):integer;
 // get reference info. aid is refs index, result is source index
-function GetRef   (arefid:integer; var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
+function GetRef   (arefid:integer; out adir,afile,atag:AnsiString; out aline,aflags:integer):integer;
 function GetRefMod(arefid:integer):Int64;
 function GetRefSrc(arefid:integer):integer;
 
@@ -132,9 +136,11 @@ type
 
 //modid field must be set before call
 function  GetModStatistic(var stat:TModStatistic):integer;
-procedure GetModList (    asl:TStrings       ; all:boolean=true);
-procedure GetModList (var asl:TDict64DynArray; all:boolean=true);
-function  GetLangList(var asl:TDictDynArray):integer;
+procedure GetModList    (    asl:TStrings       ; all:boolean=true);
+procedure GetModList    (var asl:TDict64DynArray; all:boolean=true);
+function  GetLangList   (var asl:TDictDynArray):integer;
+function  GetDeletedList(var arr:TDictDynArray):integer;
+
 
 {get mod's directory list}
 function GetModDirList(const amodid:Int64; var alist:TStringDynArray):integer;
@@ -253,7 +259,7 @@ begin
 
   if result<1 then
   begin
-    ls:='INSERT INTO dicmods (id, title) VALUES ('+ls+', ?1)';
+    ls:='INSERT INTO dicmods (id, value) VALUES ('+ls+', ?1)';
 
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls), -1, @vm, nil)=SQLITE_OK then
     begin
@@ -289,7 +295,7 @@ var
   ls:string;
 begin
   Str(amodid,ls);
-  result:=ReturnText(tldb,'SELECT title FROM dicmods WHERE id='+ls);
+  result:=ReturnText(tldb,'SELECT value FROM dicmods WHERE id='+ls);
 end;
 
 function GetModByName(const atitle:AnsiString):Int64;
@@ -302,7 +308,7 @@ begin
   result:=-1;
   if tldb<>nil then
   begin
-    lSQL:='SELECT id FROM dicmods WHERE title LIKE ?1';
+    lSQL:='SELECT id FROM dicmods WHERE value LIKE ?1';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       if sqlite3_bind_text(vm,1,PAnsiChar(atitle),-1,SQLITE_STATIC)=SQLITE_OK then
@@ -332,11 +338,12 @@ begin
     i:=ReturnInt(tldb,'SELECT count(1) FROM dicmods');
     if i>0 then
     begin
-      if sqlite3_prepare_v2(tldb,'SELECT title FROM dicmods',-1, @vm, nil)=SQLITE_OK then
+      if sqlite3_prepare_v2(tldb,'SELECT id, value FROM dicmods',-1, @vm, nil)=SQLITE_OK then
       begin
         while sqlite3_step(vm)=SQLITE_ROW do
         begin
-          asl.Add(sqlite3_column_text(vm,0));
+          if all and (sqlite3_column_int64(vm,0)=0) then continue;
+          asl.Add(sqlite3_column_text(vm,1));
         end;
         sqlite3_finalize(vm);
       end;
@@ -348,14 +355,13 @@ procedure GetModList(var asl:TDict64DynArray; all:boolean=true);
 var
   vm:pointer;
   i:integer;
-  pc:PAnsiChar;
 begin
   i:=ReturnInt(tldb,'SELECT count(1) FROM dicmods');
   if i>0 then
   begin
     if all then
     begin
-      SetLength(asl,i+2);
+      SetLength(asl,i+1);
       i:=2;
       asl[0].id   :=modAll;
       asl[0].value:=rsAllStrings;
@@ -368,17 +374,20 @@ begin
       i:=0;
     end;
 
-    if sqlite3_prepare_v2(tldb,'SELECT id,title FROM dicmods',-1, @vm, nil)=SQLITE_OK then
+    if sqlite3_prepare_v2(tldb,'SELECT id,value FROM dicmods',-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
         asl[i].id   :=sqlite3_column_int64(vm,0);
+        if all and (asl[i].id=0) then continue;
         asl[i].value:=sqlite3_column_text (vm,1);
         inc(i);
       end;
       sqlite3_finalize(vm);
     end;
-  end;
+  end
+  else
+    SetLength(asl,0);
 end;
 
 function GetLangList(var asl:TDictDynArray):integer;
@@ -392,13 +401,13 @@ begin
       ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
   if result>0 then
   begin
-    SetLength(asl,result);
     ls:='SELECT name FROM sqlite_master'+
         ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')'+
         ' ORDER BY name';
 
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
+      SetLength(asl,result);
       i:=0;
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
@@ -408,8 +417,37 @@ begin
         inc(i);
       end;
       sqlite3_finalize(vm);
+      exit;
     end;
   end;
+  SetLength(asl,0);
+end;
+
+function GetDeletedList(var arr:TDictDynArray):integer;
+var
+  vm:pointer;
+  lSQL:AnsiString;
+  i:integer;
+begin
+  result:=ReturnInt(tldb,'SELECT count(id) FROM strings WHERE deleted=1');
+  if result>0 then
+  begin
+    lSQL:='SELECT id, src FROM strings WHERE deleted=1';
+    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+    begin
+      SetLength(arr,result);
+      i:=0;
+      while sqlite3_step(vm)=SQLITE_ROW do
+      begin
+        arr[i].id   :=sqlite3_column_int (vm,0);
+        arr[i].value:=sqlite3_column_text(vm,1);
+        inc(i);
+      end;
+      sqlite3_finalize(vm);
+      exit;
+    end;
+  end;
+  SetLength(arr,0);
 end;
 
 function GetUnrefLineCount():integer;
@@ -443,10 +481,27 @@ end;
 
 function GetNationLineCount(const amodid:Int64):integer;
 var
+{
   vm:pointer;
-  ls:AnsiString;
   pc:PAnsiChar;
+}
+  ls:AnsiString;
 begin
+  if amodid=modAll then
+    ls:='SELECT count(DISTINCT id) FROM strings'+
+        ' WHERE deleted=0'+
+        ' AND src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')'
+  else
+  begin
+    Str(amodid,ls);
+    ls:='SELECT count(DISTINCT s.id) FROM strings s'+
+        ' INNER JOIN refs ON refs.srcid=s.id'+
+        ' WHERE s.deleted=0 AND refs.modid='+ls+
+        ' AND s.src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')';
+  end;
+  result:=ReturnInt(tldb,ls);
+
+{
   result:=0;
 
   if amodid=modAll then
@@ -476,7 +531,19 @@ begin
       end;
     end;
   end;
+}
+end;
 
+function IsLineUnique(aid:integer):boolean;
+var
+  ls:AnsiString;
+begin
+  if CurMod=modAll then exit(false);
+
+  Str(CurMod,ls);
+  result:=ReturnInt(tldb,
+    'SELECT count(DISTINCT srcid) FROM refs'+
+    ' WHERE modid<>'+ls+' AND srcid='+IntToStr(aid))>0;
 end;
 
 function GetUniqueLineCount(const amodid:Int64):integer;
@@ -752,10 +819,10 @@ begin
     if result>0 then
     begin
       Str(aid,lid);
-      SetLength(arr,result);
       lSQL:='SELECT id FROM strings WHERE filter='+lf+' AND id<>'+lid;
       if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
       begin
+        SetLength(arr,result);
         i:=0;
         while sqlite3_step(vm)=SQLITE_ROW do
         begin
@@ -763,9 +830,11 @@ begin
           inc(i);
         end;
         sqlite3_finalize(vm);
+        exit;
       end;
     end;
   end;
+  SetLength(arr,0);
 end;
 
 function GetDoubles(aid:integer; var arr:TIntegerDynArray):integer;
@@ -787,20 +856,20 @@ begin
   lcnt:=ReturnInt(tldb,'SELECT count(DISTINCT id) FROM refs WHERE srcid='+lid+lmod);
   if lcnt>0 then
   begin
-    SetLength(arr,lcnt);
     lSQL:='SELECT DISTINCT id FROM refs WHERE srcid='+lid+lmod;
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
+      SetLength(arr,lcnt);
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
         arr[result]:=sqlite3_column_int(vm,0);
         inc(result);
       end;
       sqlite3_finalize(vm);
+      exit;
     end;
-  end
-  else
-    SetLength(arr,0);
+  end;
+  SetLength(arr,0);
 end;
 
 function GetAlts(aid:integer; var arr:TIntegerDynArray):integer;
@@ -813,6 +882,7 @@ begin
   result:=0;
   Str(aid,ls);
 
+  lid  :=0;
   ldir :=0;
   lfile:=0;
   ltag :=0;
@@ -829,25 +899,28 @@ begin
     sqlite3_finalize(vm);
   end;
 
-  ls:=' dir='+IntToStr(ldir)+' AND file='+IntToStr(lfile)+' AND tag='+IntToStr(ltag)+
-      ' AND id<>'+IntToStr(lid);
-  lcnt:=ReturnInt(tldb,'SELECT count(*) FROM refs WHERE'+ls);
-  if lcnt>0 then
+  if lid<>0 then
   begin
-    SetLength(arr,lcnt);
-    ls:='SELECT id FROM refs WHERE'+ls;
-    if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+    ls:=' dir='+IntToStr(ldir)+' AND file='+IntToStr(lfile)+' AND tag='+IntToStr(ltag)+
+        ' AND id<>'+IntToStr(lid);
+    lcnt:=ReturnInt(tldb,'SELECT count(*) FROM refs WHERE'+ls);
+    if lcnt>0 then
     begin
-      while sqlite3_step(vm)=SQLITE_ROW do
+      ls:='SELECT id FROM refs WHERE'+ls;
+      if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
       begin
-        arr[result]:=sqlite3_column_int(vm,0);
-        inc(result);
+        SetLength(arr,lcnt);
+        while sqlite3_step(vm)=SQLITE_ROW do
+        begin
+          arr[result]:=sqlite3_column_int(vm,0);
+          inc(result);
+        end;
+        sqlite3_finalize(vm);
+        exit;
       end;
-      sqlite3_finalize(vm);
     end;
-  end
-  else
-    SetLength(arr,0);
+  end;
+  SetLength(arr,0);
 end;
 {%ENDREGION Additional}
 
@@ -914,6 +987,16 @@ var
   lSQL:AnsiString;
 begin
   lSQL:='UPDATE strings SET deleted=1 WHERE id='+IntToStr(aid);
+  result:=ExecuteDirect(tldb,lSQL);
+  if result then
+    SQLog.Add(lSQL);
+end;
+
+function RestoreOriginal(aid:integer):boolean;
+var
+  lSQL:AnsiString;
+begin
+  lSQL:='UPDATE strings SET deleted=0 WHERE id='+IntToStr(aid);
   result:=ExecuteDirect(tldb,lSQL);
   if result then
     SQLog.Add(lSQL);
@@ -1124,6 +1207,47 @@ begin
   end;
 end;
 
+function GetListInternal(aid:integer; var arr:array of AnsiString; adict,afield:AnsiString):integer;
+var
+  vm:pointer;
+  ls:AnsiString;
+  i:integer;
+begin
+  Str(aid,ls);
+  ls:=' FROM refs r'+
+      ' INNER JOIN '+adict+' d ON d.id=r.'+afield+
+      ' WHERE r.srcid='+ls;
+
+  result:=ReturnInt(tldb,'SELECT COUNT(DISTINCT d.value)'+ls);
+  if result<4 then
+  begin
+    if result>0 then
+    begin
+      ls:='SELECT DISTINCT d.value'+ls+' LIMIT 3';
+      if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+      begin
+        i:=0;
+        while sqlite3_step(vm)=SQLITE_ROW do
+        begin
+          arr[i]:=sqlite3_column_text(vm,0);
+          inc(i);
+        end;
+        sqlite3_finalize(vm);
+        exit;
+      end;
+    end
+    else
+      result:=0;
+  end;
+end;
+
+function GetLineRefList(aid:integer; var arr:array of AnsiString; atype:integer):integer;
+begin
+       if atype=1 then result:=GetListInternal(aid,arr,'dicmods','modid')
+  else if atype=2 then result:=GetListInternal(aid,arr,'dicdirs','dir')
+  else                 result:=GetListInternal(aid,arr,'dictags','tag');
+end;
+
 function GetLineRef(aid:integer):integer;
 var
   lid,lmod:AnsiString;
@@ -1139,7 +1263,7 @@ begin
   else
     lmod:='';
 
-  result:=ReturnInt(tldb,'SELECT id FROM refs WHERE srcid='+lid+lmod);
+  result:=ReturnInt(tldb,'SELECT id FROM refs WHERE srcid='+lid+lmod+' LIMIT 1');
 end;
 
 function GetLineRefCount(aid:integer):integer;
@@ -1170,6 +1294,7 @@ var
   vm:pointer;
   ls:string;
 begin
+  result:=modAll;
   Str(arefid,ls);
   ls:='SELECT modid FROM refs WHERE id='+ls;
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
@@ -1181,7 +1306,7 @@ begin
 end;
 
 function GetRef(arefid:integer;
-    var adir,afile,atag:AnsiString; var aline,aflags:integer):integer;
+    out adir,afile,atag:AnsiString; out aline,aflags:integer):integer;
 var
   vm:pointer;
   lref,lSQL:AnsiString;
@@ -1479,7 +1604,10 @@ begin
   if (CurMod<>modUnref) and (CurMod<>modDeleted) then
   begin
     if CurMod=modAll then
-      lSQL:='SELECT id, src, filter FROM strings WHERE deleted=0'
+    begin
+      lmod:='0';
+      lSQL:='SELECT id, src, filter FROM strings WHERE deleted=0';
+    end
     else
     begin
       Str(CurMod,lmod);
@@ -1747,10 +1875,10 @@ begin
   result:=ExecuteDirect(tldb,
       'CREATE TABLE dicmods ('+
       '  id     INTEGER PRIMARY KEY,'+
-      '  title  TEXT);');
+      '  value  TEXT);');
 
   result:=ExecuteDirect(tldb,
-    'INSERT INTO dicmods (id,title) VALUES (0, ''Torchlight II'');');
+    'INSERT INTO dicmods (id,value) VALUES (0, ''Torchlight II'');');
 
   result:=ExecuteDirect(tldb,
       'CREATE TABLE refs ('+

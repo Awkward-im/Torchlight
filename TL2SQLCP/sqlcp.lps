@@ -9,7 +9,7 @@
         <Filename Value="sqlcp.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="27"/>
+        <CursorPos X="45" Y="13"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -19,10 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmSQLCP"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="359"/>
-        <CursorPos X="49" Y="379"/>
-        <FoldState Value=" T8iQ21 TMj80104]ALl10C T3jW0\6 pjMlM05415]cPj5kY0 T6jX0931]j0k94m3361]TiQod2W"/>
+        <TopLine Value="186"/>
+        <CursorPos X="28" Y="202"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -56,7 +54,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="58"/>
         <CursorPos X="17" Y="74"/>
-        <UsageCount Value="193"/>
+        <UsageCount Value="198"/>
       </Unit>
       <Unit>
         <Filename Value="tl2about.pas"/>
@@ -67,7 +65,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="175"/>
       </Unit>
       <Unit>
         <Filename Value="tl2datamodule.pas"/>
@@ -76,8 +74,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TL2DataModule"/>
-        <EditorIndex Value="6"/>
-        <UsageCount Value="170"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="175"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -88,10 +86,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2DupeForm"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <TopLine Value="13"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="175"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -102,8 +100,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2EditText"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="170"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="175"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -117,7 +115,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="175"/>
       </Unit>
       <Unit>
         <Filename Value="tl2settingsform.pas"/>
@@ -126,10 +124,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="32"/>
         <CursorPos X="22" Y="49"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="175"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -140,10 +138,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SimForm"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="10"/>
         <TopLine Value="109"/>
         <CursorPos Y="128"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="175"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -151,10 +149,10 @@
         <Filename Value="tl2text.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Text"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="571"/>
         <CursorPos X="3" Y="585"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="175"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -164,9 +162,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <CursorPos X="5" Y="19"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="175"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -174,10 +172,10 @@
         <Filename Value="tlscan.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TLScan"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="755"/>
         <CursorPos X="66" Y="773"/>
-        <UsageCount Value="170"/>
+        <UsageCount Value="175"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -187,10 +185,23 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2AltForm"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="64"/>
-        <CursorPos Y="86"/>
-        <UsageCount Value="41"/>
+        <EditorIndex Value="11"/>
+        <UsageCount Value="46"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tl2delform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DelForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2DelForm"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="82"/>
+        <CursorPos Y="125"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -200,7 +211,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="160"/>
+        <UsageCount Value="159"/>
       </Unit>
       <Unit>
         <Filename Value="tltrsql.pas"/>
@@ -209,7 +220,7 @@
         <TopLine Value="877"/>
         <CursorPos Y="124"/>
         <FoldState Value=" TLiR043 PkGzW0 TMp08109 p0;g01 TCjBIB]8Jk11}31 pl5p71}2]XtD1{% T3k20X31]IkgmJ0U4 piZja035 pjYk6074]98jQ0Y[94CnJ0K1]aajH0U9]sDlN0X1 PDZ0 T6lS02011 T0mg295 PiA@18."/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="42"/>
       </Unit>
       <Unit>
         <Filename Value="tl2dataunit.pas"/>
@@ -217,28 +228,28 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1058"/>
         <CursorPos X="37" Y="1067"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="..\RGDB\db_common.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="108"/>
         <CursorPos X="37" Y="130"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customlistbox.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="627"/>
         <CursorPos Y="653"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\interfaces\win32\win32listsl.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="135"/>
         <CursorPos Y="151"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgdictlayout.pas"/>
@@ -246,14 +257,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="952"/>
         <CursorPos X="31" Y="965"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\menuitem.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="71"/>
         <CursorPos Y="86"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\controls.pp"/>
@@ -261,15 +272,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1682"/>
         <CursorPos X="15" Y="1696"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="rgdb.text.pas"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="376"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="409"/>
         <CursorPos Y="444"/>
-        <FoldState Value=" T4D031 TCWK72 PHj7J TLiF04023 pK*Y0{p2 TMmL2108 p0+F01]p11]3]P3l40C]giajE03414 pkIlX0C2 pjckF0U4]9HkG0X[94AkC084]lgjH]u]I5jQ0G5]9Dn4046]9d]sX2[a5d0O1]9ejP082 PGH0 T6lJ0381S Pid(5]H0lU2I8[d5I47612255]\kemM895]OcjA45[X6R4EC pjCk84DB]IYk5227]9ZiX23[I4bp6438]a2iO4C8[R5F4A[94fjE431W"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="68"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -278,21 +288,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="441"/>
         <CursorPos Y="456"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\sqlitedb.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="429"/>
         <CursorPos X="14" Y="437"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="23"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\fpcsrc\packages\sqlite\src\sqlite3.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1164"/>
         <CursorPos X="11" Y="1181"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgman.pas"/>
@@ -300,14 +310,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="156"/>
         <CursorPos X="35" Y="166"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2961"/>
         <CursorPos Y="2978"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\rwmemory.pas"/>
@@ -315,14 +325,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="62"/>
         <CursorPos Y="78"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\lay_tl2.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="243"/>
         <CursorPos Y="274"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.layout.pas"/>
@@ -330,7 +340,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1497"/>
         <CursorPos X="40" Y="1522"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\grids.pas"/>
@@ -338,71 +348,31 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="10371"/>
         <CursorPos Y="10387"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\buttoncontrol.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="6"/>
         <CursorPos Y="22"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\buttons.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="154"/>
         <CursorPos Y="170"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\bitbtn.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="53"/>
         <CursorPos Y="68"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="352" TopLine="335"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="384" TopLine="369"/>
-      </Position>
-      <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="408" TopLine="389"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="376" TopLine="360"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="377" TopLine="360"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="376" TopLine="360"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="377" TopLine="360"/>
-      </Position>
-      <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="408" TopLine="394"/>
-      </Position>
-      <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="373" TopLine="364"/>
-      </Position>
-      <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="375" TopLine="364"/>
-      </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
         <Caret Line="506" TopLine="498"/>
@@ -478,8 +448,48 @@
         <Caret Line="376" Column="43" TopLine="281"/>
       </Position>
       <Position>
-        <Filename Value="tl2unit.pas"/>
-        <Caret Line="245" Column="20" TopLine="1506"/>
+        <Filename Value="tl2altform.pas"/>
+        <Caret Line="86" TopLine="64"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2delform.pas"/>
+        <Caret Line="15" Column="11" TopLine="12"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2delform.pas"/>
+        <Caret Line="60" TopLine="29"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="390" Column="49" TopLine="361"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="370" Column="9" TopLine="363"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2delform.pas"/>
+        <Caret Line="41" Column="51" TopLine="21"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="85" Column="14" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="205" Column="10" TopLine="200"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2delform.pas"/>
+        <Caret Line="38" Column="12" TopLine="21"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2delform.pas"/>
+        <Caret Line="76" Column="41" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2delform.pas"/>
+        <Caret Line="79" Column="17" TopLine="58"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -488,16 +498,6 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Expression Value="i=0"/>
-        <Source Value="tl2altform.pas"/>
-        <Line Value="86"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="i"/>

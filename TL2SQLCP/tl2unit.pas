@@ -1,4 +1,5 @@
 {TODO: implement (fix) actImportClipBrd}
+{TODO: mark unique lines}
 unit TL2Unit;
 
 {$mode objfpc}{$H+}
@@ -182,10 +183,10 @@ resourcestring
   rsReplaces       = 'Total replaces';
   rsDoDelete       = 'Are you sure to delete selected line(s)?'#13#10+
                      'This text will be just hidden until you save and reload project.';
-  rsAutoFill       = 'Try to autofill similar text in database?';
 
   rsNoDoubles      = 'No doubles for this text';
   rsDupes          = 'Check doubles info.';
+  rsUnique         = '*Unique* ';
 
   // punctuation check
   rsNoWarnings     = 'No any warnings';
@@ -380,14 +381,13 @@ end;
 procedure TMainTL2TransForm.dlgOnReplace(Sender: TObject);
 var
   ls,lsrc,lr:AnsiString;
-  idx,lcnt,i,p:integer;
+  lcnt,i,p:integer;
 begin
   lcnt:=0;
   lsrc:=(Sender as TReplaceDialog).FindText;
   lr  :=(Sender as TReplaceDialog).ReplaceText;
   for i:=TL2Grid.Row to TL2Grid.RowCount-1 do
   begin
-    idx:=IntPtr(TL2Grid.Objects[0,i]);
     ls:=TL2Grid.Cells[colTrans,i];
     p:=Pos((Sender as TReplaceDialog).FindText,ls);
     if p>0 then
@@ -790,7 +790,6 @@ var
   ls:String;
   ts:TTextStyle;
   count1, count2: integer;
-  lidx:integer;
 begin
   if not (gdFixed in astate) then
   begin
@@ -805,8 +804,6 @@ begin
         ts.SingleLine:=false;
         ts.WordBreak :=true;
         Canvas.TextStyle:=ts;
-
-        lidx:=IntPtr(Objects[0,aRow]);
 
         count1:=GetTextLines(Cells[colOrigin,aRow],Canvas,CellRect(colOrigin,aRow));
         count2:=GetTextLines(Cells[colTrans ,aRow],Canvas,CellRect(colTrans ,aRow));
@@ -864,12 +861,17 @@ begin
     ls:=rsNoRef
   else if (TRCache[idx].flags and rfIsManyRefs)=0 then
   begin
-    GetRef(GetLineRef(TRCache[idx].id),ls,lfile,ltag,lline,lflags);
-    ls:=ltag+' | '+ls+lfile;
+    if GetRef(GetLineRef(TRCache[idx].id),ls,lfile,ltag,lline,lflags)>0 then
+      ls:=ltag+' | '+ls+lfile
+    else
+      ls:='';
   end
   else
     ls:=StringReplace(rsSeveralRefs,'%d',
       IntToStr(GetLineRefCount(TRCache[idx].id)),[])+' '+rsDupes;
+  if (CurMod<>modAll) and (CurMod<>modVanilla) then
+    if IsLineUnique(TRCache[idx].id) then ls:=rsUnique+ls;
+
   UpdateStatusBar(Self,ls);
 end;
 

@@ -747,7 +747,7 @@ PWord(pcw+lsize)^:=#0;
     begin
       ls:='';
       if FVer<>verTL1 then llen:=memReadWord(FPos);
-      for i:=0 to integer(llen)-1 do
+      for i:=0 to pred(integer(llen)) do
       begin
         case ltype and not rgList of
           rgBool: begin
@@ -807,7 +807,7 @@ var
 begin
   lgroup:=AddGroup(anode,'LOGICGROUP');
   lgroups:=memReadByte(FPos);
-  for i:=0 to lgroups-1 do
+  for i:=0 to pred(lgroups) do
   begin
     lgobj:=AddGroup(lgroup,'LOGICOBJECT');
     AddUnsigned (lgobj,'ID'      ,memReadByte     (FPos));
@@ -818,7 +818,7 @@ begin
     {lsize:=}memReadInteger(FPos); // absolute offset of next
 
     lglinks:=memReadByte(FPos);
-    for j:=0 to lglinks-1 do
+    for j:=0 to pred(lglinks) do
     begin
       lglnk:=AddGroup(lgobj,'LOGICLINK');
       AddInteger(lglnk,'LINKINGTO' ,memReadByte(FPos));
@@ -856,13 +856,13 @@ begin
   AddInteger64(tldata,'ID',aid);
 
   ltlobjs:=memReadByte(FPos);
-  for i:=0 to ltlobjs-1 do
+  for i:=0 to pred(ltlobjs) do
   begin
     tlobject:=AddGroup(tldata,'TIMELINEOBJECT');
     AddInteger64(tlobject,'OBJECTID',memReadInteger64(FPos));
     
     ltlprops:=memReadByte(FPos);
-    for j:=0 to ltlprops-1 do
+    for j:=0 to pred(ltlprops) do
     begin
       ltltype:=0;
       laptr:=FPos;
@@ -908,7 +908,7 @@ begin
 
       // Points
       ltlpoints:=memReadByte(FPos);
-      for k:=0 to ltlpoints-1 do
+      for k:=0 to pred(ltlpoints) do
       begin
         tlpoint:=AddGroup(tlnode,'TIMELINEPOINT');
         AddFloat(tlpoint,'TIMEPERCENT',memReadFloat(FPos));
@@ -1070,7 +1070,7 @@ begin
     begin
       astream.WriteWord(WORD(lcnt));
 
-      for i:=0 to lcnt-1 do
+      for i:=0 to pred(lcnt) do
       begin
         lidx:=0;
         repeat

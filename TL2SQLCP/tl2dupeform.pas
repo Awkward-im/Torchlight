@@ -32,7 +32,6 @@ implementation
 {$R *.lfm}
 
 uses
-  TL2DataModule,
   rgdb.text,
   rgglobal,
   LCLType;
@@ -56,8 +55,6 @@ begin
 end;
 
 constructor TDupeForm.Create(AOwner:TComponent; aidx:integer);
-var
-  lsrc,ldst:AnsiString;
 begin
   inherited Create(AOwner);
 
@@ -82,11 +79,13 @@ begin
   sgDupes.RowCount:=1+lcnt;
   for i:=0 to lcnt-1 do
   begin
-    GetRef(larr[i],ldir,lfile,ltag,lline,lflag);
-    sgDupes.Objects[0,i+1]:=TObject(UIntPtr(larr[i]));
-    sgDupes.Cells[colFile,i+1]:=ldir+lfile;
-    sgDupes.Cells[colLine,i+1]:=IntToStr(lline);
-    sgDupes.Cells[colTag ,i+1]:=ltag;
+    if GetRef(larr[i],ldir,lfile,ltag,lline,lflag)>0 then
+    begin
+      sgDupes.Objects[0,i+1]:=TObject(UIntPtr(larr[i]));
+      sgDupes.Cells[colFile,i+1]:=ldir+lfile;
+      sgDupes.Cells[colLine,i+1]:=IntToStr(lline);
+      sgDupes.Cells[colTag ,i+1]:=ltag;
+    end;
   end;
 
   sgDupes.Row:=1;

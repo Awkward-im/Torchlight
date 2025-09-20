@@ -1,7 +1,6 @@
 {
   Utility unit with mod text processing for translation
 }
-{TODO: ReplaceTranslation: replace [] and <> by sign to differ from ordinal text}
 unit TL2Text;
 
 interface
@@ -445,10 +444,10 @@ begin
 
   ldst:=lsrc;
 
-  for i:=0 to lcntSR-1 do
+  for i:=0 to pred(lcntSR) do
     ldst:=StringReplace(ldst,'%r',rome[i],[]);
 
-  for i:=0 to lcntSN-1 do
+  for i:=0 to pred(lcntSN) do
     ldst:=StringReplace(ldst,'%d',numbers[i],[]);
 
   // just one coloration added (for items usually)
@@ -463,7 +462,7 @@ begin
   end
   else
   begin
-    for i:=0 to lcntSC-1 do
+    for i:=0 to pred(lcntSC) do
       ldst:=StringReplace(ldst,'%s',colors[i],[]);
   end;
 
@@ -568,11 +567,17 @@ end;
 function CheckDescription(res:dword):AnsiString;
 begin
   result:='';
-  if (res and cpfSrcSpace)<>0 then result:=result+rsSrcSpace+#13#10;
-  if (res and cpfDstSpace)<>0 then result:=result+rsDstSpace+#13#10;
-  if (res and cpfSrcSign )<>0 then result:=result+rsSrcSign +#13#10;
-  if (res and cpfDstSign )<>0 then result:=result+rsDsSign  +#13#10;
-  if (res and cpfSrcTags )<>0 then result:=result+rsSrcTags +#13#10;
+  if (res and cpfSrcSpace )<>0 then result:=result+rsSrcSpace +#13#10;
+  if (res and cpfDstSpace )<>0 then result:=result+rsDstSpace +#13#10;
+  if (res and cpfSrcSign  )<>0 then result:=result+rsSrcSign  +#13#10;
+  if (res and cpfDstSign  )<>0 then result:=result+rsDsSign   +#13#10;
+  if (res and cpfSrcTags  )<>0 then result:=result+rsSrcTags  +#13#10;
+  if (res and cpfSrcLine  )<>0 then result:=result+rsSrcLine  +#13#10;
+  if (res and cpfDstLine  )<>0 then result:=result+rsDstLine  +#13#10;
+  if (res and cpfSrcColor )<>0 then result:=result+rsSrcColor +#13#10;
+  if (res and cpfDstColor )<>0 then result:=result+rsDstColor +#13#10;
+  if (res and cpfSrcColEnd)<>0 then result:=result+rsSrcColEnd+#13#10;
+  if (res and cpfDstColEnd)<>0 then result:=result+rsDstColEnd+#13#10;
 end;
 
 function GetFilterWords:AnsiString; inline;

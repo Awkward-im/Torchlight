@@ -226,6 +226,7 @@ begin
   end
   else if Key=VK_INSERT then
   begin
+    ls:='';
     InputQuery('Add file to delete','Enter filename with path',ls);
     lbDelete.AddItem(ls,nil);
   end;
@@ -567,7 +568,7 @@ begin
     lcnt:=SplitCountA(aval,',');
     if lcnt>0 then
     begin
-      for i:=0 to lcnt-1 do
+      for i:=0 to pred(lcnt) do
       begin
         lidx:=0;
         repeat

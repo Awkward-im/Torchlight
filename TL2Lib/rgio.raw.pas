@@ -136,7 +136,7 @@ begin
   if lcnt>0 then
   begin
     lnode:=AddGroup(result,'ITEMS');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       ReadUnit(abuf,lnode);
     end;
@@ -146,7 +146,7 @@ begin
   if lcnt>0 then
   begin
     lnode:=AddGroup(result,'MONSTERS');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       ReadUnit(abuf,lnode);
     end;
@@ -156,7 +156,7 @@ begin
   if lcnt>0 then
   begin
     lnode:=AddGroup(result,'PLAYERS');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       ReadUnit(abuf,lnode);
     end;
@@ -166,7 +166,7 @@ begin
   if lcnt>0 then
   begin
     lnode:=AddGroup(result,'PROPS');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       ReadUnit(abuf,lnode);
     end;
@@ -184,7 +184,7 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'AFFIXES');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'AFFIX');
 
@@ -199,7 +199,7 @@ begin
       if lcnt1>0 then
       begin
         lnode1:=AddGroup(lnode,'UNITTYPES');
-        for j:=0 to lcnt1-1 do
+        for j:=0 to pred(lcnt1) do
         begin
           AddString(lnode1,'UNITTYPE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
         end;
@@ -209,7 +209,7 @@ begin
       if lcnt1>0 then
       begin
         lnode1:=AddGroup(lnode,'NOT_UNITTYPES');
-        for j:=0 to lcnt1-1 do
+        for j:=0 to pred(lcnt1) do
         begin
           AddString(lnode1,'UNITTYPE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
         end;
@@ -230,7 +230,7 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'MISSILES');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'MISSILE');
 
@@ -240,7 +240,7 @@ begin
       if lcnt1>0 then
       begin
         lnode1:=AddGroup(lnode,'NAMES');
-        for j:=0 to lcnt1-1 do
+        for j:=0 to pred(lcnt1) do
         begin
           AddString(lnode1,'NAME',memReadShortStringBuf(abuf,@pcw,MAXLEN));
         end;
@@ -261,20 +261,20 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'ROOMPIECES');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'LEVELSET');
 
       AddString(lnode,'FILE',memReadShortStringBuf(abuf,@pcw,MAXLEN));
     end;
 
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lcnt1:=memReadInteger(abuf);
       if lcnt1>0 then
       begin
         lnode:=AddGroup(GetChild(result,i),'GUIDS');
-        for j:=0 to lcnt1-1 do
+        for j:=0 to pred(lcnt1) do
         begin
           AddInteger64(lnode,'GUID',memReadInteger64(abuf));
         end;
@@ -297,7 +297,7 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'MENUS');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'MENU');
 
@@ -326,7 +326,7 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'TRIGGERABLES');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'TRIGGERABLE');
 
@@ -348,7 +348,7 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'SKILLS');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'SKILL');
 
@@ -372,7 +372,7 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'PARTICLES');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'PARTICLE');
 
@@ -401,7 +401,7 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'CELLS DB');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'LAYOUT');
 
@@ -412,7 +412,7 @@ begin
       if lcnt1>0 then
       begin
          lunode:=AddGroup(lnode,'CELLS');
-         for j:=0 to lcnt1-1 do
+         for j:=0 to pred(lcnt1) do
          begin
            lsubnode:=AddGroup(lunode,'CELL');
            pc:=memReadShortStringUTF8(abuf);
@@ -442,7 +442,7 @@ begin
   if lcnt>0 then
   begin
     result:=AddGroup(nil,'QUESTMARKERS');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       lnode:=AddGroup(result,'QUESTMARKER');
 

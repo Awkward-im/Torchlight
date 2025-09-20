@@ -70,9 +70,11 @@ var
   lline,lflag:integer;
 begin
   lref:=GetLineRef(TRCache[aidx].id);
-  GetRef(lref,ldir,lfile,ltag,lline,lflag);
-  lblFile.Caption:=ldir+lfile;
-  lblTag .Caption:=ltag;
+  if GetRef(lref,ldir,lfile,ltag,lline,lflag)>0 then
+  begin
+    lblFile.Caption:=ldir+lfile;
+    lblTag .Caption:=ltag;
+  end;
   memSrc.Text:=TRCache[aidx].src;
 
   i:=GetAlts(TRCache[aidx].id,larr);

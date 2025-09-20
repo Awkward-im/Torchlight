@@ -194,7 +194,7 @@ begin
   lnode:=AddGroup(anode,lname);
 
   lcnt:=memReadInteger(aptr);
-  for i:=0 to lcnt-1 do
+  for i:=0 to pred(lcnt) do
   begin
     //!! Skip tag names for TAGS.DAT
     if isTagsDat then
@@ -249,7 +249,7 @@ begin
   end;
 
   lsub:=memReadInteger(aptr);
-  for i:=0 to lsub-1 do
+  for i:=0 to pred(lsub) do
     ParseBlock(aptr,lnode);
 
   if anode=nil then anode:=lnode;
@@ -290,7 +290,7 @@ begin
   FLocals.Capacity:=lcnt;
 
   result:=lcnt;
-  for i:=0 to lcnt-1 do
+  for i:=0 to pred(lcnt) do
   begin
     lid:=memReadDWord(lptr);
     case FVer of

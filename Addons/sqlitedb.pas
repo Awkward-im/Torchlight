@@ -1,3 +1,4 @@
+{TODO: option to create or not DB if not found}
 unit sqlitedb;
 
 interface

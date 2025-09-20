@@ -432,7 +432,7 @@ var
   lval:array [0..47] of WideChar;
   i,ltype:integer;
   res:word;
-  lres:boolean;
+//  lres:boolean;
 begin
   result:=true;
 
@@ -480,7 +480,7 @@ begin
         lp:=aval;
 
       res:=0;
-      lres:=true;
+//      lres:=true;
       case ltype of
         rgInteger  : {lres:=RGStrToInt(lp,PRGNode(anode)^.asInteger);//}Val(lp,PRGNode(anode)^.asInteger,res);
         rgFloat    : Val(lp,PRGNode(anode)^.asFloat,res);

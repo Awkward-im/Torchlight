@@ -92,7 +92,7 @@ begin
   lsize:=0;
   pcw  :=nil;
 
-  for i:=0 to result-1 do
+  for i:=0 to pred(result) do
   begin
     lhash:=pUInt32(aptr)^; inc(aptr,SizeOf(UInt32));
     llen:=PWord(aptr)^; inc(aptr,2);
@@ -365,7 +365,7 @@ begin
   aDict.Capacity:=lcnt;
   
   lend:=aptr;
-  for i:=0 to lcnt-1 do
+  for i:=0 to pred(lcnt) do
   begin
     lptr:=lend;
     while not lend^ in [0,13] do inc(lend);

@@ -28,6 +28,15 @@ msgctxt "fmsqlcp.rschooselang"
 msgid "Choose translation language"
 msgstr ""
 
+#: fmsqlcp.rsdelete
+msgid "Are you sure to delete it?"
+msgstr ""
+
+#: fmsqlcp.rshaveunique
+#, object-pascal-format
+msgid "Mod have %d unique strings."
+msgstr ""
+
 #: fmsqlcp.rslanguage
 msgid "Language:"
 msgstr ""
@@ -58,7 +67,7 @@ msgstr ""
 
 #: fmsqlcp.rsstat
 #, object-pascal-format
-msgid "Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d"
+msgid "Total lines: %d | Duplicates: %d | Different: %d | Unique: %d | Non-latin: %d | Files: %d | Tags: %d"
 msgstr ""
 
 #: fmsqlcp.rsstatus
@@ -88,6 +97,22 @@ msgstr ""
 
 #: taltform.sgalts.columns[1].title.caption
 msgid "Text"
+msgstr ""
+
+#: tdelform.bbclose.caption
+msgid "&Close"
+msgstr ""
+
+#: tdelform.bbrestore.caption
+msgid "&Restore"
+msgstr ""
+
+#: tdelform.caption
+msgid "Deleted lines"
+msgstr ""
+
+#: tdelform.lblhelp.caption
+msgid "Check required lines and click \"Restore\""
 msgstr ""
 
 #: tdupeform.caption
@@ -159,63 +184,6 @@ msgstr ""
 msgid "Save log to file"
 msgstr ""
 
-#: tformsqlcp.bbaddtrans.caption
-msgid "Load"
-msgstr ""
-
-#: tformsqlcp.bbaddtrans.hint
-msgid "Load translation file"
-msgstr ""
-
-#: tformsqlcp.bbgenerate.caption
-msgid "Generate"
-msgstr ""
-
-#: tformsqlcp.bbgenerate.hint
-msgid "Generate translation file for mod"
-msgstr ""
-
-#: tformsqlcp.bblog.caption
-msgid "Log"
-msgstr ""
-
-#: tformsqlcp.bblog.hint
-msgid "Show log file"
-msgstr ""
-
-#: tformsqlcp.bbnewtrans.caption
-msgctxt "tformsqlcp.bbnewtrans.caption"
-msgid "New"
-msgstr ""
-
-#: tformsqlcp.bbnewtrans.hint
-msgid "Add new translation language"
-msgstr ""
-
-#: tformsqlcp.bbsavedb.caption
-msgid "Save DB"
-msgstr ""
-
-#: tformsqlcp.bbsavedb.hint
-msgid "Save DB changes (memory DB related)"
-msgstr ""
-
-#: tformsqlcp.bbscanmod.caption
-msgid "Scan Mod"
-msgstr ""
-
-#: tformsqlcp.bbsqlog.caption
-msgid "SQL log"
-msgstr ""
-
-#: tformsqlcp.bbsqlog.hint
-msgid "Show session SQL requiests of DB modify"
-msgstr ""
-
-#: tformsqlcp.bedit.caption
-msgid "Edit"
-msgstr ""
-
 #: tformsqlcp.gdlanguages.columns[0].title.caption
 msgctxt "tformsqlcp.gdlanguages.columns[0].title.caption"
 msgid "Count"
@@ -260,6 +228,58 @@ msgstr ""
 msgid "Current translations"
 msgstr ""
 
+#: tformsqlcp.sbadd.hint
+msgid "Scan mod for text and add to list"
+msgstr ""
+
+#: tformsqlcp.sbbuild.hint
+msgctxt "tformsqlcp.sbbuild.hint"
+msgid "Generate translation file for mod"
+msgstr ""
+
+#: tformsqlcp.sbdeleted.hint
+msgid "Show all deleted lines"
+msgstr ""
+
+#: tformsqlcp.sbedit.hint
+msgid ""
+"Edit text for selected mod and language\n"
+"(or DblClick in list below)"
+msgstr ""
+
+#: tformsqlcp.sbload.hint
+msgctxt "tformsqlcp.sbload.hint"
+msgid "Load translation file"
+msgstr ""
+
+#: tformsqlcp.sblog.hint
+msgctxt "tformsqlcp.sblog.hint"
+msgid "Show log file"
+msgstr ""
+
+#: tformsqlcp.sbnew.hint
+msgctxt "tformsqlcp.sbnew.hint"
+msgid "Add new translation language"
+msgstr ""
+
+#: tformsqlcp.sbremove.hint
+msgid "Remove mod from list"
+msgstr ""
+
+#: tformsqlcp.sbsave.hint
+msgctxt "tformsqlcp.sbsave.hint"
+msgid "Save DB changes (memory DB related)"
+msgstr ""
+
+#: tformsqlcp.sbsettings.hint
+msgid "Open settings window"
+msgstr ""
+
+#: tformsqlcp.sbsql.hint
+msgctxt "tformsqlcp.sbsql.hint"
+msgid "Show session SQL requiests of DB modify"
+msgstr ""
+
 #: tl2datamodule.rsnoref
 msgid "Text don't have any references"
 msgstr ""
@@ -268,6 +288,10 @@ msgstr ""
 #, object-pascal-format
 msgctxt "tl2datamodule.rsseveralrefs"
 msgid "This text presents in several (about %d) places."
+msgstr ""
+
+#: tl2delform.rsnodeleted
+msgid "Strange, no deleted lines at all."
 msgstr ""
 
 #: tl2edittext.rslanguage
@@ -284,6 +308,16 @@ msgstr ""
 msgid "Notes"
 msgstr "Notas"
 
+#: tl2settingsform.rsremakefilter
+msgid "Rebuild templates..."
+msgstr ""
+
+#: tl2settingsform.rssettings
+#, fuzzy
+msgctxt "tl2settingsform.rssettings"
+msgid "Settings"
+msgstr "Configuracion"
+
 #: tl2settingsform.rsusefreekey
 msgid "Paid or Free Key (free)"
 msgstr ""
@@ -291,15 +325,6 @@ msgstr ""
 #: tl2settingsform.rsusepaidkey
 msgid "Paid or Free Key (paid)"
 msgstr ""
-
-#: tl2settingsform.snotrealized
-msgid "Not realized yet"
-msgstr "Todavia sin realizar"
-
-#: tl2settingsform.ssettings
-msgctxt "tl2settingsform.ssettings"
-msgid "Settings"
-msgstr "Configuracion"
 
 #: tl2simform.rsnoref
 msgid "No reference for this text"
@@ -354,10 +379,6 @@ msgstr ""
 msgctxt "tl2unit.rsaffected"
 msgid " line(s) affected"
 msgstr " linea(s) afectadas"
-
-#: tl2unit.rsautofill
-msgid "Try to autofill similar text in database?"
-msgstr ""
 
 #: tl2unit.rsdefaultcaption
 #, fuzzy
@@ -464,6 +485,10 @@ msgstr "Reemplazos totales"
 msgctxt "tl2unit.rsroot"
 msgid "-- Root --"
 msgstr "-- arraigar --"
+
+#: tl2unit.rsunique
+msgid "*Unique* "
+msgstr ""
 
 #: tmaintl2transform.actchecktranslation.caption
 msgctxt "tmaintl2transform.actchecktranslation.caption"
@@ -727,8 +752,16 @@ msgstr ""
 msgid "Mark new text as partial"
 msgstr ""
 
+#: ttl2settings.cbparamsign.caption
+msgid "Mark params in [ ] and < >"
+msgstr ""
+
 #: ttl2settings.cbremovetags.caption
 msgid "Remove tags on translation"
+msgstr ""
+
+#: ttl2settings.gbtemplate.caption
+msgid "Templates"
 msgstr ""
 
 #: ttl2settings.gbtranslation.caption
@@ -736,11 +769,7 @@ msgid "Translation details"
 msgstr ""
 
 #: ttl2settings.lblfilter.caption
-msgid "Words to exclude from comparing"
-msgstr ""
-
-#: ttl2settings.lblfilternote.caption
-msgid "Reopen project to apply new list"
+msgid "Words to exclude"
 msgstr ""
 
 #: ttl2settings.lblgetapikey.caption
@@ -754,6 +783,10 @@ msgstr ""
 
 #: ttl2settings.lblprogramlanguage.caption
 msgid "Program Language"
+msgstr ""
+
+#: ttl2settings.lbltmpldescr.caption
+msgid "*Template is part of text to find similars"
 msgstr ""
 
 #: ttl2settings.lbltranslators.caption

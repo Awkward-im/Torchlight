@@ -5,7 +5,7 @@ unit TL2SettingsForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Buttons,  trclass;
 
 type
@@ -82,8 +82,7 @@ uses
   TL2DataModule;
 
 resourcestring
-  sNotRealized    = 'Not realized yet';
-  sSettings       = 'Settings';
+  rsSettings       = 'Settings';
 
   rsUseFreeKey    = 'Paid or Free Key (free)';
   rsUsePaidKey    = 'Paid or Free Key (paid)';
@@ -99,15 +98,8 @@ const
   sNSBase       = 'Base';
   sSectSettings = 'Settings';
   sSectFont     = 'Font';
-  sSectTabs     = 'Tabs';
   sTranslation  = 'Translation';
 
-  sTabs         = 'tabs';
-  sTab          = 'tab';
-  sDefFile      = 'defaultfile';
-  sRootDir      = 'rootdir';
-  sWorkDir      = 'workdir';
-  sImportParts  = 'importparts';
   sFontName     = 'Name';
   sFontCharset  = 'Charset';
   sFontSize     = 'Size';
@@ -120,7 +112,6 @@ const
   sParam        = 'keepparam';
   sAutoPartial  = 'autoaspartial';
   sRemoveTags   = 'removetags';
-  sHidePartial  = 'hidepartial';
   sFreeKey      = 'freekey';
   sPaidKey      = 'paidkey';
   sUsePaid      = 'usepaid';
@@ -360,9 +351,9 @@ var
 begin
   ls:=lbLanguage.Items[lbLanguage.ItemIndex];
   SetDefaultLang(copy(ls,1,pos(' ',ls)-1));
-  Caption:=sSettings;
+  Caption:=rsSettings;
   if Parent<>nil then
-    Parent.Caption:=sSettings;
+    Parent.Caption:=rsSettings;
 end;
 
 procedure TTL2Settings.FillLocalesList;

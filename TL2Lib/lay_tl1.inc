@@ -101,14 +101,14 @@ begin
   AddInteger64(tldata,'ID',aid);
 
   lcntobj:=memReadDWord(lBinPos);
-  for i:=0 to lcntobj-1 do
+  for i:=0 to pred(lcntobj) do
   begin
     tlobject:=AddGroup(tldata,'TIMELINEOBJECT');
     lid:=memReadInteger64(lBinPos);
     AddInteger64(tlobject,'OBJECTID',lid);
 
     lcntevent:=memReadDWord(lBinPos);
-    for j:=0 to lcntevent-1 do
+    for j:=0 to pred(lcntevent) do
     begin
       {
         Object name is:"OBJECTID" as ID for FUNCTION for events, PROPERTY for props
@@ -137,7 +137,7 @@ begin
       inc(cntTLItem);
 
       lcntpoint:=memReadDWord(lBinPos);
-      for k:=0 to lcntpoint-1 do
+      for k:=0 to pred(lcntpoint) do
       begin
         tlpoint:=AddGroup(tlprop,'TIMELINEPOINT');
         AddFloat (tlpoint,'TIMEPERCENT'  ,memReadFloat(lBinPos));
@@ -146,7 +146,7 @@ begin
         begin
           lvalue:='';
           lcntvalue:=memReadDWord(lBinPos);
-          for l:=0 to lcntvalue-1 do
+          for l:=0 to pred(lcntvalue) do
           begin
             Str(memReadFloat(lBinPos):0:FloatPrec,ls);
             FixFloatStr(ls);
@@ -186,7 +186,7 @@ begin
   lgroup:=AddGroup(anode,'LOGICGROUP');
   lcntobj:=memReadDWord(lBinPos);
   lLinkPos:=lBinPos+lcntobj*SizeOf(TLogicObject);
-  for i:=0 to lcntobj-1 do
+  for i:=0 to pred(lcntobj) do
   begin
     memReadData(lBinPos,lo,SizeOf(lo));
 
@@ -197,7 +197,7 @@ begin
     AddFloat    (lgobj,'Y'       ,lo.Y);
 
     lcntlink:=memReadDWord(lLinkPos);
-    for j:=0 to lcntlink-1 do
+    for j:=0 to pred(lcntlink) do
     begin
       lglnk:=AddGroup(lgobj,'LOGICLINK');
       AddInteger(lglnk,'LINKINGTO' ,memReadDWord(lLinkPos));
@@ -292,7 +292,7 @@ begin
   if lcnt>0 then
   begin
     lnode:=AddGroup(bnode,'CHILDREN');
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       inc(result,DoParseBlockTL1(lnode,lChunkId));
     end;
@@ -330,7 +330,7 @@ begin
     FLog.Add('Old format, groups: '+IntToStr(lcnt));
 
   lobjcnt:=0;
-  for i:=0 to lcnt-1 do
+  for i:=0 to pred(lcnt) do
   begin
     inc(lobjcnt,DoParseBlockTL1(lobj,-1));
   end;
@@ -344,7 +344,7 @@ begin
       FLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
-  for i:=0 to lcnt-1 do                   // lcnt is root object count
+  for i:=0 to pred(lcnt) do                   // lcnt is root object count
     inc(lobjcnt,DoParseBlockTL1(lobj,-1));
 
   PostProcess();

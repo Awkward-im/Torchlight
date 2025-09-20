@@ -200,7 +200,6 @@ var
   ldir,lfile,ltag:AnsiString;
   lline,lflags:integer;
   i:integer;
-  b:boolean;
 begin
   //--- Save previous
   if FIdx>=0 then
@@ -289,10 +288,12 @@ begin
   else
   begin
     i:=GetLineRef(TRCache[idx].id);
-    GetRef(i, ldir,lfile,ltag,lline,lflags);
-    lblFile    .Caption:=ldir+lfile;
-		lblTagValue.Caption:=ltag;
-    lblTag     .Visible:=true;
+    if GetRef(i, ldir,lfile,ltag,lline,lflags)>0 then
+    begin
+      lblFile    .Caption:=ldir+lfile;
+      lblTagValue.Caption:=ltag;
+      lblTag     .Visible:=true;
+    end;
     actShowDupe.Visible:=false;
   end;
 

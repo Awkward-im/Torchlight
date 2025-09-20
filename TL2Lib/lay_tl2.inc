@@ -181,7 +181,7 @@ begin
     //--- Properties
 
     lcnt:=memReadByte(FPos);
-    for i:=0 to lcnt-1 do
+    for i:=0 to pred(lcnt) do
     begin
       ReadPropertyTL2(lnode);
     end;
@@ -229,7 +229,7 @@ begin
     if lcnt>0 then
     begin
       lnode:=AddGroup(bnode,'CHILDREN');
-      for i:=0 to lcnt-1 do
+      for i:=0 to pred(lcnt) do
       begin
         inc(result,DoParseBlockTL2(lnode,lChunkId));
       end;
@@ -276,7 +276,7 @@ begin
 
   lobjcnt:=0;
   lobj:=AddGroup(result,'OBJECTS');
-  for i:=0 to lcnt-1 do
+  for i:=0 to pred(lcnt) do
     inc(lobjcnt,DoParseBlockTL2(lobj,-1));
 
   asUnsigned(lc,lobjcnt);
@@ -418,7 +418,7 @@ begin
     begin
       astream.WriteDWord(DWORD(lcnt));
 
-      for i:=0 to lcnt-1 do
+      for i:=0 to pred(lcnt) do
       begin
         lidx:=0;
         repeat

@@ -1,0 +1,68 @@
+object DelForm: TDelForm
+  Left = 315
+  Height = 526
+  Top = 250
+  Width = 844
+  Caption = 'Deleted lines'
+  ClientHeight = 526
+  ClientWidth = 844
+  LCLVersion = '4.99.0.0'
+  OnCreate = FormCreate
+  object bbRestore: TBitBtn
+    AnchorSideRight.Control = bbClose
+    Left = 664
+    Height = 26
+    Top = 494
+    Width = 85
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    BorderSpacing.Right = 8
+    Caption = '&Restore'
+    Kind = bkRetry
+    TabOrder = 0
+    OnClick = bbRestoreClick
+  end
+  object bbClose: TBitBtn
+    Left = 757
+    Height = 26
+    Top = 494
+    Width = 75
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    Caption = '&Close'
+    Kind = bkClose
+    ModalResult = 11
+    TabOrder = 1
+  end
+  object lblHelp: TLabel
+    Left = 490
+    Height = 64
+    Top = 336
+    Width = 342
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'Check required lines and click "Restore"'
+    Font.Height = -15
+    ParentFont = False
+    WordWrap = True
+  end
+  object clbLines: TCheckListBox
+    Left = 8
+    Height = 321
+    Top = 7
+    Width = 824
+    Anchors = [akTop, akLeft, akRight]
+    ItemHeight = 0
+    Sorted = True
+    TabOrder = 2
+    OnSelectionChange = clbLinesSelectionChange
+  end
+  object memDescr: TMemo
+    Left = 8
+    Height = 184
+    Top = 336
+    Width = 480
+    TabOrder = 3
+  end
+end

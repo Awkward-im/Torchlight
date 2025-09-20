@@ -1,4 +1,3 @@
-{TODO: lbModsSelectionChange must work even with filtered list, not use ItemIndex=0 and 1}
 {TODO: Add existing mod check at Scan procedure}
 unit fmSQLCP;
 
@@ -37,10 +36,12 @@ type
     sbLog: TSpeedButton;
     sbSave: TSpeedButton;
     sbSettings: TSpeedButton;
+    sbDeleted: TSpeedButton;
     VSplitter: TSplitter;
     StatusBar: TStatusBar;
     procedure AddTrans(Sender: TObject);
     procedure Build(Sender: TObject);
+    procedure sbDeletedClick(Sender: TObject);
     procedure sbSettingsClick(Sender: TObject);
     procedure ShowLog(Sender: TObject);
     procedure NewTrans(Sender: TObject);
@@ -81,6 +82,7 @@ implementation
 uses
   LCLType,
   TL2SettingsForm,
+  TL2DelForm,
   sqlite3dyn,
   iso639,
   rgdb.text,
@@ -122,11 +124,6 @@ var
 //  data:TTL2Translation;
   ls:AnsiString;
   i:integer;
-
-ltmpl,idx:integer;
-  ltrans:AnsiString;
-  litem:PTLCacheElement;
-
 begin
   OpenDialog:=TOpenDialog.Create(nil);
   try
@@ -198,6 +195,15 @@ begin
     ShowMessage(rsBuildFailed);
   // maybe build from cache if curmod=modAll or just build mod, not all
   // well, it can be used in grid/editor, not CP
+end;
+
+procedure TFormSQLCP.sbDeletedClick(Sender: TObject);
+begin
+  with TDelForm.Create(Self) do
+  begin
+    ShowModal;
+    Free;
+  end;
 end;
 
 procedure TFormSQLCP.sbSettingsClick(Sender: TObject);

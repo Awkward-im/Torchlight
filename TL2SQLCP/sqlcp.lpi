@@ -221,6 +221,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2AltForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="tl2delform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DelForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2DelForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

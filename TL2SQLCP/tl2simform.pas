@@ -94,11 +94,12 @@ begin
     lblTextFile.Visible:=true;
     lblTextTag .Visible:=true;
 
-    GetRef(GetLineRef(TRCache[i].id),ldir,lfile,ltag,lline,lflags);
-
-    lblTextLine.Caption:=IntToStr(lline);
-    lblTextFile.Caption:=ldir+lfile;
-    lblTextTag .Caption:=ltag;
+    if GetRef(GetLineRef(TRCache[i].id),ldir,lfile,ltag,lline,lflags)>0 then
+    begin
+      lblTextLine.Caption:=IntToStr(lline);
+      lblTextFile.Caption:=ldir+lfile;
+      lblTextTag .Caption:=ltag;
+    end;
   end;
 
 end;
@@ -120,7 +121,6 @@ end;
 procedure TSimilarForm.FillList(aline:integer);
 var
   larr:TIntegerDynArray;
-  ltmpl:AnsiString;
   i,j,lcnt:integer;
 begin
   lbSimList.Clear;
