@@ -222,24 +222,6 @@ begin
   lbModsSelectionChange(Self,true);
 end;
 
-function TFormSQLCP.OnFileScan(const fname:AnsiString; idx, atotal:integer):integer;
-begin
-  if doBreak then
-  begin
-    if MessageDlg(rsStopScan,mtWarning,mbYesNo,0,mbNo)=mrYes then
-      exit(2)
-    else
-      doBreak:=false;
-  end;
-
-  result:=0;
-  if (idx mod 50)=0 then
-  begin
-    StatusBar.SimpleText:=IntToStr(idx)+' / '+IntToStr(atotal)+' | '+fname;
-    Application.ProcessMessages;
-  end;
-end;
-
 procedure TFormSQLCP.RemoveMod(Sender: TObject);
 var
   lmodid:Int64;
@@ -257,6 +239,24 @@ begin
   else
     if MessageDlg(rsDelete,mtWarning,[mbYes,mbNo],0)<>mrYes then exit;
   lbMods.DeleteSelected;
+end;
+
+function TFormSQLCP.OnFileScan(const fname:AnsiString; idx, atotal:integer):integer;
+begin
+  if doBreak then
+  begin
+    if MessageDlg(rsStopScan,mtWarning,mbYesNo,0,mbNo)=mrYes then
+      exit(2)
+    else
+      doBreak:=false;
+  end;
+
+  result:=0;
+  if (idx mod 50)=0 then
+  begin
+    StatusBar.SimpleText:=IntToStr(idx)+' / '+IntToStr(atotal)+' | '+fname;
+    Application.ProcessMessages;
+  end;
 end;
 
 procedure TFormSQLCP.AddMod(Sender: TObject);

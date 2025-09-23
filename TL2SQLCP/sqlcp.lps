@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Release"/>
+    <BuildModes Active="Debug"/>
     <Units>
       <Unit>
         <Filename Value="sqlcp.lpr"/>
@@ -19,8 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmSQLCP"/>
-        <TopLine Value="186"/>
-        <CursorPos X="28" Y="202"/>
+        <TopLine Value="493"/>
+        <CursorPos Y="376"/>
+        <FoldState Value=" T47021 TLkf0C T7FFv T8iE2C]LMjA01041[X43jY0.7 pjTlQ05418 PjPkY0 T6jZ045 T0k64m6 piZkC6Z413 Pela2g"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -54,7 +55,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="58"/>
         <CursorPos X="17" Y="74"/>
-        <UsageCount Value="199"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="tl2about.pas"/>
@@ -65,7 +66,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
       </Unit>
       <Unit>
         <Filename Value="tl2datamodule.pas"/>
@@ -75,7 +76,7 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TL2DataModule"/>
         <EditorIndex Value="7"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -89,7 +90,7 @@
         <EditorIndex Value="9"/>
         <TopLine Value="13"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -101,7 +102,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2EditText"/>
         <EditorIndex Value="3"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -115,7 +116,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
       </Unit>
       <Unit>
         <Filename Value="tl2settingsform.pas"/>
@@ -127,7 +128,7 @@
         <EditorIndex Value="6"/>
         <TopLine Value="32"/>
         <CursorPos X="22" Y="49"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -141,7 +142,7 @@
         <EditorIndex Value="10"/>
         <TopLine Value="109"/>
         <CursorPos Y="128"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -152,7 +153,7 @@
         <EditorIndex Value="5"/>
         <TopLine Value="571"/>
         <CursorPos X="3" Y="585"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -164,7 +165,7 @@
         <UnitName Value="TL2Unit"/>
         <EditorIndex Value="4"/>
         <CursorPos X="5" Y="19"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -175,7 +176,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="755"/>
         <CursorPos X="15" Y="773"/>
-        <UsageCount Value="176"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -186,7 +187,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2AltForm"/>
         <EditorIndex Value="11"/>
-        <UsageCount Value="47"/>
+        <UsageCount Value="48"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -197,11 +198,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2DelForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="82"/>
-        <CursorPos Y="125"/>
-        <UsageCount Value="26"/>
+        <TopLine Value="7"/>
+        <CursorPos Y="47"/>
+        <FoldState Value=" T46021 T7EDE T8N2[D43i30o3 Paj30 T6i4032 T0iH2X7 PQiP4N"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -276,9 +277,10 @@
       </Unit>
       <Unit>
         <Filename Value="rgdb.text.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="409"/>
-        <CursorPos Y="444"/>
+        <TopLine Value="609"/>
+        <CursorPos Y="612"/>
         <UsageCount Value="69"/>
         <Loaded Value="True"/>
       </Unit>
@@ -375,121 +377,123 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="506" TopLine="498"/>
+        <Caret Line="646" TopLine="632"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="507" Column="24" TopLine="498"/>
+        <Caret Line="612" TopLine="602"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
+        <Caret Line="614" TopLine="602"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="979" Column="14" TopLine="952"/>
+        <Caret Line="615" TopLine="602"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="1104" Column="15" TopLine="1092"/>
+        <Caret Line="616" TopLine="602"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="375" TopLine="364"/>
+        <Caret Line="618" TopLine="615"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="506" TopLine="493"/>
+        <Caret Line="620" TopLine="614"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="507" TopLine="493"/>
+        <Caret Line="621" TopLine="614"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="509" TopLine="493"/>
+        <Caret Line="623" TopLine="614"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="510" TopLine="503"/>
+        <Caret Line="625" TopLine="614"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="516" TopLine="509"/>
+        <Caret Line="626" TopLine="614"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="517" TopLine="509"/>
+        <Caret Line="627" TopLine="614"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="519" TopLine="509"/>
+        <Caret Line="628" TopLine="614"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="521" TopLine="509"/>
+        <Caret Line="629" TopLine="614"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="522" TopLine="509"/>
+        <Caret Line="639" TopLine="632"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="523" TopLine="509"/>
+        <Caret Line="641" TopLine="632"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="524" TopLine="509"/>
+        <Caret Line="668" TopLine="658"/>
       </Position>
       <Position>
         <Filename Value="rgdb.text.pas"/>
-        <Caret Line="376" Column="43" TopLine="281"/>
+        <Caret Line="669" TopLine="664"/>
       </Position>
       <Position>
-        <Filename Value="tl2altform.pas"/>
-        <Caret Line="86" TopLine="64"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="673" TopLine="670"/>
       </Position>
       <Position>
-        <Filename Value="tl2delform.pas"/>
-        <Caret Line="15" Column="11" TopLine="12"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="675" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="tl2delform.pas"/>
-        <Caret Line="60" TopLine="29"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="676" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="390" Column="49" TopLine="361"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="680" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="370" Column="9" TopLine="363"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="682" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="tl2delform.pas"/>
-        <Caret Line="41" Column="51" TopLine="21"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="683" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="85" Column="14" TopLine="62"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="682" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="fmsqlcp.pas"/>
-        <Caret Line="205" Column="10" TopLine="200"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="683" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="tl2delform.pas"/>
-        <Caret Line="38" Column="12" TopLine="21"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="684" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="tl2delform.pas"/>
-        <Caret Line="76" Column="41" TopLine="57"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="686" TopLine="669"/>
       </Position>
       <Position>
-        <Filename Value="tl2delform.pas"/>
-        <Caret Line="79" Column="17" TopLine="58"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="688" TopLine="669"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="689" TopLine="669"/>
       </Position>
     </JumpHistory>
     <RunParams>

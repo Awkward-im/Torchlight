@@ -1,3 +1,4 @@
+{TODO: move statistic to table (change on Add mod [remove line], change "all" on remove mod)}
 {TODO: Keep filter param replace option in base}
 {TODO: GetModStatistic: add NoRef translations of every lang for count}
 {TODO: AddOriginal: check for case when string is presents but deleted. Must not be added back?}
@@ -136,6 +137,7 @@ type
 
 //modid field must be set before call
 function  GetModStatistic(var stat:TModStatistic):integer;
+procedure SetModStatistic(const amodid:Int64);
 procedure GetModList    (    asl:TStrings       ; all:boolean=true);
 procedure GetModList    (var asl:TDict64DynArray; all:boolean=true);
 function  GetLangList   (var asl:TDictDynArray):integer;
@@ -278,6 +280,8 @@ begin
 
     result:=0;
   end;
+  SetModStatistic(amodid);
+  SetModStatistic(modAll);
 end;
 
 function AddMod(const amodid:Int64; const atitle:AnsiString):integer;
@@ -398,10 +402,12 @@ var
 begin
   asl:=nil;
   result:=ReturnInt(tldb,'SELECT count(1) FROM sqlite_master'+
+//      ' WHERE (type = ''table'') AND (name LIKE ''trans_%'')');
       ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
   if result>0 then
   begin
     ls:='SELECT name FROM sqlite_master'+
+//        ' WHERE (type = ''table'') AND (name LIKE ''trans_%'')'+
         ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')'+
         ' ORDER BY name';
 
@@ -497,7 +503,7 @@ begin
     ls:='SELECT count(DISTINCT s.id) FROM strings s'+
         ' INNER JOIN refs ON refs.srcid=s.id'+
         ' WHERE s.deleted=0 AND refs.modid='+ls+
-        ' AND s.src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')';
+        ' AND src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')'
   end;
   result:=ReturnInt(tldb,ls);
 
@@ -560,15 +566,83 @@ begin
   result:=ReturnInt(tldb,ls);
 end;
 
+procedure SetModStatistic(const amodid:Int64);
+var
+  vm:pointer;
+  ls,lmod:AnsiString;
+begin
+  if amodid<>modAll then
+  begin
+    Str(amodid,lmod);
+    ls:=' WHERE modid='+lmod;
+  end
+  else
+    ls:='';
+
+  ls:='SELECT count(srcid), count(DISTINCT srcid), count(DISTINCT file), '+
+      ' count(DISTINCT tag) FROM refs'+ls;
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+    begin
+      if amodid=modAll then lmod:='-1';
+      ls:='REPLACE INTO statistic (modid, lines, differs, files, tags, nation)'+
+        ' VALUES ('+lmod+
+        ','+IntToStr(sqlite3_column_int(vm,0))+
+        ','+IntToStr(sqlite3_column_int(vm,1))+
+        ','+IntToStr(sqlite3_column_int(vm,2))+
+        ','+IntToStr(sqlite3_column_int(vm,3))+
+        ','+IntToStr(GetNationLineCount(amodid))+
+        ');';
+      ExecuteDirect(tldb,ls);
+    end;
+    sqlite3_finalize(vm);
+  end;
+end;
+
 function GetModStatistic(var stat:TModStatistic):integer;
 var
+  lmodid:Int64;
   vm,vml:pointer;
-  lmod,ls,ltab:AnsiString;
+  llist:TDictDynArray;
+  lmod,ls:AnsiString;
+//  ltab:AnsiString;
   i:integer;
 begin
+  lmodid:=stat.modid;
+
+  SetLength(stat.langs,0);
+  FillChar(stat,SizeOf(stat),0);
+  stat.modid:=lmodid;
+
+  Str(lmodid,lmod);
+  ls:='SELECT lines, differs, files, tags, nation FROM statistic'+
+      ' WHERE modid='+lmod;
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+    begin
+      stat.total :=sqlite3_column_int(vm,0);
+      stat.dupes :=stat.total-sqlite3_column_int(vm,1);
+      stat.files :=sqlite3_column_int(vm,2);
+      stat.tags  :=sqlite3_column_int(vm,3);
+      stat.nation:=sqlite3_column_int(vm,4);
+    end
+    else
+    begin
+      sqlite3_finalize(vm);
+      SetModStatistic(lmodid);
+      GetModStatistic(stat);
+      exit;
+    end;
+
+    sqlite3_finalize(vm);
+  end;
+  stat.unique:=GetUniqueLineCount(stat.modid);
+
+{
   if stat.modid<>modAll then
   begin
-    Str(stat.modid,lmod);
     lmod:=' WHERE modid='+lmod;
   end
   else
@@ -587,9 +661,45 @@ begin
     end;
     sqlite3_finalize(vm);
   end;
-  stat.unique:=GetUniqueLineCount(stat.modid);
   stat.nation:=GetNationLineCount(stat.modid);
+  stat.unique:=GetUniqueLineCount(stat.modid);
+}
 
+  result:=GetLangList(llist);
+  if result=0 then exit;
+
+  // as variant, if result>1 then place (SELECT DISTINCT srcid FROM refs'+lmod+')'
+  // into temp table. Can be usable in other places. Update at mod scan.
+  SetLength(stat.langs,result);
+
+  if stat.modid<>modAll then
+    lmod:=' WHERE modid='+lmod
+  else
+    lmod:='';
+
+  for i:=0 to result-1 do
+  begin
+    ls:='SELECT count(srcid), sum(part) FROM [trans_'+llist[i].value+
+        '] WHERE srcid IN (SELECT DISTINCT srcid FROM refs'+lmod+')';
+    if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vml, nil)=SQLITE_OK then
+    begin
+      if sqlite3_step(vml)=SQLITE_ROW then
+      begin
+        stat.langs[i].lang :=llist[i].value;
+        stat.langs[i].trans:=sqlite3_column_int(vml,0);
+{
+        stat.langs[i].trans := stat.langs[i].trans + ReturnInt(tldb,
+           'SELECT count(strings.id) FROM strings'+
+           ' LEFT JOIN refs ON refs.srcid=strings.id WHERE refs.srcid IS NULL');
+}
+        stat.langs[i].part :=sqlite3_column_int(vml,1);
+      end;
+    end;
+    sqlite3_finalize(vml);
+  end;
+
+  SetLength(llist,0);
+(*
   result:=ReturnInt(tldb,'SELECT count(1) FROM sqlite_master'+
     ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
   SetLength(stat.langs,result);
@@ -625,7 +735,7 @@ begin
     end;
     sqlite3_finalize(vm);
   end;
-
+*)
 end;
 {%ENDREGION Mod}
 
@@ -1164,6 +1274,7 @@ begin
 
          if afilter='MEDIA/'        then lcond:='=''MEDIA/'''
     else if afilter='MEDIA/SKILLS/' then lcond:='=''MEDIA/SKILLS/'''
+//    else                                 lcond:=' LIKE '''+afilter+'%''';
     else                                 lcond:=' GLOB '''+afilter+'*''';
 
     lSQL:='SELECT DISTINCT srcid FROM refs WHERE'+lSQL+
@@ -1909,6 +2020,16 @@ begin
       '  flags  INTEGER);');
   result:=ExecuteDirect(tldb,
       'CREATE INDEX refsrc ON refs (srcid, modid)');
+
+  result:=ExecuteDirect(tldb,
+      'CREATE TABLE statistic ('+
+      '  modid   INTEGER PRIMARY KEY,'+
+      '  lines   INTEGER,'+
+      '  differs INTEGER,'+
+      '  files   INTEGER,'+
+      '  tags    INTEGER,'+
+      '  nation  INTEGER);'); // warning for ChangeOriginal
+
 end;
 
 function TLOpenBase(inmemory:boolean=false):boolean;
