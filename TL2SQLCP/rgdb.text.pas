@@ -1,4 +1,3 @@
-{TODO: move statistic to table (change on Add mod [remove line], change "all" on remove mod)}
 {TODO: Keep filter param replace option in base}
 {TODO: GetModStatistic: add NoRef translations of every lang for count}
 {TODO: AddOriginal: check for case when string is presents but deleted. Must not be added back?}
@@ -101,7 +100,8 @@ function AddOriginal (const asrc:AnsiString; afilter:Pinteger=nil):integer;
 function GetOriginal    (aid:integer):AnsiString;
 function ChangeOriginal (const asrc,anew:AnsiString):boolean;
 function ChangeOriginal (aid:integer; const anew:AnsiString):boolean;
-function DeleteOriginal (aid:integer):boolean;
+function DeleteOriginal (aid:integer):boolean; // mark as deleted, remove translation
+function RemoveOriginal (aid:integer):boolean; // remove from base
 function RestoreOriginal(aid:integer):boolean;
 
 function AddText(const asrc,alang,adst:AnsiString; apart:boolean):integer;
@@ -243,7 +243,13 @@ begin
   result:=ExecuteDirect(tldb,'DELETE FROM dicmods WHERE id='+ls);
   if not result then exit;
   // mark unique strings (if any) as deleted (really need this?)
-  // delete all references
+  result:=ExecuteDirect(tldb,
+    'UPDATE strings SET deleted=1'+
+    ' WHERE id IN'+
+    ' (SELECT DISTINCT r.srcid FROM refs r'+
+    '   LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
+    '   ON r.srcid=r1.srcid'+
+    '   WHERE r.modid='+ls+' AND r1.srcid IS NULL)');
   result:=ExecuteDirect(tldb,'DELETE FROM refs WHERE modid='+ls);
 end;
 
@@ -254,7 +260,7 @@ var
   pc:PAnsiChar;
 begin
   result:=-1;
-  if (amodid=-1) or (atitle=nil) or (atitle^=#0) then exit;
+  if (amodid=modAll) or (atitle=nil) or (atitle^=#0) then exit;
 
   Str(amodid,ls);
   result:=ReturnInt(tldb,'SELECT 1 FROM dicmods WHERE id='+ls);
@@ -506,38 +512,6 @@ begin
         ' AND src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')'
   end;
   result:=ReturnInt(tldb,ls);
-
-{
-  result:=0;
-
-  if amodid=modAll then
-    ls:='SELECT src FROM strings WHERE deleted=0'
-  else
-  begin
-    Str(amodid,ls);
-    ls:='SELECT DISTINCT s.src FROM strings s'+
-          ' INNER JOIN refs ON refs.srcid=s.id'+
-          ' WHERE s.deleted=0 AND refs.modid='+ls;
-  end;
-
-  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
-  begin
-    while sqlite3_step(vm)=SQLITE_ROW do
-    begin
-      pc:=sqlite3_column_text(vm,0);
-
-      while pc^<>#0 do
-      begin
-        if pc^>#127 then
-        begin
-          inc(result);
-          break;
-        end;
-        inc(pc);
-      end;
-    end;
-  end;
-}
 end;
 
 function IsLineUnique(aid:integer):boolean;
@@ -549,7 +523,7 @@ begin
   Str(CurMod,ls);
   result:=ReturnInt(tldb,
     'SELECT count(DISTINCT srcid) FROM refs'+
-    ' WHERE modid<>'+ls+' AND srcid='+IntToStr(aid))>0;
+    ' WHERE modid<>'+ls+' AND srcid='+IntToStr(aid))=0;
 end;
 
 function GetUniqueLineCount(const amodid:Int64):integer;
@@ -640,30 +614,6 @@ begin
   end;
   stat.unique:=GetUniqueLineCount(stat.modid);
 
-{
-  if stat.modid<>modAll then
-  begin
-    lmod:=' WHERE modid='+lmod;
-  end
-  else
-    lmod:='';
-
-  ls:='SELECT count(srcid), count(DISTINCT srcid), count(DISTINCT file), '+
-      ' count(DISTINCT tag) FROM refs'+lmod;
-  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
-  begin
-    if sqlite3_step(vm)=SQLITE_ROW then
-    begin
-      stat.total:=sqlite3_column_int(vm,0);
-      stat.dupes:=stat.total-sqlite3_column_int(vm,1);
-      stat.files:=sqlite3_column_int(vm,2);
-      stat.tags :=sqlite3_column_int(vm,3);
-    end;
-    sqlite3_finalize(vm);
-  end;
-  stat.nation:=GetNationLineCount(stat.modid);
-  stat.unique:=GetUniqueLineCount(stat.modid);
-}
 
   result:=GetLangList(llist);
   if result=0 then exit;
@@ -699,43 +649,6 @@ begin
   end;
 
   SetLength(llist,0);
-(*
-  result:=ReturnInt(tldb,'SELECT count(1) FROM sqlite_master'+
-    ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
-  SetLength(stat.langs,result);
-  if result=0 then exit;
-
-  i:=0;
-  ls:='SELECT name FROM sqlite_master'+
-    ' WHERE (type = ''table'') AND (name GLOB ''trans_*'') ORDER BY name';
-  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
-  begin
-    while sqlite3_step(vm)=SQLITE_ROW do
-    begin
-      ltab:=sqlite3_column_text(vm,0);
-      ls:='SELECT count(srcid), sum(part) FROM ['+ltab+
-        '] WHERE srcid IN (SELECT DISTINCT srcid FROM refs'+lmod+')';
-      if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vml, nil)=SQLITE_OK then
-      begin
-        if sqlite3_step(vml)=SQLITE_ROW then
-        begin
-          stat.langs[i].lang :=Copy(ltab,7);
-          stat.langs[i].trans:=sqlite3_column_int(vml,0);
-{
-          stat.langs[i].trans := stat.langs[i].trans + ReturnInt(tldb,
-             'SELECT count(strings.id) FROM strings'+
-             ' LEFT JOIN refs ON refs.srcid=strings.id WHERE refs.srcid IS NULL');
-}
-          stat.langs[i].part :=sqlite3_column_int(vml,1);
-        end;
-        sqlite3_finalize(vml);
-      end;
-
-      inc(i);
-    end;
-    sqlite3_finalize(vm);
-  end;
-*)
 end;
 {%ENDREGION Mod}
 
@@ -1129,6 +1042,16 @@ begin
     SQLog.Add(lSQL);
 end;
 
+function RemoveOriginal(aid:integer):boolean;
+var
+  lSQL:AnsiString;
+begin
+  lSQL:='DELETE FROM strings WHERE id='+IntToStr(aid);
+  result:=ExecuteDirect(tldb,lSQL);
+  if result then
+    SQLog.Add(lSQL);
+end;
+
 function ChangeOriginal(const asrc,anew:AnsiString):boolean;
 begin
   result:=ChangeOriginal(FindOriginal(asrc),anew);
@@ -1396,6 +1319,7 @@ end;
 
 function GetLineRefCount(aid:integer):integer;
 var
+  vm:pointer;
   lid,lmod:AnsiString;
 begin
 //  if (TRCache[aidx].flags and (rfIsNoRef))<>0 then exit(0);
@@ -1409,7 +1333,20 @@ begin
   else
     lmod:='';
 
-  result:=ReturnInt(tldb,'SELECT count(1) FROM refs WHERE srcid='+lid+lmod);
+//  result:=ReturnInt(tldb,'SELECT count(1) FROM refs WHERE srcid='+lid+lmod);
+  result:=0;
+  lid:='SELECT count(id), count(distinct dir)=1 and count(distinct file)=1 FROM refs'+
+      ' WHERE srcid='+lid+lmod;
+  if sqlite3_prepare_v2(tldb, PAnsiChar(lid),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+    begin
+      result:=sqlite3_column_int(vm,0);
+      if (result>1) and (sqlite3_column_int(vm,1)=1) then result:=-result;
+    end;
+    sqlite3_finalize(vm);
+  end;
+
 end;
 
 function GetRefSrc(arefid:integer):integer;

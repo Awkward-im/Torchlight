@@ -1,3 +1,4 @@
+{TODO: Show "STRING/TRANSLATE" flag}
 unit TL2DelForm;
 
 {$mode ObjFPC}{$H+}
@@ -15,9 +16,10 @@ type
   TDelForm = class(TForm)
     bbRestore: TBitBtn;
     bbClose: TBitBtn;
+    bbDelete: TBitBtn;
     clbLines: TCheckListBox;
-    lblHelp: TLabel;
     memDescr: TMemo;
+    procedure bbDeleteClick(Sender: TObject);
     procedure bbRestoreClick(Sender: TObject);
     procedure clbLinesSelectionChange(Sender: TObject; User: boolean);
     procedure FormCreate(Sender: TObject);
@@ -40,7 +42,8 @@ uses
   rgdb.text;
 
 resourcestring
-  rsNoDeleted = 'Strange, no deleted lines at all.';
+  rsNoDeleted  = 'Strange, no deleted lines at all.';
+  rsOKToDelete = 'Are you sure to delete totally selected lines from base?';
 
 { TDelForm }
 
@@ -49,6 +52,7 @@ var
   larr:array [0..2] of AnsiString;
   ls:AnsiString;
   i,lid,lcnt:integer;
+  lflags:cardinal;
 begin
   memDescr.Text:='';
 
@@ -59,11 +63,17 @@ begin
     ls:='No info about this text placement'
   else
   begin
+    lflags:=GetLineFlags(lid,'');
+    if (lflags and rfIsTranslate)<>0 then
+      ls:='Exists as Translate somethere'#13#10
+    else
+      ls:='Exists as String type only'#13#10;
+
     if lcnt>3 then
-      ls:='Exists in '+IntToStr(lcnt)+' mods'
+      ls:=ls+'Exists in '+IntToStr(lcnt)+' mods'
     else
     begin
-      ls:='In these mods:';
+      ls:=ls+'In these mods:';
       for i:=0 to lcnt-1 do
         ls:=ls+' "'+larr[i]+'"';
     end;
@@ -108,6 +118,24 @@ begin
     end;
 
   bbRestore.Enabled:=clbLines.Count>0;
+  bbDelete .Enabled:=clbLines.Count>0;
+end;
+
+procedure TDelForm.bbDeleteClick(Sender: TObject);
+var
+  i:integer;
+begin
+  if  MessageDlg(rsOKToDelete,mtWarning,mbYesNoCancel,0,mbCancel)=mrYes then
+  begin
+    for i:=clbLines.Count-1 downto 0 do
+      if clbLines.Checked[i] then
+      begin
+        RemoveOriginal(IntPtr(clbLines.Items.Objects[i]));
+        clbLines.Items.Delete(i);
+      end;
+    bbRestore.Enabled:=clbLines.Count>0;
+    bbDelete .Enabled:=clbLines.Count>0;
+  end;
 end;
 
 procedure TDelForm.FillList();
@@ -122,6 +150,7 @@ begin
   begin
     memDescr.Text:=rsNoDeleted;
     bbRestore.Enabled:=false;
+    bbDelete .Enabled:=false;
   end
   else
   begin

@@ -10,11 +10,11 @@ object DelForm: TDelForm
   OnCreate = FormCreate
   object bbRestore: TBitBtn
     AnchorSideRight.Control = bbClose
-    Left = 664
+    Left = 499
     Height = 26
-    Top = 494
+    Top = 336
     Width = 85
-    Anchors = [akRight, akBottom]
+    Anchors = [akLeft, akBottom]
     AutoSize = True
     BorderSpacing.Right = 8
     Caption = '&Restore'
@@ -34,25 +34,12 @@ object DelForm: TDelForm
     ModalResult = 11
     TabOrder = 1
   end
-  object lblHelp: TLabel
-    Left = 490
-    Height = 64
-    Top = 336
-    Width = 342
-    Alignment = taCenter
-    Anchors = [akTop, akLeft, akRight]
-    AutoSize = False
-    Caption = 'Check required lines and click "Restore"'
-    Font.Height = -15
-    ParentFont = False
-    WordWrap = True
-  end
   object clbLines: TCheckListBox
     Left = 8
     Height = 321
     Top = 7
     Width = 824
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akTop, akLeft, akRight, akBottom]
     ItemHeight = 0
     Sorted = True
     TabOrder = 2
@@ -63,6 +50,19 @@ object DelForm: TDelForm
     Height = 184
     Top = 336
     Width = 480
+    Anchors = [akLeft, akBottom]
     TabOrder = 3
+  end
+  object bbDelete: TBitBtn
+    Left = 499
+    Height = 26
+    Top = 494
+    Width = 79
+    AutoSize = True
+    Cancel = True
+    Caption = 'Delete'
+    Kind = bkCancel
+    TabOrder = 4
+    OnClick = bbDeleteClick
   end
 end

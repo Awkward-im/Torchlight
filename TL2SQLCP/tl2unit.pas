@@ -1,3 +1,4 @@
+{TODO: TL2GridClick. check for several places in one file}
 {TODO: implement (fix) actImportClipBrd}
 {TODO: mark unique lines}
 unit TL2Unit;
@@ -123,6 +124,8 @@ type
     procedure TL2GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure TL2GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
     procedure TL2GridGetEditText(Sender: TObject; ACol, ARow: Integer; var Value: string);
+    procedure TL2GridPrepareCanvas(Sender: TObject; aCol, aRow: Integer;
+      aState: TGridDrawState);
     procedure TL2GridSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
     procedure TL2GridSelectEditor(Sender: TObject; aCol, aRow: Integer; var Editor: TWinControl);
     procedure TL2GridSetCheckboxState(Sender: TObject; ACol, ARow: Integer; const Value: TCheckboxState);
@@ -208,11 +211,21 @@ resourcestring
   rsModeOriginal   = 'Original';
   rsModeNotReady   = 'Not translated';
   rsModeModified   = 'Modified';
+  rsModeNational   = 'Non-latin';
 
 const
   colOrigin  = 1;
   colPartial = 2;
   colTrans   = 3;
+const
+  ModeAll        = 0;
+  ModeReady      = 1;
+  ModeReadyPlus  = 2;
+  ModePartial    = 3;
+  ModeOriginal   = 4;
+  ModeNotReady   = 5;
+  ModeModified   = 6;
+  ModeNational   = 7;
 
 //----- Form -----
 
@@ -249,13 +262,14 @@ begin
 
   Self.Font.Assign(TL2DM.TL2Font);
 
-  cbDisplayMode.AddItem(rsModeAll      ,TObject(0));
-  cbDisplayMode.AddItem(rsModeReady    ,TObject(1));
-  cbDisplayMode.AddItem(rsModeReadyPlus,TObject(2));
-  cbDisplayMode.AddItem(rsModePartial  ,TObject(3));
-  cbDisplayMode.AddItem(rsModeOriginal ,TObject(4));
-  cbDisplayMode.AddItem(rsModeNotReady ,TObject(5));
-  cbDisplayMode.AddItem(rsModeModified ,TObject(6));
+  cbDisplayMode.AddItem(rsModeAll      ,TObject(ModeAll      ));
+  cbDisplayMode.AddItem(rsModeReady    ,TObject(ModeReady    ));
+  cbDisplayMode.AddItem(rsModeReadyPlus,TObject(ModeReadyPlus));
+  cbDisplayMode.AddItem(rsModePartial  ,TObject(ModePartial  ));
+  cbDisplayMode.AddItem(rsModeOriginal ,TObject(ModeOriginal ));
+  cbDisplayMode.AddItem(rsModeNotReady ,TObject(ModeNotReady ));
+  cbDisplayMode.AddItem(rsModeModified ,TObject(ModeModified ));
+  cbDisplayMode.AddItem(rsModeNational ,TObject(ModeNational ));
   cbDisplayMode.ItemIndex:=0;
 
   LoadModData();
@@ -844,6 +858,16 @@ begin
   memEdit.Text:=Value;
 end;
 
+procedure TMainTL2TransForm.TL2GridPrepareCanvas(Sender: TObject; aCol,
+  aRow: Integer; aState: TGridDrawState);
+begin
+  if (gdFixed in aState) and (aRow>0) then
+  begin
+    if IsLineUnique(TRCache[IntPtr(TL2Grid.Objects[0,aRow])].id) then
+      TL2Grid.Canvas.Brush.Color:=TColor($FFC0CB);
+  end;
+end;
+
 procedure TMainTL2TransForm.TL2GridHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
 begin
   if IsColumn then
@@ -852,7 +876,7 @@ end;
 
 procedure TMainTL2TransForm.TL2GridClick(Sender: TObject);
 var
-  ls,lfile,ltag:AnsiString;
+  ls,ldir,lfile,ltag:AnsiString;
   idx,lline,lflags:integer;
 begin
   idx:=IntPtr(TL2Grid.Objects[0,TL2Grid.Row]);
@@ -861,14 +885,26 @@ begin
     ls:=rsNoRef
   else if (TRCache[idx].flags and rfIsManyRefs)=0 then
   begin
-    if GetRef(GetLineRef(TRCache[idx].id),ls,lfile,ltag,lline,lflags)>0 then
-      ls:=ltag+' | '+ls+lfile
+    if GetRef(GetLineRef(TRCache[idx].id),ldir,lfile,ltag,lline,lflags)>0 then
+      ls:=ltag+' | '+ldir+lfile
     else
       ls:='';
   end
   else
-    ls:=StringReplace(rsSeveralRefs,'%d',
-      IntToStr(GetLineRefCount(TRCache[idx].id)),[])+' '+rsDupes;
+  begin
+//    ls:=StringReplace(rsSeveralRefs,'%d',
+//      IntToStr(GetLineRefCount(TRCache[idx].id)),[])+' '+rsDupes;
+    lline:=GetLineRefCount(TRCache[idx].id);
+    ls:=StringReplace(rsSeveralRefs,'%d',IntToStr(ABS(lline)),[]);
+    if lline<0 then
+    begin
+      if GetRef(GetLineRef(TRCache[idx].id),ldir,lfile,ltag,lline,lflags)>0 then
+        ls:=ldir+lfile+' - '+ls;
+    end
+    else
+      ls:=ls+' '+rsDupes;
+  end;
+
   if (CurMod<>modAll) and (CurMod<>modVanilla) then
     if IsLineUnique(TRCache[idx].id) then ls:=rsUnique+ls;
 
@@ -1111,6 +1147,9 @@ end;
 
 function TMainTL2TransForm.FillProjectSGRow(aRow, idx:integer;
           const afilter:AnsiString):boolean;
+var
+  i:integer;
+  b:boolean;
 begin
   result:=false;
 
@@ -1119,13 +1158,26 @@ begin
 
   // Display Mode
   case UIntPtr(cbDisplayMode.Items.Objects[cbDisplayMode.ItemIndex]) of
-    0: ;
-    1: if (TRCache[idx].dst ='') or (TRCache[idx].part) then exit;
-    2: if (TRCache[idx].dst ='') then exit;
-    3: if not TRCache[idx].part  then exit;
-    4: if (TRCache[idx].dst<>'') then exit;
-    5: if (TRCache[idx].dst<>'') and (not TRCache[idx].part) then exit;
-    6: if (TRCache[idx].flags and rfIsModified)=0 then exit;
+    ModeAll      : ;
+    ModeReady    : if (TRCache[idx].dst ='') or (TRCache[idx].part) then exit;
+    ModeReadyPlus: if (TRCache[idx].dst ='') then exit;
+    ModePartial  : if not TRCache[idx].part  then exit;
+    ModeOriginal : if (TRCache[idx].dst<>'') then exit;
+    ModeNotReady : if (TRCache[idx].dst<>'') and (not TRCache[idx].part) then exit;
+    ModeModified : if (TRCache[idx].flags and rfIsModified)=0 then exit;
+    ModeNational : begin
+      b:=false;
+      with TRCache[idx] do
+        for i:=1 to Length(src)-1 do
+        begin
+          if ORD(src[i])>127 then
+          begin
+            b:=true;
+            break;
+          end;
+        end;
+      if not b then exit;
+    end;
   end;
 
   // Filter

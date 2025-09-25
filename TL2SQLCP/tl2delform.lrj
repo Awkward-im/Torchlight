@@ -2,5 +2,5 @@
 {"hash":212880947,"name":"tdelform.caption","sourcebytes":[68,101,108,101,116,101,100,32,108,105,110,101,115],"value":"Deleted lines"},
 {"hash":147502133,"name":"tdelform.bbrestore.caption","sourcebytes":[38,82,101,115,116,111,114,101],"value":"&Restore"},
 {"hash":44709525,"name":"tdelform.bbclose.caption","sourcebytes":[38,67,108,111,115,101],"value":"&Close"},
-{"hash":72304338,"name":"tdelform.lblhelp.caption","sourcebytes":[67,104,101,99,107,32,114,101,113,117,105,114,101,100,32,108,105,110,101,115,32,97,110,100,32,99,108,105,99,107,32,34,82,101,115,116,111,114,101,34],"value":"Check required lines and click \"Restore\""}
+{"hash":78392485,"name":"tdelform.bbdelete.caption","sourcebytes":[68,101,108,101,116,101],"value":"Delete"}
 ]}

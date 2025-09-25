@@ -104,16 +104,16 @@ msgstr "Текст"
 msgid "&Close"
 msgstr ""
 
+#: tdelform.bbdelete.caption
+msgid "Delete"
+msgstr ""
+
 #: tdelform.bbrestore.caption
 msgid "&Restore"
 msgstr ""
 
 #: tdelform.caption
 msgid "Deleted lines"
-msgstr ""
-
-#: tdelform.lblhelp.caption
-msgid "Check required lines and click \"Restore\""
 msgstr ""
 
 #: tdupeform.caption
@@ -301,6 +301,10 @@ msgstr "Этот текст есть в нескольких (примерно %
 msgid "Strange, no deleted lines at all."
 msgstr ""
 
+#: tl2delform.rsoktodelete
+msgid "Are you sure to delete totally selected lines from base?"
+msgstr ""
+
 #: tl2edittext.rslanguage
 msgctxt "tl2edittext.rslanguage"
 msgid "Translation language"
@@ -428,6 +432,10 @@ msgstr "Все"
 #: tl2unit.rsmodemodified
 msgid "Modified"
 msgstr "Изменено"
+
+#: tl2unit.rsmodenational
+msgid "Non-latin"
+msgstr ""
 
 #: tl2unit.rsmodenotready
 msgctxt "tl2unit.rsmodenotready"
