@@ -51,6 +51,10 @@ msgstr ""
 msgid "Database saved"
 msgstr ""
 
+#: fmsqlcp.rssavesqlog
+msgid "Save SQL Log?"
+msgstr ""
+
 #: fmsqlcp.rsskip
 msgid "Skip"
 msgstr ""
@@ -667,10 +671,6 @@ msgstr ""
 
 #: tmaintl2transform.tl2grid.columns[2].title.caption
 msgid "Translation"
-msgstr ""
-
-#: tmaintl2transform.toolbutton4.caption
-msgid "ToolButton4"
 msgstr ""
 
 #: tsimilarform.btndupes.caption

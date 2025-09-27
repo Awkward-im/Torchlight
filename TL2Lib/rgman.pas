@@ -465,7 +465,7 @@ begin
           with PManFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
           begin
             ftype :=RGTypeOfExt(PUnicodeChar(lname));
-            ftime :=sr.Time;
+            ftime :=DateTimeToFileTime(sr.TimeStamp);
             size_s:=sr.Size;
             //!!
             if aman.FLUnpacked<sr.Size then aman.FLUnpacked:=sr.Size;

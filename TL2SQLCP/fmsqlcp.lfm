@@ -147,7 +147,7 @@ object FormSQLCP: TFormSQLCP
           item
             ReadOnly = True
             Title.Caption = 'Name'
-            Width = 143
+            Width = 147
           end>
         FixedCols = 0
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
@@ -157,7 +157,7 @@ object FormSQLCP: TFormSQLCP
         ColWidths = (
           60
           48
-          143
+          147
         )
       end
       object sbLoad: TSpeedButton
@@ -296,7 +296,7 @@ object FormSQLCP: TFormSQLCP
         end      
         item
           Title.Caption = 'Name'
-          Width = 370
+          Width = 374
         end>
       FixedCols = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
@@ -308,7 +308,7 @@ object FormSQLCP: TFormSQLCP
         60
         60
         48
-        370
+        374
       )
     end
   end

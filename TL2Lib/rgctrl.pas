@@ -1,4 +1,5 @@
-﻿{NOTE: ignoring changes if empty dir added only}
+﻿{TODO: Check for source of text files for "source size" field}
+{NOTE: ignoring changes if empty dir added only}
 {TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
 {TODO: add act_file for PAK files. OR create new like act_link}
 {TODO: add PAK paths and import dirs catalogue}
@@ -324,9 +325,9 @@ begin
     p:=PManFileInfo(FPAK.Man.Files[afrom^.source]);
   move(p^,ato^,SizeOf(TManFileInfo));
 }
-  ato^.size_u  :=ato^.size_u;
-  ato^.size_s  :=ato^.size_s;
-  ato^.size_c  :=ato^.size_c;
+  ato^.size_u  :=afrom^.size_u;
+  ato^.size_s  :=afrom^.size_s;
+  ato^.size_c  :=afrom^.size_c;
   // not required usually
 //  ato^.name    :=afrom^.name;
 //  ato^.offset  :=afrom^.offset;
@@ -408,7 +409,9 @@ end;
 
 function TRGController.GetUpdate(idx:integer; var buf:PByte):dword;
 var
+  lftime,lfsize:Int64;
   f:File of byte;
+  sr:TUnicodeSearchRec;
   p:PRGCtrlInfo;
 begin
   result:=0;
@@ -427,10 +430,19 @@ begin
         result:=FileSize(f);
         if result>0 then
         begin
+          p^.size  :=result;
+          p^.size_s:=result;
+
+          if FindFirst(PWideChar(p^.data),faAnyFile,sr)=0 then
+          begin
+            p^.ftime:=DateTimeToFileTime(sr.TimeStamp);
+            FindClose(sr);
+          end;
+
           if (buf=nil) or (MemSize(buf)<(result+2)) then
           begin
             FreeMem(buf);
-            GetMem(buf,result+2);
+            GetMem(buf,Align(result+2,4096));
           end;
           BlockRead(f,buf^,result);
           buf[result  ]:=0;
@@ -449,7 +461,7 @@ begin
         if (buf=nil) or (MemSize(buf)<(result+2)) then
         begin
           FreeMem(buf);
-          GetMem(buf, result+2);
+          GetMem(buf,Align(result+2,4096));
         end;
         move(PByte(p^.data)^,buf^,result);
         buf[result  ]:=0;
@@ -819,11 +831,24 @@ end;
 
 function TRGController.AddFileData(afdata:PWideChar; afname:PWideChar; acontent:boolean=false):integer;
 var
+  lftime,lfsize:Int64;
   lptr:PByte;
   f:file of byte;
   sr:TUnicodeSearchRec;
-  lsize,lcnt:integer;
+  lcnt:integer;
 begin
+  if FindFirst(afdata,faAnyFile,sr)=0 then
+  begin
+    lftime:=DateTimeToFileTime(sr.TimeStamp);
+    lfsize:=sr.Size;
+    FindClose(sr);
+  end
+  else
+  begin
+    lftime:=0;
+    lfsize:=0;
+  end;
+
   if not acontent then
   begin
     lcnt:=FileCount;
@@ -835,8 +860,9 @@ begin
       ftype :=RGTypeOfExt(afname);
       data  :=PByte(CopyWide(afdata));
       action:=act_file;
-      ftime :=0;
-      size_s:=0;
+      ftime :=lftime;
+      size_s:=lfsize;
+      size:=lfsize;
       size_u:=0;
       size_c:=0;
     end;
@@ -847,24 +873,21 @@ begin
     system.Reset(f);
     if IOResult=0 then
     begin
-      lsize:=FileSize(f);
-      if lsize>0 then
+      if lfsize=0 then
+         lfsize:=FileSize(f);
+      if lfsize>0 then
       begin
-        GetMem(lptr,lsize);
-        BlockRead(f,lptr^,lsize);
+        GetMem(lptr,lfsize);
+        BlockRead(f,lptr^,lfsize);
       end
       else
         lptr:=nil;
       system.Close(f);
 
-      result:=UseData(lptr,lsize,afname);
-
-      if FindFirst(afdata,faAnyFile,sr)=0 then
-      begin
-        Files[result]^.ftime:=sr.Time;
-        FindClose(sr);
-      end;
-
+      result:=UseData(lptr,lfsize,afname);
+      Files[result]^.ftime :=lftime; // overwrite current time from UseData
+      PRGCtrlInfo(Files[result])^.size_s:=lfsize;
+      PRGCtrlInfo(Files[result])^.size:=lfsize;
     end
     else
       result:=SearchFile(afname);

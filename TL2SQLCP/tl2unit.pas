@@ -30,6 +30,7 @@ type
     actModInfo: TAction;
     actShowSimilar: TAction;
     actTranslate: TAction;
+    cbItems: TComboBox;
     HelpNotes: TAction;
     FileExit: TAction;
     FileSave: TAction;
@@ -90,8 +91,7 @@ type
     tbSimilar: TToolButton;
     tbDouble: TToolButton;
     tbSeparator4: TToolButton;
-    ToolButton3: TToolButton;
-    ToolButton4: TToolButton;
+    tbShowAlt: TToolButton;
     procedure actCheckTranslationExecute(Sender: TObject);
     procedure actExportClipBrdExecute(Sender: TObject);
     procedure actFindNextExecute(Sender: TObject);
@@ -105,6 +105,7 @@ type
     procedure actShowSimilarExecute(Sender: TObject);
     procedure actTranslateExecute(Sender: TObject);
     procedure cbFolderChange(Sender: TObject);
+    procedure cbItemsChange(Sender: TObject);
     procedure cbLanguageChange(Sender: TObject);
     procedure cbSkillsChange(Sender: TObject);
     procedure edProjectFilterChange(Sender: TObject);
@@ -1290,6 +1291,37 @@ begin
   TL2Grid.Row:=i;
 end;
 
+procedure AddToCombo(aItems:TStrings; const astr:AnsiString; alen:integer);
+var
+  ls:AnsiString;
+  j:integer;
+begin
+  if Length(astr)=alen then           // if we has MEDIA/UNITS/ITEMS/ files
+    aItems.Add(rsRoot)
+  else                            // Add subdirs (if not added yet)
+  begin
+    inc(alen);
+    ls:=astr;
+    // Use just 1-st level subdirs
+    for j:=alen to Length(ls) do
+    begin
+      if ls[j]='/' then
+      begin
+        ls:=Copy(ls,alen,j-alen);
+        break;
+      end;
+    end;
+    j:=1;
+    while j<aItems.Count do
+    begin
+      if ls=aItems[j] then break;
+      inc(j);
+    end;
+    if j=aItems.Count then
+      aItems.Add(ls);
+  end;
+end;
+
 procedure TMainTL2TransForm.FillFoldersCombo(asetidx:boolean);
 var
   ls:string;
@@ -1308,6 +1340,11 @@ begin
   cbSkills.Sorted:=true;
   cbSkills.Items.BeginUpdate;
   cbSkills.Items.Add(rsFolderAll);
+
+  cbItems.Clear;
+  cbItems.Sorted:=true;
+  cbItems.Items.BeginUpdate;
+  cbItems.Items.Add(rsFolderAll);
 
   cbFolder.Clear;
   cbFolder.Sorted:=true;
@@ -1336,38 +1373,21 @@ begin
         lskill:=true;
         cbFolder.Items.AddObject('SKILLS',TObject(rfIsSkill));
       end;
-      if Length(ls)=13 then           // if we has MEDIA/SKILLS/ files
-        cbSkills.Items.Add(rsRoot)
-      else                            // Add subdirs (if not added yet)
-      begin
-        // Use just 1-st level subdirs
-        for j:=14 to Length(ls) do
-        begin
-          if ls[j]='/' then
-          begin
-            ls:=Copy(ls,14,j-14);
-            break;
-          end;
-        end;
-        j:=1;
-        while j<cbSkills.Items.Count do
-        begin
-          if ls=cbSkills.Items[j] then break;
-          inc(j);
-        end;
-        if j=cbSkills.Items.Count then
-          cbSkills.Items.Add(ls);
-      end;
 
+      AddToCombo(cbSkills.Items, ls, 13); // 'MEDIA/SKILLS/'
     end
     else if (Pos('UNITS',ls)=7) and (Length(ls)>12) then
     begin
       // second letter of folder
       case ls[14] of
-        'T': if (not litems) then
-        begin
-          litems:=true;
-          cbFolder.Items.AddObject('ITEMS',TObject(rfIsItem));
+        'T': begin
+          if (not litems) then
+          begin
+            litems:=true;
+            cbFolder.Items.AddObject('ITEMS',TObject(rfIsItem));
+          end;
+
+          AddToCombo(cbItems.Items, ls, 18); // 'MEDIA/UNITS/ITEMS/'
         end;
 
         'O': if (not lmonsters) then
@@ -1442,8 +1462,21 @@ begin
       begin
         pnlSkills.Visible:=true;
         splSkills.Visible:=true;
+        cbSkills .Visible:=true;
+        cbItems  .Visible:=false;
 
         cbSkillsChange(Sender);
+        exit;
+      end;
+
+      if lfolder='ITEMS' then
+      begin
+        pnlSkills.Visible:=true;
+        splSkills.Visible:=true;
+        cbSkills .Visible:=false;
+        cbItems  .Visible:=true;
+
+        cbItemsChange(Sender);
         exit;
       end;
     end;
@@ -1489,6 +1522,30 @@ begin
     CheckForDirectory('MEDIA/SKILLS/')
   else// if cbSkills.ItemIndex<>0 then
     CheckForDirectory('MEDIA/SKILLS/'+cbSkills.Items[cbSkills.ItemIndex]+'/');
+
+  edProjectFilterChange(Sender);
+end;
+
+procedure TMainTL2TransForm.cbItemsChange(Sender: TObject);
+var
+  i:integer;
+begin
+  if cbItems.ItemIndex<0 then
+     cbItems.ItemIndex:=0;
+
+  if cbItems.ItemIndex=0 then
+  begin
+    for i:=0 to High(TRCache) do
+      if ((TRCache[i].flags and rfIsReferred) =0) or
+         ((TRCache[i].flags and rfIsItem   )<>0) then
+        TRCache[i].flags:=TRCache[i].flags or rfIsFiltered
+      else
+        TRCache[i].flags:=TRCache[i].flags and not rfIsFiltered;
+  end
+  else if (cbItems.ItemIndex=1) and (cbItems.Items[1][1]='-') then
+    CheckForDirectory('MEDIA/UNITS/ITEMS/')
+  else// if cbItems.ItemIndex<>0 then
+    CheckForDirectory('MEDIA/UNITS/ITEMS/'+cbItems.Items[cbItems.ItemIndex]+'/');
 
   edProjectFilterChange(Sender);
 end;

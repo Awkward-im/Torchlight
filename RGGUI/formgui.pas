@@ -1,3 +1,5 @@
+{TODO: (Check!) Delete several files = set right selection (clear+set on current)}
+{TODO: Soundpreview: replace Start and Stop buttons by one (move caption text to resourcestrings}
 {TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
 {TODO: 3d view, change texture by choosing file}
 {TODO: preview bytes values as different types}
@@ -709,7 +711,7 @@ procedure TRGGUIForm.FormCreate(Sender: TObject);
 begin
   FLastIndex:=-1;
   FUData    :=nil;
-  sgSortColumn:=-1;
+  sgSortColumn:=colName;
   SrcFont:=TFont.Create;
 
   fmLogForm:=nil;
@@ -1401,7 +1403,7 @@ end;
 procedure TRGGUIForm.ClearInfo();
 var
   lstr:TStream;
-  bNoTree,bRoot,bEmpty,bParent:boolean;
+  {bRoot,}bNoTree,bEmpty,bParent:boolean;
 begin
   if PageControl.ActivePage=Grid then Self.ActiveControl:=SGMain;
   lblInfo1.Caption:='';
@@ -1440,7 +1442,7 @@ begin
   FreeMem(FUData); FUData:=nil;
 
   bNoTree:=tvTree.Items.Count=0;
-  bRoot  :=(not bNoTree) and (tvTree.Selected=tvTree.Items[0]);
+//  bRoot  :=(not bNoTree) and (tvTree.Selected=tvTree.Items[0]);
   bEmpty :=(not bNoTree) and
           ((sgMain.RowCount=1) or
           ((sgMain.RowCount=2) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0)));
@@ -1718,7 +1720,8 @@ var
   pc :PWideChar;
   lpc:PAnsiChar;
   ltext:string;
-  lsize,i:integer;
+  lsize:integer;
+//  i:integer;
 begin
   if FUData=nil then exit;
 
@@ -1846,10 +1849,13 @@ begin
     Exit;
   end;
 
-  StatusBar.Panels[1].Text:=rsBuildPreview;
-  ldir :=sgMain.Cells[colDir ,aRow];
+  if not actShowPreview.Checked then exit;
+
   lext :=sgMain.Cells[colExt ,aRow];
   lname:=sgMain.Cells[colName,aRow]+lext;
+
+  ltype:=RGTypeOfExt(lname{lext});
+  if (ltype=typeDirectory) then exit;
 
 //  lfile:=ctrl.SearchFile(ldir+lname);
   lfile:=IntPtr(sgMain.Objects[colName,aRow]);
@@ -1857,6 +1863,9 @@ begin
   if lfile>=0 then
   begin
     if ctrl.UpdateState(lfile)=stateDelete then exit;
+
+    StatusBar.Panels[1].Text:=rsBuildPreview;
+    ldir:=sgMain.Cells[colDir,aRow];
 
     RGLog.Reserve('Processing '+ldir+lname);
 
@@ -1870,12 +1879,6 @@ begin
     except
       lblInfo2.Caption:=rsTime+': '+'0x'+HexStr(lrec.ftime,16);
     end;
-
-    ltype:=RGTypeOfExt(lname{lext});
-
-    if (ltype=typeDirectory) then exit;
-
-    if not actShowPreview.Checked then exit;
 
     if (ltype and $FF) in [typeUnknown,typeFont,typeOther] then
     begin
@@ -1976,15 +1979,15 @@ end;
 procedure TRGGUIForm.ReplaceExecute(Sender: TObject);
 var
   lopt:TSynSearchOptions;
-  lcnt:integer;
+//  lcnt:integer;
 begin
-  lcnt:=0;
+//  lcnt:=0;
   with Sender as TReplaceDialog do
   begin
     lopt := [];
-    if frReplace    in Options then lopt := [ssoReplace];
-    if frReplaceAll in Options then lopt := [ssoReplaceAll];
-    lcnt := SynEdit.SearchReplace{Ex}( FindText, ReplaceText, lopt{, Position });
+    if frReplace    in Options then lopt:=[ssoReplace];
+    if frReplaceAll in Options then lopt:=[ssoReplaceAll];
+    {lcnt:=}SynEdit.SearchReplace{Ex}(FindText, ReplaceText, lopt{, Position});
 {
     if lcnt>=0 then
     begin
@@ -2344,7 +2347,7 @@ begin
   begin
     if (Sender as TAction).ActionComponent=miTreeAdd then
     begin
-      AddNewDir(PopupNode,ExtractName(ldir));
+//      AddNewDir(PopupNode,ExtractName(ldir));
     end;
 
     ctrl.OnDouble:=@OnImportDouble;
@@ -2362,7 +2365,7 @@ procedure TRGGUIForm.actEdNewExecute(Sender: TObject);
 var
   lNode:TTreeNode;
   lpath,lname:string;
-  lcnt,lfile:integer;
+  lcnt{,lfile}:integer;
 begin
   lname:=UpCase(InputBox(rsCreateFile, rsFileDirName, ''{sDefFileName}));
   if lname='' then exit;
@@ -2385,7 +2388,7 @@ begin
       lpath:=GetPathFromNode(tvTree.Selected);
 
     lcnt:=ctrl.FileCount;
-    lfile:=ctrl.UseData(nil,0,PUnicodeChar(UnicodeString(lpath+lname)));
+    {lfile:=}ctrl.UseData(nil,0,PUnicodeChar(UnicodeString(lpath+lname)));
     // condition just to avoid flicks in root tree list
     if ctrl.FileCount<>lcnt then
     begin
@@ -2491,6 +2494,11 @@ begin
       end;
     end;
   end;
+  if (Shift=[]) and (Key=VK_DELETE) then
+  begin
+    actEdDeleteExecute(Sender);
+    Key:=0;
+  end;
 end;
 
 procedure TRGGUIForm.sgMainDblClick(Sender: TObject);
@@ -2498,6 +2506,8 @@ var
   lname:string;
   i,lidx:integer;
 begin
+  if sgMain.Row<1 then exit;
+
   lname:=sgMain.Cells[colName,sgMain.Row];
   if lname[Length(lname)]='/' then
   begin
@@ -2568,31 +2578,44 @@ begin
   if ARow=1 then exit(-1);
   if BRow=1 then exit(1);
 }
-  s1:=(Sender as TStringGrid).Cells[ACol,ARow];
-  s2:=(Sender as TStringGrid).Cells[BCol,BRow];
 
-  if ACol in [colPack,colUnpack,colSource] then
+  s1:=(Sender as TStringGrid).Cells[colName,ARow];
+  s2:=(Sender as TStringGrid).Cells[colName,BRow];
+
+  if      (s1[Length(s1)]= '/') and (s2[Length(s2)]= '/') then
   begin
-    result:=StrToIntDef(s1,0)-
-            StrToIntDef(s2,0);
-  end
-  else if ACol=colTime then
-  begin
-{
-  variant - sort not by table but source timestamp
-  TMANFileInfo link requires
-}
-    dt1:=StrToDateTimeDef(s1,0);
-    dt2:=StrToDateTimeDef(s2,0);
-    if dt1>dt2 then
-      result:=1
-    else if dt1<dt2 then
-      result:=-1
-    else
-      result:=0;
-  end
-  else
     result:=CompareStr(s1,s2);
+    if aCol<>colName then exit;
+  end
+  else if (s1[Length(s1)]= '/') and (s2[Length(s2)]<>'/') then begin result:=-1; exit; end
+  else if (s1[Length(s1)]<>'/') and (s2[Length(s2)]= '/') then begin result:=1 ; exit; end
+  else
+  begin
+    s1:=(Sender as TStringGrid).Cells[ACol,ARow];
+    s2:=(Sender as TStringGrid).Cells[BCol,BRow];
+    if ACol in [colPack,colUnpack,colSource] then
+    begin
+      result:=StrToIntDef(s1,0)-
+              StrToIntDef(s2,0);
+    end
+    else if ACol=colTime then
+    begin
+  {
+    variant - sort not by table but source timestamp
+    TMANFileInfo link requires
+  }
+      dt1:=StrToDateTimeDef(s1,0);
+      dt2:=StrToDateTimeDef(s2,0);
+      if dt1>dt2 then
+        result:=1
+      else if dt1<dt2 then
+        result:=-1
+      else
+        result:=0;
+    end
+    else
+      result:=CompareStr(s1,s2);
+  end;
 
   if (Sender as TStringGrid).SortOrder=soDescending then
     result:=-result;
@@ -2620,7 +2643,8 @@ begin
       linc:=1
     else
       linc:=0;
-    sgMain.SortColRow(True, index, sgMain.FixedRows+linc, sgMain.RowCount-1);
+    if sgMain.RowCount>2 then
+      sgMain.SortColRow(True, index, sgMain.FixedRows+linc, sgMain.RowCount-1);
   end;
 end;
 
@@ -2784,9 +2808,9 @@ begin
       lbase:=1
     else
       lbase:=0;
+    if sgMain.RowCount>2 then
     sgMain.SortColRow(True, sgSortColumn, sgMain.FixedRows+lbase, sgMain.RowCount-1);
   end;
-
 
   if lcnt=1 then
   begin
@@ -2822,14 +2846,23 @@ begin
   if anode=nil then
     ls:=lpath
   else
+  begin
+    // if we have child with "root" name already
+    lnode:=anode.FindNode(lpath);
+    if lnode<>nil then
+    begin
+      tvTree.Selected:=lnode;
+      exit;
+    end;
+
     ls:=GetPathFromNode(anode)+lpath;
+  end;
 
   ldir:=ctrl.NewDir(PUnicodeChar(UnicodeString(ls)));
   if ldir>=0 then
   begin
     lnode:=tvTree.Items.AddChild(anode,lpath);
     lnode.Data:=pointer(IntPtr(ldir));
-    tvTree.Selected:=lnode;
   end;
 
 end;

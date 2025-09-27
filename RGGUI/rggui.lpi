@@ -294,6 +294,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fm3DView"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormImageset"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmImageset"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

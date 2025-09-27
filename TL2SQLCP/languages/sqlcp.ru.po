@@ -30,12 +30,12 @@ msgstr "Выберите язык перевода"
 
 #: fmsqlcp.rsdelete
 msgid "Are you sure to delete it?"
-msgstr ""
+msgstr "Вы уверены, что хотите удалить это?"
 
 #: fmsqlcp.rshaveunique
 #, object-pascal-format
 msgid "Mod have %d unique strings."
-msgstr ""
+msgstr "Мод имеет %d уникальных строк."
 
 #: fmsqlcp.rslanguage
 msgid "Language:"
@@ -61,15 +61,18 @@ msgstr "Перезап. неполные"
 msgid "Database saved"
 msgstr "БД сохранена"
 
+#: fmsqlcp.rssavesqlog
+msgid "Save SQL Log?"
+msgstr "Сохранить лог SQL?"
+
 #: fmsqlcp.rsskip
 msgid "Skip"
 msgstr "Пропустить"
 
 #: fmsqlcp.rsstat
-#, object-pascal-format, fuzzy, badformat
-#| msgid "Total lines: %d | Duplicates: %d | Unique: %d | Files: %d | Tags: %d"
+#, object-pascal-format
 msgid "Total lines: %d | Duplicates: %d | Different: %d | Unique: %d | Non-latin: %d | Files: %d | Tags: %d"
-msgstr "Всего строк: %d | Дублей: %d | Уникальных: %d | Файлов: %d | Тэгов: %d"
+msgstr "Всего строк: %d | Дублей: %d | Различных: %d | Уникальных: %d | Не-латиница: %d | Файлов: %d | Тэгов: %d"
 
 #: fmsqlcp.rsstatus
 #, object-pascal-format
@@ -102,19 +105,19 @@ msgstr "Текст"
 
 #: tdelform.bbclose.caption
 msgid "&Close"
-msgstr ""
+msgstr "Закрыть"
 
 #: tdelform.bbdelete.caption
 msgid "Delete"
-msgstr ""
+msgstr "Удалить"
 
 #: tdelform.bbrestore.caption
 msgid "&Restore"
-msgstr ""
+msgstr "Восстановить"
 
 #: tdelform.caption
 msgid "Deleted lines"
-msgstr ""
+msgstr "Удалённые строки"
 
 #: tdupeform.caption
 msgid "Dupe List"
@@ -231,58 +234,54 @@ msgstr "Текущий перевод"
 
 #: tformsqlcp.sbadd.hint
 msgid "Scan mod for text and add to list"
-msgstr ""
+msgstr "Сканировать мод на текст м добавить в список"
 
 #: tformsqlcp.sbbuild.hint
-#, fuzzy
 msgctxt "tformsqlcp.sbbuild.hint"
 msgid "Generate translation file for mod"
 msgstr "Создать файл перевода для мода"
 
 #: tformsqlcp.sbdeleted.hint
 msgid "Show all deleted lines"
-msgstr ""
+msgstr "Показать все удалённые строки"
 
 #: tformsqlcp.sbedit.hint
 msgid ""
 "Edit text for selected mod and language\n"
 "(or DblClick in list below)"
 msgstr ""
+"Редактировать текст выбранных мода и языка\n"
+"v(или двойной клик в списке ниже)"
 
 #: tformsqlcp.sbload.hint
-#, fuzzy
 msgctxt "tformsqlcp.sbload.hint"
 msgid "Load translation file"
 msgstr "Загрузить файл перевода"
 
 #: tformsqlcp.sblog.hint
-#, fuzzy
 msgctxt "tformsqlcp.sblog.hint"
 msgid "Show log file"
 msgstr "Показать лог"
 
 #: tformsqlcp.sbnew.hint
-#, fuzzy
 msgctxt "tformsqlcp.sbnew.hint"
 msgid "Add new translation language"
 msgstr "Добавить язык перевода"
 
 #: tformsqlcp.sbremove.hint
 msgid "Remove mod from list"
-msgstr ""
+msgstr "Удалить мод из списка"
 
 #: tformsqlcp.sbsave.hint
-#, fuzzy
 msgctxt "tformsqlcp.sbsave.hint"
 msgid "Save DB changes (memory DB related)"
 msgstr "Сохранить изменения в БД (для базы в памяти)"
 
 #: tformsqlcp.sbsettings.hint
 msgid "Open settings window"
-msgstr ""
+msgstr "Открыть окно настроек"
 
 #: tformsqlcp.sbsql.hint
-#, fuzzy
 msgctxt "tformsqlcp.sbsql.hint"
 msgid "Show session SQL requiests of DB modify"
 msgstr "Показать SQL запросы для изменения БД"
@@ -299,11 +298,11 @@ msgstr "Этот текст есть в нескольких (примерно %
 
 #: tl2delform.rsnodeleted
 msgid "Strange, no deleted lines at all."
-msgstr ""
+msgstr "Странно, удалённых строк нет."
 
 #: tl2delform.rsoktodelete
 msgid "Are you sure to delete totally selected lines from base?"
-msgstr ""
+msgstr "Вы уверены, что хотите окончательно удалить строки из БД?"
 
 #: tl2edittext.rslanguage
 msgctxt "tl2edittext.rslanguage"
@@ -322,10 +321,9 @@ msgstr "Заметки"
 
 #: tl2settingsform.rsremakefilter
 msgid "Rebuild templates..."
-msgstr ""
+msgstr "Пересобираю шаблоны..."
 
 #: tl2settingsform.rssettings
-#, fuzzy
 msgctxt "tl2settingsform.rssettings"
 msgid "Settings"
 msgstr "Настройки"
@@ -435,7 +433,7 @@ msgstr "Изменено"
 
 #: tl2unit.rsmodenational
 msgid "Non-latin"
-msgstr ""
+msgstr "Не латиница"
 
 #: tl2unit.rsmodenotready
 msgctxt "tl2unit.rsmodenotready"
@@ -497,7 +495,7 @@ msgstr "-- Корень  --"
 
 #: tl2unit.rsunique
 msgid "*Unique* "
-msgstr ""
+msgstr "*Уникальные* "
 
 #: tmaintl2transform.actchecktranslation.caption
 msgctxt "tmaintl2transform.actchecktranslation.caption"
@@ -691,10 +689,6 @@ msgstr "Часть"
 msgid "Translation"
 msgstr "Перевод"
 
-#: tmaintl2transform.toolbutton4.caption
-msgid "ToolButton4"
-msgstr ""
-
 #: tsimilarform.btndupes.caption
 msgid "Doubles"
 msgstr "Дубли"
@@ -762,7 +756,7 @@ msgstr "Пометить новый перевод как неточный"
 
 #: ttl2settings.cbparamsign.caption
 msgid "Mark params in [ ] and < >"
-msgstr ""
+msgstr "Пометить параметры в [ ] и <>"
 
 #: ttl2settings.cbremovetags.caption
 msgid "Remove tags on translation"
@@ -770,15 +764,13 @@ msgstr "Удалить теги в переводе"
 
 #: ttl2settings.gbtemplate.caption
 msgid "Templates"
-msgstr ""
+msgstr "Шаблоны"
 
 #: ttl2settings.gbtranslation.caption
 msgid "Translation details"
-msgstr "Детали первода"
+msgstr "Детали перевода"
 
 #: ttl2settings.lblfilter.caption
-#, fuzzy
-#| msgid "Words to exclude from comparing"
 msgid "Words to exclude"
 msgstr "Слова, исключаемые для сравнения"
 
@@ -797,7 +789,7 @@ msgstr "Язык программы"
 
 #: ttl2settings.lbltmpldescr.caption
 msgid "*Template is part of text to find similars"
-msgstr ""
+msgstr "*Шаблон - это часть текста для сравнения похожих строк"
 
 #: ttl2settings.lbltranslators.caption
 msgid "Translators"

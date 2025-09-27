@@ -114,6 +114,7 @@ resourcestring
   rsSkip            = 'Skip';
   rsHaveUnique      = 'Mod have %d unique strings.';
   rsDelete          = 'Are you sure to delete it?';
+  rsSaveSQLog       = 'Save SQL Log?';
 
 
 { TFormSQLCP }
@@ -238,6 +239,9 @@ begin
   end
   else
     if MessageDlg(rsDelete,mtWarning,[mbYes,mbNo],0)<>mrYes then exit;
+
+  DeleteMod(lmodid);
+  SetModStatistic(modAll);
   lbMods.DeleteSelected;
 end;
 
@@ -300,6 +304,10 @@ begin
         Self.Caption:='';
 //        RGLog.Add('Remake Filter');
 //        RemakeFilter();
+
+        SetModStatistic(CurMod);
+        SetModStatistic(modAll);
+
         ShowMessage('Done!');
         FillModList();
         UpdateStatus();
@@ -457,6 +465,11 @@ end;
 
 procedure TFormSQLCP.FormDestroy(Sender: TObject);
 begin
+  if SQLog.Size>0 then
+  begin
+    if MessageDlg(rsSaveSQLog,mtWarning,mbYesNo,0,mbYes)=mrYes then
+      SQLog.SaveToFile('sqlcp '+StringReplace(TimeToStr(Time()),':','-',[rfReplaceAll])+'.sql');
+  end;
   TLCloseBase(false);
   SetLength(FModList,0);
 end;

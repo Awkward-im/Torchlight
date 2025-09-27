@@ -111,15 +111,10 @@ object MainTL2TransForm: TMainTL2TransForm
       Top = 2
       Style = tbsSeparator
     end
-    object ToolButton3: TToolButton
+    object tbShowAlt: TToolButton
       Left = 301
       Top = 2
       Action = actShowAlts
-    end
-    object ToolButton4: TToolButton
-      Left = 332
-      Top = 2
-      Caption = 'ToolButton4'
     end
   end
   object pnlTop: TPanel
@@ -245,6 +240,17 @@ object MainTL2TransForm: TMainTL2TransForm
         ReadOnly = True
         TabOrder = 0
         OnChange = cbSkillsChange
+      end
+      object cbItems: TComboBox
+        Left = 8
+        Height = 23
+        Top = 6
+        Width = 153
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ItemHeight = 15
+        ReadOnly = True
+        TabOrder = 1
+        OnChange = cbItemsChange
       end
     end
     object splSkills: TSplitter

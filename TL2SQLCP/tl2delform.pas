@@ -69,6 +69,10 @@ begin
     else
       ls:='Exists as String type only'#13#10;
 
+{$IFDEF DEBUG}
+    ls:=ls+'DB id is '+IntToStr(lid)+#13#10;
+{$ENDIF}
+
     if lcnt>3 then
       ls:=ls+'Exists in '+IntToStr(lcnt)+' mods'
     else

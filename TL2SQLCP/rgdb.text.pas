@@ -244,8 +244,10 @@ begin
   if not result then exit;
   // mark unique strings (if any) as deleted (really need this?)
   result:=ExecuteDirect(tldb,
-    'UPDATE strings SET deleted=1'+
-    ' WHERE id IN'+
+//    'UPDATE strings SET deleted=1'+
+//    ' WHERE id IN'+
+    'DELETE FROM strings'+
+    ' WHERE (deleted=0) AND id IN'+
     ' (SELECT DISTINCT r.srcid FROM refs r'+
     '   LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
     '   ON r.srcid=r1.srcid'+
@@ -286,8 +288,6 @@ begin
 
     result:=0;
   end;
-  SetModStatistic(amodid);
-  SetModStatistic(modAll);
 end;
 
 function AddMod(const amodid:Int64; const atitle:AnsiString):integer;
@@ -363,9 +363,11 @@ end;
 
 procedure GetModList(var asl:TDict64DynArray; all:boolean=true);
 var
+  lid:Int64;
   vm:pointer;
   i:integer;
 begin
+  //!! return i=1 (modid=0) if DB is busy
   i:=ReturnInt(tldb,'SELECT count(1) FROM dicmods');
   if i>0 then
   begin
@@ -380,6 +382,7 @@ begin
     end
     else
     begin
+      if i<2 then exit;
       SetLength(asl,i);
       i:=0;
     end;
@@ -388,8 +391,9 @@ begin
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
       begin
-        asl[i].id   :=sqlite3_column_int64(vm,0);
-        if all and (asl[i].id=0) then continue;
+        lid:=sqlite3_column_int64(vm,0);
+        if all and (lid=0) then continue;
+        asl[i].id   :=lid;
         asl[i].value:=sqlite3_column_text (vm,1);
         inc(i);
       end;
