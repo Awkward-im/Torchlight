@@ -1,4 +1,6 @@
+{TODO: colorize lang line if all texts translated (with partial - another color)}
 {TODO: Add existing mod check at Scan procedure}
+{TODO: auto select saved program language in mod list if exists.}
 unit fmSQLCP;
 
 {$mode objfpc}{$H+}
@@ -41,6 +43,8 @@ type
     StatusBar: TStatusBar;
     procedure AddTrans(Sender: TObject);
     procedure Build(Sender: TObject);
+    procedure gdModStatPrepareCanvas(Sender: TObject; aCol, aRow: Integer;
+      aState: TGridDrawState);
     procedure sbDeletedClick(Sender: TObject);
     procedure sbSettingsClick(Sender: TObject);
     procedure ShowLog(Sender: TObject);
@@ -141,34 +145,31 @@ begin
         ls:=gdLanguages.Cells[1,gdLanguages.Row];
 
       if ls='' then exit;
-      if PrepareLoadSQL(ls) then
-      begin
 
-        case QuestionDlg(rsTranslation,rsTransOp,mtConfirmation,
-          [mrYesToAll,rsOverwrite,'IsDefault',
-           mrYes     ,rsPartial,
-           mrNo      ,rsSkip,
-           mrCancel],0) of
+      case QuestionDlg(rsTranslation,rsTransOp,mtConfirmation,
+        [mrYesToAll,rsOverwrite,'IsDefault',
+         mrYes     ,rsPartial,
+         mrNo      ,rsSkip,
+         mrCancel],0) of
 
-           mrYesToAll: TransOp:=da_overwrite;
-           mrYes     : TransOp:=da_compare;
-           mrNo      : TransOp:=da_skip;
-           mrCancel  : exit;
-        end;
-        Self.Caption:='Load translation';
-        i:=tlscan.LoadAsText(OpenDialog.FileName);
-
-        TransOp:=da_overwrite;
-        RGLog.Add('Loaded '+IntToStr(i)+' lines');
-        FillLangList();
-
-        Self.Caption:='Check for similars';
-        FillAllSimilars(ls);
-        ShowMessage('Done!');
-
-        Self.Caption:='';
-        lbModsSelectionChange(Self,true);
+         mrYesToAll: TransOp:=da_overwrite;
+         mrYes     : TransOp:=da_compare;
+         mrNo      : TransOp:=da_skip;
+         mrCancel  : exit;
       end;
+      Self.Caption:='Load translation';
+      i:=LoadTranslationToBase(OpenDialog.FileName,ls);
+
+      TransOp:=da_overwrite;
+      RGLog.Add('Loaded '+IntToStr(i)+' lines');
+      FillLangList();
+
+      Self.Caption:='Check for similars';
+      FillAllSimilars(ls);
+      ShowMessage('Done!');
+
+      Self.Caption:='';
+      lbModsSelectionChange(Self,true);
 {
       data.Init;
       data.LoadFromFile(OpenDialog.FileName);
@@ -243,6 +244,10 @@ begin
   DeleteMod(lmodid);
   SetModStatistic(modAll);
   lbMods.DeleteSelected;
+  if lbMods.Count>0 then
+    lbMods.ItemIndex:=0
+  else
+    EdModStat.Text:='';
 end;
 
 function TFormSQLCP.OnFileScan(const fname:AnsiString; idx, atotal:integer):integer;
@@ -373,7 +378,7 @@ end;
 procedure TFormSQLCP.lbModsSelectionChange(Sender: TObject; User: boolean);
 var
   lstat:TModStatistic;
-  i:integer;
+  i,lrow:integer;
 begin
   if lbMods.ItemIndex<0 then exit;
 
@@ -382,22 +387,52 @@ begin
   sbRemove.Enabled:=(lstat.modid<>modAll) and (lstat.modid<>modVanilla);
 
   GetModStatistic(lstat);
-  edModSTat.Tag:=lstat.total;
-  edModSTat.Text:=Format(rsStat,
+  edModStat.Tag:=lstat.total-lstat.dupes;
+  edModStat.Text:=Format(rsStat,
     [lstat.total,lstat.dupes,lstat.total-lstat.dupes,lstat.unique,lstat.nation,
      lstat.files,lstat.tags]);
   gdModStat.BeginUpdate;
   gdModStat.Clear;
   gdModStat.RowCount:=1;
+  lrow:=-1;
   for i:=0 to High(lstat.langs) do
   begin
     with lstat.langs[i] do
+    begin
+      if lang=TL2Settings.edTransLang.Text then lrow:=i+1;
+
       gdModStat.InsertRowWithValues(i+1,
         [IntToStr(trans),IntToStr(part),lang,GetLangName(lang)]);
+    end;
   end;
   gdModStat.EndUpdate();
   if Length(lstat.langs)>0 then
-    gdModStat.Row:=1;
+  begin
+    if lrow>0 then
+      gdModStat.Row:=lrow
+    else
+      gdModStat.Row:=1;
+  end;
+end;
+
+procedure TFormSQLCP.gdModStatPrepareCanvas(Sender: TObject; aCol,
+  aRow: Integer; aState: TGridDrawState);
+var
+  lt,lp:integer;
+  lcolor:TColor;
+begin
+  Val((Sender as TStringGrid).Cells[0,aRow],lt);
+  if edModStat.Tag=lt then
+    lColor:=TColor($FF8080)
+  else
+  begin
+    Val((Sender as TStringGrid).Cells[1,aRow],lp);
+    if edModStat.Tag=(lt+lp) then
+      lColor:=TColor($80FF80)
+    else
+      exit;
+  end;
+  (Sender as TStringGrid).Canvas.Brush.Color:=lColor;
 end;
 
 procedure TFormSQLCP.lfeModsAfterFilter(Sender: TObject);
@@ -479,7 +514,7 @@ begin
   if (MainTL2TransForm=nil) and
      (lbMods.ItemIndex>=0) and
      (gdModStat.Row>0) and
-     (edModSTat.Tag>0) then
+     (edModStat.Tag>0) then
   begin
     // to avoid multiply dblclicks
     MainTL2TransForm:=TMainTL2TransForm(1);

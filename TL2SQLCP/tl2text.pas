@@ -144,9 +144,9 @@ function ReplaceTranslation(srcText,srcData:PAnsiChar):AnsiString;
 const
   sWordSet = ['A'..'Z','a'..'z',#128..#255];
 var
-  colors :array [0.. 7] of String[10]; //#124'cAARRGGBB', 8 times per text must be enough
-  numbers:array [0..15] of String[9];
-  rome   :array [0..15] of String[7];
+  colors :array [0..31] of String[10]; //#124'cAARRGGBB'
+  numbers:array [0..31] of String[9];
+  rome   :array [0..31] of String[7];
   lr:String[7];
   pc:PAnsiChar;
   lsrc,ldst:AnsiString;

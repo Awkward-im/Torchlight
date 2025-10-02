@@ -1,3 +1,4 @@
+{TODO: add function to delete "dead" (no source) translation lines}
 {TODO: Keep filter param replace option in base}
 {TODO: GetModStatistic: add NoRef translations of every lang for count}
 {TODO: AddOriginal: check for case when string is presents but deleted. Must not be added back?}
@@ -46,10 +47,10 @@ procedure LoadTranslation();
 procedure SaveTranslation();
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
     aall:boolean=false; const amod:Int64=modAll):boolean;
+function LoadTranslationToBase(const fname,alang:AnsiString):integer;
 
 function RemakeFilter():boolean;
 function PrepareScanSQL():boolean;
-function PrepareLoadSQL(const alang:AnsiString):boolean;
 
 function CreateLangTable(const lng:AnsiString):boolean;
 function TLOpenBase (inmemory:boolean=false):boolean;
@@ -164,6 +165,7 @@ uses
   sqlite3dyn,
   sqlitedb,
   tl2text,
+  rgtrans,
   tlscan;
 
 // same as tlscan
@@ -236,14 +238,16 @@ end;
 {%REGION Mod}
 function DeleteMod(const amodid:Int64):boolean;
 var
-  ls:AnsiString;
+  ls,lmod:AnsiString;
 begin
-  str(amodid,ls);
+  str(amodid,lmod);
   // delete mod record
-  result:=ExecuteDirect(tldb,'DELETE FROM dicmods WHERE id='+ls);
+  ls:='DELETE FROM dicmods WHERE id='+lmod;
+  result:=ExecuteDirect(tldb,ls);
   if not result then exit;
+  SQLog.Add(ls);
   // mark unique strings (if any) as deleted (really need this?)
-  result:=ExecuteDirect(tldb,
+  ls:=
 //    'UPDATE strings SET deleted=1'+
 //    ' WHERE id IN'+
     'DELETE FROM strings'+
@@ -251,8 +255,13 @@ begin
     ' (SELECT DISTINCT r.srcid FROM refs r'+
     '   LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
     '   ON r.srcid=r1.srcid'+
-    '   WHERE r.modid='+ls+' AND r1.srcid IS NULL)');
-  result:=ExecuteDirect(tldb,'DELETE FROM refs WHERE modid='+ls);
+    '   WHERE r.modid='+lmod+' AND r1.srcid IS NULL)';
+
+  result:=ExecuteDirect(tldb,ls);
+  if result then SQLog.Add(ls);
+  ls:='DELETE FROM refs WHERE modid='+lmod;
+  result:=ExecuteDirect(tldb,ls);
+  if result then SQLog.Add(ls);
 end;
 
 function AddModInternal(const amodid:Int64; atitle:PAnsiChar):integer;
@@ -1603,25 +1612,66 @@ begin
   TLScan.DoAddString :=TDoAddString (MakeMethod(nil,@AddScanString));
 end;
 
-function AddLoadText(dummy:pointer; const astr,atrans:PAnsiChar):integer;
+function AddLoadString(const astr,afile,atag:pointer; isutf8:Boolean; aparam:pointer):integer;
+var
+  lstr,lfile,ltag:UTF8String;
 begin
-  if AddText(astr,CurLang,atrans,false)>0 then
+  result:=0;
+  if isutf8 then
+  begin
+    lstr :=PUTF8Char(astr);
+    lfile:=PUTF8Char(afile);
+    ltag :=PUTF8Char(atag);
+  end
+  else
+  begin
+    lstr :=WideToStr(astr);
+    lfile:=WideToStr(afile);
+    ltag :=WideToStr(atag);
+  end;
+
+  if Length(lstr)<2 then exit(-1);
+
+  result:=AddOriginal(lstr);
+  if result>0 then
+    AddRef(result, CurMod, lfile, ltag, 0);
+end;
+
+function AddLoadText(const astr,atrans:pointer; isutf8:Boolean; aparam:pointer):integer;
+var
+  lsrc,ldst:UTF8String;
+begin
+  result:=0;
+  if isutf8 then
+  begin
+    lsrc:=PUTF8Char(astr);
+    ldst:=PUTF8Char(atrans);
+  end
+  else
+  begin
+    lsrc:=WideToStr(astr);
+    ldst:=WideToStr(atrans);
+  end;
+
+  if Length(lsrc)<2 then exit(-1);
+
+  if AddText(lsrc,CurLang,ldst,false)>0 then
     result:=1
   else
     result:=0;
 end;
 
-function PrepareLoadSQL(const alang:AnsiString):boolean;
+function LoadTranslationToBase(const fname,alang:AnsiString):integer;
 begin
+  result:=0;
   CurLang:=alang;
-  result:=CurLang<>'';
-  if result then
+  if CurLang<>'' then
   begin
     CreateLangTable(CurLang);
-    TLScan.DoAddString:=TDoAddString(MakeMethod(nil,@AddScanString));
-    TLScan.DoAddText  :=TDoAddText  (MakeMethod(nil,@AddLoadText));
+    result:=rgtrans.Load(fname,@AddLoadText,@AddLoadString);
   end;
 end;
+
 {%ENDREGION Scan and Load}
 
 function GetLineFlags(aid:integer; const amodid:AnsiString):cardinal;
@@ -1646,6 +1696,7 @@ begin
       inc(i);
     end;
     if i>1 then result:=result or rfIsManyRefs;
+    if i<1 then result:=rfIsNoRef;
 
     sqlite3_finalize(vm);
   end;
@@ -1674,7 +1725,7 @@ begin
   begin
     if CurMod=modAll then
     begin
-      lmod:='0';
+      lmod:='';
       lSQL:='SELECT id, src, filter FROM strings WHERE deleted=0';
     end
     else

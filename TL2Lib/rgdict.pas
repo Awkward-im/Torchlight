@@ -48,7 +48,8 @@ implementation
 
 uses
   logging,
-  rgglobal;
+  rgglobal,
+  rgtrans;
 
 resourcestring
   resCantOpen = 'Can''t open ';
@@ -603,146 +604,26 @@ begin
   end;
 end;
 
-resourcestring
-  sNoFileStart     = 'No file starting tag';
-  sNoBlockStart    = 'No block start';
-  sNoOrignText     = 'No original text';
-// next line commented coz no translation case is ok, just use original
-//  sNoTransText     = 'No translated text';
-  sNoEndBlock      = 'No end of block';
-  sMoreOriginal    = 'More than one original';
-  sMoreTranslation = 'More than one translation';
-
-const
-  // TRANSLATION.DAT
-  sBeginFile   = '[TRANSLATIONS]';
-  sEndFile     = '[/TRANSLATIONS]';
-  sBeginBlock  = '[TRANSLATION]';
-  sEndBlock    = '[/TRANSLATION]';
-  sOriginal    = '<STRING>ORIGINAL:';
-  sTranslation = '<STRING>TRANSLATION:';
-
-
-function DictLoadTranslation(var aDict:TTransDict ; aptr:PByte):integer;
+function TransAddText(const astr,atrans:pointer; isutf8:Boolean; aparam:pointer):integer;
 var
-  lstart,lend:PWideChar;
-  s,lsrc,ldst:PWideChar;
-  lline:integer;
-  stage:integer;
+  lsrc,ldst:PWideChar;
 begin
   result:=0;
+  if not isutf8 then
+    PTransDict(aparam)^.Add(astr,atrans)
+  else
+  begin
+    lsrc:=UTF8ToWide(astr);
+    ldst:=UTF8ToWide(atrans);
+    PTransDict(aparam)^.Add(lsrc,ldst);
+    FreeMem(lsrc);
+    FreeMem(ldst);
+  end;
+end;
 
-  lsrc:='';
-  ldst:='';
-
-  lline:=0;
-  stage:=1;
-  lend:=pointer(aptr);
-
-  if (pword(lend)^=SIGN_UNICODE) then inc(lend);
-
-  repeat
-    if lend^=#0 then break;
-
-    lstart:=lend;
-    while not (ord(lend^) in [0, 10, 13]) do inc(lend);
-
-    if lend^<>#0 then
-    begin
-      lend^:=#0;
-      inc(lend);
-    end;
-    
-    while ord(lend^) in [10, 13] do inc(lend);
-
-    if lstart^<>#0 then
-    begin
-      case stage of
-        // <STRING>ORIGINAL:
-        // <STRING>TRANSLATION:
-        // [/TRANSLATION]
-        3: begin
-          if lsrc=nil then
-          begin
-            s:=PosWide(sOriginal,lstart);
-            if s<>nil then
-            begin
-              lsrc:=s+Length(sOriginal);
-              continue;
-            end;
-          end
-          else
-            RGLog.Add('',lline,sMoreOriginal);
-
-          if ldst=nil then
-          begin
-            s:=PosWide(sTranslation,lstart);
-            if s<>nil then
-            begin
-              ldst:=s+Length(sTranslation);
-              continue;
-            end;
-          end
-          else
-            RGLog.Add('',lline,sMoreTranslation);
-
-          if PosWide(sEndBlock,lstart)<>nil then
-          begin
-            stage:=2;
-
-            if lsrc<>nil then
-            begin
-              result:=0;
-
-              aDict.Add(lsrc,ldst);
-            end
-            else// if lsrc='' then
-            begin
-              RGLog.Add('',lline,sNoOrignText);
-              result:=-3;
-            end;
-
-          end
-          // really, can be custom tag
-          else
-          begin
-            RGLog.Add('',lline,sNoEndBlock);
-            result:=-5;
-          end;
-
-        end;
-
-        // [TRANSLATION] and [/TRANSLATIONS]
-        2: begin
-          if PosWide(sBeginBlock,lstart)<>nil then
-          begin
-            stage:=3;
-            lsrc:=nil;
-            ldst:=nil;
-          end
-          else if PosWide(sEndFile,lstart)<>nil then break // end of file
-          else
-          begin
-            RGLog.Add('',lline,sNoBlockStart);
-            result:=-2;
-          end;
-        end;
-
-        // [TRANSLATIONS]
-        1: begin
-          if PosWide(sBeginFile,lstart)<>nil then
-            stage:=2
-          else
-          begin
-            RGLog.Add('',lline,sNoFileStart);
-            result:=-1;
-            break;
-          end;
-        end;
-      end;
-    end;
-  until false;
-
+function DictLoadTranslation(var aDict:TTransDict; aptr:PByte):integer;
+begin
+  result:=Load(aptr,@TransAddText,nil,@aDict);
 end;
 
 function DictLoadTranslation(var aDict:TTransDict; const fname:AnsiString):integer;

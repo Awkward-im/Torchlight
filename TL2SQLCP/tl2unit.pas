@@ -1,6 +1,4 @@
-{TODO: TL2GridClick. check for several places in one file}
 {TODO: implement (fix) actImportClipBrd}
-{TODO: mark unique lines}
 unit TL2Unit;
 
 {$mode objfpc}{$H+}
@@ -30,7 +28,6 @@ type
     actModInfo: TAction;
     actShowSimilar: TAction;
     actTranslate: TAction;
-    cbItems: TComboBox;
     HelpNotes: TAction;
     FileExit: TAction;
     FileSave: TAction;
@@ -40,6 +37,7 @@ type
     memEdit: TMemo;
     cbFolder: TComboBox;
     cbSkills: TComboBox;
+    cbItems: TComboBox;
     cbLanguage: TComboBox;
     cbDisplayMode: TComboBox;
     edProjectFilter: TEdit;
@@ -272,6 +270,8 @@ begin
   cbDisplayMode.AddItem(rsModeModified ,TObject(ModeModified ));
   cbDisplayMode.AddItem(rsModeNational ,TObject(ModeNational ));
   cbDisplayMode.ItemIndex:=0;
+
+  Caption:=GetModName(CurMod);
 
   LoadModData();
 
@@ -889,7 +889,7 @@ begin
     if GetRef(GetLineRef(TRCache[idx].id),ldir,lfile,ltag,lline,lflags)>0 then
       ls:=ltag+' | '+ldir+lfile
     else
-      ls:='';
+      ls:=' ';
   end
   else
   begin
@@ -942,7 +942,7 @@ end;
 procedure TMainTL2TransForm.TL2GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   ls:AnsiString;
-  i,idx:integer;
+  i,idx,lrow:integer;
 begin
   if (Key=VK_SPACE) then
   begin
@@ -1016,6 +1016,7 @@ begin
       // mark lines as deleted
       if MessageDlg(rsDoDelete,mtConfirmation,mbOkCancel,0)=mrOk then
       begin
+        lrow:=TL2Grid.Row;
         for i:=TL2Grid.RowCount-1 downto 1 do
         begin
           if TL2Grid.IsCellSelected[TL2Grid.Col,i] then
@@ -1033,6 +1034,11 @@ begin
             TL2Grid.DeleteRow(i);
           end;
         end;
+        TL2Grid.ClearSelections;
+        if lrow<TL2Grid.RowCount then
+          TL2Grid.Row:=lrow
+        else
+          TL2Grid.Row:=TL2Grid.RowCount-1;
 
         FileSave.Enabled:=true;
         UpdateStatusBar(Self);

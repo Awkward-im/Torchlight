@@ -20,9 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmSQLCP"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="474"/>
-        <CursorPos Y="505"/>
-        <FoldState Value=" T47021 T7FFv T8iE2C]EMjA01b"/>
+        <TopLine Value="408"/>
+        <CursorPos X="24" Y="431"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,7 +66,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="183"/>
+        <UsageCount Value="186"/>
       </Unit>
       <Unit>
         <Filename Value="tl2datamodule.pas"/>
@@ -77,7 +76,7 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TL2DataModule"/>
         <EditorIndex Value="6"/>
-        <UsageCount Value="183"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -91,7 +90,7 @@
         <EditorIndex Value="9"/>
         <TopLine Value="13"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="183"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -103,7 +102,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2EditText"/>
         <EditorIndex Value="2"/>
-        <UsageCount Value="183"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -117,7 +116,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="183"/>
+        <UsageCount Value="186"/>
       </Unit>
       <Unit>
         <Filename Value="tl2settingsform.pas"/>
@@ -129,7 +128,7 @@
         <EditorIndex Value="5"/>
         <TopLine Value="32"/>
         <CursorPos X="22" Y="49"/>
-        <UsageCount Value="183"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -143,7 +142,7 @@
         <EditorIndex Value="10"/>
         <TopLine Value="109"/>
         <CursorPos Y="128"/>
-        <UsageCount Value="183"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -152,9 +151,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Text"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="571"/>
-        <CursorPos X="20" Y="594"/>
-        <UsageCount Value="183"/>
+        <TopLine Value="142"/>
+        <CursorPos X="22" Y="149"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -165,9 +164,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="1292"/>
-        <CursorPos X="36" Y="1379"/>
-        <UsageCount Value="183"/>
+        <TopLine Value="1072"/>
+        <CursorPos X="26" Y="1091"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -178,7 +177,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="755"/>
         <CursorPos X="15" Y="773"/>
-        <UsageCount Value="183"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -189,7 +188,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2AltForm"/>
         <EditorIndex Value="11"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -203,7 +202,7 @@
         <EditorIndex Value="12"/>
         <TopLine Value="59"/>
         <CursorPos X="44" Y="73"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -279,9 +278,9 @@
       <Unit>
         <Filename Value="rgdb.text.pas"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="228"/>
-        <CursorPos X="36" Y="249"/>
-        <UsageCount Value="71"/>
+        <TopLine Value="1684"/>
+        <CursorPos X="48" Y="1698"/>
+        <UsageCount Value="73"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -297,7 +296,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="135"/>
         <CursorPos Y="153"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -380,121 +379,123 @@
     </OtherDefines>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="388" TopLine="377"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="367" Column="13" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="369" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="370" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="372" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="374" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="375" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="376" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="377" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="378" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="379" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="387" TopLine="377"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="389" TopLine="377"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="391" TopLine="377"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="392" TopLine="377"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="369" TopLine="362"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="370" TopLine="362"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="379" Column="31" TopLine="365"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="113" Column="22" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="493" Column="33" TopLine="487"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="44" Column="19" TopLine="17"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="1685" Column="38" TopLine="1674"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="rgdb.text.pas"/>
-        <Caret Line="151" Column="19" TopLine="124"/>
+        <Filename Value="tl2unit.pas"/>
+        <Caret Line="1094" TopLine="1078"/>
       </Position>
       <Position>
         <Filename Value="tl2unit.pas"/>
-        <Caret Line="1390" TopLine="1365"/>
+        <Caret Line="884" TopLine="868"/>
       </Position>
       <Position>
         <Filename Value="tl2unit.pas"/>
-        <Caret Line="1391" TopLine="1366"/>
+        <Caret Line="1094" TopLine="1078"/>
       </Position>
       <Position>
         <Filename Value="tl2unit.pas"/>
-        <Caret Line="1299" Column="6" TopLine="1297"/>
+        <Caret Line="884" TopLine="868"/>
       </Position>
       <Position>
         <Filename Value="tl2unit.pas"/>
-        <Caret Line="1507" Column="3" TopLine="1502"/>
+        <Caret Line="1094" TopLine="1078"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2unit.pas"/>
+        <Caret Line="121" Column="15" TopLine="106"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2unit.pas"/>
+        <Caret Line="886" Column="7" TopLine="878"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2unit.pas"/>
+        <Caret Line="887" TopLine="878"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2unit.pas"/>
+        <Caret Line="910" TopLine="895"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2unit.pas"/>
+        <Caret Line="913" TopLine="895"/>
+      </Position>
+      <Position>
+        <Filename Value="tl2unit.pas"/>
+        <Caret Line="886" Column="7" TopLine="870"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="171" Column="45" TopLine="141"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="411" Column="24" TopLine="382"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="388" TopLine="374"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="389" Column="3" TopLine="384"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="19" Column="14"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="248" Column="14" TopLine="222"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="388" Column="12" TopLine="362"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="389" Column="41" TopLine="363"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="497" Column="14" TopLine="470"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="19" Column="14" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="248" Column="14" TopLine="222"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="422" TopLine="398"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="431" Column="25" TopLine="406"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="429" Column="46" TopLine="408"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="424" TopLine="408"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="425" TopLine="408"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="429" TopLine="408"/>
+      </Position>
+      <Position>
+        <Filename Value="fmsqlcp.pas"/>
+        <Caret Line="430" TopLine="408"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -527,6 +528,12 @@
       </Item>
       <Item>
         <Expression Value="FModList[3].value"/>
+      </Item>
+      <Item>
+        <Expression Value="TL2Grid"/>
+      </Item>
+      <Item>
+        <Expression Value="TL2Grid.Row"/>
       </Item>
     </Watches>
   </Debugging>

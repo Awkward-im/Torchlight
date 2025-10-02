@@ -7,27 +7,30 @@ uses
   rgglobal;
 
 type
+  //file scan only
+  TDoAddModInfo = procedure (const mi:TTL2ModInfo) of object;
   // 0 - process; 1 - skip; 2 - stop
   TOnFileScan   = function  (const fname:AnsiString; idx, atotal:integer):integer of object;
 
-  TDoAddText    = function  (const astr,atrans:PAnsiChar):integer of object;
-  TDoAddModInfo = procedure (const mi:TTL2ModInfo) of object;
+  // both, file scan and load translation
   TDoAddString  = function  (const astr, afile, atag:AnsiString; aline:integer):integer of object;
 
+  // load translation only
+//  TDoAddText    = function  (const astr,atrans:PAnsiChar):integer of object;
 const
   OnFileScan  :TOnFileScan   = nil;
 
   DoAddModInfo:TDoAddModInfo = nil;
   DoAddString :TDoAddString  = nil;
-  DoAddText   :TDoAddText    = nil;
+//  DoAddText   :TDoAddText    = nil;
 
 
 function Scan(const adir :AnsiString; allText:boolean; withChild:boolean):integer;
 function Scan(const afile:AnsiString):integer;
 
-function LoadAsText(const fname:AnsiString):integer;
-function LoadAsNode(const fname:AnsiString):integer;
-
+//function LoadAsText(const fname:AnsiString):integer;
+//function LoadAsNode(const fname:AnsiString):integer;
+//function Load      (const fname:AnsiString):integer;
 
 implementation
 
@@ -85,6 +88,7 @@ const
   );
 
 const
+{
   // TRANSLATION.DAT
   sBeginFile   = '[TRANSLATIONS]';
   sEndFile     = '[/TRANSLATIONS]';
@@ -95,6 +99,7 @@ const
   // additional tags. not used usually
   sFile        = '<STRING>FILE:';
   sProperty    = '<STRING>PROPERTY:';
+}
   // Translation
   sTranslate   = '<TRANSLATE>';
   sDescription = 'DESCRIPTION';
@@ -550,26 +555,26 @@ begin
   result:=MakeRGScan(afile,'',['.DAT','.LAYOUT','.TEMPLATE','.WDAT'],@myactproc,@lScanIdx,nil);
 end;
 
-
-function LoadAsNode(const fname:AnsiString):integer;
+(*
+function ProcessAsNode(var anode:pointer):integer;
 var
-  p,pt,ps:pointer;
+  pt,ps:pointer;
   i,j:integer;
   src,dst,lfile,ltag:PWideChar;
   ls:AnsiString;
 begin
   result:=0;
-  p:=ParseTextFile(PChar(fname));
-  if p=nil then exit;
-  if CompareWide(GetNodeName(p),'TRANSLATIONS')<>0 then
+  if anode=nil then exit;
+
+  if CompareWide(GetNodeName(anode),'TRANSLATIONS')<>0 then
   begin
-    DeleteNode(p);
+    DeleteNode(anode);
     exit;
   end;
 
-  for i:=0 to GetChildCount(p)-1 do
+  for i:=0 to GetChildCount(anode)-1 do
   begin
-    pt:=GetChild(p,i);
+    pt:=GetChild(anode,i);
     if (GetNodeType(pt)=rgGroup) and (CompareWide(GetNodeName(pt),'TRANSLATION')=0) then
     begin
       src  :=nil;
@@ -608,7 +613,15 @@ begin
   end;
   RGLog.Add('Total: '+IntToStr(result)+' lines');
 
-  DeleteNode(p);
+  DeleteNode(anode);
+end;
+
+function LoadAsNode(const fname:AnsiString):integer;
+var
+  p:pointer;
+begin
+  p:=ParseTextFile(PChar(fname));
+  result:=ProcessAsNode(p);
 end;
 
 function LoadAsText(const fname:AnsiString):integer;
@@ -782,5 +795,20 @@ begin
   RGLog.Add('Total: '+IntToStr(result)+' lines');
 end;
 
+function Load(const fname:AnsiString):integer;
+var
+  p:pointer;
+begin
+  result:=0;
+  if fname='' then exit;
 
+  p:=ParseDatFile(PChar(fname));
+  if p=nil then
+  begin
+    p:=ParseTextFile(PChar(fname));
+    if p=nil then exit;
+  end;
+  result:=ProcessAsNode(p);
+end;
+*)
 end.

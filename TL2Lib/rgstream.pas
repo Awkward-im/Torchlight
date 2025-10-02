@@ -1,4 +1,3 @@
-{TODO: Read*string: add finalizing zero}
 (*
   function TStream.ReadAnsiString: AnsiString;
 

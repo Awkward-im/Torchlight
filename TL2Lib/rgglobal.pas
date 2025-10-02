@@ -142,9 +142,12 @@ procedure CopyWide     (var adst:PWideChar; asrc:PWideChar; alen:integer=0);
 function  CopyWide     (asrc:PWideChar; alen:integer=0):PWideChar;
 function  CompareWide  (s1,s2:PWideChar; alen:integer=0):integer;
 function  CompareWideI (s1,s2:PWideChar; alen:integer=0):integer;
+function  CompareAnsi  (s1,s2:PAnsiChar; alen:integer=0):integer;
+function  CompareAnsiI (s1,s2:PAnsiChar; alen:integer=0):integer;
 function  ConcatWide   (s1,s2:PWideChar):PWideChar;
 function  CharPosWide  (c:WideChar; asrc:PWideChar):PWideChar;
 function  PosWide      (asubstr,asrc:PWideChar):PWideChar;
+function  UTF8ToWide   (asrc:PAnsiChar):PWideChar;
 function  GetLine    (var aptr:PByte):PAnsiChar;
 function  GetLineWide(var aptr:PByte):PWideChar;
 function  GetLineWide(var aptr:PByte; var buf:pointer; var asize:integer):PWideChar;
@@ -624,6 +627,22 @@ begin
 }
 end;
 
+function UTF8ToWide(asrc:PAnsiChar):PWideChar;
+var
+  i,llen:integer;
+begin
+  llen:=Length(asrc);
+  i:=Utf8ToUnicode(nil,0,asrc,llen);
+  if i>0 then
+  begin
+    GetMem(result,(i+1)*SizeOf(WideChar));
+    i:=Utf8ToUnicode(result,(i+1)*SizeOf(WideChar),asrc,llen);
+    result[i-1]:=#0;
+  end
+  else
+    result:=nil;
+end;
+
 function FastWideToStr(src:PWideChar;asize:integer=-1):AnsiString;
 var
   i:integer;
@@ -724,18 +743,18 @@ function CompareWideI(s1,s2:PWideChar; alen:integer=0):integer;
 var
   c1,c2:AnsiChar;
 begin
-  if s1=s2  then exit(0);
-  if s1=nil then if s2^=#0 then exit(0) else exit(-1);
-  if s2=nil then if s1^=#0 then exit(0) else exit( 1);
+  result:=0;
+  if s1=s2  then exit;
+  if s1=nil then begin if s2^<>#0 then result:=-1; exit; end;
+  if s2=nil then begin if s1^<>#0 then result:= 1; exit; end;
 
   repeat
     c1:=UpCase(AnsiChar(ORD(s1^)));
     c2:=UpCase(AnsiChar(ORD(s2^)));
     if c1>c2 then exit( 1);
     if c1<c2 then exit(-1);
-    if s1^=#0  then exit( 0);
+    if (s1^=#0) or (alen=1) then exit;
     dec(alen);
-    if alen=0  then exit( 0);
     inc(s1);
     inc(s2);
   until false;
@@ -743,16 +762,56 @@ end;
 
 function CompareWide(s1,s2:PWideChar; alen:integer=0):integer;
 begin
-  if s1=s2  then exit(0);
-  if s1=nil then if s2^=#0 then exit(0) else exit(-1);
-  if s2=nil then if s1^=#0 then exit(0) else exit( 1);
+  result:=0;
+  if s1=s2  then exit;
+  if s1=nil then begin if s2^<>#0 then result:=-1; exit; end;
+  if s2=nil then begin if s1^<>#0 then result:= 1; exit; end;
 
   repeat
     if s1^>s2^ then exit( 1);
     if s1^<s2^ then exit(-1);
-    if s1^=#0  then exit( 0);
+    if (s1^=#0) or (alen=1) then exit;
     dec(alen);
-    if alen=0  then exit( 0);
+
+    inc(s1);
+    inc(s2);
+  until false;
+end;
+
+function CompareAnsiI(s1,s2:PAnsiChar; alen:integer=0):integer;
+var
+  c1,c2:AnsiChar;
+begin
+  result:=0;
+  if s1=s2  then exit;
+  if s1=nil then begin if s2^<>#0 then result:=-1; exit; end;
+  if s2=nil then begin if s1^<>#0 then result:= 1; exit; end;
+
+  repeat
+    c1:=UpCase(s1^);
+    c2:=UpCase(s2^);
+    if c1>c2 then exit( 1);
+    if c1<c2 then exit(-1);
+    if (s1^=#0) or (alen=1) then exit;
+    dec(alen);
+    inc(s1);
+    inc(s2);
+  until false;
+end;
+
+function CompareAnsi(s1,s2:PAnsiChar; alen:integer=0):integer;
+begin
+  result:=0;
+  if s1=s2  then exit;
+  if s1=nil then begin if s2^<>#0 then result:=-1; exit; end;
+  if s2=nil then begin if s1^<>#0 then result:= 1; exit; end;
+
+  repeat
+    if s1^>s2^ then exit( 1);
+    if s1^<s2^ then exit(-1);
+    if (s1^=#0) or (alen=1) then exit;
+    dec(alen);
+
     inc(s1);
     inc(s2);
   until false;

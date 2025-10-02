@@ -28,6 +28,7 @@ object fmClassData: TfmClassData
     Width = 192
     Anchors = [akTop, akLeft, akRight, akBottom]
     ItemHeight = 0
+    Sorted = True
     TabOrder = 1
     OnSelectionChange = lbMainSelectionChange
   end
@@ -38,6 +39,7 @@ object fmClassData: TfmClassData
     Width = 216
     Anchors = [akTop, akRight, akBottom]
     ItemHeight = 0
+    Sorted = True
     TabOrder = 2
     OnSelectionChange = lbAltSelectionChange
   end
@@ -97,12 +99,6 @@ object fmClassData: TfmClassData
       TabOrder = 2
       OnClick = GenderClick
     end
-  end
-  object imgIcon: TImage
-    Left = 436
-    Height = 128
-    Top = 229
-    Width = 128
   end
   object bbGetList: TBitBtn
     Left = 12
@@ -166,5 +162,21 @@ object fmClassData: TfmClassData
       TabOrder = 1
       OnClick = ListTypeClick
     end
+  end
+  object lbBase: TListBox
+    Left = 436
+    Height = 140
+    Top = 251
+    Width = 270
+    ItemHeight = 0
+    Sorted = True
+    TabOrder = 9
+  end
+  object lblBase: TLabel
+    Left = 444
+    Height = 15
+    Top = 232
+    Width = 81
+    Caption = 'Base for classes'
   end
 end

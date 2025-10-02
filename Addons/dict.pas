@@ -25,6 +25,7 @@ type
 
   { TDictionary }
 type
+  PHashDict = ^THashDict;
   THashDict = object
   public
     type
@@ -97,6 +98,7 @@ type
   { Dictionary with translation }
 
 type
+  PTransDict = ^TTransDict;
   TTransDict = object(THashDict)
   private
     FValues:TElementArray;
@@ -122,6 +124,7 @@ type
   { Dictionary with translation and mask }
 
 type
+  PMaskDict = ^TMaskDict;
   TMaskDict = object(TTransDict)
   public
     type

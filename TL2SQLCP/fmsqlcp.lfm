@@ -147,7 +147,7 @@ object FormSQLCP: TFormSQLCP
           item
             ReadOnly = True
             Title.Caption = 'Name'
-            Width = 147
+            Width = 143
           end>
         FixedCols = 0
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
@@ -157,7 +157,7 @@ object FormSQLCP: TFormSQLCP
         ColWidths = (
           60
           48
-          147
+          143
         )
       end
       object sbLoad: TSpeedButton
@@ -257,20 +257,20 @@ object FormSQLCP: TFormSQLCP
     ClientWidth = 552
     TabOrder = 2
     object edModStat: TEdit
-      Left = 4
+      Left = 1
       Height = 23
-      Top = 2
-      Width = 542
-      Anchors = [akTop, akLeft, akRight]
+      Top = 1
+      Width = 550
+      Align = alTop
       TabOrder = 0
     end
     object gdModStat: TStringGrid
-      Left = 4
-      Height = 166
+      Left = 1
+      Height = 176
       Hint = 'Double-Click to edit translation'
-      Top = 28
-      Width = 542
-      Anchors = [akLeft, akRight, akBottom]
+      Top = 24
+      Width = 550
+      Align = alClient
       AutoEdit = False
       AutoFillColumns = True
       ColCount = 4
@@ -296,7 +296,7 @@ object FormSQLCP: TFormSQLCP
         end      
         item
           Title.Caption = 'Name'
-          Width = 374
+          Width = 378
         end>
       FixedCols = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
@@ -304,11 +304,12 @@ object FormSQLCP: TFormSQLCP
       ScrollBars = ssAutoVertical
       TabOrder = 1
       OnDblClick = DoStartEdit
+      OnPrepareCanvas = gdModStatPrepareCanvas
       ColWidths = (
         60
         60
         48
-        374
+        378
       )
     end
   end

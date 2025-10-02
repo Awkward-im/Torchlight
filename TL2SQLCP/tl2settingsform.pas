@@ -70,6 +70,7 @@ implementation
 uses
   inifiles,
 
+  Translations,
   LCLTranslator,
   LCLType,
   LCLIntf,
@@ -150,7 +151,7 @@ var
   config:TIniFile;
 begin
   config:=TIniFile.Create(ChangeFileExt(ParamStr(0),'.ini'),[ifoEscapeLineFeeds,ifoStripQuotes]);
-  SetDefaultLang(config.ReadString(sNSBase+':'+sTranslation,sPrgTransLang,'en'));
+  SetDefaultLang(config.ReadString(sNSBase+':'+sTranslation,sPrgTransLang,GetLanguageID.LanguageID{'en'}));
   config.Free;
 end;
 
@@ -273,9 +274,9 @@ begin
       ltr.FreeKey:=MyYandexAPIKey;
   end;
 
-  edTransLang.Text:=config.ReadString(sNSBase+':'+sTranslation,sTransLang   ,MyLanguage);
+  edTransLang.Text:=config.ReadString(sNSBase+':'+sTranslation,sTransLang   ,''{MyLanguage});
   ApplyLoadedLang ( config.ReadString(sNSBase+':'+sTranslation,sPrgTransLang,'en'));
-  ApplyLoadedTrans( config.ReadString(sNSBase+':'+sTranslation,sTranslator ,'Google'));
+  ApplyLoadedTrans( config.ReadString(sNSBase+':'+sTranslation,sTranslator  ,'Google'));
 
   config.Free;
 

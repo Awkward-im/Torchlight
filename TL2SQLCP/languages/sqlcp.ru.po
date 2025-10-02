@@ -251,7 +251,7 @@ msgid ""
 "(or DblClick in list below)"
 msgstr ""
 "Редактировать текст выбранных мода и языка\n"
-"v(или двойной клик в списке ниже)"
+"(или двойной клик в списке ниже)"
 
 #: tformsqlcp.sbload.hint
 msgctxt "tformsqlcp.sbload.hint"

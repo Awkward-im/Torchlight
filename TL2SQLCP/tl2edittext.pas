@@ -1,3 +1,4 @@
+{TODO: Add another languages panels}
 unit TL2EditText;
 
 {$mode objfpc}{$H+}
@@ -448,7 +449,7 @@ begin
   inherited;
 
   FIdx:=-1;
-  Caption:=rsLanguage+': '+CurLang;
+  Caption:=GetModName(CurMod)+' ('+rsLanguage+': '+CurLang+')';
 
   Font.Assign(TL2DM.TL2Font);
 end;
