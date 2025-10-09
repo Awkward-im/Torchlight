@@ -27,6 +27,8 @@ var
   TransOp:TRGDoubleAction;
 var
   SQLog:Logging.TLog;
+var
+  tldb:pointer;
 
 type
   PTLCacheElement = ^TTLCacheElement;
@@ -46,7 +48,7 @@ function  LoadModData():integer;
 procedure LoadTranslation();
 procedure SaveTranslation();
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
-    aall:boolean=false; const amod:Int64=modAll):boolean;
+    aall:boolean=false; const amodid:Int64=modAll):boolean;
 function LoadTranslationToBase(const fname,alang:AnsiString):integer;
 
 function RemakeFilter():boolean;
@@ -54,7 +56,7 @@ function PrepareScanSQL():boolean;
 
 function CreateLangTable(const lng:AnsiString):boolean;
 function TLOpenBase (inmemory:boolean=false):boolean;
-function TLSaveBase ():boolean;
+function TLSaveBase (const fname:AnsiString=''):boolean;
 function TLCloseBase(dosave:boolean):boolean;
 {
 function CopyToBase  (const data:TTL2Translation; withRef:boolean):integer;
@@ -119,6 +121,7 @@ function GetLineRefList (aid:integer; var arr:array of AnsiString; atype:integer
 function GetRef   (arefid:integer; out adir,afile,atag:AnsiString; out aline,aflags:integer):integer;
 function GetRefMod(arefid:integer):Int64;
 function GetRefSrc(arefid:integer):integer;
+function GetRefPlaceCount(arefid:integer; const amodid:Int64=modAll):integer;
 
 type
   TModStatistic = record
@@ -178,11 +181,33 @@ const
   sTranslated  = '<STRING>TRANSLATION:';
 
 var
-  tldb:pointer;
+  lastmodid:Int64;
 
 resourcestring
   rsAllStrings   = '- All strings -';
   rsOriginalGame = '-- Original game --';
+
+
+procedure CacheRefs(const amodid:Int64);
+var
+  lmod:AnsiString;
+begin
+  if lastmodid<>amodid then
+  begin
+    lastmodid:=amodid;
+    ExecuteDirect(tldb,'DROP TABLE tmpref');
+    ExecuteDirect(tldb,'CREATE TEMP TABLE tmpref (srcid INTEGER PRIMARY KEY)');
+
+    if amodid<>modAll then
+    begin
+      Str(amodid,lmod);
+      lmod:=' WHERE modid='+lmod;
+    end
+    else
+      lmod:='';
+    ExecuteDirect(tldb,'INSERT INTO tmpref SELECT DISTINCT refs.srcid FROM refs'+lmod);
+  end;
+end;
 
 function CheckName(const atable:AnsiString):AnsiString;
 begin
@@ -498,7 +523,16 @@ begin
   else
   begin
     Str(amodid,lsrc);
-    result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc);
+    if withdeleted then
+      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc)
+    else
+    begin
+      CacheRefs(amodid);
+      result:=ReturnInt(tldb,
+        'SELECT count(DISTINCT s.id) FROM strings s'+
+        ' INNER JOIN tmpref ON tmpref.srcid=s.id WHERE s.deleted=0');
+//      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc+' AND deleted=0');
+    end;
     if amodid=modVanilla then
       result:=result+GetUnrefLineCount();
   end;
@@ -518,8 +552,11 @@ begin
         ' AND src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')'
   else
   begin
+//    CacheRefs(amodid);
     Str(amodid,ls);
     ls:='SELECT count(DISTINCT s.id) FROM strings s'+
+//        ' INNER JOIN tmpref ON refs.srcid=s.id'+
+//        ' WHERE s.deleted=0'+
         ' INNER JOIN refs ON refs.srcid=s.id'+
         ' WHERE s.deleted=0 AND refs.modid='+ls+
         ' AND src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')'
@@ -545,11 +582,18 @@ var
 begin
   if amodid=modAll then exit(0);
 
+  CacheRefs(amodid);
   Str(amodid,ls);
+  ls:='SELECT count(1) FROM tmpref r'+
+      ' LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
+      ' ON r.srcid=r1.srcid'+
+      ' WHERE r1.srcid IS NULL';
+{
   ls:='SELECT count(DISTINCT r.srcid) FROM refs r'+
       ' LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
       ' ON r.srcid=r1.srcid'+
       ' WHERE r.modid='+ls+' AND r1.srcid IS NULL';
+}
   result:=ReturnInt(tldb,ls);
 end;
 
@@ -602,6 +646,8 @@ begin
   FillChar(stat,SizeOf(stat),0);
   stat.modid:=lmodid;
 
+  CacheRefs(lmodid);
+
   Str(lmodid,lmod);
   ls:='SELECT lines, differs, files, tags, nation FROM statistic'+
       ' WHERE modid='+lmod;
@@ -627,7 +673,6 @@ begin
   end;
   stat.unique:=GetUniqueLineCount(stat.modid);
 
-
   result:=GetLangList(llist);
   if result=0 then exit;
 
@@ -635,26 +680,16 @@ begin
   // into temp table. Can be usable in other places. Update at mod scan.
   SetLength(stat.langs,result);
 
-  if stat.modid<>modAll then
-    lmod:=' WHERE modid='+lmod
-  else
-    lmod:='';
-
   for i:=0 to result-1 do
   begin
-    ls:='SELECT count(srcid), sum(part) FROM [trans_'+llist[i].value+
-        '] WHERE srcid IN (SELECT DISTINCT srcid FROM refs'+lmod+')';
+    ls:='SELECT count(t.srcid), sum(t.part) FROM [trans_'+llist[i].value+
+        '] t INNER JOIN tmpref ON t.srcid=tmpref.srcid';
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vml, nil)=SQLITE_OK then
     begin
       if sqlite3_step(vml)=SQLITE_ROW then
       begin
         stat.langs[i].lang :=llist[i].value;
         stat.langs[i].trans:=sqlite3_column_int(vml,0);
-{
-        stat.langs[i].trans := stat.langs[i].trans + ReturnInt(tldb,
-           'SELECT count(strings.id) FROM strings'+
-           ' LEFT JOIN refs ON refs.srcid=strings.id WHERE refs.srcid IS NULL');
-}
         stat.langs[i].part :=sqlite3_column_int(vml,1);
       end;
     end;
@@ -880,6 +915,7 @@ var
   lcnt:integer;
 begin
   result:=0;
+
   Str(aid,lid);
   if CurMod<>modAll then
   begin
@@ -906,6 +942,40 @@ begin
     end;
   end;
   SetLength(arr,0);
+end;
+
+function GetRefPlaceCount(arefid:integer; const amodid:Int64=modAll):integer;
+var
+  vm:pointer;
+  ls,lmod:AnsiString;
+  ldir,lfile,ltag:integer;
+begin
+  if amodid<>modAll then
+  begin
+    Str(amodid,lmod);
+    lmod:=' AND modid='+lmod;
+  end
+  else
+    lmod:='';
+
+  ls:='SELECT dir, file, tag FROM refs WHERE id='+IntToStr(arefid)+lmod;
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+    begin
+      ldir :=sqlite3_column_int(vm,0);
+      lfile:=sqlite3_column_int(vm,1);
+      ltag :=sqlite3_column_int(vm,2);
+    end;
+    sqlite3_finalize(vm);
+  end;
+  
+  result:=ReturnInt(tldb,
+      'SELECT count(1) FROM refs'+
+      ' WHERE dir ='+IntToStr(ldir )+
+      '   AND file='+IntToStr(lfile)+
+      '   AND tag ='+IntToStr(ltag )+
+      lmod);
 end;
 
 function GetAlts(aid:integer; var arr:TIntegerDynArray):integer;
@@ -1200,6 +1270,11 @@ begin
     for i:=0 to High(TRCache) do
       TRCache[i].flags:=TRCache[i].flags and not rfIsFiltered;
 
+         if afilter='MEDIA/'        then lcond:='=''MEDIA/'''
+    else if afilter='MEDIA/SKILLS/' then lcond:='=''MEDIA/SKILLS/'''
+//    else                                 lcond:=' LIKE '''+afilter+'%''';
+    else                                 lcond:=' GLOB '''+afilter+'*''';
+
     if CurMod<>modAll then
     begin
       Str(CurMod,lSQL);
@@ -1208,13 +1283,9 @@ begin
     else
       lSQL:='';
 
-         if afilter='MEDIA/'        then lcond:='=''MEDIA/'''
-    else if afilter='MEDIA/SKILLS/' then lcond:='=''MEDIA/SKILLS/'''
-//    else                                 lcond:=' LIKE '''+afilter+'%''';
-    else                                 lcond:=' GLOB '''+afilter+'*''';
-
     lSQL:='SELECT DISTINCT srcid FROM refs WHERE'+lSQL+
           ' dir IN (SELECT id FROM dicdirs WHERE value'+lcond+')';
+
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -1256,9 +1327,7 @@ begin
   begin
     SetLength(alist,lcnt);
 
-//    ls:='SELECT value FROM dicdirs WHERE id IN (SELECT DISTINCT dir FROM refs WHERE modid='+ls+')';
-//    ls:='SELECT DISTINCT value FROM dicdirs WHERE id IN (SELECT dir FROM refs WHERE modid='+lmod+')';
-    ls:='SELECT DISTINCT value FROM dicdirs INNER JOIN refs ON refs.dir=dicdirs.id'+lmod;
+    ls:='SELECT value FROM dicdirs WHERE id IN (SELECT DISTINCT dir FROM refs'+lmod+')';
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -1423,6 +1492,8 @@ var
   lflag:integer;
 begin
   result:=0;
+
+  if afile='' then exit;
 
   lsource:=UpCase(afile);
 
@@ -1734,9 +1805,16 @@ begin
 //      lSQL:='SELECT id, src, filter FROM strings WHERE '+
 //            'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
       lSQL:='SELECT DISTINCT s.id, s.src, s.filter FROM strings s'+
+            ' INNER JOIN tmpref ON tmpref.srcid=s.id'+
+            ' WHERE s.deleted=0';
+{
+      lSQL:='SELECT DISTINCT s.id, s.src, s.filter FROM strings s'+
             ' INNER JOIN refs ON refs.srcid=s.id'+
             ' WHERE s.deleted=0 AND refs.modid='+lmod;
+}
     end;
+
+    CacheRefs(CurMod);
 
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
@@ -1751,6 +1829,7 @@ begin
         end;
         inc(result);
       end;
+      sqlite3_finalize(vm);
     end;
   end;
 
@@ -1774,6 +1853,7 @@ begin
         end;
         inc(result);
       end;
+      sqlite3_finalize(vm);
     end;
   end;
 end;
@@ -1836,7 +1916,7 @@ begin
 end;
 
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
-    aall:boolean=false; const amod:Int64=modAll):boolean;
+    aall:boolean=false; const amodid:Int64=modAll):boolean;
 var
   vm:pointer;
   sl:TStringList;
@@ -1848,12 +1928,12 @@ begin
 
   // affect on source: CurMod=0+unref; CurMod=-1; CurMod=###
   lt:=' LEFT OUTER JOIN '+CheckName(lt)+' t ON strings.id=t.srcid';
-  if amod=modAll then
+  if amodid=modAll then
   begin
     ls:='SELECT strings.src, t.dst FROM strings'+
         lt+' WHERE strings.deleted=0';
   end
-  else if amod=modVanilla then
+  else if amodid=modVanilla then
   begin
 //      ls:='SELECT id, src FROM strings WHERE '+
 //          'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
@@ -1865,9 +1945,16 @@ begin
   begin
 //      ls:='SELECT id, src, dst FROM strings WHERE '+
 //          'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
+    CacheRefs(amodid);
+{
+    Str(amodid,ls);
     ls:='SELECT strings.src, t.dst FROM strings'+
         ' INNER JOIN refs ON refs.srcid=strings.id'+lt+
-        ' WHERE strings.deleted=0 AND refs.modid='+IntToStr(amod);
+        ' WHERE strings.deleted=0 AND refs.modid='+ls;
+}
+    ls:='SELECT strings.src, t.dst FROM strings'+
+        ' INNER JOIN tmpref ON tmpref.srcid=strings.id'+lt+
+        ' WHERE strings.deleted=0';
   end;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
@@ -2032,13 +2119,18 @@ begin
 
   if (not result) and (tldb<>nil) then
     result:=CreateTables();
+
+  lastmodid:=modUnref;
 end;
 
-function TLSaveBase():boolean;
+function TLSaveBase(const fname:AnsiString=''):boolean;
 begin
   if tldb=nil then exit(false);
 
-  result:=SaveBase(tldb,TL2TextBase)=SQLITE_OK;
+  if fname='' then
+    result:=SaveBase(tldb,TL2TextBase)=SQLITE_OK
+  else
+    result:=SaveBase(tldb,fname)=SQLITE_OK
 end;
 
 function TLCloseBase(dosave:boolean):boolean;

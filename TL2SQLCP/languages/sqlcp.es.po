@@ -41,6 +41,14 @@ msgstr ""
 msgid "Language:"
 msgstr ""
 
+#: fmsqlcp.rsnonation
+msgid "Nothing to replace"
+msgstr ""
+
+#: fmsqlcp.rsnotreplaced
+msgid "Nothing was changed"
+msgstr ""
+
 #: fmsqlcp.rsopenmod
 msgid "Open mod (pak) file"
 msgstr ""
@@ -55,6 +63,18 @@ msgstr ""
 
 #: fmsqlcp.rspartial
 msgid "Overwrite partial"
+msgstr ""
+
+#: fmsqlcp.rsreplaced
+msgid "Files changed"
+msgstr ""
+
+#: fmsqlcp.rsreplacedir
+msgid "Choose dir with unpacked mod (with MEDIA/ inside)"
+msgstr ""
+
+#: fmsqlcp.rssavedb
+msgid "You forgot to save modified DB. Save it?"
 msgstr ""
 
 #: fmsqlcp.rssavedone
@@ -172,10 +192,6 @@ msgstr ""
 msgid "Tag:"
 msgstr ""
 
-#: tedittextform.sbalt.hint
-msgid "Show Alternative Text"
-msgstr ""
-
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
 msgstr ""
@@ -268,6 +284,10 @@ msgstr ""
 
 #: tformsqlcp.sbremove.hint
 msgid "Remove mod from list"
+msgstr ""
+
+#: tformsqlcp.sbreplace.hint
+msgid "Replace non-latin text by English"
 msgstr ""
 
 #: tformsqlcp.sbsave.hint
@@ -760,6 +780,14 @@ msgstr ""
 msgid "Mark new text as partial"
 msgstr ""
 
+#: ttl2settings.cbdiskdb.caption
+msgid "Use disk DB directly"
+msgstr ""
+
+#: ttl2settings.cbdiskdb.hint
+msgid "Use disk DB directly or through copy in memory"
+msgstr ""
+
 #: ttl2settings.cbparamsign.caption
 msgid "Mark params in [ ] and < >"
 msgstr ""
@@ -786,7 +814,7 @@ msgstr ""
 
 #: ttl2settings.lbllang.caption
 msgctxt "ttl2settings.lbllang.caption"
-msgid "Translation language"
+msgid "Preferred translation language"
 msgstr ""
 
 #: ttl2settings.lblprogramlanguage.caption

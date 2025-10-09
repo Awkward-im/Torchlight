@@ -1,4 +1,3 @@
-{TODO: colorize lang line if all texts translated (with partial - another color)}
 {TODO: Add existing mod check at Scan procedure}
 {TODO: auto select saved program language in mod list if exists.}
 unit fmSQLCP;
@@ -39,13 +38,14 @@ type
     sbSave: TSpeedButton;
     sbSettings: TSpeedButton;
     sbDeleted: TSpeedButton;
+    sbReplace: TSpeedButton;
     VSplitter: TSplitter;
     StatusBar: TStatusBar;
     procedure AddTrans(Sender: TObject);
     procedure Build(Sender: TObject);
-    procedure gdModStatPrepareCanvas(Sender: TObject; aCol, aRow: Integer;
-      aState: TGridDrawState);
+    procedure gdModStatPrepareCanvas(Sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
     procedure sbDeletedClick(Sender: TObject);
+    procedure sbReplaceClick(Sender: TObject);
     procedure sbSettingsClick(Sender: TObject);
     procedure ShowLog(Sender: TObject);
     procedure NewTrans(Sender: TObject);
@@ -64,6 +64,7 @@ type
     FSQLogForm:TfmLogForm;
     FModList:TDict64DynArray;
     doBreak:boolean;
+    needtosave:boolean;
 
     function AddLog(var adata: string): integer;
     function AddSQLog(var adata: string): integer;
@@ -73,7 +74,6 @@ type
     procedure UpdateStatus();
 
   public
-
   end;
 
 var
@@ -92,6 +92,7 @@ uses
   rgdb.text,
   tl2unit,
   tl2text,
+  tl2replace,
   tlscan;
 
 resourcestring
@@ -119,6 +120,13 @@ resourcestring
   rsHaveUnique      = 'Mod have %d unique strings.';
   rsDelete          = 'Are you sure to delete it?';
   rsSaveSQLog       = 'Save SQL Log?';
+  rsSaveDB          = 'You forgot to save modified DB. Save it?';
+  rsReplaced        = 'Files changed';
+  rsNotReplaced     = 'Nothing was changed';
+  rsReplaceDir      = 'Choose dir with unpacked mod (with MEDIA/ inside)';
+  rsNoNation        = 'Nothing to replace';
+//  rsDBOnDisk        = 'DB on disk'
+//  rsDBInMemory      = 'DB in memory';
 
 
 { TFormSQLCP }
@@ -128,7 +136,7 @@ var
   OpenDialog: TOpenDialog;
 //  data:TTL2Translation;
   ls:AnsiString;
-  i:integer;
+  i,lidx:integer;
 begin
   OpenDialog:=TOpenDialog.Create(nil);
   try
@@ -146,23 +154,27 @@ begin
 
       if ls='' then exit;
 
-      case QuestionDlg(rsTranslation,rsTransOp,mtConfirmation,
-        [mrYesToAll,rsOverwrite,'IsDefault',
-         mrYes     ,rsPartial,
-         mrNo      ,rsSkip,
-         mrCancel],0) of
+      TransOp:=da_overwrite;
+      if gdLanguages.Cells[0,gdLanguages.Row]<>'0' then
+        case QuestionDlg(rsTranslation,rsTransOp,mtConfirmation,
+          [mrYesToAll,rsOverwrite,'IsDefault',
+           mrYes     ,rsPartial,
+           mrNo      ,rsSkip,
+           mrCancel],0) of
 
-         mrYesToAll: TransOp:=da_overwrite;
-         mrYes     : TransOp:=da_compare;
-         mrNo      : TransOp:=da_skip;
-         mrCancel  : exit;
-      end;
+           mrYesToAll: TransOp:=da_overwrite;
+           mrYes     : TransOp:=da_compare;
+           mrNo      : TransOp:=da_skip;
+           mrCancel  : exit;
+        end;
+
       Self.Caption:='Load translation';
       i:=LoadTranslationToBase(OpenDialog.FileName,ls);
 
-      TransOp:=da_overwrite;
       RGLog.Add('Loaded '+IntToStr(i)+' lines');
+      lidx:=gdLanguages.Row;
       FillLangList();
+      gdLanguages.Row:=lidx;
 
       Self.Caption:='Check for similars';
       FillAllSimilars(ls);
@@ -205,6 +217,39 @@ begin
   begin
     ShowModal;
     Free;
+  end;
+end;
+
+procedure TFormSQLCP.sbReplaceClick(Sender: TObject);
+var
+  lstat:TModStatistic;
+  ldlg:TSelectDirectoryDialog;
+  lcnt:integer;
+begin
+  lstat.modid:=CurMod;
+  GetModStatistic(lstat);
+  if lstat.nation=0 then
+  begin
+    ShowMessage(rsNoNation);
+    exit;
+  end;
+
+  ldlg:=TSelectDirectoryDialog.Create(nil);
+  try
+    ldlg.Title:=rsReplaceDir;
+    if ldlg.Execute then
+    begin
+      lcnt:=TranslateToEnglish(CurMod,ldlg.FileName);
+      if lcnt>0 then
+      begin
+        ShowMessage(rsReplaced+': '+IntToStr(lcnt));
+//        SetModStatistic(CurMod);
+      end
+      else
+        ShowMessage(rsNotReplaced);
+    end;
+  finally
+    ldlg.Free;
   end;
 end;
 
@@ -370,7 +415,10 @@ end;
 procedure TFormSQLCP.SaveDB(Sender: TObject);
 begin
   if TLSaveBase() then
+  begin
+    needtosave:=false;
     ShowMessage(rsSaveDone)
+  end
   else
     ShowMessage(rsCantSave);
 end;
@@ -382,10 +430,12 @@ var
 begin
   if lbMods.ItemIndex<0 then exit;
 
-  lstat.modid:=FModList[IntPtr(lbMods.Items.Objects[lbMods.ItemIndex])].id;
+  CurMod:=FModList[IntPtr(lbMods.Items.Objects[lbMods.ItemIndex])].id;
 
-  sbRemove.Enabled:=(lstat.modid<>modAll) and (lstat.modid<>modVanilla);
+  sbReplace.Enabled:=(CurMod<>modAll) and (CurMod<>modVanilla);
+  sbRemove .Enabled:=(CurMod<>modAll) and (CurMod<>modVanilla);
 
+  lstat.modid:=CurMod;
   GetModStatistic(lstat);
   edModStat.Tag:=lstat.total-lstat.dupes;
   edModStat.Text:=Format(rsStat,
@@ -423,16 +473,15 @@ var
 begin
   Val((Sender as TStringGrid).Cells[0,aRow],lt);
   if edModStat.Tag=lt then
-    lColor:=TColor($FF8080)
-  else
   begin
     Val((Sender as TStringGrid).Cells[1,aRow],lp);
-    if edModStat.Tag=(lt+lp) then
-      lColor:=TColor($80FF80)
+    if lp=0 then
+      lColor:=TColor($FF8080)
     else
-      exit;
+      lColor:=TColor($80FF80);
+
+    (Sender as TStringGrid).Canvas.Brush.Color:=lColor;
   end;
-  (Sender as TStringGrid).Canvas.Brush.Color:=lColor;
 end;
 
 procedure TFormSQLCP.lfeModsAfterFilter(Sender: TObject);
@@ -488,11 +537,12 @@ procedure TFormSQLCP.FormCreate(Sender: TObject);
 begin
   FLogForm  :=nil;
   FSQLogForm:=nil;
+  needtosave:=false;
 
   TL2Settings:=TTL2Settings.Create(Self);
 
   SetProgramLanguage();
-  TLOpenBase(true);
+  TLOpenBase(not TL2Settings.cbDiskDB.Checked);
   FillLangList();
   FillModList();
   UpdateStatus();
@@ -500,6 +550,11 @@ end;
 
 procedure TFormSQLCP.FormDestroy(Sender: TObject);
 begin
+  if needtosave then
+  begin
+    if MessageDlg(rsSaveDB,mtWarning,mbYesNo,0,mbYes)=mrYes then
+      SaveDB(Sender);
+  end;
   if SQLog.Size>0 then
   begin
     if MessageDlg(rsSaveSQLog,mtWarning,mbYesNo,0,mbYes)=mrYes then
@@ -510,6 +565,8 @@ begin
 end;
 
 procedure TFormSQLCP.DoStartEdit(Sender: TObject);
+var
+  lsize:integer;
 begin
   if (MainTL2TransForm=nil) and
      (lbMods.ItemIndex>=0) and
@@ -523,7 +580,19 @@ begin
     CurLang:=gdModStat.Cells[2,gdModStat.Row];
 
     MainTL2TransForm:=TMainTL2TransForm.Create(Self);
+    lsize:=SQLog.Size;
     MainTL2TransForm.ShowModal;
+    if MainTL2TransForm.wasmodified then
+      needtosave:=true;
+
+    MainTL2TransForm.Free;
+    MainTL2TransForm:=nil;
+
+    if lsize<>SQLog.Size then
+    begin
+      FillLangList();
+      lbModsSelectionChange(Sender, true);
+    end;
   end;
 end;
 

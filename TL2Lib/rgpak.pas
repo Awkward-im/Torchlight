@@ -726,7 +726,7 @@ begin
 end;
 
 //===== Files =====
-
+{$I-}
 function TRGPAK.ExtractFile(
     afi:PManFileInfo; out asize_u:cardinal; var abuf:PByte):cardinal;
 var

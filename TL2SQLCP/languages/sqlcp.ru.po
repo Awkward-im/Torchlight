@@ -41,6 +41,14 @@ msgstr "Мод имеет %d уникальных строк."
 msgid "Language:"
 msgstr "Язык:"
 
+#: fmsqlcp.rsnonation
+msgid "Nothing to replace"
+msgstr "Заменять нечего"
+
+#: fmsqlcp.rsnotreplaced
+msgid "Nothing was changed"
+msgstr "Ничто не поменялось"
+
 #: fmsqlcp.rsopenmod
 msgid "Open mod (pak) file"
 msgstr "Открыть Mod (pak)"
@@ -56,6 +64,18 @@ msgstr "Перезаписать"
 #: fmsqlcp.rspartial
 msgid "Overwrite partial"
 msgstr "Перезап. неполные"
+
+#: fmsqlcp.rsreplaced
+msgid "Files changed"
+msgstr "Файлов изменилось "
+
+#: fmsqlcp.rsreplacedir
+msgid "Choose dir with unpacked mod (with MEDIA/ inside)"
+msgstr "Выберите папку с распакованным модом (с MEDIA/ внутри)"
+
+#: fmsqlcp.rssavedb
+msgid "You forgot to save modified DB. Save it?"
+msgstr "Вы забыли сохранить данные. Сохранить?"
 
 #: fmsqlcp.rssavedone
 msgid "Database saved"
@@ -172,10 +192,6 @@ msgstr "Перевод"
 msgid "Tag:"
 msgstr "Тэг:"
 
-#: tedittextform.sbalt.hint
-msgid "Show Alternative Text"
-msgstr "Показать альтернативные тексты"
-
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
 msgstr "Очистить"
@@ -271,6 +287,10 @@ msgstr "Добавить язык перевода"
 #: tformsqlcp.sbremove.hint
 msgid "Remove mod from list"
 msgstr "Удалить мод из списка"
+
+#: tformsqlcp.sbreplace.hint
+msgid "Replace non-latin text by English"
+msgstr "Заменить не-латинский текст на английский"
 
 #: tformsqlcp.sbsave.hint
 msgctxt "tformsqlcp.sbsave.hint"
@@ -754,6 +774,14 @@ msgstr "Сохранить"
 msgid "Mark new text as partial"
 msgstr "Пометить новый перевод как неточный"
 
+#: ttl2settings.cbdiskdb.caption
+msgid "Use disk DB directly"
+msgstr "Использовать базу на носителе"
+
+#: ttl2settings.cbdiskdb.hint
+msgid "Use disk DB directly or through copy in memory"
+msgstr "Использовать базу на носителе или копию в памяти"
+
 #: ttl2settings.cbparamsign.caption
 msgid "Mark params in [ ] and < >"
 msgstr "Пометить параметры в [ ] и <>"
@@ -780,8 +808,8 @@ msgstr "Получите свой API ключ"
 
 #: ttl2settings.lbllang.caption
 msgctxt "ttl2settings.lbllang.caption"
-msgid "Translation language"
-msgstr "Язык перевода"
+msgid "Preferred translation language"
+msgstr "Предпочитаемый язык перевода"
 
 #: ttl2settings.lblprogramlanguage.caption
 msgid "Program Language"
@@ -798,4 +826,3 @@ msgstr "Переводчики"
 #: unitlogform.rscantsave
 msgid "Can't save log file"
 msgstr "Не могу сохранить лог"
-

@@ -404,6 +404,7 @@ object MainTL2TransForm: TMainTL2TransForm
       Caption = 'Show Similar'
       Hint = 'Show lines with "almost the same" text'
       ImageIndex = 17
+      ShortCut = 116
       OnExecute = actShowSimilarExecute
     end
     object actShowDoubles: TAction
@@ -411,6 +412,7 @@ object MainTL2TransForm: TMainTL2TransForm
       Caption = 'Show Doubles'
       Hint = 'Show Doubling lines'
       ImageIndex = 7
+      ShortCut = 117
       OnExecute = actShowDoublesExecute
     end
     object actReplace: TAction
@@ -457,6 +459,7 @@ object MainTL2TransForm: TMainTL2TransForm
       Category = 'View'
       Caption = 'Show Alts'
       ImageIndex = 24
+      ShortCut = 118
       OnExecute = actShowAltsExecute
     end
     object actFilter: TAction

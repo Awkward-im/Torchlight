@@ -64,10 +64,21 @@ object AltForm: TAltForm
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowSelect, goDblClickAutoSize, goSmoothScroll]
     RowCount = 0
     TabOrder = 2
+    OnDblClick = sgAltsDblClick
+    OnKeyDown = sgAltsKeyDown
     OnSelectCell = sgAltsSelectCell
     ColWidths = (
       160
       424
     )
+  end
+  object lblMod: TLabel
+    Left = 308
+    Height = 23
+    Top = 174
+    Width = 288
+    Alignment = taRightJustify
+    Anchors = [akTop, akRight]
+    AutoSize = False
   end
 end

@@ -31,6 +31,14 @@ msgstr ""
 msgid "Language:"
 msgstr ""
 
+#: fmsqlcp.rsnonation
+msgid "Nothing to replace"
+msgstr ""
+
+#: fmsqlcp.rsnotreplaced
+msgid "Nothing was changed"
+msgstr ""
+
 #: fmsqlcp.rsopenmod
 msgid "Open mod (pak) file"
 msgstr ""
@@ -45,6 +53,18 @@ msgstr ""
 
 #: fmsqlcp.rspartial
 msgid "Overwrite partial"
+msgstr ""
+
+#: fmsqlcp.rsreplaced
+msgid "Files changed"
+msgstr ""
+
+#: fmsqlcp.rsreplacedir
+msgid "Choose dir with unpacked mod (with MEDIA/ inside)"
+msgstr ""
+
+#: fmsqlcp.rssavedb
+msgid "You forgot to save modified DB. Save it?"
 msgstr ""
 
 #: fmsqlcp.rssavedone
@@ -162,10 +182,6 @@ msgstr ""
 msgid "Tag:"
 msgstr ""
 
-#: tedittextform.sbalt.hint
-msgid "Show Alternative Text"
-msgstr ""
-
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
 msgstr ""
@@ -214,7 +230,6 @@ msgid "Name"
 msgstr ""
 
 #: tformsqlcp.gdmodstat.hint
-msgctxt "tformsqlcp.gdmodstat.hint"
 msgid "Double-Click to edit translation"
 msgstr ""
 
@@ -227,7 +242,6 @@ msgid "Scan mod for text and add to list"
 msgstr ""
 
 #: tformsqlcp.sbbuild.hint
-msgctxt "tformsqlcp.sbbuild.hint"
 msgid "Generate translation file for mod"
 msgstr ""
 
@@ -242,17 +256,14 @@ msgid ""
 msgstr ""
 
 #: tformsqlcp.sbload.hint
-msgctxt "tformsqlcp.sbload.hint"
 msgid "Load translation file"
 msgstr ""
 
 #: tformsqlcp.sblog.hint
-msgctxt "tformsqlcp.sblog.hint"
 msgid "Show log file"
 msgstr ""
 
 #: tformsqlcp.sbnew.hint
-msgctxt "tformsqlcp.sbnew.hint"
 msgid "Add new translation language"
 msgstr ""
 
@@ -260,8 +271,11 @@ msgstr ""
 msgid "Remove mod from list"
 msgstr ""
 
+#: tformsqlcp.sbreplace.hint
+msgid "Replace non-latin text by English"
+msgstr ""
+
 #: tformsqlcp.sbsave.hint
-msgctxt "tformsqlcp.sbsave.hint"
 msgid "Save DB changes (memory DB related)"
 msgstr ""
 
@@ -270,7 +284,6 @@ msgid "Open settings window"
 msgstr ""
 
 #: tformsqlcp.sbsql.hint
-msgctxt "tformsqlcp.sbsql.hint"
 msgid "Show session SQL requiests of DB modify"
 msgstr ""
 
@@ -297,7 +310,6 @@ msgid "Translation language"
 msgstr ""
 
 #: tl2edittext.rsshow
-msgctxt "tl2edittext.rsshow"
 msgid "Click on \"Show Doubles\" button to show"
 msgstr ""
 
@@ -371,7 +383,6 @@ msgid "Source have tags or parameters"
 msgstr ""
 
 #: tl2unit.rsaffected
-msgctxt "tl2unit.rsaffected"
 msgid " line(s) affected"
 msgstr ""
 
@@ -381,29 +392,24 @@ msgid "Torchlight 2 Translation"
 msgstr ""
 
 #: tl2unit.rsdodelete
-msgctxt "tl2unit.rsdodelete"
 msgid ""
 "Are you sure to delete selected line(s)?\n"
 "This text will be just hidden until you save and reload project."
 msgstr ""
 
 #: tl2unit.rsdupes
-msgctxt "tl2unit.rsdupes"
 msgid "Check doubles info."
 msgstr ""
 
 #: tl2unit.rsfixall
-msgctxt "tl2unit.rsfixall"
 msgid "Fix all"
 msgstr ""
 
 #: tl2unit.rsfixone
-msgctxt "tl2unit.rsfixone"
 msgid "Fix this"
 msgstr ""
 
 #: tl2unit.rsfolderall
-msgctxt "tl2unit.rsfolderall"
 msgid "- All -"
 msgstr ""
 
@@ -420,7 +426,6 @@ msgid "Non-latin"
 msgstr ""
 
 #: tl2unit.rsmodenotready
-msgctxt "tl2unit.rsmodenotready"
 msgid "Not translated"
 msgstr ""
 
@@ -438,42 +443,34 @@ msgid "Ready"
 msgstr ""
 
 #: tl2unit.rsmodereadyplus
-msgctxt "tl2unit.rsmodereadyplus"
 msgid "Translated"
 msgstr ""
 
 #: tl2unit.rsnext
-msgctxt "tl2unit.rsnext"
 msgid "Next note"
 msgstr ""
 
 #: tl2unit.rsnodoubles
-msgctxt "tl2unit.rsnodoubles"
 msgid "No doubles for this text"
 msgstr ""
 
 #: tl2unit.rsnotes
-msgctxt "tl2unit.rsnotes"
 msgid "Punctuation note"
 msgstr ""
 
 #: tl2unit.rsnotsaved
-msgctxt "tl2unit.rsnotsaved"
 msgid "Project modified. Do you want to save it?"
 msgstr ""
 
 #: tl2unit.rsnowarnings
-msgctxt "tl2unit.rsnowarnings"
 msgid "No any warnings"
 msgstr ""
 
 #: tl2unit.rsreplaces
-msgctxt "tl2unit.rsreplaces"
 msgid "Total replaces"
 msgstr ""
 
 #: tl2unit.rsroot
-msgctxt "tl2unit.rsroot"
 msgid "-- Root --"
 msgstr ""
 
@@ -482,7 +479,6 @@ msgid "*Unique* "
 msgstr ""
 
 #: tmaintl2transform.actchecktranslation.caption
-msgctxt "tmaintl2transform.actchecktranslation.caption"
 msgid "Check Translation"
 msgstr ""
 
@@ -738,6 +734,14 @@ msgstr ""
 msgid "Mark new text as partial"
 msgstr ""
 
+#: ttl2settings.cbdiskdb.caption
+msgid "Use disk DB directly"
+msgstr ""
+
+#: ttl2settings.cbdiskdb.hint
+msgid "Use disk DB directly or through copy in memory"
+msgstr ""
+
 #: ttl2settings.cbparamsign.caption
 msgid "Mark params in [ ] and < >"
 msgstr ""
@@ -764,7 +768,7 @@ msgstr ""
 
 #: ttl2settings.lbllang.caption
 msgctxt "ttl2settings.lbllang.caption"
-msgid "Translation language"
+msgid "Preferred translation language"
 msgstr ""
 
 #: ttl2settings.lblprogramlanguage.caption

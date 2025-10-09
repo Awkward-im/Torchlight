@@ -854,7 +854,7 @@ begin
   dlg:=TSaveDialog.Create(nil);
   try
     case ctrl.PAK.Version of
-      verTL2: dlg.FilterIndex:=2;
+      verTL2: dlg.FilterIndex:=1;
       verHob: dlg.FilterIndex:=3;
       verRG : dlg.FilterIndex:=4;
       verRGO: dlg.FilterIndex:=5;
@@ -920,7 +920,7 @@ begin
   dlg:=TSaveDialog.Create(nil);
   try
     case ctrl.PAK.Version of
-      verTL2: dlg.FilterIndex:=2;
+      verTL2: dlg.FilterIndex:=1;
       verHob: dlg.FilterIndex:=3;
       verRG : dlg.FilterIndex:=4;
       verRGO: dlg.FilterIndex:=5;

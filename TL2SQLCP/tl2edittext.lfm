@@ -159,11 +159,11 @@ object EditTextForm: TEditTextForm
       ImageIndex = 7
     end
     object sbAlt: TSpeedButton
-      Left = 269
+      Left = 272
       Height = 22
-      Hint = 'Show Alternative Text'
       Top = 4
       Width = 23
+      Action = actShowAlt
       Images = TL2DataModule.TL2ImageList
       ImageIndex = 24
     end
@@ -282,6 +282,7 @@ object EditTextForm: TEditTextForm
       OnExecute = actShowDupeExecute
     end
     object actShowAlt: TAction
+      ImageIndex = 24
       OnExecute = actShowAltExecute
     end
   end

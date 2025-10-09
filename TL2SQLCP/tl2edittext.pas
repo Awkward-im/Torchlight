@@ -346,7 +346,13 @@ procedure TEditTextForm.actShowAltExecute(Sender: TObject);
 begin
   with TAltForm.Create(Self,FIdx) do
   begin
-    ShowModal;
+    if ShowModal=mrOk then
+    begin
+//      if memTrans.Text='' then
+        memTrans.Text:=SelectedText
+//      else
+//        memTrans.Text:=memTrans.Text+#13#10+SelectedText;
+    end;
     Free;
   end;
 end;

@@ -64,8 +64,7 @@ procedure TRGDict.Init(usecache:boolean=true);
 begin
   inherited Init(@RGHash,usecache);
 
-  if RGTags.Count=0 then
-    RGTags.Import('RGDICT','TEXT');
+//  if RGTags.Count=0 then RGTags.Import('RGDICT','TEXT');
 end;
 
 
@@ -659,7 +658,7 @@ end;
 initialization
 
   RGTags.Init();
-//  RGTags.Import('RGDICT','TEXT');
+  RGTags.Import('RGDICT','TEXT');
 
 
 finalization

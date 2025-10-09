@@ -27,8 +27,8 @@ object TL2Settings: TTL2Settings
     Left = 536
     Height = 15
     Top = 8
-    Width = 111
-    Caption = 'Translation language'
+    Width = 159
+    Caption = 'Preferred translation language'
   end
   object edTransLang: TEdit
     Left = 412
@@ -229,5 +229,17 @@ object TL2Settings: TTL2Settings
       AutoSize = False
       Caption = '*Template is part of text to find similars'
     end
+  end
+  object cbDiskDB: TCheckBox
+    Left = 8
+    Height = 19
+    Hint = 'Use disk DB directly or through copy in memory'
+    Top = 173
+    Width = 121
+    Caption = 'Use disk DB directly'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 9
+    OnClick = cbDiskDBClick
   end
 end

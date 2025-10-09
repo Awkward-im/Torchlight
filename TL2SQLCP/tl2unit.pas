@@ -1,4 +1,5 @@
 {TODO: implement (fix) actImportClipBrd}
+{NOTE: SetCellText set just translation; UpdateCache set ANY NEW, move selection, update StatusBar}
 unit TL2Unit;
 
 {$mode objfpc}{$H+}
@@ -123,8 +124,7 @@ type
     procedure TL2GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure TL2GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
     procedure TL2GridGetEditText(Sender: TObject; ACol, ARow: Integer; var Value: string);
-    procedure TL2GridPrepareCanvas(Sender: TObject; aCol, aRow: Integer;
-      aState: TGridDrawState);
+    procedure TL2GridPrepareCanvas(Sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
     procedure TL2GridSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
     procedure TL2GridSelectEditor(Sender: TObject; aCol, aRow: Integer; var Editor: TWinControl);
     procedure TL2GridSetCheckboxState(Sender: TObject; ACol, ARow: Integer; const Value: TCheckboxState);
@@ -148,6 +148,7 @@ type
     function  CheckTheSame(idx:integer):integer;
     function  NextNoticed(acheckonly:boolean; var idx:integer):integer;
   public
+    wasmodified:boolean;
 
   end;
 
@@ -160,6 +161,7 @@ implementation
 
 uses
   LCLIntf,
+  LazUTF8,
   ClipBrd,
   iso639,
   rgglobal,
@@ -253,6 +255,8 @@ end;
 
 procedure TMainTL2TransForm.FormCreate(Sender: TObject);
 begin
+  wasmodified:=false;
+
   fmLogForm:=nil;
 
   TL2Settings.Parent     :=Self;
@@ -279,6 +283,7 @@ begin
   FillLangCombo();
 
   LoadTranslation();
+
   FileSave.Enabled:=false;
 
   FillProjectGrid('');
@@ -298,8 +303,7 @@ begin
     else
     end;
   end;
-  CloseAction:=caFree;
-  MainTL2TransForm:=nil;
+  CloseAction:=caHide;
 end;
 
 {%REGION File Operations}
@@ -312,6 +316,7 @@ procedure TMainTL2TransForm.FileSaveExecute(Sender: TObject);
 begin
   FileSave.Enabled:=false;
   SaveTranslation();
+  wasmodified:=true;
 end;
 {%ENDREGION File Operations}
 
@@ -374,6 +379,7 @@ end;
 procedure TMainTL2TransForm.actTranslateExecute(Sender: TObject);
 var
   ls:AnsiString;
+  i,lcnt,oldidx:integer;
 begin
   if memEdit.Visible and (memEdit.Text<>'') then
   begin
@@ -384,13 +390,49 @@ begin
     end
     else
       ls:=Translate(memEdit.Text);
+    lcnt:=1;
+    oldidx:=TL2Grid.Row;
   end
   else
   begin
-    ls:=Translate(TL2Grid.Cells[colOrigin,TL2Grid.Row]);
+    lcnt:=0;
+    ls:='';
+
+{
+// if process as one text, need to check size
+// AND replace by splitting in cycle again
+// selection can be with "hole", not 1 by 1
+    for i:=1 to TL2Grid.RowCount-1 do
+    begin
+      if TL2Grid.IsCellSelected[TL2Grid.Col,i] then
+      begin
+        if ls<>'' then ls:=ls+#13#10;
+        ls:=ls+TL2Grid.Cells[colOrigin,i];
+      end;
+    end;
+    ls:=Translate(ls);
+// no holes = Paste From Clipboard
+}    
+    for i:=1 to TL2Grid.RowCount-1 do
+    begin
+      if TL2Grid.IsCellSelected[TL2Grid.Col,i] then
+      begin
+        inc(lcnt);
+
+        if ls<>'' then
+        begin
+          SetCellText(oldidx,ls);
+//          CheckTheSame(IntPtr(TL2Grid.Objects[0,oldidx]));
+        end;
+        oldidx:=i;
+        ls:=Translate(TL2Grid.Cells[colOrigin,i]);
+      end;
+    end;
   end;
 
-  UpdateCache(TL2Grid.Row,ls);
+  UpdateCache(oldidx,ls);
+//  CheckTheSame(IntPtr(TL2Grid.Objects[0,oldidx]));
+   
 end;
 
 procedure TMainTL2TransForm.dlgOnReplace(Sender: TObject);
@@ -563,10 +605,26 @@ begin
 end;
 
 procedure TMainTL2TransForm.actShowAltsExecute(Sender: TObject);
+var
+  lidx:integer;
 begin
-  with TAltForm.Create(Self,IntPtr(TL2Grid.Objects[0,TL2Grid.Row])) do
+  lidx:=IntPtr(TL2Grid.Objects[0,TL2Grid.Row]);
+  with TAltForm.Create(Self,lidx) do
   begin
-    ShowModal;
+    if ShowModal=mrOk then
+    begin
+      SetCellText(TL2Grid.Row,SelectedText);
+      CheckTheSame(lidx);
+{
+      if TL2Grid.Cells[colTrans,TL2Grid.Row]='' then
+      begin
+        SetCellText(TL2Grid.Row,SelectedText);
+        CheckTheSame(lidx);
+      end
+      else
+        SetCellText(TL2Grid.Row,TL2Grid.Cells[colTrans,TL2Grid.Row]+#13#10+SelectedText);
+}
+    end;
     Free;
   end;
 end;
@@ -1152,11 +1210,24 @@ begin
   TL2Grid.Cells[colPartial,lrow]:=BoolNumber[TRCache[idx].part];
 end;
 
-function TMainTL2TransForm.FillProjectSGRow(aRow, idx:integer;
-          const afilter:AnsiString):boolean;
+function IsNational(const astr:AnsiString):boolean;
 var
-  i:integer;
-  b:boolean;
+  i,j:integer;
+begin
+  j:=Length(astr);
+{
+  i:=UTF8LengthFast(astr);
+  result:=((i<3) and (i<>j)) or ((i>=3) and ((j-i)>2));
+}
+//  result:=(Length(astr)-UTF8LengthFast(astr))>1;
+  for i:=1 to j-1 do
+    if ORD(astr[i])>127 then
+      exit(true);
+
+  result:=false;
+end;
+
+function TMainTL2TransForm.FillProjectSGRow(aRow, idx:integer; const afilter:AnsiString):boolean;
 begin
   result:=false;
 
@@ -1172,19 +1243,7 @@ begin
     ModeOriginal : if (TRCache[idx].dst<>'') then exit;
     ModeNotReady : if (TRCache[idx].dst<>'') and (not TRCache[idx].part) then exit;
     ModeModified : if (TRCache[idx].flags and rfIsModified)=0 then exit;
-    ModeNational : begin
-      b:=false;
-      with TRCache[idx] do
-        for i:=1 to Length(src)-1 do
-        begin
-          if ORD(src[i])>127 then
-          begin
-            b:=true;
-            break;
-          end;
-        end;
-      if not b then exit;
-    end;
+    ModeNational : if not IsNational(TRCache[idx].src) then exit;
   end;
 
   // Filter
@@ -1249,11 +1308,13 @@ end;
 {%REGION Filter}
 procedure TMainTL2TransForm.FillLangCombo();
 var
-  lstat:TModStatistic;
+  llist:TDictDynArray;
+//  lstat:TModStatistic;
   i,lcnt:integer;
 begin
-  lstat.modid:=CurMod;
-  lcnt:=GetModStatistic(lstat);
+//  lstat.modid:=CurMod;
+//  lcnt:=GetModStatistic(lstat);
+  lcnt:=GetLangList(llist);
 
   cbLanguage.Clear;
   if lcnt>0 then
@@ -1262,9 +1323,13 @@ begin
     cbLanguage.Items.BeginUpdate;
 
     for i:=0 to lcnt-1 do
+      with llist[i] do
+        cbLanguage.Items.Add(value+' '+GetLangName(value));
+
+{
       with lstat.langs[i] do
         cbLanguage.Items.Add(lang+' '+GetLangName(lang));
-
+}
     cbLanguage.Items.EndUpdate;
     cbLanguage.Text:=CurLang+' '+GetLangName(CurLang);
   end
@@ -1703,6 +1768,7 @@ begin
         if TL2Grid.IsCellSelected[colTrans,i] then
         begin
           SetCellText(i,ls);
+          CheckTheSame(IntPtr(TL2Grid.Objects[0,i])); //??
         end;
       end;
     end
@@ -1713,6 +1779,7 @@ begin
       for j:=0 to lcnt-1 do
       begin
         SetCellText(i,sl[j]);
+        CheckTheSame(IntPtr(TL2Grid.Objects[0,i]));
         inc(i);
         if i=TL2Grid.RowCount then break;
       end;

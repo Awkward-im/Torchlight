@@ -18,6 +18,7 @@ type
     cbAsPartial: TCheckBox;
     cbRemoveTags: TCheckBox;
     cbParamSign: TCheckBox;
+    cbDiskDB: TCheckBox;
     edFilterWords: TEdit;
     edTransLang: TEdit;
     gbTranslation: TGroupBox;
@@ -38,6 +39,7 @@ type
     procedure bbSaveSettingsClick(Sender: TObject);
     procedure btnFontEditClick(Sender: TObject);
     procedure cbAPIKeyChange(Sender: TObject);
+    procedure cbDiskDBClick(Sender: TObject);
     procedure edDefaultFileAcceptFileName(Sender: TObject; var Value: String);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -116,6 +118,7 @@ const
   sFreeKey      = 'freekey';
   sPaidKey      = 'paidkey';
   sUsePaid      = 'usepaid';
+  sDirectDB     = 'directDB';
 
 //----- translation settings -----
 
@@ -166,7 +169,8 @@ begin
   config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   //--- Options
-  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAsPartial .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAsPartial.Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sDirectDB   ,cbDiskDB   .Checked);
 
   //--- Font
   config.WriteString (sNSBase+':'+sSectFont,sFontName   ,TL2DM.TL2Font.Name);
@@ -233,7 +237,8 @@ begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   //--- Options
-  cbAsPartial .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
+  cbAsPartial.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
+  cbDiskDB   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sDirectDB   ,false);
 
 //--- Font
   TL2DM.TL2Font.Name   :=config.ReadString (sNSBase+':'+sSectFont,sFontName   ,DefFontName);
@@ -287,6 +292,16 @@ begin
 end;
 
 //----- Other -----
+
+procedure TTL2Settings.cbDiskDBClick(Sender: TObject);
+begin
+  // was in memory and something was changed
+  if cbDiskDB.Checked and (SQLog.Size<>0) then
+    TLSaveBase();
+
+  TLCloseBase(false);
+  TLOpenBase(not cbDiskDB.Checked);
+end;
 
 procedure TTL2Settings.bbSaveSettingsClick(Sender: TObject);
 begin
@@ -397,8 +412,8 @@ begin
   ltr:=TL2Settings.GetSelectedTranslator();
 
   // Skip NIL checking for now
-  ltr.LangSrc :='en';
-  ltr.LangDst :=TL2Settings.edTransLang.Text;
+  ltr.LangSrc :='en'; // set to "auto" if national?
+  ltr.LangDst :=CurLang;//TL2Settings.edTransLang.Text;
   ltr.Original:=ls;
   lcode:=ltr.Translate;
   if lcode<>0 then

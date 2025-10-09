@@ -23,10 +23,11 @@ function Load(const fname:AnsiString;
       aParam:pointer=nil):integer;
 
 
-function  LoadTranslation(var ahandle:pointer; const fname:AnsiString):pointer;
+function  NewTranslation ():pointer;
 procedure FreeTranslation(var ahandle:pointer);
+function  LoadTranslation(var ahandle:pointer; const fname:AnsiString):pointer;
+function  AddTranslation (    ahandle:pointer; const src,dst:AnsiString):boolean;
 function  GetTranslation (    ahandle:pointer; const src:AnsiString):AnsiString;
-
 
 implementation
 
@@ -158,7 +159,7 @@ begin
                 begin
                   inc(result);
 
-                  if Assigned(OnAddPlace) then
+                  if Assigned(OnAddPlace) and (lfile<>nil) and (lfile^<>#0) then
                     OnAddPlace(lsrc,lfile,ltag, false, aParam);
 
                   if Assigned(OnAddText) then
@@ -325,7 +326,7 @@ begin
                 begin
                   inc(result);
 
-                  if Assigned(OnAddPlace) then
+                  if Assigned(OnAddPlace) and (lfile<>nil) and (lfile^<>#0) then
                     OnAddPlace(lsrc,lfile,ltag, true, aParam);
 
                   if Assigned(OnAddText) then
@@ -434,7 +435,7 @@ begin
       begin
         if CompareWide(lsrc,ldst)=0 then ldst:=nil;
 
-        if Assigned(OnAddPlace) then
+        if Assigned(OnAddPlace) and (lfile<>nil) then
           OnAddPlace(lsrc,lfile,ltag, false, aParam);
 
         if Assigned(OnAddText) then
@@ -565,26 +566,34 @@ begin
 end;
 
 
+function NewTranslation():pointer;
+begin
+  GetMem  (result ,SizeOf(TTranslation));
+  FillChar(result^,SizeOf(TTranslation),0);
+  PTranslation(result)^.fname:='';
+  PTranslation(result)^.src  :=TStringList.Create;
+  with PTranslation(result)^.src do
+  begin
+    Sorted       :=true;
+    CaseSensitive:=true;
+    Duplicates   :=dupIgnore;
+  end;
+  // Must not be sorted to keep order
+  PTranslation(result)^.dst:=TStringList.Create;
+end;
+
 function LoadTranslation(var ahandle:pointer; const fname:AnsiString):pointer;
 begin
   if (ahandle<>nil) then
+  begin
     if (PTranslation(ahandle)^.fname=fname) then
       exit(ahandle)
     else
       FreeTranslation(ahandle);
-
-  GetMem(ahandle,SizeOf(TTranslation));
-  FillChar(ahandle^,SizeOf(TTranslation),0);
-  PTranslation(ahandle)^.fname:=fname;
-  PTranslation(ahandle)^.src:=TStringList.Create;
-  with PTranslation(ahandle)^.src do
-  begin
-    Sorted:=true;
-    CaseSensitive:=true;
-    Duplicates:=dupIgnore;
   end;
-  // Must not be sorted to keep order
-  PTranslation(ahandle)^.dst:=TStringList.Create;
+
+  ahandle:=NewTranslation();
+  PTranslation(ahandle)^.fname:=fname;
 
   Load(fname,@TransAddText,nil,ahandle);
 
@@ -602,6 +611,30 @@ begin
      IntPtr(PTranslation(ahandle)^.src.Objects[i])]
   else
     result:=src;
+end;
+
+function AddTranslation(ahandle:pointer; const src,dst:AnsiString):boolean;
+//var i,lcnt:integer;
+begin
+  result:=false;
+  if src='' then exit;
+
+  if (ahandle<>nil) then
+  begin
+    result:=true;
+    PTranslation(ahandle)^.src.AddObject(src,
+      TObject(IntPtr(PTranslation(ahandle)^.dst.Add(dst))));
+{
+    lcnt:=PTranslation(ahandle)^.src.Count;
+    lidx:=PTranslation(ahandle)^.src.Add(src);
+    if lcnt<PTranslation(ahandle)^.src.Count then
+    begin
+      result:=true;
+      PTranslation(ahandle)^.src.Objects[lidx]:=
+        TObject(IntPtr(PTranslation(ahandle)^.dst.Add(dst)));
+    end;
+}
+  end;
 end;
 
 procedure FreeTranslation(var ahandle:pointer);
