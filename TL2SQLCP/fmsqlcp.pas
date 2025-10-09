@@ -125,6 +125,8 @@ resourcestring
   rsNotReplaced     = 'Nothing was changed';
   rsReplaceDir      = 'Choose dir with unpacked mod (with MEDIA/ inside)';
   rsNoNation        = 'Nothing to replace';
+  rsTransPlace      = 'Choose file to save translation data';
+  rsBuildAll        = 'Build translation with untranslated lines too?';
 //  rsDBOnDisk        = 'DB on disk'
 //  rsDBInMemory      = 'DB in memory';
 
@@ -202,8 +204,27 @@ begin
 end;
 
 procedure TFormSQLCP.Build(Sender: TObject);
+var
+  ldlg:TSaveDialog;
+  lfname:AnsiString;
+  lbuildall:boolean;
 begin
-  if BuildTranslation('TRANSLATION.DAT','',true) then
+  lfname:=DefTransFile;
+  ldlg:=TSaveDialog.Create(nil);
+  try
+    ldlg.Title:=rsTransPlace;
+    ldlg.FileName:=lfname;
+    if ldlg.Execute then
+      lfname:=ldlg.FileName;
+  finally
+    ldlg.Free;
+  end;
+  lbuildall:=MessageDlg(rsBuildAll,mtInformation,[mbYes,mbNo],0)=mrYes;
+
+  if BuildTranslation(lfname,
+     gdModStat.Cells[2,gdModStat.Row],
+//     gdLanguages.Cells[1,gdLanguages.Row],
+     lbuildall, CurMod) then
     ShowMessage(rsBuildDone)
   else
     ShowMessage(rsBuildFailed);
@@ -272,7 +293,7 @@ end;
 procedure TFormSQLCP.RemoveMod(Sender: TObject);
 var
   lmodid:Int64;
-  lcnt:integer;
+  lcnt,lidx:integer;
 begin
   if lbMods.ItemIndex<2 then exit;
 
@@ -288,9 +309,14 @@ begin
 
   DeleteMod(lmodid);
   SetModStatistic(modAll);
+  lidx:=lbMods.ItemIndex;
   lbMods.DeleteSelected;
   if lbMods.Count>0 then
-    lbMods.ItemIndex:=0
+  begin
+         if lidx<lbMods.Count then lbMods.ItemIndex:=lidx
+    else if lbMods.Count=0    then lbMods.ItemIndex:=-1
+    else                           lbMods.ItemIndex:=lbMods.Count-1
+  end
   else
     EdModStat.Text:='';
 end;
@@ -478,7 +504,7 @@ begin
     if lp=0 then
       lColor:=TColor($FF8080)
     else
-      lColor:=TColor($80FF80);
+      lColor:=TColor($80C080);
 
     (Sender as TStringGrid).Canvas.Brush.Color:=lColor;
   end;

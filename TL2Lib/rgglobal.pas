@@ -53,16 +53,17 @@ type
   );
 
 const
-  TL1DataBase = 'tl1db.db';
-  TL2DataBase = 'tl2db.db';
-  TL2TextBase = 'tl2text.db';
-  HobDataBase = 'hobdb.db';
-  RGDataBase  = 'rgdb.db';
-  RGODataBase = 'rgodb.db';
-  TL2EditMod  = 'EDITORMOD.MOD';
-  TL2ModData  = 'MOD.DAT';
-  TL2GameVer  = $0001001900050002;
-  TL1GameVer  = $0001000F00000000;
+  TL1DataBase  = 'tl1db.db';
+  TL2DataBase  = 'tl2db.db';
+  TL2TextBase  = 'tl2text.db';
+  HobDataBase  = 'hobdb.db';
+  RGDataBase   = 'rgdb.db';
+  RGODataBase  = 'rgodb.db';
+  TL2EditMod   = 'EDITORMOD.MOD';
+  DefTransFile = 'TRANSLATION.DAT';
+  TL2ModData   = 'MOD.DAT';
+  TL2GameVer   = $0001001900050002;
+  TL1GameVer   = $0001000F00000000;
 
 const
   strRootDir  = 'MEDIA/';

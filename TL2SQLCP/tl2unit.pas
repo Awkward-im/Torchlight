@@ -923,7 +923,9 @@ begin
   if (gdFixed in aState) and (aRow>0) then
   begin
     if IsLineUnique(TRCache[IntPtr(TL2Grid.Objects[0,aRow])].id) then
-      TL2Grid.Canvas.Brush.Color:=TColor($FFC0CB);
+      TL2Grid.Canvas.Brush.Color:=TColor($FFC0CB)
+    else
+      TL2Grid.Canvas.Brush.Color:=clDefault;
   end;
 end;
 

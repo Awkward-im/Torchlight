@@ -1,4 +1,3 @@
-{TODO: DblClick is set selected text into table [if translation is empty]?}
 unit TL2AltForm;
 
 {$mode ObjFPC}{$H+}

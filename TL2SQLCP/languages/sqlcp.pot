@@ -1,6 +1,10 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: fmsqlcp.rsbuildall
+msgid "Build translation with untranslated lines too?"
+msgstr ""
+
 #: fmsqlcp.rsbuilddone
 msgid "Translation file generated"
 msgstr ""
@@ -99,6 +103,10 @@ msgstr ""
 
 #: fmsqlcp.rstransop
 msgid "When translation exists"
+msgstr ""
+
+#: fmsqlcp.rstransplace
+msgid "Choose file to save translation data"
 msgstr ""
 
 #: taltform.caption

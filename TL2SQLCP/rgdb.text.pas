@@ -1896,12 +1896,14 @@ end;
 procedure SaveTranslation();
 var
   i:integer;
+  b:boolean;
 begin
+  b:=false;
   for i:=0 to High(TRCache) do
   begin
     with TRCache[i] do
     begin
-           if (flags and rfIsDeleted )<>0 then DeleteOriginal(id)
+           if (flags and rfIsDeleted )<>0 then begin b:=true; DeleteOriginal(id) end
       else if (flags and rfIsModified)<>0 then
       begin
 //        if dst=src then dst:='';
@@ -1913,6 +1915,11 @@ begin
     end;
   end;
   if CurMod<>modAll then FillAllSimilars(CurLang);
+  if b then
+  begin
+    SetModStatistic(CurMod);
+    if CurMod<>modAll then SetModStatistic(modAll);
+  end;
 end;
 
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
