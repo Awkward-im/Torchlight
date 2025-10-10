@@ -266,11 +266,13 @@ var
   ls,lmod:AnsiString;
 begin
   str(amodid,lmod);
+
   // delete mod record
   ls:='DELETE FROM dicmods WHERE id='+lmod;
   result:=ExecuteDirect(tldb,ls);
   if not result then exit;
   SQLog.Add(ls);
+
   // mark unique strings (if any) as deleted (really need this?)
   ls:=
 //    'UPDATE strings SET deleted=1'+
@@ -284,7 +286,14 @@ begin
 
   result:=ExecuteDirect(tldb,ls);
   if result then SQLog.Add(ls);
+
+  // remove references
   ls:='DELETE FROM refs WHERE modid='+lmod;
+  result:=ExecuteDirect(tldb,ls);
+  if result then SQLog.Add(ls);
+
+  // remove mod statistic
+  ls:='DELETE FROM statistic WHERE modid='+lmod;
   result:=ExecuteDirect(tldb,ls);
   if result then SQLog.Add(ls);
 end;
@@ -1127,12 +1136,24 @@ end;
 
 function RemoveOriginal(aid:integer):boolean;
 var
-  lSQL:AnsiString;
+  lSQL, lstrid:AnsiString;
 begin
-  lSQL:='DELETE FROM strings WHERE id='+IntToStr(aid);
+  Str(aid,lstrid);
+  lSQL:='DELETE FROM strings WHERE id='+lstrid;
   result:=ExecuteDirect(tldb,lSQL);
   if result then
+  begin
     SQLog.Add(lSQL);
+    lSQL:='DELETE FROM refs WHERE srcid='+lstrid;
+    result:=ExecuteDirect(tldb,lSQL);
+    if result then
+      SQLog.Add(lSQL);
+{
+  !! Here must be:
+    1 - change ALL mods (what used that string) statistic
+    2 - change ALL translations what used that string
+}
+  end;
 end;
 
 function ChangeOriginal(const asrc,anew:AnsiString):boolean;

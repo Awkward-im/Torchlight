@@ -905,6 +905,7 @@ var
   lman:PManFileInfo;
   lbuf:PByte;
   lidx,i,j,ldir:integer;
+//  pc:PUnicodeChar;
 begin
   result:=false;
 
@@ -915,7 +916,12 @@ begin
 
   for i:=0 to DirCount-1 do
   begin
+//pc:=Dirs[i].name;
     if isDirDeleted(i) then continue;
+    lidx:=Dirs[i].index;
+    if lidx<0 then lidx:=AsFile(i);
+    if lidx<0 then continue;
+    if UpdateState(lidx)=stateDelete then continue;
 
     // save empty dirs coz they are saved in parent list
 //    ldir:=apak.man.AddPath(Dirs[i].name);
@@ -923,6 +929,7 @@ begin
 
     if GetFirstFile(j,i) then
       repeat
+//pc:=PRGCtrlInfo(Files[j])^.name;
         if achanges then
           if not (UpdateState(j) in
              [stateNew,stateChanged,stateNew+stateLink,stateChanged+stateLink]) then

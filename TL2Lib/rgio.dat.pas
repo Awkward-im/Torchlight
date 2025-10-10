@@ -280,9 +280,9 @@ begin
     RGLog.Add('Dictionary size < 0');
     exit(0);
   end;
-  if lcnt>65520 then
+  if lcnt>=$100000 then
   begin
-    RGLog.Add('Dictionary size > 65520');
+    RGLog.Add('Dictionary too large');
     exit(0);
   end;
 

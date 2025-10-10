@@ -274,6 +274,7 @@ begin
   begin
     AppendFile(0,Dirs[1].Name);
   end;
+  Link;
   result:=total;
 end;
 

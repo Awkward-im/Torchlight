@@ -91,6 +91,8 @@ type
     procedure Init(aInfoSize:integer=SizeOf(TFileInfo));
     procedure Clear;
     procedure Free;
+    // Set Dir array "index" field to proper Files array element number
+    // like cycle of AsDir for all dir-describing Files elements
     procedure Link;
 
   public
@@ -145,8 +147,9 @@ type
     function RenameDir(const apath, oldname, newname:PUnicodeChar):integer;
     function RenameDir(const apath, newname:string):integer;
 
-    function MoveDir(adir:integer; adst:integer):integer;
-    function MoveDir(adir:integer; adst:PUnicodeChar):integer;
+    //!!! DO NOT USE (not reay yet)
+//    function MoveDir(adir:integer; adst:integer):integer;
+//    function MoveDir(adir:integer; adst:PUnicodeChar):integer;
 
   // Properties
   public
@@ -161,12 +164,13 @@ type
     // check what File record is for dir
     function IsDir        (aidx:integer):boolean;
     function PathOfFile   (aidx:integer):PWideChar;
-    // get Dir index which have file
+    // get Dir array index with idx-ed file
     function FileDir      (aidx:integer):integer;
-    // get Dir index from File describing dir
+    // get Dir array index of idx-ed file (if idx-ed file is directory)
     function AsDir        (aidx:integer):integer;
-    // get File index from Dir list index
+    // get File array index from Dir list index
     function AsFile       (adir:integer):integer;
+    // like GetFileName (just with trailing slash ignoring)
     function DirName      (adir:integer):PWideChar;
     function IndexOf(p:pointer):integer;
 
@@ -1058,7 +1062,7 @@ begin
     result:=RenameDir('',PUnicodeChar(lpath),PUnicodeChar(lnew))
 end;
   {%ENDREGION Rename}
-
+(*
 function TRGDirList.MoveDir(adir:integer; adst:integer):integer;
 begin
   // search dst name
@@ -1083,7 +1087,7 @@ begin
   else
     result:=-1;
 end;
-
+*)
 {%ENDREGION Entry}
 
 initialization
