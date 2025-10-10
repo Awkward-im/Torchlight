@@ -429,7 +429,8 @@ begin
 
   // create text list
   FLocals.Init;
-  FLocals.Options:=[check_text];
+//!!!! if we want to save some space
+//!!!!  FLocals.Options:=[check_text];
 
   // write block to temporal buffer
   lstream:=TMemoryStream.Create();
