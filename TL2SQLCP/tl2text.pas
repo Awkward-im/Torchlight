@@ -192,9 +192,13 @@ begin
       end
       else if pc[i]='u' then
       begin
-        lsrc[j]:='|'; inc(j);
-        lsrc[j]:='u'; inc(j);
+        lsrc[j]:=#124; inc(j);
+        lsrc[j]:='u' ; inc(j);
         inc(i);
+      end
+      else
+      begin
+        lsrc[j]:=#124; inc(j);
       end;
     end
     //--- New Line
@@ -373,7 +377,7 @@ begin
         if (Length(lr)=1) and (lr[1]='I') then
         begin
              // 1 - at the end of text
-          if ((i+2)>=Length(srcText)) or
+          if ((i+2)>=Length(srcData)) or
              // 2 - after "-" sign
              ((k>0) and (pc[k-1]='-')) or
              // 3 - end of phrase (including end of line and color tag)

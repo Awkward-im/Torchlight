@@ -542,7 +542,7 @@ begin
         ' INNER JOIN tmpref ON tmpref.srcid=s.id WHERE s.deleted=0');
 //      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc+' AND deleted=0');
     end;
-    if amodid=modVanilla then
+    if (amodid=modVanilla) or (amodid=modAll) then
       result:=result+GetUnrefLineCount();
   end;
 end;
@@ -1855,7 +1855,7 @@ begin
   end;
 
   // Add unreferred to vanilla
-  if (CurMod=modVanilla) or (CurMod=modUnref) then
+  if (CurMod=modVanilla) or (CurMod=modAll) or (CurMod=modUnref) then
   begin
 //    lSQL:='SELECT id, src FROM strings WHERE '+
 //          'NOT (id IN (SELECT DISTINCT srcid FROM refs))';

@@ -15,8 +15,6 @@
 {"hash":36621524,"name":"tmaintl2transform.filesave.hint","sourcebytes":[83,97,118,101,32,112,114,111,106,101,99,116],"value":"Save project"},
 {"hash":4710148,"name":"tmaintl2transform.fileexit.caption","sourcebytes":[69,38,120,105,116],"value":"E&xit"},
 {"hash":56290829,"name":"tmaintl2transform.fileexit.hint","sourcebytes":[69,120,105,116,32,112,114,111,103,114,97,109],"value":"Exit program"},
-{"hash":90505615,"name":"tmaintl2transform.actmodinfo.caption","sourcebytes":[77,111,100,32,73,110,102,111],"value":"Mod Info"},
-{"hash":210793407,"name":"tmaintl2transform.actmodinfo.hint","sourcebytes":[83,104,111,119,32,109,111,100,32,105,110,102,111],"value":"Show mod info"},
 {"hash":258570439,"name":"tmaintl2transform.actshowlog.caption","sourcebytes":[83,104,111,119,32,108,111,103],"value":"Show log"},
 {"hash":21612295,"name":"tmaintl2transform.actshowlog.hint","sourcebytes":[83,104,111,119,32,108,111,103,32,119,105,110,100,111,119],"value":"Show log window"},
 {"hash":117170148,"name":"tmaintl2transform.actexportclipbrd.caption","sourcebytes":[69,120,112,111,114,116,32,67,108,105,112,98,111,97,114,100],"value":"Export Clipboard"},

@@ -1,3 +1,4 @@
+{TODO: Delete line - correct corner counter}
 {TODO: implement (fix) actImportClipBrd}
 {NOTE: SetCellText set just translation; UpdateCache set ANY NEW, move selection, update StatusBar}
 unit TL2Unit;
@@ -26,7 +27,6 @@ type
     actReplace: TAction;
     actShowDoubles: TAction;
     actShowLog: TAction;
-    actModInfo: TAction;
     actShowSimilar: TAction;
     actTranslate: TAction;
     HelpNotes: TAction;
@@ -68,7 +68,6 @@ type
     TL2Toolbar: TToolBar;
     tbFileSave: TToolButton;
     tbSeparator1: TToolButton;
-    tbModInfo: TToolButton;
     tbHelpAbout: TToolButton;
     tbFontEdit: TToolButton;
     tbSeparator2: TToolButton;
@@ -95,7 +94,6 @@ type
     procedure actExportClipBrdExecute(Sender: TObject);
     procedure actFindNextExecute(Sender: TObject);
     procedure actImportClipBrdExecute(Sender: TObject);
-    procedure actModInfoExecute(Sender: TObject);
     procedure actReplaceExecute(Sender: TObject);
     procedure actSettingsExecute(Sender: TObject);
     procedure actShowAltsExecute(Sender: TObject);
@@ -130,8 +128,6 @@ type
     procedure TL2GridSetCheckboxState(Sender: TObject; ACol, ARow: Integer; const Value: TCheckboxState);
 
   private
-    FModName:String;
-
     procedure dlgOnReplace(Sender: TObject);
     procedure FillFoldersCombo(asetidx: boolean);
     procedure FillLangCombo();
@@ -165,7 +161,6 @@ uses
   ClipBrd,
   iso639,
   rgglobal,
-  fmmodinfo,
   unitLogForm,
   TL2DataModule,
   TL2SettingsForm,
@@ -181,7 +176,6 @@ uses
 { TMainTL2TransForm }
 
 resourcestring
-  rsDefaultCaption = 'Torchlight 2 Translation';
   rsNotSaved       = 'Project modified. Do you want to save it?';
 
   rsReplaces       = 'Total replaces';
@@ -234,12 +228,7 @@ procedure TMainTL2TransForm.UpdateStatusBar(Sender:TObject; const SBText:AnsiStr
 var
   lrect:TRect;
 begin
-  if Sender=nil then
-  begin
-    TL2StatusBar.SimpleText:='';
-    Self.Caption:=rsDefaultCaption;
-  end
-  else if SBText<>'' then
+  if SBText<>'' then
   begin
     TL2StatusBar.SimpleText:=SBText;
     lrect:=TL2StatusBar.ClientRect;
@@ -249,7 +238,7 @@ begin
   end
   else
   begin
-    Self.Caption:=FModName;
+    Self.Caption:=GetModName(CurMod);
   end;
 end;
 
@@ -629,21 +618,6 @@ begin
   end;
 end;
 
-procedure TMainTL2TransForm.actModInfoExecute(Sender: TObject);
-begin
-  with TMODInfoForm.Create(Self,nil,true) do
-  begin
-{
-    Title :=prj.data.ModTitle;
-    Author:=prj.data.ModAuthor;
-    Descr :=prj.data.ModDescr;
-    ID    :=CurMod;
-}
-    ShowModal;
-    Free;
-  end;
-end;
-
 procedure TMainTL2TransForm.actSettingsExecute(Sender: TObject);
 begin
   TL2Settings.Visible:=actSettings.Checked;
@@ -925,7 +899,7 @@ begin
     if IsLineUnique(TRCache[IntPtr(TL2Grid.Objects[0,aRow])].id) then
       TL2Grid.Canvas.Brush.Color:=TColor($FFC0CB)
     else
-      TL2Grid.Canvas.Brush.Color:=clDefault;
+      TL2Grid.Canvas.Brush.Color:=clBtnFace;
   end;
 end;
 

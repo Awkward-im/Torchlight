@@ -32,11 +32,6 @@ object MainTL2TransForm: TMainTL2TransForm
       Top = 2
       Action = FileSave
     end
-    object tbModInfo: TToolButton
-      Left = 135
-      Top = 2
-      Action = actModInfo
-    end
     object tbSeparator1: TToolButton
       Left = 27
       Height = 22
@@ -60,7 +55,7 @@ object MainTL2TransForm: TMainTL2TransForm
       Action = HelpAbout
     end
     object tbHelpNotes: TToolButton
-      Left = 163
+      Left = 140
       Top = 2
       Action = HelpNotes
     end
@@ -70,7 +65,7 @@ object MainTL2TransForm: TMainTL2TransForm
       Action = actShowLog
     end
     object tbSeparator3: TToolButton
-      Left = 158
+      Left = 135
       Height = 22
       Top = 2
       Style = tbsDivider
@@ -81,38 +76,38 @@ object MainTL2TransForm: TMainTL2TransForm
       Action = actSettings
     end
     object tbCheckTranslation: TToolButton
-      Left = 186
+      Left = 163
       Top = 2
       Action = actCheckTranslation
     end
     object tbTranslate: TToolButton
-      Left = 209
+      Left = 186
       Top = 2
       Action = actTranslate
     end
     object tbReplace: TToolButton
-      Left = 232
+      Left = 209
       Top = 2
       Action = actReplace
     end
     object tbSimilar: TToolButton
-      Left = 255
+      Left = 232
       Top = 2
       Action = actShowSimilar
     end
     object tbDouble: TToolButton
-      Left = 278
+      Left = 255
       Top = 2
       Action = actShowDoubles
     end
     object tbSeparator4: TToolButton
-      Left = 324
+      Left = 301
       Height = 22
       Top = 2
       Style = tbsSeparator
     end
     object tbShowAlt: TToolButton
-      Left = 301
+      Left = 278
       Top = 2
       Action = actShowAlts
     end
@@ -369,13 +364,6 @@ object MainTL2TransForm: TMainTL2TransForm
       ImageIndex = 18
       ShortCut = 32883
       OnExecute = FileExitExecute
-    end
-    object actModInfo: TAction
-      Category = 'Help'
-      Caption = 'Mod Info'
-      Hint = 'Show mod info'
-      ImageIndex = 16
-      OnExecute = actModInfoExecute
     end
     object actShowLog: TAction
       Category = 'View'

@@ -2573,6 +2573,7 @@ procedure TRGGUIForm.sgMainCompareCells(Sender: TObject; ACol, ARow, BCol,
 var
   s1,s2:string;
   dt1,dt2:TDateTime;
+  ldir1,ldir2:boolean;
 begin
 {
   if ARow=1 then exit(-1);
@@ -2581,14 +2582,20 @@ begin
 
   s1:=(Sender as TStringGrid).Cells[colName,ARow];
   s2:=(Sender as TStringGrid).Cells[colName,BRow];
+  ldir1:=(s1<>'') and (s1[Length(s1)]= '/');
+  ldir2:=(s2<>'') and (s2[Length(s2)]= '/');
+{
+       if (s1 ='') and (s2='') then result:=0
+  else if (s1<>'') and (s2='') then result:=1
+  else if (s2<>'') and (s1='') then result:=-1
 
-  if      (s1[Length(s1)]= '/') and (s2[Length(s2)]= '/') then
+  else} if ldir1 and ldir2 then
   begin
     result:=CompareStr(s1,s2);
     if aCol<>colName then exit;
   end
-  else if (s1[Length(s1)]= '/') and (s2[Length(s2)]<>'/') then begin result:=-1; exit; end
-  else if (s1[Length(s1)]<>'/') and (s2[Length(s2)]= '/') then begin result:=1 ; exit; end
+  else if ldir1 and not ldir2 then begin result:=-1; exit; end
+  else if ldir2 and not ldir1 then begin result:=1 ; exit; end
   else
   begin
     s1:=(Sender as TStringGrid).Cells[ACol,ARow];
