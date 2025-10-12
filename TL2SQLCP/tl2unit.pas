@@ -1,4 +1,4 @@
-{TODO: Delete line - correct corner counter}
+{TODO: memEdit popup menu with hotkey commands (remove/insert color, value, \n)}
 {TODO: implement (fix) actImportClipBrd}
 {NOTE: SetCellText set just translation; UpdateCache set ANY NEW, move selection, update StatusBar}
 unit TL2Unit;
@@ -138,6 +138,7 @@ type
     procedure ReBoundEditor;
     procedure Search(const atext: AnsiString; aRow: integer);
     procedure SetCellText(arow: integer; const atext: AnsiString);
+    procedure SetDefaultCaption();
     procedure UpdateGrid(idx: integer);
     procedure UpdateStatusBar(Sender:TObject; const SBText:AnsiString='');
     function  UpdateCache(arow:integer; const astr:AnsiString):boolean;
@@ -186,6 +187,10 @@ resourcestring
   rsDupes          = 'Check doubles info.';
   rsUnique         = '*Unique* ';
 
+  // Special captions
+  rsAllStrings     = 'Special: All known strings';
+  rsUnreStrings    = 'Special: Text without direct references. Can not appear in game';
+
   // punctuation check
   rsNoWarnings     = 'No any warnings';
   rsNotes          = 'Punctuation note';
@@ -195,8 +200,9 @@ resourcestring
   rsAffected       = ' line(s) affected';
 
   // folder combobox
-  rsFolderAll      = '- All -';    // minus+space to be first
-  rsRoot           = '-- Root --'; // minus+minus+space to be second
+  rsFolderAll      = '- All -';
+  rsRoot           = '-- Root --';
+  rsFolderNoRef    = '-- No Ref --';
 
   // show mode combobox
   rsModeAll        = 'All';
@@ -238,8 +244,18 @@ begin
   end
   else
   begin
-    Self.Caption:=GetModName(CurMod);
+    SetDefaultCaption();
   end;
+end;
+
+procedure TMainTL2TransForm.SetDefaultCaption();
+begin
+  if CurMod=modAll then
+    Caption:=rsAllStrings
+  else if CurMod=modUnref then
+    Caption:=rsUnreStrings
+  else
+    Caption:=GetModName(CurMod);
 end;
 
 procedure TMainTL2TransForm.FormCreate(Sender: TObject);
@@ -264,7 +280,7 @@ begin
   cbDisplayMode.AddItem(rsModeNational ,TObject(ModeNational ));
   cbDisplayMode.ItemIndex:=0;
 
-  Caption:=GetModName(CurMod);
+  SetDefaultCaption();
 
   LoadModData();
 
@@ -1068,6 +1084,9 @@ begin
             TL2Grid.DeleteRow(i);
           end;
         end;
+
+        TL2Grid.Cells[0,0]:=IntToStr(TL2Grid.RowCount-1);
+
         TL2Grid.ClearSelections;
         if lrow<TL2Grid.RowCount then
           TL2Grid.Row:=lrow
@@ -1394,9 +1413,11 @@ begin
   cbItems.Items.Add(rsFolderAll);
 
   cbFolder.Clear;
+//!! Wrong sort for '- ' and '-- '
   cbFolder.Sorted:=true;
   cbFolder.Items.BeginUpdate;
-  cbFolder.Items.Add(rsFolderAll);
+  cbFolder.Items.AddObject(rsFolderAll,TObject(-1));
+  if CurMod=modAll then cbFolder.Items.AddObject(rsFolderNoRef,TObject(-2));
 
   lfolders:=nil;
   lcnt:=GetModDirList(CurMod,lfolders);
@@ -1411,7 +1432,7 @@ begin
     if (not lroot) and (ls='MEDIA/') then
     begin
       lroot:=true;
-      cbFolder.Items.Add(rsRoot);
+      cbFolder.Items.AddObject(rsRoot,TObject(-3));
     end
     else if Pos('SKILLS',ls)=7 then
     begin
@@ -1492,14 +1513,25 @@ begin
   if cbFolder.ItemIndex<0 then
      cbFolder.ItemIndex:=0;
 
-  if cbFolder.ItemIndex=0 then
+  if cbFolder.Items.Objects[cbFolder.ItemIndex]=TObject(-1) then
   begin
     for i:=0 to High(TRCache) do
       TRCache[i].flags:=TRCache[i].flags or rfIsFiltered;
   end
+//  else if (CurMod=modAll) and (cbFolder.ItemIndex=1) then
+  else if cbFolder.Items.Objects[cbFolder.ItemIndex]=TObject(-2) then
+  begin
+    for i:=0 to High(TRCache) do
+      if ((TRCache[i].flags and rfIsNoRef)<>0) then
+        TRCache[i].flags:=TRCache[i].flags or rfIsFiltered
+      else
+        TRCache[i].flags:=TRCache[i].flags and not rfIsFiltered;
+  end
   else
   begin
-    if (cbFolder.ItemIndex=1) and (cbFolder.Items[1][1]='-') then
+//    if CurMod=modAll then i:=2 else i:=1;
+//    if (cbFolder.ItemIndex=i) and (cbFolder.Items[i][1]='-') then
+    if cbFolder.Items.Objects[cbFolder.ItemIndex]=TObject(-3) then
       lfolder:=''
     else
     begin
@@ -1529,7 +1561,7 @@ begin
     end;
 
     lflag:=IntPtr(cbFolder.Items.Objects[cbFolder.ItemIndex]);
-    if (lflag<>0) then
+    if (lflag>0) then
     begin
       for i:=0 to High(TRCache) do
         if ((TRCache[i].flags and rfIsReferred) =0) or

@@ -45,7 +45,8 @@ uses
   rgdb.text;
 
 resourcestring
-  rsNoRef = 'No reference for this text';
+  rsNoRef      = 'No reference for this text';
+  rsAnotherMod = 'Looks like text is in another mod';
 
 
 { TSimilarForm }
@@ -66,13 +67,28 @@ var
   i,lline,lflags:integer;
 begin
   i:=IntPtr(lbSimList.Items.Objects[lbSimList.ItemIndex]);
+  if i<0 then
+  begin
+    lblPartial.Visible:=false;
+    memText .Text:='';
+    memTrans.Text:='';
+  end
+  else
+  begin
+    lblPartial.Visible:=TRCache[i].part;
+    memText .Text:=TRCache[i].src;
+    memTrans.Text:=TRCache[i].dst;
+  end;
 
-  lblPartial.Visible:=TRCache[i].part;
-
-  memText .Text:=TRCache[i].src;
-  memTrans.Text:=TRCache[i].dst;
-
-  if (TRCache[i].flags and rfIsNoRef)<>0 then
+  if i<0 then
+  begin
+    btnDupes   .Visible:=false;
+    lblTextLine.Visible:=false;
+    lblTextFile.Visible:=true;
+    lblTextTag .Visible:=false;
+    lblTextFile.Caption:=rsAnotherMod;
+  end
+  else if (TRCache[i].flags and rfIsNoRef)<>0 then
   begin
     btnDupes   .Visible:=false;
     lblTextLine.Visible:=false;
@@ -121,19 +137,33 @@ end;
 procedure TSimilarForm.FillList(aline:integer);
 var
   larr:TIntegerDynArray;
+  ls:AnsiString;
   i,j,lcnt:integer;
+  lfound:boolean;
 begin
   lbSimList.Clear;
 
   lbSimList.AddItem(TRCache[aline].src,TObject(IntPtr(aline)));
   lcnt:=GetSimilars(TRCache[aline].id,larr);
   for i:=0 to lcnt-1 do
+  begin
+    lfound:=false;
     for j:=0 to High(TRCache) do
       if TRCache[j].id=larr[i] then
       begin
-        lbSimList.AddItem(TRCache[j].src,TObject(IntPtr(j)));
+        lfound:=true;
+        ls:=TRCache[j].src;
+        if ls[Length(ls)]=' ' then ls[Length(ls)]:='~';
+        lbSimList.AddItem(ls,TObject(IntPtr(j)));
         break;
       end;
+    if not lfound then
+    begin
+      ls:=GetOriginal(larr[i]);
+      if ls[Length(ls)]=' ' then ls[Length(ls)]:='~';
+      lbSimList.AddItem(ls,Tobject(-1));
+    end;
+  end;
 
   lbSimList.ItemIndex:=0;
   SetLength(larr,0);

@@ -169,8 +169,8 @@ begin
   config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   //--- Options
-  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAsPartial.Checked);
-  config.WriteBool(sNSBase+':'+sSectSettings,sDirectDB   ,cbDiskDB   .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sAutoPartial,cbAsPartial  .Checked);
+  config.WriteBool(sNSBase+':'+sSectSettings,sDirectDB   ,cbDiskDB     .Checked);
 
   //--- Font
   config.WriteString (sNSBase+':'+sSectFont,sFontName   ,TL2DM.TL2Font.Name);
@@ -237,8 +237,8 @@ begin
   config:=TIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   //--- Options
-  cbAsPartial.Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
-  cbDiskDB   .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sDirectDB   ,false);
+  cbAsPartial  .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sAutoPartial,false);
+  cbDiskDB     .Checked:=config.ReadBool(sNSBase+':'+sSectSettings,sDirectDB   ,false);
 
 //--- Font
   TL2DM.TL2Font.Name   :=config.ReadString (sNSBase+':'+sSectFont,sFontName   ,DefFontName);

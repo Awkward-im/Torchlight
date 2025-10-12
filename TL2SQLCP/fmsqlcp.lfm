@@ -2,9 +2,9 @@ object FormSQLCP: TFormSQLCP
   Left = 315
   Height = 560
   Top = 250
-  Width = 552
+  Width = 681
   ClientHeight = 560
-  ClientWidth = 552
+  ClientWidth = 681
   Constraints.MinHeight = 560
   KeyPreview = True
   ShowHint = True
@@ -16,32 +16,32 @@ object FormSQLCP: TFormSQLCP
     Left = 0
     Height = 23
     Top = 537
-    Width = 552
+    Width = 681
     Panels = <>
   end
   object pnlUpper: TPanel
     Left = 0
     Height = 331
     Top = 0
-    Width = 552
+    Width = 681
     Align = alClient
     ClientHeight = 331
-    ClientWidth = 552
+    ClientWidth = 681
     TabOrder = 1
     object pnlLeft: TPanel
       Left = 1
       Height = 329
       Top = 1
-      Width = 282
+      Width = 411
       Align = alClient
       ClientHeight = 329
-      ClientWidth = 282
+      ClientWidth = 411
       TabOrder = 0
       object lfeMods: TListFilterEdit
         Left = 4
         Height = 23
         Top = 5
-        Width = 235
+        Width = 364
         OnAfterFilter = lfeModsAfterFilter
         ButtonWidth = 23
         Anchors = [akTop, akLeft, akRight]
@@ -54,7 +54,7 @@ object FormSQLCP: TFormSQLCP
         Left = 4
         Height = 291
         Top = 32
-        Width = 235
+        Width = 364
         Anchors = [akTop, akLeft, akRight, akBottom]
         ExtendedSelect = False
         ItemHeight = 0
@@ -62,7 +62,7 @@ object FormSQLCP: TFormSQLCP
         OnSelectionChange = lbModsSelectionChange
       end
       object sbAdd: TSpeedButton
-        Left = 244
+        Left = 373
         Height = 32
         Hint = 'Scan mod for text and add to list'
         Top = 32
@@ -73,7 +73,7 @@ object FormSQLCP: TFormSQLCP
         OnClick = AddMod
       end
       object sbRemove: TSpeedButton
-        Left = 244
+        Left = 373
         Height = 32
         Hint = 'Remove mod from list'
         Top = 80
@@ -84,7 +84,7 @@ object FormSQLCP: TFormSQLCP
         OnClick = RemoveMod
       end
       object sbEdit: TSpeedButton
-        Left = 244
+        Left = 373
         Height = 32
         Hint = 'Edit text for selected mod and language'#13#10'(or DblClick in list below)'
         Top = 127
@@ -95,7 +95,7 @@ object FormSQLCP: TFormSQLCP
         OnClick = DoStartEdit
       end
       object sbDeleted: TSpeedButton
-        Left = 244
+        Left = 373
         Height = 32
         Hint = 'Show all deleted lines'
         Top = 288
@@ -106,7 +106,7 @@ object FormSQLCP: TFormSQLCP
         OnClick = sbDeletedClick
       end
       object sbReplace: TSpeedButton
-        Left = 244
+        Left = 373
         Height = 32
         Hint = 'Replace non-latin text by English'
         Top = 247
@@ -118,7 +118,7 @@ object FormSQLCP: TFormSQLCP
       end
     end
     object pnlRight: TPanel
-      Left = 288
+      Left = 417
       Height = 329
       Top = 1
       Width = 263
@@ -158,17 +158,18 @@ object FormSQLCP: TFormSQLCP
           item
             ReadOnly = True
             Title.Caption = 'Name'
-            Width = 143
+            Width = 147
           end>
         FixedCols = 0
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
         RowCount = 1
         ScrollBars = ssAutoVertical
         TabOrder = 0
+        OnCompareCells = GridCellCompare
         ColWidths = (
           60
           48
-          143
+          147
         )
       end
       object sbLoad: TSpeedButton
@@ -250,7 +251,7 @@ object FormSQLCP: TFormSQLCP
       end
     end
     object VSplitter: TSplitter
-      Left = 283
+      Left = 412
       Height = 329
       Top = 1
       Width = 5
@@ -262,16 +263,16 @@ object FormSQLCP: TFormSQLCP
     Left = 0
     Height = 201
     Top = 336
-    Width = 552
+    Width = 681
     Align = alBottom
     ClientHeight = 201
-    ClientWidth = 552
+    ClientWidth = 681
     TabOrder = 2
     object edModStat: TEdit
       Left = 1
       Height = 23
       Top = 1
-      Width = 550
+      Width = 679
       Align = alTop
       TabOrder = 0
     end
@@ -280,7 +281,7 @@ object FormSQLCP: TFormSQLCP
       Height = 176
       Hint = 'Double-Click to edit translation'
       Top = 24
-      Width = 550
+      Width = 679
       Align = alClient
       AutoEdit = False
       AutoFillColumns = True
@@ -307,20 +308,21 @@ object FormSQLCP: TFormSQLCP
         end      
         item
           Title.Caption = 'Name'
-          Width = 378
+          Width = 511
         end>
       FixedCols = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect, goSmoothScroll]
       RowCount = 1
       ScrollBars = ssAutoVertical
       TabOrder = 1
+      OnCompareCells = GridCellCompare
       OnDblClick = DoStartEdit
       OnPrepareCanvas = gdModStatPrepareCanvas
       ColWidths = (
         60
         60
         48
-        378
+        511
       )
     end
   end
@@ -329,7 +331,7 @@ object FormSQLCP: TFormSQLCP
     Left = 0
     Height = 5
     Top = 331
-    Width = 552
+    Width = 681
     Align = alBottom
     ResizeAnchor = akBottom
   end

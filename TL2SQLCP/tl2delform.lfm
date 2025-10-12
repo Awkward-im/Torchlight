@@ -29,6 +29,7 @@ object DelForm: TDelForm
     Width = 75
     Anchors = [akRight, akBottom]
     AutoSize = True
+    Cancel = True
     Caption = '&Close'
     Kind = bkClose
     ModalResult = 11
@@ -59,7 +60,6 @@ object DelForm: TDelForm
     Top = 494
     Width = 79
     AutoSize = True
-    Cancel = True
     Caption = 'Delete'
     Kind = bkCancel
     TabOrder = 4

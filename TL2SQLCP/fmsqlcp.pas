@@ -44,6 +44,8 @@ type
     procedure AddTrans(Sender: TObject);
     procedure Build(Sender: TObject);
     procedure gdModStatPrepareCanvas(Sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
+    procedure GridCellCompare(Sender: TObject; ACol, ARow, BCol, BRow: Integer;
+      var Result: integer);
     procedure sbDeletedClick(Sender: TObject);
     procedure sbReplaceClick(Sender: TObject);
     procedure sbSettingsClick(Sender: TObject);
@@ -127,6 +129,8 @@ resourcestring
   rsNoNation        = 'Nothing to replace';
   rsTransPlace      = 'Choose file to save translation data';
   rsBuildAll        = 'Build translation with untranslated lines too?';
+  rsDone            = 'Done!';
+  rsNothingToAdd    = 'No text in this mod.';
 //  rsDBOnDisk        = 'DB on disk'
 //  rsDBInMemory      = 'DB in memory';
 
@@ -381,12 +385,18 @@ begin
 //        RGLog.Add('Remake Filter');
 //        RemakeFilter();
 
-        SetModStatistic(CurMod);
-        SetModStatistic(modAll);
-
-        ShowMessage('Done!');
-        FillModList();
-        UpdateStatus();
+        if SetModStatistic(CurMod)=0 then
+        begin
+          ShowMessage(rsNothingToAdd);
+          DeleteMod(CurMod);
+        end
+        else
+        begin
+          SetModStatistic(modAll);
+          FillModList();
+          UpdateStatus();
+          ShowMessage(rsDone);
+        end;
 
         sbAdd .Enabled:=true;
         sbLoad.Enabled:=true;
@@ -458,15 +468,18 @@ begin
 
   CurMod:=FModList[IntPtr(lbMods.Items.Objects[lbMods.ItemIndex])].id;
 
-  sbReplace.Enabled:=(CurMod<>modAll) and (CurMod<>modVanilla);
-  sbRemove .Enabled:=(CurMod<>modAll) and (CurMod<>modVanilla);
+  sbReplace.Enabled:=(CurMod<>modAll) and (CurMod<>modVanilla) and (CurMod<>modUnref);
+  sbRemove .Enabled:=(CurMod<>modAll) and (CurMod<>modVanilla) and (CurMod<>modUnref);
 
   lstat.modid:=CurMod;
   GetModStatistic(lstat);
-  edModStat.Tag:=lstat.total-lstat.dupes;
+
+  edModStat.Tag:=lstat.total-lstat.dupes-lstat.deleted;
   edModStat.Text:=Format(rsStat,
-    [lstat.total,lstat.dupes,lstat.total-lstat.dupes,lstat.unique,lstat.nation,
-     lstat.files,lstat.tags]);
+    [lstat.total ,lstat.dupes, edModStat.Tag,
+     lstat.unique,lstat.nation,
+     lstat.files ,lstat.tags]);
+
   gdModStat.BeginUpdate;
   gdModStat.Clear;
   gdModStat.RowCount:=1;
@@ -498,7 +511,7 @@ var
   lcolor:TColor;
 begin
   Val((Sender as TStringGrid).Cells[0,aRow],lt);
-  if edModStat.Tag=lt then
+  if (aRow>0) and (edModStat.Tag=lt) then
   begin
     Val((Sender as TStringGrid).Cells[1,aRow],lp);
     if lp=0 then
@@ -508,6 +521,26 @@ begin
 
     (Sender as TStringGrid).Canvas.Brush.Color:=lColor;
   end;
+end;
+
+procedure TFormSQLCP.GridCellCompare(Sender: TObject; ACol, ARow, BCol,
+  BRow: Integer; var Result: integer);
+var
+  i1,i2:integer;
+begin
+  if ACol=0 then
+  begin
+    Val((Sender as TStringGrid).Cells[ACol,ARow],i1);
+    Val((Sender as TStringGrid).Cells[BCol,BRow],i2);
+    result:=i1-i2;
+  end
+  else
+    result:=CompareStr(
+      (Sender as TStringGrid).Cells[ACol,ARow],
+      (Sender as TStringGrid).Cells[BCol,BRow]);
+
+  if (Sender as TStringGrid).SortOrder=soDescending then
+    result:=-result;
 end;
 
 procedure TFormSQLCP.lfeModsAfterFilter(Sender: TObject);

@@ -1,3 +1,4 @@
+{TODO: SetModStatistic on RestoreOriginal}
 {TODO: add function to delete "dead" (no source) translation lines}
 {TODO: Keep filter param replace option in base}
 {TODO: GetModStatistic: add NoRef translations of every lang for count}
@@ -20,7 +21,6 @@ const
   modVanilla =  0;
   modAll     = -1;
   modUnref   = -2;
-  modDeleted = -3;
 var
   CurMod :Int64;
   CurLang:AnsiString;
@@ -116,6 +116,13 @@ function GetLineFlags   (aid:integer; const amodid:AnsiString):cardinal;
 function IsLineUnique   (aid:integer):boolean;
 function GetLineRef     (aid:integer):integer;
 function GetLineRefCount(aid:integer):integer;
+
+const
+  lrMod  = 1;
+  lrDir  = 2;
+  lrFile = 3;
+  lrTag  = 4;
+
 function GetLineRefList (aid:integer; var arr:array of AnsiString; atype:integer):integer;
 // get reference info. aid is refs index, result is source index
 function GetRef   (arefid:integer; out adir,afile,atag:AnsiString; out aline,aflags:integer):integer;
@@ -125,13 +132,14 @@ function GetRefPlaceCount(arefid:integer; const amodid:Int64=modAll):integer;
 
 type
   TModStatistic = record
-    modid :Int64;
-    total :integer;
-    dupes :integer;
-    unique:integer;
-    nation:integer;
-    files :integer;
-    tags  :integer;
+    modid  :Int64;
+    total  :integer;
+    dupes  :integer;
+    unique :integer;
+    nation :integer;
+    deleted:integer;
+    files  :integer;
+    tags   :integer;
     langs:array of record
       lang :AnsiString;
       trans:integer;
@@ -141,7 +149,7 @@ type
 
 //modid field must be set before call
 function  GetModStatistic(var stat:TModStatistic):integer;
-procedure SetModStatistic(const amodid:Int64);
+function  SetModStatistic(const amodid:Int64):integer;
 procedure GetModList    (    asl:TStrings       ; all:boolean=true);
 procedure GetModList    (var asl:TDict64DynArray; all:boolean=true);
 function  GetLangList   (var asl:TDictDynArray):integer;
@@ -186,6 +194,7 @@ var
 resourcestring
   rsAllStrings   = '- All strings -';
   rsOriginalGame = '-- Original game --';
+  rsNoRef        = '-- No refs --';
 
 
 procedure CacheRefs(const amodid:Int64);
@@ -198,14 +207,25 @@ begin
     ExecuteDirect(tldb,'DROP TABLE tmpref');
     ExecuteDirect(tldb,'CREATE TEMP TABLE tmpref (srcid INTEGER PRIMARY KEY)');
 
-    if amodid<>modAll then
+    if amodid=modUnref then
     begin
-      Str(amodid,lmod);
-      lmod:=' WHERE modid='+lmod;
+      ExecuteDirect(tldb,
+        'INSERT INTO tmpref '+
+        ' SELECT strings.id FROM strings'+
+        ' LEFT JOIN refs ON refs.srcid=strings.id'+
+        ' WHERE refs.srcid IS NULL AND strings.deleted=0');
     end
     else
-      lmod:='';
-    ExecuteDirect(tldb,'INSERT INTO tmpref SELECT DISTINCT refs.srcid FROM refs'+lmod);
+    begin
+      if amodid<>modAll then
+      begin
+        Str(amodid,lmod);
+        lmod:=' WHERE modid='+lmod;
+      end
+      else
+        lmod:='';
+      ExecuteDirect(tldb,'INSERT INTO tmpref SELECT DISTINCT refs.srcid FROM refs'+lmod);
+    end;
   end;
 end;
 
@@ -386,6 +406,7 @@ begin
     begin
       asl.Add(rsAllStrings);
       asl.Add(rsOriginalGame);
+      asl.Add(rsNoRef);
     end;
 
     i:=ReturnInt(tldb,'SELECT count(1) FROM dicmods');
@@ -416,12 +437,14 @@ begin
   begin
     if all then
     begin
-      SetLength(asl,i+1);
-      i:=2;
+      SetLength(asl,i+2);
+      i:=3;
       asl[0].id   :=modAll;
       asl[0].value:=rsAllStrings;
       asl[1].id   :=modVanilla;
       asl[1].value:=rsOriginalGame;
+      asl[2].id   :=modUnRef;
+      asl[2].value:=rsNoRef;
     end
     else
     begin
@@ -509,12 +532,30 @@ begin
   SetLength(arr,0);
 end;
 
+function GetDeletedLineCount(const amodid:Int64):integer;
+var
+  ls,lmod:AnsiString;
+begin
+  if amodid=modAll then
+    ls:='SELECT count(1) FROM strings WHERE deleted=1'
+  else
+  begin
+    Str(amodid,lmod);
+    ls:='SELECT count(distinct s.id) FROM refs'+
+        ' INNER JOIN strings s ON s.id=refs.srcid'+
+        ' WHERE s.deleted=1 and modid='+lmod
+//       + ' GROUP BY modid';
+  end;
+  result:=ReturnInt(tldb,ls);
+end;
+
 function GetUnrefLineCount():integer;
 begin
   result:=ReturnInt(tldb,
 //    'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT DISTINCT srcid FROM refs))');
     'SELECT count(strings.id) FROM strings'+
-          ' LEFT JOIN refs ON refs.srcid=strings.id WHERE refs.srcid IS NULL');
+          ' LEFT JOIN refs ON refs.srcid=strings.id'+
+    ' WHERE refs.srcid IS NULL AND strings.deleted=0');
 
 end;
 
@@ -523,11 +564,12 @@ var
   lsrc:AnsiString;
 begin
        if amodid=modUnref   then result:=GetUnrefLineCount()
-  else if amodid=modDeleted then result:=ReturnInt(tldb,'SELECT count(1) FROM strings WHERE deleted=1')
   else if amodid=modAll     then
   begin
     if withdeleted then result:=ReturnInt(tldb,'SELECT count(1) FROM strings')
     else                result:=ReturnInt(tldb,'SELECT count(1) FROM strings WHERE deleted=0');
+
+    result:=result+GetUnrefLineCount();
   end
   else
   begin
@@ -542,8 +584,6 @@ begin
         ' INNER JOIN tmpref ON tmpref.srcid=s.id WHERE s.deleted=0');
 //      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc+' AND deleted=0');
     end;
-    if (amodid=modVanilla) or (amodid=modAll) then
-      result:=result+GetUnrefLineCount();
   end;
 end;
 
@@ -606,11 +646,12 @@ begin
   result:=ReturnInt(tldb,ls);
 end;
 
-procedure SetModStatistic(const amodid:Int64);
+function SetModStatistic(const amodid:Int64):integer;
 var
   vm:pointer;
   ls,lmod:AnsiString;
 begin
+  result:=0;
   if amodid<>modAll then
   begin
     Str(amodid,lmod);
@@ -626,10 +667,11 @@ begin
     if sqlite3_step(vm)=SQLITE_ROW then
     begin
       if amodid=modAll then lmod:='-1';
+      result:=sqlite3_column_int(vm,1);
       ls:='REPLACE INTO statistic (modid, lines, differs, files, tags, nation)'+
         ' VALUES ('+lmod+
         ','+IntToStr(sqlite3_column_int(vm,0))+
-        ','+IntToStr(sqlite3_column_int(vm,1))+
+        ','+IntToStr(result)+
         ','+IntToStr(sqlite3_column_int(vm,2))+
         ','+IntToStr(sqlite3_column_int(vm,3))+
         ','+IntToStr(GetNationLineCount(amodid))+
@@ -655,32 +697,40 @@ begin
   FillChar(stat,SizeOf(stat),0);
   stat.modid:=lmodid;
 
-  CacheRefs(lmodid);
+//  if lmodid<>modUnref then
+//  begin
+    CacheRefs(lmodid);
 
-  Str(lmodid,lmod);
-  ls:='SELECT lines, differs, files, tags, nation FROM statistic'+
-      ' WHERE modid='+lmod;
-  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
-  begin
-    if sqlite3_step(vm)=SQLITE_ROW then
+    Str(lmodid,lmod);
+    ls:='SELECT lines, differs, files, tags, nation FROM statistic'+
+        ' WHERE modid='+lmod;
+    if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
-      stat.total :=sqlite3_column_int(vm,0);
-      stat.dupes :=stat.total-sqlite3_column_int(vm,1);
-      stat.files :=sqlite3_column_int(vm,2);
-      stat.tags  :=sqlite3_column_int(vm,3);
-      stat.nation:=sqlite3_column_int(vm,4);
-    end
-    else
-    begin
+      if sqlite3_step(vm)=SQLITE_ROW then
+      begin
+        stat.total :=sqlite3_column_int(vm,0);
+        stat.dupes :=stat.total-sqlite3_column_int(vm,1);
+        stat.files :=sqlite3_column_int(vm,2);
+        stat.tags  :=sqlite3_column_int(vm,3);
+        stat.nation:=sqlite3_column_int(vm,4);
+      end
+      else
+      begin
+        sqlite3_finalize(vm);
+        SetModStatistic(lmodid);
+        GetModStatistic(stat);
+        exit;
+      end;
+
       sqlite3_finalize(vm);
-      SetModStatistic(lmodid);
-      GetModStatistic(stat);
-      exit;
     end;
-
-    sqlite3_finalize(vm);
-  end;
-  stat.unique:=GetUniqueLineCount(stat.modid);
+    stat.unique :=GetUniqueLineCount (stat.modid);
+    if lmodid=modUnref then
+      stat.total:=stat.unique;
+//  end
+//  else
+//    stat.total:=GetLineCount(modUnref);
+  stat.deleted:=GetDeletedLineCount(stat.modid);
 
   result:=GetLangList(llist);
   if result=0 then exit;
@@ -884,7 +934,6 @@ begin
     result:=0
 end;
 
-// Mod limited must be
 function GetSimilars(aid:integer; var arr:TIntegerDynArray):integer;
 var
   vm:pointer;
@@ -1348,7 +1397,9 @@ begin
   begin
     SetLength(alist,lcnt);
 
-    ls:='SELECT value FROM dicdirs WHERE id IN (SELECT DISTINCT dir FROM refs'+lmod+')';
+    ls:='SELECT value FROM dicdirs'+
+        ' WHERE id IN (SELECT DISTINCT dir FROM refs'+lmod+')';
+//        ' ORDER BY value';
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -1397,9 +1448,11 @@ end;
 
 function GetLineRefList(aid:integer; var arr:array of AnsiString; atype:integer):integer;
 begin
-       if atype=1 then result:=GetListInternal(aid,arr,'dicmods','modid')
-  else if atype=2 then result:=GetListInternal(aid,arr,'dicdirs','dir')
-  else                 result:=GetListInternal(aid,arr,'dictags','tag');
+       if atype=lrMod  then result:=GetListInternal(aid,arr,'dicmods' ,'modid')
+  else if atype=lrDir  then result:=GetListInternal(aid,arr,'dicdirs' ,'dir'  )
+  else if atype=lrFile then result:=GetListInternal(aid,arr,'dicfiles','file' )
+  else if atype=lrTag  then result:=GetListInternal(aid,arr,'dictags' ,'tag'  )
+  else result:=0;
 end;
 
 function GetLineRef(aid:integer):integer;
@@ -1772,6 +1825,8 @@ var
   lSQL:AnsiString;
   i:integer;
 begin
+//  if amodid='-2' then exit(rfIsNoRef);
+
   result:=0;
   if amodid<>'' then
     lSQL:=' AND modid='+amodid
@@ -1813,13 +1868,20 @@ begin
   SetLength(TRCache,0);
   lcnt:=GetLineCount(CurMod,false);
   SetLength(TRCache,lcnt);
-  if (CurMod<>modUnref) and (CurMod<>modDeleted) then
+//  if CurMod<>modUnref then
   begin
     if CurMod=modAll then
     begin
       lmod:='';
       lSQL:='SELECT id, src, filter FROM strings WHERE deleted=0';
     end
+{
+    else if CurMod=modUnref then
+    begin
+      lmod:='';
+      lSQL:=
+    end
+}
     else
     begin
       Str(CurMod,lmod);
@@ -1846,16 +1908,19 @@ begin
           id   :=sqlite3_column_int (vm,0);
           src  :=sqlite3_column_text(vm,1);
           tmpl :=sqlite3_column_int (vm,2);
-          flags:=GetLineFlags(id,lmod);
+          if CurMod=modUnref then
+            flags:=rfIsNoRef
+          else
+            flags:=GetLineFlags(id,lmod);
         end;
         inc(result);
       end;
       sqlite3_finalize(vm);
     end;
   end;
-
+(*
   // Add unreferred to vanilla
-  if (CurMod=modVanilla) or (CurMod=modAll) or (CurMod=modUnref) then
+  if {(CurMod=modVanilla) or} (CurMod=modAll) or (CurMod=modUnref) then
   begin
 //    lSQL:='SELECT id, src FROM strings WHERE '+
 //          'NOT (id IN (SELECT DISTINCT srcid FROM refs))';
@@ -1877,6 +1942,7 @@ begin
       sqlite3_finalize(vm);
     end;
   end;
+*)
 end;
 
 procedure LoadTranslation();

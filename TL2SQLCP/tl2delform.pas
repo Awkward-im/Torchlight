@@ -1,4 +1,3 @@
-{TODO: Show "STRING/TRANSLATE" flag}
 unit TL2DelForm;
 
 {$mode ObjFPC}{$H+}
@@ -24,6 +23,8 @@ type
     procedure clbLinesSelectionChange(Sender: TObject; User: boolean);
     procedure FormCreate(Sender: TObject);
   private
+    ltitle: AnsiString;
+
     procedure FillList();
 
   public
@@ -58,7 +59,7 @@ begin
 
   lid:=IntPtr(clbLines.Items.Objects[clbLines.ItemIndex]);
 
-  lcnt:=GetLineRefList(lid,larr,1);
+  lcnt:=GetLineRefList(lid,larr,lrMod);
   if lcnt=0 then
     ls:='No info about this text placement'
   else
@@ -81,7 +82,8 @@ begin
       for i:=0 to lcnt-1 do
         ls:=ls+' "'+larr[i]+'"';
     end;
-    lcnt:=GetLineRefList(lid,larr,2);
+
+    lcnt:=GetLineRefList(lid,larr,lrDir);
     if lcnt=0 then
       ls:=ls+#13#10'No info about this text directories'
     else
@@ -93,7 +95,21 @@ begin
       for i:=0 to lcnt-1 do
         ls:=ls+#13#10+larr[i];
     end;
-    lcnt:=GetLineRefList(lid,larr,3);
+
+    lcnt:=GetLineRefList(lid,larr,lrFile);
+    if lcnt=0 then
+      ls:=ls+#13#10'No info about this text files'
+    else
+    if lcnt>3 then
+      ls:=ls+#13#10'Exists in '+IntToStr(lcnt)+' files'
+    else
+    begin
+      ls:=ls+#13#10'In these files:';
+      for i:=0 to lcnt-1 do
+        ls:=ls+#13#10+larr[i];
+    end;
+
+    lcnt:=GetLineRefList(lid,larr,lrTag);
     if lcnt=0 then
       ls:=ls+#13#10'No info about this text tags'
     else
@@ -123,6 +139,7 @@ begin
 
   bbRestore.Enabled:=clbLines.Count>0;
   bbDelete .Enabled:=clbLines.Count>0;
+  Caption:=ltitle+' ['+IntToStr(clbLines.Count)+']';
 end;
 
 procedure TDelForm.bbDeleteClick(Sender: TObject);
@@ -139,6 +156,7 @@ begin
       end;
     bbRestore.Enabled:=clbLines.Count>0;
     bbDelete .Enabled:=clbLines.Count>0;
+    Caption:=ltitle+' ['+IntToStr(clbLines.Count)+']';
   end;
 end;
 
@@ -158,6 +176,7 @@ begin
   end
   else
   begin
+    Caption:=ltitle+' ['+IntToStr(lcnt)+']';
     for i:=0 to lcnt-1 do
     begin
       clbLines.AddItem(larr[i].value,TObject(IntPtr(larr[i].id)));
@@ -168,6 +187,8 @@ end;
 
 procedure TDelForm.FormCreate(Sender: TObject);
 begin
+  ltitle:=Caption;
+
   FillList();
 end;
 
