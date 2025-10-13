@@ -1,3 +1,5 @@
+{TODO: RemoveOriginal: delete all translations too}
+{TODO: DeleteMod - mark uniques trings as deleted or remove translation too}
 {TODO: SetModStatistic on RestoreOriginal}
 {TODO: add function to delete "dead" (no source) translation lines}
 {TODO: Keep filter param replace option in base}
@@ -105,7 +107,7 @@ function ChangeOriginal (const asrc,anew:AnsiString):boolean;
 function ChangeOriginal (aid:integer; const anew:AnsiString):boolean;
 function DeleteOriginal (aid:integer):boolean; // mark as deleted, remove translation
 function RemoveOriginal (aid:integer):boolean; // remove from base
-function RestoreOriginal(aid:integer):boolean;
+function RestoreOriginal(aid:integer; unique:boolean=false):boolean;
 
 function AddText(const asrc,alang,adst:AnsiString; apart:boolean):integer;
 function GetText        (aid:integer; const atable:AnsiString; var asrc,adst:AnsiString):boolean;
@@ -153,7 +155,7 @@ function  SetModStatistic(const amodid:Int64):integer;
 procedure GetModList    (    asl:TStrings       ; all:boolean=true);
 procedure GetModList    (var asl:TDict64DynArray; all:boolean=true);
 function  GetLangList   (var asl:TDictDynArray):integer;
-function  GetDeletedList(var arr:TDictDynArray):integer;
+function  GetDeletedList(var arr:TDictDynArray; unique:boolean=false):integer;
 
 
 {get mod's directory list}
@@ -293,14 +295,14 @@ begin
   if not result then exit;
   SQLog.Add(ls);
 
-  // mark unique strings (if any) as deleted (really need this?)
+  // delete unique strings
+  //!!!! think about translations!!!
   ls:=
-//    'UPDATE strings SET deleted=1'+
-//    ' WHERE id IN'+
-    'DELETE FROM strings'+
+    'UPDATE strings SET deleted=2'+
+//    'DELETE FROM strings'+
     ' WHERE (deleted=0) AND id IN'+
     ' (SELECT DISTINCT r.srcid FROM refs r'+
-    '   LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
+    '   LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+lmod+') r1'+
     '   ON r.srcid=r1.srcid'+
     '   WHERE r.modid='+lmod+' AND r1.srcid IS NULL)';
 
@@ -505,16 +507,22 @@ begin
   SetLength(asl,0);
 end;
 
-function GetDeletedList(var arr:TDictDynArray):integer;
+function GetDeletedList(var arr:TDictDynArray; unique:boolean=false):integer;
 var
   vm:pointer;
   lSQL:AnsiString;
   i:integer;
 begin
-  result:=ReturnInt(tldb,'SELECT count(id) FROM strings WHERE deleted=1');
+  if unique then
+    result:=ReturnInt(tldb,'SELECT count(id) FROM strings WHERE deleted=2')
+  else
+    result:=ReturnInt(tldb,'SELECT count(id) FROM strings WHERE deleted=1');
   if result>0 then
   begin
-    lSQL:='SELECT id, src FROM strings WHERE deleted=1';
+    if unique then
+      lSQL:='SELECT id, src FROM strings WHERE deleted=2'
+    else
+      lSQL:='SELECT id, src FROM strings WHERE deleted=1';
     if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
     begin
       SetLength(arr,result);
@@ -1144,6 +1152,8 @@ begin
       result:=FindOriginal(asrc);
 {$ENDIF}
   end;
+  // to restore Unique strings from lost mods
+  RestoreOriginal(result,true);
 end;
 
 function DeleteOriginal(aid:integer):boolean;
@@ -1173,11 +1183,15 @@ begin
   end;
 end;
 
-function RestoreOriginal(aid:integer):boolean;
+function RestoreOriginal(aid:integer; unique:boolean=false):boolean;
 var
   lSQL:AnsiString;
 begin
-  lSQL:='UPDATE strings SET deleted=0 WHERE id='+IntToStr(aid);
+  if unique then
+    lSQL:=' AND deleted=2'
+  else
+    lSQL:=' AND deleted=1';
+  lSQL:='UPDATE strings SET deleted=0 WHERE id='+IntToStr(aid)+lSQL;
   result:=ExecuteDirect(tldb,lSQL);
   if result then
     SQLog.Add(lSQL);

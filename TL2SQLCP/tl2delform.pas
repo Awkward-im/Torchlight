@@ -58,68 +58,74 @@ begin
   memDescr.Text:='';
 
   lid:=IntPtr(clbLines.Items.Objects[clbLines.ItemIndex]);
-
-  lcnt:=GetLineRefList(lid,larr,lrMod);
-  if lcnt=0 then
-    ls:='No info about this text placement'
+  if lid<0 then
+    ls:='Unique, after mod deleting'
   else
   begin
-    lflags:=GetLineFlags(lid,'');
-    if (lflags and rfIsTranslate)<>0 then
-      ls:='Exists as Translate somethere'#13#10
-    else
-      ls:='Exists as String type only'#13#10;
-
-{$IFDEF DEBUG}
-    ls:=ls+'DB id is '+IntToStr(lid)+#13#10;
-{$ENDIF}
-
-    if lcnt>3 then
-      ls:=ls+'Exists in '+IntToStr(lcnt)+' mods'
-    else
-    begin
-      ls:=ls+'In these mods:';
-      for i:=0 to lcnt-1 do
-        ls:=ls+' "'+larr[i]+'"';
-    end;
-
-    lcnt:=GetLineRefList(lid,larr,lrDir);
+    lcnt:=GetLineRefList(lid,larr,lrMod);
     if lcnt=0 then
-      ls:=ls+#13#10'No info about this text directories'
-    else
-    if lcnt>3 then
-      ls:=ls+#13#10'Exists in '+IntToStr(lcnt)+' dirs'
+      ls:='No info about this text placement'
     else
     begin
-      ls:=ls+#13#10'In these dirs:';
-      for i:=0 to lcnt-1 do
-        ls:=ls+#13#10+larr[i];
-    end;
+      ls:='';
 
-    lcnt:=GetLineRefList(lid,larr,lrFile);
-    if lcnt=0 then
-      ls:=ls+#13#10'No info about this text files'
-    else
-    if lcnt>3 then
-      ls:=ls+#13#10'Exists in '+IntToStr(lcnt)+' files'
-    else
-    begin
-      ls:=ls+#13#10'In these files:';
-      for i:=0 to lcnt-1 do
-        ls:=ls+#13#10+larr[i];
-    end;
+      lflags:=GetLineFlags(lid,'');
+      if (lflags and rfIsTranslate)<>0 then
+        ls:=ls+'Exists as Translate somethere'#13#10
+      else
+        ls:=ls+'Exists as String type only'#13#10;
 
-    lcnt:=GetLineRefList(lid,larr,lrTag);
-    if lcnt=0 then
-      ls:=ls+#13#10'No info about this text tags'
-    else
-    if lcnt>3 then
-      ls:=ls+#13#10'Exists in '+IntToStr(lcnt)+' tags'
-    else
-    begin
-      ls:=ls+#13#10'With these tags:';
-      for i:=0 to lcnt-1 do
-        ls:=ls+' "'+larr[i]+'"';
+  {$IFDEF DEBUG}
+      ls:=ls+'DB id is '+IntToStr(lid)+#13#10;
+  {$ENDIF}
+
+      if lcnt>3 then
+        ls:=ls+'Exists in '+IntToStr(lcnt)+' mods'
+      else
+      begin
+        ls:=ls+'In these mods:';
+        for i:=0 to lcnt-1 do
+          ls:=ls+' "'+larr[i]+'"';
+      end;
+
+      lcnt:=GetLineRefList(lid,larr,lrDir);
+      if lcnt=0 then
+        ls:=ls+#13#10'No info about this text directories'
+      else
+      if lcnt>3 then
+        ls:=ls+#13#10'Exists in '+IntToStr(lcnt)+' dirs'
+      else
+      begin
+        ls:=ls+#13#10'In these dirs:';
+        for i:=0 to lcnt-1 do
+          ls:=ls+#13#10+larr[i];
+      end;
+
+      lcnt:=GetLineRefList(lid,larr,lrFile);
+      if lcnt=0 then
+        ls:=ls+#13#10'No info about this text files'
+      else
+      if lcnt>3 then
+        ls:=ls+#13#10'Exists in '+IntToStr(lcnt)+' files'
+      else
+      begin
+        ls:=ls+#13#10'In these files:';
+        for i:=0 to lcnt-1 do
+          ls:=ls+#13#10+larr[i];
+      end;
+
+      lcnt:=GetLineRefList(lid,larr,lrTag);
+      if lcnt=0 then
+        ls:=ls+#13#10'No info about this text tags'
+      else
+      if lcnt>3 then
+        ls:=ls+#13#10'Exists in '+IntToStr(lcnt)+' tags'
+      else
+      begin
+        ls:=ls+#13#10'With these tags:';
+        for i:=0 to lcnt-1 do
+          ls:=ls+' "'+larr[i]+'"';
+      end;
     end;
   end;
 
@@ -128,47 +134,71 @@ end;
 
 procedure TDelForm.bbRestoreClick(Sender: TObject);
 var
-  i:integer;
+  lcnt,lcnt1,i,lid:integer;
 begin
+  lcnt :=0;
+  lcnt1:=0;
   for i:=clbLines.Count-1 downto 0 do
+  begin
+    lid:=IntPtr(clbLines.Items.Objects[i]);
     if clbLines.Checked[i] then
     begin
-      RestoreOriginal(IntPtr(clbLines.Items.Objects[i]));
-      clbLines.Items.Delete(i);
+      if lid<0 then
+        ShowMessage('Line is unique, can''t be restored')
+      else
+      begin
+        RestoreOriginal(IntPtr(clbLines.Items.Objects[i]));
+        clbLines.Items.Delete(i);
+      end;
+    end
+    else
+    begin
+      if lid>0 then inc(lcnt) else inc(lcnt1);
     end;
+  end;
 
   bbRestore.Enabled:=clbLines.Count>0;
   bbDelete .Enabled:=clbLines.Count>0;
-  Caption:=ltitle+' ['+IntToStr(clbLines.Count)+']';
+  Caption:=ltitle+' ['+IntToStr(lcnt)+'/'+IntToStr(lcnt1)+']';
 end;
 
 procedure TDelForm.bbDeleteClick(Sender: TObject);
 var
-  i:integer;
+  lcnt,lcnt1,i,lid:integer;
 begin
   if  MessageDlg(rsOKToDelete,mtWarning,mbYesNoCancel,0,mbCancel)=mrYes then
   begin
+    lcnt :=0;
+    lcnt1:=0;
     for i:=clbLines.Count-1 downto 0 do
+    begin
+      lid:=IntPtr(clbLines.Items.Objects[i]);
       if clbLines.Checked[i] then
       begin
-        RemoveOriginal(IntPtr(clbLines.Items.Objects[i]));
+        RemoveOriginal(ABS(lid));
         clbLines.Items.Delete(i);
+      end
+      else
+      begin
+        if lid>0 then inc(lcnt) else inc(lcnt1);
       end;
+    end;
     bbRestore.Enabled:=clbLines.Count>0;
     bbDelete .Enabled:=clbLines.Count>0;
-    Caption:=ltitle+' ['+IntToStr(clbLines.Count)+']';
+    Caption:=ltitle+' ['+IntToStr(lcnt)+'/'+IntToStr(lcnt1)+']';
   end;
 end;
 
 procedure TDelForm.FillList();
 var
-  larr:TDictDynArray;
-  lcnt,i:integer;
+  larr1,larr:TDictDynArray;
+  lcnt1,lcnt,i:integer;
 begin
   clbLines.Clear;
 //  lcnt:=GetLineCount(modDeleted);
-  lcnt:=GetDeletedList(larr);
-  if lcnt<=0 then
+  lcnt :=GetDeletedList(larr);
+  lcnt1:=GetDeletedList(larr1,true);
+  if (lcnt1+lcnt)<=0 then
   begin
     memDescr.Text:=rsNoDeleted;
     bbRestore.Enabled:=false;
@@ -176,11 +206,10 @@ begin
   end
   else
   begin
-    Caption:=ltitle+' ['+IntToStr(lcnt)+']';
-    for i:=0 to lcnt-1 do
-    begin
-      clbLines.AddItem(larr[i].value,TObject(IntPtr(larr[i].id)));
-    end;
+    Caption:=ltitle+' ['+IntToStr(lcnt)+'/'+IntToStr(lcnt1)+']';
+    for i:=0 to lcnt -1 do clbLines.AddItem(larr [i].value,TObject(IntPtr( larr [i].id)));
+    for i:=0 to lcnt1-1 do clbLines.AddItem(larr1[i].value,TObject(IntPtr(-larr1[i].id)));
+
     clbLines.ItemIndex:=0;
   end;
 end;

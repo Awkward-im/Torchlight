@@ -36,6 +36,10 @@ msgstr ""
 msgid "Are you sure to delete it?"
 msgstr ""
 
+#: fmsqlcp.rsdone
+msgid "Done!"
+msgstr ""
+
 #: fmsqlcp.rshaveunique
 #, object-pascal-format
 msgid "Mod have %d unique strings."
@@ -47,6 +51,10 @@ msgstr ""
 
 #: fmsqlcp.rsnonation
 msgid "Nothing to replace"
+msgstr ""
+
+#: fmsqlcp.rsnothingtoadd
+msgid "No text in this mod."
 msgstr ""
 
 #: fmsqlcp.rsnotreplaced
@@ -362,6 +370,10 @@ msgstr ""
 msgid "Paid or Free Key (paid)"
 msgstr ""
 
+#: tl2simform.rsanothermod
+msgid "Looks like text is in another mod"
+msgstr ""
+
 #: tl2simform.rsnoref
 msgid "No reference for this text"
 msgstr ""
@@ -416,11 +428,9 @@ msgctxt "tl2unit.rsaffected"
 msgid " line(s) affected"
 msgstr " linea(s) afectadas"
 
-#: tl2unit.rsdefaultcaption
-#, fuzzy
-msgctxt "tl2unit.rsdefaultcaption"
-msgid "Torchlight 2 Translation"
-msgstr "Traduccion Torchlight 2"
+#: tl2unit.rsallstrings
+msgid "Special: All known strings"
+msgstr ""
 
 #: tl2unit.rsdodelete
 #, fuzzy
@@ -452,6 +462,10 @@ msgstr ""
 msgctxt "tl2unit.rsfolderall"
 msgid "- All -"
 msgstr "- Todo -"
+
+#: tl2unit.rsfoldernoref
+msgid "-- No Ref --"
+msgstr ""
 
 #: tl2unit.rsmodeall
 msgid "All"
@@ -530,6 +544,10 @@ msgstr "-- arraigar --"
 msgid "*Unique* "
 msgstr ""
 
+#: tl2unit.rsunrestrings
+msgid "Special: Text without direct references. Can not appear in game"
+msgstr ""
+
 #: tmaintl2transform.actchecktranslation.caption
 msgctxt "tmaintl2transform.actchecktranslation.caption"
 msgid "Check Translation"
@@ -571,14 +589,6 @@ msgstr ""
 
 #: tmaintl2transform.actimportclipbrd.hint
 msgid "Inset text with translation from clipboard"
-msgstr ""
-
-#: tmaintl2transform.actmodinfo.caption
-msgid "Mod Info"
-msgstr ""
-
-#: tmaintl2transform.actmodinfo.hint
-msgid "Show mod info"
 msgstr ""
 
 #: tmaintl2transform.actreplace.caption

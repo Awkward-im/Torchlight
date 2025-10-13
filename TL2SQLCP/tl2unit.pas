@@ -292,6 +292,8 @@ begin
   FileSave.Enabled:=false;
 
   FillProjectGrid('');
+
+  ActiveControl:=TL2Grid;
 end;
 
 procedure TMainTL2TransForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -683,10 +685,13 @@ procedure TMainTL2TransForm.ReBoundEditor;
 var
   r:TRect;
 begin
-  r:=TL2Grid.CellRect(colTrans,TL2Grid.Row);
-  InflateRect(r,-1,-1);
-  memEdit.Tag:=0;
-  memEdit.BoundsRect:=r;
+  if TL2Grid.IsCellVisible(colTrans,TL2Grid.Row) then
+  begin
+    r:=TL2Grid.CellRect(colTrans,TL2Grid.Row);
+    InflateRect(r,-1,-1);
+    memEdit.Tag:=0;
+    memEdit.BoundsRect:=r;
+  end;
 end;
 
 procedure TMainTL2TransForm.memEditExit(Sender: TObject);
@@ -1155,6 +1160,7 @@ end;
 procedure TMainTL2TransForm.TL2GridSelectEditor(Sender: TObject; aCol,
   aRow: Integer; var Editor: TWinControl);
 begin
+  TL2Grid.Row:=aRow;
   ReBoundEditor;
   Editor:=memEdit;
 end;
@@ -1669,16 +1675,18 @@ procedure TMainTL2TransForm.actExportClipBrdExecute(Sender: TObject);
 var
   sl:TStringList;
   ls:string;
-  i:integer;
+  i,lcnt:integer;
   lshift:boolean;
 begin
   lshift:=GetKeyState(VK_SHIFT)<0;
   sl:=TStringList.Create;
+  lcnt:=0;
   try
     for i:=1 to TL2Grid.RowCount-1 do
     begin
       if TL2Grid.IsCellSelected[TL2Grid.Col,i] then
       begin
+        inc(lcnt);
         ls:=TL2Grid.Cells[TL2Grid.Col,i];
         if lshift then
           sl.Add(RemoveTags(ls))
@@ -1687,7 +1695,11 @@ begin
       end;
     end;
 
-    Clipboard.asText:=sl.Text;
+    // avoid CRLF
+    if lcnt=1 then
+      Clipboard.asText:=ls
+    else
+      Clipboard.asText:=sl.Text;
 
   finally
     sl.Free;

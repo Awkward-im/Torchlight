@@ -36,6 +36,10 @@ msgstr "Выберите язык перевода"
 msgid "Are you sure to delete it?"
 msgstr "Вы уверены, что хотите удалить это?"
 
+#: fmsqlcp.rsdone
+msgid "Done!"
+msgstr "Готово!"
+
 #: fmsqlcp.rshaveunique
 #, object-pascal-format
 msgid "Mod have %d unique strings."
@@ -48,6 +52,10 @@ msgstr "Язык:"
 #: fmsqlcp.rsnonation
 msgid "Nothing to replace"
 msgstr "Заменять нечего"
+
+#: fmsqlcp.rsnothingtoadd
+msgid "No text in this mod."
+msgstr "В моде нет текста."
 
 #: fmsqlcp.rsnotreplaced
 msgid "Nothing was changed"
@@ -71,7 +79,7 @@ msgstr "Перезап. неполные"
 
 #: fmsqlcp.rsreplaced
 msgid "Files changed"
-msgstr "Файлов изменилось "
+msgstr "Файлов изменилось"
 
 #: fmsqlcp.rsreplacedir
 msgid "Choose dir with unpacked mod (with MEDIA/ inside)"
@@ -364,6 +372,10 @@ msgstr "Платный или нет ключ ( бесплатно)"
 msgid "Paid or Free Key (paid)"
 msgstr "Платный или нет ключ ( платно)"
 
+#: tl2simform.rsanothermod
+msgid "Looks like text is in another mod"
+msgstr "Кажется, текст в другом моде"
+
 #: tl2simform.rsnoref
 msgid "No reference for this text"
 msgstr "Нет отсылок к этому тексту"
@@ -417,10 +429,9 @@ msgctxt "tl2unit.rsaffected"
 msgid " line(s) affected"
 msgstr " строк(а/и) исправлено"
 
-#: tl2unit.rsdefaultcaption
-msgctxt "tl2unit.rsdefaultcaption"
-msgid "Torchlight 2 Translation"
-msgstr "Перевод Torchlight 2"
+#: tl2unit.rsallstrings
+msgid "Special: All known strings"
+msgstr "Специальное: Все известные строки"
 
 #: tl2unit.rsdodelete
 msgctxt "tl2unit.rsdodelete"
@@ -450,6 +461,10 @@ msgstr "Исправить"
 msgctxt "tl2unit.rsfolderall"
 msgid "- All -"
 msgstr "- Все -"
+
+#: tl2unit.rsfoldernoref
+msgid "-- No Ref --"
+msgstr "-- Без места --"
 
 #: tl2unit.rsmodeall
 msgid "All"
@@ -525,6 +540,10 @@ msgstr "-- Корень  --"
 msgid "*Unique* "
 msgstr "*Уникальные* "
 
+#: tl2unit.rsunrestrings
+msgid "Special: Text without direct references. Can not appear in game"
+msgstr "Специальное: Текст без прямого местоположения. Может и не быть в игре"
+
 #: tmaintl2transform.actchecktranslation.caption
 msgctxt "tmaintl2transform.actchecktranslation.caption"
 msgid "Check Translation"
@@ -567,14 +586,6 @@ msgstr "Импорт буфера обмена"
 #: tmaintl2transform.actimportclipbrd.hint
 msgid "Inset text with translation from clipboard"
 msgstr "Вставить текст с переводом из буфера"
-
-#: tmaintl2transform.actmodinfo.caption
-msgid "Mod Info"
-msgstr "О моде"
-
-#: tmaintl2transform.actmodinfo.hint
-msgid "Show mod info"
-msgstr "Показать информацию о моде"
 
 #: tmaintl2transform.actreplace.caption
 msgid "Replace"
@@ -834,3 +845,4 @@ msgstr "Переводчики"
 #: unitlogform.rscantsave
 msgid "Can't save log file"
 msgstr "Не могу сохранить лог"
+

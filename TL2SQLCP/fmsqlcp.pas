@@ -299,8 +299,6 @@ var
   lmodid:Int64;
   lcnt,lidx:integer;
 begin
-  if lbMods.ItemIndex<2 then exit;
-
   lmodid:=GetModByName(lbMods.Items[lbMods.ItemIndex]);
   lcnt:=GetUniqueLineCount(lmodid);
   if lcnt>0 then
