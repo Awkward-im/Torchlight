@@ -155,6 +155,14 @@ msgstr "Восстановить"
 msgid "Deleted lines"
 msgstr "Удалённые строки"
 
+#: tdelform.cbshowdeleted.caption
+msgid "Show deleted lines"
+msgstr "Показать удалённые строки"
+
+#: tdelform.cbshowunique.caption
+msgid "Show Unique lines"
+msgstr "Показать уникальные строки"
+
 #: tdupeform.caption
 msgid "Dupe List"
 msgstr "Список дубликатов"
@@ -321,6 +329,38 @@ msgstr "Открыть окно настроек"
 msgctxt "tformsqlcp.sbsql.hint"
 msgid "Show session SQL requiests of DB modify"
 msgstr "Показать SQL запросы для изменения БД"
+
+#: tgenform.bbclose.caption
+msgid "Close"
+msgstr "Закрыть"
+
+#: tgenform.bbgenerate.caption
+msgid "Generate"
+msgstr "Собрать"
+
+#: tgenform.caption
+msgid "Generate translation file"
+msgstr "Собрать файл перевода"
+
+#: tgenform.cbpartial.caption
+msgid "Include Partial"
+msgstr "Включая частичный перевод"
+
+#: tgenform.lbllanguage.caption
+msgid "Language"
+msgstr "Язык"
+
+#: tgenform.sgmods.columns[1].title.caption
+msgid "Title"
+msgstr "Название"
+
+#: tgenform.sgmods.columns[2].title.caption
+msgid "Lines"
+msgstr "Строк"
+
+#: tgenform.sgmods.columns[3].title.caption
+msgid "Unique"
+msgstr "Уник."
 
 #: tl2datamodule.rsnoref
 msgid "Text don't have any references"
@@ -845,4 +885,3 @@ msgstr "Переводчики"
 #: unitlogform.rscantsave
 msgid "Can't save log file"
 msgstr "Не могу сохранить лог"
-

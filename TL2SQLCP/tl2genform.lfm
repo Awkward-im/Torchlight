@@ -1,0 +1,121 @@
+object GenForm: TGenForm
+  Left = 315
+  Height = 498
+  Top = 250
+  Width = 736
+  Caption = 'Generate translation file'
+  ClientHeight = 498
+  ClientWidth = 736
+  LCLVersion = '4.99.0.0'
+  OnCreate = FormCreate
+  object sgMods: TStringGrid
+    Left = 8
+    Height = 482
+    Top = 8
+    Width = 480
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoEdit = False
+    AutoFillColumns = True
+    ColCount = 4
+    ColumnClickSorts = True
+    Columns = <    
+      item
+        ButtonStyle = cbsCheckboxColumn
+        SizePriority = 0
+        Title.Caption = ''
+        Width = 32
+      end    
+      item
+        Title.Caption = 'Title'
+        Width = 300
+      end    
+      item
+        SizePriority = 0
+        Title.Alignment = taCenter
+        Title.Caption = 'Lines'
+        Width = 80
+      end    
+      item
+        SizePriority = 0
+        Title.Alignment = taCenter
+        Title.Caption = 'Unique'
+        Width = 64
+      end>
+    DefaultColWidth = 48
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goSmoothScroll]
+    RowCount = 1
+    TabOrder = 0
+    OnCheckboxToggled = sgModsCheckboxToggled
+    OnSelectCell = sgModsSelectCell
+    ColWidths = (
+      32
+      300
+      80
+      64
+    )
+  end
+  object cbLanguages: TComboBox
+    Left = 496
+    Height = 23
+    Top = 28
+    Width = 232
+    Anchors = [akTop, akRight]
+    ItemHeight = 15
+    Style = csDropDownList
+    TabOrder = 1
+  end
+  object lblLanguage: TLabel
+    Left = 496
+    Height = 15
+    Top = 8
+    Width = 52
+    Anchors = [akTop, akRight]
+    Caption = 'Language'
+  end
+  object cbPartial: TCheckBox
+    Left = 496
+    Height = 19
+    Top = 65
+    Width = 93
+    Anchors = [akTop, akRight]
+    Caption = 'Include Partial'
+    Checked = True
+    State = cbChecked
+    TabOrder = 2
+  end
+  object memStat: TMemo
+    Left = 496
+    Height = 138
+    Top = 90
+    Width = 232
+    Anchors = [akTop, akRight]
+    TabOrder = 3
+  end
+  object bbGenerate: TBitBtn
+    Left = 496
+    Height = 26
+    Top = 465
+    Width = 93
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    Caption = 'Generate'
+    Default = True
+    Kind = bkOK
+    TabOrder = 4
+    OnClick = bbGenerateClick
+  end
+  object bbClose: TBitBtn
+    Left = 653
+    Height = 26
+    Top = 464
+    Width = 75
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    Cancel = True
+    Caption = 'Close'
+    Kind = bkClose
+    ModalResult = 11
+    TabOrder = 5
+  end
+end

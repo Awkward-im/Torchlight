@@ -89,6 +89,7 @@ uses
   LCLType,
   TL2SettingsForm,
   TL2DelForm,
+  TL2GenForm,
   sqlite3dyn,
   iso639,
   rgdb.text,
@@ -210,30 +211,34 @@ end;
 procedure TFormSQLCP.Build(Sender: TObject);
 var
   ldlg:TSaveDialog;
-  lfname:AnsiString;
-  lbuildall:boolean;
 begin
-  lfname:=DefTransFile;
+{!!Not finished yet
+  with TGenForm.Create(Self) do
+  begin
+    ShowModal;
+    Free;
+  end;
+}
   ldlg:=TSaveDialog.Create(nil);
   try
     ldlg.Title:=rsTransPlace;
-    ldlg.FileName:=lfname;
+    ldlg.FileName:=DefTransFile;
     if ldlg.Execute then
-      lfname:=ldlg.FileName;
+    begin
+      if BuildTranslation(ldlg.FileName,
+         gdModStat.Cells[2,gdModStat.Row],
+    //     gdLanguages.Cells[1,gdLanguages.Row],
+         MessageDlg(rsBuildAll,mtInformation,[mbYes,mbNo],0)=mrYes,
+         CurMod) then
+        ShowMessage(rsBuildDone)
+      else
+        ShowMessage(rsBuildFailed);
+      // maybe build from cache if curmod=modAll or just build mod, not all
+      // well, it can be used in grid/editor, not CP
+    end;
   finally
     ldlg.Free;
   end;
-  lbuildall:=MessageDlg(rsBuildAll,mtInformation,[mbYes,mbNo],0)=mrYes;
-
-  if BuildTranslation(lfname,
-     gdModStat.Cells[2,gdModStat.Row],
-//     gdLanguages.Cells[1,gdLanguages.Row],
-     lbuildall, CurMod) then
-    ShowMessage(rsBuildDone)
-  else
-    ShowMessage(rsBuildFailed);
-  // maybe build from cache if curmod=modAll or just build mod, not all
-  // well, it can be used in grid/editor, not CP
 end;
 
 procedure TFormSQLCP.sbDeletedClick(Sender: TObject);

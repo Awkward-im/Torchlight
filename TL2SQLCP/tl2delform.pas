@@ -16,16 +16,17 @@ type
     bbRestore: TBitBtn;
     bbClose: TBitBtn;
     bbDelete: TBitBtn;
+    cbShowUnique: TCheckBox;
+    cbShowDeleted: TCheckBox;
     clbLines: TCheckListBox;
     memDescr: TMemo;
     procedure bbDeleteClick(Sender: TObject);
     procedure bbRestoreClick(Sender: TObject);
     procedure clbLinesSelectionChange(Sender: TObject; User: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FillList(Sender: TObject);
   private
     ltitle: AnsiString;
-
-    procedure FillList();
 
   public
 
@@ -189,15 +190,14 @@ begin
   end;
 end;
 
-procedure TDelForm.FillList();
+procedure TDelForm.FillList(Sender: TObject);
 var
   larr1,larr:TDictDynArray;
   lcnt1,lcnt,i:integer;
 begin
   clbLines.Clear;
-//  lcnt:=GetLineCount(modDeleted);
-  lcnt :=GetDeletedList(larr);
-  lcnt1:=GetDeletedList(larr1,true);
+  if cbShowDeleted.Checked then lcnt :=GetDeletedList(larr ,false) else lcnt :=0;
+  if cbShowUnique .Checked then lcnt1:=GetDeletedList(larr1,true ) else lcnt1:=0;
   if (lcnt1+lcnt)<=0 then
   begin
     memDescr.Text:=rsNoDeleted;
@@ -218,7 +218,7 @@ procedure TDelForm.FormCreate(Sender: TObject);
 begin
   ltitle:=Caption;
 
-  FillList();
+  FillList(Self);
 end;
 
 end.

@@ -65,4 +65,22 @@ object DelForm: TDelForm
     TabOrder = 4
     OnClick = bbDeleteClick
   end
+  object cbShowUnique: TCheckBox
+    Left = 499
+    Height = 19
+    Top = 374
+    Width = 115
+    Caption = 'Show Unique lines'
+    TabOrder = 5
+    OnClick = FillList
+  end
+  object cbShowDeleted: TCheckBox
+    Left = 499
+    Height = 19
+    Top = 400
+    Width = 116
+    Caption = 'Show deleted lines'
+    TabOrder = 6
+    OnClick = FillList
+  end
 end

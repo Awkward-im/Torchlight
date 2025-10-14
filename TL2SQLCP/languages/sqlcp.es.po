@@ -155,6 +155,14 @@ msgstr ""
 msgid "Deleted lines"
 msgstr ""
 
+#: tdelform.cbshowdeleted.caption
+msgid "Show deleted lines"
+msgstr ""
+
+#: tdelform.cbshowunique.caption
+msgid "Show Unique lines"
+msgstr ""
+
 #: tdupeform.caption
 msgid "Dupe List"
 msgstr ""
@@ -318,6 +326,38 @@ msgstr ""
 #: tformsqlcp.sbsql.hint
 msgctxt "tformsqlcp.sbsql.hint"
 msgid "Show session SQL requiests of DB modify"
+msgstr ""
+
+#: tgenform.bbclose.caption
+msgid "Close"
+msgstr ""
+
+#: tgenform.bbgenerate.caption
+msgid "Generate"
+msgstr ""
+
+#: tgenform.caption
+msgid "Generate translation file"
+msgstr ""
+
+#: tgenform.cbpartial.caption
+msgid "Include Partial"
+msgstr ""
+
+#: tgenform.lbllanguage.caption
+msgid "Language"
+msgstr ""
+
+#: tgenform.sgmods.columns[1].title.caption
+msgid "Title"
+msgstr ""
+
+#: tgenform.sgmods.columns[2].title.caption
+msgid "Lines"
+msgstr ""
+
+#: tgenform.sgmods.columns[3].title.caption
+msgid "Unique"
 msgstr ""
 
 #: tl2datamodule.rsnoref

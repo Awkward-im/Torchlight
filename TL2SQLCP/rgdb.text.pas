@@ -206,6 +206,7 @@ begin
   if lastmodid<>amodid then
   begin
     lastmodid:=amodid;
+
     ExecuteDirect(tldb,'DROP TABLE tmpref');
     ExecuteDirect(tldb,'CREATE TEMP TABLE tmpref (srcid INTEGER PRIMARY KEY)');
 
@@ -226,7 +227,9 @@ begin
       end
       else
         lmod:='';
-      ExecuteDirect(tldb,'INSERT INTO tmpref SELECT DISTINCT refs.srcid FROM refs'+lmod);
+//      ExecuteDirect(tldb,'INSERT INTO tmpref SELECT refs.srcid FROM refs'+lmod+' GROUP BY refs.srcid');
+      ExecuteDirect(tldb,'INSERT OR IGNORE INTO tmpref SELECT refs.srcid FROM refs'+lmod);
+//      ExecuteDirect(tldb,'INSERT INTO tmpref SELECT DISTINCT refs.srcid FROM refs'+lmod);
     end;
   end;
 end;
@@ -548,10 +551,11 @@ begin
     ls:='SELECT count(1) FROM strings WHERE deleted=1'
   else
   begin
+    CacheRefs(amodid);
+
     Str(amodid,lmod);
-    ls:='SELECT count(distinct s.id) FROM refs'+
-        ' INNER JOIN strings s ON s.id=refs.srcid'+
-        ' WHERE s.deleted=1 and modid='+lmod
+    ls:='SELECT count(distinct s.id) FROM strings'+
+        ' RIGHT JOIN tmpref ON s.id=tmpref.srcid AND s.deleted=1'
 //       + ' GROUP BY modid';
   end;
   result:=ReturnInt(tldb,ls);
@@ -581,16 +585,21 @@ begin
   end
   else
   begin
-    Str(amodid,lsrc);
+    CacheRefs(amodid);
+
+//    Str(amodid,lsrc);
     if withdeleted then
-      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc)
+      result:=ReturnInt(tldb,'SELECT count(1) FROM tmpref')
+//      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc)
     else
     begin
-      CacheRefs(amodid);
       result:=ReturnInt(tldb,
-        'SELECT count(DISTINCT s.id) FROM strings s'+
-        ' INNER JOIN tmpref ON tmpref.srcid=s.id WHERE s.deleted=0');
-//      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc+' AND deleted=0');
+//        'SELECT count(s.id) FROM strings s'+
+//        ' INNER JOIN tmpref ON tmpref.srcid=s.id WHERE s.deleted=0');
+        'SELECT count(1) FROM strings s'+
+        ' WHERE s.id IN '+
+        '  (SELECT r.srcid FROM tmpref r)'+
+        ' AND s.deleted=0');
     end;
   end;
 end;
@@ -640,17 +649,17 @@ begin
   if amodid=modAll then exit(0);
 
   CacheRefs(amodid);
+
   Str(amodid,ls);
-  ls:='SELECT count(1) FROM tmpref r'+
-      ' LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
-      ' ON r.srcid=r1.srcid'+
-      ' WHERE r1.srcid IS NULL';
 {
-  ls:='SELECT count(DISTINCT r.srcid) FROM refs r'+
-      ' LEFT JOIN (SELECT DISTINCT r.srcid FROM refs r WHERE r.modid<>'+ls+') r1'+
-      ' ON r.srcid=r1.srcid'+
-      ' WHERE r.modid='+ls+' AND r1.srcid IS NULL';
+  ls:='SELECT COUNT(distinct r.srcid) FROM refs r'+
+      ' WHERE r.modid='+ls+' AND NOT EXISTS ('+
+      '  SELECT 1 FROM refs r2 WHERE r2.srcid=r.srcid AND r2.modid<>'+ls+')';
 }
+  ls:='SELECT COUNT(1) FROM tmpref r'+
+      ' WHERE NOT EXISTS ('+
+      '  SELECT 1 FROM refs r2 WHERE r2.srcid=r.srcid AND r2.modid<>'+ls+')';
+
   result:=ReturnInt(tldb,ls);
 end;
 
@@ -725,6 +734,7 @@ begin
       else
       begin
         sqlite3_finalize(vm);
+
         SetModStatistic(lmodid);
         GetModStatistic(stat);
         exit;
@@ -732,7 +742,9 @@ begin
 
       sqlite3_finalize(vm);
     end;
+
     stat.unique :=GetUniqueLineCount (stat.modid);
+
     if lmodid=modUnref then
       stat.total:=stat.unique;
 //  end

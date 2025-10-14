@@ -295,6 +295,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Replace"/>
       </Unit>
+      <Unit>
+        <Filename Value="tl2genform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="GenForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TL2GenForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

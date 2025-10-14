@@ -1,0 +1,11 @@
+{"version":1,"strings":[
+{"hash":137836133,"name":"tgenform.caption","sourcebytes":[71,101,110,101,114,97,116,101,32,116,114,97,110,115,108,97,116,105,111,110,32,102,105,108,101],"value":"Generate translation file"},
+{"hash":4294967295,"name":"tgenform.sgmods.columns[0].title.caption","sourcebytes":[],"value":""},
+{"hash":5966629,"name":"tgenform.sgmods.columns[1].title.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
+{"hash":5440707,"name":"tgenform.sgmods.columns[2].title.caption","sourcebytes":[76,105,110,101,115],"value":"Lines"},
+{"hash":96798901,"name":"tgenform.sgmods.columns[3].title.caption","sourcebytes":[85,110,105,113,117,101],"value":"Unique"},
+{"hash":139375349,"name":"tgenform.lbllanguage.caption","sourcebytes":[76,97,110,103,117,97,103,101],"value":"Language"},
+{"hash":213014636,"name":"tgenform.cbpartial.caption","sourcebytes":[73,110,99,108,117,100,101,32,80,97,114,116,105,97,108],"value":"Include Partial"},
+{"hash":206343285,"name":"tgenform.bbgenerate.caption","sourcebytes":[71,101,110,101,114,97,116,101],"value":"Generate"},
+{"hash":4863637,"name":"tgenform.bbclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
+]}
