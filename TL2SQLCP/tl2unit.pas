@@ -282,26 +282,16 @@ begin
   cbDisplayMode.ItemIndex:=0;
 
   SetDefaultCaption();
-uprof.Start('Full');
-uprof.Start('Load');
   LoadModData();
-uprof.Stop;
 
-uprof.Start('Combo');
   FillFoldersCombo(true);
   FillLangCombo();
-uprof.Stop;
 
-uprof.Start('Trans');
   LoadTranslation();
-uprof.Stop;
 
   FileSave.Enabled:=false;
 
-uprof.Start('Grid');
   FillProjectGrid('');
-uprof.Stop;
-uprof.Stop;
   ActiveControl:=TL2Grid;
 end;
 
@@ -1435,9 +1425,7 @@ begin
   if CurMod=modAll then cbFolder.Items.AddObject(rsFolderNoRef,TObject(-2));
 
   lfolders:=nil;
-uprof.start('Folders');
   lcnt:=GetModDirList(CurMod,lfolders);
-uprof.stop;
   for i:=0 to lcnt-1 do
   begin
     ls:=lfolders[i];
@@ -1580,7 +1568,7 @@ begin
     if (lflag>0) then
     begin
       for i:=0 to High(TRCache) do
-        if ((TRCache[i].flags and rfIsReferred) =0) or
+        if //((TRCache[i].flags and rfIsReferred) =0) or
            ((TRCache[i].flags and lflag       )<>0) then
           TRCache[i].flags:=TRCache[i].flags or rfIsFiltered
         else
@@ -1607,7 +1595,7 @@ begin
   if cbSkills.ItemIndex=0 then
   begin
     for i:=0 to High(TRCache) do
-      if ((TRCache[i].flags and rfIsReferred) =0) or
+      if //((TRCache[i].flags and rfIsReferred) =0) or
          ((TRCache[i].flags and rfIsSkill   )<>0) then
         TRCache[i].flags:=TRCache[i].flags or rfIsFiltered
       else
@@ -1631,7 +1619,7 @@ begin
   if cbItems.ItemIndex=0 then
   begin
     for i:=0 to High(TRCache) do
-      if ((TRCache[i].flags and rfIsReferred) =0) or
+      if //((TRCache[i].flags and rfIsReferred) =0) or
          ((TRCache[i].flags and rfIsItem   )<>0) then
         TRCache[i].flags:=TRCache[i].flags or rfIsFiltered
       else

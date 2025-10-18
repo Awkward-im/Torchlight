@@ -1,6 +1,4 @@
-{TODO: Build translation: new modList is for list of mods}
 {TODO: RemoveOriginal: delete all translations too}
-{TODO: DeleteMod - mark uniques trings as deleted or remove translation too}
 {TODO: SetModStatistic on RestoreOriginal}
 {TODO: add function to delete "dead" (no source) translation lines}
 {TODO: Keep filter param replace option in base}
@@ -797,8 +795,8 @@ begin
         stat.langs[i].trans:=sqlite3_column_int(vml,0);
         stat.langs[i].part :=sqlite3_column_int(vml,1);
       end;
+      sqlite3_finalize(vml);
     end;
-    sqlite3_finalize(vml);
   end;
 //uprof.Stop;
   SetLength(llist,0);
@@ -1237,23 +1235,43 @@ end;
 
 function RemoveOriginal(aid:integer):boolean;
 var
+  llist:TDictDynArray;
   lSQL, lstrid:AnsiString;
+  i,lcnt:integer;
 begin
   Str(aid,lstrid);
+  // remove text
   lSQL:='DELETE FROM strings WHERE id='+lstrid;
   result:=ExecuteDirect(tldb,lSQL);
   if result then
   begin
     SQLog.Add(lSQL);
+
+{
+  !! Here must be: change ALL mods (what used that string) statistic
+     fill modlist by
+    'SELECT distinct modid FROM refs WHERE refs.srcid='+lstrid
+}
+
+    // remove references
     lSQL:='DELETE FROM refs WHERE srcid='+lstrid;
     result:=ExecuteDirect(tldb,lSQL);
     if result then
       SQLog.Add(lSQL);
 {
-  !! Here must be:
-    1 - change ALL mods (what used that string) statistic
-    2 - change ALL translations what used that string
+    for i:=0 to cnt do
+      SetModStatistic(modlist[i].id);
 }
+    // remove translations
+    lcnt:=GetLangList(llist);
+    if lcnt=0 then exit;
+
+    for i:=0 to lcnt-1 do
+    begin
+      ExecuteDirect(tldb,'DELETE FROM [trans_'+llist[i].value+'] WHERE srcid='+lstrid);
+    end;
+    SetLength(llist,0);
+
   end;
 end;
 
@@ -1392,10 +1410,11 @@ begin
     for i:=0 to High(TRCache) do
       TRCache[i].flags:=TRCache[i].flags and not rfIsFiltered;
 
-         if afilter='MEDIA/'        then lcond:='=''MEDIA/'''
-    else if afilter='MEDIA/SKILLS/' then lcond:='=''MEDIA/SKILLS/'''
+         if afilter='MEDIA/'             then lcond:='=''MEDIA/'''
+    else if afilter='MEDIA/SKILLS/'      then lcond:='=''MEDIA/SKILLS/'''
+    else if afilter='MEDIA/UNITS/ITEMS/' then lcond:='=''MEDIA/UNITS/ITEMS/'''
+    else                                      lcond:=' GLOB '''+afilter+'*''';
 //    else                                 lcond:=' LIKE '''+afilter+'%''';
-    else                                 lcond:=' GLOB '''+afilter+'*''';
 
     if CurMod<>modAll then
     begin
