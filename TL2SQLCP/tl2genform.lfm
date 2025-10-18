@@ -14,7 +14,6 @@ object GenForm: TGenForm
     Top = 8
     Width = 480
     Anchors = [akTop, akLeft, akRight, akBottom]
-    AutoEdit = False
     AutoFillColumns = True
     ColCount = 4
     ColumnClickSorts = True
@@ -26,16 +25,19 @@ object GenForm: TGenForm
         Width = 32
       end    
       item
+        ReadOnly = True
         Title.Caption = 'Title'
-        Width = 300
+        Width = 304
       end    
       item
+        ReadOnly = True
         SizePriority = 0
         Title.Alignment = taCenter
         Title.Caption = 'Lines'
         Width = 80
       end    
       item
+        ReadOnly = True
         SizePriority = 0
         Title.Alignment = taCenter
         Title.Caption = 'Unique'
@@ -43,14 +45,14 @@ object GenForm: TGenForm
       end>
     DefaultColWidth = 48
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goRowSelect, goSmoothScroll, goRowHighlight]
     RowCount = 1
     TabOrder = 0
     OnCheckboxToggled = sgModsCheckboxToggled
-    OnSelectCell = sgModsSelectCell
+    OnKeyDown = sgModsKeyDown
     ColWidths = (
       32
-      300
+      304
       80
       64
     )
@@ -64,6 +66,7 @@ object GenForm: TGenForm
     ItemHeight = 15
     Style = csDropDownList
     TabOrder = 1
+    OnSelect = cbLanguagesSelect
   end
   object lblLanguage: TLabel
     Left = 496
@@ -74,20 +77,23 @@ object GenForm: TGenForm
     Caption = 'Language'
   end
   object cbPartial: TCheckBox
+    AnchorSideLeft.Control = cbLanguages
+    AnchorSideTop.Side = asrBottom
     Left = 496
     Height = 19
-    Top = 65
+    Top = 59
     Width = 93
-    Anchors = [akTop, akRight]
+    BorderSpacing.Top = 8
     Caption = 'Include Partial'
     Checked = True
     State = cbChecked
     TabOrder = 2
+    OnClick = UpdateStatistic
   end
   object memStat: TMemo
     Left = 496
     Height = 138
-    Top = 90
+    Top = 115
     Width = 232
     Anchors = [akTop, akRight]
     TabOrder = 3
@@ -117,5 +123,37 @@ object GenForm: TGenForm
     Kind = bkClose
     ModalResult = 11
     TabOrder = 5
+  end
+  object bbToggle: TBitBtn
+    Left = 496
+    Height = 26
+    Top = 265
+    Width = 147
+    AutoSize = True
+    Caption = 'Check/Uncheck All'
+    Kind = bkRetry
+    TabOrder = 6
+    OnClick = bbToggleClick
+  end
+  object btnGenerate: TButton
+    Left = 543
+    Height = 109
+    Top = 299
+    Width = 144
+    Font.Height = 24
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 7
+    OnClick = btnGenerateClick
+  end
+  object cbAll: TCheckBox
+    AnchorSideLeft.Control = cbLanguages
+    Left = 496
+    Height = 19
+    Top = 87
+    Width = 126
+    Caption = 'Include untranslated'
+    TabOrder = 8
+    OnClick = UpdateStatistic
   end
 end

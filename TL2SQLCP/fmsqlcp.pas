@@ -44,8 +44,7 @@ type
     procedure AddTrans(Sender: TObject);
     procedure Build(Sender: TObject);
     procedure gdModStatPrepareCanvas(Sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
-    procedure GridCellCompare(Sender: TObject; ACol, ARow, BCol, BRow: Integer;
-      var Result: integer);
+    procedure GridCellCompare(Sender: TObject; ACol, ARow, BCol, BRow: Integer; var Result: integer);
     procedure sbDeletedClick(Sender: TObject);
     procedure sbReplaceClick(Sender: TObject);
     procedure sbSettingsClick(Sender: TObject);
@@ -112,8 +111,6 @@ resourcestring
   rsStopScan        = 'Do you want to break scan?';
   rsSaveDone        = 'Database saved';
   rsCantSave        = 'Can''t save database';
-  rsBuildDone       = 'Translation file generated';
-  rsBuildFailed     = 'Translation file is NOT generated';
 //  rsNothingToSave   = 'Nothing to save';
   rsTranslation     = 'Translation action';
   rsTransOp         = 'When translation exists';
@@ -128,8 +125,6 @@ resourcestring
   rsNotReplaced     = 'Nothing was changed';
   rsReplaceDir      = 'Choose dir with unpacked mod (with MEDIA/ inside)';
   rsNoNation        = 'Nothing to replace';
-  rsTransPlace      = 'Choose file to save translation data';
-  rsBuildAll        = 'Build translation with untranslated lines too?';
   rsDone            = 'Done!';
   rsNothingToAdd    = 'No text in this mod.';
 //  rsDBOnDisk        = 'DB on disk'
@@ -209,16 +204,14 @@ begin
 end;
 
 procedure TFormSQLCP.Build(Sender: TObject);
-var
-  ldlg:TSaveDialog;
+//var  ldlg:TSaveDialog;
 begin
-{!!Not finished yet
   with TGenForm.Create(Self) do
   begin
     ShowModal;
     Free;
   end;
-}
+{
   ldlg:=TSaveDialog.Create(nil);
   try
     ldlg.Title:=rsTransPlace;
@@ -228,6 +221,7 @@ begin
       if BuildTranslation(ldlg.FileName,
          gdModStat.Cells[2,gdModStat.Row],
     //     gdLanguages.Cells[1,gdLanguages.Row],
+         true,
          MessageDlg(rsBuildAll,mtInformation,[mbYes,mbNo],0)=mrYes,
          CurMod) then
         ShowMessage(rsBuildDone)
@@ -239,6 +233,7 @@ begin
   finally
     ldlg.Free;
   end;
+}
 end;
 
 procedure TFormSQLCP.sbDeletedClick(Sender: TObject);

@@ -1,3 +1,4 @@
+{TODO: Build translation: new modList is for list of mods}
 {TODO: RemoveOriginal: delete all translations too}
 {TODO: DeleteMod - mark uniques trings as deleted or remove translation too}
 {TODO: SetModStatistic on RestoreOriginal}
@@ -15,6 +16,7 @@ unit rgdb.text;
 interface
 
 uses
+//uni_profiler,
   Classes,
   logging,
   rgglobal;
@@ -23,6 +25,7 @@ const
   modVanilla =  0;
   modAll     = -1;
   modUnref   = -2;
+  modList    = -3; // special. for translation build from list of mods
 var
   CurMod :Int64;
   CurLang:AnsiString;
@@ -50,7 +53,7 @@ function  LoadModData():integer;
 procedure LoadTranslation();
 procedure SaveTranslation();
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
-    aall:boolean=false; const amodid:Int64=modAll):boolean;
+    apart:boolean=true; aall:boolean=false; const amodid:Int64=modAll):boolean;
 function LoadTranslationToBase(const fname,alang:AnsiString):integer;
 
 function RemakeFilter():boolean;
@@ -74,6 +77,7 @@ const
   rfIsMob       = $0010;
   rfIsProp      = $0020;
   rfIsPlayer    = $0040;
+
   rfIsFiltered  = $0100; // runtime, folder filter flag
   rfIsManyRefs  = $0200; // runtime, mod-limited flag
   rfIsNoRef     = $0400; // runtime, no refs for line
@@ -97,7 +101,7 @@ function GetSimilars    (aid:integer; var arr:TIntegerDynArray):integer;
 function GetDoubles     (aid:integer; var arr:TIntegerDynArray):integer;
 // refs ids with same dir/file/tag
 function GetAlts        (aid:integer; var arr:TIntegerDynArray):integer;
-function GetUnrefLineCount():integer;
+function GetUnrefLineCount(adeleted:boolean=false):integer;
 
 // aid is source index
 function FindOriginal(const asrc:AnsiString):integer;
@@ -169,6 +173,8 @@ function GetLineCount      (const amodid:Int64; withdeleted:boolean=false):integ
 function GetUniqueLineCount(const amodid:Int64):integer;
 function GetNationLineCount(const amodid:Int64):integer;
 
+procedure CacheSrcId(const amodid:Int64);
+
 
 implementation
 
@@ -199,11 +205,11 @@ resourcestring
   rsNoRef        = '-- No refs --';
 
 
-procedure CacheRefs(const amodid:Int64);
+procedure CacheSrcId(const amodid:Int64);
 var
   lmod:AnsiString;
 begin
-  if lastmodid<>amodid then
+  if (lastmodid<>amodid) or (lastmodid=modList) then
   begin
     lastmodid:=amodid;
 
@@ -220,16 +226,20 @@ begin
     end
     else
     begin
-      if amodid<>modAll then
+      if amodid=modAll then
+        lmod:=''
+      else if amodid=modList then
+        lmod:=' AND refs.modid IN tmpmods' //!! AND
+      else
       begin
         Str(amodid,lmod);
-        lmod:=' WHERE modid='+lmod;
-      end
-      else
-        lmod:='';
-//      ExecuteDirect(tldb,'INSERT INTO tmpref SELECT refs.srcid FROM refs'+lmod+' GROUP BY refs.srcid');
-      ExecuteDirect(tldb,'INSERT OR IGNORE INTO tmpref SELECT refs.srcid FROM refs'+lmod);
-//      ExecuteDirect(tldb,'INSERT INTO tmpref SELECT DISTINCT refs.srcid FROM refs'+lmod);
+        lmod:=' WHERE refs.modid='+lmod; //!! AND
+      end;
+      ExecuteDirect(tldb,
+        'INSERT INTO tmpref SELECT distinct strings.id FROM strings'+
+        ' INNER JOIN refs ON strings.id=refs.srcid AND strings.deleted=0'+lmod);
+//        'INSERT INTO tmpref SELECT distinct refs.srcid FROM refs'+
+//        ' JOIN strings ON strings.id=refs.srcid AND strings.deleted=0'+lmod);
     end;
   end;
 end;
@@ -483,12 +493,10 @@ var
 begin
   asl:=nil;
   result:=ReturnInt(tldb,'SELECT count(1) FROM sqlite_master'+
-//      ' WHERE (type = ''table'') AND (name LIKE ''trans_%'')');
       ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')');
   if result>0 then
   begin
     ls:='SELECT name FROM sqlite_master'+
-//        ' WHERE (type = ''table'') AND (name LIKE ''trans_%'')'+
         ' WHERE (type = ''table'') AND (name GLOB ''trans_*'')'+
         ' ORDER BY name';
 
@@ -543,90 +551,88 @@ begin
   SetLength(arr,0);
 end;
 
+function GetUnrefLineCount(adeleted:boolean=false):integer;
+begin
+  result:=ReturnInt(tldb,
+//    'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT DISTINCT srcid FROM refs))');
+    'SELECT count(strings.id) FROM strings'+
+    ' LEFT JOIN refs ON refs.srcid=strings.id'+
+    ' WHERE refs.srcid IS NULL AND strings.deleted='+BoolNumber[adeleted]);
+end;
+
 function GetDeletedLineCount(const amodid:Int64):integer;
 var
   ls,lmod:AnsiString;
 begin
   if amodid=modAll then
     ls:='SELECT count(1) FROM strings WHERE deleted=1'
+  else if amodid=modUnref then
+    exit(GetUnrefLineCount(true))
   else
   begin
-    CacheRefs(amodid);
-
     Str(amodid,lmod);
-    ls:='SELECT count(distinct s.id) FROM strings'+
-        ' RIGHT JOIN tmpref ON s.id=tmpref.srcid AND s.deleted=1'
-//       + ' GROUP BY modid';
+    ls:='SELECT count(distinct s.id) FROM strings s'+
+        ' WHERE s.deleted=1 AND'+
+        '   EXISTS (SELECT 1 FROM refs WHERE s.id=refs.srcid and refs.modid='+lmod+')';
   end;
   result:=ReturnInt(tldb,ls);
 end;
 
-function GetUnrefLineCount():integer;
-begin
-  result:=ReturnInt(tldb,
-//    'SELECT count(id) FROM strings WHERE NOT (id IN (SELECT DISTINCT srcid FROM refs))');
-    'SELECT count(strings.id) FROM strings'+
-          ' LEFT JOIN refs ON refs.srcid=strings.id'+
-    ' WHERE refs.srcid IS NULL AND strings.deleted=0');
-
-end;
-
 function GetLineCount(const amodid:Int64; withdeleted:boolean=false):integer;
 var
-  lsrc:AnsiString;
+  lmod:AnsiString;
 begin
        if amodid=modUnref   then result:=GetUnrefLineCount()
   else if amodid=modAll     then
   begin
     if withdeleted then result:=ReturnInt(tldb,'SELECT count(1) FROM strings')
     else                result:=ReturnInt(tldb,'SELECT count(1) FROM strings WHERE deleted=0');
-
-    result:=result+GetUnrefLineCount();
   end
   else
   begin
-    CacheRefs(amodid);
+    if amodid=modList then
+      lmod:=' IN tmpmods'
+    else
+    begin
+      Str(amodid,lmod);
+      lmod:='='+lmod;
+    end;
 
-//    Str(amodid,lsrc);
     if withdeleted then
-      result:=ReturnInt(tldb,'SELECT count(1) FROM tmpref')
-//      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid='+lsrc)
+      result:=ReturnInt(tldb,'SELECT count(DISTINCT srcid) FROM refs WHERE modid'+lmod)
     else
     begin
       result:=ReturnInt(tldb,
-//        'SELECT count(s.id) FROM strings s'+
-//        ' INNER JOIN tmpref ON tmpref.srcid=s.id WHERE s.deleted=0');
         'SELECT count(1) FROM strings s'+
-        ' WHERE s.id IN '+
-        '  (SELECT r.srcid FROM tmpref r)'+
-        ' AND s.deleted=0');
+        ' WHERE s.deleted=0 AND'+
+        ' EXISTS (SELECT 1 FROM refs WHERE refs.modid'+lmod+' AND s.id=refs.srcid)');
     end;
   end;
 end;
 
 function GetNationLineCount(const amodid:Int64):integer;
 var
-{
-  vm:pointer;
-  pc:PAnsiChar;
-}
-  ls:AnsiString;
+  ls,lwhere:AnsiString;
 begin
   if amodid=modAll then
-    ls:='SELECT count(DISTINCT id) FROM strings'+
-        ' WHERE deleted=0'+
-        ' AND src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')'
+  begin
+    ls    :='';
+    lwhere:='';
+  end
+  else if amodid=modUnref then
+  begin
+    ls    :=' LEFT JOIN refs ON refs.srcid=s.id';
+    lwhere:='AND refs.srcid IS NULL';
+  end
   else
   begin
-//    CacheRefs(amodid);
     Str(amodid,ls);
-    ls:='SELECT count(DISTINCT s.id) FROM strings s'+
-//        ' INNER JOIN tmpref ON refs.srcid=s.id'+
-//        ' WHERE s.deleted=0'+
-        ' INNER JOIN refs ON refs.srcid=s.id'+
-        ' WHERE s.deleted=0 AND refs.modid='+ls+
-        ' AND src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')'
+    ls    :=' INNER JOIN refs ON refs.modid='+ls+' AND refs.srcid=s.id';
+    lwhere:='';
   end;
+  ls:='SELECT count(DISTINCT s.id) FROM strings s'+ls+
+      ' WHERE s.deleted=0'+lwhere+
+      ' AND s.src GLOB concat(''*['',char(128),''-'',char(65535),'']*'')';
   result:=ReturnInt(tldb,ls);
 end;
 
@@ -646,20 +652,42 @@ function GetUniqueLineCount(const amodid:Int64):integer;
 var
   ls:AnsiString;
 begin
-  if amodid=modAll then exit(0);
-
-  CacheRefs(amodid);
+  if amodid=modAll   then exit(0);
+  if amodid=modUnref then exit(GetUnrefLineCount());
 
   Str(amodid,ls);
+
+  ls:='WITH UniRefs AS (SELECT DISTINCT srcid,modid FROM refs)'+
+      'SELECT count(r1.srcid) FROM UniRefs r1 WHERE r1.modid='+ls+
+      ' AND NOT EXISTS (SELECT 1 FROM Refs r2 WHERE r1.srcid=r2.srcid AND r2.modid<>'+ls+')';
 {
   ls:='SELECT COUNT(distinct r.srcid) FROM refs r'+
       ' WHERE r.modid='+ls+' AND NOT EXISTS ('+
       '  SELECT 1 FROM refs r2 WHERE r2.srcid=r.srcid AND r2.modid<>'+ls+')';
 }
-  ls:='SELECT COUNT(1) FROM tmpref r'+
-      ' WHERE NOT EXISTS ('+
-      '  SELECT 1 FROM refs r2 WHERE r2.srcid=r.srcid AND r2.modid<>'+ls+')';
+{
+  ls:='SELECT count(distinct r.srcid) AS cnt'+
+      ' FROM (SELECT t.srcid'+
+      '   FROM (SELECT DISTINCT srcid, modid FROM refs) t'+
+      ' GROUP BY t.srcid HAVING count(1) = 1) s'+
+      ' JOIN refs r ON r.srcid = s.srcid'+
+      ' WHERE r.modid='+ls;
+}  
+  result:=ReturnInt(tldb,ls);
+end;
 
+function GetUniqueLineCountCached(const amodid:Int64):integer;
+var
+  ls:AnsiString;
+begin
+  if amodid=modAll   then exit(0);
+  if amodid=modUnref then ls:='SELECT count(1) FROM tmpref'
+  else
+  begin
+    Str(amodid,ls);
+    ls:='SELECT count(r1.srcid) FROM tmpref r1'+
+        ' WHERE NOT EXISTS (SELECT 1 FROM Refs r2 WHERE r1.srcid=r2.srcid AND r2.modid<>'+ls+')';
+  end;
   result:=ReturnInt(tldb,ls);
 end;
 
@@ -669,6 +697,8 @@ var
   ls,lmod:AnsiString;
 begin
   result:=0;
+  if amodid=modUnref then exit;
+
   if amodid<>modAll then
   begin
     Str(amodid,lmod);
@@ -705,7 +735,6 @@ var
   vm,vml:pointer;
   llist:TDictDynArray;
   lmod,ls:AnsiString;
-//  ltab:AnsiString;
   i:integer;
 begin
   lmodid:=stat.modid;
@@ -714,51 +743,48 @@ begin
   FillChar(stat,SizeOf(stat),0);
   stat.modid:=lmodid;
 
-//  if lmodid<>modUnref then
-//  begin
-    CacheRefs(lmodid);
+//uprof.Start('Cache');
+  CacheSrcId(lmodid);
+//uprof.Stop;
 
-    Str(lmodid,lmod);
-    ls:='SELECT lines, differs, files, tags, nation FROM statistic'+
-        ' WHERE modid='+lmod;
-    if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+//uprof.Start('Stat');
+  Str(lmodid,lmod);
+  ls:='SELECT lines, differs, files, tags, nation FROM statistic'+
+      ' WHERE modid='+lmod;
+  if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
     begin
-      if sqlite3_step(vm)=SQLITE_ROW then
-      begin
-        stat.total :=sqlite3_column_int(vm,0);
-        stat.dupes :=stat.total-sqlite3_column_int(vm,1);
-        stat.files :=sqlite3_column_int(vm,2);
-        stat.tags  :=sqlite3_column_int(vm,3);
-        stat.nation:=sqlite3_column_int(vm,4);
-      end
-      else
-      begin
-        sqlite3_finalize(vm);
-
-        SetModStatistic(lmodid);
-        GetModStatistic(stat);
-        exit;
-      end;
-
+      stat.total :=sqlite3_column_int(vm,0);
+      stat.dupes :=stat.total-sqlite3_column_int(vm,1);
+      stat.files :=sqlite3_column_int(vm,2);
+      stat.tags  :=sqlite3_column_int(vm,3);
+      stat.nation:=sqlite3_column_int(vm,4);
+    end
+    else
+    begin
       sqlite3_finalize(vm);
+
+      SetModStatistic(lmodid);
+      GetModStatistic(stat);
+      exit;
     end;
 
-    stat.unique :=GetUniqueLineCount (stat.modid);
+    sqlite3_finalize(vm);
+  end;
+  stat.unique:=GetUniqueLineCountCached(stat.modid);
 
-    if lmodid=modUnref then
-      stat.total:=stat.unique;
-//  end
-//  else
-//    stat.total:=GetLineCount(modUnref);
+  if lmodid=modUnref then
+    stat.total:=stat.unique;
+
   stat.deleted:=GetDeletedLineCount(stat.modid);
+//uprof.Stop;
 
   result:=GetLangList(llist);
   if result=0 then exit;
 
-  // as variant, if result>1 then place (SELECT DISTINCT srcid FROM refs'+lmod+')'
-  // into temp table. Can be usable in other places. Update at mod scan.
   SetLength(stat.langs,result);
-
+//uprof.Start('Langs');
   for i:=0 to result-1 do
   begin
     ls:='SELECT count(t.srcid), sum(t.part) FROM [trans_'+llist[i].value+
@@ -774,7 +800,7 @@ begin
     end;
     sqlite3_finalize(vml);
   end;
-
+//uprof.Stop;
   SetLength(llist,0);
 end;
 {%ENDREGION Mod}
@@ -1865,11 +1891,13 @@ begin
     i:=0;
     while sqlite3_step(vm)=SQLITE_ROW do
     begin
-      result:=result or rfIsReferred or sqlite3_column_int(vm,0);
+      result:=result or sqlite3_column_int(vm,0);
       inc(i);
     end;
-    if i>1 then result:=result or rfIsManyRefs;
-    if i<1 then result:=rfIsNoRef;
+
+         if i=1 then result:=result or rfIsReferred
+    else if i>1 then result:=result or rfIsManyRefs
+    else{if i<1 then}result:=rfIsNoRef;
 
     sqlite3_finalize(vm);
   end;
@@ -1879,7 +1907,7 @@ function LoadModData():integer;
 var
   vm:pointer;
   i,lcnt:integer;
-  lmod,lSQL:AnsiString;
+  lSQL,lflags,lmod:AnsiString;
 begin
   result:=0;
 
@@ -1892,83 +1920,53 @@ begin
     end;
   end;
   SetLength(TRCache,0);
+
   lcnt:=GetLineCount(CurMod,false);
   SetLength(TRCache,lcnt);
-//  if CurMod<>modUnref then
-  begin
-    if CurMod=modAll then
-    begin
-      lmod:='';
-      lSQL:='SELECT id, src, filter FROM strings WHERE deleted=0';
-    end
 {
-    else if CurMod=modUnref then
-    begin
-      lmod:='';
-      lSQL:=
-    end
+  lflags:='CASE WHEN r.flags IS NULL THEN '+IntToStr(rfIsNoRef)+' ELSE '+
+          'max(r.flags&01)|max(r.flags&02)|max(r.flags&04)|max(r.flags&08)|'+
+          'max(r.flags&10)|max(r.flags&20)|max(r.flags&40)|max(r.flags&80) END';
 }
-    else
-    begin
-      Str(CurMod,lmod);
-//      lSQL:='SELECT id, src, filter FROM strings WHERE '+
-//            'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
-      lSQL:='SELECT DISTINCT s.id, s.src, s.filter FROM strings s'+
-            ' INNER JOIN tmpref ON tmpref.srcid=s.id'+
-            ' WHERE s.deleted=0';
-{
-      lSQL:='SELECT DISTINCT s.id, s.src, s.filter FROM strings s'+
-            ' INNER JOIN refs ON refs.srcid=s.id'+
-            ' WHERE s.deleted=0 AND refs.modid='+lmod;
-}
-    end;
-
-    CacheRefs(CurMod);
-
-    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      while sqlite3_step(vm)=SQLITE_ROW do
-      begin
-        with TRCache[result] do
-        begin
-          id   :=sqlite3_column_int (vm,0);
-          src  :=sqlite3_column_text(vm,1);
-          tmpl :=sqlite3_column_int (vm,2);
-          if CurMod=modUnref then
-            flags:=rfIsNoRef
-          else
-            flags:=GetLineFlags(id,lmod);
-        end;
-        inc(result);
-      end;
-      sqlite3_finalize(vm);
-    end;
-  end;
-(*
-  // Add unreferred to vanilla
-  if {(CurMod=modVanilla) or} (CurMod=modAll) or (CurMod=modUnref) then
+  lflags:='COALESCE(max(r.flags&01)|max(r.flags&02)|max(r.flags&04)|max(r.flags&08)|'+
+                   'max(r.flags&10)|max(r.flags&20)|max(r.flags&40)|max(r.flags&80),'+
+                   IntToStr(rfIsNoRef)+')';
+  if CurMod=modAll then
   begin
-//    lSQL:='SELECT id, src FROM strings WHERE '+
-//          'NOT (id IN (SELECT DISTINCT srcid FROM refs))';
-    lSQL:='SELECT s.id, s.src, s.filter FROM strings s'+
-          ' LEFT JOIN refs ON refs.srcid=s.id WHERE refs.srcid IS NULL AND s.deleted=0';
-    if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
-    begin
-      while sqlite3_step(vm)=SQLITE_ROW do
-      begin
-        with TRCache[result] do
-        begin
-          id   :=sqlite3_column_int (vm,0);
-          src  :=sqlite3_column_text(vm,1);
-          tmpl :=sqlite3_column_int (vm,2);
-          flags:=rfIsNoRef;
-        end;
-        inc(result);
-      end;
-      sqlite3_finalize(vm);
-    end;
+    lmod:='';
+  end
+  else if CurMod=modUnref then
+  begin
+    lmod:=' AND r.modid IS NULL';
+  end
+  else
+  begin
+    Str(CurMod,lmod);
+    lmod:=' AND r.modid='+lmod;
   end;
-*)
+
+  lSQL:='SELECT s.id, s.src, s.filter, '+lflags+
+        ' FROM strings s'+
+        ' LEFT JOIN refs r ON r.srcid=s.id'+
+        ' WHERE s.deleted=0'+lmod+
+        ' GROUP BY s.id';
+
+//    CacheSrcId(CurMod);
+  if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    while sqlite3_step(vm)=SQLITE_ROW do
+    begin
+      with TRCache[result] do
+      begin
+        id   :=sqlite3_column_int (vm,0);
+        src  :=sqlite3_column_text(vm,1);
+        tmpl :=sqlite3_column_int (vm,2);
+        flags:=sqlite3_column_int (vm,3);
+      end;
+      inc(result);
+    end;
+    sqlite3_finalize(vm);
+  end;
 end;
 
 procedure LoadTranslation();
@@ -2036,47 +2034,66 @@ begin
 end;
 
 function BuildTranslation(const afname:AnsiString; const alang:AnsiString='';
-    aall:boolean=false; const amodid:Int64=modAll):boolean;
+    apart:boolean=true; aall:boolean=false; const amodid:Int64=modAll):boolean;
 var
   vm:pointer;
   sl:TStringList;
   ls,lt:AnsiString;
 begin
   result:=false;
-  if alang='' then lt:=CurLang else lt:=alang;
-  if lt='' then exit;
+  if alang='' then ls:=CurLang else ls:=alang;
+  if ls='' then exit;
 
-  // affect on source: CurMod=0+unref; CurMod=-1; CurMod=###
-  lt:=' LEFT OUTER JOIN '+CheckName(lt)+' t ON strings.id=t.srcid';
+  if aall then lt:=' LEFT JOIN ' else lt:=' INNER JOIN ';
+  lt:=lt+CheckName(ls)+' t ON strings.id=t.srcid';
+  if not apart then lt:=lt + ' AND t.part=0';
+
+  // All mean 'with unref too'. "distinct" not necessary, strings.id are unique already
   if amodid=modAll then
   begin
     ls:='SELECT strings.src, t.dst FROM strings'+
         lt+' WHERE strings.deleted=0';
   end
+  // Vanilla mean 'with unref too' // by request'
   else if amodid=modVanilla then
   begin
-//      ls:='SELECT id, src FROM strings WHERE '+
-//          'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
-    ls:='SELECT strings.src, t.dst FROM strings'+
-        ' LEFT JOIN refs ON refs.srcid=strings.id'+lt+
-        ' WHERE strings.deleted=0 AND refs.modid=0 OR refs.srcid IS NULL';
+//    if aunref then
+      ls:='SELECT distinct strings.src, t.dst FROM strings'+
+          ' LEFT JOIN refs ON refs.srcid=strings.id'+lt+
+          ' WHERE strings.deleted=0 AND (refs.modid=0 OR refs.srcid IS NULL)'
+{
+    else
+      ls:='SELECT distinct strings.src, t.dst FROM strings'+
+          ' INNER JOIN refs ON refs.srcid=strings.id'+lt+
+          ' WHERE strings.deleted=0 AND refs.modid=0';
+}
   end
+  // List mean 'without unref'
+  else if amodid=modList then
+  begin
+      ls:='SELECT distinct strings.src, t.dst FROM strings'+lt+
+          ' INNER JOIN refs    ON refs.srcid=strings.id'+
+          ' INNER JOIN tmpmods ON refs.modid=tmpmods.id'+
+          ' WHERE strings.deleted=0';
+  end
+  // Single mod mean 'mod ONLY'. distinct = GROUP BY strings.id
   else
   begin
 //      ls:='SELECT id, src, dst FROM strings WHERE '+
 //          'id IN (SELECT DISTINCT srcid FROM refs WHERE modid='+lmod+')';
-    CacheRefs(amodid);
-{
-    Str(amodid,ls);
-    ls:='SELECT strings.src, t.dst FROM strings'+
-        ' INNER JOIN refs ON refs.srcid=strings.id'+lt+
-        ' WHERE strings.deleted=0 AND refs.modid='+ls;
-}
-    ls:='SELECT strings.src, t.dst FROM strings'+
-        ' INNER JOIN tmpref ON tmpref.srcid=strings.id'+lt+
-        ' WHERE strings.deleted=0';
-  end;
 
+    Str(amodid,ls);
+    ls:='SELECT distinct strings.src, t.dst FROM strings'+lt+
+        ' INNER JOIN refs ON refs.srcid=strings.id AND refs.modid='+ls+
+        ' WHERE strings.deleted=0';
+{
+    CacheSrcId(amodid);
+    ls:='SELECT distinct strings.src, t.dst FROM strings'+lt+
+        ' INNER JOIN tmpref ON tmpref.srcid=strings.id'+
+        ' WHERE strings.deleted=0';
+}
+  end;
+  sl:=nil;
   if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
   begin
     result:=true;
@@ -2088,20 +2105,23 @@ begin
 
     while sqlite3_step(vm)=SQLITE_ROW do
     begin
+      ls:=sqlite3_column_text(vm,0);
       lt:=sqlite3_column_text(vm,1);
-      if (lt<>'') or aall then
-      begin
-        sl.Add(#9+sBeginBlock);
-        ls:=sqlite3_column_text(vm,0);
-        sl.Add(#9#9+sOriginal+ls);
-        if lt<>'' then
-          sl.Add(#9#9+sTranslated+lt)
-        else
-          sl.Add(#9#9+sTranslated+ls);
-        sl.Add(#9+sEndBlock);
-      end;
+
+      sl.Add(#9+sBeginBlock);
+      sl.Add(#9#9+sOriginal+ls);
+      if lt<>'' then
+        sl.Add(#9#9+sTranslated+lt)
+      else
+        sl.Add(#9#9+sTranslated+ls);
+      sl.Add(#9+sEndBlock);
     end;
 
+    sqlite3_finalize(vm);
+  end;
+
+  if (sl<>nil) and (sl.Count>1) then
+  begin
     sl.Add(sEndFile);
 
     sl.SaveToFile(afname{'TRANSLATION.DAT'},TEncoding.Unicode);

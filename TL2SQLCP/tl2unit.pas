@@ -157,6 +157,7 @@ implementation
 {$R *.lfm}
 
 uses
+uni_profiler,
   LCLIntf,
   LazUTF8,
   ClipBrd,
@@ -281,18 +282,26 @@ begin
   cbDisplayMode.ItemIndex:=0;
 
   SetDefaultCaption();
-
+uprof.Start('Full');
+uprof.Start('Load');
   LoadModData();
+uprof.Stop;
 
+uprof.Start('Combo');
   FillFoldersCombo(true);
   FillLangCombo();
+uprof.Stop;
 
+uprof.Start('Trans');
   LoadTranslation();
+uprof.Stop;
 
   FileSave.Enabled:=false;
 
+uprof.Start('Grid');
   FillProjectGrid('');
-
+uprof.Stop;
+uprof.Stop;
   ActiveControl:=TL2Grid;
 end;
 
@@ -1426,8 +1435,9 @@ begin
   if CurMod=modAll then cbFolder.Items.AddObject(rsFolderNoRef,TObject(-2));
 
   lfolders:=nil;
+uprof.start('Folders');
   lcnt:=GetModDirList(CurMod,lfolders);
-
+uprof.stop;
   for i:=0 to lcnt-1 do
   begin
     ls:=lfolders[i];

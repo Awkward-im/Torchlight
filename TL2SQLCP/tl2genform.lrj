@@ -7,5 +7,7 @@
 {"hash":139375349,"name":"tgenform.lbllanguage.caption","sourcebytes":[76,97,110,103,117,97,103,101],"value":"Language"},
 {"hash":213014636,"name":"tgenform.cbpartial.caption","sourcebytes":[73,110,99,108,117,100,101,32,80,97,114,116,105,97,108],"value":"Include Partial"},
 {"hash":206343285,"name":"tgenform.bbgenerate.caption","sourcebytes":[71,101,110,101,114,97,116,101],"value":"Generate"},
-{"hash":4863637,"name":"tgenform.bbclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
+{"hash":4863637,"name":"tgenform.bbclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"},
+{"hash":94299740,"name":"tgenform.bbtoggle.caption","sourcebytes":[67,104,101,99,107,47,85,110,99,104,101,99,107,32,65,108,108],"value":"Check/Uncheck All"},
+{"hash":113544612,"name":"tgenform.cball.caption","sourcebytes":[73,110,99,108,117,100,101,32,117,110,116,114,97,110,115,108,97,116,101,100],"value":"Include untranslated"}
 ]}

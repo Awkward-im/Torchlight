@@ -13,7 +13,7 @@ msgstr ""
 
 #: fmimageset.rsallimagesets
 msgid "All imagesets"
-msgstr ""
+msgstr "Все imageset'ы"
 
 #: fmimageset.rsloadimageset
 msgid "Load imageset"

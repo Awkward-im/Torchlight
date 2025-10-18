@@ -16,10 +16,12 @@ msgid "Build translation with untranslated lines too?"
 msgstr "Собрать перевод с непереведёнными строками?"
 
 #: fmsqlcp.rsbuilddone
+msgctxt "fmsqlcp.rsbuilddone"
 msgid "Translation file generated"
 msgstr "Файл перевода создан"
 
 #: fmsqlcp.rsbuildfailed
+msgctxt "fmsqlcp.rsbuildfailed"
 msgid "Translation file is NOT generated"
 msgstr "Файл перевода не создан"
 
@@ -124,6 +126,7 @@ msgid "When translation exists"
 msgstr "Когда перевод существует"
 
 #: fmsqlcp.rstransplace
+msgctxt "fmsqlcp.rstransplace"
 msgid "Choose file to save translation data"
 msgstr "Выберите файл для сохранения перевода"
 
@@ -338,9 +341,17 @@ msgstr "Закрыть"
 msgid "Generate"
 msgstr "Собрать"
 
+#: tgenform.bbtoggle.caption
+msgid "Check/Uncheck All"
+msgstr "Пометить всё/Снять"
+
 #: tgenform.caption
 msgid "Generate translation file"
 msgstr "Собрать файл перевода"
+
+#: tgenform.cball.caption
+msgid "Include untranslated"
+msgstr "Включая без перевода"
 
 #: tgenform.cbpartial.caption
 msgid "Include Partial"
@@ -389,6 +400,51 @@ msgstr "Язык перевода"
 msgctxt "tl2edittext.rsshow"
 msgid "Click on \"Show Doubles\" button to show"
 msgstr "Нажмите на кнопку \"Показать дубли\" для показа"
+
+#: tl2genform.rsbuilddone
+msgctxt "tl2genform.rsbuilddone"
+msgid "Translation file generated"
+msgstr "Файл перевода создан"
+
+#: tl2genform.rsbuildfailed
+msgctxt "tl2genform.rsbuildfailed"
+msgid "Translation file is NOT generated"
+msgstr "Файл перевода не создан"
+
+#: tl2genform.rsgencaption
+msgid ""
+"Just\n"
+"Build\n"
+"All"
+msgstr ""
+"Просто\n"
+"\vСделай\n"
+"\vВСЁ"
+
+#: tl2genform.rsmodsselected
+msgid "Selected"
+msgstr "Выбрано"
+
+#: tl2genform.rsnolanguage
+msgid "Choose language first"
+msgstr "Сперва выберите язык"
+
+#: tl2genform.rsnothingtobuild
+msgid "Nothing to build. Check at least one mod"
+msgstr "Нечего делать. Пометьте хотя бы один мод"
+
+#: tl2genform.rstransplace
+msgctxt "tl2genform.rstransplace"
+msgid "Choose file to save translation data"
+msgstr "Выберите файл для сохранения перевода"
+
+#: tl2genform.rsvanilla
+msgid ""
+"You choosed base game translation.\n"
+"It will include unreferred info too."
+msgstr ""
+"Вы выбрали перевод оригинальной игры\n"
+"Это включает и строки без адреса."
 
 #: tl2notesform.stitle
 msgctxt "tl2notesform.stitle"

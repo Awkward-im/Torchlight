@@ -125,7 +125,6 @@ const
 const
   MyYandexAPIKey = 'trnsl.1.1.20200101T160123Z.3e57638fddd71006.49c9489591b0e6a07ab3e6cf12886b99fecdf26b';
 //  AbramoffYandexAPIkey = 'trnsl.1.1.20140120T030428Z.c4c35e8a7d79c03e.defc651bed90c4424445c47be30e6b531bc4b063';
-  MyLanguage     = 'ru';
 const
   TransList:array of string = (
     'Google'       ,
@@ -279,7 +278,7 @@ begin
       ltr.FreeKey:=MyYandexAPIKey;
   end;
 
-  edTransLang.Text:=config.ReadString(sNSBase+':'+sTranslation,sTransLang   ,''{MyLanguage});
+  edTransLang.Text:=config.ReadString(sNSBase+':'+sTranslation,sTransLang   ,'');
   ApplyLoadedLang ( config.ReadString(sNSBase+':'+sTranslation,sPrgTransLang,'en'));
   ApplyLoadedTrans( config.ReadString(sNSBase+':'+sTranslation,sTranslator  ,'Google'));
 

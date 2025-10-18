@@ -19,9 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmSQLCP"/>
-        <TopLine Value="10"/>
-        <CursorPos X="14" Y="93"/>
-        <FoldState Value=" T4902 TLlK0C T7HF- T8iL2D TMjJ010213131 T3kC0@015 piYlI0G4]9gjP0A]9j1jL036]99jQ07 T6kD04A PIsF0 T0kR4n038]oZla6jF12 Picng2B"/>
+        <TopLine Value="219"/>
+        <CursorPos X="15" Y="231"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -124,7 +123,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SettingsForm"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="107"/>
         <CursorPos Y="122"/>
         <UsageCount Value="201"/>
@@ -138,7 +137,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2SimForm"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="124"/>
         <CursorPos X="29" Y="143"/>
         <UsageCount Value="201"/>
@@ -160,8 +159,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2Unit"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="1154"/>
-        <CursorPos Y="1157"/>
+        <TopLine Value="270"/>
+        <CursorPos Y="287"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -186,7 +185,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="51"/>
         <CursorPos X="11" Y="66"/>
-        <UsageCount Value="88"/>
+        <UsageCount Value="96"/>
       </Unit>
       <Unit>
         <Filename Value="tl2delform.pas"/>
@@ -195,11 +194,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TL2DelForm"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="128"/>
         <CursorPos Y="199"/>
         <FoldState Value=" T3k60S1 PPU0?"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="75"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -207,10 +206,10 @@
         <Filename Value="tl2replace.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Replace"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="78"/>
         <CursorPos X="41" Y="89"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="38"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -222,9 +221,9 @@
         <UnitName Value="TL2GenForm"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="63"/>
-        <CursorPos X="37" Y="103"/>
-        <UsageCount Value="23"/>
+        <TopLine Value="178"/>
+        <CursorPos X="34" Y="190"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -299,10 +298,10 @@
       </Unit>
       <Unit>
         <Filename Value="rgdb.text.pas"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="289"/>
-        <CursorPos Y="309"/>
-        <UsageCount Value="88"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="2074"/>
+        <CursorPos X="34" Y="2083"/>
+        <UsageCount Value="93"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -315,10 +314,10 @@
       </Unit>
       <Unit>
         <Filename Value="..\Addons\sqlitedb.pas"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="374"/>
-        <CursorPos Y="390"/>
-        <UsageCount Value="41"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="111"/>
+        <CursorPos Y="151"/>
+        <UsageCount Value="46"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -411,130 +410,125 @@
         <CursorPos X="3" Y="1763"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customcheckbox.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="155"/>
+        <CursorPos Y="173"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="DEBUG"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="26">
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="104" Column="64" TopLine="85"/>
+        <Caret Line="168" TopLine="153"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="45" Column="10" TopLine="29"/>
+        <Caret Line="169" TopLine="153"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="104" Column="40" TopLine="88"/>
+        <Caret Line="170" TopLine="153"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="103" Column="22" TopLine="91"/>
+        <Caret Line="169" TopLine="153"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="93" TopLine="87"/>
+        <Caret Line="170" TopLine="153"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="94" TopLine="87"/>
+        <Caret Line="172" TopLine="153"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="95" TopLine="87"/>
+        <Caret Line="195" TopLine="178"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="96" TopLine="87"/>
+        <Caret Line="198" TopLine="178"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="98" TopLine="87"/>
+        <Caret Line="195" TopLine="178"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="55" Column="10" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2046" TopLine="2039"/>
       </Position>
       <Position>
         <Filename Value="tl2genform.pas"/>
-        <Caret Line="100" TopLine="87"/>
+        <Caret Line="195" TopLine="178"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="101" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2046" TopLine="2039"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="103" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2047" TopLine="2039"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="104" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2046" TopLine="2039"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="103" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2050" TopLine="2039"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="104" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2051" TopLine="2039"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="103" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2052" TopLine="2039"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="105" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2055" TopLine="2039"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="98" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2061" TopLine="2052"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="100" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2075" TopLine="2064"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="101" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2077" TopLine="2064"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="103" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2079" TopLine="2064"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="104" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2078" TopLine="2064"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="103" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2079" TopLine="2064"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="104" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2080" TopLine="2064"/>
       </Position>
       <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="103" TopLine="87"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="105" TopLine="87"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="98" TopLine="87"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="100" TopLine="87"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="101" TopLine="87"/>
-      </Position>
-      <Position>
-        <Filename Value="tl2genform.pas"/>
-        <Caret Line="100" TopLine="87"/>
+        <Filename Value="rgdb.text.pas"/>
+        <Caret Line="2079" TopLine="2064"/>
       </Position>
     </JumpHistory>
     <RunParams>
