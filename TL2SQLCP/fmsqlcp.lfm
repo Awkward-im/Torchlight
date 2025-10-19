@@ -60,6 +60,7 @@ object FormSQLCP: TFormSQLCP
         ItemHeight = 0
         TabOrder = 1
         OnSelectionChange = lbModsSelectionChange
+        OnDblClick = DoStartEdit
       end
       object sbAdd: TSpeedButton
         Left = 373

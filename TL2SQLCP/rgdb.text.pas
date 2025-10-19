@@ -735,6 +735,8 @@ var
   lmod,ls:AnsiString;
   i:integer;
 begin
+  result:=0;
+
   lmodid:=stat.modid;
 
   SetLength(stat.langs,0);

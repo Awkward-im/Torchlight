@@ -14,8 +14,6 @@ type
   { TEditTextForm }
 
   TEditTextForm = class(TForm)
-    actShowAlt: TAction;
-    actShowDupe: TAction;
     ActionList: TActionList;
     actPrevLine        : TAction;
     actNextLine        : TAction;
@@ -23,19 +21,19 @@ type
     actNextUntranslated: TAction;
     actMarkAsPartial   : TAction;
     actShowSample      : TAction;
+    actShowDupe        : TAction;
+    actShowAlt         : TAction;
     actTranslate       : TAction;
-    pnl_1_File: TPanel;
+    memAlt: TMemo;
+    pnlTop     : TPanel;
+    pnl_1_File : TPanel;
     lblFile    : TLabel;
     lblTag     : TLabel;
     lblTagValue: TLabel;
     pnl_3_Original: TPanel;
-    memOriginal: TMemo;
-    pnl_5_Translation: TPanel;
-    memTrans: TMemo;
-    pnl_6_Bottom: TPanel;
-    lblNumber: TLabel;
-    bbCancel : TBitBtn;
-    bbOK     : TBitBtn;
+    memOriginal   : TMemo;
+    Splitter1: TSplitter;
+    pnlBottom    : TPanel;
     pnl_4_Toolbar: TPanel;
     sbPrevUntranslated: TSpeedButton;
     sbPrev            : TSpeedButton;
@@ -44,8 +42,14 @@ type
     sbPartial         : TSpeedButton;
     sbShowSample      : TSpeedButton;
     sbTranslate       : TSpeedButton;
-    sbShowDupe: TSpeedButton;
-    sbAlt: TSpeedButton;
+    sbShowDupe        : TSpeedButton;
+    sbAlt             : TSpeedButton;
+    pnl_5_Translation: TPanel;
+    memTrans         : TMemo;
+    pnl_6_Bottom: TPanel;
+    lblNumber   : TLabel;
+    bbCancel    : TBitBtn;
+    bbOK        : TBitBtn;
     procedure actMarkAsPartialExecute(Sender: TObject);
     procedure actNextLineExecute(Sender: TObject);
     procedure actNextUntranslatedExecute(Sender: TObject);
@@ -58,6 +62,7 @@ type
     procedure bbOKClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure memTransKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure pnl_3_OriginalResize(Sender: TObject);
   private
     FIdx:integer;
     function CheckTheSame(idx: integer): integer;
@@ -225,10 +230,6 @@ begin
     end;
 
     CheckTheSame(FIdx);
-
-//    prj.UpdateGrid(FIdx);
-//    prj.MoveToIndex(FIdx);
-//    prj.data.CheckTheSame(FIdx,TL2Settings.cbAutoAsPartial.Checked);
   end;
 
   FIdx:=idx;
@@ -238,35 +239,7 @@ begin
   //--- Navigation
   SearchUntranslated(idx,true);
   SearchUntranslated(idx,false);
-{
-  actPrevUntranslated.Tag:=0;
-  i:=idx-1;
-  while i>=0 do
-  begin
-    with TRCache[i] do
-      if part or (dst='') or (src=dst) then
-      begin
-        actPrevUntranslated.Tag:=i;
-        break;
-      end;
-    dec(i);
-  end;
-  actPrevUntranslated.Enabled:=actPrevUntranslated.Tag>0;
 
-  actNextUntranslated.Tag:=0;
-  i:=idx+1;
-  while i<Length(TRCache) do
-  begin
-    with TRCache[i] do
-      if part or (dst='') or (src=dst) then
-      begin
-        actNextUntranslated.Tag:=i;
-        break;
-      end;
-    inc(i);
-  end;
-  actNextUntranslated.Enabled:=actNextUntranslated.Tag>0;
-}
   actPrevLine.Enabled:=FIdx>0;
   actNextLine.Enabled:=FIdx<High(TRCache);
 
@@ -308,6 +281,21 @@ begin
   memOriginal.Text:=SlashNtoCRLF(TRCache[idx].src);
   memTrans   .Text:=SlashNtoCRLF(TRCache[idx].dst);
   memTrans.Modified:=false;
+
+  //--- Alt
+  i:=memOriginal.Parent.ClientHeight;
+  GetTranslation(TRCache[idx].id,'en',ls);
+  if ls<>'' then
+  begin
+    memOriginal.Height:=i div 2;
+    memAlt.Visible:=true;
+    memAlt.Text:=ls;
+  end
+  else
+  begin
+    memAlt.Visible:=false;
+    memOriginal.Height:=i;
+  end;
 end;
 
 //----- Actions -----
@@ -439,6 +427,12 @@ begin
       Key:=0;
     end;
   end
+end;
+
+procedure TEditTextForm.pnl_3_OriginalResize(Sender: TObject);
+begin
+  if memAlt.Visible then
+    memOriginal.Height:=memOriginal.Parent.ClientHeight div 2;
 end;
 
 procedure TEditTextForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);

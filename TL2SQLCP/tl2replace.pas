@@ -10,7 +10,6 @@ implementation
 uses
   rgglobal,
   sqlite3dyn,
-  sqlitedb,
   rgtrans,
   rgio.dat,
   rgnode,
