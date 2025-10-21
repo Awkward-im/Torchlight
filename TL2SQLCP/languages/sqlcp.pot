@@ -1,20 +1,6 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: fmsqlcp.rsbuildall
-msgid "Build translation with untranslated lines too?"
-msgstr ""
-
-#: fmsqlcp.rsbuilddone
-msgctxt "fmsqlcp.rsbuilddone"
-msgid "Translation file generated"
-msgstr ""
-
-#: fmsqlcp.rsbuildfailed
-msgctxt "fmsqlcp.rsbuildfailed"
-msgid "Translation file is NOT generated"
-msgstr ""
-
 #: fmsqlcp.rscantsave
 msgid "Can't save database"
 msgstr ""
@@ -115,11 +101,6 @@ msgstr ""
 msgid "When translation exists"
 msgstr ""
 
-#: fmsqlcp.rstransplace
-msgctxt "fmsqlcp.rstransplace"
-msgid "Choose file to save translation data"
-msgstr ""
-
 #: taltform.caption
 msgid "Alternatives"
 msgstr ""
@@ -203,6 +184,11 @@ msgstr ""
 #: tedittextform.acttranslate.hint
 msgctxt "tedittextform.acttranslate.hint"
 msgid "Translate"
+msgstr ""
+
+#: tedittextform.bbcancel.caption
+msgctxt "tedittextform.bbcancel.caption"
+msgid "Cancel"
 msgstr ""
 
 #: tedittextform.lbltag.caption
@@ -397,6 +383,10 @@ msgid ""
 "All"
 msgstr ""
 
+#: tl2genform.rslinecount
+msgid "Line count"
+msgstr ""
+
 #: tl2genform.rsmodsselected
 msgid "Selected"
 msgstr ""
@@ -405,8 +395,25 @@ msgstr ""
 msgid "Choose language first"
 msgstr ""
 
+#: tl2genform.rsnothing
+msgid "Nothing selected"
+msgstr ""
+
 #: tl2genform.rsnothingtobuild
 msgid "Nothing to build. Check at least one mod"
+msgstr ""
+
+#: tl2genform.rspartially
+msgid "Partially"
+msgstr ""
+
+#: tl2genform.rstotal
+msgid "Total mods"
+msgstr ""
+
+#: tl2genform.rstranslated
+msgctxt "tl2genform.rstranslated"
+msgid "Translated"
 msgstr ""
 
 #: tl2genform.rstransplace
@@ -557,6 +564,7 @@ msgid "Ready"
 msgstr ""
 
 #: tl2unit.rsmodereadyplus
+msgctxt "tl2unit.rsmodereadyplus"
 msgid "Translated"
 msgstr ""
 
@@ -792,6 +800,7 @@ msgid "(Partial translation)"
 msgstr ""
 
 #: ttl2notes.bbcancel.caption
+msgctxt "ttl2notes.bbcancel.caption"
 msgid "Cancel"
 msgstr ""
 

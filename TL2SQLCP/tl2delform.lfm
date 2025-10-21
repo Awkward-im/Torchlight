@@ -81,6 +81,7 @@ object DelForm: TDelForm
     Width = 116
     Caption = 'Show deleted lines'
     TabOrder = 6
+    Checked = True
     OnClick = FillList
   end
 end

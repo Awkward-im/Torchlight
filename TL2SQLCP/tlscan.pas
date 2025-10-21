@@ -84,7 +84,8 @@ const
     '.PNG',
     '.BAK',
     '.DLL',
-    '.EXE'
+    '.EXE',
+    '.PSD'
   );
 
 const

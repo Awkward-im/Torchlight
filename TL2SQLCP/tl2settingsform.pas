@@ -57,7 +57,8 @@ type
     function GetSelectedTranslator: TTranslateBase;
     procedure LoadSettings();
     procedure SaveSettings();
-
+  public
+    FilterChanged:boolean;
   end;
 
 var
@@ -163,6 +164,7 @@ var
   config:TIniFile;
   ls:AnsiString;
   lstyle:TFontStyles;
+  lform:TForm;
   i:integer;
 begin
   config:=TMemIniFile.Create(INIFileName,[ifoEscapeLineFeeds,ifoStripQuotes]);
@@ -207,17 +209,22 @@ begin
   //--- Special
   config.WriteBool  (sNSBase+':'+sSectSettings,sParam ,cbParamSign.Checked);
   config.WriteString(sNSBase+':'+sSectSettings,sFilter,edFilterWords.Caption);
-  if (OldFilter<>edFilterWords.Caption) or
-     (OldParam <>cbParamSign.Checked) then
+
+  FilterChanged:=
+    (OldFilter<>edFilterWords.Caption) or
+    (OldParam <>cbParamSign.Checked);
+
+  if FilterChanged then
   begin
     SetFilterWords(TL2Settings.edFilterWords.Caption,cbParamSign.Checked);
 
     OldParam :=cbParamSign.Checked;
     OldFilter:=edFilterWords.Caption;
-    ls:=Application.MainForm.Caption;
-    Application.MainForm.Caption:=rsRemakeFilter;
+    if Parent=nil then lform:=Self else lform:=Application.MainForm;
+    ls:=lform.Caption;
+    lform.Caption:=rsRemakeFilter;
     RemakeFilter();
-    Application.MainForm.Caption:=ls;
+    lform.Caption:=ls;
   end;
 
   config.UpdateFile;

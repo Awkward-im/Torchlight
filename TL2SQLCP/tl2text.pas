@@ -39,7 +39,7 @@ type
 var
   OnFilterChange:TOnFilterChange=nil;
 const
-  defFilter = 'a an the of by to for his her their';
+  defFilter = 'a an are is the of by to for his her their';
 
 function  FilteredString(const astr:AnsiString{; keepparam:boolean=false}):AnsiString;
 procedure SetFilterWords(const astr:AnsiString; akeepparam:boolean=false);

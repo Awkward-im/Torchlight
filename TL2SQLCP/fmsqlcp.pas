@@ -285,6 +285,7 @@ begin
   TL2Settings.Align      :=alNone;
   TL2Settings.BorderStyle:=bsSizeable;
   TL2Settings.ShowModal;
+  needtosave:=needtosave or TL2Settings.FilterChanged;
 end;
 
 procedure TFormSQLCP.NewTrans(Sender: TObject);

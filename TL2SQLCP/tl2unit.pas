@@ -1293,13 +1293,14 @@ begin
 
   TL2Grid.EndUpdate;
 
-  if (lSavedRow=0) and (lline>1) then lSavedRow:=1;
-  TL2Grid.Row:=lSavedRow;
-
   if (afilter='') and Self.Active then
   begin
     TL2Grid.SetFocus;
   end;
+  if lSavedRow>=TL2Grid.RowCount then lSavedRow:=0;
+  if (lSavedRow=0) and (lline>1) then lSavedRow:=1;
+  TL2Grid.Row:=lSavedRow;
+
   TL2Grid.TopRow:=TL2Grid.Row;
 
 end;

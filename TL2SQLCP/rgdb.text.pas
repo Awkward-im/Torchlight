@@ -84,7 +84,8 @@ const
   rfIsUnique    = $2000; // runtime, line is unique for mod
   rfIsAutofill  = $1000; // runtime, autofilled or filter used by similar search
   rfIsReferred  = $8000;
-  rfRuntime     = rfIsFiltered or rfIsManyRefs or rfIsNoRef or rfIsModified or rfIsAutofill;
+//  rfRuntime     = rfIsFiltered or rfIsManyRefs or rfIsNoRef or rfIsModified or rfIsAutofill;
+  rfRuntime     = rfIsModified or rfIsAutofill;
 
 
 {set rfIsFiltered flag for cached elements placed in "afilter" and child directory}
@@ -2038,15 +2039,30 @@ begin
            if (flags and rfIsDeleted )<>0 then begin b:=true; DeleteOriginal(id) end
       else if (flags and rfIsModified)<>0 then
       begin
-//        if dst=src then dst:='';
-        SetTranslation(id, CurLang, dst, part);
-//        if checkthesame and (dst<>'') and ((flags and rfIsAutofill)=0) then
-//          FillSimilars(dst, CurLang, tmpl,true);
+        if (dst<>'') or (CurMod=modAll) then
+        begin
+          SetTranslation(id, CurLang, dst, part);
+        // delete empty translation to avoid using as template for autofill
+          flags:=flags and not rfRuntime;
+        end;
+      end;
+    end;
+  end;
+  if CurMod<>modAll then
+  begin
+    FillAllSimilars(CurLang);
+    // trying to delete translation again for case when they was autofilled
+    for i:=0 to High(TRCache) do
+    begin
+      with TRCache[i] do
+      begin
+        if (flags and rfIsModified)<>0 then
+          SetTranslation(id, CurLang, dst, part);
         flags:=flags and not rfRuntime;
       end;
     end;
   end;
-  if CurMod<>modAll then FillAllSimilars(CurLang);
+
   if b then
   begin
     SetModStatistic(CurMod);
