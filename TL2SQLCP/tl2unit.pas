@@ -1674,18 +1674,16 @@ procedure TMainTL2TransForm.actExportClipBrdExecute(Sender: TObject);
 var
   sl:TStringList;
   ls:string;
-  i,lcnt:integer;
+  i:integer;
   lshift:boolean;
 begin
   lshift:=GetKeyState(VK_SHIFT)<0;
   sl:=TStringList.Create;
-  lcnt:=0;
   try
     for i:=1 to TL2Grid.RowCount-1 do
     begin
       if TL2Grid.IsCellSelected[TL2Grid.Col,i] then
       begin
-        inc(lcnt);
         ls:=TL2Grid.Cells[TL2Grid.Col,i];
         if lshift then
           sl.Add(RemoveTags(ls))
@@ -1695,8 +1693,8 @@ begin
     end;
 
     // avoid CRLF
-    if lcnt=1 then
-      Clipboard.asText:=ls
+    if sl.Count=1 then
+      Clipboard.asText:=sl[0]
     else
       Clipboard.asText:=sl.Text;
 
