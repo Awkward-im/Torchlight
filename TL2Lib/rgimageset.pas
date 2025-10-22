@@ -494,7 +494,7 @@ end;
 
 function TRGImageset.UseImageMemory(abuf:PByte; asize:integer; ais:integer=-1):boolean;
 begin
-  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit(false);
   FreeImage(Imagesets[ais].Image);
   LoadImageFromMemory(abuf,asize,Imagesets[ais].Image);
   result:=UseImageset();
@@ -502,14 +502,14 @@ end;
 
 function TRGImageset.UseImageset(ais:integer=-1):boolean;
 begin
-  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit(false);
   with Imagesets[ais].Image do
     result:=(Width>0) and (Height>0) and (Bits<>nil);
 end;
 
 function TRGImageset.UseImageData(adata:TImageData; ais:integer=-1):boolean;
 begin
-  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit(false);
   FreeImage(Imagesets[ais].Image);
   result:=CloneImage(adata, Imagesets[ais].Image);
 end;
@@ -587,7 +587,7 @@ var
 begin
   result:=0;
 
-  if GetSPrite(idx,lsprite) then
+  if GetSprite(idx,lsprite) then
   begin
     lpos:=astrm.Position;
     SaveImageToStream('.png',astrm,lsprite);

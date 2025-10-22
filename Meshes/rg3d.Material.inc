@@ -775,7 +775,7 @@ begin
     ls:=memReadText(aptr); //ShaderName?
     Log(ls+' (size of next data, mat+consts)',HexStr(memReadDWord(aptr),8));
 
-    result:=result and ReadHobMaterial(aptr,mtl,ltxt);
+    result:=ReadHobMaterial(aptr,mtl,ltxt) and result;
   end;
   LogLn;
   SetLength(ltxt,0);

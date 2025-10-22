@@ -46,7 +46,7 @@ end;
 
 function TRGImageset.UseImagePicture(apic:TPicture; ais:integer=-1):boolean;
 begin
-  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit(false);
   FreeImage(Imagesets[ais].Image);
   ConvertBitmapToData(apic.Bitmap,Imagesets[ais].Image);
   result:=UseImageSet();

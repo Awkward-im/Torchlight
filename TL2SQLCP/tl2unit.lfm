@@ -3,7 +3,6 @@ object MainTL2TransForm: TMainTL2TransForm
   Height = 655
   Top = 152
   Width = 1007
-  Caption = 'Torchlight 2 Translation'
   ClientHeight = 655
   ClientWidth = 1007
   KeyPreview = True

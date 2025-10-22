@@ -268,8 +268,7 @@ begin
   if ltmp<>0 then
   begin
     FBinPos:=FBinStart+SizeOf(TLayoutBin)+9+2;
-    if (RGDebugLevel=dlDetailed) then
-      FLog.Add('Binary chunk at '+HexStr(ltmp,8));
+//    if (RGDebugLevel=dlDetailed) then  FLog.Add('Binary chunk at '+HexStr(ltmp,8));
   end;
 
   lcnt:=memReadWord(FPos);               // root baseobject count

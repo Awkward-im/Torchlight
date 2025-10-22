@@ -143,7 +143,7 @@ begin
           end;
         end;
         if laei.effect>=0  then
-          result:=result and AddAffixEffectToBase(ams, laei);
+          result:=AddAffixEffectToBase(ams, laei) and result;
       end;
     end;
   end;

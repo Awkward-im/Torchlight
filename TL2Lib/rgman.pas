@@ -253,7 +253,9 @@ begin
           if ftype=typeDirectory then
           begin
             AddPath(PUnicodeChar(lname+UnicodeString(pc)));
-          end;
+          end
+          else if ftype=typeUnknown then
+            RGLog.Add('Unknown file type: '+FastWideToStr(PWideChar(lname))+FastWideToStr(pc));
 
           offset  :=memReadDWord(aptr);
           size_s  :=memReadDWord(aptr);

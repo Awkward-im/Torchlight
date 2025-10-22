@@ -131,7 +131,7 @@ begin
         else if CompareWide(pcw,'ID'   )=0 then lid  :=AsInteger64(ltnode);
       end;
       if (lname<>'') and (lid<>-1) then
-        result:=result and AddLThemeToBase(ams,lname,lid);
+        result:=AddLThemeToBase(ams,lname,lid) and result;
     end;
   end;
   if (lname='') or (lid=-1) then

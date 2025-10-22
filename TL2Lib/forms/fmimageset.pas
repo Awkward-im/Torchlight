@@ -146,7 +146,7 @@ var
   ldlg:TSaveDialog;
   ldir:TSelectDirectoryDialog;
   lpath:string;
-  i,lidx:integer;
+  i:integer;
 begin
   if lbImages.SelCount=1 then
   begin
@@ -343,7 +343,6 @@ procedure TFormImageset.FillList(const actrl:TRGController;
     adata:PByte; asize:integer; adir:string='');
 var
   ls:string;
-  i:integer;
   lres:boolean;
 begin
   imgSprite.Picture.Clear;
@@ -374,7 +373,6 @@ procedure TFormImageset.FillList(const fname:string);
 var
   ldlg:TOpenDialog;
   lfname:string;
-  i:integer;
 begin
   if fname='' then
   begin

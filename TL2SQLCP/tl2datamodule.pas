@@ -13,7 +13,6 @@ type
   { TTL2DataModule }
 
   TTL2DataModule = class(TDataModule)
-    mnuClosePage: TMenuItem;
     TL2ImageList: TImageList;
     procedure DataModuleCreate (Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
@@ -41,8 +40,8 @@ implementation
 
 uses
   TL2Text,
-  rgglobal,
-  rgpak;
+//  rgpak,
+  rgglobal;
 
 {$R *.lfm}
 

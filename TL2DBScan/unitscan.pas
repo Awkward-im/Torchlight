@@ -429,7 +429,7 @@ begin
   else
     result:=true;
 
-  result:=result and (sqlite3_close(adb)=SQLITE_OK);
+  result:=(sqlite3_close(adb)=SQLITE_OK) and result;
   adb:=nil;
   ReleaseSQLite();
 end;

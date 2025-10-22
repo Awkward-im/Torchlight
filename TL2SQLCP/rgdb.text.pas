@@ -1967,7 +1967,7 @@ begin
     lmod:=' AND r.modid='+lmod;
   end;
 
-  lSQL:='SELECT s.id, s.src, s.filter, '+lflags+
+  lSQL:='SELECT s.id, s.src, s.filter, '+lflags+',count(1)'+
         ' FROM strings s'+
         ' LEFT JOIN refs r ON r.srcid=s.id'+
         ' WHERE s.deleted=0'+lmod+
@@ -1984,6 +1984,12 @@ begin
         src  :=sqlite3_column_text(vm,1);
         tmpl :=sqlite3_column_int (vm,2);
         flags:=sqlite3_column_int (vm,3);
+        if flags<>rfIsNoRef then
+        begin
+          lcnt:=sqlite3_column_int(vm,4);
+               if lcnt=1 then flags:=flags or rfIsReferred
+          else if lcnt>1 then flags:=flags or rfIsManyRefs;
+        end;
       end;
       inc(result);
     end;
