@@ -412,14 +412,12 @@ end;
 function TFormSQLCP.AddSQLog(var adata:string):integer;
 begin
   FSQLogForm.memLog.Append(adata);
-  adata:='';
   result:=0;
 end;
 
 function TFormSQLCP.AddLog(var adata:string):integer;
 begin
   FLogForm.memLog.Append(adata);
-  adata:='';
   result:=0;
 end;
 
@@ -624,7 +622,7 @@ end;
 
 procedure TFormSQLCP.DoStartEdit(Sender: TObject);
 var
-  lsize:integer;
+  lmodified:boolean;
 begin
   if (MainTL2TransForm=nil) and
      (lbMods.ItemIndex>=0) and
@@ -638,16 +636,17 @@ begin
     CurLang:=gdModStat.Cells[2,gdModStat.Row];
 
     MainTL2TransForm:=TMainTL2TransForm.Create(Self);
-    lsize:=SQLog.Size;
+
     MainTL2TransForm.ShowModal;
-    if MainTL2TransForm.wasmodified then
-      needtosave:=true;
+    lmodified:=MainTL2TransForm.wasmodified;
 
     MainTL2TransForm.Free;
     MainTL2TransForm:=nil;
 
-    if lsize<>SQLog.Size then
+    if lmodified then
     begin
+      needtosave:=true;
+
       FillLangList();
       lbModsSelectionChange(Sender, true);
     end;
@@ -660,6 +659,15 @@ begin
   begin
     doBreak:=true;
     Key:=0;
+  end;
+  if Key=VK_RETURN then
+  begin
+    // cheat, used fo scan process
+    if sbAdd.Enabled then
+    begin
+      Key:=0;
+      DoStartEdit(Sender);
+    end;
   end;
 end;
 

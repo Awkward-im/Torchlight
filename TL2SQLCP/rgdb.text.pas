@@ -1473,7 +1473,7 @@ begin
 
     ls:='SELECT value FROM dicdirs'+
         ' WHERE id IN (SELECT DISTINCT dir FROM refs'+lmod+')';
-//        ' ORDER BY value';
+//        ' INNER JOIN (SELECT DISTINCT dir FROM refs'+lmod+') r ON r.dir=dicdirs.id';
     if sqlite3_prepare_v2(tldb, PAnsiChar(ls),-1, @vm, nil)=SQLITE_OK then
     begin
       while sqlite3_step(vm)=SQLITE_ROW do
@@ -1893,11 +1893,21 @@ end;
 
 {%ENDREGION Scan and Load}
 
+const
+{
+  lflags:='CASE WHEN r.flags IS NULL THEN '+IntToStr(rfIsNoRef)+' ELSE '+
+          'max(r.flags&01)|max(r.flags&02)|max(r.flags&04)|max(r.flags&08)|'+
+          'max(r.flags&10)|max(r.flags&20)|max(r.flags&40)|max(r.flags&80) END';
+}
+  LineFlags = 'COALESCE(max(r.flags&01)|max(r.flags&02)|max(r.flags&04)|max(r.flags&08)|'+
+                       'max(r.flags&10)|max(r.flags&20)|max(r.flags&40)|max(r.flags&80),'+
+                       {IntToStr(rfIsNoRef)+}'0x400)';
+
 function GetLineFlags(aid:integer; const amodid:AnsiString):cardinal;
 var
   vm:pointer;
   lSQL:AnsiString;
-  i:integer;
+  lcnt:integer;
 begin
 //  if amodid='-2' then exit(rfIsNoRef);
 
@@ -1906,20 +1916,17 @@ begin
     lSQL:=' AND modid='+amodid
   else
     lSQL:='';
-  lSQL:='SELECT flags FROM refs WHERE srcid='+IntToStr(aid)+lSQL;
+  lSQL:='SELECT '+LineFlags+', count(1) FROM refs r WHERE srcid='+IntToStr(aid)+lSQL;
 
   if sqlite3_prepare_v2(tldb, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
   begin
-    i:=0;
-    while sqlite3_step(vm)=SQLITE_ROW do
+    result:=sqlite3_column_int(vm,0);
+    if result<>rfIsNoRef then
     begin
-      result:=result or sqlite3_column_int(vm,0);
-      inc(i);
+      lcnt:=sqlite3_column_int(vm,1);
+           if lcnt=1 then result:=result or rfIsReferred
+      else if lcnt>1 then result:=result or rfIsManyRefs;
     end;
-
-         if i=1 then result:=result or rfIsReferred
-    else if i>1 then result:=result or rfIsManyRefs
-    else{if i<1 then}result:=rfIsNoRef;
 
     sqlite3_finalize(vm);
   end;
@@ -1945,14 +1952,7 @@ begin
 
   lcnt:=GetLineCount(CurMod,false);
   SetLength(TRCache,lcnt);
-{
-  lflags:='CASE WHEN r.flags IS NULL THEN '+IntToStr(rfIsNoRef)+' ELSE '+
-          'max(r.flags&01)|max(r.flags&02)|max(r.flags&04)|max(r.flags&08)|'+
-          'max(r.flags&10)|max(r.flags&20)|max(r.flags&40)|max(r.flags&80) END';
-}
-  lflags:='COALESCE(max(r.flags&01)|max(r.flags&02)|max(r.flags&04)|max(r.flags&08)|'+
-                   'max(r.flags&10)|max(r.flags&20)|max(r.flags&40)|max(r.flags&80),'+
-                   IntToStr(rfIsNoRef)+')';
+
   if CurMod=modAll then
   begin
     lmod:='';
@@ -1967,7 +1967,7 @@ begin
     lmod:=' AND r.modid='+lmod;
   end;
 
-  lSQL:='SELECT s.id, s.src, s.filter, '+lflags+',count(1)'+
+  lSQL:='SELECT s.id, s.src, s.filter, '+LineFlags+',count(1)'+
         ' FROM strings s'+
         ' LEFT JOIN refs r ON r.srcid=s.id'+
         ' WHERE s.deleted=0'+lmod+

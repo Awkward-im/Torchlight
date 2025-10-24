@@ -1,5 +1,4 @@
 {"version":1,"strings":[
-{"hash":188241870,"name":"tmaintl2transform.caption","sourcebytes":[84,111,114,99,104,108,105,103,104,116,32,50,32,84,114,97,110,115,108,97,116,105,111,110],"value":"Torchlight 2 Translation"},
 {"hash":77859893,"name":"tmaintl2transform.cblanguage.hint","sourcebytes":[67,104,111,111,115,101,32,116,114,97,110,115,108,97,116,105,111,110,32,108,97,110,103,117,97,103,101],"value":"Choose translation language"},
 {"hash":152783778,"name":"tmaintl2transform.cbfolder.hint","sourcebytes":[84,111,112,45,108,101,118,101,108,32,102,111,108,100,101,114,32,102,105,108,116,101,114],"value":"Top-level folder filter"},
 {"hash":6063029,"name":"tmaintl2transform.tl2grid.columns[0].title.caption","sourcebytes":[86,97,108,117,101],"value":"Value"},
@@ -15,8 +14,6 @@
 {"hash":36621524,"name":"tmaintl2transform.filesave.hint","sourcebytes":[83,97,118,101,32,112,114,111,106,101,99,116],"value":"Save project"},
 {"hash":4710148,"name":"tmaintl2transform.fileexit.caption","sourcebytes":[69,38,120,105,116],"value":"E&xit"},
 {"hash":56290829,"name":"tmaintl2transform.fileexit.hint","sourcebytes":[69,120,105,116,32,112,114,111,103,114,97,109],"value":"Exit program"},
-{"hash":258570439,"name":"tmaintl2transform.actshowlog.caption","sourcebytes":[83,104,111,119,32,108,111,103],"value":"Show log"},
-{"hash":21612295,"name":"tmaintl2transform.actshowlog.hint","sourcebytes":[83,104,111,119,32,108,111,103,32,119,105,110,100,111,119],"value":"Show log window"},
 {"hash":117170148,"name":"tmaintl2transform.actexportclipbrd.caption","sourcebytes":[69,120,112,111,114,116,32,67,108,105,112,98,111,97,114,100],"value":"Export Clipboard"},
 {"hash":61202724,"name":"tmaintl2transform.actexportclipbrd.hint","sourcebytes":[67,111,112,121,32,115,101,108,101,99,116,101,100,32,115,111,117,114,99,101,32,116,101,120,116,32,116,111,32,99,108,105,112,98,111,97,114,100],"value":"Copy selected source text to clipboard"},
 {"hash":117184228,"name":"tmaintl2transform.actimportclipbrd.caption","sourcebytes":[73,109,112,111,114,116,32,67,108,105,112,98,111,97,114,100],"value":"Import Clipboard"},

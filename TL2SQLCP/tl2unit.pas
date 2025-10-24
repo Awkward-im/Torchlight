@@ -26,7 +26,6 @@ type
     actSettings: TAction;
     actReplace: TAction;
     actShowDoubles: TAction;
-    actShowLog: TAction;
     actShowSimilar: TAction;
     actTranslate: TAction;
     HelpNotes: TAction;
@@ -46,7 +45,6 @@ type
     miViewSimilar: TMenuItem;
     miViewDoubles: TMenuItem;
     miViewNotes: TMenuItem;
-    miViewLog: TMenuItem;
     miView: TMenuItem;
     miEditTranslate: TMenuItem;
     miEditReplace: TMenuItem;
@@ -80,7 +78,6 @@ type
     TL2MainMenu: TMainMenu;
     TL2StatusBar: TStatusBar;
     tbHelpNotes: TToolButton;
-    tbShowLog: TToolButton;
     tbSeparator3: TToolButton;
     tbSettings: TToolButton;
     tbCheckTranslation: TToolButton;
@@ -98,7 +95,6 @@ type
     procedure actSettingsExecute(Sender: TObject);
     procedure actShowAltsExecute(Sender: TObject);
     procedure actShowDoublesExecute(Sender: TObject);
-    procedure actShowLogExecute(Sender: TObject);
     procedure actShowSimilarExecute(Sender: TObject);
     procedure actTranslateExecute(Sender: TObject);
     procedure cbFolderChange(Sender: TObject);
@@ -163,7 +159,6 @@ uni_profiler,
   ClipBrd,
   iso639,
   rgglobal,
-  unitLogForm,
   TL2DataModule,
   TL2SettingsForm,
   TL2EditText,
@@ -263,8 +258,6 @@ procedure TMainTL2TransForm.FormCreate(Sender: TObject);
 begin
   wasmodified:=false;
 
-  fmLogForm:=nil;
-
   TL2Settings.Parent     :=Self;
   TL2Settings.BorderStyle:=bsNone;
   TL2Settings.Align      :=alClient;
@@ -284,14 +277,16 @@ begin
   SetDefaultCaption();
   LoadModData();
 
-  FillFoldersCombo(true);
   FillLangCombo();
 
   LoadTranslation();
 
+  FillFoldersCombo(true);
+
   FileSave.Enabled:=false;
 
-  FillProjectGrid('');
+// will be filled at folder fill/change
+//  FillProjectGrid('');
   ActiveControl:=TL2Grid;
 end;
 
@@ -401,8 +396,9 @@ begin
   end
   else
   begin
-    lcnt:=0;
-    ls:='';
+    lcnt  :=0;
+    oldidx:=0; // not necessary but clear warning
+    ls    :='';
 
 {
 // if process as one text, need to check size
@@ -641,16 +637,6 @@ begin
 end;
 
 {%REGION GUI}
-procedure TMainTL2TransForm.actShowLogExecute(Sender: TObject);
-begin
-  if fmLogForm=nil then
-  begin
-    fmLogForm:=TfmLogForm.Create(Self);
-    fmLogForm.memLog.Text:=RGLog.Text;
-  end;
-  fmLogForm.ShowOnTop;
-end;
-
 procedure TMainTL2TransForm.FontEditAccept(Sender: TObject);
 begin
   TL2DM.TL2Font.Assign((Sender as TFontEdit).Dialog.Font);
@@ -1186,16 +1172,21 @@ begin
   if (lrow<(TL2Grid.RowCount-1)) and (idx=IntPtr(TL2Grid.Objects[0,lrow+1])) then TL2Grid.Row:=lrow+1
   else if (lrow>1)               and (idx=IntPtr(TL2Grid.Objects[0,lrow-1])) then TL2Grid.Row:=lrow-1
   else if (idx<>IntPtr(TL2Grid.Objects[0,lrow])) then
+  begin
+    result:=-1;
     for lrow:=1 to TL2Grid.RowCount-1 do
     begin
       if idx=IntPtr(TL2Grid.Objects[0,lrow]) then
       begin
+        result:=lrow;
         TL2Grid.Row:=lrow;
         if not TL2Grid.IsCellVisible(0,lrow) then
           TL2Grid.TopRow:=lrow;
         break;
       end;
     end;
+    exit;
+  end;
 
   result:=TL2Grid.Row;
 end;
@@ -1205,9 +1196,12 @@ var
   lrow:integer;
 begin
   lrow:=MoveToIndex(idx);
-
-  TL2Grid.Cells[colTrans  ,lrow]:=TRCache[idx].dst;
-  TL2Grid.Cells[colPartial,lrow]:=BoolNumber[TRCache[idx].part];
+  // check what idx'ed line in grid after filters
+  if lrow>0 then
+  begin
+    TL2Grid.Cells[colTrans  ,lrow]:=TRCache[idx].dst;
+    TL2Grid.Cells[colPartial,lrow]:=BoolNumber[TRCache[idx].part];
+  end;
 end;
 
 function IsNational(const astr:AnsiString):boolean;
@@ -1302,7 +1296,7 @@ begin
   TL2Grid.Row:=lSavedRow;
 
   TL2Grid.TopRow:=TL2Grid.Row;
-
+  ReBoundEditor;
 end;
 {%ENDREGION Grid}
 
@@ -1315,6 +1309,7 @@ var
 begin
 //  lstat.modid:=CurMod;
 //  lcnt:=GetModStatistic(lstat);
+  llist:=nil;
   lcnt:=GetLangList(llist);
 
   cbLanguage.Clear;
@@ -1383,6 +1378,7 @@ begin
         break;
       end;
     end;
+{ Combo are sorted already, doubles will be deleted
     j:=1;
     while j<aItems.Count do
     begin
@@ -1390,6 +1386,7 @@ begin
       inc(j);
     end;
     if j=aItems.Count then
+}
       aItems.Add(ls);
   end;
 end;
@@ -1419,11 +1416,10 @@ begin
   cbItems.Items.Add(rsFolderAll);
 
   cbFolder.Clear;
-//!! Wrong sort for '- ' and '-- '
-  cbFolder.Sorted:=true;
   cbFolder.Items.BeginUpdate;
-  cbFolder.Items.AddObject(rsFolderAll,TObject(-1));
-  if CurMod=modAll then cbFolder.Items.AddObject(rsFolderNoRef,TObject(-2));
+  cbFolder.Sorted:=true;
+//  cbFolder.Items.AddObject(rsFolderAll,TObject(-1));
+//  if CurMod=modAll then cbFolder.Items.AddObject(rsFolderNoRef,TObject(-2));
 
   lfolders:=nil;
   lcnt:=GetModDirList(CurMod,lfolders);
@@ -1501,6 +1497,10 @@ begin
 
   cbSkills.Items.EndUpdate;
   cbSkills.ItemIndex:=0;
+
+  cbFolder.Sorted:=false;
+  if CurMod=modAll then cbFolder.Items.InsertObject(0,rsFolderNoRef,TObject(-2));
+  cbFolder.Items.InsertObject(0,rsFolderAll,TObject(-1));
 
   cbFolder.Items.EndUpdate;
   if asetidx then
@@ -1704,12 +1704,15 @@ begin
 end;
 // any place, format is "source#9translation"
 procedure TMainTL2TransForm.actImportClipBrdExecute(Sender: TObject);
+{
 var
   s,lsrc,ltrans:AnsiString;
   sl:TStringList;
   p,lline:integer;
   lcnt:integer;
+}
 begin
+{
   sl:=TStringList.Create;
   try
     sl.Text:=Clipboard.asText;
@@ -1739,6 +1742,7 @@ begin
   finally
     sl.Free;
   end;
+}
 end;
 
 procedure TMainTL2TransForm.SetCellText(arow:integer; const atext:AnsiString);

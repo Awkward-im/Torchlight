@@ -131,7 +131,7 @@ end;
 
 procedure TSimilarForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key=VK_ESCAPE then ModalResult:=mrOk;
+  if Key=VK_ESCAPE then ModalResult:=mrCancel;
 end;
 
 procedure TSimilarForm.FillList(aline:integer);
@@ -161,7 +161,7 @@ begin
     begin
       ls:=GetOriginal(larr[i]);
       if ls[Length(ls)]=' ' then ls[Length(ls)]:='~';
-      lbSimList.AddItem(ls,Tobject(-1));
+      lbSimList.AddItem(ls,TObject(-larr[i]));
     end;
   end;
 

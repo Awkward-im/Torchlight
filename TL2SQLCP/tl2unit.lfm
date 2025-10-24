@@ -33,7 +33,7 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object tbSeparator1: TToolButton
       Left = 27
-      Height = 8
+      Height = 22
       Top = 2
       Style = tbsSeparator
     end
@@ -44,7 +44,7 @@ object MainTL2TransForm: TMainTL2TransForm
     end
     object tbSeparator2: TToolButton
       Left = 81
-      Height = 8
+      Height = 22
       Top = 2
       Style = tbsSeparator
     end
@@ -54,18 +54,13 @@ object MainTL2TransForm: TMainTL2TransForm
       Action = HelpAbout
     end
     object tbHelpNotes: TToolButton
-      Left = 140
+      Left = 117
       Top = 2
       Action = HelpNotes
     end
-    object tbShowLog: TToolButton
-      Left = 112
-      Top = 2
-      Action = actShowLog
-    end
     object tbSeparator3: TToolButton
-      Left = 135
-      Height = 5
+      Left = 112
+      Height = 22
       Top = 2
       Style = tbsDivider
     end
@@ -75,38 +70,38 @@ object MainTL2TransForm: TMainTL2TransForm
       Action = actSettings
     end
     object tbCheckTranslation: TToolButton
-      Left = 163
+      Left = 140
       Top = 2
       Action = actCheckTranslation
     end
     object tbTranslate: TToolButton
-      Left = 186
+      Left = 163
       Top = 2
       Action = actTranslate
     end
     object tbReplace: TToolButton
-      Left = 209
+      Left = 186
       Top = 2
       Action = actReplace
     end
     object tbSimilar: TToolButton
-      Left = 232
+      Left = 209
       Top = 2
       Action = actShowSimilar
     end
     object tbDouble: TToolButton
-      Left = 255
+      Left = 232
       Top = 2
       Action = actShowDoubles
     end
     object tbSeparator4: TToolButton
-      Left = 301
-      Height = 8
+      Left = 278
+      Height = 22
       Top = 2
       Style = tbsSeparator
     end
     object tbShowAlt: TToolButton
-      Left = 278
+      Left = 255
       Top = 2
       Action = actShowAlts
     end
@@ -281,7 +276,7 @@ object MainTL2TransForm: TMainTL2TransForm
       end    
       item
         Title.Caption = 'Translation'
-        Width = 662
+        Width = 658
       end>
     DefaultColWidth = 48
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goEditing, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goSelectionActive]
@@ -302,7 +297,7 @@ object MainTL2TransForm: TMainTL2TransForm
       48
       269
       28
-      662
+      658
     )
   end
   object memEdit: TMemo
@@ -363,13 +358,6 @@ object MainTL2TransForm: TMainTL2TransForm
       ImageIndex = 18
       ShortCut = 32883
       OnExecute = FileExitExecute
-    end
-    object actShowLog: TAction
-      Category = 'View'
-      Caption = 'Show log'
-      Hint = 'Show log window'
-      ImageIndex = 20
-      OnExecute = actShowLogExecute
     end
     object actExportClipBrd: TAction
       Category = 'Edit'
@@ -505,9 +493,6 @@ object MainTL2TransForm: TMainTL2TransForm
       end
       object miViewNotes: TMenuItem
         Action = HelpNotes
-      end
-      object miViewLog: TMenuItem
-        Action = actShowLog
       end
     end
     object miHelp: TMenuItem

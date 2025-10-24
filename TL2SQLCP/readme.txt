@@ -32,7 +32,7 @@ F6           - Show Doubles window
 F7           - Show List of text at same place
 =====
 
-Project Hotkeys:
+Grid Hotkeys:
 ----------------
 Enter        - Edit current translation cell
 Ctrl-A       - Select original text column
