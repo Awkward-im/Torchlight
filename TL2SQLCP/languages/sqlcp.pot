@@ -700,11 +700,6 @@ msgstr ""
 msgid "Use online translate service"
 msgstr ""
 
-#: tmaintl2transform.caption
-msgctxt "tmaintl2transform.caption"
-msgid "Torchlight 2 Translation"
-msgstr ""
-
 #: tmaintl2transform.cbfolder.hint
 msgid "Top-level folder filter"
 msgstr ""

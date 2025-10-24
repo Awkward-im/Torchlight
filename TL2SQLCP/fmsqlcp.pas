@@ -412,13 +412,13 @@ end;
 function TFormSQLCP.AddSQLog(var adata:string):integer;
 begin
   FSQLogForm.memLog.Append(adata);
-  result:=0;
+  result:=1;
 end;
 
 function TFormSQLCP.AddLog(var adata:string):integer;
 begin
   FLogForm.memLog.Append(adata);
-  result:=0;
+  result:=1;
 end;
 
 procedure TFormSQLCP.ShowSQLog(Sender: TObject);

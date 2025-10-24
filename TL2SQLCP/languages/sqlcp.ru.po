@@ -404,8 +404,8 @@ msgid ""
 "All"
 msgstr ""
 "Просто\n"
-"vСделай\n"
-"vВСЁ"
+"Сделай\n"
+"ВСЁ"
 
 #: tl2genform.rslinecount
 msgid "Line count"
@@ -637,7 +637,7 @@ msgstr "Всего замен"
 #: tl2unit.rsroot
 msgctxt "tl2unit.rsroot"
 msgid "-- Root --"
-msgstr "-- Корень  --"
+msgstr "-- Корень --"
 
 #: tl2unit.rsunique
 msgid "*Unique* "
@@ -743,11 +743,6 @@ msgstr "Перевод"
 #: tmaintl2transform.acttranslate.hint
 msgid "Use online translate service"
 msgstr "Использовать онлайн-переводчик"
-
-#: tmaintl2transform.caption
-msgctxt "tmaintl2transform.caption"
-msgid "Torchlight 2 Translation"
-msgstr "Перевод Torchlight 2"
 
 #: tmaintl2transform.cbfolder.hint
 msgid "Top-level folder filter"
@@ -949,3 +944,4 @@ msgstr "Переводчики"
 #: unitlogform.rscantsave
 msgid "Can't save log file"
 msgstr "Не могу сохранить лог"
+
