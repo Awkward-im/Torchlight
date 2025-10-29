@@ -719,14 +719,6 @@ msgstr "Показать дубли"
 msgid "Show Doubling lines"
 msgstr "Показать одинаковые строки"
 
-#: tmaintl2transform.actshowlog.caption
-msgid "Show log"
-msgstr "Показать лог"
-
-#: tmaintl2transform.actshowlog.hint
-msgid "Show log window"
-msgstr "Показать окно лога"
-
 #: tmaintl2transform.actshowsimilar.caption
 msgid "Show Similar"
 msgstr "Показать похожие"

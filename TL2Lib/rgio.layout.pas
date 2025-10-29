@@ -1412,8 +1412,10 @@ begin
           verHob,
           verRGO,
           verRG : begin
-            astream.WriteDWord(RGTags.Hash[AsString(FindNode(lglnk,'OUTPUTNAME'))]);
-            astream.WriteDWord(RGTags.Hash[AsString(FindNode(lglnk,'INPUTNAME' ))]);
+//            astream.WriteDWord(RGTags.Hash[AsString(FindNode(lglnk,'OUTPUTNAME'))]);
+//            astream.WriteDWord(RGTags.Hash[AsString(FindNode(lglnk,'INPUTNAME' ))]);
+            aStream.WriteDWord(GetHashChecked(AsString(FindNode(lglnk,'OUTPUTNAME'))));
+            aStream.WriteDWord(GetHashChecked(AsString(FindNode(lglnk,'INPUTNAME' ))));
           end;
         end;
       end;

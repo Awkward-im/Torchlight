@@ -675,14 +675,6 @@ msgstr ""
 msgid "Show Doubling lines"
 msgstr ""
 
-#: tmaintl2transform.actshowlog.caption
-msgid "Show log"
-msgstr ""
-
-#: tmaintl2transform.actshowlog.hint
-msgid "Show log window"
-msgstr ""
-
 #: tmaintl2transform.actshowsimilar.caption
 msgid "Show Similar"
 msgstr ""

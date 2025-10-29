@@ -1,17 +1,17 @@
 object AltForm: TAltForm
   Left = 315
-  Height = 500
+  Height = 559
   Top = 250
   Width = 603
   Caption = 'Alternatives'
-  ClientHeight = 500
+  ClientHeight = 559
   ClientWidth = 603
   KeyPreview = True
   LCLVersion = '4.99.0.0'
   OnKeyDown = FormKeyDown
   object memSrc: TMemo
     Left = 8
-    Height = 120
+    Height = 96
     Top = 8
     Width = 588
     Anchors = [akTop, akLeft, akRight]
@@ -19,16 +19,16 @@ object AltForm: TAltForm
   end
   object memAlt: TMemo
     Left = 8
-    Height = 120
-    Top = 370
+    Height = 96
+    Top = 349
     Width = 588
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
   end
   object lblFile: TLabel
     Left = 8
     Height = 23
-    Top = 137
+    Top = 116
     Width = 588
     Anchors = [akTop, akLeft, akRight]
     AutoSize = False
@@ -36,16 +36,16 @@ object AltForm: TAltForm
   object lblTag: TLabel
     Left = 8
     Height = 23
-    Top = 174
+    Top = 153
     Width = 264
     AutoSize = False
   end
   object sgAlts: TStringGrid
     Left = 8
     Height = 154
-    Top = 208
+    Top = 186
     Width = 588
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akTop, akLeft, akRight, akBottom]
     AutoEdit = False
     AutoFillColumns = True
     ColCount = 2
@@ -75,10 +75,18 @@ object AltForm: TAltForm
   object lblMod: TLabel
     Left = 308
     Height = 23
-    Top = 174
+    Top = 153
     Width = 288
     Alignment = taRightJustify
     Anchors = [akTop, akRight]
     AutoSize = False
+  end
+  object memAltT: TMemo
+    Left = 8
+    Height = 96
+    Top = 455
+    Width = 588
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 3
   end
 end

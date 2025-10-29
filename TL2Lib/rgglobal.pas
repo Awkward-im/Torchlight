@@ -372,8 +372,9 @@ procedure QuaternionToMatrix(const q:TVector4; out m:TMatrix4x4);
 {%REGION Hash}
 
 function CalcCheckSum(aptr:pByte; asize:cardinal):dword;
-function RGHash (instr:PWideChar; alen:integer=0):dword;
-function RGHashB(instr:PAnsiChar; alen:integer=0):dword;
+function RGHashUp(instr:PWideChar; alen:integer=0):dword;
+function RGHash  (instr:PWideChar; alen:integer=0):dword;
+function RGHashB (instr:PAnsiChar; alen:integer=0):dword;
 function MurmurHash64B(var s; Len: Integer; Seed: UInt32) : UInt64;
 
 {%ENDREGION Hash}
@@ -1277,6 +1278,16 @@ end;
 
 {$PUSH}
 {$Q-}
+function RGHashUp(instr:PWideChar; alen:integer=0):dword;
+var
+  i:integer;
+begin
+  if alen=0 then alen:=Length(instr);
+  result:=alen;
+  for i:=0 to alen-1 do
+    result:=(result SHR 27) xor (result SHL 5) xor ORD(FastUpCase(instr[i]));
+end;
+
 function RGHash(instr:PWideChar; alen:integer=0):dword;
 var
   i:integer;

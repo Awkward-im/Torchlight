@@ -413,6 +413,8 @@ var
   f:File of byte;
   sr:TUnicodeSearchRec;
   p:PRGCtrlInfo;
+  lext:UnicodeString;
+  lres:integer;
 begin
   result:=0;
   p:=PRGCtrlInfo(Files[idx]);
@@ -422,10 +424,34 @@ begin
     // read from file
     if p^.action=act_file then
     begin
-      {%I-}
+      {$I-}
       AssignFile(f,PWideChar(p^.data));
       Reset(f);
-      if IOResult=0 then
+      lres:=IOResult();
+      if lres<>0 then
+      begin
+        lext:=UpCase(ExtractFileExt(PWideChar(p^.data)));
+        if (lext='.DAT') or (lext='.ANIMATION') or
+           (lext='.HIE') or (lext='.TEMPLATE' ) then
+        begin
+          if PAK.Version=verTL1 then
+            lext:=UnicodeString(PWideChar(p^.data))+'.ADM'
+          else
+            lext:=UnicodeString(PWideChar(p^.data))+'.BINDAT'
+        end
+        else if UpCase(lext)='.LAYOUT' then
+          lext:=UnicodeString(PWideChar(p^.data))+'.BINLAYOUT'
+        else
+          lext:='';
+
+        if lext<>'' then
+        begin
+          AssignFile(f,lext);
+          Reset(f);
+          lres:=IOResult();
+        end;
+      end;
+      if lres=0 then
       begin
         result:=FileSize(f);
         if result>0 then

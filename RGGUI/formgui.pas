@@ -731,15 +731,7 @@ begin
   LoadSettings();
   SetupColumns(Self);
   ClearInfo();
-{
-  RGTags.Import('RGDICT','TEXT');
 
-  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
-}
   if ParamCount>0 then
     OpenPAK(ParamStr(1))
   else
@@ -2266,7 +2258,7 @@ begin
     end
     else
     begin
-      {%I-}
+      {$I-}
       AssignFile(f,PUnicodeChar(newdata));
       Reset(f);
       if IOResult=0 then
@@ -2485,6 +2477,12 @@ end;
 
 procedure TRGGUIForm.sgMainKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
+  if Key=VK_RETURN then
+  begin
+    sgMainDblClick(Sender);
+    Key:=0;
+  end;
+
   if (Shift=[ssCtrl]) then
   begin
     case Key of
@@ -2494,6 +2492,7 @@ begin
       end;
     end;
   end;
+
   if (Shift=[]) and (Key=VK_DELETE) then
   begin
     actEdDeleteExecute(Sender);

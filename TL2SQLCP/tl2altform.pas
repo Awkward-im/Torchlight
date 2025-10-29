@@ -15,6 +15,7 @@ type
     lblTag: TLabel;
     lblFile: TLabel;
     lblMod: TLabel;
+    memAltT: TMemo;
     memSrc: TMemo;
     memAlt: TMemo;
     sgAlts: TStringGrid;
@@ -72,6 +73,18 @@ begin
     else
       ModalResult:=mrClose;
   end;
+
+  if Key=VK_SPACE then
+  begin
+    Key:=0;
+    if (sgAlts.Row>=0) and (memAltT.Text<>'') then
+    begin
+      SelectedText:=memAltT.Text;
+      ModalResult:=mrOk;
+    end
+    else
+      ModalResult:=mrClose;
+  end;
 end;
 
 constructor TAltForm.Create(AOwner: TComponent; aline: integer);
@@ -85,9 +98,17 @@ begin
 end;
 
 procedure TAltForm.sgAltsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
+var
+  ls:AnsiString;
+  lid:integer;
 begin
   if (aCol>=0) and (aRow>=0) then
-    memAlt.Text:=GetOriginal(GetRefSrc(IntPtr(sgAlts.Objects[0,aRow])));
+  begin
+    lid:=GetRefSrc(IntPtr(sgAlts.Objects[0,aRow]));
+    memAlt.Text:=GetOriginal(lid);
+    GetTranslation(lid,CurLang,ls);
+    memAltT.Text:=ls;
+  end;
 end;
 
 procedure TAltForm.FillList(aidx:integer);

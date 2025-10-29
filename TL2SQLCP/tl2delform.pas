@@ -29,6 +29,7 @@ type
     ltitle: AnsiString;
 
   public
+    wasmodified:boolean;
 
   end;
 
@@ -150,6 +151,7 @@ begin
       begin
         RestoreOriginal(IntPtr(clbLines.Items.Objects[i]));
         clbLines.Items.Delete(i);
+        wasmodified:=true;
       end;
     end
     else
@@ -178,6 +180,7 @@ begin
       begin
         RemoveOriginal(ABS(lid));
         clbLines.Items.Delete(i);
+        wasmodified:=true;
       end
       else
       begin
@@ -217,6 +220,7 @@ end;
 procedure TDelForm.FormCreate(Sender: TObject);
 begin
   ltitle:=Caption;
+  wasmodified:=false;
 
   FillList(Self);
 end;

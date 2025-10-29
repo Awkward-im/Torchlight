@@ -319,9 +319,10 @@ end;
 procedure TRGDATFile.BuildBlock(aStream:TStream; anode:pointer);
 var
   lptr:pByte;
-  lname:PWideChar;
+//  lname:PWideChar;
+//  lhash:dword;
   i,cnt,sub,ltype:integer;
-  lidx,lhash:dword;
+  lidx:dword;
 begin
   // write name
 
@@ -333,10 +334,13 @@ begin
   end
   else
   begin
+{
     lname:=GetNodeName(anode);
     lhash:=RGTags.Hash[lname];
     if lhash=dword(-1) then lhash:=RGHash(lname);
     aStream.WriteDWord(lhash);
+}
+    aStream.WriteDWord(GetHashChecked(GetNodeName(anode)));
   end;
 
   // write properties
@@ -360,7 +364,9 @@ begin
         aStream.WriteDWord(lidx);
       end
       else
-        aStream.WriteDWord(RGTags.Hash[GetNodeName(lptr)]);
+//        aStream.WriteDWord(RGTags.Hash[GetNodeName(lptr)]);
+        aStream.WriteDWord(GetHashChecked(GetNodeName(lptr)));
+
       // type
       aStream.WriteDWord(ltype);
       // value

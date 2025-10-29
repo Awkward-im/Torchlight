@@ -181,6 +181,7 @@ begin
       Self.Caption:='Check for similars';
       FillAllSimilars(ls);
       ShowMessage('Done!');
+      needtosave:=true;
 
       Self.Caption:='';
       lbModsSelectionChange(Self,true);
@@ -241,6 +242,7 @@ begin
   with TDelForm.Create(Self) do
   begin
     ShowModal;
+    if wasmodified then needtosave:=true;
     Free;
   end;
 end;
@@ -312,6 +314,8 @@ begin
 
   DeleteMod(lmodid);
   SetModStatistic(modAll);
+  needtosave:=true;
+
   lidx:=lbMods.ItemIndex;
   lbMods.DeleteSelected;
   if lbMods.Count>0 then
@@ -395,6 +399,7 @@ begin
           FillModList();
           UpdateStatus();
           ShowMessage(rsDone);
+          needtosave:=true;
         end;
 
         sbAdd .Enabled:=true;

@@ -1936,7 +1936,7 @@ function LoadModData():integer;
 var
   vm:pointer;
   i,lcnt:integer;
-  lSQL,lflags,lmod:AnsiString;
+  lSQL,lmod:AnsiString;
 begin
   result:=0;
 

@@ -380,20 +380,7 @@ var
   i,llen,lsize:integer;
 begin
   result:=0;
-{
-  if RGTags.Count=0 then
-    RGTags.Import('RGDICT','TEXT');
 
-  if not DictsAreLoaded() then
-  begin
-    LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-    LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-    LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-    LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-    LoadLayoutDict('LAYHOB', 'TEXT', verHob);
-    RGLog.Reserve('');
-  end;
-}
   if adir[Length(adir)] in ['\','/'] then
     lRootScanDir:=Copy(adir,1,Length(adir)-1)
   else
@@ -522,20 +509,6 @@ var
   lScanIdx:TCounter;
   lpak:TRGPAK;
 begin
-
-  if RGTags.Count=0 then
-    RGTags.Import('RGDICT','TEXT');
-
-  if not DictsAreLoaded() then
-  begin
-    LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-    LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-    LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-    LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-    LoadLayoutDict('LAYHOB', 'TEXT', verHob);
-    RGLog.Reserve('');
-  end;
-
   // call it before mod content to be sure what mod record is ready
   if Assigned(DoAddModInfo) then
   begin

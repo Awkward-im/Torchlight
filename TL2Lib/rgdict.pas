@@ -37,6 +37,7 @@ type
 function DictLoadTranslation(var aDict:TTransDict; aptr:PByte):integer;
 function DictLoadTranslation(var aDict:TTransDict; const fname:AnsiString):integer;
 
+function GetHashChecked(aname:PUnicodeChar):dword;
 var
   RGTags:TRGDict;
 
@@ -653,6 +654,35 @@ begin
   result:=DictLoadTranslation(aDict,buf);
 
   FreeMem(buf);
+end;
+
+function GetHashChecked(aname:PUnicodeChar):dword;
+//var lbuf:array [0..127] of UnicodeChar;
+begin
+  if aname<>nil then
+  begin
+    result:=RGTags.Hash[aname];
+    if result=dword(-1) then
+    begin
+{
+      i:=0;
+      while aname^<>#0 do
+      begin
+        lbuf[i]:=FastUpCase(aname[i]);
+        inc(i);
+      end;
+      lbuf[i]:=#0;
+      lhash:=RGHashUp(@lbuf);
+}
+      result:=RGHashUp(aname);
+      RGLog.Add('Name not in Tags table: '+FastWideToStr(aname));
+    end;
+  end
+  else
+  begin
+    result:=0;
+//    RGLog.Add('Empty tag name');
+  end;
 end;
 
 initialization

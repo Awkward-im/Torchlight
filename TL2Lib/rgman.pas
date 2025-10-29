@@ -254,7 +254,7 @@ begin
           begin
             AddPath(PUnicodeChar(lname+UnicodeString(pc)));
           end
-          else if ftype=typeUnknown then
+          else if (ftype=typeUnknown) and (rgDebugLevel=dlDetailed) then
             RGLog.Add('Unknown file type: '+FastWideToStr(PWideChar(lname))+FastWideToStr(pc));
 
           offset  :=memReadDWord(aptr);
