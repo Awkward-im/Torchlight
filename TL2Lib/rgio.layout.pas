@@ -28,7 +28,7 @@ function GetLayoutType(afname:PUnicodeChar):cardinal;
 function GetLayoutType(const afname:string):cardinal;
 
 
-{$i featuretags.inc}
+{.$i featuretags.inc} // replaced by LayList
 
 
 implementation
@@ -42,6 +42,7 @@ uses
 
   rgdict,
   rgdictlayout,
+  laylist,
   rgio.dat,
   rgstream,
   rgnode;

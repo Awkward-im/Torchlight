@@ -64,7 +64,6 @@ function LoadLayoutDict(const fname:AnsiString; aver:integer):boolean;
 implementation
 
 {$R dictlayout.rc}
-{.$include objicons.inc}
 
 type
   TFuncInfo = PWideChar;

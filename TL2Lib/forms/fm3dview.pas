@@ -1,3 +1,4 @@
+{TODO: Disable/hide Submesh button if one submesh only}
 {TODO: ui for choosing texture for mesh/submesh}
 {TODO: statusbar with? offset? corner? visible submesh count?}
 {TODO: list of alt textures for mesh/submesh}
@@ -19,6 +20,7 @@ type
 
   TForm3dView = class(TForm)
     bbCbSubMesh: TBitBtn;
+    bbSaveXML: TBitBtn;
     clbSubMesh: TCheckListBox;
     GLBox: TOpenGLControl;
     pnlLeft: TPanel;
@@ -26,7 +28,9 @@ type
     pnlOptions: TPanel;
     splLeft: TSplitter;
     procedure bbCbSubMeshClick(Sender: TObject);
+    procedure bbSaveXMLClick(Sender: TObject);
     procedure clbSubMeshClickCheck(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -85,12 +89,13 @@ implementation
 
 uses
   rgstream,
-  lazTGA,
+//  lazTGA,
   Imaging,
   ImagingTypes,
   ImagingComponents,
   ImagingDds,
   ImagingNetworkGraphics,
+  ImagingTarga,
   ImagingOpenGL;
 
 type
@@ -120,7 +125,11 @@ end;
 procedure TForm3dView.GLBoxClick(Sender: TObject);
 begin
   FDoRotateY:=not FDoRotateY;
-  (Owner as TForm).ActiveControl:=GLBox;
+  try
+//    {(Owner as TForm).}ActiveControl:=GLBox;
+    GetParentForm(GLBox).ActiveControl:=GLBox;
+  except
+  end;
 end;
 
 procedure TForm3dView.GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -145,7 +154,7 @@ end;
 
 procedure TForm3dView.On3DViewIdle(Sender: TObject; var Done: Boolean);
 begin
-  Done:=false;
+//  Done:=false;
   GLBox.Invalidate;
 end;
 {%ENDREGION Actions}
@@ -155,6 +164,26 @@ procedure TForm3dView.GLBoxPaint(Sender: TObject);
 var
   Speed: Double;
 begin
+  if FMeshList<=0 then
+  begin
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_LIGHTING);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
+    glEnable(GL_LIGHT0);
+
+    PrepareTextures(ExtractPath(fname));
+    CreateMeshList();
+
+    if FMeshList>0 then
+      Application.AddOnIdleHandler(@On3DViewIdle);
+    try
+//      {(Owner as TForm).}ActiveControl:=GLBox;
+      GetParentForm(GLBox).ActiveControl:=GLBox;
+    except
+    end;
+  end;
+
   glClearColor(0.27, 0.53, 0.71, 1.0); // Blue background
 
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -260,11 +289,12 @@ var
   lpic:TPicture;
   lstr:TMemoryStream;
   lbuf:PByte;
-  lname:AnsiString;
+  lname,lext:AnsiString;
   lfile,lsize:integer;
   lDDS:boolean;
 begin
-  lDDS:=ExtractExt(aname)='.DDS';
+  lext:=ExtractExt(aname);
+  lDDS:=lext='.DDS';
 
   lname:=adir+aname;
   if (ctrl<>nil) and (adir<>'') then
@@ -307,6 +337,9 @@ begin
   if lsize>0 then
   begin
     if lDDS or
+
+      (lext='.PNG') or (lext='.TGA') or
+      
       ((lbuf[0]=ORD('D')) and
        (lbuf[1]=ORD('D')) and
        (lbuf[2]=ORD('S'))) then
@@ -547,6 +580,7 @@ end;
 {%REGION Form}
 procedure TForm3dView.FormShow(Sender: TObject);
 begin
+{
   glEnable(GL_DEPTH_TEST);
 
   glEnable(GL_LIGHTING);
@@ -557,23 +591,41 @@ begin
   CreateMeshList();
 
   Application.AddOnIdleHandler(@On3DViewIdle);
-  (Owner as TForm).ActiveControl:=GLBox;
+  try
+    (Owner as TForm).ActiveControl:=GLBox;
+  except
+  end;
+}
 end;
 
 procedure TForm3dView.FormHide(Sender: TObject);
 begin
+{
   Application.RemoveOnIdleHandler(@On3DViewIdle);
   FreeTextures();
   FreeModel();
+}
+end;
+
+procedure TForm3dView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+
 end;
 
 procedure TForm3dView.FormDestroy(Sender: TObject);
 begin
-  Visible:=false;
+  Application.RemoveOnIdleHandler(@On3DViewIdle);
+  FreeTextures();
+  FreeModel();
+
+  FormHide(Sender); //!!
+//  Visible:=false;
   Mesh.Free;
   SetLength(TSubMeshOptions(FSubOpt),0);
 end;
+{%ENDREGION Form}
 
+{%REGION Options}
 procedure TForm3dView.clbSubMeshClickCheck(Sender: TObject);
 var
   i:integer;
@@ -592,13 +644,35 @@ procedure TForm3dView.bbCbSubMeshClick(Sender: TObject);
 begin
   pnlLeft.Visible:=not pnlLeft.Visible;
   splLeft.Visible:=not splLeft.Visible;
+
+  GetParentForm(GLBox).ActiveControl:=GLBox;
 end;
 
-{%ENDREGION Form}
+procedure TForm3dView.bbSaveXMLClick(Sender: TObject);
+var
+  ldlg:TSaveDialog;
+begin
+  ldlg:=TSaveDialog.Create(self);
+  ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
+  ldlg.DefaultExt:='.xml';
+  ldlg.Filter    :='XML files|*.xml|All files|*.*';
+  ldlg.FileName  :=ChangeFileExt(fname,'.xml');
+  if ldlg.Execute then
+  begin
+    Mesh.SaveToXML(ChangeFileExt(ldlg.FileName,'.xml'));
+    if Mesh.MeshVersion in [90,91,99] then
+      Mesh.SaveMaterial(ChangeFileExt(ldlg.FileName,'.material'));
+  end;
+  ldlg.Free;
+end;
 
+{%ENDREGION Options}
+
+{
 initialization
   LazTGA.Register;
 
 finalization
   LazTGA.UnRegister;
+}
 end.

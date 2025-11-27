@@ -26,8 +26,8 @@
             <Filename Value="rggui"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;viewers;..\Addons;..\Addons\Imaging;..\Meshes;..\Addons\HexView"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -50,6 +50,7 @@
               <DebugInfoType Value="dsDwarf2Set"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -73,8 +74,8 @@
             <Filename Value="rggui"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;viewers;..\Addons;..\Addons\Imaging;..\Meshes;..\Addons\HexView"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -86,6 +87,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -110,8 +112,8 @@
             <Filename Value="rggui"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;viewers;..\Addons;..\Addons\Imaging;..\Meshes;..\Addons\HexView"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <Conditionals Value="DEBUG"/>
@@ -136,6 +138,7 @@
               <DebugInfoType Value="dsDwarf2Set"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -158,8 +161,8 @@
             <Filename Value="rggui"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;viewers;..\Addons;..\Addons\Imaging;..\Meshes;..\Addons\HexView"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -173,6 +176,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -244,21 +248,17 @@
         <UnitName Value="RGPAK"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\synhighlightert.pas"/>
+        <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="SynHighlightert"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\objicons.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\forms\fmlayoutedit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="formLayoutEdit"/>
+        <ComponentName Value="fmLogForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmLayoutEdit"/>
+        <UnitName Value="unitLogForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="viewers\rgpreview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="rgPreview"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\HexView\FWHexView.pas"/>
@@ -269,38 +269,14 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\Addons\fpc.Dynamic_Bass.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="FPC.Dynamic_Bass"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmLogForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="unitLogForm"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\Meshes\rgobj.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGObj"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <Filename Value="..\Addons\textcache.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form3DView"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fm3DView"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormImageset"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmImageset"/>
+        <UnitName Value="TextCache"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -311,8 +287,8 @@
       <Filename Value="rggui"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir);..\TL2Lib"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;..\Addons\HexView;..\Addons\Imaging;..\Addons;..\Meshes"/>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\TL2Lib\forms;viewers;..\Addons;..\Addons\Imaging;..\Meshes;..\Addons\HexView"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS) $(BuildMode)"/>
     </SearchPaths>
     <Linking>

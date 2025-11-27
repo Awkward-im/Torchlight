@@ -34,10 +34,8 @@ type
     procedure Init(usecache:boolean=true);
   end;
 
-function DictLoadTranslation(var aDict:TTransDict; aptr:PByte):integer;
-function DictLoadTranslation(var aDict:TTransDict; const fname:AnsiString):integer;
-
 function GetHashChecked(aname:PUnicodeChar):dword;
+
 var
   RGTags:TRGDict;
 
@@ -49,8 +47,7 @@ implementation
 
 uses
   logging,
-  rgglobal,
-  rgtrans;
+  rgglobal;
 
 resourcestring
   resCantOpen = 'Can''t open ';
@@ -602,58 +599,6 @@ begin
       slb.Free;
     end;
   end;
-end;
-
-function TransAddText(const astr,atrans:pointer; isutf8:Boolean; aparam:pointer):integer;
-var
-  lsrc,ldst:PWideChar;
-begin
-  result:=0;
-  if not isutf8 then
-    PTransDict(aparam)^.Add(astr,atrans)
-  else
-  begin
-    lsrc:=UTF8ToWide(astr);
-    ldst:=UTF8ToWide(atrans);
-    PTransDict(aparam)^.Add(lsrc,ldst);
-    FreeMem(lsrc);
-    FreeMem(ldst);
-  end;
-end;
-
-function DictLoadTranslation(var aDict:TTransDict; aptr:PByte):integer;
-begin
-  result:=Load(aptr,@TransAddText,nil,@aDict);
-end;
-
-function DictLoadTranslation(var aDict:TTransDict; const fname:AnsiString):integer;
-var
-  f:file of byte;
-  buf:PByte;
-  i:integer;
-begin
-  result:=0;
-
-  if fname='' then exit;
-
-  Assign(f,fname);
-  Reset(f);
-  if IOResult<>0 then
-  begin
-    RGLog.Add(resCantOpen+fname);
-    exit;
-  end;
-
-  i:=FileSize(f);
-  GetMem(buf,i+SizeOf(WideChar));
-  BlockRead(f,buf^,i);
-  Close(f);
-  PByte(buf)[i  ]:=0;
-  PByte(buf)[i+1]:=0;
-
-  result:=DictLoadTranslation(aDict,buf);
-
-  FreeMem(buf);
 end;
 
 function GetHashChecked(aname:PUnicodeChar):dword;

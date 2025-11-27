@@ -1,5 +1,5 @@
 {Group tags from FEATURETAGS.HIE}
-var
+const
   FeatureTags: array of record
     id  :integer;
     name:UnicodeString;//PWideChar;

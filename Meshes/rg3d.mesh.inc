@@ -47,7 +47,8 @@ begin
       llen:=18
     else
       llen:=Length(ls);
-    lshow:=StrLComp(PAnsiChar(RGLog.Last),PAnsiChar(ls),llen)<>0;
+    lshow:=(StrLComp(PAnsiChar(RGLog.Last),PAnsiChar(ls),llen)<>0)
+           and not (achunk._type=M_SUBMESH_BONE_ASSIGNMENT);
 
     if lshow then RGLog.Add(ls);
   end

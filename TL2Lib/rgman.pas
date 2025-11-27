@@ -131,6 +131,7 @@ end;
 
 procedure TRGManifest.Init;
 begin
+  FillChar(self,SizeOf(self),0);
   inherited Init(SizeOf(TManFileInfo));
 
   Root      :=nil;

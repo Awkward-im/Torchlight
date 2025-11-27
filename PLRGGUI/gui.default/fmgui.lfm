@@ -1,0 +1,1051 @@
+object RGGUIForm: TRGGUIForm
+  Left = 433
+  Height = 514
+  Top = 205
+  Width = 944
+  AllowDropFiles = True
+  Caption = 'RGGUI'
+  ClientHeight = 514
+  ClientWidth = 944
+  Menu = MainMenu
+  ShowHint = True
+  LCLVersion = '4.99.0.0'
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDropFiles = FormDropFiles
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 491
+    Width = 944
+    Panels = <    
+      item
+        Width = 240
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object ToolBar: TToolBar
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 944
+    Images = ilMain
+    List = True
+    ShowCaptions = True
+    TabOrder = 1
+    object tbOpen: TToolButton
+      Left = 1
+      Top = 2
+      Action = actFileOpen
+      ShowCaption = False
+    end
+    object tbSaveAs: TToolButton
+      Left = 47
+      Top = 2
+      Action = actFileSaveAs
+      ShowCaption = False
+    end
+    object tbSep1: TToolButton
+      Left = 70
+      Height = 22
+      Top = 2
+      Style = tbsDivider
+    end
+    object tbInfo: TToolButton
+      Left = 75
+      Hint = 'Mod info'
+      Top = 2
+      Action = actShowInfo
+      ShowCaption = False
+    end
+    object tbShowLog: TToolButton
+      Left = 98
+      Top = 2
+      Action = actShowLog
+      ShowCaption = False
+    end
+    object tbResetView: TToolButton
+      Left = 121
+      Top = 2
+      Action = actResetView
+      ShowCaption = False
+    end
+    object tbSave: TToolButton
+      Left = 24
+      Top = 2
+      Action = actFileSave
+      ShowCaption = False
+    end
+    object tbOpenDir: TToolButton
+      Left = 144
+      Top = 2
+      Action = actOpenDir
+      ShowCaption = False
+    end
+    object ToolButton1: TToolButton
+      Left = 167
+      Top = 2
+      Action = actEdFontEdit
+      ShowCaption = False
+    end
+  end
+  object pnlTree: TPanel
+    Left = 0
+    Height = 465
+    Top = 26
+    Width = 256
+    Align = alLeft
+    ClientHeight = 465
+    ClientWidth = 256
+    TabOrder = 2
+    object tvTree: TTreeView
+      Left = 1
+      Height = 430
+      Top = 34
+      Width = 254
+      Align = alClient
+      AutoExpand = True
+      HideSelection = False
+      PopupMenu = mnuTree
+      ReadOnly = True
+      RowSelect = True
+      ScrollBars = ssAutoBoth
+      TabOrder = 0
+      Options = [tvoAutoExpand, tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+      OnContextPopup = tvTreeContextPopup
+      OnSelectionChanged = tvTreeSelectionChanged
+    end
+    object pnlTreeFilter: TPanel
+      Left = 1
+      Height = 33
+      Top = 1
+      Width = 254
+      Align = alTop
+      ClientHeight = 33
+      ClientWidth = 254
+      TabOrder = 1
+      object bbCollapse: TBitBtn
+        Left = 1
+        Height = 30
+        Hint = 'Collapse tree'
+        Top = 1
+        Width = 32
+        Enabled = False
+        Margin = 4
+        Images = ilMain
+        ImageIndex = 7
+        TabOrder = 1
+        OnClick = bbCollapseClick
+      end
+      object edTreeFilter: TTreeFilterEdit
+        Left = 37
+        Height = 23
+        Top = 5
+        Width = 214
+        ButtonWidth = 23
+        Anchors = [akTop, akLeft, akRight]
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 0
+        TextHint = '(filter)'
+        FilteredTreeview = tvTree
+        ExpandAllInitially = True
+      end
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 256
+    Height = 465
+    Top = 26
+    Width = 5
+  end
+  object PageControl: TPageControl
+    Left = 261
+    Height = 465
+    Top = 26
+    Width = 683
+    ActivePage = Setings
+    Align = alClient
+    TabIndex = 0
+    TabOrder = 4
+    object Setings: TTabSheet
+      Caption = 'Setings'
+      ClientHeight = 437
+      ClientWidth = 675
+      object lblOutDir: TLabel
+        Left = 8
+        Height = 15
+        Top = 16
+        Width = 88
+        Caption = 'Dir for extraction'
+        ParentColor = False
+      end
+      object deOutDir: TDirectoryEdit
+        Left = 8
+        Height = 23
+        Top = 37
+        Width = 416
+        OnAcceptDirectory = CoreDirChanged
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 0
+        OnEditingDone = CoreOptChanged
+      end
+      object cbUnpackTree: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 86
+        Width = 71
+        Caption = 'Keep path'
+        TabOrder = 1
+        OnClick = CoreOptChanged
+      end
+      object gbDecoding: TGroupBox
+        Left = 8
+        Height = 139
+        Top = 112
+        Width = 215
+        Caption = 'Data Unpack'
+        ClientHeight = 119
+        ClientWidth = 211
+        TabOrder = 2
+        object rbBinOnly: TRadioButton
+          Left = 4
+          Height = 19
+          Top = 0
+          Width = 77
+          Caption = 'Binary only'
+          TabOrder = 0
+          OnClick = CoreOptChanged
+        end
+        object rbTextOnly: TRadioButton
+          Left = 4
+          Height = 19
+          Top = 24
+          Width = 66
+          Caption = 'Text only'
+          TabOrder = 1
+          OnClick = CoreOptChanged
+        end
+        object rbTextRename: TRadioButton
+          Left = 4
+          Height = 19
+          Top = 48
+          Width = 83
+          Caption = 'Rename text'
+          TabOrder = 2
+          OnClick = CoreOptChanged
+        end
+        object rbGUTSStyle: TRadioButton
+          Left = 4
+          Height = 19
+          Top = 72
+          Width = 74
+          Caption = 'GUTS style'
+          TabOrder = 3
+          OnClick = CoreOptChanged
+        end
+        object cbSaveUTF8: TCheckBox
+          Left = 4
+          Height = 19
+          Top = 96
+          Width = 108
+          Caption = 'Save text as UTF8'
+          TabOrder = 4
+          OnClick = CoreOptChanged
+        end
+      end
+      object cbMODDAT: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 279
+        Width = 214
+        Caption = 'Make MOD.DAT for TL2 mod unpack'
+        TabOrder = 3
+        OnClick = CoreOptChanged
+      end
+      object cbSaveSettings: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 327
+        Width = 124
+        Caption = 'Save settings on exit'
+        TabOrder = 4
+        OnClick = CoreOptChanged
+      end
+      object cbSaveWidth: TCheckBox
+        Left = 276
+        Height = 19
+        Top = 208
+        Width = 145
+        Caption = 'Save tree and grid width'
+        TabOrder = 5
+      end
+      object cbFastScan: TCheckBox
+        Left = 8
+        Height = 19
+        Hint = 'Read manifest and mod info only, do not read headers of packed files (packed/unpacked size)'
+        Top = 301
+        Width = 65
+        Caption = 'Fast load'
+        TabOrder = 6
+        OnClick = CoreOptChanged
+      end
+      object cbTest: TCheckBox
+        Left = 8
+        Height = 19
+        Hint = 'Extract/[de]compile files, no save on disk'
+        Top = 350
+        Width = 168
+        Caption = 'DO NOT SAVE extracted files'
+        TabOrder = 7
+      end
+      object cbUseFName: TCheckBox
+        Left = 8
+        Height = 19
+        Hint = 'Use PAK/MOD file name as subdir when unpack'
+        Top = 67
+        Width = 120
+        Caption = 'Use file name as dir'
+        TabOrder = 8
+        OnClick = CoreOptChanged
+      end
+      object bbFontEdit: TBitBtn
+        Left = 276
+        Height = 26
+        Top = 117
+        Width = 70
+        Action = actEdFontEdit
+        AutoSize = True
+        Images = ilMain
+        ImageIndex = 20
+        TabOrder = 9
+      end
+      object cbSaveDateTime: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 254
+        Width = 148
+        Caption = 'Extract with original date'
+        TabOrder = 10
+        OnClick = CoreOptChanged
+      end
+      object cbPreview: TCheckBox
+        Left = 276
+        Height = 19
+        Top = 159
+        Width = 123
+        Caption = 'Use built-in preview'
+        TabOrder = 11
+        OnChange = cbPreviewChange
+      end
+    end
+    object Grid: TTabSheet
+      Caption = 'Grid'
+      ClientHeight = 437
+      ClientWidth = 675
+      object tbGrid: TToolBar
+        Left = 0
+        Height = 26
+        Top = 0
+        Width = 675
+        Images = ilMain
+        List = True
+        ShowCaptions = True
+        TabOrder = 2
+        object tbEdPreview: TToolButton
+          Left = 1
+          Top = 2
+          Action = actShowPreview
+          AllowAllUp = True
+          ShowCaption = False
+        end
+        object tbEdSep1: TToolButton
+          Left = 24
+          Height = 22
+          Top = 2
+          ShowCaption = False
+          Style = tbsSeparator
+        end
+        object tbEdReset: TToolButton
+          Left = 411
+          Top = 2
+          Action = actEdReset
+          ShowCaption = False
+        end
+        object tbEdSep2: TToolButton
+          Left = 157
+          Height = 22
+          Top = 2
+          ShowCaption = False
+          Style = tbsSeparator
+        end
+        object tbEdImport: TToolButton
+          Left = 357
+          Top = 2
+          Action = actEdImport
+          ShowCaption = False
+        end
+        object tbEdExport: TToolButton
+          Left = 380
+          Top = 2
+          Action = actEdExport
+          ShowCaption = False
+        end
+        object tbEdSep3: TToolButton
+          Left = 349
+          Height = 22
+          Top = 2
+          ShowCaption = False
+          Style = tbsSeparator
+        end
+        object tbEdSep4: TToolButton
+          Left = 403
+          Height = 22
+          Top = 2
+          ShowCaption = False
+          Style = tbsSeparator
+        end
+        object tbColDir: TToolButton
+          Left = 188
+          Hint = 'Show/hide column: Directory'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'D'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColExt: TToolButton
+          Left = 234
+          Hint = 'Show/hide column: Extension'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'E'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColCategory: TToolButton
+          Left = 211
+          Hint = 'Show/hide column: Category'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'C'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColTime: TToolButton
+          Left = 257
+          Hint = 'Show/hide column: Time'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'T'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColPacked: TToolButton
+          Left = 303
+          Hint = 'Show/hide column: Packed size'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'P'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColUnpacked: TToolButton
+          Left = 280
+          Hint = 'Show/hide column: Unpacked size'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'U'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbColSource: TToolButton
+          Left = 326
+          Hint = 'Show/hide column: Source size'
+          Top = 2
+          AllowAllUp = True
+          Caption = 'S'
+          Style = tbsCheck
+          OnClick = tbColumnClick
+        end
+        object tbFilter: TToolButton
+          Left = 165
+          Top = 2
+          Action = actShowFilter
+          ShowCaption = False
+        end
+        object edGridFilter: TEdit
+          Left = 32
+          Height = 23
+          Top = 2
+          Width = 125
+          CharCase = ecUppercase
+          TabOrder = 0
+          TextHint = 'Grid filter'
+          OnChange = edGridFilterChange
+        end
+      end
+      object Splitter2: TSplitter
+        Left = 328
+        Height = 411
+        Top = 26
+        Width = 5
+      end
+      object pnlAdd: TPanel
+        Left = 333
+        Height = 411
+        Top = 26
+        Width = 342
+        Align = alClient
+        TabOrder = 0
+      end
+      object pnlGrid: TPanel
+        Left = 0
+        Height = 411
+        Top = 26
+        Width = 328
+        Align = alLeft
+        ClientHeight = 411
+        ClientWidth = 328
+        ParentBackground = False
+        ParentColor = False
+        TabOrder = 3
+        object sgMain: TStringGrid
+          Left = 1
+          Height = 409
+          Top = 1
+          Width = 326
+          Align = alClient
+          AutoEdit = False
+          ColCount = 9
+          Columns = <          
+            item
+              Alignment = taCenter
+              ReadOnly = True
+              SizePriority = 0
+              Title.Caption = 'State'
+              Width = 40
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Dir'
+              Width = 256
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Name'
+              Width = 144
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Ext'
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Type'
+              Width = 80
+            end          
+            item
+              ReadOnly = True
+              Title.Caption = 'Time'
+              Width = 110
+            end          
+            item
+              Alignment = taRightJustify
+              ReadOnly = True
+              Title.Caption = 'Packed'
+              Width = 80
+            end          
+            item
+              Alignment = taRightJustify
+              ReadOnly = True
+              Title.Caption = 'Unpacked'
+              Width = 80
+            end          
+            item
+              Alignment = taRightJustify
+              ReadOnly = True
+              Title.Caption = 'Source'
+              Width = 80
+            end>
+          DefaultColWidth = 48
+          FixedCols = 0
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goDrawFocusSelected, goColSizing, goRowSelect, goThumbTracking, goDblClickAutoSize, goSmoothScroll, goFixedRowNumbering, goFixedColSizing, goCellHints, goRowHighlight]
+          ParentShowHint = False
+          PopupMenu = mnuGrid
+          RangeSelectMode = rsmMulti
+          RowCount = 1
+          ShowHint = True
+          TabOrder = 0
+          OnCompareCells = sgMainCompareCells
+          OnContextPopup = sgMainContextPopup
+          OnDblClick = sgMainDblClick
+          OnGetCellHint = sgMainGetCellHint
+          OnHeaderClick = sgMainHeaderClick
+          OnHeaderSized = sgMainHeaderSized
+          OnKeyDown = sgMainKeyDown
+          OnSelection = sgMainSelection
+        end
+      end
+    end
+  end
+  object MainMenu: TMainMenu
+    Images = ilMain
+    Left = 72
+    Top = 232
+    object miFile: TMenuItem
+      Caption = '&File'
+      object miFileOpen: TMenuItem
+        Action = actFileOpen
+      end
+      object miFileSave: TMenuItem
+        Action = actFileSave
+      end
+      object miFileSaveAs: TMenuItem
+        Action = actFileSaveAs
+      end
+      object miFilePatch: TMenuItem
+        Action = actFileSavePatch
+      end
+      object miFileClose: TMenuItem
+        Action = actFileClose
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object miFileExit: TMenuItem
+        Action = actFileExit
+      end
+    end
+    object miEdit: TMenuItem
+      Caption = '&Edit'
+      object miEditExtract: TMenuItem
+        Action = actEdExport
+      end
+      object miEditDelete: TMenuItem
+        Action = actEdReset
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object miChangeVersion: TMenuItem
+        Action = actChangeVersion
+      end
+    end
+    object miHelp: TMenuItem
+      Caption = '&Help'
+      object miHelpShowLog: TMenuItem
+        Action = actShowLog
+      end
+      object miHelpAbout: TMenuItem
+        Action = actHelpAbout
+      end
+    end
+  end
+  object ActionList: TActionList
+    Images = ilMain
+    Left = 72
+    Top = 288
+    object actFileOpen: TAction
+      Category = 'File'
+      Caption = '&Open'
+      Hint = 'Open file'
+      ImageIndex = 0
+      ShortCut = 16463
+      OnExecute = actFileOpenExecute
+    end
+    object actFileSave: TAction
+      Category = 'File'
+      Caption = '&Save'
+      Enabled = False
+      Hint = 'Save file'
+      ImageIndex = 1
+      ShortCut = 16467
+      OnExecute = actFileSaveExecute
+    end
+    object actFileSaveAs: TAction
+      Category = 'File'
+      Caption = 'Save &As'
+      ImageIndex = 2
+      OnExecute = actFileSaveAsExecute
+    end
+    object actHelpAbout: TAction
+      Category = 'View'
+      Caption = '&About'
+      Hint = 'About'
+    end
+    object actShowInfo: TAction
+      Category = 'View'
+      Caption = '&Info'
+      Hint = 'Show TL2 MOD info'
+      ImageIndex = 8
+      ShortCut = 32841
+      OnExecute = actShowInfoExecute
+    end
+    object actShowLog: TAction
+      Category = 'View'
+      Caption = 'Show Log'
+      Hint = 'Show Log window'
+      ImageIndex = 13
+      ShortCut = 32844
+      OnExecute = actShowLogExecute
+    end
+    object actShowFilter: TAction
+      Category = 'View'
+      Caption = 'Type Filter'
+      Hint = 'Show type filter'
+      ImageIndex = 12
+      OnExecute = actShowFilterExecute
+    end
+    object actShowPreview: TAction
+      Category = 'View'
+      Caption = 'Show Preview'
+      Hint = 'Show preview/editor'
+      ImageIndex = 9
+      ShortCut = 114
+      OnExecute = actPreviewExecute
+    end
+    object actResetView: TAction
+      Caption = 'Reset View'
+      Hint = 'Reset panels and columns width'
+      ImageIndex = 15
+      OnExecute = actResetViewExecute
+    end
+    object actEdDelete: TAction
+      Category = 'Edit'
+      Caption = 'Delete'
+      Hint = 'Mark file to delete at next saving'
+      ImageIndex = 3
+      OnExecute = actEdDeleteExecute
+    end
+    object actEdReset: TAction
+      Category = 'Edit'
+      Caption = 'Reset'
+      Hint = 'Remove any updates for file'
+      ImageIndex = 15
+      OnExecute = actEdResetExecute
+    end
+    object actEdNew: TAction
+      Category = 'Edit'
+      Caption = 'New file/dir'
+      ImageIndex = 16
+      OnExecute = actEdNewExecute
+    end
+    object actEdImport: TAction
+      Category = 'Edit'
+      Caption = 'Import file(s)'
+      Hint = 'Import file(s)'
+      ImageIndex = 11
+      OnExecute = actEdImportExecute
+    end
+    object actEdExport: TAction
+      Category = 'Edit'
+      Caption = 'Unpack selected'
+      Hint = 'Save selected file(s)'
+      ImageIndex = 2
+      OnExecute = actEdExportExecute
+    end
+    object actEdRename: TAction
+      Category = 'Edit'
+      Caption = 'Rename'
+      Hint = 'Rename file/dir'
+      ImageIndex = 17
+      OnExecute = actEdRenameExecute
+    end
+    object actEdImportDir: TAction
+      Category = 'Edit'
+      Caption = 'Import dir'
+      Hint = 'Import directory content (with subdirs)'
+      ImageIndex = 7
+      OnExecute = actEdImportDirExecute
+    end
+    object actChangeVersion: TAction
+      Caption = 'Change PAK version'
+      Hint = 'Change game target without rebuild files'
+      ImageIndex = 14
+      OnExecute = actChangeVersionExecute
+    end
+    object actFileSavePatch: TAction
+      Category = 'File'
+      Caption = 'Save &Patch'
+      Hint = 'Save just changed files'
+      ImageIndex = 2
+      OnExecute = actFileSavePatchExecute
+    end
+    object actFileClose: TAction
+      Category = 'File'
+      Caption = '&Close'
+      Hint = 'Close file'
+      ImageIndex = 3
+      ShortCut = 16499
+      OnExecute = actFileCloseExecute
+    end
+    object actFileExit: TAction
+      Category = 'File'
+      Caption = 'E&xit'
+      Hint = 'Exit program'
+      ImageIndex = 4
+      ShortCut = 32883
+      OnExecute = actFileExitExecute
+    end
+    object actEdFontEdit: TAction
+      Category = 'Edit'
+      Caption = '&Font'
+      Hint = 'Change source code font'
+      ImageIndex = 20
+      OnExecute = actEdFontEditExecute
+    end
+    object actOpenDir: TAction
+      Category = 'View'
+      Caption = 'Open unpack dir'
+      Hint = 'Open directory for unpack files'
+      ImageIndex = 0
+      OnExecute = actOpenDirExecute
+    end
+  end
+  object ilMain: TImageList
+    Left = 72
+    Top = 344
+    Bitmap = {
+      4C7A1500000010000000100000006F1300000000000078DAED9B09781455B6C7
+      EF88CF7D705C9919E77BE3388240E2828A8333228B4FC7F71C7DA3888A3288E8
+      F09EBB88F31095A4012524900510302CB22884EE242CD937F62D4016B2AFDD49
+      A7BBB3279D3D9DA4D367CEB955D57457AAB7C07B83F3ACEFFB7FD575EFF9DD73
+      EEB9F75655775533A6BC85AE8980D035E15CAB23C2615578280487AD8695AB43
+      206855307C15BC12BE5C1904CC15BF3602FAFBFBB9FAFAFAC062B1404F4F0F74
+      7676425B5B1BB4B4B4C0F2A0156EF98181012EA90DE2BBBABAECFCB2155FB9E6
+      D728F3E4BFBDBD1D5A5B5B61E9575FBAE1C35DFA9778D597CBE04F6B75EFCCD8
+      586D99BBDD0873B71BB8E8987226F59F24EF3FF181CB9772DB0CBD154E37009C
+      AA07385107905A6D85551161DCA794BBDEDE5EEEBBA3A3C3DEFF80652A20BF99
+      C89E459D6904A11D544858286724757777DBFB6E369B39BF64A9C01FAAB1C21B
+      3C76A3820CF03A695B0DCCD9AA87D95BAAE0A56F74F089BA06BE581AC8EBD79D
+      6887F0636D3C7ED249EA87D897A3B500870C5648D3F5407C712BC4641B2022B5
+      02C2920DF0852A90B7FD9EBA0E12B5FD704CB43F22EAB009E0A0D10669D50390
+      58DE057B0B9A60CF593D2CDC530987F2EB900F803918D7BC1D0638A8B74086BE
+      8FDBA6A25250C955FD90A4B3407C7937EC2B34C39EEC5AD8794A0B73B668C154
+      D7009F233F6B53157C7EC00449A56648286D83B89276D88FDA572C28B6C80CD1
+      F9CD109585ECE92A589F510EB3424F70DFA4E7D7EB60C3213DC4E618213AC704
+      EA6C13B725ED3E67825D678DF05DA61EB69FD4C2D6A365F0A9A68CCF19699EE1
+      E706CAE76B9B2FE855B936E9304E2DCC8AD4C273EB74DDC88C649768FBFEAF0F
+      C3AC599D3E8BB84BC537E35AF0553FF2978E1FAE2E359F7430CDA5BCE55DB5F3
+      4FCCCFBCD8FCFDA3D7FF7036393F6E9CD969EF2BEF0B7B39F297A2FFC3CDFF8F
+      EBFF87BBFEFF99B62953DA9F9C3EDD040F3C609E262F9F364D07F7DF5FF7843B
+      9ED8C9931B60D2A43A5A4753A9ECD147DB9E983AD5846515307162BEDB9C915F
+      621F7CB0091E7AA819FCFCCCAAC71EAB83471E21DF85307A74C9939EFA407E89
+      BDFFFE16EC47334C9860827BEF2D833163B44F789B07F23B614233F8FB37610C
+      B5D8971695B72CF5976226BFC48E1F5F8F32D8F3E129FF942BEA2FC54C7E89F5
+      F333C17DF76961ECD8FA69EE781A23CA33E54AEA2FF925D6DFBF14CBF3DCE69F
+      C697C6489E67F24BAC37F9FF7193B664236339D5C27E381BB100C2DE972DE661
+      C654570CE563FCDC73C4646C632CBD81B19DD70FE553B11F199B053BA58DEADA
+      FB182BA851E6B3CB196B1B60ECE0E6A16CC2EF19AB6A15ECF30D8CC55FA7CCD3
+      B10EEDE21F75E68FC43366C33A2BEA709A72FE8EA409F56477E480337F2E4BB0
+      35760BF9531ABF7D8F607D976047F68E5B76A5505EA0674C73AD727EA89C72C3
+      63AA90F9CF17CA2907AEC649732FD69B45FFF9CE7547138572C7FECBB7C3E942
+      3DD91D4D70AE8BC77345B598FFD61EC176AF3FFABC4AF04BC7ADBD17624C5038
+      0FA5EF64ACC37A210E8A351FF3516DBEE097EAC94E31BE2B853A290EB9A89CEA
+      C9CEDD96345DE8DFB93C1C17ADB0A7632ABFF41BDECA5D66B2A27A59C8BC279D
+      4465429D277E00D5C199DC98555C02DF81EA176D6C2EFC12DB8D6A51E09BC4BA
+      3E1771F48A3EC8AE5681AF15EBDA455B671E6DC01729F1F5D9295EE97F8BBF98
+      F8012C62FE5ADCE4AF45B4E9BD88F11BF0308FDCCD9F818B9EBF8397D97A936F
+      8F3C7C1F487257E66A239B192FCF1CC2CBCB2E258FE581543779F224BB1C6396
+      242B0F94F78F7C48723C56AA53CACF8FFC4CC5BC3BCA5BDED5BCFC919FE9F55A
+      FC815FFF65D70B9FAFFFB2EB95CFD77F19EFF3F55FC6FB7EFD77E47F88D77F5F
+      E257B8FE2BE4CFA7EBBF8BF1F3FAFAAF307F062E7AFE0E5E76EB4D4155B93F83
+      DAC219602C5CC0459FA9CC13D750306A5097FD9DAD26D7D27F46DDD69D18D2DF
+      9510DC6F39B5ABCDA6CFB50C569ED909F579B72BB2F5C5FE367D4E932525ACAF
+      3D681A98032742CB9209D0B8C80F4C1FDD05860563A03D76699FAD2AAB916CE5
+      7E89ED895A60EB0A9A02DD21D381F65DBB1740C78EF7A0FE6F63C1F0FEAFA16A
+      FEED501FF1A28DB75157719BC453CC7D29E17DC4F4853F0DFD6B9E014BD81F71
+      B8FBC0866A1063A8FEEF5150317724B4AABFE81BD49DDD2EE58AFA4B3177074F
+      83FEB57F02DB372FF236060DF930A03F0F4D8BEF05D302E27F0E956FDC08656F
+      DC0C83FA1C0B68B537526E3157ED66D523D0B5720AF72BF9EF0A7A9CE741CA41
+      D57F09FE8B5FB9123A8F6E6B87DAE2E7C154F44937E6B8E58B09D0B66C92D0EF
+      9553A173C5E3DCF740750ED47F720F183FA0FEDF06E573AE87A297AE8096A8C5
+      7D602CFA18B5B02B2EA88F7C501BE4AF6DE9EFF85EDA6A17FC16F4EFFC12B46F
+      DE0465B3AF85C2990CF9CFFA84B951F042EFC95DED6443796EFCD40FE5CFF7D2
+      56F3EEAF40F7D75BA1FCF51BA0E895119CB7C74FF9C3B961C4F1A531A27E4A92
+      36622BE6FE144A5EBD8AB32573465EC81F8D1FCE2B9A1B3AEC1FE558FFF62FF8
+      58D9FA2D5CE4B7E4D5AB394B6ADEF39965B0EAECB60B732FEF769A13F511336D
+      945F49A6D52F8021E43F31DF23ECAC31E4399A3F0D505B76EB90F9ABCB6A6C55
+      7FDE573EEF16CE14BD7C859DA398B1CEC2D9BA223FC535807392E615F5ADEBE8
+      B6361CA37E127DA6321EB3DCAF92F8BCC2DCDAD72F7E1673E5E9FEFFFF7A5BB4
+      68114446460E4B120B677601ECFDD4372123B503A921001BFECC55BB7D2E24C5
+      05701976CCB3970F113276FEC45680A8F7A0337A213C515B04370C58E07AD4D4
+      BA125E467543848C9DCF4F04C8088725BACC210314A03DCDEB8608193B4F3659
+      D130A7A57A08FF7A7335AF1B2264243EBF2C05D24FAD8777F376C3086D3A5C21
+      8A3E7F90B78BD7C9458CC47F90FA3E8CDE7037FC16356AC36827DD8D65A31544
+      8CC4076406C0E498C93E8918895F57BC0E661F9DED938891F8932D2721CA18E5
+      9388719C83C39DBFFFE8F57729EE17AAA2579A75EAAFACDADD4BAD95DF2FB156
+      EEF8CC5AFEEDFF58CBB62CB4966E5A60F6C4EBD42BAC509C0AB6C264E8CFD90F
+      3D991AE838F63D980F6E83D26F3EB07AE4A3BEB4DA8A926120370E7ACFC440D7
+      89DDD076683B34A76C82920DEF7AE4B5BB965AAD79096039170BDDA7F640FBE1
+      1DD09AB6051A12D643C9FAB739CFD799C29E54F97D80B52F6B1FB26AE838FA1D
+      B4A66F85A6C48D50B77F0D14AD9BEFD17FC58ECFADBD99D1D0797C17EF737372
+      24D4C7AD03634C2814AD794B9177F45FB163B155EA734BEA666888FB1A4CB161
+      A08F5A0905E1F33CFA2FDFB6C85C4E6315F991B578E3FBBCCF456BE75B8B22DE
+      B41684CE3533158C74E7DFEDEF4BC8B240FCD214006FF2E300F88B3B7BA576B1
+      8D79282BB26F635BE08B7F7B1BE89FB721F23EFA9F4B1C5700740DC7BFB77235
+      CFDCCDBFCB45857BD8C4927D23AB0A35CC860217B295EC1D595510C31E96F354
+      EE86735249EC48DD10FFD8767DCEC7E08DC85681C7AF69DD5E89DB7AE0CFD7B7
+      42665DF3B0F9D3B5CD70DBFE5C386C6C72CDF776AF400DB88AF3B8A9096EC736
+      0E1A9A5CF15D7726E401D364B9D588E8AC61F93FE6C9FFC5F6FFD2E6DF06BD5D
+      5E8C7F97E2FCA1F9DBA6DD0EEEDBE882B6CA6D8AF397D6049517AADDCC7DACC3
+      35A6CDD7B0872E9B75AF61666FD7AD83CC4EE3E6BB4F3B53E0FE7CE34A83763E
+      9ABD80C75565BB99C7EF56451A7633DA561646B35764E521589E71F830BBD225
+      AF6257A04D128E61B0AB3A6AC7A5EF68B60AFB9AAED1B0114AF5F9BBD84DD846
+      853C36A98FD8B6CE531FB18D875CE58CEABC1C1B6D710C1B6D5F177BD818CA99
+      0F639B52AC66FFE130BECF6059B2D77C34FB1A990F1DF80F915FE72D2FB7E7ED
+      A9D9073EF04EF1CAFBE349F27CC9F3E9495991EC5F90197018BB012A53B2BDFD
+      86ABEE983EE6E619D347DF3CD3272123B1990B7E674381B7D2EF8F800FA744D8
+      24BFBEB02464B9A458A8BD96F319D09C8BCA4987A69C3468CC4A8586AC14A83F
+      9702756793A1F64C129832135109603C1D0FE59A603BDF72FE20BF296C68B041
+      78F820B4B70FF0FFDD188D46282D2D85929212282E2EE692FE7F537332CE81CF
+      00AB751096AFB081DFB300691903FC3F3B35353576B6A8A8080A0B0BF9FF6F04
+      FE809D6FCE4D87132707E1F177009E4E0578F62D1B74765A203B3B1B929393ED
+      4A4A4A82C3870F83C96402FD890B7C13F679F16736B8C91FE08EA700AEFF05C0
+      E9D3CA7C656525FFEF91FEF87E3BDF989DE6F43F2DE9FF42F47F23E93F431433
+      FD6F88D8E6E666A83AB6CF814F7562A5FF49114BF992FE73442CFDEF48CE67ED
+      DB023939393E891889CF4FDC019959D9109B92CE739D7B602B64AABFE6CA8DFB
+      D6E9F8CCEE3028389106C4487C69FA1E483A721C02376E85E2D232C889DD08A9
+      D13BB9E8B3E3F1C1EFD642C9E90C2046E2754763A1BAC600F925A5505F5F0F35
+      85E7407BFE34177D763CD6E51C0793AE1C8891D651B926C46638150FBE8818C7
+      3538DCF53BF4F740B879F8EF12C052D420EA9E61B0CBC477A5E250570EC32FB1
+      49A86B7C645F537E5F6B88E8DDB02A5428EA1607FE3E5437CA824A45695C2806
+      5522B6A547DDE5D0C604540BAA1175AF87785F17633983FA8943F94494596C63
+      948736C2C4381E9395531BFB51B77AE01F13F98F86394F2E968F10F93F0C837D
+      43CCDF69C7FC8975A3503B5D8C5F2CAA54F44BEF66FE46A1ED0751BD6EE68F0E
+      B5EA62D6D8E52C5AB7A87750D9621E284F075053BC606F439D1473750A1582DA
+      8C328A65DF496B1BF74FA1A21DD8EB5159E23A7C49D6EED5A82FC4F3D231F158
+      C57FF9BC6013298ECFBFBB89EF65B18DED0ABC81CE5F5EF47189D89728197F95
+      07EE49D422D462541DAAC791F7C26FB4D29CB4DB048E0705457B3DF6DC7E5C2F
+      A8FC1A5121A01AB71254FE4FB965547E57C9F828BE0FF05BE2D99FDF72B43538
+      F1AAF12AF4BB1D3F0F42C0B8975DB2017887463681E3370EE1DFBFFB6ADC1F13
+      DAC038E8D829E6F1B331EE1EAC3F03AA87AE73E0A3EDFD55DD790DDAEC147368
+      426D4585227B56F0E37704168FBDC5631F55E31E47FB03A82A64BB049F7EF361
+      A6F277BF8B5EBB5959FCFB014B36253B1E7BC56A60044B3666B1D4DAB12CC974
+      8EA5189F6189C6589FFC271AC7F89F6CAAF8B0B2B7FB96830D592CC5E0F53912
+      7DA690FF8F906D18C07BE81C33B0846A6071284DE1105D195DD439D4BFE169F2
+      4BECC3A71AA1B0DD0260ED0718C07D7F2F405F3780857ED7E9E06D0CE97F9269
+      2FDB57F53396A0871264E7E7B520876C5F0F72F4BB0FBAECE900E86E1BC23BB5
+      155FCDDF3B107CF6883E896D47D60CD0D5EA9EA73A59BCD0D326B2185367B367
+      DE1E6F3B8F977C4227B21D4D00ED8D9E79EEF342BCE453601B00DAEA3CF3B278
+      A1A311D97ACE82D9E499778A977C226BAE05683501B4183CF3769F0DA24F628D
+      9C8566BD675E16AFC0D6208B63DB54E59997C54B3EA109D9461D7E49D5BAE569
+      6E2BCD79E7F95FD8391CCEEDFA1162F26A538AFF92F1F5A5007971CAA2BAFF6F
+      FE694B0B0538B856F88CFBE0758B7DF39F1E06B0EC7E80C8997C1FB4EE33CFFE
+      B9DFD502BB72125E0BFD00563DCEF7ADCB26D2B53188DF2BB8F34F31935F622B
+      8E0B65E547C146C781E3FBF87D80A7F8B7BC2AF875D81A964FA2EBF0298FFD77
+      F45F7E4C282B3BA2E85F69FD84ACFB94E74AEC2FD42F7F94B3E6E5136DF2FE7B
+      B8BF0AE2FE547E59825F3CF6E5FA1EE8176C8F95DF3BF905BB67D84FE8F94291
+      86CD2F54B345B42FDEC31EA4728FBFBDAAD98C420D2B4395A0220BA3D94ABEC7
+      636CA7B440C39E77E5136DC344BBE92E7EFF7E82DA409B50792C58B718CBCFE4
+      EE636EDF53A47AB43B4BFD92CAF234EC3758D6541AC57EE94D3ECF6BD81D645F
+      12C5EE947E97477D258BA70EFBB31EE3FDB98BDFB883A4E70068932FE4D7F9F9
+      06AA0FF3D583DA206F879E15617D9E68DB89F53728F0E0D80EDA4448F5A507D8
+      4FB1BC43B4EDF095AFF89E8DC4F276297EF9F3284FF1D3B362AC3F2F3D3B2950
+      B3153EE58FE6158AFF5E8EE3E0CBF8E5C5B25F917D712CFBB5C3BC5D44F3C2D3
+      FC119FB19CC33EFD6DC8FCC5794973BF58CDFECDC5738127B1BE9CE68BABF691
+      FDB3B876CAB07F9B783FD56C3371A862CCC773DEF4B128864D40F62DDE2FDCD3
+      B1B7E70BBE46681DABD90251333CE585F76F371B4531638C6D18EB019E0F614D
+      1F10CB22F3F632C5F77F71FEFB63BD9E72A3E44B5CB794DF6AB2751A4F6C5364
+      5FF318A39ACDA6367234EC3687B9B4C9DD9828CCBD306CE71B292EEA9B63CC05
+      D16C2AD6AB9C84658E7388982C0DBB513C5FC6C96254C99FBD5199EC7963029D
+      4BB1FC1379ECDEF0944B6CE363641762DD6A9F791A579C1BE2B3D361C77FB1F9
+      13FB12295C13BC1B3F3A8F61BF37CAE64F35CD0D2F9EEDFD45E959B1387FAB29
+      2F149FE27943CDC289C5B5A8F8FE2FCD499A57E25A89E7394651AEA88C62F6E6
+      1935E585722BAD5FFA2CE5CA1B511C740E735C233E3D9BC7EB9AF8AE42B0CFBC
+      F01CDC40CFE7694FC7BEF074EF805C3FEE1FE07BBC67F085C7FC7F4BB9B7CF51
+      3CF6FA3DC86DEC1A3E76E2F377CCFBCB748DCC8A67D779F9DC98EC3B24FB531A
+      762D8D39B6F9AF5E3E378FC79CEF70188769B86ED4F4FC186541D5A3F6E7C7B0
+      B14A634EF942FBA71CF867B16C29EE67F1FB41BAA6086BAD5A3E2E18E37BF44E
+      0CC63B996C2561B9D36F9BD427B2A37B2E59EC99B273462DFAFD236A09E62511
+      55806527B1BD34AA47FE1ED9F372C0D87F2FBB3FC9E3D752E11EF645EA07DDA7
+      C9791CAF65746D95DD7F2CA4EBBC3C7EF1D9BAED02CFAFFB5AB4FB54B60628EE
+      02BA263A5C279EA33EF058F13CC2CF3B6AF607FE4E9C782F29BB3F3B848C15F7
+      CD624E2AE85C8DFB16542B9D2BE81E066D1E7379BF12CBEEC2717894F64AF57F
+      077DBABCD4
+    }
+  end
+  object mnuTree: TPopupMenu
+    Images = ilMain
+    Left = 72
+    Top = 176
+    object miTreeExtract: TMenuItem
+      Caption = 'Extract w. subdirs'
+      ImageIndex = 1
+      ShortCut = 49
+      OnClick = DoExtractTree
+    end
+    object miTreeExtractDir: TMenuItem
+      Caption = 'Extract this dir'
+      ImageIndex = 1
+      ShortCut = 50
+      OnClick = DoExtractDir
+    end
+    object miTreeExtractVisible: TMenuItem
+      Caption = 'Extract visible'
+      ImageIndex = 2
+      ShortCut = 51
+      OnClick = DoExtractGrid
+    end
+    object miTreeNew: TMenuItem
+      Caption = 'New directory'
+      ImageIndex = 16
+      ShortCut = 78
+      OnClick = miTreeNewClick
+    end
+    object miTreeAdd: TMenuItem
+      Action = actEdImportDir
+      ShortCut = 65
+    end
+    object miTreeDelete: TMenuItem
+      Caption = 'Delete dir'
+      ImageIndex = 3
+      ShortCut = 68
+      OnClick = miTreeDeleteClick
+    end
+    object miTreeRestore: TMenuItem
+      Caption = 'Restore dir'
+      ImageIndex = 14
+      ShortCut = 82
+      OnClick = miTreeRestoreClick
+    end
+    object miTreeList: TMenuItem
+      Caption = 'Copy dir list'
+      ShortCut = 76
+      OnClick = miTreeListClick
+    end
+  end
+  object mnuGrid: TPopupMenu
+    Images = ilMain
+    Left = 175
+    Top = 232
+    object miGridExport: TMenuItem
+      Action = actEdExport
+    end
+    object miGridNew: TMenuItem
+      Action = actEdNew
+    end
+    object miImportDir: TMenuItem
+      Action = actEdImportDir
+    end
+    object miGridAdd: TMenuItem
+      Action = actEdImport
+    end
+    object miGridRename: TMenuItem
+      Action = actEdRename
+    end
+    object miGridReset: TMenuItem
+      Action = actEdReset
+    end
+    object miGridDelete: TMenuItem
+      Action = actEdDelete
+    end
+  end
+end

@@ -14,6 +14,8 @@
   Tree-like object
   every node almost independent, have it's own child list
 }
+{.$DEFINE UseRGTags} // Use RGTags hashes to restore from hash / not keep known node names
+{.$DEFINE UseBlocks} // Use small blocks to keep text inside node, not allocate memory
 unit RGNode;
 
 interface
@@ -93,10 +95,10 @@ function AddVector   (aparent:pointer; aname:PWideChar; var aval      ; atype:in
 
 implementation
 
+{$IFDEF UseRGTags}
 uses
   rgdict;
-
-{.$DEFINE UseBlocks}
+{$ENDIF}
 
 const
   CapacityStep = 10;
@@ -222,7 +224,11 @@ begin
     result:=PRGNode(anode)^.name
 {$ENDIF}
   else
+{$IFDEF UseRGTags}
     result:=RGTags.Tag[PRGNode(anode)^.hash];
+{$ELSE}
+    result:=nil; // really, Str(Hash) must be. But no buffer for this
+{$ENDIF}
 end;
 
 procedure FreeNodeName(anode:pointer);
@@ -251,7 +257,9 @@ begin
       else
         PRGNode(anode)^.hash:=RGHash(aname);
 
+{$IFDEF UseRGTags}
       if not RGTags.Exists(PRGNode(anode)^.hash) then
+{$ENDIF}
       begin
 {$IFDEF UseBlocks}
         PRGNode(anode)^.namelen:=Length(aname);

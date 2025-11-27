@@ -350,35 +350,35 @@ begin
           lpval:=AsString(lprop);
           for j:=1 to Length(strChoice) do
             if Comparewide(lpval,strChoice[j])=0 then begin adata.choice:=j; break; end;
-        end;
-        if CompareWide(lpname,'LEVEL UNIQUE')=0 then
+        end
+        else if CompareWide(lpname,'LEVEL UNIQUE')=0 then
         begin
           if AsBool(lprop) then adata.unique:=1;
-        end;
+        end
         // let mean what doubling for case 255+
-        if CompareWide(lpname,'NUMBER')=0 then
+        else if CompareWide(lpname,'NUMBER')=0 then
         begin
           adata.number:=AsUnsigned(lprop);
 //          exit;
-        end;
+        end
         // next properties presents in binary data only
-        if CompareWide(lpname,'RANDOMIZATION')=0 then
+        else if CompareWide(lpname,'RANDOMIZATION')=0 then
         begin
           adata.random:=AsUnsigned(lprop);
           exit;
-        end;
-        if CompareWide(lpname,'TAG')=0 then
+        end
+        else if CompareWide(lpname,'TAG')=0 then
         begin
           adata.tag:=GetTagTL2Num(AsString(lprop));
           exit;
-        end;
-        if CompareWide(lpname,'NO TAG FOUND')=0 then
+        end
+        else if CompareWide(lpname,'NO TAG FOUND')=0 then
         begin
           if AsBool(lprop) then adata.noflag:=1;
           exit;
-        end;
-        if CompareWide(lpname,'ACTIVE THEMES'  )=0 then exit;
-        if CompareWide(lpname,'DEACTIVE THEMES')=0 then exit;
+        end
+        else if CompareWide(lpname,'ACTIVE THEMES'  )=0 then exit
+        else if CompareWide(lpname,'DEACTIVE THEMES')=0 then exit;
       end;
     end;
 

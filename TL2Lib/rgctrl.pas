@@ -71,7 +71,19 @@ type
 
 type
   // "newdata" is filename if "newsize"=0
-  TRGOnDouble = function(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction of object;
+  TRGOnDouble  = function(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction of object;
+
+const
+  faAdd     = RGFS.faAdd;    // file/dir added
+  faRename  = RGFS.faRename; // file/dir renamed
+  faDelete  = RGFS.faDelete; // file/dir deleted
+  faMove    = RGFS.faMove;   // unimplemented
+  faChanged = 10; // file content changed
+  faInfo    = 11; // file info updated (like PAK'ed size). No need to save
+  faStatus  = 12; // file/dir status changed (delete/recover)
+  faStart   = 13; // start  group operation
+  faFinish  = 14; // finish group operation (idx - count)
+
 type
 
   { TRGController }
@@ -80,7 +92,8 @@ type
   TRGController = object(TRGDirList)
   private
     FPAK:TRGPAK;
-    FOnDouble:TRGOnDouble;
+    FOnDouble :TRGOnDouble;
+
     FLinks:array of PWideChar;
 
     procedure ClearElement(idx:integer);
@@ -90,6 +103,7 @@ type
          aver:integer; achanges:boolean=false):boolean;
     function  OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
+    function GetFileInfoPtr(idx:integer):PRGCtrlInfo;
   public
     property PAK:TRGPAK read FPAK write FPAK;
     property OnDouble:TRGOnDouble read FOnDouble write FOnDouble;
@@ -107,10 +121,12 @@ type
     procedure Trace();
 
     // Build file list and file info
-    procedure GetFullInfo(idx:integer; var info:TRGFullInfo);
+    procedure GetFullInfo(idx:integer; out info:TRGFullInfo);
 
-    // read update from file or buffer
+    // read update from file or buffer ONLY, NOT PAK
     function GetUpdate(idx:integer; var buf:PByte):dword;
+    // unpacked binary, data as is
+    function GetAsIs  (idx:integer; var buf:PByte):dword;
     // unpacked binary, data as text
     function GetSource(idx:integer; var buf:PByte):dword;
     // unpacked binary, data as binary
@@ -128,7 +144,7 @@ type
     {
       Amount of all updates
     }
-    function UpdatesCount(): integer;
+    function UpdatesCount():integer;
     {
       Amount of changes required repack ("data" and "file")
     }
@@ -140,7 +156,7 @@ type
     {
       Delete update
     }
-    function RemoveUpdate(idx: integer): integer;
+    function RemoveUpdate(idx:integer):integer;
     {
       Mark to remove from PAK
     }
@@ -153,7 +169,7 @@ type
     {
       import dir with files and subdirs. apply different actions if files exists
     }
-    function ImportDir(const adst, adir: string; nochild:boolean=false): integer;
+    function ImportDir(const adst, adir:string; nochild:boolean=false): integer;
     {
       import PAK content
     }
@@ -174,9 +190,12 @@ type
     {
       keep filename or allocate buffer and load file content
     }
-    function AddFileData(afdata: PWideChar; afname: PWideChar; acontent: boolean=
-      false): integer;
+    function AddFileData(afdata:PWideChar; afname:PWideChar; acontent:boolean=false):integer;
+
+    property Files[idx:integer]:PRGCtrlInfo read GetFileInfoPtr;
   end;
+
+function GetChangesName(atype:integer):AnsiString;
 
 
 implementation
@@ -188,8 +207,29 @@ uses
   RGFileType,
   RGFile;
 
+function GetChangesName(atype:integer):AnsiString;
+begin
+  case atype of
+    faAdd    : result:='Add'    ;
+    faRename : result:='Rename' ;
+    faDelete : result:='Delete' ;
+    faMove   : result:='Move'   ;
+    faChanged: result:='Changed';
+    faInfo   : result:='Info'   ;
+    faStatus : result:='Status' ;
+    faStart  : result:='Start'  ;
+    faFinish : result:='Finish' ;
+  else
+    result:='Unknown';
+  end;
+end;
+
 { TRGController }
 
+function TRGController.GetFileInfoPtr(idx:integer):PRGCtrlInfo; //inline;
+begin
+  result:=PRGCtrlInfo(pointer(TRGDirList.GetFileInfoPtr(idx)));
+end;
 
 function TRGController.OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 begin
@@ -198,6 +238,7 @@ end;
 
 procedure TRGController.Init;
 begin
+  FillChar(self,SizeOf(self),0);
   Inherited Init(SizeOf(TRGCtrlInfo));
 
   FLinks:=nil;
@@ -269,6 +310,8 @@ var
 begin
   result:=0;
 
+  if OnChange<>nil then OnChange(0,faStart);
+
   DirCapacity :=PAK.Man.DirCapacity;
   FileCapacity:=PAK.Man.FileCapacity;
   // No need to check for existing
@@ -280,6 +323,7 @@ begin
       if PAK.Man.GetFirstFile(lidx,ldir) then
         repeat
           lfile:=AppendFile(ldir,nil{PAK.Man.Files[lidx]^.name});
+          inc(result);
           with PRGCtrlInfo(Files[lfile])^ do
           begin
             SameNameAs(PAK.Man.Files[lidx]);
@@ -288,6 +332,7 @@ begin
         until not PAK.Man.GetNextFile(lidx);
     end;
   end;
+  if OnChange<>nil then OnChange(result,faFinish);
 end;
 
 procedure TRGController.FixSizes(idx:integer; adata:PByte; asize:cardinal);
@@ -312,6 +357,7 @@ begin
       else size_u:=asize;
     end;  
   end;
+  if OnChange<>nil then OnChange(idx,faInfo);
 end;
 
 procedure TRGController.CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
@@ -334,9 +380,10 @@ begin
 //  ato^._ftype  :=afrom^._ftype;
   ato^.ftime   :=afrom^.ftime;
   ato^.checksum:=afrom^.checksum;
+//  if OnChange<>nil then OnChange(ato,faInfo);
 end;
 
-procedure TRGController.GetFullInfo(idx:integer; var info:TRGFullInfo);
+procedure TRGController.GetFullInfo(idx:integer; out info:TRGFullInfo);
 var
   p:PRGCtrlInfo;
 begin
@@ -355,7 +402,7 @@ begin
     info.size_c:=p^.size_c;
     info.size_s:=p^.size_s;
     info.offset:=0;
-    info.ftype :=RGTypeOfExt(info.name);
+    info.ftype :=RGTypeOfExt(info.name); // p^.ftype;
     info.ftime :=p^.ftime;
   end
   else
@@ -409,7 +456,6 @@ end;
 
 function TRGController.GetUpdate(idx:integer; var buf:PByte):dword;
 var
-  lftime,lfsize:Int64;
   f:File of byte;
   sr:TUnicodeSearchRec;
   p:PRGCtrlInfo;
@@ -417,6 +463,8 @@ var
   lres:integer;
 begin
   result:=0;
+  if idx<0 then exit;
+
   p:=PRGCtrlInfo(Files[idx]);
 
   if p<>nil then
@@ -464,6 +512,7 @@ begin
             p^.ftime:=DateTimeToFileTime(sr.TimeStamp);
             FindClose(sr);
           end;
+          if OnChange<>nil then OnChange(idx,faInfo);
 
           if (buf=nil) or (MemSize(buf)<(result+2)) then
           begin
@@ -505,6 +554,48 @@ begin
   end;
 end;
 
+function TRGController.GetAsIs(idx:integer; var buf:PByte):dword;
+var
+  p:PRGCtrlInfo;
+  linfo:boolean;
+begin
+  result:=0;
+  if idx<0 then exit;
+
+  p:=PRGCtrlInfo(Files[idx]);
+  if p^.action in [act_data, act_file] then
+  begin
+    result:=GetUpdate(idx,buf);
+  end
+  else
+  begin
+    if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit;
+    result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
+  end;
+
+  if result>0 then
+  begin
+    linfo:=false;
+    if p^.size_u=0 then
+    begin
+      linfo:=true;
+      p^.size_u:=result;
+    end;
+    if p^.checksum=0 then
+    begin
+      linfo:=true;
+      p^.checksum:=crc32(0,buf,p^.size_u);
+    end;
+    if linfo then
+      if OnChange<>nil then OnChange(idx,faInfo);
+  end
+  else
+  begin
+    p^.checksum:=0;
+    p^.size_s  :=0;
+  end;
+end;
+
 {
   packed - unpack and decompile
   binary - decompile
@@ -513,7 +604,11 @@ function TRGController.GetSource(idx:integer; var buf:PByte):dword;
 var
   p:PRGCtrlInfo;
   lbuf:PWideChar;
+  linfo:boolean;
 begin
+  result:=0;
+  if idx<0 then exit;
+
   p:=PRGCtrlInfo(Files[idx]);
   if p^.action in [act_data, act_file] then
   begin
@@ -521,13 +616,14 @@ begin
   end
   else
   begin
-    if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit(0);
+    if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit;
     result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
   end;
 
   if result>0 then
   begin
-    p^.checksum:=crc32(0,buf,p^.size_u);
+    linfo:=false;
+
     if ((p^.ftype  and $FF)=typeData) and not isSource(buf) then
     begin
       if DecompileFile(buf,result,p^.name,lbuf) then
@@ -535,9 +631,26 @@ begin
         FreeMem(buf);
         buf:=PByte(lbuf);
         result:=(Length(lbuf){+1})*SizeOf(WideChar);
-        p^.size_s:=result;
+        if p^.size_s=0 then
+        begin
+          linfo:=true;
+          p^.size_s:=result;
+        end;
       end;
     end;
+
+    if p^.size_u=0 then
+    begin
+      linfo:=true;
+      p^.size_u:=result;
+    end;
+    if p^.checksum=0 then
+    begin
+      linfo:=true;
+      p^.checksum:=crc32(0,buf,p^.size_u);
+    end;
+    if linfo then
+      if OnChange<>nil then OnChange(idx,faInfo);
   end
   else
   begin
@@ -554,7 +667,11 @@ function TRGController.GetBinary(idx:integer; var buf:PByte):dword;
 var
   p:PRGCtrlInfo;
   lbuf:PByte;
+  linfo:boolean;
 begin
+  result:=0;
+  if idx<0 then exit;
+
   p:=PRGCtrlInfo(Files[idx]);
   if p^.action in [act_data, act_file] then
   begin
@@ -562,20 +679,34 @@ begin
   end
   else
   begin
-    if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit(0);
+    if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit;
     result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
   end;
 
   if result>0 then
   begin
+    linfo:=false;
+
     if ((p^.ftype and $FF)=typeData) and isSource(buf) then
     begin
       lbuf:=buf;
       buf:=nil;
       result:=CompileFile(lbuf,p^.Name,buf,FPAK.Version);
-      p^.size_u:=result;
       FreeMem(lbuf);
     end;
+
+    if p^.size_u=0 then
+    begin
+      linfo:=true;
+      p^.size_u:=result;
+    end;
+    if p^.checksum=0 then
+    begin
+      linfo:=true;
+      p^.checksum:=crc32(0,buf,p^.size_u);
+    end;
+    if linfo then
+      if OnChange<>nil then OnChange(idx,faInfo);
   end
   else
   begin
@@ -583,8 +714,6 @@ begin
     p^.checksum:=0;
     exit;
   end;
-
-  p^.checksum:=crc32(0,buf,p^.size_u);
 end;
 
 {
@@ -597,6 +726,8 @@ var
   lbuf:PByte;
 begin
   result:=0;
+  if idx<0 then exit;
+
   p:=PRGCtrlInfo(Files[idx]);
   if p^.action in [act_data, act_file] then
   begin
@@ -625,6 +756,7 @@ begin
       p^.size_c:=p^.size_u;
       result:=p^.size_c;
     end;
+    if OnChange<>nil then OnChange(idx,faInfo);
   end
   else
   begin
@@ -684,10 +816,9 @@ begin
     until not GetNextFile(i);
   
     if ltype=typeDirectory then
-      RenameDir(PathOfFile(idx),Files[idx]^.Name,PUnicodeChar(ls))
+      result:=RenameDir(PathOfFile(idx),Files[idx]^.Name,PUnicodeChar(ls))>0
     else
-      Files[idx]^.Name:=PUnicodeChar(ls);
-    result:=true;
+      result:=RenameFile(idx,PUnicodeChar(ls));//Files[idx]^.Name:=PUnicodeChar(ls);
   end;
 end;
 
@@ -746,6 +877,7 @@ begin
   begin
     ClearElement(idx);
     PRGCtrlInfo(Files[idx])^.action:=act_delete;
+    if OnChange<>nil then OnChange(idx,faStatus);
   end;
 end;
 
@@ -824,6 +956,8 @@ begin
     move(adata^,lptr^,asize);
   end;
   result:=UseData(lptr,asize,apath);
+
+  if OnChange<>nil then OnChange(result,faChanged); // can call twice, at add and change
 end;
 {
 function TRGController.AddCopy(adata:PByte; asize:cardinal; apath:PWideChar):integer;
@@ -918,6 +1052,7 @@ begin
     else
       result:=SearchFile(afname);
   end;
+  if (result>=0) and (OnChange<>nil) then OnChange(result,faChanged);
 end;
 
 {%ENDREGION Updater}
@@ -974,9 +1109,11 @@ begin
 
         if not (lman^.ftype in [typeDirectory]) then
         begin
+RGLog.Reserve('Packing '+FastWideToStr(Dirs[i].Name)+FastWideToStr(p^.Name));
           p^.size_c:=GetPacked(j,lbuf,p^.size_u);
 
           CopyInfo(p,lman);
+          if OnChange<>nil then OnChange(lidx,faInfo);
 
           if lman^.size_s=0 then lman^.size_s:=lman^.size_u;
           lman^.offset:=apak.WritePackedFile(lbuf,p^.size_u,p^.size_c);
@@ -1266,6 +1403,7 @@ var
   ldir:integer;
 begin
   result:=FileCount;
+  if OnChange<>nil then OnChange(0,faStart);
 
   ls:=UnicodeString(adir);
   if not (adir[Length(adir)] in ['/','\']) then ls:=ls+'/';
@@ -1279,6 +1417,8 @@ begin
   // but skip starting empty file
   if result=0 then result:=1;
   result:=FileCount-result;
+
+  if OnChange<>nil then OnChange(result,faFinish);
 end;
 
 function TRGController.LinkPAK(afile:PWideChar):integer;

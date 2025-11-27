@@ -1,3 +1,4 @@
 {"version":1,"strings":[
-{"hash":201121446,"name":"tform3dview.bbcbsubmesh.hint","sourcebytes":[83,104,111,119,32,108,105,115,116,32,111,102,32,115,117,98,109,101,115,104,101,115,32,116,111,32,115,119,105,116,99,104,32,115,104,111,119,32,111,110,47,111,102,102],"value":"Show list of submeshes to switch show on/off"}
+{"hash":201121446,"name":"tform3dview.bbcbsubmesh.hint","sourcebytes":[83,104,111,119,32,108,105,115,116,32,111,102,32,115,117,98,109,101,115,104,101,115,32,116,111,32,115,119,105,116,99,104,32,115,104,111,119,32,111,110,47,111,102,102],"value":"Show list of submeshes to switch show on/off"},
+{"hash":225158404,"name":"tform3dview.bbsavexml.hint","sourcebytes":[83,97,118,101,32,105,110,32,88,77,76,32,102,111,114,109,97,116],"value":"Save in XML format"}
 ]}

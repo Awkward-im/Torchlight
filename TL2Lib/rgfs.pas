@@ -4,6 +4,7 @@
   one list with file/dir records
   global text cache
 }
+{TODO: Add RenameFile function}
 {TODO: make Names text cache NOT global. But FileInfo is not part of DirList}
 {TODO: remove "total" changes/saving coz total = DirCount+FileCount (except deleted)}
 {TODO: implement Files.data=Dir index for dirs}
@@ -13,6 +14,7 @@
 unit RGFS;
 
 interface
+
 
 type
   PBaseInfo = ^TBaseInfo;
@@ -52,6 +54,14 @@ type
   end;
   TDirEntries = array of TDirInfo;
 
+const
+  faAdd      = 0; // file/dir added
+  faRename   = 1; // file/dir renamed
+  faDelete   = 2; // file/dir deleted
+  faMove     = 3; // unimplemented
+type
+  TRGOnChange = function(idx:integer; aevent:integer):integer of object;
+
 type
   PRGDirList = ^TRGDirList;
   TRGDirList = object
@@ -65,6 +75,10 @@ type
     FFiles :PByte;
     FCapacity:integer;
     FInfoSize:integer;
+    FOnChange:TRGOnChange;
+
+  protected
+    function GetFileInfoPtr(idx:integer):PFileInfo;
 
   private
     function  GetFilesCapacity():integer;
@@ -73,8 +87,6 @@ type
     procedure SetDirsCapacity(acnt:integer);
 
     function GetHash(idx:integer):dword;
-
-    function GetFileInfoPtr(idx:integer):PFileInfo;
 
     // Add dirs with full path (with parents if needs)
     function  DoAddPath   (apath:PWideChar):integer;
@@ -129,6 +141,8 @@ type
     procedure DeleteFile(adir:integer; aname:PUnicodeChar);
     procedure DeleteFile(apath,aname:PUnicodeChar);
 
+    function  RenameFile(aidx:integer; aname:PUnicodeChar):boolean;
+
     procedure MoveFile(aidx:integer; adir :integer);
     procedure MoveFile(aidx:integer; apath:PUnicodeChar);
 
@@ -164,6 +178,7 @@ type
     // check what File record is for dir
     function IsDir        (aidx:integer):boolean;
     function PathOfFile   (aidx:integer):PWideChar;
+    function NameOfFile   (aidx:integer):PWideChar;
     // get Dir array index with idx-ed file
     function FileDir      (aidx:integer):integer;
     // get Dir array index of idx-ed file (if idx-ed file is directory)
@@ -177,6 +192,9 @@ type
     property FileCapacity:integer read GetFilesCapacity write SetFilesCapacity;
     property FileCount   :integer read FFileCount;
     property Files[idx:integer]:PFileInfo read GetFileInfoPtr;
+
+  public
+    property OnChange:TRGOnChange read FOnChange write FOnChange;
 
   // Properties runtime
   public
@@ -325,6 +343,11 @@ end;
 function TRGDirList.IsFileDeleted(aidx:integer):boolean; inline;
 begin
   result:=Files[aidx]^.Name=nil;
+end;
+
+function TRGDirList.NameOfFile(aidx:integer):PWideChar; inline;
+begin
+  result:=Files[aidx]^.Name;
 end;
 
 function TRGDirList.PathOfFile(aidx:integer):PWideChar; inline;
@@ -688,6 +711,8 @@ begin
   lrec^.parent:=adir;
 
   inc(total);
+
+  if OnChange<>nil then OnChange(result,faAdd);
 end;
 
 function TRGDirList.AddFile(adir:integer; aname:PUnicodeChar):integer;
@@ -734,6 +759,8 @@ begin
     DeleteDir(Files[aidx]^.data);
   end;
 }
+  if OnChange<>nil then OnChange(aidx,faDelete);
+
   with Files[aidx]^ do
   begin
     Name:='';
@@ -793,6 +820,22 @@ begin
   DeleteFile(SearchPath(apath),aname);
 end;
   {%ENDREGION Delete}
+
+function TRGDirList.RenameFile(aidx:integer; aname:PUnicodeChar):boolean;
+var
+  ldir,lidx:integer;
+begin
+  ldir:=Files[aidx]^.parent;
+  lidx:=SearchFile(ldir, aname);
+  if lidx<0 then
+  begin
+    Files[aidx]^.Name:=aname;
+    if OnChange<>nil then OnChange(aidx,faRename);
+    result:=true;
+  end
+  else
+    result:=false;
+end;
 
 procedure TRGDirList.MoveFile(aidx:integer; adir :integer);
 begin
@@ -1020,8 +1063,6 @@ begin
       until not GetNextFile(i);
     
     result:=1;
-    // replace old
-    Files[lfile]^.Name:=PUnicodeChar(lnew);
 //    Files[Dirs[ldir].index]^.Name:=PUnicodeChar(lnew);   //!!!!!
     lnew:=lpath+lnew;
     Dirs[ldir].Name:=PUnicodeChar(lnew);
@@ -1040,6 +1081,9 @@ begin
         end;
       end;
     end;
+
+    // replace old. at last coz raise event
+    Files[lfile]^.Name:=PUnicodeChar(lnew);
   end;
 end;
 

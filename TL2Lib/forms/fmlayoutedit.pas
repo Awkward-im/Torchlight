@@ -31,15 +31,15 @@ type
     cbTxtPreview: TCheckBox;
     ilObjIcons: TImageList;
     memHelp: TMemo;
-    miRenameNode: TMenuItem;
-    miAddNode: TMenuItem;
-    miDeleteNode: TMenuItem;
-    pnlTopLeft: TPanel;
-    pnlHelp: TPanel;
-    pnlPropEdit: TPanel;
-    pnlTree: TPanel;
-    pnlProps: TPanel;
     mnuTree: TPopupMenu;
+    miRenameNode: TMenuItem;
+    miAddNode   : TMenuItem;
+    miDeleteNode: TMenuItem;
+    pnlTopLeft : TPanel;
+    pnlHelp    : TPanel;
+    pnlPropEdit: TPanel;
+    pnlTree    : TPanel;
+    pnlProps   : TPanel;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     SynEdit: TSynEdit;
@@ -79,9 +79,10 @@ type
     destructor Destroy; override;
     procedure Clear;
 
-    function BuildTree(adata:PByte; aver:integer):integer;
-    function GetFile(out abuf: PByte; aver: integer): integer;
+    function BuildTree (adata:PByte; aver:integer):integer;
+    function GetFile(out abuf:PByte; aver:integer):integer;
 
+    property Root:Pointer  read FRoot;
     property Edit:TSynEdit read SynEdit write SynEdit;
   end;
 
@@ -99,6 +100,7 @@ uses
   rgglobal,
   rgIO.Layout,
   rgIO.Text,
+  LayList,
   rgnode;
 
 resourcestring
@@ -120,6 +122,7 @@ begin
   info.Init;
   hostinfo.Init;
   slLogic:=TStringList.Create;
+  slLogic.Add(rsDefault);
   slLogic.Add('False');
   slLogic.Add('True');
 
@@ -141,7 +144,8 @@ begin
   inherited Destroy;
 end;
 
-{$include objicons.inc}
+{.$include objicons.inc} // replaced by LayList unit
+
 function TFormLayoutEdit.GetImageFromType(aicon:PWideChar):integer;
 var
   i:integer;
@@ -349,7 +353,7 @@ procedure TFormLayoutEdit.vePropSelection(Sender: TObject; aCol, aRow: Integer);
 begin
 //  memHelp.Lines[2]:='Property '+veProp.Keys[aRow];
   memHelp.Lines[2]:=FastWideToStr(TypeToText(IntPtr(veProp.Objects[1,aRow-1])))+', '+
-      info.GetPropDescr(IntPtr(veProp.Objects[0,aRow-1]));
+      WideToStr(info.GetPropDescr(IntPtr(veProp.Objects[0,aRow-1])));
 end;
 
 procedure TFormLayoutEdit.ClearPanel();
@@ -456,6 +460,7 @@ begin
       begin
         veProp.ItemProps[i-1].EditStyle:=esPickList;
         veProp.ItemProps[i-1].PickList :=slLogic;
+        veProp.ItemProps[i-1].ReadOnly :=True;
         // special
         if (CompareWide(lname,'VISIBLE')=0) or
            (CompareWide(lname,'ENABLED')=0) then
@@ -464,6 +469,7 @@ begin
       if ltype in [rgVector2, rgVector3, rgVector4] then
       begin
         veProp.ItemProps[i-1].EditStyle:=esEllipsis;
+        veProp.ItemProps[i-1].ReadOnly :=True;
       end;
       veProp.Objects[0,i-1]:=TObject(IntPtr(lid  ));
       veProp.Objects[1,i-1]:=TObject(IntPtr(ltype));
@@ -668,7 +674,13 @@ end;
 procedure TFormLayoutEdit.vePropValidateEntry(Sender: TObject; aCol,
   aRow: Integer; const OldValue: string; var NewValue: String);
 begin
-  if NewValue<>OldValue then SetPropValue(ARow,NewValue);
+  if NewValue<>OldValue then
+  begin
+    if NewValue='' then
+      NewValue:=rsDefault
+    else
+      SetPropValue(ARow,NewValue);
+  end;
 end;
 
 function TFormLayoutEdit.SetPropValue(arow:integer; const aval:string):boolean;
@@ -678,13 +690,22 @@ var
   ltype:integer;
 begin
   result:=true;
-  lname :=UnicodeString(veProp.Keys[arow]);
-  lval  :=UnicodeString(aval);
+
   lprops:=GetChild(tvLayout.Selected.Data,0);
+  lname :=UnicodeString(veProp.Keys[arow]);
   lnode :=FindNode(lprops,pointer(lname));
-  ltype :=IntPtr(veProp.Objects[1,arow-1]);
+
+  if (aval='') or (aval=rsDefault) then
+  begin
+    if lnode<>nil then DeleteNode(lnode);
+    exit;
+  end;
+
+  lval:=UnicodeString(aval);
+
   if lnode=nil then
   begin
+    ltype:=IntPtr(veProp.Objects[1,arow-1]);
     lnode:=AddNode(lprops,pointer(lname),ltype,pointer(lval));
   end
   else

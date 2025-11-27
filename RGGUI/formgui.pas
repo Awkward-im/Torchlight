@@ -25,30 +25,19 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
-  ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit, SynEdit,
-  SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
-  SynGutterCodeFolding,
-  rgglobal, rgpak, rgctrl, Types, fmLayoutEdit, fmImageset,
-  fm3dview, SynHighlighterOgre, RGObj, FWHexView{, FWHexView.MappedView};
+  ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
+//  SynEdit, SynHighlighterXML, SynHighlighterT, SynEditTypes, SynPopupMenu,
+  rgglobal, rgpak, rgctrl, Types;
 
 type
 
   { TRGGUIForm }
 
    TRGGUIForm = class(TForm)
-    actFileSavePatch: TAction;
-    actEdFontEdit: TAction;
-    actDarkBg: TAction;
-    bbPlay: TBitBtn;
-    bbStop: TBitBtn;
-    bbFontEdit: TBitBtn;
-    cbSaveTL1ADM: TCheckBox;
+    cbSaveTL1ADM  : TCheckBox;
     cbSaveDateTime: TCheckBox;
-    miTreeList: TMenuItem;
-    miCalcHash: TMenuItem;
-    miSavePatch: TMenuItem;
+    cbPreview: TCheckBox;
     pnlGrid: TPanel;
-    pnlAudio: TPanel;
     Setings: TTabSheet;
     cbUnpackTree  : TCheckBox;
     cbMODDAT      : TCheckBox;
@@ -68,8 +57,6 @@ type
     cbSaveUTF8  : TCheckBox;
 
     edGridFilter: TEdit;
-    imgPreview: TImage;
-    ilBookmarks: TImageList;
     ilMain     : TImageList;
     PageControl: TPageControl;
 
@@ -77,27 +64,18 @@ type
     pnlTreeFilter: TPanel;
     edTreeFilter : TTreeFilterEdit;
     bbCollapse   : TBitBtn;
-    SynEdit: TSynEdit;
-    tbOpenDir: TToolButton;
-    ToolButton1: TToolButton;
-    tbEdDarkBack: TToolButton;
+//    SynEdit: TSynEdit;
+    tbOpenDir    : TToolButton;
+    ToolButton1  : TToolButton;
     tvTree       : TTreeView;
 
     Grid   : TTabSheet;
     pnlAdd : TPanel;
-    pnlInfo: TPanel;
-    lblInfo1  : TLabel;
-    lblInfo2  : TLabel;
 
-    ReplaceDialog: TReplaceDialog;
     sgMain: TStringGrid;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     StatusBar: TStatusBar;
-    SynPopupMenu: TSynPopupMenu;
-    SynTSyn     : TSynTSyn;
-    SynOgreSyn  : TSynOgreSyn;
-    SynXMLSyn   : TSynXMLSyn;
 
     ToolBar: TToolBar;
     tbOpen     : TToolButton;
@@ -107,6 +85,7 @@ type
     tbInfo     : TToolButton;
     tbShowLog  : TToolButton;
     tbResetView: TToolButton;
+    bbFontEdit: TBitBtn;
 
     mnuGrid: TPopupMenu;
     miGridExport: TMenuItem;
@@ -125,9 +104,11 @@ type
     miTreeAdd           : TMenuItem;
     miTreeDelete        : TMenuItem;
     miTreeRestore       : TMenuItem;
+    miTreeList          : TMenuItem;
 
     MainMenu: TMainMenu;
     miFile: TMenuItem;
+    miFilePatch  : TMenuItem;
     miFileOpen   : TMenuItem;
     miFileSave   : TMenuItem;
     miFileSaveAs : TMenuItem;
@@ -136,8 +117,6 @@ type
     miFileExit   : TMenuItem;
     miEdit: TMenuItem;
     miEditExtract: TMenuItem;
-    miEditSearch : TMenuItem;
-    miEditReplace: TMenuItem;
     miEditDelete : TMenuItem;
     N2           : TMenuItem;
     miChangeVersion: TMenuItem;
@@ -156,17 +135,15 @@ type
     actShowLog    : TAction;
 
     actShowPreview: TAction;
-    actScaleImage : TAction;
     actEdNew      : TAction;
     actEdDelete   : TAction;
     actEdReset    : TAction; // Reset content to container
-    actEdUndo     : TAction; // Reset content to last
-    actEdSave     : TAction; // Save for update
     actEdImport   : TAction; // Load (import) content
     actEdExport   : TAction; // Export content
-    actEdSearch   : TAction; // Seacrh/replace
     actEdRename   : TAction;
     actEdImportDir: TAction;
+    actFileSavePatch: TAction;
+    actEdFontEdit : TAction;
 
     actChangeVersion: TAction;
     actOpenDir    : TAction;
@@ -175,13 +152,9 @@ type
 
     tbGrid: TToolBar;
     tbEdPreview  : TToolButton;
-    tbEdScale    : TToolButton; // Show when Image selected
     tbEdSep1: TToolButton;
     tbEdReset    : TToolButton; // Show wnen any file selected
-    tbEdUndo     : TToolButton; // Show wnen any file selected
-    tbEdSave     : TToolButton; // Show wnen any file selected
     tbEdSep2: TToolButton;
-    tbEdSearch   : TToolButton; // Show wnen text file selected
     tbEdSep3: TToolButton;
     tbEdImport   : TToolButton;
     tbEdExport   : TToolButton; // Show wnen any file selected
@@ -196,7 +169,6 @@ type
     tbColUnpacked: TToolButton;
 
     procedure actChangeVersionExecute(Sender: TObject);
-    procedure actDarkBgExecute(Sender: TObject);
     procedure actEdDeleteExecute(Sender: TObject);
     procedure actEdExportExecute(Sender: TObject);
     procedure actEdImportDirExecute(Sender: TObject);
@@ -204,9 +176,6 @@ type
     procedure actEdNewExecute(Sender: TObject);
     procedure actEdRenameExecute(Sender: TObject);
     procedure actEdResetExecute(Sender: TObject);
-    procedure actEdSaveExecute(Sender: TObject);
-    procedure actEdSearchExecute(Sender: TObject);
-    procedure actEdUndoExecute(Sender: TObject);
     procedure actFileCloseExecute(Sender: TObject);
     procedure actFileExitExecute(Sender: TObject);
     procedure actFileOpenExecute(Sender: TObject);
@@ -218,26 +187,22 @@ type
     procedure actShowInfoExecute(Sender: TObject);
     procedure actShowFilterExecute(Sender: TObject);
     procedure actShowLogExecute(Sender: TObject);
-    procedure actScaleImageExecute(Sender: TObject);
     procedure actResetViewExecute(Sender: TObject);
     procedure actPreviewExecute(Sender: TObject);
     procedure bbCollapseClick(Sender: TObject);
-    procedure bbPlayClick(Sender: TObject);
-    procedure bbStopClick(Sender: TObject);
+    procedure cbPreviewChange(Sender: TObject);
     procedure edGridFilterChange(Sender: TObject);
-    procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
-    procedure miCalcHashClick(Sender: TObject);
     procedure miTreeDeleteClick(Sender: TObject);
     procedure miTreeListClick(Sender: TObject);
     procedure miTreeNewClick(Sender: TObject);
     procedure miTreeRestoreClick(Sender: TObject);
-    procedure ReplaceExecute(Sender: TObject);
     procedure SetupColumns(Sender: TObject);
     procedure DoExtractDir(Sender: TObject);
     procedure DoExtractGrid(Sender: TObject);
     procedure DoExtractTree(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
     procedure sgMainCompareCells(Sender: TObject; ACol, ARow, BCol, BRow: Integer; var Result: integer);
     procedure sgMainContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure sgMainDblClick(Sender: TObject);
@@ -246,24 +211,17 @@ type
     procedure sgMainHeaderSized(Sender: TObject; IsColumn: Boolean; Index: Integer);
     procedure sgMainKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sgMainSelection(Sender: TObject; aCol, aRow: Integer);
-    procedure SynEditStatusChange(Sender: TObject; Changes: TSynStatusChanges);
     procedure tbColumnClick(Sender: TObject);
     procedure tvTreeContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
-    FUData:pointer;
+    fmPreview:TForm;
     fmi:TForm;
-    fmLEdit:TFormLayoutEdit;
-    fmImgset:TForm;
-    hview:TFWHexView;
     ctrl:TRGController;
-    Form3DView:TForm3dView;
 
     LastExt:string;
     LastFilter:integer;
     FLastIndex:integer;
-    FUSize:integer;
-    sstream:THandle; // sound playing stream handle
     inProcess:boolean;
     sgSortColumn:integer;
     bShowDir     : Boolean;
@@ -277,8 +235,7 @@ type
 
     procedure AddNewDir(anode: TTreeNode; const apath: string);
     procedure ClearInfo();
-    procedure DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
-    function FileClose: boolean;
+    function  FileClose: boolean;
     procedure FillGrid(idx:integer=-1);
     function  FillGridLine(arow: integer; const adir: string; afile: integer): boolean;
     procedure FillTree();
@@ -287,26 +244,16 @@ type
     procedure MarkTree(adir: integer; aEnable: boolean);
     procedure NewPAK;
     procedure OpenPAK(const aname: string);
-    procedure PrepareSound;
-    procedure PreviewDump();
-    procedure PreviewImageset(const adir: string);
-    procedure PreviewModel(const adir,aname:string);
-    procedure PreviewSound;
-    function  SaveFile(const adir, aname: string; adata: PByte; asize: integer; idx: integer): boolean;
-    procedure PreviewImage(const aext: string);
-    procedure PreviewSource();
-    procedure PreviewLayout();
-    procedure PreviewText();
     procedure LoadSettings;
     procedure SaveSettings;
     procedure SetupView;
-    procedure ShowImagesetInfo(const afile: string; arect: TRect);
-    procedure ShowModelInfo;
-    function  UnpackSingleFile(const adir, aname: string; var buf:PByte): boolean;
-    procedure ExtractSingleDir(adir: integer; var buf:PByte);
+    function  SaveFile        (const adir, aname:string; adata:PByte; asize:integer; idx:integer):boolean;
+    function  UnpackSingleFile(const adir, aname:string; var buf:PByte): boolean;
+    procedure ExtractSingleDir(adir:integer; var buf:PByte);
     procedure UpdateStatistic;
     function  OnImportDouble(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
+    function  GUIOnChange(idx:integer; atype:integer):integer;
   public
     SrcFont: TFont;
   end;
@@ -318,22 +265,14 @@ implementation
 
 {$R *.lfm}
 {$IFDEF Windows}
-  {$R bass64.rc}
+  {.$R bass64.rc}
 {$ENDIF}
 
 uses
   LCLIntf,
   LCLType,
-//  SynEditHighlighterFoldBase,
-  IntfGraphics,
-  GL, GLU,
   inifiles,
   clipbrd,
-  fpimage,
-  fpwritebmp,
-  lazTGA,
-  Imaging, ImagingDds, ImagingTypes, ImagingComponents, ImagingOpenGL,
-  fpc.Dynamic_Bass,
 
   unitLogForm,
   unitFilterForm,
@@ -342,15 +281,13 @@ uses
   fmAsk,
   fmcombodiff,
 
-  rgIO.Text,
-  rgIO.Layout,
-
+  rgpreview,
+  
   rgfiletype,
   rgfile,
-  rgmod,
-  rgdict,
-  rgdictlayout,
-  rgstream;
+  rgprepare,
+  rgmod
+  ;
 
 {%REGION Constants}
 
@@ -396,8 +333,8 @@ const
   sShoPacked    = 'shopacked';
   sShowUnpacked = 'showunpacked';
   sShowSource   = 'showsource';
+  sPreview      = 'preview';
   sShowPreview  = 'showpreview';
-  sScaleImage   = 'scaleimage';
   sSaveWidth    = 'savewidth';
   sTreeWidth    = 'width_tree';
   sGridWidth    = 'width_grid';
@@ -433,7 +370,7 @@ resourcestring
   rsReadPAK         = ' Read PAK. Parsing...';
   rsBuildTree       = ' Build tree';
   rsBuildGrid       = ' Build file list. Please, wait...';
-  rsBuildPreview    = ' Build preview';
+//  rsBuildPreview    = ' Build preview';
   rsNothingToShow   = 'Nothing to show with current filter';
   rsUnpackSucc      = 'unpacked succesfully.';
   rsFilesUnpackSucc = ' files unpacked succesfully.';
@@ -457,16 +394,8 @@ resourcestring
   rsImported        = ' files imported';
   rsLinkingNote     = 'These files still on disk and not built-in until PAK/MOD saved.';
   rsNothingImported = 'Nothing was imported.';
-  rsUnknownEncoding = 'Unknown source encoding';
-  rsSize            = 'Size';
-  rsOffset          = 'Offset';
-  rsTime            = 'Time';
-  rsImageFile       = 'Texture file';
-  rsSprite          = 'X: %d; Y: %d; Width: %d; Height: %d';
 //  rsChooseVer       = 'Choose game';
 //  rsGameVer         = 'Game';
-  rsMdlMeshes       = 'Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d';
-//  rsMdlCoords       = 'Offset: X: %f; Y: %f; Z: %f';
 
   rsNewFile         = 'New file';
   rsChangedFile     = 'Changed file';
@@ -557,7 +486,7 @@ begin
     config.WriteBool(sSectSettings,sShowSource  ,bShowSource  );
 
     config.WriteBool(sSectSettings,sShowPreview,actShowPreview.Checked);
-    config.WriteBool(sSectSettings,sScaleImage ,actScaleImage .Checked);
+    config.WriteBool(sSectSettings,sPreview    ,cbPreview     .Checked);
 
     config.WriteBool(sSectSettings,sSaveWidth,cbSaveWidth.Checked);
     if cbSaveWidth.Checked then
@@ -623,8 +552,12 @@ begin
   bShowUnpacked:=config.ReadBool(sSectSettings,sShowUnpacked,false);
   bShowSource  :=config.ReadBool(sSectSettings,sShowSource  ,false);
 
-  actShowPreview.Checked:=config.ReadBool(sSectSettings,sShowPreview,false); actPreviewExecute(Self);
-  actScaleImage .Checked:=config.ReadBool(sSectSettings,sScaleImage ,false);
+  if cbPreview.Checked then
+    actShowPreview.Checked:=config.ReadBool(sSectSettings,sShowPreview,false)
+  else
+    actShowPreview.Checked:=False;
+  cbPreview.Checked:=config.ReadBool(sSectSettings,sPreview,true);
+  if not cbPreview.Checked then actPreviewExecute(Self); // call automatically if Checked
 
   rgDebugLevel:=TRGDebugLevel(config.ReadInteger(sSectSettings,sDebugLevel,1));
 
@@ -664,6 +597,7 @@ begin
   if Pos('underline',ls)<>0 then lstyle:=lstyle+[fsUnderline];
   if Pos('strikeout',ls)<>0 then lstyle:=lstyle+[fsStrikeOut];
   SrcFont.Style:=lstyle;
+  PreviewFont(SrcFont);
 
   fmFilterForm.LoadSettings(config);
   config.Free;
@@ -705,29 +639,18 @@ begin
   ctrl.NewDir('MEDIA/');
   FillTree();
   SetupView();
+
+  ctrl.OnChange:=@GUIOnChange;
 end;
 
 procedure TRGGUIForm.FormCreate(Sender: TObject);
 begin
   FLastIndex:=-1;
-  FUData    :=nil;
   sgSortColumn:=colName;
   SrcFont:=TFont.Create;
 
   fmLogForm:=nil;
   fmFilterForm:=TFilterForm.Create(Self);
-{
-  fmLEdit:=TFormLayoutEdit.Create(Self);
-  fmLEdit.Parent:=pnlAdd;
-  fmLEdit.Align:=alClient;
-}{
-  fmImgSet:=TFormImageset.Create(Self);
-  fmImgSet.Parent:=pnlAdd;
-  fmImgSet.Align:=alClient;
-}
-  SynTSyn:=TSynTSyn.Create(Self);
-  SynOgreSyn:=TSynOgreSyn.Create(Self);
-
   LoadSettings();
   SetupColumns(Self);
   ClearInfo();
@@ -751,7 +674,6 @@ begin
     exit;
   end;
 
-  Unload_BASSDLL;
   SaveSettings();
   SrcFont.Free;
 end;
@@ -767,6 +689,7 @@ begin
     end;
   end;
 
+  ClosePreviews;
   ctrl.Free;
 
   sgMain.Clear;
@@ -810,6 +733,8 @@ begin
 //ctrl.Trace;
   FillTree();
   SetupView();
+
+  ctrl.OnChange:=@GUIOnChange;
 end;
 
 procedure TRGGUIForm.actFileOpenExecute(Sender: TObject);
@@ -961,7 +886,7 @@ begin
     if FontDialog.Execute then
     begin
       SrcFont.Assign(FontDialog.Font);
-      SynEdit.Font.Assign(SrcFont);
+      PreviewFont(SrcFont);
     end;
   finally
     FontDialog.Free;
@@ -1050,72 +975,40 @@ begin
   end;
 end;
 
-procedure TRGGUIForm.miCalcHashClick(Sender: TObject);
+function TRGGUIForm.GUIOnChange(idx:integer; atype:integer):integer;
 var
-  lc:TComponent;
-  lsynedit:TSynEdit;
-  pt,pp:TPoint;
-  lform:TForm;
-  lmemo:TMemo;
-  ltext:string;
-  lhash:dword;
+  ldir,lname:AnsiString;
+  i:integer;
 begin
-  if Sender is TSynEdit then
-  begin
-    lsynedit:=Sender as TSynEdit;
-    lc:=nil;
-  end
+  result:=1;
+  case atype of
+    faStart : inProcess:=true;
+    faFinish: inProcess:=false;
   else
-  begin
-    lc:=((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
-    if not (lc is TSynEdit) then exit;
-
-    lsynedit:=lc as TSynEdit;
-  end;
-
-  ltext:=lSynEdit.SelText;
-  if ltext='' then
-  begin
-    if lc<>nil then
+    if not inProcess then
     begin
-      pp:=((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupPoint;
-      pt:=lSynEdit.PixelsToLogicalPos(
-          lSynEdit.ScreenToClient(pp));
-    end
-    else
-    begin
-      pt:=lSynEdit.LogicalCaretXY;
-      pp:=lSynEdit.ClientToScreen(SynEdit.LogicalToPhysicalPos(pt));
+      ldir :=WideToStr(ctrl.PathOfFile(idx));
+      lname:=WideToStr(ctrl.Files[idx]^.Name);
+      if rgDebugLevel=dlDetailed then
+        RGLog.Add('File affected ('+GetChangesName(atype)+'): '+ldir+lname);
+      // 1 - check grid for file
+      // can't use sgMain.Row directly coz it can be not from Preview only
+      for i:=1 to sgMain.RowCount-1 do
+      begin
+        if IntPtr(sgMain.Objects[colName,i])=idx then
+        begin
+          FillGridLine(i,ldir,idx);
+          break;
+        end;
+      end;
+      // 2 - check for feature tags
+      if atype<>faInfo then
+        if ((ldir=strRootDir) and (lname='FEATURETAGS.HIE')) or
+            (ldir='MEDIA/FEATURETAGS/') then
+        begin
+          PrepareFeatureTags(@ctrl);
+        end;
     end;
-    ltext:=lSynEdit.GetWordAtRowCol(pt);
-  end;
-
-  if ltext<>'' then
-  begin
-    lhash:=RGHashB(PAnsiChar(UpCase(ltext)));
-    lform:=TForm.Create(Self);
-    lform.Left  :=pp.X;
-    lform.Top   :=pp.Y;
-    lform.Width :=200;
-    lform.Height:=120;
-    lform.Caption:='Hash';
-
-    lmemo:=TMemo.Create(lform);
-    lmemo.Parent  :=lform;
-    lmemo.Align   :=alClient;
-    lmemo.ReadOnly:=true;
-    lmemo.Text    :=ltext+
-      #13#10'  Unsigned'#13#10 +IntToStr(lhash)+
-      #13#10'  Signed'#13#10 +IntToStr(integer(lhash))+
-      #13#10'  Hex'#13#10'$'+IntToHex(lhash);
-    lform.ShowModal;
-    lform.Free;
-{
-    ShowMessage(ltext+
-      #13#10'U.Hash = ' +IntToStr(lhash)+
-      #13#10'S.Hash = ' +IntToStr(integer(lhash))+
-      #13#10'H.Hash = $'+IntToHex(lhash));
-}
   end;
 end;
 
@@ -1153,6 +1046,7 @@ begin
 
   if cbSaveDateTime.Checked then
   begin
+    if idx<=0 then idx:=ctrl.SearchFile(adir+aname);
     ctrl.GetFullInfo(idx,lfi);
     ltime:=FileTimeToDateTime(lfi.ftime);
   end
@@ -1394,44 +1288,15 @@ end;
 
 procedure TRGGUIForm.ClearInfo();
 var
-  lstr:TStream;
   {bRoot,}bNoTree,bEmpty,bParent:boolean;
 begin
+  if fmPreview<>nil then
+  begin
+    fmPreview.Free;
+    fmPreview:=nil;
+  end;
+
   if PageControl.ActivePage=Grid then Self.ActiveControl:=SGMain;
-  lblInfo1.Caption:='';
-  lblInfo2.Caption:='';
-
-  if sstream<>0 then bbStopClick(self);
-  pnlAudio.Visible:=false;
-
-  if fmLEdit <>nil then fmLEdit .Visible:=false;
-  if Form3dView<>nil then Form3dView.Visible:=false;
-
-  if fmImgSet<>nil then
-  begin
-    fmImgSet.Visible:=false;
-    TFormImageset(fmImgSet).FImageset.Free;
-  end;
-
-  SynEdit.Clear;
-  SynEdit.Visible:=false;
-
-  if hview<>nil then
-  begin
-    hview.Visible:=false;
-    lstr:=hview.DataStream;
-    lstr.Free;
-    hview.SetDataStream(nil,0);
-  end;
-
-  imgPreview.Picture.Clear;
-  imgPreview.Visible:=false;
-  actScaleImage.Visible:=false;
-  actDarkBg.Visible:=false;
-
-  actEdSearch.Enabled:=false;
-
-  FreeMem(FUData); FUData:=nil;
 
   bNoTree:=tvTree.Items.Count=0;
 //  bRoot  :=(not bNoTree) and (tvTree.Selected=tvTree.Items[0]);
@@ -1443,8 +1308,6 @@ begin
           ((sgMain.Row     =1) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0));
 
   // Single file actions
-  actEdUndo  .Enabled:=not (bNoTree or bEmpty or bParent);
-  actEdSave  .Enabled:=not (bNoTree or bEmpty or bParent);
   actEdRename.Enabled:=not (bNoTree or bEmpty or bParent);
   // Selected files actions
   actEdExport.Enabled:=not (bNoTree or bEmpty);
@@ -1455,547 +1318,110 @@ begin
   actEdImport.Enabled:=not bNoTree;
 end;
 
-  {%REGION Sound}
-procedure TRGGUIForm.PrepareSound;
-{$IFDEF Windows}
-var
-  res:TResourceStream;
-{$ENDIF}
-{
-  f:File Of Byte;
-  res:TFPResourceHandle;
-  lHandle:THANDLE;
-  lptr:PByte;
-  lsize:integer;
-}
-begin
-{$IFDEF Windows}
-  if not Load_BASSDLL(bassdll) then
-  begin
-    res:=TResourceStream.Create(hInstance,'BASS','RT_RCDATA');
-    try
-      res.SaveToFile(bassdll);
-    finally
-      res.Free;
-    end;
-(*
-    res:=FindResource(hInstance, 'BASS', 'TEXT');
-    if res<>0 then
-    begin
-      lHandle:=LoadResource(hInstance,Res);
-      if lHandle<>0 then
-      begin
-        lptr :=LockResource(lHandle);
-        lsize:=SizeOfResource(hInstance,res);
-
-        {$I-}
-        AssignFile(f,'bass.dll');
-        Rewrite(f);
-        if IOResult=0 then
-        begin
-          BlockWrite(f,lptr^,lsize);
-          CloseFile(f);
-        end;
-
-        UnlockResource(lHandle);
-        FreeResource(lHandle);
-      end;
-    end;
-*)
-  end;
-{$ENDIF}
-  if Load_BASSDLL(bassdll) then
-  begin
-    {$IFDEF MSWINDOWS}
-    BASS_Init(-1, 44100, 0, hInstance, nil);
-    {$ELSE}
-    BASS_Init(-1, 44100, 0, nil, nil);
-    {$ENDIF}
-  end;
-  sstream:=0;
-end;
-
-procedure EndOfSoundPlay(handle: HSYNC; channel, data: DWORD; user: Pointer); {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
-begin
-  with TRGGUIForm(user) do
-  begin
-    sstream:=0;
-    bbPlay.Visible:=true;
-    bbStop.Visible:=false;
-  end;
-end;
-
-procedure TRGGUIForm.bbPlayClick(Sender: TObject);
-begin
-  bbPlay.Visible:=false;
-  bbStop.Visible:=true;
-  sstream:=BASS_StreamCreateFile(true,FUData,0,FUSize,BASS_STREAM_AUTOFREE);
-
-  BASS_ChannelSetSync(sstream,BASS_SYNC_END or BASS_SYNC_ONETIME,0,@EndOfSoundPlay,Self);
-
-  BASS_ChannelPlay(sstream, false);
-end;
-
-procedure TRGGUIForm.bbStopClick(Sender: TObject);
-begin
-  BASS_ChannelStop(sstream);
-  sstream:=0;
-  bbPlay.Visible:=true;
-  bbStop.Visible:=false;
-end;
-
-procedure TRGGUIForm.PreviewSound;
-begin
-  if BASS_Handle=0 then PrepareSound;
-  bbPlay.Enabled:=BASS_Handle<>0;
-  bbStop.Enabled:=BASS_Handle<>0;
-  bbPlay.Visible:=true;
-  bbStop.Visible:=false;
-
-  pnlAudio.Visible:=true;
-end;
-  {%ENDREGION Sound}
-
-  {%REGION Model}
-procedure TRGGUIForm.ShowModelInfo;
-var
-  ls: AnsiString;
-begin
-  // #meshes, have skeleton
-  if Form3DView.Mesh.BoneCount>0 then
-    ls:='+bones'
-  else
-    ls:='-bones';
-  lblInfo1.Caption:=Format(rsMdlMeshes,
-    [Form3DView.Mesh.BoundMin.X,Form3DView.Mesh.BoundMin.Y,Form3DView.Mesh.BoundMin.Z,
-     Form3DView.Mesh.BoundMax.X,Form3DView.Mesh.BoundMax.Y,Form3DView.Mesh.BoundMax.Z,
-     Form3DView.Mesh.SubMeshCount])+' '+ls;
-//  lblInfo2.Caption:=Format(rsMdlCoords,[tx,ty,tz]);
-end;
-
-procedure TRGGUIForm.PreviewModel(const adir,aname:string);
-begin
-  if Form3DView=nil then
-  begin
-    Form3DView:=TForm3dView.Create(Self);
-    Form3DView.Parent:=pnlAdd;
-    Form3DView.Align :=alClient;
-    Form3DView.SetContainer(@ctrl);
-  end;
-
-  Form3DView.LoadFromMemory(FUData,FUSize,adir+aname);
-  Form3DView.Visible:=true;
-
-  ShowModelInfo();
-end;
-  {%ENDREGION Model}
-
-  {%REGION Images}
-procedure TRGGUIForm.DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
-begin
-  ACanvas.Brush.Color := clGray;
-  ACanvas.FillRect(ARect);
-end;
-
-procedure TRGGUIForm.actDarkBgExecute(Sender: TObject);
-begin
-  if actDarkBg.Checked then
-    imgPreview.OnPaintBackground:=@DrawDarkBg
-  else
-    imgPreview.OnPaintBackground:=nil;
-
-  imgPreview.Repaint;
-end;
-
-procedure TRGGUIForm.actScaleImageExecute(Sender: TObject);
-begin
-  imgPreview.Stretch:=actScaleImage.Checked;
-  imgPreview.Repaint;
- // PreviewImage(sgMain.Cells[colExt,sgMain.Row]);
-end;
-
-procedure TRGGUIForm.PreviewImage(const aext:string);
-var
-  lstr:TMemoryStream;
-  limg:TImageData;
-begin
-  if FUSize=0 then exit;
-
-  if actScaleImage.Checked then
-  begin
-    imgPreview.Stretch:=true;
-  end
-  else
-  begin
-    imgPreview.Stretch:=false;
-  end;
-
-  if (aext='.DDS') or
-    ((PByte(FUData)[0]=ORD('D')) and
-     (PByte(FUData)[1]=ORD('D')) and
-     (PByte(FUData)[2]=ORD('S'))) then
-  begin
-    InitImage(limg);
-    LoadImageFromMemory(FUData,FUsize,limg);
-try
-    ConvertDataToBitmap(limg,imgPreview.Picture.Bitmap);
-except
-end;
-    FreeImage(limg);
-  end
-  else
-  begin
-    lstr:=TMemoryStream.Create();
-    try
-      // PUData cleared in ClearInfo() and/or FormClose;
-      lstr.SetBuffer(FUData);
-      try
-        imgPreview.Picture.LoadFromStream(lstr);
-      except
-      end;
-    finally
-      lstr.Free;
-    end;
-  end;
-  imgPreview.Visible:=true;
-  imgPreview.Hint:='Size: '+
-      IntToStr(imgPreview.Picture.Width)+' x '+
-      IntToStr(imgPreview.Picture.Height);
-  actScaleImage.Visible:=true;
-  actDarkBg.Visible:=true;
-end;
-
-procedure TRGGUIForm.ShowImagesetInfo(const afile:string; arect:TRect);
-begin
-  lblInfo1.Caption:=rsImageFile+': '+afile;
-  lblInfo2.Caption:=Format(rsSprite,[arect.Left,arect.Top,arect.Right,arect.Bottom]);
-end;
-
-procedure TRGGUIForm.PreviewImageset(const adir:string);
-var
-  ldir:string;
-  i:integer;
-begin
-  if fmImgSet=nil then
-  begin
-    fmImgSet:=TFormImageset.Create(Self);
-    fmImgSet.Parent:=pnlAdd;
-    fmImgSet.Align:=alClient;
-    TFormImageset(fmImgSet).OnImagesetInfo:=@ShowImagesetInfo;
-  end;
-
-  i:=Pos('/UI/',adir);
-  if i>7 then ldir:=Copy(adir,1,i) else ldir:='';
-  TFormImageset(fmImgSet).FillList(ctrl,FUData,FUSize,ldir);
-  fmImgSet.Visible:=true;
-end;
-  {%ENDREGION Images}
-
-procedure TRGGUIForm.PreviewLayout();
-begin
-  if fmLedit=nil then
-  begin
-    fmLEdit:=TFormLayoutEdit.Create(Self);
-    fmLEdit.Parent:=pnlAdd;
-    fmLEdit.Align:=alClient;
-    fmLedit.SynEdit.PopupMenu:=SynPopupMenu;
-  end;
-  fmLedit.SynEdit.Font.Assign(SrcFont);
-  //  if FUData=nil then exit;
-
-  TFormLayoutEdit(fmLEdit).BuildTree(FUData,ctrl.PAK.Version);
-  fmLEdit.Visible:=true;
-end;
-
-procedure TRGGUIForm.PreviewSource();
-var
-  pc :PWideChar;
-  lpc:PAnsiChar;
-  ltext:string;
-  lsize:integer;
-//  i:integer;
-begin
-  if FUData=nil then exit;
-
-//!!    pnlEditButtons.Visible:=true;
-  SynEdit.Highlighter:=SynTSyn;
-{
-  for i:=0 to SynTSyn.FoldConfigCount-1 do
-    SynTSyn.FoldConfig[i].Modes:=SynTSyn.FoldConfig[i].Modes+[fmOutline];
- }
-
-  SynEdit.Visible:=true;
-
-  lsize:=FUSize;
-  case GetSourceEncoding(FUData) of
-    tofSrcUTF8: begin
-      lpc:=PAnsiChar(FUData);
-      if (PDword(FUData)^ and $00FFFFFF)=SIGN_UTF8 then
-      begin
-        inc(lpc,3);
-        dec(lsize,3);
-      end;
-      SetString(ltext,lpc,lsize);
-      SynEdit.Text:=ltext;
-    end;
-
-    tofSrcWide: begin
-      pc:=PWideChar(FUData);
-      if ORD(pc^)=SIGN_UNICODE then
-      begin
-        inc(pc);
-        dec(lsize,2);
-      end;
-      SynEdit.Text:=WideToStr(pc,lsize div 2);
-    end;
-
-  else
-    SynEdit.Text:=rsUnknownEncoding;
-  end;
-
-  SynEdit.Modified:=false;
-//  SynEdit.Visible:=true;
-  actEdSearch.Enabled:=true;
-end;
-
-procedure TRGGUIForm.PreviewText();
-var
-  ltext:string;
-  pc:PWideChar;
-  lpc:PAnsiChar;
-  lsize:integer;
-begin
-  // Use LText coz FUData don't have #0 at the end
-  ltext:='';
-  lsize:=FUSize;
-
-  if lsize>0 then
-  begin
-    // Check for Unicode
-    if lsize>=2 then
-    begin
-      pc:=PWideChar(FUData);
-      if ORD(pc^)=SIGN_UNICODE then
-      begin
-        inc(pc);
-        dec(lsize,2);
-      end;
-      if (pc<>PWideChar(FUData)) or (((lsize and 1)=0) and (ORD(pc^)<256)) then
-        ltext:=WideToStr(pc,lsize div 2);
-    end;
-    // Check for Ansi/UTF8
-    if ltext='' then
-    begin
-      lpc:=PAnsiChar(FUData);
-      if (lsize>3) and ((PDword(FUData)^ and $00FFFFFF)=SIGN_UTF8) then
-      begin
-        inc(lpc,3);
-        dec(lsize,3);
-      end;
-      SetString(ltext,lpc,lsize);
-    end;
-  end;
-
-  if SynOgreSyn.CheckType(sgMain.Cells[colExt,sgMain.Row]) then
-    SynEdit.Highlighter:=SynOgreSyn
-  else
-    SynEdit.Highlighter:=SynXMLSyn;
-  SynEdit.Visible:=true;
-  SynEdit.Text:=ltext;
-  actEdSearch.Enabled:=true;
-end;
-
-procedure TRGGUIForm.PreviewDump();
-var
-  lstr:TMemoryStream;
-begin
-  if hview=nil then
-  begin
-    hview:=TFWHexView.Create(self);
-    hview.Parent:=pnlAdd;
-    hview.Align:=alClient;
-  end
-  else
-  begin
-  end;
-  lstr:=TMemoryStream.Create();
-//  lstr.SetBuffer(FUData);
-  lstr.Write(FUData^,FUSize);
-  lstr.Position:=0;
-
-  hview.SetDataStream(lstr,0);
-  hview.Visible:=true;
-end;
-
 procedure TRGGUIForm.sgMainSelection(Sender: TObject; aCol, aRow: Integer);
 var
   lrec:TRGFullInfo;
-  ldir,lname,lext:string;
-  ltype,lfile:integer;
+  ldir:string;
+  lfile:integer;
 begin
   ClearInfo();
-  if (aCol<1) or (aRow<1) or
-//    ((aRow=1) and (sgMain.Cells[colName,aRow]=strParentDir)) then
-    ((aRow=1) and (IntPtr(UIntPtr(tvTree.Selected.Data))>1)) then
+
+  if cbPreview.Checked and actShowPreview.Checked then
   begin
-    Exit;
-  end;
-
-  if not actShowPreview.Checked then exit;
-
-  lext :=sgMain.Cells[colExt ,aRow];
-  lname:=sgMain.Cells[colName,aRow]+lext;
-
-  ltype:=RGTypeOfExt(lname{lext});
-  if (ltype=typeDirectory) then exit;
-
-//  lfile:=ctrl.SearchFile(ldir+lname);
-  lfile:=IntPtr(sgMain.Objects[colName,aRow]);
-
-  if lfile>=0 then
-  begin
-    if ctrl.UpdateState(lfile)=stateDelete then exit;
-
-    StatusBar.Panels[1].Text:=rsBuildPreview;
-    ldir:=sgMain.Cells[colDir,aRow];
-
-    RGLog.Reserve('Processing '+ldir+lname);
-
-    ctrl.GetFullInfo(lfile,lrec);
-    //if (lrec.offset=0) or (lrec.size_s=0) then exit;
-
-    lblInfo1.Caption:=rsSize+': '+IntToStr(lrec.size_s)+'; '+
-                      rsOffset+': '+'0x'+HexStr(lrec.offset,8);
-    try
-      lblInfo2.Caption:=rsTime+': '+DateTimeToStr(FileTimeToDateTime(lrec.ftime));
-    except
-      lblInfo2.Caption:=rsTime+': '+'0x'+HexStr(lrec.ftime,16);
+    if (aCol<1) or (aRow<1) or
+  //    ((aRow=1) and (sgMain.Cells[colName,aRow]=strParentDir)) then
+      ((aRow=1) and (IntPtr(UIntPtr(tvTree.Selected.Data))>1)) then
+    begin
+      Exit;
     end;
 
-    if (ltype and $FF) in [typeUnknown,typeFont,typeOther] then
+    lfile:=IntPtr(sgMain.Objects[colName,aRow]);
+    ldir :=sgMain.Cells[colDir,aRow];
+
+    if lfile>=0 then
     begin
-      FUSize:=ctrl.GetBinary(lfile,FUData);
-      if FUSize>0 then
+      fmPreview:=MakePreview(ctrl,lfile);
+      if fmPreview<>nil then
       begin
-        if RGTypeExtIsText(lext) then
-          PreviewText()
-        else
-          PreviewDump();
-      end;
-    end
-    else if ltype=typeLayout then
-    begin
-      FUSize:=ctrl.GetBinary(lfile,FUData);
-      if GetLayoutVersion(FUData)=verUnk then
-        PreviewText()
-      else
-        PreviewLayout();
-    end
-    else
-    begin
-      FUSize:=ctrl.GetSource(lfile,FUData);
-
-  //    if FUSize>0 then
-      begin
-        if ltype=typeImageset then
-        begin
-          PreviewImageset(ldir);
-        end
-
-        // Text
-        else if ltype=typeUI then PreviewText()
-        else if (ltype=typeFX) then
-        begin
-          if RGTypeExtIsText(lext) then
-            PreviewText()
-          else
-            PreviewDump()
-        end
-
-        // DAT, RAW, ANIMATION, TEMPLATE
-        else if (ltype and $FF)=typeData then PreviewSource()
-
-        // Image
-        else if ltype=typeImage then PreviewImage(lext)
-
-        // Models
-        else if ltype=typeModel then
-        begin
-          if lext='.SKELETON' then
-            PreviewDump()
-          else
-            PreviewModel(ldir,lname);
-        end
-
-        // Sound
-        else if ltype=typeSound then PreviewSound
-
-        else
-        ;
-
+        fmPreview.BorderStyle:=bsNone;
+        fmPreview.Align:=alClient;
+        fmPreview.Parent:=pnlAdd;
+        fmPreview.Visible:=true;
       end;
     end;
-    FillGridLine(sgMain.Row,ldir,lfile);
+    StatusBar.Panels[1].Text:=rsFilePath+ldir;
   end;
-  StatusBar.Panels[1].Text:=rsFilePath+ldir;
-end;
-
-procedure TRGGUIForm.SynEditStatusChange(Sender: TObject; Changes: TSynStatusChanges);
-begin
-  if (scModified in Changes) and SynEdit.Modified then Grid.Caption:='[*] Grid';
 end;
 
 procedure TRGGUIForm.actPreviewExecute(Sender: TObject);
+var
+  lform:TForm;
+  ldir:AnsiString;
+  lfile:integer;
 begin
-  {TODO: Ask about changes (if any)}
-  if actShowPreview.Checked then
+  if cbPreview.Checked then
   begin
-    {sgMain}pnlGrid.Align:=alLeft;
-    Splitter2.Visible:=true;
-    pnlAdd.Visible:=true;
-    if sgMain.RowCount>1 then
-      sgMainSelection(sgMain, colName, sgMain.Row);
+    actShowPreview.Checked:=not actShowPreview.Checked;
+    if actShowPreview.Checked then
+    begin
+      pnlGrid.Align:=alLeft;
+      Splitter2.Visible:=true;
+      pnlAdd.Visible:=true;
+      if sgMain.RowCount>1 then
+        sgMainSelection(sgMain, colName, sgMain.Row);
+    end
+    else
+    begin
+      ClearInfo();
+      pnlAdd.Visible:=false;
+      Splitter2.Visible:=false;
+      pnlGrid.Align:=alClient;
+    end;
   end
   else
   begin
-    ClearInfo();
-    pnlAdd.Visible:=false;
-    Splitter2.Visible:=false;
-    {sgMain}pnlGrid.Align:=alClient;
+    actShowPreview.Checked:=false;
+    if pnlAdd.Visible then
+    begin
+      ClearInfo();
+      pnlAdd.Visible:=false;
+      Splitter2.Visible:=false;
+      pnlGrid.Align:=alClient;
+      exit;
+    end;
+
+    if {(sgMain.Col<1) or} (sgMain.Row<1) or
+  //    ((aRow=1) and (sgMain.Cells[colName,aRow]=strParentDir)) then
+      ((sgMain.Row=1) and (IntPtr(UIntPtr(tvTree.Selected.Data))>1)) then
+    begin
+      Exit;
+    end;
+
+    lfile:=IntPtr(sgMain.Objects[colName,sgMain.Row]);
+    ldir :=sgMain.Cells[colDir,sgMain.Row];
+
+    if lfile>=0 then
+    begin
+      lform:=MakePreview(ctrl,lfile);
+      if lform<>nil then lform.Show;
+//      FillGridLine(sgMain.Row,ldir,lfile); //?? remove after trigger implementation
+    end;
   end;
+end;
+
+procedure TRGGUIForm.cbPreviewChange(Sender: TObject);
+begin
+  if cbPreview.Checked then
+  begin
+    ClosePreviews();
+  end;
+  actShowPreview.Checked:=true; // will be inverted
+  actPreviewExecute(Sender);
 end;
 
 {%ENDREGION Preview}
 
 {%REGION Actions}
-procedure TRGGUIForm.ReplaceExecute(Sender: TObject);
-var
-  lopt:TSynSearchOptions;
-//  lcnt:integer;
-begin
-//  lcnt:=0;
-  with Sender as TReplaceDialog do
-  begin
-    lopt := [];
-    if frReplace    in Options then lopt:=[ssoReplace];
-    if frReplaceAll in Options then lopt:=[ssoReplaceAll];
-    {lcnt:=}SynEdit.SearchReplace{Ex}(FindText, ReplaceText, lopt{, Position});
-{
-    if lcnt>=0 then
-    begin
-    //   if lcnt>1 then ShowMessage('Replaces = '+IntToStr(lcnt));
-      SynEdit.SetFocus()
-    end
-    else
-      Beep();
-}
-  end;
-end;
-
-procedure TRGGUIForm.actEdSearchExecute(Sender: TObject);
-begin
-  ReplaceDialog.Execute();
-end;
 
 procedure TRGGUIForm.actEdDeleteExecute(Sender: TObject);
 var
@@ -2054,11 +1480,6 @@ begin
   lf.Free;
 end;
 
-procedure TRGGUIForm.actEdUndoExecute(Sender: TObject);
-begin
-  sgMainSelection(sgMain, colName, sgMain.Row);
-end;
-
 procedure TRGGUIForm.actEdResetExecute(Sender: TObject);
 var
   state,lfile,i,j:integer;
@@ -2110,95 +1531,6 @@ begin
 
     end;
   end;
-end;
-
-procedure TRGGUIForm.actEdSaveExecute(Sender: TObject);
-var
-  ldlg:TSaveDialog;
-  ldir,lname:string;
-  pc:PWideChar;
-  lpc:PAnsiChar;
-  lbuf:PByte;
-  lsize,i:integer;
-begin
-  ldir :=sgMain.Cells[colDir ,sgMain.Row];
-  lname:=sgMain.Cells[colName,sgMain.Row]+
-         sgMain.Cells[colExt ,sgMain.Row];
-
-  if (Form3dView<>nil) and Form3dView.Visible then
-  begin
-    ldlg:=TSaveDialog.Create(self);
-    ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
-    ldlg.DefaultExt:='.xml';
-    ldlg.Filter    :='XML files|*.xml|All files|*.*';
-    ldlg.FileName  :=ChangeFileExt(lname,'.xml');
-    if ldlg.Execute then
-    begin
-{
-      if deOutDir.Text='' then deOutDir.Text:=ExtractFileDir(ParamStr(0));
-      loutdir:=deOutDir.Text;
-      if not (loutdir[Length(loutdir)] in ['\','/']) then loutdir:=loutdir+'\';
-
-      if cbUseFName.Checked   then loutdir:=loutdir+ctrl.PAK.Name+'\';
-      if cbUnpackTree.Checked then loutdir:=loutdir+adir;
-
-      if not ForceDirectories(loutdir) then exit;
-}
-      Form3DView.Mesh.SaveToXML(ChangeFileExt(ldlg.FileName,'.xml'));
-      if Form3DView.Mesh.MeshVersion in [90,91,99] then
-        Form3DView.Mesh.SaveMaterial(ChangeFileExt(ldlg.FileName,'.material'));
-    end;
-    ldlg.Free;
-    exit;
-  end;
-
-//pc:=StrToWide(SynEdit.Text);
-//  lsize:=CompileFile(PByte(pc),lname,lbuf,ctrl.PAK.Version);
-  lsize:=0;
-  lbuf:=nil;
-
-  if (fmLEdit<>nil) and fmLEdit.Visible then
-    lsize:=TFormLayoutEdit(fmLEdit).GetFile(lbuf,ctrl.PAK.Version);
-
-  if SynEdit.Visible then
-  begin
-    if SynEdit.Highlighter=SynTSyn then
-      lsize:=CompileFile(PByte(PChar(SynEdit.Text)),lname,lbuf,ctrl.PAK.Version)
-    else
-    begin
-      if ChooseEncoding(FUData)=2 then
-      begin
-        lsize:=2+Length(SynEdit.Text)*2;
-        GetMem(lbuf,lsize+2);
-        PWord(lbuf)^:=SIGN_UNICODE;
-        pc:=StrToWide(SynEdit.Text);
-        move(pc^,(lbuf+2)^,lsize-2);
-        FreeMem(pc);
-        lbuf[lsize  ]:=0;
-        lbuf[lsize+1]:=0;
-      end
-      else // skip UTF8 check
-      begin
-        lsize:=3+Length(SynEdit.Text);
-        GetMem(lbuf,lsize+1);
-        PDword(lbuf)^:=SIGN_UTF8;
-        lpc:=PAnsiChar(SynEdit.Text);
-        move(lpc^,(lbuf+3)^,lsize-3);
-        lbuf[lsize]:=0;
-      end;
-    end;
-  end;
-
-  if lsize>0 then
-  begin
-    pc:=StrToWide(ldir+lname);
-    i:=ctrl.AddUpdate(lbuf,lsize,pc);
-    PRGCtrlInfo(ctrl.Files[i])^.size_s:=Length(SynEdit.Text);
-    FillGridLine(sgMain.Row,ldir,i);
-    FreeMem(pc);
-    FreeMem(lbuf);
-  end;
-
 end;
 
 procedure TRGGUIForm.actEdImportExecute(Sender: TObject);
@@ -3059,9 +2391,4 @@ end;
 
 {%ENDREGION Tree}
 
-initialization
-  LazTGA.Register;
-
-finalization
-  LazTGA.UnRegister;
 end.

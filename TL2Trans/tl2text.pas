@@ -1,3 +1,6 @@
+{
+  Utility unit with mod text processing for translation
+}
 unit TL2Text;
 
 interface
@@ -7,7 +10,7 @@ function RemoveTags(const src:AnsiString):AnsiString;
 function RemoveColor(const textin:AnsiString; out textout:AnsiString):boolean;
 function InsertColor(const aselected, acolor:AnsiString):AnsiString;
 
-function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
+function ReplaceTranslation(srcText,srcData:PAnsiChar):AnsiString;
 
 // Punctuation
 const
@@ -38,8 +41,8 @@ var
 const
   defFilter = 'a an the of by to for his her their';
 
-function  FilteredString(const astr:AnsiString):AnsiString;
-procedure SetFilterWords(const astr:AnsiString);
+function  FilteredString(const astr:AnsiString{; keepparam:boolean=false}):AnsiString;
+procedure SetFilterWords(const astr:AnsiString; akeepparam:boolean=false);
 function  GetFilterWords:AnsiString;
 
 
@@ -67,6 +70,7 @@ const
 
 var
   curFilter:AnsiString='';
+  keepparam:Boolean=false;
   filter: TStringArray=nil;
 
 function InsertColor(const aselected, acolor:AnsiString):AnsiString;
@@ -136,13 +140,13 @@ begin
   result:=StringReplace(result,'\n',' ',[rfReplaceAll]);
 end;
 
-function ReplaceTranslation(const srcText,srcData:AnsiString):AnsiString;
+function ReplaceTranslation(srcText,srcData:PAnsiChar):AnsiString;
 const
   sWordSet = ['A'..'Z','a'..'z',#128..#255];
 var
-  colors :array [0.. 7] of String[10]; //#124'cAARRGGBB', 8 times per text must be enough
-  numbers:array [0..15] of String[9];
-  rome   :array [0..15] of String[7];
+  colors :array [0..31] of String[10]; //#124'cAARRGGBB'
+  numbers:array [0..31] of String[9];
+  rome   :array [0..31] of String[7];
   lr:String[7];
   pc:PAnsiChar;
   lsrc,ldst:AnsiString;
@@ -157,7 +161,7 @@ begin
   lcntSR:=0;
   i:=0;
   j:=1;
-  pc:=pointer(srcText);
+  pc:=srcText;
   lsrc:='';
   SetLength(lsrc,Length(srcText)+16*10);
   while pc[i]<>#0 do
@@ -188,9 +192,13 @@ begin
       end
       else if pc[i]='u' then
       begin
-        lsrc[j]:='|'; inc(j);
-        lsrc[j]:='u'; inc(j);
+        lsrc[j]:=#124; inc(j);
+        lsrc[j]:='u' ; inc(j);
         inc(i);
+      end
+      else
+      begin
+        lsrc[j]:=#124; inc(j);
       end;
     end
     //--- New Line
@@ -312,7 +320,7 @@ begin
   lcntDN:=0;
   lcntDR:=0;
   i:=0;
-  pc:=pointer(srcData);
+  pc:=srcData;
   while pc[i]<>#0 do
   begin
     //--- Color
@@ -369,7 +377,7 @@ begin
         if (Length(lr)=1) and (lr[1]='I') then
         begin
              // 1 - at the end of text
-          if ((i+2)>=Length(srcText)) or
+          if ((i+2)>=Length(srcData)) or
              // 2 - after "-" sign
              ((k>0) and (pc[k-1]='-')) or
              // 3 - end of phrase (including end of line and color tag)
@@ -440,10 +448,10 @@ begin
 
   ldst:=lsrc;
 
-  for i:=0 to lcntSR-1 do
+  for i:=0 to pred(lcntSR) do
     ldst:=StringReplace(ldst,'%r',rome[i],[]);
 
-  for i:=0 to lcntSN-1 do
+  for i:=0 to pred(lcntSN) do
     ldst:=StringReplace(ldst,'%d',numbers[i],[]);
 
   // just one coloration added (for items usually)
@@ -458,7 +466,7 @@ begin
   end
   else
   begin
-    for i:=0 to lcntSC-1 do
+    for i:=0 to pred(lcntSC) do
       ldst:=StringReplace(ldst,'%s',colors[i],[]);
   end;
 
@@ -563,11 +571,17 @@ end;
 function CheckDescription(res:dword):AnsiString;
 begin
   result:='';
-  if (res and cpfSrcSpace)<>0 then result:=result+rsSrcSpace+#13#10;
-  if (res and cpfDstSpace)<>0 then result:=result+rsDstSpace+#13#10;
-  if (res and cpfSrcSign )<>0 then result:=result+rsSrcSign +#13#10;
-  if (res and cpfDstSign )<>0 then result:=result+rsDsSign  +#13#10;
-  if (res and cpfSrcTags )<>0 then result:=result+rsSrcTags +#13#10;
+  if (res and cpfSrcSpace )<>0 then result:=result+rsSrcSpace +#13#10;
+  if (res and cpfDstSpace )<>0 then result:=result+rsDstSpace +#13#10;
+  if (res and cpfSrcSign  )<>0 then result:=result+rsSrcSign  +#13#10;
+  if (res and cpfDstSign  )<>0 then result:=result+rsDsSign   +#13#10;
+  if (res and cpfSrcTags  )<>0 then result:=result+rsSrcTags  +#13#10;
+  if (res and cpfSrcLine  )<>0 then result:=result+rsSrcLine  +#13#10;
+  if (res and cpfDstLine  )<>0 then result:=result+rsDstLine  +#13#10;
+  if (res and cpfSrcColor )<>0 then result:=result+rsSrcColor +#13#10;
+  if (res and cpfDstColor )<>0 then result:=result+rsDstColor +#13#10;
+  if (res and cpfSrcColEnd)<>0 then result:=result+rsSrcColEnd+#13#10;
+  if (res and cpfDstColEnd)<>0 then result:=result+rsDstColEnd+#13#10;
 end;
 
 function GetFilterWords:AnsiString; inline;
@@ -575,8 +589,9 @@ begin
   result:=curFilter;
 end;
 
-procedure SetFilterWords(const astr:AnsiString);
+procedure SetFilterWords(const astr:AnsiString; akeepparam:boolean=false);
 begin
+  keepparam:=akeepparam;
   if (astr='') and (curFilter<>defFilter) then
   begin
     curFilter:=defFilter;
@@ -598,7 +613,7 @@ end;
   !! KEEP '_','+','%' as significat chars
   remove \n and other punctuation
 }
-function FilteredString(const astr:AnsiString):AnsiString;
+function FilteredString(const astr:AnsiString{; keepparam:boolean=false}):AnsiString;
 const
   sWord = ['A'..'Z','a'..'z'{'_','0'..'9'}];
 var
@@ -793,19 +808,34 @@ begin
         end
         else if j=2 then inc(i);
         
+        if (i<>k) and keepparam then
+        begin
+          result[ldi]:='*';
+          inc(ldi);
+        end;
+
         wasletter:=false;
       end;
+
+      #128..#255: begin
+        result[ldi]:=astr[i];
+        inc(ldi);
+        wasletter:=true;
+      end
 
     else // any other symbols
       wasletter:=false;
     end;
     inc(i);
   end;
-  SetLength(result,ldi-1);
 
   for i:=1 to ldi-1 do
   begin
-    if result[i] in ['A'..'Z','a'..'z'] then exit;
+    if result[i] in ['A'..'Z','a'..'z',#128..#255] then
+    begin
+      SetLength(result,ldi-1);
+      exit;
+    end;
   end;
   result:='';
 end;

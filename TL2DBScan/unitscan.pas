@@ -436,7 +436,4 @@ end;
 
 {%ENDREGION Base}
 
-initialization
-//  RGTags.Import('RGDICT','TEXT');
-
 end.

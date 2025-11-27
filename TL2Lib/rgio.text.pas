@@ -322,11 +322,14 @@ begin
   result:=NodeToWide(anode,lwide, achild);
   if result then  
   begin
+    aptr:=WideToUTF8(lwide);
+{
     lsize:=Length(lwide);
     GetMem(aptr,lsize*3+1);
     lsize:=UnicodeToUtf8(aptr,lsize*3+1,lwide,lsize);
     if lsize>0 then
       ReallocMem(aptr,lsize);
+}
     FreeMem(lwide);
   end;
 end;

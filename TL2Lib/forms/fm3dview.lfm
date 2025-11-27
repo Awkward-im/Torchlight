@@ -7,6 +7,8 @@ object Form3DView: TForm3DView
   BorderStyle = bsNone
   ClientHeight = 468
   ClientWidth = 811
+  LCLVersion = '4.99.0.0'
+  OnClose = FormClose
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
@@ -47,6 +49,22 @@ object Form3DView: TForm3DView
       ShowHint = True
       TabOrder = 0
       OnClick = bbCbSubMeshClick
+    end
+    object bbSaveXML: TBitBtn
+      Left = 37
+      Height = 28
+      Hint = 'Save in XML format'
+      Top = 0
+      Width = 28
+      BorderSpacing.CellAlignHorizontal = ccaCenter
+      BorderSpacing.CellAlignVertical = ccaCenter
+      Kind = bkYes
+      Layout = blGlyphTop
+      Margin = 4
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      OnClick = bbSaveXMLClick
     end
   end
   object pnlStatus: TPanel

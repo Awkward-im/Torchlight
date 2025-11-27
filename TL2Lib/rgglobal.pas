@@ -13,6 +13,8 @@ uses
 {$IF NOT DEFINED(TIntegerDynArray)} type TIntegerDynArray = array of Integer; {$ENDIF}
 {$IF NOT DEFINED(TInt64DynArray)}   type TInt64DynArray   = array of Int64;   {$ENDIF}
 {$IF NOT DEFINED(TSingleDynArray)}  type TSingleDynArray  = array of Single;  {$ENDIF}
+{$IF NOT DEFINED(TObjectDynArray)}  type TObjectDynArray  = array of TObject; {$ENDIF}
+
 type
   TDictElement = record
     id   :integer;
@@ -149,6 +151,7 @@ function  ConcatWide   (s1,s2:PWideChar):PWideChar;
 function  CharPosWide  (c:WideChar; asrc:PWideChar):PWideChar;
 function  PosWide      (asubstr,asrc:PWideChar):PWideChar;
 function  UTF8ToWide   (asrc:PAnsiChar):PWideChar;
+function  WideToUTF8   (asrc:PWideChar):PAnsiChar;
 function  GetLine    (var aptr:PByte):PAnsiChar;
 function  GetLineWide(var aptr:PByte):PWideChar;
 function  GetLineWide(var aptr:PByte; var buf:pointer; var asize:integer):PWideChar;
@@ -627,6 +630,22 @@ begin
   move(Pointer(ws)^,result^,Length(ws)*SizeOf(WideChar));
   result[Length(ws)]:=#0;
 }
+end;
+
+function WideToUTF8(asrc:PWideChar):PAnsiChar;
+var
+  i,llen:integer;
+begin
+  llen:=Length(asrc);
+  i:=UnicodeToUtf8(nil,0,asrc,llen);
+  if i>0 then
+  begin
+    GetMem(result,i+1);
+    i:=UnicodeToUtf8(result,(i+1),asrc,llen);
+    result[i-1]:=#0;
+  end
+  else
+    result:=nil;
 end;
 
 function UTF8ToWide(asrc:PAnsiChar):PWideChar;

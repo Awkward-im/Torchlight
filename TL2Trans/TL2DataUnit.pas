@@ -1963,15 +1963,6 @@ function TTL2Translation.Scan(const afile:AnsiString):boolean;
 var
   lmod:TTL2ModInfo;
 begin
-{
-  RGTags.Import('RGDICT','TEXT');
-
-  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
-}
   Filter:=flFiltered;
 
   FErrCode:=0;

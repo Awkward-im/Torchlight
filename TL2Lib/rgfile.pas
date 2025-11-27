@@ -493,6 +493,7 @@ begin
   begin
     if IsSource(ain) then
     begin
+      result:=true;
 {
       if (ain[0]=$FF) or (ain[1]=0) then
         PWideChar(aout):=CopyWide(PWideChar(ain))
@@ -535,6 +536,7 @@ begin
         result:=true;
       end;
 }
+      PByte(aout):=nil;
       exit;
     end;
 
@@ -548,8 +550,12 @@ end;
 
 function DecompileFile(ain:PByte; ainsize:cardinal; const fname:string;
                        out aout; asUTF8:boolean=false):boolean;
+var
+  pc:PUnicodeChar;
 begin
-  result:=DecompileFile(ain,ainsize,PUnicodeChar(UnicodeString(fname)),aout,asUTF8);
+  pc:=FastStrToWide(fname);
+  result:=DecompileFile(ain,ainsize,pc,aout,asUTF8);
+  FreeMem(pc);
 end;
 
 function DecompileFile(fname:PUnicodeChar; out aout; asUTF8:boolean=false):boolean;

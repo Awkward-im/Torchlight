@@ -11,61 +11,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.4\n"
 
-#: fmimageset.rsallimagesets
-msgid "All imagesets"
-msgstr "Все imageset'ы"
-
-#: fmimageset.rsloadimageset
-msgid "Load imageset"
-msgstr "Загрузить imageset"
-
-#: fmimageset.rssavesprite
-msgid "Save sprite"
-msgstr "Сохранить спрайт"
-
-#: fmlayoutedit.rsalter
-msgid "If property name marked as unsupported but have space or underscore, try to switch them."
-msgstr "Если свойство помечено неподдерживаемым но содержит пробел или почёркивание, попробуйте поменять одно на другое."
-
-#: fmlayoutedit.rsdefault
-msgid "- default -"
-msgstr "- по умолчанию -"
-
-#: fmlayoutedit.rsnewname
-msgid "Enter new name"
-msgstr "Введите новое имя"
-
-#: fmlayoutedit.rsnewnamecap
-msgid "Change name of "
-msgstr "Смена имени у "
-
-#: fmlayoutedit.rstextpreview
-msgid "This is text preview without children nodes. You can select child from tree."
-msgstr "Это текстовый предпросмотр без дочерних узлов. Вы можете выбрать дочерний узел в дереве."
-
-#: fmlayoutedit.rsundefined
-msgid "UNDEFINED"
-msgstr "НЕ ОПРЕДЕЛЁН"
-
-#: fmlayoutedit.rsunsupobj
-msgid "This object is unsupported in current project version."
-msgstr "Этот объект еподдерживаем в текущей версии проекта."
-
-#: fmlayoutedit.rsversion
-msgid ""
-"WARNING!\n"
-"This layout file version differs from current project version."
-msgstr ""
-"ВНИМАНИЕ!\n"
-"Версия этого файла отличается от версии текущего проекта."
-
 #: formgui.rsbuildgrid
 msgid " Build file list. Please, wait..."
 msgstr " Построение списка файлов. Ждите..."
-
-#: formgui.rsbuildpreview
-msgid " Build preview"
-msgstr " Построение предпросмотра"
 
 #: formgui.rsbuildtree
 msgid " Build tree"
@@ -123,10 +71,6 @@ msgstr "Файлов: "
 msgid " files unpacked succesfully."
 msgstr " файлов распаковано."
 
-#: formgui.rsimagefile
-msgid "Texture file"
-msgstr "Файл текстуры"
-
 #: formgui.rsimported
 msgid " files imported"
 msgstr " файлов импортировано"
@@ -143,11 +87,6 @@ msgstr "Эти файлы всё ещё на диске и не будут вс�
 msgid "Link to new file"
 msgstr "Ссылка на новый файл"
 
-#: formgui.rsmdlmeshes
-#, object-pascal-format
-msgid "Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d"
-msgstr "Пределы: Min:(%f, %f, %f); Max(%f, %f, %f); Частей: %d"
-
 #: formgui.rsnewfile
 msgid "New file"
 msgstr "Новый файл"
@@ -159,10 +98,6 @@ msgstr "Ничто не импортировано."
 #: formgui.rsnothingtoshow
 msgid "Nothing to show with current filter"
 msgstr "Нечего показывать по текущим ксловиям"
-
-#: formgui.rsoffset
-msgid "Offset"
-msgstr "Смещение"
 
 #: formgui.rsreadpak
 msgid " Read PAK. Parsing..."
@@ -193,24 +128,6 @@ msgstr "Патч сохранён как"
 msgid "Select directory"
 msgstr "Выберите папку"
 
-#: formgui.rssize
-msgid "Size"
-msgstr "Размер"
-
-#: formgui.rssprite
-#, object-pascal-format
-msgid "X: %d; Y: %d; Width: %d; Height: %d"
-msgstr "X: %d; Y: %d; Ширина: %d; Высота: %d"
-
-#: formgui.rstime
-msgctxt "formgui.rstime"
-msgid "Time"
-msgstr "Время"
-
-#: formgui.rsunknownencoding
-msgid "Unknown source encoding"
-msgstr "Неизвестная кодировка"
-
 #: formgui.rsunpacksucc
 msgid "unpacked succesfully."
 msgstr "распаковано удачно."
@@ -225,7 +142,7 @@ msgstr "Внимание!"
 
 #: imaging.sallfilter
 msgid "All Images"
-msgstr "Все картинки"
+msgstr ""
 
 #: imaging.serrorbadimage
 msgid "Bad image detected."
@@ -441,6 +358,20 @@ msgstr ""
 msgid "Unknown and unsupported format"
 msgstr ""
 
+#: rgpreview.rsoffset
+msgid "Offset"
+msgstr ""
+
+#: rgpreview.rssize
+msgid "Size"
+msgstr ""
+
+#: rgpreview.rstime
+#, fuzzy
+msgctxt "rgpreview.rstime"
+msgid "Time"
+msgstr "Время"
+
 #: tfmlogform.bbclear.caption
 msgid "&Clear"
 msgstr "Очистить"
@@ -454,43 +385,6 @@ msgstr "Сохранить"
 msgid "Save log to file"
 msgstr "Сохранить лог в файл"
 
-#: tform3dview.bbcbsubmesh.hint
-msgid "Show list of submeshes to switch show on/off"
-msgstr "Показать список сабмешей для отображения"
-
-#: tformimageset.cbdarkbg.caption
-msgctxt "tformimageset.cbdarkbg.caption"
-msgid "Dark Background"
-msgstr "Тёмный фон"
-
-#: tformimageset.miextract.caption
-msgid "Extract"
-msgstr "Извлечь"
-
-#: tformimageset.miselectall.caption
-msgid "Select all"
-msgstr "Выбрать всё"
-
-#: tformimageset.statusbar.panels[1].text
-msgid "Ctrl-A to select all items in list, Ctrl-S to extract selected items"
-msgstr "Ctrl-A для выбора всех элементов, Ctrl-S сохранить выбранные"
-
-#: tformlayoutedit.acttreedeletenode.caption
-msgid "Delete Object"
-msgstr "Удалить объект"
-
-#: tformlayoutedit.acttreerenamenode.caption
-msgid "Rename Object"
-msgstr "Переименовать объект"
-
-#: tformlayoutedit.cbtxtpreview.caption
-msgid "Text preview"
-msgstr "Как текст"
-
-#: tformlayoutedit.miaddnode.caption
-msgid "Add Object"
-msgstr "Добавить объект"
-
 #: trgguiform.actchangeversion.caption
 msgid "Change PAK version"
 msgstr "Выбор версии PAK"
@@ -498,15 +392,6 @@ msgstr "Выбор версии PAK"
 #: trgguiform.actchangeversion.hint
 msgid "Change game target without rebuild files"
 msgstr "Выбор версии игры без пересбора"
-
-#: trgguiform.actdarkbg.caption
-msgctxt "trgguiform.actdarkbg.caption"
-msgid "Dark Background"
-msgstr "Тёмный фон"
-
-#: trgguiform.actdarkbg.hint
-msgid "Switch dark image background"
-msgstr "Переключить тёмный фон"
 
 #: trgguiform.acteddelete.caption
 msgctxt "trgguiform.acteddelete.caption"
@@ -573,31 +458,6 @@ msgstr "Сброс"
 #: trgguiform.actedreset.hint
 msgid "Remove any updates for file"
 msgstr "Удалить все изменения для файла"
-
-#: trgguiform.actedsave.caption
-msgctxt "trgguiform.actedsave.caption"
-msgid "Save"
-msgstr "Сохранить"
-
-#: trgguiform.actedsave.hint
-msgid "Save editor content as update"
-msgstr "Сохранить содержимое редактора как обновление"
-
-#: trgguiform.actedsearch.caption
-msgid "Search"
-msgstr "Поиск"
-
-#: trgguiform.actedsearch.hint
-msgid "Search in editor"
-msgstr "Поиск в редакторе"
-
-#: trgguiform.actedundo.caption
-msgid "Undo"
-msgstr "Отмена"
-
-#: trgguiform.actedundo.hint
-msgid "Undo edited changes"
-msgstr "Отменить редактируемые изменения"
 
 #: trgguiform.actfileclose.caption
 msgid "&Close"
@@ -667,15 +527,6 @@ msgstr "Сброс вида"
 msgid "Reset panels and columns width"
 msgstr "Сброс ширины панелей и столбцов"
 
-#: trgguiform.actscaleimage.caption
-msgctxt "trgguiform.actscaleimage.caption"
-msgid "Scale Image"
-msgstr "Масштаб"
-
-#: trgguiform.actscaleimage.hint
-msgid "Scale small images"
-msgstr "Масштаб мелких картинок"
-
 #: trgguiform.actshowfilter.caption
 msgid "Type Filter"
 msgstr "Фильтр типов"
@@ -715,14 +566,6 @@ msgstr "Поазать окно предпросмотра/редактора"
 msgid "Collapse tree"
 msgstr "Схлопнуть дерево"
 
-#: trgguiform.bbplay.caption
-msgid "Play"
-msgstr "Играть"
-
-#: trgguiform.bbstop.caption
-msgid "Stop"
-msgstr "Стоп"
-
 #: trgguiform.caption
 msgid "RGGUI"
 msgstr ""
@@ -734,6 +577,10 @@ msgstr "Быстрое сканирование (без размера)"
 #: trgguiform.cbmoddat.caption
 msgid "Make MOD.DAT for TL2 mod unpack"
 msgstr "Создать MOD.DAT при распаковке мода ТЛ2"
+
+#: trgguiform.cbpreview.caption
+msgid "Use built-in preview"
+msgstr ""
 
 #: trgguiform.cbsavedatetime.caption
 msgid "Extract with original date"
@@ -787,21 +634,9 @@ msgstr "Таблица"
 msgid "Dir for extraction"
 msgstr "Папка для распаковки"
 
-#: trgguiform.micalchash.caption
-msgid "Calc Hash"
-msgstr "Считать  хэш"
-
-#: trgguiform.micalchash.hint
-msgid "Calculate selection hash"
-msgstr "Считать хэш выделенного текста"
-
 #: trgguiform.miedit.caption
 msgid "&Edit"
 msgstr "Редактор"
-
-#: trgguiform.mieditreplace.caption
-msgid "Replace"
-msgstr "Заменить"
 
 #: trgguiform.mifile.caption
 msgid "&File"
@@ -978,3 +813,4 @@ msgstr "Информация о моде"
 #: unitlogform.rscantsave
 msgid "Can't save log file"
 msgstr "Не могу сохранить файл лога"
+

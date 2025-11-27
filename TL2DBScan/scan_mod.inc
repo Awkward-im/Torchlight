@@ -1,3 +1,4 @@
+{TODO: Add field for steam page address. must be filled manually then}
 {%REGION Mods}
 {
   Check if mod attached for data id already
