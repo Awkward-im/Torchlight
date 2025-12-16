@@ -94,15 +94,6 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2DB\tl2db.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="tl2common.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="TL2Common"/>
-      </Unit>
-      <Unit>
         <Filename Value="tl2map.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TL2Map"/>
@@ -162,7 +153,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);."/>
-      <OtherUnitFiles Value=".;..\TL2DB;..\..\utils\SQL;..\TL2Lib;..\..\utils"/>
+      <OtherUnitFiles Value=".;..\..\utils\SQL;..\TL2Lib;..\..\utils"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
   </CompilerOptions>

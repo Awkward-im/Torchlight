@@ -1,17 +1,7 @@
-{TODO: (Check!) Delete several files = set right selection (clear+set on current)}
-{TODO: Soundpreview: replace Start and Stop buttons by one (move caption text to resourcestrings}
-{TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
-{TODO: 3d view, change texture by choosing file}
-{TODO: preview bytes values as different types}
-{TODO: make dump text/bytes search}
-{TODO: change dump text area encoding}
-{TODO: preview as dump by choice?}
-{TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
 {TODO: show layout game version at least for changed/added files}
 {TODO: Save pak or file: check setData binary files version, repack if needs}
 {TODO: add hash brute form}
 {TODO: 1-setting to save linked file on disk/mem; 2-ask every time/once}
-{TODO: save as for editor}
 {TODO: Add file search}
 {TODO: StatusBar: change statistic when add/delete dir/file}
 {TODO: StatusBar: path changes on dir with files only}
@@ -275,6 +265,7 @@ uses
   fmcombodiff,
 
   rggui.core,
+  rggui.shared,
   rgpreview,
   rgplugins,
 
@@ -285,16 +276,6 @@ uses
   ;
 
 {%REGION Constants}
-
-const
-  strParentDir = '. . /';
-  strDir       = '< DIR >';
-const
-  stlblNew     = '+';
-  stlblChanged = '*';
-  stlblDelete  = 'X';
-  stlblLinkNew = 'F+';
-  stlblLinkEd  = 'F*';
 
 const
   colState  = 0;
@@ -324,71 +305,12 @@ const
   sTreeWidth    = 'width_tree';
   sGridWidth    = 'width_grid';
 
-  sSectSrcFont  = 'srcfont';
-  sFontName     = 'Name';
-  sFontCharset  = 'Charset';
-  sFontSize     = 'Size';
-  sFontStyle    = 'Style';
-  sFontColor    = 'Color';
-
 const
   sMedia       = 'MEDIA';
-//  sDefDirName  = 'NEWDIR';
-//  sDefFileName = 'NEWFILE.DAT';
 
 const
   defTreeWidth = 256;
   defGridWidth = 360;
-
-//----- default settings -----
-
-const
-  defFontName    = 'Courier New'; // 'MS Sans Serif'
-  defFontCharset = DEFAULT_CHARSET;
-  defFontSize    = 12;
-  defFontStyle   = '';
-  defFontColor   = clWindowText;
-
-resourcestring
-  rsWarning         = 'Warning!';
-  rsUnsaved         = 'You have unsaved changes. Continue anyway?';
-  rsReadPAK         = ' Read PAK. Parsing...';
-  rsBuildTree       = ' Build tree';
-  rsBuildGrid       = ' Build file list. Please, wait...';
-//  rsBuildPreview    = ' Build preview';
-  rsNothingToShow   = 'Nothing to show with current filter';
-  rsUnpackSucc      = 'unpacked succesfully.';
-  rsFilesUnpackSucc = ' files unpacked succesfully.';
-//  rsTotal           = 'Total: ';
-  rsFiles           = 'Files: ';
-  rsDirs            = '; dirs: ';
-  rsFilePath        = 'File path: ';
-  rsSave            = 'Save Pak/mod';
-  rsSavePatch       = 'Save patch (Changes)';
-  rsSaved           = 'File saved';
-  rsSavedAs         = 'File saved as';
-  rsSavedPatch      = 'Patch saved as';
-  rsCantSave        = 'Can''t save file';
-  rsExtractDir      = 'Extract directory ';
-  rsCreateDir       = 'Create directory';
-  rsSelectDir       = 'Select directory';
-  rsDirName         = 'Enter dir name';
-  rsCreateFile      = 'Create file';
-  rsFileName        = 'Enter file name';
-  rsFileDirName        = 'Enter name (with / at the end for dir)';
-  rsReady           = 'Ready to work';
-  rsRename          = 'Rename file/dir';
-  rsImported        = ' files imported';
-  rsLinkingNote     = 'These files still on disk and not built-in until PAK/MOD saved.';
-  rsNothingImported = 'Nothing was imported.';
-//  rsChooseVer       = 'Choose game';
-//  rsGameVer         = 'Game';
-
-  rsNewFile         = 'New file';
-  rsChangedFile     = 'Changed file';
-  rsDeleteFile      = 'Deleted file';
-  rsLinkNewFile     = 'Link to new file';
-  rsLinkChangedFile = 'Link to changed file';
 
 {%ENDREGION Constants}
 
@@ -507,7 +429,7 @@ begin
   config:=TIniFile.Create(ConfigName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 
   LastExt               :=config.ReadString (sSectSettings,sExt         ,RGDefaultExt);
-  LastFilter            :=config.ReadInteger(sSectSettings,sFilter      ,5);
+  LastFilter            :=config.ReadInteger(sSectSettings,sFilter      ,RGDefaultFilter);
 
   // Core
   deOutDir      .Text   :=cfgUnpackDir;
@@ -681,13 +603,14 @@ begin
     end;
   end;
 
+  ClearInfo();
+
   ClosePreviews(FCtrl);
   ClosePak(FCtrl);
   FCtrl:=nil;
 
   sgMain.Clear;
   tvTree.Items.Clear;
-  ClearInfo();
   FreeAndNil(fmi);
 
   result:=true;
@@ -720,7 +643,6 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(nil);
   try
-//    OpenDialog.Title  :=rsFileOpen;
     OpenDialog.Options    :=[ofFileMustExist];
     OpenDialog.DefaultExt :=LastExt;
     OpenDialog.Filter     :=RGDefReadFilter;
@@ -1101,10 +1023,10 @@ begin
 //  bRoot  :=(not bNoTree) and (tvTree.Selected=tvTree.Items[0]);
   bEmpty :=(not bNoTree) and
           ((sgMain.RowCount=1) or
-          ((sgMain.RowCount=2) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0)));
+          ((sgMain.RowCount=2) and (tvTree.Selected<>nil) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0)));
 //            (IntPtr(UIntPtr(sgMain.Objects[colName,1]))=-1);
   bParent:=(not bNoTree) and
-          ((sgMain.Row     =1) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0));
+          ((sgMain.Row     =1) and (tvTree.Selected<>nil) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0));
 
   // Single file actions
   actEdRename.Enabled:=not (bNoTree or bEmpty or bParent);
@@ -1119,12 +1041,12 @@ end;
 
 procedure TRGGUIForm.sgMainSelection(Sender: TObject; aCol, aRow: Integer);
 var
-  lrec:TRGFullInfo;
+//  lrec:TRGFullInfo;
   ldir:string;
   lfile:integer;
 begin
   lfile:=IntPtr(sgMain.Objects[colName,aRow]);
-  SetActiveFile(lfile);
+  SetActiveFile(lfile,FCtrl,0);
 
   ClearInfo();
 
@@ -1157,7 +1079,7 @@ end;
 procedure TRGGUIForm.actPreviewExecute(Sender: TObject);
 var
   lform:TForm;
-  ldir:AnsiString;
+//  ldir:AnsiString;
   lfile:integer;
 begin
   if cbPreview.Checked then
@@ -1199,7 +1121,7 @@ begin
     end;
 
     lfile:=IntPtr(sgMain.Objects[colName,sgMain.Row]);
-    ldir :=sgMain.Cells[colDir,sgMain.Row];
+//    ldir :=sgMain.Cells[colDir,sgMain.Row];
 
     if lfile>=0 then
     begin
@@ -1343,7 +1265,6 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(nil);
   try
-//    OpenDialog.Title  :=rsFileOpen;
     OpenDialog.Options    :=[ofFileMustExist,ofAllowMultiSelect,ofEnableSizing];
     OpenDialog.DefaultExt :='.*';
     OpenDialog.Filter     :='';
@@ -1693,12 +1614,6 @@ begin
       else if ls=stlblLinkEd  then HintText:=rsLinkChangedFile
     end;
   end;
-
-{
-    HintText:=
-        WideToStr(ctrl.Dirs [IntPtr(tvTree.Selected.Data)].Name)+
-        WideToStr(ctrl.Files[IntPtr(sgMain.Objects[colName,ARow])]^.Name);
-}
 end;
 
 procedure TRGGUIForm.sgMainCompareCells(Sender: TObject; ACol, ARow, BCol,
@@ -1883,7 +1798,7 @@ begin
 
   if idx>=FCtrl^.DirCount then exit;
 
-  SetActiveDir(idx,FCtrl);
+  SetActiveDir(idx,FCtrl,0);
 
   inProcess:=true;
 
@@ -2139,16 +2054,22 @@ end;
 
 procedure TRGGUIForm.MarkTree(adir:integer; aEnable:boolean);
 var
+  lnode:TTreeNode;
   i:integer;
 begin
   for i:=0 to tvTree.Items.Count-1 do
-    if IntPtr(UIntPtr(tvTree.Items[i].Data))=adir then
+  begin
+    lnode:=tvTree.Items[i];
+    if IntPtr(UIntPtr(lnode.Data))=adir then
     begin
-      tvTree.Items[i].Enabled:=aEnable;
-      if not aEnable then
-        tvTree.Items[i].Collapse(true);
+      lnode.Enabled:=aEnable;
+      if aEnable then
+        tvTree.Select(lnode)
+      else
+        lnode.Collapse(true);
       exit;
     end;
+  end;
 end;
 
 procedure TRGGUIForm.AddBranch(aroot:TTreeNode; const aname:string);

@@ -8,10 +8,7 @@ object Form3DView: TForm3DView
   ClientHeight = 468
   ClientWidth = 811
   LCLVersion = '4.99.0.0'
-  OnClose = FormClose
   OnDestroy = FormDestroy
-  OnHide = FormHide
-  OnShow = FormShow
   object GLBox: TOpenGLControl
     Left = 229
     Height = 408

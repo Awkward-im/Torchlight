@@ -1,17 +1,8 @@
 {TODO: (Check!) Delete several files = set right selection (clear+set on current)}
-{TODO: Soundpreview: replace Start and Stop buttons by one (move caption text to resourcestrings}
-{TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
-{TODO: 3d view, change texture by choosing file}
-{TODO: preview bytes values as different types}
-{TODO: make dump text/bytes search}
-{TODO: change dump text area encoding}
-{TODO: preview as dump by choice?}
-{TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
 {TODO: show layout game version at least for changed/added files}
 {TODO: Save pak or file: check setData binary files version, repack if needs}
 {TODO: add hash brute form}
 {TODO: 1-setting to save linked file on disk/mem; 2-ask every time/once}
-{TODO: save as for editor}
 {TODO: Add file search}
 {TODO: StatusBar: change statistic when add/delete dir/file}
 {TODO: StatusBar: path changes on dir with files only}
@@ -597,7 +588,7 @@ begin
   if Pos('underline',ls)<>0 then lstyle:=lstyle+[fsUnderline];
   if Pos('strikeout',ls)<>0 then lstyle:=lstyle+[fsStrikeOut];
   SrcFont.Style:=lstyle;
-  PreviewFont(SrcFont);
+  SetPreviewFont(SrcFont);
 
   fmFilterForm.LoadSettings(config);
   config.Free;
@@ -689,12 +680,12 @@ begin
     end;
   end;
 
+  ClearInfo();
   ClosePreviews;
   ctrl.Free;
 
   sgMain.Clear;
   tvTree.Items.Clear;
-  ClearInfo();
   FreeAndNil(fmi);
 
   result:=true;
@@ -886,7 +877,7 @@ begin
     if FontDialog.Execute then
     begin
       SrcFont.Assign(FontDialog.Font);
-      PreviewFont(SrcFont);
+      SetPreviewFont(SrcFont);
     end;
   finally
     FontDialog.Free;
@@ -1302,10 +1293,10 @@ begin
 //  bRoot  :=(not bNoTree) and (tvTree.Selected=tvTree.Items[0]);
   bEmpty :=(not bNoTree) and
           ((sgMain.RowCount=1) or
-          ((sgMain.RowCount=2) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0)));
+          ((sgMain.RowCount=2) and (tvTree.Selected<>nil) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0)));
 //            (IntPtr(UIntPtr(sgMain.Objects[colName,1]))=-1);
   bParent:=(not bNoTree) and
-          ((sgMain.Row     =1) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0));
+          ((sgMain.Row     =1) and (tvTree.Selected<>nil) and (IntPtr(UIntPtr(tvTree.Selected.Data))>0));
 
   // Single file actions
   actEdRename.Enabled:=not (bNoTree or bEmpty or bParent);
@@ -2335,16 +2326,22 @@ end;
 
 procedure TRGGUIForm.MarkTree(adir:integer; aEnable:boolean);
 var
+  lnode:TTreeNode;
   i:integer;
 begin
   for i:=0 to tvTree.Items.Count-1 do
-    if IntPtr(UIntPtr(tvTree.Items[i].Data))=adir then
+  begin
+    lnode:=tvTree.Items[i];
+    if IntPtr(UIntPtr(lnode.Data))=adir then
     begin
-      tvTree.Items[i].Enabled:=aEnable;
-      if not aEnable then
-        tvTree.Items[i].Collapse(true);
+      lnode.Enabled:=aEnable;
+      if aEnable then
+        tvTree.Select(lnode)
+      else
+        lnode.Collapse(true);
       exit;
     end;
+  end;
 end;
 
 procedure TRGGUIForm.AddBranch(aroot:TTreeNode; const aname:string);

@@ -439,8 +439,8 @@ begin
   FScale:=AStream.ReadFloat;           // scale (1.0 for char) (pet size)
 
   Funkn7[0]:=TRGID(AStream.ReadQWord); // -1 // !! "master" runtime ID, player or "unit spawner"
-  Funkn7[1]:=TRGID(AStream.ReadQWord); // -1 // /(chest?) unit spawner/ in some layouts
   if Funkn7[0]<>RGIdEmpty then DbgLn('  after scale[0]='+HexStr(Funkn7[0],16)+' at '+HexStr(AStream.Position,8));
+  Funkn7[1]:=TRGID(AStream.ReadQWord); // -1 // /(chest?) unit spawner/ in some layouts
   if Funkn7[1]<>RGIdEmpty then DbgLn('  after scale[1]='+HexStr(Funkn7[1],16)+' at '+HexStr(AStream.Position,8));
 
   if aVersion>=tlsaveTL2Minimal then
@@ -453,6 +453,7 @@ begin
   FUnkn17:=AStream.ReadDWord; //  looks like random seed
   if FUnkn17<>$FFFFFFFF then DbgLn('pre-name is '+HexStr(FUnkn17,8));
 
+  i:=AStream.Position;
   FName:=AStream.ReadShortString();    // Char name
   DbgLn('  name:'+FName);
 
@@ -555,10 +556,10 @@ begin
 
   //??
   Funkn15_1:=AStream.ReadDWord;
-  Funkn15_2:=AStream.ReadQWord;
-  Funkn15_3:=AStream.ReadDWord;
   if Funkn15_1<>0         then DbgLn('  after gold[0]='+HexStr(Funkn15_1,8 )+' at '+HexStr(AStream.Position,8));
+  Funkn15_2:=AStream.ReadQWord;
   if Funkn15_2<>QWord(-1) then DbgLn('  after gold[1]='+HexStr(Funkn15_2,16)+' at '+HexStr(AStream.Position,8));
+  Funkn15_3:=AStream.ReadDWord;
   if Funkn15_3<>DWord(-1) then DbgLn('  after gold[3]='+HexStr(Funkn15_3,8 )+' at '+HexStr(AStream.Position,8));
   {
     AStream.ReadDWord;                 // -1 at start; 0..11
@@ -854,6 +855,8 @@ begin
   except
     RGLog.Add('got char exception at '+HexStr(result.DataOffset,8));
     AStream.Position:=result.DataOffset+result.DataSize;
+//    result.Free;
+//    result:=nil;
   end;
 end;
 

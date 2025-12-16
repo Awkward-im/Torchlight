@@ -4,6 +4,7 @@
   one list with file/dir records
   global text cache
 }
+{TODO: don't keep full path name initially, just make it by request (clear on cnahge)}
 {TODO: Add RenameFile function}
 {TODO: make Names text cache NOT global. But FileInfo is not part of DirList}
 {TODO: remove "total" changes/saving coz total = DirCount+FileCount (except deleted)}
@@ -14,7 +15,6 @@
 unit RGFS;
 
 interface
-
 
 type
   PBaseInfo = ^TBaseInfo;
@@ -290,7 +290,8 @@ end;
 
 function SetName(aname:PUnicodeChar):integer; inline;
 begin
-  result:=names.Add(aname);
+//  result:=names.Add(aname);
+  result:=names.Append(aname);
 end;
 
 function GetName(idx:integer):PUnicodeChar; inline;
@@ -347,7 +348,7 @@ end;
 
 function TRGDirList.NameOfFile(aidx:integer):PWideChar; inline;
 begin
-  result:=Files[aidx]^.Name;
+  if aidx>=0 then result:=Files[aidx]^.Name else result:=nil;
 end;
 
 function TRGDirList.PathOfFile(aidx:integer):PWideChar; inline;
@@ -357,7 +358,10 @@ end;
 
 function TRGDirList.FileDir(aidx:integer):integer; inline;
 begin
-  result:=Files[aidx]^.parent;
+  if aidx<0 then
+    result:=0
+  else
+    result:=Files[aidx]^.parent;
 end;
 
 function TRGDirList.AsDir(aidx:integer):integer;
@@ -480,6 +484,8 @@ end;
 {%REGION Common}
 function TRGDirList.GetFirstFile(out p:pointer; adir:integer):integer;
 begin
+  if adir<0 then exit(0);
+
   result:=Dirs[adir].first;
   if result>=0 then p:=Files[result];
   inc(result);
@@ -571,12 +577,15 @@ end;
 function TRGDirList.SearchPathNorm(apath:PUnicodeChar):integer;
 var
   i:integer;
+  pc:PUnicodeChar;
 begin
   for i:=0 to FDirCount-1 do
   begin
     if not IsDirDeleted(i) then
+    begin
       if CompareWide(Dirs[i].Name,apath)=0 then
         exit(i);
+    end;
   end;
 
   result:=-1;
@@ -884,10 +893,8 @@ begin
   else
   begin
     result:=FDirCount;
-  
     if FDirCount=GetDirsCapacity() then
       SetDirsCapacity(FDirCount+incEntry);
-
     inc(FDirCount);
   end;
 
@@ -896,7 +903,6 @@ begin
   Dirs[result].last :=-1;
   Dirs[result].index:=-1;
   Dirs[result].Name :=apath;
-
   inc(total);
 end;
 

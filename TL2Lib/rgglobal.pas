@@ -72,6 +72,7 @@ const
 
 const
   RGDefaultExt     = '.MOD';
+  RGDefaultFilter  = 5;
   RGDefReadFilter  = 'MOD files|*.MOD|PAK files|*.PAK|TL1 ZIP archives|*.ZIP|MAN files|*.MAN|Supported files|*.MOD;*.PAK;*.MAN;*.ZIP|All files|*.*';
   RGDefWriteFilter = 'TL2 MOD file|*.MOD|TL2 PAK file|*.PAK|Hob PAK file|*.PAK|Rebel Galaxy PAK file|*.PAK|Rebel Galaxy Outlaw PAK file|*.PAK|TL1 archive|*.ZIP';
 

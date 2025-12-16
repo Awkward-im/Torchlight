@@ -19,6 +19,8 @@ uses
   rgglobal,
   rgctrl,
   rggui.core,
+  rggui.shared,
+  fmPanel,
   rgpBase;
 
 procedure OnMenuItemClick(dummy:pointer; Sender: TObject);
@@ -30,7 +32,7 @@ begin
   if (lctrl=nil) then exit;
 
   lproc:=pluginlist[TMenuItem(Sender).Tag].proc;
-  lproc(lctrl^,GetActiveFile(lctrl));
+  lproc(lctrl^,GetActiveFile(lctrl,TPanelForm(Panels[ActivePanel]).ListIndex));
 end;
 
 procedure FillEditMenu(ami:TMenuItem);

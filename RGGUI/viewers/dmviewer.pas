@@ -1,3 +1,6 @@
+{
+  This is common unit for previews
+}
 unit DMViewer;
 
 {$mode ObjFPC}{$H+}
@@ -47,9 +50,8 @@ const
   iiFind    = 3;
   iiReload  = 4;
   iiStretch = 5;
-  iiDarkBg  = 0;
-  iiHash    = 0;
-
+  iiDarkBg  = 6;
+  iiHash    = 7;
 
 type
   { TBaseViewer }

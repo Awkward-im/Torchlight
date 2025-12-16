@@ -30,10 +30,7 @@ type
     procedure bbCbSubMeshClick(Sender: TObject);
     procedure bbSaveXMLClick(Sender: TObject);
     procedure clbSubMeshClickCheck(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure FormHide(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
     procedure FormMouseWheelUp  (Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
     procedure GLBoxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -297,6 +294,7 @@ begin
   lDDS:=lext='.DDS';
 
   lname:=adir+aname;
+  lsize:=0;
   if (ctrl<>nil) and (adir<>'') then
   begin
     lfile:=ctrl^.SearchFile(lname);
@@ -450,7 +448,8 @@ var
 begin
   SetLength(TSubMeshOptions(FSubOpt),0);
   clbSubMesh.Clear;
-  if Mesh.SubMeshCount=1 then exit;
+  bbCbSubMesh.Enabled:=Mesh.SubMeshCount>1;
+  if Mesh.SubMeshCount<2 then exit;
 
   SetLength(TSubMeshOptions(FSubOpt),Mesh.SubMeshCount);
   clbSubMesh.Items.Capacity:=Mesh.SubMeshCount;
@@ -469,6 +468,7 @@ procedure TForm3dView.SetContainer(actrl:PRGController);
 begin
   ctrl:=actrl;
 end;
+
 {$I-}
 function TForm3dView.LoadFromMemory(abuf:PByte; asize:integer; const afname:string=''):boolean;
 var
@@ -479,11 +479,11 @@ begin
   Mesh.Free;
   Mesh.Init;
   result:=Mesh.ImportFromMemory(abuf,asize);
+  SetSubMeshOpts();
   if result then
   begin
     fname:=afname;
     ResetPosition();
-    SetSubMeshOpts();
 
     if (afname<>'') and (Mesh.MeshVersion<>99) then
     begin
@@ -519,6 +519,7 @@ begin
   else
     fname:='';
 end;
+
 {$I-}
 function TForm3dView.LoadFromFile(const afname:string):boolean;
 var
@@ -571,55 +572,19 @@ begin
   begin
     fname:=afname;
     ResetPosition();
-    SetSubMeshOpts();
 //    CreateMeshList();
   end;
+  SetSubMeshOpts();
 end;
 {%ENDREGION Load}
 
 {%REGION Form}
-procedure TForm3dView.FormShow(Sender: TObject);
-begin
-{
-  glEnable(GL_DEPTH_TEST);
-
-  glEnable(GL_LIGHTING);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
-  glEnable(GL_LIGHT0);
-
-  PrepareTextures(ExtractPath(fname));
-  CreateMeshList();
-
-  Application.AddOnIdleHandler(@On3DViewIdle);
-  try
-    (Owner as TForm).ActiveControl:=GLBox;
-  except
-  end;
-}
-end;
-
-procedure TForm3dView.FormHide(Sender: TObject);
-begin
-{
-  Application.RemoveOnIdleHandler(@On3DViewIdle);
-  FreeTextures();
-  FreeModel();
-}
-end;
-
-procedure TForm3dView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-
-end;
-
 procedure TForm3dView.FormDestroy(Sender: TObject);
 begin
   Application.RemoveOnIdleHandler(@On3DViewIdle);
   FreeTextures();
   FreeModel();
 
-  FormHide(Sender); //!!
-//  Visible:=false;
   Mesh.Free;
   SetLength(TSubMeshOptions(FSubOpt),0);
 end;

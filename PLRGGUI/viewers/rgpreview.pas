@@ -1,6 +1,17 @@
 ﻿{
   Unit for preview processing
 }
+{TODO: (Check!) Delete several files = set right selection (clear+set on current)}
+{TODO: Soundpreview: replace Start and Stop buttons by one (move caption text to resourcestrings}
+{TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
+{TODO: 3d view, change texture by choosing file}
+{TODO: preview bytes values as different types}
+{TODO: make dump text/bytes search}
+{TODO: change dump text area encoding}
+{TODO: preview as dump by choice?}
+{TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
+{TODO: save as for editor}
+
 {TODO: make public preview list with autochanging, not rebuild at moment}
 {TODO: notify if preview list was changed (new added, old closed)}
 unit rgPreview;
@@ -18,6 +29,7 @@ function MakePreview(var actrl:TRGController; aidx:integer):TForm;
 procedure ClosePreviews (actrl:PRGController=nil);
 function  GetPreviewList(actrl:PRGController=nil):TObjectDynArray;
 procedure SetPreviewFont(const afont:TFont);
+function  GetPreviewFont():TFont;
 
 
 implementation
@@ -45,9 +57,15 @@ resourcestring
   rsOffset          = 'Offset';
   rsTime            = 'Time';
 
-procedure SetPreviewFont(const afont:TFont);
+function GetPreviewFont():TFont; inline;
 begin
-  if Viewer=nil then Viewer:=TViewer.Create(nil{Application});
+  if Viewer=nil then Viewer:=TViewer.Create(nil{Application.MainForm});
+  result:=Viewer.Font;
+end;
+
+procedure SetPreviewFont(const afont:TFont); inline;
+begin
+  if Viewer=nil then Viewer:=TViewer.Create(nil{Application.MainForm});
   Viewer.Font.Assign(afont);
 end;
 
@@ -61,7 +79,7 @@ begin
   if aidx<0 then exit;
   if actrl.UpdateState(aidx)=stateDelete then exit;
 
-  if Viewer=nil then Viewer:=TViewer.Create(nil{Application});
+  if Viewer=nil then Viewer:=TViewer.Create(nil{Application.MainForm});
 
   ldir :=WideToStr(actrl.PathOfFile(aidx));
   lname:=WideToStr(actrl.Files[aidx]^.Name);
@@ -202,5 +220,6 @@ begin
   end;
 end;
 
+finalization
+  ClosePreviews();
 end.
-

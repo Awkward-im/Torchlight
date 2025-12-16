@@ -50,7 +50,7 @@ object RGGUIForm: TRGGUIForm
     end
     object tbSep1: TToolButton
       Left = 70
-      Height = 22
+      Height = 5
       Top = 2
       Style = tbsDivider
     end
@@ -367,7 +367,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep1: TToolButton
           Left = 24
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -380,7 +380,7 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep2: TToolButton
           Left = 157
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
@@ -399,14 +399,14 @@ object RGGUIForm: TRGGUIForm
         end
         object tbEdSep3: TToolButton
           Left = 349
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbEdSep4: TToolButton
           Left = 403
-          Height = 22
+          Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator

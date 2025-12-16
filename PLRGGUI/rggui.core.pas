@@ -4,6 +4,9 @@
   make new pak
   load existing pak
 }
+{TODO: Make Event OnChangeDir for SetActiveDir (OnChangeFile for SetActiveFile?)}
+{TODO: move cfgOriginal (sVanilaPath) to GUI unit}
+{NOTE: Set/GetActiveFile/Dir and ClosePak supports single instance of ctrl, not doubles}
 unit RGGUI.Core;
 
 interface
@@ -13,33 +16,35 @@ uses
   rgctrl;
 
 {%REGION Controller}
+const
+  MaxDirCount = 16;
 type
   TDirListElement = record
     path    :integer;                         // directory (for case when selected=-1)
     selected:integer;                         // selected file (-1 if empty [or parent])
   end;
   TCtrlListElement = record
-    Ctrl   :PRGController;                    // controller
-    Items  :array [0..15] of TDirListElement; // list of dir list items (for multi lists)
-    CurItem:integer;                          // index of Items array
+    Ctrl  :PRGController;                     // controller
+    Dirs  :array [0..MaxDirCount-1] of TDirListElement;  // list of dir list items (for multi lists)
   end;
 
 var
-  CtrlList  :array of TCtrlListElement;
+  CtrlList  :array of TCtrlListElement;       // list of opened paks
   CtrlCount :integer;
   ActiveCtrl:integer;
 {%ENDREGION Controller}
 
 {%REGION Settings}
 var
+  cfgOriginal    :AnsiString;
   cfgGUIPlugin   :AnsiString;
+  cfgUnpackDir   :AnsiString;
+  cfgSaveMode    :integer;    // sm* const (See below)
   cfgUnpackTree  :Boolean;
   cfgUsePAKName  :Boolean;
   cfgMakeMODDAT  :Boolean;
   cfgFastScan    :Boolean;
   cfgSaveDateTime:Boolean;
-  cfgUnpackDir   :AnsiString;
-  cfgSaveMode    :integer;    // sm* const (See below)
   cfgSaveUTF8    :Boolean;
   cfgSaveSettings:Boolean;
 
@@ -55,20 +60,45 @@ var
 
 {%ENDREGION Settings}
 
-procedure SetActiveFile(aidx:integer; actrl:PRGController=nil; aItem:integer=0);
-function  GetActiveFile(              actrl:PRGController=nil; aItem:integer=0):integer;
-procedure SetActiveDir (aidx:integer; actrl:PRGController=nil; aItem:integer=0);
-function  GetActiveDir (              actrl:PRGController=nil; aItem:integer=0):integer;
+{%REGION Events}
+type
+  TSelectFileEvent = procedure (idx:integer; actrl:PRGController; aList:integer) of object;
+
+procedure AddFileEventHandler(aproc:TSelectFileEvent);
+procedure AddDirEventHandler (aproc:TSelectFileEvent);
+procedure RemoveEventHandler (aproc:TSelectFileEvent);
+{%ENDREGION Events}
+
+function  GetCtrlIndex(actrl:PRGController):integer;
+function  GetCtrl     (aidx:integer):PRGController;
+
+procedure SetActiveFile(aidx:integer; actrl:PRGController{=nil}; aList:integer=0);
+function  GetActiveFile(              actrl:PRGController{=nil}; aList:integer=0):integer;
+procedure SetActiveDir (adir:integer; actrl:PRGController{=nil}; aList:integer=0);
+function  GetActiveDir (              actrl:PRGController{=nil}; aList:integer=0):integer;
 
 procedure LoadCoreSettings(acfg:TIniFile=nil);
 procedure SaveCoreSettings(acfg:TIniFile=nil);
 
 function NewPak  ():PRGController;
 function LoadPak (const aname:AnsiString):PRGController;
-function ClosePak(actrl:PRGController=nil):boolean;
+function ClosePak(actrl:PRGController=nil; aforce:boolean=false):boolean;
 
-function SaveFile(actrl:PRGController; aidx:integer;
-      testonly:boolean=false):boolean;
+{%REGION Unpack}
+type
+  TUnpackFileEvent = function (const adir, aname:string):integer of object;
+
+function SaveFile(actrl:PRGController; aidx:integer; testonly:boolean=false):boolean;
+function SaveFile(const adir,aname:string;        // destination dir and filename
+                  adata:PByte; asize:integer;
+                  aver:integer):boolean;
+function SaveFile(const adir,aname:string;        // destination dir and filename
+                  adata:PByte; asize:integer;
+                  aver:integer; atime:TDateTime;  // if not 0, set time of file changing
+                  testonly:boolean):boolean;      // do not save on disk. for unpack/convert check
+
+function ExtractDir(actrl:PRGController; adir:integer; asubdir:boolean; testonly:boolean=false):integer;
+{%ENDREGION Unpack}
 
 
 implementation
@@ -79,35 +109,132 @@ uses
 
   rgfiletype,
   rgfile,
+  rgmod,
   rgpak
   ;
   
+{%REGION Events}
+type
+  TEventHandlers = array of TSelectFileEvent;
+var
+  SFHandlers:TEventHandlers;
+  SDHandlers:TEventHandlers;
+
+procedure AddHandler(var ahandlers:TEventHandlers; aproc:TSelectFileEvent);
+var
+  i,lidx:integer;
+begin
+  for i:=0 to High(ahandlers) do
+  begin
+    if TMethod(ahandlers[i]).Data=TMethod(aproc).Data then
+    begin
+      ahandlers[i]:=aproc;
+      exit;
+    end;
+  end;
+  lidx:=Length(ahandlers);
+  SetLength(ahandlers,lidx+1);
+  ahandlers[lidx]:=aproc;
+end;
+
+procedure AddFileEventHandler(aproc:TSelectFileEvent);
+begin
+  AddHandler(SFHandlers, aproc);
+end;
+
+procedure AddDirEventHandler(aproc:TSelectFileEvent);
+begin
+  AddHandler(SDHandlers, aproc);
+end;
+
+procedure RemoveEventHandler(aproc:TSelectFileEvent);
+var
+  i:integer;
+begin
+  // check for file select
+  for i:=0 to High(SFHandlers) do
+  begin
+    if SFHandlers[i]=aproc then
+    begin
+      Delete(SFHandlers,i,1);
+      exit;
+    end;
+  end;
+
+  // Check for dir activate
+  for i:=0 to High(SDHandlers) do
+  begin
+    if SDHandlers[i]=aproc then
+    begin
+      Delete(SDHandlers,i,1);
+      exit;
+    end;
+  end;
+end;
+{%ENDREGION Events}
+
+{%REGION Controller}
+function GetCtrl(aidx:integer):PRGController; inline;
+begin
+  if (aidx>=0) and (aidx<CtrlCount) then
+    result:=CtrlList[aidx].Ctrl
+  else
+    result:=nil;
+end;
+
+function GetCtrlIndex(actrl:PRGController):integer;
+var
+  i:integer;
+begin
+  if actrl=nil then
+  begin
+    if (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then
+      exit(ActiveCtrl);
+  end
+  else
+  begin
+    for i:=0 to CtrlCount-1 do
+      if CtrlList[i].ctrl=actrl then
+        exit(i);
+  end;
+  result:=-1;
+end;
+
+function ExpandCtrlList():PRGController;
+begin
+  if CtrlCount>=Length(CtrlList) then
+    SetLength(CtrlList,CtrlCount+8);
+
+  FillChar(CtrlList[CtrlCount],SizeOf(TCtrlListElement),0);
+  GetMem(result,SizeOf(TRGController));
+  result^.Init;
+  CtrlList[CtrlCount].Ctrl:=result;
+
+  ActiveCtrl:=CtrlCount;
+  inc(CtrlCount);
+end;
+{%ENDREGION Controller}
+
+{%REGION Settings}
 const
   sSectSettings = 'settings';
   sGUIDir       = 'guidir';
-  sOutDir       = 'outdir';
-  sSavePath     = 'savepath';
+  sUnpackDir    = 'outdir';
+  sUnpackTree   = 'savepath';
   sUsePAKName   = 'usefname';
   sSaveUTF8     = 'saveutf8';
   sFastScan     = 'fastscan';
-  sDecoding     = 'decoding';
+  sSaveMode     = 'decoding';
   sMODDAT       = 'moddat';
   sSaveSettings = 'savesettings';
   sSaveDateTime = 'savedatetime';
   sDebugLevel   = 'debuglevel';
-{
-  sSectSrcFont  = 'srcfont';
-  sFontName     = 'Name';
-  sFontCharset  = 'Charset';
-  sFontSize     = 'Size';
-  sFontStyle    = 'Style';
-  sFontColor    = 'Color';
-}
+
+  sVanilaPath   = 'originalpath';
+
 procedure SaveCoreSettings(acfg:TIniFile=nil);
 var
   config:TIniFile;
-//  ls:AnsiString;
-//  lstyle:TFontStyles;
 begin
   if cfgSaveSettings then
   begin
@@ -116,32 +243,19 @@ begin
     else
       config:=acfg;
 
-    config.WriteString (sSectSettings,sOutDir      ,cfgUnpackDir);
-    config.WriteBool   (sSectSettings,sSavePath    ,cfgUnpackTree);
+    config.WriteString (sSectSettings,sVanilaPath  ,cfgOriginal);
+
+    config.WriteString (sSectSettings,sUnpackDir   ,cfgUnpackDir);
+    config.WriteBool   (sSectSettings,sUnpackTree  ,cfgUnpackTree);
     config.WriteBool   (sSectSettings,sUsePakName  ,cfgUsePakName);
     config.WriteBool   (sSectSettings,sMODDAT      ,cfgMakeMODDAT);
     config.WriteBool   (sSectSettings,sFastScan    ,cfgFastScan);
     config.WriteBool   (sSectSettings,sSaveDateTime,cfgSaveDateTime);
     config.WriteBool   (sSectSettings,sSaveUTF8    ,cfgSaveUTF8);
-    config.WriteInteger(sSectSettings,sDecoding    ,cfgSaveMode);
+    config.WriteInteger(sSectSettings,sSaveMode    ,cfgSaveMode);
 
     config.WriteBool   (sSectSettings,sSaveSettings,cfgSaveSettings);
 
-    //--- Font
-{
-    config.WriteString (sSectSrcFont,sFontName   ,SrcFont.Name);
-    config.WriteInteger(sSectSrcFont,sFontCharset,SrcFont.Charset);
-    config.WriteInteger(sSectSrcFont,sFontSize   ,SrcFont.Size);
-    config.WriteString (sSectSrcFont,sFontColor  ,ColorToString(SrcFont.Color));
-
-    lstyle:=SrcFont.Style;
-    ls:='';
-    if fsBold      in lstyle then ls:='bold ';
-    if fsItalic    in lstyle then ls:=ls+'italic ';
-    if fsUnderline in lstyle then ls:=ls+'underline ';
-    if fsStrikeOut in lstyle then ls:=ls+'strikeout ';
-    config.WriteString(sSectSrcFont,sFontStyle,ls);
-}
     if acfg=nil then
     begin
       config.UpdateFile;
@@ -153,8 +267,6 @@ end;
 procedure LoadCoreSettings(acfg:TIniFile=nil);
 var
   config:TIniFile;
-//  ls:AnsiString;
-//  lstyle:TFontStyles;
 begin
   if acfg=nil then
   begin
@@ -171,53 +283,29 @@ begin
 
   cfgGUIPlugin   :=config.ReadString (sSectSettings,sGUIDir,'');
 
-  cfgUnpackDir   :=config.ReadString (sSectSettings,sOutDir      ,ExtractFileDir(ParamStr(0)));
-  cfgUnpackTree  :=config.ReadBool   (sSectSettings,sSavePath    ,true);
+  cfgOriginal    :=config.ReadString (sSectSettings,sVanilaPath  ,'');
+
+  cfgUnpackDir   :=config.ReadString (sSectSettings,sUnpackDir   ,ExtractFileDir(ParamStr(0)));
+  cfgUnpackTree  :=config.ReadBool   (sSectSettings,sUnpackTree  ,true);
   cfgUsePAKName  :=config.ReadBool   (sSectSettings,sUsePAKName  ,true);
   cfgMakeMODDAT  :=config.ReadBool   (sSectSettings,sMODDAT      ,true);
   cfgFastScan    :=config.ReadBool   (sSectSettings,sFastScan    ,false);
   cfgSaveDateTime:=config.ReadBool   (sSectSettings,sSaveDateTime,true);
   cfgSaveUTF8    :=config.ReadBool   (sSectSettings,sSaveUTF8    ,false);
-  cfgSaveMode    :=config.ReadInteger(sSectSettings,sDecoding    ,smRename);
+  cfgSaveMode    :=config.ReadInteger(sSectSettings,sSaveMode    ,smRename);
 
   cfgSaveSettings:=config.ReadBool   (sSectSettings,sSaveSettings,false);
 
-//--- Font
-{
-  SrcFont.Name   :=config.ReadString (sSectSrcFont,sFontName   ,defFontName);
-  SrcFont.Charset:=config.ReadInteger(sSectSrcFont,sFontCharset,defFontCharset);
-  SrcFont.Size   :=config.ReadInteger(sSectSrcFont,sFontSize   ,defFontSize);
-  SrcFont.Color  :=StringToColor(
-      config.ReadString(sSectSrcFont,sFontColor,ColorToString(defFontColor)));
-
-  ls:=config.ReadString(sSectSrcFont,sFontStyle,defFontStyle);
-  lstyle:=[];
-  if Pos('bold'     ,ls)<>0 then lstyle:=lstyle+[fsBold];
-  if Pos('italic'   ,ls)<>0 then lstyle:=lstyle+[fsItalic];
-  if Pos('underline',ls)<>0 then lstyle:=lstyle+[fsUnderline];
-  if Pos('strikeout',ls)<>0 then lstyle:=lstyle+[fsStrikeOut];
-  SrcFont.Style:=lstyle;
-  SetPreviewFont(SrcFont);
-}
   if acfg=nil then config.Free;
 end;
+{%ENDREGION Settings}
 
-function ExpandCtrlList():PRGController;
-begin
-  if CtrlCount>=Length(CtrlList) then
-    SetLength(CtrlList,CtrlCount+8);
-  FillChar(CtrlList[CtrlCount],SizeOf(TCtrlListElement),0);
-  GetMem(result,SizeOf(TRGController));
-  result^.Init;
-  CtrlList[CtrlCount].Ctrl:=result;
-  ActiveCtrl:=CtrlCount;
-  inc(CtrlCount);
-end;
-
+{%REGION Container}
 function NewPak():PRGController;
 begin
   result:=ExpandCtrlList();
   result^.NewDir('MEDIA/');
+  result^.PAK.Name:='NewPak'+IntToStr(CtrlCount); //!!
 end;
 
 function LoadPak(const aname:AnsiString):PRGController;
@@ -227,10 +315,6 @@ begin
   result:=ExpandCtrlList();
   with result^ do
   begin
-{
-  StatusBar.Panels[1].Text:=rsReadPAK;
-  Application.ProcessMessages;
-}
     if cfgFastScan then
       lmode:=piParse
     else
@@ -240,21 +324,18 @@ begin
   end;
 end;
 
-function ClosePak(actrl:PRGController=nil):boolean;
+function ClosePak(actrl:PRGController=nil; aforce:boolean=false):boolean;
 var
   i:integer;
 begin
   result:=false;
-  if (actrl=nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then
-     actrl:=CtrlList[ActiveCtrl].Ctrl;
+//  if (actrl=nil) then actrl:=GetCtrl(ActiveCtrl);
+  if (actrl=nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then actrl:=CtrlList[ActiveCtrl].Ctrl;
+  if (actrl=nil) then exit;
+
   if actrl^.UpdatesCount()>0 then
   begin
-{    if MessageDlg(rsWarning,rsUnsaved,mtWarning,
-       [mbOK,mbCancel],0,mbCancel)<>mrOk then
-    begin
-      exit(false);
-    end;
-}
+    if not aforce then exit;
   end;
 
   actrl^.Free;
@@ -272,7 +353,9 @@ begin
   end;
   result:=true;
 end;
+{%ENDREGION Container}
 
+{%REGION File}
 function SaveFile(const adir,aname:string;
                   adata:PByte; asize:integer;
                   aver:integer; atime:TDateTime;
@@ -399,7 +482,7 @@ end;
 
 function SaveFile(const adir,aname:string;
                   adata:PByte; asize:integer;
-                  aver:integer=verUnk):boolean;
+                  aver:integer):boolean;
 var
   loutdir:string;
 begin
@@ -413,8 +496,7 @@ begin
   result:=SaveFile(loutdir, aname, adata, asize, aver, 0, false);
 end;
 
-function SaveFile(actrl:PRGController; aidx:integer;
-      testonly:boolean=false):boolean;
+function SaveFile(actrl:PRGController; aidx:integer; testonly:boolean=false):boolean;
 var
   lbuf:PByte;
   loutdir,lsdir,lsname:string;
@@ -423,6 +505,9 @@ var
 begin
   result:=false;
   if aidx<0 then exit;
+//  if (actrl=nil) then actrl:=GetCtrl(ActiveCtrl);
+  if (actrl=nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then actrl:=CtrlList[ActiveCtrl].Ctrl;
+  if (actrl=nil) then exit;
 
   // try to get data
   if actrl^.Files[aidx]^.ftype=typeDirectory then exit;
@@ -463,96 +548,148 @@ begin
   FreeMem(lbuf);
 end;
 
-procedure SetActiveFile(aidx:integer; actrl:PRGController=nil; aItem:integer=0);
+function ExtractDir(actrl:PRGController; adir:integer; asubdir:boolean; testonly:boolean=false):integer;
+var
+  ls,pc:PWideChar;
+  i,llen:integer;
+  lfile:integer;
+//  ldl:TRGDebugLevel;
+begin
+  result:=0;
+  if actrl^.IsDirDeleted(adir) then exit;
+
+//  ldl:=rgDebugLevel;
+
+  if not asubdir then
+  begin
+    if actrl^.GetFirstFile(lfile,adir) then
+      repeat
+        if SaveFile(actrl,lfile,testonly) then inc(result);
+      until not actrl^.GetNextFile(lfile);
+
+    exit;
+  end;
+
+  if adir>0 then
+  begin
+    ls:=actrl^.Dirs[adir].Name;
+    llen:=Length(ls);
+  end
+  else
+  begin
+    ls:='';
+    llen:=0;
+  end;
+
+  for i:=0 to actrl^.DirCount-1 do
+  begin
+    if not actrl^.IsDirDeleted(i) then
+    begin
+      pc:=actrl^.Dirs[i].name;
+      if (adir<=0) or (i=adir) or (CompareWide(ls,pc,llen)=0) then
+      begin
+//        StatusBar.Panels[1].Text:=rsExtractDir+WideToStr(pc);
+//        StatusBar.Update;
+
+        if actrl^.GetFirstFile(lfile,i) then
+          repeat
+            if SaveFile(actrl,lfile,testonly) then inc(result);
+          until not actrl^.GetNextFile(lfile);
+      end;
+    end;
+  end;
+
+  if (adir<0) and (cfgMakeMODDAT) and (actrl^.PAK.Version=verTL2Mod) then
+  begin
+    SaveModConfig(actrl^.PAK.modinfo,PChar(cfgUnpackDir+'\'+TL2ModData));
+  end;
+//  StatusBar.Panels[1].Text:=rsFilePath+sgMain.Cells[colDir ,sgMain.Row];
+//  ShowMessage(GetPathFromNode(PopupNode)+#13#10+rsUnpackSucc);
+
+//  rgDebugLevel:=ldl;
+end;
+{%ENDREGION File}
+
+{%REGION Runtime}
+procedure SetActiveFile(aidx:integer; actrl:PRGController{=nil}; aList:integer=0);
 var
   i:integer;
 begin
-  if (actrl= nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then actrl:=CtrlList[ActiveCtrl].Ctrl;
-  if (actrl<>nil) then
+  i:=GetCtrlIndex(actrl);
+  if i>=0 then
   begin
-    for i:=0 to CtrlCount-1 do
+    with CtrlList[i] do
     begin
-      if CtrlList[i].ctrl=actrl then
-      begin
-        with CtrlList[i] do
-        begin
-          if (CurItem>=0) and (CurItem<16) then
-          begin
-            Items[CurItem].selected:=aidx;
-          end;
-        end;
-        break;
-      end;
+      if (aList<0) or (aList>=MaxDirCount) then aList:=0;
+      Dirs[aList].selected:=aidx;
     end;
+    for i:=0 to High(SFHandlers) do
+      SFHandlers[i](aidx,actrl,aList);
   end;
 end;
 
-function GetActiveFile(actrl:PRGController=nil; aItem:integer=0):integer;
+function GetActiveFile(actrl:PRGController{=nil}; aList:integer=0):integer;
 var
   i:integer;
 begin
-  if (actrl=nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then actrl:=CtrlList[ActiveCtrl].Ctrl;
-  if (actrl<>nil) then
-  begin
-    for i:=0 to CtrlCount-1 do
+  i:=GetCtrlIndex(actrl);
+  if i>=0 then
+    with CtrlList[i] do
     begin
-      if CtrlList[i].ctrl=actrl then
-      begin
-        with CtrlList[i] do
-        begin
-          if (CurItem>=0) and (CurItem<16) then
-            exit(Items[CurItem].selected);
-        end;
-      end;
+      if (aList<0) or (aList>=MaxDirCount) then aList:=0;
+      exit(Dirs[aList].selected);
     end;
-  end;
   result:=-1;
 end;
 
-procedure SetActiveDir(aidx:integer; actrl:PRGController=nil; aItem:integer=0);
+procedure SetActiveDir(adir:integer; actrl:PRGController{=nil}; aList:integer=0);
 var
   i:integer;
 begin
-  if (actrl= nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then actrl:=CtrlList[ActiveCtrl].Ctrl;
-  if (actrl<>nil) then
-  begin
-    for i:=0 to CtrlCount-1 do
+  i:=GetCtrlIndex(actrl);
+  if i>=0 then
+    with CtrlList[i] do
     begin
-      if CtrlList[i].ctrl=actrl then
-      begin
-        with CtrlList[i] do
+      if (aList<0) or (aList>=MaxDirCount) then aList:=0;
+      with Dirs[aList] do
+        if path<>adir then
         begin
-          if (CurItem>=0) and (CurItem<16) then
-          begin
-            Items[CurItem].path:=aidx;
-          end;
+          path    :=adir;
+          selected:=-1;
+          for i:=0 to High(SFHandlers) do
+            SDHandlers[i](adir,actrl,aList);
         end;
-        break;
-      end;
     end;
-  end;
 end;
 
-function GetActiveDir(actrl:PRGController=nil; aItem:integer=0):integer;
+function GetActiveDir(actrl:PRGController{=nil}; aList:integer=0):integer;
 var
   i:integer;
 begin
-  if (actrl=nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then actrl:=CtrlList[ActiveCtrl].Ctrl;
-  if (actrl<>nil) then
-  begin
-    for i:=0 to CtrlCount-1 do
+  i:=GetCtrlIndex(actrl);
+  if i>=0 then
+    with CtrlList[i] do
     begin
-      if CtrlList[i].ctrl=actrl then
-      begin
-        with CtrlList[i] do
-        begin
-          if (CurItem>=0) and (CurItem<16) then
-            exit(Items[CurItem].path);
-        end;
-      end;
+      if (aList<0) or (aList>=MaxDirCount) then aList:=0;
+      exit(Dirs[aList].path);
     end;
-  end;
   result:=-1;
 end;
+{%ENDREGION Runtime}
+
+procedure CloseAll();
+begin
+  while CtrlCount>0 do
+  begin
+    dec(CtrlCount);
+    CtrlList[CtrlCount].ctrl^.Free;
+    FreeMem(CtrlList[CtrlCount].ctrl);
+  end;
+  SetLength(CtrlList,0);
+end;
+
+finalization
+
+  CloseAll();
 
 end.

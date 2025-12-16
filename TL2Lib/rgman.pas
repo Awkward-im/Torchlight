@@ -225,6 +225,7 @@ begin
     lentry:=AddPath(pc);
     lname:=pc;
     lcnt:=memReadDWord(aptr);
+
     for j:=0 to pred(lcnt) do
     begin
       lchecksum:=memReadDWord(aptr);
@@ -277,6 +278,7 @@ begin
   begin
     AppendFile(0,Dirs[1].Name);
   end;
+
   Link;
   result:=total;
 end;

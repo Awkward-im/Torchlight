@@ -539,7 +539,14 @@ begin
       AStream.Read(FProperties[0],FPropCount*SizeOf(TRGFloat));
   end;
 
-  lcnt:=AStream.ReadWord;
+  if aVersion>=tlsaveTL2Minimal then
+    lcnt:=AStream.ReadWord
+  else
+  //!!!!!!!!!!!!!!!!!!!!!!!
+  begin
+    lcnt:=AStream.ReadByte;
+    AStream.ReadByte;
+  end;
   SetLength(FStats,lcnt);
   if lcnt>0 then
     AStream.Read(FStats[0],lcnt*SizeOf(TTL2Stat));
@@ -563,7 +570,8 @@ begin
     // 64 bytes
     i1:=AStream.ReadDword;              // 4 booleans, not mask (0,1,1,1) (1,0,1,1)
     i2:=AStream.ReadDword;              // 1 on pots, 0 on shirt
-    FLevel       :=AStream.ReadDWord;   // at least, looks like
+    FLevel:=integer(AStream.ReadDWord);   // at least, looks like
+    if FLevel<0 then DbgLn('effect level='+IntToStr(FLevel)+' at '+HexStr(AStream.Position,8));
     i3:=AStream.ReadQWord;              // -1
     i4:=AStream.ReadDword;              // 100 usually
     i5:=AStream.ReadDword;              // pots=100, shirt =0

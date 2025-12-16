@@ -1,4 +1,18 @@
-﻿{TODO: make public preview list with autochanging, not rebuild at moment}
+﻿{
+  Unit for preview processing
+}
+{TODO: (Check!) Delete several files = set right selection (clear+set on current)}
+{TODO: Soundpreview: replace Start and Stop buttons by one (move caption text to resourcestrings}
+{TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
+{TODO: 3d view, change texture by choosing file}
+{TODO: preview bytes values as different types}
+{TODO: make dump text/bytes search}
+{TODO: change dump text area encoding}
+{TODO: preview as dump by choice?}
+{TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
+{TODO: save as for editor}
+
+{TODO: make public preview list with autochanging, not rebuild at moment}
 {TODO: notify if preview list was changed (new added, old closed)}
 unit rgPreview;
 
@@ -12,9 +26,9 @@ uses
 
 
 function MakePreview(var actrl:TRGController; aidx:integer):TForm;
-procedure ClosePreviews;
-function GetPreviewList():TObjectDynArray;
-procedure PreviewFont(const afont:TFont);
+procedure ClosePreviews (actrl:PRGController=nil);
+function  GetPreviewList(actrl:PRGController=nil):TObjectDynArray;
+procedure SetPreviewFont(const afont:TFont);
 
 
 implementation
@@ -42,7 +56,7 @@ resourcestring
   rsOffset          = 'Offset';
   rsTime            = 'Time';
 
-procedure PreviewFont(const afont:TFont);
+procedure SetPreviewFont(const afont:TFont);
 begin
   if Viewer=nil then Viewer:=TViewer.Create(nil{Application});
   Viewer.Font.Assign(afont);
@@ -155,7 +169,7 @@ begin
     end;
 end;
 
-procedure ClosePreviews;
+procedure ClosePreviews(actrl:PRGController=nil);
 var
   i:integer;
 begin
@@ -163,11 +177,12 @@ begin
     for i:=Viewer.ComponentCount-1 downto 0 do
     begin
       if Viewer.Components[i] is TBaseViewer then
-        (Viewer.Components[i] as TForm).Free;
+        if (actrl=nil) or (TBaseViewer(Viewer.Components[i]).ctrl=actrl) then
+          (Viewer.Components[i] as TForm).Free;
     end;
 end;
 
-function GetPreviewList():TObjectDynArray;
+function GetPreviewList(actrl:PRGController=nil):TObjectDynArray;
 var
   i,lcnt:integer;
 begin
@@ -179,7 +194,8 @@ begin
     for i:=Viewer.ComponentCount-1 downto 0 do
     begin
       if Viewer.Components[i] is TBaseViewer then
-        inc(lcnt);
+        if (actrl=nil) or (TBaseViewer(Viewer.Components[i]).ctrl=actrl) then
+          inc(lcnt);
     end;
     if lcnt>0 then
     begin
@@ -187,10 +203,11 @@ begin
       for i:=Viewer.ComponentCount-1 downto 0 do
       begin
         if Viewer.Components[i] is TBaseViewer then
-        begin
-          dec(lcnt);
-          result[lcnt]:=Viewer.Components[i];
-        end;
+          if (actrl=nil) or (TBaseViewer(Viewer.Components[i]).ctrl=actrl) then
+          begin
+            dec(lcnt);
+            result[lcnt]:=Viewer.Components[i];
+          end;
       end;
     end;
   end;

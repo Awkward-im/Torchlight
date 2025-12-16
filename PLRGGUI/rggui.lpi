@@ -25,7 +25,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -66,11 +66,44 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Linux">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="rggui"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
             <Optimizations>
               <OptimizationLevel Value="3"/>
             </Optimizations>
@@ -163,6 +196,22 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGPlugins"/>
       </Unit>
+      <Unit>
+        <Filename Value="gui.panels\fmpanel.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="PanelForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmPanel"/>
+      </Unit>
+      <Unit>
+        <Filename Value="gui.panels\fmguipanel.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="RGGUI2Form"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmGUIPanel"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -173,7 +222,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

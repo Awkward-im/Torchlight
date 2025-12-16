@@ -731,7 +731,7 @@ end;
 
 function TRGSubMesh.GetFace(idx:integer):TIntVector3;
 begin
-  FillChar(result,sizeOf(result),0);
+//  FillChar(result,sizeOf(result),0);
   if (idx>=0) and (idx<FFaceCount) then
     result:=FFaces[idx]
   else

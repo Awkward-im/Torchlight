@@ -1,0 +1,178 @@
+object PanelForm: TPanelForm
+  Left = 315
+  Height = 567
+  Top = 250
+  Width = 499
+  ActiveControl = lvList
+  ClientHeight = 567
+  ClientWidth = 499
+  LCLVersion = '4.99.0.0'
+  object pnlTop: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 499
+    Align = alTop
+    ClientHeight = 50
+    ClientWidth = 499
+    TabOrder = 1
+    object cbContent: TComboBox
+      Left = 4
+      Height = 23
+      Top = 1
+      Width = 120
+      ItemHeight = 15
+      Sorted = True
+      Style = csDropDownList
+      TabOrder = 0
+      OnChange = cbContentChange
+    end
+    object lblPath: TLabel
+      Left = 4
+      Height = 1
+      Top = 28
+      Width = 1
+    end
+    object sbType: TSpeedButton
+      Left = 136
+      Height = 22
+      Hint = 'Show/hide Category (Type) column'
+      Top = 2
+      Width = 23
+      AllowAllUp = True
+      Caption = 'C'
+      GroupIndex = 1
+      OnClick = sbColumnsClick
+    end
+    object sbTime: TSpeedButton
+      Left = 192
+      Height = 22
+      Hint = 'Show/hide Time column'
+      Top = 2
+      Width = 23
+      AllowAllUp = True
+      Caption = 'T'
+      GroupIndex = 2
+      OnClick = sbColumnsClick
+    end
+    object sbSize: TSpeedButton
+      Left = 164
+      Height = 22
+      Hint = 'Show/hide Size column'
+      Top = 2
+      Width = 23
+      AllowAllUp = True
+      Caption = 'S'
+      GroupIndex = 3
+      OnClick = sbColumnsClick
+    end
+    object sbAttr: TSpeedButton
+      Left = 224
+      Height = 22
+      Hint = 'Show/hide State column'
+      Top = 2
+      Width = 23
+      AllowAllUp = True
+      Caption = 'A'
+      GroupIndex = 4
+      OnClick = sbColumnsClick
+    end
+    object sbCollapse: TSpeedButton
+      Left = 444
+      Height = 22
+      Hint = 'Collapse tree'
+      Top = 2
+      Width = 23
+      Anchors = [akTop, akRight]
+      Images = RGGUI2Form.ilMain16
+      ImageIndex = 5
+      OnClick = sbCollapseClick
+    end
+    object sbTree: TSpeedButton
+      Left = 471
+      Height = 22
+      Hint = 'Show as Tree'
+      Top = 2
+      Width = 23
+      AllowAllUp = True
+      Anchors = [akTop, akRight]
+      GroupIndex = 5
+      Images = RGGUI2Form.ilMain16
+      ImageIndex = 9
+      OnClick = sbTreeClick
+    end
+  end
+  object lvList: TListView
+    Left = 0
+    Height = 517
+    Top = 50
+    Width = 499
+    Align = alClient
+    AutoSortIndicator = True
+    Columns = <    
+      item
+        Caption = 'Name'
+        Width = 144
+      end    
+      item
+        Caption = 'Ext'
+        Width = 80
+      end    
+      item
+        Alignment = taCenter
+        Caption = 'Type'
+        Width = 80
+      end    
+      item
+        Alignment = taRightJustify
+        Caption = 'Size'
+        Width = 80
+      end    
+      item
+        Alignment = taRightJustify
+        Caption = 'Time'
+        Width = 114
+      end    
+      item
+        Alignment = taCenter
+        Caption = 'Attr'
+        Width = 40
+      end>
+    GridLines = True
+    HideSelection = False
+    ParentShowHint = False
+    ReadOnly = True
+    RowSelect = True
+    ShowHint = True
+    SortColumn = 1
+    SortType = stText
+    TabOrder = 0
+    ViewStyle = vsReport
+    OnCompare = lvListCompare
+    OnCustomDrawItem = lvListCustomDrawItem
+    OnDblClick = DoListDblClick
+    OnEnter = SetPanelActive
+    OnKeyDown = DoListKeyDown
+    OnSelectItem = lvListSelectItem
+    OnShowHint = lvListShowHint
+  end
+  object tvTree: TTreeView
+    Left = 0
+    Height = 517
+    Top = 50
+    Width = 499
+    Align = alClient
+    AutoExpand = True
+    HideSelection = False
+    ReadOnly = True
+    RowSelect = True
+    ScrollBars = ssAutoBoth
+    SortType = stText
+    TabOrder = 2
+    Visible = False
+    Options = [tvoAutoExpand, tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    OnDblClick = tvTreeDblClick
+    OnKeyDown = DoTreeKeyDown
+    OnSelectionChanged = tvTreeSelectionChanged
+  end
+end

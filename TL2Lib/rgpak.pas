@@ -638,7 +638,7 @@ begin
   if aparse<>piNoParse then
   begin
     result:=GetCommonInfo(aname);
-    
+
     if (aparse=piFullParse) and (FSize>0) then
       result:=GetSizesInfo();
 

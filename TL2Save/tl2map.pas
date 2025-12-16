@@ -285,10 +285,14 @@ begin
   //----- Units: Mobs and NPCs -----
 
   lcnt:=AStream.ReadDWord;
+  DbgLn(IntToStr(lcnt)+' Mobs and NPCs on map');
   SetLength(FMobInfos,lcnt);
   for i:=0 to lcnt-1 do
   begin
+    DbgLn('Mob #'+IntToStr(i));
     FMobInfos[i]:=ReadCharData(AStream, aVersion,ctMob);
+    if FMobInfos[i]=nil then
+//      Halt; //!!!!!!!!!!!!!!!!!!!!!!!!!
   end;
 
   //----- Props (Items) -----

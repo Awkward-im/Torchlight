@@ -12,6 +12,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, lazcontrols, lazopenglcontext,
   fmGUI in 'GUI.Default\fmGUI.pas',
+  fmGUIPanel in 'GUI.Panels\fmGUIPanel.pas',
   rggui.core
   { you can add units after this };
 
@@ -21,14 +22,15 @@ begin
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   {$PUSH}{$WARN 5044 OFF}
-  Application.MainFormOnTaskbar:=True;
+//  Application.MainFormOnTaskbar:=True;
   {$POP}
   Application.Initialize;
 
   LoadCoreSettings;
-//  if cfgGUIPlugin='' then
-    Application.CreateForm(TRGGUIForm, RGGUIForm);
-
+  if cfgGUIPlugin='' then
+    Application.CreateForm(TRGGUIForm, RGGUIForm)
+  else
+    Application.CreateForm(TRGGUI2Form, RGGUI2Form);
   Application.Run;
 end.
 
