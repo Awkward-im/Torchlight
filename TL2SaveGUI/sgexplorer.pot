@@ -148,6 +148,10 @@ msgstr ""
 msgid "Is Disabled"
 msgstr ""
 
+#: formitems.rssurefordel
+msgid "Are you sure to delete item?"
+msgstr ""
+
 #: formkeybinding.rsitem
 msgid "item"
 msgstr ""
@@ -998,6 +1002,10 @@ msgstr ""
 msgid "?Visible"
 msgstr ""
 
+#: tfmitem.ednamebyid.hint
+msgid "Name by ID"
+msgstr ""
+
 #: tfmitem.gbcoords.caption
 msgctxt "tfmitem.gbcoords.caption"
 msgid "Coordinates"
@@ -1034,6 +1042,11 @@ msgstr ""
 
 #: tfmitem.lbliconname.caption
 msgid "Icon name"
+msgstr ""
+
+#: tfmitem.lblid.caption
+msgctxt "tfmitem.lblid.caption"
+msgid "ID"
 msgstr ""
 
 #: tfmitem.lbllevel.caption
@@ -1203,6 +1216,14 @@ msgctxt "tfmitems.lvfeitemlist.texthint"
 msgid "(filter)"
 msgstr ""
 
+#: tfmitems.sbadd.hint
+msgid "Add new item"
+msgstr ""
+
+#: tfmitems.sbdelete.hint
+msgid "Delete item"
+msgstr ""
+
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
 msgid "Key"
 msgstr ""
@@ -1218,6 +1239,20 @@ msgstr ""
 #: tfmkeybinding.sgkeybinding.columns[3].title.caption
 msgctxt "tfmkeybinding.sgkeybinding.columns[3].title.caption"
 msgid "Mod"
+msgstr ""
+
+#: tfmlogform.bbclear.caption
+msgctxt "tfmlogform.bbclear.caption"
+msgid "&Clear"
+msgstr ""
+
+#: tfmlogform.bbsave.caption
+msgctxt "tfmlogform.bbsave.caption"
+msgid "Save"
+msgstr ""
+
+#: tfmlogform.bbsave.hint
+msgid "Save log to file"
 msgstr ""
 
 #: tfmmap.btntriggerexport.caption
@@ -1367,6 +1402,7 @@ msgid "Path"
 msgstr ""
 
 #: tfmmovies.sgmovies.columns[3].title.caption
+msgctxt "tfmmovies.sgmovies.columns[3].title.caption"
 msgid "ID"
 msgstr ""
 
@@ -1408,6 +1444,7 @@ msgid "Id"
 msgstr ""
 
 #: tfmrecipes.bbclear.caption
+msgctxt "tfmrecipes.bbclear.caption"
 msgid "&Clear"
 msgstr ""
 
@@ -1485,6 +1522,7 @@ msgid "Rescan"
 msgstr ""
 
 #: tfmsettings.bbsave.caption
+msgctxt "tfmsettings.bbsave.caption"
 msgid "Save"
 msgstr ""
 
@@ -1993,5 +2031,9 @@ msgstr ""
 
 #: tlsgstatistic.rsunknownstat
 msgid "Unknown Stat"
+msgstr ""
+
+#: unitlogform.rscantsave
+msgid "Can't save log file"
 msgstr ""
 

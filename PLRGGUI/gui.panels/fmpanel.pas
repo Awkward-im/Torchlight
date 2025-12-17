@@ -15,6 +15,7 @@ type
 
   TPanelForm = class(TForm)
     cbContent: TComboBox;
+    ilPanel: TImageList;
     lblPath: TLabel;
     lvList: TListView;
     pnlTop: TPanel;
@@ -122,7 +123,7 @@ var
 begin
   if Ctrl<>actrl then
   begin
-    lidx:=GetCtrlIndex(Ctrl);
+    lidx:=GetCtrlIndex(actrl);
     if lidx<0 then
       Ctrl:=nil
     else

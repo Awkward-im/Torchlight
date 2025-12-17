@@ -159,6 +159,10 @@ msgstr "Для доспехов"
 msgid "Is Disabled"
 msgstr "Запрещён"
 
+#: formitems.rssurefordel
+msgid "Are you sure to delete item?"
+msgstr ""
+
 #: formkeybinding.rsitem
 msgid "item"
 msgstr "предмет"
@@ -1019,6 +1023,10 @@ msgstr "Распознано"
 msgid "?Visible"
 msgstr "?Видимо"
 
+#: tfmitem.ednamebyid.hint
+msgid "Name by ID"
+msgstr ""
+
 #: tfmitem.gbcoords.caption
 msgctxt "tfmitem.gbcoords.caption"
 msgid "Coordinates"
@@ -1056,6 +1064,11 @@ msgstr "Кол-во зачарований"
 #: tfmitem.lbliconname.caption
 msgid "Icon name"
 msgstr "Имя иконки"
+
+#: tfmitem.lblid.caption
+msgctxt "tfmitem.lblid.caption"
+msgid "ID"
+msgstr ""
 
 #: tfmitem.lbllevel.caption
 msgctxt "tfmitem.lbllevel.caption"
@@ -1224,6 +1237,14 @@ msgctxt "tfmitems.lvfeitemlist.texthint"
 msgid "(filter)"
 msgstr "(фильтр)"
 
+#: tfmitems.sbadd.hint
+msgid "Add new item"
+msgstr ""
+
+#: tfmitems.sbdelete.hint
+msgid "Delete item"
+msgstr ""
+
 #: tfmkeybinding.sgkeybinding.columns[0].title.caption
 msgid "Key"
 msgstr "Клавиша"
@@ -1240,6 +1261,22 @@ msgstr "Привязка"
 msgctxt "tfmkeybinding.sgkeybinding.columns[3].title.caption"
 msgid "Mod"
 msgstr "Мод"
+
+#: tfmlogform.bbclear.caption
+#, fuzzy
+msgctxt "tfmlogform.bbclear.caption"
+msgid "&Clear"
+msgstr "Очистить"
+
+#: tfmlogform.bbsave.caption
+#, fuzzy
+msgctxt "tfmlogform.bbsave.caption"
+msgid "Save"
+msgstr "Сохранить"
+
+#: tfmlogform.bbsave.hint
+msgid "Save log to file"
+msgstr ""
 
 #: tfmmap.btntriggerexport.caption
 msgid "E"
@@ -1388,6 +1425,7 @@ msgid "Path"
 msgstr "Путь"
 
 #: tfmmovies.sgmovies.columns[3].title.caption
+msgctxt "tfmmovies.sgmovies.columns[3].title.caption"
 msgid "ID"
 msgstr ""
 
@@ -1429,6 +1467,7 @@ msgid "Id"
 msgstr ""
 
 #: tfmrecipes.bbclear.caption
+msgctxt "tfmrecipes.bbclear.caption"
 msgid "&Clear"
 msgstr "Очистить"
 
@@ -1506,6 +1545,7 @@ msgid "Rescan"
 msgstr "Скан."
 
 #: tfmsettings.bbsave.caption
+msgctxt "tfmsettings.bbsave.caption"
 msgid "Save"
 msgstr "Сохранить"
 
@@ -2015,3 +2055,8 @@ msgstr "Осмотрено тайников"
 #: tlsgstatistic.rsunknownstat
 msgid "Unknown Stat"
 msgstr "Неизвестная статистика"
+
+#: unitlogform.rscantsave
+msgid "Can't save log file"
+msgstr ""
+

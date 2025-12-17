@@ -275,7 +275,7 @@ begin
   llevel:=FChar.Level;
   for i:=0 to High(FTiers) do
   begin
-    if FSkills[aidx].graph=FTiers[i].name then
+    if FSkills[aidx].tier=FTiers[i].name then
     begin
       if (aval<Length(FTiers[i].levels)) and
          (FTiers[i].levels[aval]>llevel) then
@@ -410,8 +410,8 @@ begin
     begin
       // skip TL2 without TIER
       if lshowall or (
-         (FSkills[i].graph<>'') and
-         (FSkills[i].graph[1]<>',')) then
+         (FSkills[i].tier<>'') and
+         (FSkills[i].tier[1]<>',')) then
       begin
         sgSkills.Objects[0,j]:=TObject(IntPtr(i));
 
@@ -490,7 +490,10 @@ begin
 
       for j:=0 to High(alist) do
       begin
-        if alist[j].id=FSkills[idx].id then
+        // skip possible TL1 spells
+        if j>High(FSkills) then break;
+
+        if ((rgdb.GameVersion=verTL1) and (j=idx)) or (alist[j].id=FSkills[idx].id) then
         begin
           // calculate used skillpoints (counting initially learned too)
           dec(FPoints,alist[j].value-FSkills[idx].learn);

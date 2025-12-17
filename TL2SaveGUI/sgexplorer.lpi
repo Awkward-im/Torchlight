@@ -27,7 +27,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons"/>
+            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -64,7 +64,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <Libraries Value="D:\SVN\UpLazTrunk\cross\lib\x86_64-linux\"/>
-            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons"/>
+            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -92,7 +92,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons"/>
+            <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons;..\TL2Lib\forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -372,6 +372,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TLSGTrigger"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmLogForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="unitLogForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -382,7 +390,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
-      <OtherUnitFiles Value="..\TL2Save;..\TL2Lib;..\TL2DBScan;..\RGDB;..\Addons"/>
+      <OtherUnitFiles Value="..\TL2Save;..\TL2Lib;..\TL2DBScan;..\RGDB;..\Addons;..\TL2Lib\forms"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

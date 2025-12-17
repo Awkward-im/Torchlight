@@ -6,6 +6,7 @@ object fmItem: TfmItem
   BorderStyle = bsNone
   ClientHeight = 478
   ClientWidth = 619
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object pcItemInfo: TPageControl
     Left = 0
@@ -80,7 +81,8 @@ object fmItem: TfmItem
       object edNameById: TEdit
         Left = 3
         Height = 23
-        Top = 50
+        Hint = 'Name by ID'
+        Top = 48
         Width = 233
         ReadOnly = True
         TabOrder = 2
@@ -387,6 +389,7 @@ object fmItem: TfmItem
         Height = 23
         Top = 308
         Width = 247
+        Alignment = taRightJustify
         Anchors = [akRight, akBottom]
         TabOrder = 14
       end
@@ -405,6 +408,13 @@ object fmItem: TfmItem
         Width = 56
         Anchors = [akRight, akBottom]
         Caption = 'Icon name'
+      end
+      object lblID: TLabel
+        Left = 448
+        Height = 15
+        Top = 55
+        Width = 11
+        Caption = 'ID'
       end
     end
     object tsItemInfo: TTabSheet

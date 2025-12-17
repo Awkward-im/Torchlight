@@ -1,3 +1,4 @@
+{TODO: Search case-NONsensitive texture if not found}
 {TODO: Disable/hide Submesh button if one submesh only}
 {TODO: ui for choosing texture for mesh/submesh}
 {TODO: statusbar with? offset? corner? visible submesh count?}
@@ -457,8 +458,8 @@ begin
   begin
     TSubMeshOptions(FSubOpt)[i].show:=true;
     ls:=Mesh.SubMesh[i+1]^.Name;
-    if ls='' then ls:='Mesh '+IntToStr(i+1)+
-       ' ('+Mesh.FMaterials[Mesh.SubMesh[i+1]^.Material].name+')';
+    if ls='' then ls:='Mesh '+IntToStr(i+1);
+    ls:=ls+' ('+Mesh.FMaterials[Mesh.SubMesh[i+1]^.Material].name+')';
     clbSubMesh.Items.Add(ls);
     clbSubMesh.Checked[i]:=true;//All(cbChecked);
   end;

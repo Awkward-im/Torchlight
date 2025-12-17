@@ -2,8 +2,9 @@
 
 function RGDBGetUnitTheme(const aid:TRGID):string;
 
-function RGDBGetQuest(const aid:TRGID; out amods:string; out aname:string):string; overload;
-function RGDBGetQuest(const aid:TRGID; out amods:string):string; overload;
+function RGDBGetQuest(const aid:TRGID   ; out amods:string; out aname:string):string; overload;
+function RGDBGetQuest(const aname:string; out amods:string; out aid:TRGID):string; overload;
+function RGDBGetQuest(const aid:TRGID   ; out amods:string):string; overload;
 function RGDBGetQuest(const aid:TRGID                  ):string; overload;
 
 function RGDBGetMob    (const aid:TRGID; out amods:string):string; overload;
@@ -35,6 +36,28 @@ end;
 function RGDBGetQuest(const aid:TRGID; out amods:string; out aname:string):string;
 begin
   result:=GetById(aid,'quests','',amods,aname);
+end;
+
+function RGDBGetQuest(const aname:string; out amods:string; out aid:TRGID):string;
+var
+  lmod:Int64;
+  lSQL:string;
+  vm:pointer;
+begin
+  result:=GetByName(aname,'quests',aid);
+
+  lmod:=0;
+  Str(aid,lSQL);
+  lSQL:='SELECT modid FROM quests WHERE id='+lSQL;
+  if sqlite3_prepare_v2(db, PAnsiChar(lSQL),-1, @vm, nil)=SQLITE_OK then
+  begin
+    if sqlite3_step(vm)=SQLITE_ROW then
+    begin
+      lmod:=sqlite3_column_int64(vm,0);
+      Str(lmod,amods);
+    end;
+    sqlite3_finalize(vm);
+  end;
 end;
 
 function RGDBGetQuest(const aid:TRGID; out amods:string):string;

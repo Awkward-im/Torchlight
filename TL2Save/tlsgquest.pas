@@ -23,6 +23,7 @@ uses
 
 
 type
+  PTLQuestData = ^TTLQuestData;
   TTLQuestData = record
     id  :TRGID;                        // TL2
     name:string;                       // TL1
@@ -175,13 +176,13 @@ var
 begin
   if aVersion>=tlsaveTL2Minimal then
     AStream.WriteDWord(DataSize);
-
+{
   if not Changed then
   begin
     SaveBlock(AStream);
     exit;
   end;
-
+}
   DataOffset:=AStream.Position;
 
   //--- Finished quests

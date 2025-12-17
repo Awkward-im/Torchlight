@@ -125,13 +125,12 @@ var
   lstrm:TMemoryStream;
   lver:byte;
 begin
-
   ldlg:=TOpenDialog.Create(nil);
   try
     ldlg.FileName  :='';
     ldlg.DefaultExt:=FExt;
     ldlg.Title     :=rsImportData;
-    ldlg.Options   :=ldlg.Options;
+    ldlg.Options   :=ldlg.Options+[ofFileMustExist];
     if ldlg.Execute then
     begin
       lstrm:=TMemoryStream.Create;

@@ -227,7 +227,7 @@ type
 
     property Spells[idx:integer ]:TTL2Spell  read GetSpell write SetSpell;
     property Skills:TL2IdValList read FSkills  write FSkills;
-    property Items :TTLItemList  read FItems  {write FItems};
+    property Items :TTLItemList  read FItems  write FItems;
   end;
 type
   TTLCharArray = array of TTLCharacter;
@@ -527,6 +527,9 @@ begin
     SetLength(FSkills,lcnt);
     for i:=0 to lcnt-1 do
       FSkills[i].value:=AStream.ReadDWord;
+    // looks like it can have 0..4 more for Spells
+    // where is level, where is presence - idk
+    // looks like doubles
   end;
 
   // Spell list

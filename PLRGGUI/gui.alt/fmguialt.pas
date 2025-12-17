@@ -1,4 +1,4 @@
-unit fmGUIPanel;
+unit fmGUIAlt;
 
 {$mode ObjFPC}{$H+}
 

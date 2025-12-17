@@ -23,6 +23,7 @@ type
 type
   TTLItem = class;
   TTLItemList = array of TTLItem;
+  PTLItemList = ^TTLItemList;
 type
   TTLItem = class(TLActiveClass)
   private

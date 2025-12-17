@@ -205,12 +205,12 @@
         <UnitName Value="fmPanel"/>
       </Unit>
       <Unit>
-        <Filename Value="gui.panels\fmguipanel.pas"/>
+        <Filename Value="gui.alt\fmguialt.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="RGGUI2Form"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmGUIPanel"/>
+        <UnitName Value="fmGUIAlt"/>
       </Unit>
     </Units>
   </ProjectOptions>

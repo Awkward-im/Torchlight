@@ -1,3 +1,5 @@
+{NOTE: Right now Add and Delete works with FChar<>nil only. Reason - FItems copy-on-write dynamic array}
+{TODO: signal about changes}
 {TODO: make different icons for activated and not activated props}
 {TODO: make icon for quest items. Check QuestID? or database "quest" field?}
 unit formItems;
@@ -8,7 +10,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, ListViewFilterEdit, tlsave, tlsgitem, tlsgchar, formItem;
+  ComCtrls, Buttons, ListViewFilterEdit, tlsave, tlsgitem, tlsgchar, formItem;
 
 type
 
@@ -18,25 +20,34 @@ type
     cbEquipped: TCheckBox;
     lvfeItemList: TListViewFilterEdit;
     lvItemList: TListView;
+    pnlButtons: TPanel;
     pnlItem: TPanel;
     pnlLeft: TPanel;
+    sbAdd: TSpeedButton;
+    sbDelete: TSpeedButton;
     Splitter: TSplitter;
 
     procedure cbEquippedChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure lvfeItemListAfterFilter(Sender: TObject);
     procedure lvItemListChange    (Sender: TObject; Item: TListItem; Change: TItemChange);
+    procedure lvItemListKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lvItemListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    procedure sbAddClick(Sender: TObject);
+    procedure sbDeleteClick(Sender: TObject);
   private
-    FItem:TfmItem;
+    FItem :TfmItem;
     FSGame:TTLSaveFile;
-    FChar:TTLCharacter;
+    FChar :TTLCharacter;
     FItems:TTLItemList;
+    askfordel:boolean;
+
     procedure FillItemList();
     function GetItemIcon(idx: integer): integer;
 
   public
-    procedure FillInfo(aSGame:TTLSaveFile; aItems:TTLItemList; aChar:TTLCharacter=nil);
+    procedure FillInfo(aSGame: TTLSaveFile; aItems: TTLItemList; aChar: TTLCharacter
+      =nil);
 
   end;
 
@@ -45,6 +56,7 @@ implementation
 {$R *.lfm}
 
 uses
+  LCLType,
   formButtons,
   rgglobal;
 
@@ -55,6 +67,9 @@ const
   imgUsable       = 3;
   imgModded       = 4;
   imgUnknown      = 6;
+
+resourcestring
+  rsSureForDel = 'Are you sure to delete item?';
 
 procedure TfmItems.lvItemListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 var
@@ -71,10 +86,43 @@ begin
     FItem.Visible:=true;
 
     fmButtons.btnExport.Enabled:=true;
+    fmButtons.btnImport.Enabled:=true;
     fmButtons.Ext   :='.itm';
     fmButtons.Name  :='item ['+IntToStr(Item.Index)+'] '+litem.Name;
     fmButtons.SClass:=litem;
   end;
+end;
+
+procedure TfmItems.sbAddClick(Sender: TObject);
+begin
+  SetLength(FItems,Length(FItems)+1);
+  FItems[High(FItems)]:=TTLItem.Create;
+  FillItemList();
+end;
+
+procedure TfmItems.sbDeleteClick(Sender: TObject);
+var
+  lidx:integer;
+begin
+  if lvItemList.Items.Count=0 then exit;
+  if FChar=nil then exit;
+
+  if askfordel then
+  begin
+    case MessageDlg(rsSureForDel,mtInformation,[mbNoToAll,mbNo,mbYes,mbYesToAll],0) of
+      mrNo      : begin exit; end;
+      mrYes     : begin  end;
+      mrNoToAll : begin askfordel:=false; exit; end;
+      mrYesToAll: begin askfordel:=false; end;
+    end;
+  end;
+
+  lidx:=UIntPtr(lvItemList.Items[lvItemList.ItemIndex].Data);
+  FItems[lidx].Free;
+  Delete(FItems,lidx,1);
+  FChar.Items:=FItems;
+  FChar.Changed:=true;
+  FillItemList();
 end;
 
 procedure TfmItems.FormCreate(Sender: TObject);
@@ -82,6 +130,8 @@ begin
   FItem:=TfmItem.Create(Self);
   FItem.Parent:=pnlItem;
   FItem.Align :=alClient;
+
+  askfordel:=true;
 end;
 
 procedure TfmItems.lvfeItemListAfterFilter(Sender: TObject);
@@ -97,7 +147,7 @@ begin
     lcnt:=0;
 
   lvItemList.Columns[0].Caption:=IntToStr(lcnt)+' / '+
-     IntToStr(lvItemList.Items.Count)+' ['+IntToStr(Length(FItems))+']';
+    IntToStr(lvItemList.Items.Count)+' ['+IntToStr(Length(FItems))+']';
 end;
 
 procedure TfmItems.cbEquippedChange(Sender: TObject);
@@ -124,6 +174,21 @@ begin
   if Change=ctText then
   begin
     Item.ImageIndex:=GetItemIcon(UIntPtr(Item.Data));
+  end;
+end;
+
+procedure TfmItems.lvItemListKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key=VK_DELETE then
+  begin
+    Key:=0;
+    if sbDelete.Enabled then
+      sbDeleteClick(sbDelete);
+  end;
+  if Key=VK_INSERT then
+  begin
+    Key:=0;
+    sbAddClick(sbAdd);
   end;
 end;
 
@@ -159,7 +224,12 @@ begin
       lvItemList.ItemIndex:=0;
   end
   else
+  begin
     lvItemList.Columns[0].Caption:='0 / 0 [0]';
+    FItem.Visible:=false;
+    fmButtons.SClass:=nil;
+  end;
+  sbDelete.Enabled:=(Length(FItems)>0) and (FChar<>nil);
 
   lvfeItemList.FilteredListView:=lvItemList;
   lvfeItemList.SortData:=true;

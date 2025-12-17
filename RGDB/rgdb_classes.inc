@@ -179,7 +179,7 @@ end;
 
 function RGDBGetClassInfo(const aid:TRGID; out aicon:string; out astr, adex, aint, avit:integer):string;
 var
-  lid:TRGID;
+//  lid:TRGID;
   lSQL:string;
   vm:pointer;
   i:integer;

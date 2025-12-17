@@ -672,12 +672,12 @@ begin
       lpos:=lsout.Position;
 {data}
       FStream.Position:=FDataStart;
-      lsout.CopyFrom(FStream,FStream.Size-FDataStart-4);
+      lsout.CopyFrom(FStream,FStream.Size-FDataStart{-4});
 {}
       // Modern only
       if aencoded and (FVersion>=tlsaveTL2Encoded) then
         Encode(lsout.Memory+lpos,
-               lsout.Size  -lpos-4);
+               lsout.Size  -lpos{-4});
 
       lsize:=lsout.Size+4;
       lsout.Write(lsize,4);

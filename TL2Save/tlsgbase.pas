@@ -96,6 +96,7 @@ procedure TLSGBaseClass.SaveBlock(AStream:TStream);
 begin
   if FData<>nil then
   begin
+    FDataOffset:=AStream.Position;
     AStream.Write(FData^,FDataSize);
   end;
 end;

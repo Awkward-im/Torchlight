@@ -33,6 +33,7 @@ implementation
 
 uses
   formSettings,
+  tlsgquest,
   rgdb;
 
 procedure TfmQuests.sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
@@ -73,6 +74,7 @@ end;
 
 procedure TfmQuests.FillInfo(aSGame:TTLSaveFile);
 var
+  lquest:PTLQuestData;
   lname:string;
   lmod:string;
   i,j:integer;
@@ -106,11 +108,15 @@ begin
     begin
       sgQuests.Objects[0,j]:=TObject(IntPtr(i));
 
-      sgQuests.Cells[0,j]:=RGDBGetQuest(aSGame.Quests.QuestsUnDone[i].id,lmod,lname);
+      lquest:=@aSGame.Quests.QuestsUnDone[i];
+      if lquest^.id=0 then
+        sgQuests.Cells[0,j]:=RGDBGetQuest(lquest^.name, lmod, lquest^.id)
+      else
+        sgQuests.Cells[0,j]:=RGDBGetQuest(lquest^.id, lmod, lquest^.name);
       sgQuests.Cells[1,j]:='0';
-      sgQuests.Cells[2,j]:=lname;
+      sgQuests.Cells[2,j]:=lquest^.name;
       sgQuests.Cells[3,j]:=RGDBGetMod(lmod);
-      sgQuests.Cells[4,j]:=TextId(aSGame.Quests.QuestsUnDone[i].id);
+      sgQuests.Cells[4,j]:=TextId(lquest^.id);
       inc(j);
     end;
   end;

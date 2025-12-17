@@ -133,4 +133,5 @@ begin
 
     FLastBlock.SaveToStream(FStream, FVersion);
   end;
+  FStream.Size:=FStream.Position;
 end;

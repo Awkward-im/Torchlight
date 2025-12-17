@@ -28,6 +28,7 @@ type
     edUnkn2_4: TEdit;
     edUnkn4: TEdit;
     edUnkn5: TEdit;
+    lblID: TLabel;
     lblUnkn1_1: TLabel;
     lblQuestID: TLabel;
     lblUnkn1_2: TLabel;
