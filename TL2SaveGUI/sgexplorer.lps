@@ -102,7 +102,7 @@
         <Filename Value="sgexplorer.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="54" Y="13"/>
+        <CursorPos X="16" Y="24"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -112,9 +112,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSaveGame"/>
-        <TopLine Value="667"/>
-        <CursorPos X="27" Y="703"/>
-        <FoldState Value=" T4604 TLmZ03011 T7GG+ T8i72Q]EMn60]73kN0O3 pjBk20421114 PjAlX0 T6kO016 T0kS2I4112429313126 pkYtAG915"/>
+        <TopLine Value="707"/>
+        <CursorPos Y="576"/>
+        <FoldState Value=" T4604 TLmZ03011 T7GG+ T8i72Q]EMn60]73kN0O3 pjBk20421114 PjAlX0 T6kO016 T0kS2I411242[X4]3]Z7qAJj"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -126,7 +126,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formMovies"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="16"/>
         <TopLine Value="113"/>
         <CursorPos X="43" Y="138"/>
         <UsageCount Value="200"/>
@@ -179,9 +179,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formQuests"/>
-        <EditorIndex Value="16"/>
+        <EditorIndex Value="17"/>
         <CursorPos X="13" Y="36"/>
-        <FoldState Value=" T7EEC T8K221 T3c03j"/>
+        <FoldState Value=" T7EEC T8K221&apos;"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -207,10 +207,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formChar"/>
-        <EditorIndex Value="11"/>
-        <TopLine Value="1700"/>
-        <CursorPos X="42" Y="1668"/>
-        <FoldState Value=" T46031 TL/e04 T7GC~0 TMtS210X p0yV0]U8lP2;]83oB035 pjMjc0h4]9AkM067 piXjC0I213 plIoD0Z2]Kdjb0W[l40k90)[l42lL093 PiOj30 T6oN01U]FB/F]F0oR23C]vZjZ43D]9Yjg249]9XkQ63D[R4n123A[94lA4F]9j8o44N4 PMkP2c"/>
+        <EditorIndex Value="12"/>
+        <TopLine Value="1422"/>
+        <CursorPos X="21" Y="1012"/>
+        <FoldState Value=" T46031 TL\004]87GC~0 TMtS210X p0yY010L]Q8lP2;]83oB035 pjMjc0h4]9AkM067 piXjC0I111 pk7m00\212]VGmA0W[n40k90)[n42lL09]9lRm9031 Pi350 T6oN01D pQxS02F POsX]M0oR23C piZjZ43D]9Yjg249]9XkQ631672]DjUrH6B[M4eo14N5]+lG47"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -248,7 +248,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formUnits"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="15"/>
         <TopLine Value="59"/>
         <CursorPos X="28" Y="64"/>
         <UsageCount Value="201"/>
@@ -262,11 +262,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formSkills"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="12"/>
-        <TopLine Value="377"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="587"/>
         <CursorPos Y="489"/>
-        <FoldState Value=" T46031 TLpG09 T7FE! T8f2b]KMrXA106]A3jV0F5 piejO0D314 pjEkK0,213 Pj3lJ0 T6jW01D POrK]E0kJ2881945 PkdqI2^"/>
+        <FoldState Value=" T46031 TLpG09 T7FE! T8f2b]KMrXA]73jV0F5 piejO0D314 pjEkK0,2 PQjC0 T6jW01B PLpD]E0kJ2881945 PkdoD8{"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -280,7 +279,7 @@
         <UnitName Value="formItems"/>
         <EditorIndex Value="7"/>
         <CursorPos X="28" Y="2"/>
-        <FoldState Value=" T4A021 T7IDX T8b29]D3j905711 Pj4kD0 T6iV01013 T0kC23123 PXig2y"/>
+        <FoldState Value=" T4A021 T7IDX T8b29]D3j9057 PiZjD0 T6iV01013 T0kC23123 PXiW4{"/>
         <UsageCount Value="204"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -293,7 +292,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formButtons"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="38"/>
+        <TopLine Value="42"/>
         <CursorPos Y="122"/>
         <FoldState Value=" T46021 T3iG064 PiXiJ0)"/>
         <UsageCount Value="201"/>
@@ -320,9 +319,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formEffects"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="40"/>
-        <CursorPos Y="59"/>
+        <TopLine Value="158"/>
+        <CursorPos X="61" Y="173"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -387,7 +387,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="127"/>
         <CursorPos Y="130"/>
-        <UsageCount Value="154"/>
+        <UsageCount Value="155"/>
       </Unit>
       <Unit>
         <Filename Value="..\Addons\logging.pas"/>
@@ -397,7 +397,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="154"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsave.pas"/>
@@ -406,7 +406,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="662"/>
         <CursorPos X="27" Y="682"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgprepare.inc"/>
@@ -414,7 +414,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="105"/>
         <CursorPos Y="137"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgchar.pas"/>
@@ -423,7 +423,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="619"/>
         <CursorPos Y="633"/>
-        <UsageCount Value="148"/>
+        <UsageCount Value="149"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgbase.pas"/>
@@ -432,7 +432,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="102"/>
         <CursorPos X="3" Y="106"/>
-        <UsageCount Value="144"/>
+        <UsageCount Value="145"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgstatistic.pas"/>
@@ -442,7 +442,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgactive.pas"/>
@@ -452,17 +452,16 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TLSGCommon"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="143"/>
+        <EditorIndex Value="11"/>
+        <CursorPos X="10" Y="8"/>
+        <UsageCount Value="144"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgeffects.pas"/>
@@ -471,7 +470,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="481"/>
         <CursorPos Y="566"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgitem.pas"/>
@@ -480,15 +479,15 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="450"/>
         <CursorPos Y="471"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgparse.inc"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="125"/>
-        <CursorPos X="46" Y="143"/>
-        <UsageCount Value="143"/>
+        <TopLine Value="83"/>
+        <CursorPos X="27" Y="115"/>
+        <UsageCount Value="144"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -498,7 +497,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="142"/>
         <CursorPos Y="168"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Save\tlsgtrigger.pas"/>
@@ -508,7 +507,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
@@ -520,7 +519,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="64"/>
         <CursorPos Y="80"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\tl2db.pas"/>
@@ -740,7 +739,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="24"/>
         <CursorPos X="45" Y="35"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\SVN\UpLazTrunk\lazarus\lcl\interfaces\gtk3\gtk3cellrenderer.pas"/>
@@ -784,7 +783,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="239"/>
         <CursorPos Y="256"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\tl2db_recipes.inc"/>
@@ -813,7 +812,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="3105"/>
         <CursorPos X="13" Y="3119"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2DB\tl2db_skills.inc"/>
@@ -853,7 +852,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="26"/>
         <CursorPos X="31" Y="36"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgfs.pas"/>
@@ -861,7 +860,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1057"/>
         <CursorPos X="6" Y="1057"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\RGDB\rgdb_pets.inc"/>
@@ -893,7 +892,7 @@
       </Unit>
       <Unit>
         <Filename Value="..\RGDB\rgdb_skills.inc"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="14"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit>
@@ -950,14 +949,6 @@
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="399" TopLine="386"/>
-      </Position>
-      <Position>
-        <Filename Value="formskills.pas"/>
-        <Caret Line="398" TopLine="386"/>
-      </Position>
-      <Position>
         <Filename Value="..\RGDB\rgdb_skills.inc"/>
         <Caret Line="181" TopLine="167"/>
       </Position>
@@ -1004,10 +995,6 @@
       <Position>
         <Filename Value="..\RGDB\rgdb_skills.inc"/>
         <Caret Line="208" TopLine="200"/>
-      </Position>
-      <Position>
-        <Filename Value="..\RGDB\rgdb_skills.inc"/>
-        <Caret Line="210" TopLine="211"/>
       </Position>
       <Position>
         <Filename Value="..\RGDB\rgdb_skills.inc"/>
@@ -1067,6 +1054,18 @@
       <Position>
         <Filename Value="formskills.pas"/>
         <Caret Line="491" TopLine="474"/>
+      </Position>
+      <Position>
+        <Filename Value="formsavegame.pas"/>
+        <Caret Line="610" Column="3" TopLine="588"/>
+      </Position>
+      <Position>
+        <Filename Value="formchar.pas"/>
+        <Caret Line="1012" Column="21" TopLine="1422"/>
+      </Position>
+      <Position>
+        <Filename Value="formeffects.pas"/>
+        <Caret Line="173" TopLine="158"/>
       </Position>
     </JumpHistory>
     <RunParams>

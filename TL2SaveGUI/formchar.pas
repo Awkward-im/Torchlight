@@ -757,10 +757,11 @@ var
   lid:TRGID;
   i:integer;
 begin
+  lbNewClass.Items.Clear;
+
   lfeNewClass.Items.Clear;
   lfeNewClass.Text:='';
   lfeNewClass.SortData:=true;
-
   lfeNewClass.Items.BeginUpdate;
   lfeNewClass.Items.Capacity:=Length(FClasses); //??
 
@@ -1006,7 +1007,9 @@ begin
 
   RGDBGetPetList(FPets);
 
-  lfeNewClass.Clear;
+  lbNewClass.Items.Clear;
+
+  lfeNewClass.Items.Clear;
   lfeNewClass.Text:='';
   lfeNewClass.SortData:=true;
   lfeNewClass.Items.BeginUpdate;

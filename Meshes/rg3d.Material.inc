@@ -663,7 +663,7 @@ begin
 
       type_float: begin
         lname:=memReadText(aptr);
-        lsv:=FloatToStr(memReadFloat(aptr)); FixFloatStr(lsv);
+        lsv:=RGFloatToStr(memReadFloat(aptr)); FixFloatStr(lsv);
         Log('/* '+IntToStr(i)+' */ param_named '+lname+' float '+lsv);
       end;
 
@@ -680,10 +680,10 @@ begin
 //          else if lname='const_AmbientHemisphereBottom' then with mtl^.add     do begin X:=lr; Y:=lg; Z:=lb; end
         ;
         ls:='/* '+IntToStr(i)+' */ param_named '+lname+' float4';
-        lsv:=FloatToStr(lr    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
-        lsv:=FloatToStr(lg    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
-        lsv:=FloatToStr(lb    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
-        lsv:=FloatToStr(lalpha); FixFloatStr(lsv); ls:=ls+' '+lsv;
+        lsv:=RGFloatToStr(lr    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
+        lsv:=RGFloatToStr(lg    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
+        lsv:=RGFloatToStr(lb    ); FixFloatStr(lsv); ls:=ls+' '+lsv;
+        lsv:=RGFloatToStr(lalpha); FixFloatStr(lsv); ls:=ls+' '+lsv;
         Log(ls);
       end;
 
@@ -1056,7 +1056,7 @@ end;
 procedure TRGMesh.WriteHobMaterial(astream:TStream);
 var
   mtl:PMaterial;
-  i,j:integer;
+  j:integer;
   lcntpos,lpos:integer;
 begin
   // build THobTextureList

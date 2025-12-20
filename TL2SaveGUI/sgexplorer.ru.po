@@ -919,6 +919,10 @@ msgctxt "tfmeffects.lbleffects.caption"
 msgid "Effects"
 msgstr "Эффекты"
 
+#: tfmeffects.lblelapsed.caption
+msgid "Elapsed"
+msgstr ""
+
 #: tfmeffects.lblgraph.caption
 msgid "Graph"
 msgstr "График"
@@ -952,11 +956,6 @@ msgstr "Исходник"
 #: tfmeffects.lblunittheme.caption
 msgid "Unit Theme"
 msgstr "Тема юнита"
-
-#: tfmeffects.lblunknown.caption
-msgctxt "tfmeffects.lblelapsed.caption"
-msgid "Time of"
-msgstr "Прошло"
 
 #: tfmeffects.sgeffects.columns[0].title.caption
 msgid "List"

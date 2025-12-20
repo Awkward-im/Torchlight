@@ -170,7 +170,7 @@ begin
 
   edLevel     .Text:=IntToStr(leffect.Level);
   Str(leffect.Duration    :0:4,ls); FixFloatStr(ls); edDuration.Text:=ls;
-  edElapsed   .Text:=SecToTime(Trunc(leffect.Elapsed));
+  edElapsed   .Text:=SecToTime(ABS(Trunc(leffect.Elapsed)));
   Str(leffect.DisplayValue:0:4,ls); FixFloatStr(ls); edDisplay .Text:=ls;
 
   lblBaseClass.Visible:=FObject.DataType=dtChar;

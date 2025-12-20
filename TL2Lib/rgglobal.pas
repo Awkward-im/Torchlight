@@ -131,6 +131,7 @@ function  IsNumber(astr:PWideChar):boolean;
 function  RGStrToInt(src:PWideChar; var aval:QWord):boolean;
 function  RGStrToInt(src:PWideChar):QWord;
 function  RGIntToStr(dst:PWideChar; value:QWord):PWideChar;
+function  RGFloatToStr(const aValue:single):AnsiString;
 procedure FixFloatStr(var astr:AnsiString);
 procedure FixFloatStr(var astr:UnicodeString);
 
@@ -497,6 +498,12 @@ function DateTimeToFileTime(adate: TDateTime): Int64;
 begin
   adate  := adate - FileTimeBase;
   Result := Trunc(adate * FileTimeStep);
+end;
+
+function RGFloatToStr(const aValue:single):AnsiString;
+begin
+  Str(aValue:0:6,result);
+  FixFloatStr(result);
 end;
 
 procedure FixFloatStr(var astr:AnsiString);

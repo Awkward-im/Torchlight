@@ -546,6 +546,7 @@ type
     function GetLeftNCWidth: Integer; inline;
     procedure GetRawBuff(ARowIndex: Int64; var Data: TBytes); inline;
     function GetRowOffset(ARowIndex: Int64): Int64; inline;
+    function GetRowOffsetPoint(ARowIndex: Int64): TPoint; inline;
     function GetSelectData(ARowIndex: Int64): TSelectData; inline;
     function GetSelectDataWithSelection(ARowIndex: Int64; ASelStart, ASelEnd: TSelectPoint): TSelectData; inline;
     function HeaderVisible: Boolean; inline;
@@ -1044,6 +1045,8 @@ type
   TGetHintEvent = procedure(Sender: TObject; const Param: THintParam;
     var Hint: string) of object;
 
+  TAutoScrollType = (astNone, astTop, astBottom);
+
   { TFWCustomHexView }
 
   TFWCustomHexView = class(TCustomControl, IHexViewCopyAction, IHexViewByteViewModeAction)
@@ -1060,6 +1063,7 @@ type
     FAddressView: TAddressView;
     FAddressViewAutoToggle: Boolean;
     FAddressViewOffsetBase: Int64;
+    FAutoScrollType: TAutoScrollType;
     FBookMarks: array [TBookMark] of Int64;
     FBorderStyle: TBorderStyle;
     FBytesInGroup, FBytesInColorGroup, FBytesInRow: Integer;
@@ -1247,7 +1251,9 @@ type
     // internal events
 
     procedure DoBeforePaint(const ADiapason: TVisibleRowDiapason); virtual;
+    procedure DoBeforePostPaint(const ADiapason: TVisibleRowDiapason); virtual;
     procedure DoChange(ChangeCode: Integer); virtual;
+    procedure DoColumnWidthChange(AColumnType: TColumnType; var AWidth: Integer); virtual;
     function DoDrawRowColumnBackground(ACanvas: TCanvas;
       APainter: TAbstractPrimaryRowPainter; AColumn: TColumnType; const ARect: TRect): Boolean;
     procedure DoDrawToken(ACanvas: TCanvas; ATokenParam: TDrawParam;
@@ -1324,6 +1330,7 @@ type
     // utilitarian methods for childs and painters
 
     function GetHitInfo(XPos, YPos: Integer; AShift: TShiftState): TMouseHitInfo;
+    function InUpdateMode: Boolean;
     function IsColorMapStored: Boolean; virtual;
     function LeftSelPoint: TSelectPoint;
     function RightSelPoint: TSelectPoint;
@@ -1370,7 +1377,7 @@ type
     ///  Moves the scroll to make the address (if it is not visible)
     ///  at the top of the current display window.
     /// </summary>
-    procedure FocusOnAddress(Address: Int64; ACaretChangeMode: TCaretChangeMode);
+    procedure FocusOnAddress(Address: Int64; ACaretChangeMode: TCaretChangeMode); virtual;
 
     ///  Перемещает скролл делая чтобы строка стала видимой, результат перемещения
     ///  не определен, если невидимая строка выше текущего окна, она появится
@@ -1437,9 +1444,11 @@ type
     {$ENDIF}
     property DataStream: TStream read FDataStream;
     property InplaceEdit: THexViewInplaceEdit read FInplaceEdit;
+    property Font stored IsFontStored;
     property Selections: TSelections read FSelections;
     property SelEnd: Int64 read FSelEndAddr write SetSelEnd;
     property SelStart: Int64 read FSelStartAddr write SetSelStart;
+    property StartAddress: Int64 read FStartAddress;
   protected
     // свойства для пейнтеров и наследников
 
@@ -1456,7 +1465,6 @@ type
     property SavedShift: TShiftState read FSavedShift;
     property ScrollOffset: TLargePoint read FScrollOffset;
     property SplitMargin: Integer read FSplitMargin;
-    property StartAddress: Int64 read FStartAddress;
     property TextBoundary: TLargePoint read FTextBoundary;
     property TextMargin: Integer read FTextMargin;
     property TextMetric: TAbstractTextMetric read FTextMetric;
@@ -1481,6 +1489,7 @@ type
     ///  when double-clicking on an address column
     /// </summary>
     property AddressViewAutoToggle: Boolean read FAddressViewAutoToggle write FAddressViewAutoToggle default True;
+    property AutoScrollType: TAutoScrollType read FAutoScrollType write FAutoScrollType default astNone;
     property BorderStyle: TBorderStyle read FBorderStyle write SetCtlBorderStyle default bsSingle;
     property BytesInColorGroup: Integer read FBytesInColorGroup write SetBytesInColorGroup default 4;
     property BytesInGroup: Integer read FBytesInGroup write SetBytesInGroup default 8;
@@ -1488,7 +1497,6 @@ type
     property ByteViewMode: TByteViewMode read FByteViewMode write SetByteViewMode default bvmHex8;
     property ColorMap: THexViewColorMap read FColorMap write SetColorMap stored IsColorMapStored;
     property Encoder: TCharEncoder read FEncoder write SetEncoder;
-    property Font stored IsFontStored;
     property Header: TCustomHexViewHeader read FHeader write SetHeader;
     property HideSelection: Boolean read FHideSelection write SetHideSelection default False;
     property HintHideTimeout: Integer read FHintHideTimeout write FHintHideTimeout default 7000;
@@ -1521,6 +1529,7 @@ type
     property AddressViewAutoToggle;
     property Align;
     property Anchors;
+    property AutoScrollType;
     property AutoSize;
     {$IFNDEF FPC}
     property BevelEdges;
@@ -2955,6 +2964,11 @@ begin
   Result := FOwner.GetRowOffset(ARowIndex);
 end;
 
+function TBasePainter.GetRowOffsetPoint(ARowIndex: Int64): TPoint;
+begin
+  Result := FOwner.GetRowOffsetPoint(ARowIndex);
+end;
+
 function TBasePainter.GetSelectData(ARowIndex: Int64): TSelectData;
 begin
    Result := FOwner.GetSelectData(ARowIndex);
@@ -3957,7 +3971,7 @@ begin
       begin
         Inc(Len);
         Inc(Index);
-        if Len >= ATokenLen then
+        if TextMetric.CharCount(ATokenParam.Column, Len) >= ATokenLen then
           Break;
       end;
       ATokenLen := TextMetric.CharCount(ATokenParam.Column, Len);
@@ -4676,6 +4690,7 @@ begin
   AMaxWidth := FOwner.ToDpi(ColumnMaxWidth[AType]);
   if (AMaxWidth > 0) and (AWidth > AMaxWidth) then
     AWidth := AMaxWidth;
+  FOwner.DoColumnWidthChange(AType, AWidth);
   FColumnsData[AType].Width := AWidth;
   UpdateWidth;
 end;
@@ -6096,6 +6111,13 @@ begin
   end;
 end;
 
+procedure TFWCustomHexView.DoColumnWidthChange(AColumnType: TColumnType;
+  var AWidth: Integer);
+begin
+  // The method allows you to control changes in column width
+  // without implementing an heir from the header.
+end;
+
 procedure TFWCustomHexView.DoContextPopup(MousePos: TPoint;
   var Handled: Boolean);
 begin
@@ -7064,7 +7086,10 @@ begin
   begin
     Painter := GetRowPainter(I, False);
     if Assigned(Painter) then
-      Painter.DrawRow(Canvas, Offset)
+    begin
+      Canvas.Font := Font;
+      Painter.DrawRow(Canvas, Offset);
+    end
     else
       Inc(Offset.Y, FRowHeight);
     if FRawData[I].DrawRowSmallSeparator then
@@ -7114,17 +7139,25 @@ procedure TFWCustomHexView.EndUpdate;
 begin
   Dec(FUpdateCount);
   RebuildData;
+  case AutoScrollType of
+    astNone: ;
+    astTop: UpdateScrollY(0);
+    astBottom: UpdateScrollY(- FRowHeight * RawData.Count);
+  end;
+  if FNeedFitBesSizes then
+    FitColumnsToBestSize;
 end;
 
 procedure TFWCustomHexView.FitColumnsToBestSize;
 var
   I: TColumnType;
 begin
-  if not HandleAllocated then
+  if InUpdateMode or not HandleAllocated then
   begin
     FNeedFitBesSizes := True;
     Exit;
   end;
+  FNeedFitBesSizes := False;
   for I := ctWorkSpace to High(TColumnType) do
     if I in Header.Columns then
       FitColumnToBestSize(I);
@@ -7747,6 +7780,11 @@ begin
   KillTimer(Handle, 0);
 end;
 
+function TFWCustomHexView.InUpdateMode: Boolean;
+begin
+  Result := FUpdateCount > 0;
+end;
+
 function TFWCustomHexView.InternalGetRowPainter(
   ARowIndex: Int64): TAbstractPrimaryRowPainter;
 begin
@@ -7829,7 +7867,8 @@ function TFWCustomHexView.IsFontStored: Boolean;
 begin
   Result :=
     (Font.Height <> ToDpi(GetDefaultFontHeight)) or
-    (Font.Name <> GetDefaultFontName);
+    (Font.Name <> GetDefaultFontName) or
+    (Font.Style <> []);
 end;
 
 function TFWCustomHexView.IsRowVisible(ARowIndex: Int64): Boolean;
@@ -8204,6 +8243,8 @@ begin
 
   Diapason := VisibleRowDiapason;
   PostPaintDiapason := Diapason;
+  if PostPaintDiapason.EndRow < FRawData.Count - 1 then
+    Inc(PostPaintDiapason.EndRow);
 
   // отсекаем все что не входит в клипинг
 
@@ -8258,6 +8299,7 @@ begin
   // postpainter handling
 
   {$IFDEF USE_PROFILER}if NeedProfile then uprof.Start('postpainter handling');{$ENDIF}
+  DoBeforePostPaint(PostPaintDiapason);
   Offset := GetRowOffsetPoint(PostPaintDiapason.StartRow);
   SavedTopOffset := Offset.Y;
   for I := 0 to FPostPainters.Count - 1 do
@@ -8379,7 +8421,7 @@ begin
 
   R := TRect.Empty;
   Canvas.Font.Color := ColorMap.TextColor;
-  Canvas.Font.Style := [];
+  Canvas.Font.Style := Font.Style;
   Canvas.Brush.Color := ColorMap.BackgroundColor;
   DrawText(Canvas, '', 0, R, 0);
 end;
@@ -8911,6 +8953,8 @@ begin
       GetScrollInfo(Handle, SB_VERT, SI);
       NewVerticalOffset := -Scroll32To64(SI.nTrackPos);
     end;
+    SB_TOP: NewVerticalOffset := 0;
+    SB_BOTTOM: NewVerticalOffset := - FRowHeight * RawData.Count;
   end;
   NewVerticalOffset := NewVerticalOffset - (NewVerticalOffset mod FRowHeight);
   UpdateScrollY(NewVerticalOffset);
@@ -9037,6 +9081,7 @@ begin
   {$endif}
 
   FRawData.Clear;
+  ClearSelection;
   if GetDataStreamSize = 0 then Exit;
   FRawData.Update;
 
@@ -9172,6 +9217,11 @@ begin
 end;
 
 procedure TFWCustomHexView.DoBeforePaint(const ADiapason: TVisibleRowDiapason);
+begin
+  // do nothing...
+end;
+
+procedure TFWCustomHexView.DoBeforePostPaint(const ADiapason: TVisibleRowDiapason);
 begin
   // do nothing...
 end;

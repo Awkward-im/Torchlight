@@ -330,20 +330,20 @@ begin
     rgInteger  : result:=IntToStr(AsInteger(aprop));
     rgInteger64: result:=IntToStr(AsInteger64(aprop));
     rgBool     : if AsBool(aprop) then result:='True' else result:='False';
-    rgFloat    : result:=FloatToStr(AsFloat(aprop));
-    rgDouble   : result:=FloatToStr(AsFloat(aprop));
+    rgFloat    : result:=RGFloatToStr(AsFloat(aprop));
+    rgDouble   : result:=RGFloatToStr(AsFloat(aprop));
     rgString,
     rgTranslate,
     rgNote: result:=AsString(aprop);
-    rgVector2: result:=FloatToStr(AsVector(aprop)^.X)+', '+
-                       FloatToStr(AsVector(aprop)^.Y);
-    rgVector3: result:=FloatToStr(AsVector(aprop)^.X)+', '+
-                       FloatToStr(AsVector(aprop)^.Y)+', '+
-                       FloatToStr(AsVector(aprop)^.Z);
-    rgVector4: result:=FloatToStr(AsVector(aprop)^.X)+', '+
-                       FloatToStr(AsVector(aprop)^.Y)+', '+
-                       FloatToStr(AsVector(aprop)^.Z)+', '+
-                       FloatToStr(AsVector(aprop)^.W);
+    rgVector2: result:=RGFloatToStr(AsVector(aprop)^.X)+', '+
+                       RGFloatToStr(AsVector(aprop)^.Y);
+    rgVector3: result:=RGFloatToStr(AsVector(aprop)^.X)+', '+
+                       RGFloatToStr(AsVector(aprop)^.Y)+', '+
+                       RGFloatToStr(AsVector(aprop)^.Z);
+    rgVector4: result:=RGFloatToStr(AsVector(aprop)^.X)+', '+
+                       RGFloatToStr(AsVector(aprop)^.Y)+', '+
+                       RGFloatToStr(AsVector(aprop)^.Z)+', '+
+                       RGFloatToStr(AsVector(aprop)^.W);
   else
     result:='something another';
   end;
@@ -652,17 +652,17 @@ begin
   begin
     case ltype of
       rgVector2: ls:=
-          FloatToStr(fseX.Value)+', '+
-          FloatToStr(fseY.Value);
+          RGFloatToStr(fseX.Value)+', '+
+          RGFloatToStr(fseY.Value);
       rgVector3: ls:=
-          FloatToStr(fseX.Value)+', '+
-          FloatToStr(fseY.Value)+', '+
-          FloatToStr(fseZ.Value);
+          RGFloatToStr(fseX.Value)+', '+
+          RGFloatToStr(fseY.Value)+', '+
+          RGFloatToStr(fseZ.Value);
       rgVector4: ls:=
-          FloatToStr(fseX.Value)+', '+
-          FloatToStr(fseY.Value)+', '+
-          FloatToStr(fseZ.Value)+', '+
-          FloatToStr(fseW.Value);
+          RGFloatToStr(fseX.Value)+', '+
+          RGFloatToStr(fseY.Value)+', '+
+          RGFloatToStr(fseZ.Value)+', '+
+          RGFloatToStr(fseW.Value);
     end;
     veProp.Cells[1,aRow]:=ls;
     SetPropValue(aRow,ls);

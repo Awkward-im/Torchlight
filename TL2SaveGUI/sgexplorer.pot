@@ -898,6 +898,10 @@ msgctxt "tfmeffects.lbleffects.caption"
 msgid "Effects"
 msgstr ""
 
+#: tfmeffects.lblelapsed.caption
+msgid "Elapsed"
+msgstr ""
+
 #: tfmeffects.lblgraph.caption
 msgid "Graph"
 msgstr ""
@@ -930,11 +934,6 @@ msgstr ""
 
 #: tfmeffects.lblunittheme.caption
 msgid "Unit Theme"
-msgstr ""
-
-#: tfmeffects.lblunknown.caption
-msgctxt "tfmeffects.lblunknown.caption"
-msgid "Time of"
 msgstr ""
 
 #: tfmeffects.sgeffects.columns[0].title.caption

@@ -36,9 +36,16 @@ uses
   tlsgquest,
   rgdb;
 
+const
+  colTitle = 0;
+  colDone  = 1;
+  colName  = 2;
+  colMod   = 3;
+  colId    = 4;
+
 procedure TfmQuests.sgQuestsSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 begin
-  btnSaveQuest.Enabled:=sgQuests.Cells[1,aRow]='0';
+  btnSaveQuest.Enabled:=sgQuests.Cells[colDone,aRow]='0';
 end;
 
 procedure TfmQuests.btnSaveQuestClick(Sender: TObject);
@@ -48,7 +55,7 @@ var
 begin
   ldlg:=TSaveDialog.Create(nil);
   try
-    ldlg.FileName  :=sgQuests.Cells[2,sgQuests.Row];
+    ldlg.FileName  :=sgQuests.Cells[colName,sgQuests.Row];
     ldlg.DefaultExt:='.qst';
 //      ldlg.Title     :=rsExportData;
     ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
@@ -84,7 +91,7 @@ begin
   sgQuests.BeginUpdate;
   sgQuests.Clear;
 
-  sgQuests.Columns[4].Visible:=fmSettings.cbShowTech.Checked;
+  sgQuests.Columns[colId].Visible:=fmSettings.cbShowTech.Checked;
   sgQuests.RowCount:=1;
   j:=1;
   if Length(aSGame.Quests.QuestsDone)>0 then
@@ -92,11 +99,11 @@ begin
     sgQuests.RowCount:=sgQuests.RowCount+Length(aSGame.Quests.QuestsDone);
     for i:=0 to High(aSGame.Quests.QuestsDone) do
     begin
-      sgQuests.Cells[0,j]:=RGDBGetQuest(aSGame.Quests.QuestsDone[i],lmod,lname);
-      sgQuests.Cells[1,j]:='1';
-      sgQuests.Cells[2,j]:=lname;
-      sgQuests.Cells[3,j]:=RGDBGetMod(lmod);
-      sgQuests.Cells[4,j]:=TextId(aSGame.Quests.QuestsDone[i]);
+      sgQuests.Cells[colTitle,j]:=RGDBGetQuest(aSGame.Quests.QuestsDone[i],lmod,lname);
+      sgQuests.Cells[colDone ,j]:='1';
+      sgQuests.Cells[colName ,j]:=lname;
+      sgQuests.Cells[colMod  ,j]:=RGDBGetMod(lmod);
+      sgQuests.Cells[colId   ,j]:=TextId(aSGame.Quests.QuestsDone[i]);
       inc(j);
     end;
   end;
@@ -110,13 +117,13 @@ begin
 
       lquest:=@aSGame.Quests.QuestsUnDone[i];
       if lquest^.id=0 then
-        sgQuests.Cells[0,j]:=RGDBGetQuest(lquest^.name, lmod, lquest^.id)
+        sgQuests.Cells[colTitle,j]:=RGDBGetQuest(lquest^.name, lmod, lquest^.id)
       else
-        sgQuests.Cells[0,j]:=RGDBGetQuest(lquest^.id, lmod, lquest^.name);
-      sgQuests.Cells[1,j]:='0';
-      sgQuests.Cells[2,j]:=lquest^.name;
-      sgQuests.Cells[3,j]:=RGDBGetMod(lmod);
-      sgQuests.Cells[4,j]:=TextId(lquest^.id);
+        sgQuests.Cells[colTitle,j]:=RGDBGetQuest(lquest^.id, lmod, lquest^.name);
+      sgQuests.Cells[colDone,j]:='0';
+      sgQuests.Cells[colName,j]:=lquest^.name;
+      sgQuests.Cells[colMod ,j]:=RGDBGetMod(lmod);
+      sgQuests.Cells[colId  ,j]:=TextId(lquest^.id);
       inc(j);
     end;
   end;

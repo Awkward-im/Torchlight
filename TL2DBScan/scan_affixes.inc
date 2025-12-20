@@ -41,9 +41,9 @@ begin
         'value, value1, value2, value3, value4 ,value5) VALUES ('+
         IntToStr(aei.affix)+', '+IntToStr(aei.effect)+', ?1, '''+
         aei.dmgtype+''', '+IntToStr(aei.duration)+', '+
-        FloatToStr(aei.values[0])+', '+FloatToStr(aei.values[1])+', '+
-        FloatToStr(aei.values[2])+', '+FloatToStr(aei.values[3])+', '+
-        FloatToStr(aei.values[4])+', '+FloatToStr(aei.values[5])+')';
+        RGFloatToStr(aei.values[0])+', '+RGFloatToStr(aei.values[1])+', '+
+        RGFloatToStr(aei.values[2])+', '+RGFloatToStr(aei.values[3])+', '+
+        RGFloatToStr(aei.values[4])+', '+RGFloatToStr(aei.values[5])+')';
 
   result:=ExecuteDirect(PModScanner(ams)^.db,lSQL,aei.name);
 end;

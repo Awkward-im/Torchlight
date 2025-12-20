@@ -2,6 +2,7 @@
   !! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 }
 {NOTE: texture file have path, but imageset is not}
+{TODO: RootDir for sheet pathed file search}
 {TODO: load all imagesets in dir}
 {TODO: save imageset dirs too}
 unit RGImageset;
@@ -18,11 +19,12 @@ uses
 
 type
   TImagesetFile = record
-    Name  :string;
-    Sheet :string;
-    Image :TImageData;
-    Width :integer;
-    Height:integer;
+    Name  :string;      // Imageset name
+    Sheet :string;      // Image name (with relative path usually)
+    Image :TImageData;  // Image data, filled by Use* function
+                        // like FImageset.UseImageFile(FImageset.Imagesets[FActiveImageset].Sheet)
+    Width :integer;     // Image width  (can be not real)
+    Height:integer;     // Image height (can be not real)
   end;
 
   TImagesetItem = record
@@ -40,9 +42,10 @@ type
 
   TRGImageset = object
   private
-    FOutputPath  :string;
+    FRootPath  :string;
+    FOutputPath:string;
 
-    procedure SetOutputPath(const apath:string);
+    procedure SetPath(aidx:integer; const apath:string);
     function  CheckImageset(const aname:string):boolean;
     procedure CheckItem(alen: integer);
     function  ParseDAT(abuf:PByte; asize:integer): boolean;
@@ -64,7 +67,7 @@ type
     function UseImageset   (                           ais: integer=-1): boolean;  // file from imageset info
     function UseImageFile  (const aname:string       ; ais: integer=-1): boolean;  // disk file
     function UseImageData  (adata:TImageData         ; ais: integer=-1): boolean;  // from Imaging library
-    function UseController (actrl:TRGController      ; ais: integer=-1): boolean;  // game archive/PAK
+    function UseController (const actrl:TRGController; ais: integer=-1): boolean;  // game archive/PAK
     function UseImageMemory(abuf:PByte; asize:integer; ais: integer=-1): boolean;  // memory buffer
     // sprite info
     function ItemByName(const aname:string):integer;
@@ -87,7 +90,8 @@ type
 
     function ExtractAll(aimgset:integer=-1):integer;
 
-    property OutputPath:string read FOutputPath write SetOutputPath;
+    property OutputPath:string index 0 read FOutputPath write SetPath;
+    property RootPath  :string index 1 read FRootPath   write SetPath;
   end;
 
 
@@ -104,6 +108,7 @@ uses
 procedure TRGImageset.Init;
 begin
   FOutputPath:=ExtractPath(ParamStr(0));
+  FRootPath  :='';
 end;
 
 procedure TRGImageset.Free;
@@ -118,11 +123,17 @@ begin
   ItemCount    :=0;
 end;
 
-procedure TRGImageset.SetOutputPath(const apath:string);
+procedure TRGImageset.SetPath(aidx:integer; const apath:string);
+var
+  ls:string;
 begin
-  FOutputPath:=apath;
   if not (apath[Length(apath)] in ['\','/']) then
-    FOutputPath:=FOutputPath+'/';
+    ls:=apath+'/'
+  else
+    ls:=apath;
+
+  if aidx=0 then FOutputPath:=ls
+  else           FRootPath  :=ls;
 end;
 
 {%REGION Imageset}
@@ -456,17 +467,26 @@ var
   lbuf:PByte;
   lext,lname:string;
   lsize:integer;
+  lres:boolean;
 begin
   result:=false;
+  lname:='';
   AssignFile(f,aname);
   Reset(f);
-  lname:='';
-  if IOResult<>0 then
+  lres:=IOResult()<>0;
+  if lres and (FRootPath<>'') then
+  begin
+    AssignFile(f,FRootPath+aname);
+    Reset(f);
+    lres:=IOResult()<>0;
+  end;
+  if lres then
   begin
     lname:=ExtractName(aname);
     AssignFile(f,lname);
     Reset(f);
-    if IOResult<>0 then
+    lres:=IOResult()<>0;
+    if lres then
     begin
       lext:=ExtractExt(aname);
            if lext='.DDS' then lext:='.PNG'
@@ -474,21 +494,32 @@ begin
       else exit;
       AssignFile(f,ChangeFileExt(aname,lext));
       Reset(f);
-      if IOResult<>0 then
+      lres:=IOResult()<>0;
+      if lres and (FRootPath<>'') then
+      begin
+        AssignFile(f,ChangeFileExt(FRootPath+aname,lext));
+        Reset(f);
+        lres:=IOResult()<>0;
+      end;
+      if lres then
       begin
         AssignFile(f,ChangeFileExt(lname,lext));
         Reset(f);
+        lres:=IOResult()<>0;
       end;
     end;
   end;
-  if IOResult=0 then
+  if not lres then
   begin
     lsize:=FileSize(f);
-    GetMem(lbuf,lsize);
-    BlockRead(f,lbuf^,lsize);
+    if lsize>0 then
+    begin
+      GetMem(lbuf,lsize);
+      BlockRead(f,lbuf^,lsize);
+      result:=UseImageMemory(lbuf,lsize,ais);
+      FreeMem(lbuf);
+    end;
     CloseFile(f);
-    result:=UseImageMemory(lbuf,lsize,ais);
-    FreeMem(lbuf);
   end;
 end;
 
@@ -514,7 +545,7 @@ begin
   result:=CloneImage(adata, Imagesets[ais].Image);
 end;
 
-function TRGImageset.UseController(actrl:TRGController; ais:integer=-1):boolean;
+function TRGImageset.UseController(const actrl:TRGController; ais:integer=-1):boolean;
 var
   lbuf:PByte;
   lfile,lsize:integer;

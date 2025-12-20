@@ -23,8 +23,8 @@ begin
         begin
           with PVector2(lptr)[j] do
             WriteLine(aStream,'vt '+
-              FloatToStr(x)+' '+
-              FloatToStr(y));
+              RGFloatToStr(x)+' '+
+              RGFloatToStr(y));
         end;
         continue;
       end;
@@ -38,9 +38,9 @@ begin
     begin
       with PVector3(lptr)[j] do
         WriteLine(aStream, ltype+
-          FloatToStr(x)+' '+
-          FloatToStr(y)+' '+
-          FloatToStr(z));
+          RGFloatToStr(x)+' '+
+          RGFloatToStr(y)+' '+
+          RGFloatToStr(z));
     end;
 
   end;

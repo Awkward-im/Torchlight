@@ -4,13 +4,6 @@
 
 {$ELSE}
 
-function WriteChunk(astream:TStream; achunk:integer; asize:integer=0):integer;
-begin
-  astream.WriteWord(achunk); // chunk code
-  result:=astream.Position;  // position of chunk size
-  astream.WriteDWord(asize+SizeOf(TOgreChunk)); // reserve for chunk size if needs
-end;
-
 procedure WriteMeshGeometry(astream:TStream; amesh:PRGSubMesh);
 var
   p:PByte;

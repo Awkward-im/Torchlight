@@ -55,7 +55,7 @@ begin
     ofs.Y:=memReadFloat(aptr)*opt.FScale;
     ofs.Z:=memReadFloat(aptr)*opt.FScale;
     LogLn();
-    Log('offset: x='+FloatToStr(ofs.X)+' y='+FloatToStr(ofs.Y)+' z='+FloatToStr(ofs.Z));
+    Log('offset: x='+RGFloatToStr(ofs.X)+' y='+RGFloatToStr(ofs.Y)+' z='+RGFloatToStr(ofs.Z));
 // Offset break skeleton position
 //    if not opt.FUseOffset then
     begin
@@ -384,15 +384,15 @@ begin
     begin
       Log(memReadText(aptr));
       memReadData(aptr,ltmp,12*SizeOf(single));
-//      Log('offset: x='+FloatToStr(ltmp[0])+' y='+FloatToStr(ltmp[ 1])+' z='+FloatToStr(ltmp[ 2]));
+//      Log('offset: x='+RGFloatToStr(ltmp[0])+' y='+RGFloatToStr(ltmp[ 1])+' z='+RGFloatToStr(ltmp[ 2]));
       // RG
       ltmp[0]:= ltmp[0]*opt.FScale;
       ltmp[1]:= ltmp[1]*opt.FScale;
       ltmp[2]:=-ltmp[2]*opt.FScale;
 {Looks like unused
-      Log('|' +FloatToStr(ltmp[3])+' '+FloatToStr(ltmp[ 4])+' '+FloatToStr(ltmp[ 5])+' |');
-      Log('|' +FloatToStr(ltmp[6])+' '+FloatToStr(ltmp[ 7])+' '+FloatToStr(ltmp[ 8])+' |');
-      Log('|' +FloatToStr(ltmp[9])+' '+FloatToStr(ltmp[10])+' '+FloatToStr(ltmp[11])+' |');
+      Log('|' +RGFloatToStr(ltmp[3])+' '+RGFloatToStr(ltmp[ 4])+' '+RGFloatToStr(ltmp[ 5])+' |');
+      Log('|' +RGFloatToStr(ltmp[6])+' '+RGFloatToStr(ltmp[ 7])+' '+RGFloatToStr(ltmp[ 8])+' |');
+      Log('|' +RGFloatToStr(ltmp[9])+' '+RGFloatToStr(ltmp[10])+' '+RGFloatToStr(ltmp[11])+' |');
 }
       if memReadWord(aptr)<>0 then
         memReadText(aptr); // UserData

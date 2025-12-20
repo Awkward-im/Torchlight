@@ -1,6 +1,12 @@
 ﻿{}
 
-//----- Chunk types -----
+type
+  TOgreChunk = packed record
+    _type:word;
+    _len :dword; // including this header (i.e. +6)
+  end;
+
+//----- Mesh Chunk types -----
 
 const
   M_HEADER = $1000;
@@ -435,17 +441,18 @@ const
     (ver: 21; sign:'[MeshSerializer_v2.1 R0 LEGACYV1]'),
     (ver:212; sign:'[MeshSerializer_v2.1 R2]'         ), // MESH_VERSION_2_1
     (ver:211; sign:'[MeshSerializer_v2.1 R1]'         ), // MESH_VERSION_LEGACY
-    (ver:210; sign:'[MeshSerializer_v2.1]'            )  // MESH_VERSION_LEGACY R0
+    (ver:210; sign:'[MeshSerializer_v2.1]'            ), // MESH_VERSION_LEGACY R0
+
+    (ver:110; sign:'[Serializer_v1.10]'),      // SKELETON_VERSION_1_0
+    (ver:180; sign:'[Serializer_v1.80]')       // SKELETON_VERSION_1_8
   );
+
+const
+  SKELETON_VERSION_1_0 = 110;
+  SKELETON_VERSION_1_8 = 180;
 
 const    
   TexCoordDimName:array [0..3] of string = ('u', 'v', 'w', 'x');
-
-type
-  TOgreChunk = packed record
-    _type:word;
-    _len :dword;
-  end;
 
 type
   PVertexBoneAssignment = ^TVertexBoneAssignment;
@@ -468,3 +475,81 @@ const
   TU_NOT_SAMPLED        = $0040;
   TU_UNORDERED_ACCESS   = $0080;
   TU_DEFAULT = TU_AUTOMIPMAP or TU_STATIC_WRITE_ONLY;
+
+
+//----- Skeleton Chunk Types -----
+
+const
+  SKELETON_HEADER = $1000;
+      // char* version           : Version number check
+      SKELETON_BLENDMODE = $1010; // optional, 1.80+
+          // unsigned short blendmode     : SkeletonAnimationBlendMode
+  
+  SKELETON_BONE = $2000;
+  // Repeating section defining each bone in the system. 
+  // Bones are assigned indexes automatically based on their order of declaration
+  // starting with 0.
+
+      // char* name                       : name of the bone
+      // unsigned short handle            : handle of the bone, should be contiguous & start at 0
+      // Vector3 position                 : position of this bone relative to parent 
+      // Quaternion orientation           : orientation of this bone relative to parent 
+      // Vector3 scale                    : scale of this bone relative to parent 
+
+  SKELETON_BONE_PARENT = $3000;
+  // Record of the parent of a single bone, used to build the node tree
+  // Repeating section, listed in Bone Index order, one per Bone
+
+      // unsigned short handle             : child bone
+      // unsigned short parentHandle   : parent bone
+
+  SKELETON_ANIMATION = $4000;
+  // A single animation for this skeleton
+
+      // char* name                       : Name of the animation
+      // float length                      : Length of the animation in seconds
+  
+      SKELETON_ANIMATION_BASEINFO = $4010;   // 1.80+
+      // [Optional] base keyframe information
+      // char* baseAnimationName (blank for self)
+      // float baseKeyFrameTime
+
+      SKELETON_ANIMATION_TRACK = $4100;
+      // A single animation track (relates to a single bone)
+      // Repeating section (within SKELETON_ANIMATION)
+          
+          // unsigned short boneIndex     : Index of bone to apply to
+
+          SKELETON_ANIMATION_TRACK_KEYFRAME = $4110;
+          // A single keyframe within the track
+          // Repeating section
+
+              // float time                    : The time position (seconds)
+              // Quaternion rotate            : Rotation to apply at this keyframe
+              // Vector3 translate            : Translation to apply at this keyframe
+              // Vector3 scale                : Scale to apply at this keyframe
+  SKELETON_ANIMATION_LINK = $5000;
+  // Link to another skeleton, to re-use its animations
+
+      // char* skeletonName                   : name of skeleton to get animations from
+      // float scale                          : scale to apply to trans/scale keys
+
+const
+  SkeletonChunkNames: array of record
+    id  : word;
+    name: string;
+  end = (
+     (id:$1000; name:'SKELETON_HEADER'),
+     (id:$1010; name:'SKELETON_BLENDMODE'),
+     (id:$2000; name:'SKELETON_BONE'),
+     (id:$3000; name:'SKELETON_BONE_PARENT'),
+     (id:$4000; name:'SKELETON_ANIMATION'),
+     (id:$4010; name:'SKELETON_ANIMATION_BASEINFO'),
+     (id:$4100; name:'SKELETON_ANIMATION_TRACK'),
+     (id:$4110; name:'SKELETON_ANIMATION_TRACK_KEYFRAME'),
+     (id:$5000; name:'SKELETON_ANIMATION_LINK')
+  );
+
+const // SkeletonAnimationBlendMode
+  ANIMBLEND_AVERAGE    = 0; // Animations are applied by calculating a weighted average of all animations
+  ANIMBLEND_CUMULATIVE = 1; // Animations are applied by calculating a weighted cumulative total

@@ -20,10 +20,7 @@ begin
     ls:=memReadText(abuf);
     result:=TranslateVersion(ls);
     if result<40 then
-    begin
-      Log('version',ls+' not supported');
-      exit;
-    end
+      Log('version',ls+' not supported')
     else
       Log('version',ls);
   end;

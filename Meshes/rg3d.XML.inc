@@ -13,19 +13,6 @@
 						<keyframe time="0">
 							<poseref poseindex="3" influence="1" />  <!--repeated or absent-->
 }
-function FloatToStr(const aValue:single):UTF8String;
-begin
-  Str(aValue:0:6,result);
-  FixFloatStr(AnsiString(result));
-end;
-
-procedure WriteLine(aStream:TStream; const aString:UTF8String);
-begin
-  if length(aString)>0 then
-    aStream.WriteBuffer(aString[1],length(aString));
-
-  aStream.WriteBuffer(#13#10,2);
-end;
 
 procedure SaveGeometryToXML(const asub:TRGSubMesh; aStream:TStream);
 var
@@ -91,8 +78,8 @@ begin
           // in cycle of TexCoordDimName for texture base element count
           with PVector2(lptr)[j] do
             WriteLine(aStream,'        <texcoord'+
-                 ' u="'+FloatToStr(x)+
-                '" v="'+FloatToStr(y)+'" />');
+                 ' u="'+RGFloatToStr(x)+
+                '" v="'+RGFloatToStr(y)+'" />');
 
           WriteLine(aStream,'      </vertex>');
         end;
@@ -116,18 +103,18 @@ begin
       begin
         with PVector4(lptr)[j] do
           WriteLine(aStream,'        <'+lnode+
-               ' x="'+FloatToStr(x)+
-              '" y="'+FloatToStr(y)+
-              '" z="'+FloatToStr(z)+
-              '" w="'+FloatToStr(w)+'" />');
+               ' x="'+RGFloatToStr(x)+
+              '" y="'+RGFloatToStr(y)+
+              '" z="'+RGFloatToStr(z)+
+              '" w="'+RGFloatToStr(w)+'" />');
       end
       else
       begin
         with PVector3(lptr)[j] do
           WriteLine(aStream,'        <'+lnode+
-               ' x="'+FloatToStr(x)+
-              '" y="'+FloatToStr(y)+
-              '" z="'+FloatToStr(z)+'" />');
+               ' x="'+RGFloatToStr(x)+
+              '" y="'+RGFloatToStr(y)+
+              '" z="'+RGFloatToStr(z)+'" />');
       end;
       WriteLine(aStream,'      </vertex>');
     end;
@@ -200,7 +187,7 @@ begin
           WriteLine(aStream,'        <vertexboneassignment'+
              ' vertexindex="'+IntToStr  (vertexIndex)+
             '" boneindex="'  +IntToStr  (boneIndex  )+
-            '" weight="'     +FloatToStr(weight)+'" />');
+            '" weight="'     +RGFloatToStr(weight)+'" />');
       end;
       WriteLine(aStream,'      </boneassignments>');
     end;
@@ -243,7 +230,7 @@ begin
         WriteLine(aStream,'    <vertexboneassignment'+
            ' vertexindex="'+IntToStr  (vertexIndex)+
           '" boneindex="'  +IntToStr  (boneIndex  )+
-          '" weight="'     +FloatToStr(weight)+'" />');
+          '" weight="'     +RGFloatToStr(weight)+'" />');
     end;
     WriteLine(aStream,'  </boneassignments>');
   end;

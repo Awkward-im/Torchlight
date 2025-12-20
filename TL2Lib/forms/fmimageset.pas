@@ -372,38 +372,41 @@ end;
 procedure TFormImageset.FillList(const fname:string);
 var
   ldlg:TOpenDialog;
-  lfname:string;
+  i:integer;
 begin
   if fname='' then
   begin
     ldlg:=TOpenDialog.Create(nil);
     ldlg.Filter:='Imageset|*.imageset';
+    ldlg.Options:=ldlg.Options+[ofAllowMultiSelect];
     ldlg.Title:=rsLoadImageset;
-    lfname:='';
     if ldlg.Execute then
     begin
       ChDir(ldlg.InitialDir);
-      lfname:=ldlg.FileName;
+      for i:=0 to ldlg.Files.Count-1 do
+      begin
+        if FImageset.ParseFromFile(ldlg.Files[i]) then
+          FImageset.UseImageFile(FImageset.Imagesets[FImageset.ImagesetCount-1].Sheet);
+      end;
     end;
     ldlg.Free;
   end
   else
   begin
     Chdir(ExtractFilePath(fname));
-    lfname:=fname;
+
+    if FImageset.ParseFromFile(fname) then
+      FImageset.UseImageFile(FImageset.Imagesets[FImageset.ImagesetCount-1].Sheet);
   end;
-  if lfname='' then exit;
 
-  imgSprite.Picture.Clear;
-
-  if FImageset.ParseFromFile(lfname) then
+  //  imgSprite.Picture.Clear;
+  FActiveImageset:=FImageset.ImagesetCount-1;
+  if FActiveImageset>=0 then
   begin
-    FActiveImageset:=FImageset.ImagesetCount-1;
-    FImageset.UseImageFile(FImageset.Imagesets[FActiveImageset].Sheet);
-    FImageset.GetImage(imgTexture.Picture);
+    FImageset.GetImage(imgTexture.Picture,FActiveImageset);
   end;
-  FillImagesetList();
 
+  FillImagesetList();
 end;
 
 end.
