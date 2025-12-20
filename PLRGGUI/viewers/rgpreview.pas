@@ -135,7 +135,8 @@ begin
   else if lrec.ftype=typeModel then
   begin
     if lext='.SKELETON' then
-      result:=PreviewDump(actrl,aidx)
+      result:=PreviewSkeleton(actrl,aidx)
+//      result:=PreviewDump(actrl,aidx)
     else
       result:=PreviewModel(actrl,aidx);
   end

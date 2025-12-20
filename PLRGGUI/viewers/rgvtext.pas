@@ -12,10 +12,13 @@ uses
 function PreviewText  (var actrl:TRGController; aidx:integer):TForm;
 function PreviewSource(var actrl:TRGController; aidx:integer):TForm;
 
+function PreviewSkeleton(var actrl:TRGController; aidx:integer):TForm;
+
 
 implementation
 
 uses
+  Classes,
   Controls,
   Buttons,
   Dialogs,
@@ -27,6 +30,8 @@ uses
   SynHighlighterOgre,
   SynHighlighterT,
 
+  rgskeleton,
+  
   rgGlobal,
   RGFile,
   DMViewer;
@@ -51,6 +56,8 @@ type
     procedure ReplaceExecute(Sender:TObject);
   private
     srcenc:integer;  
+
+    procedure DoSkeleton(Sender:TObject);
   end;
 
 procedure TEditForm.DoSave(Sender:TObject);
@@ -308,6 +315,46 @@ begin
     SynEdit.Modified:=false;
   end;
   FreeMem(lbuf);
+end;
+
+
+procedure TEditForm.DoSkeleton(Sender:TObject);
+var
+  lbuf:PByte;
+  ltext:AnsiString;
+  pc:PWideChar;
+  lpc:PAnsiChar;
+  lsize:integer;
+  sk:TRGSkeleton;
+  ls:TMemoryStream;
+begin
+  lbuf:=nil;
+  lsize:=Ctrl^.GetAsIs(Idx,lbuf);
+
+  sk.Init;
+  sk.ImportFromMemory(lbuf,lsize);
+  ls:=TMemoryStream.Create;
+  sk.SaveToXML(ls);
+  SetString(ltext,PAnsiChar(ls.Memory),ls.Size);
+  ls.Free;
+  sk.Free;
+  FreeMem(lbuf);
+
+  SynEdit.Text:=ltext;
+end;
+
+function PreviewSkeleton(var actrl:TRGController; aidx:integer):TForm;
+begin
+  result:=MakeEditForm(actrl,aidx);
+  with TEditForm(result) do
+  begin
+    sbSave.Enabled:=false;
+    if Viewer.SynOgreSyn=nil then Viewer.SynOgreSyn:=TSynOgreSyn.Create(Viewer);
+    SynEdit.Highlighter:=Viewer.SynXMLSyn;
+
+    sbReload.OnClick:=@DoSkeleton;
+    DoSkeleton(sbReload);
+  end;
 end;
 
 end.

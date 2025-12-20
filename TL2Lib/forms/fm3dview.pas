@@ -88,6 +88,7 @@ implementation
 uses
   rgstream,
 //  lazTGA,
+  rg3dshared,
   Imaging,
   ImagingTypes,
   ImagingComponents,
