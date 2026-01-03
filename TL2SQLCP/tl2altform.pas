@@ -7,6 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids;
 
+
 type
 
   { TAltForm }
@@ -35,15 +36,16 @@ type
 var
   AltForm: TAltForm;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
   LCLType,
-  tl2datamodule,
-  rgglobal,
-  rgdb.text;
+  RGGlobal,
+  RGDB.Text,
+  TL2DataModule;
 
 
 { TAltForm }

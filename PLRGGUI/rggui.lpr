@@ -12,8 +12,9 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, lazcontrols, lazopenglcontext,
   fmGUI    in 'GUI.Default\fmGUI.pas',
+//  fmGUIM   in 'GUI.Modified\fmGUIM.pas',
   fmGUIAlt in 'GUI.Alt\fmGUIAlt.pas',
-  rggui.core
+  RGGUI.Core
   { you can add units after this };
 
 {$R *.res}
@@ -29,7 +30,9 @@ begin
   LoadCoreSettings;
   if cfgGUIPlugin='' then
     Application.CreateForm(TRGGUIForm , RGGUIForm)
-  else
+//  else if cfgGUIPlugin='2' then
+//    Application.CreateForm(TRGGUIMForm, RGGUIMForm)
+  else //if cfgGUIPlugin='1' then
     Application.CreateForm(TRGGUI2Form, RGGUI2Form);
   Application.Run;
 end.

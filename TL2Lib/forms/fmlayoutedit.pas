@@ -18,7 +18,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, ComCtrls,
   StdCtrls, ValEdit, Grids, Menus, ActnList, SynEdit, SynHighlighterT,
-  rgdictlayout, Types;
+  RGDictLayout, Types;
 
 type
 
@@ -97,11 +97,11 @@ implementation
 uses
   Buttons,
   SpinEx,
-  rgglobal,
-  rgIO.Layout,
-  rgIO.Text,
+  RGGlobal,
+  RGIO.Layout,
+  RGIO.Text,
   LayList,
-  rgnode;
+  RGNode;
 
 resourcestring
   rsDefault     = '- default -';

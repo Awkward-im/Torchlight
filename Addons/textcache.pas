@@ -359,13 +359,14 @@ begin
     fptrs[0].hash  :=0;
     fptrs[0].len   :=0;
     fcount:=1;
-    fcursize:=SizeOf(WideChar);
+    Capacity:=SizeOf(WideChar);
+//    fcursize:=SizeOf(WideChar);
   end;
-
+{
   // Check indexes
   if fcount>=High(fptrs) then
     SetLength(fptrs,Length(fptrs)+delta_arr);
-
+}
   if fcharsize=1 then
     newlen:=Length(PAnsiChar(astr))
   else
@@ -373,6 +374,10 @@ begin
 
   if newlen>0 then
   begin
+    // Check indexes
+    if fcount>=High(fptrs) then
+      SetLength(fptrs,Length(fptrs)+delta_arr);
+
     lsize:=(newlen+1)*fcharsize;
     lhash:=CalcHash(PByte(astr),lsize);
 
@@ -427,12 +432,15 @@ begin
   end
   else
   begin
+    exit(0);
+{
     with fptrs[fcount] do
     begin
       offset:=0;
       hash  :=0;
       len   :=0;
     end;
+}
   end;
 
   result:=fcount;
@@ -441,8 +449,16 @@ end;
 
 function tTextCache.Add(astr:pointer):integer;
 begin
-  result:=IndexOf(astr);
-  if result<0 then result:=Append(astr);
+  if astr=nil then
+  begin
+    if fcount=0 then Append(nil);
+    result:=0;
+  end
+  else
+  begin
+    result:=IndexOf(astr);
+    if result<0 then result:=Append(astr);
+  end;
 end;
 
 procedure tTextCache.Export(const fname:PAnsiChar);

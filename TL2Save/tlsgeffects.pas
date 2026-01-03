@@ -5,9 +5,9 @@ interface
 
 uses
   Classes,
-  rgglobal,
-  TLSGBase,
-  rgstream;
+  RGGlobal,
+  RGStream,
+  TLSGBase;
 
 type
   TTLEffectDamageType = (Physical, Magical, Fire, Ice, Electric, Poison, All);
@@ -137,8 +137,9 @@ function GetEffectActivation(aval:TTLEffectActivation):string;
 implementation
 
 uses
-  sysutils,
-  tlsgcommon;
+  SysUtils,
+  TLSGCommon;
+
 
 const
   EffectDamageTypes : array [0..6] of string = (

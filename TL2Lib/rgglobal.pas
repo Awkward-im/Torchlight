@@ -5,7 +5,7 @@ interface
 {$DEFINE Interface}
 
 uses
-  logging;
+  Logging;
 
 //===== Common things =====
 

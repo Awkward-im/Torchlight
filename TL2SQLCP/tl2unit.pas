@@ -10,7 +10,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus,
   ShellCtrls, ExtCtrls, StdCtrls, Buttons, ActnList,
-  LCLType,StdActns, Grids, Types;
+  LCLType, StdActns, Grids, Types;
+
 
 type
 
@@ -148,17 +149,18 @@ type
 var
   MainTL2TransForm: TMainTL2TransForm;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-uni_profiler,
   LCLIntf,
   LazUTF8,
   ClipBrd,
-  iso639,
-  rgglobal,
+  ISO639,
+  RGGlobal,
+  RGDB.Text,
   TL2DataModule,
   TL2SettingsForm,
   TL2EditText,
@@ -167,8 +169,8 @@ uni_profiler,
   TL2SimForm,
   TL2AltForm,
   TL2About,
-  rgdb.text,
   TL2Text;
+
 
 { TMainTL2TransForm }
 

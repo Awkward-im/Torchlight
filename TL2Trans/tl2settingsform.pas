@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons,  trclass;
+  Buttons,  TRClass;
+
 
 const
   DefDATFile    = 'TRANSLATION.DAT';
@@ -76,22 +77,25 @@ var
 
 function Translate(const src:AnsiString):AnsiString;
 
+
 implementation
 
 {$R *.lfm}
 uses
-  inifiles,
+  IniFiles,
 
   LCLTranslator,
   LCLType,
   LCLIntf,
 
-  iso639,
+  ISO639,
 
-  rgglobal,
+  RGGlobal,
+
   TL2Text,
   TL2DataUnit,
   TL2DataModule;
+
 
 resourcestring
   sNotRealized    = 'Not realized yet';

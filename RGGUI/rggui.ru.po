@@ -11,6 +11,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.4\n"
 
+#: fmlog.rscantsave
+#, fuzzy
+msgctxt "fmlog.rscantsave"
+msgid "Can't save log file"
+msgstr "Не могу сохранить файл лога"
+
 #: formgui.rsbuildgrid
 msgid " Build file list. Please, wait..."
 msgstr " Построение списка файлов. Ждите..."
@@ -371,19 +377,6 @@ msgstr ""
 msgctxt "rgpreview.rstime"
 msgid "Time"
 msgstr "Время"
-
-#: tfmlogform.bbclear.caption
-msgid "&Clear"
-msgstr "Очистить"
-
-#: tfmlogform.bbsave.caption
-msgctxt "tfmlogform.bbsave.caption"
-msgid "Save"
-msgstr "Сохранить"
-
-#: tfmlogform.bbsave.hint
-msgid "Save log to file"
-msgstr "Сохранить лог в файл"
 
 #: trgguiform.actchangeversion.caption
 msgid "Change PAK version"
@@ -809,8 +802,4 @@ msgstr "Показать/скрыть столбец: Распакованный
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
 msgstr "Информация о моде"
-
-#: unitlogform.rscantsave
-msgid "Can't save log file"
-msgstr "Не могу сохранить файл лога"
 

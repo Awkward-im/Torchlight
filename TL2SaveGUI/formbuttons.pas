@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  TLSGBase,tlsave;
+  TLSGBase, TLSave;
 
 type
 
@@ -44,12 +44,14 @@ type
 var
   fmButtons: TfmButtons;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  rgglobal;
+  RGGlobal;
+
 
 { TfmButtons }
 

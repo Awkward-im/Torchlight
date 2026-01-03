@@ -6,7 +6,7 @@ unit RGPrepare;
 interface
 
 uses
-  rgctrl;
+  RGCtrl;
 
 procedure PrepareFeatureTags();
 procedure PrepareFeatureTags(const adir:string);
@@ -17,11 +17,11 @@ implementation
 
 uses
   SysUtils,
-  rgglobal,
-  laylist,
-  rgio.text,
-  rgio.dat,
-  rgnode;
+  RGGlobal,
+  LayList,
+  RGIO.Text,
+  RGIO.Dat,
+  RGNode;
 
 procedure ProcessHie(anode:pointer);
 var

@@ -5,7 +5,8 @@ interface
 
 uses
   Forms,
-  rgctrl;
+  RGCtrl;
+
 
 function PreviewImageset(var actrl:TRGController; aidx:integer):TForm;
 
@@ -17,9 +18,10 @@ uses
   Types,
   Controls,
   StdCtrls,
-  rgglobal,
+  RGGlobal,
   fmImageset,
   DMViewer;
+
 
 resourcestring
   rsImageFile = 'Texture file';

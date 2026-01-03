@@ -11,8 +11,8 @@ unit RGFile;
 interface
 
 uses
-  classes,
-  rgglobal;
+  Classes,
+  RGGlobal;
 
 
 const
@@ -89,19 +89,19 @@ function ConvertToVersion(var abuf:PByte; var asize:integer;
 implementation
 
 uses
-  sysutils,
-  paszlib,
-  zstream,
-  zbase,
+  SysUtils,
+  PasZLib,
+  ZStream,
+  ZBase,
 //  bufstream,
 
-  rgnode,
-  rgio.dat,
-  rgio.layout,
-  rgio.raw,
-  rgio.text,
+  RGNode,
+  RGIO.Dat,
+  RGIO.Layout,
+  RGIO.Raw,
+  RGIO.Text,
   
-  rgfiletype;
+  RGFileType;
 
 
 function RGTypeOfFile(aBuf:PByte; aname:PWideChar=nil):integer;

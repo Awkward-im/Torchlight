@@ -22,7 +22,8 @@ interface
 
 uses
   Classes,
-  textcache;
+  TextCache;
+
 
 type
   TTL2Reference = object
@@ -149,8 +150,9 @@ implementation
 
 uses
   SysUtils,
-  rgglobal,
-  rgstream;
+  RGGlobal,
+  RGStream;
+
 
 const
   RefVersion = 1;

@@ -5,7 +5,7 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, fm3dview;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, fm3dView;
 
 type
 
@@ -23,7 +23,9 @@ type
 var
   Form1: TForm1;
 
+
 implementation
+
 
 {$R *.lfm}
 
@@ -69,8 +71,5 @@ begin
   fm.LoadFromFile(lname);
 end;
 
-initialization
-
-finalization
 
 end.

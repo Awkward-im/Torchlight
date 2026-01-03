@@ -1,4 +1,5 @@
 ﻿{%REGION List (direct control access)}
+
 {
   place:
   SetFocus
@@ -6,7 +7,8 @@
     sbTreeClick
 
   Non-event functions:
-    function TPanelForm.IsParentDirSelected():integer; inline;
+    procedure TPanelForm.SelectFile(aidx:integer);
+    function  TPanelForm.IsParentDirSelected():integer; inline;
     procedure TPanelForm.GetSelectionList(var arr:TDynIntegerArray);
     function  TPanelForm.GetSelectedFile():integer; inline;
     procedure TPanelForm.SelectLine();
@@ -17,6 +19,27 @@
     lvListCompare
     lvListShowHint
 }
+
+procedure TPanelForm.sbFullClick(Sender: TObject);
+begin
+  sbFilter.Visible:=sbFull.Down;
+  lvfeFull.Visible:=sbFull.Down;
+  lvfeFull.FilteredListview:=nil;
+  lvfeFull.Items.Clear;
+  lvfeFull.Filter:='';
+
+  if sbFull.Down then
+  begin
+    FillList(-1);
+    lvfeFull.SortData:=true;
+    lvfeFull.FilteredListview:=lvList;
+  end
+  else
+  begin
+    FillList(0);
+  end;
+end;
+
 procedure TPanelForm.ShowHideColumn(acol:integer; ashow:boolean); inline;
 begin
   lvList.Column[acol].Visible:=ashow;
@@ -66,6 +89,48 @@ begin
   end;
 end;
 
+procedure TPanelForm.SelectAll();
+var
+  lstart,lidx,lcnt,i:integer;
+begin
+  if (lvList.Items.Count=0) then exit;
+  if (lvList.Items[0].Caption=strParentDir) then
+  begin
+    if lvList.Items.Count=1 then exit;
+    lstart:=1;
+  end
+  else
+    lstart:=0;
+
+  // have no any selection -> Select all
+  if not lvList.Checkboxes then
+  begin
+    lvList.Checkboxes:=True;
+    for i:=lstart to lvList.Items.Count-1 do
+      lvList.Items[i].Checked:=true;
+  end
+  // have at least one selection
+  else
+  begin
+    lcnt:=0;
+    for i:=lstart to lvList.Items.Count-1 do
+      if lvList.Items[i].Checked then inc(lcnt);
+
+    // selected all -> Select nothing
+    if lcnt=(lvList.Items.Count-lstart) then
+    begin
+{
+      for i:=lstart to lvList.Items.Count-1 do
+        lvList.Items[i].Checked:=false;
+}
+      lvList.Checkboxes:=false
+    end
+    else
+      for i:=lstart to lvList.Items.Count-1 do
+        lvList.Items[i].Checked:=true;
+  end;
+end;
+
 procedure TPanelForm.SelectLine();
 var
   lidx,lcnt,i:integer;
@@ -94,8 +159,11 @@ begin
   lvList.SetFocus;
   if lidx<(lvList.Items.Count-1) then inc(lidx);
   lvList.ItemIndex:=lidx;
-  lvList.Items[lidx].Selected:=true;
-  lvList.Items[lidx].Focused :=true;
+
+    lvList.ItemFocused:=lvList.Items[lvList.ItemIndex];
+    lvList.Items[lvList.ItemIndex].MakeVisible(true);
+//  lvList.Items[lidx].Selected:=true;
+//  lvList.Items[lidx].Focused :=true;
 end;
 
 procedure TPanelForm.lvListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
@@ -134,7 +202,7 @@ TCustomDrawStateFlag = (
 var
   lcbg:TColor;
 begin
-  case Ctrl^.UpdateState(IntPtr(Item.Data)) of
+  case Ctrl^.GetUpdateState(IntPtr(Item.Data)) of
     stateNew    : lcbg:=clrNewBG;
     stateChanged: lcbg:=clrChangedBG;
     stateDelete : lcbg:=clrDeleteBG;
@@ -228,19 +296,98 @@ begin
     HintInfo^.HintStr:=lv.SubItems[si-1];
 end;
 
+procedure TPanelForm.FillFullList();
+var
+  ltime:UInt64;
+  linfo:PRGCtrlInfo;
+  lrec:TRGFullInfo;
+  ls:AnsiString;
+  i:integer;
+begin
+  lvList.BeginUpdate;
+  lvList.Clear;
+  lvList.Checkboxes:=false;
+
+  for i:=0 to Ctrl^.FileCount-1 do
+  begin
+    if Ctrl^.IsDir(i) or Ctrl^.IsFileDeleted(i) then continue;
+
+    linfo:=Ctrl^.Files[i];
+    with lvList.Items.Add do
+    begin
+      ls:=WideToStr(linfo^.Name);
+
+      Ctrl^.GetFullInfo(i,lrec);
+
+      Caption:=ExtractNameOnly(ls);
+      Data   :=pointer(IntPtr(i));
+      SubItems.Add(ExtractExt(ls));              // ext
+      SubItems.Add(RGTypeGroupName(lrec.ftype)); // type
+      SubItems.Add(IntToStr(lrec.size));         // size
+      // Time
+      ltime:=lrec.ftime;
+      if ltime<>0 then
+      begin
+        try
+          ls:=DateTimeToStr(FileTimeToDateTime(ltime));
+        except
+          ls:='0x'+HexStr(ltime,16);
+        end;
+      end
+      else
+        ls:='';
+      SubItems.Add(ls);
+
+      // State
+      case lrec.state of
+        stateNew              : ls:=stlblNew;
+        stateChanged          : ls:=stlblChanged;
+        stateDelete           : ls:=stlblDelete;
+        stateNew    +stateLink: ls:=stlblLinkNew;
+        stateChanged+stateLink: ls:=stlblLinkEd;
+      else
+        ls:=' ';
+      end;
+      SubItems.Add(ls);
+    end;
+  end;
+  lvList.EndUpdate;
+
+  if lvList.Items.Count>0 then
+  begin
+    if lvList.Items.Count>1 then
+    begin
+      lvList.SortColumn:=colExt;
+      lvList.Sort;
+    end;
+
+    lvList.ItemIndex:=0;
+  end;
+
+  lblPath.Caption:=rsFullList;
+end;
+
 procedure TPanelForm.FillList(adir:integer);
 var
   ltime:UInt64;
   c,ls:AnsiString;
   linfo:PRGCtrlInfo;
-  lfile:integer;
+  lolddir,lfile:integer;
   lrec:TRGFullInfo;
 begin
+  if adir<0 then
+  begin
+    FillFullList();
+    exit;
+  end;
+
   if (adir<0) or (adir>=Ctrl^.DirCount) then exit;
   if GetPanelType()<>panelList then exit;
 
+  lolddir:=GetActiveDir(Ctrl,ListIndex);
   SetActiveDir(adir,Ctrl,ListIndex);
 
+  lvList.BeginUpdate;
   lvList.Clear;
   lvList.Checkboxes:=false;
 
@@ -279,7 +426,7 @@ begin
           Data   :=pointer(IntPtr(lfile));
           SubItems.Add(ExtractExt(ls));              // ext
           SubItems.Add(RGTypeGroupName(lrec.ftype)); // type
-          SubItems.Add(IntToStr(lrec.size_s));       // size
+          SubItems.Add(IntToStr(lrec.size));         // size
           // Time
           ltime:=lrec.ftime;
           if ltime<>0 then
@@ -308,19 +455,61 @@ begin
       end;
     until not Ctrl^.GetNextFile(lfile);
   end;
+  lvList.EndUpdate;
+
   if lvList.Items.Count>0 then
   begin
     if lvList.Items.Count>1 then
 	    lvList.Sort;
 
-//    if GetSelectedFile()<0 then
-    begin
-      lvList.ItemIndex:=0;
-      lvList.Items[0].Focused:=true;
-    end;
+	  if lolddir<>adir then
+      SelectFile(Ctrl^.AsFile(lolddir))
+    else
+      SelectFile(GetActiveFile(Ctrl,ListIndex));
   end;
 
   lblPath.Caption:=Ctrl^.Dirs[adir].Name;
+end;
+
+procedure TPanelForm.SelectFile(aidx:integer);
+var
+  i,lidx:integer;
+begin
+  lidx:=0;
+  if aidx>=0 then
+  begin
+    for i:=0 to lvList.Items.Count-1 do
+    begin
+      if aidx=UIntPtr(lvList.Items[i].Data) then
+      begin
+        lidx:=i;
+        break;
+      end;
+    end;
+  end;
+  lvList.ItemIndex:=lidx;
+//  if (lidx<lvList.Items.Count) and Self.Showing then lvList.Items[lvList.ItemIndex].Focused:=true;
+  if (lidx<lvList.Items.Count) and Self.Showing then 
+  begin
+    lvList.ItemFocused:=lvList.Items[lvList.ItemIndex];
+    lvList.Items[lvList.ItemIndex].MakeVisible(true);
+  end;
+end;
+
+procedure TPanelForm.SelectInList(afirst:boolean);
+begin
+  if lvList.Items.Count>1 then
+  begin
+    if afirst then
+      lvList.ItemIndex:=0
+    else
+      lvList.ItemIndex:=lvList.Items.Count-1;
+
+//    if Self.Showing then lvList.Items[lvList.ItemIndex].Focused:=true;
+    lvList.ItemFocused:=lvList.Items[lvList.ItemIndex];
+    lvList.Items[lvList.ItemIndex].MakeVisible(true);
+//    lvList.TopItem:=lvList.Items[lvList.ItemIndex]
+  end;
 end;
 
 {%ENDREGION List}

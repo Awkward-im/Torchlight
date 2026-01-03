@@ -21,8 +21,8 @@ interface
 uses
   Graphics,
   Forms,
-  rgglobal,
-  rgctrl;
+  RGGlobal,
+  RGCtrl;
 
 
 function MakePreview(var actrl:TRGController; aidx:integer):TForm;
@@ -43,14 +43,15 @@ uses
   RGFileType
 
   ,DMViewer
-  ,rgvdump
-  ,rgvimageset
-  ,rgvmesh
-  ,rgvlayout
-  ,rgvsound
-  ,rgvimage
-  ,rgvtext
+  ,rgvDump
+  ,rgvImageset
+  ,rgvMesh
+  ,rgvLayout
+  ,rgvSound
+  ,rgvImage
+  ,rgvText
   ;
+
 
 resourcestring
   rsSize            = 'Size';
@@ -77,7 +78,7 @@ var
 begin
   result:=nil;
   if aidx<0 then exit;
-  if actrl.UpdateState(aidx)=stateDelete then exit;
+  if actrl.GetUpdateState(aidx)=stateDelete then exit;
 
   if Viewer=nil then Viewer:=TViewer.Create(nil{Application.MainForm});
 
@@ -87,7 +88,7 @@ begin
   RGLog.Reserve('Processing '+ldir+lname);
 
   actrl.GetFullInfo(aidx,lrec);
-  //if (lrec.offset=0) or (lrec.size_s=0) then exit;
+  //if (lrec.offset=0) or (lrec.size=0) then exit;
 {}
   if lrec.ftype=typeDirectory then exit;
 
@@ -167,7 +168,7 @@ begin
       lblInfo2.Left  :=8;
       lblInfo2.Top   :=19;
 
-      lblInfo1.Caption:=rsSize+': '+IntToStr(lrec.size_s)+'; '+
+      lblInfo1.Caption:=rsSize+': '+IntToStr(lrec.size)+'; '+
                         rsOffset+': '+'0x'+HexStr(lrec.offset,8);
       try
         lblInfo2.Caption:=rsTime+': '+DateTimeToStr(FileTimeToDateTime(lrec.ftime));

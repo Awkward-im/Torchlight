@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, Buttons,
-  StdCtrls, tlsave, rgglobal;
+  StdCtrls, RGGlobal, TLSave;
+
 
 type
 
@@ -35,8 +36,9 @@ implementation
 
 uses
   LCLType,
-  addons,
-  rgdb;
+  RGDB,
+  Addons;
+
 
 const
   colTitle = 0;

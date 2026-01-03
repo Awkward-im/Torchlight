@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls, Buttons,
-  rgglobal;
+  RGGlobal;
+
 
 type
 
@@ -48,17 +49,19 @@ type
 var
   GenForm: TGenForm;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
   LCLType,
-  iso639,
-  sqlite3dyn,
-  sqlitedb,
-  tl2SettingsForm,
-  rgdb.text;
+  ISO639,
+  SQLite3Dyn,
+  SQLiteDB,
+  RGDB.Text,
+  tl2SettingsForm;
+
 
 resourcestring
   rsTransPlace     = 'Choose file to save translation data';

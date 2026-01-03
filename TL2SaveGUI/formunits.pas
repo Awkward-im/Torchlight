@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ComCtrls, ListViewFilterEdit, tlsave, tl2map, formChar;
+  ExtCtrls, ComCtrls, ListViewFilterEdit, TLSave, TL2Map, formChar;
+
 
 type
 
@@ -37,14 +38,16 @@ type
 var
   fmUnits: TfmUnits;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  formButtons,
-  tlsgchar,
-  rgdb;
+  RGDB,
+  TLSGChar,
+  formButtons;
+
 
 const
   imgModded  = 4;

@@ -8,6 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Buttons, StdCtrls,
   CheckLst;
 
+
 type
 
   { TDelForm }
@@ -41,8 +42,9 @@ implementation
 {$R *.lfm}
 
 uses
-  rgglobal,
-  rgdb.text;
+  RGGlobal,
+  RGDB.Text;
+
 
 resourcestring
   rsNoDeleted  = 'Strange, no deleted lines at all.';

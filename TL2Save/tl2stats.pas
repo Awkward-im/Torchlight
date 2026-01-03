@@ -4,9 +4,10 @@ interface
 
 uses
   Classes,
-  rgglobal,
-  rgstream,
+  RGGlobal,
+  RGStream,
   TLSGBase;
+
 
 type
   tStatMob = packed record
@@ -133,6 +134,7 @@ implementation
 
 uses
   TLSGCommon;
+
 
 constructor TTL2Stats.Create;
 begin

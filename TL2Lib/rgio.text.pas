@@ -35,8 +35,8 @@ function GetTextErrorDescription(aerror:integer):string;
 implementation
 
 uses
-  rgglobal,
-  rgnode;
+  RGGlobal,
+  RGNode;
 
 resourcestring
   strCantOpen      = 'Can''t open file for parsing';

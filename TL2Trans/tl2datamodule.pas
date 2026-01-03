@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Controls, Forms,
   StdCtrls, Graphics, Menus,
-  tl2dataunit;
+  TL2DataUnit;
+
 
 type
 
@@ -41,10 +42,11 @@ resourcestring
 implementation
 
 uses
-  TL2Text,
-  rgglobal,
-  rgpak,
-  rgfile;
+  RGGlobal,
+  RGPak,
+  RGFile,
+  TL2Text;
+
 
 {$R *.lfm}
 

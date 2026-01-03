@@ -5,6 +5,7 @@ unit TL2Text;
 
 interface
 
+
 function RemoveTags(const src:AnsiString):AnsiString;
 
 function RemoveColor(const textin:AnsiString; out textout:AnsiString):boolean;
@@ -50,6 +51,7 @@ implementation
 
 uses
   SysUtils;
+
 
 resourcestring
   rsSrcSpace  = 'Source have space(s) at the end';

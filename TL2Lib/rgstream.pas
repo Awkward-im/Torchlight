@@ -22,8 +22,8 @@ unit RGStream;
 interface
 
 uses
-  classes
-  ,rgglobal;
+  Classes
+  ,RGGlobal;
 
 
 type

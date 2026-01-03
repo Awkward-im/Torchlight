@@ -28,12 +28,14 @@ type
 var
   AboutForm: TAboutForm;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
   LazVersion;
+
 
 { TAboutForm }
 

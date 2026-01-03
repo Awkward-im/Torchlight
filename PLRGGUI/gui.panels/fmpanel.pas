@@ -6,8 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  ComCtrls, Buttons,
+  ComCtrls, Buttons, TreeFilterEdit, ListViewFilterEdit,
   rgglobal, rgctrl;
+
+
+{$DEFINE Interface}
 
 type
 
@@ -15,6 +18,10 @@ type
 
   TPanelForm = class(TForm)
     cbContent: TComboBox;
+    lvfeFull: TListViewFilterEdit;
+    sbFilter: TSpeedButton;
+    sbFull: TSpeedButton;
+    tfeTree: TTreeFilterEdit;
     ilPanel: TImageList;
     lblPath: TLabel;
     lvList: TListView;
@@ -31,6 +38,7 @@ type
 
     procedure DoListDblClick  (Sender: TObject);
     procedure DoListKeyDown   (Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
     procedure SetPanelActive  (Sender: TObject);
 
     procedure lvListCustomDrawItem(Sender: TCustomListView; Item: TListItem;
@@ -41,6 +49,8 @@ type
     procedure lvListShowHint(Sender: TObject; HintInfo: PHintInfo);
 
     procedure sbColumnsClick(Sender: TObject);
+    procedure sbFilterClick(Sender: TObject);
+    procedure sbFullClick(Sender: TObject);
 
     procedure DoTreeKeyDown  (Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sbCollapseClick(Sender: TObject);
@@ -49,23 +59,40 @@ type
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
     fmPreview:TForm;
+    FOnChange:TRGOnChange;
 
     procedure AddBranch(aroot:TTreeNode; adir:integer);
     procedure FillTree      (adir:integer);
     procedure SelectTreePath(adir:integer);
     procedure FillList      (adir:integer);
-
-    procedure SetupView(atype:integer);
+    procedure FillFullList();
 
     procedure ShowHideColumn(acol:integer; ashow:boolean);
-    procedure SelectLine();
     procedure UnpackSelected();
     function  GetSelectionList(var arr:TIntegerDynArray):integer;
     function  IsParentDirSelected():boolean;
+    procedure SelectFile(aidx:integer);
+    procedure SelectInList(afirst:boolean);
+
+    procedure SelectLine();
+    procedure SelectAll();
+
+{$I act.inc}
+    
+    function OnChangeDefault(actrl:pointer; idx:integer; aevent:integer):integer;
   public
     Ctrl:PRGController;
     ListIndex:integer; // index in (Dirs:array [0..15] of TDirListElement)
 
+    procedure SetupView(atype:integer);
+
+{
+  Directory must not have same name as file too. No case-sensitive
+  Return file index (-1 if not found)
+  Why here, not in Ctrl? coz we search in current dir only
+  OR we can use SearchFile (active dir+name)
+}
+    function  IsNameExists(const aname:AnsiString):integer;
     function  GetOppositePanel():TPanelForm;
     function  GetPanelType    ():integer;
     function  GetSelectedFile ():integer;
@@ -75,6 +102,8 @@ type
     procedure ShowPreview(actrl:PRGController; aidx:integer);
 
     procedure UpdatePreview(aidx: integer; actrl: PRGController; aList: integer);
+
+    property  OnChange:TRGOnChange read FOnChange write FOnChange;
   end;
 
 var
@@ -102,11 +131,15 @@ uses
   LCLType,
   LCLIntf,
 
-  rgfiletype,
+  RGFileType,
+  fmFilter,
 
-  rggui.core,
-  rggui.shared,
-  rgpreview;
+  RGGUI.Core,
+  RGGUI.Shared,
+  RGPreview;
+
+
+{$UNDEF Interface}
 
 const
   ptView = -1;
@@ -115,6 +148,8 @@ resourcestring
   rsPreview = '~~Preview';
 
 { TPanelForm }
+
+{$I act.inc}
 
 {%REGION NotVisual}
 procedure TPanelForm.SetCtrl(actrl:PRGController);
@@ -168,6 +203,12 @@ begin
     end;
   end;
 end;
+
+function TPanelForm.IsNameExists(const aname:AnsiString):integer;
+begin
+  result:=Ctrl^.IsNameExists(GetActiveDir(Ctrl,ListIndex),aname);
+end;
+
 {%ENDREGION NotVisual}
 
 // Use combobox selection for type
@@ -189,6 +230,10 @@ end;
 
 procedure TPanelForm.SetupView(atype:integer);
 begin
+  sbFull.Down:=false;
+  lvfeFull.Visible:=false;
+  sbFilter.Visible:=false;
+
   case atype of
     panelList: begin
 //RemoveEventHandler(@UpdatePreview);
@@ -197,8 +242,10 @@ begin
       sbTime.Visible:=true;
       sbSize.Visible:=true;
       sbAttr.Visible:=true;
+      sbFull.Visible:=true;
 
       tvTree    .Visible:=false;
+      tfeTree   .Visible:=false;
       sbCollapse.Visible:=false;
       sbTree    .Visible:=true;
     end;
@@ -211,8 +258,10 @@ begin
       sbTime.Visible:=false;
       sbSize.Visible:=false;
       sbAttr.Visible:=false;
+      sbFull.Visible:=false;
 
       tvTree    .Visible:=false;
+      tfeTree   .Visible:=false;
       sbCollapse.Visible:=false;
       sbTree    .Visible:=false;
     end;
@@ -224,8 +273,11 @@ begin
       sbTime.Visible:=false;
       sbSize.Visible:=false;
       sbAttr.Visible:=false;
+      sbFull.Visible:=false;
 
+      tfeTree.Filter:='';
       tvTree    .Visible:=true;
+      tfeTree   .Visible:=true;
       sbCollapse.Visible:=true;
       sbTree    .Visible:=true;
     end;
@@ -369,9 +421,19 @@ begin
   else if acol=colAttr then sbAttr.Down:=ashow
 end;
 
+procedure TPanelForm.sbColumnsClick(Sender: TObject);
+begin
+//  ldohide:=(Sender as TSpeedButton).Up;
+       if Sender=sbType then ShowHideColumn(colType,(Sender as TSpeedButton).Down)
+  else if Sender=sbTime then ShowHideColumn(colTime,(Sender as TSpeedButton).Down)
+  else if Sender=sbSize then ShowHideColumn(colSize,(Sender as TSpeedButton).Down)
+  else if Sender=sbAttr then ShowHideColumn(colAttr,(Sender as TSpeedButton).Down);
+end;
+
 procedure TPanelForm.DoListKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   lform:TForm;
+  ldir:integer;
 begin
   // DblClick, Change directory
   if (Key=VK_RETURN) and (Shift=[]) then
@@ -386,9 +448,29 @@ begin
     exit;
 }
   end
+  // to first file
+  else if (Key=VK_LEFT) and (Shift=[]) then
+  begin
+//    ldir:=GetActiveDir(Ctrl,ListIndex);
+//    if ldir>=0 then SelectFile(Ctrl^.Dirs[ldir].first);
+    SelectInList(true);
+  end
+  // to last file
+  else if (Key=VK_RIGHT) and (Shift=[]) then
+  begin
+//    ldir:=GetActiveDir(Ctrl,ListIndex);
+//    if ldir>=0 then SelectFile(Ctrl^.Dirs[ldir].last);
+    SelectInList(false);
+  end
+  // [Un] Select All
+  else if (Key=VK_A) and (Shift=[ssCtrl]) then
+  begin
+    SelectAll();
+  end
   // Rename
   else if (Key=VK_F2) and (Shift=[]) then
   begin
+    Rename();
   end
   // Preview in separate window
   else if (Key=VK_F3) and (Shift=[]) then
@@ -396,18 +478,26 @@ begin
     lform:=MakePreview(Ctrl^,GetSelectedFile());
     if lform<>nil then lform.Show;
   end
-  // Create New
+  // Create New file
   else if ((Key=VK_N ) and (Shift=[ssCtrl])) or
           ((Key=VK_F4) and (Shift=[])) then
   begin
+    CreateNewFile();
   end
   // Copy file/dir [opposite panel]
   else if (Key=VK_F5) and (Shift=[]) then
   begin
+//    Copy();
   end
   // Move file/dir [opposite panel]
   else if (Key=VK_F6) and (Shift=[]) then
   begin
+//    Move();
+  end
+  // Create new dir
+  else if (Key=VK_F7) and (Shift=[]) then
+  begin
+    CreateNewDir();
   end
   // Delete [restore?] file/dir
   else if (Key=VK_DELETE) or (Key=VK_F8) then
@@ -444,11 +534,13 @@ begin
   // Rename
   else if (Key=VK_F2) and (Shift=[]) then
   begin
+    Rename();
   end
   // Create New
   else if ((Key=VK_N ) and (Shift=[ssCtrl])) or
-          ((Key=VK_F4) and (Shift=[])) then
+          (((Key=VK_F7) or (Key=VK_F4)) and (Shift=[])) then
   begin
+    CreateNewDir();
   end
   // Copy file/dir [opposite panel]
   else if (Key=VK_F5) and (Shift=[]) then
@@ -539,13 +631,13 @@ begin
   SetLength(lselect,0);
 end;
 
-procedure TPanelForm.sbColumnsClick(Sender: TObject);
+procedure TPanelForm.sbFilterClick(Sender: TObject);
 begin
-//  ldohide:=(Sender as TSpeedButton).Up;
-       if Sender=sbType then ShowHideColumn(colType,(Sender as TSpeedButton).Down)
-  else if Sender=sbTime then ShowHideColumn(colTime,(Sender as TSpeedButton).Down)
-  else if Sender=sbSize then ShowHideColumn(colSize,(Sender as TSpeedButton).Down)
-  else if Sender=sbAttr then ShowHideColumn(colAttr,(Sender as TSpeedButton).Down);
+  if fmFilterForm=nil then
+  begin
+    fmFilterForm:=TFilterForm.Create(Self);
+  end;
+  fmFilterForm.ShowOnTop;
 end;
 
 {$I lv.inc}
@@ -845,6 +937,34 @@ begin
 begin
   if aList<>ListIndex then
     ShowPreview(actrl,aidx);
+end;
+
+procedure TPanelForm.FormCreate(Sender: TObject);
+begin
+  FOnChange:=@OnChangeDefault;
+
+  lvList.SortColumn:=colExt;
+end;
+
+function TPanelForm.OnChangeDefault(actrl:pointer; idx:integer; aevent:integer):integer;
+var
+  ltype,ldir:integer;
+  lisdir:boolean;
+begin
+  result:=1;
+  if Ctrl=actrl then
+  begin
+    ltype :=GetPanelType();
+    ldir  :=GetActiveDir(Ctrl,ListIndex);
+    lisdir:=Ctrl^.IsDir(idx);
+{
+    if (ltype=panelTree) and (lisdir) and
+       (aevent in [faAdd,faRename,faDelete,faMove,faStatus]) then
+      FillTree(ldir);
+    if ltype=panelList then
+      FillList(ldir);
+}
+  end;
 end;
 
 end.

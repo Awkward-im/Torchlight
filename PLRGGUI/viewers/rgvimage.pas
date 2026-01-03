@@ -6,7 +6,8 @@ interface
 
 uses
   Forms,
-  rgctrl;
+  RGCtrl;
+
 
 function PreviewImage(var actrl:TRGController; aidx:integer):TForm;
 
@@ -20,7 +21,7 @@ uses
   Controls,
   Graphics,
   Buttons,
-  extctrls,
+  ExtCtrls,
 
   Imaging,
   ImagingDds,
@@ -33,9 +34,10 @@ uses
   ImagingTypes,
   ImagingComponents,
 
-  rgglobal,
+  RGGlobal,
   DMViewer;
   
+
 resourcestring
   rsHintScale  = 'Stretch image';
   rsHintDarkBg = 'Draw dark background';

@@ -8,23 +8,17 @@ interface
 
 uses
   Classes,
-  zipper,
-  rgfs,
-  rgglobal;
+  Zipper,
+  RGFS,
+  RGGlobal;
 
 
 type
   PManFileInfo = ^TManFileInfo;
   TManFileInfo = object (TFileInfo)
     size_u  :dword;
-    size_s  :dword;     // MAN: looks like source,not compiled, size (unusable)
     size_c  :dword;     // PAK: from TPAKFileHeader
     offset  :dword;     // MAN: PAK data block offset (??changed to "data" field)
-    _ftype  :word;      // MAN: RGFileType unified type
-  private
-    function GetFType:word;
-  public
-    property ftype:word read GetFType write _ftype;
   end;
   TAManFileInfo = array of TManFileInfo;
 
@@ -82,20 +76,14 @@ type
 implementation
 
 uses
-  sysutils,
+  SysUtils,
 
-  rwmemory,
+  RWMemory,
 
-  rgstream,
-  rgfiletype;
+  RGStream,
+  RGFileType;
 
 {%REGION Common}
-function TManFileInfo.GetFType:word;
-begin
-  if _ftype=typeUnknown then _ftype:=RGTypeOfExt(Name);
-  result:=_ftype;
-end;
-
 procedure TRGManifest.SetRoot(apath:PUnicodeChar);
 begin
   if CompareWide(FRoot,apath)<>0 then
@@ -119,8 +107,11 @@ begin
     begin
       if not IsFileDeleted(i) then
       begin
-        if PManFileInfo(Files[i])^.size_c>FLPacked   then FLPacked  :=PManFileInfo(Files[i])^.size_c;
-        if PManFileInfo(Files[i])^.size_u>FLUnpacked then FLUnpacked:=PManFileInfo(Files[i])^.size_u;
+        with PManFileInfo(Files[i])^ do
+        begin
+          if size_c>FLPacked   then FLPacked  :=size_c;
+          if size_u>FLUnpacked then FLUnpacked:=size_u;
+        end;
       end;
     end;
 
@@ -234,7 +225,7 @@ begin
       if ((pc=nil) or (pc^=#0)) {and (ltype=typeUnknown)} then
       begin
         {offset  :=}memReadDWord(aptr);
-        {size_s  :=}memReadDWord(aptr);
+        {size    :=}memReadDWord(aptr);
         if (aver=verTL2   ) or
            (aver=verTL2Mod) then
         begin
@@ -243,7 +234,8 @@ begin
       end
       else
       begin
-        lfile:=AppendFile(lentry,nil);
+//        lfile:=AppendFile(lentry,nil);
+        lfile:=AddFile(lentry,nil);
 
         with PManFileInfo(Files[lfile])^ do
         begin
@@ -260,7 +252,7 @@ begin
             RGLog.Add('Unknown file type: '+FastWideToStr(PWideChar(lname))+FastWideToStr(pc));
 
           offset  :=memReadDWord(aptr);
-          size_s  :=memReadDWord(aptr);
+          size    :=memReadDWord(aptr);
           if (aver=verTL2   ) or
              (aver=verTL2Mod) then
           begin
@@ -276,10 +268,10 @@ begin
   }
   if Dirs[0].count=0 then
   begin
-    AppendFile(0,Dirs[1].Name);
+    AddFile(0,strRootDir);
   end;
 
-  Link;
+//  Link;
   result:=total;
 end;
 
@@ -334,7 +326,7 @@ begin
 //            ast.WriteByte(PAKTypeToReal(ftype,aver));
             ast.WriteShortString(p^.Name);
             ast.WriteDWord(offset);
-            ast.WriteDWord(size_s);
+            ast.WriteDWord(size);
             if (aver=verTL2   ) or
                (aver=verTL2Mod) then
               ast.WriteQWord(ftime);
@@ -375,58 +367,6 @@ begin
   finally
     lst.Free;
   end;
-end;
-
-function CheckFName(const adir,aname:UnicodeString):UnicodeString;
-var
-  lext:array [0..15] of UnicodeChar;
-  lname:UnicodeString;
-  lextpos,j,k:integer;
-begin
-  result:='';
-  
-  lextpos:=Length(aname);
-  while lextpos>1 do
-  begin
-    dec(lextpos);
-    if aname[lextpos]='.' then break;
-  end;
-  // extract ext
-  k:=0;
-  if lextpos>1 then
-    for j:=lextpos to Length(aname) do
-    begin
-      lext[k]:=FastUpCase(aname[j]);
-      inc(k);
-    end;
-  lext[k]:=#0;
-
-  if (CompareWide(lext,'.TXT'      )=0) or
-     (CompareWide(lext,'.BINDAT'   )=0) or
-     (CompareWide(lext,'.BINLAYOUT')=0) or
-     (CompareWide(lext,'.CMP'      )=0) or
-     (CompareWide(lext,'.ADM'      )=0) then
-  begin
-    lname:=Copy(aname,1,lextpos-1);
-    if FileExists(adir+lname) then exit;
-  end
-  else if CompareWide(lext,'.PNG')=0 then
-  begin
-    lname:=aname;
-    lname[lextpos+1]:='D';
-    lname[lextpos+2]:='D';
-    lname[lextpos+3]:='S';
-    if FileExists(adir+lname) then
-      exit
-    else
-      exit(aname);
-  end
-  else
-    lname:=aname;
-
-  // can't use lext coz need to delete ext to get real sometime
-  if RGTypeOfExt(PUnicodeChar(lname))<>typeUnknown then
-    result:=lname;
 end;
 
 {
@@ -470,9 +410,9 @@ begin
 //          for j:=1 to Length(lname) do lname[j]:=UpCase(lname[j]);
           with PManFileInfo(aman.Files[aman.AddFile(aentry,PUnicodeChar(lname))])^ do
           begin
-            ftype :=RGTypeOfExt(PUnicodeChar(lname));
-            ftime :=DateTimeToFileTime(sr.TimeStamp);
-            size_s:=sr.Size;
+            ftype:=RGTypeOfExt(PUnicodeChar(lname));
+            ftime:=DateTimeToFileTime(sr.TimeStamp);
+            size :=sr.Size;
             //!!
             if aman.FLUnpacked<sr.Size then aman.FLUnpacked:=sr.Size;
           end;
@@ -553,13 +493,13 @@ begin
     lfile:=AddFile(lfile,pointer(UnicodeString(ExtractName(lname))));
     with PManFileInfo(Files[lfile])^ do
     begin
-      checksum:=lentry.CRC32;
       if lentry.IsDirectory then
         ftype:=typeDirectory
       else
         ftype:=RGTypeOfExt(lname);
+      checksum:=lentry.CRC32;
       offset  :=i;
-      size_s  :=lentry.Size;
+      size    :=lentry.Size;
       size_c  :=lentry.CompressedSize;
       size_u  :=lentry.Size;
       ftime   :=DateTimeToFileTime(lentry.DateTime);

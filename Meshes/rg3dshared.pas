@@ -1,9 +1,10 @@
-﻿unit rg3dshared;
+﻿unit RG3dShared;
 
 interface
 
 uses
   Classes;
+
 
 {$I rg3d.Ogre.inc}
 
@@ -27,7 +28,8 @@ procedure Log(const astr:string; aval:int64);
 implementation
 
 uses
-  rgglobal;
+  RGGlobal;
+
 
 procedure WriteLine(aStream:TStream; const aString:UTF8String);
 begin

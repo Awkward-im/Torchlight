@@ -6,9 +6,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, ExtCtrls, Menus,
-  ActnList, ComCtrls, tlsave, formMovies, formRecipes, formQuests,
+  ActnList, ComCtrls, TLSave, formMovies, formRecipes, formQuests,
   formButtons, formKeyBinding, formStatistic, formSettings, formModList,
   formChar, formStat, formMap, formUnits, formSkills, formItems;
+
 
 type
 
@@ -82,18 +83,20 @@ type
 var
   fmSaveFile: TfmSaveFile;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
   LCLIntf,
-  rgglobal,
-  rgdb,
-  rgtrans,
-//  unitLogForm,
-  unitGlobal,
-  TLSGBase;
+  RGGlobal,
+  RGDB,
+  RGTrans,
+//  fmLog,
+  TLSGBase,
+  unitGlobal;
+
 
 resourcestring
   rsSaveGameOpen = 'Open Savegame';

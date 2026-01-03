@@ -9,6 +9,7 @@ uses
   ComCtrls, ActnList, ExtCtrls, Menus,
   TL2DataUnit, TL2ProjectForm;
 
+
 type
 
   { TEditTextForm }
@@ -67,6 +68,7 @@ type
 var
   EditTextForm: TEditTextForm;
 
+
 implementation
 
 {$R *.lfm}
@@ -74,10 +76,11 @@ implementation
 uses
   LCLType,
   TL2DataModule,
+  TL2Text,
   TL2SettingsForm,
   TL2DupeForm,
-  TL2SimForm,
-  TL2Text;
+  TL2SimForm;
+
 
 resourcestring
   sShow  = 'Click on "Show Doubles" button to show';

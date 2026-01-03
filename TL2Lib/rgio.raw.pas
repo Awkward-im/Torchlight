@@ -1,4 +1,4 @@
-﻿unit RGIO.RAW;
+﻿unit RGIO.Raw;
 
 interface
 
@@ -65,11 +65,11 @@ function BuildRawFile  (data:pointer;                      const fname:string):i
 implementation
 
 uses
-  rwmemory,
+  RWMemory,
 
-  rgglobal,
-  rgstream,
-  rgnode;
+  RGGlobal,
+  RGStream,
+  RGNode;
 
 const
   strUIGameStates:array [0..6] of PWideChar = (

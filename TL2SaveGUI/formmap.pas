@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
-  Buttons, tlsave, tl2map;
+  Buttons, TLSave, TL2Map;
 
 type
 
@@ -39,15 +39,17 @@ type
 var
   fmMap: TfmMap;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  rgdb,
-  tlsgcommon,
-  tlsgtrigger,
+  RGDB,
+  TLSGCommon,
+  TLSGTrigger,
   formSettings;
+
 
 resourcestring
 //  rsSaveUnknown = 'Save Unknown data';

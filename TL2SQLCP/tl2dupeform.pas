@@ -7,6 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids;
 
+
 type
 
   { TSimilaristForm }
@@ -32,9 +33,10 @@ implementation
 {$R *.lfm}
 
 uses
-  rgdb.text,
+  LCLType,
   rgglobal,
-  LCLType;
+  RGDB.Text;
+
 
 const
   colFile = 1;

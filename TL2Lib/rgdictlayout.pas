@@ -7,7 +7,7 @@ unit RGDictLayout;
 interface
 
 uses
-  rgglobal;
+  RGGlobal;
 
 type
   TRGObject = object

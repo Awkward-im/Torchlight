@@ -5,13 +5,16 @@ interface
 uses
   SysUtils,
   Classes,
-  rgglobal,
+
+  RGGlobal,
+  RGStream,
+
   TLSGBase,
-  rgstream,
-  tlsgchar,
-  tlsgtrigger,
-  tlsgcommon,
-  tlsgitem;
+  TLSGChar,
+  TLSGTrigger,
+  TLSGCommon,
+  TLSGItem;
+
 
 type
   TTL2Map     = class;
@@ -96,6 +99,7 @@ procedure WriteMapList(AStream:TStream; amaplist:TTL2MapList; aVersion:integer);
 
 
 implementation
+
 
 constructor TTL2Map.Create;
 begin

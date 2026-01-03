@@ -18,6 +18,7 @@ uses
   TL2Text,
   TL2RefUnit;
 
+
 // filters
 type
   tSearchFilter = (
@@ -233,18 +234,17 @@ implementation
 uses
   SysUtils,
 
-  rgdict,
-  rgdictlayout,
+  RGDict,
+  RGDictLayout,
 
-  rgglobal,
-  rgstream,
-  rgnode,
-  rgio.dat,
-  rgio.layout,
-  rgscan,
-  rgmod;
+  RGGlobal,
+  RGStream,
+  RGNode,
+  RGIO.Dat,
+  RGIO.Layout,
+  RGScan,
+  RGMod;
 
-{$R ..\TL2Lib\dict.rc}
 
 resourcestring
   // Open file error codes
@@ -700,7 +700,7 @@ begin
     else
     begin
       ltype :=stPartial;
-      ltrans:=ReplaceTranslation(arText[-i-1].transl,aorig);
+      ltrans:=ReplaceTranslation(PAnsiChar(arText[-i-1].transl),PAnsiChar(aorig));
     end;
   end
   else
@@ -1402,7 +1402,7 @@ begin
          (litem^.tmpl  =ltmpl) then
       begin
         inc(result);
-        litem^.transl:=ReplaceTranslation(ltrans,litem^.origin);
+        litem^.transl:=ReplaceTranslation(PAnsiChar(ltrans),PAnsiChar(litem^.origin));
         if markAsPart then litem^.state:=stPartial;
 
         if Assigned(FOnLineChanged) then
@@ -1484,7 +1484,7 @@ begin
           // no translation
           if lstate=stOriginal then
           begin
-            litem^.transl:=ReplaceTranslation(atrans,litem^.origin);
+            litem^.transl:=ReplaceTranslation(PAnsiChar(atrans),PAnsiChar(litem^.origin));
             litem^.state:=stPartial;
             inc(result);
           end;

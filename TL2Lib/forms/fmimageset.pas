@@ -1,6 +1,7 @@
+{TODO: exit form after dBlClick on spite/sprite name}
 {TODO: Preview Imageset as text (memo), select text line of sprite}
 {TODO: edit imageset (name, sprite, text) and save}
-unit fmImageset;
+unit fmImageSet;
 
 {$mode ObjFPC}{$H+}
 
@@ -8,7 +9,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, ComCtrls, ListFilterEdit, rglclimageset, rgctrl;
+  Menus, ComCtrls, ListFilterEdit, RGLCLImageSet, RGCtrl;
 
 //!! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 type
@@ -53,6 +54,8 @@ type
     FOnImagesetInfo:TOnImagesetInfo;
     procedure FillImagesetList();
     procedure FillSpriteList(ais: integer);
+    procedure SetSelected(aval:string);
+    function  GetSelected():string;
 
   public
     FImageset:TRGImageset;
@@ -62,6 +65,7 @@ type
     procedure FillList(const fname:string);
 
     property OnImagesetInfo:TOnImagesetInfo read FOnImagesetInfo write FOnImagesetInfo;
+    property Selected:string read GetSelected write SetSelected;
   end;
 
 var
@@ -73,7 +77,7 @@ implementation
 
 uses
   LCLType,
-  rgglobal;
+  RGGlobal;
 
 resourcestring
   rsSaveSprite   = 'Save sprite';
@@ -407,6 +411,31 @@ begin
   end;
 
   FillImagesetList();
+end;
+
+procedure TFormImageset.SetSelected(aval:string);
+var
+  lidx,i:integer;
+begin
+  lidx:=FImageset.ItemByName(aval);
+  for i:=0 to lbImages.Items.Count-1 do
+  begin
+    if lidx=IntPtr(lbImages.Items.Objects[i]) then
+    begin
+      lbImages.ItemIndex:=i;
+      exit;
+    end;
+  end;
+  if lbImages.Items.Count>0 then
+    lbImages.ItemIndex:=0;
+end;
+
+function TFormImageset.GetSelected():string;
+begin
+  if lbImages.ItemIndex<0 then
+    result:=''
+  else
+    result:=FImageset.Items[IntPtr(lbImages.Items.Objects[lbImages.ItemIndex])].Name;
 end;
 
 end.

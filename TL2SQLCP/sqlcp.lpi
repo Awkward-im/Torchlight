@@ -196,12 +196,12 @@
         <UnitName Value="Logging"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
+        <Filename Value="..\TL2Lib\forms\fmLog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmLogForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="unitLogForm"/>
+        <UnitName Value="fmLog"/>
       </Unit>
       <Unit>
         <Filename Value="tl2about.pas"/>

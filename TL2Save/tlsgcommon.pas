@@ -2,6 +2,7 @@ unit TLSGCommon;
 
 interface
 
+
 procedure DbgLn(const atxt:string);
 function Check(aval:qword ; const albl:string; aright:qword ):qword;
 function Check(aval:single; const albl:string; aright:single):single;
@@ -12,7 +13,8 @@ function MSecToTime(msec:cardinal):string;
 implementation
 
 uses
-  rgglobal;
+  RGGlobal;
+
 
 procedure DbgLn(const atxt:string); inline;
 begin

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, EditBtn, Buttons,
-  StdCtrls, ComCtrls, rgglobal;
+  StdCtrls, ComCtrls, RGGlobal;
 
 type
 
@@ -55,14 +55,16 @@ type
 var
   fmPAK2MOD: TfmPAK2MOD;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  rgmod,
-  fmModInfo,
-  rgpak;
+  RGMod,
+  RGPak,
+  fmModInfo;
+
 
 { TfmPAK2MOD }
 

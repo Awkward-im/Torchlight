@@ -49,7 +49,7 @@ begin
 
     if NodeToWide(FEdit.Root,pc) then
     begin
-      PRGCtrlInfo(Ctrl^.Files[Idx])^.size_s:=Length(pc);
+      PRGCtrlInfo(Ctrl^.Files[Idx])^.size:=Length(pc);
       FreeMem(pc);
     end;
   end;

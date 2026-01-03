@@ -1,10 +1,11 @@
 {TODO: option to create or not DB if not found}
-unit sqlitedb;
+unit SQLiteDB;
 
 interface
 
 uses
-  sqlite3dyn;
+  SQLite3Dyn;
+
 
 function IsTableExists (db:PSQLite3; const aTable:AnsiString):boolean;
 function IsColumnExists(db:PSQLite3; const aTable,aColumn:AnsiString):boolean;
@@ -54,6 +55,7 @@ function BaseInMemory(db:PSQLite3):boolean;
 //======================================
 
 implementation
+
 
 function ProcessParameters(vm:pointer; const aparams:array of const):boolean;
 var

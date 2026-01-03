@@ -9,6 +9,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   TL2DataUnit;
 
+
 type
 
   { TSimilarForm }
@@ -43,6 +44,7 @@ implementation
 uses
   LCLType,
   TL2DupeForm;
+
 
 { TSimilarForm }
 

@@ -13,8 +13,9 @@ unit unitGlobal;
 interface
 
 uses
-  rgglobal,
-  rgdb;
+  RGGlobal,
+  RGDB;
+
 
 procedure LoadGameGlobals;
 procedure ClearGameGlobals;
@@ -30,6 +31,7 @@ var
 
 
 implementation
+
 
 procedure ClearGameGlobals;
 begin

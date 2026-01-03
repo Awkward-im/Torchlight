@@ -56,6 +56,7 @@ type
 var
   fmScan: TfmScan;
 
+
 implementation
 
 {$R *.lfm}
@@ -63,12 +64,13 @@ implementation
 { TfmScan }
 
 uses
-  fmgameversion,
-  rgpak,
-  logging,
-  rgglobal,
-  rgscan,
-  unitscan;
+  Logging,
+  RGGlobal,
+  RGPak,
+  RGScan,
+  fmGameVersion,
+  unitScan;
+
 
 function TfmScan.AddToLog(var adata:string):integer;
 begin

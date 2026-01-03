@@ -3,18 +3,19 @@ unit TLSave;
 interface
 
 uses
-  sysutils,
-  classes,
-  tlsgstatistic,
-  rgstream,
-  tlsgcommon,
-  rgglobal,
-  tl2map,
-  tlsgitem,
-  tlsgeffects,
-  tlsgquest,
-  tl2stats,
-  tlsgchar;
+  SysUtils,
+  Classes,
+  RGGlobal,
+  RGStream,
+  TLSGStatistic,
+  TLSGCommon,
+  TL2Map,
+  TL2Stats,
+  TLSGItem,
+  TLSGEffects,
+  TLSGQuest,
+  TLSGChar;
+
 
 type
   TTLSaveFile = class
@@ -178,6 +179,7 @@ type
 //====================
 
 implementation
+
 
 resourcestring
   sLoadFailed   = 'Savegame loading failed';

@@ -16,10 +16,10 @@ interface
 
 uses
   Classes,
-  rgglobal,
+  RGGlobal,
+  RGStream,
   TLSGBase,
-  TLSGCommon,
-  rgstream;
+  TLSGCommon;
 
 
 type

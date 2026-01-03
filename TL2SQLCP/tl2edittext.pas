@@ -9,6 +9,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ComCtrls, ActnList, ExtCtrls, Menus;
 
+
 type
 
   { TEditTextForm }
@@ -78,19 +79,21 @@ type
 var
   EditTextForm: TEditTextForm;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
   LCLType,
+  RGDB.Text,
   TL2DataModule,
   TL2SettingsForm,
   TL2DupeForm,
   TL2SimForm,
   TL2AltForm,
-  TL2Text,
-  rgdb.text;
+  TL2Text;
+
 
 resourcestring
   rsLanguage = 'Translation language';

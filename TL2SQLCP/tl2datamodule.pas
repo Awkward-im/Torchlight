@@ -8,6 +8,7 @@ uses
   Classes, SysUtils, Controls, Forms,
   StdCtrls, Graphics, Menus;
 
+
 type
 
   { TTL2DataModule }
@@ -39,9 +40,9 @@ resourcestring
 implementation
 
 uses
-  TL2Text,
-//  rgpak,
-  rgglobal;
+  RGGlobal,
+  TL2Text;
+
 
 {$R *.lfm}
 

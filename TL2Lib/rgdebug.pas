@@ -3,9 +3,9 @@
 interface
 
 uses
-  rgglobal,
-  rgman,
-  rgpak;
+  RGGlobal,
+  RGMan,
+  RGPak;
 
 function DumpPAKInfo(const ainfo:TRGPAK):string;
 
@@ -20,10 +20,10 @@ implementation
 
 uses
 //  SysUtils,
-  logging,
-  rgfiletype,
-  rgNode,
-  rgIO.Text
+  Logging,
+  RGFileType,
+  RGNode,
+  RGIO.Text
   ;
 
 function IntToStr(Value: Longint): string;
@@ -72,7 +72,7 @@ begin
       begin
         inc(lfiles);
         ls:='    File: ';
-        if p^.size_s=0 then llsize:='##';
+        if p^.size=0 then llsize:='##';
       end;
       if p^.size_c>0 then inc(lpack);
       if lmaxp<p^.size_c then lmaxp:=p^.size_c;
@@ -86,11 +86,11 @@ begin
       if p^.ftype=typeData   then inc(ldat);
       if p^.ftype=typeLayout then inc(llay);
 
-      if p^.size_s<>p^.size_u then llsize:='!!';
+      if p^.size<>p^.size_u then llsize:='!!';
       llog.Add(llsize+
           ls+FastWideToStr(p^.name)+
           '; type:'       +RGTypeGroupName(p^.ftype)+
-          '; source size:'+IntToStr(p^.size_s)+
+          '; source size:'+IntToStr(p^.size)+
           '; compr:'      +IntToStr(p^.size_c)+
           '; unpacked:'   +IntToStr(p^.size_u));
     until ainfo.man.GetNextFile(p)=0;
@@ -148,7 +148,7 @@ begin
         AddString (lc,'NAME',Name);
         // "COMMON" type output, not "REAL" coz no version in MAN, in PAK only
         AddInteger(lc,'TYPE',ftype);  // required for TL2 type 18 (dir to delete)
-        AddInteger(lc,'SIZE',size_s); // required for zero-size files (file to delete)
+        AddInteger(lc,'SIZE',size);   // required for zero-size files (file to delete)
         if afull then
         begin
           AddInteger (lc,'BIN'   ,size_u);
@@ -234,7 +234,7 @@ begin
                       begin
                         name    :=AsString   (FindNode(lg,'NAME'  ));
                         ftype   :=AsInteger  (FindNode(lg,'TYPE'  ));
-                        size_s  :=AsInteger  (FindNode(lg,'SIZE'  ));
+                        size    :=AsInteger  (FindNode(lg,'SIZE'  ));
                         offset  :=AsInteger  (FindNode(lg,'OFFSET'));
                         checksum:=AsUnsigned (FindNode(lg,'CRC'   ));
                         ftime   :=AsInteger64(FindNode(lg,'TIME'  ));

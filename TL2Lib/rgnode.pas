@@ -21,7 +21,7 @@ unit RGNode;
 interface
 
 uses
-  rgglobal;
+  RGGlobal;
 
 procedure DeleteNode  (anode:pointer);
 function  CutNode     (anode:pointer):pointer;
@@ -97,7 +97,7 @@ implementation
 
 {$IFDEF UseRGTags}
 uses
-  rgdict;
+  RGDict;
 {$ENDIF}
 
 const

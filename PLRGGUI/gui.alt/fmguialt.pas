@@ -64,9 +64,11 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormClose (Sender: TObject; var CloseAction: TCloseAction);
   private
+    inProcess:Boolean;
 
     procedure LoadSettings;
     procedure UpdatePanels(actrl:pointer);
+    function  GUIOnChange(actrl:pointer; idx:integer; atype:integer):integer;
   public
 
   end;
@@ -80,17 +82,17 @@ implementation
 
 uses
   LCLType,
-  inifiles,
+  IniFiles,
 
-  rgglobal,
-  rgctrl,
+  RGGlobal,
+  RGCtrl,
 
-  unitLogForm,
+  fmLog,
 
-  rggui.core,
-  rggui.shared,
-  rgpreview,
-  rgplugins,
+  RGGUI.Core,
+  RGGUI.Shared,
+  RGPreview,
+  RGPlugins,
 
   fmPanel;
 
@@ -236,7 +238,7 @@ begin
     NewPak();
   UpdatePanels(nil);
 
-//  Panels[ActivePanel].Ctrl^.OnChange:=@GUIOnChange;
+  CtrlList[0].Ctrl^.OnChange:=@GUIOnChange;
 end;
 
 procedure TRGGUI2Form.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -261,13 +263,18 @@ end;
 {%REGION Actions}
   {%REGION File}
 procedure TRGGUI2Form.actFileNewExecute(Sender: TObject);
+var
+  lctrl:pointer;
 begin
-  UpdatePanels(NewPak());
+  lctrl:=NewPak();
+  CtrlList[CtrlCount-1].Ctrl^.OnChange:=@GUIOnChange;
+  UpdatePanels(lctrl);
 end;
 
 procedure TRGGUI2Form.actFileOpenExecute(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
+  lctrl:pointer;
 begin
   OpenDialog:=TOpenDialog.Create(nil);
   try
@@ -281,7 +288,9 @@ begin
     begin
 //      LastExt   :=OpenDialog.DefaultExt;
 //      LastFilter:=OpenDialog.FilterIndex;
-      UpdatePanels(LoadPak(OpenDialog.FileName));
+      lctrl:=LoadPak(OpenDialog.FileName);
+      CtrlList[CtrlCount-1].Ctrl^.OnChange:=@GUIOnChange;
+      UpdatePanels(lctrl);
     end;
   finally
     OpenDialog.Free;
@@ -434,6 +443,28 @@ end;
 
 {%ENDREGION Actions}
 
+function TRGGUI2Form.GUIOnChange(actrl:pointer; idx:integer; atype:integer):integer;
+var
+  ldir,lname:AnsiString;
+  i:integer;
+begin
+  result:=1;
+  case atype of
+    faStart : inProcess:=true;
+    faFinish: inProcess:=false;
+  else
+    if not inProcess then
+    begin
+      ldir :=WideToStr(PRGController(actrl)^.PathOfFile(idx));
+      lname:=WideToStr(PRGController(actrl)^.Files[idx]^.Name);
+      if rgDebugLevel=dlDetailed then
+        RGLog.Add('File affected ('+GetChangesName(atype)+'): '+PRGController(actrl)^.PAK.Name+' | '+ldir+lname);
+
+      for i:=0 to PanelCount-1 do
+        TPanelForm(Panels[i]).OnChange(actrl,idx,atype);
+    end;
+  end;
+end;
 
 end.
 

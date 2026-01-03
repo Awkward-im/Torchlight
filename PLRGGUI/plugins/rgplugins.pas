@@ -16,10 +16,10 @@ implementation
 
 uses
   Classes,
-  rgglobal,
-  rgctrl,
-  rggui.core,
-  rggui.shared,
+  RGGlobal,
+  RGCtrl,
+  RGGUI.Core,
+  RGGUI.Shared,
   fmPanel,
   rgpBase;
 

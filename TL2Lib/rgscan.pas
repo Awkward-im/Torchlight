@@ -14,7 +14,7 @@ unit RGScan;
 interface
 
 uses
-  rgglobal;
+  RGGlobal;
 
 const
   sres_break   = $80000000; // break cycle
@@ -54,10 +54,10 @@ function DoRGScan (aptr:pointer; const apath:string;
 implementation
 
 uses
-  sysutils,
-  rgpak,
-  rgman,
-  rgfiletype;
+  SysUtils,
+  RGPak,
+  RGMan,
+  RGFileType;
 
 type
   PScanObj = ^TScanObj;
@@ -145,7 +145,7 @@ begin
               if p^.ftype<>typeDirectory then // useful when FCheckProc=nil
               begin
                 if FActProc<>nil then
-                  if (p^.size_s>0) {and (p^.offset>0)} then
+                  if (p^.size>0) {and (p^.offset>0)} then
                   begin
                     lsize:=FMod.UnpackFile(lname,lfname,FBuffer);
                     lres:=FActProc(FBuffer,lsize,lname,lfname,FParam);

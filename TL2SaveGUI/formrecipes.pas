@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls, Buttons,
-  tlsave, rgglobal, Types;
+  Types, RGGlobal, TLSave;
+
 
 type
 
@@ -51,11 +52,12 @@ implementation
 
 uses
   LCLType,
-  addons,
-  formSettings,
   INIfiles,
-  rgtrans,
-  rgdb;
+  RGTrans,
+  RGDB,
+  Addons,
+  formSettings;
+
 
 const
   sRecipes    = 'Recipes';

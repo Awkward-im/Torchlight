@@ -1,12 +1,13 @@
 {TODO: put code into class to use gamever and db fields in several bases at same time}
 
-unit rgdb;
+unit RGDB;
 
 interface
 
 uses
-  sqlite3dyn,
-  rgglobal;
+  SQLite3Dyn,
+  RGGlobal;
+
 
 {$DEFINE Interface}
 
@@ -66,7 +67,8 @@ var
 implementation
 
 uses
-  sqlitedb;
+  SQLiteDB;
+
 
 var
   db:PSQLite3=nil;

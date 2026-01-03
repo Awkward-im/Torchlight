@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus,
   ShellCtrls, ExtCtrls, StdCtrls, Buttons, ActnList,
-  LCLType,StdActns;
+  LCLType, StdActns;
+
 
 type
 
@@ -111,19 +112,21 @@ type
 var
   MainTL2TransForm: TMainTL2TransForm;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  rgglobal,
-  fmmodinfo,
-  unitLogForm,
+  RGGlobal,
+  fmModInfo,
+  fmLog,
   TL2DataModule,
   TL2ProjectForm,
   TL2SettingsForm,
   TL2NotesForm,
   TL2About;
+
 
 { TMainTL2TransForm }
 

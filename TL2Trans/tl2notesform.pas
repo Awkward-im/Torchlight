@@ -8,6 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, Grids;
 
+
 type
 
   { TTL2Notes }
@@ -46,13 +47,15 @@ type
 var
   TL2Notes: TTL2Notes=nil;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  rgglobal,
+  RGGlobal,
   TL2SettingsForm;
+
 
 resourcestring
   sTitle = 'Notes';

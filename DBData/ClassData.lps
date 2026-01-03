@@ -21,8 +21,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="formClassData"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="113"/>
-        <CursorPos X="28" Y="332"/>
+        <TopLine Value="119"/>
+        <CursorPos X="9" Y="135"/>
         <UsageCount Value="43"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -71,22 +71,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="formclassdata.pas"/>
-        <Caret Line="240" Column="20" TopLine="222"/>
-      </Position>
-      <Position>
-        <Filename Value="formclassdata.pas"/>
-        <Caret Line="121" TopLine="114"/>
-      </Position>
-      <Position>
-        <Filename Value="formclassdata.pas"/>
-        <Caret Line="122" TopLine="114"/>
-      </Position>
-      <Position>
-        <Filename Value="formclassdata.pas"/>
-        <Caret Line="123" TopLine="114"/>
-      </Position>
       <Position>
         <Filename Value="formclassdata.pas"/>
         <Caret Line="121" TopLine="107"/>
@@ -190,6 +174,22 @@
       <Position>
         <Filename Value="formclassdata.pas"/>
         <Caret Line="93" TopLine="72"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="332" Column="28" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="331" Column="28" TopLine="300"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="332" Column="28" TopLine="301"/>
+      </Position>
+      <Position>
+        <Filename Value="formclassdata.pas"/>
+        <Caret Line="181" TopLine="170"/>
       </Position>
     </JumpHistory>
     <RunParams>

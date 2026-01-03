@@ -1,6 +1,11 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: fmlog.rscantsave
+msgctxt "fmlog.rscantsave"
+msgid "Can't save log file"
+msgstr ""
+
 #: formgui.rsbuildgrid
 msgid " Build file list. Please, wait..."
 msgstr ""
@@ -359,19 +364,6 @@ msgstr ""
 #: rgpreview.rstime
 msgctxt "rgpreview.rstime"
 msgid "Time"
-msgstr ""
-
-#: tfmlogform.bbclear.caption
-msgid "&Clear"
-msgstr ""
-
-#: tfmlogform.bbsave.caption
-msgctxt "tfmlogform.bbsave.caption"
-msgid "Save"
-msgstr ""
-
-#: tfmlogform.bbsave.hint
-msgid "Save log to file"
 msgstr ""
 
 #: trgguiform.actchangeversion.caption
@@ -795,9 +787,5 @@ msgstr ""
 
 #: trgguiform.tbinfo.hint
 msgid "Mod info"
-msgstr ""
-
-#: unitlogform.rscantsave
-msgid "Can't save log file"
 msgstr ""
 

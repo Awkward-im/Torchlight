@@ -5,12 +5,13 @@ interface
 uses
   SysUtils,
   Classes,
-  rgglobal,
-  rgstream,
-  tlsgcommon,
-  tlsgbase,
-  tlsgactive,
-  tlsgeffects;
+  RGGlobal,
+  RGStream,
+  TLSGCommon,
+  TLSGBase,
+  TLSGActive,
+  TLSGEffects;
+
 
 type
   TDamageBonus = record
@@ -113,7 +114,8 @@ procedure WriteItemList(AStream:TStream; alist:TTLItemList; aVersion:integer);
 implementation
 
 uses
-  rgdb;
+  RGDB;
+
 
 constructor TTLItem.Create;
 begin

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Buttons,  trclass;
+  Buttons,  TRClass;
+
 
 type
 
@@ -67,23 +68,25 @@ var
 procedure SetProgramLanguage;
 function Translate(const src:AnsiString):AnsiString;
 
+
 implementation
 
 {$R *.lfm}
 uses
-  inifiles,
+  IniFiles,
 
   Translations,
   LCLTranslator,
   LCLType,
   LCLIntf,
 
-  iso639,
+  ISO639,
 
-  rgglobal,
-  rgdb.text,
+  RGGlobal,
+  RGDB.Text,
   TL2Text,
   TL2DataModule;
+
 
 resourcestring
   rsSettings       = 'Settings';

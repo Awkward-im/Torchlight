@@ -2,13 +2,13 @@
 save another type copy or not
 keep UTF8 and UTF16 at same time?
 }
-unit RGIO.DAT;
+unit RGIO.Dat;
 
 interface
 
 uses
   Classes,
-  rgglobal;
+  RGGlobal;
 
 function ParseDatMem   (abuf        :pByte  ; fname:PUnicodeChar=nil):pointer;
 function ParseDatStream(astream     :TStream; fname:PUnicodeChar=nil):pointer;
@@ -26,12 +26,12 @@ implementation
 uses
   SysUtils,
 
-  dict,
-  rwmemory,
-  logging,
+  Dict,
+  RWMemory,
+  Logging,
 
-  rgdict,
-  rgnode;
+  RGDict,
+  RGNode;
 
 {$IFDEF DEBUG}  
 var

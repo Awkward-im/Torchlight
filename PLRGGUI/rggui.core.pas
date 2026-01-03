@@ -12,8 +12,8 @@ unit RGGUI.Core;
 interface
 
 uses
-  inifiles,
-  rgctrl;
+  IniFiles,
+  RGCtrl;
 
 {%REGION Controller}
 const
@@ -105,14 +105,15 @@ implementation
 
 uses
   SysUtils,
-  rgglobal,
+  RGGlobal,
 
-  rgfiletype,
-  rgfile,
-  rgmod,
-  rgpak
+  RGFileType,
+  RGFile,
+  RGMod,
+  RGPak
   ;
-  
+
+
 {%REGION Events}
 type
   TEventHandlers = array of TSelectFileEvent;
@@ -656,7 +657,7 @@ begin
         begin
           path    :=adir;
           selected:=-1;
-          for i:=0 to High(SFHandlers) do
+          for i:=0 to High(SDHandlers) do
             SDHandlers[i](adir,actrl,aList);
         end;
     end;

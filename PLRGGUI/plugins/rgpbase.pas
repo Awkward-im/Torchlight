@@ -8,7 +8,7 @@ unit rgpBase;
 interface
 
 uses
-  rgctrl;
+  RGCtrl;
 
 type
   TPluginProc = function(var actrl:TRGController; idx:integer):integer;

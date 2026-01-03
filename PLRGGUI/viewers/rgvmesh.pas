@@ -5,7 +5,8 @@ interface
 
 uses
   Forms,
-  rgctrl;
+  RGCtrl;
+
 
 function PreviewModel(var actrl:TRGController; aidx:integer):TForm;
 
@@ -16,9 +17,10 @@ uses
   SysUtils,
   Controls,
   StdCtrls,
-  rgglobal,
-  fm3dview,
+  RGGlobal,
+  fm3DView,
   DMViewer;
+
 
 resourcestring
   rsMdlMeshes = 'Bounds: Min:(%f, %f, %f); Max(%f, %f, %f); SubMeshes: %d';

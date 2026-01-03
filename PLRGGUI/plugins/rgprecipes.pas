@@ -3,8 +3,9 @@
 interface
 
 uses
-  rgctrl,
+  RGCtrl,
   rgpBase;
+
 
 function EditRecipes(var actrl:TRGController; idx:integer):integer;
 
@@ -12,7 +13,8 @@ function EditRecipes(var actrl:TRGController; idx:integer):integer;
 implementation
 
 uses
-  rgglobal;
+  RGGlobal;
+
 
 function EditRecipes(var actrl:TRGController; idx:integer):integer;
 begin

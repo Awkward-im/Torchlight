@@ -38,9 +38,9 @@ function DictLoadTranslation(var aDict:TTransDict; const fname:AnsiString):integ
 implementation
 
 uses
-  rgglobal,
-  rgnode,
-  rgio.dat,
+  RGGlobal,
+  RGNode,
+  RGIO.Dat,
 
   Classes,
   SysUtils;

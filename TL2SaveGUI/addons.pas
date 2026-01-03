@@ -1,18 +1,21 @@
-unit addons;
+unit Addons;
 
 interface
 
 uses
   Grids;
 
+
 function SearchForFileName(const adir,aname:string):string;
 function DeleteSelectedRows(agrid:TStringGrid):boolean;
+
 
 implementation
 
 uses
   SysUtils,
-  rgglobal;
+  RGGlobal;
+
 
 const
   dirstart = 1024;

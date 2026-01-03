@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Debug64">
+    <BuildModes Active="Win64">
       <Item Name="Debug64">
         <CompilerOptions>
           <Version Value="11"/>
@@ -81,9 +81,10 @@
       <Unit>
         <Filename Value="scan_adds.inc"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="9"/>
-        <TopLine Value="106"/>
-        <CursorPos X="7" Y="71"/>
+        <TopLine Value="94"/>
+        <CursorPos X="28" Y="121"/>
         <UsageCount Value="173"/>
         <Loaded Value="True"/>
       </Unit>
@@ -141,7 +142,6 @@
       <Unit>
         <Filename Value="scan_skills.inc"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <TopLine Value="22"/>
         <CursorPos Y="25"/>
@@ -239,8 +239,8 @@
         <Filename Value="scan_u_classes.inc"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="301"/>
-        <CursorPos Y="312"/>
+        <TopLine Value="282"/>
+        <CursorPos Y="287"/>
         <UsageCount Value="48"/>
         <Loaded Value="True"/>
       </Unit>
@@ -256,8 +256,8 @@
         <Filename Value="scan_u_mobs.inc"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="6"/>
-        <TopLine Value="80"/>
-        <CursorPos X="19" Y="96"/>
+        <TopLine Value="36"/>
+        <CursorPos Y="53"/>
         <UsageCount Value="48"/>
         <Loaded Value="True"/>
       </Unit>
@@ -498,18 +498,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="scan_skills.inc"/>
-        <Caret Line="31" TopLine="22"/>
-      </Position>
-      <Position>
-        <Filename Value="scan_skills.inc"/>
-        <Caret Line="36" TopLine="22"/>
-      </Position>
-      <Position>
-        <Filename Value="scan_skills.inc"/>
-        <Caret Line="33" TopLine="22"/>
-      </Position>
-      <Position>
-        <Filename Value="scan_skills.inc"/>
         <Caret Line="36" TopLine="22"/>
       </Position>
       <Position>
@@ -616,6 +604,18 @@
         <Filename Value="..\Addons\sqlitedb.pas"/>
         <Caret Line="307" TopLine="291"/>
       </Position>
+      <Position>
+        <Filename Value="scan_skills.inc"/>
+        <Caret Line="25" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="scan_u_classes.inc"/>
+        <Caret Line="287" TopLine="282"/>
+      </Position>
+      <Position>
+        <Filename Value="scan_u_mobs.inc"/>
+        <Caret Line="117" TopLine="101"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -623,29 +623,6 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="scan_u_classes.inc"/>
-        <Line Value="311"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="scan_u_mobs.inc"/>
-        <Line Value="53"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="scan_u_mobs.inc"/>
-        <Line Value="117"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="pcw"/>

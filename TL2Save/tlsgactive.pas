@@ -3,9 +3,10 @@ unit TLSGActive;
 interface
 
 uses
-  rgglobal,
-  tlsgbase,
-  tlsgeffects;
+  RGGlobal,
+  TLSGBase,
+  TLSGEffects;
+
 
 type
   TLActiveClass = class(TLSGBaseClass)
@@ -72,7 +73,8 @@ type
 implementation
 
 uses
-  rgdb;
+  RGDB;
+
 
 //----- Init / Free -----
 

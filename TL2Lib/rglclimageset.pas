@@ -13,7 +13,7 @@ interface
 
 uses
   Graphics,
-  rgimageset;
+  RGImageSet;
 
 
 type
@@ -31,6 +31,7 @@ implementation
 uses
   Classes,
   Imaging, ImagingTypes, ImagingComponents;
+
 
 procedure TRGImageset.GetImage(apic:TPicture; ais:integer=-1);
 begin

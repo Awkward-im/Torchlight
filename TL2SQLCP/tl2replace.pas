@@ -2,18 +2,19 @@
 
 interface
 
+
 function TranslateToEnglish(const amodid: Int64; const adir:AnsiString):integer;
 
 
 implementation
 
 uses
-  rgglobal,
-  sqlite3dyn,
-  rgtrans,
-  rgio.dat,
-  rgnode,
-  rgdb.text;
+  SQLite3Dyn,
+  RGGlobal,
+  RGTrans,
+  RGNode,
+  RGIO.Dat,
+  RGDB.Text;
 
 
 var

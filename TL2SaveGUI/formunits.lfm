@@ -44,7 +44,6 @@ object fmUnits: TfmUnits
         end>
       HideSelection = False
       ReadOnly = True
-      SmallImages = fmSaveFile.imgIcons
       SortColumn = 0
       SortType = stText
       TabOrder = 0

@@ -62,14 +62,17 @@ type
 var
   fmMod2Pak: TfmMod2Pak;
 
+
 implementation
+
 
 {$R *.lfm}
 
 uses
   INIFiles,
-  rgglobal,
-  rgmod;
+  RGGlobal,
+  RGMod;
+
 
 resourcestring
   sTitle  = 'Title';

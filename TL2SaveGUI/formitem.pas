@@ -128,17 +128,19 @@ type
 
   end;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  lazfileutils,
+  lazFileUtils,
+  RGGlobal,
+  RGDB,
   formSettings,
-  rgglobal,
-  tlsgeffects,
-  addons,
-  rgdb;
+  Addons,
+  TLSGEffects;
+
 
 procedure TfmItem.FormCreate(Sender: TObject);
 begin

@@ -8,7 +8,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  Grids, ListFilterEdit, ListViewFilterEdit, tlsave, rgglobal, rgdb;
+  Grids, ListFilterEdit, ListViewFilterEdit, RGGlobal, RGDB, TLSave;
+
 
 type
 
@@ -58,6 +59,7 @@ type
 var
   fmModList: TfmModList;
 
+
 implementation
 
 {$R *.lfm}
@@ -65,6 +67,7 @@ implementation
 uses
   ClipBrd,
   formSettings;
+
 
 { TfmModList }
 

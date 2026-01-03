@@ -36,14 +36,6 @@
         <UsageCount Value="100"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\utils\textcache.pas"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="96"/>
-      </Unit>
-      <Unit>
         <Filename Value="unitCombine.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
@@ -71,6 +63,23 @@
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="24"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\Diff.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\utils\textcache.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="96"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\utils\3rdside\Diff.pas"/>
@@ -226,15 +235,6 @@
         <TopLine Value="91"/>
         <CursorPos X="23" Y="124"/>
         <UsageCount Value="12"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\Addons\Diff.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">

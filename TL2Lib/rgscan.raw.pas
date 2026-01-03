@@ -1,4 +1,4 @@
-﻿unit RGScan.RAW;
+﻿unit RGScan.Raw;
 
 interface
 
@@ -9,13 +9,14 @@ function ScanRaw(const apath,aname:string):pointer;
 implementation
 
 uses
-  rgglobal,
-  rgscan,
-  rgnode,
-  rgio.raw,
-  rgio.layout,
-  rgio.text,
-  rgio.dat;
+  RGGlobal,
+  RGScan,
+  RGNode,
+  RGIO.Raw,
+  RGIO.Layout,
+  RGIO.Text,
+  RGIO.Dat;
+
 
 function ScanMissiles(
           abuf:PByte; asize:integer;

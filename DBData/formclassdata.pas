@@ -8,7 +8,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Buttons, ComCtrls, ListFilterEdit,
-  rgglobal;
+  RGGlobal;
 
 type
 
@@ -62,14 +62,16 @@ type
 var
   fmClassData: TfmClassData;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  sqlite3dyn,
-  rgdb,
-  sqlitedb;
+  SQLite3Dyn,
+  RGDB,
+  SQLiteDB;
+
 
 { TfmClassData }
 

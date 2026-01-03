@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
   Spin, ExtCtrls, Buttons, Grids, SpinEx, ListFilterEdit,
-  rgglobal, tlsave, tlsgchar, rgdb, formSkills, formItems, formEffects;
+  RGGlobal, RGDB, TLSave, TLSGChar, formSkills, formItems, formEffects;
+
 
 type
   tCharInfoType = (ciPlayer, ciPet, ciUnit);
@@ -278,10 +279,11 @@ implementation
 
 uses
   INIFiles,
-  addons,
+  RGTrans,
+  Addons,
   formSettings,
-  rgtrans,
   unitGlobal;
+
 
 resourcestring
   rsDefault = 'Default';

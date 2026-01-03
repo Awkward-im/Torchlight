@@ -69,8 +69,8 @@ implementation
 {$R *.lfm}
 
 uses
-  rgfile,
-  rgglobal;
+  RGFile,
+  RGGlobal;
 
 { TCompareForm }
 

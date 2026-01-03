@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids,
-  StdCtrls, Buttons, tlsave;
+  StdCtrls, Buttons, TLSave;
+
 
 type
 
@@ -60,15 +61,17 @@ type
 
   end;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  rgglobal,
-  tlsgcommon,
-  tl2stats,
-  rgdb;
+  RGGlobal,
+  RGDB,
+  TLSGCommon,
+  TL2Stats;
+
 
 procedure TfmStat.bbClearLearnHistoryClick(Sender: TObject);
 //var

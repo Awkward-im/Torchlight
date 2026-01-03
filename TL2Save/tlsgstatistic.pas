@@ -8,7 +8,8 @@ unit TLSGStatistic;
 interface
 
 uses
-  rgglobal;
+  RGGlobal;
+
 
 resourcestring
   rsTotalTime   = 'Time Played';
@@ -83,6 +84,7 @@ implementation
 
 uses
   TLSGCommon;
+
 
 function GetStatDescr(idx:integer):string;
 begin

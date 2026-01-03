@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
   Buttons, SpinEx, Types,
-  tlsgchar, rgglobal, rgdb;
+  RGGlobal, RGDB, TLSGChar;
+
 
 type
 
@@ -96,9 +97,10 @@ implementation
 uses
   INIFiles,
   LCLType,
-  addons,
-  rgtrans,
-  formsettings;
+  RGTrans,
+  Addons,
+  formSettings;
+
 
 const
   sSkills      = 'Skills';

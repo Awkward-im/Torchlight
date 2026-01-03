@@ -5,7 +5,7 @@
 {TODO: RootDir for sheet pathed file search}
 {TODO: load all imagesets in dir}
 {TODO: save imageset dirs too}
-unit RGImageset;
+unit RGImageSet;
 
 {$mode ObjFPC}{$H+}
 
@@ -14,7 +14,7 @@ interface
 uses
   Classes, SysUtils,
   Imaging, ImagingDds, ImagingNetworkGraphics, ImagingTypes
-  ,rgglobal,rgctrl;
+  ,RGGlobal,RGCtrl;
 
 
 type
@@ -98,11 +98,11 @@ type
 implementation
 
 uses
-  dom,xmlread,
-  rgstream,
-  rgio.Text,
-  rgio.DAT,
-  rgNode;
+  DOM, XMLRead,
+  RGStream,
+  RGIO.Text,
+  RGIO.Dat,
+  RGNode;
 
 
 procedure TRGImageset.Init;

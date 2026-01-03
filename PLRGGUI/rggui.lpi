@@ -55,6 +55,12 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-dDEBUG"/>
+            <OtherDefines Count="1">
+              <Define0 Value="DEBUG"/>
+            </OtherDefines>
+          </Other>
         </CompilerOptions>
       </Item>
       <Item Name="Release">
@@ -131,6 +137,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="LazControlDsgn"/>
+      </Item>
+      <Item>
         <PackageName Value="LazOpenGLContext"/>
       </Item>
       <Item>
@@ -167,11 +176,11 @@
         <UnitName Value="TextCache"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\forms\unitlogform.pas"/>
+        <Filename Value="..\TL2Lib\forms\fmlog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmLogForm"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="unitLogForm"/>
+        <UnitName Value="fmLog"/>
       </Unit>
       <Unit>
         <Filename Value="viewers\rgpreview.pas"/>
@@ -211,6 +220,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmGUIAlt"/>
+      </Unit>
+      <Unit>
+        <Filename Value="gui.modified\fmguim.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="RGGUIMForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmGUIM"/>
       </Unit>
     </Units>
   </ProjectOptions>

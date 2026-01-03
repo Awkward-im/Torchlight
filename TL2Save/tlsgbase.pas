@@ -5,6 +5,7 @@ interface
 uses
   Classes;
 
+
 type
   TL2DataType = (dtChar, dtItem, dtEffect, dtMap, dtQuest, dtStat);
 type

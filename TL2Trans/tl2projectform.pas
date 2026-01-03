@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Dialogs,
   Grids, ExtCtrls, StdCtrls, Buttons, ComCtrls, ActnList, Menus,
-  TL2DataUnit, Types;
+  Types, TL2DataUnit;
+
 
 type
   TSBUpdateEvent = Procedure(Sender:TObject; const SBText:AnsiString='') of Object;
@@ -130,19 +131,22 @@ implementation
 {$R *.lfm}
 
 uses
-  Graphics,
-  rgglobal,
-  TL2DataModule,
-  TL2SettingsForm,
-  TL2EditText,
-  TL2SimForm,
-  TL2DupeForm,
-  TL2Text,
-  iso639,
   LCLType,
   LazUtf8,
   lclintf,
-  ClipBrd;
+  ClipBrd,
+  Graphics,
+
+  ISO639,
+  RGGlobal,
+
+  TL2DataModule,
+  TL2Text,
+  TL2SettingsForm,
+  TL2EditText,
+  TL2SimForm,
+  TL2DupeForm;
+
 
 resourcestring
   sFolderAll      = '- All -';    // minus+space to be first

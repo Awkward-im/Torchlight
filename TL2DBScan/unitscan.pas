@@ -1,14 +1,14 @@
 {$I-}
 {TODO: Check current dir/mod data version (Prepare) and DB version (RGOpenBase)}
-unit unitscan;
+unit unitScan;
 
 interface
 
 uses
-  sqlite3dyn
-  ,RGMod
+  SQLite3Dyn
   ,RGGlobal
-  ;
+  ,RGMod;
+
 
 {not necessary to call them manually}
 // amul is scale (which value must be multiplied to get integer with required precision)
@@ -56,16 +56,16 @@ function RGCloseBase(var adb:PSQLite3; const fname:string=''):boolean;
 implementation
 
 uses
-  sysutils
+  SysUtils
   ,Logging
-  ,sqlitedb
+  ,SQLiteDB
   ,RGScan
-  ,rgPAK
-  ,rgio.DAT
-  ,rgio.Text
   ,RGDict
   ,RGNode
-  ;
+  ,RGPak
+  ,RGIO.Dat
+  ,RGIO.Text;
+
 
 type
   PModScanner = ^TModScanner;

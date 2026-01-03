@@ -77,6 +77,7 @@ var
 
 function TextID(const aId:int64):string;
 
+
 implementation
 
 {$R *.lfm}
@@ -84,12 +85,13 @@ implementation
 uses
   IniFiles,
 {$IFDEF Windows}
-  Windirs,
+  WinDirs,
 {$ENDIF}
-  rgdb,
-  UnitScan,
-  logging,
-  RGGlobal;
+  Logging,
+  RGGlobal,
+  RGDB,
+  unitScan;
+
 
 { TfmSettings }
 

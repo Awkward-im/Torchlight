@@ -4,8 +4,9 @@ interface
 
 uses
   Classes,
-  rgstream,
-  rgglobal;
+  RGGlobal,
+  RGStream;
+
 
 type
   // record with fixed size 136 bytes

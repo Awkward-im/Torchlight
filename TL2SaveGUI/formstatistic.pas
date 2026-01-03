@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  tlsave;
+  TLSave;
+
 
 type
 
@@ -33,11 +34,11 @@ implementation
 
 {$R *.lfm}
 
-{ TfmStatistic }
-
 uses
-  tlsgstatistic;
+  TLSGStatistic;
 
+
+{ TfmStatistic }
 
 const
   CoordLeft  = 1;

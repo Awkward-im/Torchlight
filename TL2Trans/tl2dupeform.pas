@@ -8,6 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
   TL2DataUnit;
 
+
 type
 
   { TSimilaristForm }
@@ -33,8 +34,9 @@ implementation
 {$R *.lfm}
 
 uses
-  TL2DataModule,
-  LCLType;
+  LCLType,
+  TL2DataModule;
+
 
 { TDupeForm }
 

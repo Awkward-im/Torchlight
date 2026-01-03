@@ -93,7 +93,7 @@ begin
     FreeMem(pc);
     FreeMem(lbuf);
 
-    PRGCtrlInfo(Ctrl^.Files[Idx])^.size_s:=Length(SynEdit.Text);
+    PRGCtrlInfo(Ctrl^.Files[Idx])^.size:=Length(SynEdit.Text);
   end;
 end;
 

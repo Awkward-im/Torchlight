@@ -5,7 +5,8 @@ interface
 
 uses
   Forms,
-  rgctrl;
+  RGCtrl;
+
 
 function PreviewDump(var actrl:TRGController; aidx:integer):TForm;
 

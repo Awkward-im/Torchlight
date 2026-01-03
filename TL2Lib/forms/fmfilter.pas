@@ -1,4 +1,4 @@
-unit unitFilterForm;
+unit fmFilter;
 
 {$mode ObjFPC}{$H+}
 
@@ -7,6 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   CheckLst, IniFiles;
+
 
 type
 
@@ -38,11 +39,13 @@ type
 var
   fmFilterForm: TFilterForm;
 
+
 implementation
 
 {$R *.lfm}
 uses
-  rgfiletype;
+  RGFileType;
+
 
 { TFilterForm }
 

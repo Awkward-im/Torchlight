@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
-  CheckLst, tlsgactive;
+  CheckLst, TLSGActive;
 
 type
 
@@ -49,17 +49,19 @@ type
 var
   fmEffects: TfmEffects;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  rgglobal,
-  tlsgcommon,
-  tlsgeffects,
+  RGGlobal,
+  RGDB,
+  TLSGCommon,
   TLSGBase,
-  tlsgchar,
-  rgdb;
+  TLSGEffects,
+  TLSGChar;
+
 
 resourcestring
   ef00 = 'Unknown1';

@@ -48,9 +48,16 @@ const
   sFontColor    = 'Color';
 
 
+const
+  sNewDir  = 'NEWDIR/';
+  sNewFile = 'NEWFILE.DAT';
+
 resourcestring
   rsWarning         = 'Warning!';
   rsUnsaved         = 'You have unsaved changes. Continue anyway?';
+  rsTypeChanged     = 'New name have another extension. Continue?';
+  rsSureToDelete    = 'Are you sure to delete selected?';
+
   rsReadPAK         = ' Read PAK. Parsing...';
   rsBuildTree       = ' Build tree';
   rsBuildGrid       = ' Build file list. Please, wait...';
@@ -69,12 +76,18 @@ resourcestring
   rsSavedPatch      = 'Patch saved as';
   rsCantSave        = 'Can''t save file';
   rsExtractDir      = 'Extract directory ';
-  rsCreateDir       = 'Create directory';
   rsSelectDir       = 'Select directory';
-  rsDirName         = 'Enter dir name';
+
+  rsCreateDir       = 'Create directory';
   rsCreateFile      = 'Create file';
+  rsDirName         = 'Enter dir name';
   rsFileName        = 'Enter file name';
   rsFileDirName     = 'Enter name (with / at the end for dir)';
+  rsNewName         = 'Enter new name';
+  rsExists          = 'File or dir with this name exists already.';
+
+  rsFullList        = 'Full file list';
+
   rsReady           = 'Ready to work';
   rsRename          = 'Rename file/dir';
   rsImported        = ' files imported';

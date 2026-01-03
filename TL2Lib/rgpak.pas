@@ -14,16 +14,16 @@
   * Combine PAK from PAK and MAN (now MOD as out only)
   + Convert combined PAK to MOD
 }
-unit RGPAK;
+unit RGPak;
 
 interface
 
 uses
-  classes,
-  zipper,
-  rgfs,
-  rgman,
-  rgglobal;
+  Classes,
+  Zipper,
+  RGFS,
+  RGMan,
+  RGGlobal;
 
 //===== Container =====
 
@@ -173,12 +173,12 @@ function RGPAKCombine(const asdir,aname:string; const adir:string=''):integer;
 implementation
 
 uses
-  sysutils,
-  bufstream,
+  SysUtils,
+  BufStream,
 
-  rgfile,
-  rgfiletype,
-  rgmod;
+  RGFile,
+  RGFileType,
+  RGMod;
 
 //===== Container =====
 
@@ -827,7 +827,7 @@ var
 begin
   result:=0;
   if afi=nil then exit;
-  if (afi^.offset=0) or (afi^.size_s=0) then exit;
+  if (afi^.offset=0) or (afi^.size=0) then exit;
 //  if afi^.size_s=0 then exit;
 
   lin:=nil;
@@ -1018,7 +1018,7 @@ begin
 
     if man.GetFirstFile(p,i)<>0 then
     repeat
-      if (p^.offset>0) and (p^.size_s>0) then
+      if (p^.offset>0) and (p^.size>0) then
       begin
         //!! file filter here
         if OnPAKProgress<>nil then
@@ -1581,8 +1581,8 @@ begin
 
     if man.GetFirstFile(p,i)<>0 then
     repeat
-      if (p^.ftype =typeDirectory) or
-         (p^.size_s=0) then
+      if (p^.ftype=typeDirectory) or
+         (p^.size =0) then
       begin
         if OnPAKProgress<>nil then
         begin

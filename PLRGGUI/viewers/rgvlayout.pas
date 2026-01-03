@@ -6,7 +6,8 @@ interface
 
 uses
   Forms,
-  rgctrl;
+  RGCtrl;
+
 
 function PreviewLayout(var actrl:TRGController; aidx:integer):TForm;
 
@@ -16,10 +17,11 @@ implementation
 uses
   Controls,
   Buttons,
-  rgglobal,
-  rgio.Text,
+  RGGlobal,
+  RGIO.Text,
   fmLayoutEdit,
   DMViewer;
+
 
 resourcestring
   rsSave = 'Save changes';
@@ -49,7 +51,7 @@ begin
 
     if NodeToWide(FEdit.Root,pc) then
     begin
-      PRGCtrlInfo(Ctrl^.Files[Idx])^.size_s:=Length(pc);
+      PRGCtrlInfo(Ctrl^.Files[Idx])^.size:=Length(pc);
       FreeMem(pc);
     end;
   end;

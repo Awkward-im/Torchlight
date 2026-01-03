@@ -47,7 +47,7 @@ implementation
 {$R *.lfm}
 
 uses
-  rgglobal;
+  RGGlobal;
 
 { TfmGameVer }
 

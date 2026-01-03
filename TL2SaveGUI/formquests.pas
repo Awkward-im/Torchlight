@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
-  tlsave;
+  TLSave;
+
 
 type
 
@@ -32,9 +33,10 @@ implementation
 {$R *.lfm}
 
 uses
-  formSettings,
-  tlsgquest,
-  rgdb;
+  RGDB,
+  TLSGQuest,
+  formSettings;
+
 
 const
   colTitle = 0;

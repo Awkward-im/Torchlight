@@ -58,7 +58,7 @@ function RGTypeGroupName(atype:integer):string; inline;
 implementation
 
 uses
-  rgglobal;
+  RGGlobal;
 
 
 //--- TL2 File Types

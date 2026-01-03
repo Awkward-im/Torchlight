@@ -7,6 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Buttons, StdCtrls;
 
+
 type
 
   { TAboutForm }
@@ -28,12 +29,14 @@ type
 var
   AboutForm: TAboutForm;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
   LazVersion;
+
 
 { TAboutForm }
 

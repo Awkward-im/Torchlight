@@ -12,8 +12,8 @@ unit fm3DView;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, OpenGLContext, GL, glu,
-  rgglobal, rgctrl, rgobj, lcltype, ExtCtrls, CheckLst, Buttons, Types;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, OpenGLContext, GL, GLU,
+  RGGlobal, RGCtrl, RGObj, LCLType, ExtCtrls, CheckLst, Buttons, Types;
 
 type
 
@@ -86,9 +86,9 @@ implementation
 {$R *.lfm}
 
 uses
-  rgstream,
+  RGStream,
 //  lazTGA,
-  rg3dshared,
+  RG3dShared,
   Imaging,
   ImagingTypes,
   ImagingComponents,

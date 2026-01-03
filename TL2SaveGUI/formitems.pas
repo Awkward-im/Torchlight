@@ -10,7 +10,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, Buttons, ListViewFilterEdit, tlsave, tlsgitem, tlsgchar, formItem;
+  ComCtrls, Buttons, ListViewFilterEdit, TLSave, TLSGItem, TLSGChar, formItem;
 
 type
 
@@ -51,14 +51,16 @@ type
 
   end;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
   LCLType,
-  formButtons,
-  rgglobal;
+  RGGlobal,
+  formButtons;
+
 
 const
   imgGold         = 0;
@@ -217,11 +219,13 @@ begin
     begin
       lvItemList.Items[i].ImageIndex:=GetItemIcon(UIntPtr(lvItemList.Items[i].Data));
     end;
-    lvItemList.SortColumn:=0;
-    lvItemList.Sort;
 
     if lvItemList.Items.Count>0 then
+    begin
+      lvItemList.SortColumn:=0;
+      lvItemList.Sort;
       lvItemList.ItemIndex:=0;
+    end;
   end
   else
   begin

@@ -6,7 +6,8 @@ interface
 
 uses
   Forms,
-  rgctrl;
+  RGCtrl;
+
 
 function PreviewSound(var actrl:TRGController; aidx:integer):TForm;
 
@@ -23,6 +24,7 @@ uses
   Buttons,
   fpc.Dynamic_Bass,
   DMViewer;
+
 
 resourcestring
   rsPlay     = 'Play';

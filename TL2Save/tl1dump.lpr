@@ -3,8 +3,8 @@ program tl1dump;
 {$mode objfpc}{$H+}
 
 uses
-  rgglobal,
-  tlsave;
+  RGGlobal,
+  TLSave;
 
 type
   tdummy = object

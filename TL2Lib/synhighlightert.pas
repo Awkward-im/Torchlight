@@ -1,4 +1,4 @@
-unit SynHighlightert;
+unit SynHighlighterT;
 
 interface
 

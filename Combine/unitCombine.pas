@@ -11,24 +11,23 @@ function AddMod(const aroot, asrc:string):integer;
 
 implementation
 
-{$R ..\TL2Lib\dict.rc}
-
 uses
   Controls,
   Dialogs,
   fmAsk,
   fmComboDiff,
 
-  sysutils,
+  SysUtils,
 
-  rgglobal,
-  rgscan,
-  rgdict,
-  rgdictlayout,
-  rgio.Text,
-  rgio.Layout,
-  rgio.Dat,
-  rgnode;
+  RGGlobal,
+  RGScan,
+  RGDict,
+  RGDictLayout,
+  RGIO.Text,
+  RGIO.Layout,
+  RGIO.Dat,
+  RGNode;
+
 
 type
   pourdata = ^tourdata;
@@ -230,14 +229,4 @@ begin
   result:=MakeRGScan(asrc,'',[],@actproc,@scandata,@checkproc);
 end;
 
-initialization
-{
-  RGTags.Import('RGDICT','TEXT');
-
-  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
-}
 end.

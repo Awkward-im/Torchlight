@@ -4,8 +4,9 @@ interface
 
 uses
   Classes,
-  rgglobal,
-  rg3dshared;
+  RGGlobal,
+  RG3dShared;
+
 
 type
   TRGSkeleton = object
@@ -58,27 +59,29 @@ type
     FAnimations:array of TAnimation;
 
     FBoneCount     :integer;
-    FHierarchyCount:integer; // must be same as FBoneCount
     FAnimationCount:integer;
     FAnimLinkCount :integer;
 
     function  ReadChunk(var aptr:PByte; out achunk:TOgreChunk):word;
+
+    procedure ReadTrack    (var aptr:PByte);
+    procedure ReadAnimation(var aptr:PByte);
+    function  ReadSkeleton (var aptr:PByte):boolean;
+
+    procedure WriteAnimation(astream:TStream; aver:integer);
+    procedure WriteBones    (astream:TStream; aver:integer);
   public
     blendMode:word;
 
     procedure Init;
     procedure Free;
 
-    procedure ReadTrack    (var aptr:PByte);
-    procedure ReadAnimation(var aptr:PByte);
-    function  ReadSkeleton (var aptr:PByte):boolean;
-    function  ImportFromMemory (aptr:PByte; asize:integer):boolean;
-    function  ImportFromFile   (const aFileName:string   ):boolean;
+    function  ImportFromMemory(aptr:PByte; asize:integer):boolean;
+    function  ImportFromFile  (const aFileName:string   ):boolean;
 
-    procedure WriteAnimation(astream:TStream; aver:integer);
-    procedure WriteBones    (astream:TStream; aver:integer);
-    procedure WriteSkeleton (astream:TStream; aver:integer);
+    procedure WriteSkeleton(astream:TStream; aver:integer);
 
+    function  SaveToXML():string;
     procedure SaveToXML(astream:TStream);
     procedure SaveToXML(const aFileName:String);
   end;
@@ -89,8 +92,9 @@ implementation
 uses
   Math,
   SysUtils,
-  rwmemory,
-  rgstream;
+  RWMemory,
+  RGStream;
+
 
 procedure FromAngleAxis(rfAngle:single; const rkAxis:TVector3; var dst:TVector4);
 var
@@ -302,8 +306,11 @@ function TRGSkeleton.ReadSkeleton(var aptr:PByte):boolean;
 var
   lchunk:TOgreChunk;
   lpos:PByte;
+  lhiercount:integer;
 begin
   result:=false;
+
+  lhiercount:=0;
 
   while aptr<(FBuffer+FDataSize) do
   begin
@@ -324,9 +331,12 @@ begin
         begin
           name  :=memReadText(aptr);
           handle:=memReadWord(aptr);
+          if handle<>FBoneCount then
+            Log('!!Warning!! handle='+IntToStr(handle)+' while order is '+IntToStr(FBoneCount));
+
           memRead(aptr,position,SizeOf(TVector3));
           memRead(aptr,orient  ,SizeOf(TVector4));
-          //!! can be absent
+          //!! can be absent. be aware, lchunk._len don't use "name" length
           if (lpos+lchunk._len)>=(aptr+SizeOf(TVector3)) then
             memRead(aptr,scale   ,SizeOf(TVector3))
           else
@@ -340,19 +350,24 @@ begin
       end;
 
       SKELETON_BONE_PARENT: begin
-        if FHierarchyCount=Length(FHierarchy) then
+        if FHierarchy=nil then SetLength(FHierarchy,FBoneCount);
+
+        if lhiercount=Length(FHierarchy) then
           SetLength(FHierarchy,Length(FHierarchy)+32);
 
-        with FHierarchy[FHierarchyCount] do
+        with FHierarchy[lhiercount] do
         begin
           handle:=memReadWord(aptr);
           parent:=memReadWord(aptr);
 
           // right way is use not as index but as search or right handle
           if (handle<FBoneCount) and (parent<FBoneCount) then
-            Log('Hierarchy bone="'+FBones[handle].name+'" parent="'+FBones[parent].name+'"');
+            Log('Hierarchy bone="'+FBones[handle].name+'" parent="'+FBones[parent].name+'"')
+          else
+            Log('!!Warning!! Handle='+IntToStr(handle)+' or parent='+IntToStr(parent)+
+                ' is larger than current bone count='+IntToStr(FBoneCount));
         end;
-        inc(FHierarchyCount);
+        inc(lhiercount);
       end;
 
       SKELETON_ANIMATION: begin
@@ -379,6 +394,10 @@ begin
       break;
     end;
   end;
+
+  if lhiercount<>FBoneCount then
+    Log('!!Warning!! Bone parents ('+IntToStr(lhiercount)+
+        ') is not the same as bone count='+IntToStr(FBoneCount));
 
   result:=true;
 end;
@@ -505,7 +524,7 @@ begin
     astream.WriteDWordAt(astream.Position-lpos+2-(Length(FBones[i].name)+1),lpos);
   end;
 
-  for i:=0 to FHierarchyCount-1 do
+  for i:=0 to FBoneCount-1 do
   begin
     WriteChunk(astream,SKELETON_BONE_PARENT,SizeOf(Word)*2);
     astream.WriteWord(FHierarchy[i].handle);
@@ -592,10 +611,10 @@ begin
     WriteLine(aStream,'  </bones>');
   end;
 
-  if FHierarchyCount>0 then
+  if FBoneCount>0 then
   begin
     WriteLine(aStream,'  <bonehierarchy>');
-    for i:=0 to FHierarchyCount-1 do
+    for i:=0 to FBoneCount-1 do
     begin
       with FHierarchy[i] do
         WriteLine(aStream,'    <boneparent'+
@@ -681,6 +700,20 @@ begin
   end;
 
   WriteLine(aStream,'</skeleton>');
+end;
+
+function TRGSkeleton.SaveToXML():string;
+var
+  lStream:TMemoryStream;
+begin
+  result:='';
+  lStream:=TMemoryStream.Create;
+  try
+    SaveToXML(lStream);
+    SetString(result,PAnsiChar(lStream.Memory),lStream.Size);
+  finally
+    FreeAndNil(lStream);
+  end;
 end;
 
 procedure TRGSkeleton.SaveToXML(const aFileName:String);

@@ -8,6 +8,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls;
 
+
 type
 
   { TSimilarForm }
@@ -39,10 +40,11 @@ implementation
 
 uses
   LCLType,
-  TL2DupeForm,
-  rgglobal,
+  RGGlobal,
+  RGDB.Text,
   TL2Text,
-  rgdb.text;
+  TL2DupeForm;
+
 
 resourcestring
   rsNoRef      = 'No reference for this text';

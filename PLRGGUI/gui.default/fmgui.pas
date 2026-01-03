@@ -10,13 +10,14 @@
 unit fmGUI;
 
 {$mode objfpc}{$H+}
-
+{$WARN 4055 off : Conversion between ordinals and pointers is not portable}
+{$WARN 5024 off : Parameter "$1" not used}
 interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Grids, Menus,
   ActnList, ExtCtrls, StdCtrls, EditBtn, Buttons, TreeFilterEdit,
-  rgglobal, rgpak, rgctrl, Types;
+  RGGlobal, RGPak, RGCtrl, Types;
 
 type
 
@@ -239,13 +240,14 @@ type
     procedure ExtractSingleDir(adir: integer);
     function  OnImportDouble(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
-    function  GUIOnChange(idx:integer; atype:integer):integer;
+    function  GUIOnChange(actrl:pointer; idx:integer; atype:integer):integer;
   public
     SrcFont: TFont;
   end;
 
 var
   RGGUIForm: TRGGUIForm;
+
 
 implementation
 
@@ -254,26 +256,27 @@ implementation
 uses
   LCLIntf,
   LCLType,
-  inifiles,
-  clipbrd,
+  IniFiles,
+  Clipbrd,
 
-  unitLogForm,
-  unitFilterForm,
+  fmLog,
+  fmFilter,
   fmGameVersion,
-  fmmodinfo,
+  fmModInfo,
   fmAsk,
-  fmcombodiff,
+  fmComboDiff,
 
-  rggui.core,
-  rggui.shared,
-  rgpreview,
-  rgplugins,
+  RGGUI.Core,
+  RGGUI.Shared,
+  RGPreview,
+  RGPlugins,
 
-  rgfiletype,
-  rgfile,
-  rgprepare,
-  rgmod
+  RGFileType,
+  RGFile,
+  RGPrepare,
+  RGMod
   ;
+
 
 {%REGION Constants}
 
@@ -860,7 +863,7 @@ begin
   end;
 end;
 
-function TRGGUIForm.GUIOnChange(idx:integer; atype:integer):integer;
+function TRGGUIForm.GUIOnChange(actrl:pointer; idx:integer; atype:integer):integer;
 var
   ldir,lname:AnsiString;
   i:integer;
@@ -1223,7 +1226,7 @@ begin
       if lfile<0 then continue;
 
 //      lfile:=IntPtr(sgMain.Objects[colName,sgMain.Row]);
-      state:=FCtrl^.UpdateState(lfile);
+      state:=FCtrl^.GetUpdateState(lfile);
       if FCtrl^.IsDir(lfile) then
       begin
         ldir:=FCtrl^.AsDir(lfile);
@@ -1572,7 +1575,7 @@ begin
     else
     begin
       lidx:=IntPtr(UIntPtr(sgMain.Objects[colName,sgMain.Row]));
-      if FCtrl^.UpdateState(lidx)<>stateDelete then
+      if FCtrl^.GetUpdateState(lidx)<>stateDelete then
       begin
         lidx:=FCtrl^.AsDir(lidx);
         if lidx>=0 then
@@ -1714,7 +1717,7 @@ begin
 
   //--- Filter
 
-//  if afile^.size_s=0 then exit;
+//  if afile^.size=0 then exit;
 
   lname:=WideToStr(FCtrl^.NameOfFile(afile));
    if Length(edGridFilter.Text)>0 then
@@ -1759,7 +1762,7 @@ begin
 
     sgMain.Cells[colPack  ,arow]:=IntToStr(lrec.size_c);
     sgMain.Cells[colUnpack,arow]:=IntToStr(lrec.size_u);
-    sgMain.Cells[colSource,arow]:=IntToStr(lrec.size_s);
+    sgMain.Cells[colSource,arow]:=IntToStr(lrec.size);
     if {sgMain.Columns[colTime].Visible and} (lrec.ftime<>0) then
     begin
       try

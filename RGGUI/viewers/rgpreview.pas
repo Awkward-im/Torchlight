@@ -70,7 +70,7 @@ var
 begin
   result:=nil;
   if aidx<0 then exit;
-  if actrl.UpdateState(aidx)=stateDelete then exit;
+  if actrl.GetUpdateState(aidx)=stateDelete then exit;
 
   if Viewer=nil then Viewer:=TViewer.Create(nil{Application});
 
@@ -159,7 +159,7 @@ begin
       lblInfo2.Left  :=8;
       lblInfo2.Top   :=19;
 
-      lblInfo1.Caption:=rsSize+': '+IntToStr(lrec.size_s)+'; '+
+      lblInfo1.Caption:=rsSize+': '+IntToStr(lrec.size)+'; '+
                         rsOffset+': '+'0x'+HexStr(lrec.offset,8);
       try
         lblInfo2.Caption:=rsTime+': '+DateTimeToStr(FileTimeToDateTime(lrec.ftime));

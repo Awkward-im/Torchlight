@@ -204,13 +204,14 @@ function CreateTranslatorByName(const aname:string):TTranslateBase;
 implementation
 
 uses
-  sysutils,
-  classes,
-  fphttpclient,
-  opensslsockets,
-  jsontools,
-  iso639
+  SysUtils,
+  Classes,
+  fpHttpClient,
+  OpenSSLSockets,
+  JsonTools,
+  ISO639
   ;
+
 
 {$UNDEF Interface}
 
@@ -926,7 +927,15 @@ begin
       ls:=StringReplace(ls,'{text}',EncodeURLElement(FText),[]);
 
       ls:=ltr.Get(FHost+ls);
-
+{
+result:=ltr.ResponseStatusCode;
+if result<>200 then
+begin
+  FResult:=ltr.ResponseStatusText;
+  if FResult='' then
+    FResult:=rsUnknownError+' '+IntToStr(result);
+end;
+}
       if ls<>'' then
       begin
         jn:=TJsonNode.Create;

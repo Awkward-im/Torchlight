@@ -6,8 +6,8 @@ unit RGMod;
 interface
 
 uses
-  classes,
-  rgglobal;
+  Classes,
+  RGGlobal;
 
 type
   // v.4 mod binary header start
@@ -48,10 +48,10 @@ implementation
 
 uses
   SysUtils, // CreateGUID call for MakeModInfo function
-  rgstream,
-  rwmemory,
-  rgio.text,
-  rgnode;
+  RGStream,
+  RWMemory,
+  RGIO.Text,
+  RGNode;
 
 const
   DefGameVer = $0001001900050002;

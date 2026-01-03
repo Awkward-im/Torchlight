@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  EditBtn, ExtCtrls, rgglobal;
+  EditBtn, ExtCtrls, RGGlobal;
 
 type
 
@@ -63,19 +63,22 @@ type
 var
   FormMain: TFormMain;
 
+
 implementation
 
 {$R *.lfm}
 
 uses
-  fileutil,
+  FileUtil,
   INIFiles,
 
-  logging,
+  Logging,
+
+  RGMod,
 
   fmModInfo,
-  unitCombine,
-  rgmod;
+  unitCombine;
+
 
 procedure TFormMain.LoadPackSettings(const asect:string);
 var

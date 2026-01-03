@@ -9,15 +9,16 @@
 
 {$DEFINE UseUniqueText} // fast fill, increase size
 {.$DEFINE USeRefLine}    // Unused. keep line number in refs (check for double too)
-unit rgdb.text;
+unit RGDB.Text;
 
 interface
 
 uses
 //uni_profiler,
   Classes,
-  logging,
-  rgglobal;
+  Logging,
+  RGGlobal;
+
 
 const
   modVanilla =  0;
@@ -179,12 +180,13 @@ implementation
 
 uses
   SysUtils,
-  iso639,
-  sqlite3dyn,
-  sqlitedb,
-  tl2text,
-  rgtrans,
-  tlscan;
+  ISO639,
+  SQLite3Dyn,
+  SQLiteDB,
+  RGTrans,
+  TL2Text,
+  TLScan;
+
 
 // same as tlscan
 const

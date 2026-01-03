@@ -7,7 +7,8 @@ interface
 
 uses
   Forms,
-  rgctrl;
+  RGCtrl;
+
 
 function PreviewText  (var actrl:TRGController; aidx:integer):TForm;
 function PreviewSource(var actrl:TRGController; aidx:integer):TForm;
@@ -18,7 +19,6 @@ function PreviewSkeleton(var actrl:TRGController; aidx:integer):TForm;
 implementation
 
 uses
-  Classes,
   Controls,
   Buttons,
   Dialogs,
@@ -30,11 +30,12 @@ uses
   SynHighlighterOgre,
   SynHighlighterT,
 
-  rgskeleton,
+  RGSkeleton,
   
-  rgGlobal,
+  RGGlobal,
   RGFile,
   DMViewer;
+
 
 resourcestring
   rsUnknownEncoding = 'Unknown source encoding';
@@ -100,7 +101,7 @@ begin
     FreeMem(pc);
     FreeMem(lbuf);
 
-    PRGCtrlInfo(Ctrl^.Files[Idx])^.size_s:=Length(SynEdit.Text);
+    PRGCtrlInfo(Ctrl^.Files[Idx])^.size:=Length(SynEdit.Text);
   end;
 end;
 
@@ -321,26 +322,17 @@ end;
 procedure TEditForm.DoSkeleton(Sender:TObject);
 var
   lbuf:PByte;
-  ltext:AnsiString;
-  pc:PWideChar;
-  lpc:PAnsiChar;
   lsize:integer;
   sk:TRGSkeleton;
-  ls:TMemoryStream;
 begin
   lbuf:=nil;
   lsize:=Ctrl^.GetAsIs(Idx,lbuf);
 
   sk.Init;
   sk.ImportFromMemory(lbuf,lsize);
-  ls:=TMemoryStream.Create;
-  sk.SaveToXML(ls);
-  SetString(ltext,PAnsiChar(ls.Memory),ls.Size);
-  ls.Free;
+  SynEdit.Text:=sk.SaveToXML();
   sk.Free;
   FreeMem(lbuf);
-
-  SynEdit.Text:=ltext;
 end;
 
 function PreviewSkeleton(var actrl:TRGController; aidx:integer):TForm;

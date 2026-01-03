@@ -3,14 +3,15 @@ unit TLSGChar;
 interface
 
 uses
-  classes,
-  rgstream,
-  tlsgcommon,
-  rgglobal,
-  tlsgbase,
-  tlsgactive,
-  tlsgeffects,
-  tlsgitem;
+  Classes,
+  RGGlobal,
+  RGStream,
+  TLSGCommon,
+  TLSGBase,
+  TLSGActive,
+  TLSGEffects,
+  TLSGItem;
+
 
 type
   TTL2Action = (Idle, Attack, Defence);
@@ -238,7 +239,7 @@ function ReadCharData(AStream:TStream; aVersion:integer; aCharType:TTL2CharType)
 implementation
 
 uses
-  rgdb;
+  RGDB;
 
 //----- Init / Free -----
 

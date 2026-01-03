@@ -13,7 +13,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, ComCtrls, Grids, EditBtn, SpinEx, rgglobal, rgmod;
+  Buttons, ComCtrls, Grids, EditBtn, SpinEx, RGGlobal, RGMod;
 
 type
 

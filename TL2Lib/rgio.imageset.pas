@@ -4,7 +4,7 @@ interface
 
 uses
   Classes,
-  rgglobal;
+  RGGlobal;
 
 function ParseImageSetMem   (abuf:pByte; asize:integer):pointer;
 function ParseImageSetStream(astream:TStream; fname:PUnicodeChar=nil):pointer;
@@ -19,11 +19,11 @@ implementation
 
 uses
   SysUtils,
-  dom,xmlread,
+  DOM, XMLRead,
 
-  rgio.dat,
-  rgio.text,
-  rgnode;
+  RGIO.Dat,
+  RGIO.Text,
+  RGNode;
 
 
 function ReadXMLText(out ADoc: TXMLDocument; const astr:AnsiString):boolean;

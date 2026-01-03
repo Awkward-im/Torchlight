@@ -1,5 +1,5 @@
 {TODO: restore old RGLog OnAdd processing in FormDestroy}
-unit unitLogForm;
+unit fmLog;
 
 {$mode ObjFPC}{$H+}
 
@@ -35,7 +35,8 @@ implementation
 {$R *.lfm}
 
 uses
-  rgglobal;
+  RGGlobal;
+
 
 resourcestring
   rsCantSave = 'Can''t save log file';

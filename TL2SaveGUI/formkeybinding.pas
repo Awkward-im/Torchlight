@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids,
-  tlsave;
+  TLSave;
 
 type
 
@@ -27,10 +27,11 @@ implementation
 {$R *.lfm}
 
 uses
-  rgglobal,
-  formsettings,
-  rgtrans,
-  rgdb;
+  RGGlobal,
+  RGTrans,
+  RGDB,
+  formsettings;
+
 
 resourcestring
   rsItem  = 'item';

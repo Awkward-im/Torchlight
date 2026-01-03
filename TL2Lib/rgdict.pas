@@ -46,8 +46,8 @@ implementation
 {.$R dicttagbin.rc} // Faster load
 
 uses
-  logging,
-  rgglobal;
+  Logging,
+  RGGlobal;
 
 resourcestring
   resCantOpen = 'Can''t open ';

@@ -4,12 +4,17 @@
   one list with file/dir records
   global text cache
 }
+{NOTE: "/" for dir name useful in MAN and list view}
+{TODO: Make difference, added or found existing file/dir}
+{TODO: Remove finishing "/" at file create/rename if exists}
+{TODO: Add finishing "/" at dir create/rename if not exists}
+{TODO: option for co-exists file and dir with same name}
 {TODO: don't keep full path name initially, just make it by request (clear on cnahge)}
-{TODO: Add RenameFile function}
+{TODO: make different Names for Files and Dirs (to use double search for Dirs)}
 {TODO: make Names text cache NOT global. But FileInfo is not part of DirList}
+{TODO: remove "count" field for Dirs? anyway, GetFirst/Next used}
 {TODO: remove "total" changes/saving coz total = DirCount+FileCount (except deleted)}
-{TODO: implement Files.data=Dir index for dirs}
-{TODO: check all variant of AddPath/AddFile what we uses (i.e. PUnicodeChar, string...}
+{TODO: check all variant of AddPath/AddFile what we uses (i.e. PUnicodeChar, AnsiString...}
 {TODO: Add file record on AddPath too (for Runtime). But AppendFile for MAN.Parse}
 {TODO: keep/calc info about all sub-dir and files, not direct children only}
 unit RGFS;
@@ -25,6 +30,9 @@ type
     function  GetFileName():PUnicodeChar;
     procedure SetFileName(aname:PUnicodeChar);
     function  GetFileNameLen():integer;
+//  public
+  protected
+    index:integer;      // Index of Files and Dir arrays. Or offset
   public
     procedure SameNameAs(afi:PBaseInfo);
     function  IsSameName(afi:PBaseInfo):boolean;
@@ -34,14 +42,27 @@ type
   end;
 
 type
-  PFileInfo = ^TFileInfo;
-  TFileInfo = object(TBaseInfo)
+  PBaseFileInfo = ^TBaseFileInfo;
+  TBaseFileInfo = object(TBaseInfo)
   private
+//  public
     parent:integer;     // parent dir index
     next  :integer;     // next file in current directory
+  end;
+
+type
+  PFileInfo = ^TFileInfo;
+  TFileInfo = object(TBaseFileInfo)
   public
-    ftime   :UInt64;    // MAN: TL2 only
-    checksum:dword;     // MAN: CRC32
+    ftime   :UInt64;
+    size    :cardinal;
+    checksum:dword;
+  private
+    _ftype  :word;      // MAN: RGFileType unified type
+
+    function GetFType:word;
+  public
+    property ftype:word read GetFType write _ftype;
   end;
 
 type
@@ -50,20 +71,23 @@ type
     count,              // count of child files and dirs (from first to last)
     first,
     last :integer;
-    index:integer;      // Index of Files array for this dir
   end;
   TDirEntries = array of TDirInfo;
 
 const
   faAdd      = 0; // file/dir added
   faRename   = 1; // file/dir renamed
-  faDelete   = 2; // file/dir deleted
-  faMove     = 3; // unimplemented
+  faDeleting = 2; // file/dir deleted
+  faDeleted  = 3; // file/dir deleted
+  faMove     = 4; // unimplemented. need to know old path
 type
-  TRGOnChange = function(idx:integer; aevent:integer):integer of object;
+  TRGOnChange = function(actrl:pointer; idx:integer; aevent:integer):integer of object;
 
 type
   PRGDirList = ^TRGDirList;
+
+  { TRGDirList }
+
   TRGDirList = object
   private
     FDirCount    :integer; // total count of Entries
@@ -71,49 +95,62 @@ type
     FFileCount   :integer; // total count of file records
     FFileDelFirst:integer; // first index of deleted files
   private
-    FModified :boolean;
-    FFiles :PByte;
-    FCapacity:integer;
-    FInfoSize:integer;
+    FFiles   :PByte;       // TBaseFileInfo and it modifications buffer
+    FInfoSize:integer;     // Size of single buffer element
+    FCapacity:integer;     // Fileinfo buffer and oriental name cache capacity
+    FCase    :boolean;     // translate to UpCase or keep original (not used atm)
+    FModified:boolean;
     FOnChange:TRGOnChange;
 
   protected
-    function GetFileInfoPtr(idx:integer):PFileInfo;
+    function GetFileInfoPtr(idx:integer):PBaseFileInfo;
 
   private
     function  GetFilesCapacity():integer;
     procedure SetFilesCapacity(acnt:integer);
-    function  GetDirsCapacity():integer;
-    procedure SetDirsCapacity(acnt:integer);
+    function  GetDirsCapacity ():integer;
+    procedure SetDirsCapacity (acnt:integer);
 
-    function GetHash(idx:integer):dword;
+    // Upper case, no starting slashes but with ending
+    function TransformPath(const apath:AnsiString):UnicodeString;
+    function TransformPath(apath:PUnicodeChar    ):UnicodeString;
 
-    // Add dirs with full path (with parents if needs)
-    function  DoAddPath   (apath:PWideChar):integer;
-    procedure DoDeletePath(apath:PWideChar);
-    procedure DeleteDir    (adir:integer);
+    function  AppendFile(adir:integer; aname:PUnicodeChar):integer; // Add record to list, no link
+    function  DoAddFile (adir:integer; aname:PUnicodeChar):integer; // Add file, no event
+    procedure DeleteFileRec(aidx:integer);                          // Delete record, no check for dir (!!!!event)
 
-    function  SearchPathNorm(apath:PUnicodeChar):integer;
-    procedure DeleteFileRec(aidx:integer);
+    function  AppendDir   (apath:PUnicodeChar):integer;   // Add record to list, no link
+    function  DoAddPath   (apath:PUnicodeChar):integer;   // Add dirs with full path, no event
+    procedure DeleteDir   (adir:integer);                 // Delete dir with childs, not from parent
 
-  //--- PUBLIC area ---
+    function  DoSearchPath(apath:PUnicodeChar):integer;
+    function  DoSearch(adir:integer; aname:PUnicodeChar):integer;
+
+    function DoRename    (aidx:integer; aname:PUnicodeChar):boolean;
+    function DoRenameFile(aidx:integer; aname:PUnicodeChar):boolean;
+
+    function  OnChangeDef(actrl:pointer; idx:integer; aevent:integer):integer;
+    procedure SetOnChange(aproc:TRGOnChange);
+
+    //--- PUBLIC area ---
 
   // Base
   public
-    procedure Init(aInfoSize:integer=SizeOf(TFileInfo));
+    procedure Init(aInfoSize:integer=SizeOf(TBaseFileInfo); aCase:boolean=false);
     procedure Clear;
     procedure Free;
-    // Set Dir array "index" field to proper Files array element number
-    // like cycle of AsDir for all dir-describing Files elements
-    procedure Link;
+    procedure Link; // Set Dir array "index" field to proper Files array element number
 
   public
     function SearchPath(apath:PUnicodeChar):integer;
-    function SearchPath(const apath:string):integer;
+    function SearchPath(const apath:AnsiString):integer;
 
+    // files and dirs are not the same. mean, "/" at the end is NOT ignored
     function SearchFile(adir:integer; aname:PUnicodeChar):integer;
     function SearchFile(apath,aname:PUnicodeChar):integer;
-    function SearchFile(const fname:string):integer;
+    function SearchFile(apath:PUnicodeChar):integer;
+    function SearchFile(const apath:AnsiString):integer;
+    function IsNameExists(adir:integer; const aname:AnsiString):integer;
 
     // result=0 means "end"
     function GetFirstFile(out p:pointer; adir:integer):integer;
@@ -124,16 +161,7 @@ type
 
   // Change info
   public
-    //!! no check for "dir" name
-    function  AppendFile(adir:integer; aname:PUnicodeChar):integer;
-    {
-      Add File record after check for existing
-    }
-    function  AddFile  (adir:integer; aname:PUnicodeChar):integer;
-    function  CloneFile(adir:integer; afile:PFileInfo   ):integer;
-    {
-      Add File record with path creation
-    }
+    function  AddFile(adir:integer      ; aname:PUnicodeChar):integer;
     function  AddFile(apath:PUnicodeChar; aname:PUnicodeChar):integer;
     function  AddFile(apath:PUnicodeChar):integer;
 
@@ -141,73 +169,80 @@ type
     procedure DeleteFile(adir:integer; aname:PUnicodeChar);
     procedure DeleteFile(apath,aname:PUnicodeChar);
 
-    function  RenameFile(aidx:integer; aname:PUnicodeChar):boolean;
+    // right now: just delete at old place and create at new. no any data copied
+    function MoveFile(aidx:integer; adir :integer     ):integer;
+    function MoveFile(aidx:integer; apath:PUnicodeChar):integer;
 
-    procedure MoveFile(aidx:integer; adir :integer);
-    procedure MoveFile(aidx:integer; apath:PUnicodeChar);
-
-    // Add dir name to main dir list, no check, !! no parent
-    function AppendDir(apath:PUnicodeChar):integer;
-    {
-      Add dir name to main dir list with UpCase and check for existing
-    }
+    function AddDir(adir:integer; aname:PUnicodeChar):integer;
     function AddPath(apath:PUnicodeChar):integer;
-    function AddPath(const apath:string):integer;
+    function AddPath(const apath:AnsiString):integer;
 
     procedure DeletePath(adir:integer);
     procedure DeletePath(apath:PUnicodeChar);
-    procedure DeletePath(const apath:string);
+    procedure DeletePath(const apath:AnsiString);
 
-    function RenameDir(const apath, oldname, newname:PUnicodeChar):integer;
-    function RenameDir(const apath, newname:string):integer;
+    function Rename(const apath, aname:AnsiString):boolean;
+    function Rename(adir:integer; oldname, newname:PUnicodeChar):boolean;
+    function Rename(aidx:integer; aname:PUnicodeChar):boolean;
 
     //!!! DO NOT USE (not reay yet)
 //    function MoveDir(adir:integer; adst:integer):integer;
 //    function MoveDir(adir:integer; adst:PUnicodeChar):integer;
+    procedure CopyFileInfo(afrom,ato:PFileInfo);
 
+  
   // Properties
   public
     Dirs:TDirEntries;
-    total:integer;         // total "file" elements. Can be calculated when needs
-
-    property DirCount   :integer read FDirCount;
-    property DirCapacity:integer read GetDirsCapacity write SetDirsCapacity;
+    total:integer;         // total "file" elements. Can be calculated when needs. Not used atm
 
     function IsDirDeleted (adir:integer):boolean;
     function IsFileDeleted(aidx:integer):boolean;
-    // check what File record is for dir
-    function IsDir        (aidx:integer):boolean;
-    function PathOfFile   (aidx:integer):PWideChar;
-    function NameOfFile   (aidx:integer):PWideChar;
-    // get Dir array index with idx-ed file
-    function FileDir      (aidx:integer):integer;
-    // get Dir array index of idx-ed file (if idx-ed file is directory)
-    function AsDir        (aidx:integer):integer;
-    // get File array index from Dir list index
-    function AsFile       (adir:integer):integer;
-    // like GetFileName (just with trailing slash ignoring)
-    function DirName      (adir:integer):PWideChar;
-    function IndexOf(p:pointer):integer;
+    function IsDir        (aidx:integer):boolean;       // check what File record is for dir
+    function NameOfFile   (aidx:integer):PUnicodeChar;  // get file name
+    function PathOfFile   (aidx:integer):PUnicodeChar;  // get parent Dir name
+    function FileDir      (aidx:integer):integer;       // get parent Dir index
+    function AsDir        (aidx:integer):integer;       // get Dir array index of idx-ed file
+    function AsFile       (adir:integer):integer;       // get File array index from Dir list index
 
+    function DirName      (adir:integer):PUnicodeChar;  // like NameOfFile (was: without trailing slash)
+                                                        // looks like not used atm
+    function IndexOf(p:pointer):integer;                // not used atm
+
+    property DirCount    :integer read FDirCount;
+    property DirCapacity :integer read GetDirsCapacity  write SetDirsCapacity;
     property FileCapacity:integer read GetFilesCapacity write SetFilesCapacity;
     property FileCount   :integer read FFileCount;
-    property Files[idx:integer]:PFileInfo read GetFileInfoPtr;
 
+    property Files[idx:integer]:PBaseFileInfo read GetFileInfoPtr;
+
+  // Events
   public
-    property OnChange:TRGOnChange read FOnChange write FOnChange;
+    property OnChange:TRGOnChange read FOnChange write SetOnChange;
 
   // Properties runtime
   public
     property Modified:boolean read FModified;
+    property IsCaseSensitive:boolean read FCase write FCase;
   end;
+
+{
+  Check file name to include or not. skip unknown, png if dds presents
+    and compiled data files if source presents
+  in : dir and filename to check
+  out: empty to skip, lname to include
+}
+function CheckFName(const adir,aname:UnicodeString):UnicodeString;
 
 
 implementation
 
 uses
-  sysutils,
+  SysUtils,
   TextCache,
-  rgglobal;
+  RGGlobal,
+  RGFileType
+  ;
 
 const
   MidFNameLen = 48; // middle file name length for buffer reserve
@@ -220,74 +255,6 @@ const
   incFBase = 128;
   incFFile = 16;
 
-{%REGION Support}
-
-// Upper case, no starting slashes but with ending
-function TransformPath(const apath:string):UnicodeString;
-var
-  i,j,lsize,lrsize:integer;
-begin
-  if apath='' then
-  begin
-    result:='';
-    exit;
-  end;
-
-  i:=1;
-  lsize:=Length(apath);
-  while (apath[i]='\') or (apath[i]='/') do inc(i);
-  lrsize:=lsize-i+1;
-  if (apath[lsize]<>'\') and (apath[lsize]<>'/') then inc(lrsize);
-  SetLength(result,lrsize);
-
-  j:=1;
-  while i<=lsize do
-  begin
-    if apath[i]='\' then
-      result[j]:='/'
-    else
-      result[j]:=UnicodeChar(ORD(UpCase(apath[i])));
-    inc(i);
-    inc(j);
-  end;
-
-  if result[lrsize]<>'/' then result[lrsize]:='/';
-end;
-
-// Upper case, no starting slashes but with ending
-function TransformPath(apath:PUnicodeChar):UnicodeString;
-var
-  i,j,lsize,lrsize:integer;
-begin
-  if (apath=nil) or (apath^=#0) then
-  begin
-    result:='';
-    exit;
-  end;
-
-  i:=0;
-  lsize:=Length(apath)-1;
-  while (apath[i]='\') or (apath[i]='/') do inc(i);
-  lrsize:=(lsize+1)-i;
-  if (apath[lsize]<>'\') and (apath[lsize]<>'/') then inc(lrsize);
-  // case when path='/'
-  if lrsize=0 then lrsize:=1;
-  SetLength(result,lrsize);
-
-  j:=1;
-  while i<=lsize do
-  begin
-    if apath[i]='\' then
-      result[j]:='/'
-    else
-      result[j]:=FastUpCase(apath[i]);
-    inc(i);
-    inc(j);
-  end;
-
-  if result[lrsize]<>'/' then result[lrsize]:='/';
-end;
-
 function SetName(aname:PUnicodeChar):integer; inline;
 begin
 //  result:=names.Add(aname);
@@ -299,7 +266,7 @@ begin
   result:=PUnicodeChar(names[idx]);
 end;
 
-
+{%REGION Base}
 function TBaseInfo.GetFileName():PUnicodeChar;
 begin
   result:=GetName(self.fname);
@@ -325,10 +292,21 @@ begin
   result:=fname=afi^.fname;
 end;
 
+function TFileInfo.GetFType:word;
+begin
+  if _ftype=typeUnknown then _ftype:=RGTypeOfExt(Name);
+  result:=_ftype;
+end;
+
+{%ENDREGION Base}
+
+{%REGION Support}
+
 function TRGDirList.IsDir(aidx:integer):boolean;
 var
   p:PUnicodeChar;
 begin
+  if (aidx<0) or (aidx>=FFileCount) then exit(false);
   with Files[aidx]^ do
   begin
     p:=Name;
@@ -336,115 +314,141 @@ begin
   end;
 end;
 
+function TRGDirList.TransformPath(const apath:AnsiString):UnicodeString;
+var
+  i,j,lsize,lrsize:integer;
+begin
+  if apath='' then
+  begin
+    result:='';
+    exit;
+  end;
+
+  i:=1;
+  lsize:=Length(apath);
+  while (apath[i]='\') or (apath[i]='/') do inc(i);
+  lrsize:=lsize-i+1;
+  if (apath[lsize]<>'\') and (apath[lsize]<>'/') then inc(lrsize);
+  SetLength(result,lrsize);
+
+  j:=1;
+  while i<=lsize do
+  begin
+    if apath[i]='\' then result[j]:='/'
+    else if FCase   then result[j]:=UnicodeChar(ORD(apath[i]))
+    else                 result[j]:=UnicodeChar(ORD(UpCase(apath[i])));
+    inc(i);
+    inc(j);
+  end;
+
+  {if result[lrsize]<>'/' then }result[lrsize]:='/';
+end;
+
+function TRGDirList.TransformPath(apath:PUnicodeChar):UnicodeString;
+var
+  i,j,lsize,lrsize:integer;
+begin
+  if (apath=nil) or (apath^=#0) then
+  begin
+    result:='';
+    exit;
+  end;
+
+  i:=0;
+  lsize:=Length(apath)-1;
+  while (apath[i]='\') or (apath[i]='/') do inc(i);
+  lrsize:=(lsize+1)-i;
+  if (apath[lsize]<>'\') and (apath[lsize]<>'/') then inc(lrsize);
+  // case when path='/'
+  if lrsize=0 then lrsize:=1;
+  SetLength(result,lrsize);
+
+  j:=1;
+  while i<=lsize do
+  begin
+    if apath[i]='\' then result[j]:='/'
+    else if FCase   then result[j]:=apath[i]
+    else                 result[j]:=FastUpCase(apath[i]);
+    inc(i);
+    inc(j);
+  end;
+
+  {if result[lrsize]<>'/' then }result[lrsize]:='/';
+end;
+
 function TRGDirList.IsDirDeleted(adir:integer):boolean; inline;
 begin
-  result:=(adir<>0) and (Dirs[adir].Name=nil);
+  result:=(adir<0) or (adir>=FDirCount) or ((adir>0) and (Dirs[adir].Name=nil));
 end;
 
 function TRGDirList.IsFileDeleted(aidx:integer):boolean; inline;
 begin
-  result:=Files[aidx]^.Name=nil;
+  result:=(aidx<0) or (aidx>=FFileCount) or (Files[aidx]^.Name=nil);
 end;
 
-function TRGDirList.NameOfFile(aidx:integer):PWideChar; inline;
+function TRGDirList.NameOfFile(aidx:integer):PUnicodeChar; inline;
 begin
-  if aidx>=0 then result:=Files[aidx]^.Name else result:=nil;
+  if not IsFileDeleted(aidx) then result:=Files[aidx]^.Name else result:=nil;
 end;
 
-function TRGDirList.PathOfFile(aidx:integer):PWideChar; inline;
+function TRGDirList.PathOfFile(aidx:integer):PUnicodeChar; inline;
 begin
-  result:=Dirs[Files[aidx]^.parent].Name;
+  if not IsFileDeleted(aidx) then result:=Dirs[Files[aidx]^.parent].Name else result:=nil;
 end;
 
 function TRGDirList.FileDir(aidx:integer):integer; inline;
 begin
-  if aidx<0 then
+  if IsFileDeleted(aidx) then
     result:=0
   else
     result:=Files[aidx]^.parent;
 end;
 
-function TRGDirList.AsDir(aidx:integer):integer;
-var
-  lp:PUnicodeChar;
+function TRGDirList.AsDir(aidx:integer):integer; inline;
 begin
-  lp:=ConcatWide(PathOfFile(aidx), Files[aidx]^.Name);
-  result:=SearchPathNorm(lp);
-  FreeMem(lp);
+  if IsDir(aidx) then result:=Files[aidx]^.index else result:=-1;
 end;
 
-function TRGDirList.AsFile(adir:integer):integer;
-var
-  lpath:PUnicodeChar;
-  lslash,ldir:integer;
-  c:UnicodeChar;
+function TRGDirList.AsFile(adir:integer):integer; inline;
 begin
-// if files "data" set to index, can be done by cycle, else...
-// search parent path and "file" name
-  lpath:=Dirs[adir].Name;
-  if lpath=nil then exit(-1);
-
-  lslash:=Length(lpath)-2;
-  while (lslash>0) and (lpath[lslash]<>'/') do dec(lslash);
-
-  if lslash>0 then
-  begin
-    inc(lslash);
-    c:=lpath[lslash];
-    lpath[lslash]:=#0;
-    ldir:=SearchPathNorm(lpath);
-    lpath:=lpath+lslash;
-    lpath^:=c;
-  end
-  else
-    ldir:=0;
-
-  result:=SearchFile(ldir,lpath);
+  if not IsDirDeleted(adir) then result:=Dirs[adir].index else result:=-1;
 end;
 
-function TRGDirList.DirName(adir:integer):PWideChar;
-var
-  lpath:PWideChar;
-  lslash:integer;
+function TRGDirList.DirName(adir:integer):PUnicodeChar; inline;
 begin
-//  result:=Files[Dirs[adir].index]^.Name;
-
-  lpath:=Dirs[adir].Name;
-  if lpath=nil then exit(nil);
-
-  lslash:=Length(lpath)-2;
-  while (lslash>0) and (lpath[lslash]<>'/') do dec(lslash);
-
-  if lslash>0 then
-    result:=lpath+lslash+1
-  else
-    result:=lpath;
-end;
-
-function TRGDirList.IndexOf(p:pointer):integer; inline;
-//var i:integer;
-begin
-{
-  for i:=1 to FileCount-1 do
-    if Files[i]=p then exit(i);
-  exit(0);
-}
-  result:=UIntPtr(PByte(p)-PByte(FFiles)) div SizeOf(FInfoSize);
-end;
-{%ENDREGION Support}
-
-{%REGION Getters/Setters}
-function TRGDirList.GetFileInfoPtr(idx:integer):PFileInfo;
-begin
-  if (idx>=0) and (idx<FFileCount) then
-    result:=PFileInfo(FFiles+idx*FInfoSize)
+  if not IsDirDeleted(adir) then
+    result:=Files[Dirs[adir].index]^.Name
   else
     result:=nil;
 end;
 
-function TRGDirList.GetHash(idx:integer):dword; inline;
+function TRGDirList.IndexOf(p:pointer):integer; inline;
 begin
-  result:=names.hash[idx];
+  result:=UIntPtr(PByte(p)-PByte(FFiles)) div SizeOf(FInfoSize);
+end;
+
+function TRGDirList.OnChangeDef(actrl:pointer; idx:integer; aevent:integer):integer;
+begin
+  result:=1;
+end;
+
+procedure TRGDirList.SetOnChange(aproc:TRGOnChange); inline;
+begin
+  if aproc=nil then
+    FOnChange:=@OnChangeDef
+  else
+    FOnChange:=aproc;
+end;
+
+{%ENDREGION Support}
+
+{%REGION Getters/Setters}
+function TRGDirList.GetFileInfoPtr(idx:integer):PBaseFileInfo;
+begin
+  if (idx>=0) and (idx<FFileCount) then
+    result:=PBaseFileInfo(FFiles+idx*FInfoSize)
+  else
+    result:=nil;
 end;
 
 function TRGDirList.GetFilesCapacity():integer; inline;
@@ -484,7 +488,7 @@ end;
 {%REGION Common}
 function TRGDirList.GetFirstFile(out p:pointer; adir:integer):integer;
 begin
-  if adir<0 then exit(0);
+  if (adir<0) or (adir>=FDirCount) then exit(0);
 
   result:=Dirs[adir].first;
   if result>=0 then p:=Files[result];
@@ -493,14 +497,14 @@ end;
 
 function TRGDirList.GetNextFile(var p:pointer):integer;
 begin
-  result:=PFileInfo(p)^.next;
+  result:=PBaseFileInfo(p)^.next;
   if result>=0 then p:=Files[result];
   inc(result);
 end;
 
 function TRGDirList.GetFirstFile(out idx:integer; adir:integer):boolean;
 begin
-  if adir<0 then exit(false);
+  if (adir<0) or (adir>=FDirCount) then exit(false);
 
   idx:=Dirs[adir].first;
   result:=idx>=0;
@@ -515,7 +519,7 @@ end;
 procedure TRGDirList.Link;
 var
   buf:array [0..511] of UnicodeChar;
-  p:PFileInfo;
+  p:PBaseFileInfo;
   i,ldir:integer;
 begin
   for i:=0 to FileCount-1 do
@@ -527,22 +531,23 @@ begin
       move (Dirs[p^.parent].Name^, buf[0]   , ldir);
       move (p^             .Name^, buf[ldir], p^.NameLen+1);
 
-      ldir:=SearchPathNorm(@buf[0]);
+      ldir:=DoSearchPath(@buf[0]);
       if ldir>=0 then
       begin
         Dirs [ldir].index:=i;
-//        Files[i   ].data :=pointer(ldir);
+        p^.index:=ldir;
       end;
     end;
   end;
 end;
-
 {%ENDREGION Common}
 
 {%REGION Main}
-procedure TRGDirList.Init(aInfoSize:integer=SizeOf(TFileInfo));
+procedure TRGDirList.Init(aInfoSize:integer=SizeOf(TBaseFileInfo); aCase:boolean=false);
 begin
   FillChar(self,SizeOf(self),0);
+  FCase:=aCase;
+  OnChange:=nil;
 
   FInfoSize:=aInfoSize;
 
@@ -570,15 +575,15 @@ procedure TRGDirList.Free;
 begin
   Clear;
 end;
-
 {%ENDREGION Main}
 
 {%REGION Search}
-function TRGDirList.SearchPathNorm(apath:PUnicodeChar):integer;
+function TRGDirList.DoSearchPath(apath:PUnicodeChar):integer;
 var
   i:integer;
-  pc:PUnicodeChar;
 begin
+  if apath=nil then exit(0);
+
   for i:=0 to FDirCount-1 do
   begin
     if not IsDirDeleted(i) then
@@ -591,23 +596,40 @@ begin
   result:=-1;
 end;
 
-function TRGDirList.SearchPath(apath:PUnicodeChar):integer;
+function TRGDirList.SearchPath(apath:PUnicodeChar):integer; inline;
 begin
-  result:=SearchPathNorm(PUnicodeChar(TransformPath(apath)));
+  if apath=nil then exit(0);
+  result:=DoSearchPath(PUnicodeChar(TransformPath(apath)));
 end;
 
-function TRGDirList.SearchPath(const apath:string):integer;
+function TRGDirList.SearchPath(const apath:AnsiString):integer; inline;
 begin
-  result:=SearchPathNorm(PUnicodeChar(TransformPath(apath)));
+  if apath='' then exit(0);
+  result:=DoSearchPath(PUnicodeChar(TransformPath(apath)));
+end;
+
+function TRGDirList.DoSearch(adir:integer; aname:PUnicodeChar):integer;
+begin
+  if (aname<>nil) and (aname^<>#0) and
+     not IsDirDeleted(adir) then
+  begin
+    if GetFirstFile(result,adir) then
+      repeat
+        if CompareWide(Files[result]^.Name,aname)=0 then exit;
+      until not GetNextFile(result);
+  end;
+
+  result:=-1;
 end;
 
 function TRGDirList.SearchFile(adir:integer; aname:PUnicodeChar):integer;
 var
-  p:array [0..255] of WideChar;
+  p:array [0..255] of UnicodeChar;
   pc:PUnicodeChar;
 begin
-  if (aname<>nil) and (aname^<>#0) and
-     (adir>=0) and (adir<FDirCount) then
+  if IsDirDeleted(adir) or (aname=nil) then exit(-1);
+
+  if not FCase then
   begin
     pc:=@p;
     while aname^<>#0 do
@@ -618,47 +640,173 @@ begin
     end;
     pc^:=#0;
     pc:=@p;
+  end
+  else
+    pc:=aname;
 
-    if GetFirstFile(result,adir) then
-      repeat
-        if CompareWide(Files[result]^.Name,pc)=0 then exit;
-      until not GetNextFile(result);
+  result:=DoSearch(adir,pc);
+end;
+
+function TRGDirList.SearchFile(apath:PUnicodeChar):integer;
+var
+  lpath,lname:UnicodeString;
+  llen:integer;
+begin
+  llen:=Length(apath);
+  if llen=0 then exit(-1);
+
+  if apath[llen-1]='/' then
+  begin
+    result:=DoSearchPath(PUnicodeChar(TransformPath(apath)));
+    if result>=0 then
+      result:=AsFile(result);
+  end
+  else
+  begin
+    lname:=UnicodeString(apath);
+    if not FCase then lname:=UpCase(lname); //!!
+    lpath:=ExtractPath(lname);
+
+    result:=DoSearchPath(pointer(lpath));
+    if result>=0 then
+      result:=DoSearch(result, @PUnicodeChar(lname)[Length(lpath)]);
   end;
-  
-  result:=-1;
+end;
+
+function TRGDirList.SearchFile(const apath:AnsiString):integer;
+var
+  lpath,lname:UnicodeString;
+begin
+  if apath='' then exit(-1);
+
+  if apath[Length(apath)]='/' then
+  begin
+    result:=DoSearchPath(PUnicodeChar(TransformPath(apath)));
+    if result>=0 then
+      result:=AsFile(result);
+  end
+  else
+  begin
+    lname:=UnicodeString(apath);
+    if not FCase then lname:=UpCase(lname); //!!
+    lpath:=ExtractPath(lname);
+
+    result:=DoSearchPath(pointer(lpath));
+    if result>=0 then
+      result:=DoSearch(result, @PUnicodeChar(lname)[Length(lpath)]);
+  end;
 end;
 
 function TRGDirList.SearchFile(apath,aname:PUnicodeChar):integer;
 begin
-  result:=SearchFile(SearchPath(apath),aname);
+  if apath=nil then
+    result:=0
+  else
+    result:=SearchPath(apath);
+  if result>=0 then
+    result:=SearchFile(result,aname);
 end;
 
-function TRGDirList.SearchFile(const fname:string):integer;
+function TRGDirList.IsNameExists(adir:integer; const aname:AnsiString):integer;
 var
-  lpath,lname:UnicodeString;
+  lname,liname:PWideChar;
+  lfile,llen,lilen:integer;
 begin
-  lname:=UnicodeString(fname);
-  lpath:=ExtractPath(lname);
-  lname:=ExtractName(lname); // copy(lname,Length(lpath)+1); Delete(lname,1,Length(lpath));
+  result:=-1;
+  if (aname='') or IsDirDeleted(adir) then exit;
 
-  result:=SearchFile(pointer(lpath),pointer(lname));
+  llen:=Length(aname);
+  if FCase then
+    lname:=FastStrToWide(aname)
+  else
+    lname:=FastStrToWide(UpCase(aname));
+  if lname[llen-1]='/' then
+  begin
+    dec(llen);
+    lname[llen]:=#0;
+  end;
+
+  if GetFirstFile(lfile,adir) then
+  begin
+    repeat
+      with Files[lfile]^ do
+      begin
+        lilen :=NameLen;
+        liname:=Name;
+      end;
+      if (lilen=llen) or (((lilen-1)=llen) and (liname[llen]='/')) then
+        if CompareWide(lname,liname,llen)=0 then
+        begin
+          result:=lfile;
+          break;
+        end;
+    until not GetNextFile(lfile);
+  end;
+  FreeMem(lname);
 end;
+
 {%ENDREGION Search}
 
-{%REGION File}
-  {%REGION Add}
+{%REGION Move}
+function TRGDirList.MoveFile(aidx:integer; adir:integer):integer;
+begin
+  result:=AddFile(adir,Files[aidx]^.Name);
+  if result>=0 then
+    DeleteFile(aidx);
+end;
+
+function TRGDirList.MoveFile(aidx:integer; apath:PUnicodeChar):integer;
+var
+  ldir:integer;
+begin
+  ldir:=SearchPath(apath);
+  if ldir>=0 then
+    result:=MoveFile(aidx,ldir)
+  else
+    result:=-1;
+end;
+(*
+function TRGDirList.MoveDir(adir:integer; adst:integer):integer;
+begin
+  // SearchFile dst name
+  // if not exists, add file to parent and remove old, rename all children dirs
+  // if exists... try to move all children to dst, rename all children dirs
+  // if exists empty then delete old. if moving empty then ignore
+  // else: fast. [dst.last].next:=src.first; dst.last=src.last
+  // else: slow. check ALL files and subs
+  if adst>=0 then
+    result:=MoveDir(adir,adst)
+  else
+    result:=-1;
+end;
+
+function TRGDirList.MoveDir(adir:integer; adst:PUnicodeChar):integer;
+var
+  ldir:integer;
+begin
+  ldir:=SearchPath(adst); // AddPath(adst);
+  if ldir>=0 then
+    result:=MoveDir(adir,ldir)
+  else
+    result:=-1;
+end;
+*)
+{%ENDREGION Move}
+
+{%REGION Add}
 function TRGDirList.AppendFile(adir:integer; aname:PUnicodeChar):integer;
 var
-  lrec:PFileInfo;
-  p:array [0..255] of WideChar;
+  lrec:PBaseFileInfo;
+  p:array [0..255] of UnicodeChar;
   pc:PUnicodeChar;
   i:integer;
 begin
-  //!!
-  if adir<0 then exit(-1);
+  result:=-1;
+  if adir<0 then exit;
   if FDirCount=0 then AppendDir(nil);
+  if adir>=FDirCount then exit;
 
-  // Get deleted or append
+  // Get from deleted or append
   if FFileDelFirst>=0 then
   begin
     result:=FFileDelFirst;
@@ -669,17 +817,7 @@ begin
     if FFileCount=GetFilesCapacity() then
     begin
       if FFileCount=0 then
-      begin
-        SetFilesCapacity(incFBase);
-{
-        FFileCount:=1;               // MUST BE before Files[] using
-        lrec:=Files[0];
-        FillChar(lrec^,FInfoSize,0); // if ReallocMem used, it clear memory already
-        lrec^.Name  :='';
-        lrec^.next  :=-1;
-        lrec^.parent:=-1;
-}
-      end
+        SetFilesCapacity(incFBase)
       else
         SetFilesCapacity(FFileCount+incFFile);
     end;
@@ -705,30 +843,39 @@ begin
     lrec^.Name:=nil
   else
   begin
-    pc:=@p;
-    while aname^<>#0 do
+    if not FCase then
     begin
-      pc^:=FastUpCase(aname^);
-      inc(aname);
-      inc(pc);
-    end;
-    pc^:=#0;
-    lrec^.Name:=@p{aname};
+      pc:=@p;
+      while aname^<>#0 do
+      begin
+        pc^:=FastUpCase(aname^);
+        inc(aname);
+        inc(pc);
+      end;
+      pc^:=#0;
+      lrec^.Name:=@p;
+    end
+    else
+      lrec^.Name:=aname;
   end;
 
   lrec^.next  :=-1;
   lrec^.parent:=adir;
 
   inc(total);
-
-  if OnChange<>nil then OnChange(result,faAdd);
 end;
 
-function TRGDirList.AddFile(adir:integer; aname:PUnicodeChar):integer;
+function TRGDirList.DoAddFile(adir:integer; aname:PUnicodeChar):integer;
 begin
   result:=SearchFile(adir,aname);
   if result<0 then
     result:=AppendFile(adir,aname);
+end;
+
+function TRGDirList.AddFile(adir:integer; aname:PUnicodeChar):integer;
+begin
+  result:=DoAddFile(adir,aname);
+  OnChange(@self,result,faAdd);
 end;
 
 function TRGDirList.AddFile(apath:PUnicodeChar; aname:PUnicodeChar):integer;
@@ -737,134 +884,27 @@ begin
 end;
 
 function TRGDirList.AddFile(apath:PUnicodeChar):integer;
-begin
-  result:=AddFile(PUnicodeChar(ExtractPath(apath)),PUnicodeChar(ExtractName(apath)));
-end;
-
-function TRGDirList.CloneFile(adir:integer; afile:PFileInfo):integer;
-begin
-  // not search for empty name anyway
-  result:=AppendFile(adir,''{afile^.Name});
-  // can't use move(afile^,Files[result]^,FInfoSize);
-  // coz afile and new can be different types
-  // can't use assign coz it will copy "parent" and "next" fields too
-
-  with Files[result]^ do
-  begin
-    fname   :=afile^.fname;
-    ftime   :=afile^.ftime;
-    checksum:=afile^.checksum;
-  end;
-
-end;
-  {%ENDREGION Add}
-
-  {%REGION Delete}
-procedure TRGDirList.DeleteFileRec(aidx:integer);
-begin
-{!!
-  if IsDir(aidx) then
-  begin
-    DeleteDir(Files[aidx]^.data);
-  end;
-}
-  if OnChange<>nil then OnChange(aidx,faDelete);
-
-  with Files[aidx]^ do
-  begin
-    Name:='';
-    next:=FFileDelFirst;
-//    FreeMem(data);
-  end;
-  FFileDelFirst:=aidx;
-  dec(total);
-end;
-
-procedure TRGDirList.DeleteFile(aidx:integer);
 var
-  p:PFileInfo;
-  ldir,prev,lidx:integer;
+  lpath:UnicodeString;
 begin
-  if aidx<0 then exit;
-
-  ldir:=Files[aidx]^.parent;
-
-  if GetFirstFile(lidx,ldir) then
+  if apath<>nil then
   begin
-    prev:=-1;
-    repeat
-      if lidx=aidx then
-      begin
-        p:=Files[lidx];
-
-        dec(Dirs[ldir].count);
-
-        // cut the deleting
-        if prev>=0 then
-          Files[prev]^.next:=p^.next
-        else
-          Dirs[ldir].first:=p^.next;
-
-        if Dirs[ldir].last=lidx then
-          Dirs[ldir].last:=prev;
-
-        DeleteFileRec(lidx);
-        break;
-      end;
-
-      prev:=lidx;
-    until not GetNextFile(lidx);
-  end;
-end;
-
-procedure TRGDirList.DeleteFile(adir:integer; aname:PUnicodeChar); inline;
-begin
-  // yes, 2 times cycle through dir files, to search index and to delete
-  // less code, more time
-  DeleteFile(SearchFile(adir,aname));
-end;
-
-procedure TRGDirList.DeleteFile(apath,aname:PUnicodeChar); inline;
-begin
-  DeleteFile(SearchPath(apath),aname);
-end;
-  {%ENDREGION Delete}
-
-function TRGDirList.RenameFile(aidx:integer; aname:PUnicodeChar):boolean;
-var
-  ldir,lidx:integer;
-begin
-  ldir:=Files[aidx]^.parent;
-  lidx:=SearchFile(ldir, aname);
-  if lidx<0 then
-  begin
-    Files[aidx]^.Name:=aname;
-    if OnChange<>nil then OnChange(aidx,faRename);
-    result:=true;
+    lpath:=ExtractPath(apath);
+    result:=AddFile(PUnicodeChar(lpath), @apath[Length(lpath)]);
   end
   else
-    result:=false;
+    result:=AddFile(0,nil);
 end;
 
-procedure TRGDirList.MoveFile(aidx:integer; adir :integer);
+procedure InitDirElement(var adir:TDirInfo; apath:PUnicodeChar);
 begin
-  CloneFile(adir,Files[aidx]);
-  DeleteFile(aidx);
+  adir.count:=0;
+  adir.first:=-1;
+  adir.last :=-1;
+  adir.index:=-1;
+  adir.Name :=apath;
 end;
 
-procedure TRGDirList.MoveFile(aidx:integer; apath:PUnicodeChar);
-var
-  ldir:integer;
-begin
-  ldir:=SearchPath(apath);
-  if ldir>=0 then
-    MoveFile(aidx,ldir);
-end;
-
-{%ENDREGION File}
-
-{%REGION Entry}
-  {%REGION Add}
 function TRGDirList.AppendDir(apath:PUnicodeChar):integer;
 begin
   // Check for first allocation. It have empty name ALWAYS
@@ -872,19 +912,14 @@ begin
     SetDirsCapacity(incEBase);
   if FDirCount=0 then
   begin
-    Dirs[0].Name :='';
-    Dirs[0].count:=0;
-    Dirs[0].first:=-1;
-    Dirs[0].last :=-1;
-    Dirs[0].index:=-1;
-
+    InitDirElement(Dirs[0],nil);
     FDirCount:=1;
     inc(total);
   end;
 
   if (apath=nil) or (apath^=#0) then exit(0);
 
-  // search for empty place in the middle
+  // Get from deleted or append
   if FDirDelFirst>0 then
   begin
     result:=FDirDelFirst;
@@ -898,84 +933,275 @@ begin
     inc(FDirCount);
   end;
 
-  Dirs[result].count:=0;
-  Dirs[result].first:=-1;
-  Dirs[result].last :=-1;
-  Dirs[result].index:=-1;
-  Dirs[result].Name :=apath;
+  InitDirElement(Dirs[result],apath);
   inc(total);
 end;
 
-// path going as caps, no starting "/", with finishing "/" already
-function TRGDirList.DoAddPath(apath:PWideChar):integer;
+function TRGDirList.DoAddPath(apath:PUnicodeChar):integer;
 var
-  lslash{,lparentdir,ldir}:integer;
-  lc:WideChar;
+  lslash,lparent,lfile:integer;
+  lc:UnicodeChar;
 begin
-  // if exists already
-  result:=SearchPathNorm(apath);
+  result:=DoSearchPath(apath);
   if result>=0 then exit;
 
-  // search dir name start
+  // SearchFile dir name start
   lslash:=Length(apath)-2;
   while (lslash>0) and (apath[lslash]<>'/') do dec(lslash);
 
   // add parent dir
   if lslash>0 then
   begin
-    lc:=apath[lslash+1];
-    apath[lslash+1]:=#0; // "cut" text AFTER "/"
-    {lparentdir:=}DoAddPath(apath);
-    apath[lslash+1]:=lc;
+    inc(lslash);
+    lc:=apath[lslash];
+    apath[lslash]:=#0;
+    lparent:=DoAddPath(apath);
+    apath[lslash]:=lc;
   end
-;//  else lparentdir:=0;
+  else
+    lparent:=0;
 
   result:=AppendDir(apath);
-{!!
-  ldir:=AppendFile(lparentdir,PUnicodeChar(apath)+lslash);
-  Files[ldir]^.data:=result;
 
-  Dirs[result].index :=ldir;
-}
+  lfile:=DoAddFile(lparent, apath+lslash);
+  Dirs[result] .index:=lfile;
+  Files[lfile]^.index:=result;
+end;
+
+function TRGDirList.AddDir(adir:integer; aname:PUnicodeChar):integer;
+var
+  pc:PUnicodeChar;
+  lfile:integer;
+begin
+  pc:=ConcatWide(Dirs[adir].Name,aname);
+  result:=DoSearchPath(pc);
+  if result<0 then
+  begin
+    result:=AppendDir(pc);
+
+    lfile:=DoAddFile(adir, aname);
+    Dirs[result] .index:=lfile;
+    Files[lfile]^.index:=result;
+
+    // Event: Add FILE (!) with type=typeDirectory
+    OnChange(@self,lfile,faAdd);
+  end;
+  FreeMem(pc);
 end;
 
 function TRGDirList.AddPath(apath:PUnicodeChar):integer;
 begin
   if (apath=nil) or (apath^=#0) then exit(AppendDir(nil));
-  
-  result:=DoAddPath(PWideChar(TransformPath(apath)));
+
+  result:=DoAddPath(PUnicodeChar(TransformPath(apath)));
+
+  OnChange(@self,AsFile(result),faAdd);
 end;
 
-function TRGDirList.AddPath(const apath:string):integer;
+function TRGDirList.AddPath(const apath:AnsiString):integer;
 begin
   if apath='' then exit(AppendDir(nil));
 
-  result:=DoAddPath(PWideChar(TransformPath(apath)));
-end;
-  {%ENDREGION Add}
+  result:=DoAddPath(PUnicodeChar(TransformPath(apath)));
 
-  {%REGION Delete}
+  OnChange(@self,AsFile(result),faAdd);
+end;
+
+{%ENDREGION Add}
+
+{%REGION Rename}
+
+function TRGDirList.DoRenameFile(aidx:integer; aname:PUnicodeChar):boolean;
+var
+  ldir,lidx:integer;
+begin
+  // check for existing file with same name
+  ldir:=Files[aidx]^.parent;
+  lidx:=SearchFile(ldir, aname);
+  // here time to ask, rewrite or not
+  if lidx<0 then
+  begin
+    Files[aidx]^.Name:=aname;
+    result:=true;
+  end
+  else
+    result:=false;
+end;
+
+function TRGDirList.DoRename(aidx:integer; aname:PUnicodeChar):boolean;
+var
+  lnew:UnicodeString;
+  lold,lname:PUnicodeChar;
+  i,llen:integer;
+  lisdir:boolean;
+begin
+  result:=false;
+
+  lisdir:=IsDir(aidx);
+  llen:=Length(aname);
+
+  SetLength(lnew,llen+1);
+  for i:=1 to llen do
+  begin
+    if FCase then lnew[i]:=aname^
+    else lnew[i]:=FastUpCase(aname^);
+    inc(aname);
+  end;
+  if lisdir then
+  begin
+    if lnew[llen]<>'/' then
+    begin
+      inc(llen);
+      lnew[llen]:='/';
+    end;
+  end
+  else
+  begin
+    if lnew[llen]='/' then
+      dec(llen);
+  end;
+  SetLength(lnew,llen);
+
+  if DoRenameFile(aidx,PUnicodeChar(lnew)) then
+  begin
+    result:=true;
+    if lisdir then
+    begin
+      with Dirs[AsDir(aidx)] do
+      begin
+        lold:=Name;
+        llen:=NameLen;
+      end;
+      lnew:=UnicodeString(PathOfFile(aidx))+lnew;
+
+      // rename children
+      for i:=0 to FDirCount-1 do
+      begin
+        if not IsDirDeleted(i) then
+        begin
+          lname:=Dirs[i].Name;
+          if CompareWide(PUnicodeChar(lold),lname,llen)=0 then
+            Dirs[i].Name:=PUnicodeChar(lnew+Copy(lname,llen+1));
+        end;
+      end;
+    end;
+  end;
+end;
+
+function TRGDirList.Rename(aidx:integer; aname:PUnicodeChar):boolean;
+begin
+  result:=DoRename(aidx,aname);
+  if result then
+    OnChange(@self,aidx,faRename);
+end;
+
+function TRGDirList.Rename(const apath, aname:AnsiString):boolean;
+var
+  pc:PUnicodeChar;
+  lidx:integer;
+begin
+  lidx:=SearchFile(apath);
+  if lidx>=0 then
+  begin
+    pc:=FastStrToWide(aname);
+    result:=DoRename(lidx,pc);
+    FreeMem(pc);
+    if result then
+      OnChange(@self,lidx,faRename);
+  end;
+end;
+
+function TRGDirList.Rename(adir:integer; oldname, newname:PUnicodeChar):boolean; inline;
+begin
+  result:=Rename(SearchFile(adir,oldname),newname);
+end;
+
+{%ENDREGION Rename}
+
+{%REGION Delete}
+procedure TRGDirList.DeleteFileRec(aidx:integer);
+begin
+  with Files[aidx]^ do
+  begin
+    Name:='';
+    next:=FFileDelFirst;
+  end;
+  FFileDelFirst:=aidx;
+  dec(total);
+end;
+
+procedure TRGDirList.DeleteFile(aidx:integer);
+var
+  p:PBaseFileInfo;
+  ldir,prev,lidx:integer;
+begin
+  if IsFileDeleted(aidx) then exit;
+
+  ldir:=Files[aidx]^.parent;
+
+  if GetFirstFile(lidx,ldir) then
+  begin
+    prev:=-1;
+    repeat
+      if lidx=aidx then
+      begin
+        OnChange(@self,aidx,faDeleting);
+
+        p:=Files[aidx];
+
+        dec(Dirs[ldir].count);
+
+        // cut the deleting
+        if prev>=0 then
+          Files[prev]^.next:=p^.next
+        else
+          Dirs[ldir].first:=p^.next;
+
+        if Dirs[ldir].last=aidx then
+          Dirs[ldir].last:=prev;
+
+        if IsDir(aidx) then
+          DeleteDir(AsDir(aidx));
+
+        DeleteFileRec(aidx);
+
+        OnChange(@self,aidx,faDeleted);
+
+        break;
+      end;
+
+      prev:=lidx;
+    until not GetNextFile(lidx);
+  end;
+end;
+
+procedure TRGDirList.DeleteFile(adir:integer; aname:PUnicodeChar); inline;
+begin
+  DeleteFile(SearchFile(adir,aname));
+end;
+
+procedure TRGDirList.DeleteFile(apath,aname:PUnicodeChar); inline;
+begin
+  DeleteFile(SearchFile(apath,aname));
+end;
+
 procedure TRGDirList.DeleteDir(adir:integer);
 var
   lidx,ldel:integer;
 begin
   if adir>0 then
   begin
-    // clear dir: no search, no shifts, just 1 by 1
     if GetFirstFile(lidx,adir) then
     begin
       repeat
         ldel:=lidx;
-        if not GetNextFile(lidx) then break;
+        GetNextFile(lidx);
+
         if isDir(ldel) then
-          DeletePath(asDir(ldel))
-        else
-          DeleteFileRec(ldel);
-      until false;
-      if isDir(ldel) then
-        DeletePath(asDir(ldel))
-      else
+          DeleteDir(asDir(ldel));
+
         DeleteFileRec(ldel);
+      until lidx<0;
     end;
 
     // move from dir list to deleted dir list
@@ -986,159 +1212,86 @@ begin
   end;
 end;
 
-// path going as caps, no starting "/", with finishing "/" already
-procedure TRGDirList.DeletePath(adir:integer);
-var
-  lpath:PWideChar;
-  lparent,lslash:integer;
-  lc:WideChar;
+procedure TRGDirList.DeletePath(adir:integer); inline;
 begin
-  if adir>=0 then
-  begin
-    lpath:=Dirs[adir].Name;
-
-    // search dir name start
-    lslash:=Dirs[adir].NameLen-2;
-    while (lslash>0) and (lpath[lslash]<>'/') do dec(lslash);
-
-    // delete from parent dir
-    if lslash>0 then
-    begin
-      lc:=lpath[lslash+1];
-      lpath[lslash+1]:=#0; // "cut" text AFTER "/"
-      lparent:=SearchPath(lpath);
-      lpath[lslash+1]:=lc;
-      
-      DeleteFile(lparent,lpath+lslash+1);
-//      DeleteFile(Files[Dirs[i].index]^.parent,PUnicodeChar(apath)+lslash);
-//      DeleteFile(PUnicodeChar(Copy(apath,1,lslash)),PUnicodeChar(apath)+lslash);
-    end
-    else
-      DeleteFile(0,lpath);
-
-    // requires till .data will not work
-    DeleteDir(adir);
-
-  end;
-end;
-
-procedure TRGDirList.DoDeletePath(apath:PWideChar);
-begin
-  DeletePath(SearchPathNorm(apath));
+  if not IsDirDeleted(adir) then
+    DeleteFile(AsFile(adir));
 end;
 
 procedure TRGDirList.DeletePath(apath:PUnicodeChar); inline;
 begin
-  DoDeletePath(PWideChar(TransformPath(apath)));
+  DeletePath(SearchPath(apath));
 end;
 
-procedure TRGDirList.DeletePath(const apath:string); inline;
+procedure TRGDirList.DeletePath(const apath:AnsiString); inline;
 begin
-  DoDeletePath(PWideChar(TransformPath(apath)));
+  DeletePath(SearchPath(apath));
 end;
-  {%ENDREGION Delete}
+{%ENDREGION Delete}
 
-  {%REGION Rename}
-function TRGDirList.RenameDir(const apath, oldname, newname:PUnicodeChar):integer;
+procedure TRGDirList.CopyFileInfo(afrom,ato:PFileInfo);
+begin
+  ato^.size    :=afrom^.size;
+  ato^.ftime   :=afrom^.ftime;
+  ato^.checksum:=afrom^.checksum;
+end;
+
+
+function CheckFName(const adir,aname:UnicodeString):UnicodeString;
 var
-  lpath,lold,lnew,loldname:UnicodeString;
-  lname:PUnicodeChar;
-  p:PFileInfo;
-  lfile,ldir,lparent,i,llen:integer;
+  lext:array [0..15] of UnicodeChar;
+  lname:UnicodeString;
+  lextpos,j,k:integer;
 begin
-  result:=0;
+  lextpos:=Length(aname);
+  if aname[lextpos]='/' then
+    exit(aname);
 
-  lpath   :=TransformPath(apath);
-  loldname:=TransformPath(oldname);
-  lold    :=lpath+loldname;
-
-  ldir:=SearchPathNorm(PUnicodeChar(lold));
-  if ldir>=0 then
+  result:='';
+  
+  while lextpos>1 do
   begin
-    lparent:=SearchPathNorm(PUnicodeChar(lpath));
-//    lparent:=Files[Dirs[ldir].index]^.parent;            //!!!!!
-
-    // Search if new path exists already
-    lnew:=TransformPath(newname);
-    lfile:=0;
-    if GetFirstFile(i,lparent) then // always (at least, old name)
-      repeat
-        p:=Files[i];
-        if CompareWide(p^.Name,PUnicodeChar(lnew))=0 then exit;
-        if CompareWide(p^.Name,PUnicodeChar(loldname))=0 then begin lfile:=i; break; end;
-      until not GetNextFile(i);
-    
-    result:=1;
-//    Files[Dirs[ldir].index]^.Name:=PUnicodeChar(lnew);   //!!!!!
-    lnew:=lpath+lnew;
-    Dirs[ldir].Name:=PUnicodeChar(lnew);
-
-    llen:=Length(lold);
-    // rename children
-    for i:=0 to FDirCount-1 do
-    begin
-      if (i<>lparent) and (i<>ldir) and not IsDirDeleted(i) then
-      begin
-        lname:=Dirs[i].Name;
-        if CompareWide(PUnicodeChar(lold),lname,llen)=0 then
-        begin
-          Dirs[i].Name:=PUnicodeChar(lnew+Copy(lname,llen+1));
-          inc(result);
-        end;
-      end;
-    end;
-
-    // replace old. at last coz raise event
-    Files[lfile]^.Name:=PUnicodeChar(lnew);
+    dec(lextpos);
+    if aname[lextpos]='.' then break;
   end;
-end;
+  // extract ext
+  k:=0;
+  if lextpos>1 then
+    for j:=lextpos to Length(aname) do
+    begin
+      lext[k]:=FastUpCase(aname[j]);
+      inc(k);
+    end;
+  lext[k]:=#0;
 
-function TRGDirList.RenameDir(const apath, newname:string):integer;
-var
-  lpath,lname,lnew:UnicodeString;
-  lslash:integer;
-begin
-  lpath:=TransformPath(apath);
-  lnew:=UnicodeString(newname);
-  lslash:=Length(lpath)-1;
-  while (lslash>1) and (lpath[lslash]<>'/') do dec(lslash);
-  if lslash>1 then
+  if (CompareWide(lext,'.TXT'      )=0) or
+     (CompareWide(lext,'.BINDAT'   )=0) or
+     (CompareWide(lext,'.BINLAYOUT')=0) or
+     (CompareWide(lext,'.CMP'      )=0) or
+     (CompareWide(lext,'.ADM'      )=0) then
   begin
-    lname:=Copy(lpath,lslash+1);
-    SetLength(lpath,lslash);
-    result:=RenameDir(PUnicodeChar(lpath),PUnicodeChar(lname),PUnicodeChar(lnew));
+    lname:=Copy(aname,1,lextpos-1);
+    if FileExists(adir+lname) then exit;
+  end
+  else if CompareWide(lext,'.PNG')=0 then
+  begin
+    lname:=aname;
+    lname[lextpos+1]:='D';
+    lname[lextpos+2]:='D';
+    lname[lextpos+3]:='S';
+    if FileExists(adir+lname) then
+      exit
+    else
+      exit(aname);
   end
   else
-    result:=RenameDir('',PUnicodeChar(lpath),PUnicodeChar(lnew))
-end;
-  {%ENDREGION Rename}
-(*
-function TRGDirList.MoveDir(adir:integer; adst:integer):integer;
-begin
-  // search dst name
-  // if not exists, add file to parent and remove old, rename all children dirs
-  // if exists... try to move all children to dst, rename all children dirs
-  // if exists empty then delete old. if moving empty then ignore
-  // else: fast. [dst.last].next:=src.first; dst.last=src.last
-  // else: slow. check ALL files and subs
-  if adst>=0 then
-    result:=MoveDir(adir,adst)
-  else
-    result:=-1;
+    lname:=aname;
+
+  // can't use lext coz need to delete ext to get real sometime
+  if RGTypeOfExt(PUnicodeChar(lname))<>typeUnknown then
+    result:=lname;
 end;
 
-function TRGDirList.MoveDir(adir:integer; adst:PUnicodeChar):integer;
-var
-  ldir:integer;
-begin
-  ldir:=SearchPath(adst); // AddPath(adst);
-  if ldir>=0 then
-    result:=MoveDir(adir,ldir)
-  else
-    result:=-1;
-end;
-*)
-{%ENDREGION Entry}
 
 initialization
 

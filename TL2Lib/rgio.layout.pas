@@ -5,7 +5,7 @@ interface
 
 uses
   Classes,
-  rgglobal;
+  RGGlobal;
 
 const
   ltLayout   = 0;
@@ -34,18 +34,18 @@ function GetLayoutType(const afname:string):cardinal;
 implementation
 
 uses
-  sysutils,
+  SysUtils,
 
-  dict,
-  rwmemory,
-  logging,
+  Dict,
+  RWMemory,
+  Logging,
 
-  rgdict,
-  rgdictlayout,
-  laylist,
-  rgio.dat,
-  rgstream,
-  rgnode;
+  RGDict,
+  RGDictLayout,
+  LayList,
+  RGIO.Dat,
+  RGStream,
+  RGNode;
 
 {$IFDEF DEBUG}  
 var

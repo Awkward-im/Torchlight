@@ -9,9 +9,9 @@ unit RGObj;
 interface
 
 uses
-  classes,
-  rgglobal,
-  rg3dshared;
+  Classes,
+  RGGlobal,
+  RG3dShared;
 
 {$DEFINE Interface}
 
@@ -197,9 +197,10 @@ type
 implementation
 
 uses
-  sysutils,
-  rgstream,
-  rwmemory;
+  SysUtils,
+  RGStream,
+  RWMemory;
+
 
 {$UNDEF Interface}
 

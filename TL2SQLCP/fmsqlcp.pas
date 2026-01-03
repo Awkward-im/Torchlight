@@ -8,7 +8,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Buttons, StdCtrls,
-  ComCtrls, Grids, ExtCtrls, ListFilterEdit, unitlogform, rgglobal;
+  ComCtrls, Grids, ExtCtrls, ListFilterEdit, RGGlobal, fmLog;
+
 
 type
 
@@ -89,13 +90,14 @@ uses
   TL2SettingsForm,
   TL2DelForm,
   TL2GenForm,
-  sqlite3dyn,
-  iso639,
-  rgdb.text,
-  tl2unit,
-  tl2text,
-  tl2replace,
-  tlscan;
+  SQLite3Dyn,
+  ISO639,
+  RGDB.Text,
+  TL2Unit,
+  TL2Text,
+  TL2Replace,
+  TLScan;
+
 
 resourcestring
   rsOpenTranslation = 'Open translation file';

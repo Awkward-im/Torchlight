@@ -15,7 +15,7 @@ uses
   SynHighlighterXML,
   SynHighlighterT,
   SynHighlighterOgre,
-  rgctrl;
+  RGCtrl;
 
 type
 
@@ -60,6 +60,7 @@ type
     pnlInfo: TPanel;
 
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure DoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
 
   public
@@ -75,10 +76,12 @@ implementation
 {$R *.lfm}
 
 uses
-  SynEdit,
+  LCLType,
   StdCtrls,
-  rgglobal
+  SynEdit,
+  RGGlobal
   ;
+
 
 { TViewer }
 
@@ -175,7 +178,8 @@ begin
 //  Top = 250
   Height :=377;
   Width  :=579;
-  OnClose:=@FormClose;
+  OnClose  :=@FormClose;
+  OnKeyDown:=@DoKeyDown;
 
   pnlInfo:=TPanel.Create(Self);
 //    Left = 0
@@ -188,6 +192,16 @@ begin
   ctrl:=@actrl;
   idx :=aidx;
 end;
+
+procedure TBaseViewer.DoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key=VK_ESCAPE) and (Shift=[]) then
+  begin
+    Key:=0;
+    Close;
+  end;
+end;
+
 
 finalization
   Viewer.Free;
