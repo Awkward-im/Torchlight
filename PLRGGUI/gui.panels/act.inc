@@ -7,7 +7,7 @@
   procedure CreateNewDir();
   procedure Copy();
   procedure Move();      // ??copy+delete
-  procedure Delete();    // not mark but delete
+  procedure Delete(acode: integer);    // not mark but delete
 
 {$ELSE}
 
@@ -17,8 +17,11 @@ var
   lpath:PWideChar;
   ldir:integer;
 begin
-  lname:=InputBox(rsCreateDir, rsDirName, sNewDir);
+  lname:=sNewDir;
+  if not InputQuery(rsCreateDir, rsDirName, lname) then exit;
   if lname='' then exit;
+
+  if lname[Length(lname)]= '\' then lname[Length(lname)]:='/';
   if lname[Length(lname)]<>'/' then lname:=lname+'/';
   if IsNameExists(lname)>=0 then
   begin
@@ -38,14 +41,18 @@ var
   lpath:PWideChar;
   ldir:integer;
 begin
-  lname:=UpCase(InputBox(rsCreateFile, rsFileName, sNewFile));
+  lname:=sNewFile;
+  if not InputQuery(rsCreateFile, rsFileDirName, lname) then exit;
   if lname='' then exit;
+
   if lname[Length(lname)]='/' then SetLength(lname,Length(lname)-1);
   if IsNameExists(lname)>=0 then
   begin
     ShowMessage(rsExists);
     exit;
   end;
+
+  lname:=UpCase(lname);
 
   ldir:=GetActiveDir(Ctrl,ListIndex);
   lpath:=Ctrl^.Dirs[ldir].Name;
@@ -55,17 +62,30 @@ end;
 
 procedure TPanelForm.Rename();
 var
-  lext,lname:string;
+  lold,lname:string;
   pname,pc:PUnicodeChar;
   lfile:integer;
   ltype:boolean;
 begin
-  lfile:=GetActiveFile(Ctrl,ListIndex);
-  lname:=FastWideToStr(Ctrl^.NameOfFile(lfile));
-  lext:=ExtractExt(lname);
-  lname:=UpCase(InputBox(rsNewName, rsFileDirName, lname));
+  if GetPanelType()=panelTree then
+    lfile:=Ctrl^.AsFile(GetActiveDir(Ctrl,ListIndex))
+  else
+    lfile:=GetActiveFile(Ctrl,ListIndex);
+  lold:=FastWideToStr(Ctrl^.NameOfFile(lfile));
+
+  lname:=lold;
+  if not InputQuery(rsNewName, rsFileDirName, lname) then exit;
   if lname='' then exit;
-  if (not Ctrl^.IsDir(lfile)) and (ExtractExt(lname)<>lext) then
+  lname:=UpCase(lname);
+  if lname=lold then exit;
+
+  if IsNameExists(lname)>=0 then
+  begin
+    ShowMessage(rsExists);
+    exit;
+  end;
+
+  if (not Ctrl^.IsDir(lfile)) and (ExtractExt(lname)<>ExtractExt(lold)) then
   begin
     if MessageDlg(rsWarning,rsTypeChanged,mtWarning,
        [mbOK,mbCancel],0,mbCancel)<>mrOk then
@@ -77,12 +97,6 @@ begin
   else
     ltype:=false;
     
-  if IsNameExists(lname)>=0 then
-  begin
-    ShowMessage(rsExists);
-    exit;
-  end;
-
   pc:=FastStrToWide(lname);
   if GetPanelType=panelList then
   begin
@@ -103,12 +117,54 @@ procedure TPanelForm.Move();
 begin
 end;
 
-procedure TPanelForm.Delete();
+{
+  recursive (if needs) deleting of "ctrl", not "man" (it must be deleted by-the-way) records
+}
+procedure TPanelForm.Delete(acode:integer);
+var
+  arr:TIntegerDynArray;
+  i,lidx:integer;
 begin
+  case acode of
+    1: begin
+      if GetPanelType()=panelTree then
+        Ctrl^.MarkToRemove(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)))
+      else if not IsParentDirSelected() then
+        Ctrl^.MarkToRemove(GetSelectedFile());
+
+      exit;
+    end;
+
+    2: begin
+      if GetPanelType()=panelTree then
+        Ctrl^.RemoveUpdate(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)))
+      else
+        Ctrl^.RemoveUpdate(GetSelectedFile());
+
+      exit;
+    end;
+  end;
+
   if MessageDlg(rsWarning,rsSureToDelete,mtWarning,
      [mbOK,mbCancel],0,mbCancel)<>mrOk then
   begin
     exit;
+  end;
+
+  arr:=nil;
+  if GetPanelType()=panelTree then
+    lidx:=Ctrl^.AsFile(GetActiveDir(Ctrl,ListIndex))
+  else
+    lidx:=GetSelectionList(arr);
+  if lidx<0 then
+  begin
+    for i:=0 to Length(arr)-1 do
+      Ctrl^.Delete(arr[i]);
+    SetLength(arr,0);
+  end
+  else
+  begin
+    Ctrl^.Delete(lidx);
   end;
 end;
 

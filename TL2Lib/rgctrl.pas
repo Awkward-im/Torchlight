@@ -1,4 +1,6 @@
-﻿{TODO: Check mark of deleting for files with same name}
+﻿{TODO: Check RemoveUpdate}
+{TODO: Check what saving uses Ctrl, NOT Man name}
+{TODO: Check mark of deleting for files with same name}
 {TODO: Check for source of text files for "source size" field}
 {NOTE: ignoring changes if empty dir added only}
 {TODO: add DoubleAction option: askfortext  to ask for DATA files only?}
@@ -123,6 +125,8 @@ type
 
     procedure Trace();
 
+    //--- Get info ---
+    
     // Build file list and file info
     procedure GetFullInfo(idx:integer; out info:TRGFullInfo);
 
@@ -155,9 +159,13 @@ type
     }
     function GetUpdateState(idx:integer):integer;
     {
-      Delete update
+      Delete update, keep manifest record (if any)
     }
-    function RemoveUpdate(idx:integer):integer;
+    function RemoveUpdate(aidx:integer):integer;
+    {
+      Remove item at all (update+manifest)
+    }
+    procedure Delete(aidx:integer);
     {
       Mark to remove from PAK
     }
@@ -196,6 +204,7 @@ type
       keep filename or allocate buffer and load file content
     }
     function AddFileData(afdata:PWideChar; afname:PWideChar; acontent:boolean=false):integer;
+
 
     property Files[idx:integer]:PRGCtrlInfo read GetFileInfoPtr;
   end;
@@ -332,7 +341,7 @@ begin
 //      ldir:=AppendDir(PAK.Man.Dirs[ldirs].name);//!!
       if PAK.Man.GetFirstFile(lidx,ldirs) then
         repeat
-          lfile:=AddFile(ldir,nil{PAK.Man.Files[lidx]^.name});//!!
+          lfile:=DoAddFile(ldir,nil{PAK.Man.Files[lidx]^.name});//!!
           inc(result);
           with PRGCtrlInfo(Files[lfile])^ do
           begin
@@ -401,13 +410,15 @@ begin
     case action of
       act_mark  : result:=stateRemove;
       act_delete: result:=stateDelete;
+// False work with MEDIA on new pak
+//      act_dir   : if source<0 then result:=stateNew else result:=stateChanged;
       act_data  : if source<0 then result:=stateNew else result:=stateChanged;
       act_file  : if source<0 then
         result:=stateNew+stateLink
       else
         result:=stateChanged+stateLink;
     else
-      result:=0;
+      result:=stateNone;
     end;
 end;
 
@@ -507,7 +518,7 @@ begin
     end;
   end;
 
-  FixSizes(idx,buf,result);
+//  FixSizes(idx,buf,result);
 end;
 
 function TRGController.GetContent(idx:integer; var buf:PByte):dword;
@@ -527,7 +538,9 @@ begin
 //    if PManFileInfo(FPAK.Man.Files[p^.source])^.ftype=typeDirectory then exit;
 //    if IsDir(idx) then exit;
     if p^.ftype=typeDirectory then exit;
-    result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
+    // theoretically, must use "source"m not "idx" index
+//    result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
+    result:=FPAK.UnpackFile(FPAK.Man.PathOfFile(p^.source),p^.name,buf);
   end;
 end;
 
@@ -543,7 +556,7 @@ begin
     if p^.checksum=0 then
     begin
       p^.checksum:=crc32(0,buf,result);
-      OnChange(@self,idx,faInfo); //!! fired twice after GetUpdate
+//      OnChange(@self,idx,faInfo); //!! fired twice after GetUpdate
     end;
   end;
 end;
@@ -586,7 +599,7 @@ begin
       p^.checksum:=crc32(0,buf,result);
     end;
 
-    if linfo then OnChange(@self,idx,faInfo);
+//    if linfo then OnChange(@self,idx,faInfo);
   end;
 end;
 
@@ -620,7 +633,7 @@ begin
       linfo:=true;
       p^.checksum:=crc32(0,buf,result);
     end;
-    if linfo then OnChange(@self,idx,faInfo);
+//    if linfo then OnChange(@self,idx,faInfo);
   end;
 end;
 
@@ -658,7 +671,7 @@ begin
       result:=RGFilePack(lbuf,asize_u,buf,result);
       FreeMem(lbuf);
 
-      OnChange(@self,idx,faInfo); //!!
+//      OnChange(@self,idx,faInfo); //!!
     end
     else
     begin
@@ -679,7 +692,8 @@ begin
       end;
     end;
 
-    result:=FPAK.ExtractFile(PathOfFile(idx),p^.name,asize_u,buf);
+    result:=FPAK.ExtractFile(FPAK.Man.PathOfFile(p^.source),p^.name,asize_u,buf);
+//    result:=FPAK.ExtractFile(PathOfFile(idx),p^.name,asize_u,buf);
   end;
 end;
 
@@ -718,62 +732,79 @@ begin
   end;
 end;
 
-function TRGController.RemoveUpdate(idx:integer):integer;
+function TRGController.RemoveUpdate(aidx:integer):integer;
+var
+  p:PRGCtrlInfo;
 begin
-  if idx>=0 then
+  if aidx>=0 then
   begin
-    ClearElement(idx);
-    if PRGCtrlInfo(Files[idx])^.source<0 then
+    ClearElement(aidx);
+    p:=PRGCtrlInfo(Files[aidx]);
+    result:=p^.source;
+    if result<0 then
     begin
-      if isDir(idx) then
-        DeletePath(AsDir(idx))
+      if isDir(aidx) then
+        DeletePath(AsDir(aidx))
       else
-        DeleteFile(idx);
-      idx:=-1;
+        DeleteFile(aidx);
+    end
+    else
+    begin
+      p^.SameNameAs(PAK.Man.Files[result]);
+      OnChange(@self,aidx,faStatus);
     end;
-  end;
-  result:=idx;
+  end
+  else
+    result:=-1;
 end;
 
 procedure TRGController.MarkToRemove(idx:integer);
 begin
-  if idx>=0 then
+  if idx>0 then
   begin
     ClearElement(idx);
     PRGCtrlInfo(Files[idx])^.action:=act_delete;
-     OnChange(@self,idx,faStatus);
+    OnChange(@self,idx,faStatus);
   end;
 end;
 
 function TRGController.NewDir(adir:integer; aname:PWideChar):integer;
+var
+  lfile:integer;
 begin
   result:=SearchFile(adir,aname);
   if result<0 then
   begin
-    result:=AddDir(adir, aname);
-    with Files[AsFile(result)]^ do
+    result:=DoAddDir(adir, aname);
+    lfile:=AsFile(result);
+    with Files[lfile]^ do
     begin
       source:=-1;
       ftype :=typeDirectory;
       action:=act_dir;
     end;
+    OnChange(@self,lfile,faAdd);
   end
   else
     result:=-result;
 end;
 
 function TRGController.NewDir(apath:PWideChar):integer;
+var
+  lfile:integer;
 begin
   result:=SearchPath(apath);
   if result<0 then
   begin
-    result:=AddPath(apath);
-    with Files[AsFile(result)]^ do
+    result:=DoAddPath(apath);
+    lfile:=AsFile(result);
+    with Files[lfile]^ do
     begin
       source:=-1;
       ftype :=typeDirectory;
       action:=act_dir;
     end;
+    OnChange(@self,lfile,faAdd);
   end
   else
     result:=-result;
@@ -803,19 +834,20 @@ function TRGController.UseData(adata:PByte; asize:cardinal; apath:PWideChar):int
 var
   lcnt:integer;
 begin
-  lcnt:=FileCount;
-  result:=AddFile(apath);
+  lcnt:=total;
+  result:=DoAddFile(apath); // Add file without event
   ClearElement(result);
   with PRGCtrlInfo(Files[result])^ do
   begin
-    if FileCount<>lcnt then source:=-1;
+    if total<>lcnt then source:=-1;
     data  :=adata;
     size  :=asize;
     action:=act_data;
     ftime :=DateTimeToFileTime(Now());
     ftype :=RGTypeOfExt(apath);
 
-    FixSizes(result,adata,asize);
+//    FixSizes(result,adata,asize);
+    if total<>lcnt then OnChange(@self,result,faAdd);
   end;
 end;
 
@@ -896,12 +928,12 @@ begin
 
   if not acontent then
   begin
-    lcnt:=FileCount;
-    result:=AddFile(afname);
+    lcnt:=total;
+    result:=DoAddFile(afname);
     ClearElement(result);
     with PRGCtrlInfo(Files[result])^ do
     begin
-      if FileCount<>lcnt then source:=-1;
+      if total<>lcnt then source:=-1;
       ftype :=RGTypeOfExt(afname);
       data  :=PByte(CopyWide(afdata));
       action:=act_file;
@@ -998,7 +1030,7 @@ RGLog.Reserve('Packing '+FastWideToStr(Dirs[i].Name)+FastWideToStr(p^.Name));
 
           CopyInfo(p,lman);
 
-          OnChange(@self,lidx,faInfo);
+//          OnChange(@self,lidx,faInfo);
 
           if lman^.size=0 then lman^.size:=lman^.size_u;
           lman^.offset:=apak.WritePackedFile(lbuf,lsize_u,lsize_c);
@@ -1226,7 +1258,7 @@ var
   ls:UnicodeString;
   ldir:integer;
 begin
-  result:=FileCount;
+  result:=total;
   OnChange(@self,0,faStart);
 
   ls:=UnicodeString(adir);
@@ -1240,14 +1272,14 @@ begin
   // new records only
   // but skip starting empty file
   if result=0 then result:=1;
-  result:=FileCount-result;
+  result:=total-result;
 
   OnChange(@self,result,faFinish);
 end;
 
 function TRGController.LinkPAK(afile:PWideChar):integer;
 begin
-  result:=FileCount;
+  result:=total;
   if DirCount=0 then AddPath(nil);
   // Add PAK name to FLinks
   // MakeRGScan()
@@ -1262,7 +1294,41 @@ function MakeRGScan(
   // set action=act_link
 
   if result=0 then result:=1;
-  result:=FileCount-result;
+  result:=total-result;
+end;
+
+
+procedure TRGController.Delete(aidx:integer);
+{
+var
+  lsrc:PRGManifest;
+  i,lidx:integer;
+}
+begin
+  // delete Update / Ctrl. Man record will be unref and delete at the end.
+  // Pak saving must use Ctrl. Else: use commented variant
+  ClearElement(aidx);
+  if IsDir(aidx) then DeletePath(AsDir(aidx)) else DeleteFile(aidx);
+{
+  // 1
+  ClearElement(aidx);
+  lidx:=Files[aidx].source;
+  if lidx>=0 then
+  begin
+    lsrc:=@PAK.Man;
+    if lsrc^.IsDir(lidx) then lsrc^.DeletePath(lidx) else lsrc^.DeleteFile(lidx);
+  end;
+  if IsDir(aidx) then DeletePath(aidx) else DeleteFile(aidx);
+
+  // 2
+  lidx:=RemoveUpdate(aidx);
+  if lidx>=0 then
+  begin
+    lsrc:=@PAK.Man;
+    if lsrc^.IsDir(lidx) then lsrc^.DeletePath(lidx) else lsrc^.DeleteFile(lidx);
+    if       IsDir(aidx) then       DeletePath(aidx) else       DeleteFile(aidx);
+  end;
+}
 end;
 
 end.

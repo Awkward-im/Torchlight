@@ -1417,8 +1417,11 @@ var
   lpath,lname:string;
   lcnt{,lfile}:integer;
 begin
-  lname:=UpCase(InputBox(rsCreateFile, rsFileDirName, ''{sDefFileName}));
+  lname:=''{sDefFileName};
+  if not InputQuery(rsCreateFile, rsFileDirName, lname) then exit;
   if lname='' then exit;
+
+  lname:=UpCase(lname);
   if lname[Length(lname)]= '\' then lname[Length(lname)]:='/';
 
   if lname[Length(lname)]= '/' then
@@ -1461,8 +1464,11 @@ begin
     lhelp:=rsDirName
   else
     lhelp:=rsFileName;
-  lname:=UpCase(InputBox(rsRename, lhelp, lname));
 
+  if not InputQuery(rsRename, lhelp, lname) then exit;
+  if lname='' then exit;
+
+  lname:=UpCase(lname);
   if isdir then
   begin
     if lname[Length(lname)]= '\' then lname[Length(lname)]:='/';
@@ -1989,11 +1995,12 @@ begin
     ldirname:=sMedia
   else
     ldirname:='';
-  ldirname:=UpCase(InputBox(rsCreateDir, rsDirName, ldirname));
-  if ldirname<>'' then
-  begin
-    AddNewDir(PopupNode,ldirname);
-  end;
+
+  if not InputQuery(rsCreateDir, rsDirName, ldirname) then exit;
+  if ldirname='' then exit;
+  ldirname:=UpCase(ldirname);
+  
+  AddNewDir(PopupNode,ldirname);
 end;
 
 procedure TRGGUIForm.miTreeRestoreClick(Sender: TObject);

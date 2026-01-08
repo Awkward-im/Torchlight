@@ -5,9 +5,10 @@
 interface
 
 uses
+  uni_profiler,
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   ComCtrls, Buttons, TreeFilterEdit, ListViewFilterEdit,
-  rgglobal, rgctrl;
+  RGGlobal, RGCtrl;
 
 
 {$DEFINE Interface}
@@ -39,6 +40,7 @@ type
     procedure DoListDblClick  (Sender: TObject);
     procedure DoListKeyDown   (Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
+    procedure lvfeFullAfterFilter(Sender: TObject);
     procedure SetPanelActive  (Sender: TObject);
 
     procedure lvListCustomDrawItem(Sender: TCustomListView; Item: TListItem;
@@ -47,6 +49,7 @@ type
     procedure lvListCompare   (Sender: TObject; Item1, Item2: TListItem;
       Data: Integer; var Compare: Integer);
     procedure lvListShowHint(Sender: TObject; HintInfo: PHintInfo);
+    procedure AddListRow(aidx:integer);
 
     procedure sbColumnsClick(Sender: TObject);
     procedure sbFilterClick(Sender: TObject);
@@ -76,6 +79,9 @@ type
 
     procedure SelectLine();
     procedure SelectAll();
+
+    procedure ProcessTreeEvent(aidx:integer; aevent:integer);
+    procedure ProcessListEvent(aidx:integer; aevent:integer);
 
 {$I act.inc}
     
@@ -502,9 +508,13 @@ begin
   // Delete [restore?] file/dir
   else if (Key=VK_DELETE) or (Key=VK_F8) then
   begin
-    if Shift=[ssCtrl] then
+    if Shift=[ssAlt] then
     begin
-      // restore
+      Delete(0);
+    end
+    else if Shift=[ssCtrl] then
+    begin
+      Ctrl^.RemoveUpdate(GetSelectedFile());
     end
     else if (Shift=[]) then
     begin
@@ -553,13 +563,17 @@ begin
   // Delete [restore?] file/dir
   else if (Key=VK_DELETE) or (Key=VK_F8) then
   begin
-    if Shift=[ssCtrl] then
+    if Shift=[ssAlt] then
     begin
-      // restore
+      Delete(0);
+    end
+    else if Shift=[ssCtrl] then
+    begin
+      Delete(2);
     end
     else if (Shift=[]) then
     begin
-      Ctrl^.MarkToRemove(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)));
+      Delete(1);
     end
     else
       exit;
@@ -581,8 +595,10 @@ begin
   lidx:=GetSelectedFile();
   if lidx>=0 then
   begin
-    if Ctrl^.Files[lidx]^.ftype=typeDirectory then
-      FillList(Ctrl^.AsDir(lidx));
+    with Ctrl^.Files[lidx]^ do
+      if (ftype=typeDirectory) and
+         (action<>act_delete) then
+        FillList(Ctrl^.AsDir(lidx));
   end
   // ROOT dir
   else
@@ -642,289 +658,7 @@ end;
 
 {$I lv.inc}
 
-{%REGION Tree}
-(*
-function TPanelForm.GetPathFromNode(aNode:TTreeNode):string;
-var
-  ldir:integer;
-begin
-  ldir:=IntPtr(UIntPtr(aNode.Data));
-  if ldir<0 then
-    result:=''
-  else
-	  result:=Ctrl^.Dirs[ldir].Name;
-{
-  result:='';
-  repeat
-    result:=aNode.Text+cSep+result;
-    aNode:=aNode.Parent;
-  until aNode=nil;
-}
-end;
-
-procedure TPanelForm.tvTreeContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-begin
-  PopupNode:=tvTree.GetNodeAt(MousePos.X, MousePos.Y);
-  if PopupNode<>nil then
-  begin
-    miTreeExtract       .Visible:=PopupNode.Enabled;
-    miTreeExtractDir    .Visible:=PopupNode.Enabled;
-    miTreeExtractVisible.Visible:=PopupNode.Enabled;
-    miTreeNew           .Visible:=PopupNode.Enabled;
-    miTreeAdd           .Visible:=PopupNode.Enabled;
-    miTreeDelete        .Visible:=PopupNode.Enabled and (PopupNode<>tvTree.Items[0]);
-    miTreeRestore       .Visible:=not PopupNode.Enabled;
-    mnuTree.PopUp;
-  end;
-  Handled:=true;
-end;
-
-procedure TPanelForm.miTreeListClick(Sender: TObject);
-var
-  sl:TStringList;
-  tn:TTreeNode;
-  i:integer;
-  b:boolean;
-begin
-  sl:=TStringList.Create;
-  for i:=0 to tvTree.Items.Count-1 do
-  begin
-    b:=true;
-    tn:=tvTree.Items[i].Parent;
-    while tn<>nil do
-    begin
-      if not tn.Expanded then
-      begin
-        b:=false;
-        break;
-      end;
-      tn:=tn.Parent;
-    end;
-    if b then
-      sl.Add(GetPathFromNode(tvTree.Items[i]));
-  end;
-  Clipboard.AsText:=sl.Text;
-  sl.Free;
-end;
-
-procedure TPanelForm.AddNewDir(anode:TTreeNode; const apath:string);
-var
-  lnode:TTreeNode;
-  ls,lpath:string;
-  ldir:integer;
-begin
-  lpath:={UpCase}(apath);
-
-  if      lpath[Length(lpath)]= '\' then lpath[Length(lpath)]:='/'
-  else if lpath[Length(lpath)]<>'/' then lpath:=lpath+'/';
-
-  if anode=nil then
-    ls:=lpath
-  else
-  begin
-    // if we have child with "root" name already
-    lnode:=anode.FindNode(lpath);
-    if lnode<>nil then
-    begin
-      tvTree.Selected:=lnode;
-      exit;
-    end;
-
-    ls:=GetPathFromNode(anode)+lpath;
-  end;
-
-  ldir:=FCtrl^.NewDir(PUnicodeChar(UnicodeString(ls)));
-  if ldir>=0 then
-  begin
-    lnode:=tvTree.Items.AddChild(anode,lpath);
-    lnode.Data:=pointer(IntPtr(ldir));
-  end;
-
-end;
-
-procedure TPanelForm.miTreeNewClick(Sender: TObject);
-var
-  ldirname:string;
-begin
-  if (PopupNode=tvTree.Items[0]) and (PopupNode.Count=0) then
-    ldirname:=sMedia
-  else
-    ldirname:='';
-  ldirname:=UpCase(InputBox(rsCreateDir, rsDirName, ldirname));
-  if ldirname<>'' then
-  begin
-    AddNewDir(PopupNode,ldirname);
-  end;
-end;
-
-procedure TPanelForm.miTreeDeleteClick(Sender: TObject);
-var
-  ldir:integer;
-begin
-  ldir:=IntPtr(UIntPtr(PopupNode.Data));
-  FCtrl^.MarkToRemove(FCtrl^.AsFile(ldir));
-  MarkTree(ldir,false);
-end;
-
-procedure TPanelForm.miTreeRestoreClick(Sender: TObject);
-var
-  ldir:integer;
-begin
-  ldir:=IntPtr(UIntPtr(PopupNode.Data));
-  FCtrl^.RemoveUpdate(FCtrl^.AsFile(ldir));
-  MarkTree(ldir,true);
-end;
-
-procedure TPanelForm.MarkTree(adir:integer; aEnable:boolean);
-var
-  lnode:TTreeNode;
-  i:integer;
-begin
-  for i:=0 to tvTree.Items.Count-1 do
-  begin
-    lnode:=tvTree.Items[i];
-    if IntPtr(UIntPtr(lnode.Data))=adir then
-    begin
-      lnode.Enabled:=aEnable;
-      if aEnable then
-        tvTree.Select(lnode)
-      else
-        lnode.Collapse(true);
-      exit;
-    end;
-  end;
-end;
-*)
-procedure TPanelForm.SelectTreePath(adir:integer);
-var
-  i:integer;
-begin
-  if (tvTree.Selected<>nil) and (IntPtr(UIntPtr(tvTree.Selected.Data))=adir) then exit;
-
-  for i:=0 to tvTree.Items.Count-1 do
-  begin
-    if IntPtr(UIntPtr(tvTree.Items[i].Data))=adir then
-    begin
-      tvTree.Select(tvTree.Items[i]);
-      tvTree.MakeSelectionVisible();
-      break;
-    end;
-  end;
-  SetActiveDir(adir,Ctrl,ListIndex);
-  lblPath.Caption:=Ctrl^.Dirs[adir].Name;
-end;
-
-procedure TPanelForm.sbCollapseClick(Sender: TObject);
-begin
-  tvTree.BeginUpdate;
-
-  tvTree.FullCollapse;
-
-  tvTree.Items[1].Expanded:=true;
-  tvTree.Items[0].Expanded:=true;
-  tvTree.EndUpdate;
-end;
-
-procedure TPanelForm.sbTreeClick(Sender: TObject);
-begin
-  SetPanelActive(self);
-
-  if sbTree.Down then
-  begin
-    SetupView(panelTree);
-    FillTree (GetActiveDir(Ctrl,ListIndex));
-    tvTree.SetFocus;
-  end
-  else
-  begin
-    SetupView(panelList);
-    FillList (GetActiveDir(Ctrl,ListIndex));
-    lvList.SetFocus;
-  end;
-end;
-
-procedure TPanelForm.tvTreeSelectionChanged(Sender: TObject);
-var
-  ldir:integer;
-begin
-  if tvTree.Selected<>nil then
-  begin
-    if tvTree.Selected<>tvTree.Items[0] then
-    begin
-      ldir:=IntPtr(tvTree.Selected.Data);
-    end
-    else
-      ldir:=0;
-    SetActiveDir(ldir,Ctrl,ListIndex);
-    lblPath.Caption:=Ctrl^.Dirs[ldir].Name;
-  end;
-end;
-
-procedure TPanelForm.tvTreeDblClick(Sender: TObject);
-var
-  ldir:integer;
-begin
-  if tvTree.Selected<>nil then
-  begin
-    if tvTree.Selected<>tvTree.Items[0] then
-    begin
-      ldir:=IntPtr(tvTree.Selected.Data);
-    end
-    else
-      ldir:=0;
-    SetActiveDir(ldir,Ctrl,ListIndex);
-
-    sbTree.Down:=False;
-    sbTreeClick(sbTree);
-  end;
-end;
-
-procedure TPanelForm.AddBranch(aroot:TTreeNode; adir:integer);
-var
-  lnode:TTreeNode;
-  ls:string;
-  i:integer;
-begin
-  aroot.Data:=pointer(IntPtr(adir));
-  if Ctrl^.GetFirstFile(i,adir) then
-    repeat
-      if Ctrl^.IsDir(i) then
-      begin
-        ls:=WideToStr(Ctrl^.NameOfFile(i));
-        lnode:=tvTree.Items.AddChild(aroot,ls);
-        AddBranch(lnode,Ctrl^.AsDir(i));
-        if PRGCtrlInfo(Ctrl^.Files[i])^.action=act_delete then
-          lnode.Enabled:=false;
-      end;
-    until not Ctrl^.GetNextFile(i);
-end;
-
-procedure TPanelForm.FillTree(adir:integer);
-begin
-  if (adir<0) or (adir>=Ctrl^.DirCount) then exit;
-  if GetPanelType()<>panelTree then exit;
-
-  SetActiveDir(adir,Ctrl,ListIndex);
-
-  tvTree.Items.Clear;
-  with tvTree do
-  begin
-    BeginUpdate;
-    AddBranch(Items.AddChildObjectFirst(nil,'MOD',pointer(-1)),0);
-
-    if tvTree.Items.Count>20 then sbCollapseClick(sbCollapse);
-    EndUpdate;
-  end;
-  tvTree.AlphaSort;
-  if adir>=0 then
-    SelectTreePath(adir)
-  else
-    tvTree.Items[0].Selected:=true;
-
-  lblPath.Caption:=Ctrl^.Dirs[adir].Name;
-end;
-
-{%ENDREGION Tree}
+{$I tree.inc}
 
 procedure TPanelForm.UpdatePreview(aidx:integer; actrl:PRGController; aList:integer);
 {
@@ -948,22 +682,14 @@ end;
 
 function TPanelForm.OnChangeDefault(actrl:pointer; idx:integer; aevent:integer):integer;
 var
-  ltype,ldir:integer;
-  lisdir:boolean;
+  ltype:integer;
 begin
   result:=1;
   if Ctrl=actrl then
   begin
-    ltype :=GetPanelType();
-    ldir  :=GetActiveDir(Ctrl,ListIndex);
-    lisdir:=Ctrl^.IsDir(idx);
-{
-    if (ltype=panelTree) and (lisdir) and
-       (aevent in [faAdd,faRename,faDelete,faMove,faStatus]) then
-      FillTree(ldir);
-    if ltype=panelList then
-      FillList(ldir);
-}
+    ltype:=GetPanelType();
+    if ltype=panelTree then ProcessTreeEvent(idx, aevent);
+    if ltype=panelList then ProcessListEvent(idx, aevent);
   end;
 end;
 

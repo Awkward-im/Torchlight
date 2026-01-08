@@ -101,7 +101,8 @@ begin
     FreeMem(pc);
     FreeMem(lbuf);
 
-    PRGCtrlInfo(Ctrl^.Files[Idx])^.size:=Length(SynEdit.Text);
+    PRGCtrlInfo(Ctrl^.Files[Idx])^.size:=lsize;
+//    PRGCtrlInfo(Ctrl^.Files[Idx])^.size:=Length(SynEdit.Text);
   end;
 end;
 
@@ -278,7 +279,6 @@ var
 begin
   lbuf:=nil;
   lsize:=actrl.GetSource(aidx,lbuf);
-  if lsize=0 then exit(nil);
 
   result:=MakeEditForm(actrl,aidx);
 
@@ -287,7 +287,9 @@ begin
   with TEditForm(result) do
   begin
     SynEdit.Highlighter:=Viewer.SynTSyn;
-     case GetSourceEncoding(lbuf) of
+    if lsize=0 then exit;
+
+    case GetSourceEncoding(lbuf) of
       tofSrcUTF8: begin
         lpc:=PAnsiChar(lbuf);
         if (PDword(lbuf)^ and $00FFFFFF)=SIGN_UTF8 then

@@ -30,7 +30,7 @@ begin
 
   if sbFull.Down then
   begin
-    FillList(-1);
+    FillFullList();
     lvfeFull.SortData:=true;
     lvfeFull.FilteredListview:=lvList;
   end
@@ -91,7 +91,7 @@ end;
 
 procedure TPanelForm.SelectAll();
 var
-  lstart,lidx,lcnt,i:integer;
+  lstart,lcnt,i:integer;
 begin
   if (lvList.Items.Count=0) then exit;
   if (lvList.Items[0].Caption=strParentDir) then
@@ -296,31 +296,42 @@ begin
     HintInfo^.HintStr:=lv.SubItems[si-1];
 end;
 
-procedure TPanelForm.FillFullList();
+procedure TPanelForm.lvfeFullAfterFilter(Sender: TObject);
+begin
+  if lvList.Items.Count>1 then
+  begin
+    lvList.SortColumn:=colExt;
+    lvList.Sort;
+  end;
+end;
+
+procedure TPanelForm.AddListRow(aidx:integer);
 var
   ltime:UInt64;
   linfo:PRGCtrlInfo;
   lrec:TRGFullInfo;
   ls:AnsiString;
-  i:integer;
 begin
-  lvList.BeginUpdate;
-  lvList.Clear;
-  lvList.Checkboxes:=false;
-
-  for i:=0 to Ctrl^.FileCount-1 do
+  linfo:=Ctrl^.Files[aidx];
+  with lvList.Items.Add do
   begin
-    if Ctrl^.IsDir(i) or Ctrl^.IsFileDeleted(i) then continue;
+    ls:=WideToStr(linfo^.Name);
 
-    linfo:=Ctrl^.Files[i];
-    with lvList.Items.Add do
+    Ctrl^.GetFullInfo(aidx,lrec);
+
+    if linfo^.ftype=typeDirectory then
     begin
-      ls:=WideToStr(linfo^.Name);
-
-      Ctrl^.GetFullInfo(i,lrec);
-
+      Caption:=ls;
+      Data   :=pointer(IntPtr(aidx));
+      SubItems.Add('');      // ext
+      SubItems.Add(strDir);  // type
+      SubItems.Add('');      // size
+      SubItems.Add('');      // time
+    end
+    else
+    begin
       Caption:=ExtractNameOnly(ls);
-      Data   :=pointer(IntPtr(i));
+      Data   :=pointer(IntPtr(aidx));
       SubItems.Add(ExtractExt(ls));              // ext
       SubItems.Add(RGTypeGroupName(lrec.ftype)); // type
       SubItems.Add(IntToStr(lrec.size));         // size
@@ -337,30 +348,51 @@ begin
       else
         ls:='';
       SubItems.Add(ls);
-
-      // State
-      case lrec.state of
-        stateNew              : ls:=stlblNew;
-        stateChanged          : ls:=stlblChanged;
-        stateDelete           : ls:=stlblDelete;
-        stateNew    +stateLink: ls:=stlblLinkNew;
-        stateChanged+stateLink: ls:=stlblLinkEd;
-      else
-        ls:=' ';
-      end;
-      SubItems.Add(ls);
     end;
+    // State
+    case lrec.state of
+      stateNew              : ls:=stlblNew;
+      stateChanged          : ls:=stlblChanged;
+      stateDelete           : ls:=stlblDelete;
+      stateNew    +stateLink: ls:=stlblLinkNew;
+      stateChanged+stateLink: ls:=stlblLinkEd;
+    else
+      ls:=' ';
+    end;
+    SubItems.Add(ls);
+  end;
+end;
+
+procedure TPanelForm.FillFullList();
+var
+  ltime:UInt64;
+  linfo:PRGCtrlInfo;
+  lrec:TRGFullInfo;
+  ls:AnsiString;
+  i:integer;
+begin
+  lvList.BeginUpdate;
+  lvList.Clear;
+  lvList.Checkboxes:=false;
+
+  for i:=0 to Ctrl^.FileCount-1 do
+  begin
+    if Ctrl^.IsDir(i) or Ctrl^.IsFileDeleted(i) then continue;
+
+    AddListRow(i);
   end;
   lvList.EndUpdate;
 
   if lvList.Items.Count>0 then
   begin
+    lvList.SortColumn:=colExt;
+ {
     if lvList.Items.Count>1 then
     begin
       lvList.SortColumn:=colExt;
       lvList.Sort;
     end;
-
+}
     lvList.ItemIndex:=0;
   end;
 
@@ -381,7 +413,7 @@ begin
     exit;
   end;
 
-  if (adir<0) or (adir>=Ctrl^.DirCount) then exit;
+  if adir>=Ctrl^.DirCount then exit;
   if GetPanelType()<>panelList then exit;
 
   lolddir:=GetActiveDir(Ctrl,ListIndex);
@@ -404,55 +436,7 @@ begin
   if Ctrl^.GetFirstFile(lfile,adir) then
   begin
     repeat
-      linfo:=Ctrl^.Files[lfile];
-      with lvList.Items.Add do
-      begin
-        ls:=WideToStr(linfo^.Name);
-
-        Ctrl^.GetFullInfo(lfile,lrec);
-
-        if linfo^.ftype=typeDirectory then
-        begin
-          Caption:=ls;
-          Data   :=pointer(IntPtr(lfile));
-          SubItems.Add('');      // ext
-          SubItems.Add(strDir);  // type
-          SubItems.Add('');      // size
-          SubItems.Add('');      // time
-        end
-        else
-        begin
-          Caption:=ExtractNameOnly(ls);
-          Data   :=pointer(IntPtr(lfile));
-          SubItems.Add(ExtractExt(ls));              // ext
-          SubItems.Add(RGTypeGroupName(lrec.ftype)); // type
-          SubItems.Add(IntToStr(lrec.size));         // size
-          // Time
-          ltime:=lrec.ftime;
-          if ltime<>0 then
-          begin
-            try
-              ls:=DateTimeToStr(FileTimeToDateTime(ltime));
-            except
-              ls:='0x'+HexStr(ltime,16);
-            end;
-          end
-          else
-            ls:='';
-          SubItems.Add(ls);
-        end;
-        // State
-        case lrec.state of
-          stateNew              : c:=stlblNew;
-          stateChanged          : c:=stlblChanged;
-          stateDelete           : c:=stlblDelete;
-          stateNew    +stateLink: c:=stlblLinkNew;
-          stateChanged+stateLink: c:=stlblLinkEd;
-        else
-          c:=' ';
-        end;
-        SubItems.Add(c);
-      end;
+      AddListRow(lfile);
     until not Ctrl^.GetNextFile(lfile);
   end;
   lvList.EndUpdate;
@@ -512,4 +496,67 @@ begin
   end;
 end;
 
+procedure TPanelForm.ProcessListEvent(aidx:integer; aevent:integer);
+var
+  lv:TListItem;
+  lidx,lsrcdir,lfiledir:integer;
+begin
+  lsrcdir :=GetActiveDir(Ctrl,ListIndex);
+  lfiledir:=Ctrl^.FileDir(aidx);
+  if lsrcdir<>lfiledir then exit;
+
+  while true do
+  begin
+    case aevent of
+      faAdd: begin
+        AddListRow(aidx);
+        lvList.Sort;
+        lv:=lvList.Items.FindData(pointer(IntPtr(aidx)));
+        lvList.ItemIndex:=lvList.Items.IndexOf(lv);
+        lvList.ItemFocused:=lv;
+      end;
+
+      faRename: begin
+        lv:=lvList.Items.FindData(pointer(IntPtr(aidx)));
+        if lv<>nil then lv.Caption:=Ctrl^.NameOfFile(aidx);
+      end;
+
+      faDeleting: begin
+        lv:=lvList.Items.FindData(pointer(IntPtr(aidx)));
+        if lv<>nil then
+        begin
+          lidx:=lvList.ItemIndex;
+          lv.Delete;
+          if lidx>=lvList.Items.Count then lidx:=lvList.Items.Count-1;
+          lvList.ItemIndex:=lidx;
+          lvList.ItemFocused:=lvList.Items[lidx];
+        end;
+      end;
+
+      // better was to change subitems but this is simpler
+      faChanged,
+      faInfo: begin
+        lv:=lvList.Items.FindData(pointer(IntPtr(aidx)));
+        if lv<>nil then
+        begin
+          lv.Delete;
+          aevent:=faAdd;
+          continue;
+        end;
+      end;
+
+      faStatus: begin
+        lvList.Refresh;
+      end;
+
+      // idk what to do
+      faMove: begin
+      end;
+    end;
+
+    break;
+  end;
+
+end;
+  	
 {%ENDREGION List}

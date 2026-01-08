@@ -28,7 +28,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons;..\TL2Lib\forms"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
@@ -65,7 +65,7 @@
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <Libraries Value="D:\SVN\UpLazTrunk\cross\lib\x86_64-linux\"/>
             <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons;..\TL2Lib\forms"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
@@ -93,7 +93,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
             <OtherUnitFiles Value="..\TL2Save;..\utils;..\TL2DBScan;..\TL2Lib;..\RGDB;..\Addons;..\TL2Lib\forms"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
@@ -391,7 +391,7 @@
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\TL2Save"/>
       <OtherUnitFiles Value="..\TL2Save;..\TL2Lib;..\TL2DBScan;..\RGDB;..\Addons;..\TL2Lib\forms"/>
-      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
     </SearchPaths>
     <Linking>
       <Debugging>

@@ -9,6 +9,7 @@ uses
   Menus,
   rgpRecipes;
 
+
 procedure FillEditMenu(ami:TMenuItem);
 
 
@@ -22,6 +23,7 @@ uses
   RGGUI.Shared,
   fmPanel,
   rgpBase;
+
 
 procedure OnMenuItemClick(dummy:pointer; Sender: TObject);
 var

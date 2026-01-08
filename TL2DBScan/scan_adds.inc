@@ -16,6 +16,7 @@ begin
       'INSERT INTO dicfiles (file) VALUES (?1) RETURNING id;',PAnsiChar(lfile));
 end;
 
+// Used for "base" files only
 function CreateFilesTable(adb:PSQLite3; aver:integer):boolean;
 begin
   if not IsTableExists(adb,'files') then

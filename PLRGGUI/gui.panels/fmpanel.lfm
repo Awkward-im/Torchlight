@@ -145,6 +145,7 @@ object PanelForm: TPanelForm
       Height = 23
       Top = 2
       Width = 193
+      OnAfterFilter = lvfeFullAfterFilter
       ButtonWidth = 23
       Anchors = [akTop, akLeft, akRight]
       NumGlyphs = 1

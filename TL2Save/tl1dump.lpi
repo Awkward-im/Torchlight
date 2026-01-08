@@ -26,7 +26,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);."/>
             <OtherUnitFiles Value=".;..\RGDB;..\Addons;..\TL2Lib"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -64,7 +64,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);."/>
             <OtherUnitFiles Value=".;..\RGDB;..\Addons;..\TL2Lib"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
@@ -154,7 +154,7 @@
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);."/>
       <OtherUnitFiles Value=".;..\..\utils\SQL;..\TL2Lib;..\..\utils"/>
-      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
     </SearchPaths>
   </CompilerOptions>
   <Debugging>

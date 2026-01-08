@@ -130,6 +130,7 @@ function  DateTimeToFileTime(adate: TDateTime): Int64;
 function  IsNumber(astr:PWideChar):boolean;
 function  RGStrToInt(src:PWideChar; var aval:QWord):boolean;
 function  RGStrToInt(src:PWideChar):QWord;
+function  RGIntToStr(var dst:AnsiString; value:QWord):AnsiString;
 function  RGIntToStr(dst:PWideChar; value:QWord):PWideChar;
 function  RGFloatToStr(const aValue:single):AnsiString;
 procedure FixFloatStr(var astr:AnsiString);
@@ -462,6 +463,27 @@ begin
     end;
     if isminus then result:=QWord(-Int64(result));
   end;
+end;
+
+function RGIntToStr(var dst:AnsiString; value:QWord):AnsiString;
+var
+  i:dword;
+  digits:integer;
+begin
+  i:=value;
+  digits:=0;
+  repeat
+    i:=i div 10;
+    inc(digits);
+  until i=0;
+  SetLength(dst,digits);
+//  dst[digits]:=#0;
+  repeat
+    dst[digits]:=WideChar(ord('0')+(value mod 10));
+    dec(digits);
+    value:=value div 10;
+  until digits=0;
+  result:=dst;
 end;
 
 function RGIntToStr(dst:PWideChar; value:QWord):PWideChar;

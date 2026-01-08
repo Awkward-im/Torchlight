@@ -142,14 +142,14 @@ end;
 
 function GetSourceEncoding(aBuf:PByte):integer;
 begin
+  result:=tofEmpty;
+  if aBuf=nil then exit;
   if (PDWord(abuf)^=(SIGN_UNICODE+ORD('[') shl 16)) or
-     (PWord (abuf)^=ORD('[')) then exit (tofSrcWide);
+     (PWord (abuf)^=ORD('[')) then exit(tofSrcWide);
   if (PDWord(abuf)^=(SIGN_UTF8   +ORD('[') shl 24)) or
      ((AnsiChar(abuf^)='[') and
       (AnsiChar(abuf[1]) in [#0,']','_','0'..'9','A'..'Z','a'..'z'])) then
     exit(tofSrcUTF8);
-
-  result:=tofEmpty;
 end;
 
 function IsSource(aBuf:PByte; aname:PWideChar=nil):boolean;

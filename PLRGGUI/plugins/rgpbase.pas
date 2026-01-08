@@ -10,6 +10,7 @@ interface
 uses
   RGCtrl;
 
+
 type
   TPluginProc = function(var actrl:TRGController; idx:integer):integer;
 
@@ -35,6 +36,7 @@ const
 
 
 implementation
+
 
 const
   listbase = 32;
