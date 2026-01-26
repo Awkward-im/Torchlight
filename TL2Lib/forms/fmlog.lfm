@@ -8,6 +8,7 @@ object fmLogForm: TfmLogForm
   LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   object memLog: TMemo
     Left = 8
     Height = 280

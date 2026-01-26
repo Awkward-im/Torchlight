@@ -52,6 +52,7 @@ const
   iiStretch = 5;
   iiDarkBg  = 6;
   iiHash    = 7;
+  iiFix     = 8;
 
 type
   { TBaseViewer }
@@ -174,10 +175,9 @@ constructor TBaseViewer.Create({AOwner:TComponent; }var actrl: TRGController; ai
 begin
   inherited CreateNew(Viewer{AOwner});
 
-//  Left = 315
-//  Top = 250
-  Height :=377;
-  Width  :=579;
+  Height   :=377;
+  Width    :=579;
+  Position :=poScreenCenter;
   OnClose  :=@FormClose;
   OnKeyDown:=@DoKeyDown;
 

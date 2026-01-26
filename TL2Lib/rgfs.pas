@@ -45,9 +45,14 @@ type
   PBaseFileInfo = ^TBaseFileInfo;
   TBaseFileInfo = object(TBaseInfo)
   private
-//  public
     parent:integer;     // parent dir index
     next  :integer;     // next file in current directory
+  private
+    _ftype  :word;      // MAN: RGFileType unified type
+
+    function GetFType:word;
+  public
+    property ftype:word read GetFType write _ftype;
   end;
 
 type
@@ -57,12 +62,6 @@ type
     ftime   :UInt64;
     size    :cardinal;
     checksum:dword;
-  private
-    _ftype  :word;      // MAN: RGFileType unified type
-
-    function GetFType:word;
-  public
-    property ftype:word read GetFType write _ftype;
   end;
 
 type
@@ -235,6 +234,7 @@ type
   out: empty to skip, lname to include
 }
 function CheckFName(const adir,aname:UnicodeString):UnicodeString;
+procedure CopyInfo(afrom, ato:PFileInfo);
 
 
 implementation
@@ -295,7 +295,7 @@ begin
   result:=fname=afi^.fname;
 end;
 
-function TFileInfo.GetFType:word;
+function TBaseFileInfo.GetFType:word;
 begin
   if _ftype=typeUnknown then _ftype:=RGTypeOfExt(Name);
   result:=_ftype;
@@ -933,7 +933,9 @@ begin
   if apath<>nil then
   begin
     lpath:=ExtractPath(apath);
-    result:=DoAddFile(AddPath(PUnicodeChar(lpath)), @apath[Length(lpath)]);
+    // can't use AddPath with event
+    // coz not sure what will set "source" for Ctrl for example
+    result:=DoAddFile(DoAddPath(PUnicodeChar(lpath)), @apath[Length(lpath)]);
   end
   else
     result:=DoAddFile(0,nil);
@@ -965,8 +967,12 @@ begin
   result:=AppendDir(apath);
 
   lfile:=DoAddFile(lparent, apath+lslash);
-  Dirs[result] .index:=lfile;
-  Files[lfile]^.index:=result;
+  Dirs[result].index:=lfile;
+  with Files[lfile]^ do
+  begin
+    index:=result;
+    ftype:=typeDirectory;
+  end;
 end;
 
 function TRGDirList.DoAddDir(adir:integer; aname:PUnicodeChar):integer;
@@ -981,8 +987,12 @@ begin
     result:=AppendDir(pc);
 
     lfile:=DoAddFile(adir, aname);
-    Dirs[result] .index:=lfile;
-    Files[lfile]^.index:=result;
+    Dirs[result].index:=lfile;
+    with Files[lfile]^ do
+    begin
+      index:=result;
+      ftype:=typeDirectory;
+    end;
   end;
   FreeMem(pc);
 end;
@@ -1028,7 +1038,7 @@ begin
 
   lcnt:=total;
   result:=DoAddPath(PUnicodeChar(TransformPath(apath)));
-  if total>lcnt then OnChange(@self,result,faAdd);
+  if total>lcnt then OnChange(@self,AsFile(result),faAdd);
 end;
 
 function TRGDirList.AddPath(const apath:AnsiString):integer;
@@ -1039,7 +1049,7 @@ begin
 
   lcnt:=total;
   result:=DoAddPath(PUnicodeChar(TransformPath(apath)));
-  if total>lcnt then OnChange(@self,result,faAdd);
+  if total>lcnt then OnChange(@self,AsFile(result),faAdd);
 end;
 
 {%ENDREGION Add}
@@ -1327,6 +1337,15 @@ begin
   // can't use lext coz need to delete ext to get real sometime
   if RGTypeOfExt(PUnicodeChar(lname))<>typeUnknown then
     result:=lname;
+end;
+
+procedure CopyInfo(afrom, ato:PFileInfo);
+begin
+  ato^.SameNameAs(afrom);
+  ato^.size    :=afrom^.size;
+  ato^.ftime   :=afrom^.ftime;
+  ato^.checksum:=afrom^.checksum;
+  ato^._ftype  :=afrom^._ftype;
 end;
 
 

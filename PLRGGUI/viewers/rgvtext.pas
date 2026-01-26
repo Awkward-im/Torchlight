@@ -1,6 +1,8 @@
 ﻿{}
 {TODO: modified flag}
 {TODO: need to unify sources initial loading and reload}
+{TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
+{TODO: save as for editor}
 unit rgvText;
 
 interface
@@ -42,15 +44,18 @@ resourcestring
   rsSave   = 'Save changes';
   rsFind   = 'Find/Replace info';
   rsReload = 'Reload content';
+  rsFix    = 'Fix ID case';
 
 type
   TEditForm = class(TBaseViewer)
     sbSave  :TSpeedButton;
     sbFind  :TSpeedButton;
     sbReload:TSpeedButton;
+    sbFix   :TSpeedButton;
     SynEdit:TSynEdit;
     ReplaceDialog: TReplaceDialog;
 
+    procedure DoFix   (Sender:TObject);
     procedure DoSave  (Sender:TObject);
     procedure DoReload(Sender:TObject);
     procedure DoFind  (Sender:TObject);
@@ -133,6 +138,24 @@ end;
 procedure TEditForm.DoFind(Sender:TObject);
 begin
   ReplaceDialog.Execute();
+end;
+
+procedure TEditForm.DoFix(Sender:TObject);
+var
+  i,lpos:integer;
+begin
+  for i:=0 to SynEdit.Lines.Count-1 do
+  begin
+    lpos:=Pos(':',SynEdit.Lines[i]);
+    if lpos>0 then
+    begin
+      SynEdit.Lines[i]:=
+        UpCase(Copy(SynEdit.Lines[i],1,lpos))+
+               Copy(SynEdit.Lines[i],lpos+1);
+    end
+    else
+      SynEdit.Lines[i]:=UpCase(SynEdit.Lines[i]);
+  end;
 end;
 
 procedure TEditForm.DoReload(Sender:TObject);
@@ -236,6 +259,22 @@ begin
       Parent     :=pnlInfo;
     end;
 
+    sbFix:=TSpeedButton.Create(result);
+    with sbFix do
+    begin
+      Left:=sbReload.Left+sbReload.Width+4;
+      Top :=4;
+//        SetBounds(4,4,32,30);
+      ShowCaption:=False;
+      Images     :=Viewer.ilViewer;
+      ImageIndex :=iiFix;
+      Hint       :=rsFix;
+      ShowHint   :=True;
+      OnClick    :=@DoFix;
+      Parent     :=pnlInfo;
+      Visible    :=False;
+    end;
+
     SynEdit:=TSynEdit.Create(result);
 //!!    SynEdit.Highlighter:=SynTSyn;
     SynEdit.BookmarkOptions.BookmarkImages:=Viewer.ilBookmarks;
@@ -286,6 +325,7 @@ begin
 
   with TEditForm(result) do
   begin
+    sbFix.Visible:=true;
     SynEdit.Highlighter:=Viewer.SynTSyn;
     if lsize=0 then exit;
 

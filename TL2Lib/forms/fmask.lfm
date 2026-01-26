@@ -11,8 +11,8 @@ object AskForm: TAskForm
     Left = 10
     Height = 25
     Top = 136
-    Width = 174
-    Caption = 'Use for all files of mod'
+    Width = 120
+    Caption = 'Use for all files'
     Font.Height = -16
     ParentFont = False
     TabOrder = 0

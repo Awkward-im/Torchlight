@@ -18,15 +18,19 @@ uses
 
 
 type
+  PImagesetFile = ^TImagesetFile;
   TImagesetFile = record
-    Name  :string;      // Imageset name
-    Sheet :string;      // Image name (with relative path usually)
-    Image :TImageData;  // Image data, filled by Use* function
-                        // like FImageset.UseImageFile(FImageset.Imagesets[FActiveImageset].Sheet)
-    Width :integer;     // Image width  (can be not real)
-    Height:integer;     // Image height (can be not real)
+    Name    :string;      // Imageset name
+    Sheet   :string;      // Image name (with relative path usually)
+    Image   :TImageData;  // Image data, filled by Use* function
+                          // like FImageset.UseImageFile(FImageset.Imagesets[FActiveImageset].Sheet)
+    Width   :integer;     // Image width  (can be not real)
+    Height  :integer;     // Image height (can be not real)
+    id      :integer;     // for case when deleting imageset
+    modified:boolean;
   end;
 
+  PImagesetItem = ^TImagesetItem;
   TImagesetItem = record
     Name  :string;
     XPos,
@@ -44,6 +48,7 @@ type
   private
     FRootPath  :string;
     FOutputPath:string;
+    lastid     :integer;
 
     procedure SetPath(aidx:integer; const apath:string);
     function  CheckImageset(const aname:string):boolean;
@@ -63,6 +68,9 @@ type
     function ParseFromFile  (const aname:string       ):boolean;      // disk file
     function ParseFromMemory(abuf:PByte; asize:integer):boolean;      // memory buffer
     function BuildImageset  (ais:integer; out bin:pByte; aver:integer=verTL2):integer;
+    procedure CloseImageset(const aname:string);
+    procedure CloseImageset(aidx:integer);
+    function ISbyID(aid:integer): integer;
     // input picture
     function UseImageset   (                           ais: integer=-1): boolean;  // file from imageset info
     function UseImageFile  (const aname:string       ; ais: integer=-1): boolean;  // disk file
@@ -109,6 +117,7 @@ procedure TRGImageset.Init;
 begin
   FOutputPath:=ExtractPath(ParamStr(0));
   FRootPath  :='';
+  lastid:=0;
 end;
 
 procedure TRGImageset.Free;
@@ -121,6 +130,47 @@ begin
   SetLength(Items    ,0);
   ImagesetCount:=0;
   ItemCount    :=0;
+end;
+
+procedure TRGImageset.CloseImageset(const aname:string);
+var
+  i:integer;
+begin
+  for i:=0 to ImagesetCount-1 do
+    if Imagesets[i].Name=aname then
+    begin
+      CloseImageset(i);
+      exit;
+    end;
+end;
+
+procedure TRGImageset.CloseImageset(aidx:integer);
+var
+  lid,i,litem,lcnt:integer;
+begin
+  if (aidx>=0) and (aidx<ImagesetCount) then
+  begin
+    lid:=Imagesets[aidx].id;
+    lcnt:=0;
+    for i:=0 to ItemCount-1 do
+      if Items[i].ISFile=lid then
+      begin
+        litem:=i;
+        lcnt:=0;
+        while (litem<ItemCount) and (Items[litem].ISFile=lid) do
+        begin
+          inc(lcnt);
+          inc(litem);
+        end;
+        Delete(Items,i,lcnt);
+        dec(ItemCount,lcnt);
+        break;
+      end;
+
+    FreeImage(Imagesets[aidx].Image);
+    Delete(Imagesets,aidx,1);
+    dec(ImagesetCount);
+  end;
 end;
 
 procedure TRGImageset.SetPath(aidx:integer; const apath:string);
@@ -168,7 +218,11 @@ begin
   result:=false;
 
   lpc:=PAnsiChar(abuf);
-  if (PDword(abuf)^ and $00FFFFFF)=SIGN_UTF8 then inc(lpc,3);
+  if (PDword(abuf)^ and $00FFFFFF)=SIGN_UTF8 then
+  begin
+    inc(lpc,3);
+    dec(asize,3);
+  end;
   if lpc^<>'<' then exit;
 
   SetString(ls,lpc,asize);
@@ -186,7 +240,7 @@ end;
 //  Name, XPos, YPos, Width, Height
 function TRGImageset.ParseXML(abuf:PByte; asize:integer):boolean;
 var
-  lpic:TDomNode;
+  lname,lpic:TDomNode;
   Doc: TXMLDocument;
   Child: TDOMNode;
   ls:string;
@@ -196,17 +250,20 @@ begin
   if result then
   begin
     try
-      lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Name');
+      lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Imagefile');
       if lpic=nil then exit;
 
-      ls:=AnsiString(lpic.NodeValue);
+      lname:=Doc.DocumentElement.Attributes.GetNamedItem('Name');
+      // better to use imageset filename but it unknown for this code
+      if lname=nil then
+        ls:=ExtractNameOnly(AnsiString(lpic.NodeValue))
+      else
+        ls:=AnsiString(lname.NodeValue);
+
       result:=CheckImageset(ls);
 
       if result then
       begin
-        lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Imagefile');
-        if lpic=nil then exit;
-
         with Imagesets[ImagesetCount-1] do
         begin
           Name:=ls;
@@ -339,6 +396,8 @@ begin
   begin
     with Imagesets[ImagesetCount-1] do
     begin
+      id:=lastid;
+      inc(lastid);
       if Name='' then
          Name:='imagesets';
 
@@ -376,11 +435,13 @@ end;
 function TRGImageset.BuildImageset(ais:integer; out bin:pByte; aver:integer=verTL2):integer;
 var
   ldata:string;
-  i,lcnt:integer;
+  lid,i,lcnt:integer;
 begin
   result:=0;
 
   if (ais<0) or (ais>=ImagesetCount) then exit;
+
+  lid:=Imagesets[ais].id;
 
   if ABS(aver) in [verTL1,verTL2] then
   begin
@@ -391,8 +452,8 @@ begin
         '<Imageset'+
         ' Name="'          +Name +
         '" Imagefile="'    +Sheet+
-        '" NativeHorzRez="'+IntToStr(Width )+   // 1024 even for 512
-        '" NativeVertRez="'+IntToStr(Height)+   // 768  even for 512
+        '" NativeHorzRes="'+IntToStr(Width )+   // 1024 even for 512
+        '" NativeVertRes="'+IntToStr(Height)+   // 768  even for 512
         '" AutoScaled="true">'#13#10; //??
     end;
 
@@ -400,7 +461,7 @@ begin
     begin
       with Items[i] do
       begin
-        if ISFile<>ais then continue;
+        if ISFile<>lid then continue;
 
         ldata:=ldata+
           '	<Image Name="'+Name+
@@ -435,7 +496,7 @@ begin
     begin
       with Items[i] do
       begin
-        if ISFile<>ais then continue;
+        if ISFile<>lid then continue;
 
         ldata:=ldata+
         '  [IMAGE'+IntToStr(lcnt)+']'#13#10+
@@ -532,17 +593,29 @@ begin
 end;
 
 function TRGImageset.UseImageset(ais:integer=-1):boolean;
+var
+  lis:PImagesetFile;
 begin
   if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit(false);
-  with Imagesets[ais].Image do
+  lis:=@Imagesets[ais];
+  with lis^.Image do
     result:=(Width>0) and (Height>0) and (Bits<>nil);
+
+  if lis^.Width <>lis^.Image.Width  then lis^.Width :=lis^.Image.Width;
+  if lis^.Height<>lis^.Image.Height then lis^.Height:=lis^.Image.Height;
 end;
 
 function TRGImageset.UseImageData(adata:TImageData; ais:integer=-1):boolean;
+var
+  lis:PImagesetFile;
 begin
   if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit(false);
-  FreeImage(Imagesets[ais].Image);
-  result:=CloneImage(adata, Imagesets[ais].Image);
+  lis:=@Imagesets[ais];
+  FreeImage(lis^.Image);
+  result:=CloneImage(adata, lis^.Image);
+
+  if lis^.Width <>lis^.Image.Width  then lis^.Width :=lis^.Image.Width;
+  if lis^.Height<>lis^.Image.Height then lis^.Height:=lis^.Image.Height;
 end;
 
 function TRGImageset.UseController(const actrl:TRGController; ais:integer=-1):boolean;
@@ -584,6 +657,16 @@ begin
   else
     result:=Rect(0,0,0,0);
 end;
+
+function TRGImageset.ISbyID(aid:integer):integer;
+var
+  i:integer;
+begin
+  for i:=0 to ImagesetCount-1 do
+    if Imagesets[i].id=aid then exit(i);
+  result:=-1;
+end;
+
 {%ENDREGION Info}
 
 {%REGION Sprite}

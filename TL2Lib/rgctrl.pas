@@ -1,4 +1,6 @@
-﻿{TODO: Check RemoveUpdate}
+﻿{TODO: GetUpdate: Add ".WDAT" with check}
+{TODO: Use OnDouble twice? without and with data}
+{TODO: Check RemoveUpdate}
 {TODO: Check what saving uses Ctrl, NOT Man name}
 {TODO: Check mark of deleting for files with same name}
 {TODO: Check for source of text files for "source size" field}
@@ -102,19 +104,20 @@ type
     FLinks:array of PWideChar;
 
     procedure ClearElement(idx:integer);
-    procedure FixSizes(idx:integer; adata:PByte; asize:cardinal);
-    procedure CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
+    function GetBinName(const fname: AnsiString): AnsiString;
+    function GetBinName(fname: PUnicodeChar): AnsiString;
     function  WriteToPAK(var apak:TRGPAK; const fname:string;
          aver:integer; achanges:boolean=false):boolean;
     function  OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
     function GetFileInfoPtr(idx:integer):PRGCtrlInfo;
+    procedure SetOnDouble(proc:TRGOnDouble);
   public
     property PAK:TRGPAK read FPAK write FPAK;
-    property OnDouble:TRGOnDouble read FOnDouble write FOnDouble;
+    property OnDouble:TRGOnDouble read FOnDouble write FOnDouble;//SetOnDouble;
 
   public
-    procedure Init;
+    procedure Init(aCase:boolean=false);
     procedure Free;
     procedure Clear;
     function  Rebuild():integer;
@@ -133,8 +136,6 @@ type
     // read update from file or buffer ONLY, NOT PAK
     function GetUpdate (idx:integer; var buf:PByte):dword;
     // read updated or unpacked from PAK content
-    function GetContent(idx:integer; var buf:PByte):dword;
-    // unpacked binary, data as is. Like GetContent but with checksum (and event)
     function GetAsIs   (idx:integer; var buf:PByte):dword;
     // unpacked binary, data as text
     function GetSource (idx:integer; var buf:PByte):dword;
@@ -180,7 +181,8 @@ type
     {
       import dir with files and subdirs. apply different actions if files exists
     }
-    function ImportDir(const adst, adir:string; nochild:boolean=false): integer;
+    function ImportDir(const adst, adir:AnsiString;
+                       nochild:boolean=false; addall:boolean=false):integer;
     {
       import PAK content
     }
@@ -203,8 +205,11 @@ type
     {
       keep filename or allocate buffer and load file content
     }
-    function AddFileData(afdata:PWideChar; afname:PWideChar; acontent:boolean=false):integer;
+    function AddFileData(afdata:PWideChar; afname:PWideChar ; acontent:boolean=false):integer;
+    function AddFileData(const afdata,     afname:AnsiString; acontent:boolean=false):integer;
 
+    function CopyFile(aidx:integer; actrl:PRGController; const apath:AnsiString):boolean;
+    function CopyFile(aidx:integer; actrl:PRGController; apath:PUnicodeChar):boolean;
 
     property Files[idx:integer]:PRGCtrlInfo read GetFileInfoPtr;
   end;
@@ -246,15 +251,20 @@ begin
   result:=PRGCtrlInfo(pointer(TRGDirList.GetFileInfoPtr(idx)));
 end;
 
+procedure TRGController.SetOnDouble(proc:TRGOnDouble);
+begin
+  if proc=nil then FOnDouble:=@OnDoubleDef else FOnDouble:=proc;
+end;
+
 function TRGController.OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
 begin
   result:=da_overwriteall;
 end;
 
-procedure TRGController.Init;
+procedure TRGController.Init(aCase:boolean=false);
 begin
   FillChar(self,SizeOf(self),0);
-  Inherited Init(SizeOf(TRGCtrlInfo));
+  Inherited Init(SizeOf(TRGCtrlInfo),aCase);
 
   FLinks:=nil;
   FPAK:=TRGPAK.Create;
@@ -321,6 +331,7 @@ end;
 function TRGController.Rebuild():integer;
 var
   lsrc:PRGManifest;
+  p:PRGCtrlInfo;
   ldir,ldirs:integer;
   lidx,lfile:integer;
 begin
@@ -343,28 +354,17 @@ begin
         repeat
           lfile:=DoAddFile(ldir,nil{PAK.Man.Files[lidx]^.name});//!!
           inc(result);
-          with PRGCtrlInfo(Files[lfile])^ do
+          p:=PRGCtrlInfo(Files[lfile]);
+          CopyInfo(lsrc^.Files[lidx],p);
+          with p^ do
           begin
-            SameNameAs(lsrc^.Files[lidx]);
             source:=lidx;
+            action:=act_none;
           end;
         until not lsrc^.GetNextFile(lidx);
     end;
   end;
   OnChange(@self,result,faFinish);
-end;
-
-procedure TRGController.FixSizes(idx:integer; adata:PByte; asize:cardinal);
-begin
-  Files[idx]^.size:=asize;
-  OnChange(@self,idx,faInfo);
-end;
-
-procedure TRGController.CopyInfo(afrom:PRGCtrlInfo; ato:PManFileInfo);
-begin
-  ato^.size    :=afrom^.size;
-  ato^.ftime   :=afrom^.ftime;
-  ato^.checksum:=afrom^.checksum;
 end;
 
 procedure TRGController.GetFullInfo(idx:integer; out info:TRGFullInfo);
@@ -378,22 +378,24 @@ begin
 
   info.name    :=p^.Name;
   info.path    :=PathOfFile(idx);
+  if p^.ftype=typeDirectory then exit;
+
   info.checksum:=p^.checksum;
 
   if (p^.action in [act_data, act_file]) or (p^.source<0) then
   begin
     info.size  :=p^.size;
-    info.ftype :=RGTypeOfExt(info.name); // p^.ftype;
+    info.ftype :=p^.ftype; // RGTypeOfExt(info.name);
     info.ftime :=p^.ftime;
   end
   else
   begin
     with PManFileInfo(PAK.Man.Files[p^.source])^ do
     begin
+      info.offset:=offset;
       info.size_u:=size_u;
       info.size_c:=size_c;
       info.size  :=size;
-      info.offset:=offset;
       info.ftype :=ftype;
       info.ftime :=ftime;
     end;
@@ -405,7 +407,7 @@ end;
 
 function TRGController.GetUpdateState(idx:integer):integer;
 begin
-  if idx<0 then exit(0);
+  if (idx<0) or (idx>=FileCount) then exit(0);
   with PRGCtrlInfo(Files[idx])^ do
     case action of
       act_mark  : result:=stateRemove;
@@ -450,6 +452,8 @@ begin
     lres:=IOResult();
     if lres<>0 then
     begin
+      lext:=GetBinName(PUnicodeChar(p^.data));
+{
       lext:=UpCase(ExtractFileExt(PWideChar(p^.data)));
       if (lext='.DAT') or (lext='.ANIMATION') or
          (lext='.HIE') or (lext='.TEMPLATE' ) then
@@ -463,14 +467,17 @@ begin
         lext:=UnicodeString(PWideChar(p^.data))+'.BINLAYOUT'
       else
         lext:='';
-
+}
       if lext<>'' then
       begin
         AssignFile(f,lext);
         Reset(f);
         lres:=IOResult();
       end;
-    end;
+    end
+    else
+      lext:='';
+
     if lres=0 then
     begin
       result:=FileSize(f);
@@ -479,7 +486,10 @@ begin
         lchanged:=lchanged or (p^.size<>result);
         p^.size:=result;
 
-        if FindFirst(PWideChar(p^.data),faAnyFile,sr)=0 then
+        lres:=FindFirst(PWideChar(p^.data),faAnyFile,sr);
+        if (lres<>0) and (lext<>'') then
+          lres:=FindFirst(lext,faAnyFile,sr);
+        if lres=0 then
         begin
           ltime:=DateTimeToFileTime(sr.TimeStamp);
           lchanged:=lchanged or (p^.ftime<>ltime);
@@ -517,11 +527,9 @@ begin
       buf[result+1]:=0;
     end;
   end;
-
-//  FixSizes(idx,buf,result);
 end;
 
-function TRGController.GetContent(idx:integer; var buf:PByte):dword;
+function TRGController.GetAsIs(idx:integer; var buf:PByte):dword;
 var
   p:PRGCtrlInfo;
 begin
@@ -542,23 +550,9 @@ begin
 //    result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
     result:=FPAK.UnpackFile(FPAK.Man.PathOfFile(p^.source),p^.name,buf);
   end;
-end;
 
-function TRGController.GetAsIs(idx:integer; var buf:PByte):dword;
-var
-  p:PRGCtrlInfo;
-begin
-  result:=GetContent(idx,buf);
-
-  if result>0 then
-  begin
-    p:=PRGCtrlInfo(Files[idx]);
-    if p^.checksum=0 then
-    begin
-      p^.checksum:=crc32(0,buf,result);
-//      OnChange(@self,idx,faInfo); //!! fired twice after GetUpdate
-    end;
-  end;
+  if (result>0) and (p^.checksum=0) then
+    p^.checksum:=crc32(0,buf,result);
 end;
 
 {
@@ -569,14 +563,12 @@ function TRGController.GetSource(idx:integer; var buf:PByte):dword;
 var
   p:PRGCtrlInfo;
   lbuf:PWideChar;
-  linfo:boolean;
 begin
-  result:=GetContent(idx,buf);
+  result:=GetAsIs(idx,buf);
 
   if result>0 then
   begin
     p:=PRGCtrlInfo(Files[idx]);
-    linfo:=false;
 
     if ((p^.ftype  and $FF)=typeData) and not isSource(buf) then
     begin
@@ -586,20 +578,9 @@ begin
         buf:=PByte(lbuf);
         result:=(Length(lbuf){+1})*SizeOf(WideChar);
         if p^.size=0 then
-        begin
-          linfo:=true;
           p^.size:=result;
-        end;
       end;
     end;
-
-    if p^.checksum=0 then
-    begin
-      linfo:=true;
-      p^.checksum:=crc32(0,buf,result);
-    end;
-
-//    if linfo then OnChange(@self,idx,faInfo);
   end;
 end;
 
@@ -611,14 +592,12 @@ function TRGController.GetBinary(idx:integer; var buf:PByte):dword;
 var
   p:PRGCtrlInfo;
   lbuf:PByte;
-  linfo:boolean;
 begin
-  result:=GetContent(idx,buf);
+  result:=GetAsIs(idx,buf);
 
   if result>0 then
   begin
     p:=PRGCtrlInfo(Files[idx]);
-    linfo:=false;
 
     if ((p^.ftype and $FF)=typeData) and isSource(buf) then
     begin
@@ -627,13 +606,6 @@ begin
       result:=CompileFile(lbuf,p^.Name,buf,FPAK.Version);
       FreeMem(lbuf);
     end;
-
-    if p^.checksum=0 then
-    begin
-      linfo:=true;
-      p^.checksum:=crc32(0,buf,result);
-    end;
-//    if linfo then OnChange(@self,idx,faInfo);
   end;
 end;
 
@@ -836,17 +808,19 @@ var
 begin
   lcnt:=total;
   result:=DoAddFile(apath); // Add file without event
+  if result<0 then exit;
+
   ClearElement(result);
   with PRGCtrlInfo(Files[result])^ do
   begin
     if total<>lcnt then source:=-1;
-    data  :=adata;
-    size  :=asize;
-    action:=act_data;
-    ftime :=DateTimeToFileTime(Now());
-    ftype :=RGTypeOfExt(apath);
+    data    :=adata;
+    size    :=asize;
+    action  :=act_data;
+    ftime   :=DateTimeToFileTime(Now());
+    ftype   :=RGTypeOfExt(apath);
+    checksum:=crc32(0,adata,asize);
 
-//    FixSizes(result,adata,asize);
     if total<>lcnt then OnChange(@self,result,faAdd);
   end;
 end;
@@ -875,8 +849,10 @@ begin
     move(adata^,lptr^,asize);
   end;
   result:=UseData(lptr,asize,apath);
-
-  OnChange(@self,result,faChanged); // can call twice, at add and change
+  if result>=0 then
+    OnChange(@self,result,faChanged) // can call twice, at add and change
+  else
+    FreeMem(lptr);
 end;
 {
 function TRGController.AddCopy(adata:PByte; asize:cardinal; apath:PWideChar):integer;
@@ -900,10 +876,20 @@ begin
 
   lman:=PManFileInfo(FPAK.man.Files[p^.source]);
   FPAK.UnpackSingle(lman,p^.data);
-  // Do we really need next? it just copy!
-  p^.size  :=lman^.size;
-  p^.ftime :=lman^.ftime;
-  p^.ftype :=RGTypeOfExt(lman^.Name);
+  p^.action:=act_copy;
+
+  CopyInfo(lman,p);
+end;
+
+function TRGController.AddFileData(const afdata, afname:AnsiString; acontent:boolean=false):integer;
+var
+  lsrc,ldst:PUnicodeChar;
+begin
+  lsrc:=FastStrToWide(afdata);
+  ldst:=FastStrToWide(afname);
+  result:=AddFileData(lsrc,ldst,acontent);
+  FreeMem(lsrc);
+  FreeMem(ldst);
 end;
 
 function TRGController.AddFileData(afdata:PWideChar; afname:PWideChar; acontent:boolean=false):integer;
@@ -912,9 +898,12 @@ var
   lptr:PByte;
   f:file of byte;
   sr:TUnicodeSearchRec;
-  lcnt:integer;
+  lres,lcnt:integer;
 begin
-  if FindFirst(afdata,faAnyFile,sr)=0 then
+  lres:=FindFirst(afdata,faAnyFile,sr);
+  if lres<>0 then
+    lres:=FindFirst(GetBinName(afdata),faAnyFile,sr);
+  if lres=0 then
   begin
     lftime:=DateTimeToFileTime(sr.TimeStamp);
     lfsize:=sr.Size;
@@ -989,6 +978,7 @@ begin
 
   lbuf:=nil;
 
+  OnChange(@self,0,faStart);
   for i:=0 to DirCount-1 do
   begin
 //pc:=Dirs[i].name;
@@ -1028,18 +1018,15 @@ RGLog.Reserve('Packing '+FastWideToStr(Dirs[i].Name)+FastWideToStr(p^.Name));
           lsize_u:=p^.size;
           lsize_c:=GetPacked(j,lbuf,lsize_u);
 
-          CopyInfo(p,lman);
-
-//          OnChange(@self,lidx,faInfo);
-
-          if lman^.size=0 then lman^.size:=lman^.size_u;
           lman^.offset:=apak.WritePackedFile(lbuf,lsize_u,lsize_c);
-        end
-        else
-          CopyInfo(p,lman);
+          lman^.size_u:=lsize_u;
+          lman^.size_c:=lsize_c;
+        end;
+        CopyInfo(p,lman);
         
       until not GetNextFile(j);
   end;
+  OnChange(@self,apak.man.total,faFinish);
 
   FreeMem(lbuf);
 
@@ -1133,7 +1120,7 @@ end;
   aentry - current manifest directory
 }
 function CycleDir(const adir:UnicodeString; var actrl:TRGController; aentry:integer;
-   aact:TRGDoubleAction; nochild:boolean):TRGDoubleAction;
+   aact:TRGDoubleAction; nochild:boolean=false; addall:boolean=false):TRGDoubleAction;
 var
   sr:TUnicodeSearchRec;
   ldir,lname,ltmp:UnicodeString;
@@ -1149,10 +1136,11 @@ begin
     repeat
       if (sr.Attr and faDirectory)=faDirectory then
       begin
-        if (sr.Name<>'.') and (sr.Name<>'..') and (not nochild) then
+        if (sr.Name<>'.') and (sr.Name<>'..') {and (not nochild)} then
         begin
           i:=actrl.NewDir(PUnicodeChar(ldir+sr.Name+'/'));
-          case CycleDir(adir+sr.Name+'/', actrl, ABS(i), aact, false) of
+          if (not nochild) then
+          case CycleDir(adir+sr.Name+'/', actrl, ABS(i), aact, false, addall) of
             da_skipall     : aact:=da_skipall;
             da_overwriteall: aact:=da_overwriteall;
             da_stop:begin
@@ -1171,7 +1159,10 @@ begin
             LoadModConfig(PChar(AnsiString(adir+TL2ModData)),actrl.PAK.modinfo);
           continue;
         end;
-        lname:=CheckFName(adir,sr.Name);
+        if addall then
+          lname:=sr.Name
+        else
+          lname:=CheckFName(adir,sr.Name);
         if lname<>'' then
         begin
           i:=actrl.SearchFile(aentry,PUnicodeChar(lname));
@@ -1184,6 +1175,7 @@ begin
             RGLog.AddWide(PWideChar(adir+lname+' file exists already'));
             if aact=da_ask then
             begin
+//              if actrl.OnDouble=@actrl.OnDoubleDef then aact:=da_overwriteall
               if actrl.OnDouble=nil then aact:=da_overwriteall
               else
               begin
@@ -1253,12 +1245,15 @@ begin
     result:=da_ask;
 end;
 
-function TRGController.ImportDir(const adst, adir:string; nochild:boolean=false):integer;
+function TRGController.ImportDir(const adst, adir:AnsiString;
+                                 nochild:boolean=false; addall:boolean=false):integer;
 var
   ls:UnicodeString;
   ldir:integer;
 begin
   result:=total;
+  if adir='' then exit;
+
   OnChange(@self,0,faStart);
 
   ls:=UnicodeString(adir);
@@ -1266,8 +1261,9 @@ begin
 
   if DirCount=0 then AddPath(nil);
   ldir:=SearchPath(adst);
+  if ldir<0 then ldir:=AddPath(adst);
   if ldir<0 then ldir:=0;
-  CycleDir(ls,self,ldir,da_ask,nochild);
+  CycleDir(ls,self,ldir,da_ask,nochild,addall);
 
   // new records only
   // but skip starting empty file
@@ -1329,6 +1325,69 @@ begin
     if       IsDir(aidx) then       DeletePath(aidx) else       DeleteFile(aidx);
   end;
 }
+end;
+
+
+function TRGController.CopyFile(aidx:integer; actrl:PRGController; const apath:AnsiString):boolean;
+var
+  pc:PUnicodeChar;
+begin
+  pc:=FastStrToWide(apath);
+  result:=CopyFile(aidx,actrl,pc);
+  FreeMem(pc);
+end;
+
+function TRGController.CopyFile(aidx:integer; actrl:PRGController; apath:PUnicodeChar):boolean;
+var
+  lbuf:PByte;
+  lsize:integer;
+begin
+  result:=false;
+  lbuf:=nil;
+  lsize:=GetAsIs(aidx,lbuf);
+  if lsize>0 then
+  begin
+    result:=actrl^.UseData(lbuf,lsize,apath)>=0;
+    if not result then FreeMem(lbuf);
+  end;
+end;
+
+function TRGController.GetBinName(fname:PUnicodeChar):AnsiString;
+var
+  lext:UnicodeString;
+begin
+  lext:=UpCase(ExtractFileExt(fname));
+  if (lext='.DAT') or (lext='.ANIMATION') or
+     (lext='.HIE') or (lext='.TEMPLATE' ) then
+  begin
+    if PAK.Version=verTL1 then
+      result:=UnicodeString(fname)+'.ADM'
+    else
+      result:=UnicodeString(fname)+'.BINDAT'
+  end
+  else if lext='.LAYOUT' then
+    result:=UnicodeString(fname)+'.BINLAYOUT'
+  else
+    result:='';
+end;
+
+function TRGController.GetBinName(const fname:AnsiString):AnsiString;
+var
+  lext:AnsiString;
+begin
+  lext:=UpCase(ExtractFileExt(fname));
+  if (lext='.DAT') or (lext='.ANIMATION') or
+     (lext='.HIE') or (lext='.TEMPLATE' ) then
+  begin
+    if PAK.Version=verTL1 then
+      result:=fname+'.ADM'
+    else
+      result:=fname+'.BINDAT'
+  end
+  else if lext='.LAYOUT' then
+    result:=fname+'.BINLAYOUT'
+  else
+    result:='';
 end;
 
 end.

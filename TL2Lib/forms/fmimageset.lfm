@@ -63,7 +63,7 @@ object FormImageset: TFormImageset
         Align = alTop
         Caption = 'Dark Background'
         TabOrder = 0
-        OnClick = cbDarkBgClick
+        OnClick = DarkBgChange
       end
       object imgSprite: TImage
         Left = 1
@@ -116,7 +116,6 @@ object FormImageset: TFormImageset
         PopupMenu = mnuImgSet
         Sorted = True
         TabOrder = 0
-        OnKeyDown = lbImagesKeyDown
         OnSelectionChange = lbImagesSelectionChange
       end
       object lfeImages: TListFilterEdit
@@ -144,7 +143,7 @@ object FormImageset: TFormImageset
         Width = 120
       end    
       item
-        Text = 'Ctrl-A to select all items in list, Ctrl-S to extract selected items'
+        Text = 'Ctrl-A to select all items in list, Ctrl-E to extract selected items'
         Width = 50
       end>
     SimplePanel = False
@@ -153,12 +152,54 @@ object FormImageset: TFormImageset
     Left = 71
     Top = 134
     object miSelectAll: TMenuItem
-      Caption = 'Select all'
-      OnClick = miSelectAllClick
+      Action = actSelectAll
     end
     object miExtract: TMenuItem
-      Caption = 'Extract'
-      OnClick = miExtractClick
+      Action = actExtract
+    end
+  end
+  object ActionList: TActionList
+    Left = 428
+    Top = 90
+    object actSelectAll: TAction
+      Caption = 'Select &All'
+      ShortCut = 16449
+      OnExecute = DoSelectAll
+    end
+    object actExtract: TAction
+      Caption = '&Extract'
+      Hint = 'Extract selected'
+      ShortCut = 16453
+      OnExecute = DoExtract
+    end
+    object actDarkBG: TAction
+      Caption = 'Dark Background'
+      ShortCut = 16452
+      OnExecute = DoDarkBg
+    end
+    object actRename: TAction
+      Caption = '&Rename'
+      Hint = 'Rename sprite'
+      ShortCut = 113
+      OnExecute = DoRename
+    end
+    object actSave: TAction
+      Caption = '&Save'
+      Hint = 'Save Imageset'
+      ShortCut = 16467
+      OnExecute = DoSave
+    end
+    object actOpen: TAction
+      Caption = '&Open'
+      Hint = 'Open imageset'
+      ShortCut = 16463
+      OnExecute = DoOpen
+    end
+    object actClose: TAction
+      Caption = '&Close'
+      Hint = 'Close Imageset'
+      ShortCut = 119
+      OnExecute = DoClose
     end
   end
 end

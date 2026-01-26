@@ -50,29 +50,32 @@ end;
 function ParseImageSetXML(const astr:AnsiString):pointer;
 var
   lcount,limage:pointer;
-  lpic:TDomNode;
+  lname,lpic:TDomNode;
   Doc: TXMLDocument;
   Child: TDOMNode;
+  pc:PUnicodeChar;
   buf:array [0..31] of WideChar;
   i,lwidth,lheight:integer;
 begin
   ReadXMLText(Doc,astr);
   result:=nil;
   try
-    lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Name');
-    if lpic<>nil then
-      result:=AddGroup(nil,PWideChar(lpic.NodeValue))
-    else
-      result:=AddGroup(nil,nil);
-
     lpic:=Doc.DocumentElement.Attributes.GetNamedItem('Imagefile');
-    if lpic<>nil then
-      AddString(result,'FILE',PWideChar(lpic.NodeValue))
+    if lpic=nil then exit;
+
+    lname:=Doc.DocumentElement.Attributes.GetNamedItem('Name');
+    if lname<>nil then
+      result:=AddGroup(nil,PWideChar(lname.NodeValue))
     else
     begin
-      DeleteNode(result);
-      exit(nil);
+      // better to use imageset filename but it unknown for this code
+      pc:=FastStrToWide(ExtractNameOnly(AnsiString(lpic.NodeValue)));
+      result:=AddGroup(nil,pc);
+      FreeMem(pc);
     end;
+
+    AddString(result,'FILE',PWideChar(lpic.NodeValue))
+
     lpic:=Doc.DocumentElement.Attributes.GetNamedItem('NativeHorzRes');
     if lpic<>nil then
       Val(lpic.NodeValue,lwidth)
@@ -127,7 +130,11 @@ var
   ls:string;
 begin
   lpc:=PAnsiChar(abuf);
-  if (PDword(abuf)^ and $00FFFFFF)=SIGN_UTF8 then inc(lpc,3);
+  if (PDword(abuf)^ and $00FFFFFF)=SIGN_UTF8 then
+  begin
+    inc(lpc,3);
+    dec(asize,3);
+  end;
   if lpc^='<' then
   begin
     SetString(ls,lpc,asize);
@@ -214,8 +221,8 @@ begin
       '<Imageset'+
       ' Name="'          +WideToStr(GetNodeName(data))+
       '" Imagefile="'    +ldata+
-      '" NativeHorzRez="'+ltmp+ // 1024 even for 512
-      '" NativeVertRez="'+ltmp+ // 768 even for 512
+      '" NativeHorzRes="'+ltmp+ // 1024 even for 512
+      '" NativeVertRes="'+ltmp+ // 768 even for 512
       '" AutoScaled="true">'#13#10; //??
 
     for i:=0 to GetChildCount(data)-1 do

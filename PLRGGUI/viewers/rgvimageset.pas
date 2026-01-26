@@ -1,4 +1,5 @@
 ﻿{}
+{TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
 unit rgvImageset;
 
 interface
@@ -43,7 +44,7 @@ end;
 function PreviewImageset(var actrl:TRGController; aidx:integer):TForm;
 var
   lbuf:PByte;
-  ldir:string;
+  ldir:AnsiString;
   lsize,i:integer;
 begin
   lbuf:=nil;
@@ -67,10 +68,18 @@ begin
       begin
         OnImagesetInfo:=@ShowImagesetInfo;
 
-        ldir:=WideToStr(actrl.PathOfFile(aidx));
-        i:=Pos('/UI/',ldir);
-        if i>7 then ldir:=Copy(ldir,1,i) else ldir:='';
-        FillList(actrl,lbuf,lsize,ldir);
+        if actrl.Files[aidx]^.action=act_file then
+        begin
+          ldir:=FastWideToStr(PUnicodeChar(actrl.Files[aidx]^.data));
+          FillList(ldir);
+        end
+        else
+        begin
+          ldir:=WideToStr(actrl.PathOfFile(aidx));
+          i:=Pos('/UI/',ldir);
+          if i>7 then ldir:=Copy(ldir,1,i) else ldir:='';
+          FillList(actrl,lbuf,lsize,ldir);
+        end;
 
         Align  :=alClient;
         Parent :=result;

@@ -536,8 +536,6 @@ begin
 
     if not ForceDirectories(loutdir) then exit;
 
-    // 2.5 - try to get file time
-
     if cfgSaveDateTime then
       ltime:=FileTimeToDateTime(actrl^.Files[aidx]^.ftime);
   end;

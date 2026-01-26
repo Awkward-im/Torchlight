@@ -151,6 +151,7 @@ function  CompareWideI (s1,s2:PWideChar; alen:integer=0):integer;
 function  CompareAnsi  (s1,s2:PAnsiChar; alen:integer=0):integer;
 function  CompareAnsiI (s1,s2:PAnsiChar; alen:integer=0):integer;
 function  ConcatWide   (s1,s2:PWideChar):PWideChar;
+function  ConcatWideBuf(abuf,s1,s2:PWideChar):PWideChar;
 function  CharPosWide  (c:WideChar; asrc:PWideChar):PWideChar;
 function  PosWide      (asubstr,asrc:PWideChar):PWideChar;
 function  UTF8ToWide   (asrc:PAnsiChar):PWideChar;
@@ -769,6 +770,36 @@ begin
   llen2:=Length(s2);
 
   GetMem(result,(llen1+llen2+1)*SizeOf(WideChar));
+  result[llen1+llen2]:=#0;
+  move(s1^,result^      ,llen1*SizeOf(WideChar));
+  move(s2^,result[llen1],llen2*SizeOf(WideChar));
+end;
+
+function ConcatWideBuf(abuf,s1,s2:PWideChar):PWideChar;
+var
+  llen2,llen1:integer;
+begin
+  result:=abuf;
+
+  if (s1=nil) and (s2=nil) then
+  begin
+    abuf^:=#0;
+    exit;
+  end;
+  if s1=nil then
+  begin
+    move(s2^,result^,(Length(s2)+1)*SizeOf(WideChar));
+    exit;
+  end;
+  if s2=nil then
+  begin
+    move(s1^,result^,(Length(s1)+1)*SizeOf(WideChar));
+    result:=CopyWide(s1);
+    exit;
+  end;
+  llen1:=Length(s1);
+  llen2:=Length(s2);
+
   result[llen1+llen2]:=#0;
   move(s1^,result^      ,llen1*SizeOf(WideChar));
   move(s2^,result[llen1],llen2*SizeOf(WideChar));

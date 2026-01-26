@@ -8,6 +8,7 @@ object PanelForm: TPanelForm
   ClientWidth = 499
   LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   object pnlTop: TPanel
     Left = 0
     Height = 50
@@ -203,6 +204,7 @@ object PanelForm: TPanelForm
     OnCustomDrawItem = lvListCustomDrawItem
     OnDblClick = DoListDblClick
     OnEnter = SetPanelActive
+    OnItemChecked = lvListItemChecked
     OnKeyDown = DoListKeyDown
     OnSelectItem = lvListSelectItem
     OnShowHint = lvListShowHint
@@ -225,6 +227,15 @@ object PanelForm: TPanelForm
     OnDblClick = tvTreeDblClick
     OnKeyDown = DoTreeKeyDown
     OnSelectionChanged = tvTreeSelectionChanged
+  end
+  object tvShell: TShellTreeView
+    Left = 0
+    Height = 517
+    Top = 50
+    Width = 499
+    Align = alClient
+    TabOrder = 3
+    Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
   end
   object ilPanel: TImageList
     Left = 292

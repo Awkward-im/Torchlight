@@ -23,7 +23,7 @@ type
     ActionList: TActionList;
     ilCompare: TImageList;
     sbPrev: TSpeedButton;
-    cbNext: TSpeedButton;
+    sbNext: TSpeedButton;
     sbSave: TSpeedButton;
     sbRecomp: TSpeedButton;
     sbCancel: TSpeedButton;
@@ -307,9 +307,11 @@ end;
 procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if seOld.Modified and (srcfile<>'') then
+  begin
+    seOld.Modified:=false;
     if MessageDlg('Content was modified. Save at exit?',mtConfirmation,mbOkCancel,0)=mrOk then
       actSaveExecute(Sender);
-  ModalResult:=mrOk;
+  end;
 end;
 
 procedure TCompareForm.actRefreshExecute(Sender: TObject);
@@ -329,11 +331,15 @@ procedure TCompareForm.actSaveExecute(Sender: TObject);
 var
   slold:TStrings;
 begin
-  GetPureText(seold,slold);
+  if srcfile<>'' then
+  begin
+    GetPureText(seold,slold);
 
-  slold.WriteBOM:=true;
-  slold.SaveToFile(srcfile,TEncoding.Unicode);
-  slold.Free;
+    slold.WriteBOM:=true;
+    slold.SaveToFile(srcfile,TEncoding.Unicode);
+    slold.Free;
+  end;
+  ModalResult:=mrOk
 end;
 
 procedure TCompareForm.actPrevClick(Sender: TObject);

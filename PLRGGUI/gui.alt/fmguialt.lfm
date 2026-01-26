@@ -6,6 +6,7 @@ object RGGUI2Form: TRGGUI2Form
   ClientHeight = 528
   ClientWidth = 800
   Menu = MainMenu
+  ShowHint = True
   LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
@@ -42,7 +43,7 @@ object RGGUI2Form: TRGGUI2Form
     end
     object tbSep1: TToolButton
       Left = 85
-      Height = 8
+      Height = 28
       Top = 2
       Caption = 'tbSep1'
       Style = tbsSeparator
@@ -59,7 +60,7 @@ object RGGUI2Form: TRGGUI2Form
     end
     object tbSep2: TToolButton
       Left = 149
-      Height = 8
+      Height = 28
       Top = 2
       Caption = 'tbSep2'
       Style = tbsSeparator
@@ -71,7 +72,7 @@ object RGGUI2Form: TRGGUI2Form
     end
     object ToolButton1: TToolButton
       Left = 185
-      Height = 5
+      Height = 28
       Top = 2
       Caption = 'ToolButton1'
       Style = tbsDivider
@@ -137,6 +138,9 @@ object RGGUI2Form: TRGGUI2Form
     end
     object miEdit: TMenuItem
       Caption = '&Edit'
+      object miEditVersion: TMenuItem
+        Action = actChangeVersion
+      end
     end
     object miHelp: TMenuItem
       Caption = '&Help'
@@ -219,6 +223,13 @@ object RGGUI2Form: TRGGUI2Form
       Category = 'View'
       Caption = '&About'
       Hint = 'About'
+    end
+    object actChangeVersion: TAction
+      Category = 'View'
+      Caption = 'Change PAK version'
+      Hint = 'Change game target without rebuild files'
+      ImageIndex = 6
+      OnExecute = actChangeVersionExecute
     end
   end
   object ilMain24: TImageList

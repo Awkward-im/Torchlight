@@ -292,6 +292,8 @@ var
   lfile,lsize:integer;
   lDDS:boolean;
 begin
+  result:=0;
+
   lext:=ExtractExt(aname);
   lDDS:=lext='.DDS';
 
@@ -302,14 +304,13 @@ begin
     lfile:=ctrl^.SearchFile(lname);
     if lfile<0 then
     begin
-      if lDDS then exit(0);
+//      if lDDS then exit;
 
       lfile:=ctrl^.SearchFile(ChangeFileExt(lname,'.DDS'));
-      if lfile<0 then exit(0);
-      lDDS:=true;
+      if lfile>=0 then lDDS:=true;
     end;
     lbuf:=nil;
-    lsize:=ctrl^.GetBinary(lfile,lbuf);
+    if lfile>=0 then lsize:=ctrl^.GetBinary(lfile,lbuf);
   end;
 
 //  if adir='' then
@@ -317,10 +318,10 @@ begin
   begin
     if not FileExists(lname) then
     begin
-      if lDDS then exit(0);
+      if lDDS then exit;
 
       lname:=ChangeFileExt(lname,'.DDS');
-      if not FileExists(lname) then exit(0);
+      if not FileExists(lname) then exit;
       lDDS:=true;
     end;
     AssignFile(f,lname);

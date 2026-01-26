@@ -90,6 +90,8 @@ resourcestring
 
   rsReady           = 'Ready to work';
   rsRename          = 'Rename file/dir';
+  rsRenameOld       = 'Rename existing file';
+  rsRenameNew       = 'Rename copying file';
   rsImported        = ' files imported';
   rsLinkingNote     = 'These files still on disk and not built-in until PAK/MOD saved.';
   rsNothingImported = 'Nothing was imported.';
@@ -101,6 +103,14 @@ resourcestring
   rsDeleteFile      = 'Deleted file';
   rsLinkNewFile     = 'Link to new file';
   rsLinkChangedFile = 'Link to changed file';
+
+  rsSureToCopyShell = 'Are you sure to copy selected files to'#13#10'"%s" dir?';
+  rsSureToCopy      = 'Are you sure to copy selected files to'#13#10+
+                      '"$2" dir of "$1" pak?';
+//                      '"%0:s" Pak and "%1:s" dir?';
+  rsCopied          = 'File copied';
+  rsNotCopied       = 'Nothing copied';
+
 
 implementation
 

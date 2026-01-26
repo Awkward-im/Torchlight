@@ -1,4 +1,5 @@
 ﻿{}
+{TODO: 3d view, change texture by choosing file}
 unit rgvMesh;
 
 interface
@@ -50,9 +51,17 @@ begin
     lmesh.Align  :=alClient;
     lmesh.Parent :=result;
     lmesh.SetContainer(@actrl);
-    ls:=WideToStr(actrl.PathOfFile(aidx))+
-        WideToStr(actrl.Files[aidx]^.Name);
-    lmesh.LoadFromMemory(lbuf,lsize,ls);
+    if actrl.Files[aidx]^.action=act_file then
+    begin
+      ls:=FastWideToStr(PUnicodeChar(actrl.Files[aidx]^.data));
+      lmesh.LoadFromFile(ls);
+    end
+    else
+    begin
+      ls:=WideToStr(actrl.PathOfFile(aidx))+
+          WideToStr(actrl.NameOfFile(aidx));
+      lmesh.LoadFromMemory(lbuf,lsize,ls);
+    end;
     lmesh.Visible:=True;
     FreeMem(lbuf);
 

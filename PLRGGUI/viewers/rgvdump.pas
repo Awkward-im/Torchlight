@@ -1,4 +1,8 @@
 ﻿{}
+{TODO: preview bytes values as different types}
+{TODO: make dump text/bytes search}
+{TODO: change dump text area encoding}
+{TODO: preview as dump by choice?}
 unit rgvDump;
 
 interface

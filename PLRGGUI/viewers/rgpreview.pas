@@ -1,18 +1,6 @@
 ﻿{
   Unit for preview processing
 }
-{TODO: (Check!) Delete several files = set right selection (clear+set on current)}
-{TODO: Soundpreview: replace Start and Stop buttons by one (move caption text to resourcestrings}
-{TODO: imageset, info panel, checkbox to show as picture or as text. but format? DAT or XML?}
-{TODO: 3d view, change texture by choosing file}
-{TODO: preview bytes values as different types}
-{TODO: make dump text/bytes search}
-{TODO: change dump text area encoding}
-{TODO: preview as dump by choice?}
-{TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}
-{TODO: save as for editor}
-
-{TODO: make public preview list with autochanging, not rebuild at moment}
 {TODO: notify if preview list was changed (new added, old closed)}
 unit rgPreview;
 
@@ -75,10 +63,12 @@ var
   lrec:TRGFullInfo;
   lblInfo1,lblInfo2:TLabel;
   ldir,lname,lext:string;
+  lstate:integer;
 begin
   result:=nil;
   if aidx<0 then exit;
-  if actrl.GetUpdateState(aidx)=stateDelete then exit;
+  lstate:=actrl.GetUpdateState(aidx);
+  if lstate=stateDelete then exit;
 
   if Viewer=nil then Viewer:=TViewer.Create(nil{Application.MainForm});
 
@@ -176,6 +166,8 @@ begin
         lblInfo2.Caption:=rsTime+': '+'0x'+HexStr(lrec.ftime,16);
       end;
     end;
+
+  RGLog.Reserve('');
 end;
 
 procedure ClosePreviews(actrl:PRGController=nil);

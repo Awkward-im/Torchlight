@@ -131,18 +131,46 @@ begin
   end;
 end;
 
+procedure TPanelForm.lvListItemChecked(Sender: TObject; Item: TListItem);
+var
+  i,lcnt:integer;
+begin
+  lcnt:=0;
+  for i:=0 to lvList.Items.Count-1 do
+    if lvList.Items[i].Checked then inc(lcnt);
+
+  if lcnt=0 then lvList.Checkboxes:=false;
+end;
+
+procedure LVSetTopItem(pListV: TListView; ItemID: Integer);
+var
+  x1,x2: Integer;
+begin
+  if ItemID<0 then Exit;
+  if ItemID=pListV.TopItem.Index then Exit;
+  x1:=ItemID;
+  x2:=x1+pListV.VisibleRowCount-1;
+  if x2>pListV.Items.Count-1 then Exit;
+
+  pListV.Items.Item[x1].MakeVisible(False);
+  pListV.Items.Item[x2].MakeVisible(False);
+end;
+
 procedure TPanelForm.SelectLine();
 var
+  ltop:integer;
   lidx,lcnt,i:integer;
 begin
   lidx:=lvList.ItemIndex;
   if (lidx=0) and (lvList.Items[0].Caption=strParentDir) then exit;
 
+  ltop:=lvList.TopItem.Index;
   // have no any selection
   if not lvList.Checkboxes then
   begin
     lvList.Checkboxes:=True;
     lvList.Items[lidx].Checked:=true;
+    LVSetTopItem(lvList,ltop);
   end
   // have at least one selection
   else
@@ -153,7 +181,11 @@ begin
     for i:=0 to lvList.Items.Count-1 do
       if lvList.Items[i].Checked then inc(lcnt);
 
-    if lcnt=0 then lvList.Checkboxes:=false;
+    if lcnt=0 then
+    begin
+      lvList.Checkboxes:=false;
+      LVSetTopItem(lvList,ltop);
+    end;
   end;
 //!!!!!!!!!!!!!!!!!!!!!!!!
   lvList.SetFocus;
@@ -228,11 +260,13 @@ begin
 
   if ldir1 and ldir2 then
   begin
+    if s1=strParentDir then begin Compare:=-1; exit; end;
+    if s2=strParentDir then begin Compare:= 1; exit; end;
     Compare:=CompareStr(s1,s2);
     if lvList.sortColumn<>colName then exit;
   end
   else if ldir1 and not ldir2 then begin Compare:=-1; exit; end
-  else if ldir2 and not ldir1 then begin Compare:=1 ; exit; end
+  else if ldir2 and not ldir1 then begin Compare:= 1; exit; end
   else
   begin
     if lvList.sortColumn<>colName then
@@ -310,14 +344,33 @@ var
   ltime:UInt64;
   linfo:PRGCtrlInfo;
   lrec:TRGFullInfo;
-  ls:AnsiString;
+  ls,lext:AnsiString;
+  i:integer;
 begin
   linfo:=Ctrl^.Files[aidx];
+  ls:=WideToStr(linfo^.Name);
+
+  if linfo^.ftype<>typeDirectory then
+  begin
+    lext:=ExtractExt(ls);
+    if (sbFilter.Visible) and (fmFilterForm<>nil) then
+    begin
+      if lext<>'' then
+        for i:=0 to RGTypeExtCount()-1 do
+        begin
+          if lext=RGTypeExtFromList(i) then
+          begin
+            if not fmFilterForm.exts[i] then exit;
+            break;
+          end;
+        end;
+      if RGTypeOfExt(lext)=typeUnknown then
+        if not fmFilterForm.UnknownIsOn then exit;
+    end;
+  end;
+
   with lvList.Items.Add do
   begin
-    ls:=WideToStr(linfo^.Name);
-
-    Ctrl^.GetFullInfo(aidx,lrec);
 
     if linfo^.ftype=typeDirectory then
     begin
@@ -330,9 +383,10 @@ begin
     end
     else
     begin
+      Ctrl^.GetFullInfo(aidx,lrec);
       Caption:=ExtractNameOnly(ls);
       Data   :=pointer(IntPtr(aidx));
-      SubItems.Add(ExtractExt(ls));              // ext
+      SubItems.Add(lext);                        // ext
       SubItems.Add(RGTypeGroupName(lrec.ftype)); // type
       SubItems.Add(IntToStr(lrec.size));         // size
       // Time
@@ -365,10 +419,6 @@ end;
 
 procedure TPanelForm.FillFullList();
 var
-  ltime:UInt64;
-  linfo:PRGCtrlInfo;
-  lrec:TRGFullInfo;
-  ls:AnsiString;
   i:integer;
 begin
   lvList.BeginUpdate;
@@ -377,7 +427,7 @@ begin
 
   for i:=0 to Ctrl^.FileCount-1 do
   begin
-    if Ctrl^.IsDir(i) or Ctrl^.IsFileDeleted(i) then continue;
+    if Ctrl^.IsFileDeleted(i) or Ctrl^.IsDir(i) then continue;
 
     AddListRow(i);
   end;
@@ -399,13 +449,28 @@ begin
   lblPath.Caption:=rsFullList;
 end;
 
+procedure TPanelForm.FillShellList(const aitem:AnsiString);
+var
+  ls:AnsiString;
+begin
+  FShell.Clear;
+  FShell.NewDir(nil);
+  if FShellPath='' then
+    BuildShellRootList();
+  FShell.ImportDir('',FShellPath,true,true);
+  FillList(0);
+  if aitem<>'' then
+  begin
+    ls:=aitem;
+    if ls[Length(ls)]='\' then ls[Length(ls)]:='/';
+
+    SelectFile(IntPtr(lvList.Items.FindCaption(0,ls,false,false,false).Data));
+  end;
+end;
+
 procedure TPanelForm.FillList(adir:integer);
 var
-  ltime:UInt64;
-  c,ls:AnsiString;
-  linfo:PRGCtrlInfo;
-  lolddir,lfile:integer;
-  lrec:TRGFullInfo;
+  ltype,lolddir,lfile:integer;
 begin
   if adir<0 then
   begin
@@ -413,8 +478,9 @@ begin
     exit;
   end;
 
-  if adir>=Ctrl^.DirCount then exit;
-  if GetPanelType()<>panelList then exit;
+  if (adir>0) and (adir>=Ctrl^.DirCount) then exit;
+  ltype:=GetPanelType();
+  if not ltype in [panelList,panelShell] then exit;
 
   lolddir:=GetActiveDir(Ctrl,ListIndex);
   SetActiveDir(adir,Ctrl,ListIndex);
@@ -425,13 +491,22 @@ begin
 
   // Parent dir
   if adir>0 then
+  begin
     with lvList.Items.Add do
     begin
       Caption:=strParentDir;
       // dir index to file index and get it's parent
       Data   :=pointer(IntPtr(Ctrl^.AsFile(Ctrl^.FileDir(Ctrl^.AsFile(adir)))));
-      lfile:=IntPtr(Ctrl^.AsFile(Ctrl^.FileDir(Ctrl^.AsFile(adir))));
     end;
+  end
+  else if (adir=0) and (ltype=panelShell) and (FShellPath<>'') then
+  begin
+    with lvList.Items.Add do
+    begin
+      Caption:=strParentDir;
+      Data   :=pointer(-1);
+    end;
+  end;
 
   if Ctrl^.GetFirstFile(lfile,adir) then
   begin
@@ -452,7 +527,8 @@ begin
       SelectFile(GetActiveFile(Ctrl,ListIndex));
   end;
 
-  lblPath.Caption:=Ctrl^.Dirs[adir].Name;
+  if adir<Ctrl^.DirCount then lblPath.Caption:=Ctrl^.Dirs[adir].Name;
+  if ltype=panelShell    then lblPath.Caption:=FShellPath;
 end;
 
 procedure TPanelForm.SelectFile(aidx:integer);

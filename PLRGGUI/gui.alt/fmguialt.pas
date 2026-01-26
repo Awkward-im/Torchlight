@@ -13,6 +13,7 @@ type
   { TRGGUI2Form }
 
   TRGGUI2Form = class(TForm)
+    actChangeVersion: TAction;
     ActionList: TActionList;
     actFileNew      : TAction;
     actFileOpen     : TAction;
@@ -26,6 +27,7 @@ type
     ilMain24: TImageList;
     ilMain16: TImageList;
     MainMenu: TMainMenu;
+    miEditVersion: TMenuItem;
     miFile: TMenuItem;
     miFileNew      : TMenuItem;
     miFileOpen     : TMenuItem;
@@ -60,6 +62,7 @@ type
     procedure actFileSaveAsExecute(Sender: TObject);
     procedure actFileCloseExecute (Sender: TObject);
     procedure actFileExitExecute  (Sender: TObject);
+    procedure actChangeVersionExecute(Sender: TObject);
     procedure actShowLogExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose (Sender: TObject; var CloseAction: TCloseAction);
@@ -88,6 +91,7 @@ uses
   RGCtrl,
 
   fmLog,
+  fmGameVersion,
 
   RGGUI.Core,
   RGGUI.Shared,
@@ -439,6 +443,40 @@ begin
     fmLogForm.memLog.Text:=RGLog.Text;
   end;
   fmLogForm.ShowOnTop;
+end;
+
+procedure TRGGUI2Form.actChangeVersionExecute(Sender: TObject);
+var
+  lpnl:TPanelForm;
+  lf:TFmGameVer;
+  idx: integer;
+begin
+{
+  idx:=InputCombo(rsChooseVer, rsGameVer,
+      ['Torchligh I', 'Torchlight II', 'Hob', 'Rebel Galaxy', 'Rebel Galaxy Outlaw']);
+  case idx of
+    0: idx:=verTL1;
+    1: idx:=verTL2;
+    2: idx:=verHob;
+    3: idx:=verRG;
+    4: idx:=verRGO;
+  end;
+}
+  lpnl:=TPanelForm(Panels[ActivePanel]);
+  if lpnl.GetPanelType=panelView then exit;
+
+  lf:=TFmGameVer.Create(Self);
+  lf.Version:=lpnl.Ctrl^.PAK.Version;
+  if lf.ShowModal=mrOK then
+  begin
+    idx:=lf.Version;
+    if lpnl.Ctrl^.PAK.Version<>idx then
+    begin
+      lpnl.Ctrl^.PAK.Version:=idx;
+      // setup / show version
+    end;
+  end;
+  lf.Free;
 end;
 
 {%ENDREGION Actions}

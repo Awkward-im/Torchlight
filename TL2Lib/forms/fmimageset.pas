@@ -9,7 +9,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, ComCtrls, ListFilterEdit, RGLCLImageSet, RGCtrl;
+  Menus, ComCtrls, ActnList, ListFilterEdit, RGLCLImageSet, RGCtrl;
 
 //!! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 type
@@ -20,6 +20,14 @@ type
   { TFormImageset }
 
   TFormImageset = class(TForm)
+    actDarkBG: TAction;
+    actClose: TAction;
+    actOpen: TAction;
+    actSave: TAction;
+    actSelectAll: TAction;
+    actExtract: TAction;
+    actRename: TAction;
+    ActionList: TActionList;
     cbDarkBg: TCheckBox;
     imgSprite: TImage;
     imgTexture: TImage;
@@ -36,7 +44,12 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     StatusBar: TStatusBar;
-    procedure cbDarkBgClick(Sender: TObject);
+    procedure DoClose(Sender: TObject);
+    procedure DoRename(Sender: TObject);
+    procedure DarkBgChange(Sender: TObject);
+    procedure DoDarkBg(Sender: TObject);
+    procedure DoOpen(Sender: TObject);
+    procedure DoSave(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
@@ -44,14 +57,15 @@ type
     procedure lbImagesetsSelectionChange(Sender: TObject; User: boolean);
     procedure lbImagesSelectionChange(Sender: TObject; User: boolean);
     procedure lfeImagesAfterFilter(Sender: TObject);
-    procedure lbImagesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure miExtractClick(Sender: TObject);
-    procedure miSelectAllClick(Sender: TObject);
+//    procedure lbImagesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure DoExtract(Sender: TObject);
+    procedure DoSelectAll(Sender: TObject);
   private
     rectBorder:TRect;
     FActiveImageset:integer;
     FSprite:integer;
     FOnImagesetInfo:TOnImagesetInfo;
+
     procedure FillImagesetList();
     procedure FillSpriteList(ais: integer);
     procedure SetSelected(aval:string);
@@ -83,6 +97,8 @@ resourcestring
   rsSaveSprite   = 'Save sprite';
   rsLoadImageset = 'Load imageset';
   rsAllImagesets = 'All imagesets';
+  rsChangeName   = 'Change sprite name';
+  rsNewName      = 'New Name';
 
 
 procedure TFormImageset.FormDestroy(Sender: TObject);
@@ -134,7 +150,7 @@ begin
     end;
   end;
 end;
-
+{
 procedure TFormImageset.lbImagesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Shift=[ssCtrl] then
@@ -144,8 +160,8 @@ begin
     Key:=0;
   end;
 end;
-
-procedure TFormImageset.miExtractClick(Sender: TObject);
+}
+procedure TFormImageset.DoExtract(Sender: TObject);
 var
   ldlg:TSaveDialog;
   ldir:TSelectDirectoryDialog;
@@ -194,18 +210,87 @@ begin
   end;
 end;
 
-procedure TFormImageset.miSelectAllClick(Sender: TObject);
+procedure TFormImageset.DoSelectAll(Sender: TObject);
 begin
   lbImages.SelectAll;
 end;
 
-procedure TFormImageset.DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
+procedure TFormImageset.DoOpen(Sender: TObject);
 begin
-  ACanvas.Brush.Color := clGray;
-  ACanvas.FillRect(ARect);
+  FillList('');
 end;
 
-procedure TFormImageset.cbDarkBgClick(Sender: TObject);
+procedure TFormImageset.DoSave(Sender: TObject);
+var
+  f:file of byte;
+  ldlg:TSaveDialog;
+  lbuf:PByte;
+  lsize,lis:integer;
+begin
+  lis:=FImageset.ISbyID(FActiveImageset);
+//  if FImageset.Imagesets[lis].modified then
+  begin
+    ldlg:=TSaveDialog.Create(self);
+    ldlg.Options   :=ldlg.Options+[ofOverwritePrompt];
+    ldlg.Filter:='Imageset|*.imageset';
+    ldlg.DefaultExt:='.imageset';
+    ldlg.FileName  :=ChangeFileExt(FImageset.Imagesets[lis].Name,ldlg.DefaultExt);
+    if ldlg.Execute then
+    begin
+      lbuf:=nil;
+      lsize:=FImageset.BuildImageset(lis,lbuf);
+      if lsize>0 then
+      begin
+        AssignFile(f,ldlg.FileName);
+        Rewrite(f);
+        if IOResult=0 then
+        begin
+          BlockWrite(f,lbuf^,lsize);
+          CloseFile(f);
+        end;
+        FreeMem(lbuf);
+      end;
+      FImageset.Imagesets[lis].modified:=false;
+    end;
+    ldlg.Free;
+  end;
+end;
+
+procedure TFormImageset.DoClose(Sender: TObject);
+begin
+  FImageset.CloseImageset(IntPtr(lbImagesets.Items.Objects[lbImagesets.ItemIndex]));
+  FillImagesetList();
+  lbImagesets.ItemIndex:=0;
+  lbImagesetsSelectionChange(lbImagesets,true);
+end;
+
+procedure TFormImageset.DoRename(Sender: TObject);
+var
+  lname:AnsiString;
+  lidx,lis:integer;
+begin
+//  if ActiveControl=lbImages then
+  begin
+    lname:=lbImages.Items[lbImages.ItemIndex];
+    if not InputQuery(rsChangeName, rsNewName,lname) then exit;
+    if lname=lbImages.Items[lbImages.ItemIndex] then exit;
+// not allowed on sorted list
+//    lbImages.Items[lbImages.ItemIndex]:=lname;
+    lidx:=IntPtr(lbImages.Items.Objects[lbImages.ItemIndex]);
+    lis:=FImageset.Items[lidx].ISFile;
+    FImageset.Items[lidx].Name:=lname;
+    FImageset.Imagesets[FImageset.ISbyID(lis)].modified:=true;
+    FillSpriteList(lis);
+  end;
+end;
+
+procedure TFormImageset.DoDarkBg(Sender: TObject);
+begin
+  cbDarkBg.Checked:=not cbDarkBg.Checked;
+  DarkBgChange(cbDarkBg);
+end;
+
+procedure TFormImageset.DarkBgChange(Sender: TObject);
 begin
   if cbDarkBg.Checked then
   begin
@@ -221,6 +306,47 @@ begin
   imgTexture.Repaint;
 end;
 
+procedure TFormImageset.DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
+begin
+  ACanvas.Brush.Color := clGray;
+  ACanvas.FillRect(ARect);
+end;
+
+procedure TFormImageset.lbImagesetsSelectionChange(Sender: TObject; User: boolean);
+begin
+  if lbImagesets.ItemIndex<0 then exit;
+
+  if FActiveImageset=IntPtr(lbImagesets.Items.Objects[lbImagesets.ItemIndex]) then exit;
+
+  FillSpriteList(IntPtr(lbImagesets.Items.Objects[lbImagesets.ItemIndex]));
+end;
+
+procedure TFormImageset.FillImagesetList();
+var
+  i:integer;
+begin
+  if FImageset.ImagesetCount>1 then
+  begin
+    lbImagesets.Visible:=true;
+    Splitter3.Visible:=true;
+    lbImagesets.Clear;
+    lbImagesets.Items.AddObject(rsAllImagesets,TObject(-1));
+    for i:=0 to FImageset.ImagesetCount-1 do
+      lbImagesets.Items.AddObject(
+          FImageset.Imagesets[i].Name,
+          TObject(IntPtr(FImageset.Imagesets[i].id)));
+    lbImagesets.ItemIndex:=0;
+  end
+  else
+  begin
+    lbImagesets.Visible:=false;
+    Splitter3.Visible:=false;
+
+    FillSpriteList(0);
+  end;
+end;
+
+
 procedure TFormImageset.lbImagesSelectionChange(Sender: TObject; User: boolean);
 begin
   if lbImages.ItemIndex>=0 then
@@ -230,7 +356,7 @@ begin
     if FImageset.Items[FSprite].ISFile<>FActiveImageset then
     begin
       FActiveImageset:=FImageset.Items[FSprite].ISFile;
-      FImageset.GetImage(imgTexture.Picture,FActiveImageset);
+      FImageset.GetImage(imgTexture.Picture,FImageset.ISbyID(FActiveImageset));
     end
     else
     begin
@@ -255,13 +381,6 @@ begin
     imgTexture.Picture.Clear;
 end;
 
-procedure TFormImageset.lbImagesetsSelectionChange(Sender: TObject; User: boolean);
-begin
-  if lbImagesets.ItemIndex<0 then exit;
-
-  FillSpriteList(IntPtr(lbImagesets.Items.Objects[lbImagesets.ItemIndex]));
-end;
-
 procedure TFormImageset.lfeImagesAfterFilter(Sender: TObject);
 begin
   if lbImages.Items.Count>0 then
@@ -275,6 +394,9 @@ procedure TFormImageset.FillSpriteList(ais:integer);
 var
   i:integer;
 begin
+  if rectBorder.Left<>rectBorder.Right then
+    imgTexture.Canvas.Rectangle(rectBorder);
+
   rectBorder:=Rect(0,0,0,0);
 {
   lfeImages.Items.Clear;
@@ -318,29 +440,6 @@ begin
   end;
   lfeImages.FilteredListBox:=lbImages;
 }
-end;
-
-procedure TFormImageset.FillImagesetList();
-var
-  i:integer;
-begin
-  if FImageset.ImagesetCount>1 then
-  begin
-    lbImagesets.Visible:=true;
-    Splitter3.Visible:=true;
-    lbImagesets.Clear;
-    lbImagesets.Items.AddObject(rsAllImagesets,TObject(-1));
-    for i:=0 to FImageset.ImagesetCount-1 do
-      lbImagesets.Items.AddObject(FImageset.Imagesets[i].Name,TObject(IntPtr(i)));
-    lbImagesets.ItemIndex:=0;
-  end
-  else
-  begin
-    lbImagesets.Visible:=false;
-    Splitter3.Visible:=false;
-
-    FillSpriteList(0);
-  end;
 end;
 
 procedure TFormImageset.FillList(const actrl:TRGController;

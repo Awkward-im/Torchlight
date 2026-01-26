@@ -1,124 +1,5 @@
 ﻿{%REGION Tree}
-(*
 
-procedure TPanelForm.tvTreeContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-begin
-  PopupNode:=tvTree.GetNodeAt(MousePos.X, MousePos.Y);
-  if PopupNode<>nil then
-  begin
-    miTreeExtract       .Visible:=PopupNode.Enabled;
-    miTreeExtractDir    .Visible:=PopupNode.Enabled;
-    miTreeExtractVisible.Visible:=PopupNode.Enabled;
-    miTreeNew           .Visible:=PopupNode.Enabled;
-    miTreeAdd           .Visible:=PopupNode.Enabled;
-    miTreeDelete        .Visible:=PopupNode.Enabled and (PopupNode<>tvTree.Items[0]);
-    miTreeRestore       .Visible:=not PopupNode.Enabled;
-    mnuTree.PopUp;
-  end;
-  Handled:=true;
-end;
-
-procedure TPanelForm.miTreeListClick(Sender: TObject);
-var
-  sl:TStringList;
-  tn:TTreeNode;
-  i:integer;
-  b:boolean;
-begin
-  sl:=TStringList.Create;
-  for i:=0 to tvTree.Items.Count-1 do
-  begin
-    b:=true;
-    tn:=tvTree.Items[i].Parent;
-    while tn<>nil do
-    begin
-      if not tn.Expanded then
-      begin
-        b:=false;
-        break;
-      end;
-      tn:=tn.Parent;
-    end;
-    if b then
-      sl.Add(GetPathFromNode(tvTree.Items[i]));
-  end;
-  Clipboard.AsText:=sl.Text;
-  sl.Free;
-end;
-
-procedure TPanelForm.AddNewDir(anode:TTreeNode; const apath:string);
-var
-  lnode:TTreeNode;
-  ls,lpath:string;
-  ldir:integer;
-begin
-  lpath:={UpCase}(apath);
-
-  if      lpath[Length(lpath)]= '\' then lpath[Length(lpath)]:='/'
-  else if lpath[Length(lpath)]<>'/' then lpath:=lpath+'/';
-
-  if anode=nil then
-    ls:=lpath
-  else
-  begin
-    // if we have child with "root" name already
-    lnode:=anode.FindNode(lpath);
-    if lnode<>nil then
-    begin
-      tvTree.Selected:=lnode;
-      exit;
-    end;
-
-    ls:=GetPathFromNode(anode)+lpath;
-  end;
-
-  ldir:=FCtrl^.NewDir(PUnicodeChar(UnicodeString(ls)));
-  if ldir>=0 then
-  begin
-    lnode:=tvTree.Items.AddChild(anode,lpath);
-    lnode.Data:=pointer(IntPtr(ldir));
-  end;
-
-end;
-
-procedure TPanelForm.miTreeDeleteClick(Sender: TObject);
-var
-  ldir:integer;
-begin
-  ldir:=IntPtr(UIntPtr(PopupNode.Data));
-  FCtrl^.MarkToRemove(FCtrl^.AsFile(ldir));
-  MarkTree(ldir,false);
-end;
-
-procedure TPanelForm.miTreeRestoreClick(Sender: TObject);
-var
-  ldir:integer;
-begin
-  ldir:=IntPtr(UIntPtr(PopupNode.Data));
-  FCtrl^.RemoveUpdate(FCtrl^.AsFile(ldir));
-  MarkTree(ldir,true);
-end;
-
-procedure TPanelForm.MarkTree(adir:integer; aEnable:boolean);
-var
-  lnode:TTreeNode;
-  i:integer;
-begin
-  for i:=0 to tvTree.Items.Count-1 do
-  begin
-    lnode:=tvTree.Items[i];
-    if IntPtr(UIntPtr(lnode.Data))=adir then
-    begin
-      lnode.Enabled:=aEnable;
-      if aEnable then
-        tvTree.Select(lnode)
-      else
-        lnode.Collapse(true);
-      exit;
-    end;
-  end;
-end;
-*)
 procedure TPanelForm.SelectTreePath(adir:integer);
 var
   i:integer;
@@ -153,17 +34,37 @@ procedure TPanelForm.sbTreeClick(Sender: TObject);
 begin
   SetPanelActive(self);
 
-  if sbTree.Down then
+  if IntPtr(cbContent.Items.Objects[cbContent.ItemIndex])=ptShell then
   begin
-    SetupView(panelTree);
-    FillTree (GetActiveDir(Ctrl,ListIndex));
-    tvTree.SetFocus;
+    if sbTree.Down then
+    begin
+      SetupView(panelShellTree);
+      tvShell.Path:=FShellPath;
+//      FillTree (GetActiveDir(Ctrl,ListIndex));
+      tvShell.SetFocus;
+    end
+    else
+    begin
+      SetupView(panelShell);
+      FShellPath:=tvShell.Selected.GetTextPath;
+      FillShellList(tvShell.Selected.Text);
+      lvList.SetFocus;
+    end;
   end
   else
   begin
-    SetupView(panelList);
-    FillList (GetActiveDir(Ctrl,ListIndex));
-    lvList.SetFocus;
+    if sbTree.Down then
+    begin
+      SetupView(panelTree);
+      FillTree (GetActiveDir(Ctrl,ListIndex));
+      tvTree.SetFocus;
+    end
+    else
+    begin
+      SetupView(panelList);
+      FillList (GetActiveDir(Ctrl,ListIndex));
+      lvList.SetFocus;
+    end;
   end;
 end;
 

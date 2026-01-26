@@ -71,7 +71,8 @@ begin
       (lext='.TEMPLATE') or
       (lext='.HIE') or
       (lext='.LAYOUT') or
-      (lext='.ANIMATION');
+      (lext='.ANIMATION') or
+      (lext='.WDAT');
   lblFileName.Caption:=fname;
   lblOldSizeNum.Caption:=IntToStr(aoldsize);
   lblNewSizeNum.Caption:=IntToStr(anewsize);

@@ -213,8 +213,11 @@ end;
 
 procedure TSynTSyn.GreaterThanProc;
 begin
-  fTokenId := tkType;
-  fRange := rsProp;
+  if fTokenId <> tkWrong then
+  begin
+    fRange := rsProp;
+  end;
+    fTokenId := tkType;
   Inc(Run);
 end;
 

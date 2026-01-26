@@ -1,5 +1,6 @@
 ﻿{}
 {TODO: sound file info}
+{TODO: replace Start and Stop buttons by one (move caption text to resourcestrings}
 unit rgvSound;
 
 interface

@@ -6,7 +6,8 @@ unit fmLog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, Buttons;
+  Classes, SysUtils, Forms, Controls, Dialogs, StdCtrls, Buttons,
+  Logging;
 
 type
 
@@ -20,7 +21,9 @@ type
     procedure bbSaveClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
+    FSavedOnAdd:TLogOnAdd;
 
     function AddToLog(var adata: string): integer;
   public
@@ -84,13 +87,20 @@ end;
 
 procedure TfmLogForm.FormCreate(Sender: TObject);
 begin
-  if RGLog.OnAdd=nil then
-    RGLog.OnAdd:=@AddToLog;
+  if RGLog.OnAdd<>nil then exit;
+
+  FSavedOnAdd:=RGLog.OnAdd;
+  RGLog.OnAdd:=@AddToLog;
 end;
 
 procedure TfmLogForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction:=caHide;
+end;
+
+procedure TfmLogForm.FormDestroy(Sender: TObject);
+begin
+  if RGLog.OnAdd=@AddToLog then RGLog.OnAdd:=FSavedOnAdd;
 end;
 
 end.

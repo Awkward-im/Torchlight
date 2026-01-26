@@ -263,7 +263,8 @@ uses
   fmFilter,
   fmGameVersion,
   fmModInfo,
-  fmAsk,
+//  fmAsk,
+  fmAskNew,
   fmComboDiff,
 
   RGGUI.Core,
@@ -1347,8 +1348,9 @@ begin
     ls:=FastWideToStr(FCtrl^.PathOfFile(idx))+FastWideToStr(FCtrl^.NameOfFile(idx));
   with tAskForm.Create(ls, loldsize, lnewsize) do
   begin
-    ShowModal();
-    result:=TRGDoubleAction(MyResult);
+//    ShowModal();
+//    result:=TRGDoubleAction(MyResult);
+    result:=ModalToAction(ShowModal());
     Free;
   end;
   

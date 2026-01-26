@@ -152,7 +152,7 @@ const
     (_ext:'.TEMPLATE'  ; _type:typeData    ; _tl2:tl2Dat      ; _hob:hobTemplate  ),
     (_ext:'.ANIMATION' ; _type:typeData    ; _tl2:tl2Animation; _hob:hobAnimation ),
     (_ext:'.HIE'       ; _type:typeData    ; _tl2:tl2Hie      ; _hob:hobHie       ),
-    (_ext:'.WDAT'      ; _type:typeData    ; _tl2:tl2Unknown  ; _hob:hobWDat      ),
+    (_ext:'.WDAT'      ; _type:typeData    ; _tl2:tl2Unknown  ; _hob:hobWDat      ), // _tl2:tl2Dat maybe?
 
     // TL1 "UI" directory - XML format (typeUI = UILayout) 
     (_ext:'.LAYOUT'    ; _type:typeLayout  ; _tl2:tl2Layout   ; _hob:hobLayout    ),

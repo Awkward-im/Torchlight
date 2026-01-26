@@ -35,6 +35,7 @@ type
   private
     function  GetSize(idx:integer):integer;
     procedure SetRoot(apath:PUnicodeChar);
+    function  GetFileInfoPtr(idx:integer):PManFileInfo;
 
   // Main
   public
@@ -70,6 +71,7 @@ type
     property LargestUnpacked:integer index 1 read GetSize;
     property Root:PUnicodeChar read FRoot write SetRoot; // really, is "MEDIA/" always
 
+    property Files[idx:integer]:PManFileInfo read GetFileInfoPtr;
   end;
 
 
@@ -84,6 +86,12 @@ uses
   RGFileType;
 
 {%REGION Common}
+
+function TRGManifest.GetFileInfoPtr(idx:integer):PManFileInfo; //inline;
+begin
+  result:=PManFileInfo(pointer(TRGDirList.GetFileInfoPtr(idx)));
+end;
+
 procedure TRGManifest.SetRoot(apath:PUnicodeChar);
 begin
   if CompareWide(FRoot,apath)<>0 then

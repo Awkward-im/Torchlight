@@ -1,15 +1,27 @@
 ﻿{}
-{TODO: Check file type (extension) changing on rename}
 {$IFDEF Interface}
 
   procedure Rename();
   procedure CreateNewFile();
   procedure CreateNewDir();
+  procedure Delete(acode: integer);    // not mark but delete
+  procedure DeleteSingleFile(idx:integer; ondisk:boolean);
+
+  function CopyShellToShell(const asrc, adst:AnsiString):integer;
+  function CopyShellToCtrl (const asrc, adst:AnsiString): integer;
+  function CopyCtrlToShell (aidx: integer; const apath:AnsiString): integer;
+  function CopyCtrlToCtrl  (aidx: integer; actrl:PRGController; apath:PUnicodeChar):integer;
   procedure Copy();
   procedure Move();      // ??copy+delete
-  procedure Delete(acode: integer);    // not mark but delete
+  //?? just copy from disk or link
+  procedure ImportDir();
+  procedure ImportFile();
 
 {$ELSE}
+
+procedure TPanelForm.Move();
+begin
+end;
 
 procedure TPanelForm.CreateNewDir();
 var
@@ -20,6 +32,14 @@ begin
   lname:=sNewDir;
   if not InputQuery(rsCreateDir, rsDirName, lname) then exit;
   if lname='' then exit;
+
+  if GetPanelType()=panelShell then
+  begin
+//    System.MkDir(FShellPath+lname);
+    if SysUtils.CreateDir(FShellPath+lname) then
+      FillShellList('');
+    exit;
+  end;
 
   if lname[Length(lname)]= '\' then lname[Length(lname)]:='/';
   if lname[Length(lname)]<>'/' then lname:=lname+'/';
@@ -45,6 +65,8 @@ begin
   if not InputQuery(rsCreateFile, rsFileDirName, lname) then exit;
   if lname='' then exit;
 
+  if GetPanelType()=panelShell then exit;
+
   if lname[Length(lname)]='/' then SetLength(lname,Length(lname)-1);
   if IsNameExists(lname)>=0 then
   begin
@@ -63,11 +85,13 @@ end;
 procedure TPanelForm.Rename();
 var
   lold,lname:string;
-  pname,pc:PUnicodeChar;
-  lfile:integer;
-  ltype:boolean;
+  pc:PUnicodeChar;
+  ltype,lfile:integer;
+  lchtype:boolean;
 begin
-  if GetPanelType()=panelTree then
+  ltype:=GetPanelType();
+
+  if ltype=panelTree then
     lfile:=Ctrl^.AsFile(GetActiveDir(Ctrl,ListIndex))
   else
     lfile:=GetActiveFile(Ctrl,ListIndex);
@@ -76,6 +100,7 @@ begin
   lname:=lold;
   if not InputQuery(rsNewName, rsFileDirName, lname) then exit;
   if lname='' then exit;
+
   lname:=UpCase(lname);
   if lname=lold then exit;
 
@@ -92,16 +117,23 @@ begin
     begin
       exit;
     end;
-    ltype:=true;
+    lchtype:=true;
   end
   else
-    ltype:=false;
+    lchtype:=false;
     
+  if ltype=panelShell then
+  begin
+    if SysUtils.RenameFile(FShellPath+lold,FShellPath+lname) then
+      FillShellList(lname);
+    exit;
+  end;
+  
   pc:=FastStrToWide(lname);
-  if GetPanelType=panelList then
+  if ltype=panelList then
   begin
     Ctrl^.Rename(lfile,pc);
-    if ltype then Ctrl^.Files[lfile]^.ftype:=RGTypeOfExt(lname);
+    if lchtype then Ctrl^.Files[lfile]^.ftype:=RGTypeOfExt(lname);
   end
   //!!!theoretically, next not needs coz lfile will point to dir anyway
   else // if GetPanelType=panelTree then
@@ -109,41 +141,54 @@ begin
   FreeMem(pc);
 end;
 
-procedure TPanelForm.Copy();
-begin
-end;
-
-procedure TPanelForm.Move();
-begin
-end;
-
 {
   recursive (if needs) deleting of "ctrl", not "man" (it must be deleted by-the-way) records
 }
+procedure TPanelForm.DeleteSingleFile(idx:integer; ondisk:boolean);
+var
+  ls:AnsiString;
+begin
+  if ondisk then
+  begin
+    ls:=FShellPath+FastWideToStr(Ctrl^.NameOfFile(idx));
+    if Ctrl^.IsDir(idx) then
+    begin
+      SetLength(ls,Length(ls)-1);
+//      SysUtils.RemoveDir(ls);
+      DeleteDirectory(ls,false);
+    end
+    else
+      SysUtils.DeleteFile(ls);
+  end;
+  Ctrl^.Delete(idx);
+end;
+
 procedure TPanelForm.Delete(acode:integer);
 var
   arr:TIntegerDynArray;
-  i,lidx:integer;
+  i,lidx,ltype:integer;
 begin
-  case acode of
-    1: begin
-      if GetPanelType()=panelTree then
-        Ctrl^.MarkToRemove(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)))
-      else if not IsParentDirSelected() then
-        Ctrl^.MarkToRemove(GetSelectedFile());
+  ltype:=GetPanelType();
+  if ltype<>panelShell then
+    case acode of
+      1: begin
+        if GetPanelType()=panelTree then
+          Ctrl^.MarkToRemove(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)))
+        else if not IsParentDirSelected() then
+          Ctrl^.MarkToRemove(GetSelectedFile());
 
-      exit;
+        exit;
+      end;
+
+      2: begin
+        if GetPanelType()=panelTree then
+          Ctrl^.RemoveUpdate(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)))
+        else
+          Ctrl^.RemoveUpdate(GetSelectedFile());
+
+        exit;
+      end;
     end;
-
-    2: begin
-      if GetPanelType()=panelTree then
-        Ctrl^.RemoveUpdate(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)))
-      else
-        Ctrl^.RemoveUpdate(GetSelectedFile());
-
-      exit;
-    end;
-  end;
 
   if MessageDlg(rsWarning,rsSureToDelete,mtWarning,
      [mbOK,mbCancel],0,mbCancel)<>mrOk then
@@ -152,19 +197,450 @@ begin
   end;
 
   arr:=nil;
-  if GetPanelType()=panelTree then
+  if (ltype=panelTree) or (ltype=panelShellTree) then
     lidx:=Ctrl^.AsFile(GetActiveDir(Ctrl,ListIndex))
   else
     lidx:=GetSelectionList(arr);
+
   if lidx<0 then
   begin
     for i:=0 to Length(arr)-1 do
-      Ctrl^.Delete(arr[i]);
+    begin
+      DeleteSingleFile(arr[i],(ltype=panelShell) or (ltype=panelShellTree));
+    end;
     SetLength(arr,0);
   end
   else
   begin
-    Ctrl^.Delete(lidx);
+    DeleteSingleFile(lidx,(ltype=panelShell) or (ltype=panelShellTree));
+  end;
+
+  if (ltype=panelShell) or (ltype=panelShellTree) then
+    FillShellList('');
+end;
+
+
+function CopySingleFile(const afrom,ato:AnsiString; aact:integer):integer;
+var
+  ls:AnsiString;
+begin
+  result:=aact;
+{
+  lfrom:=afrom;
+  lto  :=ato;
+  if FileExists(ato) then
+  begin
+    case aact of
+      da_skipall: exit;
+      da_overwriteall: ;
+    end;
+
+    case result of
+      da_stop: exit;
+      da_skipdir,
+      da_skipall,
+      da_skip: exit;
+      da_compare:
+      da_overwriteall,
+      da_overwrite: ;
+      da_renameold: lto:=
+      da_saveas: lfrom:=
+    end;
+  end;
+;//      CopyFile(lfrom,lto);
+}end;
+
+function TPanelForm.CopyShellToShell(const asrc, adst:AnsiString):integer;
+var
+  sr:TSearchRec;
+begin
+  result:=0;
+
+  if asrc[Length(asrc)] in ['\','/'] then
+  begin
+    if not DirectoryExists(adst) then MkDir(adst);
+
+    if SysUtils.FindFirst(asrc+'*.*',faAnyFile and faDirectory,sr)=0 then
+    begin
+      repeat
+        if (sr.Attr and faDirectory)=faDirectory then
+        begin
+          if (sr.Name='.') or (sr.Name='..') then continue;
+
+          CopyShellToShell(asrc+sr.Name+'/', adst+sr.Name+'/');
+        end
+        else
+          CopyShellToShell(asrc+sr.Name, adst+sr.Name);
+      until SysUtils.FindNext(sr)<>0;
+      SysUtils.FindClose(sr);
+    end;
+  end
+  else
+  begin
+{
+    if FileExists() then
+    begin
+    end
+    else
+;//      CopyFile
+}
+  end;
+end;
+
+function TPanelForm.CopyShellToCtrl(const asrc, adst:AnsiString):integer;
+begin
+  result:=0;
+
+  if asrc[Length(asrc)] in ['\','/'] then
+    result:=Ctrl^.ImportDir(adst+ExtractName(asrc),asrc,false,false)
+  else
+    if Ctrl^.AddFileData(asrc,
+        adst+FixFileExt(ExtractName(asrc)), true)>=0 then
+      inc(result);
+end;
+
+function TPanelForm.CopyCtrlToShell(aidx:integer; const apath:AnsiString):integer;
+var
+  lname,ls:AnsiString;
+  lbuf:PByte;
+  lidx,lsize:integer;
+begin
+  result:=0;
+  lname:=FastWideToStr(Ctrl^.NameOfFile(aidx));
+  ls:=apath+lname;
+  if Ctrl^.IsDir(aidx) then
+  begin
+    if not DirectoryExists(ls) then MkDir(ls);
+
+    if Ctrl^.GetFirstFile(lidx,Ctrl^.AsDir(aidx)) then
+    begin
+      repeat
+        inc(result,CopyCtrlToShell(lidx, ls));
+      until not Ctrl^.GetNextFile(lidx);
+    end;
+  end
+  else
+  begin
+    if not FileExists(ls) then
+    begin
+      lbuf:=nil;
+      lsize:=Ctrl^.GetAsIs(aidx,lbuf);
+      if lsize>0 then
+      begin
+        if SaveFile(apath,lname,lbuf,lsize,
+           Ctrl^.Pak.Version,
+           FileTimeToDateTime(Ctrl^.Files[aidx]^.ftime), false) then inc(result);
+        FreeMem(lbuf);
+      end;
+    end
+    else
+    begin
+    end;
+  end;
+end;
+
+function TPanelForm.CopyCtrlToCtrl(aidx:integer; actrl:PRGController; apath:PUnicodeChar):integer;
+var
+  pc:PUnicodeChar;
+  lcs_s,lcs_d:dword;
+  lidx:integer;
+begin
+  result:=0;
+  pc:=ConcatWide(apath,Ctrl^.NameOfFile(aidx));
+  if Ctrl^.IsDir(aidx) then
+  begin
+    actrl^.NewDir(pc);
+    if Ctrl^.GetFirstFile(lidx,Ctrl^.AsDir(aidx)) then
+    begin
+      repeat
+        inc(result,CopyCtrlToCtrl(lidx, actrl, pc));
+      until not Ctrl^.GetNextFile(lidx);
+    end;
+  
+  end
+  else
+  begin
+    lidx:=actrl^.SearchFile(pc);
+    if lidx<0 then
+    begin
+      if Ctrl^.CopyFile(aidx, actrl, pc) then result:=1;
+    end
+    else
+    begin
+      lcs_s:=Ctrl^ .Files[aidx]^.checksum;
+      lcs_d:=actrl^.Files[lidx]^.checksum;
+      // File with same name but different checksum (content)
+      if lcs_s<>lcs_d then
+      begin
+//        ShowMessage(IntToStr(Ord(actrl^.OnDouble(lidx,PByte(apath),0))));
+        // Skip, overwrite, update, [to all], stop
+      end;
+    end;
+  end;
+  FreeMem(pc);
+end;
+
+procedure TPanelForm.Copy();
+var
+  lpath:PUnicodeChar;
+  lctrl:PRGController;
+  lpanel:TPanelForm;
+  arr:TIntegerDynArray;
+  lspath,ls:AnsiString;
+  lcopied,i,lidx:integer;
+  lsrctype,ldsttype:integer;
+//  lcnt:integer;
+begin
+  lpanel:=GetOppositePanel();
+  ldsttype:=lpanel.GetPanelType();
+  if (ldsttype=panelView) or (ldsttype=panelLog) then exit;
+  lsrctype:=GetPanelType();
+
+  lctrl:=lpanel.Ctrl;
+  if (ldsttype=panelShell) or (ldsttype=panelShellTree) then
+  begin
+    lspath:=lpanel.FShellPath;
+    ls:=Format(rsSureToCopyShell,[lspath]);
+  end
+  else
+  begin
+    lpath:=lctrl^.Dirs[GetActiveDir(lctrl,lpanel.ListIndex)].Name;
+    lspath:=FastWideToStr(lpath);
+    ls:=StringReplace(
+      StringReplace(rsSureToCopy,'$1',lctrl^.Pak.Name,[]),
+      '$2',lpath,[]);
+  //  ls:=Format(rsSureToCopy,[lctrl^.Pak.Name,lpath]);
+  end;
+  
+
+  if MessageDlg(ls,mtConfirmation,mbOkCancel,0)<>mrOk then exit;
+
+  lctrl^.OnDouble:=@lpanel.OnImportDouble;
+
+  lcopied:=0;
+  arr:=nil;
+  lidx:=GetSelectionList(arr);
+  //!! don't forget to check destination file existing !!
+  if lidx<0 then
+  begin
+//    lcnt:=Length(arr);
+    lctrl^.OnChange(lctrl,0,faStart);
+
+    for i:=0 to Length(arr)-1 do
+    begin
+      // src: idx (lidx, arr[i]); dst: lspath, lctrl, lpath
+      if (lsrctype=panelShell) or (lsrctype=panelShellTree) then
+      begin
+        ls:=FShellPath+FastWideToStr(Ctrl^.NameOfFile(arr[i]));
+        inc(lcopied,lpanel.CopyShellToCtrl(ls,lspath));
+      end
+      else if (ldsttype=panelList) or (ldsttype=panelTree) then
+        inc(lcopied,CopyCtrlToCtrl(arr[i],lctrl,lpath))
+      else
+        inc(lcopied,CopyCtrlToShell(arr[i],lspath))
+    end;
+
+    lctrl^.OnChange(lctrl,lcopied,faFinish);
+    SetLength(arr,0);
+  end
+  else
+  begin
+//    lcnt:=1;
+    if (lsrctype=panelShell) or (lsrctype=panelShellTree) then
+    begin
+      ls:=FShellPath+FastWideToStr(Ctrl^.NameOfFile(lidx));
+      inc(lcopied,lpanel.CopyShellToCtrl(ls,lspath));
+    end
+    else if (ldsttype=panelList) or (ldsttype=panelTree) then
+      inc(lcopied,CopyCtrlToCtrl(lidx,lctrl,lpath))
+    else
+      inc(lcopied,CopyCtrlToShell(lidx,lspath));
+  end;
+
+  if lcopied>0 then
+  begin
+    lpanel.RefreshList();
+{
+    if (ldsttype=panelShell) or (ldsttype=panelShellTree) then
+      lpanel.FillShellList('')
+    else
+      lpanel.FillList(GetActiveDir(lctrl,lpanel.ListIndex));
+}
+  end;
+
+  lctrl^.OnDouble:=nil;
+
+  if lcopied>0 then
+    ShowMessage(rsCopied+' '+IntToStr(lcopied))
+  else
+    ShowMessage(rsNotCopied);
+end;
+
+function TPanelForm.OnImportDouble(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
+var
+  ls:AnsiString;
+  f:file of byte;
+  lold,lnew:PByte;
+  loldsize,lnewsize:integer;
+  istext:boolean;
+begin
+  lnew:=nil;
+  lold:=nil;
+
+//  istext:=(RGTypeOfExt(FCtrl^.Files[idx]^.Name) and $FF)=typeData;
+  istext:=(Ctrl^.Files[idx]^.ftype and $FF)=typeData;
+
+  // if size=0 then newdata is PUnicodeChar'ed filename
+  lnewsize:=newsize;
+  if newsize=0 then
+  begin
+    if istext then
+    begin
+      DecompileFile(PUnicodeChar(newdata),lnew,false);
+      lnewsize:=Length(PUnicodeChar(lnew))*SizeOf(WideChar);
+    end
+    else
+    begin
+      {$I-}
+      AssignFile(f,PUnicodeChar(newdata));
+      Reset(f);
+      if IOResult=0 then
+      begin
+        lnewsize:=Filesize(f);
+        GetMem(lnew,lnewsize);
+        BlockRead(f,lnew^,lnewsize);
+        CloseFile(f);
+      end;
+    end;
+  end;
+
+  // Check for same file
+  loldsize:=Ctrl^.GetSource(idx,lold);
+  if loldsize=lnewsize then
+  begin
+    if CompareMem(lold,lnew,loldsize) then
+    begin
+      FreeMem(lold);
+      FreeMem(lnew);
+      exit(da_skip);
+    end;
+  end;
+
+  if newsize=0 then
+    ls:=FastWideToStr(PUnicodeChar(newdata))
+  else
+    ls:=FastWideToStr(Ctrl^.PathOfFile(idx))+FastWideToStr(Ctrl^.NameOfFile(idx));
+
+  with tAskForm.Create(ls, loldsize, lnewsize) do
+  begin
+//    ShowModal();
+//    result:=TRGDoubleAction(MyResult);
+    result:=ModalToAction(ShowModal());
+    Free;
+  end;
+  
+  case result of
+    da_renameold: begin
+      ls:=WideToStr(Ctrl^.NameOfFile(idx));
+      if InputQuery(rsRenameOld, rsNewName, ls) then
+        newdata:=PByte(StrToWide(ls))
+      else
+        result:=da_skip;
+    end;
+
+    da_saveas: begin
+      ls:=WideToStr(Ctrl^.NameOfFile(idx));
+      if InputQuery(rsRenameNew, rsNewName, ls) then
+        newdata:=PByte(StrToWide(ls))
+      else
+        result:=da_skip;
+    end;
+
+    da_compare: begin
+      if istext then
+      begin
+        with TCompareForm.Create(lold,lnew) do
+        begin
+          if ShowModal()=mrOk then
+          begin
+            newdata:=PByte(UnicodeText());
+            // skip CRLF, Add Sign
+            newsize:=(Length(PUnicodeChar(newdata))-1)*SizeOf(WideChar);
+            system.move(newdata^,(newdata+2)^,newsize);
+            PWord(newdata)^:=SIGN_UNICODE;
+            PWord(newdata+newsize)^:=0;
+          end
+          else
+            result:=da_skip;
+
+          Free;
+        end;
+      end;
+    end;
+
+  else
+  end;
+
+  FreeMem(lold);
+  FreeMem(lnew);
+end;
+
+procedure TPanelForm.ImportDir();
+var
+  ldir,ldst:AnsiString;
+  lcnt:integer;
+begin
+  if SelectDirectory(rsSelectDir,'',ldir) then
+  begin
+
+    lcnt:=GetActiveDir(Ctrl,ListIndex);
+    ldst:=FastWideToStr(Ctrl^.Dirs[lcnt].Name);
+
+    Ctrl^.OnDouble:=@OnImportDouble;
+    lcnt:=Ctrl^.ImportDir(ldst,ldir);
+    Ctrl^.OnDouble:=nil;
+
+    if lcnt>0 then
+      ShowMessage(IntToStr(lcnt)+rsImported+#13#10+rsLinkingNote)
+    else
+      ShowMessage(rsNothingImported);
+  end;
+end;
+
+procedure TPanelForm.ImportFile();
+var
+  OpenDialog: TOpenDialog;
+  ldir:AnsiString;
+  i,lcnt,lresult:integer;
+begin
+  if not GetPanelType() in [panelTree, panelList] then exit;
+
+  OpenDialog:=TOpenDialog.Create(nil);
+  try
+    OpenDialog.Options    :=[ofFileMustExist,ofAllowMultiSelect,ofEnableSizing];
+    OpenDialog.DefaultExt :='.*';
+    OpenDialog.Filter     :='';
+    OpenDialog.FilterIndex:=0;
+
+    if OpenDialog.Execute then
+    begin
+      i:=GetActiveDir(Ctrl,ListIndex);
+      ldir:=FastWideToStr(Ctrl^.Dirs[i].Name);
+
+      lcnt:=OpenDialog.Files.Count;
+      if lcnt>1 then OnChange(@self,0,faStart);
+      lresult:=0;
+      for i:=0 to lcnt-1 do
+      begin
+        // add update as file content (as is)
+        if Ctrl^.AddFileData(OpenDialog.Files[i],
+            ldir+FixFileExt(ExtractName(OpenDialog.Files[i])), true)>=0 then
+          inc(lresult);
+      end;
+      if lcnt>1 then OnChange(@self,lresult,faFinish);
+    end;
+  finally
+    OpenDialog.Free;
   end;
 end;
 

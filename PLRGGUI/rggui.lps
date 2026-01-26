@@ -8,11 +8,10 @@
       <Unit>
         <Filename Value="rggui.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="11"/>
-        <TopLine Value="4"/>
-        <CursorPos X="41" Y="26"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="21" Y="36"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="gui.default\fmgui.pas"/>
@@ -21,9 +20,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmGUI"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="253"/>
-        <CursorPos X="17" Y="284"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="1344"/>
+        <CursorPos X="36" Y="1391"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -32,10 +31,9 @@
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGCtrl"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="1335"/>
-        <CursorPos X="16" Y="1298"/>
-        <FoldState Value=" T4L041 TMkD41]A32G p3-e]D216114 TCiGGE TLkJ42C18 PiW*20 T3m80G31225 plJng0L3 piajY0s025]BZl708011112421 PmWs5]u6n701F pSuU01018 PNqF]O0nX2AA pjVkV4L7]:YiE49B]I7jT45[I4XiL64B2255 pkYq94D3]VUiO6E[944I84[84eHC97 PTi1PI"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="895"/>
+        <CursorPos X="6" Y="912"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -65,8 +63,7 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="rgPreview"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="36"/>
-        <CursorPos Y="19"/>
+        <TopLine Value="19"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -109,8 +106,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmPanel"/>
-        <TopLine Value="665"/>
-        <CursorPos X="2" Y="692"/>
+        <TopLine Value="76"/>
+        <CursorPos X="42" Y="79"/>
+        <FoldState Value=" T46041 PHkF0 TLjK05w"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -122,10 +120,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmGUIAlt"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="439"/>
-        <CursorPos Y="451"/>
-        <UsageCount Value="175"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="475"/>
+        <CursorPos Y="497"/>
+        <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -136,9 +134,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="fmGUIM"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <CursorPos X="6" Y="20"/>
-        <UsageCount Value="72"/>
+        <UsageCount Value="149"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -151,49 +149,50 @@
         <TopLine Value="440"/>
         <CursorPos X="25" Y="182"/>
         <FoldState Value=" T3lH0o114 PjWjY0%"/>
-        <UsageCount Value="187"/>
+        <UsageCount Value="183"/>
       </Unit>
       <Unit>
         <Filename Value="rggui.core.pas"/>
         <UnitName Value="RGGUI.Core"/>
         <EditorIndex Value="13"/>
-        <CursorPos X="6" Y="16"/>
-        <FoldState Value=" TL005 TCLK31 TMuW01]83jb0F7 pj7kF0X112 pkQm10E2]KNk20F4 Pi8iN0 T6jc01E POtQ]E0jg26B4]ylBo34TA]n2kQ4C261 PEjA2U"/>
+        <TopLine Value="695"/>
+        <CursorPos X="27" Y="379"/>
+        <FoldState Value=" TL005 TCLK31 T3jb0F7 pj7kF0X11113 PkPnO0 T6jc01A PKqd]E0jg26B461416 PmOrP2R"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgfs.pas"/>
         <UnitName Value="RGFS"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="978"/>
-        <CursorPos Y="997"/>
-        <UsageCount Value="80"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="101"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="viewers\rgvtext.pas"/>
         <UnitName Value="rgvText"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="276"/>
-        <CursorPos Y="292"/>
-        <UsageCount Value="15"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="312"/>
+        <CursorPos Y="320"/>
+        <UsageCount Value="16"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgman.pas"/>
         <UnitName Value="RGMan"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="245"/>
         <CursorPos X="14" Y="250"/>
-        <UsageCount Value="86"/>
+        <UsageCount Value="102"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="rggui.shared.pas"/>
         <UnitName Value="RGGUI.Shared"/>
         <EditorIndex Value="12"/>
-        <CursorPos X="38" Y="89"/>
+        <TopLine Value="79"/>
+        <CursorPos X="78" Y="105"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit>
@@ -202,99 +201,65 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="66"/>
         <CursorPos Y="82"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="gui.panels\lv.inc"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="490"/>
-        <CursorPos Y="504"/>
-        <UsageCount Value="91"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="639"/>
+        <CursorPos X="29" Y="388"/>
+        <FoldState Value=" TL20I3 PKr61 T0N0HA3118115166 PlNt24 T3g034 piZj509022121112 plHqc0E1 PiIG0 T6iI0122622 PKsf]IMlO01O"/>
+        <UsageCount Value="107"/>
         <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
-        <ComponentName Value="Form3DView"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fm3DView"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="542"/>
-        <CursorPos X="32" Y="557"/>
-        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="viewers\rgvimageset.pas"/>
         <UnitName Value="rgvImageset"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="49"/>
-        <CursorPos X="9" Y="84"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
         <ComponentName Value="FormImageset"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmImageset"/>
+        <UnitName Value="fmImageSet"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="103"/>
-        <CursorPos X="3" Y="110"/>
-        <UsageCount Value="6"/>
+        <TopLine Value="38"/>
+        <CursorPos X="3" Y="53"/>
+        <FoldState Value=" T8iC291 T4ie02 T3j7033 pj2jN036]9Nje0L]IicjO06 T6jO[P4PBoB0 T0ja2IA]dEjS43B]dXkd253]WP4 TMl561 TLkg042 POk90_"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\listitems.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="34"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customlistview.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1365"/>
         <CursorPos Y="1388"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgglobal.pas"/>
         <UnitName Value="RGGlobal"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="737"/>
+        <TopLine Value="727"/>
         <CursorPos Y="752"/>
-        <UsageCount Value="21"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\rgpak.pas"/>
-        <UnitName Value="RGPAK"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="853"/>
-        <CursorPos X="45" Y="883"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="17"/>
       </Unit>
       <Unit>
         <Filename Value="gui.panels\act.inc"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="45"/>
-        <CursorPos Y="64"/>
-        <UsageCount Value="65"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="206"/>
+        <CursorPos X="3" Y="228"/>
+        <FoldState Value=" T0M01A24 PiDr52 T3P0U2 pidjZ0H T6Q036 PCpA0 TLkE021~"/>
+        <UsageCount Value="100"/>
         <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\rgimageset.pas"/>
-        <UnitName Value="RGImageset"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="539"/>
-        <CursorPos X="22" Y="555"/>
-        <UsageCount Value="3"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\TL2Lib\rgprepare.pas"/>
-        <UnitName Value="RGPrepare"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="159"/>
-        <CursorPos X="34" Y="175"/>
-        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="viewers\dmviewer.pas"/>
@@ -303,9 +268,7 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DMViewer"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="66"/>
-        <CursorPos X="13" Y="87"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2SaveGUI\formitem.pas"/>
@@ -316,7 +279,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="124"/>
         <CursorPos X="8" Y="139"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2SaveGUI\formunits.pas"/>
@@ -327,7 +290,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="32"/>
         <CursorPos X="8" Y="47"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Trans\tl2dataunit.pas"/>
@@ -335,20 +298,20 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1473"/>
         <CursorPos X="57" Y="1489"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Trans\tl2trans.lpr"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="30" Y="7"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="..\Combine\MODCombiner.lpr"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="8"/>
         <CursorPos Y="24"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\editbtn.pas"/>
@@ -356,21 +319,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1263"/>
         <CursorPos Y="1290"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\application.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1057"/>
         <CursorPos Y="1074"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="gui.panels\tree.inc"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="270"/>
-        <CursorPos Y="302"/>
-        <UsageCount Value="21"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="144"/>
+        <CursorPos X="42" Y="169"/>
+        <UsageCount Value="59"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -378,90 +341,204 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="384"/>
         <CursorPos Y="400"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgfile.pas"/>
         <UnitName Value="RGFile"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="129"/>
         <CursorPos X="18" Y="148"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmask.pas"/>
+        <ComponentName Value="AskForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmAsk"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="41" Y="84"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\shellctrls.pas"/>
+        <UnitName Value="ShellCtrls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1975"/>
+        <CursorPos Y="1991"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="viewers\rgvmesh.pas"/>
+        <UnitName Value="rgvMesh"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="44"/>
+        <CursorPos Y="56"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fm3dview.pas"/>
+        <ComponentName Value="Form3DView"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fm3DView"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="359"/>
+        <CursorPos X="19" Y="296"/>
+        <FoldState Value=" T4D021 TLiM441 p4uE06 T7LGu T8f2I1 PGJ2 TCjE[743jN055 pj5jO0-026]BNo60s4 Pgj60 T6kX01A PSrR]E0kb2H5C4 pkbp1853]m3c8I5 PPia2("/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Meshes\rg3d.import.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="155"/>
+        <CursorPos Y="184"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Meshes\rg3d.Material.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="893"/>
+        <CursorPos X="3" Y="914"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmasknew.pas"/>
+        <ComponentName Value="AskForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmAskNew"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="105"/>
+        <CursorPos X="85" Y="130"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\control.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1706"/>
+        <CursorPos X="98" Y="1718"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\custommemo.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="26"/>
+        <CursorPos Y="42"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\logging.pas"/>
+        <UnitName Value="Logging"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="228"/>
+        <CursorPos Y="244"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\forms\fmcombodiff.pas"/>
+        <ComponentName Value="CompareForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmComboDiff"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="76"/>
+        <CursorPos X="17" Y="212"/>
+        <FoldState Value=" T46031 TLn308 T7FHk T8i527]L3iX0O2 pidjQ]c1]BjCjW084]KfjG04]b0ib2JD1134 Pj7oI2 TMpP0102]T6]v2]S124"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="17">
+    <JumpHistory HistoryIndex="21">
       <Position>
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
-        <Caret Line="279" Column="33" TopLine="244"/>
-      </Position>
-      <Position>
-        <Filename Value="..\TL2Lib\rgctrl.pas"/>
-        <Caret Line="320" Column="50" TopLine="272"/>
+        <Caret Line="482" TopLine="468"/>
       </Position>
       <Position>
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
-        <Caret Line="722" Column="53" TopLine="605"/>
+        <Caret Line="483" TopLine="471"/>
       </Position>
       <Position>
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
-        <Caret Line="733" Column="39" TopLine="702"/>
+        <Caret Line="1182" Column="18" TopLine="1151"/>
       </Position>
       <Position>
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
-        <Caret Line="852" Column="25" TopLine="843"/>
+        <Caret Line="966" Column="29" TopLine="898"/>
       </Position>
       <Position>
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
-        <Caret Line="944" Column="16" TopLine="909"/>
       </Position>
       <Position>
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
-        <Caret Line="1298" Column="16" TopLine="1262"/>
+        <Caret Line="455" TopLine="442"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1355" TopLine="1338"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1356" TopLine="1341"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1357" TopLine="1341"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1360" TopLine="1341"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1363" TopLine="1341"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1355" TopLine="1341"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1369" TopLine="1342"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1355" TopLine="1342"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="1369" TopLine="1342"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\rgctrl.pas"/>
+        <Caret Line="911" TopLine="894"/>
+      </Position>
+      <Position>
+        <Filename Value="gui.panels\fmpanel.pas"/>
+        <Caret Line="690" Column="6" TopLine="675"/>
+      </Position>
+      <Position>
+        <Filename Value="gui.panels\fmpanel.pas"/>
+        <Caret Line="79" Column="42" TopLine="72"/>
       </Position>
       <Position>
         <Filename Value="gui.panels\lv.inc"/>
-        <Caret Line="504" TopLine="493"/>
+        <Caret Line="388" Column="29" TopLine="357"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgfile.pas"/>
-        <Caret Line="145" TopLine="129"/>
+        <Filename Value="gui.panels\act.inc"/>
+        <Caret Line="175" Column="43" TopLine="146"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgfile.pas"/>
-        <Caret Line="148" Column="18" TopLine="129"/>
+        <Filename Value="gui.panels\act.inc"/>
+        <Caret Line="389" Column="41" TopLine="372"/>
       </Position>
       <Position>
-        <Filename Value="gui.panels\lv.inc"/>
-        <Caret Line="504" TopLine="487"/>
-      </Position>
-      <Position>
-        <Filename Value="gui.panels\lv.inc"/>
-        <Caret Line="505" TopLine="487"/>
-      </Position>
-      <Position>
-        <Filename Value="gui.panels\lv.inc"/>
-        <Caret Line="506" TopLine="487"/>
-      </Position>
-      <Position>
-        <Filename Value="gui.panels\lv.inc"/>
-        <Caret Line="503" TopLine="487"/>
-      </Position>
-      <Position>
-        <Filename Value="gui.panels\lv.inc"/>
-        <Caret Line="504" TopLine="487"/>
-      </Position>
-      <Position>
-        <Filename Value="gui.panels\lv.inc"/>
-        <Caret Line="505" TopLine="487"/>
-      </Position>
-      <Position>
-        <Filename Value="gui.panels\lv.inc"/>
-        <Caret Line="506" TopLine="487"/>
-      </Position>
-      <Position>
-        <Filename Value="..\TL2Lib\rgfs.pas"/>
-        <Caret Line="937" Column="25" TopLine="921"/>
+        <Filename Value="gui.panels\act.inc"/>
+        <Caret Line="256" Column="35" TopLine="240"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -479,6 +556,18 @@
       </Item>
       <Item>
         <Expression Value="PChar(lbuf)"/>
+      </Item>
+      <Item>
+        <Expression Value="FShell"/>
+      </Item>
+      <Item>
+        <Expression Value="actrl"/>
+      </Item>
+      <Item>
+        <Expression Value="FShellPath"/>
+      </Item>
+      <Item>
+        <Expression Value="PWideChar(p^.Data)"/>
       </Item>
     </Watches>
   </Debugging>
