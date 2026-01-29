@@ -175,6 +175,7 @@ type
     function  GetMaterial ():string;
     procedure SaveMaterial(const aFileName:String);
     
+    function  ImportMaterialFile(const afname:AnsiString):boolean;
     function  ReadMaterialSimple(abuf:PByte; asize:integer):integer;
     function  ImportFromMemory  (aptr:PByte; asize:integer):boolean;
     function  ImportFromFile  (const aFileName:string):boolean;

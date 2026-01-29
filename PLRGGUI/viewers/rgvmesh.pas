@@ -51,13 +51,13 @@ begin
     lmesh.Align  :=alClient;
     lmesh.Parent :=result;
     lmesh.SetContainer(@actrl);
-    if actrl.Files[aidx]^.action=act_file then
+{    if actrl.Files[aidx]^.action=act_file then
     begin
       ls:=FastWideToStr(PUnicodeChar(actrl.Files[aidx]^.data));
       lmesh.LoadFromFile(ls);
     end
     else
-    begin
+}    begin
       ls:=WideToStr(actrl.PathOfFile(aidx))+
           WideToStr(actrl.NameOfFile(aidx));
       lmesh.LoadFromMemory(lbuf,lsize,ls);

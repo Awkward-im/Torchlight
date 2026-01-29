@@ -104,8 +104,8 @@ type
     FLinks:array of PWideChar;
 
     procedure ClearElement(idx:integer);
+    function GetBinName(fname: PUnicodeChar): UnicodeString;
     function GetBinName(const fname: AnsiString): AnsiString;
-    function GetBinName(fname: PUnicodeChar): AnsiString;
     function  WriteToPAK(var apak:TRGPAK; const fname:string;
          aver:integer; achanges:boolean=false):boolean;
     function  OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
@@ -1295,16 +1295,30 @@ end;
 
 
 procedure TRGController.Delete(aidx:integer);
-{
 var
+  ldir,lidx,lnext:integer;
+{
   lsrc:PRGManifest;
-  i,lidx:integer;
+  i:integer;
 }
 begin
   // delete Update / Ctrl. Man record will be unref and delete at the end.
   // Pak saving must use Ctrl. Else: use commented variant
   ClearElement(aidx);
-  if IsDir(aidx) then DeletePath(AsDir(aidx)) else DeleteFile(aidx);
+  if not IsDir(aidx) then
+    DeleteFile(aidx)
+  else
+  begin
+    ldir:=AsDir(aidx);
+    if GetFirstFile(lidx,ldir) then
+      repeat
+        lnext:=lidx;
+        GetNextFile(lnext);
+        Delete(lidx);
+        lidx:=lnext;
+      until lidx<0;
+    DeletePath(ldir);
+  end;
 {
   // 1
   ClearElement(aidx);
@@ -1352,12 +1366,12 @@ begin
   end;
 end;
 
-function TRGController.GetBinName(fname:PUnicodeChar):AnsiString;
+function TRGController.GetBinName(fname:PUnicodeChar):UnicodeString;
 var
   lext:UnicodeString;
 begin
   lext:=UpCase(ExtractFileExt(fname));
-  if (lext='.DAT') or (lext='.ANIMATION') or
+  if (lext='.DAT') or (lext='.ANIMATION') or (lext='.WDAT') or
      (lext='.HIE') or (lext='.TEMPLATE' ) then
   begin
     if PAK.Version=verTL1 then
@@ -1376,7 +1390,7 @@ var
   lext:AnsiString;
 begin
   lext:=UpCase(ExtractFileExt(fname));
-  if (lext='.DAT') or (lext='.ANIMATION') or
+  if (lext='.DAT') or (lext='.ANIMATION') or (lext='.WDAT') or
      (lext='.HIE') or (lext='.TEMPLATE' ) then
   begin
     if PAK.Version=verTL1 then

@@ -199,7 +199,7 @@ object FormImageset: TFormImageset
       Caption = '&Close'
       Hint = 'Close Imageset'
       ShortCut = 119
-      OnExecute = DoClose
+      OnExecute = DoCloseIS
     end
   end
 end

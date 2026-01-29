@@ -622,6 +622,11 @@ begin
   begin
     SelectAll();
   end
+  // go to root
+  else if (Key=VK_OEM_5) and (Shift=[ssCtrl]) then
+  begin
+    GoToRoot();
+  end
   // Rename
   else if (Key=VK_F2) and (Shift=[]) then
   begin

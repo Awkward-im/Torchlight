@@ -21,13 +21,14 @@ object PanelForm: TPanelForm
     object cbContent: TComboBox
       Left = 4
       Height = 23
-      Top = 2
+      Top = 0
       Width = 120
       ItemHeight = 15
       Sorted = True
       Style = csDropDownList
       TabOrder = 0
-      OnChange = cbContentChange
+      TabStop = False
+      OnCloseUp = cbContentChange
     end
     object lblPath: TLabel
       Left = 4

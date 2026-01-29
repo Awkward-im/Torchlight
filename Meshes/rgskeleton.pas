@@ -1,4 +1,6 @@
-﻿unit RGSkeleton;
+﻿{TODO: Add animation to existing}
+{TODO: Export/import for another format}
+unit RGSkeleton;
 
 interface
 

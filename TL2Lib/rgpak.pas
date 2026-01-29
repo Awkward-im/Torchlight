@@ -832,6 +832,7 @@ begin
 
   lin:=nil;
   lsize_c:=ExtractFile(afi,lsize_u,lin);
+
   if lsize_c>0 then
   begin
     if lsize_c=lsize_u then
@@ -847,9 +848,11 @@ begin
         move(lin^,aout^,lsize_u);
     end
     else
+//      result:=RGFileUnpackBufSafe(lin,lsize_c,aout);
       result:=RGFileUnpack(lin,lsize_c,aout,lsize_u);
     FreeMem(lin);
   end;
+
 end;
 
 function TRGPAK.UnpackSingle(afi:PManFileInfo; var aout:PByte):cardinal;

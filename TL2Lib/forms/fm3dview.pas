@@ -57,6 +57,7 @@ type
     procedure PrepareTextures(const adir:string);
     procedure CreateMeshList;
     procedure SetSubMeshOpts();
+    function  ImportMaterialCtrl(const afname:AnsiString):boolean;
 
   public
     Mesh:TRGMesh;
@@ -299,10 +300,11 @@ begin
 
   lname:=adir+aname;
   lsize:=0;
-  if (ctrl<>nil) and (adir<>'') then
+  if (ctrl<>nil) {and (adir<>'')} then
   begin
+    lname:=UpCase(lname);
     lfile:=ctrl^.SearchFile(lname);
-    if lfile<0 then
+    if (lfile<0) and (not lDDS) then
     begin
 //      if lDDS then exit;
 
@@ -472,12 +474,33 @@ begin
   ctrl:=actrl;
 end;
 
+function TForm3dView.ImportMaterialCtrl(const afname:AnsiString):boolean;
+var
+  lbuf:PByte;
+  lsize,ldir,lfile:integer;
+begin
+  result:=false;
+
+  ldir:=ctrl^.SearchPath(ExtractFilePath(afname));
+  if ldir<0 then exit;
+
+  if ctrl^.GetFirstFile(lfile,ldir) then
+  begin
+    lbuf:=nil;
+    repeat
+      if ExtractExt(FastWideToStr(ctrl^.NameOfFile(lfile)))='.MATERIAL' then
+      begin
+        lsize:=ctrl^.GetSource(lfile,lbuf);
+        if lsize>0 then
+          result:=result or (Mesh.ReadMaterialSimple(lbuf,lsize)>0);
+      end;
+    until not ctrl^.GetNextFile(lfile);
+    FreeMem(lbuf);
+  end;
+end;
+
 {$I-}
 function TForm3dView.LoadFromMemory(abuf:PByte; asize:integer; const afname:string=''):boolean;
-var
-  f:File of byte;
-  lbuf:PByte;
-  lfile,lsize:integer;
 begin
   Mesh.Free;
   Mesh.Init;
@@ -490,32 +513,9 @@ begin
 
     if (afname<>'') and (Mesh.MeshVersion<>99) then
     begin
-      AssignFile(f,ChangeFileExt(afname,'.MATERIAL'));
-      Reset(f);
-      if IOResult()=0 then
-      begin
-        lsize:=FileSize(f);
-        GetMem(lbuf,lsize+1);
-        BlockRead(f,lbuf^,lsize);
-        lbuf[lsize]:=0;
-        CloseFile(f);
-
-        Mesh.ReadMaterialSimple(lbuf,lsize);
-        FreeMem(lbuf);
-      end;
-
-      if ctrl<>nil then
-      begin
-        lbuf:=nil;
-        lfile:=ctrl^.SearchFile(ChangeFileExt(afname,'.MATERIAL'));
-        if lfile>=0 then
-        begin
-          lsize:=ctrl^.GetSource(lfile,lbuf);
-          if lsize>0 then
-            Mesh.ReadMaterialSimple(lbuf,lsize);
-          FreeMem(lbuf);
-        end;
-      end;
+      if not Mesh.ImportMaterialFile(afname) then
+        if ctrl<>nil then
+          ImportMaterialCtrl(afname);
 //      CreateMeshList();
     end;
   end
@@ -553,17 +553,7 @@ begin
           SetSubMeshOpts();
 
           if Mesh.MeshVersion<>99 then
-          begin
-            lbuf:=nil;
-            lfile:=ctrl^.SearchFile(ChangeFileExt(afname,'.MATERIAL'));
-            if lfile>=0 then
-            begin
-              lsize:=ctrl^.GetSource(lfile,lbuf);
-              if lsize>0 then
-                Mesh.ReadMaterialSimple(lbuf,lsize);
-              FreeMem(lbuf);
-            end;
-          end;
+            ImportMaterialCtrl(afname);
 //          CreateMeshList();
         end;
         exit;

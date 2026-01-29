@@ -134,7 +134,43 @@ begin
 
   Log('offset',HexStr(aptr-FBuffer,8));
 end;
+
 {$I-}
+function TRGMesh.ImportMaterialFile(const afname:AnsiString):boolean;
+var
+  sr:TSearchRec;
+  lfile:File of byte;
+  lbuf:PByte;
+  lsize:integer;
+begin
+  result:=false;
+
+  if FindFirst(ExtractFilePath(afname)+'*.MATERIAL',faAnyFile,sr)=0 then
+  begin
+    lbuf:=nil;
+    repeat
+      AssignFile(lfile,sr.Name);
+      Reset(lfile);
+      if IOResult=0 then
+      begin
+        lsize:=FileSize(lfile);
+        if (lbuf=nil) or (MemSize(lbuf)<(lsize+1)) then
+        begin
+          FreeMem(lbuf);
+          GetMem(lbuf,Align(lsize+1,4096));
+        end;
+        BlockRead(lfile,lbuf^,lsize);
+        lbuf[lsize]:=0;
+        CloseFile(lfile);
+
+        result:=result or (ReadMaterialSimple(lbuf,lsize)>0);
+      end;
+    until FindNext(sr)<>0;
+    FindClose(sr);
+    FreeMem(lbuf);
+  end;
+end;
+
 function TRGMesh.ImportFromFile(const aFileName:string):boolean;
 var
   lfile:File of byte;
@@ -159,21 +195,7 @@ begin
       if result then
       begin
         if MeshVersion<>99 then
-        begin
-          AssignFile(lfile,ChangeFileExt(aFileName,'.MATERIAL'));
-          Reset(lfile);
-          if IOResult=0 then
-          begin
-            lsize:=FileSize(lfile);
-            GetMem(lbuf,lsize+1);
-            BlockRead(lfile,lbuf^,lsize);
-            lbuf[lsize]:=0;
-            CloseFile(lfile);
-
-            ReadMaterialSimple(lbuf,lsize);
-            FreeMem(lbuf);
-          end;
-        end;
+          ImportMaterialFile(aFileName);
       end;
 
       exit;

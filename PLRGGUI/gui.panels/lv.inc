@@ -326,7 +326,7 @@ begin
   end;
   if si=0 then
     HintInfo^.HintStr:=lv.Caption;
-  if si>0 then
+  if (si>0) and (lv.SubItems.Count>=si) then
     HintInfo^.HintStr:=lv.SubItems[si-1];
 end;
 

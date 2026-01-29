@@ -44,7 +44,7 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     StatusBar: TStatusBar;
-    procedure DoClose(Sender: TObject);
+    procedure DoCloseIS(Sender: TObject);
     procedure DoRename(Sender: TObject);
     procedure DarkBgChange(Sender: TObject);
     procedure DoDarkBg(Sender: TObject);
@@ -256,7 +256,7 @@ begin
   end;
 end;
 
-procedure TFormImageset.DoClose(Sender: TObject);
+procedure TFormImageset.DoCloseIS(Sender: TObject);
 begin
   FImageset.CloseImageset(IntPtr(lbImagesets.Items.Objects[lbImagesets.ItemIndex]));
   FillImagesetList();

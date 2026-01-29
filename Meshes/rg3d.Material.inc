@@ -788,9 +788,9 @@ var
   lptr:PByte;
   lmat:PMaterial;
   pc:PAnsiChar;
-  ls:AnsiString;
-  i,idx,stage:integer;
-  isMaterial,isTech,isPass,isTexture:boolean;
+  ltexture:AnsiString;
+  ltxtype,i,idx,stage:integer;
+  isGlow,isMaterial,isTech,isPass,isTexture:boolean;
 begin
   result:=0;
   stage:=0;
@@ -828,6 +828,27 @@ begin
           if isTexture then
           begin
             // place to choose texture type by additional properties
+            idx:=-1;
+            for i:=0 to High(FTextures) do
+            begin
+              if FTextures[i]=ltexture then
+              begin
+                idx:=i;
+                break;
+              end;
+            end;
+            if idx<0 then
+            begin
+              idx:=Length(FTextures);
+              SetLength(FTextures,idx+1);
+              FTextures[idx]:=ltexture;
+            end;
+            if isGlow then ltxtype:=txtGlow
+            else           ltxtype:=txtDiffuse;
+            //!! Keep just first texture
+            if lmat^.Textures[ltxtype]<0 then
+               lmat^.Textures[ltxtype]:=idx;
+
             isTexture:=false;
           end;
         end;
@@ -879,17 +900,21 @@ begin
         end
         else if stage=4 then
         begin
+          ltexture:='';
           if isTexture then
           begin
+            isGlow:=false;
+            ltexture:='';
             if strlcomp(pc,'texture',7)=0 then
             begin
               inc(pc,8);
               while (pc^=' ') or (pc^=#9) do inc(pc);
-              ls:=pc;
+              ltexture:=pc;
+{
               idx:=-1;
               for i:=0 to High(FTextures) do
               begin
-                if FTextures[i]=ls then
+                if FTextures[i]=ltexture then
                 begin
                   idx:=i;
                   break;
@@ -899,13 +924,15 @@ begin
               begin
                 idx:=Length(FTextures);
                 SetLength(FTextures,idx+1);
-                FTextures[idx]:=ls;
+                FTextures[idx]:=ltexture;
               end;
               //!! Keep just first texture
               if lmat^.Textures[txtDiffuse]<0 then
                  lmat^.Textures[txtDiffuse]:=idx;
+}
             end
-            else if strlcomp(pc,'colour_op add',13)=0 then ;
+            else if strlcomp(pc,'colour_op add',13)=0 then
+              isGlow:=true;
           end;
         end
       end;

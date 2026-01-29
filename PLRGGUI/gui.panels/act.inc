@@ -1,26 +1,36 @@
 ﻿{}
 {$IFDEF Interface}
 
+  procedure GoToRoot();
   procedure Rename();
   procedure CreateNewFile();
   procedure CreateNewDir();
   procedure Delete(acode: integer);    // not mark but delete
   procedure DeleteSingleFile(idx:integer; ondisk:boolean);
 
-  function CopyShellToShell(const asrc, adst:AnsiString):integer;
-  function CopyShellToCtrl (const asrc, adst:AnsiString): integer;
-  function CopyCtrlToShell (aidx: integer; const apath:AnsiString): integer;
-  function CopyCtrlToCtrl  (aidx: integer; actrl:PRGController; apath:PUnicodeChar):integer;
+  function CopyShellToShell(const asrc, adst:AnsiString; var aact:TRGDoubleAction):integer;
+  function CopyShellToCtrl (const asrc, adst:AnsiString):integer;
+  function CopyCtrlToShell (aidx:integer; const apath:AnsiString):integer;
+  function CopyCtrlToCtrl  (aidx:integer; actrl:PRGController; apath:PUnicodeChar):integer;
   procedure Copy();
-  procedure Move();      // ??copy+delete
   //?? just copy from disk or link
   procedure ImportDir();
   procedure ImportFile();
 
 {$ELSE}
 
-procedure TPanelForm.Move();
+procedure TPanelForm.GoToRoot();
 begin
+  case GetPanelType() of
+    panelList: begin
+      FillList(0);
+    end;
+
+    panelShell: begin
+      FShellPath:='';
+      FillShellList('');
+    end;
+  end;
 end;
 
 procedure TPanelForm.CreateNewDir();
@@ -204,11 +214,15 @@ begin
 
   if lidx<0 then
   begin
+    Ctrl^.OnChange(Ctrl,0,faStart);
     for i:=0 to Length(arr)-1 do
     begin
       DeleteSingleFile(arr[i],(ltype=panelShell) or (ltype=panelShellTree));
     end;
+    Ctrl^.OnChange(Ctrl,Length(arr),faFinish);
     SetLength(arr,0);
+    if (ltype=panelList) or (ltype=panelTree) then
+      FillList(GetActiveDir(Ctrl,ListIndex));
   end
   else
   begin
@@ -220,7 +234,7 @@ begin
 end;
 
 
-function CopySingleFile(const afrom,ato:AnsiString; aact:integer):integer;
+function CopySingleFile(const afrom,ato:AnsiString; aact:TRGDoubleAction):TRGDoubleAction;
 var
   ls:AnsiString;
 begin
@@ -250,7 +264,7 @@ begin
 ;//      CopyFile(lfrom,lto);
 }end;
 
-function TPanelForm.CopyShellToShell(const asrc, adst:AnsiString):integer;
+function TPanelForm.CopyShellToShell(const asrc, adst:AnsiString; var aact:TRGDoubleAction):integer;
 var
   sr:TSearchRec;
 begin
@@ -267,16 +281,17 @@ begin
         begin
           if (sr.Name='.') or (sr.Name='..') then continue;
 
-          CopyShellToShell(asrc+sr.Name+'/', adst+sr.Name+'/');
+          CopyShellToShell(asrc+sr.Name+'/', adst+sr.Name+'/',aact);
         end
         else
-          CopyShellToShell(asrc+sr.Name, adst+sr.Name);
+          CopySingleFile(asrc+sr.Name, adst+sr.Name, aact);
       until SysUtils.FindNext(sr)<>0;
       SysUtils.FindClose(sr);
     end;
   end
   else
   begin
+    CopySingleFile(asrc,adst,aact);
 {
     if FileExists() then
     begin
@@ -389,7 +404,25 @@ var
   lspath,ls:AnsiString;
   lcopied,i,lidx:integer;
   lsrctype,ldsttype:integer;
-//  lcnt:integer;
+  lact:TRGDoubleAction;
+
+  function CopySingle(aidx:integer):integer;
+  begin
+    if (lsrctype=panelShell) or (lsrctype=panelShellTree) then
+    begin
+      if (ldsttype=panelList) or (ldsttype=panelTree) then
+        result:=lpanel.CopyShellToCtrl(FShellPath+FastWideToStr(Ctrl^.NameOfFile(aidx)),lspath)
+      else
+        result:=CopyShellToShell(FShellPath+FastWideToStr(Ctrl^.NameOfFile(aidx)),lspath,lact);
+    end
+    else if (ldsttype=panelList) or (ldsttype=panelTree) then
+    begin
+      result:=CopyCtrlToCtrl(aidx,lctrl,lpath);
+    end
+    else
+      result:=CopyCtrlToShell(aidx,lspath);
+  end;
+
 begin
   lpanel:=GetOppositePanel();
   ldsttype:=lpanel.GetPanelType();
@@ -401,10 +434,12 @@ begin
   begin
     lspath:=lpanel.FShellPath;
     ls:=Format(rsSureToCopyShell,[lspath]);
+    lpath:=nil;
   end
   else
   begin
-    lpath:=lctrl^.Dirs[GetActiveDir(lctrl,lpanel.ListIndex)].Name;
+    // MUST use copy coz name buffer can be changed while copying files
+    lpath:=CopyWide(lctrl^.Dirs[GetActiveDir(lctrl,lpanel.ListIndex)].Name);
     lspath:=FastWideToStr(lpath);
     ls:=StringReplace(
       StringReplace(rsSureToCopy,'$1',lctrl^.Pak.Name,[]),
@@ -412,66 +447,37 @@ begin
   //  ls:=Format(rsSureToCopy,[lctrl^.Pak.Name,lpath]);
   end;
   
-
   if MessageDlg(ls,mtConfirmation,mbOkCancel,0)<>mrOk then exit;
 
   lctrl^.OnDouble:=@lpanel.OnImportDouble;
 
-  lcopied:=0;
+  lact:=da_ask;
   arr:=nil;
   lidx:=GetSelectionList(arr);
   //!! don't forget to check destination file existing !!
   if lidx<0 then
   begin
-//    lcnt:=Length(arr);
+    lcopied:=0;
     lctrl^.OnChange(lctrl,0,faStart);
 
     for i:=0 to Length(arr)-1 do
-    begin
-      // src: idx (lidx, arr[i]); dst: lspath, lctrl, lpath
-      if (lsrctype=panelShell) or (lsrctype=panelShellTree) then
-      begin
-        ls:=FShellPath+FastWideToStr(Ctrl^.NameOfFile(arr[i]));
-        inc(lcopied,lpanel.CopyShellToCtrl(ls,lspath));
-      end
-      else if (ldsttype=panelList) or (ldsttype=panelTree) then
-        inc(lcopied,CopyCtrlToCtrl(arr[i],lctrl,lpath))
-      else
-        inc(lcopied,CopyCtrlToShell(arr[i],lspath))
-    end;
+      inc(lcopied,CopySingle(arr[i]));
 
     lctrl^.OnChange(lctrl,lcopied,faFinish);
     SetLength(arr,0);
   end
   else
-  begin
-//    lcnt:=1;
-    if (lsrctype=panelShell) or (lsrctype=panelShellTree) then
-    begin
-      ls:=FShellPath+FastWideToStr(Ctrl^.NameOfFile(lidx));
-      inc(lcopied,lpanel.CopyShellToCtrl(ls,lspath));
-    end
-    else if (ldsttype=panelList) or (ldsttype=panelTree) then
-      inc(lcopied,CopyCtrlToCtrl(lidx,lctrl,lpath))
-    else
-      inc(lcopied,CopyCtrlToShell(lidx,lspath));
-  end;
+    lcopied:=CopySingle(lidx);
 
-  if lcopied>0 then
-  begin
-    lpanel.RefreshList();
-{
-    if (ldsttype=panelShell) or (ldsttype=panelShellTree) then
-      lpanel.FillShellList('')
-    else
-      lpanel.FillList(GetActiveDir(lctrl,lpanel.ListIndex));
-}
-  end;
+  FreeMem(lpath);
 
   lctrl^.OnDouble:=nil;
 
   if lcopied>0 then
-    ShowMessage(rsCopied+' '+IntToStr(lcopied))
+  begin
+    ShowMessage(rsCopied+' '+IntToStr(lcopied));
+    lpanel.RefreshList();
+  end
   else
     ShowMessage(rsNotCopied);
 end;
