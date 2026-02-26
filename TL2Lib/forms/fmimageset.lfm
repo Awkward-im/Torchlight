@@ -1,38 +1,27 @@
 object FormImageset: TFormImageset
   Left = 350
-  Height = 473
+  Height = 476
   Top = 250
-  Width = 667
+  Width = 653
   BorderStyle = bsNone
-  ClientHeight = 473
-  ClientWidth = 667
+  ClientHeight = 476
+  ClientWidth = 653
   LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object Splitter1: TSplitter
     Left = 170
-    Height = 450
+    Height = 453
     Top = 0
     Width = 5
   end
-  object imgTexture: TImage
-    Left = 175
-    Height = 450
-    Top = 0
-    Width = 492
-    Align = alClient
-    Proportional = True
-    Stretch = True
-    Transparent = True
-    OnMouseDown = imgTextureMouseDown
-  end
   object pnlLeft: TPanel
     Left = 0
-    Height = 450
+    Height = 453
     Top = 0
     Width = 170
     Align = alLeft
-    ClientHeight = 450
+    ClientHeight = 453
     ClientWidth = 170
     ParentBackground = False
     ParentColor = False
@@ -41,7 +30,7 @@ object FormImageset: TFormImageset
       Cursor = crVSplit
       Left = 1
       Height = 5
-      Top = 257
+      Top = 260
       Width = 168
       Align = alBottom
       ResizeAnchor = akBottom
@@ -49,7 +38,7 @@ object FormImageset: TFormImageset
     object pnlSprite: TPanel
       Left = 1
       Height = 187
-      Top = 262
+      Top = 265
       Width = 168
       Align = alBottom
       ClientHeight = 187
@@ -71,7 +60,6 @@ object FormImageset: TFormImageset
         Top = 20
         Width = 166
         Align = alClient
-        PopupMenu = mnuImgSet
         Proportional = True
         Stretch = True
         Transparent = True
@@ -85,6 +73,7 @@ object FormImageset: TFormImageset
       Align = alTop
       ItemHeight = 0
       TabOrder = 2
+      Visible = False
       OnSelectionChange = lbImagesetsSelectionChange
     end
     object Splitter3: TSplitter
@@ -95,25 +84,26 @@ object FormImageset: TFormImageset
       Width = 168
       Align = alTop
       ResizeAnchor = akTop
+      Visible = False
     end
     object pnlImages: TPanel
       Left = 1
-      Height = 147
+      Height = 150
       Top = 110
       Width = 168
       Align = alClient
-      ClientHeight = 147
+      ClientHeight = 150
       ClientWidth = 168
       TabOrder = 4
       object lbImages: TListBox
         Left = 1
-        Height = 122
+        Height = 125
         Top = 24
         Width = 166
         Align = alClient
         ItemHeight = 0
         MultiSelect = True
-        PopupMenu = mnuImgSet
+        PopupMenu = mnuImages
         Sorted = True
         TabOrder = 0
         OnSelectionChange = lbImagesSelectionChange
@@ -136,8 +126,8 @@ object FormImageset: TFormImageset
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 450
-    Width = 667
+    Top = 453
+    Width = 653
     Panels = <    
       item
         Width = 120
@@ -148,19 +138,144 @@ object FormImageset: TFormImageset
       end>
     SimplePanel = False
   end
-  object mnuImgSet: TPopupMenu
+  object pnlRight: TPanel
+    Left = 175
+    Height = 453
+    Top = 0
+    Width = 478
+    Align = alClient
+    ClientHeight = 453
+    ClientWidth = 478
+    TabOrder = 3
+    object imgTexture: TImage
+      Left = 1
+      Height = 419
+      Top = 33
+      Width = 476
+      Align = alClient
+      Proportional = True
+      Stretch = True
+      Transparent = True
+      OnMouseDown = imgTextureMouseDown
+      OnMouseMove = imgTextureMouseMove
+    end
+    object pnlTop: TPanel
+      Left = 1
+      Height = 32
+      Top = 1
+      Width = 476
+      Align = alTop
+      ClientHeight = 32
+      ClientWidth = 476
+      TabOrder = 0
+      Visible = False
+      object seLeft: TSpinEditEx
+        Left = 24
+        Height = 23
+        Top = 2
+        Width = 63
+        MaxLength = 0
+        NumbersOnly = True
+        SpinButtonWidth = 17
+        TabOrder = 0
+        OnChange = SpinValueChanged
+        NullValue = 0
+        Value = 0
+      end
+      object seTop: TSpinEditEx
+        Left = 124
+        Height = 23
+        Top = 2
+        Width = 63
+        MaxLength = 0
+        NumbersOnly = True
+        SpinButtonWidth = 17
+        TabOrder = 1
+        OnChange = SpinValueChanged
+        NullValue = 0
+        Value = 0
+      end
+      object seWidth: TSpinEditEx
+        Left = 224
+        Height = 23
+        Top = 2
+        Width = 63
+        MaxLength = 0
+        NumbersOnly = True
+        SpinButtonWidth = 17
+        TabOrder = 2
+        OnChange = SpinValueChanged
+        NullValue = 0
+        Value = 0
+      end
+      object seHeight: TSpinEditEx
+        Left = 324
+        Height = 23
+        Top = 2
+        Width = 63
+        MaxLength = 0
+        NumbersOnly = True
+        SpinButtonWidth = 17
+        TabOrder = 3
+        OnChange = SpinValueChanged
+        NullValue = 0
+        Value = 0
+      end
+      object lblLeft: TLabel
+        Left = 4
+        Height = 15
+        Top = 6
+        Width = 10
+        Caption = 'X:'
+      end
+      object lblTop: TLabel
+        Left = 104
+        Height = 15
+        Top = 6
+        Width = 10
+        Caption = 'Y:'
+      end
+      object lblWidth: TLabel
+        Left = 204
+        Height = 15
+        Top = 6
+        Width = 14
+        Caption = 'W:'
+      end
+      object lblHeight: TLabel
+        Left = 304
+        Height = 15
+        Top = 6
+        Width = 12
+        Caption = 'H:'
+      end
+    end
+  end
+  object mnuImages: TPopupMenu
     Left = 71
     Top = 134
-    object miSelectAll: TMenuItem
-      Action = actSelectAll
+    object miNewItem: TMenuItem
+      Action = actNewSprite
+    end
+    object miRename: TMenuItem
+      Action = actRename
+    end
+    object miDelete: TMenuItem
+      Action = actDelete
     end
     object miExtract: TMenuItem
       Action = actExtract
     end
+    object miSep1: TMenuItem
+      Caption = '-'
+    end
+    object miSelectAll: TMenuItem
+      Action = actSelectAll
+    end
   end
   object ActionList: TActionList
     Left = 428
-    Top = 90
+    Top = 88
     object actSelectAll: TAction
       Caption = 'Select &All'
       ShortCut = 16449
@@ -183,23 +298,37 @@ object FormImageset: TFormImageset
       ShortCut = 113
       OnExecute = DoRename
     end
-    object actSave: TAction
+    object actISSave: TAction
       Caption = '&Save'
       Hint = 'Save Imageset'
       ShortCut = 16467
       OnExecute = DoSave
     end
-    object actOpen: TAction
+    object actISOpen: TAction
       Caption = '&Open'
       Hint = 'Open imageset'
       ShortCut = 16463
       OnExecute = DoOpen
     end
-    object actClose: TAction
+    object actISClose: TAction
       Caption = '&Close'
       Hint = 'Close Imageset'
       ShortCut = 119
       OnExecute = DoCloseIS
+    end
+    object actNewSprite: TAction
+      Caption = 'New Item'
+      ShortCut = 16462
+      OnExecute = DoNewItem
+    end
+    object actISAutosplit: TAction
+      ShortCut = 32851
+      OnExecute = DoAutosplit
+    end
+    object actDelete: TAction
+      Caption = 'Delete Item'
+      ShortCut = 119
+      OnExecute = DoDelete
     end
   end
 end

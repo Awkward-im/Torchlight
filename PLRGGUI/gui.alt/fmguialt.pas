@@ -14,6 +14,8 @@ type
 
   TRGGUI2Form = class(TForm)
     actChangeVersion: TAction;
+    actLeftPanelMode: TAction;
+    actRightPanelMode: TAction;
     ActionList: TActionList;
     actFileNew      : TAction;
     actFileOpen     : TAction;
@@ -63,6 +65,8 @@ type
     procedure actFileCloseExecute (Sender: TObject);
     procedure actFileExitExecute  (Sender: TObject);
     procedure actChangeVersionExecute(Sender: TObject);
+    procedure actLeftPanelModeExecute(Sender: TObject);
+    procedure actRightPanelModeExecute(Sender: TObject);
     procedure actShowLogExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose (Sender: TObject; var CloseAction: TCloseAction);
@@ -98,6 +102,7 @@ uses
   RGPreview,
   RGPlugins,
 
+  fmCoreCfg,
   fmPanel;
 
 const
@@ -118,24 +123,6 @@ begin
 {
   LastExt               :=config.ReadString (sSectSettings,sExt         ,RGDefaultExt);
   LastFilter            :=config.ReadInteger(sSectSettings,sFilter      ,5);
-}
-{
-  // Core
-  deOutDir      .Text   :=cfgUnpackDir;
-  cbUnpackTree  .Checked:=cfgUnpackTree;
-  cbUseFName    .Checked:=cfgUsePakName;
-  cbMODDAT      .Checked:=cfgMakeMODDAT;
-  cbFastScan    .Checked:=cfgFastScan;
-  cbSaveSettings.Checked:=cfgSaveSettings;
-  cbSaveDateTime.Checked:=cfgSaveDateTime;
-  cbSaveUTF8    .Checked:=cfgSaveUTF8;
-  case cfgSaveMode of
-    smBinary: rbBinOnly  .Checked:=true;
-    smText  : rbTextOnly .Checked:=true;
-    smGUTS  : rbGUTSStyle.Checked:=true;
-  else // smRename
-    rbTextRename.Checked:=true;
-  end;
 }
 {
   bShowDir     :=config.ReadBool(sSectSettings,sShowDir     ,true);
@@ -235,7 +222,7 @@ begin
 
   if ParamCount>0 then
   begin
-    StatusBar.Panels[1].Text:=rsReadPAK;
+    StatusBar.SimpleText:=rsReadPAK;
     LoadPak(ParamStr(1));
   end
   else
@@ -477,6 +464,24 @@ begin
     end;
   end;
   lf.Free;
+end;
+
+procedure TRGGUI2Form.actLeftPanelModeExecute(Sender: TObject);
+begin
+  with TPanelForm(Panels[fpLeft]).cbContent do
+  begin
+    DroppedDown:=true;
+    SetFocus;
+  end;
+end;
+
+procedure TRGGUI2Form.actRightPanelModeExecute(Sender: TObject);
+begin
+  with TPanelForm(Panels[fpRight]).cbContent do
+  begin
+    DroppedDown:=true;
+    SetFocus;
+  end;
 end;
 
 {%ENDREGION Actions}

@@ -28,7 +28,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="D:\Dropbox\src\Torchlight\TL2Lib\forms;D:\Dropbox\src\Torchlight\TL2Lib;D:\Dropbox\src\Torchlight\Addons;D:\Dropbox\src\Torchlight\Addons\Imaging"/>
+            <OtherUnitFiles Value="D:\Dropbox\src\Torchlight\TL2Lib\forms\;D:\Dropbox\src\Torchlight\TL2Lib\;D:\Dropbox\src\Torchlight\Addons\;D:\Dropbox\src\Torchlight\Addons\Imaging\"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -69,7 +69,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="D:\Dropbox\src\Torchlight\TL2Lib\forms;D:\Dropbox\src\Torchlight\TL2Lib;D:\Dropbox\src\Torchlight\Addons;D:\Dropbox\src\Torchlight\Addons\Imaging"/>
+            <OtherUnitFiles Value="D:\Dropbox\src\Torchlight\TL2Lib\forms\;D:\Dropbox\src\Torchlight\TL2Lib\;D:\Dropbox\src\Torchlight\Addons\;D:\Dropbox\src\Torchlight\Addons\Imaging\"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -91,6 +91,45 @@
           </Linking>
         </CompilerOptions>
       </Item>
+      <Item Name="GTK2">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="iconextract"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="D:\Dropbox\src\Torchlight\TL2Lib\forms\;D:\Dropbox\src\Torchlight\TL2Lib\;D:\Dropbox\src\Torchlight\Addons\;D:\Dropbox\src\Torchlight\Addons\Imaging\"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="244544819247" Modes="GTK2" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -100,6 +139,12 @@
       <FormatVersion Value="2"/>
     </RunParams>
     <RequiredPackages>
+      <Item>
+        <PackageName Value="LazControlDsgn"/>
+      </Item>
+      <Item>
+        <PackageName Value="LazControls"/>
+      </Item>
       <Item>
         <PackageName Value="LCL"/>
       </Item>
@@ -115,7 +160,7 @@
         <ComponentName Value="FormImageset"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmImageset"/>
+        <UnitName Value="fmImageSet"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rglclimageset.pas"/>
@@ -139,7 +184,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="D:\Dropbox\src\Torchlight\TL2Lib\forms;D:\Dropbox\src\Torchlight\TL2Lib;D:\Dropbox\src\Torchlight\Addons;D:\Dropbox\src\Torchlight\Addons\Imaging"/>
+      <OtherUnitFiles Value="D:\Dropbox\src\Torchlight\TL2Lib\forms\;D:\Dropbox\src\Torchlight\TL2Lib\;D:\Dropbox\src\Torchlight\Addons\;D:\Dropbox\src\Torchlight\Addons\Imaging\"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

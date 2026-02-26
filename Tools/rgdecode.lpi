@@ -119,6 +119,7 @@
       <Unit>
         <Filename Value="..\TL2Lib\rgio.text.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="RGIO.Text"/>
       </Unit>
     </Units>
   </ProjectOptions>

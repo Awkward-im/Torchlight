@@ -1,3 +1,4 @@
+{NOTE: Imagesets object is imagesets ID, Images object is Items index}
 {TODO: exit form after dBlClick on spite/sprite name}
 {TODO: Preview Imageset as text (memo), select text line of sprite}
 {TODO: edit imageset (name, sprite, text) and save}
@@ -9,7 +10,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, ComCtrls, ActnList, ListFilterEdit, RGLCLImageSet, RGCtrl;
+  Menus, ComCtrls, ActnList, ListFilterEdit, SpinEx, RGLCLImageSet, RGCtrl;
 
 //!! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 type
@@ -20,62 +21,84 @@ type
   { TFormImageset }
 
   TFormImageset = class(TForm)
-    actDarkBG: TAction;
-    actClose: TAction;
-    actOpen: TAction;
-    actSave: TAction;
-    actSelectAll: TAction;
-    actExtract: TAction;
-    actRename: TAction;
+    actDelete: TAction;
+    actISAutosplit: TAction;
+    actNewSprite: TAction;
     ActionList: TActionList;
+    actDarkBG   : TAction;
+    actISClose    : TAction;
+    actISOpen     : TAction;
+    actISSave     : TAction;
+    actSelectAll: TAction;
+    actExtract  : TAction;
+    actRename   : TAction;
     cbDarkBg: TCheckBox;
     imgSprite: TImage;
     imgTexture: TImage;
-    lbImages: TListBox;
     lbImagesets: TListBox;
-    lfeImages: TListFilterEdit;
-    miSelectAll: TMenuItem;
-    miExtract: TMenuItem;
+    lbImages   : TListBox;
+    lfeImages  : TListFilterEdit;
+    miDelete: TMenuItem;
+    miRename: TMenuItem;
+    miNewItem: TMenuItem;
+    miSep1: TMenuItem;
+    pnlTop   : TPanel;
+    pnlRight : TPanel;
     pnlImages: TPanel;
     pnlSprite: TPanel;
-    pnlLeft: TPanel;
-    mnuImgSet: TPopupMenu;
+    pnlLeft  : TPanel;
+    mnuImages: TPopupMenu;
+    miSelectAll: TMenuItem;
+    miExtract  : TMenuItem;
+    seLeft  : TSpinEditEx;  lblLeft  : TLabel;
+    seTop   : TSpinEditEx;  lblTop   : TLabel;
+    seWidth : TSpinEditEx;  lblWidth : TLabel;
+    seHeight: TSpinEditEx;  lblHeight: TLabel;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     StatusBar: TStatusBar;
-    procedure DoCloseIS(Sender: TObject);
-    procedure DoRename(Sender: TObject);
+
     procedure DarkBgChange(Sender: TObject);
-    procedure DoDarkBg(Sender: TObject);
-    procedure DoOpen(Sender: TObject);
-    procedure DoSave(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure DoAutosplit (Sender: TObject);
+    procedure DoCloseIS   (Sender: TObject);
+    procedure DoDelete(Sender: TObject);
+    procedure DoRename    (Sender: TObject);
+    procedure DoDarkBg    (Sender: TObject);
+    procedure DoOpen      (Sender: TObject);
+    procedure DoSave      (Sender: TObject);
+    procedure DoExtract   (Sender: TObject);
+    procedure DoSelectAll (Sender: TObject);
+    procedure DoNewItem   (Sender: TObject);
+    procedure FormCreate (Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
     procedure imgTextureMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure imgTextureMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure lbImagesetsSelectionChange(Sender: TObject; User: boolean);
-    procedure lbImagesSelectionChange(Sender: TObject; User: boolean);
-    procedure lfeImagesAfterFilter(Sender: TObject);
+    procedure lbImagesSelectionChange   (Sender: TObject; User: boolean);
+    procedure lfeImagesAfterFilter      (Sender: TObject);
+    procedure SpinValueChanged(Sender: TObject);
 //    procedure lbImagesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure DoExtract(Sender: TObject);
-    procedure DoSelectAll(Sender: TObject);
   private
     rectBorder:TRect;
+    FSetSEValues:boolean;
     FActiveImageset:integer;
     FSprite:integer;
     FOnImagesetInfo:TOnImagesetInfo;
 
+    procedure AddImageset(const fname: string);
+    procedure CheckActs();
     procedure FillImagesetList();
     procedure FillSpriteList(ais: integer);
+    function GetActiveIS(): integer;
     procedure SetSelected(aval:string);
     function  GetSelected():string;
 
   public
     FImageset:TRGImageset;
 
-    procedure FillList(const actrl: TRGController;
-        adata: PByte; asize: integer; adir:string='');
+    procedure FillList(const actrl:TRGController; adata:PByte; asize:integer; adir:string='');
     procedure FillList(const fname:string);
 
     property OnImagesetInfo:TOnImagesetInfo read FOnImagesetInfo write FOnImagesetInfo;
@@ -114,6 +137,45 @@ begin
   imgTexture.Canvas.Brush.Style:=bsClear;
   rectBorder.Left :=0;
   rectBorder.Right:=0;
+  FSetSEValues:=false;
+  CheckActs();
+end;
+
+procedure TFormImageset.CheckActs();
+var
+  i,lid:integer;
+  lis:boolean;
+begin
+  lis:=FImageset.ImagesetCount>0;
+  actISClose    .Enabled:=lis;
+  actISSave     .Enabled:=lis;
+  actISAutosplit.Enabled:=lis;
+  if lis then
+    lbImages.PopupMenu:=mnuImages
+  else
+    lbImages.PopupMenu:=nil;
+
+  lid:=GetActiveIS();
+  lis:=false;
+  for i:=0 to FImageset.ItemCount-1 do
+    if FImageset.Items[i].ISFile=lid then
+    begin
+      lis:=true;
+      break;
+    end;
+  actRename .Enabled:=lis;
+  actExtract.Enabled:=lis;
+  actDelete .Enabled:=lis;
+end;
+
+function TFormImageset.GetActiveIS():integer;
+begin
+  if FImageset.ImagesetCount=0 then exit(-1);
+
+  result:=FImageset.Imagesets[0].id;
+  if lbImagesets.Items.Count>0 then
+    if lbImagesets.ItemIndex>=0 then
+      result:=IntPtr(lbImagesets.Items.Objects[lbImagesets.ItemIndex]);
 end;
 
 procedure TFormImageset.imgTextureMouseDown(Sender: TObject;
@@ -150,6 +212,13 @@ begin
     end;
   end;
 end;
+
+procedure TFormImageset.imgTextureMouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  StatusBar.Panels[0].Text:=Format('X: %d, Y: %d',[X,Y]);
+end;
+
 {
 procedure TFormImageset.lbImagesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
@@ -218,6 +287,7 @@ end;
 procedure TFormImageset.DoOpen(Sender: TObject);
 begin
   FillList('');
+  CheckActs();
 end;
 
 procedure TFormImageset.DoSave(Sender: TObject);
@@ -258,10 +328,21 @@ end;
 
 procedure TFormImageset.DoCloseIS(Sender: TObject);
 begin
-  FImageset.CloseImageset(IntPtr(lbImagesets.Items.Objects[lbImagesets.ItemIndex]));
+  FImageset.CloseImageset(GetActiveIS());
   FillImagesetList();
   lbImagesets.ItemIndex:=0;
   lbImagesetsSelectionChange(lbImagesets,true);
+  CheckActs();
+end;
+
+procedure TFormImageset.DoDelete(Sender: TObject);
+var
+  i:integer;
+begin
+  for i:=lbImages.Items.Count-1 downto 0 do
+    if lbImages.Selected[i] then
+      FImageset.DeleteItem(IntPtr(lbImages.Items.Objects[i]));
+  FillSpriteList(GetActiveIS());
 end;
 
 procedure TFormImageset.DoRename(Sender: TObject);
@@ -280,8 +361,19 @@ begin
     lis:=FImageset.Items[lidx].ISFile;
     FImageset.Items[lidx].Name:=lname;
     FImageset.Imagesets[FImageset.ISbyID(lis)].modified:=true;
-    FillSpriteList(lis);
+//    FillSpriteList(lis);
+    FillSpriteList(GetActiveIS());
   end;
+end;
+
+procedure TFormImageset.DoNewItem(Sender: TObject);
+var
+  lidx:integer;
+begin
+  lidx:=GetActiveIS();
+  lfeImages.Items.AddObject(FImageset.Items[lidx].Name,TObject(IntPtr(lidx)));
+  lfeImages.Filter:='';
+  lfeImages.InvalidateFilter;
 end;
 
 procedure TFormImageset.DoDarkBg(Sender: TObject);
@@ -304,6 +396,15 @@ begin
   end;
   imgSprite .Repaint;
   imgTexture.Repaint;
+end;
+
+procedure TFormImageset.DoAutosplit(Sender: TObject);
+var
+  lis:integer;
+begin
+  lis:=GetActiveIs();
+  FImageset.AutoSplit(lis,1);
+  FillSpriteList(lis);
 end;
 
 procedure TFormImageset.DrawDarkBg(ASender: TObject; ACanvas: TCanvas; ARect: TRect);
@@ -370,24 +471,60 @@ begin
 
     FImageset.GetSprite(FSprite,imgSprite.Picture);
 
+    FSetSEValues:=true;
     with FImageset.ItemBounds(FSprite) do
     begin
-      StatusBar.Panels[0].Text:=Format('%d, %d; %d x %d',[Left,Top,Right,Bottom]);
+      seLeft  .Value:=Left;
+      seTop   .Value:=Top;
+      seWidth .Value:=Right;
+      seHeight.Value:=Bottom;
+//      StatusBar.Panels[0].Text:=Format('%d, %d; %d x %d',[Left,Top,Right,Bottom]);
       rectBorder:=Rect(Left,Top,Left+Right,Top+Bottom);
     end;
     imgTexture.Canvas.Rectangle(rectBorder);
   end
   else
-    imgTexture.Picture.Clear;
+  begin
+    seLeft  .Value:=0;
+    seTop   .Value:=0;
+    seWidth .Value:=0;
+    seHeight.Value:=0;
+    FImageset.GetImage(imgTexture.Picture,FImageset.ISbyID(FActiveImageset));
+  end;
+  FSetSEValues:=false;
+  //    imgTexture.Picture.Clear;
 end;
 
 procedure TFormImageset.lfeImagesAfterFilter(Sender: TObject);
 begin
   if lbImages.Items.Count>0 then
   begin
-    lbImages.ItemIndex:=0;
+    lbImages.Selected  [lbImages.Items.Count-1]:=true;
+    lbImages.ItemIndex:=lbImages.Items.Count-1;
+    lbImagesSelectionChange(lbImages, true);
+    pnlTop.Visible:=true;
+//    lbImages.ItemIndex:=0;
+
 //    lbImagesClick(Sender);
   end;
+end;
+
+procedure TFormImageset.SpinValueChanged(Sender: TObject);
+begin
+  if not FSetSEValues then imgTexture.Canvas.Rectangle(rectBorder);
+  FSprite:=IntPtr(lbImages.Items.Objects[lbImages.ItemIndex]);
+  with FImageset.Items[FSprite] do
+  begin
+         if Sender=seLeft   then XPos  :=seLeft  .Value
+    else if Sender=seTop    then YPos  :=seTop   .Value
+    else if Sender=seWidth  then Width :=seWidth .Value
+    else if Sender=seHeight then Height:=seHeight.Value;
+    rectBorder:=Rect(XPos,YPos,XPos+Width,YPos+Height);
+
+    if (XPos>=0) and (yPos>=0) and (Width>1) and (Height>1) then
+      FImageset.GetSprite(FSprite,imgSprite.Picture);
+  end;
+  if not FSetSEValues then imgTexture.Canvas.Rectangle(rectBorder);
 end;
 
 procedure TFormImageset.FillSpriteList(ais:integer);
@@ -398,21 +535,20 @@ begin
     imgTexture.Canvas.Rectangle(rectBorder);
 
   rectBorder:=Rect(0,0,0,0);
-{
+
+  CheckActs();
+
   lfeImages.Items.Clear;
   lfeImages.Text:='';
-  for i:=0 to FImageset.ItemCount-1 do
-    if (ais<0) or (ais=FImageset.Items[i].ISFile) then
-      lfeImages.Items.AddObject(FImageset.Items[i].Name,TObject(IntPtr(i)));
-  lfeImages.InvalidateFilter;
-  // lbImages still empty here
-}
-  lfeImages.Items.Clear;
-  lfeImages.Text:='';
+  lbImages.Items.Clear;
 
   for i:=0 to FImageset.ItemCount-1 do
+  begin
+    if FImageset.Items[i].ISFile<0 then continue;
+
     if (ais<0) or (ais=FImageset.Items[i].ISFile) then
       lfeImages.Items.AddObject(FImageset.Items[i].Name,TObject(IntPtr(i)));
+  end;
 
   if lfeImages.Items.Count>0 then
   begin
@@ -422,6 +558,15 @@ begin
     lbImages.Selected[0]:=true;
     lbImages.ItemIndex:=0;
     lbImagesSelectionChange(lbImages, true);
+    pnlTop.Visible:=true;
+  end
+  else
+  begin
+    pnlTop.Visible:=false;
+    FActiveImageset:=ais;
+    FImageset.GetImage(imgTexture.Picture,FImageset.ISbyID(FActiveImageset));
+//    imgTexture.Picture.Clear;
+    imgSprite.Picture.Clear;
   end;
 {
   lfeImages.FilteredListBox:=nil;
@@ -429,8 +574,11 @@ begin
   lbImages.items.Clear;
 
   for i:=0 to FImageset.ItemCount-1 do
+  begin
+    if FImageset.Items[i].ISFile<0 then continue;
     if (ais<0) or (ais=FImageset.Items[i].ISFile) then
       lbImages.Items.AddObject(FImageset.Items[i].Name,TObject(IntPtr(i)));
+  end;
 
   if lbImages.Items.Count>0 then
   begin
@@ -465,11 +613,32 @@ begin
 
     if not lres then
       if not FImageset.UseController(actrl) then ;
+
+    FActiveImageset:=FImageset.Imagesets[FImageset.ImagesetCount-1].id;
     FImageset.GetImage(imgTexture.Picture);
-    FActiveImageset:=FImageset.ImagesetCount-1;
   end;
   FillImagesetList();
 
+end;
+
+procedure TFormImageset.AddImageset(const fname:string);
+var
+  lls:string;
+  lidx:integer;
+begin
+  if ExtractExt(fname)<>'.IMAGESET' then
+  begin
+    lls:=ExtractNameOnly(fname);
+    lidx:=FImageset.ISbyName(lls);
+    if lidx<0 then lidx:=FImageset.NewImageset(lls);
+    FImageset.Imagesets[lidx].Sheet:=fname;
+    FImageset.UseImageFile(fname);
+  end
+  else
+  begin
+    if FImageset.ParseFromFile(fname) then
+      FImageset.UseImageFile(FImageset.Imagesets[FImageset.ImagesetCount-1].Sheet);
+  end;
 end;
 
 procedure TFormImageset.FillList(const fname:string);
@@ -480,7 +649,7 @@ begin
   if fname='' then
   begin
     ldlg:=TOpenDialog.Create(nil);
-    ldlg.Filter:='Imageset|*.imageset';
+    ldlg.Filter:='Imageset|*.imageset|Texture|*.PNG;*.DDS|Supported|*.imageset;*.PNG;*.DDS';
     ldlg.Options:=ldlg.Options+[ofAllowMultiSelect];
     ldlg.Title:=rsLoadImageset;
     if ldlg.Execute then
@@ -488,8 +657,7 @@ begin
       ChDir(ldlg.InitialDir);
       for i:=0 to ldlg.Files.Count-1 do
       begin
-        if FImageset.ParseFromFile(ldlg.Files[i]) then
-          FImageset.UseImageFile(FImageset.Imagesets[FImageset.ImagesetCount-1].Sheet);
+        AddImageset(ldlg.Files[i]);
       end;
     end;
     ldlg.Free;
@@ -497,16 +665,14 @@ begin
   else
   begin
     Chdir(ExtractFilePath(fname));
-
-    if FImageset.ParseFromFile(fname) then
-      FImageset.UseImageFile(FImageset.Imagesets[FImageset.ImagesetCount-1].Sheet);
+    AddImageset(fname);
   end;
 
   //  imgSprite.Picture.Clear;
-  FActiveImageset:=FImageset.ImagesetCount-1;
+  FActiveImageset:=FImageset.Imagesets[FImageset.ImagesetCount-1].id;
   if FActiveImageset>=0 then
   begin
-    FImageset.GetImage(imgTexture.Picture,FActiveImageset);
+    FImageset.GetImage(imgTexture.Picture{,FImageset.ImagesetCount-1});
   end;
 
   FillImagesetList();

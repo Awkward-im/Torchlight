@@ -243,14 +243,14 @@ begin
       else
       begin
 //        lfile:=AppendFile(lentry,nil);
-        lfile:=AddFile(lentry,nil);
+        lfile:=AddFile(lentry,pc{nil});
 
         with PManFileInfo(Files[lfile])^ do
         begin
           checksum:=lchecksum;
           ftype   :=ltype;
   //        pc      :=memReadShortStringBuf(aptr,@lbuf,bufsize);
-          Name    :=pc;
+//!!          Name    :=pc;
           // for case when dir is file-like only
           if ftype=typeDirectory then
           begin

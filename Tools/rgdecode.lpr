@@ -1,7 +1,5 @@
 ﻿{$I-}
 
-{$R ..\TL2Lib\dict.rc}
-
 uses
   classes,
   sysutils,
@@ -16,17 +14,6 @@ uses
   rgio.layout,
   rgio.raw,
   rgio.text;
-
-const
-  GoodExtArray : array of string = (
-    '.DAT',
-    '.ANIMATION',
-    '.TEMPLATE',
-    '.HIE',
-    '.WDAT',
-    '.LAYOUT'
-  );
-
 
 procedure DoProcessFile(const fname:string);
 var
@@ -97,13 +84,6 @@ begin
   HaltOnError := true;
 {$endif}
   //--- Initialization
-
-  RGTags.Import ('RGDICT', 'TEXT');
-  LoadLayoutDict('LAYTL1', 'TEXT', verTL1);
-  LoadLayoutDict('LAYTL2', 'TEXT', verTL2);
-  LoadLayoutDict('LAYRG' , 'TEXT', verRG);
-  LoadLayoutDict('LAYRGO', 'TEXT', verRGO);
-  LoadLayoutDict('LAYHOB', 'TEXT', verHob);
 
   //--- Process
 

@@ -101,7 +101,7 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="laytotxt.dpr"/>
+        <Filename Value="laytotxt.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>

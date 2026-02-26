@@ -231,6 +231,18 @@ object RGGUI2Form: TRGGUI2Form
       ImageIndex = 6
       OnExecute = actChangeVersionExecute
     end
+    object actLeftPanelMode: TAction
+      Category = 'View'
+      Caption = 'actLeftPanelMode'
+      ShortCut = 32880
+      OnExecute = actLeftPanelModeExecute
+    end
+    object actRightPanelMode: TAction
+      Category = 'View'
+      Caption = 'actRightPanelMode'
+      ShortCut = 32881
+      OnExecute = actRightPanelModeExecute
+    end
   end
   object ilMain24: TImageList
     Height = 24

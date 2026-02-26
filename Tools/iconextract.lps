@@ -3,15 +3,15 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Default"/>
+    <BuildModes Active="Debug"/>
     <Units>
       <Unit>
         <Filename Value="iconextract.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="20"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="23"/>
+        <CursorPos Y="42"/>
+        <UsageCount Value="52"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
@@ -19,11 +19,14 @@
         <ComponentName Value="FormImageset"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmImageset"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="186"/>
-        <CursorPos X="13" Y="202"/>
-        <UsageCount Value="20"/>
+        <UnitName Value="fmImageSet"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="154"/>
+        <CursorPos X="3" Y="174"/>
+        <FoldState Value=" T4A021 TMmf61[A5Lm60A]88id2E]83je03033 pifkQ]B114214 pk2m10C11]QjClB0F]j6lA03211]!PBsQ0 T0lU4915416 PjOsD4q"/>
+        <UsageCount Value="52"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rglclimageset.pas"/>
@@ -32,7 +35,24 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="52"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\textcache.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="52"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\Addons\Imaging\Imaging.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1144"/>
+        <CursorPos Y="1160"/>
+        <UsageCount Value="52"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgfs.pas"/>
@@ -43,35 +63,183 @@
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="..\Addons\textcache.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <Filename Value="..\TL2Lib\rgimageset.pas"/>
+        <UnitName Value="RGImageSet"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="329"/>
+        <CursorPos Y="329"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\TL2Lib\rgimageset.pas"/>
-        <UnitName Value="RGImageset"/>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\interfaces\win32\win32listsl.inc"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="3" Y="12"/>
+        <TopLine Value="228"/>
+        <CursorPos Y="244"/>
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="..\Addons\Imaging\Imaging.pas"/>
-        <IsPartOfProject Value="True"/>
+        <Filename Value="D:\Work\LazTrunk\lazarus\lcl\include\customlistbox.inc"/>
         <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="225"/>
+        <CursorPos Y="241"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="D:\Work\LazTrunk\lazarus\components\lazutils\extendedstrings.pas"/>
+        <UnitName Value="ExtendedStrings"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="141"/>
+        <CursorPos Y="157"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="357" TopLine="329"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="369" TopLine="331"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="364" TopLine="331"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="492" Column="12" TopLine="475"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="154" Column="15" TopLine="119"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="502" TopLine="482"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="532" Column="3" TopLine="620"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="533" Column="3" TopLine="533"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="534" Column="3" TopLine="534"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="535" Column="3" TopLine="535"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="536" Column="3" TopLine="536"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="543" Column="3" TopLine="543"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="300" Column="35" TopLine="239"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="298" Column="13" TopLine="252"/>
+      </Position>
+      <Position>
+        <Filename Value="D:\Work\LazTrunk\lazarus\components\lazutils\extendedstrings.pas"/>
+        <Caret Line="157" TopLine="141"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="332" Column="33" TopLine="328"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="147" Column="31" TopLine="121"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="300" Column="40" TopLine="148"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="342" TopLine="320"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="374" TopLine="329"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="388" Column="38" TopLine="339"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="390" Column="34" TopLine="341"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="163" Column="27" TopLine="124"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="327" Column="3" TopLine="276"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="159" Column="29" TopLine="143"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="141" Column="15" TopLine="108"/>
+      </Position>
+      <Position>
+        <Filename Value="..\TL2Lib\forms\fmimageset.pas"/>
+        <Caret Line="174" Column="3" TopLine="154"/>
+      </Position>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
     </RunParams>
+    <HistoryLists>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+    </HistoryLists>
   </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="FImageset.items"/>
+        <DisplayFormat ArrayNavBarInherit="False"/>
+      </Item>
+      <Item>
+        <Expression Value="FImageset.imagesets"/>
+        <DisplayFormat ArrayNavBarInherit="False"/>
+      </Item>
+      <Item>
+        <Expression Value="lbimages.items.Count"/>
+      </Item>
+      <Item>
+        <Expression Value="lfeImages.Items"/>
+      </Item>
+    </Watches>
+  </Debugging>
 </CONFIG>

@@ -7,7 +7,6 @@ var
   cnt:array [' '..'z'] of integer;
   c:Char;
 begin
-  RGTags.Import('RGDICT','TEXT');
   FillChar(cnt,SizeOf(cnt),0);
   for i:=0 to RGTags.Count-1 do
   begin

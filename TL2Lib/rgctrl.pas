@@ -378,6 +378,7 @@ begin
 
   info.name    :=p^.Name;
   info.path    :=PathOfFile(idx);
+  info.ftype   :=p^.ftype;
   if p^.ftype=typeDirectory then exit;
 
   info.checksum:=p^.checksum;
@@ -385,7 +386,7 @@ begin
   if (p^.action in [act_data, act_file]) or (p^.source<0) then
   begin
     info.size  :=p^.size;
-    info.ftype :=p^.ftype; // RGTypeOfExt(info.name);
+//    info.ftype :=p^.ftype; // RGTypeOfExt(info.name);
     info.ftime :=p^.ftime;
   end
   else
@@ -1354,13 +1355,21 @@ end;
 function TRGController.CopyFile(aidx:integer; actrl:PRGController; apath:PUnicodeChar):boolean;
 var
   lbuf:PByte;
-  lsize:integer;
+  lidx,lsize:integer;
+  lact:TRGDoubleAction;
 begin
   result:=false;
   lbuf:=nil;
   lsize:=GetAsIs(aidx,lbuf);
   if lsize>0 then
   begin
+    //!! check for existing
+    lidx:=actrl^.SearchFile(apath);
+    if lidx>=0 then
+      lact:=OnDouble(lidx,lbuf,lsize)
+    else
+      lact:=da_overwrite;
+
     result:=actrl^.UseData(lbuf,lsize,apath)>=0;
     if not result then FreeMem(lbuf);
   end;

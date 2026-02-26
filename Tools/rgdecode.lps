@@ -8,9 +8,10 @@
       <Unit>
         <Filename Value="rgdecode.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="67"/>
-        <CursorPos X="57" Y="84"/>
-        <UsageCount Value="22"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="32"/>
+        <CursorPos Y="64"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -20,16 +21,16 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.dat.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RGIO.DAT"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="72"/>
         <CursorPos X="25" Y="90"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -39,16 +40,17 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgio.text.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="22"/>
+        <UnitName Value="RGIO.Text"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="112"/>
+        <CursorPos Y="123"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\work\rgio.dat.pas"/>
@@ -93,134 +95,169 @@
       <Unit>
         <Filename Value="..\TL2Lib\rgdict.pas"/>
         <UnitName Value="RGDict"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="341"/>
         <CursorPos Y="352"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgnode.pas"/>
+        <UnitName Value="RGNode"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="275"/>
+        <CursorPos X="13" Y="293"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <UnitName Value="RGFile"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="531"/>
+        <CursorPos Y="553"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <UnitName Value="RGFileType"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="369"/>
+        <CursorPos Y="386"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\TL2Lib\rgglobal.pas"/>
+        <UnitName Value="RGGlobal"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="521"/>
+        <CursorPos Y="544"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="85" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="373" TopLine="357"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="86" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="357" TopLine="346"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="87" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="378" TopLine="351"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="83" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="357" TopLine="351"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="85" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="378" TopLine="351"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="86" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="381" TopLine="369"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="87" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="386" TopLine="369"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="83" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="381" TopLine="369"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="85" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfiletype.pas"/>
+        <Caret Line="386" TopLine="369"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="86" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="492" TopLine="483"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="87" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="494" TopLine="483"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="83" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="509" TopLine="499"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="85" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="510" TopLine="499"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="86" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="517" TopLine="505"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="87" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="520" TopLine="508"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="83" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="521" TopLine="508"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="85" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="522" TopLine="520"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="86" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="524" TopLine="518"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="87" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="526" TopLine="518"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="83" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="541" TopLine="518"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="85" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="544" TopLine="518"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="86" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="545" TopLine="519"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="87" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="489" TopLine="472"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="83" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="547" TopLine="532"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="85" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="491" TopLine="472"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="86" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="547" TopLine="532"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="87" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="551" TopLine="531"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="83" TopLine="68"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="553" TopLine="531"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="96" TopLine="72"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="551" TopLine="531"/>
       </Position>
       <Position>
-        <Filename Value="..\TL2Lib\rgio.dat.pas"/>
-        <Caret Line="86" TopLine="72"/>
+        <Filename Value="..\TL2Lib\rgfile.pas"/>
+        <Caret Line="553" TopLine="531"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -228,7 +265,7 @@
       <Modes ActiveMode="default">
         <Mode Name="default">
           <local>
-            <CommandLineParams Value="D:\Dropbox\src\bin\UNITTYPES.HIE"/>
+            <CommandLineParams Value="TRANSLATION.DAT.adm"/>
           </local>
         </Mode>
       </Modes>
@@ -237,12 +274,14 @@
       <List Name="LaunchingApplication" Type="File" Count="1">
         <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
       </List>
-      <List Name="CommandLineParameters" Count="4">
-        <Item1 Value="D:\Dropbox\src\bin\UNITTYPES.HIE"/>
-        <Item2 Value="D:\Dropbox\src\bin\TIMEWARPER_FEMALE.DAT"/>
-        <Item3 Value="D:\Dropbox\src\bin\_UNITTHEMES.DAT "/>
-        <Item4 Value="D:\Dropbox\src\bin\_UNITTHEMES.DAT"/>
+      <List Name="CommandLineParameters" Count="5">
+        <Item1 Value="TRANSLATION.DAT.adm"/>
+        <Item2 Value="D:\Dropbox\src\bin\UNITTYPES.HIE"/>
+        <Item3 Value="D:\Dropbox\src\bin\TIMEWARPER_FEMALE.DAT"/>
+        <Item4 Value="D:\Dropbox\src\bin\_UNITTHEMES.DAT "/>
+        <Item5 Value="D:\Dropbox\src\bin\_UNITTHEMES.DAT"/>
       </List>
+      <List Name="WorkingDirectory" Type="File" Count="1"/>
     </HistoryLists>
   </ProjectSession>
   <Debugging>

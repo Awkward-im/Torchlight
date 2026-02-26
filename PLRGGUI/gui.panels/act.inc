@@ -182,19 +182,14 @@ begin
   if ltype<>panelShell then
     case acode of
       1: begin
-        if GetPanelType()=panelTree then
-          Ctrl^.MarkToRemove(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)))
-        else if not IsParentDirSelected() then
+        if (GetPanelType()=panelTree) or not IsParentDirSelected() then
           Ctrl^.MarkToRemove(GetSelectedFile());
 
         exit;
       end;
 
       2: begin
-        if GetPanelType()=panelTree then
-          Ctrl^.RemoveUpdate(Ctrl^.AsFile(IntPtr(tvTree.Selected.Data)))
-        else
-          Ctrl^.RemoveUpdate(GetSelectedFile());
+        Ctrl^.RemoveUpdate(GetSelectedFile());
 
         exit;
       end;
@@ -236,12 +231,13 @@ end;
 
 function CopySingleFile(const afrom,ato:AnsiString; aact:TRGDoubleAction):TRGDoubleAction;
 var
-  ls:AnsiString;
+  lfrom,lto:AnsiString;
 begin
   result:=aact;
-{
+
   lfrom:=afrom;
   lto  :=ato;
+{
   if FileExists(ato) then
   begin
     case aact of
@@ -261,8 +257,9 @@ begin
       da_saveas: lfrom:=
     end;
   end;
-;//      CopyFile(lfrom,lto);
-}end;
+}
+  fileutil.CopyFile(lfrom,lto,true,false);
+end;
 
 function TPanelForm.CopyShellToShell(const asrc, adst:AnsiString; var aact:TRGDoubleAction):integer;
 var
@@ -356,9 +353,12 @@ end;
 
 function TPanelForm.CopyCtrlToCtrl(aidx:integer; actrl:PRGController; apath:PUnicodeChar):integer;
 var
-  pc:PUnicodeChar;
+  lpc,pc:PUnicodeChar;
+  psrc,pdst:PRGCtrlInfo;
+  ls:AnsiString;
   lcs_s,lcs_d:dword;
   lidx:integer;
+  lact:TRGDoubleAction;
 begin
   result:=0;
   pc:=ConcatWide(apath,Ctrl^.NameOfFile(aidx));
@@ -382,13 +382,60 @@ begin
     end
     else
     begin
-      lcs_s:=Ctrl^ .Files[aidx]^.checksum;
-      lcs_d:=actrl^.Files[lidx]^.checksum;
+      psrc:=Ctrl^ .Files[aidx];
+      pdst:=actrl^.Files[lidx];
+
       // File with same name but different checksum (content)
-      if lcs_s<>lcs_d then
+      if psrc^.checksum<>pdst^.checksum then
       begin
 //        ShowMessage(IntToStr(Ord(actrl^.OnDouble(lidx,PByte(apath),0))));
         // Skip, overwrite, update, [to all], stop
+
+        lpc:=ConcatWide(actrl^.PathOfFile(lidx),actrl^.NameOfFile(lidx));
+        with tAskForm.Create(FastWideToStr(lpc), psrc^.Size, pdst^.Size) do
+        begin
+      //    ShowModal();
+      //    result:=TRGDoubleAction(MyResult);
+          lact:=ModalToAction(ShowModal());
+          Free;
+        end;
+        FreeMem(lpc);
+        lpc:=nil;
+        
+        case lact of
+          da_renameold: begin
+            lpc:=StrToWide(
+                InputBox('Rename existing file', 'Enter new name', Ctrl^.NameOfFile(lidx)) );
+          end;
+
+          da_saveas: begin
+            lpc:=StrToWide(
+                InputBox('Rename new file', 'Enter new name', Ctrl^.NameOfFile(lidx)) );
+          end;
+
+          da_compare: begin
+            if (psrc^.ftype and $FF)=typeData then
+            begin
+{
+              with TCompareForm.Create(lold,lnew) do
+              begin
+                if ShowModal()=mrOk then
+                begin
+                  newdata:=PByte(UnicodeText());
+                  newsize:=(Length(PUnicodeChar(newdata))+1)*SizeOf(WideChar);
+                end
+                else
+                  lres:=da_skip;
+
+                Free;
+              end;
+}
+            end;
+          end;
+
+        else
+        end;
+
       end;
     end;
   end;

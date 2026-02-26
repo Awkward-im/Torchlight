@@ -1,7 +1,7 @@
 program iconextract;
 
 {$mode objfpc}{$H+}
-
+(*
 {$IFDEF Console}
 uses
   rgglobal,
@@ -22,7 +22,7 @@ begin
   rg.Free;
 end.
 {$ELSE}
-
+*)
 uses
   {$IFDEF UNIX}
   cthreads,
@@ -32,11 +32,13 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Controls,
-  Forms,
+  Forms, lazcontrols,
   fmimageset;
 
 {$R *.res}
 
+var
+  i:integer;
 begin
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
@@ -46,7 +48,8 @@ begin
   Application.Initialize;
   Application.CreateForm(TFormImageset, FormImageset);
   FormImageset.BorderStyle:=bsSizeable;
-  FormImageset.FillList(ParamStr(1));
+  for i:=1 to ParamCount do
+    FormImageset.FillList(ParamStr(i));
   Application.Run;
 end.
-{$ENDIF}
+//{$ENDIF}

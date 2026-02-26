@@ -217,7 +217,7 @@ begin
     pp:=FindNode(data,'SIZE'); ltmp :=IntToStr(AsInteger(pp));
     
     ldata:=
-      '<?xml version="1.0" encoding="UTF-8"?>'+
+      '<?xml version="1.0" encoding="UTF-8"?>'#13#10+
       '<Imageset'+
       ' Name="'          +WideToStr(GetNodeName(data))+
       '" Imagefile="'    +ldata+

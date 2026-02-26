@@ -50,14 +50,6 @@ begin
   result:=lvList.Selected.Caption=strParentDir;
 end;
 
-function TPanelForm.GetSelectedFile():integer; inline;
-begin
-  if lvList.ItemIndex>=0 then
-    result:=IntPtr(lvList.Items[lvList.ItemIndex].Data)
-  else
-    result:=-1;
-end;
-
 function TPanelForm.GetSelectionList(var arr:TIntegerDynArray):integer;
 var
   i,lcnt:integer;

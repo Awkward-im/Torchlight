@@ -1,9 +1,9 @@
-uses tl2save;
+uses tlsave;
 
 var
-  tr:TTL2SaveFile;
+  tr:TTLSaveFile;
 begin
-  tr:=TTL2SaveFile.Create;
+  tr:=TTLSaveFile.Create;
   tr.LoadFromFile(ParamStr(1));
   tr.SaveToFile(ParamStr(1)+'.bin');
   tr.Free;

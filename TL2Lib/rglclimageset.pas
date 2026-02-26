@@ -35,7 +35,7 @@ uses
 
 procedure TRGImageset.GetImage(apic:TPicture; ais:integer=-1);
 begin
-  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit;
+  if (ais<0) or (ais>=ImagesetCount) then ais:=ImagesetCount-1; if ais<0 then exit;
   if Imagesets[ais].Image.Format=IFUnknown then
   begin
     apic.Clear;
@@ -47,7 +47,7 @@ end;
 
 function TRGImageset.UseImagePicture(apic:TPicture; ais:integer=-1):boolean;
 begin
-  if ais<0 then ais:=ImagesetCount-1; if ais<0 then exit(false);
+  if (ais<0) or (ais>=ImagesetCount) then ais:=ImagesetCount-1; if ais<0 then exit(false);
   FreeImage(Imagesets[ais].Image);
   ConvertBitmapToData(apic.Bitmap,Imagesets[ais].Image);
   result:=UseImageSet();
@@ -57,22 +57,23 @@ function TRGImageset.GetSprite(idx:integer; apic:TPicture):boolean;
 var
   lsprite:TImageData;
   lrc:TRect;
+  lidx:integer;
 begin
   result:=false;
 
   if (idx>=0) and (idx<ItemCount) then
   begin
-    with Items[idx] do
-    begin
-      if Imagesets[ISFile].Image.Format=IFUnknown then exit;
-      lrc:=ItemBounds(idx);
-      NewImage(lrc.Right,lrc.Bottom,
-               Imagesets[ISFile].Image.Format,lsprite);
-      CopyRect(Imagesets[ISFile].Image,
-        lrc.Left ,lrc.Top,
-        lrc.Right,lrc.Bottom,
-        lsprite,0,0);
-    end;
+    lidx:=ISbyID(Items[idx].ISFile);
+    if Imagesets[lidx].Image.Format=IFUnknown then exit;
+
+    lrc:=ItemBounds(idx);
+    NewImage(lrc.Right,lrc.Bottom,
+             Imagesets[lidx].Image.Format,lsprite);
+    CopyRect(Imagesets[lidx].Image,
+      lrc.Left ,lrc.Top,
+      lrc.Right,lrc.Bottom,
+      lsprite,0,0);
+
     ConvertDataToBitmap(lsprite,apic.Bitmap);
     FreeImage(lsprite);
 

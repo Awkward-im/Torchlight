@@ -64,8 +64,9 @@ type
     procedure tvTreeDblClick (Sender: TObject);
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
-    fmPreview:TForm;
-    fmLog    :TForm;
+    fmPreview :TForm;
+    fmLog     :TForm;
+    fmSettings:TForm;
     FOnChange:TRGOnChange;
     FShell:TRGController;
     FShellPath:AnsiString;
@@ -79,6 +80,7 @@ type
     procedure FillShellList(const aitem:AnsiString);
     procedure RefreshList();
     procedure ShowLog();
+    procedure ShowSettings();
 
     procedure ShowHideColumn(acol:integer; ashow:boolean);
     procedure UnpackSelected();
@@ -122,6 +124,7 @@ type
     procedure UpdatePreview(aidx: integer; actrl: PRGController; aList: integer);
 
     property  OnChange:TRGOnChange read FOnChange write FOnChange;
+    property  PanelType:integer read GetPanelType;
   end;
 
 var
@@ -142,6 +145,7 @@ const
   panelShell     = 3;
   panelShellTree = 4;
   panelLog       = 5;
+  panelSettings  = 6;
 
 
 implementation
@@ -162,6 +166,7 @@ uses
   fmAskNew,
   fmComboDiff,
   fmLog,
+  fmCorecfg,
 
   RGGUI.Core,
   RGGUI.Shared,
@@ -171,14 +176,16 @@ uses
 {$UNDEF Interface}
 
 const
-  ptView  = -1;
-  ptShell = -2;
-  ptLog   = -3;
+  ptView   = -1;
+  ptShell  = -2;
+  ptLog    = -3;
+  ptConfig = -4;
 
 resourcestring
   rsPreview = '~~Preview';
   rsShell   = '~~Shell';
   rsLog     = '~~Log';
+  rsConfig  = '~~Settings';
 
 { TPanelForm }
 
@@ -256,6 +263,8 @@ begin
     lidx:=IntPtr(cbContent.Items.Objects[lidx]);
     if lidx=ptView then
       result:=panelView
+    else if lidx=ptConfig then
+      result:=panelSettings
     else if lidx=ptLog then
       result:=panelLog
     else if lidx=ptShell then
@@ -359,7 +368,7 @@ begin
     end;
 
     panelLog: begin
-//AddFileEventHandler(@UpdatePreview);
+//RemoveEventHandler(@UpdatePreview);
       lvList .Visible:=false;
       sbType .Visible:=false;
       sbTime .Visible:=false;
@@ -374,6 +383,21 @@ begin
       sbTree    .Visible:=false;
     end;
 
+    panelSettings: begin
+//RemoveEventHandler(@UpdatePreview);
+      lvList .Visible:=false;
+      sbType .Visible:=false;
+      sbTime .Visible:=false;
+      sbSize .Visible:=false;
+      sbAttr .Visible:=false;
+      sbFull .Visible:=false;
+
+      tvShell   .Visible:=false;
+      tvTree    .Visible:=false;
+      tfeTree   .Visible:=false;
+      sbCollapse.Visible:=false;
+      sbTree    .Visible:=false;
+    end;
   end;
 end;
 
@@ -404,6 +428,17 @@ begin
     end;
   end;
 
+  if lidx<>ptConfig then
+  begin
+{
+    if fmSettings<>nil then
+    begin
+      fmSettings.Free;
+      fmSettings:=nil;
+    end;
+}
+  end;
+
   lpanel:=GetOppositePanel();
   ltype :=lpanel.GetPanelType();
 
@@ -421,6 +456,12 @@ begin
   begin
     SetupView(panelLog);
     ShowLog();
+  end
+
+  else if lidx=ptConfig then
+  begin
+    SetupView(panelSettings);
+    ShowSettings();
   end
 
   else if lidx=ptShell then
@@ -482,6 +523,7 @@ begin
   cbContent.Sorted:=false;
   cbContent.AddItem(rsLog    ,TObject(ptLog));
   cbContent.AddItem(rsShell  ,TObject(ptShell));
+  cbContent.AddItem(rsConfig ,TObject(ptConfig));
   cbContent.AddItem(rsPreview,TObject(ptView));
 
   // Active panel: choose last used Controller
@@ -528,12 +570,31 @@ begin
   if fmLog=nil then
   begin
     fmLog:=TfmLogForm.Create(Self);
-    TfmLogForm(fmLog).BorderStyle:=bsNone;
-    TfmLogForm(fmLog).Align      :=alClient;
-    TfmLogForm(fmLog).Parent     :=Self;
-    TfmLogForm(fmLog).memLog.Text:=RGLog.Text;
-    TfmLogForm(fmLog).Visible    :=true;
+    with TfmLogForm(fmLog) do
+    begin
+      BorderStyle:=bsNone;
+      Align      :=alClient;
+      Parent     :=Self;
+      memLog.Text:=RGLog.Text;
+      Visible    :=true;
+    end;
   end;
+end;
+
+procedure TPanelForm.ShowSettings();
+begin
+  if fmSettings=nil then
+  begin
+    fmSettings:=TCoreCfgForm.Create(Self);
+    with TCoreCfgForm(fmSettings) do
+    begin
+      BorderStyle:=bsNone;
+      Align      :=alClient;
+      Parent     :=Self;
+      Visible    :=true;
+    end;
+  end;
+  TCoreCfgForm(fmSettings).FillSettings;
 end;
 
 procedure TPanelForm.ShowPreview(actrl:PRGController; aidx:integer);
@@ -852,6 +913,16 @@ begin
     fmFilterForm:=TFilterForm.Create(Self);
   end;
   fmFilterForm.ShowOnTop;
+end;
+
+function TPanelForm.GetSelectedFile():integer;
+begin
+  if GetPanelType()=panelTree then
+    result:=Ctrl^.AsFile(IntPtr(tvTree.Selected.Data))
+  else if lvList.ItemIndex>=0 then
+    result:=IntPtr(lvList.Items[lvList.ItemIndex].Data)
+  else
+    result:=-1;
 end;
 
 {$I lv.inc}
