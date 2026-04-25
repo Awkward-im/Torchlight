@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-  ExtCtrls, ActnList;
+  ExtCtrls, ActnList,
+  RGCtrl;
 
 type
 
@@ -74,8 +75,12 @@ type
     inProcess:Boolean;
 
     procedure LoadSettings;
+    procedure SaveSettings;
     procedure UpdatePanels(actrl:pointer);
     function  GUIOnChange(actrl:pointer; idx:integer; atype:integer):integer;
+    function  AltPanelType(apanel:TForm; atype:integer; abefore:boolean):integer;
+    function  AltExecute(actrl:PRGController; aidx:integer):integer;
+    function GetOppositePanel(apanel: TForm): TForm;
   public
 
   end;
@@ -92,7 +97,8 @@ uses
   IniFiles,
 
   RGGlobal,
-  RGCtrl,
+  RGFS,
+  RGFileType,
 
   fmLog,
   fmGameVersion,
@@ -115,66 +121,31 @@ const
 procedure TRGGUI2Form.LoadSettings;
 var
   config:TIniFile;
-  ls:AnsiString;
-  lstyle:TFontStyles;
-  lfont:TFont;
 begin
   config:=TIniFile.Create(ConfigName,[ifoEscapeLineFeeds,ifoStripQuotes]);
 {
-  LastExt               :=config.ReadString (sSectSettings,sExt         ,RGDefaultExt);
-  LastFilter            :=config.ReadInteger(sSectSettings,sFilter      ,5);
-}
-{
-  bShowDir     :=config.ReadBool(sSectSettings,sShowDir     ,true);
-  bShowExt     :=config.ReadBool(sSectSettings,sShowExt     ,true);
-  bShowPacked  :=config.ReadBool(sSectSettings,sShoPacked   ,false);
-  bShowUnpacked:=config.ReadBool(sSectSettings,sShowUnpacked,false);
-}
-{
   bShowCategory:=config.ReadBool(sSectSettings,sShowCategory,false);
-  bShowTime    :=config.ReadBool(sSectSettings,sShowTime    ,false);
   bShowSource  :=config.ReadBool(sSectSettings,sShowSource  ,false);
+  bShowPacked  :=config.ReadBool(sSectSettings,sShoPacked   ,false);
+  bShowTime    :=config.ReadBool(sSectSettings,sShowTime    ,false);
 }
-{
-  if cbPreview.Checked then
-    actShowPreview.Checked:=config.ReadBool(sSectSettings,sShowPreview,false)
-  else
-    actShowPreview.Checked:=False;
-  cbPreview.Checked:=config.ReadBool(sSectSettings,sPreview,true);
-  if not cbPreview.Checked then actPreviewExecute(Self); // call automatically if Checked
-}
-{
-  cbSaveWidth.Checked:=config.ReadBool(sSectSettings,sSaveWidth,true);
-
-  if cbSaveWidth.Checked then
-  begin
-    pnlTree.Width:=config.ReadInteger(sSectSettings,sTreeWidth,defTreeWidth);
-    Splitter2.Left:=config.ReadInteger(sSectSettings,sGridWidth,defGridWidth);
-  end
-  else
-  begin
-    pnlTree.Width:=defTreeWidth;
-    sgMain .Width:=defGridWidth;
-  end;
-}
-//--- Font
-  lfont:=GetPreviewFont();
-  lfont.Name   :=config.ReadString (sSectSrcFont,sFontName   ,defFontName);
-  lfont.Charset:=config.ReadInteger(sSectSrcFont,sFontCharset,defFontCharset);
-  lfont.Size   :=config.ReadInteger(sSectSrcFont,sFontSize   ,defFontSize);
-  lfont.Color  :=StringToColor(
-      config.ReadString(sSectSrcFont,sFontColor,ColorToString(defFontColor)));
-
-  ls:=config.ReadString(sSectSrcFont,sFontStyle,defFontStyle);
-  lstyle:=[];
-  if Pos('bold'     ,ls)<>0 then lstyle:=lstyle+[fsBold];
-  if Pos('italic'   ,ls)<>0 then lstyle:=lstyle+[fsItalic];
-  if Pos('underline',ls)<>0 then lstyle:=lstyle+[fsUnderline];
-  if Pos('strikeout',ls)<>0 then lstyle:=lstyle+[fsStrikeOut];
-  lfont.Style:=lstyle;
-//  SetPreviewFont(lfont);
-
 //  fmFilterForm.LoadSettings(config);
+
+  LoadGUISettings(config);
+
+  config.Free;
+end;
+
+procedure TRGGUI2Form.SaveSettings;
+var
+  config:TIniFile;
+begin
+  config:=TMemIniFile.Create(ConfigName,[ifoEscapeLineFeeds,ifoStripQuotes]);
+
+  SaveCoreSettings(config);
+  SaveGUISettings (config);
+
+  config.UpdateFile;
   config.Free;
 end;
 {%ENDREGION Settings}
@@ -195,11 +166,15 @@ begin
     Align      :=alClient;
     Visible    :=True;
 
+    SetPanelType(panelList);
     SetColumnState(colType,true);
-    SetColumnState(colTime,true);
     SetColumnState(colSize,true);
+    SetColumnState(colPack,false);
+    SetColumnState(colTime,true);
     SetColumnState(colAttr,true);
     ListIndex:=0;
+    OnPanelType:=@AltPanelType;
+    OnExecute  :=@AltExecute;
   end;
 
   Panels[fpRight]:=TPanelForm.Create(Self);
@@ -210,11 +185,15 @@ begin
     Align      :=alClient;
     Visible    :=True;
 
+    SetPanelType(panelList);
     SetColumnState(colType,true);
-    SetColumnState(colTime,true);
     SetColumnState(colSize,true);
+    SetColumnState(colPack,false);
+    SetColumnState(colTime,true);
     SetColumnState(colAttr,true);
     ListIndex:=1;
+    OnPanelType:=@AltPanelType;
+    OnExecute  :=@AltExecute;
   end;
 
   ActivePanel  :=fpLeft;
@@ -235,9 +214,72 @@ end;
 procedure TRGGUI2Form.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   ClosePreviews();
+
+  SaveSettings();
 end;
 
 {%ENDREGION Form}
+
+function TRGGUI2Form.GetOppositePanel(apanel:TForm):TForm;
+begin
+  result:=nil;
+  if PanelCount=2 then
+  begin
+         if Panels[0]=apanel then result:=TPanelForm(Panels[1])
+    else if Panels[1]=apanel then result:=TPanelForm(Panels[0]);
+  end;
+end;
+
+function TRGGUI2Form.AltPanelType(apanel:TForm; atype:integer; abefore:boolean):integer;
+var
+  lpanel:TPanelForm;
+begin
+  result:=atype;
+  if abefore then
+  begin
+    if atype in [panelLog, panelView, panelSettings] then
+    begin
+      lpanel:=TPanelForm(GetOppositePanel(apanel));
+      lpanel.FillCombo(atype);
+//      if lpanel.GetPanelType()=atype then
+//        result:=TPanelForm(apanel).GetPanelType();
+    end;
+  end
+  else if atype=panelView then
+  begin
+    lpanel:=TPanelForm(GetOppositePanel(apanel));
+    if lpanel.GetPanelType()=panelList then
+    begin
+      TPanelForm(apanel).ShowPreview(lpanel.Ctrl,lpanel.GetSelectedFile());
+    end;
+  end;
+end;
+
+function TRGGUI2Form.AltExecute(actrl:PRGController; aidx:integer):integer;
+var
+  lctrl:PRGController;
+  ls,lsext:AnsiString;
+  i:integer;
+begin
+  with actrl^.Files[aidx]^ do
+  begin
+    if ftype=typeUnknown then
+    begin
+      ls   :=FastWideToStr(Name);
+      lsext:=ExtractExt(ls);
+      for i:=0 to High(RGPAKExts) do
+        if RGPAKExts[i]=lsext then
+        begin
+
+          lctrl:=LoadPak(actrl^.PAK.Directory+ls);
+          CtrlList[CtrlCount-1].Ctrl^.OnChange:=@GUIOnChange;
+          UpdatePanels(lctrl);
+
+          break;
+        end;
+    end;
+  end;
+end;
 
 procedure TRGGUI2Form.UpdatePanels(actrl:pointer);
 begin
@@ -365,10 +407,7 @@ begin
         ls:=rsSavedAs;
 {
         if result then
-        begin
-          tvTreeSelectionChanged(self);
           SetupView();
-        end;
 }
       end;
 
@@ -399,7 +438,10 @@ begin
   end;
 
   if CtrlCount=1 then
+  begin
     Close;
+    exit;
+  end;
 
   if TPanelForm(Panels[ActivePanel]).GetPanelType in [panelList,panelTree] then
   begin

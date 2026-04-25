@@ -7,11 +7,15 @@ interface
 uses
   uni_profiler,
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  ComCtrls, Buttons, ShellCtrls, TreeFilterEdit, ListViewFilterEdit,
+  ComCtrls, Buttons, ShellCtrls, Menus, TreeFilterEdit, ListViewFilterEdit,
   RGGlobal, RGCtrl;
 
 
 {$DEFINE Interface}
+
+type
+  TRGOnPanelType = function (apanel:TForm; atype:integer; abefore:boolean):integer of object;
+  TRGOnExecute   = function (actrl:PRGController; aidx:integer):integer of object;
 
 type
 
@@ -20,43 +24,48 @@ type
   TPanelForm = class(TForm)
     cbContent: TComboBox;
     lvfeFull: TListViewFilterEdit;
+    miColType: TMenuItem;
+    miColSize: TMenuItem;
+    miColPacked: TMenuItem;
+    miColTime: TMenuItem;
+    miColAttr: TMenuItem;
+    pnlTopTree: TPanel;
+    pnlTopList: TPanel;
+    pnlPath: TPanel;
+    mnuColumns: TPopupMenu;
     sbFilter: TSpeedButton;
     sbFull: TSpeedButton;
+    sbColumns: TSpeedButton;
     tvShell: TShellTreeView;
     tfeTree: TTreeFilterEdit;
     ilPanel: TImageList;
-    lblPath: TLabel;
     lvList: TListView;
     pnlTop: TPanel;
-    sbAttr: TSpeedButton;
-    sbType: TSpeedButton;
-    sbTime: TSpeedButton;
-    sbSize: TSpeedButton;
     sbCollapse: TSpeedButton;
     sbTree: TSpeedButton;
     tvTree: TTreeView;
 
     procedure cbContentChange(Sender: TObject);
+    procedure ColMenuClick(Sender: TObject);
 
-    procedure DoListDblClick  (Sender: TObject);
-    procedure DoListKeyDown   (Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure lvfeFullAfterFilter(Sender: TObject);
-    procedure lvListItemChecked(Sender: TObject; Item: TListItem);
     procedure SetPanelActive  (Sender: TObject);
 
+    procedure DoListDblClick  (Sender: TObject);
+    procedure DoListKeyDown   (Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lvListCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure lvListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
-    procedure lvListCompare   (Sender: TObject; Item1, Item2: TListItem;
-      Data: Integer; var Compare: Integer);
-    procedure lvListShowHint(Sender: TObject; HintInfo: PHintInfo);
+    procedure lvListItemChecked(Sender: TObject; Item: TListItem);
+    procedure lvListSelectItem (Sender:TObject; Item:TListItem; Selected:Boolean);
+    procedure lvListCompare    (Sender:TObject; Item1,Item2:TListItem; Data:Integer; var Compare:Integer);
+    procedure lvListShowHint   (Sender:TObject; HintInfo:PHintInfo);
     procedure AddListRow(aidx:integer);
 
     procedure sbColumnsClick(Sender: TObject);
-    procedure sbFilterClick(Sender: TObject);
-    procedure sbFullClick(Sender: TObject);
+    procedure sbFilterClick (Sender: TObject);
+    procedure sbFullClick   (Sender: TObject);
 
     procedure DoTreeKeyDown  (Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sbCollapseClick(Sender: TObject);
@@ -67,21 +76,25 @@ type
     fmPreview :TForm;
     fmLog     :TForm;
     fmSettings:TForm;
-    FOnChange:TRGOnChange;
+    FOnChange :TRGOnChange;
+    FOnType   :TRGOnPanelType;
+    FOnExecute:TRGOnExecute;
     FShell:TRGController;
     FShellPath:AnsiString;
+    FPanelType:integer;
 
     procedure AddBranch(aroot:TTreeNode; adir:integer);
     procedure BuildShellRootList;
-    procedure FillTree      (adir:integer);
-    procedure SelectTreePath(adir:integer);
-    procedure FillList      (adir:integer);
+//    procedure SelectTreePath(adir:integer);
+//    procedure FillTree      (adir:integer);
+//    procedure FillList      (adir:integer);
     procedure FillFullList();
     procedure FillShellList(const aitem:AnsiString);
     procedure RefreshList();
     procedure ShowLog();
     procedure ShowSettings();
 
+    procedure SetPanelPath(const apath:AnsiString);
     procedure ShowHideColumn(acol:integer; ashow:boolean);
     procedure UnpackSelected();
     function  GetSelectionList(var arr:TIntegerDynArray):integer;
@@ -90,21 +103,27 @@ type
     procedure SelectInList(afirst:boolean);
 
     procedure SelectLine();
-    procedure SelectAll();
+    procedure SelectAll (ainverse:boolean=false);
 
     procedure ProcessTreeEvent(aidx:integer; aevent:integer);
     procedure ProcessListEvent(aidx:integer; aevent:integer);
 
 {$I act.inc}
     
+    function OnImportDouble (idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
     function OnChangeDefault(actrl:pointer; idx:integer; aevent:integer):integer;
-    function OnImportDouble(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
+    function OnPanelTypeDef (apanel:TForm; atype:integer; abefore:boolean):integer;
+    function OnExecuteDef   (actrl:PRGController; aidx:integer):integer;
+    procedure SetOnExecute  (aproc:TRGOnExecute);
+    procedure SetOnPanelType(aproc:TRGOnPanelType);
+//    function  GetColumnState(acol:integer):boolean;
 
   public
     Ctrl:PRGController;
     ListIndex:integer; // index in (Dirs:array [0..15] of TDirListElement)
 
-    procedure SetupView(atype:integer);
+    procedure FillTree;
+    procedure FillList      (adir:integer);
 
 {
   Directory must not have same name as file too. No case-sensitive
@@ -114,17 +133,23 @@ type
 }
     function  IsNameExists(const aname:AnsiString):integer;
     function  GetOppositePanel():TPanelForm;
+    procedure SetPanelType(atype: integer);
     function  GetPanelType    ():integer;
     function  GetSelectedFile ():integer;
-    procedure FillCombo();
+    procedure FillCombo(aremove:integer=0); // enough for 2 panels
+
     procedure SetColumnState(acol:integer; ashow:boolean);
     procedure SetCtrl(actrl:PRGController);
-    procedure ShowPreview(actrl:PRGController; aidx:integer);
+    procedure SelectTreePath(adir:integer);
 
+    procedure ShowPreview(actrl:PRGController; aidx:integer);
     procedure UpdatePreview(aidx: integer; actrl: PRGController; aList: integer);
 
-    property  OnChange:TRGOnChange read FOnChange write FOnChange;
-    property  PanelType:integer read GetPanelType;
+    property  OnChange   :TRGOnChange    read FOnChange  write FOnChange;
+    property  OnPanelType:TRGOnPanelType read FOnType    write SetOnPanelType; // FOnType;
+    property  OnExecute  :TRGOnExecute   read FOnExecute write SetOnExecute;   // FOnExecute;
+    property  PanelType:integer read GetPanelType write SetPanelType;
+    property  ShowCol[acol:integer]:boolean {read GetColState} write ShowHideColumn;
   end;
 
 var
@@ -135,10 +160,12 @@ const
   colExt  = 1;
   colType = 2;
   colSize = 3;
-  colTime = 4;
-  colAttr = 5; // Attrib (file state) not used atm
+  colPack = 4;
+  colTime = 5;
+  colAttr = 6; // Attrib (file state) not used atm
 
 const
+  panelUnknown   = -1;
   panelList      = 0;
   panelView      = 1;
   panelTree      = 2;
@@ -251,160 +278,145 @@ end;
 
 {%ENDREGION NotVisual}
 
-// Use combobox selection for type
-function TPanelForm.GetPanelType():integer;
-var
-  lidx:integer;
+function TPanelForm.OnExecuteDef(actrl:PRGController; aidx:integer):integer;
 begin
-  result:=panelList;
-  lidx:=cbContent.ItemIndex;
-  if lidx>=0 then
-  begin
-    lidx:=IntPtr(cbContent.Items.Objects[lidx]);
-    if lidx=ptView then
-      result:=panelView
-    else if lidx=ptConfig then
-      result:=panelSettings
-    else if lidx=ptLog then
-      result:=panelLog
-    else if lidx=ptShell then
-    begin
-      if sbTree.Down then
-        result:=panelShellTree
-      else
-        result:=panelShell;
-    end
-    else if sbTree.Down then
-      result:=panelTree;
-  end;
+  result:=0;
 end;
 
-procedure TPanelForm.SetupView(atype:integer);
+function TPanelForm.OnPanelTypeDef(apanel:TForm; atype:integer; abefore:boolean):integer;
 begin
+  result:=atype;
+end;
+
+procedure TPanelForm.SetOnExecute(aproc:TRGOnExecute);
+begin
+  if aproc=nil then
+    FOnExecute:=@OnExecuteDef
+  else
+    FOnExecute:=aproc;
+end;
+
+procedure TPanelForm.SetOnPanelType(aproc:TRGOnPanelType);
+begin
+  if aproc=nil then
+    FOnType:=@OnPanelTypeDef
+  else
+    FOnType:=aproc;
+end;
+
+function TPanelForm.GetPanelType():integer; inline;
+begin
+  result:=FPanelType;
+end;
+
+procedure TPanelForm.SetPanelType(atype:integer);
+begin
+  atype:=OnPanelType(Self,atype,true);
+  if FPanelType=atype then exit;
+
+  FPanelType:=atype;
+
   sbFull.Down:=false;
   lvfeFull.Visible:=false;
   sbFilter.Visible:=false;
 
-  case atype of
+  case FPanelType of
     panelList: begin
-//RemoveEventHandler(@UpdatePreview);
-      lvList .Visible:=true;
-      sbType .Visible:=true;
-      sbTime .Visible:=true;
-      sbSize .Visible:=true;
-      sbAttr .Visible:=true;
-      sbFull .Visible:=true;
+      pnlTopList.Visible:=true;
+      pnlTopTree.Visible:=false;
+      pnlPath   .Visible:=true;
 
-      tvShell   .Visible:=false;
-      tvTree    .Visible:=false;
-      tfeTree   .Visible:=false;
-      sbCollapse.Visible:=false;
-      sbTree    .Visible:=true;
+      sbTree .Visible:=true;
+      lvList .Visible:=true;
+      tvShell.Visible:=false;
+      tvTree .Visible:=false;
     end;
 
     panelView: begin
-//AddFileEventHandler(@UpdatePreview);
-      lvList .Visible:=false;
-      sbType .Visible:=false;
-      sbTime .Visible:=false;
-      sbSize .Visible:=false;
-      sbAttr .Visible:=false;
-      sbFull .Visible:=false;
+      AddFileEventHandler(@UpdatePreview);
 
-      tvShell   .Visible:=false;
-      tvTree    .Visible:=false;
-      tfeTree   .Visible:=false;
-      sbCollapse.Visible:=false;
-      sbTree    .Visible:=false;
+      pnlTopList.Visible:=false;
+      pnlTopTree.Visible:=false;
+      pnlPath   .Visible:=false;
+
+      sbTree .Visible:=false;
+      lvList .Visible:=false;
+      tvShell.Visible:=false;
+      tvTree .Visible:=false;
     end;
 
     panelTree: begin
-//RemoveEventHandler(@UpdatePreview);
-      lvList .Visible:=false;
-      sbType .Visible:=false;
-      sbTime .Visible:=false;
-      sbSize .Visible:=false;
-      sbAttr .Visible:=false;
-      sbFull .Visible:=false;
+      pnlTopList.Visible:=false;
+      pnlTopTree.Visible:=true;
+      pnlPath   .Visible:=true;
 
-      tvShell   .Visible:=false;
-      tvTree    .Visible:=true;
+      sbTree .Visible:=true;
+      lvList .Visible:=false;
+      tvShell.Visible:=false;
+      tvTree .Visible:=true;
       tfeTree.Filter:='';
-      tfeTree   .Visible:=true;
-      sbCollapse.Visible:=true;
-      sbTree    .Visible:=true;
+
+      FillTree();
+      if tvTree.Showing then
+        tvTree.SetFocus;
     end;
 
     panelShell: begin
-//RemoveEventHandler(@UpdatePreview);
-      lvList .Visible:=true;
-      sbType .Visible:=true;
-      sbTime .Visible:=true;
-      sbSize .Visible:=true;
-      sbAttr .Visible:=true;
-      sbFull .Visible:=false;
+      pnlTopList.Visible:=true;
+      pnlTopTree.Visible:=false;
+      pnlPath   .Visible:=true;
 
-      tvShell   .Visible:=false;
-      tvTree    .Visible:=false;
-      tfeTree   .Visible:=false;
-      sbCollapse.Visible:=false;
-      sbTree    .Visible:=true;
+      sbTree .Visible:=true;
+      lvList .Visible:=true;
+      tvShell.Visible:=false;
+      tvTree .Visible:=false;
     end;
 
     panelShellTree: begin
-//RemoveEventHandler(@UpdatePreview);
-      lvList .Visible:=false;
-      sbType .Visible:=false;
-      sbTime .Visible:=false;
-      sbSize .Visible:=false;
-      sbAttr .Visible:=false;
-      sbFull .Visible:=false;
+      pnlTopList.Visible:=false;
+      pnlTopTree.Visible:=true;
+      pnlPath   .Visible:=true;
 
-      tvShell   .Visible:=true;
-      tvTree    .Visible:=false;
-      tfeTree   .Visible:=false;
-      sbCollapse.Visible:=true;
-      sbTree    .Visible:=true;
+      sbTree .Visible:=true;
+      lvList .Visible:=false;
+      tvShell.Visible:=true;
+      tvTree .Visible:=false;
+
+      tvShell.Path:=FShellPath;
+      if tvShell.Showing then
+        tvShell.SetFocus;
     end;
 
     panelLog: begin
-//RemoveEventHandler(@UpdatePreview);
-      lvList .Visible:=false;
-      sbType .Visible:=false;
-      sbTime .Visible:=false;
-      sbSize .Visible:=false;
-      sbAttr .Visible:=false;
-      sbFull .Visible:=false;
+      pnlTopList.Visible:=false;
+      pnlTopTree.Visible:=false;
+      pnlPath   .Visible:=false;
 
-      tvShell   .Visible:=false;
-      tvTree    .Visible:=false;
-      tfeTree   .Visible:=false;
-      sbCollapse.Visible:=false;
-      sbTree    .Visible:=false;
+      sbTree .Visible:=false;
+      lvList .Visible:=false;
+      tvShell.Visible:=false;
+      tvTree .Visible:=false;
     end;
 
     panelSettings: begin
-//RemoveEventHandler(@UpdatePreview);
-      lvList .Visible:=false;
-      sbType .Visible:=false;
-      sbTime .Visible:=false;
-      sbSize .Visible:=false;
-      sbAttr .Visible:=false;
-      sbFull .Visible:=false;
+      pnlTopList.Visible:=false;
+      pnlTopTree.Visible:=false;
+      pnlPath   .Visible:=false;
 
-      tvShell   .Visible:=false;
-      tvTree    .Visible:=false;
-      tfeTree   .Visible:=false;
-      sbCollapse.Visible:=false;
-      sbTree    .Visible:=false;
+      sbTree .Visible:=false;
+      lvList .Visible:=false;
+      tvShell.Visible:=false;
+      tvTree .Visible:=false;
     end;
   end;
+
+  OnPanelType(Self,atype,false);
 end;
 
 procedure TPanelForm.cbContentChange(Sender: TObject);
 var
   lpanel:TPanelForm;
-  lidx,ltype:integer;
+  lidx:integer;
 begin
   SetPanelActive(self);
 
@@ -414,6 +426,7 @@ begin
   begin
     if fmPreview<>nil then
     begin
+      fmPreview.Visible:=false;
       fmPreview.Free;
       fmPreview:=nil;
     end;
@@ -430,6 +443,8 @@ begin
 
   if lidx<>ptConfig then
   begin
+    if fmSettings<>nil then
+      fmSettings.Hide;
 {
     if fmSettings<>nil then
     begin
@@ -439,68 +454,57 @@ begin
 }
   end;
 
-  lpanel:=GetOppositePanel();
-  ltype :=lpanel.GetPanelType();
-
   if lidx=ptView then
   begin
 //    SetCtrl(lpanel.Ctrl);
-    SetupView(panelView);
-    if ltype=panelList then
-    begin
-      ShowPreview(lpanel.Ctrl,lpanel.GetSelectedFile());
-    end;
+    SetPanelType(panelView);
   end
 
   else if lidx=ptLog then
   begin
-    SetupView(panelLog);
-    ShowLog();
+    SetPanelType(panelLog);
+    if GetPanelType()=panelLog then ShowLog();
   end
 
   else if lidx=ptConfig then
   begin
-    SetupView(panelSettings);
-    ShowSettings();
+    SetPanelType(panelSettings);
+    if GetPanelType()=panelSettings then ShowSettings();
   end
 
   else if lidx=ptShell then
   begin
     Ctrl:=@FShell;
-    if GetPanelType()=panelShell then
+    if not sbTree.Down {GetPanelType()=panelShell} then
+//    if GetPanelType()=panelShell then
     begin
-      SetupView(panelShell);
+      SetPanelType(panelShell);
       FillShellList('');
     end
     else
     begin
-      SetupView(panelShellTree);
+      SetPanelType(panelShellTree);
     end
   end
 
   else
   begin
     SetCtrl(CtrlList[lidx].Ctrl);
-    if GetPanelType()=panelList then
+    if not sbTree.Down {GetPanelType()=panelList} then
     begin
-      SetupView(panelList);
+      SetPanelType(panelList);
       FillList (GetActiveDir(Ctrl,ListIndex));
-      if (ListIndex=ActivePanel) and Application.Active then lvList.SetFocus;
+      if (ListIndex=ActivePanel) and lvList.Showing then lvList.SetFocus;
     end
     else
     begin
-      SetupView(panelTree);
-      FillTree (GetActiveDir(Ctrl,ListIndex));
-    end;
-
-    if ltype=panelView then
-    begin
-      lpanel.ShowPreview(Ctrl,GetSelectedFile());
+      SetPanelType(panelTree);
+//      FillTree();
     end;
   end;
 end;
 
-procedure TPanelForm.FillCombo();
+procedure TPanelForm.FillCombo(aremove:integer=0);
 var
   i,lold,lidx:integer;
   lobj:integer;
@@ -521,10 +525,10 @@ begin
   for i:=0 to CtrlCount-1 do
     cbContent.AddItem(CtrlList[i].Ctrl^.Pak.Name,TObject(IntPtr(i)));
   cbContent.Sorted:=false;
-  cbContent.AddItem(rsLog    ,TObject(ptLog));
   cbContent.AddItem(rsShell  ,TObject(ptShell));
-  cbContent.AddItem(rsConfig ,TObject(ptConfig));
-  cbContent.AddItem(rsPreview,TObject(ptView));
+  if aremove<>panelLog      then cbContent.AddItem(rsLog    ,TObject(ptLog));
+  if aremove<>panelSettings then cbContent.AddItem(rsConfig ,TObject(ptConfig));
+  if aremove<>panelView     then cbContent.AddItem(rsPreview,TObject(ptView));
 
   // Active panel: choose last used Controller
   if Self=Panels[ActivePanel] then
@@ -591,21 +595,26 @@ begin
       BorderStyle:=bsNone;
       Align      :=alClient;
       Parent     :=Self;
-      Visible    :=true;
+//      Visible    :=true;
     end;
   end;
   TCoreCfgForm(fmSettings).FillSettings;
+  fmSettings.Show;
 end;
 
 procedure TPanelForm.ShowPreview(actrl:PRGController; aidx:integer);
 begin
-  fmPreview.Free;
-  fmPreview:=nil;
+  if fmPreview<>nil then
+  begin
+    fmPreview.Visible:=false;
+    fmPreview.Free;
+    fmPreview:=nil;
+  end;
   if (actrl<>nil) and (aidx>=0) then
   begin
     if actrl^.Files[aidx]^.ftype<>typeDirectory then
     begin
-      fmPreview:=MakePreview(actrl^,aidx);
+      fmPreview:=MakePreview(actrl^,aidx,false);
       if fmPreview<>nil then
       begin
         fmPreview.BorderStyle:=bsNone;
@@ -617,21 +626,42 @@ begin
   end;
 end;
 
-procedure TPanelForm.SetColumnState(acol:integer; ashow:boolean);
+procedure TPanelForm.SetPanelPath(const apath:AnsiString); inline;
 begin
-       if acol=colType then sbType.Down:=ashow
-  else if acol=colTime then sbTime.Down:=ashow
-  else if acol=colSize then sbSize.Down:=ashow
-  else if acol=colAttr then sbAttr.Down:=ashow
+  pnlPath.Caption:=apath;
 end;
 
 procedure TPanelForm.sbColumnsClick(Sender: TObject);
 begin
-//  ldohide:=(Sender as TSpeedButton).Up;
-       if Sender=sbType then ShowHideColumn(colType,(Sender as TSpeedButton).Down)
-  else if Sender=sbTime then ShowHideColumn(colTime,(Sender as TSpeedButton).Down)
-  else if Sender=sbSize then ShowHideColumn(colSize,(Sender as TSpeedButton).Down)
-  else if Sender=sbAttr then ShowHideColumn(colAttr,(Sender as TSpeedButton).Down);
+  mnuColumns.PopUp;
+end;
+
+procedure TPanelForm.SetColumnState(acol:integer; ashow:boolean);
+begin
+  if FPanelType in [panelList,panelShell] then
+  begin
+         if acol=colType then miColType  .Checked:=ashow
+    else if acol=colSize then miColSize  .Checked:=ashow
+    else if acol=colPack then miColPacked.Checked:=ashow
+    else if acol=colTime then miColTime  .Checked:=ashow
+    else if acol=colAttr then miColAttr  .Checked:=ashow
+    else exit;
+    ShowHideColumn(acol, ashow);
+  end;
+end;
+
+procedure TPanelForm.ColMenuClick(Sender: TObject);
+var
+  mi: TMenuItem;
+begin
+  mi:=Sender as TMenuItem;
+  mi.Checked:=not mi.Checked;
+
+       if Sender=miColType   then ShowHideColumn(colType,mi.Checked)
+  else if Sender=miColSize   then ShowHideColumn(colSize,mi.Checked)
+  else if Sender=miColPacked then ShowHideColumn(colPack,mi.Checked)
+  else if Sender=miColTime   then ShowHideColumn(colTime,mi.Checked)
+  else if Sender=miColAttr   then ShowHideColumn(colAttr,mi.Checked);
 end;
 
 procedure TPanelForm.RefreshList();
@@ -678,10 +708,15 @@ begin
 //    if ldir>=0 then SelectFile(Ctrl^.Dirs[ldir].last);
     SelectInList(false);
   end
+  // Inverse selection
+  else if (Key=VK_MULTIPLY) and (Shift=[]) then
+  begin
+    SelectAll(true);
+  end
   // [Un] Select All
   else if (Key=VK_A) and (Shift=[ssCtrl]) then
   begin
-    SelectAll();
+    SelectAll(false);
   end
   // go to root
   else if (Key=VK_OEM_5) and (Shift=[ssCtrl]) then
@@ -694,9 +729,9 @@ begin
     Rename();
   end
   // Preview in separate window
-  else if (Key=VK_F3) and (Shift=[]) then
+  else if (Key=VK_F3) then
   begin
-    lform:=MakePreview(Ctrl^,GetSelectedFile());
+    lform:=MakePreview(Ctrl^,GetSelectedFile(),(Shift<>[]));
     if lform<>nil then lform.Show;
   end
   // Create New file
@@ -818,6 +853,7 @@ begin
   if lidx>=0 then
   begin
     with Ctrl^.Files[lidx]^ do
+    begin
       if (ftype=typeDirectory) and
          (action<>act_delete) then
       begin
@@ -828,7 +864,25 @@ begin
         end
         else
           FillList(Ctrl^.AsDir(lidx));
+      end
+      else if (ftype=typeUnknown) then
+      begin
+        FOnExecute(Ctrl,lidx);
+(*
+        ls:=ExtractExt(FastWideToStr(Name));
+        for i:=0 to High(RGPAKExts) do
+          if RGPAKExts[i]=ls then
+          begin
+{
+dir:=PathOfFile(lidx)
+lctrl:=LoadPak(OpenDialog.FileName);
+CtrlList[CtrlCount-1].Ctrl^.OnChange:=@GUIOnChange;
+UpdatePanels(lctrl);
+}
+          end;
+*)
       end;
+    end;
   end
   // Parent dir
   else if GetPanelType()=panelShell then
@@ -930,25 +984,21 @@ end;
 {$I tree.inc}
 
 procedure TPanelForm.UpdatePreview(aidx:integer; actrl:PRGController; aList:integer);
-{
-var
-  lpanel:TPanelForm;
 begin
-  lpanel:=GetOppositePanel();
-  if (aList=lpanel.ListIndex) and (lpanel.GetPanelType()=panelList) then
-}
-begin
-  if aList<>ListIndex then
+  if (GetPanelType()=panelView) {and (aList<>ListIndex)} then
     ShowPreview(actrl,aidx);
 end;
 
 procedure TPanelForm.FormCreate(Sender: TObject);
 begin
+  FPanelType:=panelUnknown;
   FOnChange:=@OnChangeDefault;
   FShell.Init(true);
   FShellPath:=ExtractPath(ParamStr(0));
 
   lvList.SortColumn:=colExt;
+  FOnType   :=@OnPanelTypeDef;
+  FOnExecute:=@OnExecuteDef;
 end;
 
 procedure TPanelForm.FormDestroy(Sender: TObject);

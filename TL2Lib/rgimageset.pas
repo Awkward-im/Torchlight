@@ -2,10 +2,9 @@
   !! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 }
 {NOTE: texture file have path, but imageset is not}
+{TODO: calc really required items array increment when "deleted" exists}
 {TODO: Build: transform absolute path to MEDIA-relative (how?)}
-{TODO: ISFile=-1 for deleted items}
 {TODO: RootDir for sheet pathed file search}
-{TODO: load all imagesets in dir}
 {TODO: save imageset dirs too}
 unit RGImageSet;
 
@@ -230,6 +229,10 @@ end;
 
 procedure TRGImageset.CheckItem(alen:integer);
 begin
+  //!!!! for using with NewItem only
+  dec(alen,FDeletedCnt);
+  if alen<=0 then exit;
+
   if (ItemCount+alen)>=Length(Items) then
     SetLength(Items,Align(Length(Items)+alen,16));
 end;
@@ -297,7 +300,7 @@ var
   Doc: TXMLDocument;
   Child: TDOMNode;
   ls:string;
-  lid,lis:integer;
+  lidx,lid,lis:integer;
 begin
   result:=ReadXMLText(Doc, abuf, asize);
 
@@ -341,16 +344,17 @@ begin
           begin
             if CompareWideI(PWideChar(Child.NodeName),'Image')=0 then
             begin
-              with Items[ItemCount] do
+              lidx:=NewItem(lid);
+              with Items[lidx] do
               begin
                 Name  :=AnsiString(Child.Attributes.Item[0].NodeValue);
-                ISFile:=lid;
+//                ISFile:=lid;
                 Val(Child.Attributes.Item[1].NodeValue,XPos);
                 Val(Child.Attributes.Item[2].NodeValue,YPos);
                 Val(Child.Attributes.Item[3].NodeValue,Width);
                 Val(Child.Attributes.Item[4].NodeValue,Height);
               end;
-              inc(ItemCount);
+//              inc(ItemCount);
             end;
             Child:=Child.NextSibling;
           end;
@@ -369,7 +373,7 @@ var
   lname,pc:PWideChar;
   ls:string;
   i,j:integer;
-  lis,lid,lx,ly,lwidth,lheight:integer;
+  lidx,lis,lid,lx,ly,lwidth,lheight:integer;
 begin
   pc:=PWideChar(abuf);
   if ORD(pc^)=SIGN_UNICODE then inc(pc);
@@ -423,16 +427,17 @@ begin
           end;
           if (lname<>nil) and (lwidth>0) and (lheight>0) then
           begin
-            with Items[ItemCount] do
+            lidx:=NewItem(lid);
+            with Items[lidx] do
             begin
               Name  :=FastWideToStr(lname);
-              ISFile:=lid;
+//              ISFile:=lid;
               XPos  :=lx;
               YPos  :=ly;
               Width :=lwidth;
               Height:=lheight;
             end;
-            inc(ItemCount);
+//            inc(ItemCount);
           end;
         end;
       else

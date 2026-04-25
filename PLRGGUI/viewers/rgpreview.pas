@@ -13,7 +13,7 @@ uses
   RGCtrl;
 
 
-function MakePreview(var actrl:TRGController; aidx:integer):TForm;
+function MakePreview(var actrl:TRGController; aidx:integer; asdump:boolean):TForm;
 procedure ClosePreviews (actrl:PRGController=nil);
 function  GetPreviewList(actrl:PRGController=nil):TObjectDynArray;
 procedure SetPreviewFont(const afont:TFont);
@@ -55,10 +55,11 @@ end;
 procedure SetPreviewFont(const afont:TFont); inline;
 begin
   if Viewer=nil then Viewer:=TViewer.Create(nil{Application.MainForm});
-  Viewer.Font.Assign(afont);
+  if afont<>Viewer.Font then
+    Viewer.Font.Assign(afont);
 end;
 
-function MakePreview(var actrl:TRGController; aidx:integer):TForm;
+function MakePreview(var actrl:TRGController; aidx:integer; asdump:boolean):TForm;
 var
   lrec:TRGFullInfo;
   lblInfo1,lblInfo2:TLabel;
@@ -82,7 +83,9 @@ begin
 {}
   if lrec.ftype=typeDirectory then exit;
 
-  if (lrec.ftype and $FF) in [typeUnknown,typeFont,typeOther,typeFX] then
+  if asdump then
+    result:=PreviewDump(actrl,aidx)
+  else if (lrec.ftype and $FF) in [typeUnknown,typeFont,typeOther,typeFX] then
   begin
     if RGTypeExtIsText(lext) then
       result:=PreviewText(actrl,aidx)
@@ -141,7 +144,7 @@ begin
 
   if result=nil then exit;
 
-  result.Caption:=ldir+lname;
+  result.Caption:=actrl.PAK.Name+': '+ldir+lname;
 
   with TBaseViewer(result) do
     if pnlInfo.ControlCount=0 then

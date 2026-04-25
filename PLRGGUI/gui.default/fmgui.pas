@@ -1067,7 +1067,7 @@ begin
 
     if lfile>=0 then
     begin
-      fmPreview:=MakePreview(FCtrl^,lfile);
+      fmPreview:=MakePreview(FCtrl^,lfile,false);
       if fmPreview<>nil then
       begin
         fmPreview.BorderStyle:=bsNone;
@@ -1129,7 +1129,7 @@ begin
 
     if lfile>=0 then
     begin
-      lform:=MakePreview(FCtrl^,lfile);
+      lform:=MakePreview(FCtrl^,lfile,false);
       if lform<>nil then lform.Show;
 //      FillGridLine(sgMain.Row,ldir,lfile); //?? remove after trigger implementation
     end;

@@ -23,7 +23,6 @@ object RGGUI2Form: TRGGUI2Form
     Width = 800
     ButtonHeight = 28
     ButtonWidth = 28
-    Caption = 'ToolBar'
     Images = ilMain24
     TabOrder = 1
     object tbNew: TToolButton
@@ -43,7 +42,7 @@ object RGGUI2Form: TRGGUI2Form
     end
     object tbSep1: TToolButton
       Left = 85
-      Height = 28
+      Height = 8
       Top = 2
       Caption = 'tbSep1'
       Style = tbsSeparator
@@ -60,7 +59,7 @@ object RGGUI2Form: TRGGUI2Form
     end
     object tbSep2: TToolButton
       Left = 149
-      Height = 28
+      Height = 8
       Top = 2
       Caption = 'tbSep2'
       Style = tbsSeparator
@@ -72,7 +71,7 @@ object RGGUI2Form: TRGGUI2Form
     end
     object ToolButton1: TToolButton
       Left = 185
-      Height = 28
+      Height = 5
       Top = 2
       Caption = 'ToolButton1'
       Style = tbsDivider

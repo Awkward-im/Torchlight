@@ -11,17 +11,17 @@ object PanelForm: TPanelForm
   OnDestroy = FormDestroy
   object pnlTop: TPanel
     Left = 0
-    Height = 50
+    Height = 30
     Top = 0
     Width = 499
     Align = alTop
-    ClientHeight = 50
+    ClientHeight = 30
     ClientWidth = 499
     TabOrder = 1
     object cbContent: TComboBox
       Left = 4
       Height = 23
-      Top = 0
+      Top = 1
       Width = 120
       ItemHeight = 15
       Sorted = True
@@ -29,67 +29,6 @@ object PanelForm: TPanelForm
       TabOrder = 0
       TabStop = False
       OnCloseUp = cbContentChange
-    end
-    object lblPath: TLabel
-      Left = 4
-      Height = 1
-      Top = 28
-      Width = 1
-    end
-    object sbType: TSpeedButton
-      Left = 134
-      Height = 22
-      Hint = 'Show/hide Category (Type) column'
-      Top = 2
-      Width = 23
-      AllowAllUp = True
-      Caption = 'C'
-      GroupIndex = 1
-      OnClick = sbColumnsClick
-    end
-    object sbTime: TSpeedButton
-      Left = 186
-      Height = 22
-      Hint = 'Show/hide Time column'
-      Top = 2
-      Width = 23
-      AllowAllUp = True
-      Caption = 'T'
-      GroupIndex = 2
-      OnClick = sbColumnsClick
-    end
-    object sbSize: TSpeedButton
-      Left = 160
-      Height = 22
-      Hint = 'Show/hide Size column'
-      Top = 2
-      Width = 23
-      AllowAllUp = True
-      Caption = 'S'
-      GroupIndex = 3
-      OnClick = sbColumnsClick
-    end
-    object sbAttr: TSpeedButton
-      Left = 212
-      Height = 22
-      Hint = 'Show/hide State column'
-      Top = 2
-      Width = 23
-      AllowAllUp = True
-      Caption = 'A'
-      GroupIndex = 4
-      OnClick = sbColumnsClick
-    end
-    object sbCollapse: TSpeedButton
-      Left = 444
-      Height = 22
-      Hint = 'Collapse tree'
-      Top = 2
-      Width = 23
-      Anchors = [akTop, akRight]
-      Images = ilPanel
-      ImageIndex = 1
-      OnClick = sbCollapseClick
     end
     object sbTree: TSpeedButton
       Left = 471
@@ -105,60 +44,120 @@ object PanelForm: TPanelForm
       ShowCaption = False
       OnClick = sbTreeClick
     end
-    object tfeTree: TTreeFilterEdit
-      Left = 136
-      Height = 23
-      Top = 2
-      Width = 158
-      ButtonWidth = 23
-      NumGlyphs = 1
-      MaxLength = 0
-      TabOrder = 1
-      TextHint = '(filter)'
-      FilteredTreeview = tvTree
-      ExpandAllInitially = True
-    end
-    object sbFilter: TSpeedButton
-      Left = 471
-      Height = 22
-      Top = 2
-      Width = 23
-      Anchors = [akTop, akRight]
-      Images = ilPanel
-      ImageIndex = 2
-      ShowCaption = False
-      OnClick = sbFilterClick
-    end
-    object sbFull: TSpeedButton
-      Left = 444
-      Height = 22
-      Top = 2
-      Width = 23
-      AllowAllUp = True
-      Anchors = [akTop, akRight]
-      GroupIndex = 7
-      Images = ilPanel
-      ImageIndex = 3
-      ShowCaption = False
-      OnClick = sbFullClick
-    end
-    object lvfeFull: TListViewFilterEdit
-      Left = 243
-      Height = 23
-      Top = 2
-      Width = 193
-      OnAfterFilter = lvfeFullAfterFilter
-      ButtonWidth = 23
+    object pnlTopList: TPanel
+      AnchorSideLeft.Control = cbContent
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideRight.Control = sbTree
+      Left = 130
+      Height = 24
+      Top = 1
+      Width = 335
       Anchors = [akTop, akLeft, akRight]
-      NumGlyphs = 1
-      MaxLength = 0
+      BorderSpacing.Left = 6
+      BorderSpacing.Right = 6
+      BevelOuter = bvNone
+      ClientHeight = 24
+      ClientWidth = 335
+      TabOrder = 1
+      object sbFilter: TSpeedButton
+        Left = 284
+        Height = 22
+        Hint = 'Filter setup'
+        Top = 2
+        Width = 23
+        Anchors = [akTop, akRight]
+        Images = ilPanel
+        ImageIndex = 2
+        ShowCaption = False
+        OnClick = sbFilterClick
+      end
+      object sbFull: TSpeedButton
+        Left = 310
+        Height = 22
+        Hint = 'Full List'
+        Top = 2
+        Width = 23
+        AllowAllUp = True
+        Anchors = [akTop, akRight]
+        GroupIndex = 7
+        Images = ilPanel
+        ImageIndex = 3
+        ShowCaption = False
+        OnClick = sbFullClick
+      end
+      object lvfeFull: TListViewFilterEdit
+        Left = 2
+        Height = 23
+        Top = 2
+        Width = 250
+        OnAfterFilter = lvfeFullAfterFilter
+        ButtonWidth = 23
+        Anchors = [akTop, akLeft, akRight]
+        AutoSize = False
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 0
+      end
+      object sbColumns: TSpeedButton
+        Left = 256
+        Height = 22
+        Top = 2
+        Width = 23
+        Anchors = [akTop, akRight]
+        Images = ilPanel
+        ImageIndex = 4
+        ShowCaption = False
+        PopupMenu = mnuColumns
+        OnClick = sbColumnsClick
+      end
+    end
+    object pnlTopTree: TPanel
+      AnchorSideLeft.Control = cbContent
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideRight.Control = sbTree
+      Left = 130
+      Height = 23
+      Top = 1
+      Width = 335
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 6
+      BorderSpacing.Right = 6
+      BevelOuter = bvNone
+      ClientHeight = 23
+      ClientWidth = 335
       TabOrder = 2
+      object sbCollapse: TSpeedButton
+        Left = 310
+        Height = 22
+        Hint = 'Collapse tree'
+        Top = 2
+        Width = 23
+        Anchors = [akTop, akRight]
+        Images = ilPanel
+        ImageIndex = 1
+        OnClick = sbCollapseClick
+      end
+      object tfeTree: TTreeFilterEdit
+        Left = 2
+        Height = 23
+        Top = 2
+        Width = 300
+        ButtonWidth = 23
+        Anchors = [akTop, akLeft, akRight]
+        AutoSize = False
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 0
+        TextHint = '(filter)'
+        FilteredTreeview = tvTree
+        ExpandAllInitially = True
+      end
     end
   end
   object lvList: TListView
     Left = 0
-    Height = 517
-    Top = 50
+    Height = 509
+    Top = 58
     Width = 499
     Align = alClient
     AutoSortIndicator = True
@@ -179,6 +178,11 @@ object PanelForm: TPanelForm
       item
         Alignment = taRightJustify
         Caption = 'Size'
+        Width = 80
+      end    
+      item
+        Alignment = taRightJustify
+        Caption = 'Packed'
         Width = 80
       end    
       item
@@ -212,8 +216,8 @@ object PanelForm: TPanelForm
   end
   object tvTree: TTreeView
     Left = 0
-    Height = 517
-    Top = 50
+    Height = 509
+    Top = 58
     Width = 499
     Align = alClient
     AutoExpand = True
@@ -231,47 +235,94 @@ object PanelForm: TPanelForm
   end
   object tvShell: TShellTreeView
     Left = 0
-    Height = 517
-    Top = 50
+    Height = 509
+    Top = 58
     Width = 499
     Align = alClient
     TabOrder = 3
     Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    OnDblClick = tvTreeDblClick
+  end
+  object pnlPath: TPanel
+    Left = 0
+    Height = 28
+    Top = 30
+    Width = 499
+    Align = alTop
+    TabOrder = 4
   end
   object ilPanel: TImageList
     Left = 292
     Top = 208
     Bitmap = {
-      4C7A0400000010000000100000008F0300000000000078DACD95494C934114C7
-      276E8978D278960B7A41BD4094960B140F442524D8265E4C08081A64F34025B2
-      D8A0071142222D022151298BF42B4A4991A58B284640E9016B29081405311112
-      DA08A81896F1BDDAE2C797B6F46BD4F4F0CF74DEBCDFCC5BE69B524A097549AB
-      D552CA9AF3D5BFE0ADC6D450DB508901B4FCEED945BD898938C4879F36571ABE
-      CE0D51D4B4594E873BC53A5F3C5753C30ABA85EF122FF2C9036386D829CA624C
-      A583EA933A3EFCABC7C25064404BA01E5FF907631F85C2A9D0E4E4590368392A
-      CAA627648457FC52E91783D1B84C51F09B86858DFB553FB7F2F33F530EBFC827
-      178C1962A728F84D217E1D1F9E106B2832845896403DFEE41F0C6ACC8D9FEDAB
-      B8FC11C7407864A989A1CE91075773293A5226233BB8BC222D3ADC17874CEBB5
-      84074CDED9B9B20BC7F771F9E6ABF1B36A69421DFA79E2557909750B3DF77E0E
-      5665CD78E29F97A78F2F7457ADAAA589755CF67E8648686D28B2A3FF4065D6A7
-      DAF488104F3CCE47EA0BEDF557E2046CBEBDF09C7663484557079BE993EB493A
-      4FF56B03FBDAEB4774FD4D0BD5148ADBD9BCF1768A097D6DAA5BDF6A52A2233D
-      F5AF3A557002D697D1CFE9CFE221B649B4F7CBB3A62B2482BD9EEA83F60179D6
-      0CFABD284F9BD8727E698A19EDD68662BBB73ED5260B8E8D35143B5CE79BD96B
-      9A42C953EACCBF69337FAEDA0A92F4581FF4D314883BD86B0FB363E3C69A64CE
-      FACF7729BEA36F75AAF0A84C12BE07CFC5F97CB7E207AE8F428CF51971B1DCFD
-      1969A2D2A1AF5E431F8C0363EDBF9B398DA3F35CB0E33A234D507ABC7F3131BB
-      708FD1C6623BC688FE9B8239DA91453F5FF758992B12698A241D50D3B7D0171B
-      8E98AF3253240AD6B7C2C2100788F29483C5D300CEFCF31FCB908D00CE5FDFE4
-      D52409E61FDE379383DB9D3BC29003E03B695193F31CFB1DB01B7A7B89F7FEC2
-      DB033E9D161529F5B686FB783D5B4DCA20573DC3909D9ED6CD4D643FEC31C18D
-      CD9D23EC3DB55D8EB04784B79AE19A9FBDB1595BC961F77CB4851CC19AF1E86D
-      B755454EB3FA7B066C5D7EF36AA2002687C5E7002FF797E7FA3BF753916C1EFC
-      9678B9F96C276EBDB8F5DC4EA65AB21B985556EF56D1168C6F07DCE91B10DF0A
-      2BD615B4F1B82B2BF84D72BE4FC7FF7A7BFE066FD2929000DFD0391CE16E9D82
-      B18F4F0C6EC6B98F8ADC843B5EC22B0717E38AE325F42C8E670D9C8C8B5FC21A
-      F87DBF7FD76BC935D2407377D73FD0DCDD7CA0B9BBDE8AB540FE3BF9D4CB977E
-      0145381A26
+      4C7A0500000010000000100000009E0400000000000078DACD576D4C935714BE
+      D95732F76BCB7E8F3F6E7FDCF607B349F9A32D1AA336260C92FD594260BAC589
+      1FCBEC10F99AF3C740C3325B0705230384D1160153261F6D75C34C81769BD652
+      2852260C8D9040A3C5BE5D40CFCE79EDCB5EDEF5EB36DB429327B7F7DCF3DC73
+      CE73EEBD4D0180410456AB154036E7C57FC1F73A0AD2FCCEE376C4E2ADCB1FDA
+      5CE6F4D778F853EED3F607B34E204CB9F570E3524E7F3CBE1293370CB08ADF93
+      F390A70ECA19730782C75100839677FB79F83F5F50A511071144F4C5AB7F2DF6
+      51A59A4CCBCB9BB12316376DF2DB181BE1CA5FA7BB6F7738168180DF61FDFAF1
+      A4F4935054741714FC873CB550CE983B10F03B60FEFD3C7CC6BC69C461CC1344
+      F42553FF5AC0F943DB6706AA3FBE43632A7CE282CB0CE2C8C1ABFD2873634505
+      7B46C937ECC9DC108F479CF6CFB50DE623BB664F7EF0F64B4A7EEBE1ED33169D
+      B69EFCA2F14D47B4F5F37DDFFE3978A6703A1AFFC7537BC7E77BCF2C5974BBEB
+      95DC73FBD42A6F73E902F95F3F5DF887716FFABA687C9A8F34962C347EA2C990
+      F32F96BC677DE234C1D2602B741467F747D3AF13EDCB43DFC3E3E136E82AC9B9
+      28E73BBECA7791AFDF74E2516D7EE6C668FDAB29C87807D717C94FF497F131B7
+      09B25FD3174E55E766BC184D1FB25FD7174E93DF4FA7F6DC5E15BF32DF4D766F
+      73D942AC3E19F332DE1A6B2E0B44E2BBE56B5D25B93F80587FCB4AFD4A741ECB
+      B6913EE4D7752CA75BBEF6DD812D9AB1960A51FFB91E43887C6B0A546F56E46E
+      7881E2D27CAED720D0FA28E6D8B84FB345B9BF59B7BB2960AB59261FCA8372BD
+      F6CDFE291AC5B868A775B34EDB14F5FC6DDEFC1CED317ABE6C817224FF15E09C
+      ECC425BF78E7B8E9905ADD559ADB8D9ADEC4BEF869A47A9BF6ABD56BF5ADF098
+      5900019C08C8F89042CCBF7F63CDEC490AF11FAFF02D2C1BE7BFFB5AD9AB89E2
+      8E98D92BE83BE1B1B0F715F62AB4DBAF5C61B1FB8B6F0FFA5CF2985865AC35DA
+      27666C0B3B89B5DACC66F66CB475770B7B19F7B8ADCC4DAA11F79E4C5423EE91
+      1E4B335A4BB2377E6F3B7B5D9A8FB6B13748338EDEF67A4D6C87ACBF3BD1D693
+      34DFC20CC83928E31F44BE3E59BED25FDCCFC40E70F057E5ABAC2711947A29F5
+      4C0497913D8F9C2559EF96C8B616DF0E3CD3E5985F58966B986C1C67254C7752
+      713F03FFD7DBF36FF05D56B62EC5377496463C5B59380EF0E42071C47D4CEC4B
+      3CE3C7B96A887022795CC59E6938351039117E903448FA7C3FD52B181921D5DA
+      25FD53AD5DE2A75A7BE4AD584EE5B79347AF78A8ABAB0B1A8D469030343404CE
+      869D7055AF015B5516747FB1153A4A778976B91F41E24A9FC8FF36709ED540F8
+      911B84B95E10268DD07E74DB3F7CE823EDA35C1B3EAB16F9E1592B081306B014
+      6D8DCB97FFDFF3F97CC8C7F8C15F40B8770184F1AFA1BD689B6857FEB78F19BF
+      1EE33F180461A60D84B1AA84F1A3F20303204C374368E4446AF5CF5F06E1CE39
+      103CE5983F67FD189FB40FF96B2174B358CC9FA77EEA9F70FFA9F6A1DF3EE3CF
+      9FE2DFEB8090AF1A42BF7E2AEACFADDF5D1384462B457E2AFD97B417E31FE5EF
+      3F691FBA551EC99FAFFFA45FC86F04C15DBC129FB7FF92F689F8D1EEEF70C30E
+      BCBF59E2FDB5E2FDED2CD3C6BCBF7F012DDF6509
     }
+  end
+  object mnuColumns: TPopupMenu
+    TrackButton = tbLeftButton
+    Left = 352
+    Top = 208
+    object miColType: TMenuItem
+      Caption = 'Category'
+      ShowAlwaysCheckable = True
+      OnClick = ColMenuClick
+    end
+    object miColSize: TMenuItem
+      Caption = 'Size'
+      ShowAlwaysCheckable = True
+      OnClick = ColMenuClick
+    end
+    object miColPacked: TMenuItem
+      Caption = 'Packed'
+      ShowAlwaysCheckable = True
+      OnClick = ColMenuClick
+    end
+    object miColTime: TMenuItem
+      Caption = 'Time'
+      ShowAlwaysCheckable = True
+      OnClick = ColMenuClick
+    end
+    object miColAttr: TMenuItem
+      Caption = 'Attrib'
+      ShowAlwaysCheckable = True
+      OnClick = ColMenuClick
+    end
   end
 end

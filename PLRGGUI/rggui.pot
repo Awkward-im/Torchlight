@@ -1,133 +1,243 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: formgui.rsbuildgrid
-msgid " Build file list. Please, wait..."
+#: fmlog.rscantsave
+msgctxt "fmlog.rscantsave"
+msgid "Can't save log file"
 msgstr ""
 
-#: formgui.rsbuildtree
-msgid " Build tree"
+#: fmpanel.rsconfig
+msgid "~~Settings"
 msgstr ""
 
-#: formgui.rscantsave
-msgid "Can't save file"
+#: fmpanel.rslog
+msgid "~~Log"
 msgstr ""
 
-#: formgui.rschangedfile
-msgid "Changed file"
+#: fmpanel.rspreview
+msgid "~~Preview"
 msgstr ""
 
-#: formgui.rscreatedir
-msgid "Create directory"
+#: fmpanel.rsshell
+msgid "~~Shell"
 msgstr ""
 
-#: formgui.rscreatefile
-msgid "Create file"
+#: imaging.sallfilter
+msgid "All Images"
 msgstr ""
 
-#: formgui.rsdeletefile
-msgid "Deleted file"
+#: imaging.serrorbadimage
+msgid "Bad image detected."
 msgstr ""
 
-#: formgui.rsdirname
-msgid "Enter dir name"
+#: imaging.serrorcloneimage
+#, object-pascal-format
+msgid "Error while cloning image. %s"
 msgstr ""
 
-#: formgui.rsdirs
-msgid "; dirs: "
+#: imaging.serrorconvertimage
+#, object-pascal-format
+msgid "Error while converting image to format \"%s\". %s"
 msgstr ""
 
-#: formgui.rsextractdir
-msgid "Extract directory "
+#: imaging.serrorcopypalette
+#, object-pascal-format
+msgid "Error while copying %d entries from palette @%p to @%p"
 msgstr ""
 
-#: formgui.rsfiledirname
-msgid "Enter name (with / at the end for dir)"
+#: imaging.serrorcopyrect
+#, object-pascal-format
+msgid "Error while copying rect from image %s to image %s."
 msgstr ""
 
-#: formgui.rsfilename
-msgid "Enter file name"
+#: imaging.serrorcustompalette
+#, object-pascal-format
+msgid "Error while filling custom palette @%p with %d entries."
 msgstr ""
 
-#: formgui.rsfilepath
-msgid "File path: "
+#: imaging.serroremptystream
+msgid "Input stream has no data. Check Position property."
 msgstr ""
 
-#: formgui.rsfiles
-msgid "Files: "
+#: imaging.serrorfillrect
+#, object-pascal-format
+msgid "Error while filling rectangle X:%d Y:%d W:%d H:%d in image %s"
 msgstr ""
 
-#: formgui.rsfilesunpacksucc
-msgid " files unpacked succesfully."
+#: imaging.serrorfindcolor
+#, object-pascal-format
+msgid "Error while finding color in palette @%p with %d entries."
 msgstr ""
 
-#: formgui.rsimported
-msgid " files imported"
+#: imaging.serrorflipimage
+#, object-pascal-format
+msgid "Error while flipping image. %s"
 msgstr ""
 
-#: formgui.rslinkchangedfile
-msgid "Link to changed file"
+#: imaging.serrorfreeimage
+#, object-pascal-format
+msgid "Error while freeing image. %s"
 msgstr ""
 
-#: formgui.rslinkingnote
-msgid "These files still on disk and not built-in until PAK/MOD saved."
+#: imaging.serrorfreepalette
+#, object-pascal-format
+msgid "Error while freeing palette @%p"
 msgstr ""
 
-#: formgui.rslinknewfile
-msgid "Link to new file"
+#: imaging.serrorgeneratemipmaps
+#, object-pascal-format
+msgid "Error while generating %d mipmap levels for image %s"
 msgstr ""
 
-#: formgui.rsnewfile
-msgid "New file"
+#: imaging.serrorgrayscalepalette
+#, object-pascal-format
+msgid "Error while filling grayscale palette @%p with %d entries."
 msgstr ""
 
-#: formgui.rsnothingimported
-msgid "Nothing was imported."
+#: imaging.serrorinvalidinputimage
+msgid "Invalid input image."
 msgstr ""
 
-#: formgui.rsnothingtoshow
-msgid "Nothing to show with current filter"
+#: imaging.serrorloadingfile
+#, object-pascal-format
+msgid "Error while loading images from file \"%s\" (file format: %s)."
 msgstr ""
 
-#: formgui.rsreadpak
-msgid " Read PAK. Parsing..."
+#: imaging.serrorloadingmemory
+#, object-pascal-format
+msgid "Error while loading images from memory %p (%d Bytes) (file format: %s)."
 msgstr ""
 
-#: formgui.rsready
-msgid "Ready to work"
+#: imaging.serrorloadingstream
+#, object-pascal-format
+msgid "Error while loading images from stream %p (file format: %s)."
 msgstr ""
 
-#: formgui.rsrename
-msgctxt "formgui.rsrename"
-msgid "Rename file/dir"
+#: imaging.serrormakepaletteforimages
+#, object-pascal-format
+msgid "Error while making %d color palette for %d images."
 msgstr ""
 
-#: formgui.rssaved
-msgid "File saved"
+#: imaging.serrormapimage
+#, object-pascal-format
+msgid "Error while mapping image %s to palette."
 msgstr ""
 
-#: formgui.rssavedas
-msgid "File saved as"
+#: imaging.serrormirrorimage
+#, object-pascal-format
+msgid "Error while mirroring image. %s"
 msgstr ""
 
-#: formgui.rssavedpatch
-msgid "Patch saved as"
+#: imaging.serrornewimage
+#, object-pascal-format
+msgid "Error while creating image data with params: Width=%d Height=%d Format=%s."
 msgstr ""
 
-#: formgui.rsselectdir
-msgid "Select directory"
+#: imaging.serrornewpalette
+#, object-pascal-format
+msgid "Error while creating new palette with %d entries"
 msgstr ""
 
-#: formgui.rsunpacksucc
-msgid "unpacked succesfully."
+#: imaging.serrorreducecolors
+#, object-pascal-format
+msgid "Error while reducing number of colors of image to %d. %s"
 msgstr ""
 
-#: formgui.rsunsaved
-msgid "You have unsaved changes. Continue anyway?"
+#: imaging.serrorreplacecolor
+#, object-pascal-format
+msgid "Error while replacing colors in rectangle X:%d Y:%d W:%d H:%d of image %s"
 msgstr ""
 
-#: formgui.rswarning
-msgid "Warning!"
+#: imaging.serrorresizeimage
+#, object-pascal-format
+msgid "Error while resizing image.  %s"
+msgstr ""
+
+#: imaging.serrorrotateimage
+#, object-pascal-format
+msgid "Error while rotating image %s by %.2n degrees"
+msgstr ""
+
+#: imaging.serrorsavingfile
+#, object-pascal-format
+msgid "Error while saving images to file \"%s\" (file format: %s)."
+msgstr ""
+
+#: imaging.serrorsavingmemory
+#, object-pascal-format
+msgid "Error while saving images to memory %p (%d Bytes) (file format: %s)."
+msgstr ""
+
+#: imaging.serrorsavingstream
+#, object-pascal-format
+msgid "Error while saving images to stream %p (file format: %s)."
+msgstr ""
+
+#: imaging.serrorsplitimage
+#, object-pascal-format
+msgid "Error while splitting image %s to %dx%d sized chunks."
+msgstr ""
+
+#: imaging.serrorstretchrect
+#, object-pascal-format
+msgid "Error while stretching rect from image %s to image %s."
+msgstr ""
+
+#: imaging.serrorswapimage
+#, object-pascal-format
+msgid "Error while swapping channels of image. %s"
+msgstr ""
+
+#: imaging.serrorswappalette
+#, object-pascal-format
+msgid "Error while swapping channels of palette @%p with %d entries."
+msgstr ""
+
+#: imaging.sexceptmsg
+msgid "Exception Message"
+msgstr ""
+
+#: imaging.sfileformatcannotload
+#, object-pascal-format
+msgid "Image Format \"%s\" does not support loading images."
+msgstr ""
+
+#: imaging.sfileformatcannotsave
+#, object-pascal-format
+msgid "Image Format \"%s\" does not support saving images."
+msgstr ""
+
+#: imaging.sfilenotvalid
+#, object-pascal-format
+msgid "File \"%s\" is not valid image in \"%s\" format."
+msgstr ""
+
+#: imaging.simageinfo
+#, object-pascal-format
+msgid "Image @%p info: Width = %dpx, Height = %dpx, Format = %s, Size = %.0n %s, Bits @%p, Palette @%p."
+msgstr ""
+
+#: imaging.simageinfoinvalid
+#, object-pascal-format
+msgid "Access violation encountered when getting info on image at address %p."
+msgstr ""
+
+#: imaging.simagesnotvalid
+msgid "One or more images are not valid."
+msgstr ""
+
+#: imaging.smemorynotvalid
+#, object-pascal-format
+msgid "Memory %p (%d Bytes) does not contain valid image in \"%s\" format."
+msgstr ""
+
+#: imaging.sstreamnotvalid
+#, object-pascal-format
+msgid "Stream %p does not contain valid image in \"%s\" format."
+msgstr ""
+
+#: imaging.sunknownformat
+msgid "Unknown and unsupported format"
 msgstr ""
 
 #: rgpreview.rsoffset
@@ -135,6 +245,7 @@ msgid "Offset"
 msgstr ""
 
 #: rgpreview.rssize
+msgctxt "rgpreview.rssize"
 msgid "Size"
 msgstr ""
 
@@ -143,443 +254,543 @@ msgctxt "rgpreview.rstime"
 msgid "Time"
 msgstr ""
 
-#: tfmlogform.bbclear.caption
-msgid "&Clear"
-msgstr ""
-
-#: tfmlogform.bbsave.caption
-msgctxt "tfmlogform.bbsave.caption"
-msgid "Save"
-msgstr ""
-
-#: tfmlogform.bbsave.hint
-msgid "Save log to file"
-msgstr ""
-
-#: trgguiform.actchangeversion.caption
-msgid "Change PAK version"
-msgstr ""
-
-#: trgguiform.actchangeversion.hint
-msgid "Change game target without rebuild files"
-msgstr ""
-
-#: trgguiform.acteddelete.caption
-msgctxt "trgguiform.acteddelete.caption"
-msgid "Delete"
-msgstr ""
-
-#: trgguiform.acteddelete.hint
-msgid "Mark file to delete at next saving"
-msgstr ""
-
-#: trgguiform.actedexport.caption
-msgid "Unpack selected"
-msgstr ""
-
-#: trgguiform.actedexport.hint
-msgid "Save selected file(s)"
-msgstr ""
-
-#: trgguiform.actedfontedit.caption
+#: tcorecfgform.bbfontedit.caption
+msgctxt "tcorecfgform.bbfontedit.caption"
 msgid "&Font"
 msgstr ""
 
-#: trgguiform.actedfontedit.hint
+#: tcorecfgform.bbfontedit.hint
+msgctxt "tcorecfgform.bbfontedit.hint"
 msgid "Change source code font"
 msgstr ""
 
-#: trgguiform.actedimport.caption
-msgctxt "trgguiform.actedimport.caption"
-msgid "Import file(s)"
+#: tcorecfgform.cbfastscan.caption
+msgid "Fast load"
 msgstr ""
 
-#: trgguiform.actedimport.hint
-msgctxt "trgguiform.actedimport.hint"
-msgid "Import file(s)"
+#: tcorecfgform.cbfastscan.hint
+msgid "Read manifest and mod info only, do not read headers of packed files (packed/unpacked size)"
 msgstr ""
 
-#: trgguiform.actedimportdir.caption
-msgid "Import dir"
-msgstr ""
-
-#: trgguiform.actedimportdir.hint
-msgid "Import directory content (with subdirs)"
-msgstr ""
-
-#: trgguiform.actednew.caption
-msgid "New file/dir"
-msgstr ""
-
-#: trgguiform.actedrename.caption
-msgid "Rename"
-msgstr ""
-
-#: trgguiform.actedrename.hint
-msgctxt "trgguiform.actedrename.hint"
-msgid "Rename file/dir"
-msgstr ""
-
-#: trgguiform.actedreset.caption
-msgid "Reset"
-msgstr ""
-
-#: trgguiform.actedreset.hint
-msgid "Remove any updates for file"
-msgstr ""
-
-#: trgguiform.actfileclose.caption
-msgid "&Close"
-msgstr ""
-
-#: trgguiform.actfileclose.hint
-msgid "Close file"
-msgstr ""
-
-#: trgguiform.actfileexit.caption
-msgid "E&xit"
-msgstr ""
-
-#: trgguiform.actfileexit.hint
-msgid "Exit program"
-msgstr ""
-
-#: trgguiform.actfileopen.caption
-msgid "&Open"
-msgstr ""
-
-#: trgguiform.actfileopen.hint
-msgid "Open file"
-msgstr ""
-
-#: trgguiform.actfilesave.caption
-msgid "&Save"
-msgstr ""
-
-#: trgguiform.actfilesave.hint
-msgid "Save file"
-msgstr ""
-
-#: trgguiform.actfilesaveas.caption
-msgid "Save &As"
-msgstr ""
-
-#: trgguiform.actfilesavepatch.caption
-msgid "Save &Patch"
-msgstr ""
-
-#: trgguiform.actfilesavepatch.hint
-msgid "Save just changed files"
-msgstr ""
-
-#: trgguiform.acthelpabout.caption
-msgid "&About"
-msgstr ""
-
-#: trgguiform.acthelpabout.hint
-msgid "About"
-msgstr ""
-
-#: trgguiform.actopendir.caption
-msgid "Open unpack dir"
-msgstr ""
-
-#: trgguiform.actopendir.hint
-msgid "Open directory for unpack files"
-msgstr ""
-
-#: trgguiform.actresetview.caption
-msgid "Reset View"
-msgstr ""
-
-#: trgguiform.actresetview.hint
-msgid "Reset panels and columns width"
-msgstr ""
-
-#: trgguiform.actshowfilter.caption
-msgid "Type Filter"
-msgstr ""
-
-#: trgguiform.actshowfilter.hint
-msgid "Show type filter"
-msgstr ""
-
-#: trgguiform.actshowinfo.caption
-msgctxt "trgguiform.actshowinfo.caption"
-msgid "&Info"
-msgstr ""
-
-#: trgguiform.actshowinfo.hint
-msgctxt "trgguiform.actshowinfo.hint"
-msgid "Show TL2 MOD info"
-msgstr ""
-
-#: trgguiform.actshowlog.caption
-msgid "Show Log"
-msgstr ""
-
-#: trgguiform.actshowlog.hint
-msgid "Show Log window"
-msgstr ""
-
-#: trgguiform.actshowpreview.caption
-msgctxt "trgguiform.actshowpreview.caption"
-msgid "Show Preview"
-msgstr ""
-
-#: trgguiform.actshowpreview.hint
-msgid "Show preview/editor"
-msgstr ""
-
-#: trgguiform.bbcollapse.hint
-msgid "Collapse tree"
-msgstr ""
-
-#: trgguiform.caption
-msgid "RGGUI"
-msgstr ""
-
-#: trgguiform.cbfastscan.caption
-msgid "Fast scan (no packed size)"
-msgstr ""
-
-#: trgguiform.cbmoddat.caption
+#: tcorecfgform.cbmoddat.caption
 msgid "Make MOD.DAT for TL2 mod unpack"
 msgstr ""
 
-#: trgguiform.cbpreview.caption
-msgid "Use built-in preview"
-msgstr ""
-
-#: trgguiform.cbsavedatetime.caption
+#: tcorecfgform.cbsavedatetime.caption
 msgid "Extract with original date"
 msgstr ""
 
-#: trgguiform.cbsavesettings.caption
-msgid "Save Settings on exit"
+#: tcorecfgform.cbsavesettings.caption
+msgid "Save settings on exit"
 msgstr ""
 
-#: trgguiform.cbsavetl1adm.caption
-msgid "TL1: Save ADM files too"
-msgstr ""
-
-#: trgguiform.cbsaveutf8.caption
+#: tcorecfgform.cbsaveutf8.caption
 msgid "Save text as UTF8"
 msgstr ""
 
-#: trgguiform.cbsavewidth.caption
-msgid "Save tree and grid width"
+#: tcorecfgform.cbsinglemod.caption
+msgctxt "tcorecfgform.cbsinglemod.caption"
+msgid "Use single mod interface"
 msgstr ""
 
-#: trgguiform.cbtest.caption
-msgid "DO NOT SAVE extracted files (test only)"
+#: tcorecfgform.cbtest.caption
+msgid "DO NOT SAVE extracted files"
 msgstr ""
 
-#: trgguiform.cbunpacktree.caption
+#: tcorecfgform.cbtest.hint
+msgid "Extract/[de]compile files, no save on disk"
+msgstr ""
+
+#: tcorecfgform.cbunpacktree.caption
 msgid "Keep path"
 msgstr ""
 
-#: trgguiform.cbusefname.caption
-msgid "Use file name as dir for unpack"
+#: tcorecfgform.cbusefname.caption
+msgid "Use file name as dir"
 msgstr ""
 
-#: trgguiform.edgridfilter.texthint
-msgid "Grid filter"
+#: tcorecfgform.cbusefname.hint
+msgid "Use PAK/MOD file name as subdir when unpack"
 msgstr ""
 
-#: trgguiform.edtreefilter.texthint
-msgid "(filter)"
+#: tcorecfgform.gbdecoding.caption
+msgid "Data Unpack"
 msgstr ""
 
-#: trgguiform.gbdecoding.caption
-msgid "Text unpack"
-msgstr ""
-
-#: trgguiform.grid.caption
-msgid "Grid"
-msgstr ""
-
-#: trgguiform.lbloutdir.caption
+#: tcorecfgform.lbloutdir.caption
 msgid "Dir for extraction"
 msgstr ""
 
-#: trgguiform.miedit.caption
-msgid "&Edit"
-msgstr ""
-
-#: trgguiform.mifile.caption
-msgid "&File"
-msgstr ""
-
-#: trgguiform.mihelp.caption
-msgid "&Help"
-msgstr ""
-
-#: trgguiform.mitreedelete.caption
-msgid "Delete dir"
-msgstr ""
-
-#: trgguiform.mitreeextract.caption
-msgctxt "trgguiform.mitreeextract.caption"
-msgid "Extract w. subdirs"
-msgstr ""
-
-#: trgguiform.mitreeextractdir.caption
-msgctxt "trgguiform.mitreeextractdir.caption"
-msgid "Extract this dir"
-msgstr ""
-
-#: trgguiform.mitreeextractvisible.caption
-msgctxt "trgguiform.mitreeextractvisible.caption"
-msgid "Extract visible"
-msgstr ""
-
-#: trgguiform.mitreelist.caption
-msgid "Copy dir list"
-msgstr ""
-
-#: trgguiform.mitreenew.caption
-msgid "New directory"
-msgstr ""
-
-#: trgguiform.mitreerestore.caption
-msgid "Restore dir"
-msgstr ""
-
-#: trgguiform.rbbinonly.caption
+#: tcorecfgform.rbbinonly.caption
 msgid "Binary only"
 msgstr ""
 
-#: trgguiform.rbgutsstyle.caption
+#: tcorecfgform.rbgutsstyle.caption
 msgid "GUTS style"
 msgstr ""
 
-#: trgguiform.rbtextonly.caption
+#: tcorecfgform.rbtextonly.caption
 msgid "Text only"
 msgstr ""
 
-#: trgguiform.rbtextrename.caption
+#: tcorecfgform.rbtextrename.caption
 msgid "Rename text"
 msgstr ""
 
-#: trgguiform.setings.caption
-msgid "Setings"
+#: tguicfgform.bbfontedit.caption
+msgctxt "tguicfgform.bbfontedit.caption"
+msgid "&Font"
 msgstr ""
 
-#: trgguiform.sgmain.columns[0].title.caption
-msgid "State"
+#: tguicfgform.bbfontedit.hint
+msgctxt "tguicfgform.bbfontedit.hint"
+msgid "Change source code font"
 msgstr ""
 
-#: trgguiform.sgmain.columns[1].title.caption
-msgid "Dir"
+#: tguicfgform.cbpreview.caption
+msgid "Use built-in preview"
 msgstr ""
 
-#: trgguiform.sgmain.columns[2].title.caption
-msgctxt "trgguiform.sgmain.columns[2].title.caption"
+#: tguicfgform.cbsinglemod.caption
+msgctxt "tguicfgform.cbsinglemod.caption"
+msgid "Use single mod interface"
+msgstr ""
+
+#: tpanelform.lvlist.columns[0].caption
 msgid "Name"
 msgstr ""
 
-#: trgguiform.sgmain.columns[3].title.caption
-msgctxt "trgguiform.sgmain.columns[3].title.caption"
+#: tpanelform.lvlist.columns[1].caption
 msgid "Ext"
 msgstr ""
 
-#: trgguiform.sgmain.columns[4].title.caption
+#: tpanelform.lvlist.columns[2].caption
 msgid "Type"
 msgstr ""
 
-#: trgguiform.sgmain.columns[5].title.caption
-msgctxt "trgguiform.sgmain.columns[5].title.caption"
-msgid "Time"
+#: tpanelform.lvlist.columns[3].caption
+msgctxt "tpanelform.lvlist.columns[3].caption"
+msgid "Size"
 msgstr ""
 
-#: trgguiform.sgmain.columns[6].title.caption
+#: tpanelform.lvlist.columns[4].caption
+msgctxt "tpanelform.lvlist.columns[4].caption"
 msgid "Packed"
 msgstr ""
 
-#: trgguiform.sgmain.columns[7].title.caption
-msgid "Unpacked"
+#: tpanelform.lvlist.columns[5].caption
+msgctxt "tpanelform.lvlist.columns[5].caption"
+msgid "Time"
 msgstr ""
 
-#: trgguiform.sgmain.columns[8].title.caption
-msgid "Source"
+#: tpanelform.lvlist.columns[6].caption
+msgid "Attr"
 msgstr ""
 
-#: trgguiform.tbcolcategory.caption
-msgctxt "trgguiform.tbcolcategory.caption"
-msgid "C"
+#: tpanelform.micolattr.caption
+msgid "Attrib"
 msgstr ""
 
-#: trgguiform.tbcolcategory.hint
-msgctxt "trgguiform.tbcolcategory.hint"
-msgid "Show/hide column: Category"
+#: tpanelform.micolpacked.caption
+msgctxt "tpanelform.micolpacked.caption"
+msgid "Packed"
 msgstr ""
 
-#: trgguiform.tbcoldir.caption
-msgctxt "trgguiform.tbcoldir.caption"
-msgid "D"
+#: tpanelform.micolsize.caption
+msgctxt "tpanelform.micolsize.caption"
+msgid "Size"
 msgstr ""
 
-#: trgguiform.tbcoldir.hint
-msgctxt "trgguiform.tbcoldir.hint"
-msgid "Show/hide column: Directory"
+#: tpanelform.micoltime.caption
+msgctxt "tpanelform.micoltime.caption"
+msgid "Time"
 msgstr ""
 
-#: trgguiform.tbcolext.caption
-msgctxt "trgguiform.tbcolext.caption"
-msgid "E"
+#: tpanelform.micoltype.caption
+msgid "Category"
 msgstr ""
 
-#: trgguiform.tbcolext.hint
-msgctxt "trgguiform.tbcolext.hint"
-msgid "Show/hide column: Extension"
+#: tpanelform.sbcollapse.hint
+msgid "Collapse tree"
 msgstr ""
 
-#: trgguiform.tbcolpacked.caption
-msgctxt "trgguiform.tbcolpacked.caption"
-msgid "P"
+#: tpanelform.sbfilter.hint
+msgid "Filter setup"
 msgstr ""
 
-#: trgguiform.tbcolpacked.hint
-msgctxt "trgguiform.tbcolpacked.hint"
-msgid "Show/hide column: Packed size"
+#: tpanelform.sbfull.hint
+msgid "Full List"
 msgstr ""
 
-#: trgguiform.tbcolsource.caption
-msgctxt "trgguiform.tbcolsource.caption"
-msgid "S"
+#: tpanelform.sbtree.hint
+msgid "Show as Tree"
 msgstr ""
 
-#: trgguiform.tbcolsource.hint
-msgctxt "trgguiform.tbcolsource.hint"
-msgid "Show/hide column: Source size"
+#: tpanelform.tfetree.texthint
+msgid "(filter)"
 msgstr ""
 
-#: trgguiform.tbcoltime.caption
-msgctxt "trgguiform.tbcoltime.caption"
-msgid "T"
+#: trggui2form.actchangeversion.caption
+msgctxt "trggui2form.actchangeversion.caption"
+msgid "Change PAK version"
 msgstr ""
 
-#: trgguiform.tbcoltime.hint
-msgctxt "trgguiform.tbcoltime.hint"
-msgid "Show/hide column: Time"
+#: trggui2form.actchangeversion.hint
+msgctxt "trggui2form.actchangeversion.hint"
+msgid "Change game target without rebuild files"
 msgstr ""
 
-#: trgguiform.tbcolunpacked.caption
-msgctxt "trgguiform.tbcolunpacked.caption"
-msgid "U"
+#: trggui2form.actfileclose.caption
+msgid "actFileClose"
 msgstr ""
 
-#: trgguiform.tbcolunpacked.hint
-msgctxt "trgguiform.tbcolunpacked.hint"
-msgid "Show/hide column: Unpacked size"
+#: trggui2form.actfileclose.hint
+msgctxt "trggui2form.actfileclose.hint"
+msgid "Close file"
 msgstr ""
 
-#: trgguiform.tbinfo.hint
+#: trggui2form.actfileexit.caption
+msgid "actFileExit"
+msgstr ""
+
+#: trggui2form.actfileexit.hint
+msgctxt "trggui2form.actfileexit.hint"
+msgid "Exit program"
+msgstr ""
+
+#: trggui2form.actfilenew.caption
+msgid "&New"
+msgstr ""
+
+#: trggui2form.actfilenew.hint
+msgid "New file"
+msgstr ""
+
+#: trggui2form.actfileopen.caption
+msgctxt "trggui2form.actfileopen.caption"
+msgid "&Open"
+msgstr ""
+
+#: trggui2form.actfileopen.hint
+msgctxt "trggui2form.actfileopen.hint"
+msgid "Open file"
+msgstr ""
+
+#: trggui2form.actfilesave.caption
+msgid "actFileSave"
+msgstr ""
+
+#: trggui2form.actfilesave.hint
+msgctxt "trggui2form.actfilesave.hint"
+msgid "Save file"
+msgstr ""
+
+#: trggui2form.actfilesaveas.caption
+msgid "actFileSaveAs"
+msgstr ""
+
+#: trggui2form.actfilesaveas.hint
+msgid "Save file as..."
+msgstr ""
+
+#: trggui2form.actfilesavepatch.caption
+msgid "actFileSavePatch"
+msgstr ""
+
+#: trggui2form.actfilesavepatch.hint
+msgctxt "trggui2form.actfilesavepatch.hint"
+msgid "Save just changed files"
+msgstr ""
+
+#: trggui2form.acthelpabout.caption
+msgctxt "trggui2form.acthelpabout.caption"
+msgid "&About"
+msgstr ""
+
+#: trggui2form.acthelpabout.hint
+msgctxt "trggui2form.acthelpabout.hint"
+msgid "About"
+msgstr ""
+
+#: trggui2form.actleftpanelmode.caption
+msgid "actLeftPanelMode"
+msgstr ""
+
+#: trggui2form.actrightpanelmode.caption
+msgid "actRightPanelMode"
+msgstr ""
+
+#: trggui2form.actshowlog.caption
+msgctxt "trggui2form.actshowlog.caption"
+msgid "Show Log"
+msgstr ""
+
+#: trggui2form.actshowlog.hint
+msgid "Show log window"
+msgstr ""
+
+#: trggui2form.miedit.caption
+msgctxt "trggui2form.miedit.caption"
+msgid "&Edit"
+msgstr ""
+
+#: trggui2form.mifile.caption
+msgctxt "trggui2form.mifile.caption"
+msgid "&File"
+msgstr ""
+
+#: trggui2form.mifileclose.caption
+msgctxt "trggui2form.mifileclose.caption"
+msgid "&Close"
+msgstr ""
+
+#: trggui2form.mifileexit.caption
+msgctxt "trggui2form.mifileexit.caption"
+msgid "E&xit"
+msgstr ""
+
+#: trggui2form.mifilesave.caption
+msgctxt "trggui2form.mifilesave.caption"
+msgid "&Save"
+msgstr ""
+
+#: trggui2form.mifilesaveas.caption
+msgctxt "trggui2form.mifilesaveas.caption"
+msgid "Save &As"
+msgstr ""
+
+#: trggui2form.mifilesavepatch.caption
+msgctxt "trggui2form.mifilesavepatch.caption"
+msgid "Save &Patch"
+msgstr ""
+
+#: trggui2form.mihelp.caption
+msgctxt "trggui2form.mihelp.caption"
+msgid "&Help"
+msgstr ""
+
+#: trggui2form.tbsep1.caption
+msgid "tbSep1"
+msgstr ""
+
+#: trggui2form.tbsep2.caption
+msgid "tbSep2"
+msgstr ""
+
+#: trggui2form.toolbutton1.caption
+msgid "ToolButton1"
+msgstr ""
+
+#: trgguimform.actchangeversion.caption
+msgctxt "trgguimform.actchangeversion.caption"
+msgid "Change PAK version"
+msgstr ""
+
+#: trgguimform.actchangeversion.hint
+msgctxt "trgguimform.actchangeversion.hint"
+msgid "Change game target without rebuild files"
+msgstr ""
+
+#: trgguimform.actedimport.caption
+msgctxt "trgguimform.actedimport.caption"
+msgid "Import file(s)"
+msgstr ""
+
+#: trgguimform.actedimport.hint
+msgctxt "trgguimform.actedimport.hint"
+msgid "Import file(s)"
+msgstr ""
+
+#: trgguimform.actedimportdir.caption
+msgid "Import dir"
+msgstr ""
+
+#: trgguimform.actedimportdir.hint
+msgid "Import directory content (with subdirs)"
+msgstr ""
+
+#: trgguimform.actfileclose.caption
+msgctxt "trgguimform.actfileclose.caption"
+msgid "&Close"
+msgstr ""
+
+#: trgguimform.actfileclose.hint
+msgctxt "trgguimform.actfileclose.hint"
+msgid "Close file"
+msgstr ""
+
+#: trgguimform.actfileexit.caption
+msgctxt "trgguimform.actfileexit.caption"
+msgid "E&xit"
+msgstr ""
+
+#: trgguimform.actfileexit.hint
+msgctxt "trgguimform.actfileexit.hint"
+msgid "Exit program"
+msgstr ""
+
+#: trgguimform.actfileopen.caption
+msgctxt "trgguimform.actfileopen.caption"
+msgid "&Open"
+msgstr ""
+
+#: trgguimform.actfileopen.hint
+msgctxt "trgguimform.actfileopen.hint"
+msgid "Open file"
+msgstr ""
+
+#: trgguimform.actfilesave.caption
+msgctxt "trgguimform.actfilesave.caption"
+msgid "&Save"
+msgstr ""
+
+#: trgguimform.actfilesave.hint
+msgctxt "trgguimform.actfilesave.hint"
+msgid "Save file"
+msgstr ""
+
+#: trgguimform.actfilesaveas.caption
+msgctxt "trgguimform.actfilesaveas.caption"
+msgid "Save &As"
+msgstr ""
+
+#: trgguimform.actfilesavepatch.caption
+msgctxt "trgguimform.actfilesavepatch.caption"
+msgid "Save &Patch"
+msgstr ""
+
+#: trgguimform.actfilesavepatch.hint
+msgctxt "trgguimform.actfilesavepatch.hint"
+msgid "Save just changed files"
+msgstr ""
+
+#: trgguimform.acthelpabout.caption
+msgctxt "trgguimform.acthelpabout.caption"
+msgid "&About"
+msgstr ""
+
+#: trgguimform.acthelpabout.hint
+msgctxt "trgguimform.acthelpabout.hint"
+msgid "About"
+msgstr ""
+
+#: trgguimform.actopendir.caption
+msgid "Open unpack dir"
+msgstr ""
+
+#: trgguimform.actopendir.hint
+msgid "Open directory for unpack files"
+msgstr ""
+
+#: trgguimform.actshowinfo.caption
+msgid "&Info"
+msgstr ""
+
+#: trgguimform.actshowinfo.hint
+msgid "Show TL2 MOD info"
+msgstr ""
+
+#: trgguimform.actshowlog.caption
+msgctxt "trgguimform.actshowlog.caption"
+msgid "Show Log"
+msgstr ""
+
+#: trgguimform.actshowlog.hint
+msgid "Show Log window"
+msgstr ""
+
+#: trgguimform.actshowpreview.caption
+msgid "Show Preview"
+msgstr ""
+
+#: trgguimform.actshowpreview.hint
+msgid "Show preview/editor"
+msgstr ""
+
+#: trgguimform.caption
+msgid "RGGUI"
+msgstr ""
+
+#: trgguimform.grid.caption
+msgid "Grid"
+msgstr ""
+
+#: trgguimform.miedit.caption
+msgctxt "trgguimform.miedit.caption"
+msgid "&Edit"
+msgstr ""
+
+#: trgguimform.mieditdelete.caption
+msgctxt "trgguimform.mieditdelete.caption"
+msgid "Reset"
+msgstr ""
+
+#: trgguimform.mieditdelete.hint
+msgctxt "trgguimform.mieditdelete.hint"
+msgid "Remove any updates for file"
+msgstr ""
+
+#: trgguimform.mieditextract.caption
+msgctxt "trgguimform.mieditextract.caption"
+msgid "Unpack selected"
+msgstr ""
+
+#: trgguimform.mieditextract.hint
+msgctxt "trgguimform.mieditextract.hint"
+msgid "Save selected file(s)"
+msgstr ""
+
+#: trgguimform.mifile.caption
+msgctxt "trgguimform.mifile.caption"
+msgid "&File"
+msgstr ""
+
+#: trgguimform.mihelp.caption
+msgctxt "trgguimform.mihelp.caption"
+msgid "&Help"
+msgstr ""
+
+#: trgguimform.settings.caption
+msgid "Settings"
+msgstr ""
+
+#: trgguimform.tbedexport.caption
+msgctxt "trgguimform.tbedexport.caption"
+msgid "Unpack selected"
+msgstr ""
+
+#: trgguimform.tbedexport.hint
+msgctxt "trgguimform.tbedexport.hint"
+msgid "Save selected file(s)"
+msgstr ""
+
+#: trgguimform.tbedreset.caption
+msgctxt "trgguimform.tbedreset.caption"
+msgid "Reset"
+msgstr ""
+
+#: trgguimform.tbedreset.hint
+msgctxt "trgguimform.tbedreset.hint"
+msgid "Remove any updates for file"
+msgstr ""
+
+#: trgguimform.tbfilter.caption
+msgid "Type Filter"
+msgstr ""
+
+#: trgguimform.tbfilter.hint
+msgid "Show type filter"
+msgstr ""
+
+#: trgguimform.tbinfo.hint
 msgid "Mod info"
 msgstr ""
 
-#: unitlogform.rscantsave
-msgid "Can't save log file"
+#: trgguimform.tbresetview.caption
+msgid "Reset View"
+msgstr ""
+
+#: trgguimform.tbresetview.hint
+msgid "Reset panels and columns width"
 msgstr ""
 

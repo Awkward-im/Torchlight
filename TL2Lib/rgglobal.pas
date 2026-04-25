@@ -71,6 +71,9 @@ const
   strRootDir  = 'MEDIA/';
 
 const
+  RGPAKExts:array [0..3] of string = ('.MOD','.PAK', '.MAN', '.ZIP');
+
+const
   RGDefaultExt     = '.MOD';
   RGDefaultFilter  = 5;
   RGDefReadFilter  = 'MOD files|*.MOD|PAK files|*.PAK|TL1 ZIP archives|*.ZIP|MAN files|*.MAN|Supported files|*.MOD;*.PAK;*.MAN;*.ZIP|All files|*.*';

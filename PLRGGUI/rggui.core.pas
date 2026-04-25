@@ -4,6 +4,7 @@
   make new pak
   load existing pak
 }
+{TODO: make settings as property to set cfgSettingsChanged with check for changes (with indexes?)}
 {TODO: Make Event OnChangeDir for SetActiveDir (OnChangeFile for SetActiveFile?)}
 {TODO: move cfgOriginal (sVanilaPath) to GUI unit}
 {NOTE: Set/GetActiveFile/Dir and ClosePak supports single instance of ctrl, not doubles}
@@ -16,6 +17,11 @@ uses
   RGCtrl;
 
 {%REGION Controller}
+{
+  Dirs list is not the same as panel list.
+    1 - dir list is non-visual
+    2 - theoretically, single panel can have several dirs
+}
 const
   MaxDirCount = 16;
 type
@@ -35,6 +41,10 @@ var
 {%ENDREGION Controller}
 
 {%REGION Settings}
+const
+  sSectSettings = 'settings';
+  sGUIDir       = 'guidir';
+
 var
   cfgOriginal    :AnsiString;
   cfgGUIPlugin   :AnsiString;
@@ -46,7 +56,9 @@ var
   cfgFastScan    :Boolean;
   cfgSaveDateTime:Boolean;
   cfgSaveUTF8    :Boolean;
-  cfgSaveSettings:Boolean;
+
+var
+  cfgSettingsChanged:boolean;
 
 // Save Mode
 const
@@ -62,7 +74,15 @@ var
 
 {%REGION Events}
 type
+  TActiveCtrlEvent = procedure (idx:integer) of object;
+  TUnpackFileEvent = function (const adir, aname:string):integer of object;
   TSelectFileEvent = procedure (idx:integer; actrl:PRGController; aList:integer) of object;
+
+{
+property OnActiveCtrlChanged:TActiveCtrlEvent read GetACtrlEvent write SetACtrlEvent;
+procedure SetACtrlEvent(aproc:TActiveCtrlEvent);
+function  GetACtrlEvent()    :TActiveCtrlEvent;
+}
 
 procedure AddFileEventHandler(aproc:TSelectFileEvent);
 procedure AddDirEventHandler (aproc:TSelectFileEvent);
@@ -85,9 +105,6 @@ function LoadPak (const aname:AnsiString):PRGController;
 function ClosePak(actrl:PRGController=nil; aforce:boolean=false):boolean;
 
 {%REGION Unpack}
-type
-  TUnpackFileEvent = function (const adir, aname:string):integer of object;
-
 function SaveFile(actrl:PRGController; aidx:integer; testonly:boolean=false):boolean;
 function SaveFile(const adir,aname:string;        // destination dir and filename
                   adata:PByte; asize:integer;
@@ -115,6 +132,20 @@ uses
 
 
 {%REGION Events}
+{
+var
+  FACtrlEvent:TActiveCtrlEvent;
+
+procedure SetACtrlEvent(aproc:TActiveCtrlEvent);
+begin
+  FACtrlEvent:=aproc;
+end;
+
+function GetACtrlEvent():TActiveCtrlEvent; inline;
+begin
+  result:=FACtrlEvent;
+end;
+}
 type
   TEventHandlers = array of TSelectFileEvent;
 var
@@ -218,8 +249,6 @@ end;
 
 {%REGION Settings}
 const
-  sSectSettings = 'settings';
-  sGUIDir       = 'guidir';
   sUnpackDir    = 'outdir';
   sUnpackTree   = 'savepath';
   sUsePAKName   = 'usefname';
@@ -233,35 +262,33 @@ const
 
   sVanilaPath   = 'originalpath';
 
+
 procedure SaveCoreSettings(acfg:TIniFile=nil);
 var
   config:TIniFile;
 begin
-  if cfgSaveSettings then
+  if not cfgSettingsChanged then exit;
+
+  if acfg=nil then
+    config:=TMemIniFile.Create(ConfigName,[ifoEscapeLineFeeds,ifoStripQuotes])
+  else
+    config:=acfg;
+
+  config.WriteString (sSectSettings,sVanilaPath  ,cfgOriginal);
+
+  config.WriteString (sSectSettings,sUnpackDir   ,cfgUnpackDir);
+  config.WriteBool   (sSectSettings,sUnpackTree  ,cfgUnpackTree);
+  config.WriteBool   (sSectSettings,sUsePakName  ,cfgUsePakName);
+  config.WriteBool   (sSectSettings,sMODDAT      ,cfgMakeMODDAT);
+  config.WriteBool   (sSectSettings,sFastScan    ,cfgFastScan);
+  config.WriteBool   (sSectSettings,sSaveDateTime,cfgSaveDateTime);
+  config.WriteBool   (sSectSettings,sSaveUTF8    ,cfgSaveUTF8);
+  config.WriteInteger(sSectSettings,sSaveMode    ,cfgSaveMode);
+
+  if acfg=nil then
   begin
-    if acfg=nil then
-      config:=TMemIniFile.Create(ConfigName,[ifoEscapeLineFeeds,ifoStripQuotes])
-    else
-      config:=acfg;
-
-    config.WriteString (sSectSettings,sVanilaPath  ,cfgOriginal);
-
-    config.WriteString (sSectSettings,sUnpackDir   ,cfgUnpackDir);
-    config.WriteBool   (sSectSettings,sUnpackTree  ,cfgUnpackTree);
-    config.WriteBool   (sSectSettings,sUsePakName  ,cfgUsePakName);
-    config.WriteBool   (sSectSettings,sMODDAT      ,cfgMakeMODDAT);
-    config.WriteBool   (sSectSettings,sFastScan    ,cfgFastScan);
-    config.WriteBool   (sSectSettings,sSaveDateTime,cfgSaveDateTime);
-    config.WriteBool   (sSectSettings,sSaveUTF8    ,cfgSaveUTF8);
-    config.WriteInteger(sSectSettings,sSaveMode    ,cfgSaveMode);
-
-    config.WriteBool   (sSectSettings,sSaveSettings,cfgSaveSettings);
-
-    if acfg=nil then
-    begin
-      config.UpdateFile;
-      config.Free;
-    end;
+    config.UpdateFile;
+    config.Free;
   end;
 end;
 
@@ -295,9 +322,9 @@ begin
   cfgSaveUTF8    :=config.ReadBool   (sSectSettings,sSaveUTF8    ,false);
   cfgSaveMode    :=config.ReadInteger(sSectSettings,sSaveMode    ,smRename);
 
-  cfgSaveSettings:=config.ReadBool   (sSectSettings,sSaveSettings,false);
-
   if acfg=nil then config.Free;
+
+  cfgSettingsChanged:=false;
 end;
 {%ENDREGION Settings}
 
@@ -620,6 +647,7 @@ begin
     with CtrlList[i] do
     begin
       if (aList<0) or (aList>=MaxDirCount) then aList:=0;
+      if Dirs[aList].selected=aidx then exit;
       Dirs[aList].selected:=aidx;
     end;
     for i:=0 to High(SFHandlers) do

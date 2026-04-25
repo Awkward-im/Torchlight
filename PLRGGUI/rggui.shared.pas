@@ -40,14 +40,6 @@ const
   defFontStyle   = '';
   defFontColor   = clWindowText;
 
-  sSectSrcFont  = 'srcfont';
-  sFontName     = 'Name';
-  sFontCharset  = 'Charset';
-  sFontSize     = 'Size';
-  sFontStyle    = 'Style';
-  sFontColor    = 'Color';
-
-
 const
   sNewDir  = 'NEWDIR/';
   sNewFile = 'NEWFILE.DAT';

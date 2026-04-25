@@ -1,0 +1,22 @@
+{"version":1,"strings":[
+{"hash":176957246,"name":"tcorecfgform.lbloutdir.caption","sourcebytes":[68,105,114,32,102,111,114,32,101,120,116,114,97,99,116,105,111,110],"value":"Dir for extraction"},
+{"hash":203897112,"name":"tcorecfgform.cbunpacktree.caption","sourcebytes":[75,101,101,112,32,112,97,116,104],"value":"Keep path"},
+{"hash":101707179,"name":"tcorecfgform.gbdecoding.caption","sourcebytes":[68,97,116,97,32,85,110,112,97,99,107],"value":"Data Unpack"},
+{"hash":167797177,"name":"tcorecfgform.rbbinonly.caption","sourcebytes":[66,105,110,97,114,121,32,111,110,108,121],"value":"Binary only"},
+{"hash":258416633,"name":"tcorecfgform.rbtextonly.caption","sourcebytes":[84,101,120,116,32,111,110,108,121],"value":"Text only"},
+{"hash":53438580,"name":"tcorecfgform.rbtextrename.caption","sourcebytes":[82,101,110,97,109,101,32,116,101,120,116],"value":"Rename text"},
+{"hash":92174005,"name":"tcorecfgform.rbgutsstyle.caption","sourcebytes":[71,85,84,83,32,115,116,121,108,101],"value":"GUTS style"},
+{"hash":262197896,"name":"tcorecfgform.cbsaveutf8.caption","sourcebytes":[83,97,118,101,32,116,101,120,116,32,97,115,32,85,84,70,56],"value":"Save text as UTF8"},
+{"hash":247592011,"name":"tcorecfgform.cbmoddat.caption","sourcebytes":[77,97,107,101,32,77,79,68,46,68,65,84,32,102,111,114,32,84,76,50,32,109,111,100,32,117,110,112,97,99,107],"value":"Make MOD.DAT for TL2 mod unpack"},
+{"hash":76935012,"name":"tcorecfgform.cbsavesettings.caption","sourcebytes":[83,97,118,101,32,115,101,116,116,105,110,103,115,32,111,110,32,101,120,105,116],"value":"Save settings on exit"},
+{"hash":210401881,"name":"tcorecfgform.cbfastscan.hint","sourcebytes":[82,101,97,100,32,109,97,110,105,102,101,115,116,32,97,110,100,32,109,111,100,32,105,110,102,111,32,111,110,108,121,44,32,100,111,32,110,111,116,32,114,101,97,100,32,104,101,97,100,101,114,115,32,111,102,32,112,97,99,107,101,100,32,102,105,108,101,115,32,40,112,97,99,107,101,100,47,117,110,112,97,99,107,101,100,32,115,105,122,101,41],"value":"Read manifest and mod info only, do not read headers of packed files (packed/unpacked size)"},
+{"hash":174553588,"name":"tcorecfgform.cbfastscan.caption","sourcebytes":[70,97,115,116,32,108,111,97,100],"value":"Fast load"},
+{"hash":42749467,"name":"tcorecfgform.cbtest.hint","sourcebytes":[69,120,116,114,97,99,116,47,91,100,101,93,99,111,109,112,105,108,101,32,102,105,108,101,115,44,32,110,111,32,115,97,118,101,32,111,110,32,100,105,115,107],"value":"Extract/[de]compile files, no save on disk"},
+{"hash":242755811,"name":"tcorecfgform.cbtest.caption","sourcebytes":[68,79,32,78,79,84,32,83,65,86,69,32,101,120,116,114,97,99,116,101,100,32,102,105,108,101,115],"value":"DO NOT SAVE extracted files"},
+{"hash":236024811,"name":"tcorecfgform.cbusefname.hint","sourcebytes":[85,115,101,32,80,65,75,47,77,79,68,32,102,105,108,101,32,110,97,109,101,32,97,115,32,115,117,98,100,105,114,32,119,104,101,110,32,117,110,112,97,99,107],"value":"Use PAK/MOD file name as subdir when unpack"},
+{"hash":145204114,"name":"tcorecfgform.cbusefname.caption","sourcebytes":[85,115,101,32,102,105,108,101,32,110,97,109,101,32,97,115,32,100,105,114],"value":"Use file name as dir"},
+{"hash":152151093,"name":"tcorecfgform.cbsavedatetime.caption","sourcebytes":[69,120,116,114,97,99,116,32,119,105,116,104,32,111,114,105,103,105,110,97,108,32,100,97,116,101],"value":"Extract with original date"},
+{"hash":266288772,"name":"tcorecfgform.bbfontedit.hint","sourcebytes":[67,104,97,110,103,101,32,115,111,117,114,99,101,32,99,111,100,101,32,102,111,110,116],"value":"Change source code font"},
+{"hash":2807380,"name":"tcorecfgform.bbfontedit.caption","sourcebytes":[38,70,111,110,116],"value":"&Font"},
+{"hash":52164805,"name":"tcorecfgform.cbsinglemod.caption","sourcebytes":[85,115,101,32,115,105,110,103,108,101,32,109,111,100,32,105,110,116,101,114,102,97,99,101],"value":"Use single mod interface"}
+]}

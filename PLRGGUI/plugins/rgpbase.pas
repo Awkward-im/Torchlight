@@ -19,11 +19,11 @@ const
   rgptTool = 1;
 
 procedure RegisterPlugin(atype:integer; const atitle:AnsiString; aproc:TPluginProc);
-
+{
 var
   CurCtrl:PRGController=nil;
   CurIdx:integer=-1;
-
+}
 type
   TPluginListElement = record
     proc :TPluginProc;

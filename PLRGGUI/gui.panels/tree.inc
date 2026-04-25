@@ -16,7 +16,7 @@ begin
     end;
   end;
   SetActiveDir(adir,Ctrl,ListIndex);
-  lblPath.Caption:=Ctrl^.Dirs[adir].Name;
+  SetPanelPath(Ctrl^.Dirs[adir].Name);
 end;
 
 procedure TPanelForm.sbCollapseClick(Sender: TObject);
@@ -34,18 +34,18 @@ procedure TPanelForm.sbTreeClick(Sender: TObject);
 begin
   SetPanelActive(self);
 
-  if IntPtr(cbContent.Items.Objects[cbContent.ItemIndex])=ptShell then
+  if GetPanelType() in [panelShell, panelShellTree] then
+//  if IntPtr(cbContent.Items.Objects[cbContent.ItemIndex])=ptShell then
   begin
     if sbTree.Down then
     begin
-      SetupView(panelShellTree);
-      tvShell.Path:=FShellPath;
-//      FillTree (GetActiveDir(Ctrl,ListIndex));
-      tvShell.SetFocus;
+      SetPanelType(panelShellTree);
+//      tvShell.Path:=FShellPath;
+//      tvShell.SetFocus;
     end
     else
     begin
-      SetupView(panelShell);
+      SetPanelType(panelShell);
       FShellPath:=tvShell.Selected.GetTextPath;
       FillShellList(tvShell.Selected.Text);
       lvList.SetFocus;
@@ -55,13 +55,13 @@ begin
   begin
     if sbTree.Down then
     begin
-      SetupView(panelTree);
-      FillTree (GetActiveDir(Ctrl,ListIndex));
-      tvTree.SetFocus;
+      SetPanelType(panelTree);
+//      FillTree();
+//      tvTree.SetFocus;
     end
     else
     begin
-      SetupView(panelList);
+      SetPanelType(panelList);
       FillList (GetActiveDir(Ctrl,ListIndex));
       lvList.SetFocus;
     end;
@@ -81,11 +81,12 @@ begin
     else
       ldir:=0;
     SetActiveDir(ldir,Ctrl,ListIndex);
-    lblPath.Caption:=Ctrl^.Dirs[ldir].Name;
+    SetPanelPath(Ctrl^.Dirs[ldir].Name);
   end;
 end;
 
 procedure TPanelForm.tvTreeDblClick(Sender: TObject);
+{
 var
   ldir:integer;
 begin
@@ -99,6 +100,14 @@ begin
       ldir:=0;
     SetActiveDir(ldir,Ctrl,ListIndex);
 
+    sbTree.Down:=False;
+    sbTreeClick(sbTree);
+  end;
+}
+begin
+  tvTreeSelectionChanged(Sender);
+  if pnlTop.Visible then
+  begin
     sbTree.Down:=False;
     sbTreeClick(sbTree);
   end;
@@ -124,13 +133,17 @@ begin
     until not Ctrl^.GetNextFile(i);
 end;
 
-procedure TPanelForm.FillTree(adir:integer);
+procedure TPanelForm.FillTree();
+var
+  ldir:integer;
 begin
+{
   if (adir<0) or (adir>=Ctrl^.DirCount) then exit;
   if GetPanelType()<>panelTree then exit;
 
   SetActiveDir(adir,Ctrl,ListIndex);
-
+}
+  ldir:=GetActiveDir(Ctrl,ListIndex);
   tvTree.Items.Clear;
   with tvTree do
   begin
@@ -141,12 +154,16 @@ begin
     EndUpdate;
   end;
   tvTree.AlphaSort;
-  if adir>=0 then
-    SelectTreePath(adir)
+  if ldir>=0 then
+  begin
+    SelectTreePath(ldir);
+    SetPanelPath(Ctrl^.Dirs[ldir].Name);
+  end
   else
+  begin
     tvTree.Items[0].Selected:=true;
-
-  lblPath.Caption:=Ctrl^.Dirs[adir].Name;
+    SetPanelPath('');
+  end;
 end;
 
 {
@@ -167,7 +184,10 @@ begin
       lparent:=tvTree.Items.FindNodeWithData(pointer(IntPtr(ldir)));
       // case when several branches was made without redraw
       if lparent=nil then
-        FillTree(ldir)
+      begin
+        SetActiveDir(ldir,Ctrl,ListIndex);
+        FillTree();
+      end
       else
         tvTree.Selected:=tvTree.Items.AddChild(lparent,Ctrl^.NameOfFile(aidx));
     end;

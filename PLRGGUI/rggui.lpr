@@ -11,8 +11,9 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, lazcontrols, lazopenglcontext,
-  fmGUI    in 'GUI.Default\fmGUI.pas',
-//  fmGUIM   in 'GUI.Modified\fmGUIM.pas',
+  DefaultTranslator,
+//  fmGUI    in 'GUI.Default\fmGUI.pas',
+  fmGUIM   in 'GUI.Modified\fmGUIM.pas',
   fmGUIAlt in 'GUI.Alt\fmGUIAlt.pas',
   RGGUI.Core
   { you can add units after this };
@@ -28,10 +29,13 @@ begin
   Application.Initialize;
 
   LoadCoreSettings;
+{
   if cfgGUIPlugin='' then
     Application.CreateForm(TRGGUIForm , RGGUIForm)
-//  else if cfgGUIPlugin='2' then
-//    Application.CreateForm(TRGGUIMForm, RGGUIMForm)
+  else 
+}
+  if (ParamCount=1) or (cfgGUIPlugin='1') then
+    Application.CreateForm(TRGGUIMForm, RGGUIMForm)
   else //if cfgGUIPlugin='1' then
     Application.CreateForm(TRGGUI2Form, RGGUI2Form);
   Application.Run;

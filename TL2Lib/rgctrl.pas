@@ -533,6 +533,8 @@ end;
 function TRGController.GetAsIs(idx:integer; var buf:PByte):dword;
 var
   p:PRGCtrlInfo;
+  lsize_u,lsize_c:cardinal;
+  lchanged:boolean;
 begin
   result:=0;
   if IsFileDeleted(idx) then exit;
@@ -549,11 +551,23 @@ begin
     if p^.ftype=typeDirectory then exit;
     // theoretically, must use "source"m not "idx" index
 //    result:=FPAK.UnpackFile(PathOfFile(idx),p^.name,buf);
-    result:=FPAK.UnpackFile(FPAK.Man.PathOfFile(p^.source),p^.name,buf);
+    lchanged:=false;
+    with FPAK.Man.Files[p^.source]^ do
+    begin
+      lsize_u:=size_u;
+      lsize_c:=size_c;
+      result:=FPAK.UnpackFile(FPAK.Man.PathOfFile(p^.source),p^.name,buf);
+      lchanged:=(lsize_u<>size_u) or (lsize_c<>size_c);
+    end;
   end;
 
   if (result>0) and (p^.checksum=0) then
+  begin
     p^.checksum:=crc32(0,buf,result);
+//??    lchanged:=true;
+  end;
+
+  if lchanged then OnChange(@self,idx,faInfo);
 end;
 
 {

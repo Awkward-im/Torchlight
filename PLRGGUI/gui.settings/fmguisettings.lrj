@@ -1,0 +1,6 @@
+{"version":1,"strings":[
+{"hash":266288772,"name":"tguicfgform.bbfontedit.hint","sourcebytes":[67,104,97,110,103,101,32,115,111,117,114,99,101,32,99,111,100,101,32,102,111,110,116],"value":"Change source code font"},
+{"hash":2807380,"name":"tguicfgform.bbfontedit.caption","sourcebytes":[38,70,111,110,116],"value":"&Font"},
+{"hash":229224951,"name":"tguicfgform.cbpreview.caption","sourcebytes":[85,115,101,32,98,117,105,108,116,45,105,110,32,112,114,101,118,105,101,119],"value":"Use built-in preview"},
+{"hash":52164805,"name":"tguicfgform.cbsinglemod.caption","sourcebytes":[85,115,101,32,115,105,110,103,108,101,32,109,111,100,32,105,110,116,101,114,102,97,99,101],"value":"Use single mod interface"}
+]}

@@ -69,8 +69,10 @@ object RGGUIMForm: TRGGUIMForm
     end
     object tbResetView: TToolButton
       Left = 121
+      Hint = 'Reset panels and columns width'
       Top = 2
-      Action = actResetView
+      Caption = 'Reset View'
+      ImageIndex = 15
       ShowCaption = False
     end
     object tbSave: TToolButton
@@ -85,12 +87,6 @@ object RGGUIMForm: TRGGUIMForm
       Action = actOpenDir
       ShowCaption = False
     end
-    object ToolButton1: TToolButton
-      Left = 167
-      Top = 2
-      Action = actEdFontEdit
-      ShowCaption = False
-    end
   end
   object pnlTree: TPanel
     Left = 0
@@ -98,45 +94,7 @@ object RGGUIMForm: TRGGUIMForm
     Top = 26
     Width = 256
     Align = alLeft
-    ClientHeight = 465
-    ClientWidth = 256
     TabOrder = 2
-    object pnlTreeFilter: TPanel
-      Left = 1
-      Height = 33
-      Top = 1
-      Width = 254
-      Align = alTop
-      ClientHeight = 33
-      ClientWidth = 254
-      TabOrder = 0
-      object bbCollapse: TBitBtn
-        Left = 1
-        Height = 30
-        Hint = 'Collapse tree'
-        Top = 1
-        Width = 32
-        Enabled = False
-        Margin = 4
-        Images = ilMain
-        ImageIndex = 7
-        TabOrder = 1
-        OnClick = bbCollapseClick
-      end
-      object edTreeFilter: TTreeFilterEdit
-        Left = 37
-        Height = 23
-        Top = 5
-        Width = 214
-        ButtonWidth = 23
-        Anchors = [akTop, akLeft, akRight]
-        NumGlyphs = 1
-        MaxLength = 0
-        TabOrder = 0
-        TextHint = '(filter)'
-        ExpandAllInitially = True
-      end
-    end
   end
   object Splitter1: TSplitter
     Left = 256
@@ -149,183 +107,12 @@ object RGGUIMForm: TRGGUIMForm
     Height = 465
     Top = 26
     Width = 683
-    ActivePage = Grid
+    ActivePage = Settings
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 4
-    object Setings: TTabSheet
-      Caption = 'Setings'
-      ClientHeight = 437
-      ClientWidth = 675
-      object lblOutDir: TLabel
-        Left = 8
-        Height = 15
-        Top = 16
-        Width = 88
-        Caption = 'Dir for extraction'
-        ParentColor = False
-      end
-      object deOutDir: TDirectoryEdit
-        Left = 8
-        Height = 23
-        Top = 37
-        Width = 416
-        OnAcceptDirectory = CoreDirChanged
-        ShowHidden = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        MaxLength = 0
-        TabOrder = 0
-        OnEditingDone = CoreOptChanged
-      end
-      object cbUnpackTree: TCheckBox
-        Left = 8
-        Height = 19
-        Top = 86
-        Width = 71
-        Caption = 'Keep path'
-        TabOrder = 1
-        OnClick = CoreOptChanged
-      end
-      object gbDecoding: TGroupBox
-        Left = 8
-        Height = 139
-        Top = 112
-        Width = 215
-        Caption = 'Data Unpack'
-        ClientHeight = 119
-        ClientWidth = 211
-        TabOrder = 2
-        object rbBinOnly: TRadioButton
-          Left = 4
-          Height = 19
-          Top = 0
-          Width = 77
-          Caption = 'Binary only'
-          TabOrder = 0
-          OnClick = CoreOptChanged
-        end
-        object rbTextOnly: TRadioButton
-          Left = 4
-          Height = 19
-          Top = 24
-          Width = 66
-          Caption = 'Text only'
-          TabOrder = 1
-          OnClick = CoreOptChanged
-        end
-        object rbTextRename: TRadioButton
-          Left = 4
-          Height = 19
-          Top = 48
-          Width = 83
-          Caption = 'Rename text'
-          TabOrder = 2
-          OnClick = CoreOptChanged
-        end
-        object rbGUTSStyle: TRadioButton
-          Left = 4
-          Height = 19
-          Top = 72
-          Width = 74
-          Caption = 'GUTS style'
-          TabOrder = 3
-          OnClick = CoreOptChanged
-        end
-        object cbSaveUTF8: TCheckBox
-          Left = 4
-          Height = 19
-          Top = 96
-          Width = 108
-          Caption = 'Save text as UTF8'
-          TabOrder = 4
-          OnClick = CoreOptChanged
-        end
-      end
-      object cbMODDAT: TCheckBox
-        Left = 8
-        Height = 19
-        Top = 279
-        Width = 214
-        Caption = 'Make MOD.DAT for TL2 mod unpack'
-        TabOrder = 3
-        OnClick = CoreOptChanged
-      end
-      object cbSaveSettings: TCheckBox
-        Left = 8
-        Height = 19
-        Top = 327
-        Width = 124
-        Caption = 'Save settings on exit'
-        TabOrder = 4
-        OnClick = CoreOptChanged
-      end
-      object cbSaveWidth: TCheckBox
-        Left = 276
-        Height = 19
-        Top = 208
-        Width = 145
-        Caption = 'Save tree and grid width'
-        TabOrder = 5
-      end
-      object cbFastScan: TCheckBox
-        Left = 8
-        Height = 19
-        Hint = 'Read manifest and mod info only, do not read headers of packed files (packed/unpacked size)'
-        Top = 301
-        Width = 65
-        Caption = 'Fast load'
-        TabOrder = 6
-        OnClick = CoreOptChanged
-      end
-      object cbTest: TCheckBox
-        Left = 8
-        Height = 19
-        Hint = 'Extract/[de]compile files, no save on disk'
-        Top = 350
-        Width = 168
-        Caption = 'DO NOT SAVE extracted files'
-        TabOrder = 7
-      end
-      object cbUseFName: TCheckBox
-        Left = 8
-        Height = 19
-        Hint = 'Use PAK/MOD file name as subdir when unpack'
-        Top = 67
-        Width = 120
-        Caption = 'Use file name as dir'
-        TabOrder = 8
-        OnClick = CoreOptChanged
-      end
-      object bbFontEdit: TBitBtn
-        Left = 276
-        Height = 26
-        Top = 117
-        Width = 70
-        Action = actEdFontEdit
-        AutoSize = True
-        Images = ilMain
-        ImageIndex = 20
-        TabOrder = 9
-      end
-      object cbSaveDateTime: TCheckBox
-        Left = 8
-        Height = 19
-        Top = 254
-        Width = 148
-        Caption = 'Extract with original date'
-        TabOrder = 10
-        OnClick = CoreOptChanged
-      end
-      object cbPreview: TCheckBox
-        Left = 276
-        Height = 19
-        Top = 159
-        Width = 123
-        Caption = 'Use built-in preview'
-        TabOrder = 11
-        OnChange = cbPreviewChange
-      end
+    object Settings: TTabSheet
+      Caption = 'Settings'
     end
     object Grid: TTabSheet
       Caption = 'Grid'
@@ -355,122 +142,48 @@ object RGGUIMForm: TRGGUIMForm
           Style = tbsSeparator
         end
         object tbEdReset: TToolButton
-          Left = 411
+          Left = 117
+          Hint = 'Remove any updates for file'
           Top = 2
-          Action = actEdReset
+          Caption = 'Reset'
+          ImageIndex = 15
           ShowCaption = False
-        end
-        object tbEdSep2: TToolButton
-          Left = 157
-          Height = 8
-          Top = 2
-          ShowCaption = False
-          Style = tbsSeparator
         end
         object tbEdImport: TToolButton
-          Left = 357
+          Left = 63
           Top = 2
           Action = actEdImport
           ShowCaption = False
         end
         object tbEdExport: TToolButton
-          Left = 380
+          Left = 86
+          Hint = 'Save selected file(s)'
           Top = 2
-          Action = actEdExport
+          Caption = 'Unpack selected'
+          ImageIndex = 2
           ShowCaption = False
         end
         object tbEdSep3: TToolButton
-          Left = 349
+          Left = 55
           Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
         object tbEdSep4: TToolButton
-          Left = 403
+          Left = 109
           Height = 8
           Top = 2
           ShowCaption = False
           Style = tbsSeparator
         end
-        object tbColDir: TToolButton
-          Left = 188
-          Hint = 'Show/hide column: Directory'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'D'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColExt: TToolButton
-          Left = 234
-          Hint = 'Show/hide column: Extension'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'E'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColCategory: TToolButton
-          Left = 211
-          Hint = 'Show/hide column: Category'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'C'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColTime: TToolButton
-          Left = 257
-          Hint = 'Show/hide column: Time'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'T'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColPacked: TToolButton
-          Left = 303
-          Hint = 'Show/hide column: Packed size'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'P'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColUnpacked: TToolButton
-          Left = 280
-          Hint = 'Show/hide column: Unpacked size'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'U'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
-        object tbColSource: TToolButton
-          Left = 326
-          Hint = 'Show/hide column: Source size'
-          Top = 2
-          AllowAllUp = True
-          Caption = 'S'
-          Style = tbsCheck
-          OnClick = tbColumnClick
-        end
         object tbFilter: TToolButton
-          Left = 165
-          Top = 2
-          Action = actShowFilter
-          ShowCaption = False
-        end
-        object edGridFilter: TEdit
           Left = 32
-          Height = 23
+          Hint = 'Show type filter'
           Top = 2
-          Width = 125
-          CharCase = ecUppercase
-          TabOrder = 0
-          TextHint = 'Grid filter'
-          OnChange = edGridFilterChange
+          Caption = 'Type Filter'
+          ImageIndex = 12
+          ShowCaption = False
         end
       end
       object Splitter2: TSplitter
@@ -530,10 +243,14 @@ object RGGUIMForm: TRGGUIMForm
     object miEdit: TMenuItem
       Caption = '&Edit'
       object miEditExtract: TMenuItem
-        Action = actEdExport
+        Caption = 'Unpack selected'
+        Hint = 'Save selected file(s)'
+        ImageIndex = 2
       end
       object miEditDelete: TMenuItem
-        Action = actEdReset
+        Caption = 'Reset'
+        Hint = 'Remove any updates for file'
+        ImageIndex = 15
       end
       object N2: TMenuItem
         Caption = '-'
@@ -600,13 +317,6 @@ object RGGUIMForm: TRGGUIMForm
       ShortCut = 32844
       OnExecute = actShowLogExecute
     end
-    object actShowFilter: TAction
-      Category = 'View'
-      Caption = 'Type Filter'
-      Hint = 'Show type filter'
-      ImageIndex = 12
-      OnExecute = actShowFilterExecute
-    end
     object actShowPreview: TAction
       Category = 'View'
       Caption = 'Show Preview'
@@ -615,52 +325,12 @@ object RGGUIMForm: TRGGUIMForm
       ShortCut = 114
       OnExecute = actPreviewExecute
     end
-    object actResetView: TAction
-      Caption = 'Reset View'
-      Hint = 'Reset panels and columns width'
-      ImageIndex = 15
-      OnExecute = actResetViewExecute
-    end
-    object actEdDelete: TAction
-      Category = 'Edit'
-      Caption = 'Delete'
-      Hint = 'Mark file to delete at next saving'
-      ImageIndex = 3
-      OnExecute = actEdDeleteExecute
-    end
-    object actEdReset: TAction
-      Category = 'Edit'
-      Caption = 'Reset'
-      Hint = 'Remove any updates for file'
-      ImageIndex = 15
-      OnExecute = actEdResetExecute
-    end
-    object actEdNew: TAction
-      Category = 'Edit'
-      Caption = 'New file/dir'
-      ImageIndex = 16
-      OnExecute = actEdNewExecute
-    end
     object actEdImport: TAction
       Category = 'Edit'
       Caption = 'Import file(s)'
       Hint = 'Import file(s)'
       ImageIndex = 11
       OnExecute = actEdImportExecute
-    end
-    object actEdExport: TAction
-      Category = 'Edit'
-      Caption = 'Unpack selected'
-      Hint = 'Save selected file(s)'
-      ImageIndex = 2
-      OnExecute = actEdExportExecute
-    end
-    object actEdRename: TAction
-      Category = 'Edit'
-      Caption = 'Rename'
-      Hint = 'Rename file/dir'
-      ImageIndex = 17
-      OnExecute = actEdRenameExecute
     end
     object actEdImportDir: TAction
       Category = 'Edit'
@@ -697,13 +367,6 @@ object RGGUIMForm: TRGGUIMForm
       ImageIndex = 4
       ShortCut = 32883
       OnExecute = actFileExitExecute
-    end
-    object actEdFontEdit: TAction
-      Category = 'Edit'
-      Caption = '&Font'
-      Hint = 'Change source code font'
-      ImageIndex = 20
-      OnExecute = actEdFontEditExecute
     end
     object actOpenDir: TAction
       Category = 'View'
@@ -875,77 +538,5 @@ object RGGUIMForm: TRGGUIMForm
       CD624E2AE85C8DFB16542B9D2BE81E066D1E7379BF12CBEEC2717894F64AF57F
       077DBABCD4
     }
-  end
-  object mnuTree: TPopupMenu
-    Images = ilMain
-    Left = 72
-    Top = 176
-    object miTreeExtract: TMenuItem
-      Caption = 'Extract w. subdirs'
-      ImageIndex = 1
-      ShortCut = 49
-      OnClick = DoExtractTree
-    end
-    object miTreeExtractDir: TMenuItem
-      Caption = 'Extract this dir'
-      ImageIndex = 1
-      ShortCut = 50
-      OnClick = DoExtractDir
-    end
-    object miTreeExtractVisible: TMenuItem
-      Caption = 'Extract visible'
-      ImageIndex = 2
-      ShortCut = 51
-      OnClick = DoExtractGrid
-    end
-    object miTreeNew: TMenuItem
-      Caption = 'New directory'
-      ImageIndex = 16
-      ShortCut = 78
-    end
-    object miTreeAdd: TMenuItem
-      Action = actEdImportDir
-      ShortCut = 65
-    end
-    object miTreeDelete: TMenuItem
-      Caption = 'Delete dir'
-      ImageIndex = 3
-      ShortCut = 68
-    end
-    object miTreeRestore: TMenuItem
-      Caption = 'Restore dir'
-      ImageIndex = 14
-      ShortCut = 82
-    end
-    object miTreeList: TMenuItem
-      Caption = 'Copy dir list'
-      ShortCut = 76
-    end
-  end
-  object mnuGrid: TPopupMenu
-    Images = ilMain
-    Left = 175
-    Top = 232
-    object miGridExport: TMenuItem
-      Action = actEdExport
-    end
-    object miGridNew: TMenuItem
-      Action = actEdNew
-    end
-    object miImportDir: TMenuItem
-      Action = actEdImportDir
-    end
-    object miGridAdd: TMenuItem
-      Action = actEdImport
-    end
-    object miGridRename: TMenuItem
-      Action = actEdRename
-    end
-    object miGridReset: TMenuItem
-      Action = actEdReset
-    end
-    object miGridDelete: TMenuItem
-      Action = actEdDelete
-    end
   end
 end

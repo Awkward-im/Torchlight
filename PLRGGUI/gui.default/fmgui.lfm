@@ -167,9 +167,9 @@ object RGGUIForm: TRGGUIForm
     Height = 465
     Top = 26
     Width = 683
-    ActivePage = Grid
+    ActivePage = Setings
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 4
     object Setings: TTabSheet
       Caption = 'Setings'

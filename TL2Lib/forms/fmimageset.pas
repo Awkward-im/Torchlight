@@ -668,6 +668,11 @@ begin
     AddImageset(fname);
   end;
 
+  if FImageset.ImagesetCount=1 then
+    Caption:=FImageset.Imagesets[0].Name
+  else
+    Caption:='';
+
   //  imgSprite.Picture.Clear;
   FActiveImageset:=FImageset.Imagesets[FImageset.ImagesetCount-1].id;
   if FActiveImageset>=0 then

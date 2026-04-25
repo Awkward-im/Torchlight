@@ -1,25 +1,5 @@
 ﻿{%REGION List (direct control access)}
 
-{
-  place:
-  SetFocus
-    cbContentChange
-    sbTreeClick
-
-  Non-event functions:
-    procedure TPanelForm.SelectFile(aidx:integer);
-    function  TPanelForm.IsParentDirSelected():integer; inline;
-    procedure TPanelForm.GetSelectionList(var arr:TDynIntegerArray);
-    function  TPanelForm.GetSelectedFile():integer; inline;
-    procedure TPanelForm.SelectLine();
-    procedure TPanelForm.FillList(adir:integer);
-  Event functions:
-    lvListSelectItem
-    lvListCustomDrawItem
-    lvListCompare
-    lvListShowHint
-}
-
 procedure TPanelForm.sbFullClick(Sender: TObject);
 begin
   sbFilter.Visible:=sbFull.Down;
@@ -81,7 +61,7 @@ begin
   end;
 end;
 
-procedure TPanelForm.SelectAll();
+procedure TPanelForm.SelectAll(ainverse:boolean=false);
 var
   lstart,lcnt,i:integer;
 begin
@@ -118,8 +98,18 @@ begin
       lvList.Checkboxes:=false
     end
     else
-      for i:=lstart to lvList.Items.Count-1 do
-        lvList.Items[i].Checked:=true;
+    begin
+      if ainverse then
+      begin
+        for i:=lstart to lvList.Items.Count-1 do
+          lvList.Items[i].Checked:=not lvList.Items[i].Checked;
+      end
+      else
+      begin
+        for i:=lstart to lvList.Items.Count-1 do
+          lvList.Items[i].Checked:=true;
+      end;
+    end;
   end;
 end;
 
@@ -192,20 +182,12 @@ end;
 
 procedure TPanelForm.lvListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 var
-  lpanel:TPanelForm;
-  ltype,lfile:integer;
+  lfile:integer;
 begin
   if Selected then
   begin
     lfile:=GetSelectedFile();
     SetActiveFile(lfile,Ctrl,ListIndex);
-
-    // If only no handler set
-    lpanel:=GetOppositePanel();
-    ltype :=lpanel.GetPanelType();
-
-    if ltype=panelView then
-      lpanel.ShowPreview(Ctrl,lfile);
   end;
 end;
 
@@ -266,7 +248,8 @@ begin
       ss1:=Item1.SubItems[lvList.sortColumn-1];
       ss2:=Item2.SubItems[lvList.sortColumn-1];
     end;
-    if lvList.sortColumn=colSize then
+    if (lvList.sortColumn=colSize) or
+       (lvList.sortColumn=colPack) then
     begin
       Compare:=StrToIntDef(ss1,0)-
                StrToIntDef(ss2,0);
@@ -371,6 +354,7 @@ begin
       SubItems.Add('');      // ext
       SubItems.Add(strDir);  // type
       SubItems.Add('');      // size
+      SubItems.Add('');      // pack
       SubItems.Add('');      // time
     end
     else
@@ -381,6 +365,11 @@ begin
       SubItems.Add(lext);                        // ext
       SubItems.Add(RGTypeGroupName(lrec.ftype)); // type
       SubItems.Add(IntToStr(lrec.size));         // size
+      if ((lrec.size_c=0) and (lrec.size_u=0)) or
+         (GetPanelType()<>panelList) then
+        SubItems.Add('')                         // pack
+      else
+        SubItems.Add(IntToStr(lrec.size_c));     // pack
       // Time
       ltime:=lrec.ftime;
       if ltime<>0 then
@@ -405,7 +394,7 @@ begin
     else
       ls:=' ';
     end;
-    SubItems.Add(ls);
+    SubItems.Add(ls); // Attr
   end;
 end;
 
@@ -438,11 +427,12 @@ begin
     lvList.ItemIndex:=0;
   end;
 
-  lblPath.Caption:=rsFullList;
+  SetPanelPath(rsFullList);
 end;
 
 procedure TPanelForm.FillShellList(const aitem:AnsiString);
 var
+  li:TListItem;
   ls:AnsiString;
 begin
   FShell.Clear;
@@ -450,13 +440,16 @@ begin
   if FShellPath='' then
     BuildShellRootList();
   FShell.ImportDir('',FShellPath,true,true);
+  FShell.PAK.Directory:=FShellPath;
   FillList(0);
   if aitem<>'' then
   begin
     ls:=aitem;
     if ls[Length(ls)]='\' then ls[Length(ls)]:='/';
 
-    SelectFile(IntPtr(lvList.Items.FindCaption(0,ls,false,false,false).Data));
+    li:=lvList.Items.FindCaption(0,ls,false,false,false);
+    if li<>nil then
+      SelectFile(IntPtr(li.Data));
   end;
 end;
 
@@ -519,8 +512,8 @@ begin
       SelectFile(GetActiveFile(Ctrl,ListIndex));
   end;
 
-  if adir<Ctrl^.DirCount then lblPath.Caption:=Ctrl^.Dirs[adir].Name;
-  if ltype=panelShell    then lblPath.Caption:=FShellPath;
+       if ltype=panelShell    then SetPanelPath(FShellPath)
+  else if adir<Ctrl^.DirCount then SetPanelPath(Ctrl^.Dirs[adir].Name);
 end;
 
 procedure TPanelForm.SelectFile(aidx:integer);
@@ -602,6 +595,7 @@ begin
       end;
 
       // better was to change subitems but this is simpler
+      faStatus,
       faChanged,
       faInfo: begin
         lv:=lvList.Items.FindData(pointer(IntPtr(aidx)));
@@ -612,11 +606,12 @@ begin
           continue;
         end;
       end;
-
+{
+      // can be moved to previous condition maybe
       faStatus: begin
-        lvList.Refresh;
+        FillList(lfiledir);
       end;
-
+}
       // idk what to do
       faMove: begin
       end;

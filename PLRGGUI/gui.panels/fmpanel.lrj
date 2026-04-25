@@ -1,0 +1,19 @@
+{"version":1,"strings":[
+{"hash":231395797,"name":"tpanelform.sbtree.hint","sourcebytes":[83,104,111,119,32,97,115,32,84,114,101,101],"value":"Show as Tree"},
+{"hash":11137280,"name":"tpanelform.sbfilter.hint","sourcebytes":[70,105,108,116,101,114,32,115,101,116,117,112],"value":"Filter setup"},
+{"hash":48594276,"name":"tpanelform.sbfull.hint","sourcebytes":[70,117,108,108,32,76,105,115,116],"value":"Full List"},
+{"hash":51679365,"name":"tpanelform.sbcollapse.hint","sourcebytes":[67,111,108,108,97,112,115,101,32,116,114,101,101],"value":"Collapse tree"},
+{"hash":218345129,"name":"tpanelform.tfetree.texthint","sourcebytes":[40,102,105,108,116,101,114,41],"value":"(filter)"},
+{"hash":346165,"name":"tpanelform.lvlist.columns[0].caption","sourcebytes":[78,97,109,101],"value":"Name"},
+{"hash":19700,"name":"tpanelform.lvlist.columns[1].caption","sourcebytes":[69,120,116],"value":"Ext"},
+{"hash":376933,"name":"tpanelform.lvlist.columns[2].caption","sourcebytes":[84,121,112,101],"value":"Type"},
+{"hash":368901,"name":"tpanelform.lvlist.columns[3].caption","sourcebytes":[83,105,122,101],"value":"Size"},
+{"hash":90677684,"name":"tpanelform.lvlist.columns[4].caption","sourcebytes":[80,97,99,107,101,100],"value":"Packed"},
+{"hash":372789,"name":"tpanelform.lvlist.columns[5].caption","sourcebytes":[84,105,109,101],"value":"Time"},
+{"hash":297906,"name":"tpanelform.lvlist.columns[6].caption","sourcebytes":[65,116,116,114],"value":"Attr"},
+{"hash":145482249,"name":"tpanelform.micoltype.caption","sourcebytes":[67,97,116,101,103,111,114,121],"value":"Category"},
+{"hash":368901,"name":"tpanelform.micolsize.caption","sourcebytes":[83,105,122,101],"value":"Size"},
+{"hash":90677684,"name":"tpanelform.micolpacked.caption","sourcebytes":[80,97,99,107,101,100],"value":"Packed"},
+{"hash":372789,"name":"tpanelform.micoltime.caption","sourcebytes":[84,105,109,101],"value":"Time"},
+{"hash":76265714,"name":"tpanelform.micolattr.caption","sourcebytes":[65,116,116,114,105,98],"value":"Attrib"}
+]}
