@@ -74,7 +74,7 @@ begin
       FreeMem(pc);
     end;
 
-    AddString(result,'FILE',PWideChar(lpic.NodeValue))
+    AddString(result,'FILE',PWideChar(lpic.NodeValue));
 
     lpic:=Doc.DocumentElement.Attributes.GetNamedItem('NativeHorzRes');
     if lpic<>nil then

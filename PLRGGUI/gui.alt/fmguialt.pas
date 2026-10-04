@@ -4,80 +4,45 @@ unit fmGUIAlt;
 
 interface
 
+{$DEFINE Interface}
+
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
   ExtCtrls, ActnList,
-  RGCtrl;
+  RGGlobal, fmGUIBase, RGCtrl;
 
 type
 
   { TRGGUI2Form }
 
-  TRGGUI2Form = class(TForm)
-    actChangeVersion: TAction;
-    actLeftPanelMode: TAction;
+  TRGGUI2Form = class(TRGGUIBaseForm)
+    actCopy          : TAction;
+    actCompare       : TAction;
+    actLeftPanelMode : TAction;
     actRightPanelMode: TAction;
-    ActionList: TActionList;
-    actFileNew      : TAction;
-    actFileOpen     : TAction;
-    actFileSave     : TAction;
-    actFileSaveAs   : TAction;
-    actFileSavePatch: TAction;
-    actFileClose    : TAction;
-    actFileExit     : TAction;
-    actShowLog  : TAction;
-    actHelpAbout: TAction;
-    ilMain24: TImageList;
-    ilMain16: TImageList;
-    MainMenu: TMainMenu;
-    miEditVersion: TMenuItem;
-    miFile: TMenuItem;
-    miFileNew      : TMenuItem;
-    miFileOpen     : TMenuItem;
-    miFileSave     : TMenuItem;
-    miFileSaveAs   : TMenuItem;
-    miFileSavePatch: TMenuItem;
-    miFileClose    : TMenuItem;
-    miFileSep1     : TMenuItem;
-    miFileExit     : TMenuItem;
-    miEdit: TMenuItem;
-    miHelp: TMenuItem;
-    miHelpShowLog  : TMenuItem;
-    miHelpAbout    : TMenuItem;
-    pnlLeft : TPanel;
-    pnlRight: TPanel;
+
+    pnlLeft  : TPanel;
+    pnlRight : TPanel;
     splPanels: TSplitter;
-    StatusBar: TStatusBar;
-    ToolBar: TToolBar;
-    tbNew    : TToolButton;
-    tbOpen   : TToolButton;
-    tbSave   : TToolButton;
-    tbSep1   : TToolButton;
-    tbSaveAs : TToolButton;
-    tbPatch  : TToolButton;
-    tbSep2   : TToolButton;
-    tbShowLog: TToolButton;
-    ToolButton1: TToolButton;
+
+    tbCompare: TToolButton;
 
     procedure actFileNewExecute   (Sender: TObject);
     procedure actFileOpenExecute  (Sender: TObject);
-    procedure actFileSaveExecute  (Sender: TObject);
-    procedure actFileSaveAsExecute(Sender: TObject);
     procedure actFileCloseExecute (Sender: TObject);
     procedure actFileExitExecute  (Sender: TObject);
-    procedure actChangeVersionExecute(Sender: TObject);
-    procedure actLeftPanelModeExecute(Sender: TObject);
+    procedure actShowInfoExecute(Sender: TObject);
+    procedure actLeftPanelModeExecute (Sender: TObject);
     procedure actRightPanelModeExecute(Sender: TObject);
-    procedure actShowLogExecute(Sender: TObject);
+    procedure actCopyExecute(Sender: TObject);
+
     procedure FormCreate(Sender: TObject);
     procedure FormClose (Sender: TObject; var CloseAction: TCloseAction);
   private
-    inProcess:Boolean;
-
+{$include copy.inc}
     procedure LoadSettings;
     procedure SaveSettings;
     procedure UpdatePanels(actrl:pointer);
-    function  GUIOnChange(actrl:pointer; idx:integer; atype:integer):integer;
     function  AltPanelType(apanel:TForm; atype:integer; abefore:boolean):integer;
     function  AltExecute(actrl:PRGController; aidx:integer):integer;
     function GetOppositePanel(apanel: TForm): TForm;
@@ -95,13 +60,14 @@ implementation
 uses
   LCLType,
   IniFiles,
+  FileUtil,
 
-  RGGlobal,
   RGFS,
   RGFileType,
 
-  fmLog,
-  fmGameVersion,
+  fmModInfo,
+//  fmComboDiff,
+  fmAskNew,
 
   RGGUI.Core,
   RGGUI.Shared,
@@ -111,11 +77,15 @@ uses
   fmCoreCfg,
   fmPanel;
 
+{$UNDEF Interface}
+
 const
   fpLeft  = 0;
   fpRight = 1;
 
 { TRGGUI2Form }
+
+{$include copy.inc}
 
 {%REGION Settings}
 procedure TRGGUI2Form.LoadSettings;
@@ -153,6 +123,8 @@ end;
 {%REGION Form}
 procedure TRGGUI2Form.FormCreate(Sender: TObject);
 begin
+  Inherited;
+
   LoadSettings();
 
   FillEditMenu(miEdit);
@@ -208,7 +180,7 @@ begin
     NewPak();
   UpdatePanels(nil);
 
-  CtrlList[0].Ctrl^.OnChange:=@GUIOnChange;
+  ActiveCtrl^.OnChange:=@GUIOnChange;
 end;
 
 procedure TRGGUI2Form.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -216,9 +188,22 @@ begin
   ClosePreviews();
 
   SaveSettings();
-end;
 
+  Inherited;
+end;
 {%ENDREGION Form}
+
+{%REGION Events}
+procedure TRGGUI2Form.UpdatePanels(actrl:pointer);
+begin
+  // really needs? can be in FillCombo.
+  if actrl<>nil then
+  begin
+    TPanelForm(Panels[ActivePanel]).SetCtrl(actrl);
+  end;
+  TPanelForm(Panels[fpLeft ]).FillCombo();
+  TPanelForm(Panels[fpRight]).FillCombo();
+end;
 
 function TRGGUI2Form.GetOppositePanel(apanel:TForm):TForm;
 begin
@@ -240,17 +225,20 @@ begin
     if atype in [panelLog, panelView, panelSettings] then
     begin
       lpanel:=TPanelForm(GetOppositePanel(apanel));
-      lpanel.FillCombo(atype);
+      lpanel.FillCombo(atype,false);
 //      if lpanel.GetPanelType()=atype then
 //        result:=TPanelForm(apanel).GetPanelType();
     end;
   end
-  else if atype=panelView then
+  else
   begin
-    lpanel:=TPanelForm(GetOppositePanel(apanel));
-    if lpanel.GetPanelType()=panelList then
+    if atype=panelView then
     begin
-      TPanelForm(apanel).ShowPreview(lpanel.Ctrl,lpanel.GetSelectedFile());
+      lpanel:=TPanelForm(GetOppositePanel(apanel));
+      if lpanel.GetPanelType()=panelList then
+      begin
+        TPanelForm(apanel).ShowPreview(lpanel.Ctrl,lpanel.GetSelectedFile());
+      end;
     end;
   end;
 end;
@@ -259,8 +247,10 @@ function TRGGUI2Form.AltExecute(actrl:PRGController; aidx:integer):integer;
 var
   lctrl:PRGController;
   ls,lsext:AnsiString;
+  lform:TForm;
   i:integer;
 begin
+  result:=0;
   with actrl^.Files[aidx]^ do
   begin
     if ftype=typeUnknown then
@@ -272,42 +262,42 @@ begin
         begin
 
           lctrl:=LoadPak(actrl^.PAK.Directory+ls);
-          CtrlList[CtrlCount-1].Ctrl^.OnChange:=@GUIOnChange;
-          UpdatePanels(lctrl);
+          if lctrl<>nil then
+          begin
+            lctrl^.OnChange:=@GUIOnChange;
+            UpdatePanels(lctrl);
+          end;
 
-          break;
+          exit;
         end;
+    end;
+    if ftype<>typeDirectory then
+    begin
+      lform:=MakePreview(actrl^,aidx,false);
+      if lform<>nil then lform.Show;
     end;
   end;
 end;
-
-procedure TRGGUI2Form.UpdatePanels(actrl:pointer);
-begin
-  // really needs? can be in FillCombo.
-  if actrl<>nil then
-  begin
-    //  Panels[ActivePanel].Ctrl^.OnChange:=@GUIOnChange;
-    TPanelForm(Panels[ActivePanel]).SetCtrl(actrl);
-  end;
-  TPanelForm(Panels[fpLeft ]).FillCombo();
-  TPanelForm(Panels[fpRight]).FillCombo();
-end;
+{%ENDREGION Events}
 
 {%REGION Actions}
   {%REGION File}
 procedure TRGGUI2Form.actFileNewExecute(Sender: TObject);
 var
-  lctrl:pointer;
+  lctrl:PRGController;
 begin
   lctrl:=NewPak();
-  CtrlList[CtrlCount-1].Ctrl^.OnChange:=@GUIOnChange;
-  UpdatePanels(lctrl);
+  if lctrl<>nil then
+  begin
+    lctrl^.OnChange:=@GUIOnChange;
+    UpdatePanels(lctrl);
+  end;
 end;
 
 procedure TRGGUI2Form.actFileOpenExecute(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
-  lctrl:pointer;
+  lctrl:PRGController;
 begin
   OpenDialog:=TOpenDialog.Create(nil);
   try
@@ -322,103 +312,14 @@ begin
 //      LastExt   :=OpenDialog.DefaultExt;
 //      LastFilter:=OpenDialog.FilterIndex;
       lctrl:=LoadPak(OpenDialog.FileName);
-      CtrlList[CtrlCount-1].Ctrl^.OnChange:=@GUIOnChange;
-      UpdatePanels(lctrl);
+      if lctrl<>nil then
+      begin
+        lctrl^.OnChange:=@GUIOnChange;
+        UpdatePanels(lctrl);
+      end;
     end;
   finally
     OpenDialog.Free;
-  end;
-end;
-
-procedure TRGGUI2Form.actFileSaveExecute(Sender: TObject);
-begin
-  if TPanelForm(Panels[ActivePanel]).Ctrl^.Save() then
-  begin
-    ShowMessage(rsSaved);
-{
-    FreeAndNil(fmi);
-    // remove all possible marks, update "size" columns
-//FillTree;
-    tvTreeSelectionChanged(self);
-    // if not implemented in "Save" then
-    // close existing
-    // reopen
-}
-  end
-  else
-    ShowMessage(rsCantSave);
-end;
-
-procedure TRGGUI2Form.actFileSaveAsExecute(Sender: TObject);
-var
-  dlg:TSaveDialog;
-  ls:AnsiString;
-  lctrl:PRGController;
-  lver:integer;
-  lresult,lAsPatch:boolean;
-begin
-  lAsPatch:=Sender=actFileSavePatch;
-  lctrl:=TPanelForm(Panels[ActivePanel]).Ctrl;
-// must not happen
-//  if lctrl=nil then exit;
-  dlg:=TSaveDialog.Create(nil);
-  try
-    case lctrl^.PAK.Version of
-      verTL2: dlg.FilterIndex:=1;
-      verHob: dlg.FilterIndex:=3;
-      verRG : dlg.FilterIndex:=4;
-      verRGO: dlg.FilterIndex:=5;
-      verTL1: dlg.FilterIndex:=6;
-    else
-      dlg.FilterIndex:=1;
-    end;
-
-    if lasPatch then
-      dlg.Title:=rsSavePatch
-    else
-      dlg.Title:=rsSave;
-
-    dlg.InitialDir:=lctrl^.PAK.Directory;
-    dlg.FileName  :=lctrl^.PAK.Name;
-    dlg.DefaultExt:=RGDefaultExt;
-    dlg.Filter    :=RGDefWriteFilter;
-    dlg.Title     :='';
-    dlg.Options   :=dlg.Options+[ofOverwritePrompt];
-
-    if (dlg.Execute) then
-    begin
-      case dlg.FilterIndex of
-        1: lver:=verTL2Mod;
-        2: lver:=verTL2;
-        3: lver:=verHob;
-        4: lver:=verRG;
-        5: lver:=verRGO;
-        6: lver:=verTL1;
-      end;
-
-      if lasPatch then
-      begin
-        lresult:=lctrl^.SavePatch(dlg.Filename,lver);
-        ls:=rsSavedPatch;
-      end
-      else
-      begin
-        lresult:=lctrl^.SaveAs(dlg.Filename,lver);
-        ls:=rsSavedAs;
-{
-        if result then
-          SetupView();
-}
-      end;
-
-      if lresult then
-        ShowMessage(ls+' '+dlg.Filename)
-      else
-        ShowMessage(rsCantSave+' '+dlg.Filename);
-
-    end;
-  finally
-    dlg.Free;
   end;
 end;
 
@@ -427,7 +328,9 @@ var
   lctrl:PRGController;
   lidx:integer;
 begin
-  lctrl:=CtrlList[ActiveCtrl].Ctrl;
+  lctrl:=ActiveCtrl;
+  if lctrl=nil then exit;
+
   if lctrl^.UpdatesCount()>0 then
   begin
     if MessageDlg(rsWarning,rsUnsaved,mtWarning,
@@ -436,13 +339,13 @@ begin
       exit;
     end;
   end;
-
+{
   if CtrlCount=1 then
   begin
     Close;
     exit;
   end;
-
+}
   if TPanelForm(Panels[ActivePanel]).GetPanelType in [panelList,panelTree] then
   begin
     // GetOppositePanel()
@@ -450,12 +353,11 @@ begin
     if TPanelForm(Panels[lidx]).GetPanelType=panelView then
        TPanelForm(Panels[lidx]).ShowPreview(nil,0);
 
-//    lidx:=GetCtrlIndex(nil);
-    ClosePreviews(lctrl{CtrlList[lidx].Ctrl});
-    ClosePak(lctrl{nil},true);
+    ClosePreviews(lctrl);
+    ClosePak(lctrl,true);
 
-    UpdatePanels(nil);
   end;
+    UpdatePanels(nil);
 end;
 
 procedure TRGGUI2Form.actFileExitExecute(Sender: TObject);
@@ -464,48 +366,15 @@ begin
 end;
   {%ENDREGION File}
 
-procedure TRGGUI2Form.actShowLogExecute(Sender: TObject);
-begin
-  if fmLogForm=nil then
-  begin
-    fmLogForm:=TfmLogForm.Create(Self);
-    fmLogForm.memLog.Text:=RGLog.Text;
-  end;
-  fmLogForm.ShowOnTop;
-end;
-
-procedure TRGGUI2Form.actChangeVersionExecute(Sender: TObject);
+procedure TRGGUI2Form.actShowInfoExecute(Sender: TObject);
 var
-  lpnl:TPanelForm;
-  lf:TFmGameVer;
-  idx: integer;
+  lctrl:PRGController;
 begin
-{
-  idx:=InputCombo(rsChooseVer, rsGameVer,
-      ['Torchligh I', 'Torchlight II', 'Hob', 'Rebel Galaxy', 'Rebel Galaxy Outlaw']);
-  case idx of
-    0: idx:=verTL1;
-    1: idx:=verTL2;
-    2: idx:=verHob;
-    3: idx:=verRG;
-    4: idx:=verRGO;
-  end;
-}
-  lpnl:=TPanelForm(Panels[ActivePanel]);
-  if lpnl.GetPanelType=panelView then exit;
+  lctrl:=ActiveCtrl;
+  if lctrl=nil then exit;
 
-  lf:=TFmGameVer.Create(Self);
-  lf.Version:=lpnl.Ctrl^.PAK.Version;
-  if lf.ShowModal=mrOK then
-  begin
-    idx:=lf.Version;
-    if lpnl.Ctrl^.PAK.Version<>idx then
-    begin
-      lpnl.Ctrl^.PAK.Version:=idx;
-      // setup / show version
-    end;
-  end;
-  lf.Free;
+  with TMODInfoForm.Create(Self,@(lctrl^.PAK.modinfo),false) do
+    ShowModal;
 end;
 
 procedure TRGGUI2Form.actLeftPanelModeExecute(Sender: TObject);
@@ -526,30 +395,12 @@ begin
   end;
 end;
 
-{%ENDREGION Actions}
-
-function TRGGUI2Form.GUIOnChange(actrl:pointer; idx:integer; atype:integer):integer;
-var
-  ldir,lname:AnsiString;
-  i:integer;
+procedure TRGGUI2Form.actCopyExecute(Sender: TObject);
 begin
-  result:=1;
-  case atype of
-    faStart : inProcess:=true;
-    faFinish: inProcess:=false;
-  else
-    if not inProcess then
-    begin
-      ldir :=WideToStr(PRGController(actrl)^.PathOfFile(idx));
-      lname:=WideToStr(PRGController(actrl)^.Files[idx]^.Name);
-      if rgDebugLevel=dlDetailed then
-        RGLog.Add('File affected ('+GetChangesName(atype)+'): '+PRGController(actrl)^.PAK.Name+' | '+ldir+lname);
-
-      for i:=0 to PanelCount-1 do
-        TPanelForm(Panels[i]).OnChange(actrl,idx,atype);
-    end;
-  end;
+  Self.Copy();
 end;
+
+{%ENDREGION Actions}
 
 end.
 

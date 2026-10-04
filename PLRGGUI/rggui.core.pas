@@ -1,11 +1,11 @@
-﻿{
+{
   Read base settings
   load gui plugin
   make new pak
   load existing pak
 }
+{TODO: fix ActiveCtrl when ClosePak for inactive ctrl}
 {TODO: make settings as property to set cfgSettingsChanged with check for changes (with indexes?)}
-{TODO: Make Event OnChangeDir for SetActiveDir (OnChangeFile for SetActiveFile?)}
 {TODO: move cfgOriginal (sVanilaPath) to GUI unit}
 {NOTE: Set/GetActiveFile/Dir and ClosePak supports single instance of ctrl, not doubles}
 unit RGGUI.Core;
@@ -20,7 +20,7 @@ uses
 {
   Dirs list is not the same as panel list.
     1 - dir list is non-visual
-    2 - theoretically, single panel can have several dirs
+    2 - theoretically, single panel can have several dirs (useful for Shell List)
 }
 const
   MaxDirCount = 16;
@@ -37,7 +37,11 @@ type
 var
   CtrlList  :array of TCtrlListElement;       // list of opened paks
   CtrlCount :integer;
-  ActiveCtrl:integer;
+
+ 
+function  GetActiveCtrl:PRGController;
+procedure SetActiveCtrl(actrl:PRGController);
+property  ActiveCtrl:PRGController read GetActiveCtrl write SetActiveCtrl;
 {%ENDREGION Controller}
 
 {%REGION Settings}
@@ -74,7 +78,7 @@ var
 
 {%REGION Events}
 type
-  TActiveCtrlEvent = procedure (idx:integer) of object;
+  TActiveCtrlEvent = procedure (actrl:PRGController) of object;
   TUnpackFileEvent = function (const adir, aname:string):integer of object;
   TSelectFileEvent = procedure (idx:integer; actrl:PRGController; aList:integer) of object;
 
@@ -84,9 +88,11 @@ procedure SetACtrlEvent(aproc:TActiveCtrlEvent);
 function  GetACtrlEvent()    :TActiveCtrlEvent;
 }
 
+procedure AddCtrlEventHandler(aproc:TActiveCtrlEvent);
+
 procedure AddFileEventHandler(aproc:TSelectFileEvent);
 procedure AddDirEventHandler (aproc:TSelectFileEvent);
-procedure RemoveEventHandler (aproc:TSelectFileEvent);
+procedure RemoveEventHandler (aproc:TMethod);
 {%ENDREGION Events}
 
 function  GetCtrlIndex(actrl:PRGController):integer;
@@ -130,122 +136,8 @@ uses
   RGPak
   ;
 
-
-{%REGION Events}
-{
 var
-  FACtrlEvent:TActiveCtrlEvent;
-
-procedure SetACtrlEvent(aproc:TActiveCtrlEvent);
-begin
-  FACtrlEvent:=aproc;
-end;
-
-function GetACtrlEvent():TActiveCtrlEvent; inline;
-begin
-  result:=FACtrlEvent;
-end;
-}
-type
-  TEventHandlers = array of TSelectFileEvent;
-var
-  SFHandlers:TEventHandlers;
-  SDHandlers:TEventHandlers;
-
-procedure AddHandler(var ahandlers:TEventHandlers; aproc:TSelectFileEvent);
-var
-  i,lidx:integer;
-begin
-  for i:=0 to High(ahandlers) do
-  begin
-    if TMethod(ahandlers[i]).Data=TMethod(aproc).Data then
-    begin
-      ahandlers[i]:=aproc;
-      exit;
-    end;
-  end;
-  lidx:=Length(ahandlers);
-  SetLength(ahandlers,lidx+1);
-  ahandlers[lidx]:=aproc;
-end;
-
-procedure AddFileEventHandler(aproc:TSelectFileEvent);
-begin
-  AddHandler(SFHandlers, aproc);
-end;
-
-procedure AddDirEventHandler(aproc:TSelectFileEvent);
-begin
-  AddHandler(SDHandlers, aproc);
-end;
-
-procedure RemoveEventHandler(aproc:TSelectFileEvent);
-var
-  i:integer;
-begin
-  // check for file select
-  for i:=0 to High(SFHandlers) do
-  begin
-    if SFHandlers[i]=aproc then
-    begin
-      Delete(SFHandlers,i,1);
-      exit;
-    end;
-  end;
-
-  // Check for dir activate
-  for i:=0 to High(SDHandlers) do
-  begin
-    if SDHandlers[i]=aproc then
-    begin
-      Delete(SDHandlers,i,1);
-      exit;
-    end;
-  end;
-end;
-{%ENDREGION Events}
-
-{%REGION Controller}
-function GetCtrl(aidx:integer):PRGController; inline;
-begin
-  if (aidx>=0) and (aidx<CtrlCount) then
-    result:=CtrlList[aidx].Ctrl
-  else
-    result:=nil;
-end;
-
-function GetCtrlIndex(actrl:PRGController):integer;
-var
-  i:integer;
-begin
-  if actrl=nil then
-  begin
-    if (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then
-      exit(ActiveCtrl);
-  end
-  else
-  begin
-    for i:=0 to CtrlCount-1 do
-      if CtrlList[i].ctrl=actrl then
-        exit(i);
-  end;
-  result:=-1;
-end;
-
-function ExpandCtrlList():PRGController;
-begin
-  if CtrlCount>=Length(CtrlList) then
-    SetLength(CtrlList,CtrlCount+8);
-
-  FillChar(CtrlList[CtrlCount],SizeOf(TCtrlListElement),0);
-  GetMem(result,SizeOf(TRGController));
-  result^.Init;
-  CtrlList[CtrlCount].Ctrl:=result;
-
-  ActiveCtrl:=CtrlCount;
-  inc(CtrlCount);
-end;
-{%ENDREGION Controller}
+  FActiveCtrl:PRGController;
 
 {%REGION Settings}
 const
@@ -256,7 +148,6 @@ const
   sFastScan     = 'fastscan';
   sSaveMode     = 'decoding';
   sMODDAT       = 'moddat';
-  sSaveSettings = 'savesettings';
   sSaveDateTime = 'savedatetime';
   sDebugLevel   = 'debuglevel';
 
@@ -328,6 +219,135 @@ begin
 end;
 {%ENDREGION Settings}
 
+{%REGION Events}
+{
+var
+  FACtrlEvent:TActiveCtrlEvent;
+
+procedure SetACtrlEvent(aproc:TActiveCtrlEvent);
+begin
+  FACtrlEvent:=aproc;
+end;
+
+function GetACtrlEvent():TActiveCtrlEvent; inline;
+begin
+  result:=FACtrlEvent;
+end;
+}
+type
+  TEventHandlers = array of TMethod; // TSelectFileEvent;
+var
+  ACHandlers:TEventHandlers;
+  SFHandlers:TEventHandlers;
+  SDHandlers:TEventHandlers;
+
+procedure AddHandler(var ahandlers:TEventHandlers; var aproc:TMethod);
+var
+  i,lidx:integer;
+begin
+  for i:=0 to High(ahandlers) do
+  begin
+    if TMethod(ahandlers[i]).Data=TMethod(aproc).Data then
+    begin
+      ahandlers[i]:=aproc;
+      exit;
+    end;
+  end;
+  lidx:=Length(ahandlers);
+  SetLength(ahandlers,lidx+1);
+  ahandlers[lidx]:=aproc;
+end;
+
+procedure AddCtrlEventHandler(aproc:TActiveCtrlEvent);
+begin
+  AddHandler(ACHandlers, TMethod(aproc));
+end;
+
+procedure AddFileEventHandler(aproc:TSelectFileEvent);
+begin
+  AddHandler(SFHandlers, TMethod(aproc));
+end;
+
+procedure AddDirEventHandler(aproc:TSelectFileEvent);
+begin
+  AddHandler(SDHandlers, TMethod(aproc));
+end;
+
+procedure RemoveEventHandler(aproc:TMethod);
+var
+  i:integer;
+begin
+
+  // check for file select
+  for i:=0 to High(ACHandlers) do
+  begin
+    if ACHandlers[i]=aproc then
+    begin
+      Delete(ACHandlers,i,1);
+      exit;
+    end;
+  end;
+
+  // check for file select
+  for i:=0 to High(SFHandlers) do
+  begin
+    if SFHandlers[i]=aproc then
+    begin
+      Delete(SFHandlers,i,1);
+      exit;
+    end;
+  end;
+
+  // Check for dir activate
+  for i:=0 to High(SDHandlers) do
+  begin
+    if SDHandlers[i]=aproc then
+    begin
+      Delete(SDHandlers,i,1);
+      exit;
+    end;
+  end;
+end;
+{%ENDREGION Events}
+
+{%REGION Controller}
+function GetCtrl(aidx:integer):PRGController; inline;
+begin
+  if (aidx>=0) and (aidx<CtrlCount) then
+    result:=CtrlList[aidx].Ctrl
+  else
+    result:=nil;
+end;
+
+function GetCtrlIndex(actrl:PRGController):integer;
+var
+  i:integer;
+begin
+  if actrl=nil then actrl:=ActiveCtrl;
+  if actrl<>nil then
+  begin
+    for i:=0 to CtrlCount-1 do
+      if CtrlList[i].ctrl=actrl then
+        exit(i);
+  end;
+  result:=-1;
+end;
+
+function ExpandCtrlList():PRGController;
+begin
+  if CtrlCount>=Length(CtrlList) then
+    SetLength(CtrlList,CtrlCount+8);
+
+  FillChar(CtrlList[CtrlCount],SizeOf(TCtrlListElement),0);
+  GetMem(result,SizeOf(TRGController));
+  result^.Init;
+  CtrlList[CtrlCount].Ctrl:=result;
+
+  ActiveCtrl:=result;
+  inc(CtrlCount);
+end;
+{%ENDREGION Controller}
+
 {%REGION Container}
 function NewPak():PRGController;
 begin
@@ -348,7 +368,12 @@ begin
     else
       lmode:=piFullParse;
     if PAK.GetInfo(aname,lmode) then
-      Rebuild();
+      Rebuild()
+    else
+    begin
+      result^.NewDir('MEDIA/');
+      result^.PAK.Name:='New '+ExtractNameOnly(aname);
+    end;
   end;
 end;
 
@@ -357,9 +382,8 @@ var
   i:integer;
 begin
   result:=false;
-//  if (actrl=nil) then actrl:=GetCtrl(ActiveCtrl);
-  if (actrl=nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then actrl:=CtrlList[ActiveCtrl].Ctrl;
-  if (actrl=nil) then exit;
+  if actrl=nil then actrl:=ActiveCtrl;
+  if actrl=nil then exit;
 
   if actrl^.UpdatesCount()>0 then
   begin
@@ -533,9 +557,9 @@ var
 begin
   result:=false;
   if aidx<0 then exit;
-//  if (actrl=nil) then actrl:=GetCtrl(ActiveCtrl);
-  if (actrl=nil) and (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then actrl:=CtrlList[ActiveCtrl].Ctrl;
-  if (actrl=nil) then exit;
+
+  if actrl=nil then actrl:=ActiveCtrl;
+  if actrl=nil then exit;
 
   // try to get data
   if actrl^.Files[aidx]^.ftype=typeDirectory then exit;
@@ -651,7 +675,7 @@ begin
       Dirs[aList].selected:=aidx;
     end;
     for i:=0 to High(SFHandlers) do
-      SFHandlers[i](aidx,actrl,aList);
+      TSelectFileEvent(SFHandlers[i])(aidx,actrl,aList);
   end;
 end;
 
@@ -684,7 +708,7 @@ begin
           path    :=adir;
           selected:=-1;
           for i:=0 to High(SDHandlers) do
-            SDHandlers[i](adir,actrl,aList);
+            TSelectFileEvent(SDHandlers[i])(adir,actrl,aList);
         end;
     end;
 end;
@@ -702,6 +726,31 @@ begin
     end;
   result:=-1;
 end;
+
+function GetActiveCtrl:PRGController; inline;
+begin
+  result:=FActiveCtrl;
+end;
+
+procedure SetActiveCtrl(actrl:PRGController);
+var
+  i,j:integer;
+begin
+  if FActiveCtrl<>actrl then
+  begin
+    for i:=0 to CtrlCount-1 do
+    begin
+      if CtrlList[i].Ctrl=actrl then
+      begin
+        FActiveCtrl:=actrl;
+        for j:=0 to High(ACHandlers) do
+          TActiveCtrlEvent(ACHandlers[j])(actrl);
+        break;
+      end;
+    end;
+  end;
+end;
+
 {%ENDREGION Runtime}
 
 procedure CloseAll();

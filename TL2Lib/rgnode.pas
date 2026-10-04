@@ -36,6 +36,9 @@ function GetNodeName  (anode:pointer):PWideChar;
 function GetNodeParent(anode:pointer):pointer;
 function GetCustomType(anode:pointer):PWideChar;
 
+function GetNodeTag   (anode:pointer):UIntPtr;
+function SetNodeTag   (anode:pointer; atag :UIntPtr):pointer;
+
 function SetNodeValue (anode:pointer; aval :PWideChar; alen:integer=0):ByteBool;
 function SetNodeName  (anode:pointer; aname:PWideChar):boolean;
 function IsNodeName   (anode:pointer; ahash:dword    ):boolean;
@@ -123,6 +126,7 @@ type
   TRGNode = record
     name   : TNodeText;
     parent : PRGNode; // really needs just for deleting
+    tag    : UIntPtr;
     hash   : dword;
     namelen: word;
     case nodetype:SmallInt of
@@ -148,6 +152,7 @@ type
   TRGNode = record
     name   : PWideChar;
     parent : PRGNode; // really needs just for deleting
+    tag    : UIntPtr;
     hash   : dword;
     case nodetype:SmallInt of
       rgGroup    : (
@@ -182,7 +187,10 @@ type
       rgQWord    : (asQWord    :QWord);
       rgWord     : (asWord     :Word);
       rgByte     : (asByte     :Byte);
-      rgBinary   : (len        :UInt32);
+      rgBinary   : (
+        len :UInt32;
+        data:PByte;
+      );
   end;
   TARGNode = array [0..MAXINT div SizeOf(pointer)-1] of PRGNode;
 
@@ -293,6 +301,17 @@ begin
     result:=rgNotValid
   else
     result:=PRGNode(anode)^.nodetype;
+end;
+
+function GetNodeTag(anode:pointer):UIntPtr;
+begin
+  result:=PRGNode(anode)^.tag;
+end;
+
+function SetNodeTag(anode:pointer; atag:UIntPtr):pointer;
+begin
+  PRGNode(anode)^.tag:=atag;
+  result:=anode;
 end;
 
 function GetChildCount(anode:pointer):integer;

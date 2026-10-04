@@ -28,6 +28,7 @@ uses
 {$IFDEF CustomFormats}
   ImagingNetworkGraphics,
   ImagingTarga,
+  ImagingJpeg,
 {$ELSE}
   lazTGA,
 {$ENDIF}
@@ -97,6 +98,7 @@ begin
       AllowAllUp :=True;
       GroupIndex :=1;
       ShowCaption:=False;
+      ShowHint   :=true;
       Hint       :=rsHintScale;
       Images     :=Viewer.ilViewer;
       ImageIndex :=iiStretch;
@@ -112,6 +114,7 @@ begin
       AllowAllUp :=True;
       GroupIndex :=2;
       ShowCaption:=False;
+      ShowHint   :=true;
       Hint       :=rsHintDarkBg;
       Images     :=Viewer.ilViewer;
       ImageIndex :=iiDarkBg;

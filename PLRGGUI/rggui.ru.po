@@ -347,23 +347,116 @@ msgstr ""
 msgid "Rename text"
 msgstr ""
 
-#: tguicfgform.bbfontedit.caption
-msgctxt "tguicfgform.bbfontedit.caption"
-msgid "&Font"
+#: tformitemedit.bbsave.caption
+msgid "bbSave"
 msgstr ""
 
-#: tguicfgform.bbfontedit.hint
-msgctxt "tguicfgform.bbfontedit.hint"
-msgid "Change source code font"
+#: tformitemedit.bbsaveas.caption
+msgid "bbSaveAs"
 msgstr ""
 
-#: tguicfgform.cbpreview.caption
-msgid "Use built-in preview"
+#: tformitemedit.cbadvanced.caption
+msgid "Show advanced settings"
 msgstr ""
 
-#: tguicfgform.cbsinglemod.caption
-msgctxt "tguicfgform.cbsinglemod.caption"
-msgid "Use single mod interface"
+#: tformitemedit.lblguid.caption
+msgid "lblGUID"
+msgstr ""
+
+#: tformitemedit.lblname.caption
+msgid "lblName"
+msgstr ""
+
+#: tformitemedit.lbltitle.caption
+msgid "lblTitle"
+msgstr ""
+
+#: tformitemedit.pnlaffixes.caption
+msgid "Affixes"
+msgstr ""
+
+#: tformitemedit.pnlcommon.caption
+msgid "Common"
+msgstr ""
+
+#: tformitemedit.pnlsound.caption
+msgid "Sound"
+msgstr ""
+
+#: tformitemedit.pnlstats.caption
+msgid "Stats"
+msgstr ""
+
+#: tformitemedit.pnlview.caption
+msgid "View"
+msgstr ""
+
+#: tpanelform.actdelete.caption
+msgid "Delete"
+msgstr ""
+
+#: tpanelform.actdirlist.caption
+msgid "Copy subdir list"
+msgstr ""
+
+#: tpanelform.actextract.caption
+msgid "Extract selected"
+msgstr ""
+
+#: tpanelform.actextractcurdir.caption
+msgid "Extract selected only"
+msgstr ""
+
+#: tpanelform.actextractdir.caption
+msgid "Extract Directory"
+msgstr ""
+
+#: tpanelform.actimportdir.caption
+msgid "Import Directory"
+msgstr ""
+
+#: tpanelform.actimportfile.caption
+msgid "Import File"
+msgstr ""
+
+#: tpanelform.actinverse.caption
+msgid "Inverse selection"
+msgstr ""
+
+#: tpanelform.actmark.caption
+msgid "Mark for deleting"
+msgstr ""
+
+#: tpanelform.actnewdir.caption
+msgid "New Directory"
+msgstr ""
+
+#: tpanelform.actnewfile.caption
+msgid "New File"
+msgstr ""
+
+#: tpanelform.actrefresh.caption
+msgid "Refresh"
+msgstr ""
+
+#: tpanelform.actrename.caption
+msgid "Rename"
+msgstr ""
+
+#: tpanelform.actroot.caption
+msgid "Go to root"
+msgstr ""
+
+#: tpanelform.actselectall.caption
+msgid "Select &All"
+msgstr ""
+
+#: tpanelform.actundo.caption
+msgid "Undo"
+msgstr ""
+
+#: tpanelform.actview.caption
+msgid "&View"
 msgstr ""
 
 #: tpanelform.lvlist.columns[0].caption
@@ -424,6 +517,10 @@ msgstr "Время"
 msgid "Category"
 msgstr ""
 
+#: tpanelform.migridcopy.caption
+msgid "miGridCopy"
+msgstr ""
+
 #: tpanelform.sbcollapse.hint
 msgid "Collapse tree"
 msgstr ""
@@ -444,165 +541,182 @@ msgstr ""
 msgid "(filter)"
 msgstr ""
 
-#: trggui2form.actchangeversion.caption
-msgctxt "trggui2form.actchangeversion.caption"
-msgid "Change PAK version"
+#: trggui2form.actcompare.caption
+msgctxt "trggui2form.actcompare.caption"
+msgid "Compare"
 msgstr ""
 
-#: trggui2form.actchangeversion.hint
-msgctxt "trggui2form.actchangeversion.hint"
-msgid "Change game target without rebuild files"
-msgstr ""
-
-#: trggui2form.actfileclose.caption
-msgid "actFileClose"
-msgstr ""
-
-#: trggui2form.actfileclose.hint
-msgctxt "trggui2form.actfileclose.hint"
-msgid "Close file"
-msgstr ""
-
-#: trggui2form.actfileexit.caption
-msgid "actFileExit"
-msgstr ""
-
-#: trggui2form.actfileexit.hint
-msgctxt "trggui2form.actfileexit.hint"
-msgid "Exit program"
-msgstr ""
-
-#: trggui2form.actfilenew.caption
-msgid "&New"
-msgstr ""
-
-#: trggui2form.actfilenew.hint
-msgid "New file"
-msgstr ""
-
-#: trggui2form.actfileopen.caption
-msgctxt "trggui2form.actfileopen.caption"
-msgid "&Open"
-msgstr ""
-
-#: trggui2form.actfileopen.hint
-msgctxt "trggui2form.actfileopen.hint"
-msgid "Open file"
-msgstr ""
-
-#: trggui2form.actfilesave.caption
-msgid "actFileSave"
-msgstr ""
-
-#: trggui2form.actfilesave.hint
-msgctxt "trggui2form.actfilesave.hint"
-msgid "Save file"
-msgstr ""
-
-#: trggui2form.actfilesaveas.caption
-msgid "actFileSaveAs"
-msgstr ""
-
-#: trggui2form.actfilesaveas.hint
-msgid "Save file as..."
-msgstr ""
-
-#: trggui2form.actfilesavepatch.caption
-msgid "actFileSavePatch"
-msgstr ""
-
-#: trggui2form.actfilesavepatch.hint
-msgctxt "trggui2form.actfilesavepatch.hint"
-msgid "Save just changed files"
-msgstr ""
-
-#: trggui2form.acthelpabout.caption
-msgctxt "trggui2form.acthelpabout.caption"
-msgid "&About"
-msgstr ""
-
-#: trggui2form.acthelpabout.hint
-msgctxt "trggui2form.acthelpabout.hint"
-msgid "About"
+#: trggui2form.actcopy.caption
+msgid "Copy"
 msgstr ""
 
 #: trggui2form.actleftpanelmode.caption
+msgctxt "trggui2form.actleftpanelmode.caption"
 msgid "actLeftPanelMode"
 msgstr ""
 
 #: trggui2form.actrightpanelmode.caption
+msgctxt "trggui2form.actrightpanelmode.caption"
 msgid "actRightPanelMode"
 msgstr ""
 
-#: trggui2form.actshowlog.caption
-msgctxt "trggui2form.actshowlog.caption"
-msgid "Show Log"
-msgstr ""
-
-#: trggui2form.actshowlog.hint
-msgid "Show log window"
-msgstr ""
-
-#: trggui2form.miedit.caption
-msgctxt "trggui2form.miedit.caption"
-msgid "&Edit"
-msgstr ""
-
-#: trggui2form.mifile.caption
-msgctxt "trggui2form.mifile.caption"
-msgid "&File"
-msgstr ""
-
-#: trggui2form.mifileclose.caption
-msgctxt "trggui2form.mifileclose.caption"
-msgid "&Close"
-msgstr ""
-
-#: trggui2form.mifileexit.caption
-msgctxt "trggui2form.mifileexit.caption"
-msgid "E&xit"
-msgstr ""
-
-#: trggui2form.mifilesave.caption
-msgctxt "trggui2form.mifilesave.caption"
-msgid "&Save"
-msgstr ""
-
-#: trggui2form.mifilesaveas.caption
-msgctxt "trggui2form.mifilesaveas.caption"
-msgid "Save &As"
-msgstr ""
-
-#: trggui2form.mifilesavepatch.caption
-msgctxt "trggui2form.mifilesavepatch.caption"
-msgid "Save &Patch"
-msgstr ""
-
-#: trggui2form.mihelp.caption
-msgctxt "trggui2form.mihelp.caption"
-msgid "&Help"
-msgstr ""
-
-#: trggui2form.tbsep1.caption
-msgid "tbSep1"
-msgstr ""
-
-#: trggui2form.tbsep2.caption
-msgid "tbSep2"
-msgstr ""
-
-#: trggui2form.toolbutton1.caption
-msgid "ToolButton1"
-msgstr ""
-
-#: trgguimform.actchangeversion.caption
-msgctxt "trgguimform.actchangeversion.caption"
+#: trgguibaseform.actchangeversion.caption
+msgctxt "trgguibaseform.actchangeversion.caption"
 msgid "Change PAK version"
 msgstr ""
 
-#: trgguimform.actchangeversion.hint
-msgctxt "trgguimform.actchangeversion.hint"
+#: trgguibaseform.actchangeversion.hint
+msgctxt "trgguibaseform.actchangeversion.hint"
 msgid "Change game target without rebuild files"
+msgstr ""
+
+#: trgguibaseform.actfileclose.caption
+msgctxt "trgguibaseform.actfileclose.caption"
+msgid "&Close"
+msgstr ""
+
+#: trgguibaseform.actfileclose.hint
+msgctxt "trgguibaseform.actfileclose.hint"
+msgid "Close file"
+msgstr ""
+
+#: trgguibaseform.actfileexit.caption
+msgctxt "trgguibaseform.actfileexit.caption"
+msgid "E&xit"
+msgstr ""
+
+#: trgguibaseform.actfileexit.hint
+msgctxt "trgguibaseform.actfileexit.hint"
+msgid "Exit program"
+msgstr ""
+
+#: trgguibaseform.actfilenew.caption
+msgctxt "trgguibaseform.actfilenew.caption"
+msgid "&New"
+msgstr ""
+
+#: trgguibaseform.actfilenew.hint
+msgctxt "trgguibaseform.actfilenew.hint"
+msgid "New file"
+msgstr ""
+
+#: trgguibaseform.actfileopen.caption
+msgctxt "trgguibaseform.actfileopen.caption"
+msgid "&Open"
+msgstr ""
+
+#: trgguibaseform.actfileopen.hint
+msgctxt "trgguibaseform.actfileopen.hint"
+msgid "Open file"
+msgstr ""
+
+#: trgguibaseform.actfilesave.caption
+msgctxt "trgguibaseform.actfilesave.caption"
+msgid "&Save"
+msgstr ""
+
+#: trgguibaseform.actfilesave.hint
+msgctxt "trgguibaseform.actfilesave.hint"
+msgid "Save file"
+msgstr ""
+
+#: trgguibaseform.actfilesaveas.caption
+msgctxt "trgguibaseform.actfilesaveas.caption"
+msgid "Save &As"
+msgstr ""
+
+#: trgguibaseform.actfilesaveas.hint
+msgctxt "trgguibaseform.actfilesaveas.hint"
+msgid "Save file as..."
+msgstr ""
+
+#: trgguibaseform.actfilesavepatch.caption
+msgctxt "trgguibaseform.actfilesavepatch.caption"
+msgid "Save &Patch"
+msgstr ""
+
+#: trgguibaseform.actfilesavepatch.hint
+msgctxt "trgguibaseform.actfilesavepatch.hint"
+msgid "Save just changed files"
+msgstr ""
+
+#: trgguibaseform.acthelpabout.caption
+msgctxt "trgguibaseform.acthelpabout.caption"
+msgid "&About"
+msgstr ""
+
+#: trgguibaseform.acthelpabout.hint
+msgctxt "trgguibaseform.acthelpabout.hint"
+msgid "About"
+msgstr ""
+
+#: trgguibaseform.actopendir.caption
+msgctxt "trgguibaseform.actopendir.caption"
+msgid "Open unpack dir"
+msgstr ""
+
+#: trgguibaseform.actopendir.hint
+msgctxt "trgguibaseform.actopendir.hint"
+msgid "Open directory for unpack files"
+msgstr ""
+
+#: trgguibaseform.actshowinfo.caption
+msgctxt "trgguibaseform.actshowinfo.caption"
+msgid "Show Mod Info"
+msgstr ""
+
+#: trgguibaseform.actshowinfo.hint
+msgid "Show current mod info"
+msgstr ""
+
+#: trgguibaseform.actshowlog.caption
+msgctxt "trgguibaseform.actshowlog.caption"
+msgid "Show Log"
+msgstr ""
+
+#: trgguibaseform.actshowlog.hint
+msgctxt "trgguibaseform.actshowlog.hint"
+msgid "Show log window"
+msgstr ""
+
+#: trgguibaseform.miedit.caption
+msgctxt "trgguibaseform.miedit.caption"
+msgid "&Edit"
+msgstr ""
+
+#: trgguibaseform.mifile.caption
+msgctxt "trgguibaseform.mifile.caption"
+msgid "&File"
+msgstr ""
+
+#: trgguibaseform.mihelp.caption
+msgctxt "trgguibaseform.mihelp.caption"
+msgid "&Help"
+msgstr ""
+
+#: trgguibaseform.mihelpabout.caption
+msgctxt "trgguibaseform.mihelpabout.caption"
+msgid "&About"
+msgstr ""
+
+#: trgguibaseform.mihelpabout.hint
+msgctxt "trgguibaseform.mihelpabout.hint"
+msgid "About"
+msgstr ""
+
+#: trgguibaseform.tbsep1.caption
+msgctxt "trgguibaseform.tbsep1.caption"
+msgid "tbSep1"
+msgstr ""
+
+#: trgguibaseform.tbsep2.caption
+msgctxt "trgguibaseform.tbsep2.caption"
+msgid "tbSep2"
+msgstr ""
+
+#: trgguibaseform.tbsep3.caption
+msgctxt "trgguibaseform.tbsep3.caption"
+msgid "tbSep3"
 msgstr ""
 
 #: trgguimform.actedimport.caption
@@ -623,96 +737,6 @@ msgstr ""
 msgid "Import directory content (with subdirs)"
 msgstr ""
 
-#: trgguimform.actfileclose.caption
-msgctxt "trgguimform.actfileclose.caption"
-msgid "&Close"
-msgstr ""
-
-#: trgguimform.actfileclose.hint
-msgctxt "trgguimform.actfileclose.hint"
-msgid "Close file"
-msgstr ""
-
-#: trgguimform.actfileexit.caption
-msgctxt "trgguimform.actfileexit.caption"
-msgid "E&xit"
-msgstr ""
-
-#: trgguimform.actfileexit.hint
-msgctxt "trgguimform.actfileexit.hint"
-msgid "Exit program"
-msgstr ""
-
-#: trgguimform.actfileopen.caption
-msgctxt "trgguimform.actfileopen.caption"
-msgid "&Open"
-msgstr ""
-
-#: trgguimform.actfileopen.hint
-msgctxt "trgguimform.actfileopen.hint"
-msgid "Open file"
-msgstr ""
-
-#: trgguimform.actfilesave.caption
-msgctxt "trgguimform.actfilesave.caption"
-msgid "&Save"
-msgstr ""
-
-#: trgguimform.actfilesave.hint
-msgctxt "trgguimform.actfilesave.hint"
-msgid "Save file"
-msgstr ""
-
-#: trgguimform.actfilesaveas.caption
-msgctxt "trgguimform.actfilesaveas.caption"
-msgid "Save &As"
-msgstr ""
-
-#: trgguimform.actfilesavepatch.caption
-msgctxt "trgguimform.actfilesavepatch.caption"
-msgid "Save &Patch"
-msgstr ""
-
-#: trgguimform.actfilesavepatch.hint
-msgctxt "trgguimform.actfilesavepatch.hint"
-msgid "Save just changed files"
-msgstr ""
-
-#: trgguimform.acthelpabout.caption
-msgctxt "trgguimform.acthelpabout.caption"
-msgid "&About"
-msgstr ""
-
-#: trgguimform.acthelpabout.hint
-msgctxt "trgguimform.acthelpabout.hint"
-msgid "About"
-msgstr ""
-
-#: trgguimform.actopendir.caption
-msgid "Open unpack dir"
-msgstr ""
-
-#: trgguimform.actopendir.hint
-msgid "Open directory for unpack files"
-msgstr ""
-
-#: trgguimform.actshowinfo.caption
-msgid "&Info"
-msgstr ""
-
-#: trgguimform.actshowinfo.hint
-msgid "Show TL2 MOD info"
-msgstr ""
-
-#: trgguimform.actshowlog.caption
-msgctxt "trgguimform.actshowlog.caption"
-msgid "Show Log"
-msgstr ""
-
-#: trgguimform.actshowlog.hint
-msgid "Show Log window"
-msgstr ""
-
 #: trgguimform.actshowpreview.caption
 msgid "Show Preview"
 msgstr ""
@@ -721,90 +745,11 @@ msgstr ""
 msgid "Show preview/editor"
 msgstr ""
 
-#: trgguimform.caption
-msgid "RGGUI"
-msgstr ""
-
 #: trgguimform.grid.caption
 msgid "Grid"
 msgstr ""
 
-#: trgguimform.miedit.caption
-msgctxt "trgguimform.miedit.caption"
-msgid "&Edit"
-msgstr ""
-
-#: trgguimform.mieditdelete.caption
-msgctxt "trgguimform.mieditdelete.caption"
-msgid "Reset"
-msgstr ""
-
-#: trgguimform.mieditdelete.hint
-msgctxt "trgguimform.mieditdelete.hint"
-msgid "Remove any updates for file"
-msgstr ""
-
-#: trgguimform.mieditextract.caption
-msgctxt "trgguimform.mieditextract.caption"
-msgid "Unpack selected"
-msgstr ""
-
-#: trgguimform.mieditextract.hint
-msgctxt "trgguimform.mieditextract.hint"
-msgid "Save selected file(s)"
-msgstr ""
-
-#: trgguimform.mifile.caption
-msgctxt "trgguimform.mifile.caption"
-msgid "&File"
-msgstr ""
-
-#: trgguimform.mihelp.caption
-msgctxt "trgguimform.mihelp.caption"
-msgid "&Help"
-msgstr ""
-
 #: trgguimform.settings.caption
 msgid "Settings"
-msgstr ""
-
-#: trgguimform.tbedexport.caption
-msgctxt "trgguimform.tbedexport.caption"
-msgid "Unpack selected"
-msgstr ""
-
-#: trgguimform.tbedexport.hint
-msgctxt "trgguimform.tbedexport.hint"
-msgid "Save selected file(s)"
-msgstr ""
-
-#: trgguimform.tbedreset.caption
-msgctxt "trgguimform.tbedreset.caption"
-msgid "Reset"
-msgstr ""
-
-#: trgguimform.tbedreset.hint
-msgctxt "trgguimform.tbedreset.hint"
-msgid "Remove any updates for file"
-msgstr ""
-
-#: trgguimform.tbfilter.caption
-msgid "Type Filter"
-msgstr ""
-
-#: trgguimform.tbfilter.hint
-msgid "Show type filter"
-msgstr ""
-
-#: trgguimform.tbinfo.hint
-msgid "Mod info"
-msgstr ""
-
-#: trgguimform.tbresetview.caption
-msgid "Reset View"
-msgstr ""
-
-#: trgguimform.tbresetview.hint
-msgid "Reset panels and columns width"
 msgstr ""
 

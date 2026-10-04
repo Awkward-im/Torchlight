@@ -6,7 +6,7 @@ object PanelForm: TPanelForm
   ActiveControl = lvList
   ClientHeight = 567
   ClientWidth = 499
-  LCLVersion = '4.99.0.0'
+  LCLVersion = '5.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object pnlTop: TPanel
@@ -28,6 +28,7 @@ object PanelForm: TPanelForm
       Style = csDropDownList
       TabOrder = 0
       TabStop = False
+      OnChange = cbContentChange
       OnCloseUp = cbContentChange
     end
     object sbTree: TSpeedButton
@@ -59,32 +60,6 @@ object PanelForm: TPanelForm
       ClientHeight = 24
       ClientWidth = 335
       TabOrder = 1
-      object sbFilter: TSpeedButton
-        Left = 284
-        Height = 22
-        Hint = 'Filter setup'
-        Top = 2
-        Width = 23
-        Anchors = [akTop, akRight]
-        Images = ilPanel
-        ImageIndex = 2
-        ShowCaption = False
-        OnClick = sbFilterClick
-      end
-      object sbFull: TSpeedButton
-        Left = 310
-        Height = 22
-        Hint = 'Full List'
-        Top = 2
-        Width = 23
-        AllowAllUp = True
-        Anchors = [akTop, akRight]
-        GroupIndex = 7
-        Images = ilPanel
-        ImageIndex = 3
-        ShowCaption = False
-        OnClick = sbFullClick
-      end
       object lvfeFull: TListViewFilterEdit
         Left = 2
         Height = 23
@@ -98,8 +73,34 @@ object PanelForm: TPanelForm
         MaxLength = 0
         TabOrder = 0
       end
-      object sbColumns: TSpeedButton
+      object sbFilter: TSpeedButton
         Left = 256
+        Height = 22
+        Hint = 'Filter setup'
+        Top = 2
+        Width = 23
+        Anchors = [akTop, akRight]
+        Images = ilPanel
+        ImageIndex = 2
+        ShowCaption = False
+        OnClick = sbFilterClick
+      end
+      object sbFull: TSpeedButton
+        Left = 284
+        Height = 22
+        Hint = 'Full List'
+        Top = 2
+        Width = 23
+        AllowAllUp = True
+        Anchors = [akTop, akRight]
+        GroupIndex = 7
+        Images = ilPanel
+        ImageIndex = 3
+        ShowCaption = False
+        OnClick = sbFullClick
+      end
+      object sbColumns: TSpeedButton
+        Left = 310
         Height = 22
         Top = 2
         Width = 23
@@ -206,9 +207,11 @@ object PanelForm: TPanelForm
     TabOrder = 0
     ViewStyle = vsReport
     OnCompare = lvListCompare
+    OnContextPopup = lvListContextPopup
     OnCustomDrawItem = lvListCustomDrawItem
     OnDblClick = DoListDblClick
     OnEnter = SetPanelActive
+    OnExit = SetPanelInactive
     OnItemChecked = lvListItemChecked
     OnKeyDown = DoListKeyDown
     OnSelectItem = lvListSelectItem
@@ -229,6 +232,7 @@ object PanelForm: TPanelForm
     TabOrder = 2
     Visible = False
     Options = [tvoAutoExpand, tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    OnContextPopup = tvTreeContextPopup
     OnDblClick = tvTreeDblClick
     OnKeyDown = DoTreeKeyDown
     OnSelectionChanged = tvTreeSelectionChanged
@@ -323,6 +327,163 @@ object PanelForm: TPanelForm
       Caption = 'Attrib'
       ShowAlwaysCheckable = True
       OnClick = ColMenuClick
+    end
+  end
+  object mnuTree: TPopupMenu
+    Left = 352
+    Top = 272
+    object miTreeNew: TMenuItem
+      Action = actNewDir
+    end
+    object miTreeExtractCurrent: TMenuItem
+      Action = actExtractCurDir
+    end
+    object miTreeExtractSub: TMenuItem
+      Action = actExtractDir
+    end
+    object miTreeImportDir: TMenuItem
+      Action = actImportDir
+    end
+    object miTreeCopyList: TMenuItem
+      Action = actDirList
+    end
+    object miTreeSep1: TMenuItem
+      Caption = '-'
+    end
+    object miTreeDelete: TMenuItem
+      Action = actDelete
+    end
+    object miTreeMark: TMenuItem
+      Action = actMark
+    end
+    object miTreeUndo: TMenuItem
+      Action = actUndo
+    end
+  end
+  object mnuGrid: TPopupMenu
+    Left = 352
+    Top = 336
+    object miGridExtract: TMenuItem
+      Action = actExtract
+    end
+    object miGridNew: TMenuItem
+      Action = actNewFile
+    end
+    object miGridRename: TMenuItem
+      Action = actRename
+    end
+    object miGridView: TMenuItem
+      Action = actView
+    end
+    object miGridSep1: TMenuItem
+      Caption = '-'
+    end
+    object miGridImportDir: TMenuItem
+      Action = actImportDir
+    end
+    object miGridImportFile: TMenuItem
+      Action = actImportFile
+    end
+    object miGridSep2: TMenuItem
+      Caption = '-'
+    end
+    object miGridCopy: TMenuItem
+      Caption = 'miGridCopy'
+      Visible = False
+    end
+    object miGridSepAlt: TMenuItem
+      Caption = '-'
+      Visible = False
+    end
+    object miGridDelete: TMenuItem
+      Action = actDelete
+    end
+    object miGridMark: TMenuItem
+      Action = actMark
+    end
+    object miGridUndo: TMenuItem
+      Action = actUndo
+    end
+  end
+  object alPanel: TActionList
+    Left = 292
+    Top = 272
+    object actRefresh: TAction
+      Caption = 'Refresh'
+      OnExecute = execRefreshList
+    end
+    object actNewFile: TAction
+      Category = 'List'
+      Caption = 'New File'
+      OnExecute = execNewFile
+    end
+    object actNewDir: TAction
+      Caption = 'New Directory'
+      OnExecute = execNewDir
+    end
+    object actRename: TAction
+      Caption = 'Rename'
+      OnExecute = execRename
+    end
+    object actSelectAll: TAction
+      Category = 'List'
+      Caption = 'Select &All'
+      OnExecute = execSelectAll
+    end
+    object actInverse: TAction
+      Caption = 'Inverse selection'
+      OnExecute = execInverse
+    end
+    object actExtract: TAction
+      Category = 'List'
+      Caption = 'Extract selected'
+      OnExecute = execExtractSelected
+    end
+    object actExtractDir: TAction
+      Category = 'Tree'
+      Caption = 'Extract Directory'
+      OnExecute = execExtractDir
+    end
+    object actDelete: TAction
+      Caption = 'Delete'
+      OnExecute = execDelete
+    end
+    object actMark: TAction
+      Caption = 'Mark for deleting'
+      OnExecute = execMark
+    end
+    object actUndo: TAction
+      Caption = 'Undo'
+      OnExecute = execUndo
+    end
+    object actRoot: TAction
+      Category = 'List'
+      Caption = 'Go to root'
+      OnExecute = execGoToRoot
+    end
+    object actView: TAction
+      Category = 'List'
+      Caption = '&View'
+      OnExecute = execView
+    end
+    object actImportFile: TAction
+      Category = 'List'
+      Caption = 'Import File'
+      OnExecute = execImportFile
+    end
+    object actImportDir: TAction
+      Caption = 'Import Directory'
+      OnExecute = execImportDir
+    end
+    object actDirList: TAction
+      Category = 'Tree'
+      Caption = 'Copy subdir list'
+      OnExecute = execDirList
+    end
+    object actExtractCurDir: TAction
+      Category = 'Tree'
+      Caption = 'Extract selected only'
+      OnExecute = execExtractCurDir
     end
   end
 end

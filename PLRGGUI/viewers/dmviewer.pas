@@ -25,6 +25,7 @@ type
     ilBookmarks: TImageList;
     ilViewer   : TImageList;
     miCalcHash: TMenuItem;
+    miViews   : TMenuItem;
     SynPopupMenu: TSynPopupMenu;
     SynXMLSyn: TSynXMLSyn;
 
@@ -89,6 +90,7 @@ uses
 procedure TViewer.DataModuleCreate(Sender: TObject);
 begin
   Font:=TFont.Create;
+  miViews:=nil;
 end;
 
 procedure TViewer.DataModuleDestroy(Sender: TObject);
@@ -165,13 +167,35 @@ begin
   end;
 end;
 
-
 procedure TBaseViewer.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  i:integer;
 begin
+
+  if Viewer.miViews.Parent<>nil then
+  begin
+    // Search and remove Self from menu list
+    for i:=0 to Viewer.miViews.Count-1 do
+    begin
+      if Viewer.miViews.Items[i].Tag=UIntPtr(Self) then
+      begin
+        Viewer.miViews.Delete(i);
+        break;
+      end;
+    end;
+  end;
+
   CloseAction:=caFree;
 end;
 
+procedure OnMenuItemClick(dummy:pointer; Sender: TObject);
+begin
+  TBaseViewer(TMenuItem(Sender).Tag).ShowOnTop;
+end;
+
 constructor TBaseViewer.Create({AOwner:TComponent; }var actrl: TRGController; aidx: integer);
+var
+  mi:TMenuItem;
 begin
   inherited CreateNew(Viewer{AOwner});
 
@@ -191,6 +215,26 @@ begin
 
   ctrl:=@actrl;
   idx :=aidx;
+
+  if Viewer.miViews=nil then
+  begin
+    Viewer.miViews:=TMenuItem.Create(Application.MainForm.Menu);
+    Viewer.miViews.Caption:='&Views';
+    Application.MainForm.Menu.Items.Add(Viewer.miViews);
+  end;
+  if Viewer.miViews.Parent<>nil then
+  begin
+    mi:=TMenuItem.Create(Viewer.miViews);
+    mi.Tag    :=UIntPtr(Self);
+    mi.OnClick:=TNotifyEvent(MakeMethod(nil,@OnMenuItemClick));
+
+    mi.Caption:=actrl.PAK.Name+': '+
+//!!       WideToStr(actrl.PathOfFile(aidx))+
+       WideToStr(actrl.Files[aidx]^.Name);
+
+    Viewer.miViews.Add(mi);
+  end;
+
 end;
 
 procedure TBaseViewer.DoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

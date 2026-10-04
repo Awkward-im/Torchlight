@@ -5,10 +5,9 @@
 interface
 
 uses
-  uni_profiler,
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  ComCtrls, Buttons, ShellCtrls, Menus, TreeFilterEdit, ListViewFilterEdit,
-  RGGlobal, RGCtrl;
+  uni_profiler, Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
+  StdCtrls, ComCtrls, Buttons, ShellCtrls, Menus, ActnList, TreeFilterEdit,
+  ListViewFilterEdit, RGGlobal, RGCtrl, Types;
 
 
 {$DEFINE Interface}
@@ -22,37 +21,99 @@ type
   { TPanelForm }
 
   TPanelForm = class(TForm)
-    cbContent: TComboBox;
-    lvfeFull: TListViewFilterEdit;
-    miColType: TMenuItem;
-    miColSize: TMenuItem;
-    miColPacked: TMenuItem;
-    miColTime: TMenuItem;
-    miColAttr: TMenuItem;
-    pnlTopTree: TPanel;
-    pnlTopList: TPanel;
-    pnlPath: TPanel;
+    actExtractCurDir: TAction;
+    alPanel: TActionList;
+    actImportFile: TAction;
+    actImportDir : TAction;
+    actView      : TAction;
+    actRefresh   : TAction;
+    actMark      : TAction;
+    actUndo      : TAction;
+    actRoot      : TAction;
+    actNewFile   : TAction;
+    actNewDir    : TAction;
+    actRename    : TAction;
+    actSelectAll : TAction;
+    actInverse   : TAction;
+    actExtract   : TAction;
+    actExtractDir: TAction;
+    actDelete    : TAction;
+    actDirList   : TAction;
+    mnuGrid: TPopupMenu;
+    miGridExtract   : TMenuItem;
+    miGridNew       : TMenuItem;
+    miGridRename    : TMenuItem;
+    miGridView      : TMenuItem;
+    miGridSep1      : TMenuItem;
+    miGridImportDir : TMenuItem;
+    miGridImportFile: TMenuItem;
+    miGridSep2      : TMenuItem;
+    miGridCopy      : TMenuItem;
+    miGridSepAlt    : TMenuItem;
+    miGridDelete    : TMenuItem;
+    miGridMark      : TMenuItem;
+    miGridUndo      : TMenuItem;
+    mnuTree: TPopupMenu;
+    miTreeNew           : TMenuItem;
+    miTreeExtractCurrent: TMenuItem;
+    miTreeExtractSub    : TMenuItem;
+    miTreeImportDir     : TMenuItem;
+    miTreeCopyList      : TMenuItem;
+    miTreeSep1          : TMenuItem;
+    miTreeDelete        : TMenuItem;
+    miTreeMark          : TMenuItem;
+    miTreeUndo          : TMenuItem;
     mnuColumns: TPopupMenu;
-    sbFilter: TSpeedButton;
-    sbFull: TSpeedButton;
-    sbColumns: TSpeedButton;
-    tvShell: TShellTreeView;
-    tfeTree: TTreeFilterEdit;
+    miColType  : TMenuItem;
+    miColSize  : TMenuItem;
+    miColPacked: TMenuItem;
+    miColTime  : TMenuItem;
+    miColAttr  : TMenuItem;
     ilPanel: TImageList;
-    lvList: TListView;
+    pnlPath: TPanel;
     pnlTop: TPanel;
+    cbContent: TComboBox;
+    pnlTopList: TPanel;
+    lvfeFull : TListViewFilterEdit;
+    sbFilter : TSpeedButton;
+    sbFull   : TSpeedButton;
+    sbColumns: TSpeedButton;
+    lvList: TListView;
+    pnlTopTree: TPanel;
+    tfeTree   : TTreeFilterEdit;
     sbCollapse: TSpeedButton;
-    sbTree: TSpeedButton;
-    tvTree: TTreeView;
+    sbTree    : TSpeedButton;
+    tvShell: TShellTreeView;
+    tvTree : TTreeView;
 
     procedure cbContentChange(Sender: TObject);
     procedure ColMenuClick(Sender: TObject);
+    procedure execDelete(Sender: TObject);
+
+    procedure execDirList(Sender: TObject);
+    procedure execExtractCurDir(Sender: TObject);
+    procedure execExtractDir(Sender: TObject);
+    procedure execExtractSelected(Sender: TObject);
+    procedure execGoToRoot(Sender: TObject);
+    procedure execImportDir(Sender: TObject);
+    procedure execImportFile(Sender: TObject);
+    procedure execInverse(Sender: TObject);
+    procedure execMark(Sender: TObject);
+    procedure execNewDir(Sender: TObject);
+    procedure execNewFile(Sender: TObject);
+    procedure execRefreshList(Sender: TObject);
+    procedure execRename(Sender: TObject);
+    procedure execSelectAll(Sender: TObject);
+    procedure execUndo(Sender: TObject);
+    procedure execView(Sender: TObject);
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure lvfeFullAfterFilter(Sender: TObject);
+    procedure SetPanelInactive(Sender: TObject);
     procedure SetPanelActive  (Sender: TObject);
 
+    procedure lvfeFullAfterFilter(Sender: TObject);
+    procedure lvListContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure DoListDblClick  (Sender: TObject);
     procedure DoListKeyDown   (Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lvListCustomDrawItem(Sender: TCustomListView; Item: TListItem;
@@ -70,6 +131,7 @@ type
     procedure DoTreeKeyDown  (Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure sbCollapseClick(Sender: TObject);
     procedure sbTreeClick    (Sender: TObject);
+    procedure tvTreeContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure tvTreeDblClick (Sender: TObject);
     procedure tvTreeSelectionChanged(Sender: TObject);
   private
@@ -79,9 +141,10 @@ type
     FOnChange :TRGOnChange;
     FOnType   :TRGOnPanelType;
     FOnExecute:TRGOnExecute;
-    FShell:TRGController;
+    FShell    :TRGController;
     FShellPath:AnsiString;
     FPanelType:integer;
+    FPopupNode: TTreeNode;
 
     procedure AddBranch(aroot:TTreeNode; adir:integer);
     procedure BuildShellRootList;
@@ -90,14 +153,12 @@ type
 //    procedure FillList      (adir:integer);
     procedure FillFullList();
     procedure FillShellList(const aitem:AnsiString);
-    procedure RefreshList();
+    function GetPathFromNode(aNode: TTreeNode): string;
     procedure ShowLog();
     procedure ShowSettings();
 
     procedure SetPanelPath(const apath:AnsiString);
     procedure ShowHideColumn(acol:integer; ashow:boolean);
-    procedure UnpackSelected();
-    function  GetSelectionList(var arr:TIntegerDynArray):integer;
     function  IsParentDirSelected():boolean;
     procedure SelectFile(aidx:integer);
     procedure SelectInList(afirst:boolean);
@@ -110,7 +171,6 @@ type
 
 {$I act.inc}
     
-    function OnImportDouble (idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
     function OnChangeDefault(actrl:pointer; idx:integer; aevent:integer):integer;
     function OnPanelTypeDef (apanel:TForm; atype:integer; abefore:boolean):integer;
     function OnExecuteDef   (actrl:PRGController; aidx:integer):integer;
@@ -123,7 +183,7 @@ type
     ListIndex:integer; // index in (Dirs:array [0..15] of TDirListElement)
 
     procedure FillTree;
-    procedure FillList      (adir:integer);
+    procedure FillList(adir:integer);
 
 {
   Directory must not have same name as file too. No case-sensitive
@@ -136,7 +196,8 @@ type
     procedure SetPanelType(atype: integer);
     function  GetPanelType    ():integer;
     function  GetSelectedFile ():integer;
-    procedure FillCombo(aremove:integer=0); // enough for 2 panels
+    function  GetSelectionList(var arr:TIntegerDynArray):integer;
+    procedure FillCombo(aremove:integer=0; arebuild:boolean=true); // enough for 2 panels
 
     procedure SetColumnState(acol:integer; ashow:boolean);
     procedure SetCtrl(actrl:PRGController);
@@ -150,6 +211,7 @@ type
     property  OnExecute  :TRGOnExecute   read FOnExecute write SetOnExecute;   // FOnExecute;
     property  PanelType:integer read GetPanelType write SetPanelType;
     property  ShowCol[acol:integer]:boolean {read GetColState} write ShowHideColumn;
+    property  ShellPath  :AnsiString     read FShellPath;
   end;
 
 var
@@ -183,6 +245,7 @@ uses
   LCLType,
   LCLIntf,
   FileUtil,
+  Clipbrd,
 {$IFDEF Windows}
   Windows,
 {$ENDIF}
@@ -220,9 +283,12 @@ resourcestring
 
 {%REGION NotVisual}
 procedure TPanelForm.SetCtrl(actrl:PRGController);
-var
-  lidx:integer;
+//var lidx:integer;
 begin
+  Ctrl:=actrl;
+  if self=Panels[ActivePanel] then
+    ActiveCtrl:=Ctrl;
+{
   if Ctrl<>actrl then
   begin
     lidx:=GetCtrlIndex(actrl);
@@ -240,11 +306,9 @@ begin
     end;
     //!!
     if self=Panels[ActivePanel] then
-    begin
-      if Ctrl<>nil then ActiveCtrl:=GetCtrlIndex(Ctrl)
-      else ActiveCtrl:=-1;
-    end;
+      ActiveCtrl:=Ctrl;
   end;
+}
 end;
 
 function TPanelForm.GetOppositePanel():TPanelForm;
@@ -261,15 +325,26 @@ procedure TPanelForm.SetPanelActive(Sender: TObject);
 var
   i:integer;
 begin
+//  RGLog.Add('Enter list '+HexStr(Self));
   for i:=0 to PanelCount-1 do
   begin
     if Panels[i]=Self then
     begin
-      ActivePanel:=i;
+      if ActivePanel<>i then
+      begin
+        ActivePanel:=i;
+        //!! event for active ctrl must be here
+      end;
       break;
     end;
   end;
 end;
+
+procedure TPanelForm.SetPanelInactive(Sender: TObject);
+begin
+//  RGLog.Add('Leave list '+HexStr(Self));
+end;
+
 
 function TPanelForm.IsNameExists(const aname:AnsiString):integer;
 begin
@@ -326,6 +401,7 @@ begin
       pnlTopTree.Visible:=false;
       pnlPath   .Visible:=true;
 
+      sbFull .Visible:=true;
       sbTree .Visible:=true;
       lvList .Visible:=true;
       tvShell.Visible:=false;
@@ -366,6 +442,7 @@ begin
       pnlTopTree.Visible:=false;
       pnlPath   .Visible:=true;
 
+      sbFull .Visible:=false;
       sbTree .Visible:=true;
       lvList .Visible:=true;
       tvShell.Visible:=false;
@@ -416,13 +493,13 @@ end;
 procedure TPanelForm.cbContentChange(Sender: TObject);
 var
   lpanel:TPanelForm;
-  lidx:integer;
+  lctrl:IntPtr;
 begin
   SetPanelActive(self);
 
-  lidx:=IntPtr(cbContent.Items.Objects[cbContent.ItemIndex]);
+  lctrl:=IntPtr(cbContent.Items.Objects[cbContent.ItemIndex]);
 
-  if lidx<>ptView then
+  if lctrl<>ptView then
   begin
     if fmPreview<>nil then
     begin
@@ -432,7 +509,7 @@ begin
     end;
   end;
 
-  if lidx<>ptLog then
+  if lctrl<>ptLog then
   begin
     if fmLog<>nil then
     begin
@@ -441,7 +518,7 @@ begin
     end;
   end;
 
-  if lidx<>ptConfig then
+  if lctrl<>ptConfig then
   begin
     if fmSettings<>nil then
       fmSettings.Hide;
@@ -454,25 +531,25 @@ begin
 }
   end;
 
-  if lidx=ptView then
+  if lctrl=ptView then
   begin
 //    SetCtrl(lpanel.Ctrl);
     SetPanelType(panelView);
   end
 
-  else if lidx=ptLog then
+  else if lctrl=ptLog then
   begin
     SetPanelType(panelLog);
     if GetPanelType()=panelLog then ShowLog();
   end
 
-  else if lidx=ptConfig then
+  else if lctrl=ptConfig then
   begin
     SetPanelType(panelSettings);
     if GetPanelType()=panelSettings then ShowSettings();
   end
 
-  else if lidx=ptShell then
+  else if lctrl=ptShell then
   begin
     Ctrl:=@FShell;
     if not sbTree.Down {GetPanelType()=panelShell} then
@@ -489,7 +566,7 @@ begin
 
   else
   begin
-    SetCtrl(CtrlList[lidx].Ctrl);
+    SetCtrl(PRGController(lctrl));
     if not sbTree.Down {GetPanelType()=panelList} then
     begin
       SetPanelType(panelList);
@@ -504,69 +581,54 @@ begin
   end;
 end;
 
-procedure TPanelForm.FillCombo(aremove:integer=0);
+procedure TPanelForm.FillCombo(aremove:integer=0; arebuild:boolean=true);
 var
-  i,lold,lidx:integer;
-  lobj:integer;
+  lctrl:IntPtr;
+  i,lidx:integer;
 begin
   // save current content
-  lidx:=cbContent.ItemIndex;
-  if lidx>=0 then
-  begin
-    lobj:=IntPtr(cbContent.Items.Objects[lidx]);
-  end
+  if (CtrlCount>0) and (Self=Panels[ActivePanel]) then
+    lctrl:=IntPtr(CtrlList[CtrlCount-1].Ctrl)
   else
-    lobj:=10000;
+  begin
+    lidx:=cbContent.ItemIndex;
+    if lidx>=0 then
+    begin
+      lctrl:=IntPtr(cbContent.Items.Objects[lidx]);
+    end
+    else
+      lctrl:=10000;
+  end;
 
   cbContent.Clear;
   cbContent.Sorted:=true;
 
   // fill with sorting
   for i:=0 to CtrlCount-1 do
-    cbContent.AddItem(CtrlList[i].Ctrl^.Pak.Name,TObject(IntPtr(i)));
+    cbContent.AddItem(CtrlList[i].Ctrl^.Pak.Name,TObject(CtrlList[i].Ctrl));
+
   cbContent.Sorted:=false;
-  cbContent.AddItem(rsShell  ,TObject(ptShell));
+  cbContent.AddItem(rsShell,TObject(ptShell));
   if aremove<>panelLog      then cbContent.AddItem(rsLog    ,TObject(ptLog));
   if aremove<>panelSettings then cbContent.AddItem(rsConfig ,TObject(ptConfig));
   if aremove<>panelView     then cbContent.AddItem(rsPreview,TObject(ptView));
 
   // Active panel: choose last used Controller
-  if Self=Panels[ActivePanel] then
+  // Inactive: choose previous, no need to rebuild
+  // rebuild 
+  lidx:=0;
+  for i:=0 to cbContent.Items.Count-1 do
   begin
-    lidx:=0;
-    for i:=0 to cbContent.Items.Count-1 do
+    if lctrl=IntPtr(cbContent.Items.Objects[i]) then
     begin
-      if (CtrlCount-1)=IntPtr(cbContent.Items.Objects[i]) then
-      begin
-        lidx:=i;
-        break;
-      end;
+      lidx:=i;
+      if Self<>Panels[ActivePanel] then
+        arebuild:=false;
+      break;
     end;
-    cbContent.ItemIndex:=lidx;
-    cbContentChange(cbContent);
-  end
-  // Inactive panel, keep used Controller (if was)
-  else
-  begin
-    lold:=-1;
-    if lobj=ptView then cbContent.ItemIndex:=cbContent.Items.Count-1
-//    else if lobj=ptShell then cbContent.ItemIndex:=cbContent.Items.Count-1
-    else
-    begin
-      lidx:=0;
-      for i:=0 to cbContent.Items.Count-1 do
-      begin
-        if lobj=IntPtr(cbContent.Items.Objects[i]) then
-        begin
-          lidx:=i;
-          lold:=i;
-          break;
-        end;
-      end;
-      cbContent.ItemIndex:=lidx;
-    end;
-    if lold<0 then cbContentChange(cbContent);
   end;
+  cbContent.ItemIndex:=lidx;
+  if arebuild then cbContentChange(cbContent);
 end;
 
 procedure TPanelForm.ShowLog();
@@ -664,15 +726,6 @@ begin
   else if Sender=miColAttr   then ShowHideColumn(colAttr,mi.Checked);
 end;
 
-procedure TPanelForm.RefreshList();
-var
-  ltype:integer;
-begin
-  ltype:=GetPanelType();
-  if      (ltype=panelShell) or (ltype=panelShellTree) then FillShellList('')
-  else if (ltype=panelList ) or (ltype=panelTree     ) then FillList(GetActiveDir(Ctrl,ListIndex));
-end;
-
 procedure TPanelForm.DoListKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   lform:TForm;
@@ -684,7 +737,7 @@ begin
   end
   else if (Key=VK_R) and (Shift=[ssCtrl]) then
   begin
-    RefreshList();
+    execRefreshList(nil);
   end
   else if ((Key=VK_SPACE) or (Key=VK_INSERT)) and (Shift=[]) then
   begin
@@ -721,12 +774,12 @@ begin
   // go to root
   else if (Key=VK_OEM_5) and (Shift=[ssCtrl]) then
   begin
-    GoToRoot();
+    execGoToRoot(nil);
   end
   // Rename
   else if (Key=VK_F2) and (Shift=[]) then
   begin
-    Rename();
+    execRename(nil);
   end
   // Preview in separate window
   else if (Key=VK_F3) then
@@ -738,13 +791,15 @@ begin
   else if ((Key=VK_N ) and (Shift=[ssCtrl])) or
           ((Key=VK_F4) and (Shift=[])) then
   begin
-    CreateNewFile();
+    execNewFile(nil);
   end
+{
   // Copy file/dir [opposite panel]
   else if (Key=VK_F5) and (Shift=[]) then
   begin
     Copy();
   end
+}
   // Move file/dir [opposite panel]
   else if (Key=VK_F6) and (Shift=[]) then
   begin
@@ -753,7 +808,7 @@ begin
   // Create new dir
   else if (Key=VK_F7) and (Shift=[]) then
   begin
-    CreateNewDir();
+    execNewDir(nil);
   end
   // Delete [restore?] file/dir
   else if (Key=VK_DELETE) or (Key=VK_F8) then
@@ -777,7 +832,7 @@ begin
   // Extract
   else if (Key=VK_F9) and (Shift=[]) then
   begin
-    UnpackSelected();
+    execExtractSelected(nil);
   end
   else
     exit;
@@ -793,24 +848,26 @@ begin
   end
   else if (Key=VK_R) and (Shift=[ssCtrl]) then
   begin
-    RefreshList();
+    execRefreshList(nil);
   end
   // Rename
   else if (Key=VK_F2) and (Shift=[]) then
   begin
-    Rename();
+    execRename(nil);
   end
   // Create New
   else if ((Key=VK_N ) and (Shift=[ssCtrl])) or
           (((Key=VK_F7) or (Key=VK_F4)) and (Shift=[])) then
   begin
-    CreateNewDir();
+    execNewDir(nil);
   end
+{
   // Copy file/dir [opposite panel]
   else if (Key=VK_F5) and (Shift=[]) then
   begin
     Copy()
   end
+}
   // Move file/dir [opposite panel]
   else if (Key=VK_F6) and (Shift=[]) then
   begin
@@ -868,19 +925,6 @@ begin
       else if (ftype=typeUnknown) then
       begin
         FOnExecute(Ctrl,lidx);
-(*
-        ls:=ExtractExt(FastWideToStr(Name));
-        for i:=0 to High(RGPAKExts) do
-          if RGPAKExts[i]=ls then
-          begin
-{
-dir:=PathOfFile(lidx)
-lctrl:=LoadPak(OpenDialog.FileName);
-CtrlList[CtrlCount-1].Ctrl^.OnChange:=@GUIOnChange;
-UpdatePanels(lctrl);
-}
-          end;
-*)
       end;
     end;
   end
@@ -916,48 +960,6 @@ begin
 begin
   Ctrl^.NewDir('/');
 {$ENDIF}
-end;
-
-procedure TPanelForm.UnpackSelected();
-var
-  ls:AnsiString;
-  lselect:TIntegerDynArray;
-  lcnt,i,lfile:integer;
-begin
-  lselect:=nil;
-  lfile:=GetSelectionList(lselect);
-
-  lcnt:=0;
-  if lfile>=0 then
-  begin
-    if Ctrl^.IsDir(lfile) then
-      lcnt:=ExtractDir(Ctrl,Ctrl^.AsDir(lfile),true)
-    else
-      if SaveFile(Ctrl,lfile) then lcnt:=1;
-  end
-  else
-  begin
-    for i:=0 to High(lselect) do
-    begin
-      lfile:=lselect[i];
-      if Ctrl^.IsDir(lfile) then
-        inc(lcnt,ExtractDir(Ctrl,Ctrl^.AsDir(lfile),true))
-      else
-        if SaveFile(Ctrl,lfile) then inc(lcnt);
-    end;
-  end;
-
-  if lcnt=1 then
-  begin
-    if Ctrl^.IsDir(lfile) then ls:='Directory ' else ls:='File ';
-    ShowMessage(ls+
-          WideToStr(Ctrl^.PathOfFile(lfile))+
-          WideToStr(Ctrl^.NameOfFile(lfile))+
-          #13#10+rsUnpackSucc);
-  end
-  else if lcnt>1 then ShowMessage(IntToStr(lcnt)+rsFilesUnpackSucc);
-
-  SetLength(lselect,0);
 end;
 
 procedure TPanelForm.sbFilterClick(Sender: TObject);

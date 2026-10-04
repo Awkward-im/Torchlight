@@ -1,27 +1,28 @@
 object FormImageset: TFormImageset
   Left = 350
-  Height = 476
+  Height = 500
   Top = 250
   Width = 653
   BorderStyle = bsNone
-  ClientHeight = 476
+  ClientHeight = 500
   ClientWidth = 653
+  Menu = MainMenu
   LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object Splitter1: TSplitter
     Left = 170
-    Height = 453
+    Height = 477
     Top = 0
     Width = 5
   end
   object pnlLeft: TPanel
     Left = 0
-    Height = 453
+    Height = 477
     Top = 0
     Width = 170
     Align = alLeft
-    ClientHeight = 453
+    ClientHeight = 477
     ClientWidth = 170
     ParentBackground = False
     ParentColor = False
@@ -30,7 +31,7 @@ object FormImageset: TFormImageset
       Cursor = crVSplit
       Left = 1
       Height = 5
-      Top = 260
+      Top = 284
       Width = 168
       Align = alBottom
       ResizeAnchor = akBottom
@@ -38,7 +39,7 @@ object FormImageset: TFormImageset
     object pnlSprite: TPanel
       Left = 1
       Height = 187
-      Top = 265
+      Top = 289
       Width = 168
       Align = alBottom
       ClientHeight = 187
@@ -88,16 +89,16 @@ object FormImageset: TFormImageset
     end
     object pnlImages: TPanel
       Left = 1
-      Height = 150
+      Height = 174
       Top = 110
       Width = 168
       Align = alClient
-      ClientHeight = 150
+      ClientHeight = 174
       ClientWidth = 168
       TabOrder = 4
       object lbImages: TListBox
         Left = 1
-        Height = 125
+        Height = 149
         Top = 24
         Width = 166
         Align = alClient
@@ -126,7 +127,7 @@ object FormImageset: TFormImageset
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 453
+    Top = 477
     Width = 653
     Panels = <    
       item
@@ -140,16 +141,16 @@ object FormImageset: TFormImageset
   end
   object pnlRight: TPanel
     Left = 175
-    Height = 453
+    Height = 477
     Top = 0
     Width = 478
     Align = alClient
-    ClientHeight = 453
+    ClientHeight = 477
     ClientWidth = 478
     TabOrder = 3
     object imgTexture: TImage
       Left = 1
-      Height = 419
+      Height = 443
       Top = 33
       Width = 476
       Align = alClient
@@ -255,33 +256,35 @@ object FormImageset: TFormImageset
     Left = 71
     Top = 134
     object miNewItem: TMenuItem
-      Action = actNewSprite
+      Action = actSprNew
     end
     object miRename: TMenuItem
-      Action = actRename
+      Action = actSprRename
     end
     object miDelete: TMenuItem
-      Action = actDelete
+      Action = actSprDelete
     end
     object miExtract: TMenuItem
-      Action = actExtract
+      Action = actSprExtract
     end
     object miSep1: TMenuItem
       Caption = '-'
     end
     object miSelectAll: TMenuItem
-      Action = actSelectAll
+      Action = actSprSelectAll
     end
   end
   object ActionList: TActionList
     Left = 428
     Top = 88
-    object actSelectAll: TAction
+    object actSprSelectAll: TAction
+      Category = 'Sprite'
       Caption = 'Select &All'
       ShortCut = 16449
       OnExecute = DoSelectAll
     end
-    object actExtract: TAction
+    object actSprExtract: TAction
+      Category = 'Sprite'
       Caption = '&Extract'
       Hint = 'Extract selected'
       ShortCut = 16453
@@ -292,7 +295,8 @@ object FormImageset: TFormImageset
       ShortCut = 16452
       OnExecute = DoDarkBg
     end
-    object actRename: TAction
+    object actSprRename: TAction
+      Category = 'Sprite'
       Caption = '&Rename'
       Hint = 'Rename sprite'
       ShortCut = 113
@@ -316,19 +320,75 @@ object FormImageset: TFormImageset
       ShortCut = 119
       OnExecute = DoCloseIS
     end
-    object actNewSprite: TAction
-      Caption = 'New Item'
+    object actSprNew: TAction
+      Category = 'Sprite'
+      Caption = 'New'
+      Hint = 'New sprite'
       ShortCut = 16462
       OnExecute = DoNewItem
     end
     object actISAutosplit: TAction
+      Caption = 'Split'
+      Hint = 'Split texture to sprites'
       ShortCut = 32851
       OnExecute = DoAutosplit
     end
-    object actDelete: TAction
-      Caption = 'Delete Item'
+    object actSprDelete: TAction
+      Category = 'Sprite'
+      Caption = 'Delete'
+      Hint = 'Delete sprite'
       ShortCut = 119
       OnExecute = DoDelete
+    end
+    object actReTexture: TAction
+      Category = 'Texture'
+      Caption = 'Change texture'
+      Hint = 'Replace texture'
+      OnExecute = DoReTexture
+    end
+    object actTxtResize: TAction
+      Category = 'Texture'
+      Caption = 'Resize'
+      OnExecute = DoTxtResize
+    end
+    object actSprClone: TAction
+      Category = 'Sprite'
+      Caption = 'Clone'
+      OnExecute = DoClone
+    end
+    object actTxtPath: TAction
+      Category = 'Texture'
+      Caption = 'Texture path'
+      Hint = 'Change texture path'
+      OnExecute = DoChangeTxtPath
+    end
+  end
+  object MainMenu: TMainMenu
+    Left = 224
+    Top = 134
+    object miImageset: TMenuItem
+      Caption = '&Imageset'
+      object miISOpen: TMenuItem
+        Action = actISOpen
+      end
+      object miISSave: TMenuItem
+        Action = actISSave
+      end
+      object miISClose: TMenuItem
+        Action = actISClose
+      end
+    end
+    object miEdit: TMenuItem
+      Caption = '&Edit'
+      object miEdTexture: TMenuItem
+        Action = actReTexture
+      end
+      object MenuItem1: TMenuItem
+        Action = actTxtPath
+      end
+      object miEdSplit: TMenuItem
+        Action = actISAutosplit
+      end
     end
   end
 end

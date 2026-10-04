@@ -5,17 +5,14 @@ interface
 uses
   LCLType, Forms, Graphics;
 
-{
-type
-  TPanelData = record
-    panel:TForm;
-  end;
-}
 var
   ActivePanel:integer;
   PanelCount:integer;
-  Panels:array [0..15] of TForm;//TPanelData;
+  Panels:array [0..15] of TForm;
   
+
+const
+  strProgramName = 'RGGUI';
 
 const
   strParentDir = '. . /';

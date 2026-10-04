@@ -1,7 +1,7 @@
 ﻿{
   This is common unit for plugins
 }
-{TODO: register with imageindex for iconlist}
+{TODO: register with imageindex for iconlist (can use separate bitmap)}
 {TODO: make imagelist for menus/buttons}
 unit rgpBase;
 

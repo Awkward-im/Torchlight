@@ -1,3 +1,4 @@
+{Ogre shader highlighter}
 unit SynHighlighterOgre;
 
 interface

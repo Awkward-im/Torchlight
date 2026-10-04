@@ -1,25 +1,22 @@
 ﻿{}
 {$IFDEF Interface}
 
-  procedure GoToRoot();
-  procedure Rename();
-  procedure CreateNewFile();
-  procedure CreateNewDir();
   procedure Delete(acode: integer);    // not mark but delete
   procedure DeleteSingleFile(idx:integer; ondisk:boolean);
-
+{
   function CopyShellToShell(const asrc, adst:AnsiString; var aact:TRGDoubleAction):integer;
   function CopyShellToCtrl (const asrc, adst:AnsiString):integer;
   function CopyCtrlToShell (aidx:integer; const apath:AnsiString):integer;
   function CopyCtrlToCtrl  (aidx:integer; actrl:PRGController; apath:PUnicodeChar):integer;
   procedure Copy();
+}
   //?? just copy from disk or link
-  procedure ImportDir();
-  procedure ImportFile();
+  function OnImportDouble (actrl:PRGController; idx:integer;
+           var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
 {$ELSE}
 
-procedure TPanelForm.GoToRoot();
+procedure TPanelForm.execGoToRoot(Sender: TObject);
 begin
   case GetPanelType() of
     panelList: begin
@@ -33,7 +30,7 @@ begin
   end;
 end;
 
-procedure TPanelForm.CreateNewDir();
+procedure TPanelForm.execNewDir(Sender: TObject);
 var
   lname:string;
   lpath:PWideChar;
@@ -65,17 +62,17 @@ begin
   Ctrl^.NewDir(WideToStr(lpath)+lname);
 end;
 
-procedure TPanelForm.CreateNewFile();
+procedure TPanelForm.execNewFile(Sender: TObject);
 var
   lname:string;
   lpath:PWideChar;
   ldir:integer;
 begin
+  if GetPanelType()=panelShell then exit;
+
   lname:=sNewFile;
   if not InputQuery(rsCreateFile, rsFileDirName, lname) then exit;
   if lname='' then exit;
-
-  if GetPanelType()=panelShell then exit;
 
   if lname[Length(lname)]='/' then SetLength(lname,Length(lname)-1);
   if IsNameExists(lname)>=0 then
@@ -92,7 +89,7 @@ begin
   Ctrl^.UseData(nil,0,WideToStr(lpath)+lname);
 end;
 
-procedure TPanelForm.Rename();
+procedure TPanelForm.execRename(Sender: TObject);
 var
   lold,lname:string;
   pc:PUnicodeChar;
@@ -151,6 +148,46 @@ begin
   FreeMem(pc);
 end;
 
+procedure TPanelForm.execSelectAll(Sender: TObject);
+begin
+  SelectAll(false);
+end;
+
+procedure TPanelForm.execInverse(Sender: TObject);
+begin
+  SelectAll(true);
+end;
+
+procedure TPanelForm.execDelete(Sender: TObject);
+begin
+  Delete(0);
+end;
+
+procedure TPanelForm.execMark(Sender: TObject);
+begin
+  if GetPanelType()=panelTree then
+    Delete(1)
+  else if not IsParentDirSelected() then
+    Ctrl^.MarkToRemove(GetSelectedFile())
+
+end;
+
+procedure TPanelForm.execUndo(Sender: TObject);
+begin
+  if GetPanelType()=panelTree then
+    Delete(2)
+  else
+    Ctrl^.RemoveUpdate(GetSelectedFile());
+end;
+
+procedure TPanelForm.execView(Sender: TObject);
+var
+  lform:TForm;
+begin
+  lform:=MakePreview(Ctrl^,GetSelectedFile(),false);
+  if lform<>nil then lform.Show;
+end;
+
 {
   recursive (if needs) deleting of "ctrl", not "man" (it must be deleted by-the-way) records
 }
@@ -178,35 +215,69 @@ var
   arr:TIntegerDynArray;
   i,lidx,ltype:integer;
 begin
-  ltype:=GetPanelType();
-  if ltype<>panelShell then
-    case acode of
-      1: begin
-        if (GetPanelType()=panelTree) or not IsParentDirSelected() then
-          Ctrl^.MarkToRemove(GetSelectedFile());
-
-        exit;
-      end;
-
-      2: begin
-        Ctrl^.RemoveUpdate(GetSelectedFile());
-
-        exit;
-      end;
-    end;
-
-  if MessageDlg(rsWarning,rsSureToDelete,mtWarning,
-     [mbOK,mbCancel],0,mbCancel)<>mrOk then
-  begin
-    exit;
-  end;
-
   arr:=nil;
   if (ltype=panelTree) or (ltype=panelShellTree) then
     lidx:=Ctrl^.AsFile(GetActiveDir(Ctrl,ListIndex))
   else
     lidx:=GetSelectionList(arr);
 
+  ltype:=GetPanelType();
+  if ltype<>panelShell then
+  begin
+    case acode of
+      1: begin
+        if lidx>=0 then
+          Ctrl^.MarkToRemove(lidx)
+        else
+        begin
+          Ctrl^.OnChange(Ctrl,0,faStart);
+          for i:=0 to Length(arr)-1 do
+          begin
+            Ctrl^.MarkToRemove(arr[i]);
+          end;
+          Ctrl^.OnChange(Ctrl,Length(arr),faFinish);
+          SetLength(arr,0);
+        end;
+        
+//        if (GetPanelType()=panelTree) or not IsParentDirSelected() then
+//          Ctrl^.MarkToRemove(GetSelectedFile());
+
+        exit;
+      end;
+
+      2: begin
+        if lidx>=0 then
+          Ctrl^.RemoveUpdate(lidx)
+        else
+        begin
+          Ctrl^.OnChange(Ctrl,0,faStart);
+          for i:=0 to Length(arr)-1 do
+          begin
+            Ctrl^.RemoveUpdate(arr[i]);
+          end;
+          Ctrl^.OnChange(Ctrl,Length(arr),faFinish);
+          SetLength(arr,0);
+        end;
+
+//        Ctrl^.RemoveUpdate(GetSelectedFile());
+
+        exit;
+      end;
+    end;
+  end;
+
+  if MessageDlg(rsWarning,rsSureToDelete,mtWarning,
+     [mbOK,mbCancel],0,mbCancel)<>mrOk then
+  begin
+    exit;
+  end;
+{
+  arr:=nil;
+  if (ltype=panelTree) or (ltype=panelShellTree) then
+    lidx:=Ctrl^.AsFile(GetActiveDir(Ctrl,ListIndex))
+  else
+    lidx:=GetSelectionList(arr);
+}
   if lidx<0 then
   begin
     Ctrl^.OnChange(Ctrl,0,faStart);
@@ -228,7 +299,7 @@ begin
     FillShellList('');
 end;
 
-
+(*
 function CopySingleFile(const afrom,ato:AnsiString; aact:TRGDoubleAction):TRGDoubleAction;
 var
   lfrom,lto:AnsiString;
@@ -473,7 +544,9 @@ var
 begin
   lpanel:=GetOppositePanel();
   ldsttype:=lpanel.GetPanelType();
-  if (ldsttype=panelView) or (ldsttype=panelLog) then exit;
+  if (ldsttype=panelView    ) or
+     (ldsttype=panelSettings) or
+     (ldsttype=panelLog     ) then exit;
   lsrctype:=GetPanelType();
 
   lctrl:=lpanel.Ctrl;
@@ -528,8 +601,9 @@ begin
   else
     ShowMessage(rsNotCopied);
 end;
-
-function TPanelForm.OnImportDouble(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
+*)
+function TPanelForm.OnImportDouble(actrl:PRGController; idx:integer;
+         var newdata:PByte; var newsize:integer):TRGDoubleAction;
 var
   ls:AnsiString;
   f:file of byte;
@@ -638,7 +712,7 @@ begin
   FreeMem(lnew);
 end;
 
-procedure TPanelForm.ImportDir();
+procedure TPanelForm.execImportDir(Sender: TObject);
 var
   ldir,ldst:AnsiString;
   lcnt:integer;
@@ -660,7 +734,7 @@ begin
   end;
 end;
 
-procedure TPanelForm.ImportFile();
+procedure TPanelForm.execImportFile(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
   ldir:AnsiString;
@@ -695,6 +769,111 @@ begin
   finally
     OpenDialog.Free;
   end;
+end;
+
+procedure TPanelForm.execRefreshList(Sender: TObject);
+var
+  ltype:integer;
+begin
+  ltype:=GetPanelType();
+  if      (ltype=panelShell) or (ltype=panelShellTree) then FillShellList('')
+  else if (ltype=panelList ) or (ltype=panelTree     ) then FillList(GetActiveDir(Ctrl,ListIndex));
+end;
+
+procedure TPanelForm.execExtractSelected(Sender: TObject);
+var
+  ls:AnsiString;
+  lselect:TIntegerDynArray;
+  lcnt,i,lfile:integer;
+begin
+  lselect:=nil;
+  lfile:=GetSelectionList(lselect);
+
+  lcnt:=0;
+  if lfile>=0 then
+  begin
+    if Ctrl^.IsDir(lfile) then
+      lcnt:=ExtractDir(Ctrl,Ctrl^.AsDir(lfile),true)
+    else
+      if SaveFile(Ctrl,lfile) then lcnt:=1;
+  end
+  else
+  begin
+    for i:=0 to High(lselect) do
+    begin
+      lfile:=lselect[i];
+      if Ctrl^.IsDir(lfile) then
+        inc(lcnt,ExtractDir(Ctrl,Ctrl^.AsDir(lfile),true))
+      else
+        if SaveFile(Ctrl,lfile) then inc(lcnt);
+    end;
+  end;
+
+  if lcnt=1 then
+  begin
+    if Ctrl^.IsDir(lfile) then ls:='Directory ' else ls:='File ';
+    ShowMessage(ls+
+          WideToStr(Ctrl^.PathOfFile(lfile))+
+          WideToStr(Ctrl^.NameOfFile(lfile))+
+          #13#10+rsUnpackSucc);
+  end
+  else if lcnt>1 then ShowMessage(IntToStr(lcnt)+rsFilesUnpackSucc);
+
+  SetLength(lselect,0);
+end;
+
+procedure TPanelForm.execExtractDir(Sender: TObject);
+begin
+  ExtractDir(Ctrl,GetActiveDir(Ctrl,ListIndex),true,false);
+end;
+
+procedure TPanelForm.execExtractCurDir(Sender: TObject);
+begin
+  ExtractDir(Ctrl,GetActiveDir(Ctrl,ListIndex),false,false);
+end;
+
+function TPanelForm.GetPathFromNode(aNode:TTreeNode):string;
+//var ldir:integer;
+begin
+{  ldir:=IntPtr(UIntPtr(aNode.Data));
+  if ldir<0 then
+    result:=''
+  else
+	  result:=ctrl.Dirs[ldir].Name;
+}
+  result:='';
+  repeat
+    result:=aNode.Text+'/'+result;
+    aNode:=aNode.Parent;
+  until aNode=nil;
+end;
+
+procedure TPanelForm.execDirList(Sender: TObject);
+var
+  sl:TStringList;
+  tn:TTreeNode;
+  i:integer;
+  b:boolean;
+begin
+  sl:=TStringList.Create;
+  for i:=0 to tvTree.Items.Count-1 do
+  begin
+    b:=true;
+    tn:=tvTree.Items[i].Parent;
+    while tn<>nil do
+    begin
+      if not tn.Expanded then
+      begin
+        b:=false;
+        break;
+      end;
+      tn:=tn.Parent;
+    end;
+    if b then
+      sl.Add(GetPathFromNode(tvTree.Items[i]));
+  end;
+  Clipboard.AsText:=sl.Text;
+  sl.Free;
 end;
 
 {$ENDIF}

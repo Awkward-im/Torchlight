@@ -30,8 +30,8 @@ var
   lproc:TPluginProc;
   lctrl:PRGController;
 begin
-  if (ActiveCtrl>=0) and (ActiveCtrl<CtrlCount) then lctrl:=CtrlList[ActiveCtrl].Ctrl;
-  if (lctrl=nil) then exit;
+  lctrl:=ActiveCtrl;
+  if lctrl=nil then exit;
 
   lproc:=pluginlist[TMenuItem(Sender).Tag].proc;
   lproc(lctrl^,GetActiveFile(lctrl,TPanelForm(Panels[ActivePanel]).ListIndex));

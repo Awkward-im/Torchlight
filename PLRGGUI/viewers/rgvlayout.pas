@@ -1,4 +1,5 @@
 ﻿{}
+{TODO: show original game version}
 {TODO: modified flag}
 unit rgvLayout;
 

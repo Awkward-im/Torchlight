@@ -1,0 +1,13 @@
+{"version":1,"strings":[
+{"hash":21217363,"name":"tformitemedit.cbadvanced.caption","sourcebytes":[83,104,111,119,32,97,100,118,97,110,99,101,100,32,115,101,116,116,105,110,103,115],"value":"Show advanced settings"},
+{"hash":78005342,"name":"tformitemedit.pnlcommon.caption","sourcebytes":[67,111,109,109,111,110],"value":"Common"},
+{"hash":5941427,"name":"tformitemedit.pnlstats.caption","sourcebytes":[83,116,97,116,115],"value":"Stats"},
+{"hash":380871,"name":"tformitemedit.pnlview.caption","sourcebytes":[86,105,101,119],"value":"View"},
+{"hash":130879107,"name":"tformitemedit.pnlaffixes.caption","sourcebytes":[65,102,102,105,120,101,115],"value":"Affixes"},
+{"hash":5925956,"name":"tformitemedit.pnlsound.caption","sourcebytes":[83,111,117,110,100],"value":"Sound"},
+{"hash":43075653,"name":"tformitemedit.lblname.caption","sourcebytes":[108,98,108,78,97,109,101],"value":"lblName"},
+{"hash":152768005,"name":"tformitemedit.lbltitle.caption","sourcebytes":[108,98,108,84,105,116,108,101],"value":"lblTitle"},
+{"hash":43043236,"name":"tformitemedit.lblguid.caption","sourcebytes":[108,98,108,71,85,73,68],"value":"lblGUID"},
+{"hash":109549765,"name":"tformitemedit.bbsave.caption","sourcebytes":[98,98,83,97,118,101],"value":"bbSave"},
+{"hash":127454979,"name":"tformitemedit.bbsaveas.caption","sourcebytes":[98,98,83,97,118,101,65,115],"value":"bbSaveAs"}
+]}

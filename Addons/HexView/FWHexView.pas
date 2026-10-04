@@ -5,37 +5,20 @@
 //  * Unit Name : FWHexView.pas
 //  * Purpose   : Implementation of a basic HexView editor
 //  * Author    : Alexander (Rouse_) Bagel
-//  * Copyright : © Fangorn Wizards Lab 1998 - 2025.
-//  * Version   : 2.0.15
+//  * Copyright : © Fangorn Wizards Lab 1998 - 2026.
+//  * Version   : 2.0.16
 //  * Home Page : http://rouse.drkb.ru
 //  * Home Blog : http://alexander-bagel.blogspot.ru
 //  ****************************************************************************
 //  * Latest Release : https://github.com/AlexanderBagel/FWHexView/releases
 //  * Latest Source  : https://github.com/AlexanderBagel/FWHexView
 //  ****************************************************************************
+//  *
+//  * SPDX-License-Identifier: MIT
+//  * See LICENSE file in the project root for full license information.
+//  *
+//  ****************************************************************************
 //
-
-{
-Licence:
-  FWHexView is dual-licensed. You may choose to use it under the restrictions of the GPL v3 licence at no cost to you,
-  or you may purchase a commercial licence. A commercial licence grants you the right to use FWHexView in your own
-  applications, royalty free, and without any requirement to disclose your source code nor any modifications to FWHexView
-  to any other party. A commercial licence lasts into perpetuity, and entitles you to all future updates, free of
-  charge. A commercial licence is sold per developer developing applications that use FWHexView, as follows:
-    1 developer = $49
-    2 developers = $89
-    3 developers = $139
-    4 developers = $169
-    5 developers = $199
-    >5 developers = $199 + $25 per developer from the 6th onwards
-    site licence = $499 (unlimited number of developers affiliated with the owner of the licence, i.e. employees, co-workers, interns and contractors)
-
-  Please send an e-mail to hexview_sale@rousehome.ru to request an invoice before or after payment is made. Payment may be
-  made via bank transfer. Bank details will be provided on the invoice.
-
-  Support (via e-mail) is available for users with a commercial licence. Enhancement requests submitted by users with a
-  commercial licence will be prioritized.
-}
 
 unit FWHexView;
 
@@ -1076,6 +1059,7 @@ type
     FDefaultFontColorIsDark: Boolean;
     FDefaultPainter: TAbstractPrimaryRowPainter;
     FEncoder: TCharEncoder;
+    FFontChanged: Boolean;
     FHeader: TCustomHexViewHeader;
     FHideSelection: Boolean;
     FHintHideTimeout, FHintShowPause: Integer;
@@ -1088,7 +1072,7 @@ type
     FMinColumnWidth: Integer;
     FMousePressed: Boolean;
     FMousePressedHitInfo: TMouseHitInfo;
-    FNeedFitBesSizes: Boolean;
+    FNeedFitBestSizes: Boolean;
     FNoDataText: string;
     FPainters: TObjectList<TAbstractPrimaryRowPainter>;
     FPostPainters: TObjectList<TAbstractPostPainter>;
@@ -1182,6 +1166,7 @@ type
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
     procedure KeyPress(var Key: Char); override;
     procedure KeyUp(var Key: Word; Shift: TShiftState); override;
+    procedure Loaded; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
       X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
@@ -1415,6 +1400,7 @@ type
     function RowColumnData(ARowIndex: Int64): TRowColumnData;
     function RowRawLength(ARowIndex: Int64): Integer;
     function RowToAddress(ARowIndex: Int64; ValueOffset: Integer): Int64;
+    procedure SelectAll;
     function SelectedColumnAsString(AColumn: TColumnType): string;
     function SelectedRawLength: Integer;
     function SelectedRowIndex: Int64;
@@ -6116,6 +6102,7 @@ procedure TFWCustomHexView.DoColumnWidthChange(AColumnType: TColumnType;
 begin
   // The method allows you to control changes in column width
   // without implementing an heir from the header.
+  FNeedFitBestSizes := False;
 end;
 
 procedure TFWCustomHexView.DoContextPopup(MousePos: TPoint;
@@ -6453,7 +6440,7 @@ procedure TFWCustomHexView.CreateWnd;
 begin
   inherited;
   DoChange(cmHandle);
-  if FNeedFitBesSizes then
+  if FNeedFitBestSizes then
     FitColumnsToBestSize;
 end;
 
@@ -6485,6 +6472,8 @@ begin
   end;
   try
     inherited;
+    if keSplitter in MousePressedHitInfo.Elements then
+      FitColumnToBestSize(MousePressedHitInfo.SelectPoint.Column);
     if not EditAtCaretPos then
     begin
       Painter := GetRowPainter(MousePressedHitInfo.SelectPoint.RowIndex);
@@ -6942,7 +6931,11 @@ procedure TFWCustomHexView.DoFontChange(Sender: TObject);
 var
   PresiosTopRow: Integer;
 begin
-  if csLoading in ComponentState then Exit;
+  if csLoading in ComponentState then
+  begin
+    FFontChanged := True;
+    Exit;
+  end;
   if Parent = nil then Exit;
   PresiosTopRow := CurrentVisibleRow;
   if Assigned(FOldOnFontChange) then
@@ -7144,7 +7137,7 @@ begin
     astTop: UpdateScrollY(0);
     astBottom: UpdateScrollY(- FRowHeight * RawData.Count);
   end;
-  if FNeedFitBesSizes then
+  if FNeedFitBestSizes then
     FitColumnsToBestSize;
 end;
 
@@ -7154,10 +7147,10 @@ var
 begin
   if InUpdateMode or not HandleAllocated then
   begin
-    FNeedFitBesSizes := True;
+    FNeedFitBestSizes := True;
     Exit;
   end;
-  FNeedFitBesSizes := False;
+  FNeedFitBestSizes := False;
   for I := ctWorkSpace to High(TColumnType) do
     if I in Header.Columns then
       FitColumnToBestSize(I);
@@ -7755,6 +7748,7 @@ begin
 
   Font.PixelsPerInch := FCurrentPPI;
   {$ENDIF}
+
   Font.Height := ToDpi(GetDefaultFontHeight);
   Font.Name := GetDefaultFontName;
 end;
@@ -7853,6 +7847,13 @@ begin
     Result := FSelStart
   else
     Result := FSelEnd;
+end;
+
+procedure TFWCustomHexView.Loaded;
+begin
+  inherited;
+  if not FFontChanged then
+    Font.Height := ToDpi(GetDefaultFontHeight);
 end;
 
 function TFWCustomHexView.RightSelPoint: TSelectPoint;
@@ -8564,6 +8565,12 @@ function TFWCustomHexView.RowToAddress(ARowIndex: Int64;
   ValueOffset: Integer): Int64;
 begin
   Result := RawData.RowToAddress(ARowIndex, ValueOffset);
+end;
+
+procedure TFWCustomHexView.SelectAll;
+begin
+  UpdateSelection(SelectPoint(0, 0, ctOpcode),
+    SelectPoint(FRawData.Count - 1, -1, ctOpcode));
 end;
 
 function TFWCustomHexView.SelectedColumnAsString(AColumn: TColumnType): string;

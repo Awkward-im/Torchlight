@@ -1283,6 +1283,14 @@ begin
   ato^.checksum:=afrom^.checksum;
 end;
 
+procedure CopyInfo(afrom, ato:PFileInfo);
+begin
+  ato^.SameNameAs(afrom);
+  ato^.size    :=afrom^.size;
+  ato^.ftime   :=afrom^.ftime;
+  ato^.checksum:=afrom^.checksum;
+  ato^._ftype  :=afrom^._ftype;
+end;
 
 function CheckFName(const adir,aname:UnicodeString):UnicodeString;
 var
@@ -1337,15 +1345,6 @@ begin
   // can't use lext coz need to delete ext to get real sometime
   if RGTypeOfExt(PUnicodeChar(lname))<>typeUnknown then
     result:=lname;
-end;
-
-procedure CopyInfo(afrom, ato:PFileInfo);
-begin
-  ato^.SameNameAs(afrom);
-  ato^.size    :=afrom^.size;
-  ato^.ftime   :=afrom^.ftime;
-  ato^.checksum:=afrom^.checksum;
-  ato^._ftype  :=afrom^._ftype;
 end;
 
 

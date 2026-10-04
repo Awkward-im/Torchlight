@@ -317,7 +317,7 @@ end;
 function NodeToUTF8(anode:pointer; out aptr:PAnsiChar; achild:boolean=true):ByteBool;
 var
   lwide:PWideChar;
-  lsize:integer;
+//  lsize:integer;
 begin
   result:=NodeToWide(anode,lwide, achild);
   if result then  

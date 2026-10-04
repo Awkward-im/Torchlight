@@ -2,6 +2,9 @@
   !! WARGING !! rect is X,Y,Width,Height, NOT right, bottom !!
 }
 {NOTE: texture file have path, but imageset is not}
+{TODO: Check same texture for different imagesets}
+{TODO: Place texture to separate array and keep just index}
+{TODO: SetTexturePath. but what to do with existing path and texture?}
 {TODO: calc really required items array increment when "deleted" exists}
 {TODO: Build: transform absolute path to MEDIA-relative (how?)}
 {TODO: RootDir for sheet pathed file search}
@@ -14,14 +17,15 @@ interface
 
 uses
   Classes, SysUtils,
-  Imaging, ImagingDds, ImagingNetworkGraphics, ImagingTypes
-  ,RGGlobal,RGCtrl;
+  Imaging, ImagingTypes, ImagingDds, ImagingNetworkGraphics, ImagingJpeg
+  ,RGGlobal, RGCtrl;
 
 
 type
   PImagesetFile = ^TImagesetFile;
   TImagesetFile = record
     Name    :string;      // Imageset name
+    SrcImage:string;      // source drive image file name with path. Empty or same for PAK
     Sheet   :string;      // Image name (with relative path usually)
     Image   :TImageData;  // Image data, filled by Use* function
                           // like FImageset.UseImageFile(FImageset.Imagesets[FActiveImageset].Sheet)
@@ -77,16 +81,20 @@ type
 
     // modify
     function  NewImageset(const aname:string):integer;
-    function  NewItem(ais:integer):integer;
-    procedure DeleteItem(aidx:integer);
-    procedure AutoSplit(ais:integer; apad:integer=0);
+    procedure AutoSplit  (ais:integer; awidth:integer=64; apad:integer=0);
+    function  NewItem    (ais:integer):integer;
+    function  RenameItem (aidx:integer; const aname:string):integer;
+    function  CloneItem  (aidx:integer):integer;
+    procedure DeleteItem (aidx:integer);
+    procedure SetItemRect(aidx:integer; const arect:TRect);
+//    procedure SetImagePath(ais:integer; const apath:string; aupdate:boolean=false);
 
     // input picture
-    function UseImageset   (                           ais: integer=-1): boolean;  // file from imageset info
-    function UseImageFile  (const aname:string       ; ais: integer=-1): boolean;  // disk file
-    function UseImageData  (adata:TImageData         ; ais: integer=-1): boolean;  // from Imaging library
-    function UseController (const actrl:TRGController; ais: integer=-1): boolean;  // game archive/PAK
-    function UseImageMemory(abuf:PByte; asize:integer; ais: integer=-1): boolean;  // memory buffer
+    function UseImageset   (                           ais:integer=-1): boolean;  // file from imageset info
+    function UseImageFile  (const aname:string       ; ais:integer=-1): boolean;  // disk file
+    function UseImageData  (adata:TImageData         ; ais:integer=-1): boolean;  // from Imaging library
+    function UseController (const actrl:TRGController; ais:integer=-1): boolean;  // game archive/PAK
+    function UseImageMemory(abuf:PByte; asize:integer; ais:integer=-1): boolean;  // memory buffer
     // sprite info
     function ItemByName(const aname:string):integer;
     function ItemBounds(idx:integer):TRect;
@@ -158,12 +166,13 @@ end;
 
 procedure TRGImageset.CloseImageset(aidx:integer);
 var
-  lid,i,litem,lcnt:integer;
+  i,lid:integer;
+//  litem,lcnt:integer;
 begin
   if (aidx>=0) and (aidx<ImagesetCount) then
   begin
     lid:=Imagesets[aidx].id;
-    lcnt:=0;
+//    lcnt:=0;
     for i:=0 to ItemCount-1 do
       if Items[i].ISFile=lid then
       begin
@@ -224,6 +233,7 @@ begin
       Name:='imagesets'
     else
       Name:=aname;
+    SrcImage:='';
   end;
 end;
 
@@ -261,6 +271,7 @@ begin
     Width :=62;
     Height:=62;
   end;
+  Imagesets[ISbyID(ais)].modified:=true;
 end;
 
 function ReadXMLText(out ADoc: TXMLDocument; abuf:PByte; asize:integer):boolean;
@@ -359,6 +370,7 @@ begin
             Child:=Child.NextSibling;
           end;
         end;
+        Imagesets[lis].modified:=false;
       end;
 
     finally
@@ -442,6 +454,7 @@ begin
         end;
       else
       end;
+      Imagesets[lis].modified:=false;
     end;
     DeleteNode(lnode);
   end;
@@ -574,11 +587,14 @@ function TRGImageset.UseImageFile(const aname:string; ais:integer=-1):boolean;
 var
   f:file of byte;
   lbuf:PByte;
-  lext,lname:string;
+  ls,lext,lname:string;
   lsize:integer;
   lres:boolean;
 begin
   result:=false;
+
+  if (ais<0) or (ais>=ImagesetCount) then ais:=ImagesetCount-1; if ais<0 then exit;
+
   lname:='';
   AssignFile(f,aname);
   Reset(f);
@@ -591,6 +607,7 @@ begin
   end;
   if lres then
   begin
+    ls:=aname;
     lname:=ExtractName(aname);
     AssignFile(f,lname);
     Reset(f);
@@ -601,18 +618,21 @@ begin
            if lext='.DDS' then lext:='.PNG'
       else if lext='.PNG' then lext:='.DDS'
       else exit;
-      AssignFile(f,ChangeFileExt(aname,lext));
+      ls:=ChangeFileExt(aname,lext);
+      AssignFile(f,ls);
       Reset(f);
       lres:=IOResult()<>0;
       if lres and (FRootPath<>'') then
       begin
-        AssignFile(f,ChangeFileExt(FRootPath+aname,lext));
+        ls:=ChangeFileExt(FRootPath+aname,lext);
+        AssignFile(f,ls);
         Reset(f);
         lres:=IOResult()<>0;
       end;
       if lres then
       begin
-        AssignFile(f,ChangeFileExt(lname,lext));
+        ls:=ChangeFileExt(lname,lext);
+        AssignFile(f,ls);
         Reset(f);
         lres:=IOResult()<>0;
       end;
@@ -626,6 +646,8 @@ begin
       GetMem(lbuf,lsize);
       BlockRead(f,lbuf^,lsize);
       result:=UseImageMemory(lbuf,lsize,ais);
+      if result then
+        Imagesets[ais].SrcImage:=ls;
       FreeMem(lbuf);
     end;
     CloseFile(f);
@@ -673,6 +695,12 @@ var
 begin
   if (ais<0) or (ais>=ImagesetCount) then ais:=ImagesetCount-1; if ais<0 then exit(false);
   lfile:=actrl.SearchFile(Imagesets[ais].Sheet);
+  if (lfile<0) and (Imagesets[ais].SrcImage<>'') then
+  begin
+    //!! search for actrl and disk file
+    //!! but disk requires File read, not ctrl
+  end;
+   
   if lfile>=0 then
   begin
     lbuf:=nil;
@@ -879,12 +907,27 @@ end;
 {%ENDREGION Extract}
 
 {%REGION Modify}
+procedure TRGImageset.SetItemRect(aidx:integer; const arect:TRect);
+begin
+  if (aidx<0) or (aidx>=ItemCount) or (Items[aidx].ISFile=-1) then exit;
+
+  with Items[aidx] do
+  begin
+    XPos  :=arect.Left;
+    YPos  :=arect.Top;
+    Width :=arect.Right;
+    Height:=arect.Bottom;
+  end;
+  Imagesets[ISbyID(Items[aidx].ISFile)].modified:=true;
+end;
+
 procedure TRGImageset.DeleteItem(aidx:integer);
 begin
   if (aidx>=0) and (aidx<ItemCount) then
   begin
     with Items[aidx] do
     begin
+      Imagesets[ISbyID(ISFile)].modified:=true;
       ISFile:=-1;
       XPos  :=FDeleted;
       Name  :='';
@@ -894,7 +937,37 @@ begin
   end;
 end;
 
-procedure TRGImageset.AutoSplit(ais:integer; apad:integer=0);
+function TRGImageset.RenameItem(aidx:integer; const aname:string):integer;
+begin
+  result:=0;
+  if (aidx<0) or (aidx>=ItemCount) or (Items[aidx].ISFile=-1) then exit;
+
+  Items[aidx].Name:=aname;
+  Imagesets[ISbyID(Items[aidx].ISFile)].modified:=true;
+end;
+
+function TRGImageset.CloneItem(aidx:integer):integer;
+var
+  lis,lidx:integer;
+begin
+  result:=0;
+  if (aidx<0) or (aidx>=ItemCount) or (Items[aidx].ISFile=-1) then exit;
+
+  lis :=ISbyID(Items[aidx].ISFile);
+  lidx:=NewItem(lis);
+  with Items[lidx] do
+  begin
+    Name  :=Items[aidx].Name+'_clone';
+    XPos  :=Items[aidx].XPos;
+    YPos  :=Items[aidx].YPos;
+    Width :=Items[aidx].Width;
+    Height:=Items[aidx].Height;
+  end;
+
+//  Imagesets[lis].modified:=true;
+end;
+
+procedure TRGImageset.AutoSplit(ais:integer; awidth:integer=64; apad:integer=0);
 var
   lcnt,i,j,k:integer;
   lwidth,lheight:integer;
@@ -909,8 +982,8 @@ begin
 *)
   with Imagesets[ais{ImagesetCount-1}] do
   begin
-    lwidth :=Width  div 64;
-    lheight:=Height div 64;
+    lwidth :=Width  div awidth;
+    lheight:=Height div awidth;
   end;
 
   lcnt:=ItemCount;

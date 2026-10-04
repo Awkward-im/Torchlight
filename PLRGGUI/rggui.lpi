@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="12"/>
+    <Version Value="13"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -28,7 +28,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels;gui.settings"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels;gui.settings;gui.base;plugins\items"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -75,7 +75,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels;gui.settings"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels;gui.settings;gui.base;plugins\items"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -111,7 +111,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels;gui.settings"/>
+            <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels;gui.settings;gui.base;plugins\items"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -164,14 +164,6 @@
       <Unit>
         <Filename Value="rggui.lpr"/>
         <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="gui.default\fmgui.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="RGGUIForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmGUI"/>
       </Unit>
       <Unit>
         <Filename Value="..\TL2Lib\rgctrl.pas"/>
@@ -246,12 +238,20 @@
         <UnitName Value="fmCoreCfg"/>
       </Unit>
       <Unit>
-        <Filename Value="gui.settings\fmguisettings.pas"/>
+        <Filename Value="gui.base\fmguibase.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="GUICfgForm"/>
+        <ComponentName Value="RGGUIBaseForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="fmGUISettings"/>
+        <UnitName Value="fmGUIBase"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plugins\items\fmitemedit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormItemEdit"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="fmItemEdit"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -263,7 +263,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels;gui.settings"/>
+      <OtherUnitFiles Value="..\TL2Lib;..\Addons;..\TL2Lib\forms;viewers;..\Addons\Imaging;..\Addons\HexView;..\Meshes;plugins;gui.panels;gui.settings;gui.base;plugins\items"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
     </SearchPaths>
     <Linking>

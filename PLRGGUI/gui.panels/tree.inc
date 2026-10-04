@@ -35,7 +35,6 @@ begin
   SetPanelActive(self);
 
   if GetPanelType() in [panelShell, panelShellTree] then
-//  if IntPtr(cbContent.Items.Objects[cbContent.ItemIndex])=ptShell then
   begin
     if sbTree.Down then
     begin
@@ -66,6 +65,16 @@ begin
       lvList.SetFocus;
     end;
   end;
+end;
+
+procedure TPanelForm.tvTreeContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  FPopupNode:=tvTree.GetNodeAt(MousePos.X, MousePos.Y);
+  if FPopupNode<>nil then
+  begin
+    mnuTree.PopUp;
+  end;
+  Handled:=True;
 end;
 
 procedure TPanelForm.tvTreeSelectionChanged(Sender: TObject);
@@ -106,7 +115,7 @@ begin
 }
 begin
   tvTreeSelectionChanged(Sender);
-  if pnlTop.Visible then
+  if sbTree.Visible then
   begin
     sbTree.Down:=False;
     sbTreeClick(sbTree);

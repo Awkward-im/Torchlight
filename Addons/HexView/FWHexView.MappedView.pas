@@ -5,37 +5,20 @@
 //  * Unit Name : FWHexView.MappedView.pas
 //  * Purpose   : Implementation of advanced HexView editor with data map support
 //  * Author    : Alexander (Rouse_) Bagel
-//  * Copyright : © Fangorn Wizards Lab 1998 - 2025.
-//  * Version   : 2.0.15
+//  * Copyright : © Fangorn Wizards Lab 1998 - 2026.
+//  * Version   : 2.0.16
 //  * Home Page : http://rouse.drkb.ru
 //  * Home Blog : http://alexander-bagel.blogspot.ru
 //  ****************************************************************************
 //  * Latest Release : https://github.com/AlexanderBagel/FWHexView/releases
 //  * Latest Source  : https://github.com/AlexanderBagel/FWHexView
 //  ****************************************************************************
+//  *
+//  * SPDX-License-Identifier: MIT
+//  * See LICENSE file in the project root for full license information.
+//  *
+//  ****************************************************************************
 //
-
-{
-Licence:
-  FWHexView is dual-licensed. You may choose to use it under the restrictions of the GPL v3 licence at no cost to you,
-  or you may purchase a commercial licence. A commercial licence grants you the right to use FWHexView in your own
-  applications, royalty free, and without any requirement to disclose your source code nor any modifications to FWHexView
-  to any other party. A commercial licence lasts into perpetuity, and entitles you to all future updates, free of
-  charge. A commercial licence is sold per developer developing applications that use FWHexView, as follows:
-    1 developer = $49
-    2 developers = $89
-    3 developers = $139
-    4 developers = $169
-    5 developers = $199
-    >5 developers = $199 + $25 per developer from the 6th onwards
-    site licence = $499 (unlimited number of developers affiliated with the owner of the licence, i.e. employees, co-workers, interns and contractors)
-
-  Please send an e-mail to hexview_sale@rousehome.ru to request an invoice before or after payment is made. Payment may be
-  made via bank transfer. Bank details will be provided on the invoice.
-
-  Support (via e-mail) is available for users with a commercial licence. Enhancement requests submitted by users with a
-  commercial licence will be prioritized.
-}
 
 unit FWHexView.MappedView;
 
@@ -4096,7 +4079,10 @@ begin
     ctJmpLine: Result := ToDpi(82);
     ctOpcode:
     begin
-      Result := ToDpi(255);
+      if Header.ColumnMinWidth[ctOpcode] = 0 then
+        Result := ToDpi(255)
+      else
+        Result := ToDpi(Header.ColumnMinWidth[ctOpcode]);
       I := 0;
       EndIdx := RawData.PresentRows.Count;
       while I < EndIdx do
@@ -4143,7 +4129,7 @@ end;
 
 procedure TCustomMappedHexView.DoBeforePostPaint(const ADiapason: TVisibleRowDiapason);
 var
-  RegAddress, RegSize: Integer;
+  RegAddress, RegSize: Int64;
   Region: TRegion;
 begin
   RegAddress := RawData.RowToAddress(ADiapason.StartRow, 0);
@@ -4192,6 +4178,7 @@ procedure TCustomMappedHexView.DoColumnWidthChange(AColumnType: TColumnType;
 var
   AMinWidth: Integer;
 begin
+  inherited;
   if (AColumnType = ctAddress) and (RawData.MaxRegionLevel > 0) then
   begin
     AMinWidth := CalculateColumnBestSize(ctAddress);
@@ -4233,6 +4220,7 @@ end;
 
 procedure TCustomMappedHexView.ClearDataMap;
 begin
+  DataMap.Clear;
   SetDataStream(nil, 0);
   RebuildData;
 end;

@@ -1,4 +1,7 @@
-﻿{TODO: GetUpdate: Add ".WDAT" with check}
+﻿{TODO: Change CopyFile from src to dst}
+{TODO: Check stateChanged+stateLink combo (color as changed, attrib as link)}
+{TODO: Save pak or file: check setData binary files version, repack if needs}
+{TODO: Create OnCompare event, not second OnDouble?}
 {TODO: Use OnDouble twice? without and with data}
 {TODO: Check RemoveUpdate}
 {TODO: Check what saving uses Ctrl, NOT Man name}
@@ -75,10 +78,6 @@ type
     state   :byte;      // state* constant
   end;
 
-type
-  // "newdata" is filename if "newsize"=0
-  TRGOnDouble  = function(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction of object;
-
 const
   faAdd      = RGFS.faAdd;      // file/dir added
   faRename   = RGFS.faRename;   // file/dir renamed
@@ -96,6 +95,21 @@ type
   { TRGController }
 
   PRGController = ^TRGController;
+
+{
+  Event can be calls twice:
+    1 - just filename. (newdata=nil) Size can be known and >0
+      IN : ctrl, idx (it will give filename)
+      OUT: newfilename (rename old/new) in "newdata". "Size" can point on encoding
+    2 - binary data if da_compare was first
+      IN : ctrl, idx, data and size
+      OUT: newdata and newsize if was compared and changed. identify by result or comparing data
+}
+  TRGOnDouble = function(actrl:PRGController; idx:integer;
+                         var newdata:PByte; var newsize:integer):TRGDoubleAction of object;
+  TRGOnCompare = function(olddata:PByte;     oldsize:integer;
+                      var newdata:PByte; var newsize:integer):TRGDoubleAction of object;
+
   TRGController = object(TRGDirList)
   private
     FPAK:TRGPAK;
@@ -106,15 +120,16 @@ type
     procedure ClearElement(idx:integer);
     function GetBinName(fname: PUnicodeChar): UnicodeString;
     function GetBinName(const fname: AnsiString): AnsiString;
-    function  WriteToPAK(var apak:TRGPAK; const fname:string;
-         aver:integer; achanges:boolean=false):boolean;
-    function  OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
+    function WriteToPAK(var apak:TRGPAK; const fname:string;
+             aver:integer; achanges:boolean=false):boolean;
+    function OnDoubleDef(actrl:PRGController; idx:integer;
+             var newdata:PByte; var newsize:integer):TRGDoubleAction;
 
     function GetFileInfoPtr(idx:integer):PRGCtrlInfo;
     procedure SetOnDouble(proc:TRGOnDouble);
   public
     property PAK:TRGPAK read FPAK write FPAK;
-    property OnDouble:TRGOnDouble read FOnDouble write FOnDouble;//SetOnDouble;
+    property OnDouble:TRGOnDouble read FOnDouble write {FOnDouble;//}SetOnDouble;
 
   public
     procedure Init(aCase:boolean=false);
@@ -208,8 +223,8 @@ type
     function AddFileData(afdata:PWideChar; afname:PWideChar ; acontent:boolean=false):integer;
     function AddFileData(const afdata,     afname:AnsiString; acontent:boolean=false):integer;
 
-    function CopyFile(aidx:integer; actrl:PRGController; const apath:AnsiString):boolean;
-    function CopyFile(aidx:integer; actrl:PRGController; apath:PUnicodeChar):boolean;
+    function CopyFile(asrcctrl:PRGController; asrcidx:integer; const apath:AnsiString  ):boolean;
+    function CopyFile(asrcctrl:PRGController; asrcidx:integer;       apath:PUnicodeChar):boolean;
 
     property Files[idx:integer]:PRGCtrlInfo read GetFileInfoPtr;
   end;
@@ -256,7 +271,8 @@ begin
   if proc=nil then FOnDouble:=@OnDoubleDef else FOnDouble:=proc;
 end;
 
-function TRGController.OnDoubleDef(idx:integer; var newdata:PByte; var newsize:integer):TRGDoubleAction;
+function TRGController.OnDoubleDef(actrl:PRGController; idx:integer;
+         var newdata:PByte; var newsize:integer):TRGDoubleAction;
 begin
   result:=da_overwriteall;
 end;
@@ -1087,6 +1103,14 @@ begin
       lpak.Rename(fname);
       result:=true;
 
+      if FPAK.Directory='' then
+      begin
+        // for case of empty or template name
+        FPAK.Name     :=(ExtractNameOnly(fname));
+        FPAK.Directory:=(ExtractPath    (fname));
+      end;
+{!! must be regulated by option
+      // reopen is just for attrib (states) clear
       if FPAK.Name='' then
       begin
         FPAK.Free;
@@ -1096,6 +1120,7 @@ begin
         Rebuild;
         exit;
       end;
+}
     end;
 
 	  lpak.Free;
@@ -1134,13 +1159,110 @@ end;
   actrl  - our manifest
   aentry - current manifest directory
 }
+function ImportSingleFile(const asrcdir, aname:UnicodeString;
+         var actrl:TRGController; aentry:integer;
+         aact:TRGDoubleAction):TRGDoubleAction;
+var
+  ldstdir,lsrc,ldst:UnicodeString;
+  lbuf:PByte;
+  i,lsize:integer;
+begin
+  result:=aact;
+
+  if aname='' then exit;
+
+  if UpCase(aname)=TL2ModData then
+  begin
+    if actrl.PAK.modinfo.title=nil then
+      LoadModConfig(PChar(AnsiString(asrcdir+TL2ModData)),actrl.PAK.modinfo);
+    exit;
+  end;
+
+  ldstdir:=UnicodeString(actrl.Dirs[aentry].name);
+  ldst:=ldstdir+aname;
+  lsrc:=asrcdir+aname;
+{
+  if addall then
+    lname:=aname
+  else
+    lname:=CheckFName(adir,aname);
+}
+  i:=actrl.SearchFile(aentry,PUnicodeChar(aname));
+  if i<0 then
+  begin
+    //!!!!!!!!!!!!!!!!!!!
+    actrl.AddFileData(PUnicodeChar(lsrc),PUnicodeChar(ldst),false);
+  end
+  else
+  begin
+    RGLog.AddWide(PWideChar(ldst+' file exists already'));
+
+    if result=da_ask then
+    begin
+      lbuf :=nil;
+      lsize:=0; // FileSize(lsrc);
+      result:=actrl.OnDouble(@actrl,i,lbuf,lsize);
+    end;
+
+    case result of
+      da_skip: result:=da_ask;
+
+      da_overwrite,
+      da_overwritedir,
+      da_overwriteall: begin
+        if result=da_overwrite then result:=da_ask;
+//                if GetUpdateState(i)=stateNone then
+        //!!!!!!!!!!!!!!!!!!!
+        actrl.AddFileData(PUnicodeChar(lsrc),PUnicodeChar(ldst),false);
+      end;
+
+//!! visual part. must be processed inside FOnDouble
+//!! But requires ctrl or new name or new content (buf+size)
+      da_compare: begin // data+size
+        result:=da_ask;
+{
+        LoadFile(lsrc,lbuf);
+        result:=actrl.OnDouble(actrl,i,lbuf,lsize);
+}
+        actrl.UseData(lbuf,lsize,PUnicodeChar(ldst));
+      end;
+
+      da_renameold: begin // name + check again. what if new name exists already?
+        result:=da_ask;
+        actrl.Rename(i,PUnicodeChar(lbuf));
+        //!!!!!!!!!!!!!!!!!!!
+        actrl.AddFileData(PUnicodeChar(lsrc),PUnicodeChar(ldst),false);
+        FreeMem(lbuf);
+      end;
+
+      da_saveas: begin // name + check again
+        result:=da_ask;
+        //!!!!!!!!!!!!!!!!!!!
+        actrl.AddFileData(
+          PUnicodeChar(lsrc),
+          PUnicodeChar(ldstdir+UnicodeString(PUnicodeChar(lbuf))),false);
+//            PUnicodeChar(adir+UnicodeString(PUnicodeChar(lbuf))),
+//            PUnicodeChar(ldst),false);
+        FreeMem(lbuf);
+      end;
+
+    else
+    end;
+
+  end;
+end;
+
 function CycleDir(const adir:UnicodeString; var actrl:TRGController; aentry:integer;
    aact:TRGDoubleAction; nochild:boolean=false; addall:boolean=false):TRGDoubleAction;
 var
   sr:TUnicodeSearchRec;
-  ldir,lname,ltmp:UnicodeString;
+  ldir:UnicodeString;
+{
+  lname,ltmp:UnicodeString;
   lbuf:PByte;
-  i,lsize:integer;
+  lsize:integer;
+}
+  i:integer;
 begin
   ldir:=actrl.Dirs[aentry].name;
 
@@ -1168,85 +1290,7 @@ begin
       end
       else
       begin
-        if UpCase(sr.Name)=TL2ModData then
-        begin
-          if actrl.PAK.modinfo.title=nil then
-            LoadModConfig(PChar(AnsiString(adir+TL2ModData)),actrl.PAK.modinfo);
-          continue;
-        end;
-        if addall then
-          lname:=sr.Name
-        else
-          lname:=CheckFName(adir,sr.Name);
-        if lname<>'' then
-        begin
-          i:=actrl.SearchFile(aentry,PUnicodeChar(lname));
-          if i<0 then
-          begin
-            actrl.AddFileData(PUnicodeChar(adir+lname),PUnicodeChar(ldir+lname),false);
-          end
-          else
-          begin
-            RGLog.AddWide(PWideChar(adir+lname+' file exists already'));
-            if aact=da_ask then
-            begin
-//              if actrl.OnDouble=@actrl.OnDoubleDef then aact:=da_overwriteall
-              if actrl.OnDouble=nil then aact:=da_overwriteall
-              else
-              begin
-                ltmp :=adir+lname;
-                lbuf :=PByte(PUnicodeChar(ltmp));
-                lsize:=0;
-                aact:=actrl.OnDouble(i,PByte(lbuf),lsize);
-              end;
-            end;
-
-            case aact of
-              da_stop: begin
-                aact:=da_stop;
-                break;
-              end;
-
-              da_skip,
-              da_skipdir,
-              da_skipall: begin
-                if aact=da_skip then aact:=da_ask;
-                continue;
-              end;
-
-              da_overwrite,
-              da_overwritedir,
-              da_overwriteall: begin
-                if aact=da_overwrite then aact:=da_ask;
-//                if GetUpdateState(i)=stateNone then
-                actrl.AddFileData(PUnicodeChar(adir+lname),PUnicodeChar(ldir+lname),false);
-              end;
-
-//!! visual part. must be processed inside FOnDouble
-//!! But requires ctrl or new name or new content (buf+size)
-              da_compare: begin // data+size
-                aact:=da_ask;
-                actrl.UseData(lbuf,lsize,PUnicodeChar(ldir+lname));
-              end;
-              da_renameold: begin // name + check again. what if new name exists already?
-                aact:=da_ask;
-                actrl.Rename(i,PUnicodeChar(lbuf));
-                actrl.AddFileData(PUnicodeChar(adir+lname),PUnicodeChar(ldir+lname),false);
-                FreeMem(lbuf);
-              end;
-              da_saveas: begin // name + check again
-                aact:=da_ask;
-                actrl.AddFileData(
-                    PUnicodeChar(adir+UnicodeString(PUnicodeChar(lbuf))),
-                    PUnicodeChar(ldir+lname),false);
-                FreeMem(lbuf);
-              end;
-
-            else
-            end;
-
-          end;
-        end;
+        aact:=ImportSingleFile(adir,sr.Name, actrl,aentry, aact);
       end;
     until FindNext(sr)<>0;
 
@@ -1357,36 +1401,72 @@ begin
 end;
 
 
-function TRGController.CopyFile(aidx:integer; actrl:PRGController; const apath:AnsiString):boolean;
+function TRGController.CopyFile(asrcctrl:PRGController; asrcidx:integer; const apath:AnsiString):boolean;
 var
   pc:PUnicodeChar;
 begin
   pc:=FastStrToWide(apath);
-  result:=CopyFile(aidx,actrl,pc);
+  result:=CopyFile(asrcctrl,asrcidx,pc);
   FreeMem(pc);
 end;
 
-function TRGController.CopyFile(aidx:integer; actrl:PRGController; apath:PUnicodeChar):boolean;
+function TRGController.CopyFile(asrcctrl:PRGController; asrcidx:integer; apath:PUnicodeChar):boolean;
 var
   lbuf:PByte;
-  lidx,lsize:integer;
+  {lidx1,}lidx,lsize:integer;
   lact:TRGDoubleAction;
 begin
   result:=false;
   lbuf:=nil;
-  lsize:=GetAsIs(aidx,lbuf);
-  if lsize>0 then
+  lsize:=asrcctrl^.Files[asrcidx]^.size;
+  lidx:=SearchFile(apath);
+  if lidx>=0 then
   begin
-    //!! check for existing
-    lidx:=actrl^.SearchFile(apath);
-    if lidx>=0 then
-      lact:=OnDouble(lidx,lbuf,lsize)
-    else
-      lact:=da_overwrite;
+    while true do
+    begin
+      lact:=OnDouble(@Self,lidx,lbuf,lsize);
+      if lact=da_renameold then
+      begin
+{
+        lidx1:=SearchFile();
+        if lidx1>0 then
+        begin
+          RGLog.Add('File with name '++'exists already');
+          continue;
+        end;
+}
+      end
+      else if lact=da_saveas then
+      begin
+{
+        lidx1:=SearchFile();
+        if lidx1>0 then
+        begin
+          RGLog.Add('File with name '++'exists already');
+          continue;
+        end;
+}
+      end
+      else if lact=da_compare then
+      begin
+        lsize:=asrcctrl^.GetAsIs(asrcidx,lbuf);
+        if lsize>0 then
+          lact:=OnDouble(@Self,lidx,lbuf,lsize)
+        else
+          lact:=da_overwrite;
+      end;
+      break;
+    end;
+  end
+  else
+    lact:=da_overwrite;
 
-    result:=actrl^.UseData(lbuf,lsize,apath)>=0;
-    if not result then FreeMem(lbuf);
+  if lact in [da_overwriteall, da_overwritedir, da_overwrite] then
+  begin
+    result:=UseData(lbuf,lsize,apath)>=0;
   end;
+
+  if (lbuf<>nil) and not result then FreeMem(lbuf);
 end;
 
 function TRGController.GetBinName(fname:PUnicodeChar):UnicodeString;

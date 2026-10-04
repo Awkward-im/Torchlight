@@ -314,6 +314,14 @@ begin
   end;
 end;
 
+procedure TPanelForm.lvListContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  if lvList.ItemIndex>=0 then
+    mnuGrid.PopUp;
+
+  Handled:=True;
+end;
+
 procedure TPanelForm.AddListRow(aidx:integer);
 var
   ltime:UInt64;
@@ -536,8 +544,8 @@ begin
 //  if (lidx<lvList.Items.Count) and Self.Showing then lvList.Items[lvList.ItemIndex].Focused:=true;
   if (lidx<lvList.Items.Count) and Self.Showing then 
   begin
-    lvList.ItemFocused:=lvList.Items[lvList.ItemIndex];
-    lvList.Items[lvList.ItemIndex].MakeVisible(true);
+    lvList.ItemFocused:=lvList.Items[lidx];
+    lvList.Items[lidx].MakeVisible(true);
   end;
 end;
 

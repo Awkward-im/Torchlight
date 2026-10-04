@@ -1,6 +1,7 @@
 ﻿{
   Unit for preview processing
 }
+{TODO: MakePreview flag for read only? (text presentation)}
 {TODO: notify if preview list was changed (new added, old closed)}
 unit rgPreview;
 

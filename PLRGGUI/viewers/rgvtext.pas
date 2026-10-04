@@ -1,4 +1,7 @@
 ﻿{}
+{TODO: ShowHint for succesfull or not file saving}
+{TODO: sources, button for case fix for section, types and tags}
+{TODO: show original game version for sources}
 {TODO: modified flag}
 {TODO: need to unify sources initial loading and reload}
 {TODO: PreviewSource: autoformat if no block spaces. Add to synedit with line by line}

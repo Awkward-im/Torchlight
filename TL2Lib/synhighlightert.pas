@@ -1,3 +1,4 @@
+{Torchlight/Hob/Rebel Galaxy DAT/Layout files syntax highlighter}
 unit SynHighlighterT;
 
 interface
@@ -24,7 +25,7 @@ type
     fLine: PChar;
     Run: Longint;
     fTokenPos: Integer;
-    fTokenID: TtkTokenKind;
+    fTokenId: TtkTokenKind;
     fLineNumber: Integer;
 
     fGroupAttri : TSynHighlighterAttributes;
@@ -56,7 +57,7 @@ type
     procedure TypeProc;
     procedure TextProc;
     procedure MakeMethodTables;
-    function NextTokenIs(T: String): Boolean;
+    function  NextTokenIs(const T: String): Boolean;
   protected
     function GetIdentChars: TSynIdentChars; override;
   public
@@ -171,26 +172,26 @@ end;
 
 procedure TSynTSyn.NullProc;
 begin
-  fTokenID := tkNull;
+  fTokenId := tkNull;
 end;
 
 procedure TSynTSyn.CarriageReturnProc;
 begin
-  fTokenID := tkSpace;
+  fTokenId := tkSpace;
   Inc(Run);
   if fLine[Run] = #10 then Inc(Run);
 end;
 
 procedure TSynTSyn.LineFeedProc;
 begin
-  fTokenID := tkSpace;
+  fTokenId := tkSpace;
   Inc(Run);
 end;
 
 procedure TSynTSyn.SpaceProc;
 begin
   Inc(Run);
-  fTokenID := tkSpace;
+  fTokenId := tkSpace;
   while fLine[Run] <= #32 do begin
     if fLine[Run] in [#0, #9, #10, #13] then break;
     Inc(Run);
@@ -200,14 +201,14 @@ end;
 procedure TSynTSyn.PointProc;
 begin
   Inc(Run);
-  fTokenID := tkSymbol;
-  fRange:= rsText;
+  fTokenId := tkSymbol;
+  fRange   := rsText;
 end;
 
 procedure TSynTSyn.LessThanProc;
 begin
   fTokenId := tkType;
-  fRange := rsOpenType;
+  fRange   := rsOpenType;
   Inc(Run);
 end;
 
@@ -217,7 +218,7 @@ begin
   begin
     fRange := rsProp;
   end;
-    fTokenId := tkType;
+  fTokenId := tkType;
   Inc(Run);
 end;
 
@@ -227,19 +228,19 @@ begin
   if (fLine[Run] = '/') then
   begin
     Inc(Run);
-    fTokenID := tkGroup;
-    fRange := rsCloseGroup;
+    fTokenId := tkGroup;
+    fRange   := rsCloseGroup;
     exit;
   end;
 
-  fTokenID := tkGroup;
-  fRange := rsOpenGroup;
+  fTokenId := tkGroup;
+  fRange   := rsOpenGroup;
 end;
 
 procedure TSynTSyn.SquareCloseProc;
 begin
   fTokenId := tkGroup;
-  fRange := rsText;
+  fRange   := rsText;
   Inc(Run);
 end;
 
@@ -248,7 +249,7 @@ var
   buf:array [0..27] of AnsiChar;
   i:integer;
 begin
-  fRange := rsPoint;
+  fRange   := rsPoint;
   fTokenId := tkProp;
   if Assigned(OnPropCheck) then
   begin
@@ -315,7 +316,7 @@ procedure TSynTSyn.TypeProc;
 var
   lp:integer;
 begin
-  fRange := rsType;
+  fRange   := rsType;
   fTokenId := tkType;
   lp:=Run;
   while (fLine[Run] in NameChars) do Inc(Run);
@@ -387,26 +388,27 @@ begin
   if fRange = rsOpenGroup  then StartCodeFoldBlock(nil,true);
   if fRange = rsCloseGroup then EndCodeFoldBlock(true);
 
-  fRange := rsGroup;
-  fTokenID := tkGroup;
+  fRange   := rsGroup;
+  fTokenId := tkGroup;
 end;
 
 procedure TSynTSyn.Next;
 begin
   fTokenPos := Run;
-  if (fTokenID = tkSymbol) and (fRange = rsText) then
+  if (fTokenId = tkSymbol) and (fRange = rsText) then
     TextProc()
   else
     fProcTable[fLine[Run]]();
 end;
 
-function TSynTSyn.NextTokenIs(T : String) : Boolean;
-var I, Len : Integer;
+function TSynTSyn.NextTokenIs(const T: String): Boolean;
+var
+  i, Len : Integer;
 begin
   Result:= True;
   Len:= Length(T);
-  for I:= 1 to Len do
-    if (fLine[Run + I] <> T[I]) then
+  for i:= 1 to Len do
+    if (fLine[Run + i] <> T[i]) then
     begin
       Result:= False;
       Break;
@@ -453,7 +455,7 @@ end;
 
 function TSynTSyn.GetTokenAttribute: TSynHighlighterAttributes;
 begin
-  case fTokenID of
+  case fTokenId of
     tkGroup  : Result:= fGroupAttri;
     tkType   : Result:= fTypeAttri;
     tkProp   : Result:= fPropAttri;

@@ -1,4 +1,3 @@
-{TODO: restore old RGLog OnAdd processing in FormDestroy}
 unit fmLog;
 
 {$mode ObjFPC}{$H+}
@@ -81,7 +80,9 @@ end;
 function TfmLogForm.AddToLog(var adata:string):integer;
 begin
   memLog.Append(adata);
-  adata:='';
+  if @FSavedOnAdd<>nil then
+    FSavedOnAdd(adata);
+//  adata:='';
   result:=0;
 end;
 

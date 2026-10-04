@@ -1,4 +1,5 @@
 {TODO: Set modified if any edit field changed}
+{TODO: Move right side to down with scroll if width too small. left of fields is 391. So, less than 400? }
 {
 fsModal in FormState
 Application.ModalLevel

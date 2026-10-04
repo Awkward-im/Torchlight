@@ -2,10 +2,12 @@ object MODInfoForm: TMODInfoForm
   Left = 350
   Height = 320
   Top = 31
-  Width = 751
+  Width = 750
   Caption = 'MOD Info'
   ClientHeight = 320
-  ClientWidth = 751
+  ClientWidth = 750
+  Constraints.MinHeight = 320
+  Constraints.MinWidth = 750
   LCLVersion = '4.99.0.0'
   object seVersion: TSpinEditEx
     Left = 7
@@ -76,7 +78,7 @@ object MODInfoForm: TMODInfoForm
     Left = 568
     Height = 1
     Top = 176
-    Width = 88
+    Width = 87
     Anchors = [akTop, akLeft, akRight]
     ParentColor = False
   end
@@ -91,7 +93,7 @@ object MODInfoForm: TMODInfoForm
     ParentColor = False
   end
   object bbOK: TBitBtn
-    Left = 651
+    Left = 650
     Height = 30
     Top = 283
     Width = 92
@@ -103,7 +105,7 @@ object MODInfoForm: TMODInfoForm
     OnClick = bbOKClick
   end
   object bbCancel: TBitBtn
-    Left = 551
+    Left = 550
     Height = 30
     Top = 283
     Width = 92
@@ -160,7 +162,7 @@ object MODInfoForm: TMODInfoForm
     Left = 392
     Height = 254
     Top = 3
-    Width = 352
+    Width = 351
     ActivePage = tsAdditional
     Anchors = [akTop, akLeft, akRight, akBottom]
     ParentShowHint = False
@@ -171,12 +173,12 @@ object MODInfoForm: TMODInfoForm
       Hint = 'Mod Description'
       Caption = 'Description'
       ClientHeight = 226
-      ClientWidth = 344
+      ClientWidth = 343
       object memDescr: TMemo
         Left = 0
         Height = 226
         Top = 0
-        Width = 344
+        Width = 343
         Align = alClient
         TabOrder = 0
       end
@@ -184,12 +186,12 @@ object MODInfoForm: TMODInfoForm
     object tsDelete: TTabSheet
       Caption = 'Delete'
       ClientHeight = 226
-      ClientWidth = 344
+      ClientWidth = 343
       object lbDelete: TListBox
         Left = 0
         Height = 226
         Top = 0
-        Width = 344
+        Width = 343
         Align = alClient
         ItemHeight = 0
         MultiSelect = True
@@ -200,13 +202,13 @@ object MODInfoForm: TMODInfoForm
     object tsRequirement: TTabSheet
       Caption = 'Requirement'
       ClientHeight = 226
-      ClientWidth = 344
+      ClientWidth = 343
       TabVisible = False
       object sgReq: TStringGrid
         Left = 0
         Height = 226
         Top = 0
-        Width = 344
+        Width = 343
         Align = alClient
         AutoAdvance = aaDown
         AutoFillColumns = True
@@ -214,7 +216,7 @@ object MODInfoForm: TMODInfoForm
         Columns = <        
           item
             Title.Caption = 'Name'
-            Width = 188
+            Width = 183
           end        
           item
             SizePriority = 0
@@ -233,7 +235,7 @@ object MODInfoForm: TMODInfoForm
         TabOrder = 0
         OnKeyDown = sgReqKeyDown
         ColWidths = (
-          188
+          183
           108
           48
         )
@@ -242,7 +244,7 @@ object MODInfoForm: TMODInfoForm
     object tsAdditional: TTabSheet
       Caption = 'Additional'
       ClientHeight = 226
-      ClientWidth = 344
+      ClientWidth = 343
       object lblSteamPreview: TLabel
         Left = 2
         Height = 15
@@ -341,6 +343,7 @@ object MODInfoForm: TMODInfoForm
     Hint = 'Save MOD info to file'
     Top = 283
     Width = 30
+    Anchors = [akLeft, akBottom]
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
       2000000000000009000000000000000000000000000000000000FF9147FFFF90
@@ -427,6 +430,7 @@ object MODInfoForm: TMODInfoForm
     Hint = 'Load MOD info from file'
     Top = 283
     Width = 30
+    Anchors = [akLeft, akBottom]
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
       2000000000000009000000000000000000000000000000000000FFFFFF00FFFF
