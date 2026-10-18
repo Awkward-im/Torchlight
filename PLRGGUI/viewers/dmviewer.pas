@@ -121,23 +121,23 @@ begin
     lsynedit:=lc as TSynEdit;
   end;
 
+  if lc<>nil then
+  begin
+    pp:=((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupPoint;
+    pt:=lSynEdit.PixelsToLogicalPos(
+        lSynEdit.ScreenToClient(pp));
+  end
+  else
+  begin
+    pt:=lSynEdit.LogicalCaretXY;
+    pp:=lSynEdit.ClientToScreen(lSynEdit.LogicalToPhysicalPos(pt));
+  end;
+
   ltext:=lSynEdit.SelText;
   if ltext='' then
   begin
-    if lc<>nil then
-    begin
-      pp:=((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupPoint;
-      pt:=lSynEdit.PixelsToLogicalPos(
-          lSynEdit.ScreenToClient(pp));
-    end
-    else
-    begin
-      pt:=lSynEdit.LogicalCaretXY;
-      pp:=lSynEdit.ClientToScreen(lSynEdit.LogicalToPhysicalPos(pt));
-    end;
     ltext:=lSynEdit.GetWordAtRowCol(pt);
   end;
-
   if ltext<>'' then
   begin
     lhash:=RGHashB(PAnsiChar(UpCase(ltext)));

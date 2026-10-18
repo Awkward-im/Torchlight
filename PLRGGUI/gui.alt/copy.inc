@@ -312,7 +312,7 @@ begin
   if lcopied>0 then
   begin
     ShowMessage(rsCopied+' '+IntToStr(lcopied));
-    lpdst.RefreshList();
+    lpdst.execRefreshList(nil);
   end
   else
     ShowMessage(rsNotCopied);

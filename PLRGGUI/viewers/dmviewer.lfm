@@ -132,8 +132,6 @@ object Viewer: TViewer
     }
   end
   object SynXMLSyn: TSynXMLSyn
-    DefaultFilter = 'Документ XML (*.xml,*.xsd,*.xsl,*.xslt,*.dtd)|*.xml;*.xsd;*.xsl;*.xslt;*.dtd'
-    Enabled = False
     WantBracesParsed = False
     Left = 135
     Top = 24

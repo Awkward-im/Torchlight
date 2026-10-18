@@ -399,6 +399,10 @@ msgstr ""
 msgid "Copy subdir list"
 msgstr ""
 
+#: tpanelform.actdump.caption
+msgid "View as &dump"
+msgstr ""
+
 #: tpanelform.actextract.caption
 msgid "Extract selected"
 msgstr ""

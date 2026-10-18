@@ -1,3 +1,4 @@
+{NOTE: AltExecute as action can't be - ctrl+idx used manually}
 unit fmGUIAlt;
 
 {$mode ObjFPC}{$H+}
@@ -273,7 +274,7 @@ begin
     end;
     if ftype<>typeDirectory then
     begin
-      lform:=MakePreview(actrl^,aidx,false);
+      lform:=MakePreview(actrl^,aidx,vAsIs);
       if lform<>nil then lform.Show;
     end;
   end;

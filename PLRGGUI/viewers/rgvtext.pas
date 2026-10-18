@@ -170,7 +170,7 @@ var
   lsize:integer;
 begin
   lbuf:=nil;
-  lsize:=Ctrl^.GetSource(Idx,lbuf);
+  lsize:=Ctrl^.GetSource(idx,lbuf);
 
   ltext:='';
   // Check for Unicode
@@ -201,6 +201,7 @@ begin
   FreeMem(lbuf);
 
   SynEdit.Text:=ltext;
+  SynEdit.Modified:=false;
 end;
 
 function MakeEditForm(var actrl:TRGController; aidx:integer):TForm;
@@ -321,6 +322,12 @@ var
 begin
   lbuf:=nil;
   lsize:=actrl.GetSource(aidx,lbuf);
+  if GetSourceEncoding(lbuf)=tofEmpty then
+  begin
+    FreeMem(lbuf);
+    result:=PreviewText(actrl,aidx);
+    exit;
+  end;
 
   result:=MakeEditForm(actrl,aidx);
 

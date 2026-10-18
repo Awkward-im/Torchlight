@@ -1,6 +1,8 @@
 ﻿{
   Unit for preview processing
 }
+{TODO: Add picture exts for lrec.ftype=typeOther/typeUnknown for case of shell. At least, webp}
+{TODO: imageset: view as text for xml for and as source for dat form}
 {TODO: MakePreview flag for read only? (text presentation)}
 {TODO: notify if preview list was changed (new added, old closed)}
 unit rgPreview;
@@ -13,8 +15,16 @@ uses
   RGGlobal,
   RGCtrl;
 
+{
+const
+  vAsIs   = 0;
+  vAsText = 1;
+  vAsDump = 2;
+}
+type
+  TViewMode = (vAsIs, vAsText, vAsDump);
 
-function MakePreview(var actrl:TRGController; aidx:integer; asdump:boolean):TForm;
+function MakePreview(var actrl:TRGController; aidx:integer; amode:TViewMode):TForm;
 procedure ClosePreviews (actrl:PRGController=nil);
 function  GetPreviewList(actrl:PRGController=nil):TObjectDynArray;
 procedure SetPreviewFont(const afont:TFont);
@@ -60,7 +70,7 @@ begin
     Viewer.Font.Assign(afont);
 end;
 
-function MakePreview(var actrl:TRGController; aidx:integer; asdump:boolean):TForm;
+function MakePreview(var actrl:TRGController; aidx:integer; amode:TViewMode):TForm;
 var
   lrec:TRGFullInfo;
   lblInfo1,lblInfo2:TLabel;
@@ -84,29 +94,31 @@ begin
 {}
   if lrec.ftype=typeDirectory then exit;
 
-  if asdump then
+  if amode=vAsDump then
     result:=PreviewDump(actrl,aidx)
-  else if (lrec.ftype and $FF) in [typeUnknown,typeFont,typeOther,typeFX] then
+
+  else if ((lrec.ftype and $FF) in [typeUnknown,typeFont,typeOther,typeFX]) and
+       RGTypeExtIsText(lext) then
   begin
-    if RGTypeExtIsText(lext) then
-      result:=PreviewText(actrl,aidx)
-    else
-      result:=PreviewDump(actrl,aidx);
+    result:=PreviewText(actrl,aidx)
   end
 
   else if lrec.ftype=typeLayout then
   begin
-{
-    if GetLayoutVersion(FUData)=verUnk then
+    {if GetLayoutVersion(FUData)=verUnk then
       result:=PreviewText(actrl,aidx)
+    else}if amode=vAsText then
+      result:=PreviewSource(actrl,aidx)
     else
-}
       result:=PreviewLayout(actrl,aidx);
   end
 
   else if lrec.ftype=typeImageset then
   begin
-    result:=PreviewImageset(actrl,aidx);
+    if amode=vAsText then
+      result:=PreviewSource(actrl,aidx)
+    else
+      result:=PreviewImageset(actrl,aidx);
   end
 
   // Text
@@ -140,7 +152,12 @@ begin
   else if lrec.ftype=typeSound then result:=PreviewSound(actrl,aidx)
 
   else
-    result:=PreviewDump(actrl,aidx);
+  begin
+    if lext='.WEBP' then
+      result:=PreviewImage(actrl,aidx)
+    else
+      result:=PreviewDump(actrl,aidx);
+  end;
 {}
 
   if result=nil then exit;
